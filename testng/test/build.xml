@@ -1,0 +1,151 @@
+<project name="testng" default="all" basedir="..">
+
+  <property file="build.properties"/>
+
+  <property name="test15.dir" value="${basedir}/test"/>
+  <property name="test14.dir" value="${basedir}/test-14"/>
+  <property name="test.src.dir" value="${test15.dir}/src"/>
+  <property name="test.build.dir" value="${test15.dir}/build"/>
+
+  <property name="report.dir" value="${test15.dir}/test-output"/>
+  <property name="junit.report.dir" value="${report.dir}/test-tmp"/>
+  <property name="testng.report.dir" value="${report.dir}"/>
+
+  <target name="all" depends="prepare,compile,run,reports"/>
+
+  <!-- ==================================================================== -->
+  <!-- Compile                                                              -->
+  <!-- ==================================================================== -->
+  <path id="compile.cp">
+		<pathelement location="${build.jdk15.dir}"/>
+		<fileset dir="${lib.dir}">
+			<include name="junit.jar"/>
+			<include name="${beanshell.jar}"/>
+		</fileset>
+  </path>
+
+  <target name="env:info">
+		<echo>
+BASEDIR          =${basedir}
+TEST15.DIR       =${test15.dir}
+TEST14.DIR       =${test14.dir}
+TEST.SRC.DIR     =${test.src.dir}
+TEST.BUILD.DIR   =${test.build.dir}
+REPORT.DIR       =${report.dir}
+JUNIT.REPORT.DIR =${junit.report.dir}
+TESTNG.REPORT.DIR=${testng.report.dir}
+		</echo>
+  </target>
+	
+  <target name="compile" depends="prepare">
+		<echo message="                                 -- Compiling JDK 1.5 tests --"/>
+
+		<property name="build.compiler" value="modern"/>
+		<javac debug="true"
+           source="1.5"
+           classpathref="compile.cp"
+           srcdir="${test.src.dir}"
+           destdir="${test.build.dir}"
+		/>
+  </target>
+
+  <target name="prepare">
+		<tstamp/>
+		<mkdir dir="${test.build.dir}"/>
+		<mkdir dir="${junit.report.dir}"/>
+		<mkdir dir="${testng.report.dir}"/>
+  	
+		<taskdef name="testng" classname="org.testng.TestNGAntTask" classpath="${jdk15.testng.jar}"/>
+  </target>
+
+  <!-- ==================================================================== -->
+  <!-- Run                                                             -->
+  <!-- ==================================================================== -->
+
+  <path id="run.cp">
+		<path refid="compile.cp"/>
+		<pathelement location="${test.build.dir}"/>
+		<pathelement location="${lib.dir}/qdox-1.5.jar"/>
+		<pathelement location="${java.home}/../lib/tools.jar"/>
+  </path>
+
+  <target name="run" description="Run tests" depends="compile">
+		<echo message="                                 -- Running JDK 1.5 tests --"/>
+		<echo message="                                 -- ${jdk15.testng.jar} --" />
+		<testng classpathref="run.cp"
+            outputdir="${testng.report.dir}">
+			<xmlfileset dir="${test15.dir}" includes="testng.xml"/>
+		</testng>
+  </target>
+
+  <target name="run-jdk14" description="Run tests on javadoc annotations" depends="compile">
+    <echo message="                                 -- Running JDK 1.4 tests --"/>
+  	<echo message="                                 -- ${jdk15.testng.jar} --" />
+  	
+  	<testng classpathref="run.cp"
+            outputdir="${testng.report.dir}"
+            sourcedir="${test.src.dir}">
+			<xmlfileset dir="${test15.dir}" includes="testng.xml"/>
+		</testng>
+  </target>
+
+  <target name="run:single" description="Run 1 property file named with the ant property test" depends="compile">
+      <echo message="                                 -- testng-tests-run1 --"/>
+
+      <testng outputdir="${testng.report.dir}"
+              classpathref="run.cp">
+          <xmlfileset dir="${test15.dir}" includes="testng-single.xml"/>
+      </testng>
+
+      <echo>Report created in ${testng.report.dir}</echo>
+  </target>
+
+  <!-- ==================================================================== -->
+  <!-- Run specific configuration                                           -->
+  <!-- ==================================================================== -->
+  <target name="run:conf"
+          if="testng.conf"
+          depends="clean:reports,compile"
+          description="Run specified tests">
+		<echo message="                                 -- testng-tests-run --"/>
+		<echo message="using: ${testng.conf}.xml"/>
+
+		<testng classpathref="run.cp"
+            outputDir="${testng.report.dir}">
+			<xmlfileset dir="${test15.dir}" includes="${testng.conf}.xml"/>
+		</testng>
+
+		<antcall target="clean.tmp"/>
+  </target>
+
+
+  <!-- ==================================================================== -->
+  <!-- Reports                                                              -->
+  <!-- ==================================================================== -->
+
+  <target name="reports">
+		<junitreport todir="${junit.report.dir}">
+			<fileset dir="${testng.report.dir}">
+				<include name="*.xml"/>
+				<exclude name="testng-failures.xml"/>
+			</fileset>
+			<report format="noframes" todir="${junit.report.dir}"/>
+		</junitreport>
+  </target>
+
+
+  <target name="clean.tmp">
+      <delete dir="${basedir}/test-output-tests"/>
+  </target>
+
+  <target name="clean:reports">
+      <delete dir="${report.dir}"/>
+      <delete dir="${junit.report.dir}"/>
+  </target>
+
+  <target name="clean" depends="clean.tmp,clean:reports">
+		<echo message="                                 -- test clean --"/>
+
+  	<delete dir="${test.build.dir}"/>
+  </target>
+</project>

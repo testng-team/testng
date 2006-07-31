@@ -1,0 +1,9 @@
+test-report
+test-output-tests
+testng2.xml
+report
+build
+test-output
+test-outputs
+
+global-result.txt

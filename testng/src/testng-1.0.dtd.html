@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+    <head>
+    <title>DTD for TestNG 1.0</title>
+        <link rel="stylesheet" href="http://beust.com/beust.css" type="text/css"/>
+    </head>
+<body>
+
+<pre class="code"><span class="xml-comment">&lt;!-- ====================================================== --&gt;</span>
+<span class="xml-comment">&lt;!-- DTD for TestNG 1.0                                     --&gt;</span>
+<span class="xml-comment">&lt;!--                                                        --&gt;</span>
+<span class="xml-comment">&lt;!-- A suite is made of tests and parameters.               --&gt;</span>
+<span class="xml-comment">&lt;!--                                                        --&gt;</span>
+<span class="xml-comment">&lt;!-- A test is made of three parts:                         --&gt;</span>
+<span class="xml-comment">&lt;!-- * Parameters, which override the Suite parameters      --&gt;</span>
+<span class="xml-comment">&lt;!-- * Groups, made of two parts                            --&gt;</span>
+<span class="xml-comment">&lt;!-- * Classes, defining which classes are going to be part --&gt;</span>
+<span class="xml-comment">&lt;!--   of this test run                                     --&gt;</span>
+<span class="xml-comment">&lt;!--                                                        --&gt;</span>
+<span class="xml-comment">&lt;!-- In turn, groups are made of two parts:                 --&gt;</span>
+<span class="xml-comment">&lt;!-- * Definitions, which allow you to group groups into    --&gt;</span>
+<span class="xml-comment">&lt;!--   bigger groups                                        --&gt;</span>
+<span class="xml-comment">&lt;!-- * Runs, which defines the groups that the methods      --&gt;</span>
+<span class="xml-comment">&lt;!--   must belong to in order to be run during this test   --&gt;</span>
+<span class="xml-comment">&lt;!--                                                        --&gt;</span>
+<span class="xml-comment">&lt;!-- Full documentation:  http://testng.org                 --&gt;</span>
+<span class="xml-comment">&lt;!--                                                        --&gt;</span>
+<span class="xml-comment">&lt;!-- Cedric Beust                                           --&gt;</span>
+<span class="xml-comment">&lt;!-- ====================================================== --&gt;</span>
+
+
+<span class="xml-comment">&lt;!-- A suite is the top-level element of a testng.xml file                  --&gt;</span>
+&lt;!ELEMENT suite (packages|test|parameter|method-selectors)* &gt;
+
+<span class="xml-comment">&lt;!-- Attributes: --&gt;</span>
+<span class="xml-comment">&lt;!-- name:  The name of this suite (as it will appear in the reports)       --&gt;</span>
+<span class="xml-comment">&lt;!-- verbose:  (0-10) How verbose the output on the console                 --&gt;</span>
+<span class="xml-comment">&lt;!--           will be.  This setting has no impact on the HTML reports     --&gt;</span>
+<span class="xml-comment">&lt;!-- parallel:  (true|false) Whether TestNG should use different threads to --&gt;</span>
+<span class="xml-comment">&lt;!--             run your tests (might speed up the process)                --&gt;</span>
+<span class="xml-comment">&lt;!-- thread-count:  An integer giving the size of the thread pool to use    --&gt;</span>
+<span class="xml-comment">&lt;!--                if you set parallel=true (default is 5)                 --&gt;</span>
+<span class="xml-comment">&lt;!-- annotations:   (javadoc|JDK5)  If "javadoc", TestNG will look for      --&gt;</span>
+<span class="xml-comment">&lt;!--                JavaDoc annotations in your sources, otherwise it will  --&gt;</span>
+<span class="xml-comment">&lt;!--                use JDK5 annotations                                    --&gt;</span>
+&lt;!ATTLIST suite 
+    name CDATA #REQUIRED
+    verbose CDATA #IMPLIED
+    parallel CDATA #IMPLIED
+    thread-count CDATA #IMPLIED
+    annotations CDATA #IMPLIED
+&gt;
+
+<span class="xml-comment">&lt;!-- Parameters can be defined at the <span class="tag">&lt;suite&gt;</span> or at the <span class="tag">&lt;test&gt;</span> level        --&gt;</span>
+<span class="xml-comment">&lt;!-- Parameters defined at the <span class="tag">&lt;test&gt;</span> level override parameters of the      --&gt;</span>
+<span class="xml-comment">&lt;!-- same name in <span class="tag">&lt;suite&gt;.</span>                                                  --&gt;</span>
+<span class="xml-comment">&lt;!-- Parameters are used to link Java method parameters to their actual     --&gt;</span>
+<span class="xml-comment">&lt;!-- value, defined here.                                                   --&gt;</span>
+&lt;!ELEMENT parameter ANY&gt;
+&lt;!ATTLIST parameter
+    name CDATA #REQUIRED
+    value CDATA #REQUIRED &gt;
+
+<span class="xml-comment">&lt;!-- Method selectors define user classes used to select which methods to   --&gt;</span>
+<span class="xml-comment">&lt;!-- run.  They need to implement org.testng.IMethodSelector                --&gt;</span>
+&lt;!ELEMENT method-selectors (method-selector*) &gt;
+&lt;!ELEMENT method-selector ((selector-class)*|script) &gt;
+&lt;!ELEMENT selector-class ANY&gt;
+&lt;!ATTLIST selector-class
+    name CDATA #REQUIRED
+	priority CDATA #IMPLIED
+&gt;
+&lt;!ELEMENT script ANY&gt;
+&lt;!ATTLIST script
+    language CDATA #REQUIRED
+&gt;
+
+<span class="xml-comment">&lt;!-- A test contains parameters and classes.  Additionally, you can define  --&gt;</span>
+<span class="xml-comment">&lt;!-- additional groups ("groups of groups")                                 --&gt;</span>
+&lt;!ELEMENT test (method-selectors?,parameter*,groups?,packages?,classes?) &gt;
+
+<span class="xml-comment">&lt;!-- Attributes:                                                            --&gt;</span>
+<span class="xml-comment">&lt;!-- name:  The name of this test (as it will appear in the reports)        --&gt;</span>
+<span class="xml-comment">&lt;!-- junit:  (true|false) Whether to run in JUnit mode                      --&gt;</span>
+<span class="xml-comment">&lt;!-- verbose:  (0-10) How verbose the output on the console                 --&gt;</span>
+<span class="xml-comment">&lt;!--           will be.  This setting has no impact on the HTML reports     --&gt;</span>
+<span class="xml-comment">&lt;!-- parallel:  (true|false) Whether TestNG should use different threads to --&gt;</span>
+<span class="xml-comment">&lt;!--             run your tests (might speed up the process)                --&gt;</span>
+<span class="xml-comment">&lt;!-- annotations:   (javadoc|JDK5)  If "javadoc", TestNG will look for      --&gt;</span>
+<span class="xml-comment">&lt;!--                JavaDoc annotations in your sources, otherwise it will  --&gt;</span>
+<span class="xml-comment">&lt;!--                use JDK5 annotations                                    --&gt;</span>
+&lt;!ATTLIST test
+    name CDATA #REQUIRED 
+    junit CDATA #IMPLIED
+    verbose CDATA #IMPLIED
+    parallel CDATA #IMPLIED 
+    annotations CDATA #IMPLIED
+&gt;
+
+<span class="xml-comment">&lt;!-- Defines additional groups ("groups of groups") and also which groups   --&gt;</span>
+<span class="xml-comment">&lt;!-- to include in this test run                                            --&gt;</span>
+&lt;!ELEMENT groups (define*,run?) &gt;
+
+&lt;!ELEMENT define (include*)&gt;
+&lt;!ATTLIST define
+    name CDATA #REQUIRED&gt;
+
+<span class="xml-comment">&lt;!-- Defines which groups to include in the current group of groups         --&gt;</span>
+&lt;!ELEMENT include ANY&gt;
+&lt;!ATTLIST include
+    name CDATA #REQUIRED&gt;
+
+<span class="xml-comment">&lt;!-- Defines which groups to exclude from the current group of groups       --&gt;</span>
+&lt;!ELEMENT exclude ANY&gt;
+&lt;!ATTLIST exclude
+    name CDATA #REQUIRED&gt;
+
+<span class="xml-comment">&lt;!-- The subtag of groups used to define which groups should be run         --&gt;</span>
+&lt;!ELEMENT run (include?,exclude?)* &gt;
+
+<span class="xml-comment">&lt;!-- The list of classes to include in this test                            --&gt;</span>
+&lt;!ELEMENT classes (class*) &gt;
+&lt;!ELEMENT class (methods*) &gt;
+&lt;!ATTLIST class
+    name CDATA #REQUIRED &gt;
+
+<span class="xml-comment">&lt;!-- The list of packages to include in this test                           --&gt;</span>
+&lt;!ELEMENT packages (package*) &gt;
+&lt;!ELEMENT package (include?,exclude?)*&gt;
+&lt;!ATTLIST package
+    name CDATA #REQUIRED &gt;
+
+<span class="xml-comment">&lt;!-- The list of methodes to include/exclude from this test                 --&gt;</span>
+&lt;!ELEMENT methods (include?,exclude?)* &gt;
+
+    
+
+</pre>
+    
+</body>
+</html>
+

@@ -1,0 +1,2 @@
+testng=org.testng.TestNGAntTask
+junit-converter=org.testng.JUnitConverterTask

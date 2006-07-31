@@ -1,0 +1,17 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+  
+<suite name="Single" verbose="2" parallel="false" 
+thread-count="2" annotations="javadoc">
+
+   <test name="Regression2">
+    <classes>
+      <class name="test.reports.ReportTest" />
+<!--
+      <class name="test.mannotation.MAnnotationSampleTest" />
+      <class name="test.expectedexceptions.SampleExceptions2" />
+-->
+    </classes>
+   </test>
+
+</suite>
+

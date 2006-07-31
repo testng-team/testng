@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+  
+<suite name="Suite 1" verbose="3">
+  <test name="Factory">
+    <classes>
+      <class name="test.factory.FactoryInSeparateClass" />
+      <class name="test.factory.MyTest"/> 
+    </classes>
+  </test>
+
+</suite>

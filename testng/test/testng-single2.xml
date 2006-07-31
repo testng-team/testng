@@ -1,0 +1,19 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+  
+<suite name="Single" verbose="3" parallel="false"  >
+  
+  <test name="TimeOut">
+    <classes>
+      <class name="test.tmp.ExponentTest" />
+      <class name="test.tmp.A" />
+<!--
+      <class name="test.expectedexceptions.ExpectedExceptionsTest" />
+      <class name="test.expectedexceptions.SampleExceptions2" />
+      <class name="test.mannotation.MAnnotationSampleTest" />
+-->
+    </classes>
+  </test>
+
+
+</suite>
+

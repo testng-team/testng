@@ -1,0 +1,30 @@
+<project name="testng" default="run" basedir=".">
+
+	<property name="testng.home" value="c:/java/testng" />
+    <property name="lib.dir" value="${testng.home}/lib"/>
+    <property name="testng.jar" value="${testng.home}/testng-2.5-jdk15.jar" />
+
+	<path id="run.cp">
+		<!--
+      <path refid="compile.cp"/>
+-->
+		<pathelement location="build" />
+		<pathelement location="${lib.dir}/qdox-1.5.jar"/>
+		<pathelement location="${java.home}/../lib/tools.jar"/>
+	</path>
+
+	<target name="run" description="Run tests" >
+		<echo>Defining task from ${testng.jar}</echo>
+		<taskdef name="testng"
+              classname="org.testng.TestNGAntTask"
+              classpath="${testng.jar}" />
+
+		<testng classpathref="run.cp"
+        dumpcommand="true" verbose="9" outputdir="test-outputs">
+			<classfileset dir="build">
+				<include name="**/justin/*Test*.class" />
+			</classfileset>
+		</testng>
+	</target>
+
+</project>
