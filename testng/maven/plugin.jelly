@@ -1,0 +1,88 @@
+<project xmlns:j="jelly:core"
+    xmlns:ant="jelly:ant" 
+    xmlns:doc="doc"
+    xmlns:maven="jelly:maven"
+    xmlns:util="jelly:util" >
+
+
+  <!-- ================================================================== -->
+  <!-- Registration                                                       -->
+  <!-- ================================================================== -->
+  <goal name="maven-testng-plugin:register">
+      <doc:registerReport 
+        name="TestNG Tests"
+        pluginName="maven-testng-plugin"
+        description="Report on the results of the TestNG framework tests."
+        link="testng-report"/>
+   </goal>
+
+   <goal name="maven-testng-plugin:deregister">
+      <doc:deregisterReport name="TestNG Tests"/>
+   </goal>
+
+
+   <goal name="testng-init">
+	  <ant:taskdef classpath="${plugin.getDependencyClasspath()}" 
+	               name="testng" 
+	               classname="org.testng.TestNGAntTask" />
+  </goal>
+
+  <goal name="testng" prereqs="testng-init,test:compile">
+
+      <ant:mkdir dir="${maven.testng.output.dir}"/>
+
+      <testng fork="yes"
+	          outputDir="${maven.testng.output.dir}"
+	          sourceDir="${maven.testng.source.dir}"
+	          classpath="${maven.build.dir}/test-classes/;${maven.build.dir}/classes/">
+			
+		  <xmlfileset dir="${maven.testng.suitexml.dir}" 
+		              includes="${maven.testng.suitexml.name}"/>
+	
+		  <ant:classpath>
+		      <ant:path refid="maven.dependency.classpath"/>
+		  </ant:classpath>
+      </testng>
+  </goal>
+
+
+
+	<!-- ================= TestNG JUnitreport Goal ======================== -->
+	
+	<goal name="maven-testng-junit-report" prereqs="testng">   
+	    <ant:mkdir dir="${maven.testng.report.dir}"/>
+            
+	    <!-- There seems to be an issue with transformer properties- this forces the correct one -->
+	    <!-- for Java 1.5 and others below it. This error should be avoided:  -->
+	    <!-- Provider com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl not found  -->	    
+	    <j:choose>
+		    <j:when test="${systemScope['java.runtime.version'].startsWith('1.5')}">
+			${systemScope.setProperty('javax.xml.transform.TransformerFactory','com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl')}	
+		    </j:when>
+		    <j:otherwise>
+			${systemScope.setProperty('javax.xml.transform.TransformerFactory','org.apache.xalan.processor.TransformerFactoryImpl')}
+		   </j:otherwise>
+           </j:choose>
+
+	    <junitreport todir="${maven.testng.report.dir}" tofile="TestNG-Suites.xml">
+	        <fileset dir="${maven.testng.output.dir}">
+	            <include name="*.xml"/>
+	        </fileset>
+	        <report format="noframes" todir="${maven.testng.report.dir}"/>
+	        <ant:classpath>
+	          <ant:path refid="maven.dependency.classpath"/>  
+	          <ant:pathelement path="plugin.getDependencyClasspath()"/>
+	        </ant:classpath>
+	    </junitreport>
+	</goal>
+
+	<!-- ==== TestNG Stylize the JUnitReports to Maven Styles Goal ======= -->
+	
+	<goal name="testng:junit-report" prereqs="maven-testng-junit-report">
+	    <doc:jsl input="${maven.testng.report.dir}/TestNG-Suites.xml"
+	            output="testng-report.xml"
+	            stylesheet="${plugin.resources}/junitRpt.jsl"
+	            outputMode="xml"
+	            prettyPrint="true"/>
+	</goal>
+</project>
