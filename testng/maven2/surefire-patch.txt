@@ -1,0 +1,519 @@
+Index: /home/jkuhnert/projects/surefire/surefire-providers/surefire-testng/src/main/java/org/apache/maven/surefire/testng/TestNGXmlTestSuite.java
+===================================================================
+--- /home/jkuhnert/projects/surefire/surefire-providers/surefire-testng/src/main/java/org/apache/maven/surefire/testng/TestNGXmlTestSuite.java	(revision 426818)
++++ /home/jkuhnert/projects/surefire/surefire-providers/surefire-testng/src/main/java/org/apache/maven/surefire/testng/TestNGXmlTestSuite.java	(working copy)
+@@ -22,6 +22,7 @@
+ import org.testng.xml.Parser;
+ import org.testng.xml.XmlSuite;
+ import org.testng.xml.XmlTest;
++import org.testng.xml.XmlClass;
+ import org.xml.sax.SAXException;
+ 
+ import javax.xml.parsers.ParserConfigurationException;
+@@ -149,7 +150,7 @@
+             {
+                 throw new TestSetFailedException( "Duplicate test set '" + xmlTest.getName() + "'" );
+             }
+-
++            
+             // We don't need to put real test sets in here, the key is the important part
+             testSets.put( xmlTest.getName(), xmlTest );
+         }
+Index: /home/jkuhnert/projects/surefire/surefire-providers/surefire-testng/src/main/java/org/apache/maven/surefire/testng/TestNGDirectoryTestSuite.java
+===================================================================
+--- /home/jkuhnert/projects/surefire/surefire-providers/surefire-testng/src/main/java/org/apache/maven/surefire/testng/TestNGDirectoryTestSuite.java	(revision 426818)
++++ /home/jkuhnert/projects/surefire/surefire-providers/surefire-testng/src/main/java/org/apache/maven/surefire/testng/TestNGDirectoryTestSuite.java	(working copy)
+@@ -134,7 +134,7 @@
+         XmlSuite suite = new XmlSuite();
+         suite.setParallel( parallel );
+         suite.setThreadCount( threadCount );
+-
++        
+         for ( Iterator i = testSets.values().iterator(); i.hasNext(); )
+         {
+             SurefireTestSet testSet = (SurefireTestSet) i.next();
+@@ -150,6 +150,7 @@
+         XmlTest xmlTest = new XmlTest( suite );
+         xmlTest.setName( testSet.getName() );
+         xmlTest.setXmlClasses( Collections.singletonList( new XmlClass( testSet.getTestClass() ) ) );
++        
+         if ( groups != null )
+         {
+             xmlTest.setIncludedGroups( Arrays.asList( groups.split( "," ) ) );
+@@ -158,13 +159,18 @@
+         {
+             xmlTest.setExcludedGroups( Arrays.asList( excludedGroups.split( "," ) ) );
+         }
+-
+-//        if ( !TestNGClassFinder.isTestNGClass( testSet.getTestClass(), annotationFinder ) )
++        
++        // if ( !TestNGClassFinder.isTestNGClass( testSet.getTestClass(), annotationFinder ) )
+         // TODO: this is a bit dodgy, but isTestNGClass wasn't working
+         try
+         {
+-            Class junitClass = Class.forName( "junit.framework.Test" );
+-            xmlTest.setJUnit( testSet.getTestClass().isAssignableFrom( junitClass ) );
++        	Class junitClass = Class.forName( "junit.framework.Test" );
++        	Class junitBase = Class.forName( "junit.framework.TestCase" );
++        	
++        	if (junitClass.isAssignableFrom(testSet.getTestClass()))
++        		xmlTest.setJUnit( true );
++        	else if (junitBase.isAssignableFrom(testSet.getTestClass()))
++        		xmlTest.setJUnit( true );
+         }
+         catch ( ClassNotFoundException e )
+         {
+Index: /home/jkuhnert/projects/surefire/surefire-providers/surefire-testng/src/main/java/org/apache/maven/surefire/testng/TestNGExecutor.java
+===================================================================
+--- /home/jkuhnert/projects/surefire/surefire-providers/surefire-testng/src/main/java/org/apache/maven/surefire/testng/TestNGExecutor.java	(revision 426818)
++++ /home/jkuhnert/projects/surefire/surefire-providers/surefire-testng/src/main/java/org/apache/maven/surefire/testng/TestNGExecutor.java	(working copy)
+@@ -59,9 +59,11 @@
+             testNG.setSourcePath( testSourceDirectory );
+         }
+         
+-        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+-        Thread.currentThread().setContextClassLoader( suite.getClass().getClassLoader() );
++        // TODO: Doesn't find testng.xml based suites when these are un-commented
++        // TestNG ~also~ looks for the currentThread context classloader
++        // ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
++        // Thread.currentThread().setContextClassLoader( suite.getClass().getClassLoader() );
+         testNG.runSuitesLocally();
+-        Thread.currentThread().setContextClassLoader( oldClassLoader );
++        //Thread.currentThread().setContextClassLoader( oldClassLoader );
+     }
+ }
+Index: /home/jkuhnert/projects/surefire/surefire-providers/surefire-testng/pom.xml
+===================================================================
+--- /home/jkuhnert/projects/surefire/surefire-providers/surefire-testng/pom.xml	(revision 426818)
++++ /home/jkuhnert/projects/surefire/surefire-providers/surefire-testng/pom.xml	(working copy)
+@@ -19,7 +19,7 @@
+   <parent>
+     <groupId>org.apache.maven.surefire</groupId>
+     <artifactId>surefire-providers</artifactId>
+-    <version>2.1-SNAPSHOT</version>
++    <version>2.8-SNAPSHOT</version>
+   </parent>
+   <artifactId>surefire-testng</artifactId>
+   <name>SureFire TestNG Runner</name>
+@@ -33,7 +33,7 @@
+         <dependency>
+           <groupId>org.testng</groupId>
+           <artifactId>testng</artifactId>
+-          <version>4.7</version>
++          <version>5.0.1</version>
+           <classifier>jdk14</classifier>
+         </dependency>
+       </dependencies>
+@@ -47,7 +47,7 @@
+         <dependency>
+           <groupId>org.testng</groupId>
+           <artifactId>testng</artifactId>
+-          <version>4.7</version>
++          <version>5.0.1</version>
+           <classifier>jdk15</classifier>
+         </dependency>
+       </dependencies>
+Index: /home/jkuhnert/projects/surefire/surefire-providers/pom.xml
+===================================================================
+--- /home/jkuhnert/projects/surefire/surefire-providers/pom.xml	(revision 426818)
++++ /home/jkuhnert/projects/surefire/surefire-providers/pom.xml	(working copy)
+@@ -19,7 +19,7 @@
+   <parent>
+     <artifactId>surefire</artifactId>
+     <groupId>org.apache.maven.surefire</groupId>
+-    <version>2.1-SNAPSHOT</version>
++    <version>2.8-SNAPSHOT</version>
+   </parent>
+   <modelVersion>4.0.0</modelVersion>
+   <artifactId>surefire-providers</artifactId>
+@@ -33,7 +33,7 @@
+     <dependency>
+       <groupId>${project.groupId}</groupId>
+       <artifactId>surefire-api</artifactId>
+-      <version>2.1-SNAPSHOT</version>
++      <version>2.8-SNAPSHOT</version>
+ <!-- commenting this due to MNG-2339
+       <version>${project.version}</version>
+ -->
+Index: /home/jkuhnert/projects/surefire/.classpath
+===================================================================
+--- /home/jkuhnert/projects/surefire/.classpath	(revision 0)
++++ /home/jkuhnert/projects/surefire/.classpath	(revision 0)
+@@ -0,0 +1,14 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<classpath>
++	<classpathentry path="surefire-providers/surefire-testng/src/main/java" kind="src"/>
++	<classpathentry path="surefire-providers/surefire-junit/src/test/java" kind="src"/>
++	<classpathentry path="surefire-api/src/test/java" kind="src"/>
++	<classpathentry path="surefire-providers/surefire-testng/src/test/java" kind="src"/>
++	<classpathentry path="surefire-api/src/main/java" kind="src"/>
++	<classpathentry path="surefire-booter/src/test/java" kind="src"/>
++	<classpathentry path="surefire-providers/surefire-junit/src/main/java" kind="src"/>
++	<classpathentry path="surefire-booter/src/main/java" kind="src"/>
++	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"/>
++	<classpathentry path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER" kind="con"/>
++	<classpathentry path="target" kind="output"/>
++</classpath>
+Index: /home/jkuhnert/projects/surefire/.project
+===================================================================
+--- /home/jkuhnert/projects/surefire/.project	(revision 0)
++++ /home/jkuhnert/projects/surefire/.project	(revision 0)
+@@ -0,0 +1,23 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<projectDescription>
++	<name>surefire</name>
++	<comment></comment>
++	<projects>
++	</projects>
++	<buildSpec>
++		<buildCommand>
++			<name>org.eclipse.jdt.core.javabuilder</name>
++			<arguments>
++			</arguments>
++		</buildCommand>
++		<buildCommand>
++			<name>org.maven.ide.eclipse.maven2Builder</name>
++			<arguments>
++			</arguments>
++		</buildCommand>
++	</buildSpec>
++	<natures>
++		<nature>org.eclipse.jdt.core.javanature</nature>
++		<nature>org.maven.ide.eclipse.maven2Nature</nature>
++	</natures>
++</projectDescription>
+Index: /home/jkuhnert/projects/surefire/pom.xml
+===================================================================
+--- /home/jkuhnert/projects/surefire/pom.xml	(revision 426818)
++++ /home/jkuhnert/projects/surefire/pom.xml	(working copy)
+@@ -1,119 +1,147 @@
+-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+-  <modelVersion>4.0.0</modelVersion>
+-  <parent>
+-    <artifactId>maven-parent</artifactId>
+-    <groupId>org.apache.maven</groupId>
+-    <version>1</version>
+-    <relativePath>../pom/maven/pom.xml</relativePath>
+-  </parent>
+-  <groupId>org.apache.maven.surefire</groupId>
+-  <artifactId>surefire</artifactId>
+-  <packaging>pom</packaging>
+-  <name>SureFire</name>
+-  <version>2.1-SNAPSHOT</version>
+-  <description>Surefire is a test framework project.</description>
+-  <url>http://maven.apache.org/surefire</url>
+-  <issueManagement>
+-    <system>jira</system>
+-    <url>http://jira.codehaus.org/browse/SUREFIRE</url>
+-  </issueManagement>
+-  <inceptionYear>2004</inceptionYear>
+-  <mailingLists>
+-    <mailingList>
+-      <name>Surefire User List</name>
+-      <subscribe>surefire-users-subscribe@maven.apache.org</subscribe>
+-      <unsubscribe>surefire-users-unsubscribe@maven.apache.org</unsubscribe>
+-      <archive>http://mail-archives.apache.org/mod_mbox/maven-surefire-users/</archive>
+-    </mailingList>
+-    <mailingList>
+-      <name>Surefire Developer List</name>
+-      <subscribe>surefire-dev-subscribe@maven.apache.org</subscribe>
+-      <unsubscribe>surfire-dev-unsubscribe@maven.apache.org</unsubscribe>
+-      <archive>http://mail-archives.apache.org/mod_mbox/maven-surefire-dev/</archive>
+-    </mailingList>
+-    <mailingList>
+-      <name>Surefire Commits List</name>
+-      <subscribe>surefire-commits-subscribe@maven.apache.org</subscribe>
+-      <unsubscribe>surefire-commits-unsubscribe@maven.apache.org</unsubscribe>
+-      <archive>http://mail-archives.apache.org/mod_mbox/maven-surefire-commits/</archive>
+-    </mailingList>
+-  </mailingLists>
+-  <contributors>
+-    <contributor>
+-      <name>Jesse Kuhnert</name>
+-    </contributor>
+-    <contributor>
+-      <name>Vincent Siveton</name>
+-      <email>vincent.siveton@gmail.com</email>
+-      <organization>ASF</organization>
+-      <roles>
+-        <role>Java Developer</role>
+-      </roles>
+-    </contributor>
+-  </contributors>
+-  <scm>
+-    <connection>scm:svn:https://svn.apache.org/repos/asf/maven/surefire/trunk/</connection>
+-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/surefire/trunk/</developerConnection>
+-    <url>http://svn.apache.org/viewcvs.cgi/maven/surefire/trunk</url>
+-  </scm>
+-  <build>
+-    <plugins>
+-      <plugin>
+-        <artifactId>maven-surefire-plugin</artifactId>
+-        <version>2.2</version>
+-        <configuration>
+-          <childDelegation>true</childDelegation>
+-        </configuration>
+-      </plugin>
+-      <plugin>
+-        <artifactId>maven-compiler-plugin</artifactId>
+-        <configuration>
+-          <source>1.3</source>
+-          <target>1.3</target>
+-        </configuration>
+-      </plugin>
+-    </plugins>
+-    <pluginManagement>
+-      <plugins>
+-        <plugin>
+-          <artifactId>maven-release-plugin</artifactId>
+-          <configuration>
+-            <tagBase>https://svn.apache.org/repos/asf/maven/surefire/tags</tagBase>
+-          </configuration>
+-        </plugin>
+-      </plugins>
+-    </pluginManagement>
+-  </build>
+-  <modules>
+-    <module>surefire-api</module>
+-    <module>surefire-booter</module>
+-    <module>surefire-providers</module>
+-  </modules>
+-
+-  <profiles>
+-    <!-- use preinstalled JDK 1.3 to build and test -->
+-    <profile>
+-      <id>jdk1.3</id>
+-      <build>
++<project xmlns="http://maven.apache.org/POM/4.0.0"
++    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
++    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
++    <modelVersion>4.0.0</modelVersion>
++    <parent>
++        <artifactId>maven-parent</artifactId>
++        <groupId>org.apache.maven</groupId>
++        <version>1</version>
++        <relativePath>../pom/maven/pom.xml</relativePath>
++    </parent>
++    <groupId>org.apache.maven.surefire</groupId>
++    <artifactId>surefire</artifactId>
++    <packaging>pom</packaging>
++    <name>SureFire</name>
++    <version>2.8-SNAPSHOT</version>
++    <description>Surefire is a test framework project.</description>
++    <url>http://maven.apache.org/surefire</url>
++    <issueManagement>
++        <system>jira</system>
++        <url>http://jira.codehaus.org/browse/SUREFIRE</url>
++    </issueManagement>
++    <inceptionYear>2004</inceptionYear>
++    <mailingLists>
++        <mailingList>
++            <name>Surefire User List</name>
++            <subscribe>surefire-users-subscribe@maven.apache.org</subscribe>
++            <unsubscribe>surefire-users-unsubscribe@maven.apache.org</unsubscribe>
++            <archive>http://mail-archives.apache.org/mod_mbox/maven-surefire-users/</archive>
++        </mailingList>
++        <mailingList>
++            <name>Surefire Developer List</name>
++            <subscribe>surefire-dev-subscribe@maven.apache.org</subscribe>
++            <unsubscribe>surfire-dev-unsubscribe@maven.apache.org</unsubscribe>
++            <archive>http://mail-archives.apache.org/mod_mbox/maven-surefire-dev/</archive>
++        </mailingList>
++        <mailingList>
++            <name>Surefire Commits List</name>
++            <subscribe>surefire-commits-subscribe@maven.apache.org</subscribe>
++            <unsubscribe>surefire-commits-unsubscribe@maven.apache.org</unsubscribe>
++            <archive>http://mail-archives.apache.org/mod_mbox/maven-surefire-commits/</archive>
++        </mailingList>
++    </mailingLists>
++    <contributors>
++        <contributor>
++            <name>Jesse Kuhnert</name>
++        </contributor>
++        <contributor>
++            <name>Vincent Siveton</name>
++            <email>vincent.siveton@gmail.com</email>
++            <organization>ASF</organization>
++            <roles>
++                <role>Java Developer</role>
++            </roles>
++        </contributor>
++    </contributors>
++    <scm>
++        <connection>scm:svn:https://svn.apache.org/repos/asf/maven/surefire/trunk/</connection>
++        <developerConnection>
++            scm:svn:https://svn.apache.org/repos/asf/maven/surefire/trunk/
++        </developerConnection>
++        <url>http://svn.apache.org/viewcvs.cgi/maven/surefire/trunk</url>
++    </scm>
++    <build>
+         <plugins>
+-          <plugin>
+-            <artifactId>maven-compiler-plugin</artifactId>
+-            <configuration>
+-              <fork>true</fork>
+-              <compilerVersion>1.3</compilerVersion>
+-              <executable>${JAVA_1_3_HOME}/bin/javac</executable>
+-            </configuration>
+-          </plugin>
+-          <plugin>
+-            <artifactId>maven-surefire-plugin</artifactId>
+-            <configuration>
+-              <forkMode>once</forkMode>
+-              <childDelegation>true</childDelegation>
+-              <jvm>${JAVA_1_3_HOME}/bin/java</jvm>
+-            </configuration>
+-          </plugin>
++            <plugin>
++                <artifactId>maven-surefire-plugin</artifactId>
++                <version>2.2</version>
++                <configuration>
++                    <childDelegation>true</childDelegation>
++                </configuration>
++            </plugin>
++            <plugin>
++                <artifactId>maven-compiler-plugin</artifactId>
++                <configuration>
++                    <source>1.3</source>
++                    <target>1.3</target>
++                </configuration>
++            </plugin>
+         </plugins>
+-      </build>
+-    </profile>
+-  </profiles>
++        <pluginManagement>
++            <plugins>
++                <plugin>
++                    <artifactId>maven-release-plugin</artifactId>
++                    <configuration>
++                        <tagBase>https://svn.apache.org/repos/asf/maven/surefire/tags</tagBase>
++                    </configuration>
++                </plugin>
++                <plugin>
++                    <artifactId>maven-release-plugin</artifactId>
++                    <configuration>
++                        <tagBase>https://svn.apache.org/repos/asf/maven/surefire/tags</tagBase>
++                    </configuration>
++                </plugin>
++            </plugins>
++        </pluginManagement>
++
++        <extensions>
++            <!-- Needed to support FTP deployment. -->
++            <extension>
++                <groupId>org.apache.maven.wagon</groupId>
++                <artifactId>wagon-ftp</artifactId>
++            </extension>
++        </extensions>
++
++    </build>
++
++    <modules>
++        <module>surefire-api</module>
++        <module>surefire-booter</module>
++        <module>surefire-providers</module>
++    </modules>
++
++    <profiles>
++        <!-- use preinstalled JDK 1.3 to build and test -->
++        <profile>
++            <id>jdk1.3</id>
++            <build>
++                <plugins>
++                    <plugin>
++                        <artifactId>maven-compiler-plugin</artifactId>
++                        <configuration>
++                            <fork>true</fork>
++                            <compilerVersion>1.3</compilerVersion>
++                            <executable>${JAVA_1_3_HOME}/bin/javac</executable>
++                        </configuration>
++                    </plugin>
++                    <plugin>
++                        <artifactId>maven-surefire-plugin</artifactId>
++                        <configuration>
++                            <forkMode>once</forkMode>
++                            <childDelegation>true</childDelegation>
++                            <jvm>${JAVA_1_3_HOME}/bin/java</jvm>
++                        </configuration>
++                    </plugin>
++                </plugins>
++            </build>
++        </profile>
++    </profiles>
++
++    <distributionManagement>
++        <snapshotRepository>
++            <id>howardlewisship.com</id>
++            <url>ftp://howardlewisship.com/repository</url>
++        </snapshotRepository>
++    </distributionManagement>
++
+ </project>
+Index: /home/jkuhnert/projects/surefire/surefire-api/pom.xml
+===================================================================
+--- /home/jkuhnert/projects/surefire/surefire-api/pom.xml	(revision 426818)
++++ /home/jkuhnert/projects/surefire/surefire-api/pom.xml	(working copy)
+@@ -2,7 +2,7 @@
+   <parent>
+     <artifactId>surefire</artifactId>
+     <groupId>org.apache.maven.surefire</groupId>
+-    <version>2.1-SNAPSHOT</version>
++    <version>2.8-SNAPSHOT</version>
+   </parent>
+   <modelVersion>4.0.0</modelVersion>
+   <artifactId>surefire-api</artifactId>
+
+Property changes on: /home/jkuhnert/projects/surefire/surefire-booter
+___________________________________________________________________
+Name: svn:ignore
+   - docs
+maven.log
+target
+velocity.log*
+work
+*~
+build.properties
+.classpath
+.project
+.nbattrs
+lib
+*.ipr
+*.iws
+*.iml
+bin
+.wtpmodules
+
+   + 
+docs
+maven.log
+target
+velocity.log*
+work
+*~
+build.properties
+.classpath
+.project
+.nbattrs
+lib
+*.ipr
+*.iws
+*.iml
+bin
+.wtpmodules
+name-output.txt
+
+
+Index: /home/jkuhnert/projects/surefire/surefire-booter/pom.xml
+===================================================================
+--- /home/jkuhnert/projects/surefire/surefire-booter/pom.xml	(revision 426818)
++++ /home/jkuhnert/projects/surefire/surefire-booter/pom.xml	(working copy)
+@@ -21,7 +21,7 @@
+   <parent>
+     <artifactId>surefire</artifactId>
+     <groupId>org.apache.maven.surefire</groupId>
+-    <version>2.1-SNAPSHOT</version>
++    <version>2.8-SNAPSHOT</version>
+   </parent>
+   <modelVersion>4.0.0</modelVersion>
+   <artifactId>surefire-booter</artifactId>
