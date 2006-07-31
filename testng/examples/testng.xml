@@ -1,0 +1,22 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+  
+<suite name="Example" >
+  
+  <test name="Simple example" >
+<!--
+      <groups>
+      <run>
+        <include name="assert" />
+        <include name="fail" />
+        <include name="odd" />
+        <include name="even" />
+        <exclude name="broken" />
+      </run>        
+    </groups>
+-->
+    <classes>
+      <class name="example1.Test1" />
+    </classes>
+  </test>
+
+</suite>

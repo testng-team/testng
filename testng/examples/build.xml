@@ -1,0 +1,146 @@
+<project name="testng" default="all" basedir="..">
+
+   <property file="build.properties"/>
+
+   <property name="debug" value="true"/>
+   <property name="optimize" value="false"/>
+   <property name="build.compiler" value="javac1.5" />
+
+   <!-- dirs for test output -->
+   <property name="test.output" value="${example.dir}/build/test-output"/>
+   <property name="test.report" value="${example.dir}/build/test-report"/>
+
+   <target name="all" depends="prepare,compile,run"/>
+
+
+   <!-- ==================================================================== -->
+   <!-- Compile                                                              -->
+   <!-- ==================================================================== -->
+   <path id="compile.cp">
+      <pathelement location="${build.jdk15.dir}"/>
+   </path>
+
+   <target name="compile"
+           description="compile the examples"
+           depends="prepare">
+      <echo message="                                 -- testng-compile-examples --"/>
+
+     <javac   debug="true"
+              fork="true"
+              source="1.5"
+              classpathref="compile.cp"
+              srcdir="${example.dir}/src"
+              destdir="${example.dir}/build/classes"
+      />
+   </target>
+
+   <target name="prepare">
+      <mkdir dir="${example.dir}/build/classes"/>
+      <mkdir dir="${test.output}"/>
+      <mkdir dir="${test.report}"/>
+   </target>
+
+   <!-- ==================================================================== -->
+   <!-- Run                                                             -->
+   <!-- ==================================================================== -->
+
+   <path id="run.cp">
+      <pathelement location="${jdk15.testng.jar}" />
+      <path refid="compile.cp"/>
+      <pathelement location="${example.dir}/build/classes"/>
+   </path>
+
+   <target  name="run"
+            description="run examples with java"
+            depends="compile">
+
+      <echo message="                                  testng-run "/>
+      <java fork="yes"
+            classpathref="run.cp"
+            classname="com.beust.testng.TestNG">
+         <arg value="-d"/>
+         <arg value="${test.output}"/>
+         <arg value="${example.dir}/testng.xml"/>
+         <jvmarg value="-ea"/>
+      </java>
+      <echo>Some of these tests should have failed.  Statistics are available at</echo>
+      <echo>${test.output}\index.html for a TestNG HTML report</echo>
+   </target>
+
+   <target  name="run-task"
+            description="run examples using testng task"
+            depends="compile">
+      <echo message="                                 -- testng-run using the testng task--"/>
+     
+      <taskdef classpathref="compile.cp" name="testng" classname="com.beust.testng.TestNGAntTask"/>
+     
+      <testng
+               fork="yes"
+               classpathref="run.cp"
+               outputdir="${test.output}">
+         <fileset dir="${example.dir}" includes="testng.xml"/>
+      </testng>
+
+      <echo>Some of these tests should have failed, see the file test.out for the details</echo>
+      <junitreport todir="${test.report}">
+         <fileset dir="${test.output}">
+            <include name="*.xml"/>
+         </fileset>
+         <report format="noframes" todir="${test.report}"/>
+      </junitreport>
+   </target>
+
+   <target  name="run-task-noxml"
+            depends="compile"
+            description="run examples using testng task with just -testclass and no xml">
+      <testng
+               fork="yes"
+               classpathref="run.cp"
+               outputdir="${test.output}"
+               testclass="example1.Test1">
+      </testng>
+      <echo>Some of these tests should have failed, see the file test.out for the details</echo>
+      <antcall target="report"/>
+   </target>
+
+   <target  name="run-task-jar"
+            depends="compile,testjar"
+            description="run examples using testng task with just -testjar and no xml">
+      <!-- note that this invocation does not have build/ in the path -->
+      <testng
+               fork="yes"
+               classpathref="compile.cp"
+               outputdir="${test.output}"
+               testjar="${example.dir}/example.jar">
+      </testng>
+      <antcall target="report"/>
+      <echo>Some of these tests should have failed, see the file test.out for the details</echo>
+   </target>
+
+   <target name="testjar"
+      description="make a test jar with the property file and the classes we need in it">
+      <jar destfile="${example.dir}/example.jar">
+         <fileset dir="${example.dir}/build/classes" includes="**/*.class"/>
+         <fileset file="${example.dir}/testng.xml"/>
+      </jar>
+   </target>
+
+   <target name="report"
+      description="generate reports using junireport">
+      <junitreport todir="${test.report}">
+         <fileset dir="${test.output}">
+            <include name="*.xml"/>
+         </fileset>
+         <report format="noframes" todir="${test.report}"/>
+      </junitreport>
+   </target>
+
+   <target  name="clean"
+            description="clean up example results">
+      <delete dir="${example.dir}/build/classes"/>
+      <delete dir="${test.output}"/>
+      <delete dir="${test.report}"/>
+      <antcall target="prepare"/>
+   </target>
+
+</project>
