@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+  
+<suite name="Order" verbose="2" parallel="false" annotations="javadoc">
+
+  <test name="Test order invocation">
+    <classes>
+       <class name="test.interleavedorder.InterleavedInvocationTest" />
+    </classes>
+  </test>
+</suite>
+

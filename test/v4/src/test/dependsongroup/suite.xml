@@ -1,0 +1,15 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="webpublic" verbose="10">
+    <test name="test">
+        <groups>
+            <run>
+                <include name="test" />
+            </run>
+        </groups>
+        
+        <packages>
+            <package name="test.dependsongroup" />
+        </packages>
+    </test>
+</suite>

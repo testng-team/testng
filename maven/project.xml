@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<project>
+    <pomVersion>3</pomVersion>
+    <id>maven-testng-plugin</id>
+    <name>TestNG Maven Plugin</name>
+    <currentVersion>1.2</currentVersion>
+    <organization>
+        <name>testng.org</name>
+    </organization>
+    <inceptionYear>2005</inceptionYear>
+    <package>org.testng</package>
+
+    <logo/>
+    <description>TestNG Plugin</description>
+    <shortDescription>TestNG Plugin</shortDescription>
+    <url>http://www.testng.org</url>
+    <issueTrackingUrl/>
+    <siteAddress/>
+    <siteDirectory/>
+    <distributionDirectory/>
+    <repository>
+        <connection/>
+        <url/>
+    </repository>
+    <mailingLists/>
+    <developers>
+      <developer>
+        <name>Andrew Glover</name>
+        <id>aglover</id>
+        <email>aglover AT vanwardtechnologies DOT com</email>
+        <organization>Vanward Technologies</organization>
+      </developer>
+      <developer>
+        <name>Fred Olivieri</name>
+        <id>folivieri</id>
+        <email></email>
+        <organization>Quest Software</organization>
+      </developer>
+    </developers>
+
+    <dependencies>
+
+		<dependency>
+		  <groupId>testng</groupId>
+		  <artifactId>testng-1.4</artifactId>		 
+		  <jar>testng-4.4-jdk14.jar</jar>
+		</dependency>
+		
+		<dependency>
+		  <groupId>testng</groupId>
+		  <artifactId>testng-1.5</artifactId>		     
+		  <jar>testng-4.4-jdk15.jar</jar>
+		</dependency>
+
+	    <dependency>
+	      <groupId>commons-jelly</groupId>
+	      <artifactId>commons-jelly-tags-jsl</artifactId>
+	      <version>20030211.143151</version>
+	    </dependency>
+    
+	    <dependency>
+	      <groupId>commons-jelly</groupId>
+	      <artifactId>commons-jelly-tags-xml</artifactId>
+	      <version>20030211.142705</version>
+	      <url>http://jakarta.apache.org/commons/jelly/libs/xml/</url>
+	    </dependency>
+    
+	     <dependency>
+	        <groupId>xalan</groupId>
+	        <artifactId>xalan</artifactId>
+	        <version>2.6.0</version>
+	        <type>jar</type>
+	        <properties>
+	            <classloader>root</classloader>
+	        </properties>
+	     </dependency>
+
+	</dependencies>
+
+    <build>
+        <sourceDirectory>src/java</sourceDirectory>
+        <unitTestSourceDirectory>test/java</unitTestSourceDirectory>
+        <integrationUnitTestSourceDirectory/>
+        <aspectSourceDirectory></aspectSourceDirectory>
+        <unitTest/>
+             
+        <resources>
+            <resource>
+                <includes>
+                    <include>*.jelly</include>
+                    <include>*.xml</include>
+                    <include>*.properties</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+</project>

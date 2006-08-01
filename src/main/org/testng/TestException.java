@@ -1,0 +1,22 @@
+package org.testng;
+
+/**
+ * Exception thrown when an exception happens while running a test
+ * method.
+ *
+ * @author Cedric Beust, Apr 26, 2004
+ * 
+ */
+public class TestException extends TestNGException {
+	
+	/* generated */
+	private static final long serialVersionUID = -7946644025188038804L;
+
+public TestException(String s) {
+    super(s);
+  }
+  
+	public TestException(Throwable t) {
+		super(t);
+	}
+}

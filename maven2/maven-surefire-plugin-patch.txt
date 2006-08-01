@@ -1,0 +1,852 @@
+
+Property changes on: /home/jkuhnert/projects/maven-surefire-plugin
+___________________________________________________________________
+Name: svn:ignore
+   - *~
+*.log
+*.ipr
+*.iws
+*.iml
+target
+.project
+.classpath
+.wtpmodules
+
+   + 
+*~
+*.log
+*.ipr
+*.iws
+*.iml
+target
+.project
+.classpath
+.wtpmodules
+tmp
+temp-testng-*.xml
+
+
+Index: /home/jkuhnert/projects/maven-surefire-plugin/src/main/java/org/apache/maven/plugin/surefire/SurefirePlugin.java
+===================================================================
+--- /home/jkuhnert/projects/maven-surefire-plugin/src/main/java/org/apache/maven/plugin/surefire/SurefirePlugin.java	(revision 426818)
++++ /home/jkuhnert/projects/maven-surefire-plugin/src/main/java/org/apache/maven/plugin/surefire/SurefirePlugin.java	(working copy)
+@@ -443,7 +443,9 @@
+ 
+             if ( testNgArtifact != null )
+             {
+-                VersionRange range = VersionRange.createFromVersionSpec( "[4.7,)" );
++            	addArtifact(surefireBooter, testNgArtifact);
++                
++            	VersionRange range = VersionRange.createFromVersionSpec( "[4.7,)" );
+                 if ( !range.containsVersion( testNgArtifact.getSelectedVersion() ) )
+                 {
+                     throw new MojoFailureException(
+
+Property changes on: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test1
+___________________________________________________________________
+Name: svn:ignore
+   + 
+target
+
+
+
+Property changes on: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test3
+___________________________________________________________________
+Name: svn:ignore
+   + 
+target
+
+
+Index: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test3/pom.xml
+===================================================================
+--- /home/jkuhnert/projects/maven-surefire-plugin/src/it/test3/pom.xml	(revision 426818)
++++ /home/jkuhnert/projects/maven-surefire-plugin/src/it/test3/pom.xml	(working copy)
+@@ -24,7 +24,7 @@
+       <plugin>
+         <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-surefire-plugin</artifactId>
+-        <version>2.1.2</version>
++        <version>2.1</version>
+         <configuration>
+           <testFailureIgnore>true</testFailureIgnore >
+         </configuration>
+
+Property changes on: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test4
+___________________________________________________________________
+Name: svn:ignore
+   + 
+null
+target
+
+
+Index: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test4/src/test/java/TestNGSuiteTest.java
+===================================================================
+--- /home/jkuhnert/projects/maven-surefire-plugin/src/it/test4/src/test/java/TestNGSuiteTest.java	(revision 426818)
++++ /home/jkuhnert/projects/maven-surefire-plugin/src/it/test4/src/test/java/TestNGSuiteTest.java	(working copy)
+@@ -1,6 +1,5 @@
+-import org.testng.annotations.Configuration;
++import org.testng.annotations.BeforeClass;
+ import org.testng.annotations.Test;
+-import org.testng.internal.Utils;
+ 
+ 
+ /**
+@@ -15,7 +14,7 @@
+ 	/**
+ 	 * Sets up testObject
+ 	 */
+-	@Configuration(beforeTestClass = true)
++	@BeforeClass
+ 	public void configureTest()
+ 	{
+ 		testObject = new Object();
+Index: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test4/src/test-data/testng.xml
+===================================================================
+--- /home/jkuhnert/projects/maven-surefire-plugin/src/it/test4/src/test-data/testng.xml	(revision 426818)
++++ /home/jkuhnert/projects/maven-surefire-plugin/src/it/test4/src/test-data/testng.xml	(working copy)
+@@ -1,8 +1,8 @@
+ <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+  
+-<suite name="Suite 1 Test" verbose="1" >
++<suite name="Suite 1 Test" verbose="4" >
+ 
+-  <test name="Sample Test"  >
++  <test name="Sample Test" >
+     <classes>
+       <class name="TestNGSuiteTest"  />
+     </classes>
+Index: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test4/pom.xml
+===================================================================
+--- /home/jkuhnert/projects/maven-surefire-plugin/src/it/test4/pom.xml	(revision 426818)
++++ /home/jkuhnert/projects/maven-surefire-plugin/src/it/test4/pom.xml	(working copy)
+@@ -12,15 +12,10 @@
+    
+    <dependencies>
+       <dependency>
+-         <groupId>junit</groupId>
+-         <artifactId>junit</artifactId>
+-         <version>3.8.1</version>
+-         <scope>test</scope>
+-      </dependency>
+-      <dependency>
+          <groupId>org.testng</groupId>
+-         <artifactId>testng-jdk15</artifactId>
+-         <version>4.4.7</version>
++         <artifactId>testng</artifactId>
++         <version>5.0.1</version>
++         <classifier>jdk15</classifier>
+          <scope>test</scope>
+       </dependency>
+    </dependencies>
+@@ -46,5 +41,6 @@
+          </plugin>
+       </plugins>
+    </build>
+-
++   
++    
+ </project>
+
+Property changes on: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test5
+___________________________________________________________________
+Name: svn:ignore
+   + 
+null
+target
+
+
+Index: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test5/pom.xml
+===================================================================
+--- /home/jkuhnert/projects/maven-surefire-plugin/src/it/test5/pom.xml	(revision 426818)
++++ /home/jkuhnert/projects/maven-surefire-plugin/src/it/test5/pom.xml	(working copy)
+@@ -19,8 +19,9 @@
+       </dependency>
+       <dependency>
+          <groupId>org.testng</groupId>
+-         <artifactId>testng-jdk14</artifactId>
+-         <version>4.4.7</version>
++         <artifactId>testng</artifactId>
++         <version>5.0.1</version>
++         <classifier>jdk14</classifier>
+          <scope>test</scope>
+       </dependency>
+    </dependencies>
+
+Property changes on: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test6
+___________________________________________________________________
+Name: svn:ignore
+   + 
+null
+target
+
+
+Index: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test6/src/test/java/TestNGTest.java
+===================================================================
+--- /home/jkuhnert/projects/maven-surefire-plugin/src/it/test6/src/test/java/TestNGTest.java	(revision 426818)
++++ /home/jkuhnert/projects/maven-surefire-plugin/src/it/test6/src/test/java/TestNGTest.java	(working copy)
+@@ -1,26 +1,34 @@
+-import org.testng.annotations.Configuration;
++import org.testng.annotations.AfterSuite;
++import org.testng.annotations.BeforeClass;
+ import org.testng.annotations.Test;
+-import org.testng.internal.Utils;
+ 
+ 
+ /**
+- * Tests that forcing testng to run tests via the 
+- * <code>"${maven.test.forcetestng}"</code> configuration option
+- * works.
++ * Tests grouping/threading/parallel functionality of TestNG.
+  * 
+  * @author jkuhnert
+  */
+ public class TestNGTest {
+ 
++	static int m_testCount = 0;
++	
+ 	/**
+ 	 * Sets up testObject
+ 	 */
+-	@Configuration(beforeTestClass = true, groups = "functional")
++	@BeforeClass(groups = "functional")
+ 	public void configureTest()
+ 	{
+ 		testObject = new Object();
+ 	}
+ 	
++	@AfterSuite(alwaysRun = true, groups = "functional")
++	public void check_Test_Count()
++	{
++		System.out.println("check_Test_Count(): " + m_testCount);
++		
++		assert m_testCount == 3 : "Expected 3 tests to be run but local count was " + m_testCount;
++	}
++	
+ 	Object testObject;
+ 	
+ 	/**
+@@ -29,6 +37,7 @@
+ 	@Test(groups = {"functional", "notincluded"})
+ 	public void isTestObjectNull()
+ 	{
++		m_testCount++;
+ 		assert testObject != null : "testObject is null";
+ 	}
+ 	
+Index: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test6/src/test/java/JunitTest.java
+===================================================================
+--- /home/jkuhnert/projects/maven-surefire-plugin/src/it/test6/src/test/java/JunitTest.java	(revision 426818)
++++ /home/jkuhnert/projects/maven-surefire-plugin/src/it/test6/src/test/java/JunitTest.java	(working copy)
+@@ -1,29 +0,0 @@
+-import junit.framework.TestCase;
+-
+-/**
+- * Provided to ensure both junit and testng tests can run happily
+- * together.
+- * 
+- * @author jkuhnert
+- */
+-public class JunitTest extends TestCase {
+-
+-	Object testObject;
+-	
+-	/**
+-	 * Creats an object instance
+-	 */
+-	public void setUp()
+-	{
+-		testObject = new Object();
+-	}
+-	
+-	/**
+-	 * Tests that object created in setup 
+-	 * isn't null.
+-	 */
+-	public void testJunitObject()
+-	{
+-		assertNotNull(testObject);
+-	}
+-}
+Index: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test6/pom.xml
+===================================================================
+--- /home/jkuhnert/projects/maven-surefire-plugin/src/it/test6/pom.xml	(revision 426818)
++++ /home/jkuhnert/projects/maven-surefire-plugin/src/it/test6/pom.xml	(working copy)
+@@ -7,20 +7,15 @@
+    <groupId>org.apache.maven.plugins.surefire</groupId>
+    <artifactId>test6</artifactId>
+    <version>1.0-SNAPSHOT</version>
+-   <name>Test for testng integration</name>
+-   <description>calls testng test</description>
++   <name>TestNG group/parallel thread tests</name>
++   <description>Tests group/thread/parallel functionality of TestNG</description>
+    
+    <dependencies>
+       <dependency>
+-         <groupId>junit</groupId>
+-         <artifactId>junit</artifactId>
+-         <version>3.8.1</version>
+-         <scope>test</scope>
+-      </dependency>
+-      <dependency>
+          <groupId>org.testng</groupId>
+-         <artifactId>testng-jdk15</artifactId>
+-         <version>4.4.7</version>
++         <artifactId>testng</artifactId>
++         <version>5.0.1</version>
++         <classifier>jdk15</classifier>
+          <scope>test</scope>
+       </dependency>
+    </dependencies>
+Index: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/target/surefire-reports/TEST-JunitTest.xml
+===================================================================
+--- /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/target/surefire-reports/TEST-JunitTest.xml	(revision 0)
++++ /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/target/surefire-reports/TEST-JunitTest.xml	(revision 0)
+@@ -0,0 +1,60 @@
++<?xml version="1.0" encoding="UTF-8" ?>
++<testsuite failures="0" time="0.001" errors="0" skipped="0" tests="1" name="JunitTest">
++  <properties>
++    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
++    <property name="sun.boot.library.path" value="/usr/local/jdk1.6.0/jre/lib/i386"/>
++    <property name="java.vm.version" value="1.6.0-rc-b93"/>
++    <property name="java.vm.vendor" value="Sun Microsystems Inc."/>
++    <property name="java.vendor.url" value="http://java.sun.com/"/>
++    <property name="path.separator" value=":"/>
++    <property name="java.vm.name" value="Java HotSpot(TM) Client VM"/>
++    <property name="file.encoding.pkg" value="sun.io"/>
++    <property name="user.country" value="US"/>
++    <property name="sun.java.launcher" value="SUN_STANDARD"/>
++    <property name="sun.os.patch.level" value="unknown"/>
++    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
++    <property name="user.dir" value="/home/jkuhnert/projects/maven-surefire-plugin/src/it/test7"/>
++    <property name="java.runtime.version" value="1.6.0-rc-b93"/>
++    <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment"/>
++    <property name="basedir" value="/home/jkuhnert/projects/maven-surefire-plugin/src/it/test7"/>
++    <property name="java.endorsed.dirs" value="/usr/local/jdk1.6.0/jre/lib/endorsed"/>
++    <property name="os.arch" value="i386"/>
++    <property name="java.io.tmpdir" value="/tmp"/>
++    <property name="line.separator" value="
++"/>
++    <property name="java.vm.specification.vendor" value="Sun Microsystems Inc."/>
++    <property name="os.name" value="Linux"/>
++    <property name="sun.jnu.encoding" value="UTF-8"/>
++    <property name="java.library.path" value="/usr/local/jdk1.6.0/jre/lib/i386/client:/usr/local/jdk1.6.0/jre/lib/i386:/usr/local/jdk1.6.0/jre/../lib/i386:/usr/java/packages/lib/i386:/lib:/usr/lib"/>
++    <property name="java.specification.name" value="Java Platform API Specification"/>
++    <property name="java.class.version" value="50.0"/>
++    <property name="sun.management.compiler" value="HotSpot Client Compiler"/>
++    <property name="os.version" value="2.6.15-26-386"/>
++    <property name="user.home" value="/home/jkuhnert"/>
++    <property name="user.timezone" value=""/>
++    <property name="java.awt.printerjob" value="sun.print.PSPrinterJob"/>
++    <property name="file.encoding" value="UTF-8"/>
++    <property name="java.specification.version" value="1.6"/>
++    <property name="user.name" value="jkuhnert"/>
++    <property name="java.class.path" value="/home/jkuhnert/.m2/repository/org/codehaus/plexus/plexus-utils/1.1/plexus-utils-1.1.jar:/home/jkuhnert/.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1.jar:/home/jkuhnert/.m2/repository/org/apache/maven/surefire/surefire-booter/2.8-SNAPSHOT/surefire-booter-2.8-SNAPSHOT.jar:/home/jkuhnert/.m2/repository/org/apache/maven/surefire/surefire-api/2.8-SNAPSHOT/surefire-api-2.8-SNAPSHOT.jar:/home/jkuhnert/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar:/home/jkuhnert/.m2/repository/org/testng/testng/5.0.1/testng-5.0.1-jdk15.jar"/>
++    <property name="java.vm.specification.version" value="1.0"/>
++    <property name="sun.arch.data.model" value="32"/>
++    <property name="java.home" value="/usr/local/jdk1.6.0/jre"/>
++    <property name="java.specification.vendor" value="Sun Microsystems Inc."/>
++    <property name="user.language" value="en"/>
++    <property name="java.vm.info" value="mixed mode, sharing"/>
++    <property name="java.version" value="1.6.0-rc"/>
++    <property name="java.ext.dirs" value="/usr/local/jdk1.6.0/jre/lib/ext:/usr/java/packages/lib/ext"/>
++    <property name="sun.boot.class.path" value="/usr/local/jdk1.6.0/jre/lib/resources.jar:/usr/local/jdk1.6.0/jre/lib/rt.jar:/usr/local/jdk1.6.0/jre/lib/sunrsasign.jar:/usr/local/jdk1.6.0/jre/lib/jsse.jar:/usr/local/jdk1.6.0/jre/lib/jce.jar:/usr/local/jdk1.6.0/jre/lib/charsets.jar:/usr/local/jdk1.6.0/jre/classes"/>
++    <property name="java.vendor" value="Sun Microsystems Inc."/>
++    <property name="localRepository" value="/home/jkuhnert/.m2/repository"/>
++    <property name="file.separator" value="/"/>
++    <property name="java.vendor.url.bug" value="http://java.sun.com/cgi-bin/bugreport.cgi"/>
++    <property name="sun.cpu.endian" value="little"/>
++    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
++    <property name="sun.desktop" value="gnome"/>
++    <property name="sun.cpu.isalist" value=""/>
++  </properties>
++  <testcase time="0.001" name="isTestObjectNull"/>
++  <testcase time="0" name="testJunitObject"/>
++</testsuite>
+\ No newline at end of file
+
+Property changes on: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/target/surefire-reports/TEST-JunitTest.xml
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/target/surefire-reports/JunitTest.txt
+===================================================================
+--- /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/target/surefire-reports/JunitTest.txt	(revision 0)
++++ /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/target/surefire-reports/JunitTest.txt	(revision 0)
+@@ -0,0 +1,4 @@
++-------------------------------------------------------------------------------
++Test set: JunitTest
++-------------------------------------------------------------------------------
++Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 sec
+
+Property changes on: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/target/surefire-reports/JunitTest.txt
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/target/surefire-reports/TEST-TestNGJunitTest.xml
+===================================================================
+--- /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/target/surefire-reports/TEST-TestNGJunitTest.xml	(revision 0)
++++ /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/target/surefire-reports/TEST-TestNGJunitTest.xml	(revision 0)
+@@ -0,0 +1,59 @@
++<?xml version="1.0" encoding="UTF-8" ?>
++<testsuite failures="0" time="0.013" errors="0" skipped="0" tests="1" name="TestNGJunitTest">
++  <properties>
++    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
++    <property name="sun.boot.library.path" value="/usr/local/jdk1.6.0/jre/lib/i386"/>
++    <property name="java.vm.version" value="1.6.0-rc-b93"/>
++    <property name="java.vm.vendor" value="Sun Microsystems Inc."/>
++    <property name="java.vendor.url" value="http://java.sun.com/"/>
++    <property name="path.separator" value=":"/>
++    <property name="java.vm.name" value="Java HotSpot(TM) Client VM"/>
++    <property name="file.encoding.pkg" value="sun.io"/>
++    <property name="user.country" value="US"/>
++    <property name="sun.java.launcher" value="SUN_STANDARD"/>
++    <property name="sun.os.patch.level" value="unknown"/>
++    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
++    <property name="user.dir" value="/home/jkuhnert/projects/maven-surefire-plugin/src/it/test7"/>
++    <property name="java.runtime.version" value="1.6.0-rc-b93"/>
++    <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment"/>
++    <property name="basedir" value="/home/jkuhnert/projects/maven-surefire-plugin/src/it/test7"/>
++    <property name="java.endorsed.dirs" value="/usr/local/jdk1.6.0/jre/lib/endorsed"/>
++    <property name="os.arch" value="i386"/>
++    <property name="java.io.tmpdir" value="/tmp"/>
++    <property name="line.separator" value="
++"/>
++    <property name="java.vm.specification.vendor" value="Sun Microsystems Inc."/>
++    <property name="os.name" value="Linux"/>
++    <property name="sun.jnu.encoding" value="UTF-8"/>
++    <property name="java.library.path" value="/usr/local/jdk1.6.0/jre/lib/i386/client:/usr/local/jdk1.6.0/jre/lib/i386:/usr/local/jdk1.6.0/jre/../lib/i386:/usr/java/packages/lib/i386:/lib:/usr/lib"/>
++    <property name="java.specification.name" value="Java Platform API Specification"/>
++    <property name="java.class.version" value="50.0"/>
++    <property name="sun.management.compiler" value="HotSpot Client Compiler"/>
++    <property name="os.version" value="2.6.15-26-386"/>
++    <property name="user.home" value="/home/jkuhnert"/>
++    <property name="user.timezone" value=""/>
++    <property name="java.awt.printerjob" value="sun.print.PSPrinterJob"/>
++    <property name="file.encoding" value="UTF-8"/>
++    <property name="java.specification.version" value="1.6"/>
++    <property name="user.name" value="jkuhnert"/>
++    <property name="java.class.path" value="/home/jkuhnert/.m2/repository/org/codehaus/plexus/plexus-utils/1.1/plexus-utils-1.1.jar:/home/jkuhnert/.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1.jar:/home/jkuhnert/.m2/repository/org/apache/maven/surefire/surefire-booter/2.8-SNAPSHOT/surefire-booter-2.8-SNAPSHOT.jar:/home/jkuhnert/.m2/repository/org/apache/maven/surefire/surefire-api/2.8-SNAPSHOT/surefire-api-2.8-SNAPSHOT.jar:/home/jkuhnert/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar:/home/jkuhnert/.m2/repository/org/testng/testng/5.0.1/testng-5.0.1-jdk15.jar"/>
++    <property name="java.vm.specification.version" value="1.0"/>
++    <property name="sun.arch.data.model" value="32"/>
++    <property name="java.home" value="/usr/local/jdk1.6.0/jre"/>
++    <property name="java.specification.vendor" value="Sun Microsystems Inc."/>
++    <property name="user.language" value="en"/>
++    <property name="java.vm.info" value="mixed mode, sharing"/>
++    <property name="java.version" value="1.6.0-rc"/>
++    <property name="java.ext.dirs" value="/usr/local/jdk1.6.0/jre/lib/ext:/usr/java/packages/lib/ext"/>
++    <property name="sun.boot.class.path" value="/usr/local/jdk1.6.0/jre/lib/resources.jar:/usr/local/jdk1.6.0/jre/lib/rt.jar:/usr/local/jdk1.6.0/jre/lib/sunrsasign.jar:/usr/local/jdk1.6.0/jre/lib/jsse.jar:/usr/local/jdk1.6.0/jre/lib/jce.jar:/usr/local/jdk1.6.0/jre/lib/charsets.jar:/usr/local/jdk1.6.0/jre/classes"/>
++    <property name="java.vendor" value="Sun Microsystems Inc."/>
++    <property name="localRepository" value="/home/jkuhnert/.m2/repository"/>
++    <property name="file.separator" value="/"/>
++    <property name="java.vendor.url.bug" value="http://java.sun.com/cgi-bin/bugreport.cgi"/>
++    <property name="sun.cpu.endian" value="little"/>
++    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
++    <property name="sun.desktop" value="gnome"/>
++    <property name="sun.cpu.isalist" value=""/>
++  </properties>
++  <testcase time="0.001" name="isTestObjectNull"/>
++</testsuite>
+\ No newline at end of file
+
+Property changes on: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/target/surefire-reports/TEST-TestNGJunitTest.xml
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/target/surefire-reports/TestNGJunitTest.txt
+===================================================================
+--- /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/target/surefire-reports/TestNGJunitTest.txt	(revision 0)
++++ /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/target/surefire-reports/TestNGJunitTest.txt	(revision 0)
+@@ -0,0 +1,4 @@
++-------------------------------------------------------------------------------
++Test set: TestNGJunitTest
++-------------------------------------------------------------------------------
++Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.022 sec
+
+Property changes on: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/target/surefire-reports/TestNGJunitTest.txt
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/target/test-classes/TestNGJunitTest.class
+===================================================================
+Cannot display: file marked as a binary type.
+svn:mime-type = application/octet-stream
+
+Property changes on: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/target/test-classes/TestNGJunitTest.class
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Index: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/target/test-classes/JunitTest.class
+===================================================================
+Cannot display: file marked as a binary type.
+svn:mime-type = application/octet-stream
+
+Property changes on: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/target/test-classes/JunitTest.class
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Index: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/src/test/java/JunitTest.java
+===================================================================
+--- /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/src/test/java/JunitTest.java	(revision 0)
++++ /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/src/test/java/JunitTest.java	(revision 0)
+@@ -0,0 +1,28 @@
++import junit.framework.TestCase;
++
++/**
++ * Provided to ensure both junit and testng tests can run together.
++ * 
++ * @author jkuhnert
++ */
++public class JunitTest extends TestCase {
++
++	Object testObject;
++	
++	/**
++	 * Creats an object instance
++	 */
++	public void setUp()
++	{
++		testObject = new Object();
++	}
++	
++	/**
++	 * Tests that object created in setup 
++	 * isn't null.
++	 */
++	public void testJunitObject()
++	{
++		assertNotNull(testObject);
++	}
++}
+Index: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/src/test/java/TestNGJunitTest.java
+===================================================================
+--- /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/src/test/java/TestNGJunitTest.java	(revision 0)
++++ /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/src/test/java/TestNGJunitTest.java	(revision 0)
+@@ -0,0 +1,31 @@
++import org.testng.annotations.BeforeClass;
++import org.testng.annotations.Test;
++
++
++/**
++ * Simple test
++ * 
++ * @author jkuhnert
++ */
++public class TestNGJunitTest {
++
++	/**
++	 * Sets up testObject
++	 */
++	@BeforeClass
++	public void configureTest()
++	{
++		testObject = new Object();
++	}
++	
++	Object testObject;
++	
++	/**
++	 * Tests reporting an error
++	 */
++	@Test
++	public void isTestObjectNull()
++	{
++		assert testObject != null : "testObject is null";
++	}
++}
+Index: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/pom.xml
+===================================================================
+--- /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/pom.xml	(revision 0)
++++ /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/pom.xml	(revision 0)
+@@ -0,0 +1,46 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project xmlns="http://maven.apache.org/POM/4.0.0"
++   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
++   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
++   <modelVersion>4.0.0</modelVersion>
++
++   <groupId>org.apache.maven.plugins.surefire</groupId>
++   <artifactId>test7</artifactId>
++   <version>1.0-SNAPSHOT</version>
++   <name>TestNG Junit Compatible</name>
++   <description>Tests that junit tests can be executed alongside TestNG tests</description>
++   
++   <dependencies>
++      <dependency>
++         <groupId>junit</groupId>
++         <artifactId>junit</artifactId>
++         <version>3.8.1</version>
++         <scope>test</scope>
++      </dependency>
++      <dependency>
++         <groupId>org.testng</groupId>
++         <artifactId>testng</artifactId>
++         <version>5.0.1</version>
++         <classifier>jdk15</classifier>
++         <scope>test</scope>
++      </dependency>
++   </dependencies>
++   
++   <build>
++      <plugins>
++         <plugin>
++            <groupId>org.apache.maven.plugins</groupId>
++            <artifactId>maven-surefire-plugin</artifactId>
++         </plugin>
++         <plugin>
++            <groupId>org.apache.maven.plugins</groupId>
++            <artifactId>maven-compiler-plugin</artifactId>
++            <configuration>
++               <source>1.5</source>
++               <target>1.5</target>
++            </configuration>
++         </plugin>
++      </plugins>
++   </build>
++
++</project>
+
+Property changes on: /home/jkuhnert/projects/maven-surefire-plugin/src/it/test7/pom.xml
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: /home/jkuhnert/projects/maven-surefire-plugin/src/it/pom.xml
+===================================================================
+--- /home/jkuhnert/projects/maven-surefire-plugin/src/it/pom.xml	(revision 426818)
++++ /home/jkuhnert/projects/maven-surefire-plugin/src/it/pom.xml	(working copy)
+@@ -14,6 +14,9 @@
+     <module>test1</module>
+     <module>test2</module>
+     <module>test3</module>
++    <module>test4</module>
++    <module>test5</module>
++    <module>test6</module>
+   </modules> 
+ 
+ </project>
+Index: /home/jkuhnert/projects/maven-surefire-plugin/pom.xml
+===================================================================
+--- /home/jkuhnert/projects/maven-surefire-plugin/pom.xml	(revision 426818)
++++ /home/jkuhnert/projects/maven-surefire-plugin/pom.xml	(working copy)
+@@ -1,98 +1,119 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+-  <parent>
+-    <artifactId>maven-plugins</artifactId>
+-    <groupId>org.apache.maven.plugins</groupId>
+-    <version>2-SNAPSHOT</version>
+-  </parent>
+-  <modelVersion>4.0.0</modelVersion>
+-  <artifactId>maven-surefire-plugin</artifactId>
+-  <packaging>maven-plugin</packaging>
+-  <name>Maven Surefire Plugin</name>
+-  <version>2.3-SNAPSHOT</version>
+-  <prerequisites>
+-    <maven>2.0</maven>
+-  </prerequisites>
+-  <issueManagement>
+-    <system>JIRA</system>
+-    <url>http://jira.codehaus.org/browse/MSUREFIRE</url>
+-  </issueManagement>
+-  <mailingLists>
+-    <!-- duplication from maven-plugins pom - temporary until they inherit properly -->
+-    <mailingList>
+-      <name>Maven User List</name>
+-      <subscribe>users-subscribe@maven.apache.org</subscribe>
+-      <unsubscribe>users-unsubscribe@maven.apache.org</unsubscribe>
+-      <post>users@maven.apache.org</post>
+-      <archive>http://mail-archives.apache.org/mod_mbox/maven-users</archive>
+-      <otherArchives>
+-        <otherArchive>http://www.mail-archive.com/users@maven.apache.org/</otherArchive>
+-        <otherArchive>http://www.nabble.com/Maven---Users-f178.html</otherArchive>
+-      </otherArchives>
+-    </mailingList>
+-    <mailingList>
+-      <name>Maven Developer List</name>
+-      <subscribe>dev-subscribe@maven.apache.org</subscribe>
+-      <unsubscribe>dev-unsubscribe@maven.apache.org</unsubscribe>
+-      <post>dev@maven.apache.org</post>
+-      <archive>http://mail-archives.apache.org/mod_mbox/maven-dev</archive>
+-    </mailingList>
+-    <mailingList>
+-      <name>Maven Commits List</name>
+-      <subscribe>commits-subscribe@maven.apache.org</subscribe>
+-      <unsubscribe>commits-unsubscribe@maven.apache.org</unsubscribe>
+-      <post>commits@maven.apache.org</post>
+-      <archive>http://mail-archives.apache.org/mod_mbox/maven-dev</archive>
+-    </mailingList>
+-    <!-- duplication from maven-parent pom - temporary until they inherit properly -->
+-    <mailingList>
+-      <name>Maven Announcements List</name>
+-      <post>announce@maven.apache.org</post>
+-      <subscribe>announce-subscribe@maven.apache.org</subscribe>
+-      <unsubscribe>announce-unsubscribe@maven.apache.org</unsubscribe>
+-      <archive>http://mail-archives.apache.org/mod_mbox/maven-announce/</archive>
+-    </mailingList>
+-    <mailingList>
+-      <name>Maven Issues List</name>
+-      <post>issues@maven.apache.org</post>
+-      <subscribe>issues-subscribe@maven.apache.org</subscribe>
+-      <unsubscribe>issues-unsubscribe@maven.apache.org</unsubscribe>
+-      <archive>http://mail-archives.apache.org/mod_mbox/maven-issues/</archive>
+-    </mailingList>
+-    <mailingList>
+-      <name>Maven Notifications List</name>
+-      <post>notifications@maven.apache.org</post>
+-      <subscribe>notifications-subscribe@maven.apache.org</subscribe>
+-      <unsubscribe>notifications-unsubscribe@maven.apache.org</unsubscribe>
+-      <archive>http://mail-archives.apache.org/mod_mbox/maven-notifications/</archive>
+-    </mailingList>
+-  </mailingLists>
+-  <contributors>
+-    <contributor>
+-      <name>Joakim Erdfelt</name>
+-      <email>joakim@erdfelt.com</email>
+-    </contributor>
+-  </contributors>
+-  <dependencies>
+-    <dependency>
+-      <groupId>org.apache.maven</groupId>
+-      <artifactId>maven-plugin-api</artifactId>
+-      <version>2.0</version>
+-    </dependency>
+-    <dependency>
+-      <groupId>org.apache.maven.surefire</groupId>
+-      <artifactId>surefire-booter</artifactId>
+-      <version>2.1-SNAPSHOT</version>
+-    </dependency>
+-    <dependency>
+-      <groupId>org.codehaus.plexus</groupId>
+-      <artifactId>plexus-utils</artifactId>
+-      <version>1.1</version>
+-    </dependency>
+-    <dependency>
+-      <groupId>org.apache.maven</groupId>
+-      <artifactId>maven-artifact</artifactId>
+-      <version>2.0</version>
+-    </dependency>
+-  </dependencies>
++<project xmlns="http://maven.apache.org/POM/4.0.0"
++    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
++    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
++    <parent>
++        <artifactId>maven-plugins</artifactId>
++        <groupId>org.apache.maven.plugins</groupId>
++        <version>2-SNAPSHOT</version>
++    </parent>
++    <modelVersion>4.0.0</modelVersion>
++    <artifactId>maven-surefire-plugin</artifactId>
++    <packaging>maven-plugin</packaging>
++    <name>Maven Surefire Plugin</name>
++    <version>2.8-SNAPSHOT</version>
++    <prerequisites>
++        <maven>2.0</maven>
++    </prerequisites>
++    <issueManagement>
++        <system>JIRA</system>
++        <url>http://jira.codehaus.org/browse/MSUREFIRE</url>
++    </issueManagement>
++    
++    <mailingLists>
++        <!-- duplication from maven-plugins pom - temporary until they inherit properly -->
++        <mailingList>
++            <name>Maven User List</name>
++            <subscribe>users-subscribe@maven.apache.org</subscribe>
++            <unsubscribe>users-unsubscribe@maven.apache.org</unsubscribe>
++            <post>users@maven.apache.org</post>
++            <archive>http://mail-archives.apache.org/mod_mbox/maven-users</archive>
++            <otherArchives>
++                <otherArchive>http://www.mail-archive.com/users@maven.apache.org/</otherArchive>
++                <otherArchive>http://www.nabble.com/Maven---Users-f178.html</otherArchive>
++            </otherArchives>
++        </mailingList>
++        <mailingList>
++            <name>Maven Developer List</name>
++            <subscribe>dev-subscribe@maven.apache.org</subscribe>
++            <unsubscribe>dev-unsubscribe@maven.apache.org</unsubscribe>
++            <post>dev@maven.apache.org</post>
++            <archive>http://mail-archives.apache.org/mod_mbox/maven-dev</archive>
++        </mailingList>
++        <mailingList>
++            <name>Maven Commits List</name>
++            <subscribe>commits-subscribe@maven.apache.org</subscribe>
++            <unsubscribe>commits-unsubscribe@maven.apache.org</unsubscribe>
++            <post>commits@maven.apache.org</post>
++            <archive>http://mail-archives.apache.org/mod_mbox/maven-dev</archive>
++        </mailingList>
++        <!-- duplication from maven-parent pom - temporary until they inherit properly -->
++        <mailingList>
++            <name>Maven Announcements List</name>
++            <post>announce@maven.apache.org</post>
++            <subscribe>announce-subscribe@maven.apache.org</subscribe>
++            <unsubscribe>announce-unsubscribe@maven.apache.org</unsubscribe>
++            <archive>http://mail-archives.apache.org/mod_mbox/maven-announce/</archive>
++        </mailingList>
++        <mailingList>
++            <name>Maven Issues List</name>
++            <post>issues@maven.apache.org</post>
++            <subscribe>issues-subscribe@maven.apache.org</subscribe>
++            <unsubscribe>issues-unsubscribe@maven.apache.org</unsubscribe>
++            <archive>http://mail-archives.apache.org/mod_mbox/maven-issues/</archive>
++        </mailingList>
++        <mailingList>
++            <name>Maven Notifications List</name>
++            <post>notifications@maven.apache.org</post>
++            <subscribe>notifications-subscribe@maven.apache.org</subscribe>
++            <unsubscribe>notifications-unsubscribe@maven.apache.org</unsubscribe>
++            <archive>http://mail-archives.apache.org/mod_mbox/maven-notifications/</archive>
++        </mailingList>
++    </mailingLists>
++    <contributors>
++        <contributor>
++            <name>Joakim Erdfelt</name>
++            <email>joakim@erdfelt.com</email>
++        </contributor>
++    </contributors>
++    <dependencies>
++        <dependency>
++            <groupId>org.apache.maven</groupId>
++            <artifactId>maven-plugin-api</artifactId>
++            <version>2.0</version>
++        </dependency>
++        <dependency>
++            <groupId>org.apache.maven.surefire</groupId>
++            <artifactId>surefire-booter</artifactId>
++            <version>2.8-SNAPSHOT</version>
++        </dependency>
++        <dependency>
++            <groupId>org.codehaus.plexus</groupId>
++            <artifactId>plexus-utils</artifactId>
++            <version>1.1</version>
++        </dependency>
++        <dependency>
++            <groupId>org.apache.maven</groupId>
++            <artifactId>maven-artifact</artifactId>
++            <version>2.0</version>
++        </dependency>
++    </dependencies>
++
++    <build>
++        <extensions>
++            <!-- Needed to support FTP deployment. -->
++            <extension>
++                <groupId>org.apache.maven.wagon</groupId>
++                <artifactId>wagon-ftp</artifactId>
++            </extension>
++        </extensions>
++    </build>
++    
++    <distributionManagement>
++        <snapshotRepository>
++            <id>howardlewisship.com</id>
++            <url>ftp://howardlewisship.com/repository</url>
++        </snapshotRepository>
++    </distributionManagement>
++    
+ </project>

@@ -1,0 +1,65 @@
+<html>
+    <head>
+        <title>TestNG - IDEA Plugin</title>
+        <script type="text/javascript" src="banner.js"></script>
+        <link rel="stylesheet" href="testng.css" type="text/css" />
+      </head>
+<body>
+
+<script type="text/javascript">
+    displayMenu("idea.html")
+</script>
+
+<h2 align="center">TestNG IDEA Plug-in</h2>
+
+
+
+<p align="center">
+<img src="http://testng.org/pictures/idea-output.png" />
+</p>
+
+
+TestNG has an IDEA plug-in that mirrors much of the behavior of the built-in JUnit support. You should be able to run tests within IDEA without defining any files externally, as well as quickly and easily migrate JUnit code, and switch back and forth between 1.4 and 1.5 style annotations. The plug-in also provides the same output test view as JUnit tests.
+
+Installation
+
+New versions of the plugin are constantly uploaded to the IDEA plug-in repository.
+
+
+<ul>
+	<li>From IDEA, go to Preferences -> Plugins.</li>
+	<li>Click over to the Available Plugins tab.</li>
+</ul>
+<p>The latest version of the TestNG plugin will be listed there, ready to download and install.&nbsp; 
+Also, you can go to the <a href="http://javaforge.com/proj/summary.do?proj_id=4">
+TestNG IDEA plug-in project page</a> and download its source from there.</p>
+<p>Please note that this plug-in only works on IDEA 5.0.</p>
+
+<p><b>Creating a TestNG Run/Debug configuration</b></p>
+<p>Once you have installed the plug-in and restarted IDEA, and have some TestNG classes you would like to run, simply 
+open the Run/Debug window. You will see a TestNG tab, where you can add a configuration.
+
+</p>
+<p>There are a number of methods for determining the set of tests that will be run. These are:</p>
+<ul>
+	<li>Package: Specify a package to run. All tests in this package and below will be included.</li>
+	<li>Group: Specify a TestNG group to run.</li>
+	<li>Suite: Specify an external testng.xml file to run.</li>
+	<li>Class: Run all tests in a single class.</li>
+	<li>Method: Run a single test method.
+
+</li>
+</ul>
+<p>Once you create the run configuration, you can run it. Upon running, the plug-in will launch an external process to run your tests. The test results will be display in a tree view, with passed and failed tests highlighted. You can narrow down on the console output for a specify test by clicking on it, while double clicking a test will navigate to its source code.
+</p>
+
+<p align="center">
+<img src="http://testng.org/pictures/idea-rundialog.png" />
+</p>
+
+
+
+
+</body>
+
+</html>

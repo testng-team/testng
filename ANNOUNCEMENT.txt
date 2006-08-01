@@ -1,0 +1,110 @@
+javalobby.org
+testdriven.com
+opensourcetesting.org
+http://saloon.javaranch.com/cgi-bin/ubb/ultimatebb.cgi?ubb=forum&f=68
+java.net
+comp.lang.java.programmer
+
+==========
+
+The TestNG team is happy to announce the immediate availability of TestNG 4.5. 
+
+This release contains a lot of bug fixes and a few new features.  It also 
+includes the first phase of Distributed TestNG, a work in progress designed 
+to transparently distribute tests on many machines and collect their results.
+
+Announcement:
+
+http://beust.com/weblog/archives/000361.html
+
+Details on Distributed TestNG:  
+
+http://beust.com/weblog/archives/000362.html
+
+
+==========
+
+The TestNG team is happy to announce the immediate availability of TestNG 4.0, with a lot of improvements and new features.
+
+The announcement, along with a few examples and summary of the new features, can be found here:
+
+    http://tinyurl.com/dxlbh
+
+-- 
+Cédric
+http://testng.org
+
+================
+
+Announcing TestNG 2.3
+
+The TestNG team is happy to announce the availability of TestNG 2.3.
+
+The version is available at http://beust.com/testng as well as the new documentation, which has been considerably improved (highlighted code snippets, detailed DTD, ant task and description of all the new features).
+
+What's new:
+
+    * beforeSuite, afterSuite, beforeTest, afterTest
+    * Revamped ant task with haltonfailure and other helpful flags
+    * Better stack traces and improved level control for verbosity
+    * Better syntax for including and excluding methods in testng.xml
+    * Test classes can be invoked on the command line
+    * ... and many bug fixes.
+
+For Eclipse users, a new version (1.1.1) of the Eclipse plug-in that includes this new TestNG version is available on the remote update site or for direct download.
+
+Also, TestNG has joined OpenSymphony (big thanks to Patrick and Hani for setting this up).  As a consequence of this move, there is now a TestNG users forum as well as a Wiki and JIRA for issue tracking.
+
+The users mailing-list has been moved to Google Groups and is connected to the forum, so you only need to subscribe to one.
+
+Try it and let us know what you think!
+
+===
+
+I am happy to announce the availability of TestNG 2.1 (http://beust.com/testng).  
+
+TestNG is a testing framework inspired from JUnit and NUnit but introducing some new functionalities that make it more powerful and easier to use, such as:
+
+    * JSR 175 Annotations (JDK 1.4 is also supported with JavaDoc annotations).
+    * Flexible test configuration.
+    * Default JDK functions for runtime and logging (no dependencies).
+    * Powerful execution model (no more TestSuite).
+    * Supports dependent methods.
+
+Some of the new features in this version include:
+
+    * invocationCount and successPercentage, which I described in a previous entry (http://beust.com/weblog/archives/000236.html), and which allow you to invoke a test method a certain number of times while allowing some of these invocations to fail.  If the number of failures is under a certain threshold, the test is still considered a success.
+       
+    * timeOut is now applicable to all test methods.  Whether you are running your tests in parallel or not, you can specify a time-out for your test method and if it fails to complete within the given amount of time, TestNG will mark it as a failure.
+       
+    * dependsOnMethods was the most requested feature.  You can now specify dependencies on a method-based basis (no need to specify a group if your dependency graph is simple).  You can even mix dependsOnMethods and dependsOnGroups.
+       
+    * ... and of course, numerous bug fixes and other additions.
+
+A special thanks to Alexandru Popescu who has pulled all-nighters to make this release happen!
+
+We have an exciting list of new features lined up for our next version, among which a plug-in API, but in the meantime, enjoy TestNG 2.1.
+
+======
+
+Announcing TestNG for Eclipse
+
+The TestNG team is happy to announce the first release of the TestNG plug-in for Eclipse.
+
+http://beust.com/testng
+
+This first release covers the basic functionalities of TestNG, among which:
+
+    * Multiple ways to launch tests (from a method, from a class, groups or an entire suite).
+    * Convenient report view that lets you directly jump to failed tests.
+
+A more detailed overview can be found here:
+
+http://beust.com/weblog/archives/000261.html
+
+and the documentation and snapshots here:
+
+http://beust.com/testng/main.html#eclipse
+
+-- 
+Cedric

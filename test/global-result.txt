@@ -1,0 +1,64 @@
+TestNG JDK 1.4
+Total tests run: 0, Failures: 0, Skips: 0
+Exponent suite
+Total tests run: 4, Failures: 0, Skips: 0
+Command line suite
+Total tests run: 1, Failures: 0, Skips: 0
+Exponent suite
+Total tests run: 4, Failures: 0, Skips: 0
+Command line suite
+Total tests run: 1, Failures: 0, Skips: 0
+Exponent suite
+Total tests run: 4, Failures: 0, Skips: 0
+Command line suite
+Total tests run: 1, Failures: 0, Skips: 0
+Exponent suite
+Total tests run: 4, Failures: 0, Skips: 0
+Command line suite
+Total tests run: 1, Failures: 0, Skips: 0
+Exponent suite
+Total tests run: 4, Failures: 0, Skips: 0
+Command line suite
+Total tests run: 1, Failures: 0, Skips: 0
+Exponent suite
+Total tests run: 4, Failures: 0, Skips: 0
+Command line suite
+Total tests run: 1, Failures: 0, Skips: 0
+Exponent suite
+Total tests run: 4, Failures: 0, Skips: 0
+Command line suite
+Total tests run: 1, Failures: 0, Skips: 0
+Exponent suite
+Total tests run: 4, Failures: 0, Skips: 0
+Command line suite
+Total tests run: 1, Failures: 0, Skips: 0
+Exponent suite
+Total tests run: 4, Failures: 0, Skips: 0
+Command line suite
+Total tests run: 1, Failures: 0, Skips: 0
+Exponent suite
+Total tests run: 4, Failures: 0, Skips: 0
+Command line suite
+Total tests run: 1, Failures: 0, Skips: 0
+Exponent suite
+Total tests run: 4, Failures: 0, Skips: 0
+Command line suite
+Total tests run: 1, Failures: 0, Skips: 0
+Exponent suite
+Total tests run: 4, Failures: 0, Skips: 0
+Command line suite
+Total tests run: 1, Failures: 0, Skips: 0
+Exponent suite
+Total tests run: 4, Failures: 0, Skips: 0
+Command line suite
+Total tests run: 1, Failures: 0, Skips: 0
+Exponent suite
+Total tests run: 4, Failures: 0, Skips: 0
+Command line suite
+Total tests run: 1, Failures: 0, Skips: 0
+TestNG JDK 1.5
+Total tests run: 0, Failures: 0, Skips: 0
+TestNG JDK 1.5
+Total tests run: 0, Failures: 0, Skips: 0
+TestNG JDK 1.5
+Total tests run: 0, Failures: 0, Skips: 0

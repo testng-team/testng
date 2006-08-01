@@ -1,0 +1,18 @@
+TestNG JDK 1.4 (v4)
+Total tests run: 0, Failures: 0, Skips: 0
+TestNG JDK 1.4 (v4)
+Total tests run: 179, Failures: 10, Skips: 0
+TestNG JDK 1.4 (v4)
+Total tests run: 0, Failures: 0, Skips: 0
+TestNG JDK 1.4 (v4)
+Total tests run: 179, Failures: 10, Skips: 0
+TestNG JDK 1.4 (v4)
+Total tests run: 0, Failures: 0, Skips: 0
+TestNG JDK 1.4 (v4)
+Total tests run: 0, Failures: 0, Skips: 0
+TestNG JDK 1.4 (v4)
+Total tests run: 179, Failures: 10, Skips: 0
+TestNG JDK 1.4 (v4)
+Total tests run: 179, Failures: 10, Skips: 0
+TestNG JDK 1.4 (v4)
+Total tests run: 179, Failures: 10, Skips: 0

@@ -1,0 +1,238 @@
+<html>
+    <head>
+        <title>TestNG - Ant</title>
+        <script type="text/javascript" src="banner.js"></script>
+        <link rel="stylesheet" href="testng.css" type="text/css" />
+      </head>
+<body>
+
+<script type="text/javascript">
+    displayMenu("ant.html")
+</script>
+
+<h2 align="center">TestNG Ant Task</h2>
+<p>You define the TestNG ant task as follows:</p>
+<blockquote class="code">
+	<p>&lt;taskdef resource=&quot;testngtasks&quot;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classpath=&quot;testng.jar&quot;/&gt;</p>
+</blockquote>
+This task runs TestNG tests and is always run in a forked JVM.&nbsp; It 
+accepts the following attributes: <br>
+&nbsp;<table border="2" id="table1">
+	<tr>
+		<th>Attribute </th>
+		<th>Description </th>
+		<th>Required </th>
+	</tr>
+	<tr>
+		<td><tt>classfilesetref</tt> </td>
+		<td>A reference to a
+		<a href="http://ant.apache.org/manual/CoreTypes/fileset.html">FileSet</a> 
+		structure of the test classes to be run. </td>
+		<td>&nbsp; </td>
+	</tr>
+	<tr>
+		<td><tt>classpath</tt> </td>
+		<td>A PATH-like structure for the tests to be run. </td>
+		<td>&nbsp; </td>
+	</tr>
+	<tr>
+		<td><tt>classpathref</tt> </td>
+		<td>A reference to a PATH-like structure for the tests to be run. </td>
+		<td>&nbsp; </td>
+	</tr>
+	<tr>
+		<td height="64"><tt>dumpCommand</tt> </td>
+		<td height="64">Print the TestNG launcher command. </td>
+		<td height="64">No. Defaults to false </td>
+	</tr>
+	<tr>
+		<td><tt>enableAssert</tt> </td>
+		<td>Enables JDK 1.4 assertion. </td>
+		<td>No. Defaults to true </td>
+	</tr>
+	<tr>
+		<td><tt>failureProperty</tt> </td>
+		<td>The name of a property to set in the event of a failure. It is used 
+		only if the <tt>haltonfailure</tt> is not set. </td>
+		<td>No.</td>
+	</tr>
+	<tr>
+		<td><tt>haltonfailure</tt> </td>
+		<td>Stop the build process if a failure has occurred during the test 
+		run. </td>
+		<td>No. Defaults to false 
+		</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td><tt>haltonskipped</tt> </td>
+		<td>Stop the build process if there is at least on skipped test. </td>
+		<td>No. Default to false </td>
+	</tr>
+	<tr>
+	  <td><tt>groups</tt></td>
+	  <td>
+   	The list of groups to run, separated by spaces or commas</td>
+	  <td>
+   	</td>
+	</tr>
+	<tr>
+	  <td><tt>excludedgroups</tt></td>
+	  <td>
+   	The list of groups to exclude, separated by spaces or commas</td>
+	  <td>
+   	</td>
+	</tr>
+	<tr>
+		<td><tt>jvm</tt></td>
+		<td>The JVM to use, which will be run by <tt>Runtime.exec()</tt></td>
+		<td><tt>java</tt></td>
+	</tr>
+	<tr>
+		<td><tt>listener</tt></td>
+		<td>The name of a class that implements either <tt>
+		<a href="http://testng.org/javadocs/org/testng/ITestListener.html">
+		org.testng.ITestListener</a></tt> or <tt>
+		<a href="http://testng.org/javadocs/org/testng/IReporter.html">
+		org.testng.IReporter</a></tt></td>
+		<td>No.</td>
+	</tr>
+	<tr>
+		<td><tt>outputdir</tt> </td>
+		<td>Directory for reports output. 
+		</td>
+		<td>No. Defaults to <tt>test-output</tt>. </td>
+	</tr>
+	<tr>
+		<td><tt>skippedProperty</tt> </td>
+		<td>The name of a property to set in the event of a skipped test. It is 
+		used only if the <tt>haltonskipped</tt> is not set. </td>
+		<td>No. </td>
+	</tr>
+	<tr>
+		<td><tt>sourcedir</tt> </td>
+		<td>A PATH-like structure for JDK 1.4 tests (using JavaDoc-like 
+		annotations) 
+		</td>
+		<td>&nbsp; </td>
+	</tr>
+	<tr>
+		<td><tt>sourcedirref</tt> 
+		</td>
+		<td>A reference to a PATH-like structure for JDK 1.4 tests (using 
+		JavaDoc-like annotations). </td>
+		<td>&nbsp; </td>
+	</tr>
+	<tr>
+		<td><tt>suiteRunnerClass</tt> </td>
+		<td>A fully qualified name of a TestNG starter. </td>
+		<td>
+		<p align="left">No.&nbsp; Defaults to <tt>
+		<a href="http://testng.org/javadocs/org/testng/TestNG.html">org.testng.TestNG</a> </tt></td>
+	</tr>
+	<tr>
+		<td><tt>target</tt> </td>
+		<td>Used only with JDK 1.5+ to specify the type of tests: 1.4 for 
+		javadoc annotated tests, 1.5 for JDK1.5 annotated tests. </td>
+		<td>No. When JDK1.4 default to 1.4; when JDK1.5+ default to 1.5 
+		</td>
+	</tr>
+	<tr>
+		<td><tt>testJar</tt> </td>
+		<td>Path to a jar containing tests and a suite definition. </td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td><tt>timeOut</tt></td>
+		<td>The maximum time out in milliseconds that all the tests should run 
+		under.</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td><tt>workingDir</tt></td>
+		<td>The directory where the ant task should change to before running 
+		TestNG.</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td><tt>xmlfilesetref</tt> </td>
+		<td>A reference to a
+		<a href="http://ant.apache.org/manual/CoreTypes/fileset.html">FileSet</a> 
+		structure for the suite definitions to be run. </td>
+		<td>&nbsp; </td>
+	</tr>
+</table>
+<br>
+One of attributes <tt>classpath</tt>, <tt>classpathref</tt> or nested <tt>
+&lt;classpath&gt;</tt> must be used for providing the tests classpath. 
+<p>One of the attributes <tt>xmlfilesetref</tt>, <tt>classfilesetref</tt> or 
+nested <tt>&lt;xmlfileset&gt;</tt>, respectively <tt>&lt;classfileset&gt;</tt> must be used 
+for providing the tests. </p>
+<p><u>Note</u>: if using JDK 1.4 one of the attributes <tt>sourcedir</tt>, <tt>
+sourcedirref</tt> or the nested <tt>&lt;sourcedir&gt;</tt> must be provided. </p>
+<p><u>Note</u>: using <tt>&lt;classfileset&gt;</tt> doesn't automatically adds the 
+test classes to your classpath: you might need to repeat these classes in the 
+classpath for the task to work.</p>
+<h3><a name="nested">Nested Elements</a></h3>
+<h4>classpath</h4>
+<p>The <tt>&lt;testng&gt;</tt> task supports a nested <tt>&lt;classpath&gt;</tt> element 
+that represents a <em>PATH</em>-like structure. </p>
+<h4>bootclasspath</h4>
+<p>The location of bootstrap class files can be specified using this <em>
+PATH-like</em> structure - will be ignored if <tt>fork </tt>is not set. </p>
+<h4>xmlfileset</h4>
+<p>The suite definitions (<tt>testng.xml</tt>) can be passed to the task with a
+<tt><a href="http://ant.apache.org/manual/CoreTypes/fileset.html">FileSet</a></tt> 
+structure. </p>
+<h4>classfileset</h4>
+<p>TestNG can also run directly on classes, also supplied with a <tt>
+<a href="http://ant.apache.org/manual/CoreTypes/fileset.html">FileSet</a></tt> 
+structure.</p>
+<h4>sourcedir</h4>
+<p>A PATH-like structure for JDK 1.4 tests using Javadoc annotations. </p>
+<h4>jvmarg</h4>
+<p>Additional parameters may be passed to the new VM via nested <tt>&lt;jvmarg&gt;</tt> 
+elements. For example: </p>
+<pre class="code">&lt;<span class="tag">testng&gt;
+</span>&nbsp;&nbsp; &lt;<span class="tag">jvmarg</span> <span class="attribute">value=&quot;-Djava.compiler=NONE&quot;</span> /&gt;
+&nbsp; ...
+&lt;<span class="tag">/testng&gt;</span></pre>
+<h4>sysproperty</h4>
+<p>Use nested <tt>&lt;sysproperty&gt;</tt> elements to specify system properties 
+required by the class. These properties will be made available to the virtual 
+machine during the execution of the test. The attributes for this element are 
+the same as for <em>environment variables</em>:</p>
+<pre class="code">&lt;<span class="tag">testng</span>&gt;
+&nbsp;&nbsp;&nbsp;&lt;<span class="tag">sysproperty</span> <span class="attribute">key=&quot;basedir&quot;</span> <span class="attribute">value=&quot;${basedir}&quot;</span>/&gt;
+&nbsp; ...
+&lt;<span class="tag">/testng</span>&gt;</pre>
+<p>will run the test and make the <code>basedir</code> property 
+available to the test.</p>
+<h4>env</h4>
+<p>It is possible to specify environment variables to pass to the TestNG forked 
+virtual machine via nested <tt>&lt;env&gt;</tt> elements. For a description of the <tt>
+&lt;env&gt;</tt> element's attributes, see the description in the <em>
+<a href="http://ant.apache.org/manual/CoreTasks/exec.html">exec</a></em> task.</p>
+<h3>Examples</h3>
+<h4>Suite xml</h4>
+<pre class="code">&lt;<span class="tag">testng</span> <span class="attribute">classpathref=&quot;run.cp&quot;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">outputDir=&quot;${testng.report.dir}&quot;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">sourcedir=&quot;${test.src.dir}&quot;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">haltOnfailure=&quot;true&quot;</span>&gt;
+&nbsp;
+&nbsp;&nbsp;&nbsp;&lt;<span class="tag">xmlfileset</span> <span class="attribute">dir=&quot;${test14.dir}&quot;</span> <span class="attribute">includes=&quot;testng.xml&quot;</span>/&gt;
+&lt;<span class="tag">/testng</span>&gt;</pre>
+
+<h4>Class FileSet</h4>
+<pre class="code">
+&lt;<span class="tag">testng</span> <span class="attribute">classpathref=&quot;run.cp&quot;</span>
+		<span class="attribute">outputDir=&quot;${testng.report.dir}&quot;</span>
+		<span class="attribute">haltOnFailure=&quot;true&quot;M</span> <span class="attribute">verbose=&quot;2&quot;&gt;</span>
+	&lt;<span class="tag">classfileset</span> <span class="attribute">dir=&quot;${test.build.dir}&quot;</span> <span class="attribute">includes=&quot;**/*.class&quot;</span> <span class="tag">/&gt;</span>
+&lt;<span class="tag">/testng</span>&gt;
+</pre>
+
+</body>
+
+</html>

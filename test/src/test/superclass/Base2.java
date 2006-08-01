@@ -1,0 +1,28 @@
+package test.superclass;
+
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+@Test
+public class Base2 {
+  @BeforeClass
+  public void bc() {
+    ppp("BEFORE_CLASS");
+  }
+
+  @BeforeMethod
+  public void bm() {
+    ppp("BEFORE_METHOD");
+  }
+
+  public void tbase() {
+    ppp("TEST IN BASE");
+  }
+
+  private static void ppp(String s) {
+    if (false) {
+      System.out.println("[Base] " + s);
+    }
+  }
+}

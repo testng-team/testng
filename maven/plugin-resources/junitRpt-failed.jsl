@@ -1,0 +1,307 @@
+<?xml version="1.0"?>
+<!-- 
+/*
+ * Copyright 2001-2004 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ -->
+
+
+<jsl:stylesheet
+  select="$doc"
+  xmlns:j="jelly:core"
+  xmlns:jsl="jelly:jsl"
+  xmlns:x="jelly:xml"
+  xmlns:define="jelly:define"
+  xmlns:util="jelly:util"
+  xmlns:junit="junit"
+  xmlns:doc="doc"
+  trim="false">
+
+  <!-- This needs to be instantiated here to be available in the template matches -->
+  <j:useBean var="mavenTool" class="org.apache.maven.MavenTool"/>
+  <j:useBean var="numbers" class="java.text.DecimalFormat"/>
+  <j:useBean var="htmlescape" class="org.apache.velocity.anakia.Escape"/>
+  <j:useBean var="formatter" class="org.apache.maven.DVSLFormatter"/>
+  <j:useBean var="fileutil" class="org.apache.velocity.texen.util.FileUtil"/>
+  <j:useBean var="pathtool" class="org.apache.maven.util.DVSLPathTool"/>
+
+  
+  <define:taglib uri="junit">
+    <define:tag name="nav">
+      <p>
+        [
+        <a href="#Summary">summary</a>]
+        [
+        <a href="#Package List">package list</a>]
+        [
+        <a href="#Test Cases">test cases</a>]
+      </p>
+    </define:tag>
+    
+    <define:tag name="testSuiteHeader">
+      <tr>
+        <th>Name</th>
+        <th>Tests</th>
+        <th>Errors</th>
+        <th>Failures</th>
+        <th>Time(s)</th>
+      </tr>
+    </define:tag>
+    
+    <define:tag name="testCaseHeader">
+      <tr>
+        <th>Name</th>
+        <th>Status</th>
+        <th>Type</th>
+        <th>Time(s)</th>
+      </tr>
+    </define:tag>
+    
+    <define:tag name="displayFailure">
+      <j:choose>
+        <j:when test="${current.attribute('message') != null}">
+          <code>
+            ${htmlescape.getText(current.attribute('message').value)}
+          </code>
+        </j:when>
+        <j:otherwise>
+          N/A
+        </j:otherwise>
+      </j:choose>
+    </define:tag>
+  </define:taglib>
+
+  <jsl:template match="testsuites">
+    <document>
+
+      <properties>
+        <title>JUnit Test Results</title>
+      </properties>
+
+      <body>
+        <section name="Summary">
+          <junit:nav/>
+          <j:set var="testCount"><x:expr select="sum(testsuite/@tests)"/></j:set>
+          <j:set var="errorCount"><x:expr select="sum(testsuite/@errors)"/></j:set>
+          <j:set var="failureCount"><x:expr select="sum(testsuite/@failures)"/></j:set>
+          <j:set var="timeCount"><x:expr select="sum(testsuite/@time)"/></j:set>
+          <j:set var="successRate"><x:expr select="($testCount - ($failureCount + $errorCount)) div $testCount"/></j:set>
+          <table>
+            <tr>
+              <th>Tests</th>
+              <th>Errors</th>
+              <th>Failures</th>
+              <th>Success rate</th>
+              <th>Time(s)</th>
+            </tr>
+            <tr>
+              <td>
+                <doc:formatAsNumber string="${testCount}" pattern="0"/>
+              </td>
+              <td>
+                <doc:formatAsNumber string="${errorCount}" pattern="0"/>
+              </td>
+              <td>
+                <doc:formatAsNumber string="${failureCount}" pattern="0"/>
+              </td>
+              <td>
+                <doc:formatAsNumber string="${successRate}" pattern="0.00%"/>
+              </td>
+              <td>
+                <doc:formatAsNumber string="${timeCount}" pattern="0.00"/>
+              </td>
+            </tr>
+          </table>
+          <p>
+            Note:
+            <i>failures</i> are anticipated and checked for with
+            assertions while
+            <i>errors</i> are unanticipated.
+          </p>
+        </section>
+
+        <section name="Package List">
+          <junit:nav/>
+          <table>
+            <!--
+            <junit:testSuiteHeader/>
+            -->
+            <x:set var="testsuites" select="./testsuite[not(./@package = preceding-sibling::testsuite/@package)]"/>
+            <j:forEach var="testsuite" items="${testsuites}">
+              <x:set var="errorCount" select="sum($testsuite/@errors)"/>
+              <x:set var="failureCount" select="sum($testsuite/@failures)"/>
+          
+              <j:if test="${errorCount.intValue() gt 0 or failureCount.intValue() gt 0}">
+              
+              <j:set var="package" value="${testsuite.attribute('package').value}"/>
+              <x:set var="quotedPackage" select='"${package}"'/>
+              <j:set var="testCount"><x:expr select="sum(./testsuite[./@package = $quotedPackage]/@tests)"/></j:set>
+              <j:set var="errorCount"><x:expr select="sum(./testsuite[./@package = $quotedPackage]/@errors)"/></j:set>
+              <j:set var="failureCount"><x:expr select="sum(./testsuite[./@package = $quotedPackage]/@failures)"/></j:set>
+              <j:set var="timeCount"><x:expr select="sum(./testsuite[./@package = $quotedPackage]/@time)"/></j:set>
+    
+              <tr>
+                <td>
+                  <a href="#${package}">${package}</a>
+                </td>
+                <td>
+                  <doc:formatAsNumber string="${testCount}" pattern="0"/>
+                </td>
+                <td>
+                  <doc:formatAsNumber string="${failureCount}" pattern="0"/>
+                </td>
+                <td>
+                  <doc:formatAsNumber string="${errorCount}" pattern="0"/>
+                </td>
+                <td>
+                  <doc:formatAsNumber string="${timeCount}" pattern="0.00"/>
+                </td>
+              </tr>
+              </j:if>
+            </j:forEach>
+            
+          </table>
+          <p>
+            Note: package statistics are not computed recursively, they only
+            sum up all of its testsuites numbers.
+          </p>
+
+          <j:forEach var="testsuite" items="${testsuites}">
+            <j:set var="package" value="${testsuite.attribute('package').value}"/>
+            <x:set var="quotedPackage" select='"${package}"'/>
+            <x:set var="errorCount" select="sum($testsuite/@errors)"/>
+            <x:set var="failureCount" select="sum($testsuite/@failures)"/>
+          
+            <j:if test="${errorCount.intValue() gt 0 or failureCount.intValue() gt 0}">
+            
+            <a name="${package}"></a>
+            <subsection name="${package}">
+              <table>
+                <x:forEach var="test" select="/testsuites/testsuite[./@package = $quotedPackage]">
+                  <x:set var="errorCount" select="count($test/testcase/error)"/>
+                  <x:set var="failureCount" select="count($test/testcase/failure)"/>
+          
+                  <j:if test="${errorCount.intValue() gt 0 or failureCount.intValue() gt 0}">
+            
+                  <tr>
+                    <td>
+                      <a href="#${test.attribute('name').value}">${testcase.attribute("classname").value}.${test.attribute('name').value}</a>
+                    </td>
+                    <td>
+                      <doc:formatAsNumber string="${test.attribute('tests').value}" pattern="0"/>
+                    </td>
+                    <td>
+                      <doc:formatAsNumber string="${test.attribute('errors').value}" pattern="0"/>
+                    </td>
+                    <td>
+                      <doc:formatAsNumber string="${test.attribute('failures').value}" pattern="0"/>
+                    </td>
+                    <td>
+                      <doc:formatAsNumber string="${test.attribute('time').value}" pattern="0.000"/>
+                    </td>
+                  </tr>
+                  </j:if>
+                </x:forEach>
+              </table>
+            </subsection>
+            </j:if>
+          </j:forEach>
+        </section>
+
+        <section name="Test Cases">
+          <junit:nav/>
+    
+          <x:set var="testsuites" select="./testsuite"/>
+          <j:forEach var="testsuite" items="${testsuites}">
+            <!--j:set var="errorCount"><x:expr select="count($testsuite/testcase/error)"/></j:set-->
+            <x:set var="errorCount" select="count($testsuite/testcase/error)"/>
+            <x:set var="failureCount" select="count($testsuite/testcase/failure)"/>
+          
+            <j:if test="${errorCount.intValue() gt 0 or failureCount.intValue() gt 0}">
+            <a name="${testsuite.attribute('name').value}"></a>
+            <subsection name="${testsuite.attribute('name').value}">
+              <table>
+               
+                ## test can even not be started at all (failure to load the class)
+                ## so report the error directly
+                ##
+
+                <x:set var="errors" select="$testsuite/error"/>
+                <j:forEach var="error" items="${errors}">
+                  <tr>
+                    <td colspan="4">
+                      <junit:displayFailure current="${error}"/>
+                    </td>
+                  </tr>
+                </j:forEach>
+    
+    
+    
+                <x:set var="testcases" select="$testsuite/testcase"/>
+                <j:forEach var="testcase" items="${testcases}">
+                  <j:set var="failure" value="${testcase.selectSingleNode('failure')}"/>
+                  <j:set var="error" value="${testcase.selectSingleNode('error')}"/>
+                  <j:if test="${!empty(failure) or !empty(error)}">
+                  <tr>
+                    <td>[${testcase.attribute("classname").value}]${testcase.attribute("name").value}</td>
+                    <j:choose>
+                      <j:when test="${failure != null}">
+                        <td style="width: 60px; color: red; font-weight: bold">Failure</td>
+                      </j:when>
+                      <j:when test="${error != null}">
+                        <td style="width: 60px; color: red; font-weight: bold">Error</td>
+                      </j:when>
+                      <j:otherwise>
+                        <td style="width: 60px;">Success</td>
+                      </j:otherwise>
+                    </j:choose>
+                    <j:choose>
+                      <j:when test="${testcase.attribute('time') != null}">
+                        <td width="60px">
+                          <doc:formatAsNumber string="${testcase.attribute('time').value}" pattern="0.00"/>
+                        </td>
+                      </j:when>
+                      <j:otherwise>
+                        <td width="60px"></td>
+                      </j:otherwise>
+                    </j:choose>
+                  </tr>
+                    <j:choose>
+                      <j:when test="${failure != null}">
+                        <tr>
+                          <td colspan="3" style="padding-left: 50px">
+                            <junit:displayFailure current="${failure}"/>
+                          </td>
+                       </tr>
+                      </j:when>
+                      <j:when test="${error != null}">
+                        <tr>
+                          <td colspan="3" style="padding-left: 50px">
+                            <junit:displayFailure current="${error}"/>
+                          </td>
+                        </tr>
+                      </j:when>
+                    </j:choose>
+                  </j:if>
+                </j:forEach>
+              </table>
+            </subsection>
+            </j:if>
+          </j:forEach>
+        </section>
+      </body>
+    </document>
+  </jsl:template>
+</jsl:stylesheet>

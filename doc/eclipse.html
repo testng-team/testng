@@ -1,0 +1,99 @@
+<html>
+    <head>
+        <title>TestNG - Eclipse</title>
+        <script type="text/javascript" src="banner.js"></script>
+        <link rel="stylesheet" href="testng.css" type="text/css" />
+      </head>
+<body>
+
+<script type="text/javascript">
+    displayMenu("eclipse.html")
+</script>
+
+
+<h2 align="center">TestNG Eclipse plug-in</h2>
+<p>The TestNG Eclipse plug-in allows you to run your TestNG tests from Eclipse 
+and easily monitor their execution and their output. It has its own
+<a href="https://testng-eclipse.dev.java.net/">separate project on java.net 
+called testng-eclipse</a>.</p>
+
+<h3><a name="eclipse-installation">4.1 - Installation</a></h3><p>Once you have downloaded the plug-in zip file, extract it directly in your 
+eclipse/ directory.&nbsp; Restart Eclipse and select the menu <tt>Window / Show View 
+/ Other...</tt>&nbsp; and you should see the TestNG view listed in the Java category.</p><p align="center">
+<img src="http://testng.org/pictures/view.png" />
+</p>
+<h3><a name="eclipse-create-launch">4.2 - Creating a TestNG Launch configuration</a></h3><p>Once you have created classes that contain TestNG annotations and/or one or 
+more <tt>testng.xml</tt> files, you can create a TestNG Launch Configuration.&nbsp; 
+Select the <tt>Run / Run...</tt> (or <tt>Run / Debug...</tt>) menu and create a new TestNG 
+configuration:</p><p align="center">
+<img src="http://testng.org/pictures/launch.png" />
+</p>
+<p>You should change the name of this configuration and pick a project, which 
+can be selected by clicking on the <tt>Browse...</tt> button at the top of the window.</p><p>Then you choose to launch your TestNG tests in the following ways:</p><h4><a name="eclipse-launch-class">4.2.1 - From a class file</a></h4><p>Make sure the box near <tt>Class</tt> is checked and then pick a class from your 
+project.&nbsp; You can click on the <tt>Browse...</tt> button and pick it directly from a 
+list.&nbsp; This list only contains classes that contain TestNG annotations:</p><p align="center">
+<img src="http://testng.org/pictures/classes.png" />
+</p>
+<h4><a name="eclipse-launch-groups">4.2.2 - From groups</a></h4><p>If you only want to launch one or several groups, you can type them in the 
+text field or pick them from a list by clicking on the <tt>Browse...</tt> button&nbsp;
+
+<p align="center">
+<img src="http://testng.org/pictures/groups.png" />
+</p>
+<h4><a name="eclipse-launch-definition">4.2.3 - From a definition file</a></h4>Finally, you can select a suite definition from your project.  It doesn't have to be named
+<tt>testng.xml</tt>, the plug-in will automatically identify all the applicable TestNG XML files 
+in your project:
+<p align="center">
+<img src="http://testng.org/pictures/suites.png" />
+</p>
+<h4>
+<a name="eclipse-launch-method">4.2.4 - From a method </a>
+</h4>
+
+<p>This launch isn't accomplished from the Launch dialog but 
+directly from your Outline view:</p><p align="center">
+<img src="http://testng.org/pictures/outline.png" />
+</p>
+You can right-click on any test methods and select <tt>Run as... / TestNG test</tt> and only the selected
+method will be run (not shown on the above screenshot because I couldn't find a way to capture
+a contextual menu).<p>Method launching is also available from the Package 
+Explorer view and from the Java Browser perspective.</p><p>Once you have selected one of these launches, you can also choose the logging of level and also
+whether TestNG should run in 1.4 or 1.5 mode. Then you can launch the tests by 
+pressing the <tt>Debug</tt> (or <tt>Run</tt>) button, which will switch you to the Debug 
+perspective and will open the main TestNG view.</p><h4>
+<a name="eclipse-viewing">4.3 - Viewing the test results </a>
+</h4>
+
+<p align="center">
+<img src="http://testng.org/pictures/success.png" width="798" height="506" />
+</p>
+
+<p>The above view shows a successful run of the tests:&nbsp; the bar is green 
+and no failed tests are reported.&nbsp; The <tt>All tests</tt> tab shows you a list of 
+all the classes and methods that were run.</p><p>If your test run contains failures, the view will look like this:</p><p align="center">
+<img src="http://testng.org/pictures/failure.png" />
+</p>
+
+<p>You can use the <tt>Failed tests</tt> tab to display only these tests that failed, and 
+when you select such a test, the stack trace will be shown on the right-hand 
+pane.&nbsp; You can double click on the offending line to be taken directly to 
+the failure in your code.</p>
+
+
+<h3><a name="quickfix">4.4 - Converting JUnit tests</a></h3>
+
+<p>When you are editing a JUnit class, press Ctrl-1 (Quick Fix) and the plug-in 
+will give you the option to convert it to TestNG, either with JDK5 annotations:</p>
+<p align="center">
+
+<img src="http://beust.com/pics/quickfix1.png" />
+
+</p>
+<p>or JavaDoc annotations:</p>
+<p align="center">
+
+<img src="http://beust.com/pics/quickfix2.png" />
+
+</p>
+
+</body>
