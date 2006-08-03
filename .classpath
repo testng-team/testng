@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main"/>
+	<classpathentry kind="src" path="src/jdk15"/>
+	<classpathentry kind="src" path="test/src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="3rdparty/junit.jar"/>
+	<classpathentry kind="lib" path="3rdparty/util-concurrent.jar"/>
+	<classpathentry kind="lib" path="3rdparty/qdox-1.5.jar"/>
+	<classpathentry kind="lib" path="3rdparty/bsh-2.0b4.jar"/>
+	<classpathentry kind="lib" path="3rdparty/ant-launcher.jar"/>
+	<classpathentry kind="lib" path="3rdparty/ant.jar"/>
+	<classpathentry kind="output" path="z_build"/>
+</classpath>
