@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="3rdparty/bsh-2.0b4.jar"/>
 	<classpathentry kind="lib" path="3rdparty/ant-launcher.jar"/>
 	<classpathentry kind="lib" path="3rdparty/ant.jar"/>
+	<classpathentry kind="var" path="TOOLS15_LIB"/>
 	<classpathentry kind="output" path="z_build"/>
 </classpath>
