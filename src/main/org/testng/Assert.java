@@ -13,7 +13,7 @@ import java.util.Iterator;
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public class Assert {
-
+  
   /**
    * Protect constructor since it is a static only class
    */
@@ -43,7 +43,9 @@ public class Assert {
    * an AssertionError with the given message.
    */
   static public void assertFalse(boolean condition, String message) {
-    assertTrue(!condition, message);
+    if(condition) {
+      failNotEquals(new Boolean(condition), new Boolean(false), message); // TESTNG-81
+    }
   }
 
   /**
