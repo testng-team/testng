@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import org.testng.IClass;
 import org.testng.IResultMap;
 import org.testng.ITestNGMethod;
+import org.testng.TestNGCommandLineArgs;
 import org.testng.TestNGException;
 import org.testng.TestRunner;
 import org.testng.internal.annotations.AnnotationHelper;
@@ -46,7 +47,6 @@ import org.testng.xml.XmlTest;
  * @author <a href = "mailto:the_mindstorm&#64;evolva.ro">Alexandru Popescu</a>
  */
 public final class Utils {
-  public static final String SHOW_TESTNG_STACK_FRAMES = "testng.show.stack.frames";
   private static final String LINE_SEP = System.getProperty("line.separator");
   
   /**
@@ -644,7 +644,7 @@ public final class Utils {
     String fullStackTrace = sw.getBuffer().toString();
     String shortStackTrace = null;
     
-    if (Boolean.getBoolean(SHOW_TESTNG_STACK_FRAMES)
+    if (Boolean.getBoolean(TestNGCommandLineArgs.SHOW_TESTNG_STACK_FRAMES)
         || TestRunner.getVerbose() == -1) {
       shortStackTrace = fullStackTrace;
     }

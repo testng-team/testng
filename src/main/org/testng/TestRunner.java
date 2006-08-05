@@ -138,30 +138,38 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     m_xmlTest= test;
     m_suite = suite;
     m_testName = test.getName();
-    m_testClassesFromXml= test.getXmlClasses();
-    m_packageNamesFromXml= new ArrayList<XmlPackage>(test.getXmlPackages());
-    m_packageNamesFromXml.addAll(test.getSuite().getXmlPackages());
     m_host = suite.getHost();
+    m_testClassesFromXml= test.getXmlClasses();
+
+    m_packageNamesFromXml= test.getXmlPackages();    
+    if(null != m_packageNamesFromXml) {
+      for(XmlPackage xp: m_packageNamesFromXml) {
+        m_testClassesFromXml.addAll(xp.getXmlClasses());
+      }
+    }
+//    m_packageNamesFromXml= new ArrayList<XmlPackage>(test.getXmlPackages());
+//    m_packageNamesFromXml.addAll(test.getSuite().getXmlPackages());
+    
     
     // If packages were supplied, find all the classes they contain
     // and add them directly to the m_testClassesFromXml field
-    if (null != m_packageNamesFromXml) {
-      for (XmlPackage xp : m_packageNamesFromXml) {
-        String pkg = xp.getName();
-        try {
-          String[] classes = PackageUtils.findClassesInPackage(pkg, xp.getInclude(), xp.getExclude());
-          for (String cls : classes) {
-            XmlClass xc = new XmlClass(cls);
-            m_testClassesFromXml.add(xc);
-          }
-        }
-        catch(Exception e) {
-
-          // Should ignore
-          e.printStackTrace();
-        }
-      }
-    }
+//    if (null != m_packageNamesFromXml) {
+//      for (XmlPackage xp : m_packageNamesFromXml) {
+//        String pkg = xp.getName();
+//        try {
+//          String[] classes = PackageUtils.findClassesInPackage(pkg, xp.getInclude(), xp.getExclude());
+//          for (String cls : classes) {
+//            XmlClass xc = new XmlClass(cls);
+//            m_testClassesFromXml.add(xc);
+//          }
+//        }
+//        catch(Exception e) {
+//
+//          // Should ignore
+//          e.printStackTrace();
+//        }
+//      }
+//    }
     m_annotationFinder= annotationFinder;
     m_invoker= new Invoker(this, this, m_annotationFinder);
 

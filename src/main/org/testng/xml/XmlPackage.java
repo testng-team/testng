@@ -1,9 +1,12 @@
 package org.testng.xml;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.testng.internal.PackageUtils;
+import org.testng.internal.Utils;
 import org.testng.reporters.XMLStringBuffer;
 
 /**
@@ -16,6 +19,7 @@ public class XmlPackage {
   private String m_name;
   private List<String> m_include = new ArrayList<String>();
   private List<String> m_exclude = new ArrayList<String>();
+  private List<XmlClass> m_xmlClasses= null;
   
   /**
    * @return the exclude
@@ -57,6 +61,30 @@ public class XmlPackage {
    */
   public void setName(String name) {
     m_name = name;
+  }
+  
+  public List<XmlClass> getXmlClasses() {
+    if(null == m_xmlClasses) {
+      m_xmlClasses= initializeXmlClasses();
+    }
+    
+    return m_xmlClasses;
+  }
+  
+  private List<XmlClass> initializeXmlClasses() {
+    List<XmlClass> result= new ArrayList<XmlClass>();
+    try {
+      String[] classes = PackageUtils.findClassesInPackage(m_name, m_include, m_exclude);
+      
+      for(String className: classes) {
+        result.add(new XmlClass(className));
+      }
+    }
+    catch(IOException ioex) {
+      Utils.log("XmlPackage", 1, ioex.getMessage());
+    }
+    
+    return result;
   }
   
   public Object toXml(String indent) {

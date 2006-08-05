@@ -3,6 +3,7 @@ package org.testng.internal;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -12,6 +13,8 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
+
+import org.testng.TestNGCommandLineArgs;
 
 /**
  * Utility class that finds all the classes in a given package.
@@ -44,6 +47,10 @@ public class PackageUtils {
     while (dirs.hasMoreElements()) {
       URL url = dirs.nextElement();
       String protocol = url.getProtocol();
+      if(!matchTestClasspath(url, packageDirName, recursive)) {
+        continue;
+      }
+      
       if ("file".equals(protocol)) {
         findClassesInDirPackage(packageOnly, included, excluded,
                                 URLDecoder.decode(url.getFile(), "UTF-8"),
@@ -81,6 +88,45 @@ public class PackageUtils {
   
     String[] result = vResult.toArray(new String[vResult.size()]); 
     return result;
+  }
+
+  /**
+   * @param url
+   * @return
+   */
+  private static boolean matchTestClasspath(URL url, String lastFragment, boolean recursive) {
+    String testClasspath= System.getProperty(TestNGCommandLineArgs.TEST_CLASSPATH);
+    if(null == testClasspath) {
+      return true;
+    }
+    String[] classpathFragments= Utils.split(testClasspath, File.pathSeparator);
+    String protocol = url.getProtocol();
+    String fileName= null;
+    try {
+      fileName= URLDecoder.decode(url.getFile(), "UTF-8");
+    }
+    catch(UnsupportedEncodingException ueex) {
+      ; // ignore. should never happen
+    }
+    for(String classpathFrag: classpathFragments) {
+      String path= null;
+      if(classpathFrag.toLowerCase().endsWith(".jar") || classpathFrag.toLowerCase().endsWith(".zip")) {
+        path= classpathFrag + "!/" + lastFragment;
+      }
+      else {
+        if(classpathFrag.endsWith(File.separator)) {
+          path= classpathFrag + lastFragment;
+        }
+        else {
+          path= classpathFrag + "/" + lastFragment;
+        }
+      }
+      if(fileName.endsWith(path) || (recursive && fileName.indexOf(path) != -1)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private static void findClassesInDirPackage(String packageName,

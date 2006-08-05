@@ -16,6 +16,9 @@ import java.util.Map;
  * @author <a href = "mailto:the_mindstorm&#64;evolva.ro">Alexandru Popescu</a>
  */
 public final class TestNGCommandLineArgs {
+  public static final String SHOW_TESTNG_STACK_FRAMES = "testng.show.stack.frames";
+  public static final String TEST_CLASSPATH = "testng.test.classpath";
+  
   /** The test report output directory option. */
   public static final String OUTDIR_COMMAND_OPT = "-d";
   
