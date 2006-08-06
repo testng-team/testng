@@ -8,10 +8,9 @@
         </groups>
         <classes>
             <class name="test.testng93.SingleTestTest">
-                <!-- <methods>
+                <methods>
                     <include name="theFirstActualTest"/>
                 </methods>
-                -->
             </class>
         </classes>
     </test>

@@ -1,0 +1,17 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="TESTNG-59 Suite" verbose="3" >
+  <test name="TESTNG-59">
+      <classes>
+          <class name="test.testng59.Test1">
+              <methods>
+                  <include name="test1"/>
+              </methods>
+          </class>
+          <class name="test.testng59.Test2">
+              <methods>
+                  <include name="test2"/>
+              </methods>
+          </class>
+      </classes>
+  </test>
+</suite>

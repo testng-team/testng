@@ -37,9 +37,7 @@ public class XmlMethodSelector implements IMethodSelector {
   // List of methods included implicitly
   private Map<String, String> m_includedMethods = new HashMap<String, String>();
   
-  public boolean  includeMethod(ITestNGMethod tm, 
-      boolean isTestMethod) 
-  {
+  public boolean  includeMethod(ITestNGMethod tm, boolean isTestMethod) {
     boolean result = false;
     if (null != m_expression) {
       result = includeMethodFromExpression(tm, isTestMethod);
@@ -51,9 +49,7 @@ public class XmlMethodSelector implements IMethodSelector {
     return result;
   }
   
-  private boolean includeMethodFromExpression(ITestNGMethod tm, 
-      boolean isTestMethod) 
-  {
+  private boolean includeMethodFromExpression(ITestNGMethod tm,  boolean isTestMethod) {
     boolean result = false;
 
     Interpreter interpreter = new Interpreter();
@@ -86,8 +82,8 @@ public class XmlMethodSelector implements IMethodSelector {
     //
     // No groups were specified:
     //
-    if (includedGroups.size() == 0 && excludedGroups.size() == 0 &&
-        ! hasIncludedMethods() && ! hasExcludedMethods())
+    if (includedGroups.size() == 0 && excludedGroups.size() == 0 
+        && ! hasIncludedMethods() && ! hasExcludedMethods())
     //
     // If we don't include or exclude any methods, method is in
     //
@@ -97,8 +93,7 @@ public class XmlMethodSelector implements IMethodSelector {
     //
     // If it's a configuration method and no groups were requested, we want it in
     //
-    else if (includedGroups.size() == 0 && excludedGroups.size() == 0 &&
-        ! isTestMethod) 
+    else if (includedGroups.size() == 0 && excludedGroups.size() == 0 && ! isTestMethod) 
     {
       result = true;
     }
@@ -133,49 +128,54 @@ public class XmlMethodSelector implements IMethodSelector {
         }
       }
       
-      //
-      // Now filter by method name
-      //
-      Method method = tm.getMethod();
-      String fullMethodName =  
-              method.getDeclaringClass().getName()
-              + "."
-              + method.getName();
+      if(isTestMethod) {
+        //
+        // Now filter by method name
+        //
+        Method method = tm.getMethod();
+        Class methodClass= method.getDeclaringClass();
+        String fullMethodName =  methodClass.getName() 
+                + "."
+                + method.getName();
 
-      String[] fullyQualifiedMethodName = new String[] { fullMethodName };
-      
-      //
-      // Iterate through all the classes so we can gather all the included and
-      // excluded methods
-      //
-      for (XmlClass xmlClass : m_classes) {
-        // Only consider included/excluded methods that belong to the same class
-        // we are looking at
-        String xmlClassName = xmlClass.getName();
-        List<String> includedMethods = 
-          createQualifiedMethodNames(xmlClassName, xmlClass.getIncludedMethods());
-        boolean isIncludedInMethods = 
-          isIncluded(fullyQualifiedMethodName, includedMethods);
-        List<String> excludedMethods = 
-          createQualifiedMethodNames(xmlClassName, xmlClass.getExcludedMethods());
-        boolean isExcludedInMethods = 
-          isExcluded(fullyQualifiedMethodName, excludedMethods);
-        if (result) {
-          // If we're about to include this method by group, make sure
-          // it's included by method and not excluded by method
-          result = isIncludedInMethods && ! isExcludedInMethods;
+        String[] fullyQualifiedMethodName = new String[] { fullMethodName };
+        
+        //
+        // Iterate through all the classes so we can gather all the included and
+        // excluded methods
+        //
+        for (XmlClass xmlClass : m_classes) {
+          // Only consider included/excluded methods that belong to the same class
+          // we are looking at
+          Class cls= ClassHelper.forName(xmlClass.getName());
+          if(null == cls) {
+            Utils.log("XmlMethodSelector", 1, "Cannot find class in classpath " + xmlClass.getName());
+            continue;
+          }
+          if(!cls.isAssignableFrom(methodClass) && !methodClass.isAssignableFrom(cls)) {
+            continue;
+          }
+          
+          List<String> includedMethods = createQualifiedMethodNames(xmlClass, xmlClass.getIncludedMethods());
+          boolean isIncludedInMethods = isIncluded(fullyQualifiedMethodName, includedMethods);
+          List<String> excludedMethods = createQualifiedMethodNames(xmlClass, xmlClass.getExcludedMethods());
+          boolean isExcludedInMethods = isExcluded(fullyQualifiedMethodName, excludedMethods);
+          if (result) {
+            // If we're about to include this method by group, make sure
+            // it's included by method and not excluded by method
+            result = isIncludedInMethods && ! isExcludedInMethods;
+          }
+          // otherwise it's already excluded and nothing will bring it back,
+          // since exclusions preempt inclusions
         }
-        // otherwise it's already excluded and nothing will bring it back,
-        // since exclusions preempt inclusions
-      }
-      
-      Package pkg = m.getDeclaringClass().getPackage();
-      String methodName = pkg != null ? pkg.getName() + "." + m.getName() : m.getName();
-      
-      logInclusion(result ? "Including" : "Excluding", "method", methodName + "()");
-//      log(3, result ? "Including method " + methodName + "(): " : "Excluding " + methodName + "(): ");
+      }      
     }    
     
+    Package pkg = m.getDeclaringClass().getPackage();
+    String methodName = pkg != null ? pkg.getName() + "." + m.getName() : m.getName();
+    
+    logInclusion(result ? "Including" : "Excluding", "method", methodName + "()");
+
     return result;
   }
   
@@ -207,9 +207,9 @@ public class XmlMethodSelector implements IMethodSelector {
     return false;
   }
 
-  private List<String> createQualifiedMethodNames(String className, List<String> methods) {
+  private List<String> createQualifiedMethodNames(XmlClass xmlClass, List<String> methods) {
     List<String> vResult = new ArrayList<String>();
-    Class cls = ClassHelper.forName(className);
+    Class cls = xmlClass.getSupportClass();
 
     while (null != cls) {
       for (String methodName : methods) {
