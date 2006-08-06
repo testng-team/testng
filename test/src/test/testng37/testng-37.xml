@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="TESTNG-37 Suite" verbose="2">
+  <test name="TESTNG-57">
+      <parameter name="notnull" value="null"/>
+      <parameter name="nullvalue" value="NULL"/>
+      <packages>
+          <package name="test.testng37" />
+      </packages>
+  </test>
+</suite>

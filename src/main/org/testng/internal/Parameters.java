@@ -26,14 +26,15 @@ import org.testng.xml.XmlSuite;
  * @@ANNOTATIONS@@
  */
 public class Parameters {
-
-  public static Object[] createParameters(Constructor m, 
-      String methodAnnotation, 
-      String[] parameterNames, 
-      Map<String, String> params,
-      XmlSuite xmlSuite) 
+  private static final String NULL_VALUE= "NULL";
+  
+  public static Object[] createParameters(Constructor ctor, 
+                                          String methodAnnotation, 
+                                          String[] parameterNames, 
+                                          Map<String, String> params,
+                                          XmlSuite xmlSuite)
   {
-    return createParameters(m.toString(), m.getParameterTypes(),
+    return createParameters(ctor.toString(), ctor.getParameterTypes(),
         methodAnnotation, parameterNames, params, xmlSuite);
   }
 
@@ -73,13 +74,12 @@ public class Parameters {
    * picked from the property file
    */
   
-  private static Object[] createParameters(
-      String methodName,
-      Object[] parameterTypes, 
-      String methodAnnotation, 
-      String[] parameterNames, 
-      Map<String, String> params,
-      XmlSuite xmlSuite)
+  private static Object[] createParameters(String methodName,
+                                           Class[] parameterTypes,
+                                           String methodAnnotation,
+                                           String[] parameterNames,
+                                           Map<String, String> params,
+                                           XmlSuite xmlSuite)
   {
     Object[] result = new Object[0];
     if(parameterTypes.length > 0) {
@@ -106,7 +106,7 @@ public class Parameters {
               + "\nbut has not been defined in " + xmlSuite.getFileName());
         }
         
-        vResult.add(convertType(parameterTypes[i], value));
+        vResult.add(convertType(parameterTypes[i], value, p));
       }
       
       result = (Object[]) vResult.toArray(new Object[vResult.size()]);
@@ -115,8 +115,16 @@ public class Parameters {
     return result;
   }
 
-  private static Object convertType(Object type, String value) {
+  private static Object convertType(Class type, String value, String paramName) {
     Object result = null;
+    
+    if(NULL_VALUE.equals(value)) {
+      if(type.isPrimitive()) {
+        Utils.log("Parameters", 2, "Attempt to pass null value to primitive type parameter '" + paramName + "'");
+      }
+      
+      return null; // null value must be used
+    }
     
     if(type == String.class) {
       result = value;
