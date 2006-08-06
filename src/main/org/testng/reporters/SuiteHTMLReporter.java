@@ -297,6 +297,7 @@ public class SuiteHTMLReporter implements IReporter {
     long startDate = -1;
     Map<Long, StringBuffer> tables = new HashMap<Long, StringBuffer>();
     sb.append("<br/><em>").append(suite.getName()).append("</em><p/>");
+    sb.append("<small><i>(Hoover the method name to see the test class name)</i></small><p/>\n");
     Collection<ITestNGMethod> invokedMethods = suite.getInvokedMethods();
     
     if (alphabetical) {

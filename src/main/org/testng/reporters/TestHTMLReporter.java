@@ -98,9 +98,8 @@ public class TestHTMLReporter extends TestListenerAdapter {
       ITestNGMethod method = tr.getMethod();
 
       String fqName = tr.getName();
-      sb.append("<td>").append(fqName);
+      sb.append("<td title='").append(tr.getTestClass().getName()).append(".").append(fqName).append("()'>").append(fqName);
       
-      sb.append("<br/>(").append(tr.getTestClass().getName()).append(")");
       // Method description
       if (! Utils.isStringEmpty(method.getDescription())) {
         sb.append("<br/><b>").append(method.getDescription()).append("</b>");
@@ -278,6 +277,7 @@ public class TestHTMLReporter extends TestListenerAdapter {
     .append("</table><p/>\n")
     ;
     
+    sb.append("<small><i>(Hoover the method name to see the test class name)</i></small><p/>\n");
     if (failedTests.size() > 0) {
       generateTable(sb, "FAILED TESTS", failedTests, "failed");
     }
