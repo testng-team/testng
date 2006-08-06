@@ -100,6 +100,7 @@ public class TestHTMLReporter extends TestListenerAdapter {
       String fqName = tr.getName();
       sb.append("<td>").append(fqName);
       
+      sb.append("<br/>(").append(tr.getTestClass().getName()).append(")");
       // Method description
       if (! Utils.isStringEmpty(method.getDescription())) {
         sb.append("<br/><b>").append(method.getDescription()).append("</b>");
