@@ -14,6 +14,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
+import org.testng.TestRunner;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlClass;
@@ -106,6 +107,16 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
         }
       }
       
+      // retrieve also the @Before/After Suite/Test methods
+      // HACK for TESTNG-40
+      if(context instanceof TestRunner) {
+        TestRunner tr= (TestRunner) context;
+        addMethods(methodsToReRun, tr.getBeforeSuiteMethods()); 
+        addMethods(methodsToReRun, tr.getBeforeTestConfigurationMethods());
+        addMethods(methodsToReRun, tr.getAfterTestConfigurationMethods());
+        addMethods(methodsToReRun, tr.getAfterSuiteMethods());
+      }
+      
       //
       // Now we have all the right methods.  Go through the list of
       // all the methods that were run and only pick those that are
@@ -120,6 +131,15 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       }
       
       createXmlTest(context, result);
+    }
+  }
+  
+  private void addMethods(Map<ITestNGMethod, ITestNGMethod> map, ITestNGMethod[] methods) {
+    if(null == methods) {
+      return;
+    }
+    for(ITestNGMethod tm: methods) {
+      map.put(tm, tm);
     }
   }
   
