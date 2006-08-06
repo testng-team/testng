@@ -26,7 +26,7 @@ import org.testng.xml.XmlSuite;
  * @@ANNOTATIONS@@
  */
 public class Parameters {
-  private static final String NULL_VALUE= "NULL";
+  private static final String NULL_VALUE= "null";
   
   public static Object[] createParameters(Constructor ctor, 
                                           String methodAnnotation, 
@@ -118,7 +118,7 @@ public class Parameters {
   private static Object convertType(Class type, String value, String paramName) {
     Object result = null;
     
-    if(NULL_VALUE.equals(value)) {
+    if(NULL_VALUE.equals(value.toLowerCase())) {
       if(type.isPrimitive()) {
         Utils.log("Parameters", 2, "Attempt to pass null value to primitive type parameter '" + paramName + "'");
       }

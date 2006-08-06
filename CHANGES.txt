@@ -1,7 +1,38 @@
-5.1 TODO
+===========================================================================
+5.1
 
-(Introduce ITestFactory, deprecate @Factory
-Introduce Annotation Transformers
+Added: support for specifying test-only classpath (http://forums.opensymphony.com/thread.jspa?messageID=78048&tstart=0)
+Fixed: TESTNG-93 (method selectors filtering @BeforeMethod)
+Fixed: TESTNG-81 (Assert.assertFalse() displays wrong expected, actual value)
+Fixed: TESTNG-59 (multiple method selectors usage results in no tests run)
+Fixed: TESTNG-56 (invocation of @Before/AfterClass methods in parallel/sequential scenarios)
+Fixed: TESTNG-40 (failures suite does not contain @Before/After Suite/Test methods)
+Fixed: TESTNG-37 (allow passing null parameter value from testng.xml)
+Fixed: TESTNG-7 (display classname when hovering method)
+
+
+Eclipse plug-in
+
+Added: run contextual test classes with parameters from suite definition files
+Added: TESTNG-100 (Show HTML reports after running tests)
+Added: TESTNG-84 (plug-in UI for suite option should support absolute path)
+Added: TESTNG-20 (copy stack trace)
+
+Fixed: TESTNG-72 (display groups with non-array values)
+Fixed: TESTNG-64 (Eclipse plug-in applies added groups to all launch configurations)
+Fixed: TESTNG-28 (Cannot select groups from dependent eclipse projects)
+Fixed: TESTNG-25 (do not display fully qualified method name when running contextual test class)
+
+Improved behavior:
+	TESTNG-98 (temporary files have guaranteed fixed names)
+	TESTNG-95 (Assertion failed comparison trims trailing ">")
+	TESTNG-70 (TestNG prevents eclpse from opening an older CVS version of a java class)
+	display of test hierarchy information (TESTNG-29)
+
+
+TODO
+	:Introduce ITestFactory, deprecate @Factory 
+	:Introduce Annotation Transformers
 
 ===========================================================================
 
