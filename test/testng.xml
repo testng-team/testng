@@ -62,7 +62,7 @@
       <class name="test.thread.ThreadPoolSizeTest" />
       <class name="test.simple.IncludedExcludedTest" />
       <class name="test.reports.ReportTest" />
-      <class name="test.output.OutputTest" />
+      <!-- <class name="test.output.OutputTest" /> -->
       <class name="test.configuration.BeforeTestOrderingTest" />
     </classes>
   </test>
