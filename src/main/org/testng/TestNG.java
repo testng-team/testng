@@ -324,10 +324,10 @@ public class TestNG {
       System.out.println("testng.xml from within jar "
                          + jarFile.getAbsolutePath()
                          + " is not well formatted");
-      saxe.printStackTrace();
+      saxe.printStackTrace(System.out);
     }
     catch(ParserConfigurationException pce) {
-      pce.printStackTrace();
+      pce.printStackTrace(System.out);
     }
   }
 
@@ -446,16 +446,16 @@ public class TestNG {
         m_suites.add(s);
       }
       catch(FileNotFoundException e) {
-        e.printStackTrace();
+        e.printStackTrace(System.out);
       }
       catch(IOException e) {
-        e.printStackTrace();
+        e.printStackTrace(System.out);
       }
       catch(ParserConfigurationException e) {
-        e.printStackTrace();
+        e.printStackTrace(System.out);
       }
       catch(SAXException e) {
-        e.printStackTrace();
+        e.printStackTrace(System.out);
       }
     }
   }
@@ -684,7 +684,7 @@ public class TestNG {
           ci.getOos().writeObject(sr);
         }
         catch (ClassNotFoundException e) {
-          e.printStackTrace();
+          e.printStackTrace(System.out);
         }      
         catch(EOFException ex) {
           log("Connection closed " + ex.getMessage());
@@ -697,7 +697,7 @@ public class TestNG {
       }
     }
     catch(IOException ex) {
-      ex.printStackTrace();
+      ex.printStackTrace(System.out);
     }
   }
 
@@ -721,10 +721,10 @@ public class TestNG {
         sockets[i] = new Socket(s[0], Integer.parseInt(s[1]));
       }
       catch (NumberFormatException e) {
-        e.printStackTrace();
+        e.printStackTrace(System.out);
       }
       catch (UnknownHostException e) {
-        e.printStackTrace();
+        e.printStackTrace(System.out);
       }
       catch (IOException e) {
         Utils.error("Couldn't connect to " + host + ": " + e.getMessage());
@@ -738,7 +738,7 @@ public class TestNG {
       m_slavePool.addSlaves(sockets);
     }
     catch (IOException e1) {
-      e1.printStackTrace();
+      e1.printStackTrace(System.out);
     }
 
     //
@@ -810,7 +810,7 @@ public class TestNG {
       executor.awaitTermination(maxTimeOut);
     }
     catch (InterruptedException e) {
-      e.printStackTrace();
+      e.printStackTrace(System.out);
     }
     
     //
@@ -894,7 +894,7 @@ public class TestNG {
         result.setHost(InetAddress.getLocalHost() + ":" + m_clientPort);
       }
       catch (UnknownHostException e) {
-        e.printStackTrace();
+        e.printStackTrace(System.out);
       }
     }
 
@@ -1002,7 +1002,7 @@ public class TestNG {
     }
     catch(TestNGException ex) {
       if (TestRunner.getVerbose() > 1) {
-        ex.printStackTrace();
+        ex.printStackTrace(System.out);
       }
       else {
         System.err.println("[ERROR]: " + ex.getMessage());
