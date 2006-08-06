@@ -31,14 +31,14 @@ public class TestMethodWorker implements Runnable {
   private ClassMethodMap m_classMethodMap = null;
   
   public TestMethodWorker(IInvoker invoker, 
-      ITestNGMethod[] testMethods,
-      XmlSuite suite,
-      Map<String, String> parameters,
-      Map<ITestClass, ITestClass> invokedBeforeClassMethods,
-      Map<ITestClass, ITestClass> invokedAfterClassMethods,
-      ITestNGMethod[] allTestMethods,
-      ConfigurationGroupMethods groupMethods,
-      ClassMethodMap classMethodMap)
+                          ITestNGMethod[] testMethods,
+                          XmlSuite suite,
+                          Map<String, String> parameters,
+                          Map<ITestClass, ITestClass> invokedBeforeClassMethods,
+                          Map<ITestClass, ITestClass> invokedAfterClassMethods,
+                          ITestNGMethod[] allTestMethods,
+                          ConfigurationGroupMethods groupMethods,
+                          ClassMethodMap classMethodMap)
   {
     m_invoker = invoker;
     m_testMethods = testMethods;
@@ -88,13 +88,21 @@ public class TestMethodWorker implements Runnable {
       // Invoke the before class methods if not done already
       //
       ITestClass testClass = tm.getTestClass();
-      if (! m_invokedBeforeClassMethods.containsKey(testClass)) {  
+      
+      boolean invokeBefore= false;
+      synchronized(m_invokedBeforeClassMethods) {
+        if (! m_invokedBeforeClassMethods.containsKey(testClass)) {  
+          m_invokedBeforeClassMethods.put(testClass, testClass);
+          invokeBefore= true;
+        }
+      }
+
+      if(invokeBefore) {
         m_invoker.invokeConfigurations(testClass,
             testClass.getBeforeClassMethods(),
             m_suite,
             m_parameters,
             null /* instance */);
-        m_invokedBeforeClassMethods.put(testClass, testClass);
       }
 
       //
@@ -106,9 +114,13 @@ public class TestMethodWorker implements Runnable {
       // several times and these methods are run in parallel, the results
       // are unpredictable...  Need to think about this more (and make it
       // more efficient)
-      List<ITestResult> testResults = 
-        m_invoker.invokeTestMethods(tm, m_suite, m_parameters, 
-            m_allTestMethods, indexOf(tm, m_allTestMethods), m_groupMethods);
+      List<ITestResult> testResults = m_invoker.invokeTestMethods(tm, 
+          m_suite, 
+          m_parameters, 
+          m_allTestMethods, 
+          indexOf(tm, m_allTestMethods), 
+          m_groupMethods);
+      
       if (testResults != null) {
         m_testResults.addAll(testResults);        
       }
@@ -117,15 +129,22 @@ public class TestMethodWorker implements Runnable {
       // Invoke after class methods if this test method is the last one
       // on this class
       //
-      if (m_classMethodMap.removeAndCheckIfLast(tm) &&
-          ! m_invokedAfterClassMethods.containsKey(testClass))
-      {
-        m_invoker.invokeConfigurations(testClass,
-            testClass.getAfterClassMethods(),
-            m_suite,
-            m_parameters,
-            null /* instance */);
-        m_invokedAfterClassMethods.put(testClass, testClass);        
+      if (m_classMethodMap.removeAndCheckIfLast(tm)) {
+        boolean invokeAfter= false;
+        synchronized(m_invokedAfterClassMethods) {
+          if (! m_invokedAfterClassMethods.containsKey(testClass)) {
+            m_invokedAfterClassMethods.put(testClass, testClass);
+            invokeAfter= true;
+          }
+        }
+        
+        if(invokeAfter) {
+          m_invoker.invokeConfigurations(testClass,
+              testClass.getAfterClassMethods(),
+              m_suite,
+              m_parameters,
+              null /* instance */);
+        }
       }
     }
   }

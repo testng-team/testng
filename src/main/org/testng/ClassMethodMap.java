@@ -32,7 +32,7 @@ public class ClassMethodMap {
    * Remove the method from this map and returns true if it is the last
    * of its class.
    */
-  public boolean removeAndCheckIfLast(ITestNGMethod m) {
+  public synchronized boolean removeAndCheckIfLast(ITestNGMethod m) {
     Class c = getMethodClass(m);
     List<ITestNGMethod> l = m_classMap.get(c);
     l.remove(m);

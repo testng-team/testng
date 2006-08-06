@@ -20,7 +20,6 @@ import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.InvokedMethod;
 import org.testng.internal.Invoker;
 import org.testng.internal.MethodHelper;
-import org.testng.internal.PackageUtils;
 import org.testng.internal.ResultMap;
 import org.testng.internal.RunInfo;
 import org.testng.internal.TestMethodWorker;
@@ -618,10 +617,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     
     // These two variables are used throughout the workers to keep track
     // of what beforeClass/afterClass methods have been invoked
-    Map<ITestClass, ITestClass> beforeClassMethods =
-      new HashMap<ITestClass, ITestClass>();
-    Map<ITestClass, ITestClass> afterClassMethods =
-      new HashMap<ITestClass, ITestClass>();
+    Map<ITestClass, ITestClass> beforeClassMethods = new HashMap<ITestClass, ITestClass>();
+    Map<ITestClass, ITestClass> afterClassMethods = new HashMap<ITestClass, ITestClass>();
     
     ClassMethodMap cmm = new ClassMethodMap(m_allTestMethods);
     
@@ -629,11 +626,11 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     // will be invoked sequentially
     if (sequentialList.size() > 0) {
       workers.add(new TestMethodWorker(m_invoker,
-                                       sequentialList.toArray(new ITestNGMethod[sequentialList
-                                                              .size()]),
+                                       sequentialList.toArray(new ITestNGMethod[sequentialList.size()]),
                                        m_xmlTest.getSuite(),
                                        params,
-                                       beforeClassMethods, afterClassMethods,
+                                       beforeClassMethods, 
+                                       afterClassMethods,
                                        m_allTestMethods,
                                        m_groupMethods,
                                        cmm));
@@ -647,7 +644,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
                                          new ITestNGMethod[] { tm },
                                          m_xmlTest.getSuite(),
                                          params,
-                                         beforeClassMethods, afterClassMethods,
+                                         beforeClassMethods, 
+                                         afterClassMethods,
                                          m_allTestMethods,
                                          m_groupMethods,
                                          cmm));
