@@ -88,21 +88,18 @@ public class TestMethodWorker implements Runnable {
       // Invoke the before class methods if not done already
       //
       ITestClass testClass = tm.getTestClass();
-      
-      boolean invokeBefore= false;
+
+      // the whole invocation must be synchronized as other threads must
+      // get a full initialized test object (not the same for @After)
       synchronized(m_invokedBeforeClassMethods) {
         if (! m_invokedBeforeClassMethods.containsKey(testClass)) {  
           m_invokedBeforeClassMethods.put(testClass, testClass);
-          invokeBefore= true;
+          m_invoker.invokeConfigurations(testClass,
+              testClass.getBeforeClassMethods(),
+              m_suite,
+              m_parameters,
+              null /* instance */);
         }
-      }
-
-      if(invokeBefore) {
-        m_invoker.invokeConfigurations(testClass,
-            testClass.getBeforeClassMethods(),
-            m_suite,
-            m_parameters,
-            null /* instance */);
       }
 
       //
