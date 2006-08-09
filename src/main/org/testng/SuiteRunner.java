@@ -186,9 +186,9 @@ public class SuiteRunner implements ISuite, Serializable {
 
   private void privateRun() {
     
-    
-    Map<Method, ITestNGMethod> beforeSuiteMethods = new HashMap<Method, ITestNGMethod>();
-    Map<Method, ITestNGMethod> afterSuiteMethods = new HashMap<Method, ITestNGMethod>();
+    List<ITestNGMethod> beforeSuiteMethods = new ArrayList<ITestNGMethod>();
+    List<ITestNGMethod> afterSuiteMethods = new ArrayList<ITestNGMethod>();
+//    Map<Method, ITestNGMethod> afterSuiteMethods = new HashMap<Method, ITestNGMethod>();
 
     IInvoker invoker = null;
 
@@ -210,12 +210,14 @@ public class SuiteRunner implements ISuite, Serializable {
       // TODO: Code smell.  Invoker should belong to SuiteRunner, not TestRunner
       // -- cbeust
       invoker = tr.getInvoker();
-
+      
       for (ITestNGMethod m : tr.getBeforeSuiteMethods()) {
-        beforeSuiteMethods.put(m.getMethod(), m);
+        beforeSuiteMethods.add(m);
       }
+
       for (ITestNGMethod m : tr.getAfterSuiteMethods()) {
-        afterSuiteMethods.put(m.getMethod(), m);
+        afterSuiteMethods.add(m);
+//        afterSuiteMethods.put(m.getMethod(), m);
       }
     }
 
@@ -223,7 +225,7 @@ public class SuiteRunner implements ISuite, Serializable {
     // Invoke beforeSuite methods
     //
     invoker.invokeConfigurations(null,
-        beforeSuiteMethods.values().toArray(new ITestNGMethod[beforeSuiteMethods.size()]),
+        beforeSuiteMethods.toArray(new ITestNGMethod[beforeSuiteMethods.size()]),
         m_suite, m_suite.getParameters(),
         null /* instance */
     );
@@ -252,7 +254,8 @@ public class SuiteRunner implements ISuite, Serializable {
     // Invoke afterSuite methods
     //
     invoker.invokeConfigurations(null,
-        afterSuiteMethods.values().toArray(new ITestNGMethod[afterSuiteMethods.size()]),
+        afterSuiteMethods.toArray(new ITestNGMethod[afterSuiteMethods.size()]),        
+//        afterSuiteMethods.values().toArray(new ITestNGMethod[afterSuiteMethods.size()]),
         m_suite, m_suite.getAllParameters(),
         null /* instance */);
 

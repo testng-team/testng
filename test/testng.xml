@@ -64,6 +64,8 @@
       <class name="test.reports.ReportTest" />
       <!-- <class name="test.output.OutputTest" /> -->
       <class name="test.configuration.BeforeTestOrderingTest" />
+      <class name="test.configuration.SuiteTest" />
+      <class name="test.configuration.VerifySuiteTest" />
     </classes>
   </test>
   

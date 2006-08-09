@@ -1,6 +1,7 @@
 ===========================================================================
 5.1
 
+Fixed: TESTNG-102 (Incorrect ordering of @BeforeMethod calls when a dependency is specified)
 Added: support for specifying test-only classpath (http://forums.opensymphony.com/thread.jspa?messageID=78048&tstart=0)
 Fixed: TESTNG-93 (method selectors filtering @BeforeMethod)
 Fixed: TESTNG-81 (Assert.assertFalse() displays wrong expected, actual value)
