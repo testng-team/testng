@@ -2,14 +2,12 @@ package org.testng;
 
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +16,6 @@ import org.testng.internal.Utils;
 import org.testng.internal.annotations.AnnotationConfiguration;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.reporters.ExitCodeListener;
-import org.testng.reporters.FailedReporter;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
 import org.testng.reporters.TextReporter;
@@ -186,9 +183,9 @@ public class SuiteRunner implements ISuite, Serializable {
 
   private void privateRun() {
     
-    List<ITestNGMethod> beforeSuiteMethods = new ArrayList<ITestNGMethod>();
-    List<ITestNGMethod> afterSuiteMethods = new ArrayList<ITestNGMethod>();
-//    Map<Method, ITestNGMethod> afterSuiteMethods = new HashMap<Method, ITestNGMethod>();
+    // HINT: Map for unicitity, Linked: for guaranteed order
+    Map<Method, ITestNGMethod> beforeSuiteMethods= new LinkedHashMap<Method, ITestNGMethod>();
+    Map<Method, ITestNGMethod> afterSuiteMethods = new LinkedHashMap<Method, ITestNGMethod>();
 
     IInvoker invoker = null;
 
@@ -212,12 +209,11 @@ public class SuiteRunner implements ISuite, Serializable {
       invoker = tr.getInvoker();
       
       for (ITestNGMethod m : tr.getBeforeSuiteMethods()) {
-        beforeSuiteMethods.add(m);
+        beforeSuiteMethods.put(m.getMethod(), m);
       }
 
       for (ITestNGMethod m : tr.getAfterSuiteMethods()) {
-        afterSuiteMethods.add(m);
-//        afterSuiteMethods.put(m.getMethod(), m);
+        afterSuiteMethods.put(m.getMethod(), m);
       }
     }
 
@@ -225,7 +221,7 @@ public class SuiteRunner implements ISuite, Serializable {
     // Invoke beforeSuite methods
     //
     invoker.invokeConfigurations(null,
-        beforeSuiteMethods.toArray(new ITestNGMethod[beforeSuiteMethods.size()]),
+        beforeSuiteMethods.values().toArray(new ITestNGMethod[beforeSuiteMethods.size()]),
         m_suite, m_suite.getParameters(),
         null /* instance */
     );
@@ -254,8 +250,7 @@ public class SuiteRunner implements ISuite, Serializable {
     // Invoke afterSuite methods
     //
     invoker.invokeConfigurations(null,
-        afterSuiteMethods.toArray(new ITestNGMethod[afterSuiteMethods.size()]),        
-//        afterSuiteMethods.values().toArray(new ITestNGMethod[afterSuiteMethods.size()]),
+        afterSuiteMethods.values().toArray(new ITestNGMethod[afterSuiteMethods.size()]),
         m_suite, m_suite.getAllParameters(),
         null /* instance */);
 
