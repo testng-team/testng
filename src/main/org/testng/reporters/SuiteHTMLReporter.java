@@ -227,16 +227,16 @@ public class SuiteHTMLReporter implements IReporter {
     sb.append("<hr width='100%'/>")
     .append("<h3>").append(cls.getRealClass().getName()).append("</h3>\n");
 
-    sb.append("<p>").append(SP3).append("Test methods\n")
-      .append(dumpMethods(cls.getTestMethods())).append("</p>\n")
-      .append("<p>").append(SP3).append("@BeforeClass\n") 
-      .append(dumpMethods(cls.getBeforeClassMethods())).append("</p>\n")
-      .append("<p>").append(SP3).append("@BeforeMethod\n") 
-      .append(dumpMethods(cls.getBeforeTestMethods())).append("</p>\n")
-      .append("<p>").append(SP3).append("@AfterMethod\n") 
-      .append(dumpMethods(cls.getAfterTestMethods())).append("</p>\n")
-      .append("<p>").append(SP3).append("@AfterClass\n") 
-      .append(dumpMethods(cls.getAfterClassMethods())).append("</p>\n")
+    sb.append("<div>").append(SP3).append("Test methods\n")
+      .append(dumpMethods(cls.getTestMethods())).append("</div>\n")
+      .append("<div>").append(SP3).append("@BeforeClass\n") 
+      .append(dumpMethods(cls.getBeforeClassMethods())).append("</div>\n")
+      .append("<div>").append(SP3).append("@BeforeMethod\n") 
+      .append(dumpMethods(cls.getBeforeTestMethods())).append("</div>\n")
+      .append("<div>").append(SP3).append("@AfterMethod\n") 
+      .append(dumpMethods(cls.getAfterTestMethods())).append("</div>\n")
+      .append("<div>").append(SP3).append("@AfterClass\n") 
+      .append(dumpMethods(cls.getAfterClassMethods())).append("</div>\n")
      ;
     
     String result = sb.toString();
