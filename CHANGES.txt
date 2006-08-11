@@ -17,6 +17,7 @@ Eclipse plug-in
 
 Added: run contextual test classes with parameters from suite definition files
 Added: TESTNG-100 (Show HTML reports after running tests)
+Added: TESTNG-97 (Double click top stack to raise comparison)
 Added: TESTNG-84 (plug-in UI for suite option should support absolute path)
 Added: TESTNG-20 (copy stack trace)
 
