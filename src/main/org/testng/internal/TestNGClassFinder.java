@@ -153,6 +153,13 @@ public class TestNGClassFinder extends BaseClassFinder {
 	  Class[] allAnnotations= AnnotationHelper.getAllAnnotations();
 	  
 	    for(Class annotation : allAnnotations) {
+          // Try on the methods
+          for(Method m : cls.getMethods()) {
+            IAnnotation ma= annotationFinder.findAnnotation(m, annotation);
+            if(null != ma) {
+              return true;
+            }
+          }
 
 	      // Try on the class
 	      IAnnotation a= annotationFinder.findAnnotation(cls, annotation);
@@ -164,14 +171,6 @@ public class TestNGClassFinder extends BaseClassFinder {
 	      for(Constructor ctor : cls.getConstructors()) {
 	        IAnnotation ca= annotationFinder.findAnnotation(ctor, annotation);
 	        if(null != ca) {
-	          return true;
-	        }
-	      }
-
-	      // Try on the methods
-	      for(Method m : cls.getMethods()) {
-	        IAnnotation ma= annotationFinder.findAnnotation(m, annotation);
-	        if(null != ma) {
 	          return true;
 	        }
 	      }

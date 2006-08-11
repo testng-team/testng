@@ -143,13 +143,14 @@ public class AnnotationHelper {
   }
 
   private static Class[] ALL_ANNOTATIONS = new Class[] { 
-    IConfiguration.class, IDataProvider.class, IExpectedExceptions.class, 
-    IFactory.class, IParameters.class, ITest.class,
+    ITest.class, IConfiguration.class, 
+    IBeforeClass.class, IAfterClass.class,
+    IBeforeMethod.class, IAfterMethod.class,
+    IDataProvider.class, IExpectedExceptions.class, 
+    IFactory.class, IParameters.class, 
     IBeforeSuite.class, IAfterSuite.class,
     IBeforeTest.class, IAfterTest.class,
     IBeforeGroups.class, IAfterGroups.class,
-    IBeforeClass.class, IAfterClass.class,
-    IBeforeMethod.class, IAfterMethod.class,
   };
   
   public static Class[] CONFIGURATION_CLASSES = new Class[] {
