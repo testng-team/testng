@@ -23,7 +23,8 @@ import org.testng.TestNGCommandLineArgs;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class PackageUtils {
-
+  private static String[] s_testClassPaths;
+  
   /**
    *
    * @param packageName
@@ -90,16 +91,49 @@ public class PackageUtils {
     return result;
   }
 
+  private static String[] getTestClasspath() {
+    if(null != s_testClassPaths) {
+      return s_testClassPaths;
+    }
+    
+    String testClasspath= System.getProperty(TestNGCommandLineArgs.TEST_CLASSPATH);
+    if(null == testClasspath) {
+      return null;
+    }
+    
+    String[] classpathFragments= Utils.split(testClasspath, File.pathSeparator);
+    s_testClassPaths= new String[classpathFragments.length];
+    
+    for(int i= 0; i < classpathFragments.length; i++)  {
+      String path= null;
+      if(classpathFragments[i].toLowerCase().endsWith(".jar") || classpathFragments[i].toLowerCase().endsWith(".zip")) {
+        path= classpathFragments[i] + "!/";
+      }
+      else {
+        if(classpathFragments[i].endsWith(File.separator)) {
+          path= classpathFragments[i];
+        }
+        else {
+          path= classpathFragments[i] + "/";
+        }
+      }
+      
+      s_testClassPaths[i]= path.replace('\\', '/');
+    }
+    
+    return s_testClassPaths;
+  }
+  
   /**
    * @param url
    * @return
    */
   private static boolean matchTestClasspath(URL url, String lastFragment, boolean recursive) {
-    String testClasspath= System.getProperty(TestNGCommandLineArgs.TEST_CLASSPATH);
-    if(null == testClasspath) {
+    String[] classpathFragments= getTestClasspath();
+    if(null == classpathFragments) {
       return true;
     }
-    String[] classpathFragments= Utils.split(testClasspath, File.pathSeparator);
+    
     String protocol = url.getProtocol();
     String fileName= null;
     try {
@@ -108,20 +142,16 @@ public class PackageUtils {
     catch(UnsupportedEncodingException ueex) {
       ; // ignore. should never happen
     }
+    
     for(String classpathFrag: classpathFragments) {
-      String path= null;
-      if(classpathFrag.toLowerCase().endsWith(".jar") || classpathFrag.toLowerCase().endsWith(".zip")) {
-        path= classpathFrag + "!/" + lastFragment;
+      String path=  classpathFrag + lastFragment;
+      int idx= fileName.indexOf(path);
+      if((idx == -1) || (idx > 0 && fileName.charAt(idx-1) != '/')) {
+        continue;
       }
-      else {
-        if(classpathFrag.endsWith(File.separator)) {
-          path= classpathFrag + lastFragment;
-        }
-        else {
-          path= classpathFrag + "/" + lastFragment;
-        }
-      }
-      if(fileName.endsWith(path) || (recursive && fileName.indexOf(path) != -1)) {
+      
+      if(fileName.endsWith(classpathFrag + lastFragment) 
+          || (recursive && fileName.charAt(idx + path.length()) == '/')) {
         return true;
       }
     }
