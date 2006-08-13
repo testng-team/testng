@@ -237,11 +237,14 @@ public class SuiteRunner implements ISuite, Serializable {
                                    tr.getBeforeTestConfigurationMethods(),
                                    m_suite, parameters,
                                    null /* instance */);
+      
       tr.run();
+      
       tr.getInvoker().invokeConfigurations(null,
                                    tr.getAfterTestConfigurationMethods(),
                                    m_suite, parameters,
                                    null /* instance */);
+
       ISuiteResult sr = new SuiteResult(m_suite, tr);
       m_suiteResults.put(tr.getName(), sr);
     }
@@ -253,7 +256,6 @@ public class SuiteRunner implements ISuite, Serializable {
         afterSuiteMethods.values().toArray(new ITestNGMethod[afterSuiteMethods.size()]),
         m_suite, m_suite.getAllParameters(),
         null /* instance */);
-
   }
 
   /**
@@ -294,7 +296,7 @@ public class SuiteRunner implements ISuite, Serializable {
       for (ITestNGMethod m : methods) {
         String[] groups = m.getGroups();
         for (String groupName : groups) {
-          Collection testMethods = result.get(groupName);
+          Collection<ITestNGMethod> testMethods = result.get(groupName);
           if (null == testMethods) {
             testMethods = new ArrayList<ITestNGMethod>();
             result.put(groupName, testMethods);
@@ -323,22 +325,13 @@ public class SuiteRunner implements ISuite, Serializable {
   
   private Collection<ITestNGMethod> getIncludedOrExcludedMethods(boolean included) {
     List<ITestNGMethod> result= new ArrayList<ITestNGMethod>();
-//    Map<ITestNGMethod, ITestNGMethod> seen= 
-//    new HashMap<ITestNGMethod, ITestNGMethod>();
 
     for (TestRunner tr : m_testRunners) {
-      Collection<ITestNGMethod> methods = 
-        included ? tr.getInvokedMethods() : tr.getExcludedMethods();
+      Collection<ITestNGMethod> methods = included ? tr.getInvokedMethods() : tr.getExcludedMethods();
       for (ITestNGMethod m : methods) {
         result.add(m);
-//        if (!seen.containsKey(m)) {
-//          seen.put(m, m);
-//          result.add(m);
-//        }
       }
     }
-
-//    Collections.sort(result, TestNGMethod.DATE_COMPARATOR);
 
     return result;
   }

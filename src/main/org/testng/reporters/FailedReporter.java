@@ -31,7 +31,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
   public static final String TESTNG_FAILED_XML = "testng-failed.xml";
   
   private XmlSuite m_xmlSuite;
-  
+
   public FailedReporter() {
   }
 
@@ -50,12 +50,22 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     failedSuite.setName("Failed suite [" + xmlSuite.getName() + "]");
     m_xmlSuite= failedSuite;
 
+    Map<String, XmlTest> xmlTests= new HashMap<String, XmlTest>();
+    for(XmlTest xmlT: xmlSuite.getTests()) {
+      xmlTests.put(xmlT.getName(), xmlT);
+    }
+    
     Map<String, ISuiteResult> results= suite.getResults();
     
     for(String name: results.keySet()) {
       ISuiteResult suiteResult= results.get(name);
       ITestContext testContext= suiteResult.getTestContext();
-      generateXmlTest(testContext, testContext.getFailedTests().getAllResults(), testContext.getSkippedTests().getAllResults());
+
+      generateXmlTest(suite, 
+                      xmlTests.get(testContext.getName()), 
+                      testContext, 
+                      testContext.getFailedTests().getAllResults(), 
+                      testContext.getSkippedTests().getAllResults());
     }
    
     Utils.writeFile(outputDir, TESTNG_FAILED_XML, failedSuite.toXml());
@@ -80,7 +90,11 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
 //    List<ITestResult> skippedTests = getSkippedTests();
   }
   
-  private void generateXmlTest(ITestContext context, Collection<ITestResult> failedTests, Collection<ITestResult> skippedTests) {
+  private void generateXmlTest(ISuite suite, 
+                               XmlTest xmlTest, 
+                               ITestContext context, 
+                               Collection<ITestResult> failedTests, 
+                               Collection<ITestResult> skippedTests) {
     // Note:  we can have skipped tests and no failed tests
     // if a method depends on nonexistent groups
     if (skippedTests.size() > 0 || failedTests.size() > 0) {
@@ -120,19 +134,16 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
         }
       }
 
-      // retrieve also the @Before/After Suite/Test methods
-      // HACK for TESTNG-40
-      if(context instanceof TestRunner) {
-        TestRunner tr= (TestRunner) context;
-
-        addMethods(result, tr.getBeforeSuiteMethods());
-        addMethods(result, tr.getBeforeTestConfigurationMethods());
-        addMethods(result, tr.getAfterTestConfigurationMethods());
-        addMethods(result, tr.getAfterSuiteMethods());
+      methodsToReRun.clear();
+      Collection<ITestNGMethod> invoked= suite.getInvokedMethods();
+      for(ITestNGMethod tm: invoked) {
+        if(!tm.isTest()) {
+          methodsToReRun.put(tm, tm);
+        }
       }
       
-
-      createXmlTest(context, result);
+      result.addAll(methodsToReRun.keySet());
+      createXmlTest(context, result, xmlTest);
     }
   }
   
@@ -145,22 +156,18 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     }
   }
   
-  private void addMethods(List<ITestNGMethod> result, ITestNGMethod[] methods) {
-    if(null == methods) {
-      return;
-    }
-    for(ITestNGMethod tm: methods) {
-      result.add(tm);
-      System.out.println("Adding @Before/@After:" + tm.getMethod());
-    }
-  }
-  
   /**
    * Generate testng-failed.xml
    */
-  private void createXmlTest(ITestContext context, List<ITestNGMethod> methods) {
+  private void createXmlTest(ITestContext context, List<ITestNGMethod> methods, XmlTest srcXmlTest) {
     XmlTest xmlTest = new XmlTest(m_xmlSuite);
     xmlTest.setName(context.getName() + "(failed)");
+    xmlTest.setAnnotations(srcXmlTest.getAnnotations());
+    xmlTest.setBeanShellExpression(srcXmlTest.getExpression());
+    xmlTest.setIncludedGroups(srcXmlTest.getIncludedGroups());
+    xmlTest.setExcludedGroups(srcXmlTest.getExcludedGroups());
+    xmlTest.setParallel(srcXmlTest.isParallel());
+    xmlTest.setParameters(srcXmlTest.getParameters());
     List<XmlClass> xmlClasses = createXmlClasses(methods);
     xmlTest.setXmlClasses(xmlClasses);
   }
@@ -181,7 +188,6 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       if (null == methodList) {
         methodList = new ArrayList<String>();
         map.put(className, methodList);
-        System.out.println("Added class:" + className);
       }
       methodList.add(method);
     }
