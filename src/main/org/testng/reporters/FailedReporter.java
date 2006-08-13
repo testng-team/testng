@@ -107,16 +107,6 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
         }
       }
       
-      // retrieve also the @Before/After Suite/Test methods
-      // HACK for TESTNG-40
-      if(context instanceof TestRunner) {
-        TestRunner tr= (TestRunner) context;
-        addMethods(methodsToReRun, tr.getBeforeSuiteMethods()); 
-        addMethods(methodsToReRun, tr.getBeforeTestConfigurationMethods());
-        addMethods(methodsToReRun, tr.getAfterTestConfigurationMethods());
-        addMethods(methodsToReRun, tr.getAfterSuiteMethods());
-      }
-      
       //
       // Now we have all the right methods.  Go through the list of
       // all the methods that were run and only pick those that are
@@ -129,7 +119,19 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
           result.add(m);
         }
       }
+
+      // retrieve also the @Before/After Suite/Test methods
+      // HACK for TESTNG-40
+      if(context instanceof TestRunner) {
+        TestRunner tr= (TestRunner) context;
+
+        addMethods(result, tr.getBeforeSuiteMethods());
+        addMethods(result, tr.getBeforeTestConfigurationMethods());
+        addMethods(result, tr.getAfterTestConfigurationMethods());
+        addMethods(result, tr.getAfterSuiteMethods());
+      }
       
+
       createXmlTest(context, result);
     }
   }
@@ -140,6 +142,16 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     }
     for(ITestNGMethod tm: methods) {
       map.put(tm, tm);
+    }
+  }
+  
+  private void addMethods(List<ITestNGMethod> result, ITestNGMethod[] methods) {
+    if(null == methods) {
+      return;
+    }
+    for(ITestNGMethod tm: methods) {
+      result.add(tm);
+      System.out.println("Adding @Before/@After:" + tm.getMethod());
     }
   }
   
@@ -169,6 +181,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       if (null == methodList) {
         methodList = new ArrayList<String>();
         map.put(className, methodList);
+        System.out.println("Added class:" + className);
       }
       methodList.add(method);
     }
