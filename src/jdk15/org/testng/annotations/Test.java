@@ -128,7 +128,7 @@ public @interface Test {
    * If set to true, all the methods on this test class are guaranteed to run
    * sequentially, even if the tests are currently being run with parallel="true".
    * 
-   * This attribute can only be used at the class level and it will be ignored
+   * This attribute can only be used at the class level and will be ignored
    * if used at the method level. 
    */
   public boolean sequential() default false;
