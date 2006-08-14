@@ -19,6 +19,7 @@ public class TestAnnotation extends TestOrConfiguration implements ITest {
   private Class[] m_expectedExceptions = {};
   private String m_suiteName = TestNG.DEFAULT_SUITE_NAME;
   private String m_testName = TestNG.DEFAULT_TEST_NAME;
+  private boolean m_sequential = false;
 
   /**
    * @return the expectedExceptions
@@ -96,6 +97,14 @@ public class TestAnnotation extends TestOrConfiguration implements ITest {
 
   public void setTestName(String xmlTest) {
     m_testName = xmlTest;
+  }
+  
+  public boolean getSequential() {
+    return m_sequential;
+  }
+  
+  public void setSequential(boolean sequential) {
+    m_sequential = sequential;
   }
   
 }

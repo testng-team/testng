@@ -123,5 +123,14 @@ public @interface Test {
    * attribute is ignore if @Test is not at the class level.
    */
   public String testName() default TestNG.DEFAULT_TEST_NAME;
+  
+  /**
+   * If set to true, all the methods on this test class are guaranteed to run
+   * sequentially, even if the tests are currently being run with parallel="true".
+   * 
+   * This attribute can only be used at the class level and it will be ignored
+   * if used at the method level. 
+   */
+  public boolean sequential() default false;
 
 }

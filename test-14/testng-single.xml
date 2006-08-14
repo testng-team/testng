@@ -5,11 +5,10 @@ thread-count="2" annotations="javadoc">
 
    <test name="Regression2">
     <classes>
-      <class name="test.reports.ReportTest" />
 <!--
-      <class name="test.mannotation.MAnnotationSampleTest" />
-      <class name="test.expectedexceptions.SampleExceptions2" />
--->
+      <class name="test.thread.SequentialSampleTest" />
+      -->
+      <class name="test.thread.SequentialTest" />
     </classes>
    </test>
 

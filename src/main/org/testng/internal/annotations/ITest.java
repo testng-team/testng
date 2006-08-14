@@ -12,60 +12,62 @@ public interface ITest extends ITestOrConfiguration {
    * If it hasn't returned after this time, it will be marked as a FAIL.
    * @return the maximum number of milliseconds this test should take.
    */
-  long getTimeOut();
+  public long getTimeOut();
   
   /**
    * Returns the number of times this method should be invoked.
    * @return the number of times this method should be invoked.
    */
-  int getInvocationCount();
+  public int getInvocationCount();
   
   /**
    * The size of the thread pool for this method.  The method will be invoked
    * from multiple threads as specified by invocationCount.
    * Note:  this attribute is ignored if invocationCount is not specified
    */
-  int getThreadPoolSize();
+  public int getThreadPoolSize();
   
   /**
    * The percentage of success expected from this method.
    */
-  int getSuccessPercentage();
+  public int getSuccessPercentage();
   
   /**
    * The name of the data provider for this test method.
    * @see org.testng.annotations.DataProvider#DataProvider
    */
-  String getDataProvider();
+  public String getDataProvider();
   
   /**
    * If set to true, this test method will always be run even if it depends
    * on a method that failed.  This attribute will be ignored if this test
    * doesn't depend on any method or group.
    */
-  boolean getAlwaysRun();
+  public boolean getAlwaysRun();
 
-  String[] getGroups();
+  public String[] getGroups();
 
-  boolean getEnabled();
+  public boolean getEnabled();
 
-  void setDependsOnGroups(String[] dependsOnGroups);
+  public void setDependsOnGroups(String[] dependsOnGroups);
 
-  void setDependsOnMethods(String[] dependsOnMethods);
+  public void setDependsOnMethods(String[] dependsOnMethods);
 
-  void setEnabled(boolean enabled);
+  public void setEnabled(boolean enabled);
 
-  void setGroups(String[] groups);
+  public void setGroups(String[] groups);
 
-  String[] getDependsOnGroups();
+  public String[] getDependsOnGroups();
 
-  String[] getDependsOnMethods();
+  public String[] getDependsOnMethods();
 
-  String getDescription();
+  public String getDescription();
  
   public Class[] getExpectedExceptions();
   
   public String getSuiteName();
   
   public String getTestName();
+  
+  public boolean getSequential();
 }

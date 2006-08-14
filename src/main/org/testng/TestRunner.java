@@ -744,6 +744,26 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
 
     for (int i= m_allTestMethods.length - 1; i >= 0; i--) {
       ITestNGMethod tm= m_allTestMethods[i];
+      
+      //
+      // If the class this method belongs to has @Test(sequential = true), we
+      // put this method in the sequential list right away
+      //
+      Class cls = tm.getMethod().getDeclaringClass();
+      org.testng.internal.annotations.ITest test = 
+        (org.testng.internal.annotations.ITest) m_annotationFinder.
+          findAnnotation(cls, org.testng.internal.annotations.ITest.class);
+      if (test != null) {
+        if (test.getSequential()) {
+          sequentialList.add(0, tm);
+          continue;
+        }
+      }
+      
+      //
+      // Otherwise, determine if it depends on other methods/groups or if
+      // it is depended upon
+      //
       String[] currentGroups = tm.getGroups();
       String[] currentGroupsDependedUpon= tm.getGroupsDependedUpon();
       String[] currentMethodsDependedUpon= tm.getMethodsDependedUpon();
