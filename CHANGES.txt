@@ -35,7 +35,7 @@ Fixed: TESTNG-25 (do not display fully qualified method name when running contex
 Improved behavior:
 	TESTNG-98 (temporary files have guaranteed fixed names)
 	TESTNG-95 (Assertion failed comparison trims trailing ">")
-	TESTNG-70 (TestNG prevents eclpse from opening an older CVS version of a java class)
+	TESTNG-70 (TestNG prevents eclipse from opening an older CVS version of a java class)
 	display of test hierarchy information (TESTNG-29)
 
 ===========================================================================
