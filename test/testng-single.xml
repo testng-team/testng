@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="Single" verbose="3" parallel="true" thread-count="5" >
+<suite name="Single" verbose="3" parallel="false" thread-count="2" >
   
   <test name="TestSingle">
 <!--
@@ -10,6 +10,9 @@
       </run>
     </groups>
       <class name="test.configuration.ExternalConfigurationClass"/>
+      <class name="test.thread.SequentialSampleTest" />
+      <class name="test.thread.SequentialSample2Test" />
+      <class name="test.thread.SequentialSample3Test" />
 -->
     <classes>
       <class name="test.thread.SequentialTest" />

@@ -598,7 +598,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     //
     // Calculate the lists of tests that can be run in sequence and in parallel
     //
-    List<ITestNGMethod> sequentialList= new ArrayList<ITestNGMethod>();
+    List<List<ITestNGMethod>> sequentialList= new ArrayList<List<ITestNGMethod>>();
     List<ITestNGMethod> parallelList= new ArrayList<ITestNGMethod>();
 
     computeTestLists(sequentialList, parallelList);
@@ -625,18 +625,20 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     // All the sequential tests are place in one worker, guaranteeing they
     // will be invoked sequentially
     if (sequentialList.size() > 0) {
-      workers.add(new TestMethodWorker(m_invoker,
-                                       sequentialList.toArray(new ITestNGMethod[sequentialList.size()]),
-                                       m_xmlTest.getSuite(),
-                                       params,
-                                       beforeClassMethods, 
-                                       afterClassMethods,
-                                       m_allTestMethods,
-                                       m_groupMethods,
-                                       cmm));
+      for (List<ITestNGMethod> sl : sequentialList) {
+        workers.add(new TestMethodWorker(m_invoker,
+                                         sl.toArray(new ITestNGMethod[sl.size()]),
+                                         m_xmlTest.getSuite(),
+                                         params,
+                                         beforeClassMethods, 
+                                         afterClassMethods,
+                                         m_allTestMethods,
+                                         m_groupMethods,
+                                         cmm));
+      }
     }
 
-    // All the parallel tests are placed in a separate worker, so then can be
+    // All the parallel tests are placed in a separate worker, so they can be
     // invoked in parallel
     if (parallelList.size() > 0) {
       for (ITestNGMethod tm : parallelList) {
@@ -735,12 +737,15 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
    * @param sequentialList
    * @param parallelList
    */
-  private void computeTestLists(List<ITestNGMethod> sequentialList,
+  private void computeTestLists(List<List<ITestNGMethod>> sl,
                                 List<ITestNGMethod> parallelList) 
   {
 
     Map<String, String> groupsDependedUpon= new HashMap<String, String>();
     Map<String, String> methodsDependedUpon= new HashMap<String, String>();
+    
+    Map<String, List<ITestNGMethod>> sequentialAttributeList = new HashMap<String, List<ITestNGMethod>>();
+    List<ITestNGMethod> sequentialList = new ArrayList<ITestNGMethod>();
 
     for (int i= m_allTestMethods.length - 1; i >= 0; i--) {
       ITestNGMethod tm= m_allTestMethods[i];
@@ -755,7 +760,13 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
           findAnnotation(cls, org.testng.internal.annotations.ITest.class);
       if (test != null) {
         if (test.getSequential()) {
-          sequentialList.add(0, tm);
+          String className = cls.getName();
+          List<ITestNGMethod> list = sequentialAttributeList.get(className);
+          if (list == null) {
+            list = new ArrayList<ITestNGMethod>();
+            sequentialAttributeList.put(className, list);
+          }
+          list.add(0, tm);
           continue;
         }
       }
@@ -808,7 +819,18 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       }
     }
     
+    //
+    // Put all the sequential methods in the output argument
+    //
+    sl.add(sequentialList);
+    
+    for (List<ITestNGMethod> l : sequentialAttributeList.values()) {
+      sl.add(l);
+    }
+    
+    //
     // Finally, sort the parallel methods by classes
+    //
 
     Collections.sort(parallelList, TestNGMethod.SORT_BY_CLASS);
 
@@ -819,8 +841,11 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       }
 
       log(3, "WILL BE RUN SEQUENTIALLY:");
-      for (ITestNGMethod tm : sequentialList) {
-        log(3, "  " + tm);
+      for (List<ITestNGMethod> l : sl) {
+        for (ITestNGMethod tm : l) {
+          log(3, "  " + tm);
+        }
+        log(3, "====");
       }
       
       log(3, "===");

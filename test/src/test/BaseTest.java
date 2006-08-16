@@ -55,6 +55,10 @@ public class BaseTest extends BaseDistributedTest {
   protected void setJUnit(boolean f) {
     getTest().setJUnit(f);
   }
+  
+  protected void setThreadCount(int count) {
+    getTest().getSuite().setThreadCount(count);
+  }
 
 	//
 	// Use this for sequential tests

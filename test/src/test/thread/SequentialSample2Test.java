@@ -3,7 +3,7 @@ package test.thread;
 import org.testng.annotations.Test;
 
 @Test(sequential = true)
-public class SequentialSampleTest extends BaseSequentialSample {
+public class SequentialSample2Test extends BaseSequentialSample {
   
   @Test
   public void f1() {
