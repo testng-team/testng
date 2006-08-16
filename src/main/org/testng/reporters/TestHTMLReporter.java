@@ -277,7 +277,7 @@ public class TestHTMLReporter extends TestListenerAdapter {
     .append("</table><p/>\n")
     ;
     
-    sb.append("<small><i>(Hoover the method name to see the test class name)</i></small><p/>\n");
+    sb.append("<small><i>(Hover the method name to see the test class name)</i></small><p/>\n");
     if (failedTests.size() > 0) {
       generateTable(sb, "FAILED TESTS", failedTests, "failed");
     }

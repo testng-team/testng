@@ -140,7 +140,7 @@ public class SuiteHTMLReporter implements IReporter {
 
   private void generateExcludedMethodsReport(XmlSuite xmlSuite, ISuite suite) {
       Collection<ITestNGMethod> excluded = suite.getExcludedMethods(); 
-      StringBuffer sb2 = new StringBuffer("<h2>Disabled methods</h2><table>\n");
+      StringBuffer sb2 = new StringBuffer("<h2>Methods that were not run</h2><table>\n");
       for (ITestNGMethod method : excluded) {
         Method m = method.getMethod();
         if (m != null) {
@@ -297,7 +297,7 @@ public class SuiteHTMLReporter implements IReporter {
     long startDate = -1;
     Map<Long, StringBuffer> tables = new HashMap<Long, StringBuffer>();
     sb.append("<br/><em>").append(suite.getName()).append("</em><p/>");
-    sb.append("<small><i>(Hoover the method name to see the test class name)</i></small><p/>\n");
+    sb.append("<small><i>(Hover the method name to see the test class name)</i></small><p/>\n");
     Collection<ITestNGMethod> invokedMethods = suite.getInvokedMethods();
     
     if (alphabetical) {
