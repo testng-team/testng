@@ -169,13 +169,34 @@ The rest of this manual will explain the following:
 <table>
 
 <tr>
-<td colspan="2"><b><tt>@BeforeSuite<br>@AfterSuite<br>@BeforeTest<br>@AfterTest<br>@BeforeGroups<br>@AfterGroups<br>@BeforeClass<br>@AfterClass<br>@BeforeMethod<br>@AfterMethod</tt></b></td><td><b>Configuration information for a TestNG class:<br><br>@BeforeSuite: </b>The annotated method will be run before all tests in this suite have run.<b><br>@AfterSuite: </b>The annotated method will be run after all tests in this suite have run. <br><b>@BeforeTest</b>: The annotated method will be run before the test. <br><b>@BeforeTest</b>: The annotated method will be run after the test. <br><b>@AfterGroups</b>:
-   The list of groups that this configuration method will run before.
-   This method is guaranteed to run shortly before the first test method that
-   belongs to any of these groups is invoked.<br><b>@BeforeGroups</b>:
-   The list of groups that this configuration method will run after.
-   This method is guaranteed to run shortly before the first test method that
-   belongs to any of these groups is invoked.<br><b>@BeforeClass</b>: The annotated method will be run before all the tests in the test class have been run. <br><b>@AfterClass</b>: The annotated method will be run after all the tests in the test class have been run. <br><b>@BeforeMethod</b>: The annotated method will be run before any test method is invoked. <br><b>@AfterMethod</b>: The annotated method will be run after any test method is invoked. </td></tr><tr>
+<td colspan="2"><b><tt>@BeforeSuite<br>@AfterSuite<br>@BeforeTest<br>@AfterTest<br>@BeforeGroups<br>@AfterGroups<br>@BeforeClass<br>@AfterClass<br>@BeforeMethod<br>@AfterMethod</tt></b></td><td><b>Configuration information for a TestNG class:</b>
+
+<br>
+
+<br><b>@BeforeSuite: </b>The annotated method will be run before all tests in this suite have run.
+
+<br><b>@AfterSuite: </b> The annotated method will be run after all tests in this suite have run. 
+
+<br><b>@BeforeTest</b>: The annotated method will be run before the test. 
+
+<br><b>@BeforeTest</b>: The annotated method will be run after the test. 
+
+<br><b>@AfterGroups</b>:   The list of groups that this configuration method will run after.  This method is guaranteed to run shortly after the last test method that belongs to any of these groups is invoked.
+
+<br><b>@BeforeGroups</b>:   The list of groups that this configuration method will run before. This method is guaranteed to run shortly before the first test method that belongs to any of these groups is invoked.
+
+<br><b>@BeforeClass</b>: The annotated method will be run before all the tests in the test class have been run. 
+
+<br><b>@AfterClass</b>: The annotated method will be run after all the tests in the test class have been run. 
+
+<br><b>@BeforeMethod</b>: The annotated method will be run before any test method is invoked. 
+
+<br><b>@AfterMethod</b>: The annotated method will be run after any test method is invoked. 
+
+</td>
+</tr>
+
+<tr>
 <td>
 </td>
 <td>
