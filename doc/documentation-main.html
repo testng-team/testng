@@ -588,6 +588,34 @@ This documentation can be obtained by invoking TestNG without any arguments.
 
 <p>
 
+Additionally, TestNG can be passed properties on the command line of the Java Virtual Machine, for example
+
+<blockquote class="code">
+java -Dtestng.test.classpath="c:/build;c:/java/classes;" org.testng.TestNG testng.xml
+</blockquote>
+
+Here are the properties that TestNG understands:
+
+<table id="system=properties">
+    <caption>System properties</caption>
+    <colgroup class="option"/>
+    <colgroup class="type"/>
+    <colgroup class="documentation"/>
+    <thead>
+      <tr><th>Property</th>
+      <th>Type</th>
+      <th>Documentation</th></tr>
+    </thead>
+
+    <tr>
+    <td>testng.test.classpath</td>
+    <td>A semi-colon separated series of directories that contain your test classes.</td>
+    <td>If this property is set, TestNG will use it to look for your test classes instead of the class path.  This is convenient if you are using the <tt>package</tt> tag in your XML file and you have a lot of classes in your classpath, most of them not being test classes.
+    </tr>
+</table
+
+<br>
+
 <b>Example:</b>
 
 <blockquote class="code">
