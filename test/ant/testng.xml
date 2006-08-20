@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+  
+<suite name="TestNG JDK 1.5" verbose="1" parallel="false" thread-count="2">
+  
+  <test name="Nopackage">
+    <classes>
+      <class name="NoPackageTest" />
+    </classes>
+  </test>
+</suite>

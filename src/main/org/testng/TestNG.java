@@ -337,6 +337,7 @@ public class TestNG {
   public void setThreadCount(int threadCount) {
     for (XmlSuite s : m_cmdlineSuite) {
       s.setThreadCount(threadCount);
+      s.setParallel(true);
     }
   }
 
@@ -349,11 +350,6 @@ public class TestNG {
     }
   }
 
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @param suite
-   */
   public void setCommandLineSuite(XmlSuite suite)
   {
     m_cmdlineSuite = new XmlSuite[] { suite };
@@ -987,6 +983,11 @@ public class TestNG {
       result.setTestJar((String) cmdLineArgs.get(TestNGCommandLineArgs.TESTJAR_COMMAND_OPT));
       result.setJUnit((Boolean) cmdLineArgs.get(TestNGCommandLineArgs.JUNIT_DEF_OPT));
       result.setHostFile((String) cmdLineArgs.get(TestNGCommandLineArgs.HOSTFILE_OPT));
+      
+      String threadCount = (String) cmdLineArgs.get(TestNGCommandLineArgs.THREAD_COUNT);
+      if (threadCount != null) {
+        result.setThreadCount(Integer.parseInt(threadCount));
+      }
       
       String client = (String) cmdLineArgs.get(TestNGCommandLineArgs.SLAVE_OPT);
       if (client != null) {

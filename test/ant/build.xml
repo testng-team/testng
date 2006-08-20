@@ -1,0 +1,32 @@
+<project name="testng" default="all" basedir=".">
+
+  <property file="../../build.properties"/>
+
+  <taskdef name="testng" classname="org.testng.TestNGAntTask" 
+  	classpath="../../testng-5.2beta-jdk15.jar" />
+
+  <target name="all">
+  	<mkdir dir="build" />
+  	
+  	<javac classpath="../../testng-5.2beta-jdk15.jar"
+  		  destdir="build" srcdir="." includes="*.java" />
+
+<!--
+    <testng classpath="build;../../testng-5.2beta-jdk15.jar"
+            outputdir="test-output"
+    	      dumpcommand="true">
+        <xmlfileset dir="." includes="testng.xml"/>
+    </testng>
+-->
+  	
+    <testng classpath="build;../../testng-5.2beta-jdk15.jar"
+            outputdir="test-output"
+    	      threadcount="7"
+    	>
+        <classfileset dir="build">
+        	<include name="NoPackageTest.class" />
+        </classfileset>
+    </testng>
+
+  </target>
+</project>

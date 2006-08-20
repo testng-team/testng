@@ -663,8 +663,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       // Parallel run
       //
       long maxTimeOut= 10 * 1000; // 1 second
-      IPooledExecutor executor= ThreadUtil.createPooledExecutor(m_xmlTest.getSuite()
-                                                                .getThreadCount());
+      IPooledExecutor executor = 
+        ThreadUtil.createPooledExecutor(m_xmlTest.getSuite().getThreadCount());
 
       for (TestMethodWorker tmw : workers) {
         long mt= tmw.getMaxTimeOut();

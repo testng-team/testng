@@ -15,7 +15,7 @@
       <class name="test.thread.SequentialSample3Test" />
 -->
     <classes>
-      <class name="test.thread.SequentialTest" />
+      <class name="test.tmp.A" />
     </classes>
   </test>
 

@@ -77,19 +77,13 @@ public class TestNGAntTask extends Task {
   protected File m_testjar;
   protected File m_workingDir;
   private Integer m_timeout;
-  
   protected Boolean m_isJUnit;
   private String m_listener;
-  
   protected Environment m_environment = new Environment();
-  
   protected String m_mainClass = TestNG.class.getName();
-  
   protected String m_target;
-  
   protected boolean m_dump;
   protected boolean m_assertEnabled = true;
-  
   protected boolean m_haltOnFailure;
   protected String m_failurePropertyName;
   protected boolean m_haltOnSkipped;
@@ -98,8 +92,11 @@ public class TestNGAntTask extends Task {
   protected String m_fspPropertyName;
   protected String m_includedGroups;
   protected String m_excludedGroups;
-
+  protected String m_threadCount;
   
+  public void setThreadCount(String threadCount) {
+    m_threadCount = threadCount;
+  }
 
   // Ant task settings
   public void setHaltonfailure(boolean value) {
@@ -397,6 +394,11 @@ public class TestNGAntTask extends Task {
     if (m_listener != null) {
         cmd.createArgument().setValue(TestNGCommandLineArgs.LISTENER_COMMAND_OPT);
         cmd.createArgument().setValue(m_listener);
+    }
+    
+    if (m_threadCount != null) {
+      cmd.createArgument().setValue(TestNGCommandLineArgs.THREAD_COUNT);
+      cmd.createArgument().setValue(m_threadCount);
     }
 
     if(m_xmlFilesets.size() > 0) {
