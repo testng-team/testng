@@ -398,7 +398,6 @@ public final class TestNGCommandLineArgs {
    * options.
    */  
   public static void usage() {
-    // TODO move this method to TestNGCommandLineArgs class
     System.out.println("Usage:");
     System.out.println("[" + OUTDIR_COMMAND_OPT + " output-directory]");
     System.out.println("\t\tdefault output directory to : " + "test-output");
@@ -422,6 +421,9 @@ public final class TestNGCommandLineArgs {
         + ITestListener.class.getName()
         + " and/or "
         + ISuiteListener.class.getName()
+        + "]");
+    System.out.println("[" + THREAD_COUNT
+        + " number of threads to use"
         + "]");
     System.out.println("[suite definition files*]");
     System.out.println("");
