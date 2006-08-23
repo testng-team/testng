@@ -55,7 +55,7 @@ public class Parameters {
   {
     return createParameters(m, params, finder, xmlSuite, IFactory.class, "@Factory");
   }
-    
+  
   ////////////////////////////////////////////////////////
   
   private static Object[] createParameters(Method m, String methodAnnotation,
@@ -168,11 +168,14 @@ public class Parameters {
       if (null != dataProviderName && ! "".equals(dataProviderName)) {
         result = findDataProvider(clazz, finder, dataProviderName);
         if (null != result) {
+          if (result.getParameterTypes().length > 0) {
+            throw new TestNGException("DataProvider " + m + " cannot receive parameters."); 
+          }
           return result;
         }
       }
     }
-    
+
     return null;
   }
   
