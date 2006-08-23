@@ -586,6 +586,10 @@ public class MethodHelper {
           testMethod
         };
       }
+      else if (parameterTypes.length > 0) {
+        throw new TestNGException("DataProvider " + dataProvider + " needs to have "
+            + " either zero parameters or one parameter of type java.lang.reflect.Method");
+      }
       
       Class< ? > returnType = dataProvider.getReturnType();
       if (Object[][].class.isAssignableFrom(returnType)) {

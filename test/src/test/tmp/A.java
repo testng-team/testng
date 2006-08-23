@@ -2,8 +2,21 @@ package test.tmp;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+
 public class A {
+  @DataProvider(name = "create")
+  public Object[][] create(Integer n) {
+    return new Object[][] {
+        new Object[] {}
+    };
+  }
+  
+  @Test(dataProvider = "create")
+  public void f(Object o) {
+    
+  }
   @BeforeMethod
   public void setUp() {
     ppp("SETUP THREAD: " + Thread.currentThread().getId());

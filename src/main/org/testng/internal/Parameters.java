@@ -168,9 +168,6 @@ public class Parameters {
       if (null != dataProviderName && ! "".equals(dataProviderName)) {
         result = findDataProvider(clazz, finder, dataProviderName);
         if (null != result) {
-          if (result.getParameterTypes().length > 0) {
-            throw new TestNGException("DataProvider " + m + " cannot receive parameters."); 
-          }
           return result;
         }
       }

@@ -55,7 +55,9 @@ TESTNG.REPORT.DIR=${testng.report.dir}
 		<mkdir dir="${junit.report.dir}"/>
 		<mkdir dir="${testng.report.dir}"/>
   	
-		<taskdef name="testng" classname="org.testng.TestNGAntTask" classpath="${jdk15.testng.jar}"/>
+  <taskdef name="testng"
+             classname="org.testng.TestNGAntTask"
+             classpath="${build.jdk15.dir}"/>
   </target>
 
   <!-- ==================================================================== -->

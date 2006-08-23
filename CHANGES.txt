@@ -4,6 +4,11 @@ TODO
 	:Introduce Annotation Transformers
 
 ===========================================================================
+5.2
+
+Fixed: Throw proper exception when a DataProvider declares parameters
+
+===========================================================================
 5.1
 
 Added: @Test(sequential = true)

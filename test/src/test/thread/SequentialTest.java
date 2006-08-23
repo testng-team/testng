@@ -64,14 +64,12 @@ public class SequentialTest extends BaseTest {
     Assert.assertEquals(verifyMap.size(), threadCount);
     
     ppp("COUNT:" + threadCount  + " THREAD ID'S:" + ids[0] + " " + ids[1] + " " + ids[2]);
-    
-    
   }
-  
-  
 
   private static void ppp(String s) {
-    System.out.println("[SequentialTest] " + s);
+    if (false) {
+      System.out.println("[SequentialTest] " + s);
+    }
   }
 
 }

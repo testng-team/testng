@@ -191,13 +191,30 @@
 
   <target name="dist-jar" depends="dist-14,dist-15" />
 
-  <target name="dist-14" depends="compile-14">
+  <target name="dist-14" depends="compile-14,dist-14-bsh" >
+   </target>
+
+  <target name="dist-14-bsh">
     <antcall target="clean-unjar" />
     <antcall target="extract-qdox-jar" />
     <antcall target="extract-beanshell-jar" />
     <antcall target="extract-util-concurrent-jar" />
     <delete quiet="true" file="${jdk14.testng.jar}" />
     <jar destfile="${jdk14.testng.jar}" update="true">
+      <manifest>
+        <attribute name="Main-Class" value="org.testng.TestNG" />
+      </manifest>
+      <fileset dir="${build.3rdparty.dir}" />
+      <fileset dir="${build.jdk14.dir}" />
+    </jar>
+  </target>
+  
+  <target name="dist-14-nobsh">
+    <antcall target="clean-unjar" />
+    <antcall target="extract-util-concurrent-jar" />
+    <delete quiet="true" file="${other.jars.dir}/${jdk14.testng.nobsh.jar}" />
+    <mkdir dir="${other.jars.dir}" />
+    <jar destfile="${other.jars.dir}/${jdk14.testng.nobsh.jar}" update="true">
       <manifest>
         <attribute name="Main-Class" value="org.testng.TestNG" />
       </manifest>
@@ -229,12 +246,29 @@
            overwrite="true" />
   </target>
 
-  <target name="dist-15" depends="compile-15">
+  <target name="dist-15" depends="compile-15, dist-15-bsh">
+  </target>
+    
+  <target name="dist-15-bsh">
     <antcall target="clean-unjar" />
     <antcall target="extract-qdox-jar" />
     <antcall target="extract-beanshell-jar" />
     <delete file="${jdk15.testng.jar}" />
     <jar destfile="${jdk15.testng.jar}">
+      <manifest>
+        <attribute name="Main-Class" value="org.testng.TestNG" />
+      </manifest>
+      <fileset dir="${build.jdk15.dir}" />
+      <fileset dir="${build.3rdparty.dir}" />
+    </jar>
+  </target>
+  
+  <target name="dist-15-nobsh">
+    <antcall target="clean-unjar" />
+    <antcall target="extract-qdox-jar" />
+    <delete file="{other.jars.dir}/${jdk15.testng.nobsh.jar}" />
+    <mkdir dir="${other.jars.dir}" />
+    <jar destfile="${other.jars.dir}/${jdk15.testng.nobsh.jar}" update="true">
       <manifest>
         <attribute name="Main-Class" value="org.testng.TestNG" />
       </manifest>
@@ -250,17 +284,18 @@
         <include name="${jdk14.testng.jar}" />
         <include name="${jdk15.testng.jar}" />
       </zipfileset>
+      <zipfileset dir="${other.jars.dir}" prefix="${other.jars.dir}"/>
       <zipfileset dir="javadocs" prefix="javadocs" />
       <zipfileset dir="src" prefix="src" />
       <zipfileset dir="doc" prefix="doc" />
       <zipfileset dir="test"
                   prefix="test"
                   includes="**/*.properties,**/*.java,build.xml,testng.xml"
-                  excludes="test-output/**,report/**" />
+                  excludes="test-output/**,report/**,v4/**" />
       <zipfileset dir="test-14"
                   prefix="test-14"
                   includes="**/*.properties,**/*.java,build.xml,testng.xml"
-                  excludes="test-output/**,report/**" />
+                  excludes="test-output/**,report/**,v4/**" />
       <zipfileset dir="3rdparty"
                   prefix="3rdparty"
                   includes="${qdox.jar},${beanshell.jar},util-concurrent.jar" />
