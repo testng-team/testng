@@ -39,16 +39,18 @@ public class JUnitTestConverter extends Doclet {
   private File m_outDir = null;
   private boolean m_useAnnotations;
   private boolean m_done;
+  private String[] m_groups;
 
   /**
    * @param fileNames
    */
   public JUnitTestConverter(File[] fileNames, File outDir, String release,
-      boolean useAnnotations) 
+      boolean useAnnotations, String[] groups) 
   {
     m_fileNames = fileNames;
     m_outDir = outDir;
     m_useAnnotations = useAnnotations;
+    m_groups = groups;
 
     Collection<String> argv = new ArrayList<String>();
 
@@ -244,26 +246,49 @@ public class JUnitTestConverter extends Doclet {
       lineCount++;
       line = line.trim();
       if(line.startsWith("import")) {
-        lines.add(lineCount - 1, "import org.testng.annotations.*;");
+        lines.add(lineCount - 1, "import org.testng.annotations.Test;");
+        lines.add(lineCount - 1, "import org.testng.annotations.BeforeMethod;");
+        lines.add(lineCount - 1, "import org.testng.annotations.AfterMethod;");
         break;
       }
     }
+    
+    String groupsLine = createGroupsLine(m_groups);
 
     //
     // Add annotations
     //
     for (MethodDoc md : methodDocs) {
       SourcePosition sp = md.position();
+      int line = sp.line() + 2;
       if (isTest(md)) {
-        lines.add(sp.line(), "  @Test");
-      } else if (isSetUp(md)) {
-        lines.add(sp.line(), "  @Configuration(beforeTestMethod = true)");
-      } else if (isTearDown(md)) {
-        lines.add(sp.line(), "  @Configuration(afterTestMethod = true)"); // BUGFIX
+        lines.add(line, "  @Test" + groupsLine);
+      } 
+      else if (isSetUp(md)) {
+        ppp("ADDING NEW BEFORE AT " + line);
+        lines.add(line, "  @BeforeMethod" + groupsLine);
+      } 
+      else if (isTearDown(md)) {
+        lines.add(line, "  @AfterMethod" + groupsLine);
       }
     }
 
     return lines;
+  }
+
+  private String createGroupsLine(String[] groups) {
+    StringBuffer result = new StringBuffer();
+    
+    if (groups != null) {
+      result.append("(groups = {");
+      for (int i = 0; i < groups.length; i++) {
+        if (i > 0) result.append(", ");
+        result.append("\""+ groups[i] + "\"");
+      }
+      result.append("})");
+    }
+     
+    return result.toString();
   }
 
   private List<String> insertJavadoc(File file,
@@ -292,10 +317,10 @@ public class JUnitTestConverter extends Doclet {
         lines.add(realInsert, "    * @testng.test");
       } else if (isSetUp(md)) {
         lines.add(realInsert,
-            "    * @testng.configuration beforeTestMethod=\"true\"");
+            "    * @testng.before-method");
       } else if (isTearDown(md)) {
         lines.add(realInsert,
-            "    * @testng.configuration afterTestMethod=\"true\"");
+            "    * @testng.after-method");
       }
 
       if (insertLineNo == 0) {

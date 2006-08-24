@@ -84,43 +84,46 @@ public class JUnitConverterTest {
     JUnitConverter.main(argv);
     
     List resultLines = new ArrayList();
-    List actualLineNumbers = grep(new File(outputDir, packageDir + File.separatorChar + fileName), tag, resultLines);
-    Assert.assertEquals(expected, actualLineNumbers, fileName + " tag:" + tag);
+    File file = new File(outputDir, packageDir + File.separatorChar + fileName);
+    List actualLineNumbers = grep(file, tag, resultLines);
+    Assert.assertEquals(actualLineNumbers, expected, file + "\n    tag:" + tag);
     
   }
   
   private void runJavaDocTest(File sourcePath, String pkg, String fileName, List[] expected) {
     runTest(sourcePath, pkg, fileName, "@testng.test", "-javadoc", expected[0]);
-    runTest(sourcePath, pkg, fileName, "@testng.configuration", "-javadoc", expected[1]);
+    runTest(sourcePath, pkg, fileName, "@testng.before-method", "-javadoc", expected[1]);
+    runTest(sourcePath, pkg, fileName, "@testng.after-method", "-javadoc", expected[2]);
   }
 
   private void runAnnotationTest(File sourcePath, String pkg, String fileName, List[] expected) {
     runTest(sourcePath, pkg, fileName, "@Test", "-annotation", expected[0]);
-    runTest(sourcePath, pkg, fileName, "@Configuration", "-annotation", expected[1]);
+    runTest(sourcePath, pkg, fileName, "@BeforeMethod", "-annotation", expected[1]);
+    runTest(sourcePath, pkg, fileName, "@AfterMethod", "-annotation", expected[2]);
   }
 
   @Test(parameters = { "source-directory" })
   public void testAnnotations(String dir) {
     runAnnotationTest(new File(dir),  "test.converter", "ConverterSample1.java", 
-        new List[] { Arrays.asList(21, 28, 33), Arrays.asList(7, 16) });
+        new List[] { Arrays.asList(23, 30, 35), Arrays.asList(9), Arrays.asList(18) });
   }
   
   @Test(parameters = { "source-directory" })
   public void testAnnotationsNoPackage(String dir) {
     runAnnotationTest(new File(dir, "../../.."),  "", "ConverterSample2.java", 
-        new List[] { Arrays.asList(21, 28, 33), Arrays.asList(7, 16) });
+        new List[] { Arrays.asList(23, 30, 35), Arrays.asList(9), Arrays.asList(18) });
   }
   
   @Test(parameters = { "source-directory" })
   public void testJavaDoc(String dir) {
     runJavaDocTest(new File(dir),  "test.converter", "ConverterSample1.java", 
-        new List[] { Arrays.asList(25, 34, 41), Arrays.asList(7, 18) });
+        new List[] { Arrays.asList(25, 34, 41), Arrays.asList(7), Arrays.asList(18) });
   }
 
   @Test(parameters = { "source-directory" })
   public void testJavaDocNoPackage(String dir) {
     runJavaDocTest(new File(dir, "../../.."),  "", "ConverterSample2.java",
-        new List[] { Arrays.asList(25, 34, 41), Arrays.asList(7, 18) });
+        new List[] { Arrays.asList(25, 34, 41), Arrays.asList(7), Arrays.asList(18) });
   }
 
   

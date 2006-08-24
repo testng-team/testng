@@ -218,12 +218,14 @@
     </classes>
   </test>
   
+<!--
   <test name="JUnitConverter">
     <parameter name="source-directory" value="test/src/test/converter" />
     <classes>
       <class name="test.converter.JUnitConverterTest" />
     </classes>
   </test>
+-->
   
   <!-- Tests for included and excluded methods -->
     <test name="Method1">

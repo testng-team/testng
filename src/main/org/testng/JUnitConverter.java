@@ -22,6 +22,7 @@ public class JUnitConverter {
    private static final String QUIET = "-quiet";
    // Deprecated, maintained for backward compatibility
    private static final String RESTORE_OPT  = "-restore";
+   private static final String GROUPS_OPT  = "-groups";
    
    private static int m_logLevel = 1;
 
@@ -70,11 +71,17 @@ public class JUnitConverter {
       }
 
       String outPath = overwrite ? srcPath : (String) params.get(OUT_DIR_OPT);
+      
+      String groupsOpt = (String) params.get(GROUPS_OPT);
+      String[] groups = null;
+      if (groupsOpt != null) {
+        groups = groupsOpt.split("[ ,]");
+      }
 
       JUnitDirectoryConverter convertor = new JUnitDirectoryConverter(new File(srcPath),
             new File(outPath),
             (String) params.get(SOURCE_OPT),
-            useAnnotations);
+            useAnnotations, groups);
 
       int result = convertor.convert();
 
@@ -126,6 +133,12 @@ public class JUnitConverter {
       else if (SOURCE_OPT.equals(args[i])) {
         if (i + 1 < args.length) {
           options.put(SOURCE_OPT, args[i + 1]);
+          i++;
+        }
+      }
+      else if (GROUPS_OPT.equals(args[i])) {
+        if (i + 1 < args.length) {
+          options.put(GROUPS_OPT , args[i + 1]);
           i++;
         }
       }

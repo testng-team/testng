@@ -6,6 +6,8 @@ TODO
 ===========================================================================
 5.2
 
+Added: JUnitConverter uses the new syntax
+Added: -groups to JUnitConverter
 Fixed: Throw proper exception when a DataProvider declares parameters
 
 ===========================================================================

@@ -14,6 +14,7 @@ public class JUnitConverterTask extends Task {
   private File m_sourceDirectory;
   private File m_outputDirectory;
   private boolean m_useAnnotations;
+  private String[] m_groups;
   
   public JUnitConverterTask() {
     super();
@@ -24,7 +25,7 @@ public class JUnitConverterTask extends Task {
     this.validate();
 
     final JUnitDirectoryConverter convertor = new JUnitDirectoryConverter(
-        m_sourceDirectory, m_outputDirectory, null, m_useAnnotations);
+        m_sourceDirectory, m_outputDirectory, null, m_useAnnotations, m_groups);
     final int result = convertor.convert();
 
     if (result > -1) {
@@ -57,6 +58,10 @@ public class JUnitConverterTask extends Task {
    */
   public void setOutputDir(final File outputDirectory) {
     m_outputDirectory = outputDirectory;
+  }
+  
+  public void setGroups(String groups) {
+    m_groups = groups.split("[ ,]");
   }
   
   /**

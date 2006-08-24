@@ -85,7 +85,7 @@ public class JUnitConverterTest {
     
     List resultLines = new ArrayList();
     List actualLineNumbers = grep(new File(outputDir, packageDir + File.separatorChar + fileName), tag, resultLines);
-    Assert.assertEquals(expected, actualLineNumbers, fileName + " tag:" + tag);
+    Assert.assertEquals(actualLineNumbers, expected, fileName + " tag:" + tag);
     
   }
   
@@ -102,13 +102,13 @@ public class JUnitConverterTest {
   @Test(parameters = { "source-directory" })
   public void testAnnotations(String dir) {
     runAnnotationTest(new File(dir),  "test.converter", "ConverterSample1.java", 
-        new List[] { Arrays.asList(21, 28, 33), Arrays.asList(7, 16) });
+        new List[] { Arrays.asList(23, 30, 35), Arrays.asList(7, 16) });
   }
   
   @Test(parameters = { "source-directory" })
   public void testAnnotationsNoPackage(String dir) {
     runAnnotationTest(new File(dir, "../../.."),  "", "ConverterSample2.java", 
-        new List[] { Arrays.asList(21, 28, 33), Arrays.asList(7, 16) });
+        new List[] { Arrays.asList(23, 30, 35), Arrays.asList(7, 16) });
   }
   
   @Test(parameters = { "source-directory" })

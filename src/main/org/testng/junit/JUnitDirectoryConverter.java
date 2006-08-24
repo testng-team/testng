@@ -25,6 +25,7 @@ public class JUnitDirectoryConverter {
    private File m_outDir    = null;
    private String m_release   = null;
    private boolean m_useAnnotations;
+   private String[] m_groups = null;
 
    private Map<File, File> m_fileNames = new HashMap<File, File>();
 
@@ -37,11 +38,14 @@ public class JUnitDirectoryConverter {
     *                      used, <tt>false</tt> if javadoc-like annotations should be use
     * @param restore flag if the output directory should reflect the package
     */
-   public JUnitDirectoryConverter(File srcDir, File outDir, String release, boolean useAnnotation) {
+   public JUnitDirectoryConverter(File srcDir, File outDir, String release, 
+       boolean useAnnotation, String[] groups) 
+   {
       m_sourceDir = srcDir;
       m_outDir    = outDir;
       m_useAnnotations = useAnnotation;
       m_release = release;
+      m_groups = groups;
    }
 
    public int convert() {
@@ -54,7 +58,8 @@ public class JUnitDirectoryConverter {
       JUnitTestConverter fc = new JUnitTestConverter(files,
                                                      m_outDir,
                                                      m_release,
-                                                     m_useAnnotations);
+                                                     m_useAnnotations,
+                                                     m_groups);
 
       int converted = fc.convert();
 

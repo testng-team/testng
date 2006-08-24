@@ -23,7 +23,7 @@ public class JUnitConverterTest {
       JUnitDirectoryConverter convertor = new JUnitDirectoryConverter(new File(inputDir),
             m_output,
             "1.4",
-            false);
+            false, null);
 
       int result = convertor.convert();
       assert 2 == result : "Expected number of tests 2, found " + result;
