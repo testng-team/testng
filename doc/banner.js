@@ -44,4 +44,7 @@ function displayMenu(pCurrentPage) {
     document.writeln('            </tr>')
     document.writeln('        </table>')
     document.writeln('    </div>')
+
 }
+
+

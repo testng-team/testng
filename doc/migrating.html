@@ -1,10 +1,13 @@
 <html>
     <head>
         <title>TestNG - Migrating from JUnit</title>
-        <script type="text/javascript" src="banner.js"></script>
+
         <link rel="stylesheet" href="testng.css" type="text/css" />
+        <link type="text/css" rel="stylesheet" href="http://beust.com/beust.css"  />
+        <script type="text/javascript" src="http://beust.com/prettify.js"></script>
+        <script type="text/javascript" src="banner.js"></script>
       </head>
-<body>
+<body onLoad="prettyPrint()">
 
 <script type="text/javascript">
     displayMenu("migrating.html")
@@ -30,7 +33,9 @@ which you can invoke as follows:</p><ul>
 	files will be directly modified.<br>
 &nbsp;</li><li><tt>-quiet</tt><br>
 	<tt>JUnitConverter</tt> will not print anything on the console.</li></ul><p>Here is a sample use that will convert all the JUnit tests in the <tt>src/</tt> 
-directory to TestNG:</p><blockquote class="code">
+directory to TestNG:</p>
+
+<blockquote class="code">
 	java org.testng.JUnitConverter -overwrite -annotation -srcdir src
 </blockquote>
 Notes:<blockquote>
@@ -45,38 +50,14 @@ parameter&quot;), make sure your classpath only contains JDK5 jar files.</i></li
 	</ul>
 </blockquote><p><tt>JUnitConverter</tt> also has an ant task, which you can invoke as follows: </p>
 
-<blockquote class="code">
-  <div class="e">
-	<div class="c" style="MARGIN-LEFT: 1em; TEXT-INDENT: -2em">
-		<span class="m">&lt;</span><span class="t">project name</span><span class="m">=&quot;</span><b>test</b><span class="m">&quot;</span><span class="t"> 
-		default</span><span class="m">=&quot;</span><b>init</b><span class="m">&quot;&gt;</span></div><div>
-		<div class="e">
-			<div class="c" style="MARGIN-LEFT: 1em; TEXT-INDENT: -2em">
-				<span class="m">&lt;</span><span class="t">target name</span><span class="m">=&quot;</span><b>init</b><span class="m">&quot;&gt;</span></div><div>
-				<div class="e">
-					<div style="MARGIN-LEFT: 1em; TEXT-INDENT: -2em">
-						<span class="m">&lt;</span><span class="t">taskdef</span>
-						<span class="t">resource</span><span class="m">=&quot;</span><b>testngtasks</b><span class="m">&quot;</span> 
-						<span class="m"> 
-						/&gt;</span> </div>
-				</div>
-				<div>
-					<span class="m">&lt;/</span><span class="t">target</span><span class="m">&gt;<br>
-&nbsp;</span></div>
-			</div>
-		</div>
-		<div class="e">
-			<div class="c" style="MARGIN-LEFT: 1em; TEXT-INDENT: -2em">
-				<span class="m">&lt;</span><span class="t">target name</span><span class="m">=&quot;</span><b>junitconvert</b><span class="m">&quot;</span><span class="t"> 
-				depends</span><span class="m">=&quot;</span><b>init</b><span class="m">&quot;&gt;</span></div><div>
-				<div class="e">
-					<div style="MARGIN-LEFT: 1em; TEXT-INDENT: -2em">
-						<span class="m">&lt;</span><span class="t">junit-converter</span>
-						<span class="t">sourcedir</span><span class="m">=&quot;</span><b>C:\dev\projects\test\java</b><span class="m">&quot;</span><span class="t"> 
-						outputdir</span><span class="m">=&quot;</span><b>C:\dev\projects\temp</b><span class="m">&quot;</span><span class="t"> 
-						annotations</span><span class="m">=&quot;</span><b>false</b><span class="m">&quot; 
-						/&gt;</span> </div>
-				</div>
-				<div>
-					<span class="m">&lt;/</span><span class="t">target</span><span class="m">&gt;</span></div></div></div><div>
-			<span class="m">&lt;/</span><span class="t">project</span><span class="m">&gt;</span></div></div></div></blockquote>
+<pre class="prettyprint">
+&lt;project name="test" default="init"&gt;
+  &lt;target name="init"&gt;
+    &lt;taskdef resource="testngtasks" /&gt;
+  &lt;/target&gt;
+     
+  &lt;target name="junitconvert" depends="init"&gt;
+    &lt;junit-converter sourcedir="C:\dev\projects\test\java" outputdir="C:\dev\projects\temp" annotations="false" /&gt;
+  &lt;/target&gt;
+&lt;/project&gt;
+</pre>

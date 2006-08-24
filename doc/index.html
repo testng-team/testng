@@ -1,14 +1,20 @@
 <html>
     <head>
         <title>TestNG - Welcome</title>
-        <script type="text/javascript" src="banner.js"></script>
         <link rel="stylesheet" href="testng.css" type="text/css" />
+        <link type="text/css" rel="stylesheet" href="http://beust.com/beust.css"  />
+        <script type="text/javascript" src="http://beust.com/prettify.js"></script>
+        <script type="text/javascript" src="banner.js"></script>
+
+
       </head>
-<body>
+
+<body onload="prettyPrint()">
 
 <script type="text/javascript">
-    displayMenu("index.html")
+    displayMenu("index.html");
 </script>
+
 
 
 <h2 >TestNG</h2>
@@ -53,26 +59,26 @@ article</a> describing a very concrete example where the combined use of several
 TestNG's features provides for a very intuitive and maintainable testing design.</p>
 <p>Here is a very simple test:</p>
 
-<pre class="code">
-<span class=j_eclipse_keyword>package example1;</span>
+<pre class="prettyprint">
+package example1;
 
-<span class=j_eclipse_keyword>import</span> <span class=j_eclipse_pkgname>org.testng</span>.<span class=j_eclipse_pkgname>annotations</span>.<span class=j_eclipse_pkgname>*</span>;
+import org.testng.annotations.*;
 
-<span class=j_eclipse_keyword>public</span> <span class=j_eclipse_keyword>class</span> <span class=j_eclipse_classname>SimpleTest</span> {
+public class SimpleTest {
 
-  @<span class=j_eclipse_classname>Configuration</span>(beforeTestClass = <span class=j_eclipse_constant>true</span>)
-  <span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> <span class=j_eclipse_methname>setUp</span>() {
-    <span class=j_eclipse_comment>// code that will be invoked when this test is instantiated</span>
+  @Configuration(beforeTestClass = true)
+  public void setUp() {
+    // code that will be invoked when this test is instantiated
   }
 
-  @<span class=j_eclipse_classname>Test</span>(groups = { <span class=j_eclipse_string>"fast"</span> })
-  <span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> <span class="j_eclipse_methname">aFastTest</span>() {
-    <span class="j_eclipse_comment">System.out.println(&quot;Fast test&quot;);</span>
+  @Test(groups = { "fast" })
+  public void aFastTest() {
+    System.out.println("Fast test");
   }
 
-  @<span class=j_eclipse_classname>Test</span>(groups = { <span class=j_eclipse_string>"slow"</span> })
-  <span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> <span class="j_eclipse_methname">aSlowTest</span>() {
-     <span class="j_eclipse_comment">System.out.println(&quot;Slow test&quot;);</span>
+  @Test(groups = { "slow" })
+  public void aSlowTest() {
+     System.out.println("Slow test");
   }
 
 }
@@ -98,23 +104,30 @@ Things to note:</p><ul>
 
 Once you have compiled your test class into the <tt>build</tt> directory, you 
 can invoke your test with the command line, an ant task (shown below) or an XML 
-file:<pre class="code">&lt;<span class="tag">project </span><span class="attribute">default=&quot;test&quot;</span>&gt;
+file:
 
-  &lt;<span class="tag">path </span><span class="attribute">id=&quot;cp"</span>&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">pathelement </span><span class="attribute">location=&quot;lib/testng-testng-4.4-jdk15.jar"</span>/&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">pathelement </span><span class="attribute">location=&quot;build"</span>/&gt;
-  &lt;<span class="tag">/path</span>&gt;
- 
-&nbsp; &lt;<span class="tag">taskdef </span><span class="attribute">name=&quot;testng" classpathref=&quot;cp&quot;
-           classname=&quot;org.testng.TestNGAntTask&quot; /</span>&gt;
 
-&nbsp;&lt;<span class="tag">target </span><span class="attribute">name=&quot;test"</span>&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">testng </span><span class="attribute">classpathref=&quot;cp&quot; groups=&quot;fast&quot;</span>&gt;
-&nbsp;&nbsp;   &nbsp;&lt;<span class="tag">classfileset</span><span class="attribute"> dir=&quot;build&quot; includes=&quot;example1/*.class"</span>/&gt;
- &nbsp;&nbsp;&nbsp;&lt;<span class="tag">/testng</span>&gt;
-  &lt;<span class="tag">/target</span>&gt;
+<pre class="prettyprint">
+&lt;project default="test"&gt;
+
+  &lt;path id="cp"&gt;
+    &lt;pathelement location="lib/testng-testng-4.4-jdk15.jar"/&gt;
+    &lt;pathelement location="build"/&gt;
+  &lt;/path&gt;
  
-&lt;<span class="tag">/project</span>&gt;</pre>Use ant to invoke it:<pre class="code">
+  &lt;taskdef name="testng" classpathref="cp"
+           classname="org.testng.TestNGAntTask" /&gt;
+
+ &lt;target name="test"&gt;
+    &lt;testng classpathref="cp" groups="fast"&gt;
+      &lt;classfileset dir="build" includes="example1/*.class"/&gt;
+    &lt;/testng&gt;
+  &lt;/target&gt;
+ 
+&lt;/project&gt;
+</pre>
+
+Use ant to invoke it:<pre class="code">
 c:&gt; ant
 Buildfile: build.xml
 
@@ -174,6 +187,7 @@ you can file a bug report
 <p>For more information, you can either <a href="download.html">download TestNG</a>, 
 read the <a href="documentation-main.html">manual</a> or browse the links at the 
 <a href="#top">top</a>.</p>
+
 
 </body>
 

@@ -1,18 +1,20 @@
 <html>
     <head>
         <title>TestNG</title>
-        <script type="text/javascript" src="banner.js"></script>
+
         <link rel="stylesheet" href="testng.css" type="text/css" />
-        
+        <link type="text/css" rel="stylesheet" href="http://beust.com/beust.css"  />
+        <script type="text/javascript" src="http://beust.com/prettify.js"></script>
+        <script type="text/javascript" src="banner.js"></script>
+
         <style type="text/css">
-        
             /* Set the command-line table option column width. */
             #command-line colgroup.option {
                  width: 7em;
             }
         </style>
     </head>
-<body>
+<body onLoad="prettyPrint()">
 
 <script type="text/javascript">
     displayMenu("documentation-main.html")
@@ -473,47 +475,65 @@ invocationCount. <br>Note:  this attribute is ignored if invocationCount is not 
 on ant and the command line below).</p><p>The current DTD for <tt>testng.xml</tt> can be found on the main Web site:&nbsp;
 <a href="http://testng.org/testng-1.0.dtd">http://testng.org/testng-1.0.dtd</a> 
 (for your convenience, you might prefer to browse the
-<a href="http://testng.org/testng-1.0.dtd.html">HTML version</a>).</p><p>Here is an example <tt>testng.xml</tt> file:</p><pre class="code">&lt;!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" &gt;
-&nbsp;
-<span class="tag">&lt;suite</span> <span class="attribute">name="Suite1"</span>&nbsp;&nbsp;  <span class="attribute">verbose="1"</span> &gt;
-  <span class="tag">&lt;test</span> <span class="attribute">name="Nopackage"</span> &gt;
-    <span class="tag">&lt;classes&gt;
-</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tag">&lt;class</span> <span class="attribute">name="NoPackageTest"</span>&nbsp; /&gt;
-    <span class="tag">&lt;/classes&gt;</span>
-  <span class="tag">&lt;/test&gt;</span>
+<a href="http://testng.org/testng-1.0.dtd.html">HTML version</a>).</p><p>Here is an example <tt>testng.xml</tt> file:</p>
 
-  <span class="tag">&lt;test</span> <span class="attribute">name="Regression1"</span>&nbsp;&nbsp; &gt;
-    <span class="tag">&lt;classes&gt;
-</span>      <span class="tag">&lt;class</span> <span class="attribute">name="test.sample.ParameterSample"</span>&nbsp; /&gt;
-      <span class="tag">&lt;class</span> <span class="attribute">name="test.sample.ParameterTest"</span> /&gt;
-    <span class="tag">&lt;/classes&gt;
-</span>  <span class="tag">&lt;/test&gt;
-&lt;/suite&gt;</span></pre></pre>
 
-<p>You can specify package names instead of class names:</p><pre class="code">&lt;!DOCTYPE suite SYSTEM "<a href="http://testng.org/testng-1.0.dtd">http://testng.org/testng-1.0.dtd</a>" &gt;
-&nbsp;
-<span class="tag">&lt;suite</span> <span class="attribute">name="Suite1" verbose="1"</span> &gt;
-<span class="tag">&nbsp; &lt;test</span> <span class="attribute">name="Regression1"</span>&nbsp;&nbsp; &gt;
-    <span class="tag">&lt;packages&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;package</span> <span class="attribute">name=&quot;test.sample&quot;</span> /&gt;
-   <span class="tag">&lt;/packages&gt;
-</span>&nbsp;<span class="tag">&lt;/test&gt;
-&lt;/suite&gt;</span></pre><p>In this example, TestNG will look at all the classes in the package 
-	<tt>test.sample</tt> and will retain only classes that have TestNG annotations.</p><p>You can also specify groups and methods to be included and excluded:</p><pre class="code"><span class="tag">&lt;test</span> <span class="attribute">name="Regression1"</span>&gt;
-  <span class="tag">&lt;groups&gt;
-</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="tag">&lt;exclude</span> <span class="attribute">name="brokenTests"</span>&nbsp; /&gt;
-      <span class="tag">&lt;include</span> <span class="attribute">name="checkinTests"</span>&nbsp; /&gt;
-    <span class="tag">&lt;/run&gt;
-</span>&nbsp;&nbsp;<span class="tag">&lt;/groups&gt;
-</span>&nbsp;
-&nbsp;&nbsp;<span class="tag">&lt;classes&gt;</span>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="tag">&lt;class</span> <span class="attribute">name="test.IndividualMethodsTest"</span>&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tag">&lt;methods&gt;</span>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tag">&lt;include</span> <span class="attribute">name="testMethod"</span> /&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tag">&lt;/methods&gt;</span>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="tag">&lt;/class&gt;
-&nbsp;&nbsp;<span class="tag">&lt;/classes&gt;</span>
-&lt;/test&gt;</span></pre><p>You can also define new groups inside <tt>testng.xml</tt> and specify additional details in attributes, such as whether to run the tests in parallel, how many threads to use, whether you are running JUnit tests, etc...&nbsp; Please see the DTD for a complete list of the features, or read on.</p><!-------------------------------------
+<pre class="prettyprint">
+&lt;!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" &gt;
+ 
+&lt;suite name="Suite1"    verbose="1" &gt;
+  &lt;test name="Nopackage" &gt;
+    &lt;classes&gt;
+       &lt;class name="NoPackageTest"  /&gt;
+    &lt;/classes&gt;
+  &lt;/test&gt;
+
+  &lt;test name="Regression1"   &gt;
+    &lt;classes&gt;
+      &lt;class name="test.sample.ParameterSample"  /&gt;
+      &lt;class name="test.sample.ParameterTest" /&gt;
+    &lt;/classes&gt;
+  &lt;/test&gt;
+&lt;/suite&gt;
+</pre>
+
+<p>You can specify package names instead of class names:</p>
+
+<pre class="prettyprint">
+&lt;!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" &gt;
+
+&lt;suite name="Suite1" verbose="1" &gt;
+  &lt;test name="Regression1"   &gt;
+    &lt;packages&gt;
+      &lt;package name="test.sample" /&gt;
+   &lt;/packages&gt;
+ &lt;/test&gt;
+&lt;/suite&gt;
+</pre>
+
+
+<p>In this example, TestNG will look at all the classes in the package 
+	<tt>test.sample</tt> and will retain only classes that have TestNG annotations.</p><p>You can also specify groups and methods to be included and excluded:</p>
+
+<pre class="prettyprint">
+&lt;test name="Regression1"&gt;
+  &lt;groups&gt;
+      &lt;exclude name="brokenTests"  /&gt;
+      &lt;include name="checkinTests"  /&gt;
+    &lt;/run&gt;
+  &lt;/groups&gt;
+ 
+  &lt;classes&gt;
+    &lt;class name="test.IndividualMethodsTest"&gt;
+      &lt;methods&gt;
+        &lt;include name="testMethod" /&gt;
+      &lt;/methods&gt;
+    &lt;/class&gt;
+  &lt;/classes&gt;
+&lt;/test&gt;
+</pre>
+
+<p>You can also define new groups inside <tt>testng.xml</tt> and specify additional details in attributes, such as whether to run the tests in parallel, how many threads to use, whether you are running JUnit tests, etc...&nbsp; Please see the DTD for a complete list of the features, or read on.</p><!-------------------------------------
   RUNNING TESTNG
   ------------------------------------><h3><a name="running-testng">4 - Running TestNG</a></h3>TestNG can be invoked in different ways:
 
@@ -647,77 +667,99 @@ sets of tests back to back.</p><p>For example, it is quite common to have at lea
 allows you to specify this in a very intuitive way with test groups.&nbsp; For 
 example, you could structure your test by saying that your entire test class 
 belongs to the &quot;functest&quot; group, and additionally that a couple of methods 
-belong to the group &quot;checkintest&quot;:</p><pre class="code">
-<span class=j_eclipse_keyword>public</span> <span class=j_eclipse_keyword>class</span> <span class=j_eclipse_classname>Test1</span> {
-&nbsp; @<span class=j_eclipse_classname>Test</span>(groups = { <span class=j_eclipse_string>"functest"</span>, <span class=j_eclipse_string>"checkintest"</span> })
-  <span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> <span class=j_eclipse_methname>testMethod1</span>() {
-&nbsp; }
+belong to the group &quot;checkintest&quot;:</p>
 
-&nbsp; @<span class=j_eclipse_classname>Test</span>(groups = {<span class=j_eclipse_string>"functest"</span>, <span class=j_eclipse_string>"checkintest"</span>} )
-  <span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> <span class=j_eclipse_methname>testMethod2</span>() {
-&nbsp; }
+<pre class="prettyprint">
+public class Test1 {
+  @Test(groups = { "functest", "checkintest" })
+  public void testMethod1() {
+  }
 
-&nbsp; @<span class=j_eclipse_classname>Test</span>(groups = { <span class=j_eclipse_string>"functest"</span> })
-  <span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> <span class=j_eclipse_methname>testMethod3</span>() {
-&nbsp; }
+  @Test(groups = {"functest", "checkintest"} )
+  public void testMethod2() {
+  }
+
+  @Test(groups = { "functest" })
+  public void testMethod3() {
+  }
 
 }
-</pre><p>Invoking TestNG with </p>
-<pre class="code">&lt;<span class="tag">test</span> <span class="attribute">name="Test1"</span>&gt;
-&nbsp;&nbsp;&lt;<span class="tag">groups</span>&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">run</span>&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">include</span> <span class="attribute">name="functest"</span>/&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">/run</span>&gt;
-&nbsp;&nbsp;&lt;<span class="tag">/groups</span>&gt;
-&nbsp;&nbsp;&lt;<span class="tag">classes</span>&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">class</span> <span class="attribute">name="example1.Test1"</span>/&gt;
-&nbsp;&nbsp;&lt;<span class="tag">/classes</span>&gt;
-&lt;<span class="tag">/test</span>&gt;</pre><p>will run all the test methods in that classes, while invoking it with <tt>checkintest</tt> will only run 
+</pre>
+
+<p>Invoking TestNG with </p>
+
+<pre class="prettyprint">
+&lt;test name="Test1"&gt;
+  &lt;groups&gt;
+    &lt;run&gt;
+      &lt;include name="functest"/&gt;
+    &lt;/run&gt;
+  &lt;/groups&gt;
+  &lt;classes&gt;
+    &lt;class name="example1.Test1"/&gt;
+  &lt;/classes&gt;
+&lt;/test&gt;
+</pre>
+
+<p>will run all the test methods in that classes, while invoking it with <tt>checkintest</tt> will only run 
 <tt>testMethod1()</tt> and <tt>testMethod2()</tt>.</p><p>Here is another example, using regular expressions this time.&nbsp; Assume 
 that some of your test methods should not be run on Linux, your test would look 
-like:</p><pre class="code">
-@<span class=j_eclipse_classname>Test</span>
-<span class=j_eclipse_keyword>public</span> <span class=j_eclipse_keyword>class</span> <span class=j_eclipse_classname>Test1</span> {
-&nbsp; @<span class=j_eclipse_classname>Test</span>(groups = { <span class=j_eclipse_string>"windows.checkintest"</span> })&nbsp;
-  <span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> <span class=j_eclipse_methname>testWindowsOnly</span>() {
-&nbsp; }
+like:</p>
 
-&nbsp; @<span class=j_eclipse_classname>Test</span>(groups = {<span class=j_eclipse_string>"linux.checkintest"</span>} )
-  <span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> <span class=j_eclipse_methname>testLinuxOnly</span>() {
-&nbsp; }
+<pre class="prettyprint">
+@Test
+public class Test1 {
+  @Test(groups = { "windows.checkintest" }) 
+  public void testWindowsOnly() {
+  }
 
-&nbsp; @<span class=j_eclipse_classname>Test</span>(groups = { <span class=j_eclipse_string>"windows.functest"</span> )
-  <span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> <span class=j_eclipse_methname>testWindowsToo</span>() {
-&nbsp; }
+  @Test(groups = {"linux.checkintest"} )
+  public void testLinuxOnly() {
+  }
+
+  @Test(groups = { "windows.functest" )
+  public void testWindowsToo() {
+  }
 }
-</pre><p>
-You could use the following testng.xml to launch only the Windows methods:
-</p><pre class="code">&lt;<span class="tag">test</span> <span class="attribute">name="Test1"</span>&gt;
-&nbsp;&nbsp;&lt;<span class="tag">groups</span>&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">run</span>&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">include</span> <span class="attribute">name="windows.*"</span>/&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">/run</span>&gt;
-&nbsp;&nbsp;&lt;<span class="tag">/groups</span>&gt;
+</pre>
 
-&nbsp;&nbsp;&lt;<span class="tag">classes</span>&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">class</span> <span class="attribute">name="example1.Test1"</span>/&gt;
-&nbsp;&nbsp;&lt;<span class="tag">/classes</span>&gt;
-&lt;<span class="tag">/test</span>&gt;</pre><blockquote>
+<p>
+You could use the following testng.xml to launch only the Windows methods:
+</p>
+<pre class="prettyprint">
+&lt;test name="Test1"&gt;
+  &lt;groups&gt;
+    &lt;run&gt;
+      &lt;include name="windows.*"/&gt;
+    &lt;/run&gt;
+  &lt;/groups&gt;
+
+  &lt;classes&gt;
+    &lt;class name="example1.Test1"/&gt;
+  &lt;/classes&gt;
+&lt;/test&gt;
+</pre>
+
+<blockquote>
 <em>Note:  TestNG uses <a href="http://en.wikipedia.org/wiki/Regular_expression">regular expressions</a>, and not <a href="http://en.wikipedia.org/wiki/Wildmat">wildmats</a>.  Be aware of the difference (for example, "anything" is matched by ".*" -- dot star -- and not "*").</em>
 </blockquote>
 
 <h4><a name="method-groups">Method groups</a></h4>You can also exclude or include individual methods:
 
-<pre class="code">&lt;<span class="tag">test</span> <span class="attribute">name="Test1"</span>&gt;
-&nbsp;&nbsp;&lt;<span class="tag">classes</span>&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">class</span> <span class="attribute">name="example1.Test1"</span>&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">methods</span>&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">include</span> <span class="attribute">name=".*enabledTestMethod.*"</span>/&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">exclude</span> <span class="attribute">name=".*brokenTestMethod.*"</span>/&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">/methods</span>&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">/class</span>&gt;
-&nbsp;&nbsp;&lt;<span class="tag">/classes</span>&gt;
-&lt;<span class="tag">/test</span>&gt;</pre>This can come in handy to deactivate a single method without having to recompile 
+<pre class="prettyprint">
+&lt;test name="Test1"&gt;
+  &lt;classes&gt;
+    &lt;class name="example1.Test1"&gt;
+      &lt;methods&gt;
+        &lt;include name=".*enabledTestMethod.*"/&gt;
+        &lt;exclude name=".*brokenTestMethod.*"/&gt;
+      &lt;/methods&gt;
+     &lt;/class&gt;
+  &lt;/classes&gt;
+&lt;/test&gt;
+</pre>
+
+This can come in handy to deactivate a single method without having to recompile 
 anything, but I don't recommend using this technique too much since it makes 
 your testing framework likely to break if you start refactoring your Java code 
 (the regular expressions used in the tags might not match your methods any 
@@ -726,50 +768,65 @@ more).
 For example, you might want to define a group &quot;all&quot; that includes &quot;checkintest&quot; 
 and &quot;functest&quot;.&nbsp; &quot;functest&quot; itself will contain the groups &quot;windows&quot; and 
 &quot;linux&quot; while &quot;checkintest will only contain &quot;windows&quot;.&nbsp; Here is how you 
-would define this in your property file:</p><pre class="code">&lt;<span class="tag">test</span> <span class="attribute">name="Regression1"</span>&gt;
-&nbsp;&nbsp;&lt;<span class="tag">groups</span>&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">define</span> <span class="attribute">name="functest"</span>&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">include</span> <span class="attribute">name="windows"</span>/&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">include</span> <span class="attribute">name="linux"</span>/&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">/define</span>&gt;
-&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">define</span> <span class="attribute">name="all"</span>&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">include</span> <span class="attribute">name="functest"</span>/&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">include</span> <span class="attribute">name="checkintest"</span>/&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">/define</span>&gt;
-&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">run</span>&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">include</span> <span class="attribute">name="all"</span>/&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">/run</span>&gt;
-&nbsp;&nbsp;&lt;<span class="tag">/groups</span>&gt;
-&nbsp;
-&nbsp;&nbsp;&lt;<span class="tag">classes</span>&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">class</span> <span class="attribute">name="test.sample.Test1"</span>/&gt;
-&nbsp;&nbsp;&lt;<span class="tag">/classes</span>&gt;
-&lt;<span class="tag">/test</span>&gt;</pre></p><!-------------------------------------
+would define this in your property file:</p>
+
+
+<pre class="prettyprint">
+&lt;test name="Regression1"&gt;
+  &lt;groups&gt;
+    &lt;define name="functest"&gt;
+      &lt;include name="windows"/&gt;
+      &lt;include name="linux"/&gt;
+    &lt;/define&gt;
+ 
+    &lt;define name="all"&gt;
+      &lt;include name="functest"/&gt;
+      &lt;include name="checkintest"/&gt;
+    &lt;/define&gt;
+ 
+    &lt;run&gt;
+      &lt;include name="all"/&gt;
+    &lt;/run&gt;
+  &lt;/groups&gt;
+ 
+  &lt;classes&gt;
+    &lt;class name="test.sample.Test1"/&gt;
+  &lt;/classes&gt;
+&lt;/test&gt;
+</pre>
+
+</p><!-------------------------------------
   EXCLUSION
   ------------------------------------><h4><a name="exclusions">5.3 - Exclusion groups</a></h4><p>TestNG allows you to include groups as well as exclude them.</p><p>For example, it is quite usual to have tests that temporarily break because 
 of a recent change, and you don't have time to fix the breakage yet.&nbsp; 4
 However, you do want to have clean runs of your functional tests, so you need to 
 deactivate these tests but keep in mind they will need to be reactivated.</p><p>A simple way to solve this problem is to create a group called &quot;broken&quot; and 
 make these test methods belong to it.&nbsp; For example, in the above example, I 
-know that testMethod2() is now broken so I want to disable it:</p><pre class="code">
-@<span class=j_eclipse_classname>Test</span>(groups = {<span class=j_eclipse_string>"checkintest"</span>, <span class=j_eclipse_string>"broken"</span>} )
-<span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> <span class=j_eclipse_methname>testMethod2</span>() {
-}</pre><p>All I need to do now is to exclude this group from the run:
+know that testMethod2() is now broken so I want to disable it:</p>
 
-<pre class="code">&lt;<span class="tag">test</span> <span class="attribute">name="Simple example"</span>&gt;
-&nbsp;&nbsp;&lt;<span class="tag">groups</span>&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">run</span>&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">include</span> <span class="attribute">name="checkintest"</span>/&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">exclude</span> <span class="attribute">name="broken"</span>/&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">/run</span>&gt;
-&nbsp;&nbsp;&lt;<span class="tag">/groups</span>&gt;
-&nbsp;
-&nbsp;&nbsp;&lt;<span class="tag">classes</span>&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">class</span> <span class="attribute">name="example1.Test1"</span>/&gt;
-&nbsp;&nbsp;&lt;<span class="tag">/classes</span>&gt;
-&lt;<span class="tag">/test&gt;</span></pre><p>This way, I will get a clean test run while keeping track of what tests are 
+<pre class="prettyprint">
+@Test(groups = {"checkintest", "broken"} )
+public void testMethod2() {
+}
+</pre>
+<p>All I need to do now is to exclude this group from the run:
+
+<pre class="prettyprint">
+&lt;test name="Simple example"&gt;
+  &lt;groups&gt;
+    &lt;run&gt;
+      &lt;include name="checkintest"/&gt;
+      &lt;exclude name="broken"/&gt;
+    &lt;/run&gt;
+  &lt;/groups&gt;
+ 
+  &lt;classes&gt;
+    &lt;class name="example1.Test1"/&gt;
+  &lt;/classes&gt;
+&lt;/test&gt;
+</pre>
+
+<p>This way, I will get a clean test run while keeping track of what tests are 
 broken and need to be fixed later.</p><blockquote>
 	<p><i>Note:&nbsp; you can also disable tests on an individual basis by using the 
 &quot;enabled&quot; property available on both @Test and @Before/After annotations.</i></p></blockquote><h4>
@@ -780,16 +837,20 @@ broken and need to be fixed later.</p><blockquote>
   ------------------------------------>
 
 <a name="partial-groups">5.4 - Partial groups</a></h4><p>You can define 
-groups at the class level and then add groups at the method level:</p><pre class="code">
-@<span class=j_eclipse_classname>Test</span>(groups = { <span class=j_eclipse_string>"checkin-test"</span> })
-<span class=j_eclipse_keyword>public</span> <span class=j_eclipse_keyword>class</span> <span class=j_eclipse_classname>All</span> {
+groups at the class level and then add groups at the method level:</p>
 
-&nbsp; @<span class=j_eclipse_classname>Test</span>(groups = { <span class=j_eclipse_string>"func-test"</span> )
-  <span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> <span class=j_eclipse_methname>method1</span>() { ... }
+<pre class="prettyprint">
+@Test(groups = { "checkin-test" })
+public class All {
 
-  <span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> <span class=j_eclipse_methname>method2</span>() { ... }
+  @Test(groups = { "func-test" )
+  public void method1() { ... }
+
+  public void method2() { ... }
 }
-</pre>In this class, method2() is part of the group &quot;checkin-test&quot;, which is defined 
+</pre>
+
+In this class, method2() is part of the group &quot;checkin-test&quot;, which is defined 
 at the class level, while method1() belongs to both &quot;checkin-test&quot; and 
 &quot;func-test&quot;.
 
@@ -813,27 +874,40 @@ programmatically.</p><p>
 
 
 If you are using simple values for your parameters, you can specify them in your 
-<tt>testng.xml</tt>:</p><pre class="code">
-<span class=j_eclipse_classname>@Parameters({ &quot;first-name&quot; })
+<tt>testng.xml</tt>:</p>
+
+<pre class="prettyprint">
+@Parameters({ "first-name" })
 @Test
-</span><span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> <span class=j_eclipse_methname>testSingleString</span>(<span class=j_eclipse_classname>String</span> <span class=j_eclipse_varname>firstName</span>) {&nbsp;
-  <span class=j_eclipse_classname>System</span>.out.println(<span class=j_eclipse_string>"Invoked testString "</span> + firstName);
-&nbsp; assert <span class=j_eclipse_string>"Cedric"</span>.equals(firstName);
+public void testSingleString(String firstName) { 
+  System.out.println("Invoked testString " + firstName);
+  assert "Cedric".equals(firstName);
 }
-</pre>In this code, we specify that the parameter <tt>firstName</tt> of your Java method 
+</pre>
+
+In this code, we specify that the parameter <tt>firstName</tt> of your Java method 
 should receive the value of the XML parameter called <tt>first-name</tt><i>.</i>&nbsp; 
 This XML parameter is defined in <tt>testng.xml</tt>:<p>
-<pre class="code">&lt;<span class="tag">suite</span> <span class="attribute">name="My suite"</span>&gt;
-&nbsp;&nbsp;&lt;<span class="tag">parameter</span> <span class="attribute">name="first-name"</span>&nbsp;&nbsp;<span class="attribute">value="Cedric"</span>/&gt;
-&nbsp;&nbsp;&lt;<span class="tag">test</span> <span class="attribute">name="Simple example"</span>&gt;
-&nbsp; ...</pre><h4><span style="font-weight: 400">The same technique can be used for <tt>@Before/After </tt>and <tt>@Factory</tt> annotations:</span></h4><pre class="code">
-@Parameters({ <span class=j_eclipse_string>&quot;datasource&quot;</span>, <span class=j_eclipse_string>&quot;jdbcDriver&quot;</span> })
+
+<pre class="prettyprint">
+&lt;suite name="My suite"&gt;
+  &lt;parameter name="first-name"  value="Cedric"/&gt;
+  &lt;test name="Simple example"&gt;
+  &lt;-- ... --&gt;
+</pre>
+
+<h4><span style="font-weight: 400">The same technique can be used for <tt>@Before/After </tt>and <tt>@Factory</tt> annotations:</span></h4>
+
+<pre class="prettyprint">
+@Parameters({ "datasource", "jdbcDriver" })
 @BeforeMethod
-<span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> <span class=j_eclipse_methname>beforeTest</span>(<span class=j_eclipse_classname>String</span> <span class=j_eclipse_varname>ds</span>, <span class=j_eclipse_classname>String</span> <span class=j_eclipse_varname>driver</span>) {
-&nbsp; m_dataSource = ...;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  <span class=j_eclipse_comment>// look up the value of datasource</span>
-&nbsp; m_jdbcDriver = driver;
+public void beforeTest(String ds, String driver) {
+  m_dataSource = ...;                              // look up the value of datasource
+  m_jdbcDriver = driver;
 }
-</pre>This time, the two Java parameter <i>ds</i> 
+</pre>
+
+This time, the two Java parameter <i>ds</i> 
 and <i>driver</i> will receive the value given to the properties <tt>datasource</tt> 
 and <tt>jdbc-driver </tt>respectively.&nbsp;
 <p>The <tt>@Parameters</tt> annotation can be placed at the following locations:</p><ul>
@@ -870,24 +944,24 @@ from Java (complex objects, objects read from a property file or a database, etc
 test.&nbsp; A Data Provider is a method on your class that returns an array of 
 array of objects.&nbsp; This method is annotated with @DataProvider:
 
-<blockquote class="code">
-<font color="#3f7f5f">//This&nbsp;method&nbsp;will&nbsp;provide&nbsp;data&nbsp;to&nbsp;any&nbsp;test&nbsp;method&nbsp;that&nbsp;declares&nbsp;that&nbsp;its&nbsp;Data&nbsp;Provider</font><br/>
-<font color="#3f7f5f">//is&nbsp;named&nbsp;&#34;test1&#34;</font><br/>
-<font color="#000000">@DataProvider</font><font color="#000000">(</font><font color="#000000">name&nbsp;=&nbsp;</font><font color="#2a00ff">&#34;test1&#34;</font><font color="#000000">)</font><br/>
-<font color="#7f0055"><b>public&nbsp;</b></font><font color="#000000">Object</font><font color="#000000">[][]&nbsp;</font><font color="#000000">createData1</font><font color="#000000">()&nbsp;{</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#7f0055"><b>return&nbsp;new&nbsp;</b></font><font color="#000000">Object</font><font color="#000000">[][]&nbsp;{</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font>{&nbsp;</font><font color="#2a00ff">&#34;Cedric&#34;</font><font color="#000000">,&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Integer</font><font color="#000000">(</font><font color="#990000">36</font><font color="#000000">)&nbsp;}</font><font color="#000000">,</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font>{&nbsp;</font><font color="#2a00ff">&#34;Anne&#34;</font><font color="#000000">,&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Integer</font><font color="#000000">(</font><font color="#990000">37</font><font color="#000000">)}</font><font color="#000000">,&nbsp;</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#000000">}</font><font color="#000000">;</font><br/>
-<font color="#000000">}</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#3f7f5f">//This&nbsp;test&nbsp;method&nbsp;declares&nbsp;that&nbsp;its&nbsp;data&nbsp;should&nbsp;be&nbsp;supplied&nbsp;by&nbsp;the&nbsp;Data&nbsp;Provider</font><br/>
-<font color="#3f7f5f">//named&nbsp;&#34;test1&#34;</font><br/>
-<font color="#000000">@Test</font><font color="#000000">(</font><font color="#000000">dataProvider&nbsp;=&nbsp;</font><font color="#2a00ff">&#34;test1&#34;</font><font color="#000000">)</font><br/>
-<font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>void&nbsp;</b></font><font color="#000000">verifyData1</font><font color="#000000">(</font><font color="#000000">String&nbsp;n1,&nbsp;Integer&nbsp;n2</font><font color="#000000">)&nbsp;{</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#000000">System.out.println</font><font color="#000000">(</font><font color="#000000">n1&nbsp;+&nbsp;</font><font color="#2a00ff">&#34;&nbsp;&#34;&nbsp;</font><font color="#000000">+&nbsp;n2</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#000000">}</font>
-</blockquote>
+<pre class="prettyprint">
+//This method will provide data to any test method that declares that its Data Provider
+//is named "test1"
+@DataProvider(name = "test1")
+public Object[][] createData1() {
+ return new Object[][] {
+   { "Cedric", new Integer(36) },
+   { "Anne", new Integer(37)}, 
+ };
+}
+
+//This test method declares that its data should be supplied by the Data Provider
+//named "test1"
+@Test(dataProvider = "test1")
+public void verifyData1(String n1, Integer n2) {
+ System.out.println(n1 + " " + n2);
+} 
+</pre>
 will print
 
 <blockquote class="code">
@@ -909,22 +983,22 @@ The Data Provider method can return one of the following two types:
 Here is an example of this feature for both JDK 1.4 and JDK5 (note that the JDK 1.4 example does not use Generics):
 
 
-<blockquote class="code">
+<pre class="prettyprint">
+/**
+ * @testng.data-provider name="test1"
+ */
+public Iterator createData() {
+  return new MyIterator(DATA);
+)
+</pre>
 
-<font color="#3f5fbf">/**</font><br/>
-<font color="#3f5fbf">&nbsp;*&nbsp;@testng.data-provider&nbsp;name=&#34;test1&#34;</font><br/>
-<font color="#3f5fbf">&nbsp;*/</font><br/>
-<font color="#7f0055"><b>public&nbsp;</b></font><font color="#000000">Iterator&nbsp;createData</font><font color="#000000">()&nbsp;{</font><br/>
-<font color="#7f0055"><b>&nbsp;&nbsp;return&nbsp;new&nbsp;</b></font><font color="#000000">MyIterator</font><font color="#000000">(</font><font color="#000000">DATA</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#000000">)</font><br/>
-</blockquote>
+<pre class="prettyprint">
+@DataProvider(name = "test1")
+public Iterator<Object[]> createData() {
+  return new MyIterator(DATA);
+} 
+</pre>
 
-<blockquote class="code">
-<font color="#000000">@DataProvider</font><font color="#000000">(</font><font color="#000000">name&nbsp;=&nbsp;</font><font color="#2a00ff">&#34;test1&#34;</font><font color="#000000">)</font><br/>
-<font color="#7f0055"><b>public&nbsp;</b></font><font color="#000000">Iterator&lt;Object</font><font color="#000000">[]</font><font color="#000000">&gt;&nbsp;createData</font><font color="#000000">()&nbsp;{</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>return&nbsp;new&nbsp;</b></font><font color="#000000">MyIterator</font><font color="#000000">(</font><font color="#000000">DATA</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#000000">}</font>
-</blockquote>
 If you declare your <tt>@DataProvider</tt> as taking a <tt>java.lang.reflect.Method</tt>
 as first parameter, TestNG will pass the current test method for this
 first parameter.  This is particularly useful when several test methods
@@ -933,22 +1007,21 @@ values depending on which test method it is supplying data for.
 <p>
 For example, the following code prints the name of the test method inside its <tt>@DataProvider</tt>:
 
-<blockquote class="code">
-<font color="#ffffff"></font><font color="#000000">@DataProvider</font><font color="#000000">(</font><font color="#000000">name&nbsp;=&nbsp;</font><font color="#2a00ff">&#34;dp&#34;</font><font color="#000000">)</font><br/>
-<font color="#ffffff"></font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#000000">Object</font><font color="#000000">[][]&nbsp;</font><font color="#000000">createData</font><font color="#000000">(</font><font color="#000000">Method&nbsp;m</font><font color="#000000">)&nbsp;{</font><br/>
-<font color="#ffffff"></font><font color="#000000">&nbsp;&nbsp;<b>System.out.println</font><font color="#000000">(</font><font color="#000000">m.getName</font><font color="#000000">())</font><font color="#000000">;</font>&nbsp; // print test method name</b><br/>
-<font color="#ffffff"></font><font color="#7f0055"><b>&nbsp;&nbsp;return&nbsp;new&nbsp;</b></font><font color="#000000">Object</font><font color="#000000">[][]&nbsp;{&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Object</font><font color="#000000">[]&nbsp;{&nbsp;</font><font color="#2a00ff">&#34;Cedric&#34;&nbsp;</font><font color="#000000">}}</font><font color="#000000">;</font><br/>
-<font color="#ffffff"></font><font color="#000000">}</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff"></font><font color="#000000">@Test</font><font color="#000000">(</font><font color="#000000">dataProvider&nbsp;=&nbsp;</font><font color="#2a00ff">&#34;dp&#34;</font><font color="#000000">)</font><br/>
-<font color="#ffffff"></font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>void&nbsp;</b></font><font color="#000000">test1</font><font color="#000000">(String s)&nbsp;{</font><br/>
-<font color="#ffffff"></font><font color="#000000">}</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff"></font><font color="#000000">@Test</font><font color="#000000">(</font><font color="#000000">dataProvider&nbsp;=&nbsp;</font><font color="#2a00ff">&#34;dp&#34;</font><font color="#000000">)</font><br/>
-<font color="#ffffff"></font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>void&nbsp;</b></font><font color="#000000">test2</font><font color="#000000">(String s)&nbsp;{</font><br/>
-<font color="#ffffff"></font><font color="#000000">}</font>
+<pre class="prettyprint">
+@DataProvider(name = "dp")
+public Object[][] createData(Method m) {
+  System.out.println(m.getName());  // print test method name
+  return new Object[][] { new Object[] { "Cedric" }};
+}
 
-</blockquote>
+@Test(dataProvider = "dp")
+public void test1(String s) {
+}
+
+@Test(dataProvider = "dp")
+public void test2(String s) {
+}
+</pre>
 
 and will therefore display:
 
@@ -1000,22 +1073,30 @@ final report).
 
 Here is an example of a hard dependency:
 
-<pre class="code">@<span class=j_eclipse_classname>Test</span>
-<span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> <span class=j_eclipse_methname>serverStartedOk</span>() {}
+<pre class="prettyprint">
+@Test
+public void serverStartedOk() {}
 
-@<span class=j_eclipse_classname>Test</span>(dependsOnMethods = { <span class=j_eclipse_string>"serverStartedOk"</span> })
-<span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> <span class=j_eclipse_methname>method1</span>() {}
+@Test(dependsOnMethods = { "serverStartedOk" })
+public void method1() {}
+</pre>
 
-</pre><p>In this example, <tt>method1()</tt> is declared as depending on method 
+<p>In this example, <tt>method1()</tt> is declared as depending on method 
 serverStartedOk(), which guarantees that serverStartedOk() 
-will always be invoked first.</p><p>You can also have methods that depend on entire groups:</p><pre class="code">@<span class=j_eclipse_classname>Test</span>(groups = { &quot;init&quot; })
-<span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> serverStartedOk() {}
+will always be invoked first.</p><p>You can also have methods that depend on entire groups:</p>
 
-@<span class=j_eclipse_classname>Test</span>(groups = { &quot;init&quot; })
-<span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> initEnvironment() {}
+<pre class="prettyprint">
+@Test(groups = { "init" })
+public void serverStartedOk() {}
 
-@<span class=j_eclipse_classname>Test</span>(dependsOnGroups = { &quot;init.* })
-<span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> method1() {}</pre><p>In this example, method1() is declared as depending on any group matching the 
+@Test(groups = { "init" })
+public void initEnvironment() {}
+
+@Test(dependsOnGroups = { "init.* })
+public void method1() {}
+</pre>
+
+<p>In this example, method1() is declared as depending on any group matching the 
 regular expression &quot;init.*&quot;, which guarantees that the methods <tt>serverStartedOk()</tt> 
 and <tt>initEnvironment()</tt> will always be invoked before <tt>method1()</tt>.&nbsp; </p>
 <blockquote>
@@ -1038,48 +1119,72 @@ dependencies.</p><!-------------------------------------
 
 <p>Factories allow you to create tests dynamically. For example, imagine you 
 want to create a test method that will access a page on a Web site several 
-times, and you want to invoke it with different values:</p><pre class="code">
-<span class=j_eclipse_keyword>public</span> <span class=j_eclipse_keyword>class</span> <span class=j_eclipse_classname>TestWebServer</span> {
-&nbsp; @<span class=j_eclipse_classname>Test</span>(parameters = { <span class=j_eclipse_string>"number-of-times"</span> })
-&nbsp; <span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> <span class=j_eclipse_methname>accessPage</span>(<span class=j_eclipse_typekeyw>int</span> <span class=j_eclipse_varname>numberOfTimes</span>) {
-    <span class=j_eclipse_keyword>while</span> (numberOfTimes-- &gt; 0) {
-     <span class=j_eclipse_comment>// access the web page</span>
-&nbsp;&nbsp;&nbsp; }
-&nbsp; }
-}
-</pre><tt>testng.xml:</tt></p><pre class="code">&lt;<span class="tag">parameter</span> <span class="attribute">name="number-of-times"</span>&nbsp;&nbsp;&nbsp;<span class="attribute">value="10"</span>/&gt;
-&lt;<span class="tag">class</span> name= "TestWebServer" /&gt;
-&lt;<span class="tag">parameter</span> <span class="attribute">name="number-of-times"</span>&nbsp;&nbsp;&nbsp;<span class="attribute">value="20"</span>/&gt;
-&lt;<span class="tag">class</span> name= "TestWebServer"/&gt;
-&lt;<span class="tag">parameter</span> <span class="attribute">name="number-of-times"</span>&nbsp;&nbsp;&nbsp;<span class="attribute">value="30"</span>/&gt;
-&lt;<span class="tag">class</span> name= "TestWebServer"/&gt;</pre><p>This can become quickly impossible to manage, so instead, you should use a 
-factory:</p><pre class="code">
-<span class=j_eclipse_keyword>public</span> <span class=j_eclipse_keyword>class</span> <span class=j_eclipse_classname>WebTestFactory</span> {
-&nbsp; @<span class=j_eclipse_classname>Factory</span>
-  <span class=j_eclipse_keyword>public</span> <span class=j_eclipse_classname>Object</span>[] <span class=j_eclipse_methname>createInstances</span>() {
-   <span class=j_eclipse_classname>Object</span>[] <span class=j_eclipse_varname>result</span> = <span class=j_eclipse_keyword>new</span> <span class=j_eclipse_classname>Object</span>[10];&nbsp;&nbsp;
-   <span class=j_eclipse_keyword>for</span> (<span class=j_eclipse_typekeyw>int</span> <span class=j_eclipse_varname>i</span> = 0; i &lt; 10; i++) {
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; result[i] = <span class=j_eclipse_keyword>new</span> <span class=j_eclipse_classname>WebTest</span>(i * 10);
-    <span class=j_eclipse_keyword>return</span> result;
-&nbsp; }
-}
-</pre>and the new test class is now:</p><pre class="code">
-<span class=j_eclipse_keyword>public</span> <span class=j_eclipse_keyword>class</span> <span class=j_eclipse_classname>WebTest</span> {
-  <span class=j_eclipse_keyword>private</span> <span class=j_eclipse_typekeyw>int</span> <span class=j_eclipse_varname>m_numberOfTimes</span>;
-  <span class=j_eclipse_keyword>public</span> <span class=j_eclipse_classname>WebTest</span>(<span class=j_eclipse_typekeyw>int</span> <span class=j_eclipse_varname>numberOfTimes</span>) {
-&nbsp;&nbsp;&nbsp; m_numberOfTimes = numberOfTimes;
-&nbsp; }
+times, and you want to invoke it with different values:</p>
 
-&nbsp; @<span class=j_eclipse_classname>Test</span>
-  <span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> <span class=j_eclipse_methname>testServer</span>() {
-   <span class=j_eclipse_keyword>for</span> (<span class=j_eclipse_typekeyw>int</span> <span class=j_eclipse_varname>i</span> = 0; i &lt; m_numberOfTimes; i++) {
-     <span class=j_eclipse_comment>// access the web page</span>
-&nbsp;&nbsp;&nbsp; }
-&nbsp; }
+<pre class="prettyprint">
+public class TestWebServer {
+  @Test(parameters = { "number-of-times" })
+  public void accessPage(int numberOfTimes) {
+    while (numberOfTimes-- > 0) {
+     // access the web page
+    }
+  }
 }
-</pre><p>Your <tt>testng.xml</tt> only needs to reference the class that 
+</pre>
+
+<tt>testng.xml:</tt></p>
+
+<pre class="prettyprint">
+&lt;parameter name="number-of-times"   value="10"/&gt;
+&lt;class name= "TestWebServer" /&gt;
+&lt;parameter name="number-of-times"   value="20"/&gt;
+&lt;class name= "TestWebServer"/&gt;
+&lt;parameter name="number-of-times"   value="30"/&gt;
+&lt;class name= "TestWebServer"/&gt;
+</pre>
+
+<p>This can become quickly impossible to manage, so instead, you should use a 
+factory:</p>
+
+<pre class="prettyprint">
+public class WebTestFactory {
+  @Factory
+  public Object[] createInstances() {
+   Object[] result = new Object[10];  
+   for (int i = 0; i < 10; i++) {
+      result[i] = new WebTest(i * 10);
+    return result;
+  }
+}
+</pre>
+
+and the new test class is now:</p>
+
+<pre class="prettyprint">
+public class WebTest {
+  private int m_numberOfTimes;
+  public WebTest(int numberOfTimes) {
+    m_numberOfTimes = numberOfTimes;
+  }
+
+  @Test
+  public void testServer() {
+   for (int i = 0; i < m_numberOfTimes; i++) {
+     // access the web page
+    }
+  }
+}
+</pre>
+
+<p>Your <tt>testng.xml</tt> only needs to reference the class that 
 contains the factory method, since the test instances themselves will be created 
-at runtime:</p><pre class="code">&lt;<span class="tag">class</span> <span class="attribute">name="WebTestFactory"</span>&nbsp;/&gt;</pre><p>The factory method can receive parameters just like <tt>@Test</tt> and <tt>@Before/After</tt> and it must return <tt>Object[]</tt>.&nbsp; 
+at runtime:</p>
+
+<pre class="prettyprint">
+<class name="WebTestFactory" />
+</pre>
+
+<p>The factory method can receive parameters just like <tt>@Test</tt> and <tt>@Before/After</tt> and it must return <tt>Object[]</tt>.&nbsp; 
 The objects returned can be of any class (not necessarily the same class as the 
 factory class) and they don't even need to contain TestNG annotations (in which 
 case they will be ignored by TestNG).</p><!------- --><!-- ANT  --><!------- --><!-- end maven stuff --><!-------------------------------------
@@ -1087,9 +1192,12 @@ case they will be ignored by TestNG).</p><!------- --><!-- ANT  --><!------- -->
   ------------------------------------><h4><a name="parallel-running">5.8 - Parallel running and time-outs</a></h4>You can 
 instruct TestNG to run your tests in separate threads by using the <i>parallel</i> 
 attribute on the suite tag:
-<pre class="code">&lt;<span class='tag'>suite</span> <span class='attribute'>name=&quot;My suite&quot; parallel=&quot;true&quot; thread-count=&quot;5&quot;</span>&gt;
-...
-</pre>When you use the <i>parallel</i> attribute, TestNG will try to run all your test methods in separate threads, except for methods 
+
+<pre class="code">
+&lt;suite name="My suite" parallel="true" thread-count="5"&gt;
+&lt;!-- ... --&gt;
+</pre>
+When you use the <i>parallel</i> attribute, TestNG will try to run all your test methods in separate threads, except for methods 
 that depend on each other, which will be run in the same thread in order to 
 respect their order of execution.&nbsp; Additionally, the attribute <i>
 thread-count</i> allows you to specify how many threads should be allocated for 
@@ -1097,10 +1205,11 @@ this execution.<blockquote>
 	<p><i>Note: the <tt>@Test</tt> attribute <tt>timeOut</tt> works in both 
 	parallel and non-parallel mode.</i></p></blockquote>You can also specify that a <tt>@Test</tt> method should be invoked from different threads.  You can use the attribute <tt>threadPoolSize</tt> to achieve this result:
 
-<pre class="code">
-&nbsp; @<span class=j_eclipse_classname>Test</span>(threadPoolSize = <span class=j_eclipse_string>3</span>, invocationCount = <span class=j_eclipse_string>10</span>,&nbsp; timeOut = <span class=j_eclipse_string>10000</span>)
-  <span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> <span class=j_eclipse_methname>testServer</span>() {
-</pre>In this example, the function <tt>testServer</tt> will be invoked ten times from three different threads.  Additionally, a time-out of ten seconds guarantees that none of the threads will block on this thread forever. 
+<pre class="prettyprint">
+@Test(threadPoolSize = 3, invocationCount = 10,  timeOut = 10000)
+public void testServer() {
+</pre>
+In this example, the function <tt>testServer</tt> will be invoked ten times from three different threads.  Additionally, a time-out of ten seconds guarantees that none of the threads will block on this thread forever. 
 
 <!-------------------------------------
   RERUNNING
@@ -1116,15 +1225,21 @@ like this:
 <pre class="code">
 java -classpath testng.jar;%CLASSPATH% org.testng.TestNG -d test-outputs testng.xml
 java -classpath testng.jar;%CLASSPATH% org.testng.TestNG -d test-outputs test-outputs\testng-failed.xml
-</pre><p>Note that <tt>testng-failed.xml</tt> will contain all the necessary dependent 
+</pre>
+
+<p>Note that <tt>testng-failed.xml</tt> will contain all the necessary dependent 
 methods so that you are guaranteed to run the methods that failed without any 
 SKIP failures.</p><h4><a name="junit">5.10 - JUnit tests</a></h4>TestNG can run JUnit tests.&nbsp; All you need to do is specify your JUnit test 
 classes in the <tt>testng.classNames</tt> property and set the <tt>testng.junit</tt> property to 
 true:<br>
 <p></p>
-<pre class="code">&lt;<span class="tag">test</span> <span class="attribute">name="Test1"</span>&nbsp;&nbsp;&nbsp;<span class="attribute">junit="true"</span>&gt;
-&nbsp; &lt;<span class="tag">classes</span>&gt;
-&nbsp;&nbsp; ...</pre><p>The behavior of TestNG in this case is similar to JUnit:<br>
+<pre class="prettyprint">
+&lt;test name="Test1"   junit="true"&gt;
+  &lt;classes&gt;
+    &lt;!-- ... --&gt;
+</pre>
+
+<p>The behavior of TestNG in this case is similar to JUnit:<br>
 </p>
 <ul>
   <li>All methods starting with test* in your classes will be run</li><li>If there is a method setUp() on your test class, it will be invoked before 
@@ -1140,22 +1255,26 @@ true:<br>
 TestNG also works with JDK 1.4.&nbsp; In this case, you need to use the JDK 
 1.4 jar file in the distribution (named <i>testng-...-jdk14.jar</i>).&nbsp; The 
 only difference is in the annotations, which use the popular XDoclet JavaDoc 
-annotation syntax:</p><pre class="code">
-<span class=j_eclipse_keyword>public</span> <span class=j_eclipse_keyword>class</span> <span class=j_eclipse_classname>SimpleTest</span> {
- <span class=j_eclipse_comment>/**
-&nbsp; * @testng.before-class = "true"
-&nbsp; *</span>/
-  <span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> <span class=j_eclipse_methname>setUp</span>() {
-    <span class=j_eclipse_comment>// code that will be invoked when this test is instantiated</span>
+annotation syntax:</p>
+
+<pre class="prettyprint">
+public class SimpleTest {
+ /**
+  * @testng.before-class = "true"
+  */
+  public void setUp() {
+    // code that will be invoked when this test is instantiated
  }
- <span class=j_eclipse_comment>/**
-&nbsp; * @testng.test groups = "functest" dependsOnGroups = "group1,group2"
-&nbsp;&nbsp;*</span>/
-  <span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> <span class=j_eclipse_methname>testItWorks</span>() {
-    <span class=j_eclipse_comment>// your test code</span>
+ /**
+  * @testng.test groups = "functest" dependsOnGroups = "group1,group2"
+  */
+  public void testItWorks() {
+    // your test code
  }
 }
-</pre><p>The rules for the JavaDoc syntax are pretty straightforward and the only 
+</pre>
+
+<p>The rules for the JavaDoc syntax are pretty straightforward and the only 
 difference with JDK 1.5 annotations is that arrays of strings should be 
 specified as a single, comma or space-separated string.&nbsp; Although double quotes 
 around values are optional, I recommend using them anyway so that future 
@@ -1224,15 +1343,15 @@ JDK 1.5 tests ported to JavaDoc annotations.</p><!------------------------------
 <a name="running-testng-programmatically">5.12 - Running TestNG programmatically</a>
 </h4>
 
-<p>You can invoke TestNG from your own programs very easily:</p><blockquote class="code">
+<p>You can invoke TestNG from your own programs very easily:</p>
 
-
-<font color="#000000">TestListenerAdapter&nbsp;tla&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">TestListenerAdapter</font><font color="#000000">()</font><font color="#000000">;</font><br/>
-<font color="#000000">TestNG&nbsp;testng&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">TestNG</font><font color="#000000">()</font><font color="#000000">;</font><br/>
-<font color="#000000">testng.setTestClasses</font><font color="#000000">(</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Class</font><font color="#000000">[]&nbsp;{&nbsp;</font><font color="#000000">Run2.</font><font color="#7f0055"><b>class&nbsp;</b></font><font color="#000000">})</font><font color="#000000">;</font><br/>
-<font color="#000000">testng.addListener</font><font color="#000000">(</font><font color="#000000">tla</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#000000">testng.run</font><font color="#000000">()</font><font color="#000000">;</font>
-</blockquote>
+<pre class="prettyprint">
+TestListenerAdapter tla = new TestListenerAdapter();
+TestNG testng = new TestNG();
+testng.setTestClasses(new Class[] { Run2.class });
+testng.addListener(tla);
+testng.run(); 
+</pre>
 
 This example creates a <tt><a href="http://testng.org/javadocs/org/testng/TestNG.html">TestNG</a></tt> object and runs the test class <tt>Run2</tt>.  It also adds a <tt>TestListener</tt>.  You can either use the adapter class <tt><a href="http://testng.org/javadocs/org/testng/TestListenerAdapter.html">org.testng.TestListenerAdapter</a></tt> or implement <tt><a href="http://testng.org/javadocs/org/testng/ITestListener.html">org.testng.ITestListener</a></tt> yourself.  This interface contains various callback methods that let you keep track of when a test starts, succeeds, fails, etc... 
 <p>
@@ -1240,35 +1359,36 @@ Similary, you can invoke TestNG on a <tt>testng.xml</tt> file or you can create 
 <p>
 For example, suppose you want to create the following virtual file:
 
-<pre class="code"><span class="tag">&lt;suite</span> <span class="attribute">name="TmpSuite"</span> &gt;
-  <span class="tag">&lt;test</span> <span class="attribute">name="TmpTest"</span> &gt;
-    <span class="tag">&lt;classes&gt;
-</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      <span class="tag">&lt;class</span> <span class="attribute">name="test.failures.Child"</span>&nbsp; /&gt;
-    <span class="tag">&lt;classes&gt;
-</span>&nbsp;&nbsp;  <span class="tag">&lt;/test&gt;
-&lt;/suite&gt;</span></pre>You would use the following code:
+<pre class="prettyprint">
+&lt;suite name="TmpSuite" &gt;
+  &lt;test name="TmpTest" &gt;
+    &lt;classes&gt;
+      &lt;class name="test.failures.Child"  /&gt;
+    &lt;classes&gt;
+    &lt;/test&gt;
+&lt;/suite&gt;
+</pre>
 
-<blockquote class="code">
+You would use the following code:
 
-<font color="#000000">XmlSuite&nbsp;suite&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">XmlSuite</font><font color="#000000">()</font><font color="#000000">;</font><br/>
-<font color="#000000">suite.setName</font><font color="#000000">(</font><font color="#2a00ff">&#34;TmpSuite&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#000000">XmlTest&nbsp;test&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">XmlTest</font><font color="#000000">(</font><font color="#000000">suite</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#000000">test.setName</font><font color="#000000">(</font><font color="#2a00ff">&#34;TmpTest&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#000000">List&lt;XmlClass&gt;&nbsp;classes&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">ArrayList&lt;XmlClass&gt;</font><font color="#000000">()</font><font color="#000000">;</font><br/>
-<font color="#000000">classes.add</font><font color="#000000">(</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">XmlClass</font><font color="#000000">(</font><font color="#2a00ff">&#34;test.failures.Child&#34;</font><font color="#000000">))</font><font color="#000000">;</font>
+<pre class="prettyprint">
+XmlSuite suite = new XmlSuite();
+suite.setName("TmpSuite");
 
-</blockquote>
+XmlTest test = new XmlTest(suite);
+test.setName("TmpTest");
+List&lt;XmlClass&gt; classes = new ArrayList&lt;XmlClass&gt;();
+classes.add(new XmlClass("test.failures.Child")); 
+</pre>
 And then you can pass this <tt>XmlSuite</tt> to TestNG:
 
-<blockquote class="code">
-<font color="#000000">List&lt;XmlSuite&gt;&nbsp;suites&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">ArrayList&lt;XmlSuite&gt;</font><font color="#000000">()</font><font color="#000000">;</font><br/>
-<font color="#000000">suites.add</font><font color="#000000">(</font><font color="#000000">suite</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#000000">TestNG&nbsp;tng&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">TestNG</font><font color="#000000">()</font><font color="#000000">;</font><br/>
-<font color="#000000">tng.setXmlSuites</font><font color="#000000">(</font><font color="#000000">suites</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#000000">tng.run</font><font color="#000000">()</font><font color="#000000">;&nbsp;&nbsp;</font>
-
-</blockquote>
+<pre class="prettyprint">
+List&lt;XmlSuite&gt; suites = new ArrayList&lt;XmlSuite&gt;();
+suites.add(suite);
+TestNG tng = new TestNG();
+tng.setXmlSuites(suites);
+tng.run(); 
+</pre>
 
 <p>Please see the <a href="../doc/javadocs/org/testng/package-summary.html" target="mainFrame">JavaDocs</a> for the entire API.</p><p>
 
@@ -1282,17 +1402,19 @@ And then you can pass this <tt>XmlSuite</tt> to TestNG:
 </h4>
 
 
-	<p>If the <tt>&lt;include&gt;</tt> and <tt>&lt;exclude&gt;</tt> tags in <tt>testng.xml</tt> are not enough for your needs, you can use a <a href="http://beanshell.org">BeanShell</a> expression to decide whether a certain test method should be included in a test run or not. You specify this expression just under the <tt>&lt;test&gt;</tt> tag:</p><blockquote class="code">
-&lt;test name=&quot;BeanShell test&quot;&gt;<br>
-&nbsp;&nbsp; &lt;method-selectors&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp; &lt;method-selector&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;script language=&quot;beanshell&quot;&gt;&lt;![CDATA[<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>groups.containsKey(&quot;test1&quot;)</b><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ]]>&lt;/script&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp; &lt;/method-selector&gt;<br>
-&nbsp;&nbsp; &lt;/method-selectors&gt;<br>
-&nbsp; ...
-</blockquote>
+	<p>If the <tt>&lt;include&gt;</tt> and <tt>&lt;exclude&gt;</tt> tags in <tt>testng.xml</tt> are not enough for your needs, you can use a <a href="http://beanshell.org">BeanShell</a> expression to decide whether a certain test method should be included in a test run or not. You specify this expression just under the <tt>&lt;test&gt;</tt> tag:</p>
+
+<pre class="prettyprint">
+&lt;test name="BeanShell test"&gt;
+   &lt;method-selectors&gt;
+     &lt;method-selector&gt;
+       &lt;script language="beanshell"&gt;&lt;![CDATA[
+         groups.containsKey("test1")
+       ]]&gt;&lt;/script&gt;
+     &lt;/method-selector&gt;
+   &lt;/method-selectors&gt;
+  &lt;!-- ... --&gt;
+</pre>
 
 When a <tt>&lt;script&gt;</tt> tag is found in <tt>testng.xml</tt>, TestNG will ignore subsequent <tt>&lt;include&gt;</tt> and <tt>&lt;exclude&gt;</tt> of groups and methods in the current <tt>&lt;test&gt;</tt> tag:&nbsp; your BeanShell expression will be the only way to decide whether a test method is included or not.</p><p>Here are additional information on the BeanShell script:</p><ul>
 <li>
@@ -1329,21 +1451,26 @@ documentation for the <tt>@ExpectedExceptions</tt> annotation).</p><p>Your test 
 exception, or of various assertions (using the Java &quot;assert&quot; keyword).&nbsp; An 
 &quot;assert&quot; failing will trigger an AssertionErrorException, which in turn will 
 mark the method as failed (remember to use -ea on the JVM if you are not seeing 
-the assertion errors).</p><p>Here is an example test method:</p><pre class="code">
-@<span class=j_eclipse_classname>Test</span>
-<span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> <span class=j_eclipse_methname>verifyLastName</span>() {
-&nbsp; assert <span class=j_eclipse_string>"Beust"</span>.equals(m_lastName) : <span class=j_eclipse_string>"Expected name Beust, for"</span> + m_lastName;
+the assertion errors).</p><p>Here is an example test method:</p>
+
+<pre class="prettyprint">
+@Test
+public void verifyLastName() {
+  assert "Beust".equals(m_lastName) : "Expected name Beust, for" + m_lastName;
 }
-</pre>TestNG also include JUnit's Assert class, which lets you perform 
-assertions on complex objects:<blockquote class="code">
-	import static org.testng.AssertJUnit.*;<br>
-	//...<br>
-@<span class=j_eclipse_classname>Test</span><br>
-<span class=j_eclipse_keyword>public</span> <span class=j_eclipse_typekeyw>void</span> <span class=j_eclipse_methname>verify() 
-	{<br>
-	</span>&nbsp; assertEquals(<span class=j_eclipse_string>"Beust&quot;, </span>m_lastName);<br>
-	}
-</blockquote>
+</pre>
+
+TestNG also include JUnit's Assert class, which lets you perform 
+assertions on complex objects:
+
+<pre class="prettyprint">
+import static org.testng.AssertJUnit.*;
+//...
+@Test
+public void verify() {
+  assertEquals("Beust", m_lastName);
+}
+</pre>
 <p>Note that the above code use a static import in order to be able to use the
 <tt>assertEquals</tt> method without having to prefix it by its class.
 
@@ -1371,33 +1498,33 @@ It's very easy to generate your own reports with TestNG with Listeners and Repor
 
 Here is a listener that displays a "." for each passed test, a "F" for each failure and a "S" for each skip:
 
-<blockquote class="code">
-<font color="#7f0055"><b>public&nbsp;class&nbsp;</b></font><font color="#000000">DotTestListener&nbsp;</font><font color="#7f0055"><b>extends&nbsp;</b></font><font color="#000000">TestListenerAdapter&nbsp;</font><font color="#000000">{</font><br />
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>private&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">m_count&nbsp;=&nbsp;</font><font color="#990000">0</font><font color="#000000">;</font><br />
-<font color="#ffffff"></font><br />
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#646464">@Override</font><br />
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>void&nbsp;</b></font><font color="#000000">onTestFailure</font><font color="#000000">(</font><font color="#000000">ITestResult&nbsp;tr</font><font color="#000000">)&nbsp;{</font><br />
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">log</font><font color="#000000">(</font><font color="#2a00ff">&#34;F&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br />
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br />
-<font color="#ffffff"></font><br />
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#646464">@Override</font><br />
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>void&nbsp;</b></font><font color="#000000">onTestSkipped</font><font color="#000000">(</font><font color="#000000">ITestResult&nbsp;tr</font><font color="#000000">)&nbsp;{</font><br />
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">log</font><font color="#000000">(</font><font color="#2a00ff">&#34;S&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br />
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br />
-<font color="#ffffff"></font><br />
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#646464">@Override</font><br />
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>void&nbsp;</b></font><font color="#000000">onTestSuccess</font><font color="#000000">(</font><font color="#000000">ITestResult&nbsp;tr</font><font color="#000000">)&nbsp;{</font><br />
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">log</font><font color="#000000">(</font><font color="#2a00ff">&#34;.&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br />
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br />
-<font color="#ffffff"></font><br />
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>private&nbsp;</b></font><font color="#7f0055"><b>void&nbsp;</b></font><font color="#000000">log</font><font color="#000000">(</font><font color="#000000">String&nbsp;string</font><font color="#000000">)&nbsp;{</font><br />
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">System.out.print</font><font color="#000000">(</font><font color="#2a00ff">&#34;.&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br />
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>if&nbsp;</b></font><font color="#000000">(</font><font color="#000000">m_count++&nbsp;%&nbsp;</font><font color="#990000">40&nbsp;</font><font color="#000000">==&nbsp;</font><font color="#990000">0</font><font color="#000000">)&nbsp;{</font><br />
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">System.out.println</font><font color="#000000">(</font><font color="#2a00ff">&#34;&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br />
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br />
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br />
-<font color="#000000">}</font>
-</blockquote>
+<pre class="prettyprint">
+public class DotTestListener extends TestListenerAdapter {
+  private int m_count = 0;
+
+  @Override
+  public void onTestFailure(ITestResult tr) {
+    log("F");
+  }
+
+  @Override
+  public void onTestSkipped(ITestResult tr) {
+    log("S");
+  }
+
+  @Override
+  public void onTestSuccess(ITestResult tr) {
+    log(".");
+  }
+
+  private void log(String string) {
+    System.out.print(".");
+    if (m_count++ % 40 == 0) {
+      System.out.println("");
+    }
+  }
+} 
+</pre>
 
 In this example, I chose to extend <a href="../javadocs/org/testng/TestListenerAdapter.html"><tt>TestListenerAdapter</tt></a>, which implements <a href="../javadocs/org/testng/ITestListener.html"><tt>ITestListener</tt></a> with empty methods, so I don't have to override other methods from the interface that I have no interest in.  You can implement the interface directly if you prefer.
 
@@ -1432,11 +1559,9 @@ Note that when you use <tt>-listener</tt>, TestNG will automatically determine t
 
 The <a href="../javadocs/org/testng/IReporter.html"><tt>org.testng.IReporter</tt></a> interface only has one method:
 
-<blockquote class="code">
-<br>
-public void generateReport(List&lt;<a href="../javadocs/org/testng/ISuite.html">ISuite</a>&gt; suites, String outputDirectory) <br>
-<br>
-</blockquote>
+<pre class="prettyprint">
+public void generateReport(List&lt;<a href="../javadocs/org/testng/ISuite.html">ISuite</a>&gt; suites, String outputDirectory)
+</pre>
 
 This method will be invoked by TestNG when all the suites have been run and you can inspect its parameters to access all the information on the run that was just completed.
 
@@ -1451,15 +1576,18 @@ TestNG contains a listener that takes the TestNG results
 and outputs an XML file that can then be fed to JUnitReport.  <a href="http://testng.org/test-report/junit-noframes.html">
 Here</a> is an example, and the ant task to create this report:
 
-<pre class="code">&lt;<span class="tag">target</span> <span class="attribute">name="reports"</span>&gt;
-&nbsp;&nbsp;&lt;<span class="tag">junitreport</span> <span class="attribute">todir="test-report"</span>&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">fileset</span> <span class="attribute">dir="test-output"</span>&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">include</span> <span class="attribute">name="*.xml"</span>/&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">/fileset</span>&gt;
-&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="tag">report</span> <span class="attribute">format="noframes"</span>&nbsp;&nbsp;<span class="attribute">todir="test-report"</span>/&gt;
-&nbsp;&nbsp;&lt;<span class="tag">/junitreport</span>&gt;
-&lt;<span class="tag">/target</span>&gt;</pre><blockquote>
+<pre class="prettyprint">
+&lt;target name="reports"&gt;
+  &lt;junitreport todir="test-report"&gt;
+    &lt;fileset dir="test-output"&gt;
+      &lt;include name="*.xml"/&gt;
+    &lt;/fileset&gt;
+ 
+    &lt;report format="noframes"  todir="test-report"/&gt;
+  &lt;/junitreport&gt;
+&lt;/target&gt;
+</pre>
+<blockquote>
 	<em>Note:&nbsp; a current incompatibility between the JDK 1.5 and JUnitReports 
 prevents the frame version from working, so you need to specify &quot;noframes&quot; to 
 get this to work for now.</em>

@@ -1,10 +1,14 @@
 <html>
     <head>
         <title>TestNG - Maven</title>
-        <script type="text/javascript" src="banner.js"></script>
+
         <link rel="stylesheet" href="testng.css" type="text/css" />
+        <link type="text/css" rel="stylesheet" href="http://beust.com/beust.css"  />
+        <script type="text/javascript" src="http://beust.com/prettify.js"></script>
+        <script type="text/javascript" src="banner.js"></script>
       </head>
-<body>
+
+<body onLoad="prettyPrint()">
 
 <script type="text/javascript">
     displayMenu("maven.html")
@@ -135,7 +139,7 @@ may need to add a new plugin repository into your maven2 pom in order to get the
 working in your build. The new repository can be added with the following style script fragment:
 </p>
 
-<pre class="code">
+<pre class="prettyprint">
 &lt;pluginRepositories&gt;
    &lt;pluginRepository&gt;
       &lt;id&gt;tapestry.javaforge&lt;/id&gt;
@@ -164,47 +168,54 @@ parameters, like those you will need to get TestNG setup the
 way that you prefer. Following is a sample portion of this
 section in a pom.xml file.</p>
 
-<pre class="code">
-&nbsp;<p class="P1"><span class="T1">&lt;</span>build<span class="T1">&gt;
-</span>&nbsp; <span class="T3">&lt;</span><span class="T4">defaultGoal</span><span class="T3">&gt;</span><span class="T2">package</span><span class="T3">&lt;/</span><span class="T4">defaultGoal</span><span class="T3">&gt;
+<pre class="prettyprint">
+&lt;build&gt;
+ &lt;defaultGoal&gt;package&lt;/defaultGoal&gt;
+ &lt;sourceDirectory&gt;src/java&lt;/sourceDirectory&gt;
 
-</span><span class="T2"> </span><span class="T3">&lt;</span><span class="T4">sourceDirectory</span><span class="T3">&gt;</span><span class="T2">src/java</span><span class="T3">&lt;/</span><span class="T4">sourceDirectory</span><span class="T3">&gt;
-</span><span class="T2">
- </span><span class="T3">&lt;</span><span class="T4">resources</span><span class="T3">&gt;</span><span class="T2">
-&nbsp;&nbsp; </span><span class="T3">&lt;</span><span class="T4">resource</span><span class="T3">&gt;</span><span class="T2">
- &nbsp;&nbsp; </span><span class="T3">&lt;</span><span class="T4">directory</span><span class="T3">&gt;</span><span class="T2">src/js/dojo</span><span class="T3">&lt;/</span><span class="T4">directory</span><span class="T3">&gt;</span><span class="T2">
-   </span><span class="T3">&lt;</span><span class="T4">includes</span><span class="T3">&gt;</span><span class="T2">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span class="T3">&lt;</span><span class="T4">include</span><span class="T3">&gt;</span><span class="T2">**</span><span class="T3">&lt;/</span><span class="T4">include</span><span class="T3">&gt;</span><span class="T2">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span class="T3">&lt;/</span><span class="T4">includes</span><span class="T3">&gt;</span><span class="T2">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span class="T3">&lt;</span><span class="T4">targetPath</span><span class="T3">&gt;</span><span class="T2">net/sf/tacos/ajax/components/dojo</span><span class="T3">&lt;/</span><span class="T4">targetPath</span><span class="T3">&gt;</span><span class="T2">
-  </span><span class="T3">&lt;/</span><span class="T4">resource</span><span class="T3">&gt;</span><span class="T2">
-&nbsp;&nbsp;&nbsp; </span><span class="T3">&lt;</span><span class="T4">resource</span><span class="T3">&gt;</span><span class="T2">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span class="T3">&lt;</span><span class="T4">directory</span><span class="T3">&gt;</span><span class="T2">src/descriptor/META-INF</span><span class="T3">&lt;/</span><span class="T4">directory</span><span class="T3">&gt;</span><span class="T2">
-  &nbsp;&nbsp; </span><span class="T3">&lt;</span><span class="T4">includes</span><span class="T3">&gt;</span><span class="T2">
-   &nbsp;&nbsp; </span><span class="T3">&lt;</span><span class="T4">include</span><span class="T3">&gt;</span><span class="T2">**</span><span class="T3">&lt;/</span><span class="T4">include</span><span class="T3">&gt;</span><span class="T2">
-    </span><span class="T3">&lt;/</span><span class="T4">includes</span><span class="T3">&gt;</span><span class="T2">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span class="T3">&lt;</span><span class="T4">targetPath</span><span class="T3">&gt;</span><span class="T2">META-INF</span><span class="T3">&lt;/</span><span class="T4">targetPath</span><span class="T3">&gt;</span><span class="T2">
-  </span><span class="T3">&lt;/</span><span class="T4">resource</span><span class="T3">&gt;</span><span class="T2">
-&nbsp; </span><span class="T3">&lt;/</span><span class="T4">resources</span><span class="T3">&gt;</span></p><p class="P2"><span class="T2"> </span><span class="T3">&lt;</span><span class="T4">testSourceDirectory</span><span class="T3">&gt;</span><span class="T2">src/test</span><span class="T3">&lt;/</span><span class="T4">testSourceDirectory</span><span class="T3">&gt;</span></p><p class="P2"><span class="T2"> </span><span class="T3">&lt;</span><span class="T4">testResources</span><span class="T3">&gt;</span><span class="T2">
-&nbsp;&nbsp; </span><span class="T3">&lt;</span><span class="T4">testResource</span><span class="T3">&gt;</span><span class="T2">
- &nbsp;&nbsp; </span><span class="T3">&lt;</span><span class="T4">directory</span><span class="T3">&gt;</span><span class="T2">src/test-data</span><span class="T3">&lt;/</span><span class="T4">directory</span><span class="T3">&gt;</span><span class="T2">
-   </span><span class="T3">&lt;</span><span class="T4">includes</span><span class="T3">&gt;</span><span class="T2">
-  &nbsp;&nbsp; </span><span class="T3">&lt;</span><span class="T4">include</span><span class="T3">&gt;</span><span class="T2">*.*</span><span class="T3">&lt;/</span><span class="T4">include</span><span class="T3">&gt;</span><span class="T2">
-   </span><span class="T3">&lt;/</span><span class="T4">includes</span><span class="T3">&gt;</span><span class="T2">
-   </span><span class="T3">&lt;</span><span class="T4">excludes</span><span class="T3">&gt;</span><span class="T2">
-  &nbsp;&nbsp; </span><span class="T3">&lt;</span><span class="T4">exclude</span><span class="T3">&gt;</span><span class="T2">*.launch</span><span class="T3">&lt;/</span><span class="T4">exclude</span><span class="T3">&gt;</span><span class="T2">
-   </span><span class="T3">&lt;/</span><span class="T4">excludes</span><span class="T3">&gt;</span><span class="T2">
-  </span><span class="T3">&lt;/</span><span class="T4">testResource</span><span class="T3">&gt;</span><span class="T2">
-&nbsp; </span><span class="T3">&lt;/</span><span class="T4">testResources</span><span class="T3">&gt;</span></p><p class="P2"><span class="T2"> </span><span class="T3">&lt;</span><span class="T4">plugins</span><span class="T3">&gt;</span><span class="T2">
-&nbsp;&nbsp; </span><span class="T3">&lt;</span><span class="T4">plugin</span><span class="T3">&gt;</span><span class="T2">
- &nbsp;&nbsp; </span><span class="T3">&lt;</span><span class="T4">groupId</span><span class="T3">&gt;</span><span class="T2">org.apache.maven.plugins</span><span class="T3">&lt;/</span><span class="T4">groupId</span><span class="T3">&gt;</span><span class="T2">
-   </span><span class="T3">&lt;</span><span class="T4">artifactId</span><span class="T3">&gt;</span><span class="T2">maven-surefire-plugin</span><span class="T3">&lt;/</span><span class="T4">artifactId</span><span class="T3">&gt;</span><span class="T2">
-   </span><span class="T3">&lt;</span><span class="T4">configuration</span><span class="T3">&gt;</span><span class="T2">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span class="T3">&lt;</span><span class="T4">groups</span><span class="T3">&gt;</span><span class="T2">functest,util</span><span class="T3">&lt;/</span><span class="T4">groups</span><span class="T3">&gt;</span><span class="T2">
-   </span><span class="T3">&lt;/</span><span class="T4">configuration</span><span class="T3">&gt;</span><span class="T2">
-&nbsp; </span><span class="T3">&lt;/</span><span class="T4">plugin</span><span class="T3">&gt;</span><span class="T2">
- </span><span class="T3">&lt;/</span><span class="T4">plugins</span><span class="T3">&gt;</span><span class="T5">
- </span><span class="T6">&lt;/</span><span class="T7">build</span><span class="T6">&gt;</span></p>
+  &lt;resources&gt;
+    &lt;resource&gt;
+      &lt;directory&gt;src/js/dojo&lt;/directory&gt;
+      &lt;includes&gt;
+        &lt;include&gt;**&lt;/include&gt;
+      &lt;/includes&gt;
+      &lt;targetPath&gt;net/sf/tacos/ajax/components/dojo&lt;/targetPath&gt;
+    &lt;/resource&gt;
+
+    &lt;resource&gt;
+      &lt;directory&gt;src/descriptor/META-INF&lt;/directory&gt;
+        &lt;includes&gt;
+          &lt;include&gt;**&lt;/include&gt;
+        &lt;/includes&gt;
+        
+        &lt;targetPath&gt;META-INF&lt;/targetPath
+      &lt;/resource&gt;
+    &lt;/resources&gt;
+
+    &lt;testSourceDirectory&gt;src/test&lt;/testSourceDirectory&gt;
+
+    &lt;testResources&gt;
+      &lt;testResource&gt;
+        &lt;directory&gt;src/test-data&lt;/directory&gt;
+        &lt;includes&gt;
+          &lt;include&gt;*.*&lt;/include&gt;
+        &lt;/includes&gt;
+      &lt;excludes&gt;
+        &lt;exclude&gt;*.launch&lt;/exclude&gt;
+      &lt;/excludes&gt;
+    &lt;/testResource&gt;
+  &lt;/testResources&gt;
+
+  &lt;plugins&gt;
+    &lt;plugin&gt;
+      &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+      &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;
+      &lt;configuration&gt;
+        &lt;groups&gt;functest,util&lt;/groups&gt;
+      &lt;/configuration&gt;
+    &lt;/plugin&gt;
+  &lt;/plugins&gt;
+&lt;/build&gt;
 </pre>
 
 <p>

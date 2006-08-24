@@ -1,10 +1,14 @@
 <html>
     <head>
         <title>TestNG - Ant</title>
-        <script type="text/javascript" src="banner.js"></script>
+
         <link rel="stylesheet" href="testng.css" type="text/css" />
+        <link type="text/css" rel="stylesheet" href="http://beust.com/beust.css"  />
+        <script type="text/javascript" src="http://beust.com/prettify.js"></script>
+        <script type="text/javascript" src="banner.js"></script>
       </head>
-<body>
+
+<body onLoad="prettyPrint()">
 
 <script type="text/javascript">
     displayMenu("ant.html")
@@ -12,10 +16,12 @@
 
 <h2 align="center">TestNG Ant Task</h2>
 <p>You define the TestNG ant task as follows:</p>
-<blockquote class="code">
-	<p>&lt;taskdef resource=&quot;testngtasks&quot;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classpath=&quot;testng.jar&quot;/&gt;</p>
-</blockquote>
+
+<pre class="prettyprint">
+&lt;taskdef resource="testngtasks"
+         classpath="testng.jar"/&gt;
+</pre>
+
 This task runs TestNG tests and is always run in a forked JVM.&nbsp; It 
 accepts the following attributes: <br>
 &nbsp;<table border="2" id="table1">
@@ -201,19 +207,27 @@ structure.</p>
 <h4>jvmarg</h4>
 <p>Additional parameters may be passed to the new VM via nested <tt>&lt;jvmarg&gt;</tt> 
 elements. For example: </p>
-<pre class="code">&lt;<span class="tag">testng&gt;
-</span>&nbsp;&nbsp; &lt;<span class="tag">jvmarg</span> <span class="attribute">value=&quot;-Djava.compiler=NONE&quot;</span> /&gt;
-&nbsp; ...
-&lt;<span class="tag">/testng&gt;</span></pre>
+
+<pre class="prettyprint">
+&lt;testng&gt;
+   &lt;jvmarg value="-Djava.compiler=NONE" /&gt;
+   &lt;!-- ... --&gt;
+&lt;/testng&gt;
+</pre>
+
 <h4>sysproperty</h4>
 <p>Use nested <tt>&lt;sysproperty&gt;</tt> elements to specify system properties 
 required by the class. These properties will be made available to the virtual 
 machine during the execution of the test. The attributes for this element are 
 the same as for <em>environment variables</em>:</p>
-<pre class="code">&lt;<span class="tag">testng</span>&gt;
-&nbsp;&nbsp;&nbsp;&lt;<span class="tag">sysproperty</span> <span class="attribute">key=&quot;basedir&quot;</span> <span class="attribute">value=&quot;${basedir}&quot;</span>/&gt;
-&nbsp; ...
-&lt;<span class="tag">/testng</span>&gt;</pre>
+
+<pre class="prettyprint">
+&lt;testng&gt;
+   &lt;sysproperty key="basedir" value="${basedir}"/&gt;
+   &lt;!-- ... --&gt;
+&lt;/testng&gt;
+</pre>
+
 <p>will run the test and make the <code>basedir</code> property 
 available to the test.</p>
 <h4>env</h4>
@@ -223,21 +237,24 @@ virtual machine via nested <tt>&lt;env&gt;</tt> elements. For a description of t
 <a href="http://ant.apache.org/manual/CoreTasks/exec.html">exec</a></em> task.</p>
 <h3>Examples</h3>
 <h4>Suite xml</h4>
-<pre class="code">&lt;<span class="tag">testng</span> <span class="attribute">classpathref=&quot;run.cp&quot;</span>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">outputDir=&quot;${testng.report.dir}&quot;</span>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">sourcedir=&quot;${test.src.dir}&quot;</span>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="attribute">haltOnfailure=&quot;true&quot;</span>&gt;
-&nbsp;
-&nbsp;&nbsp;&nbsp;&lt;<span class="tag">xmlfileset</span> <span class="attribute">dir=&quot;${test14.dir}&quot;</span> <span class="attribute">includes=&quot;testng.xml&quot;</span>/&gt;
-&lt;<span class="tag">/testng</span>&gt;</pre>
+
+<pre class="prettyprint">
+&lt;testng classpathref="run.cp"
+        outputDir="${testng.report.dir}"
+        sourcedir="${test.src.dir}"
+        haltOnfailure="true"&gt;
+ 
+   &lt;xmlfileset dir="${test14.dir}" includes="testng.xml"/&gt;
+&lt;/testng&gt;
+</pre>
 
 <h4>Class FileSet</h4>
-<pre class="code">
-&lt;<span class="tag">testng</span> <span class="attribute">classpathref=&quot;run.cp&quot;</span>
-		<span class="attribute">outputDir=&quot;${testng.report.dir}&quot;</span>
-		<span class="attribute">haltOnFailure=&quot;true&quot;M</span> <span class="attribute">verbose=&quot;2&quot;&gt;</span>
-	&lt;<span class="tag">classfileset</span> <span class="attribute">dir=&quot;${test.build.dir}&quot;</span> <span class="attribute">includes=&quot;**/*.class&quot;</span> <span class="tag">/&gt;</span>
-&lt;<span class="tag">/testng</span>&gt;
+<pre class="prettyprint">
+&lt;testng classpathref="run.cp"
+		outputDir="${testng.report.dir}"
+		haltOnFailure="true"M verbose="2"&gt;
+	&lt;classfileset dir="${test.build.dir}" includes="**/*.class" /&gt;
+&lt;/testng&gt;
 </pre>
 
 </body>

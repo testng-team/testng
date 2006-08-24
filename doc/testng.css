@@ -83,7 +83,6 @@ hr {
 }
 
 #menu {
-        font-type: sans-serif;
         font-size: small;
         line-height: 0.9em;
         clear: both;
@@ -108,7 +107,6 @@ hr {
         }
 
 .e{margin-left:1em;text-indent:-1em;margin-right:1em}
-.c{cursor:hand}
 .m{color:blue}
 .t{color:#990000}
 
