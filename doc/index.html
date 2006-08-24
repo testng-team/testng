@@ -1,12 +1,11 @@
 <html>
     <head>
         <title>TestNG - Welcome</title>
+
         <link rel="stylesheet" href="testng.css" type="text/css" />
         <link type="text/css" rel="stylesheet" href="http://beust.com/beust.css"  />
         <script type="text/javascript" src="http://beust.com/prettify.js"></script>
         <script type="text/javascript" src="banner.js"></script>
-
-
       </head>
 
 <body onload="prettyPrint()">
@@ -66,7 +65,7 @@ import org.testng.annotations.*;
 
 public class SimpleTest {
 
-  @Configuration(beforeTestClass = true)
+  @BeforeTestClass
   public void setUp() {
     // code that will be invoked when this test is instantiated
   }
@@ -118,7 +117,7 @@ file:
   &lt;taskdef name="testng" classpathref="cp"
            classname="org.testng.TestNGAntTask" /&gt;
 
- &lt;target name="test"&gt;
+  &lt;target name="test"&gt;
     &lt;testng classpathref="cp" groups="fast"&gt;
       &lt;classfileset dir="build" includes="example1/*.class"/&gt;
     &lt;/testng&gt;
