@@ -12,6 +12,11 @@
 //    needs to do more substantial DOM manipulations to support that, so some
 //    css styles may not be preserved.
 
+// Change log:
+// cbeust, 2006/08/22
+//   Java annotations (start with "@") are now captured as literals ("lit")
+// 
+
 var PR_keywords = new Object();
 /** initialize the keyword list for our target languages. */
 (function () {

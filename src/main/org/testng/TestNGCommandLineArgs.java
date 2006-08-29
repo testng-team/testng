@@ -1,13 +1,17 @@
 package org.testng;
 
 
-import org.testng.internal.ClassHelper;
-import org.testng.internal.Utils;
-
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
+
+import org.testng.internal.ClassHelper;
+import org.testng.internal.Utils;
 
 /**
  * TestNG/RemoteTestNG command line arguments parser.
@@ -77,10 +81,11 @@ public final class TestNGCommandLineArgs {
    * @param argv the command line options.
    * @return the parsed parameters as a map from option string to parsed values. 
    */
-  public static Map parseCommandLine(final String[] argv) {
+  public static Map parseCommandLine(final String[] originalArgv) {
     // TODO CQ In this method, is this OK to simply ignore invalid parameters?
     
     Map<String, Object> arguments = new HashMap<String, Object>();
+    String[] argv = expandArgv(originalArgv);
 
     for (int i = 0; i < argv.length; i++) {
       if (OUTDIR_COMMAND_OPT.equalsIgnoreCase(argv[i])) {
@@ -299,15 +304,93 @@ public final class TestNGCommandLineArgs {
 
 
   /**
-   * Returns the Class object corresponding to the given name. The name may
-   * be of the following form:
+   * Expand the command line parameters to take @ parameters into account.
+   * When @ is encountered, the content of the file that follows is inserted
+   * in the command line
+   */
+  private static String[] expandArgv(String[] originalArgv) {
+    List<String> vResult = new ArrayList<String>();
+    
+    for (String arg : originalArgv) {
+      if (arg.startsWith("@")) {
+        String fileName = arg.substring(1);
+        List<String> lines = readFile(fileName);
+        for (String line : lines) {
+          List<String> args = parseArgs(line);
+          for (String oneArg : args) {
+            vResult.add(oneArg);
+          }
+        }
+      }
+      else {
+        vResult.add(arg);
+      }
+    }
+    
+    return vResult.toArray(new String[vResult.size()]);
+  }
+  
+  /**
+   * Break a line of parameters into individual parameters.
+   * TODO(cbeust):  Handled double quotes
+   */
+  private static List<String> parseArgs(String line) {
+    List<String> result = new ArrayList<String>();
+    
+    StringTokenizer st = new StringTokenizer(line);
+    while (st.hasMoreTokens()) {
+      result.add(st.nextToken());
+    }
+    
+    return result;
+  }
+
+  public static List<String> readFile(String fileName) {
+    List<String> result = new ArrayList<String>();
+    try {
+      //
+      // Sets up a file reader to read the file passed on the command line one
+      // character at a time
+      //
+      FileReader input = new FileReader(fileName);
+
+      /*
+       * Filter FileReader through a Buffered read to read a line at a time
+       */
+      BufferedReader bufRead = new BufferedReader(input);
+
+      String line; // String that holds current file line
+      // Read first line
+      line = bufRead.readLine();
+
+      // Read through file one line at time. Print line # and line
+      while (line != null) {
+        result.add(line);
+        line = bufRead.readLine();
+      }
+
+      bufRead.close();
+
+    }
+    catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return result;
+  }
+  
+
+  /**
+   * Returns the Class object corresponding to the given name. The name may be
+   * of the following form:
    * <ul>
-   * <li>A class name: "org.testng.TestNG"</li>  
-   * <li>A class file name: "/testng/src/org/testng/TestNG.class"</li>  
-   * <li>A class source name: "d:\testng\src\org\testng\TestNG.java"</li>  
-   * </ul>  
-   *
-   * @param file the class name. 
+   * <li>A class name: "org.testng.TestNG"</li>
+   * <li>A class file name: "/testng/src/org/testng/TestNG.class"</li>
+   * <li>A class source name: "d:\testng\src\org\testng\TestNG.java"</li>
+   * </ul>
+   * 
+   * @param file
+   *          the class name.
    * @return the class corresponding to the name specified.
    */
   private static Class fileToClass(String file) {
