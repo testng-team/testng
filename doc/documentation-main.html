@@ -552,11 +552,9 @@ This section only explains how to invoke TestNG from the command line.  Please c
 <p>
 Assuming that you have TestNG in your class path, the simplest way to invoke TestNG is as follows:
 
-<blockquote class="code">
-<br>
+<pre class="code">
 java org.testng.TestNG testng1.xml [testng2.xml testng3.xml ...]
-<p>
-</blockquote>
+</pre>
 
 You need to specify at least one XML file describing the TestNG suite you are trying to run.  Additionally, the following command-line switches are available:
 
@@ -608,11 +606,21 @@ This documentation can be obtained by invoking TestNG without any arguments.
 
 <p>
 
+You can also put the command line switches in a text file, say <tt>c:\command.txt</tt>, and tell TestNG to use that file to retrieve its parameters:
+
+<pre class="code">
+  C:> more c:\command.txt
+  -d test-output testng.xml
+  C:> java org.testng.TestNG @c:\command.txt
+</pre>
+
+<p>
+
 Additionally, TestNG can be passed properties on the command line of the Java Virtual Machine, for example
 
-<blockquote class="code">
+<pre class="code">
 java -Dtestng.test.classpath="c:/build;c:/java/classes;" org.testng.TestNG testng.xml
-</blockquote>
+</pre>
 
 Here are the properties that TestNG understands:
 
@@ -638,11 +646,9 @@ Here are the properties that TestNG understands:
 
 <b>Example:</b>
 
-<blockquote class="code">
-<br>
+<pre class="code">
 java org.testng.TestNG -groups windows,linux -testclass org.test.MyTest
-<p>
-</blockquote>
+</pre>
 
 Note that the <a href="ant.html">ant task</a> and <a href="#testng-xml">testng.xml</a> allow you to launch TestNG with more parameters (methods to include, specifying parameters, etc...), so you should consider using the command line only when you are trying to learn about TestNG and you want to get up and running quickly.
 
