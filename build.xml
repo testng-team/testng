@@ -212,8 +212,6 @@
   <target name="dist-14-nobsh">
     <antcall target="clean-unjar" />
     <antcall target="extract-util-concurrent-jar" />
-    <delete quiet="true" file="${other.jars.dir}/${jdk14.testng.nobsh.jar}" />
-    <mkdir dir="${other.jars.dir}" />
     <jar destfile="${other.jars.dir}/${jdk14.testng.nobsh.jar}" update="true">
       <manifest>
         <attribute name="Main-Class" value="org.testng.TestNG" />
@@ -266,8 +264,6 @@
   <target name="dist-15-nobsh">
     <antcall target="clean-unjar" />
     <antcall target="extract-qdox-jar" />
-    <delete file="{other.jars.dir}/${jdk15.testng.nobsh.jar}" />
-    <mkdir dir="${other.jars.dir}" />
     <jar destfile="${other.jars.dir}/${jdk15.testng.nobsh.jar}" update="true">
       <manifest>
         <attribute name="Main-Class" value="org.testng.TestNG" />
@@ -277,7 +273,7 @@
     </jar>
   </target>
 
-  <target name="dist-all-zip" depends="dist-jar,javadocs">
+  <target name="dist-all-zip" depends="dist-prepare,dist-jar,javadocs">
     <zip zipfile="${testng.zip}">
       <zipfileset dir="${basedir}" includesfile="FILES" />
       <zipfileset dir="${basedir}">
@@ -300,6 +296,13 @@
                   prefix="3rdparty"
                   includes="${qdox.jar},${beanshell.jar},util-concurrent.jar" />
     </zip>
+  </target>
+  
+  <target name="dist-prepare">
+    <delete quiet="true" file="${other.jars.dir}/${jdk14.testng.nobsh.jar}" />
+    <mkdir dir="${other.jars.dir}" />
+    <delete file="{other.jars.dir}/${jdk15.testng.nobsh.jar}" />
+    <mkdir dir="${other.jars.dir}" />
   </target>
 
   <target name="eclipse">
