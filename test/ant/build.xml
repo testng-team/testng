@@ -21,7 +21,8 @@
   	
     <testng classpath="build;../../testng-5.2beta-jdk15.jar"
             outputdir="test-output"
-    	      threadcount="7"
+  	    threadcount="7"
+	    dumpCommand = "true"
     	>
         <classfileset dir="build">
         	<include name="NoPackageTest.class" />

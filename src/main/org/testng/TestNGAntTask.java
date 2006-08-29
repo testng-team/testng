@@ -1,6 +1,8 @@
 package org.testng;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -321,7 +323,7 @@ public class TestNGAntTask extends Task {
   public void setListener(String listener) {
     m_listener = listener;
   }
-
+  
   @Override
   public void execute() throws BuildException {
     validateOptions();
@@ -330,15 +332,17 @@ public class TestNGAntTask extends Task {
     
     cmd.setClassname(m_mainClass);
     
+    List<String> argv = new ArrayList<String>();
+    
     if (null != m_isJUnit) {
       if (m_isJUnit.booleanValue()) {
-        cmd.createArgument().setValue(TestNGCommandLineArgs.JUNIT_DEF_OPT);
+        argv.add(TestNGCommandLineArgs.JUNIT_DEF_OPT);
       }
     }
     
     if (null != m_verbose) {
-      cmd.createArgument().setValue(TestNGCommandLineArgs.LOG);
-      cmd.createArgument().setValue(m_verbose.toString());
+      argv.add(TestNGCommandLineArgs.LOG);
+      argv.add(m_verbose.toString());
     }
     
     if(m_assertEnabled) {
@@ -350,8 +354,8 @@ public class TestNGAntTask extends Task {
         m_outputDir.mkdirs();
       }
       if (m_outputDir.isDirectory()) {
-        cmd.createArgument().setValue(TestNGCommandLineArgs.OUTDIR_COMMAND_OPT);
-        cmd.createArgument().setValue(m_outputDir.getAbsolutePath());
+        argv.add(TestNGCommandLineArgs.OUTDIR_COMMAND_OPT);
+        argv.add(m_outputDir.getAbsolutePath());
       }
       else {
         throw new BuildException("Output directory is not a directory: " + m_outputDir);
@@ -359,59 +363,90 @@ public class TestNGAntTask extends Task {
     }
 
     if(null != m_target) {
-      cmd.createArgument().setValue(TestNGCommandLineArgs.TARGET_COMMAND_OPT);
-      cmd.createArgument().setValue(m_target);
+      argv.add(TestNGCommandLineArgs.TARGET_COMMAND_OPT);
+      argv.add(m_target);
     }
     
     if((null != m_testjar) && m_testjar.isFile()) {
-      cmd.createArgument().setValue(TestNGCommandLineArgs.TESTJAR_COMMAND_OPT);
-      cmd.createArgument().setValue(m_testjar.getAbsolutePath());
+      argv.add(TestNGCommandLineArgs.TESTJAR_COMMAND_OPT);
+      argv.add(m_testjar.getAbsolutePath());
     }
 
     if(null != m_sourceDirPath) {
       String srcPath = createPathString(m_sourceDirPath, ";");
-      cmd.createArgument().setValue(TestNGCommandLineArgs.SRC_COMMAND_OPT);
-      cmd.createArgument().setValue(srcPath);
+      argv.add(TestNGCommandLineArgs.SRC_COMMAND_OPT);
+      argv.add(srcPath);
     }
     
     if(null != m_includedGroups) {
-      cmd.createArgument().setValue(TestNGCommandLineArgs.GROUPS_COMMAND_OPT);
-      cmd.createArgument().setValue(m_includedGroups);
+      argv.add(TestNGCommandLineArgs.GROUPS_COMMAND_OPT);
+      argv.add(m_includedGroups);
     }
     
     if(null != m_excludedGroups) {
-      cmd.createArgument().setValue(TestNGCommandLineArgs.EXCLUDED_GROUPS_COMMAND_OPT);
-      cmd.createArgument().setValue(m_excludedGroups);
+      argv.add(TestNGCommandLineArgs.EXCLUDED_GROUPS_COMMAND_OPT);
+      argv.add(m_excludedGroups);
     }
 
     if(m_classFilesets.size() > 0) {
-      cmd.createArgument().setValue(TestNGCommandLineArgs.TESTCLASS_COMMAND_OPT);
+      argv.add(TestNGCommandLineArgs.TESTCLASS_COMMAND_OPT);
       for(String file: fileset(m_classFilesets)) {
-        cmd.createArgument().setValue(file);
+        argv.add(file);
       }
     }
 
     if (m_listener != null) {
-        cmd.createArgument().setValue(TestNGCommandLineArgs.LISTENER_COMMAND_OPT);
-        cmd.createArgument().setValue(m_listener);
+        argv.add(TestNGCommandLineArgs.LISTENER_COMMAND_OPT);
+        argv.add(m_listener);
     }
     
     if (m_threadCount != null) {
-      cmd.createArgument().setValue(TestNGCommandLineArgs.THREAD_COUNT);
-      cmd.createArgument().setValue(m_threadCount);
+      argv.add(TestNGCommandLineArgs.THREAD_COUNT);
+      argv.add(m_threadCount);
     }
 
     if(m_xmlFilesets.size() > 0) {
       for(String file: fileset(m_xmlFilesets)) {
-        cmd.createArgument().setValue(file);
+        argv.add(file);
       }
+    }
+    
+    String fileName = "";
+    FileWriter fw = null;
+    BufferedWriter bw = null;
+    try {
+      File f = File.createTempFile("testng", "");
+      fileName = f.getAbsolutePath();
+      // If the user asked to see the command, preserve the file
+      if (! m_dump) f.deleteOnExit();
+      fw = new FileWriter(f);
+      bw = new BufferedWriter(fw);
+      for (String arg : argv) {
+        bw.append(arg).append(" ");
+      }
+    }
+    catch (IOException e) {
+      e.printStackTrace();
+    }
+    finally {
+      try {
+        if (bw != null) bw.close();
+        if (fw != null) fw.close();
+      }
+      catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+    
+    if(m_dump) {
+      dumpCommand(fileName);
     }
     
     createClasspath().setLocation(findJar());
     
-    if(m_dump) {
-      dumpCommand();
-    }
+    cmd.createVmArgument().setValue("-ea");
+    
+    cmd.createArgument().setValue("@" + fileName);
 
     ExecuteWatchdog watchdog = createWatchdog();
     boolean wasKilled = false;
@@ -421,6 +456,10 @@ public class TestNGAntTask extends Task {
     }
 
     actOnResult(exitValue, wasKilled);
+  }
+
+  private void ppp(String string) {
+    System.out.println("[TestNGAntTask] " + string);
   }
 
   protected void actOnResult(int exitValue, boolean wasKilled) {
@@ -721,9 +760,11 @@ public class TestNGAntTask extends Task {
     return buf.toString();
   }
   
-  private void dumpCommand() {
-    for(String str: getJavaCommand().getCommandline()) {
-      System.out.println(str);
+  private void dumpCommand(String fileName) {
+    ppp("TESTNG PASSED @" + fileName + " WHICH CONTAINS:");
+    List<String> lines = TestNGCommandLineArgs.readFile(fileName);
+    for (String line : lines) {
+      ppp(line);
     }
   }
 }
