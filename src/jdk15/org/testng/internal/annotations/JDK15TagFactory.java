@@ -341,12 +341,13 @@ public class JDK15TagFactory {
     return vResult.keySet().toArray(new String[vResult.size()]);
   }
 
-  private String[] findInheritedStringArray(Class cls, Class annotationClass,
-      String methodName)
+  private String[] findInheritedStringArray(Class cls, Class annotationClass, String methodName)
   {
+    if (null == cls) return new String[0];
+    
     Map<String, String> vResult = new HashMap<String, String>();
     
-    while (cls != Object.class) {
+    while (cls != null && cls != Object.class) {
       Annotation annotation = cls.getAnnotation(annotationClass);
       if (annotation != null) {
         String[] g = (String[]) invokeMethod(annotation, methodName);
