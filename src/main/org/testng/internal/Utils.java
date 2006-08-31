@@ -169,7 +169,7 @@ public final class Utils {
       fw = new BufferedWriter(new FileWriter(outputFile, false));
       fw.write(sb);
   
-      Utils.log("", 2, "Creating " + outputFile.getAbsolutePath());
+      Utils.log("", 3, "Creating " + outputFile.getAbsolutePath());
     }
     catch(IOException ex) {
       System.err.println("ERROR WHILE WRITING TO " + outputFile);
