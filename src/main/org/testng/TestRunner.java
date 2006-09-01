@@ -666,7 +666,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       //
       // Parallel run
       //
-      long maxTimeOut= 10 * 1000; // 1 second
+      // Default timeout for individual methods:  10 seconds
+      long maxTimeOut = m_xmlTest.getTimeOut(10 * 1000);
       IPooledExecutor executor = 
         ThreadUtil.createPooledExecutor(m_xmlTest.getSuite().getThreadCount());
 
@@ -695,7 +696,6 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       // Sequential run
       //
       for (TestMethodWorker tmw : workers) {
-        tmw.setAllTestMethods(m_allTestMethods);
         tmw.run();
       }
     }

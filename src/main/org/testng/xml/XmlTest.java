@@ -36,7 +36,8 @@ public class XmlTest implements Serializable, Cloneable {
   private List<XmlMethodSelector> m_methodSelectors = new ArrayList<XmlMethodSelector>();
   // test level packages
   private List<XmlPackage> m_xmlPackages = new ArrayList<XmlPackage>();
-
+  
+  private String m_timeOut = null;
 
   public XmlTest(XmlSuite suite) {
     m_suite = suite;
@@ -223,6 +224,28 @@ public class XmlTest implements Serializable, Cloneable {
     
     return result;
   }
+  
+  public String getTimeOut() {
+    String result = null;
+    if (null != m_timeOut) {
+      result = m_timeOut;
+    }
+    else {
+      result = m_suite.getTimeOut();
+    }
+      
+    return result;
+  }
+  
+  public long getTimeOut(long def) {
+    long result = def;
+    if (getTimeOut() != null) {
+        result = new Long(getTimeOut()).longValue();
+    }
+     
+    return result;
+  }
+
   
   public String getAnnotations() {
     String result = m_annotations;

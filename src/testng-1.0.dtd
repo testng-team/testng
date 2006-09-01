@@ -35,12 +35,15 @@
 <!-- annotations:   (javadoc|JDK5)  If "javadoc", TestNG will look for      -->
 <!--                JavaDoc annotations in your sources, otherwise it will  -->
 <!--                use JDK5 annotations                                    -->
+<!-- time-out:  the time to wait in milliseconds before aborting -->
+<!--       the method (if parallel="methods") or the test (if parallel="tests") -->
 <!ATTLIST suite 
     name CDATA #REQUIRED
     verbose CDATA #IMPLIED
     parallel CDATA #IMPLIED
     thread-count CDATA #IMPLIED
     annotations CDATA #IMPLIED
+    time-out CDATA #IMPLIED
 >
 
 <!-- Parameters can be defined at the <suite> or at the <test> level        -->
@@ -81,12 +84,15 @@
 <!-- annotations:   (javadoc|JDK5)  If "javadoc", TestNG will look for      -->
 <!--                JavaDoc annotations in your sources, otherwise it will  -->
 <!--                use JDK5 annotations                                    -->
+<!-- timeout:  the time to wait in milliseconds before aborting -->
+<!--       the method (if parallel="methods") or the test (if parallel="tests") -->
 <!ATTLIST test
     name CDATA #REQUIRED 
     junit CDATA #IMPLIED
     verbose CDATA #IMPLIED
     parallel CDATA #IMPLIED 
     annotations CDATA #IMPLIED
+    time-out CDATA #IMPLIED
 >
 
 <!-- Defines additional groups ("groups of groups") and also which groups   -->

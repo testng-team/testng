@@ -72,6 +72,9 @@ public class XmlSuite implements Serializable, Cloneable {
   /** Name of the XML file */
   private String m_fileName;
 
+  /** Time out for methods/tests */
+  private String m_timeOut;
+
   /**
    * @return the fileName
    */
@@ -406,4 +409,21 @@ public class XmlSuite implements Serializable, Cloneable {
 
     return result;
   }
+
+    public void setTimeOut(String timeOut) {
+        m_timeOut = timeOut;
+    }
+    
+    public String getTimeOut() {
+        return m_timeOut;
+    }
+    
+    public long getTimeOut(long def) {
+        long result = def;
+        if (m_timeOut != null) {
+            result = new Long(m_timeOut).longValue();
+        }
+        
+        return result;
+    }
 }

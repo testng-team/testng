@@ -253,7 +253,8 @@ public class SuiteRunner implements ISuite, Serializable {
 
 
     private void runSuiteInParallel() {
-      long maxTimeOut= 120 * 1000; // Need to make config setting
+      // Default timeout for <test>:  2 minutes
+      long maxTimeOut = m_suite.getTimeOut(120 * 1000);
       int nPoolSize = m_testRunners.size(); // Customize pool size?
       IPooledExecutor executor = ThreadUtil.createPooledExecutor(nPoolSize);
 

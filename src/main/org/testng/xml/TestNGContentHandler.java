@@ -119,6 +119,10 @@ public class TestNGContentHandler extends DefaultHandler {
       if (null != annotations) {
         m_currentSuite.setAnnotations(annotations);
       }
+      String timeOut = attributes.getValue("time-out");
+      if (null != timeOut) {
+        m_currentSuite.setTimeOut(timeOut);
+      }
       if (TestNG.isJdk14()) {
         m_currentSuite.setAnnotations(XmlSuite.JAVADOC);
       }
