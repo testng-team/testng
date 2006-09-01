@@ -278,15 +278,9 @@ public class SuiteRunner implements ISuite, Serializable {
         }
 
         public void run() {
-            try {
-              Utils.log("[SuiteWorker]", 4, "Running XML Test '" 
-                  +  m_testRunner.getTest().getName() + "' in Parallel");
-              runTest(m_testRunner);
-            } 
-            catch(Exception ex) {
-              // FIXME: shouldn't we have something here?
-              ex.printStackTrace();
-            }
+          Utils.log("[SuiteWorker]", 4, "Running XML Test '" 
+                    +  m_testRunner.getTest().getName() + "' in Parallel");
+          runTest(m_testRunner);
         }
     }
 
