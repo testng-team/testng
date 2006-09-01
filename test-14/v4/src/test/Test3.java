@@ -1,5 +1,7 @@
 package test;
 
+import org.testng.xml.XmlSuite;
+
 
 
 
@@ -20,7 +22,7 @@ public class Test3 extends BaseTest {
     */  
   public void timeOut() {
     addClass("test.sample.TimeOutTest");
-    setParallel(true);
+    setParallel(XmlSuite.PARALLEL_METHODS);
     run();
     String[] passed = {
         "timeoutShouldPass", 

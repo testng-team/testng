@@ -28,7 +28,7 @@ public class XmlTest implements Serializable, Cloneable {
 
   private Map<String, List<String>> m_metaGroups = new HashMap<String, List<String>>();
   private Map<String, String> m_parameters = new HashMap<String, String>();
-  private Boolean m_isParallel = null;
+  private String m_parallel = null;
   private String m_annotations = null;
   
   // BeanShell expression
@@ -208,17 +208,17 @@ public class XmlTest implements Serializable, Cloneable {
     return result;
   }
     
-  public void setParallel(boolean parallel) {
-    m_isParallel = new Boolean(parallel);
+  public void setParallel(String parallel) {
+    m_parallel = parallel;
   }
   
-  public boolean isParallel() {
-    boolean result = false;
-    if (null != m_isParallel) {
-      result = m_isParallel.booleanValue();
+  public String getParallel() {
+    String result = null;
+    if (null != m_parallel) {
+      result = m_parallel;
     }
     else {
-      result = m_suite.isParallel();
+      result = m_suite.getParallel();
     }
     
     return result;
@@ -253,8 +253,8 @@ public class XmlTest implements Serializable, Cloneable {
     Properties p = new Properties();
     p.setProperty("name", getName());
     p.setProperty("junit", m_isJUnit != null ? m_isJUnit.toString() : "false");
-    if (null != m_isParallel) {
-      p.setProperty("parallel", "" + m_isParallel);
+    if (null != m_parallel) {
+      p.setProperty("parallel", "" + m_parallel);
     }
     if (null != m_verbose) {
       p.setProperty("verbose", m_verbose.toString());
@@ -423,7 +423,7 @@ public class XmlTest implements Serializable, Cloneable {
     result.setIncludedGroups(getIncludedGroups());
     result.setExcludedGroups(getExcludedGroups());
     result.setJUnit(isJUnit());
-    result.setParallel(isParallel());
+    result.setParallel(getParallel());
     result.setVerbose(getVerbose());
     result.setParameters(getParameters());
     result.setXmlPackages(getXmlPackages());

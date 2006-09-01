@@ -166,7 +166,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     xmlTest.setBeanShellExpression(srcXmlTest.getExpression());
     xmlTest.setIncludedGroups(srcXmlTest.getIncludedGroups());
     xmlTest.setExcludedGroups(srcXmlTest.getExcludedGroups());
-    xmlTest.setParallel(srcXmlTest.isParallel());
+    xmlTest.setParallel(srcXmlTest.getParallel());
     xmlTest.setParameters(srcXmlTest.getParameters());
     List<XmlClass> xmlClasses = createXmlClasses(methods);
     xmlTest.setXmlClasses(xmlClasses);

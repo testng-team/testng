@@ -35,6 +35,7 @@ import org.testng.junit.JUnitClassFinder;
 import org.testng.junit.JUnitMethodFinder;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlPackage;
+import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 /**
@@ -174,8 +175,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
 
     setVerbose(test.getVerbose());
 
-    if (suite.isParallel()) {
-      log(3, "Running the tests in parallel");
+    if (suite.getParallel() != null) {
+      log(3, "Running the tests in parallel mode:" + suite.getParallel());
     }
 
     setOutputDirectory(outputDirectory);
@@ -657,7 +658,10 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     //
     // Invoke the workers
     //
-    if (xmlTest.isParallel()) {
+    String parallelMode = xmlTest.getParallel();
+    if (XmlSuite.PARALLEL_METHODS.equals(parallelMode) || 
+        "true".equalsIgnoreCase(parallelMode)) 
+    {
 
       //
       // Parallel run

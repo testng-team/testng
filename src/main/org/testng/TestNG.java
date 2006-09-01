@@ -337,14 +337,13 @@ public class TestNG {
   public void setThreadCount(int threadCount) {
     for (XmlSuite s : m_cmdlineSuite) {
       s.setThreadCount(threadCount);
-      s.setParallel(true);
     }
   }
 
   /**
    * Define whether this run will be run in parallel mode.
    */
-  public void setParallel(boolean parallel) {
+  public void setParallel(String parallel) {
     for (XmlSuite s : m_cmdlineSuite) {
       s.setParallel(parallel);
     }
@@ -754,7 +753,7 @@ public class TestNG {
           tmpSuite.setAnnotations(suite.getAnnotations());
           tmpSuite.setJUnit(suite.isJUnit());
           tmpSuite.setName("Temporary suite for " + test.getName());
-          tmpSuite.setParallel(suite.isParallel());
+          tmpSuite.setParallel(suite.getParallel());
           tmpSuite.setParameters(suite.getParameters());
           tmpSuite.setThreadCount(suite.getThreadCount());
           tmpSuite.setVerbose(suite.getVerbose());
@@ -767,7 +766,7 @@ public class TestNG {
           tmpTest.setJUnit(test.isJUnit());
           tmpTest.setMethodSelectors(test.getMethodSelectors());
           tmpTest.setName(test.getName());
-          tmpTest.setParallel(test.isParallel());
+          tmpTest.setParallel(test.getParallel());
           tmpTest.setParameters(test.getParameters());
           tmpTest.setVerbose(test.getVerbose());
           tmpTest.setXmlClasses(test.getXmlClasses());

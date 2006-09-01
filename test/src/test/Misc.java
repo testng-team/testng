@@ -1,6 +1,7 @@
 package test;
 
 import org.testng.annotations.*;
+import org.testng.xml.XmlSuite;
 
 /**
  * This class
@@ -13,7 +14,7 @@ public class Misc extends BaseTest {
   public void makeSureSetUpWithParameterWithNoParametersFails() {
     addClass("test.sample.SetUpWithParameterTest");
     setVerbose(0);
-    setParallel(false);
+    setParallel(XmlSuite.PARALLEL_METHODS);
     run();
     String[] passed = {
       };

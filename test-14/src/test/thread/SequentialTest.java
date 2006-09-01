@@ -1,6 +1,7 @@
 package test.thread;
 
 import org.testng.Assert;
+import org.testng.xml.XmlSuite;
 
 import test.BaseTest;
 
@@ -11,7 +12,7 @@ public class SequentialTest extends BaseTest {
    */
   public void verifySequential() {
     addClass("test.thread.SequentialSampleTest");
-    setParallel(true);
+    setParallel(XmlSuite.PARALLEL_METHODS);
     
     run();
     

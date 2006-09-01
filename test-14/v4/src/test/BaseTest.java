@@ -42,7 +42,7 @@ public class BaseTest {
     getTest().setVerbose(9);
   }
 
-  protected void setParallel(boolean parallel) {
+  protected void setParallel(String parallel) {
     getTest().setParallel(parallel);
   }
   

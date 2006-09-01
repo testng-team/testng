@@ -31,7 +31,7 @@ public interface ISuite {
   /**
    * @return true if the tests must be run in parallel.
    */
-  public boolean isParallel();
+  public String getParallel();
 
   /**
    * @return The value of this parameter, or null if none was specified.

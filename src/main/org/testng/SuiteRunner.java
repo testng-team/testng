@@ -135,8 +135,8 @@ public class SuiteRunner implements ISuite, Serializable {
     return factory;
   }
   
-  public boolean isParallel() {
-    return m_suite.isParallel();
+  public String getParallel() {
+    return m_suite.getParallel();
   }
 
   public void run() {
@@ -233,7 +233,7 @@ public class SuiteRunner implements ISuite, Serializable {
     //
     // Run all the test runners
     //
-    boolean testsInParallel = false; // Need config
+    boolean testsInParallel = XmlSuite.PARALLEL_TESTS.equals(m_suite.getParallel());
     if (!testsInParallel) {
       runSequentially();
     } 

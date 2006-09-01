@@ -28,10 +28,10 @@
 <!-- name:  The name of this suite (as it will appear in the reports)       -->
 <!-- verbose:  (0-10) How verbose the output on the console                 -->
 <!--           will be.  This setting has no impact on the HTML reports     -->
-<!-- parallel:  (true|false) Whether TestNG should use different threads to -->
-<!--             run your tests (might speed up the process)                -->
+<!-- parallel:  (methods|tests) Whether TestNG should use different threads -->
+<!-- to run your tests (might speed up the process)                         -->
 <!-- thread-count:  An integer giving the size of the thread pool to use    -->
-<!--                if you set parallel=true (default is 5)                 -->
+<!--                if you set parallel      (default is 5)                 -->
 <!-- annotations:   (javadoc|JDK5)  If "javadoc", TestNG will look for      -->
 <!--                JavaDoc annotations in your sources, otherwise it will  -->
 <!--                use JDK5 annotations                                    -->
@@ -76,8 +76,8 @@
 <!-- junit:  (true|false) Whether to run in JUnit mode                      -->
 <!-- verbose:  (0-10) How verbose the output on the console                 -->
 <!--           will be.  This setting has no impact on the HTML reports     -->
-<!-- parallel:  (true|false) Whether TestNG should use different threads to -->
-<!--             run your tests (might speed up the process)                -->
+<!-- parallel:  (methods)       Whether TestNG should use different threads -->
+<!-- to run your tests (might speed up the process)                         -->
 <!-- annotations:   (javadoc|JDK5)  If "javadoc", TestNG will look for      -->
 <!--                JavaDoc annotations in your sources, otherwise it will  -->
 <!--                use JDK5 annotations                                    -->

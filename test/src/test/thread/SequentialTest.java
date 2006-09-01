@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.testng.xml.XmlSuite;
 
 import test.BaseTest;
 
@@ -35,7 +36,7 @@ public class SequentialTest extends BaseTest {
     addClass(class1);
     addClass(class2);
     addClass(class3);
-    setParallel(true);
+    setParallel(XmlSuite.PARALLEL_METHODS);
     setThreadCount(threadCount);
 
     run();

@@ -1,6 +1,7 @@
 package test;
 
 import org.testng.annotations.Test;
+import org.testng.xml.XmlSuite;
 
 
 /**
@@ -18,7 +19,7 @@ public class Test3 extends BaseTest {
   @Test
   public void timeOutInParallel() {
     addClass("test.sample.TimeOutTest");
-    setParallel(true);
+    setParallel(XmlSuite.PARALLEL_METHODS);
     run();
     String[] passed = {
         "timeoutShouldPass", 
@@ -36,7 +37,7 @@ public class Test3 extends BaseTest {
   @Test(enabled=false)
   public void timeOutInNonParallel() {
     addClass("test.sample.TimeOutTest");
-    setParallel(false);
+    setParallel(XmlSuite.PARALLEL_METHODS);
     run();
     String[] passed = {
         "timeoutShouldPass", 

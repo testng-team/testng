@@ -6,6 +6,7 @@ TODO
 ===========================================================================
 5.2
 
+Added: parallel can now be "methods" or "tests". Boolean version deprecated
 Added: TestNGAntTask now uses the @ syntax to invoke TestNG
 Added: Command line understands @ syntax
 Added: JUnitConverter uses the new syntax

@@ -31,6 +31,7 @@ public class ParallelTestTest extends BaseTest {
     
     XmlSuite xmlSuite = new XmlSuite();
     xmlSuite.setName("ParallelTestTest");
+    xmlSuite.setParallel(XmlSuite.PARALLEL_TESTS);
     List<XmlTest> tests = xmlSuite.getTests();
     createTest(xmlSuite, class1);
     createTest(xmlSuite, class2);

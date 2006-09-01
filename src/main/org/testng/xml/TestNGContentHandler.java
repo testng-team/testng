@@ -109,7 +109,7 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       String parallel = attributes.getValue("parallel");
       if (null != parallel) {
-        m_currentSuite.setParallel(new Boolean(parallel).booleanValue());
+        m_currentSuite.setParallel(parallel);
       }
       String threadCount = attributes.getValue("thread-count");
       if (null != threadCount) {
@@ -189,7 +189,7 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       String parallel = attributes.getValue("parallel");
       if (null != parallel) {
-        m_currentTest.setParallel(new Boolean(parallel).booleanValue());
+        m_currentTest.setParallel(parallel);
       }
       String annotations = attributes.getValue("annotations");
       if (null != annotations) {

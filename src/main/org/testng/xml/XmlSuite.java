@@ -31,6 +31,10 @@ public class XmlSuite implements Serializable, Cloneable {
   /** The JavaDoc annotation type ID ("javadoc"). */
   public static final String JAVADOC_ANNOTATION_TYPE = TestNG.JAVADOC_ANNOTATION_TYPE;
   
+  /** Parallel modes */
+  public static final String PARALLEL_TESTS = "tests";
+  public static final String PARALLEL_METHODS = "methods";
+  
   private String m_test;
   
   /** The suite name. */
@@ -39,7 +43,7 @@ public class XmlSuite implements Serializable, Cloneable {
   /** The suite verbose flag. (0 to 10)*/
   private Integer m_verbose = new Integer(1);
   
-  private boolean m_parallel = false;
+  private String m_parallel = null;
   
   /** JUnit compatibility flag. */
   private Boolean m_isJUnit = Boolean.FALSE;
@@ -83,18 +87,16 @@ public class XmlSuite implements Serializable, Cloneable {
   }
 
   /**
-   * Returns the parallel.
-   * @return the parallel.
+   * Returns the parallel mode.
    */
-  public boolean isParallel() {
+  public String getParallel() {
     return m_parallel;
   }
 
   /**
-   * Sets the parallel.
-   * @param parallel The parallel to set.
+   * Sets the parallel mode
    */
-  public void setParallel(boolean parallel) {
+  public void setParallel(String parallel) {
     m_parallel = parallel;
   }
 
@@ -317,7 +319,7 @@ public class XmlSuite implements Serializable, Cloneable {
     Properties p = new Properties();
     p.setProperty("name", getName());
     p.setProperty("verbose", getVerbose().toString());
-    p.setProperty("parallel", "" + isParallel());
+    p.setProperty("parallel", "" + getParallel());
     p.setProperty("thread-count", "" + getThreadCount());
     p.setProperty("annotations", getAnnotations());
 
@@ -394,7 +396,7 @@ public class XmlSuite implements Serializable, Cloneable {
 
     result.setName(getName());
     result.setAnnotations(getAnnotations());
-    result.setParallel(isParallel());
+    result.setParallel(getParallel());
     result.setThreadCount(getThreadCount());
     result.setParameters(getAllParameters());
     result.setVerbose(getVerbose());
