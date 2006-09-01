@@ -43,9 +43,6 @@ public class SuiteRunner implements ISuite, Serializable {
   transient private List<ISuiteListener> m_listeners = new ArrayList<ISuiteListener>();
   transient private TestListenerAdapter m_textReporter= new TestListenerAdapter();
 
-  /** Special ISuiteListener, ITestListener used to generate testng-failures.xml. */
-//  transient private FailedReporter m_suiteGen;
-
   private String m_outputDir; // DEFAULT_OUTPUT_DIR;
   private XmlSuite m_suite;
 
@@ -163,22 +160,6 @@ public class SuiteRunner implements ISuite, Serializable {
          System.out.println("\n===============================================\n"
                            + totalTestsRun
                            + "===============================================\n");
-
-         //
-         // Append results to global-result.txt
-         //
-//       try {
-//         FileOutputStream fos = 
-//           new FileOutputStream("global-result.txt", true /* append */);
-//         fos.write(totalTestsRun.getBytes());
-//         fos.close();
-//		 }
-//       catch (FileNotFoundException e) {
-//         e.printStackTrace();
-//       }
-//       catch (IOException e) {
-//         e.printStackTrace();
-//       }
       }
     }
   }
@@ -201,10 +182,6 @@ public class SuiteRunner implements ISuite, Serializable {
       // (this is used to display the final suite report at the end)
       tr.addTestListener(m_textReporter);
       m_testRunners.add(tr);
-
-      // Failures suite generator needs this for retrieving the list of methods.
-//      if (m_suiteGen != null)
-//          m_suiteGen.registerRunner(tr);
 
       // TODO: Code smell.  Invoker should belong to SuiteRunner, not TestRunner
       // -- cbeust
@@ -278,44 +255,37 @@ public class SuiteRunner implements ISuite, Serializable {
     private void runSuiteInParallel() {
       long maxTimeOut= 120 * 1000; // Need to make config setting
       int nPoolSize = m_testRunners.size(); // Customize pool size?
-//      System.out.println("Creating " + m_testRunners.size() + " threads");
       IPooledExecutor executor = ThreadUtil.createPooledExecutor(nPoolSize);
 
       for (TestRunner tr : m_testRunners) {
-        maxTimeOut = 500000L;
-        SuiteWorker worker = new SuiteWorker(tr);
-        executor.execute(worker);
+        executor.execute(new SuiteWorker(tr));
       }
 
       try {
         executor.shutdown();
-//        System.out.println("Waiting for termination, timeout:" 
-//                  + maxTimeOut);
         executor.awaitTermination(maxTimeOut);
-//        System.out.println("Successful termination");
       }
       catch (InterruptedException e) {
         e.printStackTrace();
       }
-      catch (java.util.concurrent.RejectedExecutionException ree) {
-        System.err.println(ree.getMessage());
-      }
     }
 
     private class SuiteWorker implements Runnable {
-        private TestRunner tr;
+        private TestRunner m_testRunner;
 
         public SuiteWorker(TestRunner tr) {
-            this.tr = tr;
+          m_testRunner = tr;
         }
 
         public void run() {
             try {
-                System.out.println("Running XML Test '" + 
-                        tr.getTest().getName() + "' in Parallel");
-                runTest(tr);
-            } catch(Exception ex) {
-                ex.printStackTrace();
+              Utils.log("[SuiteWorker]", 4, "Running XML Test '" 
+                  +  m_testRunner.getTest().getName() + "' in Parallel");
+              runTest(m_testRunner);
+            } 
+            catch(Exception ex) {
+              // FIXME: shouldn't we have something here?
+              ex.printStackTrace();
             }
         }
     }
