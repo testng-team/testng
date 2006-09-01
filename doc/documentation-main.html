@@ -1193,19 +1193,49 @@ at runtime:</p>
 <p>The factory method can receive parameters just like <tt>@Test</tt> and <tt>@Before/After</tt> and it must return <tt>Object[]</tt>.&nbsp; 
 The objects returned can be of any class (not necessarily the same class as the 
 factory class) and they don't even need to contain TestNG annotations (in which 
-case they will be ignored by TestNG).</p><!------- --><!-- ANT  --><!------- --><!-- end maven stuff --><!-------------------------------------
-  PARALLEL RUNNING
-  ------------------------------------><h4><a name="parallel-running">5.8 - Parallel running and time-outs</a></h4>You can 
-instruct TestNG to run your tests in separate threads by using the <i>parallel</i> 
-attribute on the suite tag:
+case they will be ignored by TestNG).</p>
 
-<pre class="code">
-&lt;suite name="My suite" parallel="true" thread-count="5"&gt;
-&lt;!-- ... --&gt;
+<!------- -->
+<!-- ANT  -->
+<!------- -->
+
+<!-- end maven stuff -->
+
+
+<!-------------------------------------
+  PARALLEL RUNNING
+  ------------------------------------>
+
+<h4><a name="parallel-running">5.8 - Parallel running and time-outs</a></h4>You can 
+instruct TestNG to run your tests in separate threads by using the <i>parallel</i> 
+attribute on the suite tag.  This attribute can take one of two values:
+
+<pre class="prettyprint">
+&lt;suite name="My suite" parallel="methods" thread-count="5"&gt;
 </pre>
-When you use the <i>parallel</i> attribute, TestNG will try to run all your test methods in separate threads, except for methods 
-that depend on each other, which will be run in the same thread in order to 
-respect their order of execution.&nbsp; Additionally, the attribute <i>
+
+<pre class="prettyprint">
+&lt;suite name="My suite" parallel="tests" thread-count="5"&gt;
+</pre>
+
+<ul>
+<li>
+<b><tt>parallel="methods"</tt></b>:  TestNG will run all your test methods in separate threads, except for methods that depend on each other, which will be run in the same thread in order to 
+respect their order of execution.&nbsp;
+</li>
+
+<br>
+
+<li>
+<b><tt>parallel="tests"</tt></b>:  TestNG will run all the methods in the same &lt;test&gt; tag in the same thread, but each &lt;test&gt; tag will be in a separate thread.  This allows you to group all your classes that are not thread safe in the same &lt;test&gt; and guarantee they will all run in the same thread while taking advantage of TestNG using as many threads as possible to run your tests.
+</li>
+
+</ul>
+
+<p>
+
+
+Additionally, the attribute <i>
 thread-count</i> allows you to specify how many threads should be allocated for 
 this execution.<blockquote>
 	<p><i>Note: the <tt>@Test</tt> attribute <tt>timeOut</tt> works in both 
