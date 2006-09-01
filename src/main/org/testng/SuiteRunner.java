@@ -15,6 +15,8 @@ import org.testng.internal.IInvoker;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.AnnotationConfiguration;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.thread.IPooledExecutor;
+import org.testng.internal.thread.ThreadUtil;
 import org.testng.reporters.ExitCodeListener;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
@@ -231,7 +233,30 @@ public class SuiteRunner implements ISuite, Serializable {
     //
     // Run all the test runners
     //
-    for (TestRunner tr : m_testRunners) {
+    boolean testsInParallel = false; // Need config
+    if (!testsInParallel) {
+      runSequentially();
+    } 
+    else {
+      runSuiteInParallel();
+    }
+
+    //
+    // Invoke afterSuite methods
+    //
+    invoker.invokeConfigurations(null,
+          afterSuiteMethods.values().toArray(new ITestNGMethod[afterSuiteMethods.size()]),
+          m_suite, m_suite.getAllParameters(),
+          null /* instance */);
+    }
+
+    private void runSequentially() {
+      for (TestRunner tr : m_testRunners) {
+        runTest(tr);
+      }
+    }
+
+    private void runTest(TestRunner tr) {
       Map<String, String> parameters = tr.getTest().getParameters();
       tr.getInvoker().invokeConfigurations(null,
                                    tr.getBeforeTestConfigurationMethods(),
@@ -249,14 +274,51 @@ public class SuiteRunner implements ISuite, Serializable {
       m_suiteResults.put(tr.getName(), sr);
     }
 
-    //
-    // Invoke afterSuite methods
-    //
-    invoker.invokeConfigurations(null,
-        afterSuiteMethods.values().toArray(new ITestNGMethod[afterSuiteMethods.size()]),
-        m_suite, m_suite.getAllParameters(),
-        null /* instance */);
-  }
+
+    private void runSuiteInParallel() {
+      long maxTimeOut= 120 * 1000; // Need to make config setting
+      int nPoolSize = m_testRunners.size(); // Customize pool size?
+//      System.out.println("Creating " + m_testRunners.size() + " threads");
+      IPooledExecutor executor = ThreadUtil.createPooledExecutor(nPoolSize);
+
+      for (TestRunner tr : m_testRunners) {
+        maxTimeOut = 500000L;
+        SuiteWorker worker = new SuiteWorker(tr);
+        executor.execute(worker);
+      }
+
+      try {
+        executor.shutdown();
+//        System.out.println("Waiting for termination, timeout:" 
+//                  + maxTimeOut);
+        executor.awaitTermination(maxTimeOut);
+//        System.out.println("Successful termination");
+      }
+      catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      catch (java.util.concurrent.RejectedExecutionException ree) {
+        System.err.println(ree.getMessage());
+      }
+    }
+
+    private class SuiteWorker implements Runnable {
+        private TestRunner tr;
+
+        public SuiteWorker(TestRunner tr) {
+            this.tr = tr;
+        }
+
+        public void run() {
+            try {
+                System.out.println("Running XML Test '" + 
+                        tr.getTest().getName() + "' in Parallel");
+                runTest(tr);
+            } catch(Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
 
   /**
    * Registers ISuiteListeners interested in reporting the result of the current

@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="Single" verbose="1" parallel="false" thread-count="2" >
+<suite name="Single" verbose="3" parallel="false" thread-count="2" >
   
   <test name="TestSingle">
 <!--
@@ -13,10 +13,10 @@
       <class name="test.thread.SequentialSampleTest" />
       <class name="test.thread.SequentialSample2Test" />
       <class name="test.thread.SequentialSample3Test" />
--->
     <parameter name="source-directory" value="test/src/test/converter" />
+-->
     <classes>
-      <class name="test.converter.JUnitConverterTest" />
+      <class name="test.thread.ParallelTestTest" />
     </classes>
   </test>
 

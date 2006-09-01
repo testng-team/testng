@@ -5,6 +5,7 @@ import java.util.Map;
 public class BaseSequentialSample {
 
   protected void addId(long id) {
+    ppp("ADDING ID " + id);
     getMap().put(id, id);
   }
 
