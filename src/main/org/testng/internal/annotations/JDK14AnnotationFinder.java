@@ -1,13 +1,5 @@
 package org.testng.internal.annotations;
 
-import com.thoughtworks.qdox.JavaDocBuilder;
-import com.thoughtworks.qdox.directorywalker.DirectoryScanner;
-import com.thoughtworks.qdox.directorywalker.FileVisitor;
-import com.thoughtworks.qdox.directorywalker.SuffixFilter;
-import com.thoughtworks.qdox.model.AbstractInheritableJavaEntity;
-import com.thoughtworks.qdox.model.JavaClass;
-import com.thoughtworks.qdox.model.JavaMethod;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -19,21 +11,53 @@ import java.util.List;
 import org.testng.TestRunner;
 import org.testng.internal.Utils;
 
+import com.thoughtworks.qdox.JavaDocBuilder;
+import com.thoughtworks.qdox.directorywalker.DirectoryScanner;
+import com.thoughtworks.qdox.directorywalker.FileVisitor;
+import com.thoughtworks.qdox.directorywalker.SuffixFilter;
+import com.thoughtworks.qdox.model.AbstractInheritableJavaEntity;
+import com.thoughtworks.qdox.model.JavaClass;
+import com.thoughtworks.qdox.model.JavaMethod;
+
 /**
  * This class implements IAnnotationFinder with QDox for JDK 1.4
  * 
- * Created on Dec 20, 2005
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
+ * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class JDK14AnnotationFinder implements IAnnotationFinder {
   private JDK14TagFactory m_tagFactory = new JDK14TagFactory();
   private JavaDocBuilder m_docBuilder;
+  private String[] m_dirPaths;
+  private boolean m_initialized;
 
   public JDK14AnnotationFinder() {
     m_docBuilder = new JavaDocBuilder();
   }
   
-  public void addSources(String[] filePaths) {
+  /**
+   * @see org.testng.internal.annotations.IAnnotationFinder#initialize()
+   */
+  public void initialize() {
+    if(m_initialized || null == m_dirPaths) {
+      return;
+    }
+    
+    for (int i = 0; i < m_dirPaths.length; i++) {
+      File dir = new File(m_dirPaths[i]);
+      DirectoryScanner scanner = new DirectoryScanner(dir);
+      scanner.addFilter(new SuffixFilter(".java"));
+      scanner.scan(new FileVisitor() {
+        public void visitFile(File currentFile) {
+          addSources(new String[] { currentFile.getAbsolutePath() });
+        }
+      });
+    }
+
+    m_initialized= true;
+  }
+
+  void addSources(String[] filePaths) {
     if(filePaths == null) {
       if (TestRunner.getVerbose() > 1) {
         ppp("Array of source paths is null");
@@ -62,16 +86,7 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
       return;
     }
 
-    for (int i = 0; i < dirPaths.length; i++) {
-      File dir = new File(dirPaths[i]);
-      DirectoryScanner scanner = new DirectoryScanner(dir);
-      scanner.addFilter(new SuffixFilter(".java"));
-      scanner.scan(new FileVisitor() {
-          public void visitFile(File currentFile) {
-            addSources(new String[] { currentFile.getAbsolutePath() });
-          }
-        });
-    }
+    m_dirPaths = dirPaths;
   }
 
   public IAnnotation findAnnotation(Class cls, Class annotationClass) {

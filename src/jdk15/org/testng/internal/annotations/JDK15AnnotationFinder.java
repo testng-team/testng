@@ -91,5 +91,12 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     // no-op for JDK 15
   }
 
+  /**
+   * @see org.testng.internal.annotations.IAnnotationFinder#initialize()
+   */
+  public void initialize() {
+    //  no-op for JDK5
+  }
+
   
 }

@@ -293,6 +293,7 @@ public class TestNG {
     }
 
     m_sourceDirs = Utils.split(sourcePaths, SRC_SEPARATOR);
+    AnnotationConfiguration.getInstance().getAnnotationFinder().addSourceDirs(m_sourceDirs);
   }
 
   /**
@@ -359,7 +360,9 @@ public class TestNG {
    * Set the test classes to be run by this TestNG object.  This method
    * will create a dummy suite that will wrap these classes called
    * "Command Line Test".
-   *
+   * <p/>
+   * If used together with threadCount, parallel, groups, excludedGroups than this one must be set first.
+   * 
    * @param classes An array of classes that contain TestNG annotations.
    */
   public void setTestClasses(Class[] classes) {
@@ -367,6 +370,11 @@ public class TestNG {
     for (XmlSuite s : m_cmdlineSuite) {
       m_suites.add(s);
     }
+  }
+  
+  private int getVersion() {
+    return JDK5_ANNOTATION_TYPE.equals(m_target) ? AnnotationConfiguration.JVM_15_CONFIG
+        : AnnotationConfiguration.JVM_14_CONFIG;
   }
   
   public XmlSuite[] createCommandLineSuites(Class[] classes) {
@@ -377,8 +385,9 @@ public class TestNG {
     //
     XmlClass[] xmlClasses = Utils.classesToXmlClasses(classes);
     Map<String, XmlSuite> suites = new HashMap<String, XmlSuite>();
-    IAnnotationFinder finder =
-      SuiteRunner.getAnnotationFinder(AnnotationConfiguration.JVM_15_CONFIG);
+    IAnnotationFinder finder = SuiteRunner.getAnnotationFinder(getVersion());
+    finder.initialize();
+    
     for (int i = 0; i < classes.length; i++) {
       Class c = classes[i];
       ITest test = (ITest) finder.findAnnotation(c, ITest.class);
@@ -387,8 +396,7 @@ public class TestNG {
       if (test != null) {
         suiteName = test.getSuiteName();
         testName = test.getTestName();    
-      }
-        
+      }  
       XmlSuite xmlSuite = suites.get(suiteName);
       if (xmlSuite == null) {
         xmlSuite = new XmlSuite();
@@ -587,11 +595,8 @@ public class TestNG {
    * Run TestNG.
    */
   public void run() {
-    // lazy scan sourcedirs if needed
-    if(isJdk14() || JAVADOC_ANNOTATION_TYPE.equals(m_target)) {
-      AnnotationConfiguration.getInstance().getAnnotationFinder().addSourceDirs(m_sourceDirs);
-    }
-    
+    // if JDK1.4 lazy scan sources
+    AnnotationConfiguration.getInstance().getAnnotationFinder().initialize();
     List<ISuite> suiteRunners = null;
     
     //
@@ -963,9 +968,9 @@ public class TestNG {
       
       result.setOutputDirectory((String) cmdLineArgs.get(TestNGCommandLineArgs.OUTDIR_COMMAND_OPT));
       result.setSourcePath((String) cmdLineArgs.get(TestNGCommandLineArgs.SRC_COMMAND_OPT));
+      result.setTarget((String) cmdLineArgs.get(TestNGCommandLineArgs.TARGET_COMMAND_OPT));
 
-      List<String> testClasses = (List<String>) cmdLineArgs
-        .get(TestNGCommandLineArgs.TESTCLASS_COMMAND_OPT);
+      List<String> testClasses = (List<String>) cmdLineArgs.get(TestNGCommandLineArgs.TESTCLASS_COMMAND_OPT);
       if (null != testClasses) {
         Class[] classes = (Class[]) testClasses.toArray(new Class[testClasses.size()]);
         result.setTestClasses(classes);
@@ -977,8 +982,7 @@ public class TestNG {
       }
       
       result.setGroups((String) cmdLineArgs.get(TestNGCommandLineArgs.GROUPS_COMMAND_OPT));
-      result.setExcludedGroups((String) cmdLineArgs.get(TestNGCommandLineArgs.EXCLUDED_GROUPS_COMMAND_OPT));
-      result.setTarget((String) cmdLineArgs.get(TestNGCommandLineArgs.TARGET_COMMAND_OPT));
+      result.setExcludedGroups((String) cmdLineArgs.get(TestNGCommandLineArgs.EXCLUDED_GROUPS_COMMAND_OPT));      
       result.setTestJar((String) cmdLineArgs.get(TestNGCommandLineArgs.TESTJAR_COMMAND_OPT));
       result.setJUnit((Boolean) cmdLineArgs.get(TestNGCommandLineArgs.JUNIT_DEF_OPT));
       result.setHostFile((String) cmdLineArgs.get(TestNGCommandLineArgs.HOSTFILE_OPT));

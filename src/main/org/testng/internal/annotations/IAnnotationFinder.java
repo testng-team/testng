@@ -41,4 +41,6 @@ public interface IAnnotationFinder {
   // No op for JDK15
   public void addSourceDirs(String[] dirs);
   
+  // No-op for JDK5
+  void initialize();
 }
