@@ -145,8 +145,11 @@ public class SuiteHTMLReporter implements IReporter {
         Method m = method.getMethod();
         if (m != null) {
           sb2.append("<tr><td>")
-          .append(m.getDeclaringClass().getName() + "." + m.getName())
-          .append("</td></tr>\n");
+          .append(m.getDeclaringClass().getName() + "." + m.getName());
+          if(null != method.getDescription() && !"".equals(method.getDescription())) {
+            sb2.append("<br/>").append(SP2).append("<i>").append(method.getDescription()).append("</i>");
+          }
+          sb2.append("</td></tr>\n");
         }
       }
       sb2.append("</table>");
@@ -555,7 +558,7 @@ public class SuiteHTMLReporter implements IReporter {
           .append("<td>" + methodCount + " " + pluralize(methodCount, "method") + ":<br/>\n")
             .append("&nbsp;&nbsp;<a target='mainFrame' href='").append(METHODS_CHRONOLOGICAL).append("'>").append("chronological</a><br/>\n")
             .append("&nbsp;&nbsp;<a target='mainFrame' href='").append(METHODS_ALPHABETICAL).append("\'>").append("alphabetical</a><br/>\n")
-            .append("&nbsp;&nbsp;<a target='mainFrame' href='").append(METHODS_NOT_RUN).append("'>not run</a>")
+            .append("&nbsp;&nbsp;<a target='mainFrame' href='").append(METHODS_NOT_RUN).append("'>not run (" + suite.getExcludedMethods().size() + ")</a>")
           .append("</td>\n")
         .append("</tr>\n")
 
