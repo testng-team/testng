@@ -16,6 +16,7 @@ import test.junit.TestAd;
 import test.junit.TestAe;
 import test.junit.TestAf;
 import test.sample.JUnitSample1;
+import test.sample.JUnitSample2;
 
 
 /**
@@ -65,8 +66,7 @@ public class JUnitTest1 extends BaseTest {
     addClass("test.sample.AllJUnitTests");
     run();
     String[] passed = {
-        JUnitSample1.EXPECTED1, JUnitSample1.EXPECTED2,
-        "testSample2ThatSetUpWasRun",
+        JUnitSample1.EXPECTED1, JUnitSample2.EXPECTED
     };
     String[] failed = {
     };
@@ -129,10 +129,9 @@ public class JUnitTest1 extends BaseTest {
     String[] passed = {
     };
     String[] failed = {
-      "setUp"
+        "testM1"
     };
     String[] skipped = {
-      "testM1", "tearDown"
     };
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Skipped", skipped, getSkippedTests());    

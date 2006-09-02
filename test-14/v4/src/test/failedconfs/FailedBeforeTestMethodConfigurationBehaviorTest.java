@@ -23,7 +23,7 @@ public class FailedBeforeTestMethodConfigurationBehaviorTest {
 
   
   /**
-   * @testng.test
+   * @testng.test enabled=false description="Test1 and Test2 are not triggered"
    */
   public void beforeTestMethodFailureInTwoClasses() {
     TestNG testng = new TestNG();

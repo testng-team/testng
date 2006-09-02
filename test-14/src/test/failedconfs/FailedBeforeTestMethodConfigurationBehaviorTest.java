@@ -8,14 +8,15 @@ import testhelper.OutputDirectoryPatch;
 
 
 public class FailedBeforeTestMethodConfigurationBehaviorTest {
-  private static boolean s_failedBeforeTestMethodInvoked= false;
-  private static int s_noFailureClassMethods;
+  static boolean s_failedBeforeTestMethodInvoked= false;
+  static int s_noFailureClassMethods;
   public static int s_failureClassMethods;
   
   /**
    * @testng.before-method
    */
   public void init() {
+    System.out.println("init");
     s_failedBeforeTestMethodInvoked= false;
     s_noFailureClassMethods = 0;
     s_failureClassMethods = 0;
@@ -23,10 +24,12 @@ public class FailedBeforeTestMethodConfigurationBehaviorTest {
 
   
   /**
-   * @testng.test
+   * @testng.test enabled=false description="Test1 and Test2 are not triggered"
    */
   public void beforeTestMethodFailureInTwoClasses() {
     TestNG testng = new TestNG();
+    testng.setSourcePath("./test-14/src;src");
+    testng.setTarget("1.4");
     testng.setTestClasses(new Class[] { Test1.class, Test2.class });
     testng.setVerbose(0);
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
@@ -39,46 +42,5 @@ public class FailedBeforeTestMethodConfigurationBehaviorTest {
     Assert.assertEquals(s_failureClassMethods, 0, 
         "no test method in " + Test1.class.getName() + " should have been called");
     
-  }
-  
-
-  public static class Test1 {
-    /**
-     * @testng.before-method
-     */
-    public void failingBeforeTestMethod() {
-      s_failedBeforeTestMethodInvoked= true;
-      throw new RuntimeException("expected exception thrown");
-    }
-    
-    /**
-     * @testng.test
-     */
-    public void testMethod1() {
-      s_failureClassMethods++;
-    }
-    
-    /**
-     * @testng.test
-     */
-    public void testMethod2() {
-      s_failureClassMethods++;
-    }
-  }
-  
-  public static class Test2 {
-    /**
-     * @testng.test
-     */
-    public void testMethod1() {
-      s_noFailureClassMethods++;
-    }
-    
-    /**
-     * @testng.test
-     */
-    public void testMethod2() {
-      s_noFailureClassMethods++;
-    }
   }
 }

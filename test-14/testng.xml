@@ -78,7 +78,9 @@
        <class name="test.reports.ReportTest" />
      </classes>
    </test>
-<!-- -->
+<!-- 
+    THIS CANNOT WORK: cannot set the sourcedirs
+-->
     <test name="BeforeTestMethod Behavior Regression">
         <classes>
             <class name="test.failedconfs.FailedBeforeTestMethodConfigurationBehaviorTest" />

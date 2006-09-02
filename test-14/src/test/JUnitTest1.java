@@ -56,7 +56,7 @@ public class JUnitTest1 extends BaseTest {
       addClass("test.sample.AllJUnitTests");
       run();
       String[] passed = {
-         "testSample1_1", "testSample1_2", "testSample2ThatSetUpWasRun",
+         "testSample1_1", "testSample2ThatSetUpWasRun",
       };
       String[] failed = {
       };

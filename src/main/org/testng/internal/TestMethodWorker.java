@@ -18,7 +18,7 @@ import org.testng.xml.XmlSuite;
  * 
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
-public class TestMethodWorker implements Runnable {
+public class TestMethodWorker implements IMethodWorker {
   private ITestNGMethod[] m_testMethods;
   private IInvoker m_invoker = null;
   private Map<String, String> m_parameters = null;

@@ -2,15 +2,12 @@
   
 <suite name="Single" verbose="3" parallel="false"  >
   
-  <test name="TimeOut">
+  <test name="JUnit" junit="true">
     <classes>
-      <class name="test.tmp.ExponentTest" />
-      <class name="test.tmp.A" />
-<!--
-      <class name="test.expectedexceptions.ExpectedExceptionsTest" />
-      <class name="test.expectedexceptions.SampleExceptions2" />
-      <class name="test.mannotation.MAnnotationSampleTest" />
--->
+      <class name="test.sample.JUnitSample1" />
+      <class name="test.sample.JUnitSample2" />
+      <!-- <class name="test.sample.AllJUnitTests" /> -->
+      <class name="test.sample.JUnitSample3" />
     </classes>
   </test>
 

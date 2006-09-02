@@ -3,14 +3,11 @@
 <suite name="Single" verbose="2" parallel="false" 
 thread-count="2" annotations="javadoc">
 
-   <test name="Regression2">
-    <classes>
-<!--
-      <class name="test.thread.SequentialSampleTest" />
-      -->
-      <class name="test.thread.SequentialTest" />
-    </classes>
-   </test>
+ <test name="Regression2">
+  <classes>
+   <class name="test.reports.ReportTest" />
+  </classes>
+ </test>
 
 </suite>
 

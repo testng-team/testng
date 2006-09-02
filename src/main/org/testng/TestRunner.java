@@ -16,6 +16,7 @@ import org.testng.internal.ClassHelper;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.Constants;
 import org.testng.internal.IInvoker;
+import org.testng.internal.IMethodWorker;
 import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.InvokedMethod;
 import org.testng.internal.Invoker;
@@ -33,6 +34,7 @@ import org.testng.internal.thread.IPooledExecutor;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.junit.JUnitClassFinder;
 import org.testng.junit.JUnitMethodFinder;
+import org.testng.junit.JUnitTestRunner;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
@@ -210,7 +212,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     initRunInfo(m_xmlTest);
 
     // Init methods and class map
-    initMethods();
+    if(!m_xmlTest.isJUnit()) {
+      initMethods();
+    }
 
   }
 
@@ -549,13 +553,13 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
    * @return All the methods that match the filtered groups.
    *         If a method belongs to an excluded group, it is automatically excluded.
    */
-  public ITestNGMethod[] collectAndOrderTestMethods(ITestNGMethod[] methods) {
-    return MethodHelper.collectAndOrderMethods(methods,
-                                               true /* forTests */,
-                                               m_runInfo,
-                                               m_annotationFinder,
-                                               m_excludedMethods);
-  }
+//  public ITestNGMethod[] collectAndOrderTestMethods(ITestNGMethod[] methods) {
+//    return MethodHelper.collectAndOrderMethods(methods,
+//                                               true /* forTests */,
+//                                               m_runInfo,
+//                                               m_annotationFinder,
+//                                               m_excludedMethods);
+//  }
 
   /**
    * The main entry method for TestRunner.
@@ -572,7 +576,13 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     beforeRun();
 
     try {
-      privateRun(getTest());
+      XmlTest test= getTest();
+      if(test.isJUnit()) {
+        privateRunJUnit(test);
+      }
+      else {
+        privateRun(test);
+      }
     }
     finally {
       afterRun();
@@ -593,6 +603,41 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     fireEvent(true /*start*/);
   }
 
+  private void privateRunJUnit(XmlTest xmlTest) {
+    final Class[] classes= Utils.xmlClassesToClasses(m_testClassesFromXml);
+    final List<ITestNGMethod> runMethods= new ArrayList<ITestNGMethod>();
+    List<IMethodWorker> workers= new ArrayList<IMethodWorker>();
+    workers.add(new IMethodWorker() {
+      /**
+       * @see org.testng.internal.IMethodWorker#getMaxTimeOut()
+       */
+      public long getMaxTimeOut() {
+        return 0;
+      }
+      
+      /**
+       * @see java.lang.Runnable#run()
+       */
+      public void run() {    
+        for(Class tc: classes) {
+          JUnitTestRunner tr= new JUnitTestRunner(TestRunner.this);
+          try {
+            tr.start(tc);
+          }
+          catch(Exception ex) {
+            ex.printStackTrace();
+          }
+          finally {
+            runMethods.addAll(tr.getTestMethods());
+          }
+        }
+      }
+    });
+
+    runWorkers(workers, "" /* JUnit does not support parallel */);
+    m_allTestMethods= runMethods.toArray(new ITestNGMethod[runMethods.size()]);
+  }
+  
   public void privateRun(XmlTest xmlTest) {
     Map<String, String> params = xmlTest.getParameters();
 
@@ -655,23 +700,24 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       }
     }
 
-    //
-    // Invoke the workers
-    //
-    String parallelMode = xmlTest.getParallel();
-    if (XmlSuite.PARALLEL_METHODS.equals(parallelMode) || 
-        "true".equalsIgnoreCase(parallelMode)) 
-    {
+    runWorkers(workers, xmlTest.getParallel());
+  }
 
+  //
+  // Invoke the workers
+  //
+  private void runWorkers(List<? extends IMethodWorker> workers, String parallelMode) {
+    if (XmlSuite.PARALLEL_METHODS.equals(parallelMode) 
+        || "true".equalsIgnoreCase(parallelMode)) 
+    {
       //
       // Parallel run
       //
       // Default timeout for individual methods:  10 seconds
       long maxTimeOut = m_xmlTest.getTimeOut(10 * 1000);
-      IPooledExecutor executor = 
-        ThreadUtil.createPooledExecutor(m_xmlTest.getSuite().getThreadCount());
+      IPooledExecutor executor = ThreadUtil.createPooledExecutor(m_xmlTest.getSuite().getThreadCount());
 
-      for (TestMethodWorker tmw : workers) {
+      for (IMethodWorker tmw : workers) {
         long mt= tmw.getMaxTimeOut();
         if (mt > maxTimeOut) {
           maxTimeOut= mt;
@@ -695,13 +741,12 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       //
       // Sequential run
       //
-      for (TestMethodWorker tmw : workers) {
+      for (IMethodWorker tmw : workers) {
         tmw.run();
       }
     }
-
   }
-
+  
   private void afterRun() {
     //
     // Log the end date
@@ -783,8 +828,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       String[] currentGroupsDependedUpon= tm.getGroupsDependedUpon();
       String[] currentMethodsDependedUpon= tm.getMethodsDependedUpon();
 
-      String thisMethodName = 
-        tm.getMethod().getDeclaringClass().getName() + "." + 
+      String thisMethodName = tm.getMethod().getDeclaringClass().getName() + "." + 
         tm.getMethod().getName();
       if (currentGroupsDependedUpon.length > 0) {
         for (String gdu : currentGroupsDependedUpon) {

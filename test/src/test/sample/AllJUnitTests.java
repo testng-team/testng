@@ -10,10 +10,10 @@ import junit.framework.TestSuite;
  * 
  */
 public class AllJUnitTests {
-  public Test suite() {
+  public static Test suite() {
     TestSuite suite= new TestSuite(); 
-    suite.addTest(new JUnitSample1("JUnitSample1")); 
-    suite.addTest(new JUnitSample2("JUnitSample2")); 
+    suite.addTest(new JUnitSample1(JUnitSample1.EXPECTED1)); 
+    suite.addTest(new JUnitSample2(JUnitSample2.EXPECTED)); 
     return suite;    
   }
 }
