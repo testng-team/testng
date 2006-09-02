@@ -147,13 +147,13 @@
   </target>
 
   <target name="test-15" depends="test-15-v4">
-    <ant inheritall="no" antfile="test/build.xml" />
+  	<ant inheritall="no" antfile="test/build.xml" />
     <ant inheritall="no" antfile="test/build.xml" target="run-jdk14" />
-    <ant inheritall="no" antfile="test/v4/build.xml" target="run-jdk14" />
   </target>
   
   <target name="test-15-v4">
     <ant inheritall="no" antfile="test/v4/build.xml" />
+    <ant inheritall="no" antfile="test/v4/build.xml" target="run-jdk14" /> 
   </target>
 
   <target name="tmp">

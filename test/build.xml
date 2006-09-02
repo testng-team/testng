@@ -6,6 +6,8 @@
   <property name="test14.dir" value="${basedir}/test-14"/>
   <property name="test.src.dir" value="${test15.dir}/src"/>
   <property name="test.build.dir" value="${test15.dir}/build"/>
+  <property name="test14.src.dir" value="${test14.dir}/src"/>
+  <property name="test14.build.dir" value="${test14.dir}/build"/>
 
   <property name="report.dir" value="${test15.dir}/test-output"/>
   <property name="junit.report.dir" value="${report.dir}/test-tmp"/>
@@ -71,6 +73,13 @@ TESTNG.REPORT.DIR=${testng.report.dir}
 		<pathelement location="${java.home}/../lib/tools.jar"/>
   </path>
 
+	<path id="run14.cp">
+		<path refid="compile.cp" />
+		<pathelement location="${test14.build.dir}" />
+		<pathelement location="${lib.dir}/qdox-1.5.jar" />
+		<pathelement location="${java.home}/../lib/tools.jar" />
+	</path>
+		
   <target name="run" description="Run tests" depends="compile">
 		<echo message="                                 -- Running JDK 1.5 tests --"/>
 		<echo message="                                 -- ${jdk15.testng.jar} --" />
@@ -84,10 +93,11 @@ TESTNG.REPORT.DIR=${testng.report.dir}
     <echo message="                                 -- Running JDK 1.4 tests --"/>
   	<echo message="                                 -- ${jdk15.testng.jar} --" />
   	
-  	<testng classpathref="run.cp"
+  	<testng classpathref="run14.cp"
             outputdir="${testng.report.dir}"
-            sourcedir="${test.src.dir}">
-			<xmlfileset dir="${test15.dir}" includes="testng.xml"/>
+            sourcedir="${test14.src.dir}"
+  					target="1.4">
+			<xmlfileset dir="${test14.dir}" includes="testng.xml"/>
 		</testng>
   </target>
 
