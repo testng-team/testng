@@ -12,6 +12,11 @@ Added: Command line understands @ syntax
 Added: JUnitConverter uses the new syntax
 Added: -groups to JUnitConverter
 Fixed: Throw proper exception when a DataProvider declares parameters
+Added: completely revamped JUnit support (should run all kind of JUnit tests)
+Fixed: TESTNG-40 (Bug in testng-failed.xml generation)
+
+Eclipse plug-in
+Added: TESTNG-105 Automaticaly define TESTNG_HOME classpath variable
 
 ===========================================================================
 5.1
