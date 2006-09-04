@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="Single" verbose="3" parallel="false" thread-count="2" >
+<suite name="Single" verbose="3" parallel="methods" thread-count="2" time-out="1000" >
   
   <test name="TestSingle">
 <!--
@@ -17,7 +17,7 @@
       <class name="test.thread.ParallelTestTest" />
 -->
     <classes>
-      <class name="test.Misc" />
+      <class name="test.timeout.TimeOutSampleTest" />
     </classes>
   </test>
 

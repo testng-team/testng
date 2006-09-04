@@ -212,7 +212,7 @@
 
   <test name="TimeOut">
     <classes>
-      <class name="test.Test3" />
+      <class name="test.timeout.TimeOutTest" />
     </classes>
   </test>
   

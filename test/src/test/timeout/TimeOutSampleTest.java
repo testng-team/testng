@@ -1,4 +1,4 @@
-package test.sample;
+package test.timeout;
 
 import org.testng.annotations.*;
 
@@ -7,7 +7,7 @@ import org.testng.annotations.*;
  * 
  * @author cbeust
  */
-public class TimeOutTest {
+public class TimeOutSampleTest {
   
   @Test(timeOut = 5000 /* 5 seconds */)
   public void timeoutShouldPass() {
