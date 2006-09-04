@@ -67,4 +67,11 @@ public interface ISuite {
    * returned string has the form:  host:port
    */
   public String getHost();
+  
+  /**
+   * Retrieves the shared state for a suite.
+   * 
+   * @return the share state of the current suite. 
+   */
+  SuiteRunState getSuiteState();
 }

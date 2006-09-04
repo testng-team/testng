@@ -1,0 +1,25 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="TESTNG-106" verbose="3">
+    <test name="myTest1">
+        <classes>
+            <class name="test.testng106.FailingSuiteFixture" />
+            <class name="test.testng106.Test1"/>
+        </classes>
+    </test>
+    <test name="myTest2">
+        <classes>
+            <class name="test.testng106.Test1"/>
+        </classes>
+    </test>
+    <test name="myTest3">
+        <classes>
+            <class name="test.testng106.Test2"/>
+        </classes>
+    </test>
+    <test name="myTest-last">
+        <classes>
+            <class name="test.testng106.Test2"/>
+        </classes>
+    </test>
+</suite> 

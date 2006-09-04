@@ -14,6 +14,8 @@ Added: -groups to JUnitConverter
 Fixed: Throw proper exception when a DataProvider declares parameters
 Added: completely revamped JUnit support (should run all kind of JUnit tests)
 Fixed: TESTNG-40 (Bug in testng-failed.xml generation)
+Fixed: TESTNG-106 (Failed "@BeforeSuite" method just skipps the last test in xml-file)
+Fixed: Success on 0 tests (http://forums.opensymphony.com/thread.jspa?threadID=41213)
 
 Eclipse plug-in
 Added: TESTNG-105 Automaticaly define TESTNG_HOME classpath variable

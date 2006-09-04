@@ -456,4 +456,13 @@ public class SuiteRunner implements ISuite, Serializable {
     return m_host;
   }
 
+  private SuiteRunState m_suiteState= new SuiteRunState();
+  
+  /**
+   * @see org.testng.ISuite#getSuiteState()
+   */
+  public SuiteRunState getSuiteState() {
+    return m_suiteState;
+  }
+
 }

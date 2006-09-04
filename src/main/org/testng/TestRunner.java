@@ -173,7 +173,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
 //      }
 //    }
     m_annotationFinder= annotationFinder;
-    m_invoker= new Invoker(this, this, m_annotationFinder);
+    m_invoker= new Invoker(this, this, m_suite.getSuiteState(), m_annotationFinder);
 
     setVerbose(test.getVerbose());
 

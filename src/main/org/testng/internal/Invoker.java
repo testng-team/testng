@@ -20,6 +20,7 @@ import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
+import org.testng.SuiteRunState;
 import org.testng.TestException;
 import org.testng.TestNGException;
 import org.testng.internal.InvokeMethodRunnable.TestNGRuntimeException;
@@ -54,12 +55,14 @@ public class Invoker implements IInvoker {
   private ITestContext m_testContext;
   private ITestResultNotifier m_notifier;
   private IAnnotationFinder m_annotationFinder;
+  private SuiteRunState m_suiteState;
 
   public Invoker(ITestContext testContext,
                  ITestResultNotifier notifier,
+                 SuiteRunState state,
                  IAnnotationFinder annotationFinder) {
     m_testContext= testContext;
-
+    m_suiteState= state;
     m_notifier= notifier;
     m_annotationFinder= annotationFinder;
   }
@@ -209,7 +212,8 @@ public class Invoker implements IInvoker {
       // If beforeSuite or afterSuite failed, mark *all* the classes as failed
       // for configurations.  At this point, the entire Suite is screwed
       else if (annotation.getBeforeSuite() || annotation.getAfterSuite()) {
-        m_suiteConfigurationFailed= true;
+//        m_suiteConfigurationFailed= true;
+        m_suiteState.failed();
       }
   
       // beforeTest or afterTest:  mark all the classes in the same
@@ -266,7 +270,7 @@ public class Invoker implements IInvoker {
   private boolean confInvocationPassed(Class cls) {
     boolean result= true;
 
-    if(m_suiteConfigurationFailed) {
+    if(m_suiteState.isFailed()) {
       result= false;
     }
     else {
@@ -289,7 +293,7 @@ public class Invoker implements IInvoker {
   private Map<Class, Boolean> m_classInvocationResults= new HashMap<Class, Boolean>();
 
   // True if at least a beforeSuite or afterSuit method failed
-  private boolean m_suiteConfigurationFailed= false;
+//  private boolean m_suiteConfigurationFailed= false;
 
   private void setClassInvocationFailure(Class clazz, boolean flag) {
     m_classInvocationResults.put(clazz, flag);
