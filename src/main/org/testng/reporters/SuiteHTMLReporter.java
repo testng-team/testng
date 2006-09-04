@@ -119,7 +119,7 @@ public class SuiteHTMLReporter implements IReporter {
         skippedTests += context.getSkippedTests().size();
       }
       
-      String cls = failedTests > 0 ? "invocation-failed" : "invocation-passed";
+      String cls = failedTests > 0 ? "invocation-failed" : (passedTests > 0  ? "invocation-passed" : "invocation-failed");
       sb.append("<tr align='center' class='" + cls + "'>")
         .append("<td><a href='").append(name).append("/index.html'>")
         .append(name).append("</a></td>\n");
@@ -584,16 +584,28 @@ public class SuiteHTMLReporter implements IReporter {
         ITestContext tc = sr.getTestContext();
         int failed = tc.getFailedTests().size(); 
         int skipped = tc.getSkippedTests().size();
+        int passed = tc.getPassedTests().size();
         
-        if (failed > 0) redResults.put(suiteName, sr);
-        else if (skipped > 0) yellowResults.put(suiteName, sr);
-        else greenResults.put(suiteName, sr);
+        if (failed > 0) {
+          redResults.put(suiteName, sr);
+        }
+        else if (skipped > 0) {
+          yellowResults.put(suiteName, sr);
+        }
+        else if (passed > 0) {
+          greenResults.put(suiteName, sr);
+        }
+        else {
+          redResults.put(suiteName, sr);
+        }
       }
   
-      String[] colors = {"failed", "skipped", "passed"};
+      
       ISuiteResult[][] results = new ISuiteResult[][] {
         sortResults(redResults.values()), sortResults(yellowResults.values()), sortResults(greenResults.values())
       };
+      
+      String[] colors = {"failed", "skipped", "passed"};
       for (int i = 0; i < colors.length; i++) {
         ISuiteResult[] r = results[i];
         for (ISuiteResult sr: r) {

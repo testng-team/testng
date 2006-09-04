@@ -127,7 +127,8 @@ public class TestNG {
   public static final int HAS_NO_TEST = 8;
 
   protected int m_status;
-
+  protected boolean m_hasTests= false;
+  
   /** The port on which this client will listen. */
   private int m_clientPort = 0;
 
@@ -165,9 +166,14 @@ public class TestNG {
 
       m_outputDir = DEFAULT_OUTPUTDIR; 
     }
+    m_testListeners.add(new ExitCodeListener(this));
     m_useDefaultListeners = useDefaultListeners;
   }
 
+  /**
+   * @deprecated
+   */
+  @Deprecated
   public static TestNG getDefault() {
     return m_instance;
   }
@@ -486,6 +492,7 @@ public class TestNG {
       }
     }
   }
+  
   /**
    * Define which groups will be included from this run.
    *
@@ -626,33 +633,30 @@ public class TestNG {
       }
     }
     
-    // HINT: check if anything was run
-    int runMethodsCount = 0;
-    if(null != suiteRunners) {
-      for(ISuite suite: suiteRunners) {
-        runMethodsCount += suite.getInvokedMethods().size();
-      }
-    }  
-    if(runMethodsCount == 0) {
+    if(!m_hasTests) {
       setStatus(HAS_NO_TEST);
       if (TestRunner.getVerbose() > 1) {
         System.err.println("[TestNG] No tests found. Nothing was run");
       }
     }
-    
+    // HINT: check if anything was run
+//    int runMethodsCount = 0;
+//    if(null != suiteRunners) {
+//      for(ISuite suite: suiteRunners) {
+//        runMethodsCount += suite.getInvokedMethods().size();
+//      }
+//    }  
+//    if(runMethodsCount == 0) {
+//      setStatus(HAS_NO_TEST);
+//      if (TestRunner.getVerbose() > 1) {
+//        System.err.println("[TestNG] No tests found. Nothing was run");
+//      }
+//    }    
   }
   
   private static ConnectionInfo resetSocket(int clientPort, ConnectionInfo oldCi) 
     throws IOException 
   {
-//    if (oldCi != null) {
-//      Socket oldSocket = oldCi.getSocket();
-//      if (! oldSocket.isClosed()) {
-//        oldCi.getOis().close();
-//        oldCi.getOos().close();
-//      }
-//      oldSocket.close();
-//    }
     ConnectionInfo result = new ConnectionInfo();
     ServerSocket serverSocket = new ServerSocket(clientPort);
     serverSocket.setReuseAddress(true);
@@ -1109,6 +1113,10 @@ public class TestNG {
     return (getStatus() & HAS_FAILURE) == HAS_FAILURE;
   }
 
+  /**
+   * @deprecated
+   */
+  @Deprecated
   public void setHasFailure(boolean hasFailure) {
     m_status |= HAS_FAILURE;
   }
@@ -1120,6 +1128,10 @@ public class TestNG {
     return (getStatus() & HAS_FSP) == HAS_FSP;
   }
 
+  /**
+   * @deprecated
+   */
+  @Deprecated
   public void setHasFailureWithinSuccessPercentage(boolean hasFailureWithinSuccessPercentage) {
     m_status |= HAS_FSP;
   }
@@ -1131,6 +1143,10 @@ public class TestNG {
     return (getStatus() & HAS_SKIPPED) == HAS_SKIPPED;
   }
 
+  /**
+   * @deprecated
+   */
+  @Deprecated
   public void setHasSkip(boolean hasSkip) {
     m_status |= HAS_SKIPPED;
   }
@@ -1153,4 +1169,46 @@ public class TestNG {
     return m_outputDir;
   }
 
+  public static class ExitCodeListener implements ITestListener {
+    protected TestNG m_mainRunner;
+    
+    public ExitCodeListener() {
+      m_mainRunner = TestNG.m_instance;
+    }
+
+    public ExitCodeListener(TestNG runner) {
+      m_mainRunner = runner;
+    }
+    
+    public void onTestFailure(ITestResult result) {
+      m_mainRunner.m_status |= HAS_FAILURE;
+    }
+
+    public void onTestSkipped(ITestResult result) {
+//      m_mainRunner.setHasSkip(true);
+      m_mainRunner.m_status |= HAS_SKIPPED;
+    }
+
+    public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
+//      m_mainRunner.setHasFailureWithinSuccessPercentage(true);
+      m_mainRunner.m_status |= HAS_FSP;
+    }
+
+    public void onTestSuccess(ITestResult result) {
+    }
+
+    public void onStart(ITestContext context) {
+    }
+
+    public void onFinish(ITestContext context) {
+    }
+
+    public void onTestStart(ITestResult result) {
+      setHasRunTests();
+    }
+    
+    private void setHasRunTests() {
+      m_mainRunner.m_hasTests= true;
+    }
+  }
 }

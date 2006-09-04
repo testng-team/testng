@@ -123,8 +123,6 @@ public class SuiteRunner implements ISuite, Serializable {
           m_testlisteners.toArray(new ITestListener[m_testlisteners.size()]), m_useDefaultListeners);
     }
     else {
-      m_testlisteners.add(new ExitCodeListener());
-
       factory = new ProxyTestRunnerFactory(
           m_testlisteners.toArray(new ITestListener[m_testlisteners.size()]), m_tmpRunnerFactory);
     }
@@ -416,8 +414,6 @@ public class SuiteRunner implements ISuite, Serializable {
         //to be added even with defaultListeners set to false?
         testRunner.addTestListener(new TextReporter(testRunner.getName(), TestRunner.getVerbose()));
       }
-      
-      testRunner.addTestListener(new ExitCodeListener());
       
       for (ITestListener itl : m_failureGenerators) {
         testRunner.addTestListener(itl);
