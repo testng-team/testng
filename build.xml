@@ -284,6 +284,9 @@
       <zipfileset dir="javadocs" prefix="javadocs" />
       <zipfileset dir="src" prefix="src" />
       <zipfileset dir="doc" prefix="doc" />
+    	<zipfileset dir="resources"
+    							prefix="resources" 
+    							includes="**/*.css"/>
       <zipfileset dir="test"
                   prefix="test"
                   includes="**/*.properties,**/*.java,build.xml,testng.xml"
