@@ -25,6 +25,7 @@ import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
+import org.apache.tools.ant.types.selectors.FilenameSelector;
 
 /**
  * TestNG settings:
@@ -226,11 +227,11 @@ public class TestNGAntTask extends Task {
   }
 
   public void addClassfileset(FileSet fs) {
-    m_classFilesets.add(fs);
+    m_classFilesets.add(appendClassSelector(fs));
   }
 
   public void setClassfilesetRef(Reference ref) {
-    m_classFilesets.add(createFileSet(ref));
+    m_classFilesets.add(appendClassSelector(createFileSet(ref)));
   }
 
   /**
@@ -629,6 +630,15 @@ public class TestNGAntTask extends Task {
     fs.setRefid(ref);
     fs.setProject(getProject());
 
+    return fs;
+  }
+  
+  private FileSet appendClassSelector(FileSet fs) {
+    FilenameSelector selector = new FilenameSelector();
+    selector.setName("**/*.class");
+    selector.setProject(getProject());
+    fs.appendSelector(selector);
+    
     return fs;
   }
   
