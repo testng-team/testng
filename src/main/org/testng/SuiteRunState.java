@@ -1,5 +1,7 @@
 package org.testng;
 
+import java.io.Serializable;
+
 
 /**
  * A state object that records the status of the suite run. Mainly used to
@@ -7,7 +9,7 @@ package org.testng;
  * 
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
-public class SuiteRunState {
+public class SuiteRunState implements Serializable {
   private boolean m_hasFailures;
   
   public void failed() {
