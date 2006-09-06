@@ -423,7 +423,8 @@ public class TestNGAntTask extends Task {
       fw = new FileWriter(f);
       bw = new BufferedWriter(fw);
       for (String arg : argv) {
-        bw.append(arg).append(" ");
+        bw.write(arg);
+        bw.write(" ");
       }
     }
     catch (IOException e) {
