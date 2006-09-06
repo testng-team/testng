@@ -6,6 +6,7 @@ TODO
 ===========================================================================
 5.2
 
+Added: EmailableReported (from Paul Mendelson)
 Added: parallel can now be "methods" or "tests". Boolean version deprecated
 Added: TestNGAntTask now uses the @ syntax to invoke TestNG
 Added: Command line understands @ syntax

@@ -36,6 +36,7 @@ import org.testng.internal.thread.ThreadUtil;
 import org.testng.remote.ConnectionInfo;
 import org.testng.remote.RemoteSuiteWorker;
 import org.testng.remote.RemoteTestWorker;
+import org.testng.reporters.EmailableReporter;
 import org.testng.reporters.FailedReporter;
 import org.testng.reporters.SuiteHTMLReporter;
 import org.testng.xml.Parser;
@@ -163,6 +164,7 @@ public class TestNG {
     if (useDefaultListeners) {
       m_reporters.add(new SuiteHTMLReporter());
       m_reporters.add(new FailedReporter());
+      m_reporters.add(new EmailableReporter());
 
       m_outputDir = DEFAULT_OUTPUTDIR; 
     }
