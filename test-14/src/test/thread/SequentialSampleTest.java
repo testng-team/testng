@@ -25,7 +25,7 @@ public class SequentialSampleTest {
    * @testng.test
    */
   public void f1() {
-    Long id = new Long(Thread.currentThread().getId());
+    Long id = new Long(Thread.currentThread().hashCode());
     ppp("ID:" + id);
     m_threads.put(id, id);
   }
@@ -34,7 +34,7 @@ public class SequentialSampleTest {
    * @testng.test
    */
   public void f2() {
-    Long id = new Long(Thread.currentThread().getId());
+    Long id = new Long(Thread.currentThread().hashCode());
     ppp("ID:" + id);
     m_threads.put(id, id);
   }
@@ -43,7 +43,7 @@ public class SequentialSampleTest {
    * @testng.test
    */
   public void f3() {
-    Long id = new Long(Thread.currentThread().getId());
+    Long id = new Long(Thread.currentThread().hashCode());
     ppp("ID:" + id);
     m_threads.put(id, id);
   }
