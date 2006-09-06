@@ -101,7 +101,7 @@
         <include name="${beanshell.jar}" />
         <include name="junit.jar" />
         <include name="${qdox.jar}" />
-        <include name="util-concurrent.jar" />
+      	<include name="${concurrent.jar}" />
       </fileset>
     </path>
 
@@ -153,7 +153,7 @@
   
   <target name="test-15-v4">
     <ant inheritall="no" antfile="test/v4/build.xml" />
-    <ant inheritall="no" antfile="test/v4/build.xml" target="run-jdk14" /> 
+    <ant inheritall="no" antfile="test/v4/build.xml" target="run-jdk14" />
   </target>
 
   <target name="tmp">
@@ -198,7 +198,7 @@
     <antcall target="clean-unjar" />
     <antcall target="extract-qdox-jar" />
     <antcall target="extract-beanshell-jar" />
-    <antcall target="extract-util-concurrent-jar" />
+    <antcall target="extract-concurrent-jar" />
     <delete quiet="true" file="${jdk14.testng.jar}" />
     <jar destfile="${jdk14.testng.jar}" update="true">
       <manifest>
@@ -211,7 +211,7 @@
   
   <target name="dist-14-nobsh">
     <antcall target="clean-unjar" />
-    <antcall target="extract-util-concurrent-jar" />
+    <antcall target="extract-concurrent-jar" />
     <jar destfile="${other.jars.dir}/${jdk14.testng.nobsh.jar}" update="true">
       <manifest>
         <attribute name="Main-Class" value="org.testng.TestNG" />
@@ -238,8 +238,8 @@
            overwrite="true" />
   </target>
 
-  <target name="extract-util-concurrent-jar">
-    <unjar src="3rdparty/util-concurrent.jar"
+  <target name="extract-concurrent-jar">
+    <unjar src="3rdparty/${concurrent.jar}"
            dest="${build.3rdparty.dir}"
            overwrite="true" />
   </target>
@@ -297,7 +297,7 @@
                   excludes="test-output/**,report/**,v4/**" />
       <zipfileset dir="3rdparty"
                   prefix="3rdparty"
-                  includes="${qdox.jar},${beanshell.jar},util-concurrent.jar" />
+                  includes="${qdox.jar},${beanshell.jar},${concurrent.jar}" />
     </zip>
   </target>
   

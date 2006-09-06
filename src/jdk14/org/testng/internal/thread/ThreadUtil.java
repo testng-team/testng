@@ -26,7 +26,7 @@ public class ThreadUtil {
       return new ThreadFactoryImpl(name);
    }
 
-   public static class ThreadFactoryImpl implements IThreadFactory, edu.emory.mathcs.util.concurrent.ThreadFactory {
+   public static class ThreadFactoryImpl implements IThreadFactory, edu.emory.mathcs.backport.java.util.concurrent.ThreadFactory {
       private String m_methodName;
 
       public ThreadFactoryImpl(String name) {

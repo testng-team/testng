@@ -3,10 +3,10 @@ package org.testng.internal.thread.port;
 import org.testng.TestNGException;
 import org.testng.internal.thread.IPooledExecutor;
 
-import edu.emory.mathcs.util.concurrent.LinkedBlockingQueue;
-import edu.emory.mathcs.util.concurrent.RejectedExecutionException;
-import edu.emory.mathcs.util.concurrent.ThreadPoolExecutor;
-import edu.emory.mathcs.util.concurrent.TimeUnit;
+import edu.emory.mathcs.backport.java.util.concurrent.LinkedBlockingQueue;
+import edu.emory.mathcs.backport.java.util.concurrent.RejectedExecutionException;
+import edu.emory.mathcs.backport.java.util.concurrent.ThreadPoolExecutor;
+import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
 
 /**
  * IPooledExecutor implementation based on ThreadPoolExecutor.

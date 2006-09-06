@@ -1,7 +1,5 @@
 package org.testng.internal.remote;
 
-import edu.emory.mathcs.util.concurrent.LinkedBlockingQueue;
-
 import java.io.IOException;
 import java.net.Socket;
 import java.util.HashMap;
@@ -9,14 +7,15 @@ import java.util.Map;
 
 import org.testng.remote.ConnectionInfo;
 
+import edu.emory.mathcs.backport.java.util.concurrent.LinkedBlockingQueue;
+
 /**
  * This class maintains a pool of slaves (represented by sockets).
  * 
  * @author cbeust
  */
 public class SlavePool {
-  private static LinkedBlockingQueue m_hosts =
-    new LinkedBlockingQueue();
+  private static LinkedBlockingQueue m_hosts = new LinkedBlockingQueue();
   private static Map<Socket, ConnectionInfo> m_connectionInfos =
     new HashMap<Socket, ConnectionInfo>();
   

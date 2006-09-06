@@ -5,9 +5,9 @@ import org.testng.internal.thread.IExecutor;
 import org.testng.internal.thread.IFutureResult;
 import org.testng.internal.thread.IThreadFactory;
 
-import edu.emory.mathcs.util.concurrent.ArrayBlockingQueue;
-import edu.emory.mathcs.util.concurrent.ThreadPoolExecutor;
-import edu.emory.mathcs.util.concurrent.TimeUnit;
+import edu.emory.mathcs.backport.java.util.concurrent.ArrayBlockingQueue;
+import edu.emory.mathcs.backport.java.util.concurrent.ThreadPoolExecutor;
+import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
 
 /**
  * ThreadPoolExecutor adaptor.
@@ -21,7 +21,7 @@ public class ExecutorAdapter extends ThreadPoolExecutor implements IExecutor {
             0L,
             TimeUnit.MILLISECONDS,
             new ArrayBlockingQueue(threadCount),
-            (edu.emory.mathcs.util.concurrent.ThreadFactory) tf.getThreadFactory());
+            (edu.emory.mathcs.backport.java.util.concurrent.ThreadFactory) tf.getThreadFactory());
    }
 
 

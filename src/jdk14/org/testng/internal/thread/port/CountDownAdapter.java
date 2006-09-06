@@ -1,8 +1,9 @@
 package org.testng.internal.thread.port;
 
 import org.testng.internal.thread.ICountDown;
-import edu.emory.mathcs.util.concurrent.CountDownLatch;
-import edu.emory.mathcs.util.concurrent.TimeUnit;
+
+import edu.emory.mathcs.backport.java.util.concurrent.CountDownLatch;
+import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
 
 /**
  * CountDownLatch adapter.

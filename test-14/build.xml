@@ -17,9 +17,8 @@
 		<fileset dir="${lib.dir}">
 			<include name="junit.jar" />
 			<include name="${qdox.jar}" />
-			<include name="concurrent-1.3.4.jar" />
 			<include name="${beanshell.jar}"/>
-			<include name="util-concurrent.jar" />
+			<include name="${concurrent.jar}" />
 		</fileset>
 	</path>
 
@@ -88,9 +87,12 @@ TESTNG.REPORT.DIR=${testng.report.dir}
 			<xmlfileset dir="${test14.dir}" includes="testng.xml"/>
 		</testng-14>
    	
+
 		<echo>                                -- Running JDK 1.4 tests (1.4)--</echo>
 		<echo>                                -- ${jdk15.testng.jar} --</echo>
-
+		<!--
+		JDK1.4 tests run with JDK5 are available through the test/build.xml
+		
 		<taskdef name="testng-15" 
             classname="org.testng.TestNGAntTask"
             classpath="${jdk15.testng.jar}"/>
@@ -100,7 +102,7 @@ TESTNG.REPORT.DIR=${testng.report.dir}
            sourcedir="${test.src.dir}">
       <xmlfileset dir="${test14.dir}" includes="testng.xml"/>
      </testng-15>
-   	
+   	 -->
      <antcall target="clean.tmp" />
 	</target>
 
@@ -150,7 +152,7 @@ TESTNG.REPORT.DIR=${testng.report.dir}
       <junitreport todir="${junit.report.dir}">
          <fileset dir="${testng.report.dir}">
             <include name="*.xml" />
-         	<exclude name="testng-failures.xml"/>
+         	<exclude name="testng-failed.xml"/>
          </fileset>
          <report format="noframes" todir="${junit.report.dir}" />
       </junitreport>

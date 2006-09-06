@@ -4,8 +4,8 @@ package org.testng.internal.thread.port;
 import org.testng.internal.thread.IFutureResult;
 import org.testng.internal.thread.ThreadExecutionException;
 
-import edu.emory.mathcs.util.concurrent.ExecutionException;
-import edu.emory.mathcs.util.concurrent.Future;
+import edu.emory.mathcs.backport.java.util.concurrent.ExecutionException;
+import edu.emory.mathcs.backport.java.util.concurrent.Future;
 
 /**
  * IFutureResult implementation and Future adapter.
