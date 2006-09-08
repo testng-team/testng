@@ -74,7 +74,7 @@ TESTNG.REPORT.DIR=${testng.report.dir}
    <!-- ==================================================================== -->
 
 	<target name="run" description="Run tests" depends="compile">
-		<echo>                                 -- Running JDK 1.4 tests (1.5)--</echo>
+		<echo>                                 -- Running JDK 1.4 tests --</echo>
 		<echo>                                 -- ${jdk14.testng.jar} --</echo>
    	
 		<taskdef name="testng-14" 
@@ -88,10 +88,11 @@ TESTNG.REPORT.DIR=${testng.report.dir}
 		</testng-14>
    	
 
-		<echo>                                -- Running JDK 1.4 tests (1.4)--</echo>
-		<echo>                                -- ${jdk15.testng.jar} --</echo>
 		<!--
 		JDK1.4 tests run with JDK5 are available through the test/build.xml
+
+		<echo>                                - Running JDK 1.4 tests (1.4)-</echo>
+		<echo>                                - ${jdk15.testng.jar} -</echo>
 		
 		<taskdef name="testng-15" 
             classname="org.testng.TestNGAntTask"

@@ -29,7 +29,6 @@ public class MAnnotationSampleTest {
         "./test-14/src",
         "src"
       });
-    m_finder.initialize();
   }
 
   public void verifyTestClassLevel() {

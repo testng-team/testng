@@ -29,34 +29,11 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
   private JDK14TagFactory m_tagFactory = new JDK14TagFactory();
   private JavaDocBuilder m_docBuilder;
   private String[] m_dirPaths;
-  private boolean m_initialized;
 
   public JDK14AnnotationFinder() {
     m_docBuilder = new JavaDocBuilder();
   }
   
-  /**
-   * @see org.testng.internal.annotations.IAnnotationFinder#initialize()
-   */
-  public void initialize() {
-    if(m_initialized || null == m_dirPaths) {
-      return;
-    }
-    
-    for (int i = 0; i < m_dirPaths.length; i++) {
-      File dir = new File(m_dirPaths[i]);
-      DirectoryScanner scanner = new DirectoryScanner(dir);
-      scanner.addFilter(new SuffixFilter(".java"));
-      scanner.scan(new FileVisitor() {
-        public void visitFile(File currentFile) {
-          addSources(new String[] { currentFile.getAbsolutePath() });
-        }
-      });
-    }
-
-    m_initialized= true;
-  }
-
   void addSources(String[] filePaths) {
     if(filePaths == null) {
       if (TestRunner.getVerbose() > 1) {
@@ -87,6 +64,17 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
     }
 
     m_dirPaths = dirPaths;
+    
+    for (int i = 0; i < m_dirPaths.length; i++) {
+      File dir = new File(m_dirPaths[i]);
+      DirectoryScanner scanner = new DirectoryScanner(dir);
+      scanner.addFilter(new SuffixFilter(".java"));
+      scanner.scan(new FileVisitor() {
+        public void visitFile(File currentFile) {
+          addSources(new String[] { currentFile.getAbsolutePath() });
+        }
+      });
+    }
   }
 
   public IAnnotation findAnnotation(Class cls, Class annotationClass) {

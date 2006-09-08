@@ -104,14 +104,16 @@ public class TestNG {
   private static boolean m_isJdk14;
 
   protected List<XmlSuite> m_suites = new ArrayList<XmlSuite>();
-  protected XmlSuite[] m_cmdlineSuite;
-  protected String m_outputDir;
+  protected XmlSuite[] m_cmdlineSuites;
+  protected String m_outputDir = DEFAULT_OUTPUTDIR;
   protected String[] m_sourceDirs;
   
   /** The annotation type for suites/tests that have not explicitly set this attribute. */
   protected String m_target;
   
-  protected String[] m_groups;
+  protected String[] m_includedGroups;
+  protected String[] m_excludedGroups;
+  
   private Boolean m_isJUnit = Boolean.FALSE;
   private boolean m_useDefaultListeners = true;
 
@@ -139,6 +141,16 @@ public class TestNG {
 
   private SlavePool m_slavePool = new SlavePool();
 
+  // Command line suite parameters
+  private int m_threadCount;
+  private boolean m_useThreadCount;
+  private String m_parallelMode;
+  private boolean m_useParallelMode;
+  private Class[] m_commandLineTestClasses;
+
+  /**
+   * Default constructor. Setting also usage of default listeners/reporters.
+   */
   public TestNG() {
     init(true);
   }
@@ -161,14 +173,6 @@ public class TestNG {
     // TODO CQ Since we have two code bases shoulld'nt this simply be part 
     // of a target specific class.
     m_target = m_isJdk14 ? JAVADOC_ANNOTATION_TYPE : JDK5_ANNOTATION_TYPE;
-    if (useDefaultListeners) {
-      m_reporters.add(new SuiteHTMLReporter());
-      m_reporters.add(new FailedReporter());
-      m_reporters.add(new EmailableReporter());
-
-      m_outputDir = DEFAULT_OUTPUTDIR; 
-    }
-    m_testListeners.add(new ExitCodeListener(this));
     m_useDefaultListeners = useDefaultListeners;
   }
 
@@ -282,8 +286,7 @@ public class TestNG {
     // Start of patch specific code
     // This is an optimization to reduce the sourcePath scope
     // Is it OK to look only for the Thread context class loader?
-    InputStream is = Thread.currentThread().getContextClassLoader()
-        .getResourceAsStream("testng-sourcedir-override.properties");
+    InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("testng-sourcedir-override.properties");
 
     // Resource exists. Use override values and ignore given value
     if (is != null) {
@@ -301,7 +304,6 @@ public class TestNG {
     }
 
     m_sourceDirs = Utils.split(sourcePaths, SRC_SEPARATOR);
-    AnnotationConfiguration.getInstance().getAnnotationFinder().addSourceDirs(m_sourceDirs);
   }
 
   /**
@@ -344,25 +346,28 @@ public class TestNG {
    * Define the number of threads in the thread pool.
    */
   public void setThreadCount(int threadCount) {
-    for (XmlSuite s : m_cmdlineSuite) {
-      s.setThreadCount(threadCount);
+    if(threadCount < 1) {
+      exitWithError("Cannot use a threadCount parameter less than 1; 1 > " + threadCount);
     }
+    
+    m_threadCount = threadCount;
+    m_useThreadCount = true;
   }
+  
 
   /**
    * Define whether this run will be run in parallel mode.
    */
   public void setParallel(String parallel) {
-    for (XmlSuite s : m_cmdlineSuite) {
-      s.setParallel(parallel);
-    }
+    m_parallelMode = parallel;
+    m_useParallelMode = true;
   }
 
-  public void setCommandLineSuite(XmlSuite suite)
-  {
-    m_cmdlineSuite = new XmlSuite[] { suite };
-    m_suites.add(m_cmdlineSuite[0]);
+  public void setCommandLineSuite(XmlSuite suite) {
+    m_cmdlineSuites = new XmlSuite[] { suite };
+    m_suites.add(m_cmdlineSuites[0]);
   }
+  
 
   /**
    * Set the test classes to be run by this TestNG object.  This method
@@ -374,18 +379,16 @@ public class TestNG {
    * @param classes An array of classes that contain TestNG annotations.
    */
   public void setTestClasses(Class[] classes) {
-    m_cmdlineSuite = createCommandLineSuites(classes);
-    for (XmlSuite s : m_cmdlineSuite) {
-      m_suites.add(s);
-    }
+    m_commandLineTestClasses = classes;
   }
   
   private int getVersion() {
-    return JDK5_ANNOTATION_TYPE.equals(m_target) ? AnnotationConfiguration.JVM_15_CONFIG
+    return JDK5_ANNOTATION_TYPE.equals(m_target) 
+        ? AnnotationConfiguration.JVM_15_CONFIG
         : AnnotationConfiguration.JVM_14_CONFIG;
   }
   
-  public XmlSuite[] createCommandLineSuites(Class[] classes) {
+  private XmlSuite[] createCommandLineSuites(Class[] classes) {
     //
     // See if any of the classes has an xmlSuite or xmlTest attribute.
     // If it does, create the appropriate XmlSuite, otherwise, create
@@ -394,7 +397,6 @@ public class TestNG {
     XmlClass[] xmlClasses = Utils.classesToXmlClasses(classes);
     Map<String, XmlSuite> suites = new HashMap<String, XmlSuite>();
     IAnnotationFinder finder = SuiteRunner.getAnnotationFinder(getVersion());
-    finder.initialize();
     
     for (int i = 0; i < classes.length; i++) {
       Class c = classes[i];
@@ -486,14 +488,9 @@ public class TestNG {
    * @param groups A list of group names separated by a comma.
    */
   public void setExcludedGroups(String groups) {
-    m_groups = Utils.split(groups, ",");
-
-    if (null != m_cmdlineSuite) {
-      for (XmlSuite s : m_cmdlineSuite) {
-        s.getTests().get(0).setExcludedGroups(Arrays.asList(m_groups));
-      }
-    }
+    m_excludedGroups = Utils.split(groups, ",");
   }
+  
   
   /**
    * Define which groups will be included from this run.
@@ -501,22 +498,19 @@ public class TestNG {
    * @param groups A list of group names separated by a comma.
    */
   public void setGroups(String groups) {
-    m_groups = Utils.split(groups, ",");
-
-    if (null != m_cmdlineSuite) {
-      for (XmlSuite s : m_cmdlineSuite) {
-        s.getTests().get(0).setIncludedGroups(Arrays.asList(m_groups));
-      }
-    }
+    m_includedGroups = Utils.split(groups, ",");
   }
+  
 
   private void setTestRunnerFactoryClass(Class testRunnerFactoryClass) {
     setTestRunnerFactory((ITestRunnerFactory) newInstance(testRunnerFactoryClass));
   }
   
+  
   private void setTestRunnerFactory(ITestRunnerFactory itrf) {
     m_testRunnerFactory= itrf;
   }
+  
   
   /**
    * Define which listeners to user for this run.
@@ -537,7 +531,8 @@ public class TestNG {
   }
     
   public void addListener(Object listener) {
-    if (! (listener instanceof ISuiteListener) && ! (listener instanceof ITestListener)
+    if (! (listener instanceof ISuiteListener) 
+        && ! (listener instanceof ITestListener)
         && ! (listener instanceof IReporter))
     {
       exitWithError("Listener " + listener + " is neither an ITestListener, ISuiteListener nor IReporter");
@@ -600,12 +595,71 @@ public class TestNG {
     m_verbose = new Integer(verbose);
   }
 
+  private void initializeSources() {
+    if(null != m_sourceDirs) {
+      if(isJdk14() || JAVADOC_ANNOTATION_TYPE.equals(m_target)) {
+        AnnotationConfiguration.getInstance().getAnnotationFinder().addSourceDirs(m_sourceDirs);
+      }
+    }
+  }
+  
+  private void initializeCommandLineSuites() {
+    if(null != m_commandLineTestClasses) {
+      m_cmdlineSuites = createCommandLineSuites(m_commandLineTestClasses);
+      for (XmlSuite s : m_cmdlineSuites) {
+        m_suites.add(s);
+      }
+    }
+  }
+  
+  private void initializeCommandLineSuitesParams() {
+    if(null == m_cmdlineSuites) {
+      return;
+    }
+    
+    for (XmlSuite s : m_cmdlineSuites) {
+      if(m_useThreadCount) {
+        s.setThreadCount(m_threadCount);
+      }
+      if(m_useParallelMode) {
+        s.setParallel(m_parallelMode);
+      }
+    }
+  }
+  
+  private void initializeCommandLineSuitesGroups() {
+    if (null != m_cmdlineSuites) {
+      for (XmlSuite s : m_cmdlineSuites) {
+        if(null != m_includedGroups && m_includedGroups.length > 0) {
+          s.getTests().get(0).setIncludedGroups(Arrays.asList(m_includedGroups));
+        }
+        if(null != m_excludedGroups && m_excludedGroups.length > 0) {
+          s.getTests().get(0).setExcludedGroups(Arrays.asList(m_excludedGroups));
+        }
+      }
+    }
+  }
+  
+  private void initializeListeners() {
+    m_testListeners.add(new ExitCodeListener(this));
+    
+    if(m_useDefaultListeners) {
+      m_reporters.add(new SuiteHTMLReporter());
+      m_reporters.add(new FailedReporter());
+      m_reporters.add(new EmailableReporter());
+    }
+  }
+  
   /**
    * Run TestNG.
    */
   public void run() {
-    // if JDK1.4 lazy scan sources
-    AnnotationConfiguration.getInstance().getAnnotationFinder().initialize();
+    initializeListeners();
+    initializeSources();
+    initializeCommandLineSuites();
+    initializeCommandLineSuitesParams();
+    initializeCommandLineSuitesGroups();
+    
     List<ISuite> suiteRunners = null;
     
     //
@@ -620,9 +674,6 @@ public class TestNG {
     //
     else if (m_hostFile == null) {
       suiteRunners = runSuitesLocally();
-      for (IReporter reporter : m_reporters) {
-        reporter.generateReport(m_suites, suiteRunners, m_outputDir);
-      }
     }
     
     //
@@ -630,9 +681,10 @@ public class TestNG {
     //
     else {
       suiteRunners = runSuitesRemotely();
-      for (IReporter reporter : m_reporters) {
-        reporter.generateReport(m_suites, suiteRunners, m_outputDir);
-      }
+    }
+    
+    if(null != suiteRunners) {
+      generateReports(suiteRunners);
     }
     
     if(!m_hasTests) {
@@ -641,19 +693,18 @@ public class TestNG {
         System.err.println("[TestNG] No tests found. Nothing was run");
       }
     }
-    // HINT: check if anything was run
-//    int runMethodsCount = 0;
-//    if(null != suiteRunners) {
-//      for(ISuite suite: suiteRunners) {
-//        runMethodsCount += suite.getInvokedMethods().size();
-//      }
-//    }  
-//    if(runMethodsCount == 0) {
-//      setStatus(HAS_NO_TEST);
-//      if (TestRunner.getVerbose() > 1) {
-//        System.err.println("[TestNG] No tests found. Nothing was run");
-//      }
-//    }    
+  }
+  
+  private void generateReports(List<ISuite> suiteRunners) {
+    for (IReporter reporter : m_reporters) {
+      try {
+        reporter.generateReport(m_suites, suiteRunners, m_outputDir);
+      }
+      catch(Exception ex) {
+        System.err.println("[TestNG] Reporter " + reporter + " failed");
+        ex.printStackTrace(System.err);
+      }
+    }
   }
   
   private static ConnectionInfo resetSocket(int clientPort, ConnectionInfo oldCi) 
@@ -1161,10 +1212,10 @@ public class TestNG {
     TestNGCommandLineArgs.usage();
   }
   
-  public static void exitWithError(String msg) {
+  static void exitWithError(String msg) {
     System.err.println(msg);
     usage();
-    System.exit(0);
+    System.exit(1);
   }
 
   public String getOutputDirectory() {
@@ -1187,12 +1238,10 @@ public class TestNG {
     }
 
     public void onTestSkipped(ITestResult result) {
-//      m_mainRunner.setHasSkip(true);
       m_mainRunner.m_status |= HAS_SKIPPED;
     }
 
     public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
-//      m_mainRunner.setHasFailureWithinSuccessPercentage(true);
       m_mainRunner.m_status |= HAS_FSP;
     }
 

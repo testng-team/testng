@@ -27,7 +27,6 @@ public class MAnnotationSampleTest {
     m_finder.addSourceDirs(new String[] {
         "./test-14/src"
     });
-    m_finder.initialize();
   }
 
   public void verifyTestClassLevel() {
