@@ -96,9 +96,14 @@ public class TestNGAntTask extends Task {
   protected String m_includedGroups;
   protected String m_excludedGroups;
   protected String m_threadCount;
+  public String m_useDefaultListeners;
   
   public void setThreadCount(String threadCount) {
     m_threadCount = threadCount;
+  }
+  
+  public void setUseDefaultListeners(String f) {
+    m_useDefaultListeners = f;
   }
 
   // Ant task settings
@@ -346,8 +351,15 @@ public class TestNGAntTask extends Task {
       argv.add(m_verbose.toString());
     }
     
-    if(m_assertEnabled) {
+    if (m_assertEnabled) {
       cmd.createVmArgument().setValue("-ea");
+    }
+    
+    if (m_useDefaultListeners != null) {
+      boolean useDefaultListeners = "yes".equalsIgnoreCase(m_useDefaultListeners)
+        || "true".equalsIgnoreCase(m_useDefaultListeners);
+      cmd.createVmArgument().setValue(TestNGCommandLineArgs.USE_DEFAULT_LISTENERS);
+      cmd.createVmArgument().setValue(new Boolean(useDefaultListeners).toString());
     }
 
     if((null != m_outputDir)) {

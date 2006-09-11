@@ -1038,6 +1038,11 @@ public class TestNG {
         result.setTestSuites(testNgXml);
       }
       
+      String useDefaultListeners = (String) cmdLineArgs.get(TestNGCommandLineArgs.USE_DEFAULT_LISTENERS);
+      if (null != useDefaultListeners) {
+        result.setUseDefaultListeners("true".equalsIgnoreCase(useDefaultListeners));
+      }
+      
       result.setGroups((String) cmdLineArgs.get(TestNGCommandLineArgs.GROUPS_COMMAND_OPT));
       result.setExcludedGroups((String) cmdLineArgs.get(TestNGCommandLineArgs.EXCLUDED_GROUPS_COMMAND_OPT));      
       result.setTestJar((String) cmdLineArgs.get(TestNGCommandLineArgs.TESTJAR_COMMAND_OPT));

@@ -54,6 +54,7 @@ public final class TestNGCommandLineArgs {
   public static final String SLAVE_OPT = "-slave";
   public static final String HOSTFILE_OPT = "-hostfile";
   public static final String THREAD_COUNT = "-threadcount";
+  public static final String USE_DEFAULT_LISTENERS = "-usedefaultlisteners";
 
   /** 
    * When given a file name to form a class name, the file name is parsed and divided 
@@ -277,6 +278,13 @@ public final class TestNGCommandLineArgs {
           i++;
         }
       }
+      else if (USE_DEFAULT_LISTENERS.equalsIgnoreCase(argv[i])) {
+        if ((i + 1) < argv.length) {
+          arguments.put(USE_DEFAULT_LISTENERS, argv[i + 1]);
+          i++;
+        }
+      }
+
       
       //
       // Unknown option
