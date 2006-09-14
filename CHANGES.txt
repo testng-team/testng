@@ -1,8 +1,4 @@
 
-TODO
-	:Introduce ITestFactory, deprecate @Factory 
-	:Introduce Annotation Transformers
-
 ===========================================================================
 5.2
 

@@ -1,7 +1,8 @@
                                        TODO for TestNG
 
-* Create a servlet for remote driving
+* Nested XML suites
 * Annotation Transformers
+* Create a servlet for remote driving
 * Add time-outs at the testng.xml.  Also:  test and suite time-outs? http://tinyurl.com/kbwxq
 * Add working dir to the ant task
 * Add a servlet so TestNG can be invoked from a web browser
