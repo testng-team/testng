@@ -115,7 +115,7 @@ public class TestNG {
   protected String[] m_excludedGroups;
   
   private Boolean m_isJUnit = Boolean.FALSE;
-  private boolean m_useDefaultListeners = true;
+  protected boolean m_useDefaultListeners = true;
 
   protected ITestRunnerFactory m_testRunnerFactory;
 
