@@ -901,6 +901,16 @@ public class TestNG {
    */
   public List<ISuite> runSuitesLocally() {
     List<ISuite> result = new ArrayList<ISuite>();
+    int v = TestRunner.getVerbose();
+    
+    if (TestRunner.getVerbose() > 0) {
+      StringBuffer allFiles = new StringBuffer();
+      for (XmlSuite s : m_suites) {
+        allFiles.append("  ").append(s.getFileName()).append("\n");
+      }
+      Utils.log("Parser", 0, "Running:\n" + allFiles.toString());
+    }
+
     if (m_suites.size() > 0) {
       for (XmlSuite xmlSuite : m_suites) {
         

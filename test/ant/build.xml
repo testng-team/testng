@@ -20,7 +20,7 @@
     </testng>
 -->
   	
-    <testng classpath="build;../../testng-5.2beta-jdk15.jar"
+    <testng classpath="build;${testng.jar}"
             outputdir="test-output"
   	    threadcount="7"
 	    dumpCommand = "true"

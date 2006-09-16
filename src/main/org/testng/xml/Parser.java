@@ -16,6 +16,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.testng.TestRunner;
+import org.testng.internal.Utils;
 import org.xml.sax.SAXException;
 
 /**
@@ -130,7 +132,6 @@ public class Parser {
     // path to make sure we don't add a same file twice
     // (e.g. "testng.xml" and "./testng.xml")
     Map<String, XmlSuite> mapResult = new HashMap<String, XmlSuite>();
-    XmlSuite mainXmlSuite = null;
     
     SAXParserFactory spf = null;
     try {
@@ -149,21 +150,45 @@ public class Parser {
     spf.setValidating(true);
     SAXParser saxParser = spf.newSAXParser();
     
-    mainXmlSuite = parseOneFile(saxParser, m_fileName, m_inputStream);
     String mainFilePath = new File(m_fileName).getCanonicalPath();
-    mapResult.put(mainFilePath, mainXmlSuite);
     
-    List<String> suiteFiles = mainXmlSuite.getSuiteFiles();
-    if (suiteFiles.size() > 0) {
+    List<String> toBeParsed = new ArrayList<String>();
+    List<String> toBeAdded = new ArrayList<String>();
+    List<String> toBeRemoved = new ArrayList<String>();
+    toBeParsed.add(mainFilePath);
+    
+    while (toBeParsed.size() > 0) {
       
-      List<String> toBeParsed = new ArrayList<String>();
-      
-      for (String path : suiteFiles) {
-        String canonicalPath = new File(path).getCanonicalPath();
-        if (! mapResult.containsKey(canonicalPath)) {
-          toBeParsed.add(path);
+      for (String currentFile : toBeParsed) {
+        String canonicalPath = new File(currentFile).getCanonicalPath();
+
+        XmlSuite currentXmlSuite = parseOneFile(saxParser, canonicalPath);
+        mapResult.put(canonicalPath, currentXmlSuite);
+        toBeRemoved.add(canonicalPath);
+        
+        List<String> suiteFiles = currentXmlSuite.getSuiteFiles();
+        if (suiteFiles.size() > 0) {
+          for (String path : suiteFiles) {
+            canonicalPath = new File(path).getCanonicalPath();
+            if (! mapResult.containsKey(canonicalPath)) {
+              toBeAdded.add(canonicalPath);
+            }
+          }
         }
       }
+      
+      //
+      // Add and remove files from toBeParsed before we loop
+      //
+      for (String s : toBeRemoved) {
+        toBeParsed.remove(s);
+      }
+      toBeRemoved = new ArrayList<String>();
+      
+      for (String s : toBeAdded) {
+        toBeParsed.add(s);
+      }
+      toBeAdded = new ArrayList<String>();
       
     }
     
@@ -171,12 +196,13 @@ public class Parser {
 
   }
   
-  private XmlSuite parseOneFile(SAXParser saxParser,
-      String fileName, InputStream inputStream)
-      throws ParserConfigurationException, SAXException, IOException
+  private XmlSuite parseOneFile(SAXParser saxParser, String fileName)
+    throws ParserConfigurationException, SAXException, IOException
   {
     TestNGContentHandler ch = new TestNGContentHandler(fileName);
+    InputStream inputStream = new FileInputStream(fileName);
     saxParser.parse(inputStream, ch);     
+    inputStream.close();
     XmlSuite result = ch.getSuite();
     
     return result;
