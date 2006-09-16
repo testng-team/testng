@@ -1,5 +1,8 @@
+
 ===========================================================================
-5.2.1
+5.3
+
+Added: ant task can receive several listeners
 
 Eclipse plug-in
 Added: Support for configuring per project usedefaultlisteners

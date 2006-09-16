@@ -1,14 +1,15 @@
 <project name="testng" default="all" basedir=".">
 
   <property file="../../build.properties"/>
+  <property name="testng.jar" value="../../testng-5.3beta-jdk15.jar" />
 
   <taskdef name="testng" classname="org.testng.TestNGAntTask" 
-  	classpath="../../testng-5.2beta-jdk15.jar" />
+  	classpath="${testng.jar}" />
 
   <target name="all">
   	<mkdir dir="build" />
   	
-  	<javac classpath="../../testng-5.2beta-jdk15.jar"
+  	<javac classpath="${testng.jar}"
   		  destdir="build" srcdir="." includes="*.java" />
 
 <!--
@@ -23,6 +24,7 @@
             outputdir="test-output"
   	    threadcount="7"
 	    dumpCommand = "true"
+    	listeners = "org.testng.reporters.FailedReporter, org.testng.reporters.DotTestListener"
     	>
         <classfileset dir="build">
         	<include name="NoPackageTest.class" />

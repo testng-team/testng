@@ -11,6 +11,7 @@ import java.text.StringCharacterIterator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
@@ -81,7 +82,7 @@ public class TestNGAntTask extends Task {
   protected File m_workingDir;
   private Integer m_timeout;
   protected Boolean m_isJUnit;
-  private String m_listener;
+  private List<String> m_listeners = new ArrayList<String>();
   protected Environment m_environment = new Environment();
   protected String m_mainClass = TestNG.class.getName();
   protected String m_target;
@@ -323,11 +324,21 @@ public class TestNGAntTask extends Task {
   }
   
   public void setReporter(String listener) {
-    m_listener = listener;
+    m_listeners.add(listener);
   }
 
+  /**
+   * @deprecated Use "listeners"
+   */
   public void setListener(String listener) {
-    m_listener = listener;
+    m_listeners.add(listener);
+  }
+  
+  public void setListeners(String listeners) {
+    StringTokenizer st = new StringTokenizer(listeners, " ,");
+    while (st.hasMoreTokens()) {
+      m_listeners.add(st.nextToken());
+    }
   }
   
   @Override
@@ -408,9 +419,11 @@ public class TestNGAntTask extends Task {
       }
     }
 
-    if (m_listener != null) {
+    if (m_listeners != null) {
+      for (String listener : m_listeners) {
         argv.add(TestNGCommandLineArgs.LISTENER_COMMAND_OPT);
-        argv.add(m_listener);
+        argv.add(listener);
+      }
     }
     
     if (m_threadCount != null) {
