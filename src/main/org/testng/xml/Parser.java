@@ -5,6 +5,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
@@ -107,7 +112,9 @@ public class Parser {
   }
   
   /**
-   * Parses the TestNG test suite and returns the corresponding XmlSuite.
+   * Parses the TestNG test suite and returns the corresponding XmlSuite,
+   * and possibly, other XmlSuite that are pointed to by <suite-files>
+   * tags.
    *
    * @return the parsed TestNG test suite.
    * 
@@ -116,10 +123,15 @@ public class Parser {
    * @throws IOException if an I/O error occurs while parsing the test suite file or
    * if the default testng.xml file is not found.
    */
-  public XmlSuite parse() throws ParserConfigurationException, SAXException, IOException {
-    XmlSuite result = null;
+  public Collection<XmlSuite> parse()
+    throws ParserConfigurationException, SAXException, IOException 
+  {
+    // Each suite found is put in this map, keyed by their canonical
+    // path to make sure we don't add a same file twice
+    // (e.g. "testng.xml" and "./testng.xml")
+    Map<String, XmlSuite> mapResult = new HashMap<String, XmlSuite>();
+    XmlSuite mainXmlSuite = null;
     
-    TestNGContentHandler ch = new TestNGContentHandler(m_fileName);
     SAXParserFactory spf = null;
     try {
       spf = SAXParserFactory.newInstance();
@@ -136,8 +148,37 @@ public class Parser {
     }
     spf.setValidating(true);
     SAXParser saxParser = spf.newSAXParser();
-    saxParser.parse(m_inputStream, ch);     
-    result = ch.getSuite();
+    
+    mainXmlSuite = parseOneFile(saxParser, m_fileName, m_inputStream);
+    String mainFilePath = new File(m_fileName).getCanonicalPath();
+    mapResult.put(mainFilePath, mainXmlSuite);
+    
+    List<String> suiteFiles = mainXmlSuite.getSuiteFiles();
+    if (suiteFiles.size() > 0) {
+      
+      List<String> toBeParsed = new ArrayList<String>();
+      
+      for (String path : suiteFiles) {
+        String canonicalPath = new File(path).getCanonicalPath();
+        if (! mapResult.containsKey(canonicalPath)) {
+          toBeParsed.add(path);
+        }
+      }
+      
+    }
+    
+    return mapResult.values();
+
+  }
+  
+  private XmlSuite parseOneFile(SAXParser saxParser,
+      String fileName, InputStream inputStream)
+      throws ParserConfigurationException, SAXException, IOException
+  {
+    TestNGContentHandler ch = new TestNGContentHandler(fileName);
+    saxParser.parse(inputStream, ch);     
+    XmlSuite result = ch.getSuite();
+    
     return result;
   }
   

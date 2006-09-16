@@ -44,6 +44,7 @@ public class TestNGContentHandler extends DefaultHandler {
   private XmlMethodSelector m_currentSelector = null;
   private String m_currentLanguage = null;
   private String m_currentExpression = null;
+  private List<String> m_suiteFiles = new ArrayList<String>();
   
   private String m_fileName;
 
@@ -90,6 +91,19 @@ public class TestNGContentHandler extends DefaultHandler {
     }
 
     return result;
+  }
+  
+  /**
+   * Parse <suite-file>
+   */
+  private void xmlSuiteFile(boolean start, Attributes attributes) {
+    if (start) {
+      String path = attributes.getValue("path");
+      m_suiteFiles.add(path);
+    }
+    else {
+      m_currentSuite.setSuiteFiles(m_suiteFiles);
+    }
   }
 
   /**
@@ -337,6 +351,9 @@ public class TestNGContentHandler extends DefaultHandler {
     if ("suite".equals(qName)) {
       xmlSuite(true, attributes);
     }
+    else if ("suite-file".equals(qName)) {
+      xmlSuiteFile(true, attributes);
+    }
     else if ("test".equals(qName)) {
       xmlTest(true, attributes);
     }
@@ -428,6 +445,9 @@ public class TestNGContentHandler extends DefaultHandler {
       throws SAXException {
     if ("suite".equals(qName)) {
       xmlSuite(false, null);
+    }
+    else if ("suite-file".equals(qName)) {
+      xmlSuiteFile(false, null);
     }
     else if ("test".equals(qName)) {
       xmlTest(false, null);

@@ -46,10 +46,10 @@
 
   <target name="copy-resources" description="Copies resources.">
     <copy verbose="false"
-          file="src/testng-1.0.dtd"
+          file="src/main/testng-1.0.dtd"
           todir="${build.jdk15.dir}" />
     <copy verbose="false"
-          file="src/testng-1.0.dtd"
+          file="src/main/testng-1.0.dtd"
           todir="${build.jdk14.dir}" />
     <copy verbose="false"
           file="src/testngtasks"

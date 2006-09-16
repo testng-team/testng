@@ -75,6 +75,8 @@ public class XmlSuite implements Serializable, Cloneable {
   /** Time out for methods/tests */
   private String m_timeOut;
 
+  private List<String> m_suiteFiles = new ArrayList<String>();
+
   /**
    * @return the fileName
    */
@@ -425,5 +427,13 @@ public class XmlSuite implements Serializable, Cloneable {
         }
         
         return result;
+    }
+
+    public void setSuiteFiles(List<String> files) {
+      m_suiteFiles = files;
+    }
+    
+    public List<String> getSuiteFiles() {
+      return m_suiteFiles;
     }
 }

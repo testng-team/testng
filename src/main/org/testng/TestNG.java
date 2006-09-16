@@ -322,7 +322,7 @@ public class TestNG {
       URLClassLoader jarLoader = new URLClassLoader(new URL[] { jarfile });
       Thread.currentThread().setContextClassLoader(jarLoader);
 
-      m_suites.add(new Parser().parse());
+      m_suites.addAll(new Parser().parse());
     }
     catch(MalformedURLException mfurle) {
       System.err.println("could not find jar file named: " + jarFile.getAbsolutePath());
@@ -455,8 +455,10 @@ public class TestNG {
   public void setTestSuites(List<String> suites) {
     for (String suiteXmlPath : suites) {
       try {
-        XmlSuite s = new Parser(suiteXmlPath).parse();
-        m_suites.add(s);
+        Collection<XmlSuite> allSuites = new Parser(suiteXmlPath).parse();
+        for (XmlSuite s : allSuites) {
+          m_suites.add(s);
+        }
       }
       catch(FileNotFoundException e) {
         e.printStackTrace(System.out);
@@ -1033,12 +1035,14 @@ public class TestNG {
         result.setTestClasses(classes);
       }
 
-      List<String> testNgXml = (List<String>) cmdLineArgs.get(TestNGCommandLineArgs.SUITE_DEF_OPT);
+      List<String> testNgXml = 
+          (List<String>) cmdLineArgs.get(TestNGCommandLineArgs.SUITE_DEF_OPT);
       if (null != testNgXml) {
         result.setTestSuites(testNgXml);
       }
       
-      String useDefaultListeners = (String) cmdLineArgs.get(TestNGCommandLineArgs.USE_DEFAULT_LISTENERS);
+      String useDefaultListeners = 
+          (String) cmdLineArgs.get(TestNGCommandLineArgs.USE_DEFAULT_LISTENERS);
       if (null != useDefaultListeners) {
         result.setUseDefaultListeners("true".equalsIgnoreCase(useDefaultListeners));
       }

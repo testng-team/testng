@@ -22,7 +22,7 @@
 
 
 <!-- A suite is the top-level element of a testng.xml file                  -->
-<!ELEMENT suite (packages|test|parameter|method-selectors)* >
+<!ELEMENT suite (packages|test|parameter|method-selectors|suite-files)* >
 
 <!-- Attributes: -->
 <!-- name:  The name of this suite (as it will appear in the reports)       -->
@@ -35,8 +35,9 @@
 <!-- annotations:   (javadoc|JDK5)  If "javadoc", TestNG will look for      -->
 <!--                JavaDoc annotations in your sources, otherwise it will  -->
 <!--                use JDK5 annotations                                    -->
-<!-- time-out:  the time to wait in milliseconds before aborting -->
-<!--       the method (if parallel="methods") or the test (if parallel="tests") -->
+<!-- time-out:  the time to wait in milliseconds before aborting            -->
+<!--       the method (if parallel="methods") or the test                   -->
+<!--       (if parallel="tests")                                            -->
 <!ATTLIST suite 
     name CDATA #REQUIRED
     verbose CDATA #IMPLIED
@@ -44,6 +45,14 @@
     thread-count CDATA #IMPLIED
     annotations CDATA #IMPLIED
     time-out CDATA #IMPLIED
+>
+
+<!-- A list of XML files that contain more suite descriptions -->
+<!ELEMENT suite-files (suite-file)* >
+
+<!ELEMENT suite-file ANY >
+<!ATTLIST suite-file
+    path CDATA #REQUIRED
 >
 
 <!-- Parameters can be defined at the <suite> or at the <test> level        -->

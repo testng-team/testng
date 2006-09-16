@@ -292,6 +292,10 @@ public final class TestNGCommandLineArgs {
       else if (argv[i].startsWith("-")) {
         TestNG.exitWithError("Unknown option: " + argv[i]);
       }
+      
+      //
+      // The XML files
+      //
       else {
         List<String> suiteDefs = new ArrayList<String>();
 

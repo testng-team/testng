@@ -81,11 +81,15 @@
 <!-- 
     THIS CANNOT WORK: cannot set the sourcedirs
 -->
+
+<!--
     <test name="BeforeTestMethod Behavior Regression">
         <classes>
             <class name="test.failedconfs.FailedBeforeTestMethodConfigurationBehaviorTest" />
         </classes>
     </test>
+-->
+    
 <!-- -->
    <test name="Basic" >
      <classes>

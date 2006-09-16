@@ -1,6 +1,10 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
 <suite name="Single" verbose="3" parallel="methods" thread-count="2" time-out="1000" >
+
+<suite-files>
+  <suite-file path="./testng.xml" />
+</suite-files>
   
   <test name="TestSingle">
 <!--
