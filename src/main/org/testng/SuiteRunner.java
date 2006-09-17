@@ -164,7 +164,7 @@ public class SuiteRunner implements ISuite, Serializable {
 
   private void privateRun() {
     
-    // HINT: Map for unicitity, Linked: for guaranteed order
+    // Map for unicity, Linked for guaranteed order
     Map<Method, ITestNGMethod> beforeSuiteMethods= new LinkedHashMap<Method, ITestNGMethod>();
     Map<Method, ITestNGMethod> afterSuiteMethods = new LinkedHashMap<Method, ITestNGMethod>();
 
@@ -195,93 +195,97 @@ public class SuiteRunner implements ISuite, Serializable {
     }
 
     //
-    // Invoke beforeSuite methods
+    // Invoke beforeSuite methods (the invoker can be null
+    // if the suite we are currently running only contains
+    // a <file-suite> tag and no real tests)
     //
-    invoker.invokeConfigurations(null,
-        beforeSuiteMethods.values().toArray(new ITestNGMethod[beforeSuiteMethods.size()]),
-        m_suite, m_suite.getParameters(),
-        null /* instance */
-    );
+    if (invoker != null) {
+      invoker.invokeConfigurations(null,
+          beforeSuiteMethods.values().toArray(new ITestNGMethod[beforeSuiteMethods.size()]),
+          m_suite, m_suite.getParameters(),
+          null /* instance */
+      );
 
-    Utils.log("[SuiteRunner]", 3, "Created " + m_testRunners.size() + " TestRunners");
-
-    //
-    // Run all the test runners
-    //
-    boolean testsInParallel = XmlSuite.PARALLEL_TESTS.equals(m_suite.getParallel());
-    if (!testsInParallel) {
-      runSequentially();
-    } 
-    else {
-      runSuiteInParallel();
-    }
-
-    //
-    // Invoke afterSuite methods
-    //
-    invoker.invokeConfigurations(null,
-          afterSuiteMethods.values().toArray(new ITestNGMethod[afterSuiteMethods.size()]),
-          m_suite, m_suite.getAllParameters(),
-          null /* instance */);
-    }
-
-    private void runSequentially() {
-      for (TestRunner tr : m_testRunners) {
-        runTest(tr);
+      Utils.log("[SuiteRunner]", 3, "Created " + m_testRunners.size() + " TestRunners");
+  
+      //
+      // Run all the test runners
+      //
+      boolean testsInParallel = XmlSuite.PARALLEL_TESTS.equals(m_suite.getParallel());
+      if (!testsInParallel) {
+        runSequentially();
+      } 
+      else {
+        runSuiteInParallel();
       }
+  
+      //
+      // Invoke afterSuite methods
+      //
+      invoker.invokeConfigurations(null,
+            afterSuiteMethods.values().toArray(new ITestNGMethod[afterSuiteMethods.size()]),
+            m_suite, m_suite.getAllParameters(),
+            null /* instance */);
+    }
+  }
+
+  private void runSequentially() {
+    for (TestRunner tr : m_testRunners) {
+      runTest(tr);
+    }
+  }
+
+  private void runTest(TestRunner tr) {
+    Map<String, String> parameters = tr.getTest().getParameters();
+    tr.getInvoker().invokeConfigurations(null,
+                                 tr.getBeforeTestConfigurationMethods(),
+                                 m_suite, parameters,
+                                 null /* instance */);
+    
+    tr.run();
+    
+    tr.getInvoker().invokeConfigurations(null,
+                                 tr.getAfterTestConfigurationMethods(),
+                                 m_suite, parameters,
+                                 null /* instance */);
+
+    ISuiteResult sr = new SuiteResult(m_suite, tr);
+    m_suiteResults.put(tr.getName(), sr);
+  }
+
+
+  private void runSuiteInParallel() {
+    // Default timeout for <test>:  2 minutes
+    long maxTimeOut = m_suite.getTimeOut(120 * 1000);
+    int nPoolSize = m_testRunners.size(); // Customize pool size?
+    IPooledExecutor executor = ThreadUtil.createPooledExecutor(nPoolSize);
+
+    for (TestRunner tr : m_testRunners) {
+      executor.execute(new SuiteWorker(tr));
     }
 
-    private void runTest(TestRunner tr) {
-      Map<String, String> parameters = tr.getTest().getParameters();
-      tr.getInvoker().invokeConfigurations(null,
-                                   tr.getBeforeTestConfigurationMethods(),
-                                   m_suite, parameters,
-                                   null /* instance */);
-      
-      tr.run();
-      
-      tr.getInvoker().invokeConfigurations(null,
-                                   tr.getAfterTestConfigurationMethods(),
-                                   m_suite, parameters,
-                                   null /* instance */);
-
-      ISuiteResult sr = new SuiteResult(m_suite, tr);
-      m_suiteResults.put(tr.getName(), sr);
+    try {
+      executor.shutdown();
+      executor.awaitTermination(maxTimeOut);
     }
+    catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+  }
 
+  private class SuiteWorker implements Runnable {
+      private TestRunner m_testRunner;
 
-    private void runSuiteInParallel() {
-      // Default timeout for <test>:  2 minutes
-      long maxTimeOut = m_suite.getTimeOut(120 * 1000);
-      int nPoolSize = m_testRunners.size(); // Customize pool size?
-      IPooledExecutor executor = ThreadUtil.createPooledExecutor(nPoolSize);
-
-      for (TestRunner tr : m_testRunners) {
-        executor.execute(new SuiteWorker(tr));
+      public SuiteWorker(TestRunner tr) {
+        m_testRunner = tr;
       }
 
-      try {
-        executor.shutdown();
-        executor.awaitTermination(maxTimeOut);
+      public void run() {
+        Utils.log("[SuiteWorker]", 4, "Running XML Test '" 
+                  +  m_testRunner.getTest().getName() + "' in Parallel");
+        runTest(m_testRunner);
       }
-      catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }
-
-    private class SuiteWorker implements Runnable {
-        private TestRunner m_testRunner;
-
-        public SuiteWorker(TestRunner tr) {
-          m_testRunner = tr;
-        }
-
-        public void run() {
-          Utils.log("[SuiteWorker]", 4, "Running XML Test '" 
-                    +  m_testRunner.getTest().getName() + "' in Parallel");
-          runTest(m_testRunner);
-        }
-    }
+  }
 
   /**
    * Registers ISuiteListeners interested in reporting the result of the current
