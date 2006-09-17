@@ -10,6 +10,7 @@ import org.testng.ITestResult;
 import org.testng.Reporter;
 
 import org.testng.log4testng.Logger;
+
 import org.testng.xml.XmlSuite;
 
 import java.io.File;
@@ -32,13 +33,13 @@ import java.util.TreeSet;
  * of a testing suite.
  *
  * @author Paul Mendelson
- * @version $Revision: 3 $
-  */
+ * @version $Revision: 112 $
+ */
 public class EmailableReporter implements IReporter
 {
-  Logger logger=Logger.getLogger(EmailableReporter.class);
   //~ Instance fields ------------------------------------------------------
 
+  Logger logger=Logger.getLogger(EmailableReporter.class);
   private PrintWriter out;
   int row;
 
@@ -57,17 +58,32 @@ public class EmailableReporter implements IReporter
       return;
     }
     startHtml(out);
+    summarize(suites);
     for(ISuite suite : suites) {
-      summarize(suite);
       out.println("<a id=summary></a>");
       Map<String,ISuiteResult> r=suite.getResults();
+      startResultSummaryTable("passed");
       for(ISuiteResult r2 : r.values()) {
+        if(r.values().size()>1) {
+          titleRow(
+            r2.getTestContext().getName(),
+            4);
+        }
         resultSummary(
           r2.getTestContext().getFailedTests(),
           "failed");
         resultSummary(
           r2.getTestContext().getPassedTests(),
           "passed");
+        resultSummary(
+          r2.getTestContext().getSkippedTests(),
+          "skipped");
+      }
+      out.println("</table>");
+      for(ISuiteResult r2 : r.values()) {
+        if(r.values().size()>0) {
+          out.println("<h1>"+r2.getTestContext().getName()+"</h1>");
+        }
         resultDetail(
           r2.getTestContext().getFailedTests(),
           "failed");
@@ -76,7 +92,7 @@ public class EmailableReporter implements IReporter
           "passed");
       }
     }
-    out.println("</body></html>");
+    endHtml(out);
     out.close();
   }
 
@@ -86,11 +102,6 @@ public class EmailableReporter implements IReporter
   private void resultSummary(IResultMap tests,String style)
   {
     if(tests.getAllResults().size()>0) {
-      tableStart(style);
-      out.println(
-        "<tr><th>Class</th>"
-        +"<th>Method</th><th># of<br/>Scenarios</th><th>Time<br/>(Msecs)</th></tr>");
-      int row=0;
       StringBuffer buff=new StringBuffer();
       String lastc="";
       int mq=0;
@@ -102,9 +113,9 @@ public class EmailableReporter implements IReporter
           if(mq>0) {
             cq+=1;
             out.println(
-              "<tr"+(cq%2==0
-              ? " class=\"stripe\""
-              : "")+">"+"<td rowspan=\""+mq+"\">"+lastc+buff);
+              "<tr class=\""+style+(cq%2==0
+              ? "even"
+              : "odd")+"\">"+"<td rowspan=\""+mq+"\">"+lastc+buff);
           }
           mq=0;
           buff.setLength(0);
@@ -123,9 +134,9 @@ public class EmailableReporter implements IReporter
         }
         mq+=1;
         if(mq>1) {
-          buff.append("<tr"+(cq%2==1
-            ? " class=\"stripe\""
-            : "")+">");
+          buff.append("<tr class=\""+style+(cq%2==0
+            ? "odd"
+            : "even")+"\">");
         }
         buff.append(
           "<td><a href=\"#m"+row+"\">"+qualifiedName(method)+"</a></td>"
@@ -133,19 +144,34 @@ public class EmailableReporter implements IReporter
           +(end-start)+"</td></tr>");
       }
       if(mq>0) {
-        row+=1;
+        cq+=1;
         out.println(
-          "<tr"+(row%2==0
-          ? " class=\"stripe\""
-          : "")+">"+"<td rowspan=\""+mq+"\">"+lastc+buff);
+          "<tr class=\""+style+(cq%2==0
+          ? "even"
+          : "odd")+"\">"+"<td rowspan=\""+mq+"\">"+lastc+buff);
       }
-      out.println("</table>");
     }
   }
 
-  private String qualifiedName(ITestNGMethod method) {
+  /**
+   * @param style
+   * @return
+   */
+  private void startResultSummaryTable(String style)
+  {
+    tableStart(style);
+    out.println(
+      "<tr><th>Class</th>"
+      +"<th>Method</th><th># of<br/>Scenarios</th><th>Time<br/>(Msecs)</th></tr>");
+    row=0;
+  }
+
+  private String qualifiedName(ITestNGMethod method)
+  {
     String addon="";
-    if(method.getGroups().length>0 && ! "basic".equalsIgnoreCase(method.getGroups()[0])) {
+    if(
+      method.getGroups().length>0
+          && !"basic".equalsIgnoreCase(method.getGroups()[0])) {
       addon=" ("+method.getGroups()[0]+")";
     }
     return method.getMethodName()+addon;
@@ -162,9 +188,6 @@ public class EmailableReporter implements IReporter
         out.println(
           "<a id=\"m"+row+"\"></a><h2>"+cname+":"+method.getMethodName()
           +"</h2>");
-        //        Set<ITestResult> result_set=tests.getResults(method);
-        //        long end=Long.MIN_VALUE;
-        //        long start=Long.MAX_VALUE;
         int rq=0;
         Set<ITestResult> result_set=tests.getResults(method);
         for(ITestResult ans : result_set) {
@@ -200,22 +223,8 @@ public class EmailableReporter implements IReporter
             out.println("</div>");
           }
         }
-        //        mq+=1;
-        //        if(mq>1)
-        //          buff.append("<tr"+(row%2==1?" class=\"stripe\"":"")+">");
-        //        buff.append("<td><a href=\"#"+method.getId()+">"+method.getMethodName()+"</a></td>"
-        //          +"<td class=\"numi\">"+result_set.size()+"</td><td class=\"numi\">"
-        //          +(end-start)
-        //          +"</td></tr>");
-        //      }
-        //      if(mq>0) {
-        //        row+=1;
-        //        out.println("<tr"+(row%2==0?" class=\"stripe\"":"")+">"
-        //          +"<td rowspan=\""+mq+"\">"+lastc+buff);
         out.println("<p class=\"totop\"><a href=#top>back to summary</a></p>");
       }
-
-      //      out.println("</table>");
     }
   }
 
@@ -230,38 +239,95 @@ public class EmailableReporter implements IReporter
     return r;
   }
 
-  private void summarize(ISuite suite)
+  private void summarize(List<ISuite> suites)
   {
-    tableStart("param");
-    Map<String,ISuiteResult> r=suite.getResults();
-    for(ISuiteResult r2 : r.values()) {
-      ITestContext overview=r2.getTestContext();
-      tableRow(
-        "# of Tests passed",
-        getMethodSet(overview.getPassedTests()).size());
-      tableRow(
-        "# of Scenarios passed",
-        overview.getPassedTests().size());
-      tableRow(
-        "# failed",
-        overview.getFailedTests().size());
-      tableRow(
-        "# skipped",
-        overview.getSkippedTests().size());
-      NumberFormat formatter=new DecimalFormat("#,##0.0");
-      tableRow(
-        "Total Time",
-        formatter.format(
+    tableStart(
+      "param");
+    out.print("<tr><th>Test</th>");
+    tableColumnStart("Methods<br/>Passed");
+    tableColumnStart("Scenarios<br/>Passed");
+    tableColumnStart("# skipped");
+    tableColumnStart("# failed");
+    tableColumnStart("Total<br/>Time");
+    tableColumnStart("Included<br/>Groups");
+    tableColumnStart("Excluded<br/>Groups");
+    out.println("</tr>");
+    NumberFormat formatter=new DecimalFormat("#,##0.0");
+    int qty_tests=0;
+    int qty_pass_m=0;
+    int qty_pass_s=0;
+    int qty_skip=0;
+    int qty_fail=0;
+    long time_start=Long.MAX_VALUE;
+    long time_end=Long.MIN_VALUE;
+    for(ISuite suite:suites) {
+      if(suites.size()>1) {
+        titleRow(suite.getName(),7);
+      }
+      Map<String,ISuiteResult> tests=suite.getResults();
+      for(ISuiteResult r : tests.values()) {
+        qty_tests+=1;
+        ITestContext overview=r.getTestContext();
+        startSummaryRow(overview.getName());
+        int q=getMethodSet(overview.getPassedTests()).size();
+        qty_pass_m+=q;
+        summaryCell(q);
+        q=overview.getPassedTests().size();
+        qty_pass_s+=q;
+        summaryCell(q);
+        q=getMethodSet(overview.getSkippedTests()).size();
+        qty_skip+=q;
+        summaryCell(q);
+        q=getMethodSet(overview.getFailedTests()).size();
+        qty_fail+=q;
+        summaryCell(q);
+        time_start=Math.min(overview.getStartDate().getTime(),time_start);
+        time_end=Math.max(overview.getEndDate().getTime(),time_end);
+        summaryCell(formatter.format(
           (overview.getEndDate().getTime()-overview.getStartDate().getTime())/1000.)
-        +" seconds");
-      tableRow(
-        "Included Groups",
-        overview.getIncludedGroups());
-      tableRow(
-        "Excluded Groups",
-        overview.getExcludedGroups());
+          +" seconds");
+        summaryCell(overview.getIncludedGroups());
+        summaryCell(overview.getExcludedGroups());
+        out.println("</tr>");
+      }
     }
-    out.println("</table>");
+    if(qty_tests>1) {
+      out.println("<tr class=\"total\"><td>Total</td>");
+      summaryCell(qty_pass_m);
+      summaryCell(qty_pass_s);
+      summaryCell(qty_skip);
+      summaryCell(qty_fail);
+      summaryCell(formatter.format(
+        (time_end-time_start)/1000.)
+        +" seconds");
+      out.println("<td colspan=\"2\">&nbsp;</td></tr>");
+      out.println("</table>");
+    }
+  }
+
+  private void summaryCell(String[] val) {
+    StringBuffer b=new StringBuffer();
+    for(String v : val)
+      b.append(v+" ");
+    summaryCell(b.toString());
+  }
+
+  private void summaryCell(String v) {
+    out.print("<td class=\"numi\">"+v+"</td>");
+  }
+
+  private void startSummaryRow(String label) {
+    row+=1;
+    out.print("<tr"+(row%2==0
+      ? " class=\"stripe\""
+      : "")+"><td style=\"text-align:left;padding-right:2em\">"+label
+      +"</td>");
+  }
+
+  private int row_total;
+  private void summaryCell(int v) {
+    summaryCell(String.valueOf(v));
+    row_total+=v;
   }
 
   /**
@@ -279,52 +345,56 @@ public class EmailableReporter implements IReporter
     row=0;
   }
 
-  private void tableRow(String label,String val)
+  private void tableStart(String cssclass,String title)
+  {
+    tableStart(cssclass);
+    out.println("<caption>"+title+"</caption>");
+    row+=1;
+  }
+
+  private void tableColumnStart(String label) {
+    out.print("<th class=\"numi\">"+label+"</th>");
+  }
+
+  private void titleRow(String label,int cq)
   {
     row+=1;
     out.println(
       "<tr"+(row%2==0
       ? " class=\"stripe\""
-      : "")+"><th style=\"text-align:left;padding-right:2em\">"+label
-      +"</th><td style=\"text-align:right\">"+val+"</td></tr>");
+      : "")+"><th colspan=\""+cq+"\">"+label+"</th></tr>");
   }
 
-  private void tableRow(String label,long val)
+  /** Starts HTML stream */
+  protected void startHtml(PrintWriter out)
   {
-    tableRow(
-      label,
-      String.valueOf(val));
-  }
-
-  private void tableRow(String label,String[] val)
-  {
-    StringBuffer b=new StringBuffer();
-    for(String v : val)
-      b.append(v+" ");
-    tableRow(
-      label,
-      b.toString().trim());
-  }
-
-  private void startHtml(PrintWriter out)
-  {
-    out.println("<html>");
+    out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">");
+    out.println("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
     out.println("<head>");
     out.println("<title>TestNG:  Unit Test</title>");
     out.println("<style type=\"text/css\">");
     out.println(
-      "table.info_table,table.param,table.passed,table.failed {margin-bottom:10px;border:1px solid #000099;border-collapse:collapse;empty-cells:show;}");
+      "table caption,table.info_table,table.param,table.passed,table.failed {margin-bottom:10px;border:1px solid #000099;border-collapse:collapse;empty-cells:show;}");
     out.println(
       "table.info_table td,table.info_table th,table.param td,table.param th,table.passed td,table.passed th,table.failed td,table.failed th {");
     out.println("border:1px solid #000099;padding:.25em .5em .25em .5em");
     out.println("}");
-    out.println("td.numi {");
+    out.println("table.param th {vertical-align:bottom}");
+    out.println("td.numi,th.numi {");
     out.println("text-align:right");
     out.println("}");
-    out.println("table.passed td {background-color: #00AA00;}");
-    out.println("table.passed tr.stripe td {background-color: #33FF33;}");
-    out.println("table.failed td {background-color: #DD0000;}");
-    out.println("table.failed tr.stripe td {background-color: #FF3333;}");
+    out.println("tr.total td {font-weight:bold}");
+    out.println("table caption {");
+    out.println("text-align:center;font-weight:bold;");
+    out.println("}");
+    out.println(
+      "table.passed td,table tr.passedeven td {background-color: #00AA00;}");
+    out.println(
+      "table.passed tr.stripe td,table tr.passedodd td {background-color: #33FF33;}");
+    out.println(
+      "table.failed td,table tr.failedeven td {background-color: #DD0000;}");
+    out.println(
+      "table.failed tr.stripe td,table tr.failedodd td {background-color: #FF3333;}");
     out.println("tr.stripe td,tr.stripe th {background-color: #E6EBF9;}");
     out.println(
       "p.totop {font-size:85%;text-align:center;border-bottom:2px black solid}");
@@ -334,6 +404,12 @@ public class EmailableReporter implements IReporter
     out.println("<body>");
   }
 
+  /** Finishes HTML stream */
+  protected void endHtml(PrintWriter out)
+  {
+    out.println("</body></html>");
+  }
+
   //~ Inner Classes --------------------------------------------------------
 
   /**
@@ -341,7 +417,7 @@ public class EmailableReporter implements IReporter
    *
    * @author $author$
    * @version $Revision: 3 $
-    *
+   *
    * @param <T> DOCUMENT ME!
    */
   private class TestSorter<T extends ITestNGMethod> implements Comparator
