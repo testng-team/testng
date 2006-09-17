@@ -2,6 +2,7 @@
 ===========================================================================
 5.3
 
+Added: testng.xml now supports <suite-files>
 Added: ant task can receive several listeners
 
 Eclipse plug-in

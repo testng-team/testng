@@ -29,7 +29,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Reported designed to render self-contained HTML top down view 
+ * Reported designed to render self-contained HTML top down view
  * of a testing suite.
  *
  * @author Paul Mendelson
@@ -42,6 +42,8 @@ public class EmailableReporter implements IReporter
   Logger logger=Logger.getLogger(EmailableReporter.class);
   private PrintWriter out;
   int row;
+  private int method_ptr;
+  private int row_total;
 
   //~ Methods --------------------------------------------------------------
 
@@ -52,34 +54,40 @@ public class EmailableReporter implements IReporter
     String outdir)
   {
     try {
-      out=new PrintWriter(new FileWriter(new File(outdir,"emailable-report.html")));
+      out=
+        new PrintWriter(
+          new FileWriter(new File(outdir,"emailable-report.html")));
     } catch(IOException e) {
       logger.error("output file",e);
       return;
     }
     startHtml(out);
     summarize(suites);
+    method_ptr=0;
     for(ISuite suite : suites) {
-      out.println("<a id=summary></a>");
+      out.println("<a id=\"summary\"></a>");
       Map<String,ISuiteResult> r=suite.getResults();
       startResultSummaryTable("passed");
       for(ISuiteResult r2 : r.values()) {
-        if(r.values().size()>1) {
-          titleRow(
-            r2.getTestContext().getName(),
-            4);
-        }
+        ITestContext test=r2.getTestContext();
         resultSummary(
-          r2.getTestContext().getFailedTests(),
+          test.getFailedTests(),
+          test.getName(),
           "failed");
         resultSummary(
-          r2.getTestContext().getPassedTests(),
-          "passed");
-        resultSummary(
-          r2.getTestContext().getSkippedTests(),
+          test.getSkippedTests(),
+          test.getName(),
           "skipped");
+        resultSummary(
+          test.getPassedTests(),
+          test.getName(),
+          "passed");
       }
-      out.println("</table>");
+    }
+    out.println("</table>");
+    method_ptr=0;
+    for(ISuite suite : suites) {
+      Map<String,ISuiteResult> r=suite.getResults();
       for(ISuiteResult r2 : r.values()) {
         if(r.values().size()>0) {
           out.println("<h1>"+r2.getTestContext().getName()+"</h1>");
@@ -87,6 +95,9 @@ public class EmailableReporter implements IReporter
         resultDetail(
           r2.getTestContext().getFailedTests(),
           "failed");
+        resultDetail(
+          r2.getTestContext().getSkippedTests(),
+          "skipped");
         resultDetail(
           r2.getTestContext().getPassedTests(),
           "passed");
@@ -99,7 +110,7 @@ public class EmailableReporter implements IReporter
   /**
    * @param tests
    */
-  private void resultSummary(IResultMap tests,String style)
+  private void resultSummary(IResultMap tests,String testname,String style)
   {
     if(tests.getAllResults().size()>0) {
       StringBuffer buff=new StringBuffer();
@@ -108,7 +119,11 @@ public class EmailableReporter implements IReporter
       int cq=0;
       for(ITestNGMethod method : getMethodSet(tests)) {
         row+=1;
+        method_ptr+=1;
         String cname=method.getTestClass().getName();
+        if(mq==0) {
+          titleRow(testname+" &#8212; "+style,4);
+        }
         if(!cname.equalsIgnoreCase(lastc)) {
           if(mq>0) {
             cq+=1;
@@ -139,7 +154,7 @@ public class EmailableReporter implements IReporter
             : "even")+"\">");
         }
         buff.append(
-          "<td><a href=\"#m"+row+"\">"+qualifiedName(method)+"</a></td>"
+          "<td><a href=\"#m"+method_ptr+"\">"+qualifiedName(method)+"</a></td>"
           +"<td class=\"numi\">"+result_set.size()+"</td><td class=\"numi\">"
           +(end-start)+"</td></tr>");
       }
@@ -184,9 +199,10 @@ public class EmailableReporter implements IReporter
       StringBuffer buff=new StringBuffer();
       for(ITestNGMethod method : getMethodSet(tests)) {
         row+=1;
+        method_ptr+=1;
         String cname=method.getTestClass().getName();
         out.println(
-          "<a id=\"m"+row+"\"></a><h2>"+cname+":"+method.getMethodName()
+          "<a id=\"m"+method_ptr+"\"></a><h2>"+cname+":"+method.getMethodName()
           +"</h2>");
         int rq=0;
         Set<ITestResult> result_set=tests.getResults(method);
@@ -223,7 +239,7 @@ public class EmailableReporter implements IReporter
             out.println("</div>");
           }
         }
-        out.println("<p class=\"totop\"><a href=#top>back to summary</a></p>");
+        out.println("<p class=\"totop\"><a href=\"#summary\">back to summary</a></p>");
       }
     }
   }
@@ -241,8 +257,7 @@ public class EmailableReporter implements IReporter
 
   private void summarize(List<ISuite> suites)
   {
-    tableStart(
-      "param");
+    tableStart("param");
     out.print("<tr><th>Test</th>");
     tableColumnStart("Methods<br/>Passed");
     tableColumnStart("Scenarios<br/>Passed");
@@ -260,9 +275,11 @@ public class EmailableReporter implements IReporter
     int qty_fail=0;
     long time_start=Long.MAX_VALUE;
     long time_end=Long.MIN_VALUE;
-    for(ISuite suite:suites) {
+    for(ISuite suite : suites) {
       if(suites.size()>1) {
-        titleRow(suite.getName(),7);
+        titleRow(
+          suite.getName(),
+          7);
       }
       Map<String,ISuiteResult> tests=suite.getResults();
       for(ISuiteResult r : tests.values()) {
@@ -281,10 +298,17 @@ public class EmailableReporter implements IReporter
         q=getMethodSet(overview.getFailedTests()).size();
         qty_fail+=q;
         summaryCell(q);
-        time_start=Math.min(overview.getStartDate().getTime(),time_start);
-        time_end=Math.max(overview.getEndDate().getTime(),time_end);
-        summaryCell(formatter.format(
-          (overview.getEndDate().getTime()-overview.getStartDate().getTime())/1000.)
+        time_start=
+          Math.min(
+            overview.getStartDate().getTime(),
+            time_start);
+        time_end=
+          Math.max(
+            overview.getEndDate().getTime(),
+            time_end);
+        summaryCell(
+          formatter.format(
+            (overview.getEndDate().getTime()-overview.getStartDate().getTime())/1000.)
           +" seconds");
         summaryCell(overview.getIncludedGroups());
         summaryCell(overview.getExcludedGroups());
@@ -297,35 +321,36 @@ public class EmailableReporter implements IReporter
       summaryCell(qty_pass_s);
       summaryCell(qty_skip);
       summaryCell(qty_fail);
-      summaryCell(formatter.format(
-        (time_end-time_start)/1000.)
-        +" seconds");
+      summaryCell(formatter.format((time_end-time_start)/1000.)+" seconds");
       out.println("<td colspan=\"2\">&nbsp;</td></tr>");
       out.println("</table>");
     }
   }
 
-  private void summaryCell(String[] val) {
+  private void summaryCell(String[] val)
+  {
     StringBuffer b=new StringBuffer();
     for(String v : val)
       b.append(v+" ");
     summaryCell(b.toString());
   }
 
-  private void summaryCell(String v) {
+  private void summaryCell(String v)
+  {
     out.print("<td class=\"numi\">"+v+"</td>");
   }
 
-  private void startSummaryRow(String label) {
+  private void startSummaryRow(String label)
+  {
     row+=1;
-    out.print("<tr"+(row%2==0
+    out.print(
+      "<tr"+(row%2==0
       ? " class=\"stripe\""
-      : "")+"><td style=\"text-align:left;padding-right:2em\">"+label
-      +"</td>");
+      : "")+"><td style=\"text-align:left;padding-right:2em\">"+label+"</td>");
   }
 
-  private int row_total;
-  private void summaryCell(int v) {
+  private void summaryCell(int v)
+  {
     summaryCell(String.valueOf(v));
     row_total+=v;
   }
@@ -352,23 +377,22 @@ public class EmailableReporter implements IReporter
     row+=1;
   }
 
-  private void tableColumnStart(String label) {
+  private void tableColumnStart(String label)
+  {
     out.print("<th class=\"numi\">"+label+"</th>");
   }
 
   private void titleRow(String label,int cq)
   {
-    row+=1;
-    out.println(
-      "<tr"+(row%2==0
-      ? " class=\"stripe\""
-      : "")+"><th colspan=\""+cq+"\">"+label+"</th></tr>");
+    out.println("<tr><th colspan=\""+cq+"\">"+label+"</th></tr>");
+    row=0;
   }
 
   /** Starts HTML stream */
   protected void startHtml(PrintWriter out)
   {
-    out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">");
+    out.println(
+      "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">");
     out.println("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
     out.println("<head>");
     out.println("<title>TestNG:  Unit Test</title>");
@@ -388,13 +412,18 @@ public class EmailableReporter implements IReporter
     out.println("text-align:center;font-weight:bold;");
     out.println("}");
     out.println(
-      "table.passed td,table tr.passedeven td {background-color: #00AA00;}");
+      "table.passed tr.stripe td,table tr.passedodd td {background-color: #00AA00;}");
     out.println(
-      "table.passed tr.stripe td,table tr.passedodd td {background-color: #33FF33;}");
+      "table.passed td,table tr.passedeven td {background-color: #33FF33;}");
     out.println(
-      "table.failed td,table tr.failedeven td {background-color: #DD0000;}");
+      "table.passed tr.stripe td,table tr.skippedodd td {background-color: #cccccc;}");
+    out.println(
+      "table.passed td,table tr.skippedodd td {background-color: #dddddd;}");
+
     out.println(
       "table.failed tr.stripe td,table tr.failedodd td {background-color: #FF3333;}");
+    out.println(
+      "table.failed td,table tr.failedeven td {background-color: #DD0000;}");
     out.println("tr.stripe td,tr.stripe th {background-color: #E6EBF9;}");
     out.println(
       "p.totop {font-size:85%;text-align:center;border-bottom:2px black solid}");
