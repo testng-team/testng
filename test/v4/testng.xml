@@ -372,11 +372,13 @@
     </classes>
   </test>
 
+<!--
   <test name="Distributed">
     <classes>
       <class name="test.distributed.DistributedTest" />
     </classes>
   </test>  
+-->
 
   <test name="Nested" >
     <groups>

@@ -33,8 +33,11 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   private JDK15TagFactory m_tagFactory = new JDK15TagFactory();
   private Map<Class<?>, Class<?>> m_annotationMap = 
     new HashMap<Class<?>, Class<?>>();
+  private IAnnotationTransformer m_transformer = null;
   
-  public JDK15AnnotationFinder() {
+  public JDK15AnnotationFinder(IAnnotationTransformer transformer) {
+    m_transformer = transformer;
+    
     m_annotationMap.put(IConfiguration.class, Configuration.class);
     m_annotationMap.put(IDataProvider.class, DataProvider.class);
     m_annotationMap.put(IExpectedExceptions.class, ExpectedExceptions.class);

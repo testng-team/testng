@@ -28,7 +28,9 @@ import org.testng.internal.HostFile;
 import org.testng.internal.Invoker;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.AnnotationConfiguration;
+import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.IAnnotationTransformer;
 import org.testng.internal.annotations.ITest;
 import org.testng.internal.remote.SlavePool;
 import org.testng.internal.thread.IPooledExecutor;
@@ -396,7 +398,8 @@ public class TestNG {
     //
     XmlClass[] xmlClasses = Utils.classesToXmlClasses(classes);
     Map<String, XmlSuite> suites = new HashMap<String, XmlSuite>();
-    IAnnotationFinder finder = SuiteRunner.getAnnotationFinder(getVersion());
+    IAnnotationFinder finder = 
+      SuiteRunner.getAnnotationFinder(getVersion(), m_annotationTransformer);
     
     for (int i = 0; i < classes.length; i++) {
       Class c = classes[i];
@@ -585,6 +588,9 @@ public class TestNG {
   /** The verbosity level. TODO why not a simple int? */
   private Integer m_verbose;
 
+  private IAnnotationTransformer m_annotationTransformer
+    = new DefaultAnnotationTransformer();
+
   /**
    * Sets the level of verbosity. This value will override the value specified 
    * in the test suites.
@@ -600,7 +606,8 @@ public class TestNG {
   private void initializeSources() {
     if(null != m_sourceDirs) {
       if(isJdk14() || JAVADOC_ANNOTATION_TYPE.equals(m_target)) {
-        AnnotationConfiguration.getInstance().getAnnotationFinder().addSourceDirs(m_sourceDirs);
+        AnnotationConfiguration.getInstance().
+          getAnnotationFinder(getAnnotationTransformer()).addSourceDirs(m_sourceDirs);
       }
     }
   }
@@ -810,7 +817,8 @@ public class TestNG {
     if (hostFile.isStrategyTest()) {
       for (XmlSuite suite : m_suites) {
         suite.setVerbose(hostFile.getVerbose());
-        SuiteRunner suiteRunner = new SuiteRunner(suite, m_outputDir);
+        SuiteRunner suiteRunner = 
+          new SuiteRunner(suite, m_outputDir, m_annotationTransformer);
         for (XmlTest test : suite.getTests()) {
           XmlSuite tmpSuite = new XmlSuite();
           tmpSuite.setXmlPackages(suite.getXmlPackages());
@@ -946,10 +954,12 @@ public class TestNG {
   private SuiteRunner createAndRunSuiteRunners(XmlSuite xmlSuite) {
     SuiteRunner result = null;
     if (null != m_testRunnerFactory) {
-      result = new SuiteRunner(xmlSuite, m_outputDir, m_testRunnerFactory, m_useDefaultListeners);
+      result = new SuiteRunner(xmlSuite, m_outputDir, m_testRunnerFactory, 
+          m_useDefaultListeners, m_annotationTransformer);
     }
     else {
-      result = new SuiteRunner(xmlSuite, m_outputDir, m_useDefaultListeners);
+      result = new SuiteRunner(xmlSuite, m_outputDir, 
+          m_useDefaultListeners, m_annotationTransformer);
     }
     
     for (ISuiteListener isl : m_suiteListeners) {
@@ -1239,6 +1249,10 @@ public class TestNG {
 
   public String getOutputDirectory() {
     return m_outputDir;
+  }
+  
+  public IAnnotationTransformer getAnnotationTransformer() {
+    return m_annotationTransformer;
   }
 
   public static class ExitCodeListener implements ITestListener {

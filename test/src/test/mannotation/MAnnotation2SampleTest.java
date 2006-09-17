@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import org.testng.Assert;
 import org.testng.annotations.Configuration;
 import org.testng.annotations.Test;
+import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IConfiguration;
 import org.testng.internal.annotations.ITest;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
@@ -14,7 +15,7 @@ public class MAnnotation2SampleTest {
   
   @Configuration(beforeTestClass = true, enabled = true, groups="current")
   public void init() {
-    m_finder = new JDK15AnnotationFinder();
+    m_finder = new JDK15AnnotationFinder(new DefaultAnnotationTransformer());
   }
 
   @Test

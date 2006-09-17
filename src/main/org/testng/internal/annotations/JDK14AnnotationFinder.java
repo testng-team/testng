@@ -29,9 +29,11 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
   private JDK14TagFactory m_tagFactory = new JDK14TagFactory();
   private JavaDocBuilder m_docBuilder;
   private String[] m_dirPaths;
+  private IAnnotationTransformer m_annotationTransformer;
 
-  public JDK14AnnotationFinder() {
+  public JDK14AnnotationFinder(IAnnotationTransformer transformer) {
     m_docBuilder = new JavaDocBuilder();
+    m_annotationTransformer = transformer;
   }
   
   void addSources(String[] filePaths) {

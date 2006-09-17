@@ -2,8 +2,9 @@ package org.testng;
 
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+
+import org.testng.internal.annotations.IAnnotationTransformer;
 
 /**
  * Interface defining a Test Suite.
@@ -73,5 +74,10 @@ public interface ISuite {
    * 
    * @return the share state of the current suite. 
    */
-  SuiteRunState getSuiteState();
+  public SuiteRunState getSuiteState();
+  
+  /**
+   * @return the annotation transformer for this suite
+   */
+  public IAnnotationTransformer getAnnotationTransformer();
 }

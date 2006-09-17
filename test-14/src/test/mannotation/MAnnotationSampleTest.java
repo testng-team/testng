@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 import org.testng.Assert;
+import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAfterSuite;
 import org.testng.internal.annotations.IBeforeSuite;
 import org.testng.internal.annotations.IConfiguration;
@@ -24,7 +25,7 @@ public class MAnnotationSampleTest {
    * @testng.before-class description = "New annotation"
    */
   public void init() {
-    m_finder = new JDK14AnnotationFinder();
+    m_finder = new JDK14AnnotationFinder(new DefaultAnnotationTransformer());
     m_finder.addSourceDirs(new String[] {
         "./test-14/src",
         "src"

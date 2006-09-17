@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import org.testng.Assert;
 import org.testng.annotations.Configuration;
 import org.testng.annotations.Test;
+import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAfterSuite;
 import org.testng.internal.annotations.IBeforeSuite;
 import org.testng.internal.annotations.IConfiguration;
@@ -22,7 +23,7 @@ public class MAnnotationSampleTest {
 
   @Configuration(beforeTestClass = true, enabled = true)
   public void init() {
-    m_finder = new JDK15AnnotationFinder();
+    m_finder = new JDK15AnnotationFinder(new DefaultAnnotationTransformer());
 //    m_finder.addSourceDirs(new String[] {
 //        "./test-14/src",
 //        "src"
@@ -229,7 +230,7 @@ public class MAnnotationSampleTest {
   public void verifyParameters() 
     throws SecurityException, NoSuchMethodException 
   {
-    m_finder = new JDK15AnnotationFinder();
+    m_finder = new JDK15AnnotationFinder(new DefaultAnnotationTransformer());
     Method method = MTest1.class.getMethod("parameters", new Class[0]);
     IParameters parameters = 
       (IParameters) m_finder.findAnnotation(method, IParameters.class);

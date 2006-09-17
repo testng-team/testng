@@ -14,8 +14,8 @@ import org.testng.ITestResult;
 import org.testng.ITestRunnerFactory;
 import org.testng.SuiteRunner;
 import org.testng.TestListenerAdapter;
-import org.testng.TestNG;
 import org.testng.TestRunner;
+import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
 import org.testng.xml.XmlClass;
@@ -118,7 +118,9 @@ public class BaseTest {
     setFailedButWithinSuccessPercentageTests(new HashMap());
 
     m_suite.setVerbose(new Integer(0));
-    SuiteRunner suite = new SuiteRunner(m_suite, m_outputDirectory, m_testRunnerFactory);
+    SuiteRunner suite = 
+      new SuiteRunner(m_suite, m_outputDirectory, m_testRunnerFactory,
+          new DefaultAnnotationTransformer());
 
     suite.run();
   }

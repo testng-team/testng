@@ -129,7 +129,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   }
 
   public TestRunner(ISuite suite, XmlTest test) {
-    init(suite, test, suite.getOutputDirectory(), SuiteRunner.getAnnotationFinder(test));
+    init(suite, test, suite.getOutputDirectory(), 
+        SuiteRunner.getAnnotationFinder(test, suite.getAnnotationTransformer()));
   }
 
   private void init(ISuite suite,
