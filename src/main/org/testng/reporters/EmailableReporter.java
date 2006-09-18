@@ -62,12 +62,23 @@ public class EmailableReporter implements IReporter {
       return;
     }
     startHtml(m_out);
-    summarize(suites);
+    generateSuiteSummaryReport(suites);
+    generateMethodSummaryReport(suites);
+    generateMethodDetailReport(suites);
+    endHtml(m_out);
+    m_out.close();
+  }
+
+  /** Creates a table showing the highlights of each test method with links to the method details */
+  protected void generateMethodSummaryReport(List<ISuite> suites) {
     m_method_ptr = 0;
+    m_out.println("<a id=\"summary\"></a>");
+    startResultSummaryTable("passed");
     for (ISuite suite : suites) {
-      m_out.println("<a id=\"summary\"></a>");
+      if(suites.size()>1) {
+        titleRow(suite.getName(), 4);
+      }
       Map<String, ISuiteResult> r = suite.getResults();
-      startResultSummaryTable("passed");
       for (ISuiteResult r2 : r.values()) {
         ITestContext test = r2.getTestContext();
         resultSummary(test.getFailedTests(), test.getName(), "failed");
@@ -76,6 +87,10 @@ public class EmailableReporter implements IReporter {
       }
     }
     m_out.println("</table>");
+  }
+
+  /** Creates a section showing known results for each method */
+  protected void generateMethodDetailReport(List<ISuite> suites) {
     m_method_ptr = 0;
     for (ISuite suite : suites) {
       Map<String, ISuiteResult> r = suite.getResults();
@@ -88,8 +103,6 @@ public class EmailableReporter implements IReporter {
         resultDetail(r2.getTestContext().getPassedTests(), "passed");
       }
     }
-    endHtml(m_out);
-    m_out.close();
   }
 
   /**
@@ -111,8 +124,9 @@ public class EmailableReporter implements IReporter {
         if (!cname.equalsIgnoreCase(lastc)) {
           if (mq > 0) {
             cq += 1;
-            m_out.println("<tr class=\"" + style + (cq % 2 == 0 ? "even" : "odd")
-                + "\">" + "<td rowspan=\"" + mq + "\">" + lastc + buff);
+            m_out.println("<tr class=\"" + style
+                + (cq % 2 == 0 ? "even" : "odd") + "\">" + "<td rowspan=\""
+                + mq + "\">" + lastc + buff);
           }
           mq = 0;
           buff.setLength(0);
@@ -180,7 +194,7 @@ public class EmailableReporter implements IReporter {
         for (ITestResult ans : result_set) {
           rq += 1;
           Object[] pset = ans.getParameters();
-          String output_tag=null;
+          String output_tag = null;
           if (pset.length > 0) {
             if (rq == 1) {
               tableStart("param");
@@ -192,20 +206,22 @@ public class EmailableReporter implements IReporter {
               }
               m_out.println("</tr>");
             }
-            m_out.print("<tr>");
+            m_out.print("<tr" + (rq % 2 == 0 ? " class=\"stripe\"" : "") + ">");
             for (Object p : pset) {
-              m_out.println("<td style=\"padding-left:.5em;padding-right:2em\">"
-                  + p + "</td>");
+              m_out
+                  .println("<td style=\"padding-left:.5em;padding-right:2em\">"
+                      + p + "</td>");
             }
             m_out.println("</tr>");
           }
           List<String> msgs = Reporter.getOutput(ans);
           if (msgs.size() > 0) {
-            String indent=" style=\"padding-left:3em\"";
+            String indent = " style=\"padding-left:3em\"";
             if (pset.length > 0) {
-              m_out.println("<tr><td"+indent+" colspan=\""+pset.length+"\">");
+              m_out.println("<tr" + (rq % 2 == 0 ? " class=\"stripe\"" : "")
+                  + "><td" + indent + " colspan=\"" + pset.length + "\">");
             } else {
-              m_out.println("<div"+indent+">");
+              m_out.println("<div" + indent + ">");
             }
             for (String line : msgs) {
               m_out.println(line + "<br/>");
@@ -238,7 +254,7 @@ public class EmailableReporter implements IReporter {
     return r;
   }
 
-  private void summarize(List<ISuite> suites) {
+  public void generateSuiteSummaryReport(List<ISuite> suites) {
     tableStart("param");
     m_out.print("<tr><th>Test</th>");
     tableColumnStart("Methods<br/>Passed");
@@ -268,22 +284,22 @@ public class EmailableReporter implements IReporter {
         startSummaryRow(overview.getName());
         int q = getMethodSet(overview.getPassedTests()).size();
         qty_pass_m += q;
-        summaryCell(q);
+        summaryCell(q,Integer.MAX_VALUE);
         q = overview.getPassedTests().size();
         qty_pass_s += q;
-        summaryCell(q);
+        summaryCell(q,Integer.MAX_VALUE);
         q = getMethodSet(overview.getSkippedTests()).size();
         qty_skip += q;
-        summaryCell(q);
+        summaryCell(q,0);
         q = getMethodSet(overview.getFailedTests()).size();
         qty_fail += q;
-        summaryCell(q);
+        summaryCell(q,0);
         time_start = Math.min(overview.getStartDate().getTime(), time_start);
         time_end = Math.max(overview.getEndDate().getTime(), time_end);
         summaryCell(formatter
             .format((overview.getEndDate().getTime() - overview.getStartDate()
                 .getTime()) / 1000.)
-            + " seconds");
+            + " seconds",true);
         summaryCell(overview.getIncludedGroups());
         summaryCell(overview.getExcludedGroups());
         m_out.println("</tr>");
@@ -291,12 +307,12 @@ public class EmailableReporter implements IReporter {
     }
     if (qty_tests > 1) {
       m_out.println("<tr class=\"total\"><td>Total</td>");
-      summaryCell(qty_pass_m);
-      summaryCell(qty_pass_s);
-      summaryCell(qty_skip);
-      summaryCell(qty_fail);
+      summaryCell(qty_pass_m,Integer.MAX_VALUE);
+      summaryCell(qty_pass_s,Integer.MAX_VALUE);
+      summaryCell(qty_skip,0);
+      summaryCell(qty_fail,0);
       summaryCell(formatter.format((time_end - time_start) / 1000.)
-          + " seconds");
+          + " seconds",true);
       m_out.println("<td colspan=\"2\">&nbsp;</td></tr>");
       m_out.println("</table>");
     }
@@ -306,11 +322,11 @@ public class EmailableReporter implements IReporter {
     StringBuffer b = new StringBuffer();
     for (String v : val)
       b.append(v + " ");
-    summaryCell(b.toString());
+    summaryCell(b.toString(),true);
   }
 
-  private void summaryCell(String v) {
-    m_out.print("<td class=\"numi\">" + v + "</td>");
+  private void summaryCell(String v,boolean isgood) {
+    m_out.print("<td class=\"numi"+(isgood?"":"_attn")+"\">" + v + "</td>");
   }
 
   private void startSummaryRow(String label) {
@@ -321,8 +337,8 @@ public class EmailableReporter implements IReporter {
             + "</td>");
   }
 
-  private void summaryCell(int v) {
-    summaryCell(String.valueOf(v));
+  private void summaryCell(int v,int maxexpected) {
+    summaryCell(String.valueOf(v),v<=maxexpected);
     m_row_total += v;
   }
 
@@ -336,12 +352,6 @@ public class EmailableReporter implements IReporter {
     m_row = 0;
   }
 
-  private void tableStart(String cssclass, String title) {
-    tableStart(cssclass);
-    m_out.println("<caption>" + title + "</caption>");
-    m_row += 1;
-  }
-
   private void tableColumnStart(String label) {
     m_out.print("<th class=\"numi\">" + label + "</th>");
   }
@@ -349,6 +359,10 @@ public class EmailableReporter implements IReporter {
   private void titleRow(String label, int cq) {
     m_out.println("<tr><th colspan=\"" + cq + "\">" + label + "</th></tr>");
     m_row = 0;
+  }
+  
+  protected void writeStyle(String[] formats,String[] targets) {
+    
   }
 
   /** Starts HTML stream */
@@ -366,29 +380,21 @@ public class EmailableReporter implements IReporter {
     out.println("border:1px solid #000099;padding:.25em .5em .25em .5em");
     out.println("}");
     out.println("table.param th {vertical-align:bottom}");
-    out.println("td.numi,th.numi {");
+    out.println("td.numi,th.numi,td.numi_attn {");
     out.println("text-align:right");
     out.println("}");
     out.println("tr.total td {font-weight:bold}");
     out.println("table caption {");
     out.println("text-align:center;font-weight:bold;");
     out.println("}");
-    out
-        .println("table.passed tr.stripe td,table tr.passedodd td {background-color: #00AA00;}");
-    out
-        .println("table.passed td,table tr.passedeven td {background-color: #33FF33;}");
-    out
-        .println("table.passed tr.stripe td,table tr.skippedodd td {background-color: #cccccc;}");
-    out
-        .println("table.passed td,table tr.skippedodd td {background-color: #dddddd;}");
-
-    out
-        .println("table.failed tr.stripe td,table tr.failedodd td {background-color: #FF3333;}");
-    out
-        .println("table.failed td,table tr.failedeven td {background-color: #DD0000;}");
+    out.println("table.passed tr.stripe td,table tr.passedodd td {background-color: #00AA00;}");
+    out.println("table.passed td,table tr.passedeven td {background-color: #33FF33;}");
+    out.println("table.passed tr.stripe td,table tr.skippedodd td {background-color: #cccccc;}");
+    out.println("table.passed td,table tr.skippedodd td {background-color: #dddddd;}");
+    out.println("table.failed tr.stripe td,table tr.failedodd td,table.param td.numi_attn {background-color: #FF3333;}");
+    out.println("table.failed td,table tr.failedeven td,table.param tr.stripe td.numi_attn {background-color: #DD0000;}");
     out.println("tr.stripe td,tr.stripe th {background-color: #E6EBF9;}");
-    out
-        .println("p.totop {font-size:85%;text-align:center;border-bottom:2px black solid}");
+    out.println("p.totop {font-size:85%;text-align:center;border-bottom:2px black solid}");
     out.println("div.shootout {padding:2em;border:3px #4854A8 solid}");
     out.println("</style>");
     out.println("</head>");
