@@ -819,7 +819,7 @@ public class Invoker implements IInvoker {
               }
     
               // No exception thrown, make sure we weren't expecting one
-              else {
+              else if(status != ITestResult.SKIP) {
                 if (expectedExceptionClasses.length > 0) {
                   testResult.setThrowable(new TestException("Expected an exception in test method "
                                                      + testMethod));
