@@ -761,20 +761,22 @@ public class Invoker implements IInvoker {
               //
               // Create the workers
               //
-              Map<ITestClass, ITestClass> beforeMethodsMap = 
-                new HashMap<ITestClass, ITestClass>();
-              Map<ITestClass, ITestClass> afterMethodsMap = 
-                new HashMap<ITestClass, ITestClass>();
+              Map<ITestClass, ITestClass> beforeMethodsMap = new HashMap<ITestClass, ITestClass>();
+              beforeMethodsMap.put(testMethod.getTestClass(), testMethod.getTestClass());
+              Map<ITestClass, ITestClass> afterMethodsMap = new HashMap<ITestClass, ITestClass>();
               List<TestMethodWorker> workers= new ArrayList<TestMethodWorker>();
-              ClassMethodMap classMethodMap = new ClassMethodMap(allTestMethods);
+              ClassMethodMap classMethodMap = new ClassMethodMap(allTestMethods, true);
               for (int i = 0; i < testMethod.getInvocationCount(); i++) {
                 workers.add(new TestMethodWorker(this,
                     new ITestNGMethod[] {testMethod},
-                    suite, parameters,
-                    beforeMethodsMap, afterMethodsMap,
+                    suite, 
+                    parameters,
+                    beforeMethodsMap, 
+                    afterMethodsMap,
                     allTestMethods,
                     groupMethods,
-                    classMethodMap));
+                    classMethodMap,
+                    true /*force AfterClass execution*/));
               }
               setWithinThreadedMethod(true);
               try {
@@ -791,14 +793,14 @@ public class Invoker implements IInvoker {
             //
             else {
               result = invokeMethod(instances,
-                                               testMethod,
-                                               parameterValues,
-                                               suite,
-                                               allParameterNames,
-                                               testClass,
-                                               beforeMethods,
-                                               afterMethods,
-                                               groupMethods);
+                                    testMethod,
+                                    parameterValues,
+                                    suite,
+                                    allParameterNames,
+                                    testClass,
+                                    beforeMethods,
+                                    afterMethods,
+                                    groupMethods);
             }
   
             //
