@@ -1,6 +1,7 @@
 package org.testng;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -11,12 +12,12 @@ import java.util.List;
  * 
  */
 public class TestListenerAdapter implements ITestListener {
-  private List<ITestNGMethod> m_allTestMethods = new ArrayList<ITestNGMethod>();
-  private List<ITestResult> m_passedTests = new ArrayList<ITestResult>();
-  private List<ITestResult> m_failedTests = new ArrayList<ITestResult>();
-  private List<ITestResult> m_skippedTests = new ArrayList<ITestResult>();
+  private List<ITestNGMethod> m_allTestMethods = Collections.synchronizedList(new ArrayList<ITestNGMethod>());
+  private List<ITestResult> m_passedTests = Collections.synchronizedList(new ArrayList<ITestResult>());
+  private List<ITestResult> m_failedTests = Collections.synchronizedList(new ArrayList<ITestResult>());
+  private List<ITestResult> m_skippedTests = Collections.synchronizedList(new ArrayList<ITestResult>());
   private List<ITestResult> m_failedButWithinSuccessPercentageTests 
-    = new ArrayList<ITestResult>();
+    = Collections.synchronizedList(new ArrayList<ITestResult>());
 
   public void onTestSuccess(ITestResult tr) {
     m_allTestMethods.add(tr.getMethod());
