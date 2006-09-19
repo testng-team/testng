@@ -210,7 +210,7 @@ public class EmailableReporter implements IReporter {
             for (Object p : pset) {
               m_out
                   .println("<td style=\"padding-left:.5em;padding-right:2em\">"
-                      + p + "</td>");
+                      + (p != null ? p.toString() : "null") + "</td>");
             }
             m_out.println("</tr>");
           }

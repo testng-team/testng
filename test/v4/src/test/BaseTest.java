@@ -16,6 +16,7 @@ import org.testng.SuiteRunner;
 import org.testng.TestListenerAdapter;
 import org.testng.TestRunner;
 import org.testng.annotations.Configuration;
+import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
 import org.testng.xml.XmlClass;
@@ -157,7 +158,8 @@ public class BaseTest extends BaseDistributedTest {
     m_suite.setVerbose(0);
 		SuiteRunner suite = new SuiteRunner(m_suite, 
                                           m_outputDirectory,
-                                          m_testRunnerFactory
+                                          m_testRunnerFactory,
+                                          new DefaultAnnotationTransformer()
       );
 
       suite.run();
