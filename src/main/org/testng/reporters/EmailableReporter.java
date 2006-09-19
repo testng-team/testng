@@ -1,5 +1,19 @@
 package org.testng.reporters;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.testng.IReporter;
 import org.testng.IResultMap;
 import org.testng.ISuite;
@@ -8,25 +22,8 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
-
 import org.testng.log4testng.Logger;
-
 import org.testng.xml.XmlSuite;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Reported designed to render self-contained HTML top down view of a testing
@@ -37,9 +34,9 @@ import java.util.TreeSet;
  * @version $Revision$
  */
 public class EmailableReporter implements IReporter {
+  private static final Logger L = Logger.getLogger(EmailableReporter.class);
+  
   // ~ Instance fields ------------------------------------------------------
-
-  Logger m_logger = Logger.getLogger(EmailableReporter.class);
 
   private PrintWriter m_out;
 
@@ -52,13 +49,12 @@ public class EmailableReporter implements IReporter {
   // ~ Methods --------------------------------------------------------------
 
   /** Creates summary of the run */
-  public void generateReport(List<XmlSuite> xml, List<ISuite> suites,
-      String outdir) {
+  public void generateReport(List<XmlSuite> xml, List<ISuite> suites, String outdir) {
     try {
-      m_out = new PrintWriter(new FileWriter(new File(outdir,
-          "emailable-report.html")));
-    } catch (IOException e) {
-      m_logger.error("output file", e);
+      m_out = new PrintWriter(new BufferedWriter(new FileWriter(new File(outdir, "emailable-report.html"))));
+    } 
+    catch (IOException e) {
+      L.error("output file", e);
       return;
     }
     startHtml(m_out);
@@ -66,6 +62,7 @@ public class EmailableReporter implements IReporter {
     generateMethodSummaryReport(suites);
     generateMethodDetailReport(suites);
     endHtml(m_out);
+    m_out.flush();
     m_out.close();
   }
 
@@ -164,8 +161,7 @@ public class EmailableReporter implements IReporter {
   /** Starts and defines columns result summary table */
   private void startResultSummaryTable(String style) {
     tableStart(style);
-    m_out
-        .println("<tr><th>Class</th>"
+    m_out.println("<tr><th>Class</th>"
             + "<th>Method</th><th># of<br/>Scenarios</th><th>Time<br/>(Msecs)</th></tr>");
     m_row = 0;
   }
@@ -238,8 +234,7 @@ public class EmailableReporter implements IReporter {
             }
           }
         }
-        m_out
-            .println("<p class=\"totop\"><a href=\"#summary\">back to summary</a></p>");
+        m_out.println("<p class=\"totop\"><a href=\"#summary\">back to summary</a></p>");
       }
     }
   }
@@ -296,10 +291,9 @@ public class EmailableReporter implements IReporter {
         summaryCell(q,0);
         time_start = Math.min(overview.getStartDate().getTime(), time_start);
         time_end = Math.max(overview.getEndDate().getTime(), time_end);
-        summaryCell(formatter
-            .format((overview.getEndDate().getTime() - overview.getStartDate()
-                .getTime()) / 1000.)
-            + " seconds",true);
+        summaryCell(formatter.format(
+            (overview.getEndDate().getTime() - overview.getStartDate().getTime()) / 1000.)
+            + " seconds", true);
         summaryCell(overview.getIncludedGroups());
         summaryCell(overview.getExcludedGroups());
         m_out.println("</tr>");
@@ -311,8 +305,7 @@ public class EmailableReporter implements IReporter {
       summaryCell(qty_pass_s,Integer.MAX_VALUE);
       summaryCell(qty_skip,0);
       summaryCell(qty_fail,0);
-      summaryCell(formatter.format((time_end - time_start) / 1000.)
-          + " seconds",true);
+      summaryCell(formatter.format((time_end - time_start) / 1000.) + " seconds", true);
       m_out.println("<td colspan=\"2\">&nbsp;</td></tr>");
       m_out.println("</table>");
     }
@@ -320,8 +313,9 @@ public class EmailableReporter implements IReporter {
 
   private void summaryCell(String[] val) {
     StringBuffer b = new StringBuffer();
-    for (String v : val)
+    for (String v : val) {
       b.append(v + " ");
+    }
     summaryCell(b.toString(),true);
   }
 
@@ -331,8 +325,7 @@ public class EmailableReporter implements IReporter {
 
   private void startSummaryRow(String label) {
     m_row += 1;
-    m_out
-        .print("<tr" + (m_row % 2 == 0 ? " class=\"stripe\"" : "")
+    m_out.print("<tr" + (m_row % 2 == 0 ? " class=\"stripe\"" : "")
             + "><td style=\"text-align:left;padding-right:2em\">" + label
             + "</td>");
   }
@@ -367,16 +360,13 @@ public class EmailableReporter implements IReporter {
 
   /** Starts HTML stream */
   protected void startHtml(PrintWriter out) {
-    out
-        .println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">");
+    out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">");
     out.println("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
     out.println("<head>");
     out.println("<title>TestNG:  Unit Test</title>");
     out.println("<style type=\"text/css\">");
-    out
-        .println("table caption,table.info_table,table.param,table.passed,table.failed {margin-bottom:10px;border:1px solid #000099;border-collapse:collapse;empty-cells:show;}");
-    out
-        .println("table.info_table td,table.info_table th,table.param td,table.param th,table.passed td,table.passed th,table.failed td,table.failed th {");
+    out.println("table caption,table.info_table,table.param,table.passed,table.failed {margin-bottom:10px;border:1px solid #000099;border-collapse:collapse;empty-cells:show;}");
+    out.println("table.info_table td,table.info_table th,table.param td,table.param th,table.passed td,table.passed th,table.failed td,table.failed th {");
     out.println("border:1px solid #000099;padding:.25em .5em .25em .5em");
     out.println("}");
     out.println("table.param th {vertical-align:bottom}");
@@ -407,15 +397,13 @@ public class EmailableReporter implements IReporter {
   }
 
   // ~ Inner Classes --------------------------------------------------------
-
   /** Arranges methods by classname and method name */
   private class TestSorter<T extends ITestNGMethod> implements Comparator {
     // ~ Methods -------------------------------------------------------------
 
     /** Arranges methods by classname and method name */
     public int compare(Object o1, Object o2) {
-      int r = ((T) o1).getTestClass().getName().compareTo(
-          ((T) o2).getTestClass().getName());
+      int r = ((T) o1).getTestClass().getName().compareTo(((T) o2).getTestClass().getName());
       if (r == 0) {
         r = ((T) o1).getMethodName().compareTo(((T) o2).getMethodName());
       }
