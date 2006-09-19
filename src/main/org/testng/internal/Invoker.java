@@ -777,9 +777,13 @@ public class Invoker implements IInvoker {
                     classMethodMap));
               }
               setWithinThreadedMethod(true);
-              result = runWorkers(testMethod, workers, threadPoolSize);
-              setWithinThreadedMethod(false);
-              more = false;
+              try {
+                result = runWorkers(testMethod, workers, threadPoolSize);
+              }
+              finally {
+                setWithinThreadedMethod(false);
+                more = false;
+              }
             }
             
             //
@@ -921,10 +925,9 @@ public class Invoker implements IInvoker {
     m_withinThreadedMethod = f;
   }
 
-  private List<ITestResult> runWorkers(ITestNGMethod testMethod, 
-      List<TestMethodWorker> workers, int threadPoolSize) 
+  private List<ITestResult> runWorkers(ITestNGMethod testMethod, List<TestMethodWorker> workers, int threadPoolSize)
   {
-    long maxTimeOut= 10 * 1000; // 1 second
+    long maxTimeOut= 10 * 1000; // 10 seconds
     IPooledExecutor executor= ThreadUtil.createPooledExecutor(threadPoolSize);
 
     for(TestMethodWorker tmw : workers) {
@@ -939,7 +942,16 @@ public class Invoker implements IInvoker {
       executor.shutdown();
       log(3, "Waiting for termination, timeout:" + maxTimeOut);
       executor.awaitTermination(maxTimeOut);
-      log(3, "Successful termination");
+      if(executor.isTerminated()) {
+        log(3, "Timeout done, successful termination");
+      }
+      else {
+        log(3, "Timeout done, execution not finished, waiting complete termination");
+        while(!executor.isTerminated()) {
+            executor.awaitTermination(100L);
+        }
+        log(3, "Successful complete termination");
+      }
     }
     catch(InterruptedException e) {
       e.printStackTrace();

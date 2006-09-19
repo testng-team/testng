@@ -1,5 +1,7 @@
 package org.testng.internal.thread;
 
+import java.util.List;
+
 /**
  * Reduced interface to mimic PooledExecutor.
  *
@@ -11,4 +13,9 @@ public interface IPooledExecutor {
    void shutdown();
 
    void awaitTermination(long timeout) throws InterruptedException;
+
+  /**
+   * @return
+   */
+  boolean isTerminated();
 }
