@@ -16,6 +16,7 @@ import java.util.StringTokenizer;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Execute;
 import org.apache.tools.ant.taskdefs.ExecuteWatchdog;
@@ -61,6 +62,7 @@ import org.apache.tools.ant.types.selectors.FilenameSelector;
  * <li>jvmarg (inner)</li>
  * <li>timeout (attribute)</li>
  * <li>haltonfailure (attribute)</li>
+ * <li>onHaltTarget (attribute)</li>
  * <li>failureProperty (attribute)</li>
  * <li>haltonFSP (attribute)</li>
  * <li>FSPproperty (attribute)</li>
@@ -89,6 +91,7 @@ public class TestNGAntTask extends Task {
   protected boolean m_dump;
   protected boolean m_assertEnabled = true;
   protected boolean m_haltOnFailure;
+  protected String m_onhalt_target;
   protected String m_failurePropertyName;
   protected boolean m_haltOnSkipped;
   protected String m_skippedPropertyName;
@@ -111,6 +114,15 @@ public class TestNGAntTask extends Task {
   public void setHaltonfailure(boolean value) {
     m_haltOnFailure = value;
   }
+  
+  public void setOnHaltTarget(String target_name) {
+    if(getProject().getTargets().containsKey(target_name)) {
+      m_onhalt_target = target_name;
+    } else {
+      throw new BuildException("Target "+target_name+" not found in this project");
+    }
+  }
+  
 
   public void setFailureProperty(String propertyName) {
     m_failurePropertyName = propertyName;
@@ -496,6 +508,7 @@ public class TestNGAntTask extends Task {
     
     if((exitValue & TestNG.HAS_NO_TEST) == TestNG.HAS_NO_TEST) {
       if(m_haltOnFailure) {
+        executeHaltTarget();
         throw new BuildException("No tests were run");
       }
       else {
@@ -511,6 +524,7 @@ public class TestNGAntTask extends Task {
     if(failed) {
       final String msg = wasKilled ? "The tests timed out and were killed." : "The tests failed.";
       if(m_haltOnFailure) {
+        executeHaltTarget();
         throw new BuildException(msg);
       }
       else {
@@ -524,6 +538,7 @@ public class TestNGAntTask extends Task {
     
     if((exitValue & TestNG.HAS_SKIPPED) == TestNG.HAS_SKIPPED) {
       if(m_haltOnSkipped) {
+        executeHaltTarget();
         throw new BuildException("There are TestNG SKIPPED tests");
       }
       else {
@@ -537,6 +552,7 @@ public class TestNGAntTask extends Task {
     
     if((exitValue & TestNG.HAS_FSP) == TestNG.HAS_FSP) {
       if(m_haltOnFSP) {
+        executeHaltTarget();
         throw new BuildException("There are TestNG FAILED WITHIN SUCCESS PERCENTAGE tests");
       }
       else {
@@ -549,6 +565,14 @@ public class TestNGAntTask extends Task {
     }
   }
   
+  /**
+   * 
+   */
+  private void executeHaltTarget() {
+    Target t=(Target)getProject().getTargets().get(m_onhalt_target);
+    t.execute();
+  }
+
   protected int executeAsForked(CommandlineJava cmd, ExecuteWatchdog watchdog) {
     Execute execute = new Execute(new LogStreamHandler(this, Project.MSG_INFO, Project.MSG_WARN), watchdog);
     execute.setCommandline(cmd.getCommandline());
