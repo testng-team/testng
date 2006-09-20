@@ -56,11 +56,6 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     m_annotationMap.put(IAfterMethod.class, AfterMethod.class);
   }
 
-  public IAnnotation findAnnotation(Class cls, Class annotationClass) {
-    Class a = m_annotationMap.get(annotationClass);
-    return findAnnotation(cls, findAnnotationInSuperClasses(cls, a), annotationClass);
-  }
-
   private Annotation findAnnotationInSuperClasses(Class cls, Class a) {
     while (cls != null) {
       Annotation result = cls.getAnnotation(a);
@@ -74,22 +69,36 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   public IAnnotation findAnnotation(Method m, Class annotationClass) {
     Class a = m_annotationMap.get(annotationClass);
     assert a != null : "Annotation class not found:" + annotationClass;
-    return findAnnotation(m.getDeclaringClass(), m.getAnnotation(a), annotationClass);
+    IAnnotation result = findAnnotation(m.getDeclaringClass(), m.getAnnotation(a), annotationClass);
+    if (result != null) result.setMethod(m);
+    
+    return result;
   }
   
+  public IAnnotation findAnnotation(Class cls, Class annotationClass) {
+    Class a = m_annotationMap.get(annotationClass);
+    IAnnotation result = findAnnotation(cls, findAnnotationInSuperClasses(cls, a), annotationClass);
+    if (result != null) result.setTestClass(cls);
+    
+    return result;
+  }
+  
+  public IAnnotation findAnnotation(Constructor m, Class annotationClass) {
+    Class a = m_annotationMap.get(annotationClass);
+    IAnnotation result = findAnnotation(m.getDeclaringClass(), m.getAnnotation(a), annotationClass);
+    if (result != null) result.setConstructor(m);
+    
+    return result;
+  }
+
+  private IAnnotation findAnnotation(Class cls, Annotation a, Class annotationClass) {
+    return m_tagFactory.createTag(cls, a, annotationClass, m_transformer);
+  }
+
   private void ppp(String string) {
     System.out.println("[JDK15AnnotationFinder] " + string);
   }
-
-  public IAnnotation findAnnotation(Constructor m, Class annotationClass) {
-    Class a = m_annotationMap.get(annotationClass);
-    return findAnnotation(m.getDeclaringClass(), m.getAnnotation(a), annotationClass);
-  }
-
-  public IAnnotation findAnnotation(Class cls, Annotation a, Class annotationClass) {
-    return m_tagFactory.createTag(cls, a, annotationClass);
-  }
-
+  
   public void addSourceDirs(String[] dirs) {
     // no-op for JDK 15
   }

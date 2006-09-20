@@ -79,20 +79,24 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
     }
   }
 
-  public IAnnotation findAnnotation(Class cls, Class annotationClass) {
+  public IAnnotation findAnnotation(Class cls, Class annotationClass)
+  {
     return m_tagFactory.createTag(annotationClass, 
-        m_docBuilder.getClassByName(cls.getName()));
+        m_docBuilder.getClassByName(cls.getName()),
+        m_annotationTransformer);
   }
 
-  public IAnnotation findAnnotation(Method m, Class annotationClass) {
+  public IAnnotation findAnnotation(Method m, Class annotationClass)
+  {
     return findMethodAnnotation(m.getName(), m.getParameterTypes(), 
-        m.getDeclaringClass(), annotationClass);
+        m.getDeclaringClass(), annotationClass, m_annotationTransformer);
   }
   
-  public IAnnotation findAnnotation(Constructor m, Class annotationClass) {
+  public IAnnotation findAnnotation(Constructor m, Class annotationClass)
+  {
     String name = stripPackage(m.getName());
     return findMethodAnnotation(name, m.getParameterTypes(), m.getDeclaringClass(), 
-        annotationClass);
+        annotationClass, m_annotationTransformer);
   }
   
   private String stripPackage(String name) {
@@ -106,7 +110,7 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
   }
   
   private IAnnotation findMethodAnnotation(String methodName, Class[] parameterTypes, 
-      Class methodClass, Class annotationClass) 
+      Class methodClass, Class annotationClass, IAnnotationTransformer transformer) 
   {
     IAnnotation result = null;
     JavaClass jc = m_docBuilder.getClassByName(methodClass.getName());
@@ -127,7 +131,7 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
       
       if (methods.size() > 0) {
         method = (JavaMethod) methods.get(0);
-        result = findTag(annotationClass, result, method);
+        result = findTag(annotationClass, result, method, transformer);
       }
       
     }
@@ -146,9 +150,9 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
   }
 
   private IAnnotation findTag(Class annotationClass, IAnnotation result, 
-      AbstractInheritableJavaEntity entity) 
+      AbstractInheritableJavaEntity entity, IAnnotationTransformer transformer)
   {
-    return m_tagFactory.createTag(annotationClass, entity);
+    return m_tagFactory.createTag(annotationClass, entity, transformer);
   }
   
   private static void ppp(String s) {

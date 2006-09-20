@@ -6,7 +6,10 @@ package org.testng.internal.annotations;
  * Created on Dec 20, 2005
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
-public class FactoryAnnotation implements IFactory {
+public class FactoryAnnotation 
+  extends BaseAnnotation
+  implements IFactory 
+{
   private String[] m_parameters = {};
   
   public String[] getParameters() {

@@ -9,6 +9,7 @@ import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IConfiguration;
 import org.testng.internal.annotations.ITest;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
+import org.testng.internal.annotations.DefaultAnnotationTransformer;
 
 public class MAnnotation2SampleTest {
   private JDK15AnnotationFinder m_finder;

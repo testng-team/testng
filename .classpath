@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/main"/>
-	<classpathentry kind="src" path="src/jdk15"/>
 	<classpathentry kind="src" path="test/src"/>
+	<classpathentry kind="src" path="src/jdk15"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="3rdparty/junit.jar"/>
 	<classpathentry kind="lib" path="3rdparty/qdox-1.5.jar"/>

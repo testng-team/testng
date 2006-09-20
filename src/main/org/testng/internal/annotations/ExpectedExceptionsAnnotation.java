@@ -6,7 +6,10 @@ package org.testng.internal.annotations;
  * Created on Dec 20, 2005
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
-public class ExpectedExceptionsAnnotation implements IExpectedExceptions {
+public class ExpectedExceptionsAnnotation 
+  extends BaseAnnotation
+  implements IExpectedExceptions 
+{
   private Class[] m_value = {};
   
   public Class[] getValue() {

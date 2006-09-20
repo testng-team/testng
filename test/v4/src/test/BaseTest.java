@@ -24,6 +24,7 @@ import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+import org.testng.internal.annotations.DefaultAnnotationTransformer;
 
 /**
  * Base class for tests
@@ -32,138 +33,138 @@ import org.testng.xml.XmlTest;
  * 
  */
 public class BaseTest extends BaseDistributedTest {
-	private static final String m_outputDirectory = "test-output-tests";
-	
-	private XmlSuite m_suite = null;
-	private ITestRunnerFactory m_testRunnerFactory;
-	
-	public BaseTest() {
-   	m_testRunnerFactory = new InternalTestRunnerFactory(this);
+  private static final String m_outputDirectory = "test-output-tests";
+  
+  private XmlSuite m_suite = null;
+  private ITestRunnerFactory m_testRunnerFactory;
+  
+  public BaseTest() {
+     m_testRunnerFactory = new InternalTestRunnerFactory(this);
    }
-	
-	protected void setDebug() {
-		getTest().setVerbose(9);
-	}
+  
+  protected void setDebug() {
+    getTest().setVerbose(9);
+  }
 
-	protected void setParallel(String parallel) {
-		getTest().setParallel(parallel);
-	}
+  protected void setParallel(String parallel) {
+    getTest().setParallel(parallel);
+  }
 
-	protected void setVerbose(int n) {
-		getTest().setVerbose(n);
-	}
+  protected void setVerbose(int n) {
+    getTest().setVerbose(n);
+  }
   
   protected void setJUnit(boolean f) {
     getTest().setJUnit(f);
   }
 
-	//
-	// Use this for sequential tests
-	//
-	//  private XmlTest m_test = null;
-	//  protected Map m_passedTests = null;
-	//  protected Map m_failedTests = null;
-	//  protected Map m_skippedTests = null;
-	//
-	//  public Map getPassedTests() {
-	//    return m_passedTests;
-	//  }
-	//  
-	//  public Map getSkippedTests() {
-	//    return m_skippedTests;
-	//  }
-	//  
-	//  public Map getFailedTests() {
-	//    return m_failedTests;
-	//  }
-	//  
-	//  public void setFailedTests(Map m) {
-	//    m_failedTests = m;
-	//  }
-	//  
-	//  public void setSkippedTests(Map m) {
-	//    m_skippedTests = m;
-	//  }
-	//  
-	//  public void setPassedTests(Map m) {
-	//    m_passedTests = m;
-	//  }
+  //
+  // Use this for sequential tests
+  //
+  //  private XmlTest m_test = null;
+  //  protected Map m_passedTests = null;
+  //  protected Map m_failedTests = null;
+  //  protected Map m_skippedTests = null;
+  //
+  //  public Map getPassedTests() {
+  //    return m_passedTests;
+  //  }
+  //  
+  //  public Map getSkippedTests() {
+  //    return m_skippedTests;
+  //  }
+  //  
+  //  public Map getFailedTests() {
+  //    return m_failedTests;
+  //  }
+  //  
+  //  public void setFailedTests(Map m) {
+  //    m_failedTests = m;
+  //  }
+  //  
+  //  public void setSkippedTests(Map m) {
+  //    m_skippedTests = m;
+  //  }
+  //  
+  //  public void setPassedTests(Map m) {
+  //    m_passedTests = m;
+  //  }
 
-	//
-	// Use this for parallel tests
-	//
+  //
+  // Use this for parallel tests
+  //
 
-	private Map<Long, XmlTest>	m_tests												= new HashMap<Long, XmlTest>();
-	private Map<Long, Map>		m_passedTests										= new HashMap<Long, Map>();
-	private Map<Long, Map>		m_failedTests										= new HashMap<Long, Map>();
-	private Map<Long, Map>		m_skippedTests										= new HashMap<Long, Map>();
-	private Map<Long, Map>		m_failedButWithinSuccessPercentageTests	= new HashMap<Long, Map>();
+  private Map<Long, XmlTest>  m_tests                        = new HashMap<Long, XmlTest>();
+  private Map<Long, Map>    m_passedTests                    = new HashMap<Long, Map>();
+  private Map<Long, Map>    m_failedTests                    = new HashMap<Long, Map>();
+  private Map<Long, Map>    m_skippedTests                    = new HashMap<Long, Map>();
+  private Map<Long, Map>    m_failedButWithinSuccessPercentageTests  = new HashMap<Long, Map>();
 
-	protected Map<String, List<ITestResult>> getTests(Map<Long, Map> map) {
-		Map<String, List<ITestResult>> result = map.get(getId());
-		if(null == result) {
-			result = new HashMap<String, List<ITestResult>>();
-			map.put(getId(), result);
-		}
-		return result;
-	}
+  protected Map<String, List<ITestResult>> getTests(Map<Long, Map> map) {
+    Map<String, List<ITestResult>> result = map.get(getId());
+    if(null == result) {
+      result = new HashMap<String, List<ITestResult>>();
+      map.put(getId(), result);
+    }
+    return result;
+  }
 
-	protected XmlTest getTest() {
-		return m_tests.get(getId());
-	}
+  protected XmlTest getTest() {
+    return m_tests.get(getId());
+  }
 
-	protected void setTests(Map<Long, Map> map, Map m) {
-		map.put(getId(), m);
-	}
+  protected void setTests(Map<Long, Map> map, Map m) {
+    map.put(getId(), m);
+  }
 
-	public Map<String, List<ITestResult>> getFailedTests() {
-		return getTests(m_failedTests);
-	}
+  public Map<String, List<ITestResult>> getFailedTests() {
+    return getTests(m_failedTests);
+  }
 
-	public Map<String, List<ITestResult>> getFailedButWithinSuccessPercentageTests() {
-		return getTests(m_failedButWithinSuccessPercentageTests);
-	}
+  public Map<String, List<ITestResult>> getFailedButWithinSuccessPercentageTests() {
+    return getTests(m_failedButWithinSuccessPercentageTests);
+  }
 
-	public Map<String, List<ITestResult>> getPassedTests() {
-		return getTests(m_passedTests);
-	}
+  public Map<String, List<ITestResult>> getPassedTests() {
+    return getTests(m_passedTests);
+  }
 
-	public Map<String, List<ITestResult>> getSkippedTests() {
-		return getTests(m_skippedTests);
-	}
+  public Map<String, List<ITestResult>> getSkippedTests() {
+    return getTests(m_skippedTests);
+  }
 
-	public void setSkippedTests(Map m) {
-		setTests(m_skippedTests, m);
-	}
+  public void setSkippedTests(Map m) {
+    setTests(m_skippedTests, m);
+  }
 
-	public void setPassedTests(Map m) {
-		setTests(m_passedTests, m);
-	}
+  public void setPassedTests(Map m) {
+    setTests(m_passedTests, m);
+  }
 
-	public void setFailedTests(Map m) {
-		setTests(m_failedTests, m);
-	}
+  public void setFailedTests(Map m) {
+    setTests(m_failedTests, m);
+  }
 
-	public void setFailedButWithinSuccessPercentageTests(Map m) {
-		setTests(m_failedButWithinSuccessPercentageTests, m);
-	}
+  public void setFailedButWithinSuccessPercentageTests(Map m) {
+    setTests(m_failedButWithinSuccessPercentageTests, m);
+  }
 
-	protected void run() {
-		assert null != getTest() : "Test wasn't set, maybe @Configuration methodSetUp() was never called";
-		setPassedTests(new HashMap());
-		setFailedTests(new HashMap());
-		setSkippedTests(new HashMap());
-		setFailedButWithinSuccessPercentageTests(new HashMap());
+  protected void run() {
+    assert null != getTest() : "Test wasn't set, maybe @Configuration methodSetUp() was never called";
+    setPassedTests(new HashMap());
+    setFailedTests(new HashMap());
+    setSkippedTests(new HashMap());
+    setFailedButWithinSuccessPercentageTests(new HashMap());
 
     m_suite.setVerbose(0);
-		SuiteRunner suite = new SuiteRunner(m_suite, 
-                                          m_outputDirectory,
-                                          m_testRunnerFactory,
-                                          new DefaultAnnotationTransformer()
+    SuiteRunner suite = new SuiteRunner(m_suite, 
+                                        m_outputDirectory,
+					m_testRunnerFactory,
+                                        new DefaultAnnotationTransformer()
       );
 
       suite.run();
-	}
+  }
   
   protected void addMethodSelector(String className, int priority) {
     XmlMethodSelector methodSelector = new XmlMethodSelector();
@@ -201,170 +202,170 @@ public class BaseTest extends BaseDistributedTest {
     return result;
   }
 
-	public void addIncludedMethod(String className, String m) {
+  public void addIncludedMethod(String className, String m) {
     XmlClass xmlClass = findClass(className);
     xmlClass.getIncludedMethods().add(m);
-		getTest().getXmlClasses().add(xmlClass);
-	}
+    getTest().getXmlClasses().add(xmlClass);
+  }
 
-	public void addExcludedMethod(String className, String m) {
+  public void addExcludedMethod(String className, String m) {
     XmlClass xmlClass = findClass(className);
     xmlClass.getExcludedMethods().add(m);
     getTest().getXmlClasses().add(xmlClass);
-	}
+  }
 
-	public void addIncludedGroup(String g) {
-		getTest().getIncludedGroups().add(g);
-	}
+  public void addIncludedGroup(String g) {
+    getTest().getIncludedGroups().add(g);
+  }
 
-	public void addExcludedGroup(String g) {
-		getTest().getExcludedGroups().add(g);
-	}
+  public void addExcludedGroup(String g) {
+    getTest().getExcludedGroups().add(g);
+  }
 
-	public void addMetaGroup(String mg, List<String> l) {
-		getTest().getMetaGroups().put(mg, l);
-	}
+  public void addMetaGroup(String mg, List<String> l) {
+    getTest().getMetaGroups().put(mg, l);
+  }
 
-	public void addMetaGroup(String mg, String n) {
-		List<String> l = new ArrayList<String>();
-		l.add(n);
-		addMetaGroup(mg, l);
-	}
+  public void addMetaGroup(String mg, String n) {
+    List<String> l = new ArrayList<String>();
+    l.add(n);
+    addMetaGroup(mg, l);
+  }
 
-	public void setParameter(String key, String value) {
-		getTest().addParameter(key, value);
-	}
+  public void setParameter(String key, String value) {
+    getTest().addParameter(key, value);
+  }
 
-	private void setTest(XmlTest test) {
-		XmlTest t = m_tests.get(getId());
-		if(null == t) {
-			m_tests.put(getId(), t);
-		}
-	}
+  private void setTest(XmlTest test) {
+    XmlTest t = m_tests.get(getId());
+    if(null == t) {
+      m_tests.put(getId(), t);
+    }
+  }
 
-	@Configuration(beforeTestMethod = true, groups = {"init", "initTest"}) 
-	public void methodSetUp() {
-		m_suite = new XmlSuite();
+  @Configuration(beforeTestMethod = true, groups = {"init", "initTest"}) 
+  public void methodSetUp() {
+    m_suite = new XmlSuite();
     m_suite.setName("Internal suite");
-		m_tests.put(getId(), new XmlTest(m_suite));
-		getTest().setName("Internal test, failures are expected");
-	}
+    m_tests.put(getId(), new XmlTest(m_suite));
+    getTest().setName("Internal test, failures are expected");
+  }
 
-	private Collection computeDifferences(Map m1, Map m2) {
-		List result = new ArrayList();
+  private Collection computeDifferences(Map m1, Map m2) {
+    List result = new ArrayList();
 
-		for(Iterator it = m1.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
-		}
+    for(Iterator it = m1.keySet().iterator(); it.hasNext();) {
+      Object key = it.next();
+    }
 
-		return result;
-	}
+    return result;
+  }
 
-	private void addTest(Map<String, List<ITestResult>> tests, ITestResult t) {
-		List<ITestResult> l = tests.get(t.getName());
-		if(null == l) {
-			l = new ArrayList<ITestResult>();
-			tests.put(t.getName(), l);
-		}
-		l.add(t);
-	}
+  private void addTest(Map<String, List<ITestResult>> tests, ITestResult t) {
+    List<ITestResult> l = tests.get(t.getName());
+    if(null == l) {
+      l = new ArrayList<ITestResult>();
+      tests.put(t.getName(), l);
+    }
+    l.add(t);
+  }
 
-	public void addPassedTest(ITestResult t) {
-		addTest(getPassedTests(), t);
-	}
+  public void addPassedTest(ITestResult t) {
+    addTest(getPassedTests(), t);
+  }
 
-	public void addFailedTest(ITestResult t) {
-		addTest(getFailedTests(), t);
-	}
+  public void addFailedTest(ITestResult t) {
+    addTest(getFailedTests(), t);
+  }
 
-	public void addFailedButWithinSuccessPercentageTest(ITestResult t) {
-		addTest(getFailedButWithinSuccessPercentageTests(), t);
-	}
+  public void addFailedButWithinSuccessPercentageTest(ITestResult t) {
+    addTest(getFailedButWithinSuccessPercentageTests(), t);
+  }
 
-	public void addSkippedTest(ITestResult t) {
-		addTest(getSkippedTests(), t);
-	}
+  public void addSkippedTest(ITestResult t) {
+    addTest(getSkippedTests(), t);
+  }
 
-	private void ppp(String s) {
-		System.out.println("[BaseTest " + getId() + "] " + s);
-	}
+  private void ppp(String s) {
+    System.out.println("[BaseTest " + getId() + "] " + s);
+  }
 
-	protected Long getId() {
-		return Thread.currentThread().getId();
-	}
+  protected Long getId() {
+    return Thread.currentThread().getId();
+  }
 
-	public XmlSuite getSuite() {
-		return m_suite;
-	}
+  public XmlSuite getSuite() {
+    return m_suite;
+  }
 
-	/**
-	 * Used for instanceCount testing, when we need to look inside the
-	 * TestResult to count the various SUCCESS/FAIL/FAIL_BUT_OK
-	 */
-	protected void verifyResults(Map<String, List<ITestResult>> tests, int expected, String message) {
-		if(tests.size() > 0) {
-			Set keys = tests.keySet();
-			Object firstKey = keys.iterator().next();
-			List<ITestResult> passedResult = tests.get(firstKey);
-			int n = passedResult.size();
-			assert n == expected : "Expected " + expected + " " + message + " but found " + n;
-		} 
+  /**
+   * Used for instanceCount testing, when we need to look inside the
+   * TestResult to count the various SUCCESS/FAIL/FAIL_BUT_OK
+   */
+  protected void verifyResults(Map<String, List<ITestResult>> tests, int expected, String message) {
+    if(tests.size() > 0) {
+      Set keys = tests.keySet();
+      Object firstKey = keys.iterator().next();
+      List<ITestResult> passedResult = tests.get(firstKey);
+      int n = passedResult.size();
+      assert n == expected : "Expected " + expected + " " + message + " but found " + n;
+    } 
     else {
-			assert expected == 0 : "Expected " + expected + " " + message + " but found "
-					+ tests.size();
-		}
-	}
+      assert expected == 0 : "Expected " + expected + " " + message + " but found "
+          + tests.size();
+    }
+  }
 
    private static class InternalTestRunnerFactory implements ITestRunnerFactory {
-   	private final BaseTest m_baseTest;
-   	
-   	public InternalTestRunnerFactory(final BaseTest baseTest) {
-   		m_baseTest = baseTest;
-   	}
-   	
-		/**
-		 * @see org.testng.ITestRunnerFactory#newTestRunner(org.testng.ISuite, org.testng.xml.XmlTest)
-		 */
-		public TestRunner newTestRunner(ISuite suite, XmlTest test) {
-			TestRunner testRunner = new TestRunner(suite, test);
-			
-			testRunner.addTestListener(new TestHTMLReporter());
-			testRunner.addTestListener(new JUnitXMLReporter());
-			testRunner.addTestListener(new TestListener(m_baseTest));
-			
-			return testRunner;
-		}
+     private final BaseTest m_baseTest;
+     
+     public InternalTestRunnerFactory(final BaseTest baseTest) {
+       m_baseTest = baseTest;
+     }
+     
+    /**
+     * @see org.testng.ITestRunnerFactory#newTestRunner(org.testng.ISuite, org.testng.xml.XmlTest)
+     */
+    public TestRunner newTestRunner(ISuite suite, XmlTest test) {
+      TestRunner testRunner = new TestRunner(suite, test);
+      
+      testRunner.addTestListener(new TestHTMLReporter());
+      testRunner.addTestListener(new JUnitXMLReporter());
+      testRunner.addTestListener(new TestListener(m_baseTest));
+      
+      return testRunner;
+    }
    }
 } // BaseTest
 
 ////////////////////////////
 
 class TestListener extends TestListenerAdapter {
-	private static BaseTest	m_test	= null;
+  private static BaseTest  m_test  = null;
 
-	public TestListener(BaseTest t1) {
-		m_test = t1;
-	}
+  public TestListener(BaseTest t1) {
+    m_test = t1;
+  }
 
-	@Override
+  @Override
   public void onTestSuccess(ITestResult tr) {
-		m_test.addPassedTest(tr);
-	}
+    m_test.addPassedTest(tr);
+  }
 
-	@Override
+  @Override
   public void onTestFailure(ITestResult tr) {
-		m_test.addFailedTest(tr);
-	}
+    m_test.addFailedTest(tr);
+  }
 
-	@Override
+  @Override
   public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
-		m_test.addFailedButWithinSuccessPercentageTest(result);
-	}
+    m_test.addFailedButWithinSuccessPercentageTest(result);
+  }
 
-	@Override
+  @Override
   public void onTestSkipped(ITestResult tr) {
-		m_test.addSkippedTest(tr);
-	}
+    m_test.addSkippedTest(tr);
+  }
   
 
 } // TestListener

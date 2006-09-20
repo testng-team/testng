@@ -1254,6 +1254,10 @@ public class TestNG {
   public IAnnotationTransformer getAnnotationTransformer() {
     return m_annotationTransformer;
   }
+  
+  public void setAnnotationTransformer(IAnnotationTransformer t) {
+    m_annotationTransformer = t;
+  }
 
   public static class ExitCodeListener implements ITestListener {
     protected TestNG m_mainRunner;

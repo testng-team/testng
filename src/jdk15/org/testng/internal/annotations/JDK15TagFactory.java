@@ -31,7 +31,10 @@ import org.testng.annotations.Test;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class JDK15TagFactory {
-  public IAnnotation createTag(Class cls, Annotation a, Class annotationClass) {
+  public IAnnotation createTag(Class cls, Annotation a, 
+      Class annotationClass,
+      IAnnotationTransformer transformer) 
+  {
     IAnnotation result = null;
 
     if (a != null) {
@@ -51,7 +54,7 @@ public class JDK15TagFactory {
         result = createParametersTag(a);
       }
       else if (annotationClass == ITest.class) {      
-        result = createTestTag(cls, a);
+        result = createTestTag(cls, a, transformer);
       }
       else if (annotationClass == IBeforeSuite.class || annotationClass == IAfterSuite.class || 
           annotationClass == IBeforeTest.class || annotationClass == IAfterTest.class ||
@@ -303,8 +306,10 @@ public class JDK15TagFactory {
     return result;
   }
   
-  private IAnnotation createTestTag(Class cls, Annotation a) {
-    TestAnnotation result = new TestAnnotation();
+  private IAnnotation createTestTag(Class cls, Annotation a, 
+      IAnnotationTransformer transformer) 
+  {
+    TestAnnotation result = new TestAnnotation(transformer);
     Test test = (Test) a;
     
     result.setEnabled(test.enabled());

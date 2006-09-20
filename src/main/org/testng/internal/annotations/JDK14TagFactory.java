@@ -57,7 +57,10 @@ public class JDK14TagFactory {
     m_annotationMap.put(IAfterMethod.class, AFTER_METHOD);
   }
   
-  public IAnnotation createTag(Class annotationClass, AbstractInheritableJavaEntity entity) {
+  public IAnnotation createTag(Class annotationClass, 
+      AbstractInheritableJavaEntity entity,
+      IAnnotationTransformer transformer) 
+  {
     IAnnotation result = null;
     String tag = getTagName(annotationClass);
 //    ppp("TAG FOR " + annotationClass + " = " + tag);
@@ -65,7 +68,7 @@ public class JDK14TagFactory {
     DocletTag dt = entity.getTagByName(tag, true /* superclasses */);
 //    ppp("DOCLET TAG:" + dt);
     if (dt != null) {
-      result = createTag(annotationClass, dt);
+      result = createTag(annotationClass, dt, transformer);
     }
     return result;
   }
@@ -76,7 +79,9 @@ public class JDK14TagFactory {
     return result;
   }
 
-  private IAnnotation createTag(Class annotationClass, DocletTag dt) {
+  private IAnnotation createTag(Class annotationClass, DocletTag dt,
+      IAnnotationTransformer transformer) 
+  {
     IAnnotation result = null;
     if (annotationClass == IConfiguration.class) {
       result = createConfigurationTag(dt);
@@ -94,7 +99,7 @@ public class JDK14TagFactory {
       result = createParametersTag(dt);
     }
     else if (annotationClass == ITest.class) {
-      result = createTestTag(dt);
+      result = createTestTag(dt, transformer);
     }
     else if (annotationClass == IBeforeSuite.class || annotationClass == IAfterSuite.class || 
         annotationClass == IBeforeTest.class || annotationClass == IAfterTest.class ||
@@ -324,8 +329,8 @@ public class JDK14TagFactory {
     return result;
   }
 
-  private IAnnotation createTestTag(DocletTag dt) {
-    TestAnnotation result = new TestAnnotation();
+  private IAnnotation createTestTag(DocletTag dt, IAnnotationTransformer transformer) {
+    TestAnnotation result = new TestAnnotation(transformer);
     result.setEnabled(Converter.getBoolean(dt.getNamedParameter("enabled"),
         result.getEnabled()));
     result.setGroups(Converter.getStringArray(dt.getNamedParameter("groups"),

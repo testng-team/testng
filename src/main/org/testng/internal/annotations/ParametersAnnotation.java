@@ -7,7 +7,10 @@ package org.testng.internal.annotations;
  * Created on Dec 20, 2005
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
-public class ParametersAnnotation implements IParameters {
+public class ParametersAnnotation 
+  extends BaseAnnotation
+  implements IParameters 
+{
   private String[] m_value  = {};
 
   public String[] getValue() {

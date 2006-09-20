@@ -13,6 +13,7 @@ import org.testng.internal.annotations.IFactory;
 import org.testng.internal.annotations.IParameters;
 import org.testng.internal.annotations.ITest;
 import org.testng.internal.annotations.JDK14AnnotationFinder;
+import org.testng.internal.annotations.DefaultAnnotationTransformer;
 
 /**
  * @testng.test

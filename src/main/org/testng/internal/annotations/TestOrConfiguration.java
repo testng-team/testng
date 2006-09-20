@@ -1,6 +1,9 @@
 package org.testng.internal.annotations;
 
-public class TestOrConfiguration implements ITestOrConfiguration {
+public class TestOrConfiguration 
+  extends BaseAnnotation
+  implements ITestOrConfiguration 
+{
   private String[] m_parameters = {};
   private String[] m_groups = {};
   private boolean m_enabled = true;
