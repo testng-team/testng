@@ -91,7 +91,7 @@ public class TestNGAntTask extends Task {
   protected boolean m_dump;
   protected boolean m_assertEnabled = true;
   protected boolean m_haltOnFailure;
-  protected String m_onhalt_target;
+  protected String m_onHaltTarget;
   protected String m_failurePropertyName;
   protected boolean m_haltOnSkipped;
   protected String m_skippedPropertyName;
@@ -115,11 +115,12 @@ public class TestNGAntTask extends Task {
     m_haltOnFailure = value;
   }
   
-  public void setOnHaltTarget(String target_name) {
-    if(getProject().getTargets().containsKey(target_name)) {
-      m_onhalt_target = target_name;
-    } else {
-      throw new BuildException("Target "+target_name+" not found in this project");
+  public void setOnHaltTarget(String targetName) {
+    if(getProject().getTargets().containsKey(targetName)) {
+      m_onHaltTarget = targetName;
+    } 
+    else {
+      throw new BuildException("Target "+targetName+" not found in this project");
     }
   }
   
@@ -569,7 +570,7 @@ public class TestNGAntTask extends Task {
    * 
    */
   private void executeHaltTarget() {
-    Target t=(Target)getProject().getTargets().get(m_onhalt_target);
+    Target t=(Target)getProject().getTargets().get(m_onHaltTarget);
     t.execute();
   }
 
