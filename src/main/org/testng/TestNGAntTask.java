@@ -116,12 +116,7 @@ public class TestNGAntTask extends Task {
   }
   
   public void setOnHaltTarget(String targetName) {
-    if(getProject().getTargets().containsKey(targetName)) {
-      m_onHaltTarget = targetName;
-    } 
-    else {
-      throw new BuildException("Target "+targetName+" not found in this project");
-    }
+    m_onHaltTarget = targetName;
   }
   
 
@@ -504,12 +499,13 @@ public class TestNGAntTask extends Task {
 
   protected void actOnResult(int exitValue, boolean wasKilled) {
     if(exitValue == -1) {
+      executeHaltTarget(exitValue);
       throw new BuildException("an error occured when running TestNG tests");
     }
     
     if((exitValue & TestNG.HAS_NO_TEST) == TestNG.HAS_NO_TEST) {
       if(m_haltOnFailure) {
-        executeHaltTarget();
+        executeHaltTarget(exitValue);
         throw new BuildException("No tests were run");
       }
       else {
@@ -525,7 +521,7 @@ public class TestNGAntTask extends Task {
     if(failed) {
       final String msg = wasKilled ? "The tests timed out and were killed." : "The tests failed.";
       if(m_haltOnFailure) {
-        executeHaltTarget();
+        executeHaltTarget(exitValue);
         throw new BuildException(msg);
       }
       else {
@@ -539,7 +535,7 @@ public class TestNGAntTask extends Task {
     
     if((exitValue & TestNG.HAS_SKIPPED) == TestNG.HAS_SKIPPED) {
       if(m_haltOnSkipped) {
-        executeHaltTarget();
+        executeHaltTarget(exitValue);
         throw new BuildException("There are TestNG SKIPPED tests");
       }
       else {
@@ -553,7 +549,7 @@ public class TestNGAntTask extends Task {
     
     if((exitValue & TestNG.HAS_FSP) == TestNG.HAS_FSP) {
       if(m_haltOnFSP) {
-        executeHaltTarget();
+        executeHaltTarget(exitValue);
         throw new BuildException("There are TestNG FAILED WITHIN SUCCESS PERCENTAGE tests");
       }
       else {
@@ -565,13 +561,19 @@ public class TestNGAntTask extends Task {
       }
     }
   }
-  
-  /**
-   * 
-   */
-  private void executeHaltTarget() {
-    Target t=(Target)getProject().getTargets().get(m_onHaltTarget);
-    t.execute();
+
+  /** Executes the target, if any, that user designates executing before failing the test */
+  private void executeHaltTarget(int exitValue) {
+    if(m_onHaltTarget!=null) {
+      if(m_outputDir!=null) {
+        getProject().setProperty("testng.outputdir", m_outputDir.getAbsolutePath());
+      }
+      getProject().setProperty("testng.returncode", String.valueOf(exitValue));
+      Target t=(Target)getProject().getTargets().get(m_onHaltTarget);
+      if(t!=null) {
+        t.execute();
+      }
+    }
   }
 
   protected int executeAsForked(CommandlineJava cmd, ExecuteWatchdog watchdog) {
@@ -661,6 +663,12 @@ public class TestNGAntTask extends Task {
         throw new BuildException("Target attribute value unknown. Must be 1.4 or 1.5.");
       }
     }
+    if(m_onHaltTarget!=null) {
+      if(! getProject().getTargets().containsKey(m_onHaltTarget)) {
+        throw new BuildException("Target "+m_onHaltTarget+" not found in this project");
+      }
+    }
+
   }
   
   private boolean usesJavadocAnnotations() {
