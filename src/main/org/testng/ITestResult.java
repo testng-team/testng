@@ -6,6 +6,8 @@ import java.io.Serializable;
  * This class describes the result of a test.
  *
  * @author Cedric Beust, May 2, 2004
+ * @since May 2, 2004
+ * @version $Revision$, $Date$
  * 
  */
 public interface ITestResult extends Serializable {
@@ -46,8 +48,8 @@ public interface ITestResult extends Serializable {
    * @return The throwable that was thrown while running the
    * method, or null if no exception was thrown.
    */  
-  public void setThrowable(Throwable throwable);
   public Throwable getThrowable();
+  public void setThrowable(Throwable throwable);
   
   /**
    * @return the start date for this test, in milliseconds.
