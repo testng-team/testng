@@ -40,11 +40,11 @@ public class EmailableReporter implements IReporter {
 
   private PrintWriter m_out;
 
-  int m_row;
+  private int m_row;
 
-  private int m_method_ptr;
+  private int m_methodIndex;
 
-  private int m_row_total;
+  private int m_rowTotal;
 
   // ~ Methods --------------------------------------------------------------
 
@@ -68,7 +68,7 @@ public class EmailableReporter implements IReporter {
 
   /** Creates a table showing the highlights of each test method with links to the method details */
   protected void generateMethodSummaryReport(List<ISuite> suites) {
-    m_method_ptr = 0;
+    m_methodIndex = 0;
     m_out.println("<a id=\"summary\"></a>");
     startResultSummaryTable("passed");
     for (ISuite suite : suites) {
@@ -88,7 +88,7 @@ public class EmailableReporter implements IReporter {
 
   /** Creates a section showing known results for each method */
   protected void generateMethodDetailReport(List<ISuite> suites) {
-    m_method_ptr = 0;
+    m_methodIndex = 0;
     for (ISuite suite : suites) {
       Map<String, ISuiteResult> r = suite.getResults();
       for (ISuiteResult r2 : r.values()) {
@@ -113,7 +113,7 @@ public class EmailableReporter implements IReporter {
       int cq = 0;
       for (ITestNGMethod method : getMethodSet(tests)) {
         m_row += 1;
-        m_method_ptr += 1;
+        m_methodIndex += 1;
         String cname = method.getTestClass().getName();
         if (mq == 0) {
           titleRow(testname + " &#8212; " + style, 4);
@@ -145,7 +145,7 @@ public class EmailableReporter implements IReporter {
           buff.append("<tr class=\"" + style + (cq % 2 == 0 ? "odd" : "even")
               + "\">");
         }
-        buff.append("<td><a href=\"#m" + m_method_ptr + "\">"
+        buff.append("<td><a href=\"#m" + m_methodIndex + "\">"
             + qualifiedName(method) + "</a></td>" + "<td class=\"numi\">"
             + result_set.size() + "</td><td class=\"numi\">" + (end - start)
             + "</td></tr>");
@@ -178,24 +178,22 @@ public class EmailableReporter implements IReporter {
   private void resultDetail(IResultMap tests, final String style) {
     if (tests.getAllResults().size() > 0) {
       int row = 0;
-      StringBuffer buff = new StringBuffer();
       for (ITestNGMethod method : getMethodSet(tests)) {
         row += 1;
-        m_method_ptr += 1;
+        m_methodIndex += 1;
         String cname = method.getTestClass().getName();
-        m_out.println("<a id=\"m" + m_method_ptr + "\"></a><h2>" + cname + ":"
+        m_out.println("<a id=\"m" + m_methodIndex + "\"></a><h2>" + cname + ":"
             + method.getMethodName() + "</h2>");
         int rq = 0;
-        Set<ITestResult> result_set = tests.getResults(method);
-        for (ITestResult ans : result_set) {
+        Set<ITestResult> resultSet = tests.getResults(method);
+        for (ITestResult ans : resultSet) {
           rq += 1;
-          Object[] pset = ans.getParameters();
-          String output_tag = null;
-          if (pset.length > 0) {
+          Object[] parameters = ans.getParameters();
+          if (parameters != null && parameters.length > 0) {
             if (rq == 1) {
               tableStart("param");
               m_out.print("<tr>");
-              for (int x = 1; x <= pset.length; x++) {
+              for (int x = 1; x <= parameters.length; x++) {
                 m_out
                     .print("<th style=\"padding-left:1em;padding-right:1em\">Parameter #"
                         + x + "</th>");
@@ -203,7 +201,7 @@ public class EmailableReporter implements IReporter {
               m_out.println("</tr>");
             }
             m_out.print("<tr" + (rq % 2 == 0 ? " class=\"stripe\"" : "") + ">");
-            for (Object p : pset) {
+            for (Object p : parameters) {
               m_out
                   .println("<td style=\"padding-left:.5em;padding-right:2em\">"
                       + (p != null ? p.toString() : "null") + "</td>");
@@ -211,25 +209,31 @@ public class EmailableReporter implements IReporter {
             m_out.println("</tr>");
           }
           List<String> msgs = Reporter.getOutput(ans);
+          
+          // Note(cbeust)
+          // There are three tests against parameters here, they should probably
+          // be factored into one
           if (msgs.size() > 0) {
             String indent = " style=\"padding-left:3em\"";
-            if (pset.length > 0) {
+            if (parameters != null && parameters.length > 0) {
               m_out.println("<tr" + (rq % 2 == 0 ? " class=\"stripe\"" : "")
-                  + "><td" + indent + " colspan=\"" + pset.length + "\">");
-            } else {
+                  + "><td" + indent + " colspan=\"" + parameters.length + "\">");
+            } 
+            else {
               m_out.println("<div" + indent + ">");
             }
             for (String line : msgs) {
               m_out.println(line + "<br/>");
             }
-            if (pset.length > 0) {
+            if (parameters != null && parameters.length > 0) {
               m_out.println("</td></tr>");
-            } else {
+            } 
+            else {
               m_out.println("</div>");
             }
           }
-          if (pset.length > 0) {
-            if (rq == result_set.size()) {
+          if (parameters != null && parameters.length > 0) {
+            if (rq == resultSet.size()) {
               m_out.println("</table>");
             }
           }
@@ -332,7 +336,7 @@ public class EmailableReporter implements IReporter {
 
   private void summaryCell(int v,int maxexpected) {
     summaryCell(String.valueOf(v),v<=maxexpected);
-    m_row_total += v;
+    m_rowTotal += v;
   }
 
   /**

@@ -430,6 +430,7 @@ public class Invoker implements IInvoker {
             IExecutor exec= ThreadUtil.createExecutor(1, factory);
 
             try {
+              Reporter.setCurrentTestResult(testResult);
               InvokeMethodRunnable imr = 
                 new InvokeMethodRunnable(tm,
                   instances[i],
@@ -463,6 +464,9 @@ public class Invoker implements IInvoker {
               System.err.println("WARN: invocation of method " + thisMethod
                                  + " has been interrupted.");
             }
+            finally {
+              Reporter.setCurrentTestResult(null);
+            }                            
           }
         }
         else {
@@ -734,7 +738,6 @@ public class Invoker implements IInvoker {
         Iterator<Object[]> allParameterValues =
           handleParameters(testMethod, allParameterNames, testClass, parameters,
               suite);
-//        testMethod.setParameterInvocationCount(allParameterValues.)
 
         //
         // Invoke the test method if it's enabled

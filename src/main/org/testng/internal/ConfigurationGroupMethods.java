@@ -44,11 +44,7 @@ public class ConfigurationGroupMethods implements Serializable {
     // If we have more invocation to do, this is not the last
     // one yet
     int invocationCount = method.getCurrentInvocationCount();
-    if (invocationCount < method.getInvocationCount()) {
-      return false;
-    }
-    
-    if (invocationCount < method.getParameterInvocationCount()) {
+    if (invocationCount < method.getInvocationCount() * method.getParameterInvocationCount()) {
       return false;
     }
     

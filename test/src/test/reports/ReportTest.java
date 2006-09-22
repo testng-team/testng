@@ -2,8 +2,13 @@ package test.reports;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
 import org.testng.Assert;
+import org.testng.ITestListener;
+import org.testng.ITestResult;
+import org.testng.Reporter;
+import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
@@ -100,4 +105,32 @@ public class ReportTest {
     Assert.assertTrue(fileA.exists(), fileA + " wasn't created");
     Assert.assertTrue(fileB.exists(), fileB + " wasn't created");
   }
+  
+  static boolean m_success = false;
+
+  @Test
+  public void reportLogShouldBeAvailableEvenWithTimeOut() {
+    m_success = false;
+    TestNG tng = new TestNG();
+    tng.setVerbose(0);
+    tng.setTestClasses(new Class[] { ReporterSampleTest.class });
+    
+    ITestListener listener = new TestListenerAdapter() {
+      @Override
+      public void onTestSuccess(ITestResult tr) {
+        super.onTestSuccess(tr);
+        List<String> output = Reporter.getOutput(tr);
+        m_success = output != null && output.size() > 0;
+//        ppp("ON SUCCESS, OUTPUT:" + output + " SUCCESS:" + m_success);
+      }
+    };
+    tng.addListener(listener);
+    tng.run();
+    
+    Assert.assertTrue(m_success);
+  }
+  
+  private static void ppp(String s) {
+    System.out.println("[ReporterTest] " + s);
+  }    
 }
