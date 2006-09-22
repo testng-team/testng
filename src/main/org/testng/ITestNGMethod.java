@@ -172,4 +172,9 @@ public interface ITestNGMethod extends Comparable, Serializable {
 
   public boolean isAfterGroupsConfiguration();
 
+  public void incrementCurrentInvocationCount();
+  public int getCurrentInvocationCount();
+  public void setParameterInvocationCount(int n);
+  public int getParameterInvocationCount();
+
 }

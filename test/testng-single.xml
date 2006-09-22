@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="Single" verbose="3" parallel="methods" thread-count="2" time-out="1000" >
+<suite name="Single" verbose="3" >
 
 <!--
 <suite-files>
@@ -13,7 +13,7 @@
 <!--
     <groups>
       <run>
-        <include name="trial"/>
+        <include name="twice"/>
       </run>
     </groups>
       <class name="test.configuration.ExternalConfigurationClass"/>
@@ -22,9 +22,10 @@
       <class name="test.thread.SequentialSample3Test" />
     <parameter name="source-directory" value="test/src/test/converter" />
       <class name="test.thread.ParallelTestTest" />
+      <class name="test.annotationtransformer.AnnotationTransformerSampleTest" />
 -->
     <classes>
-      <class name="test.annotationtransformer.AnnotationTransformerSampleTest" />
+      <class name="test.configuration.GroupsTest" />
     </classes>
   </test>
 

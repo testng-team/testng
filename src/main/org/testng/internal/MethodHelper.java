@@ -566,13 +566,15 @@ public class MethodHelper {
   }
 
   public static Iterator<Object[]> createArrayIterator(final Object[][] objects) {
-    return new ArrayIterator(objects);
+    ArrayIterator result = new ArrayIterator(objects);
+    return result;
   }
 
   public static Iterator<Object[]> invokeDataProvider(Object instance, 
-      Method dataProvider, Method testMethod)
+      Method dataProvider, ITestNGMethod method)
    {
     Iterator<Object[]> result = null;
+    Method testMethod = method.getMethod();
 
     // If it returns an Object[][], convert it to an Iterable<Object[]>
     try {
@@ -595,6 +597,7 @@ public class MethodHelper {
       if (Object[][].class.isAssignableFrom(returnType)) {
         Object[][] oResult = (Object[][]) MethodHelper.invokeMethod(
             dataProvider, instance, parameters);
+        method.setParameterInvocationCount(oResult.length);
         result = MethodHelper.createArrayIterator(oResult);
       }
       else if (Iterator.class.isAssignableFrom(returnType)) {

@@ -46,6 +46,7 @@
       <class name="test.sample.AfterClassCalledAtEnd"/>
       <class name="test.GraphTest"/>
       <class name="test.configuration.ConfigurationTest"/>
+      <class name="test.configuration.GroupsTest"/>
       <class name="test.configuration.ExternalConfigurationClass"/>
       <class name="test.privatemethod.PrivateMethodTest$PrivateMethodInnerTest"/>
       <class name="test.configuration.MethodCallOrderTest"/>

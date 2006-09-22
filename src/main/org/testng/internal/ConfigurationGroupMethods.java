@@ -41,6 +41,17 @@ public class ConfigurationGroupMethods implements Serializable {
    * afterGroups methods.
    */
   public boolean isLastMethodForGroup(String group, ITestNGMethod method) {
+    // If we have more invocation to do, this is not the last
+    // one yet
+    int invocationCount = method.getCurrentInvocationCount();
+    if (invocationCount < method.getInvocationCount()) {
+      return false;
+    }
+    
+    if (invocationCount < method.getParameterInvocationCount()) {
+      return false;
+    }
+    
     // Lazy initialization since we might never be called
     if (m_afterGroupsMap == null) {
       m_afterGroupsMap = new HashMap<String, ITestNGMethod>();

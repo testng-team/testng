@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.testng.ITestNGMethod;
 import org.testng.internal.thread.ICountDown;
 
 /**
@@ -14,13 +15,13 @@ import org.testng.internal.thread.ICountDown;
  * @author <a href="mailto:the_mindstorm@evolva.ro>the_mindstorm</a>
  */
 public class InvokeMethodRunnable implements Runnable {
-  private Method     m_method = null;
-  private Object     m_instance = null;
-  private Object[]   m_parameters = null;
+  private ITestNGMethod m_method = null;
+  private Object m_instance = null;
+  private Object[] m_parameters = null;
   private ICountDown m_done = null;
   private List<String> m_output = new ArrayList<String>();
 
-  public InvokeMethodRunnable(Method thisMethod,
+  public InvokeMethodRunnable(ITestNGMethod thisMethod,
                               Object instance,
                               Object[] parameters,
                               ICountDown done)
@@ -37,7 +38,8 @@ public class InvokeMethodRunnable implements Runnable {
     try {
       RuntimeException t = null;
       try {
-        MethodHelper.invokeMethod(m_method, m_instance, m_parameters);
+        Method m = m_method.getMethod();
+        MethodHelper.invokeMethod(m, m_instance, m_parameters);
       }
       catch(InvocationTargetException e) {
         t = new TestNGRuntimeException(e.getCause());
@@ -52,6 +54,7 @@ public class InvokeMethodRunnable implements Runnable {
     }
     finally {
       m_done.countDown();
+      m_method.incrementCurrentInvocationCount();
     }
   }
   

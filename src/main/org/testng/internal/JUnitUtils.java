@@ -65,6 +65,8 @@ public class JUnitUtils {
     private Method m_method;
     private String m_methodName= "N/A";
     private String m_signature;
+    private int m_currentInvocationCount = 0;
+    private int m_parameterInvocationCount = 0;
 
     private long m_date;
     private long m_id;
@@ -369,6 +371,22 @@ public class JUnitUtils {
      */
     public boolean isBeforeTestConfiguration() {
       return false;
+    }
+    
+    public int getCurrentInvocationCount() {
+      return m_currentInvocationCount;
+    }
+    
+    public void incrementCurrentInvocationCount() {
+      m_currentInvocationCount++;
+    }
+    
+    public void setParameterInvocationCount(int n) {
+      m_parameterInvocationCount = n;
+    }
+
+    public int getParameterInvocationCount() {
+      return m_parameterInvocationCount;
     }
 
     public String toString() {

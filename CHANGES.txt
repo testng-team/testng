@@ -2,6 +2,7 @@
 ===========================================================================
 5.3
 
+Fixed: AfterGroups were invoked out of order with invocationCount and DataProviders
 Added: testng.xml now supports <suite-files>
 Added: ant task can receive several listeners
 Fixed: TESTNG-109 Skipped tests with expected exceptions are reported as failures

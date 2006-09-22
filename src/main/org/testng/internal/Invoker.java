@@ -430,10 +430,11 @@ public class Invoker implements IInvoker {
             IExecutor exec= ThreadUtil.createExecutor(1, factory);
 
             try {
-              InvokeMethodRunnable imr= new InvokeMethodRunnable(thisMethod,
-                                                                 instances[i],
-                                                                 parameterValues,
-                                                                 done);
+              InvokeMethodRunnable imr = 
+                new InvokeMethodRunnable(tm,
+                  instances[i],
+                  parameterValues,
+                  done);
               IFutureResult future= exec.submitRunnable(imr);
               exec.shutdown();
               boolean finished= exec.awaitTermination(timeOut);
@@ -484,6 +485,11 @@ public class Invoker implements IInvoker {
         testResult.setThrowable(thr);
       }
       finally {
+        //
+        // Increment the invocation count for this method
+        //
+        tm.incrementCurrentInvocationCount();
+
         if (testResult != null) testResult.setEndMillis(System.currentTimeMillis());
         //
         // Invoke afterMethods
@@ -644,7 +650,7 @@ public class Invoker implements IInvoker {
 
       result  = MethodHelper.invokeDataProvider(
           testClass.getInstances(true)[0], /* a test instance */
-          dataProvider, testMethod.getMethod());
+          dataProvider, testMethod);
     }
     else {
       //
@@ -658,6 +664,11 @@ public class Invoker implements IInvoker {
             parameters,
             m_annotationFinder,
             xmlSuite);
+      
+      // Mark that this method needs to have at least a certain
+      // number of invocations (needed later to call AfterGroups
+      // at the right time).
+      testMethod.setParameterInvocationCount(allParameterValuesArray.length);
       // Turn it into an Iterable
       result  = MethodHelper.createArrayIterator(allParameterValuesArray);
     }
@@ -723,6 +734,7 @@ public class Invoker implements IInvoker {
         Iterator<Object[]> allParameterValues =
           handleParameters(testMethod, allParameterNames, testClass, parameters,
               suite);
+//        testMethod.setParameterInvocationCount(allParameterValues.)
 
         //
         // Invoke the test method if it's enabled

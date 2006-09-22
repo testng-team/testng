@@ -38,6 +38,8 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   private String m_missingGroup;
   private Integer m_threadPoolSize = 0;
   private String m_description = null;
+  private int m_currentInvocationCount = 0;
+  private int m_parameterInvocationCount = 1;
   
   /**
    * Constructs a <code>BaseTestMethod</code> TODO cquezel JavaDoc.
@@ -562,5 +564,20 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   public String[] getAfterGroups() {
     return m_afterGroups;
   }
+  
+  public void incrementCurrentInvocationCount() {
+    m_currentInvocationCount++;
+  }
+  
+  public int getCurrentInvocationCount() {
+    return m_currentInvocationCount;
+  }
 
+  public void setParameterInvocationCount(int n) {
+    m_parameterInvocationCount = n;
+  }
+  
+  public int getParameterInvocationCount() {
+    return m_parameterInvocationCount;
+  }
 }
