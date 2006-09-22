@@ -871,7 +871,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     //
     // Put all the sequential methods in the output argument
     //
-    sl.add(sequentialList);
+    if(sequentialList.size() > 0) {
+      sl.add(sequentialList);
+    }
     
     for (List<ITestNGMethod> l : sequentialAttributeList.values()) {
       sl.add(l);
