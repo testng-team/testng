@@ -226,6 +226,8 @@ public class Invoker implements IInvoker {
       }
     }
     else  {
+      // TODO: remove this code. We should never pass through it,
+      // as JUnit runs now independently
       //
       // If we're in JUnit mode, mark the entire class failed
       //
@@ -749,7 +751,9 @@ public class Invoker implements IInvoker {
 //            Reporter.setCurrentOutput(testMethod.getExtraOutput().getOutput());
             Object[] instances = testClass.getInstances(true);
             
-            //
+            // TODO: we should never hit this block, as JUnit is run
+            // completely independent now
+            // 
             // Special behavior for JUnit:  call setName on the instance with
             // the name of the method to be invoked
             //

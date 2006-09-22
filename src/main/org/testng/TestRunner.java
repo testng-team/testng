@@ -32,8 +32,6 @@ import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.thread.IPooledExecutor;
 import org.testng.internal.thread.ThreadUtil;
-import org.testng.junit.JUnitClassFinder;
-import org.testng.junit.JUnitMethodFinder;
 import org.testng.junit.JUnitTestRunner;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlPackage;
@@ -150,29 +148,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
         m_testClassesFromXml.addAll(xp.getXmlClasses());
       }
     }
-//    m_packageNamesFromXml= new ArrayList<XmlPackage>(test.getXmlPackages());
-//    m_packageNamesFromXml.addAll(test.getSuite().getXmlPackages());
-    
-    
-    // If packages were supplied, find all the classes they contain
-    // and add them directly to the m_testClassesFromXml field
-//    if (null != m_packageNamesFromXml) {
-//      for (XmlPackage xp : m_packageNamesFromXml) {
-//        String pkg = xp.getName();
-//        try {
-//          String[] classes = PackageUtils.findClassesInPackage(pkg, xp.getInclude(), xp.getExclude());
-//          for (String cls : classes) {
-//            XmlClass xc = new XmlClass(cls);
-//            m_testClassesFromXml.add(xc);
-//          }
-//        }
-//        catch(Exception e) {
-//
-//          // Should ignore
-//          e.printStackTrace();
-//        }
-//      }
-//    }
+
     m_annotationFinder= annotationFinder;
     m_invoker= new Invoker(this, this, m_suite.getSuiteState(), m_annotationFinder);
 
@@ -213,6 +189,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     initRunInfo(m_xmlTest);
 
     // Init methods and class map
+    // JUnit behavior is different and doesn't need this initialization step
     if(!m_xmlTest.isJUnit()) {
       initMethods();
     }
@@ -267,21 +244,11 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     List<ITestNGMethod> beforeXmlTestMethods = new ArrayList<ITestNGMethod>();
     List<ITestNGMethod> afterXmlTestMethods = new ArrayList<ITestNGMethod>();
 
-    ITestMethodFinder testMethodFinder= null;
-    ITestClassFinder testClassFinder= null;
-    if (m_xmlTest.isJUnit()) {
-      testClassFinder= new JUnitClassFinder(Utils.xmlClassesToClasses(m_testClassesFromXml),
-                                            m_xmlTest,
-                                            m_annotationFinder);
-      testMethodFinder= new JUnitMethodFinder(m_testName, m_annotationFinder);
-    }
-    else {
-      testClassFinder= new TestNGClassFinder(Utils.xmlClassesToClasses(m_testClassesFromXml),
+    ITestClassFinder testClassFinder= new TestNGClassFinder(Utils.xmlClassesToClasses(m_testClassesFromXml),
                                              null,
                                              m_xmlTest,
                                              m_annotationFinder);
-      testMethodFinder= new TestNGMethodFinder(m_runInfo, m_annotationFinder);
-    }
+    ITestMethodFinder testMethodFinder= new TestNGMethodFinder(m_runInfo, m_annotationFinder);
 
     //
     // Initialize TestClasses
