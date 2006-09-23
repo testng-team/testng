@@ -210,12 +210,10 @@ public class EmailableReporter implements IReporter {
             m_out.println("</tr>");
           }
           List<String> msgs = Reporter.getOutput(ans);
-          
-          // Note(cbeust)
-          // There are three tests against parameters here, they should probably
-          // be factored into one
+          boolean hasReporterOutput = msgs.size() > 0;
           Throwable exception=ans.getThrowable();
-          if (msgs.size() > 0||exception!=null) {
+          boolean hasThrowable = exception!=null;
+          if (hasReporterOutput||hasThrowable) {
             String indent = " style=\"padding-left:3em\"";
             if (hasParameters) {
               m_out.println("<tr" + (rq % 2 == 0 ? " class=\"stripe\"" : "")
@@ -224,16 +222,19 @@ public class EmailableReporter implements IReporter {
             else {
               m_out.println("<div" + indent + ">");
             }
-            if (msgs.size() > 0||exception!=null) {
+            if (hasReporterOutput) {
+              if(hasThrowable)
+                m_out.println("<h3>Test Messages</h3>");
               for (String line : msgs) {
                 m_out.println(line + "<br/>");
               }
             }
-            if(exception!=null) {
+            if(hasThrowable) {
               boolean wantsMinimalOutput = ans.getStatus()==ITestResult.SUCCESS;
-              m_out.println("<h3>"
-                  +(wantsMinimalOutput?"Expected Exception":"Failure")
-                  +"</h3>");
+              if(hasReporterOutput)
+                m_out.println("<h3>"
+                    +(wantsMinimalOutput?"Expected Exception":"Failure")
+                    +"</h3>");
               generateExceptionReport(exception, wantsMinimalOutput);
             }
             if (hasParameters) {
@@ -344,8 +345,8 @@ public class EmailableReporter implements IReporter {
       summaryCell(qty_fail,0);
       summaryCell(formatter.format((time_end - time_start) / 1000.) + " seconds", true);
       m_out.println("<td colspan=\"2\">&nbsp;</td></tr>");
-      m_out.println("</table>");
     }
+    m_out.println("</table>");
   }
 
   private void summaryCell(String[] val) {
