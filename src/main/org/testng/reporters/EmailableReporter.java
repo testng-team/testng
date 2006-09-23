@@ -189,7 +189,8 @@ public class EmailableReporter implements IReporter {
         for (ITestResult ans : resultSet) {
           rq += 1;
           Object[] parameters = ans.getParameters();
-          if (parameters != null && parameters.length > 0) {
+          boolean hasParameters = parameters != null && parameters.length > 0;
+          if (hasParameters) {
             if (rq == 1) {
               tableStart("param");
               m_out.print("<tr>");
@@ -213,19 +214,21 @@ public class EmailableReporter implements IReporter {
           // Note(cbeust)
           // There are three tests against parameters here, they should probably
           // be factored into one
-          if (msgs.size() > 0) {
+          Throwable exception=ans.getThrowable();
+          if (msgs.size() > 0||exception!=null) {
             String indent = " style=\"padding-left:3em\"";
-            if (parameters != null && parameters.length > 0) {
+            if (hasParameters) {
               m_out.println("<tr" + (rq % 2 == 0 ? " class=\"stripe\"" : "")
                   + "><td" + indent + " colspan=\"" + parameters.length + "\">");
             } 
             else {
               m_out.println("<div" + indent + ">");
             }
-            for (String line : msgs) {
-              m_out.println(line + "<br/>");
+            if (msgs.size() > 0||exception!=null) {
+              for (String line : msgs) {
+                m_out.println(line + "<br/>");
+              }
             }
-            Throwable exception=ans.getThrowable();
             if(exception!=null) {
               boolean wantsMinimalOutput = ans.getStatus()==ITestResult.SUCCESS;
               m_out.println("<h3>"
@@ -233,14 +236,14 @@ public class EmailableReporter implements IReporter {
                   +"</h3>");
               generateExceptionReport(exception, wantsMinimalOutput);
             }
-            if (parameters != null && parameters.length > 0) {
+            if (hasParameters) {
               m_out.println("</td></tr>");
             } 
             else {
               m_out.println("</div>");
             }
           }
-          if (parameters != null && parameters.length > 0) {
+          if (hasParameters) {
             if (rq == resultSet.size()) {
               m_out.println("</table>");
             }
