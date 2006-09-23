@@ -12,11 +12,11 @@ import java.io.Serializable;
 public class SuiteRunState implements Serializable {
   private boolean m_hasFailures;
   
-  public void failed() {
+  public synchronized void failed() {
     m_hasFailures= true;
   }
   
-  public boolean isFailed() {
+  public synchronized boolean isFailed() {
     return m_hasFailures;
   }
 }

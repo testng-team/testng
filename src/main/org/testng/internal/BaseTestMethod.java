@@ -565,11 +565,11 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return m_afterGroups;
   }
   
-  public void incrementCurrentInvocationCount() {
+  synchronized public void incrementCurrentInvocationCount() {
     m_currentInvocationCount++;
   }
   
-  public int getCurrentInvocationCount() {
+  synchronized public int getCurrentInvocationCount() {
     return m_currentInvocationCount;
   }
 

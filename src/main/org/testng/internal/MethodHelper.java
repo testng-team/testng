@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
 import org.testng.TestRunner;
@@ -18,6 +20,7 @@ import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotation;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IConfiguration;
+import org.testng.internal.annotations.IExpectedExceptions;
 import org.testng.internal.annotations.ITest;
 import org.testng.internal.annotations.ITestOrConfiguration;
 
@@ -25,6 +28,7 @@ import org.testng.internal.annotations.ITestOrConfiguration;
  * Collection of helper methods to help sort and arrange methods.
  * 
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
+ * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class MethodHelper {
   static private boolean m_quiet = true;
@@ -162,6 +166,34 @@ public class MethodHelper {
     return result;
   }
 
+  /**
+   * Read the expected exceptions, if any (need to handle both the old and new
+   * syntax
+   */
+  public static Class[] findExpectedExceptions(IAnnotationFinder finder, Method method) {
+    Class[] result = {};
+    IExpectedExceptions expectedExceptions= 
+      (IExpectedExceptions) finder.findAnnotation(method,
+        IExpectedExceptions.class);
+    // Old syntax
+    if (expectedExceptions != null) {
+      result = expectedExceptions.getValue();
+    }
+    else {
+      // New syntax
+      ITest testAnnotation = 
+        (ITest) finder.findAnnotation(method, ITest.class);
+      if (testAnnotation != null) {
+        Class[] ee = testAnnotation.getExpectedExceptions();
+        if (testAnnotation != null && ee.length > 0) {
+          result = ee; 
+        }
+      }
+    }
+    
+    return result;
+  }
+  
   //
   // End of public methods
   // ///
@@ -270,6 +302,46 @@ public class MethodHelper {
     
     outMethods.addAll(runningMethods.keySet());
     outGroups.addAll(runningGroups.keySet());
+  }
+  
+  /**
+   * Extracts the map of groups and their corresponding methods from the <code>classes</code>.
+   */
+  public static Map<String, List<ITestNGMethod>> findGroupsMethods(Collection<ITestClass> classes, boolean before) {
+    Map<String, List<ITestNGMethod>> result= new HashMap<String, List<ITestNGMethod>>();
+    for (ITestClass cls : classes) {
+      ITestNGMethod[] methods = before ? cls.getBeforeGroupsMethods() : cls.getAfterGroupsMethods();
+      for (ITestNGMethod method : methods) {
+        for (String group : before ? method.getBeforeGroups() : method.getAfterGroups()) {
+          List<ITestNGMethod> methodList = result.get(group);
+          if (methodList == null) {
+            methodList = new ArrayList<ITestNGMethod>();
+            result.put(group, methodList);
+          }
+          methodList.add(method);
+        }
+      }
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Extracts the unique list of <code>ITestNGMethod</code>s.
+   */
+  public static List<ITestNGMethod> uniqueMethodList(Collection<List<ITestNGMethod>> methods) {
+    Map<ITestNGMethod, ITestNGMethod> uniq= new HashMap<ITestNGMethod, ITestNGMethod>();
+    
+    for (List<ITestNGMethod> l : methods) {
+      for (ITestNGMethod m : l) {
+        uniq.put(m, m);
+      }
+    }
+    
+    List<ITestNGMethod> result = new ArrayList<ITestNGMethod>();
+    result.addAll(uniq.values());
+    
+    return result;
   }
   
   private static ITestNGMethod findMethodNamed(String tm, List<ITestNGMethod> allMethods) {

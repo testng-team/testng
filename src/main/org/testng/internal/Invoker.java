@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +28,6 @@ import org.testng.internal.InvokeMethodRunnable.TestNGRuntimeException;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IConfiguration;
-import org.testng.internal.annotations.IExpectedExceptions;
-import org.testng.internal.annotations.ITest;
 import org.testng.internal.thread.ICountDown;
 import org.testng.internal.thread.IExecutor;
 import org.testng.internal.thread.IFutureResult;
@@ -212,7 +211,6 @@ public class Invoker implements IInvoker {
       // If beforeSuite or afterSuite failed, mark *all* the classes as failed
       // for configurations.  At this point, the entire Suite is screwed
       else if (annotation.getBeforeSuite() || annotation.getAfterSuite()) {
-//        m_suiteConfigurationFailed= true;
         m_suiteState.failed();
       }
   
@@ -292,10 +290,8 @@ public class Invoker implements IInvoker {
     return result;
   }
 
-  private Map<Class, Boolean> m_classInvocationResults= new HashMap<Class, Boolean>();
-
-  // True if at least a beforeSuite or afterSuit method failed
-//  private boolean m_suiteConfigurationFailed= false;
+  /** Class failures must be synched as the Invoker is accessed concurrently */
+  private Map<Class, Boolean> m_classInvocationResults= new Hashtable<Class, Boolean>();
 
   private void setClassInvocationFailure(Class clazz, boolean flag) {
     m_classInvocationResults.put(clazz, flag);
@@ -525,28 +521,30 @@ public class Invoker implements IInvoker {
       XmlSuite suite, Map<String, String> params, 
       Object instance) 
   {
-    List<ITestNGMethod> filteredMethods = new ArrayList<ITestNGMethod>();
-    String[] groups = tm.getGroups();
-    Map<String, List<ITestNGMethod>> beforeGroupMap = groupMethods.getBeforeGroupsMap();
-    
-    for (String group : groups) {
-      List<ITestNGMethod> methods = beforeGroupMap.get(group);
-      if (methods != null) {
-        filteredMethods.addAll(methods);
+    synchronized(groupMethods) {
+      List<ITestNGMethod> filteredMethods = new ArrayList<ITestNGMethod>();
+      String[] groups = tm.getGroups();
+      Map<String, List<ITestNGMethod>> beforeGroupMap = groupMethods.getBeforeGroupsMap();
+      
+      for (String group : groups) {
+        List<ITestNGMethod> methods = beforeGroupMap.get(group);
+        if (methods != null) {
+          filteredMethods.addAll(methods);
+        }
       }
+      
+      //
+      // Invoke the right groups methods
+      //
+      ITestNGMethod[] beforeMethodsArray = 
+        filteredMethods.toArray(new ITestNGMethod[filteredMethods.size()]);
+      invokeConfigurations(testClass, beforeMethodsArray, suite, params, instance);
+      
+      //
+      // Remove them so they don't get run again
+      //
+      groupMethods.removeBeforeGroups(groups);
     }
-    
-    //
-    // Invoke the right groups methods
-    //
-    ITestNGMethod[] beforeMethodsArray = 
-      filteredMethods.toArray(new ITestNGMethod[filteredMethods.size()]);
-    invokeConfigurations(testClass, beforeMethodsArray, suite, params, instance);
-    
-    //
-    // Remove them so they don't get run again
-    //
-    groupMethods.removeBeforeGroups(groups);
   }
 
   private void invokeAfterGroupsConfigurations(ITestClass testClass, 
@@ -566,38 +564,38 @@ public class Invoker implements IInvoker {
     // it belongs to
     Map<String, String> filteredGroups = new HashMap<String, String>();
     String[] groups = currentTestMethod.getGroups();
-    for (String group : groups) {
-      if (groupMethods.isLastMethodForGroup(group, currentTestMethod)) {
-        filteredGroups.put(group, group);
-      }
-    }
-    
-    // The list of afterMethods to run
-    Map<ITestNGMethod, ITestNGMethod> afterMethods = 
-      new HashMap<ITestNGMethod, ITestNGMethod>();
-    
-    // Now filteredGroups contains all the groups for which we need to run the afterGroups
-    // method.  Find all the methods that correspond to these groups and invoke them.
-    Map<String, List<ITestNGMethod>> map = groupMethods.getAfterGroupsMap();
-    for (String g : filteredGroups.values()) {
-      List<ITestNGMethod> methods = map.get(g);
-      // Note:  should put them in a map if we want to make sure the same afterGroups
-      // doesn't get run twice
-      if (methods != null) {
-        for (ITestNGMethod m : methods) {
-          afterMethods.put(m, m);
+    synchronized(groupMethods) {
+      for (String group : groups) {
+        if (groupMethods.isLastMethodForGroup(group, currentTestMethod)) {
+          filteredGroups.put(group, group);
         }
       }
+      
+      // The list of afterMethods to run
+      Map<ITestNGMethod, ITestNGMethod> afterMethods = new HashMap<ITestNGMethod, ITestNGMethod>();
+      
+      // Now filteredGroups contains all the groups for which we need to run the afterGroups
+      // method.  Find all the methods that correspond to these groups and invoke them.
+      Map<String, List<ITestNGMethod>> map = groupMethods.getAfterGroupsMap();
+      for (String g : filteredGroups.values()) {
+        List<ITestNGMethod> methods = map.get(g);
+        // Note:  should put them in a map if we want to make sure the same afterGroups
+        // doesn't get run twice
+        if (methods != null) {
+          for (ITestNGMethod m : methods) {
+            afterMethods.put(m, m);
+          }
+        }
+      }
+      
+      // Got our afterMethods, invoke them
+      ITestNGMethod[] afterMethodsArray = 
+        afterMethods.keySet().toArray(new ITestNGMethod[afterMethods.size()]);
+      invokeConfigurations(testClass, afterMethodsArray, suite, params, instance);
+
+      // Remove the groups so they don't get run again
+      groupMethods.removeAfterGroups(filteredGroups.keySet());      
     }
-    
-    // Got our afterMethods, invoke them
-    ITestNGMethod[] afterMethodsArray = 
-      afterMethods.keySet().toArray(new ITestNGMethod[afterMethods.size()]);
-    invokeConfigurations(testClass, afterMethodsArray, suite, params, instance);
-
-    // Remove the groups so they don't get run again
-    groupMethods.removeAfterGroups(filteredGroups.keySet());
-
   }
 
   private void invokeHookable(Object[] instances, Object[] parameters, 
@@ -633,8 +631,10 @@ public class Invoker implements IInvoker {
    * if any was provided, or by looking up <parameters> in testng.xml
    */
   private Iterator<Object[]> handleParameters(ITestNGMethod testMethod, 
-      Map<String, String> allParameterNames,
-      ITestClass testClass, Map<String, String> parameters, XmlSuite xmlSuite)
+                                              Map<String, String> allParameterNames,
+                                              ITestClass testClass, 
+                                              Map<String, String> parameters, 
+                                              XmlSuite xmlSuite)
   {
     Iterator<Object[]> result = null;
     
@@ -656,7 +656,8 @@ public class Invoker implements IInvoker {
 
       result  = MethodHelper.invokeDataProvider(
           testClass.getInstances(true)[0], /* a test instance */
-          dataProvider, testMethod);
+          dataProvider, 
+          testMethod);
     }
     else {
       //
@@ -665,8 +666,7 @@ public class Invoker implements IInvoker {
       allParameterNames.putAll(parameters);
       // Create an Object[][] containing just one row of parameters
       Object[][] allParameterValuesArray = new Object[1][];
-      allParameterValuesArray[0] = 
-            Parameters.createTestParameters(testMethod.getMethod(),
+      allParameterValuesArray[0] = Parameters.createTestParameters(testMethod.getMethod(),
             parameters,
             m_annotationFinder,
             xmlSuite);
@@ -725,8 +725,7 @@ public class Invoker implements IInvoker {
     boolean more = true;
     int threadPoolSize = testMethod.getThreadPoolSize();
 
-    Class[] expectedExceptionClasses = 
-      findExpectedExceptions(m_annotationFinder, testMethod.getMethod());
+    Class[] expectedExceptionClasses = MethodHelper.findExpectedExceptions(m_annotationFinder, testMethod.getMethod());
     while(invocationCount-- > 0 && more) {
       boolean okToProceed = checkDependencies(testMethod, testClass, allTestMethods);
 
@@ -735,21 +734,12 @@ public class Invoker implements IInvoker {
         //
         // Invoke test method
         //
-        Map<String, String> allParameterNames = new HashMap<String, String>();
-        
-        Iterator<Object[]> allParameterValues =
-          handleParameters(testMethod, allParameterNames, testClass, parameters,
-              suite);
 
         //
         // Invoke the test method if it's enabled
         //
         if (MethodHelper.isEnabled(testMethod.getMethod(), m_annotationFinder)) {
-          Iterator<Object[]> it = allParameterValues;
-          while (it.hasNext()) {
-            parameterValues = it.next();
-//            Reporter.setCurrentOutput(testMethod.getExtraOutput().getOutput());
-            Object[] instances = testClass.getInstances(true);
+
             
             // TODO: we should never hit this block, as JUnit is run
             // completely independent now
@@ -757,20 +747,20 @@ public class Invoker implements IInvoker {
             // Special behavior for JUnit:  call setName on the instance with
             // the name of the method to be invoked
             //
-            if (JUnitUtils.isAssignableFromTestCase(testClass.getRealClass())) {
-              String name = testMethod.getMethodName();
-              try {
-                Method m = 
-                  testClass.getRealClass().getMethod("setName", new Class[] { String.class });
-                for (Object instance : instances) {
-                  m.invoke(instance, new Object[] { name });
-                } 
-              }
-              catch (Exception e) {
-                e.printStackTrace();
-              }
-            } // JUnit
-            
+//            if (JUnitUtils.isAssignableFromTestCase(testClass.getRealClass())) {
+//              String name = testMethod.getMethodName();
+//              try {
+//                Method m = 
+//                  testClass.getRealClass().getMethod("setName", new Class[] { String.class });
+//                for (Object instance : instances) {
+//                  m.invoke(instance, new Object[] { name });
+//                } 
+//              }
+//              catch (Exception e) {
+//                e.printStackTrace();
+//              }
+//            } // JUnit
+
             //
             // If threadPoolSize specified, run this method in its own
             // pool thread.  The extra boolean is here to make sure
@@ -804,6 +794,7 @@ public class Invoker implements IInvoker {
               finally {
                 setWithinThreadedMethod(false);
                 more = false;
+                failureCount = handleInvocationResults(testMethod, result, failureCount, expectedExceptionClasses);
               }
             }
             
@@ -811,72 +802,31 @@ public class Invoker implements IInvoker {
             // No threads, regular invocation
             //
             else {
-              result = invokeMethod(instances,
-                                    testMethod,
-                                    parameterValues,
-                                    suite,
-                                    allParameterNames,
-                                    testClass,
-                                    beforeMethods,
-                                    afterMethods,
-                                    groupMethods);
-            }
-  
-            //
-            // Go through all the results and create a TestResult for each of them
-            //
-            for(ITestResult testResult : result) {
-              Throwable ite= testResult.getThrowable();
-              int status= testResult.getStatus();
+              Map<String, String> allParameterNames = new HashMap<String, String>();
+              
+              Iterator<Object[]> allParameterValues =
+                handleParameters(testMethod, allParameterNames, testClass, parameters, suite);
 
-              // Exception thrown?
-              if(ite != null) {
-    
-                //  Invocation caused an exception, see if the method was annotated with @ExpectedException
-                if(isExpectedException(ite, expectedExceptionClasses)) {
-                  testResult.setStatus(ITestResult.SUCCESS);
-                  status= ITestResult.SUCCESS;
-                }
-                else {
-                  handleException(ite, testMethod, testResult, failureCount++);
-                  status= testResult.getStatus();
-                }
-              }
-    
-              // No exception thrown, make sure we weren't expecting one
-              else if(status != ITestResult.SKIP) {
-                if (expectedExceptionClasses.length > 0) {
-                  testResult.setThrowable(new TestException("Expected an exception in test method "
-                                                     + testMethod));
-                  status= ITestResult.FAILURE;
-                }
-              }
-    
-              testResult.setStatus(status);
-    
-              // Collect the results
-              if(ITestResult.SUCCESS == status) {
-                m_notifier.addPassedTest(testMethod, testResult);
-              }
-              else if(ITestResult.SKIP == status) {
-                m_notifier.addSkippedTest(testMethod, testResult);
-              }
-              else if(ITestResult.FAILURE == status) {
-                m_notifier.addFailedTest(testMethod, testResult);
-              }
-              else if(ITestResult.SUCCESS_PERCENTAGE_FAILURE == status) {
-                m_notifier.addFailedButWithinSuccessPercentageTest(testMethod, testResult);
-              }
-              else {
-                assert false : "UNKNOWN STATUS:" + status;
-              }
-    
-              if (! isWithinThreadedMethod()) {
-                runTestListeners(testResult);
-              }
-            } // isTestMethodEnabled
-          } // for
-        } // for parameters
+              while (allParameterValues.hasNext()) {
+                parameterValues = allParameterValues.next();
+//                Reporter.setCurrentOutput(testMethod.getExtraOutput().getOutput());
+                Object[] instances = testClass.getInstances(true);
+
+                result = invokeMethod(instances,
+                                      testMethod,
+                                      parameterValues,
+                                      suite,
+                                      allParameterNames,
+                                      testClass,
+                                      beforeMethods,
+                                      afterMethods,
+                                      groupMethods);
+                
+                failureCount = handleInvocationResults(testMethod, result, failureCount, expectedExceptionClasses);
+              } // for parameters
+            }
+
+        } // isTestMethodEnabled 
 
       } // okToProceed
       else {
@@ -909,33 +859,74 @@ public class Invoker implements IInvoker {
   } // invokeTestMethod
 
   /**
-   * Read the expected exceptions, if any (need to handle both the old and new
-   * syntax
+   * @param testMethod
+   * @param result
+   * @param failureCount
+   * @param expectedExceptionClasses
+   * @return
    */
-  public static Class[] findExpectedExceptions(IAnnotationFinder finder, Method method) {
-    Class[] result = {};
-    IExpectedExceptions expectedExceptions= 
-      (IExpectedExceptions) finder.findAnnotation(method,
-        IExpectedExceptions.class);
-    // Old syntax
-    if (expectedExceptions != null) {
-      result = expectedExceptions.getValue();
-    }
-    else {
-      // New syntax
-      ITest testAnnotation = 
-        (ITest) finder.findAnnotation(method, ITest.class);
-      if (testAnnotation != null) {
-        Class[] ee = testAnnotation.getExpectedExceptions();
-        if (testAnnotation != null && ee.length > 0) {
-          result = ee; 
+  private int handleInvocationResults(ITestNGMethod testMethod, 
+                                      List<ITestResult> result, 
+                                      int failureCount, 
+                                      Class[] expectedExceptionClasses) {
+    //
+    // Go through all the results and create a TestResult for each of them
+    //
+    for(ITestResult testResult : result) {
+      Throwable ite= testResult.getThrowable();
+      int status= testResult.getStatus();
+
+      // Exception thrown?
+      if(ite != null) {
+
+        //  Invocation caused an exception, see if the method was annotated with @ExpectedException
+        if(isExpectedException(ite, expectedExceptionClasses)) {
+          testResult.setStatus(ITestResult.SUCCESS);
+          status= ITestResult.SUCCESS;
+        }
+        else {
+          handleException(ite, testMethod, testResult, failureCount++);
+          status= testResult.getStatus();
         }
       }
-    }
+
+      // No exception thrown, make sure we weren't expecting one
+      else if(status != ITestResult.SKIP) {
+        if (expectedExceptionClasses.length > 0) {
+          testResult.setThrowable(
+              new TestException("Expected an exception in test method " + testMethod));
+          status= ITestResult.FAILURE;
+        }
+      }
+
+      testResult.setStatus(status);
+
+      // Collect the results
+      if(ITestResult.SUCCESS == status) {
+        m_notifier.addPassedTest(testMethod, testResult);
+      }
+      else if(ITestResult.SKIP == status) {
+        m_notifier.addSkippedTest(testMethod, testResult);
+      }
+      else if(ITestResult.FAILURE == status) {
+        m_notifier.addFailedTest(testMethod, testResult);
+      }
+      else if(ITestResult.SUCCESS_PERCENTAGE_FAILURE == status) {
+        m_notifier.addFailedButWithinSuccessPercentageTest(testMethod, testResult);
+      }
+      else {
+        assert false : "UNKNOWN STATUS:" + status;
+      }
+
+      if (! isWithinThreadedMethod()) {
+        runTestListeners(testResult);
+      }
+    } // for results
     
-    return result;
+    return failureCount;
   }
 
+  
   private boolean m_withinThreadedMethod = false;
   
   private boolean isWithinThreadedMethod() {

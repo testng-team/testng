@@ -368,7 +368,7 @@
   </target>
 
   <target name="clean">
-    <delete>
+    <delete failonerror="false">
       <fileset dir="${build.jdk14.dir}" includes="**/*" />
       <fileset dir="${build.jdk15.dir}" includes="**/*" />
       <fileset dir="." includes="*.jar,*.zip" />

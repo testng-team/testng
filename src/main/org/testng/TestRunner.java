@@ -270,7 +270,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     //
     // Calculate groups methods
     //
-    m_groupMethods = findGroupMethods(m_classMap.values());
+    Map<String, List<ITestNGMethod>> beforeGroupMethods= MethodHelper.findGroupsMethods(m_classMap.values(), true);
+    Map<String, List<ITestNGMethod>> afterGroupMethods= MethodHelper.findGroupsMethods(m_classMap.values(), false);
+
    
 
     //
@@ -287,8 +289,10 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       fixMethodsWithClass(tc.getAfterSuiteMethods(), tc, afterSuiteMethods);
       fixMethodsWithClass(tc.getBeforeTestConfigurationMethods(), tc, beforeXmlTestMethods);
       fixMethodsWithClass(tc.getAfterTestConfigurationMethods(), tc, afterXmlTestMethods);
-      fixMethodsWithClass(tc.getBeforeGroupsMethods(), tc, m_groupMethods.getBeforeGroupsMethods());
-      fixMethodsWithClass(tc.getAfterGroupsMethods(), tc, m_groupMethods.getAfterGroupsMethods());
+      fixMethodsWithClass(tc.getBeforeGroupsMethods(), tc, 
+          MethodHelper.uniqueMethodList(beforeGroupMethods.values()));
+      fixMethodsWithClass(tc.getAfterGroupsMethods(), tc, 
+          MethodHelper.uniqueMethodList(afterGroupMethods.values()));
     }
     
     m_runInfo.setTestMethods(testMethods);
@@ -341,36 +345,37 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
                                                              m_annotationFinder,
                                                              true /* unique */,
                                                              m_excludedMethods);
+    // shared group methods
+    m_groupMethods = new ConfigurationGroupMethods(m_allTestMethods, beforeGroupMethods, afterGroupMethods);
   }
 
-  private ConfigurationGroupMethods findGroupMethods(Collection<ITestClass> classes) {
-    ConfigurationGroupMethods result = new ConfigurationGroupMethods(m_allTestMethods);
-    
-    fillGroupMethods(classes, result.getBeforeGroupsMap(), true /* before */);
-    fillGroupMethods(classes, result.getAfterGroupsMap(), false /* before */);
-    
-    return result;
-  }
+//  private ConfigurationGroupMethods findGroupMethods(Collection<ITestClass> classes) {
+//    ConfigurationGroupMethods result = new ConfigurationGroupMethods(classes, m_allTestMethods);
+//    
+//    fillGroupMethods(classes, result.getBeforeGroupsMap(), true /* before */);
+//    fillGroupMethods(classes, result.getAfterGroupsMap(), false /* before */);
+//    
+//    return result;
+//  }
 
-  private void fillGroupMethods(Collection<ITestClass> classes, 
-      Map<String, List<ITestNGMethod>> map, boolean before) 
-  {
-    for (ITestClass cls : classes) {
-      ITestNGMethod[] methods = 
-        before ? cls.getBeforeGroupsMethods() : cls.getAfterGroupsMethods();
-      for (ITestNGMethod method : methods) {
-        for (String group : before ? method.getBeforeGroups() : method.getAfterGroups()) {
-          List<ITestNGMethod> methodList = map.get(group);
-          if (methodList == null) {
-            methodList = new ArrayList<ITestNGMethod>();
-            map.put(group, methodList);
-          }
-          methodList.add(method);
-        }
-      }
-    }
-    
-  }
+//  private void fillGroupMethods(Collection<ITestClass> classes, 
+//      Map<String, List<ITestNGMethod>> map, boolean before) 
+//  {
+//    for (ITestClass cls : classes) {
+//      ITestNGMethod[] methods = 
+//        before ? cls.getBeforeGroupsMethods() : cls.getAfterGroupsMethods();
+//      for (ITestNGMethod method : methods) {
+//        for (String group : before ? method.getBeforeGroups() : method.getAfterGroups()) {
+//          List<ITestNGMethod> methodList = map.get(group);
+//          if (methodList == null) {
+//            methodList = new ArrayList<ITestNGMethod>();
+//            map.put(group, methodList);
+//          }
+//          methodList.add(method);
+//        }
+//      }
+//    }
+//  }
   
   private static void ppp(String s) {
     if (true) {
@@ -515,21 +520,6 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   }
 
   /**
-   * FIXME: unused
-   * 
-   * @param methods
-   * @return All the methods that match the filtered groups.
-   *         If a method belongs to an excluded group, it is automatically excluded.
-   */
-//  public ITestNGMethod[] collectAndOrderTestMethods(ITestNGMethod[] methods) {
-//    return MethodHelper.collectAndOrderMethods(methods,
-//                                               true /* forTests */,
-//                                               m_runInfo,
-//                                               m_annotationFinder,
-//                                               m_excludedMethods);
-//  }
-
-  /**
    * The main entry method for TestRunner.
    *
    * This is where all the hard work is done:
@@ -622,7 +612,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     //
     // Find out all the group methods
     //
-    m_groupMethods = findGroupMethods(m_classMap.values());
+//    m_groupMethods = findGroupMethods(m_classMap.values());
 
     //
     // Create the workers

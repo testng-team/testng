@@ -17,7 +17,7 @@ public class ConfigurationGroupBothSampleTest {
     m_list.add(1);
   }
 
-  @Test(groups={"twice"}, dataProvider="MyData", invocationCount = 2)
+  @Test(groups={"twice"}, dataProvider="MyData", invocationCount = 3, threadPoolSize=2)
   public void b(int a, int b) {
     m_list.add(2);
     ppp("B()"  + a + "," + b);
@@ -35,8 +35,8 @@ public class ConfigurationGroupBothSampleTest {
   }
   
   private void ppp(String string) {
-    if (false) {
-      System.out.println("[A] " + string);
+    if (true) {
+      System.out.println("[A] " + string + " on Thread:" + Thread.currentThread());
     }
   }
   
