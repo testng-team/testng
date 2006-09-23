@@ -264,6 +264,9 @@ public class EmailableReporter implements IReporter {
     for(int x=0; x<maxlines; x++) {
       m_out.println((x>0?"<br/>":"")+s1[x].toString());
     }
+    if(maxlines<s1.length) {
+      m_out.println("<br/>"+(s1.length-maxlines)+" lines not shown");
+    }
     if(t2!=null) {
       m_out.println("<p>Caused by</p>");
       generateExceptionReport(t2, wantsMinimalOutput);
