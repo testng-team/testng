@@ -225,6 +225,14 @@ public class EmailableReporter implements IReporter {
             for (String line : msgs) {
               m_out.println(line + "<br/>");
             }
+            Throwable exception=ans.getThrowable();
+            if(exception!=null) {
+              boolean wantsMinimalOutput = ans.getStatus()==ITestResult.SUCCESS;
+              m_out.println("<h3>"
+                  +(wantsMinimalOutput?"Expected Exception":"Failure")
+                  +"</h3>");
+              generateExceptionReport(exception, wantsMinimalOutput);
+            }
             if (parameters != null && parameters.length > 0) {
               m_out.println("</td></tr>");
             } 
@@ -240,6 +248,25 @@ public class EmailableReporter implements IReporter {
         }
         m_out.println("<p class=\"totop\"><a href=\"#summary\">back to summary</a></p>");
       }
+    }
+  }
+
+  /** Reports excpetion results
+   * @param wantsMinimalOutput if true the stack trace will display a fiew lines
+   */
+  private void generateExceptionReport(Throwable exception, boolean wantsMinimalOutput) {
+    m_out.println("<p>"+exception.getLocalizedMessage()+"</p>");
+    StackTraceElement[] s1=exception.getStackTrace();
+    Throwable t2=exception.getCause();
+    if(t2==exception)
+      t2=null;
+    int maxlines=Math.min((wantsMinimalOutput?5:(t2==null?100:10)),s1.length);
+    for(int x=0; x<maxlines; x++) {
+      m_out.println((x>0?"<br/>":"")+s1[x].toString());
+    }
+    if(t2!=null) {
+      m_out.println("<p>Caused by</p>");
+      generateExceptionReport(t2, wantsMinimalOutput);
     }
   }
 
