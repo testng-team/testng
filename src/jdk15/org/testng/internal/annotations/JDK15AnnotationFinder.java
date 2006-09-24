@@ -70,15 +70,24 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     Class a = m_annotationMap.get(annotationClass);
     assert a != null : "Annotation class not found:" + annotationClass;
     IAnnotation result = findAnnotation(m.getDeclaringClass(), m.getAnnotation(a), annotationClass);
-    if (result != null) result.setMethod(m);
+
+    transform(result, null, null, m);
     
     return result;
+  }
+  
+  private void transform (IAnnotation a, Class testClass,
+      Constructor testConstructor, Method testMethod)
+  {
+    if (a instanceof ITest) {
+      m_transformer.transform((ITest) a, testClass, testConstructor, testMethod);
+    }
   }
   
   public IAnnotation findAnnotation(Class cls, Class annotationClass) {
     Class a = m_annotationMap.get(annotationClass);
     IAnnotation result = findAnnotation(cls, findAnnotationInSuperClasses(cls, a), annotationClass);
-    if (result != null) result.setTestClass(cls);
+    transform(result, cls, null, null);
     
     return result;
   }
@@ -86,7 +95,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   public IAnnotation findAnnotation(Constructor m, Class annotationClass) {
     Class a = m_annotationMap.get(annotationClass);
     IAnnotation result = findAnnotation(m.getDeclaringClass(), m.getAnnotation(a), annotationClass);
-    if (result != null) result.setConstructor(m);
+    transform(result, null, m, null);
     
     return result;
   }

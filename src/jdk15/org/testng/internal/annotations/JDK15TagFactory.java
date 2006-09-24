@@ -309,7 +309,7 @@ public class JDK15TagFactory {
   private IAnnotation createTestTag(Class cls, Annotation a, 
       IAnnotationTransformer transformer) 
   {
-    TestAnnotation result = new TestAnnotation(transformer);
+    TestAnnotation result = new TestAnnotation();
     Test test = (Test) a;
     
     result.setEnabled(test.enabled());
@@ -330,7 +330,7 @@ public class JDK15TagFactory {
     result.setSuiteName(test.suiteName());
     result.setTestName(test.testName());
     result.setSequential(test.sequential());
-
+    
     return result;
   }
 

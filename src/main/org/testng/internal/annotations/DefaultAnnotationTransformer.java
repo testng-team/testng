@@ -1,13 +1,15 @@
 package org.testng.internal.annotations;
 
-import org.testng.ITestResult;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 
 public class DefaultAnnotationTransformer 
   implements IAnnotationTransformer 
 {
 
-  public ITest transform(ITest annotation, ITestResult result) {
-    return annotation;
+  public void transform(ITest annotation, Class testClass,
+      Constructor testConstructor, Method testMethod) 
+  {
   }
 
 }

@@ -21,13 +21,8 @@ public class TestAnnotation extends TestOrConfiguration implements ITest {
   private String m_suiteName = TestNG.DEFAULT_SUITE_NAME;
   private String m_testName = TestNG.DEFAULT_TEST_NAME;
   private boolean m_sequential = false;
-  private IAnnotationTransformer m_transformer;
   private boolean m_reentering = false;
   
-  public TestAnnotation(IAnnotationTransformer transformer) {
-    m_transformer = transformer;
-  }
-
   /**
    * @return the expectedExceptions
    */
@@ -62,39 +57,12 @@ public class TestAnnotation extends TestOrConfiguration implements ITest {
     m_timeOut = timeOut;
   }
   
-  private ITest transform(ITest test) {
-    ITest result = m_transformer.transform(test, null);
-    result.setMethod(test.getMethod());
-    result.setTestClass(test.getTestClass());
-    result.setConstructor(test.getConstructor());
-    
-    return result;
-  }
-
   public long getTimeOut() {
-    long result = m_timeOut;
-
-    if (! m_reentering) {
-      m_reentering  = true;
-      ITest tTest = transform(this);
-      result = tTest.getTimeOut();
-      m_reentering = false;
-    }
-    
-    return result;
+    return m_timeOut;
   }
 
   public int getInvocationCount() {
-    int result = m_invocationCount;
-
-    if (! m_reentering) {
-      m_reentering  = true;
-      ITest tTest = transform(this);
-      result = tTest.getInvocationCount();
-      m_reentering = false;
-    }
-    
-    return result;
+    return m_invocationCount;
   }
 
   public int getSuccessPercentage() {

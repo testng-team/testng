@@ -6,9 +6,16 @@ import org.testng.annotations.Test;
 
 public class AnnotationTransformerSampleTest {
 
+  private int m_two = 0;
   private int m_five = 0;
   private int m_three = 0;
   private int m_four = 0;
+  
+  @Test(invocationCount = 2)
+  public void two() {
+    m_two++;
+    System.out.println("Should be invoked 2 times");
+  }
 
   @Test(invocationCount = 5)
   public void four() {
@@ -22,14 +29,15 @@ public class AnnotationTransformerSampleTest {
     System.out.println("Should be invoked 3 times");
   }
 
-  @Test(invocationCount = 5)
+  @Test
   public void five() {
     m_five++;
     System.out.println("Should be invoked 5 times");
   }
   
-  @Test(dependsOnMethods = {"three", "four", "five"})
+  @Test(dependsOnMethods = {"two", "three", "four", "five"})
   public void verify() {
+    Assert.assertEquals(m_two, 2);
     Assert.assertEquals(m_three, 3);
     Assert.assertEquals(m_four, 4);
     Assert.assertEquals(m_five, 5);

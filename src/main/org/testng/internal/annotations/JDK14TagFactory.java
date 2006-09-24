@@ -330,7 +330,7 @@ public class JDK14TagFactory {
   }
 
   private IAnnotation createTestTag(DocletTag dt, IAnnotationTransformer transformer) {
-    TestAnnotation result = new TestAnnotation(transformer);
+    TestAnnotation result = new TestAnnotation();
     result.setEnabled(Converter.getBoolean(dt.getNamedParameter("enabled"),
         result.getEnabled()));
     result.setGroups(Converter.getStringArray(dt.getNamedParameter("groups"),
@@ -363,8 +363,11 @@ public class JDK14TagFactory {
         result.getTestName()));
     result.setSequential(Converter.getBoolean(dt.getNamedParameter("sequential"),
         result.getSequential()));    
-  
-    return result;
+    
+    throw new RuntimeException("FIXME");
+//    transformer.transform(result, null, null, null);
+//  
+//    return result;
   }
   
   private IAnnotation createConfigurationTag(DocletTag dt) {

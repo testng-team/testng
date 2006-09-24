@@ -13,12 +13,14 @@ public interface ITest extends ITestOrConfiguration {
    * @return the maximum number of milliseconds this test should take.
    */
   public long getTimeOut();
+  public void setTimeOut(long l);
   
   /**
    * Returns the number of times this method should be invoked.
    * @return the number of times this method should be invoked.
    */
   public int getInvocationCount();
+  public void setInvocationCount(int l);
   
   /**
    * The size of the thread pool for this method.  The method will be invoked
