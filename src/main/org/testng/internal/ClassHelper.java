@@ -9,9 +9,11 @@ import java.util.Set;
 
 import org.testng.IMethodSelector;
 import org.testng.TestNGException;
+import org.testng.TestRunner;
 import org.testng.internal.annotations.IAnnotation;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IFactory;
+import org.testng.junit.IJUnitTestRunner;
 
 /**
  * Utility class for different class manipulations.
@@ -19,6 +21,7 @@ import org.testng.internal.annotations.IFactory;
  * @author <a href = "mailto:the_mindstorm&#64;evolva.ro">Alex Popescu</a>
  */
 public final class ClassHelper {
+  private static final String JUNIT_TESTRUNNER= "org.testng.junit.JUnitTestRunner";
 
   /** Hide constructor. */
   private ClassHelper() {
@@ -125,6 +128,23 @@ public final class ClassHelper {
     return methods;
   }
 
+
+  /**
+   * @param runner
+   * @return
+   */
+  public static IJUnitTestRunner createTestRunner(TestRunner runner) {
+    try {
+      IJUnitTestRunner tr= (IJUnitTestRunner) ClassHelper.forName(JUNIT_TESTRUNNER).newInstance();
+      tr.setTestResultNotifier(runner);
+      
+      return tr;
+    }
+    catch(Exception ex) {
+      throw new TestNGException("Cannot create JUnit runner " + JUNIT_TESTRUNNER);
+    }
+  }
+  
   private static Set<Method> extractMethods(final Class childClass, final Class clazz, final Set<Method> collected) {
     Set<Method> methods = new HashSet<Method>();
 

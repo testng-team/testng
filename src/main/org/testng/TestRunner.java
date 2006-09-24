@@ -32,7 +32,7 @@ import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.thread.IPooledExecutor;
 import org.testng.internal.thread.ThreadUtil;
-import org.testng.junit.JUnitTestRunner;
+import org.testng.junit.IJUnitTestRunner;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
@@ -582,9 +582,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
        */
       public void run() {    
         for(Class tc: classes) {
-          JUnitTestRunner tr= new JUnitTestRunner(TestRunner.this);
+          IJUnitTestRunner tr= ClassHelper.createTestRunner(TestRunner.this);
           try {
-            tr.start(tc);
+            tr.run(tc);
           }
           catch(Exception ex) {
             ex.printStackTrace();

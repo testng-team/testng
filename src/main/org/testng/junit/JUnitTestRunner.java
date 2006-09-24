@@ -19,24 +19,28 @@ import junit.framework.TestSuite;
 import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.TestNGException;
 import org.testng.TestRunner;
+import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.InvokedMethod;
-import org.testng.internal.JUnitUtils;
 
 /**
  * A JUnit TestRunner that records/triggers all information/events necessary to TestNG.
  * 
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
-public class JUnitTestRunner implements TestListener {
+public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
   public static final String SUITE_METHODNAME = "suite";
 
-  private TestRunner m_parentRunner;
+  private ITestResultNotifier m_parentRunner;
 
   private Map<Test, TestRunInfo> m_tests= new WeakHashMap<Test, TestRunInfo>();
   private List<ITestNGMethod> m_methods= new ArrayList<ITestNGMethod>();
   
-  public JUnitTestRunner(TestRunner tr) {
+  public JUnitTestRunner() {
+  }
+  
+  public JUnitTestRunner(ITestResultNotifier tr) {
     m_parentRunner= tr;
   }
 
@@ -47,6 +51,10 @@ public class JUnitTestRunner implements TestListener {
    */
   public List<ITestNGMethod> getTestMethods() {
     return m_methods;
+  }
+  
+  public void setTestResultNotifier(ITestResultNotifier notifier) {
+    m_parentRunner= notifier;
   }
   
   /**
@@ -164,7 +172,7 @@ public class JUnitTestRunner implements TestListener {
       return new TestSuite(testClass);
     }
     if (!Modifier.isStatic(suiteMethod.getModifiers())) {
-      runFailed("Suite() method must be static");
+      runFailed(testClass, "suite() method must be static");
 
       return null;
     }
@@ -176,12 +184,12 @@ public class JUnitTestRunner implements TestListener {
       }
     }
     catch (InvocationTargetException e) {
-      runFailed("Failed to invoke suite():" + e.getTargetException().toString());
+      runFailed(testClass, "failed to invoke method suite():" + e.getTargetException().toString());
 
       return null;
     }
     catch (IllegalAccessException e) {
-      runFailed("Failed to invoke suite():" + e.toString());
+      runFailed(testClass, "failed to invoke method suite():" + e.toString());
 
       return null;
     }
@@ -190,25 +198,37 @@ public class JUnitTestRunner implements TestListener {
   }
 
   /**
+   * A <code>start</code> implementation that ignores the <code>TestResult</code>
+   * @param testClass the JUnit test class
+   */
+  public void run(Class testClass) {
+    start(testClass);
+  }
+  
+  /**
    * Starts a test run. Analyzes the command line arguments and runs the given
    * test suite.
    */
-  public TestResult start(Class testCase) throws Exception {
+  public TestResult start(Class testCase) {
     try {
       Test suite = getTest(testCase);
 
-      return doRun(suite);
+      if(null != suite) {
+        return doRun(suite);
+      }
+      else {
+        runFailed(testCase, "could not create/run JUnit test suite");
+      }
     }
     catch (Exception e) {
-
-      // FIXME
-      throw new Exception("Could not create and run test suite: " + e);
+      runFailed(testCase, "could not create/run JUnit test suite: " + e.getMessage());
     }
+    
+    return null;
   }
 
-  // FIXME: trigger an exception or something
-  protected void runFailed(String message) {
-    System.err.println(message);
+  protected void runFailed(Class clazz, String message) {
+    throw new TestNGException("Failure in JUnit mode for class " + clazz.getName() + ": " + message);
   }
 
   /**
