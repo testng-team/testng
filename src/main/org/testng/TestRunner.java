@@ -565,6 +565,10 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     final Class[] classes= Utils.xmlClassesToClasses(m_testClassesFromXml);
     final List<ITestNGMethod> runMethods= new ArrayList<ITestNGMethod>();
     List<IMethodWorker> workers= new ArrayList<IMethodWorker>();
+    // FIXME: directly referincing JUnitTestRunner which uses JUnit classes
+    // may result in an class resolution exception under different JVMs
+    // The resolution process is not specified in the JVM spec with a specific implementation,
+    // so it can be eager => failure
     workers.add(new IMethodWorker() {
       /**
        * @see org.testng.internal.IMethodWorker#getMaxTimeOut()
