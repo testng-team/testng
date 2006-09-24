@@ -5,7 +5,7 @@ thread-count="2" annotations="javadoc">
 
  <test name="Regression2">
   <classes>
-   <class name="test.reports.ReportTest" />
+      <class name="test.annotationtransformer.AnnotationTransformerTest" />
   </classes>
  </test>
 
