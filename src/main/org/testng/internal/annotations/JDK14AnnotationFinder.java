@@ -29,11 +29,11 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
   private JDK14TagFactory m_tagFactory = new JDK14TagFactory();
   private JavaDocBuilder m_docBuilder;
   private String[] m_dirPaths;
-  private IAnnotationTransformer m_annotationTransformer;
+  private IAnnotationTransformer m_transformer;
 
   public JDK14AnnotationFinder(IAnnotationTransformer transformer) {
     m_docBuilder = new JavaDocBuilder();
-    m_annotationTransformer = transformer;
+    m_transformer = transformer;
   }
   
   void addSources(String[] filePaths) {
@@ -81,24 +81,46 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
 
   public IAnnotation findAnnotation(Class cls, Class annotationClass)
   {
-    return m_tagFactory.createTag(annotationClass, 
+    IAnnotation result = m_tagFactory.createTag(annotationClass, 
         m_docBuilder.getClassByName(cls.getName()),
-        m_annotationTransformer);
+        m_transformer);
+    
+    transform(result, cls, null, null);
+
+    return result;
   }
 
   public IAnnotation findAnnotation(Method m, Class annotationClass)
   {
-    return findMethodAnnotation(m.getName(), m.getParameterTypes(), 
-        m.getDeclaringClass(), annotationClass, m_annotationTransformer);
+    IAnnotation result = findMethodAnnotation(m.getName(), m.getParameterTypes(), 
+        m.getDeclaringClass(), annotationClass, m_transformer);
+    
+    transform(result, null, null, m);
+    
+    return result;
   }
   
   public IAnnotation findAnnotation(Constructor m, Class annotationClass)
   {
     String name = stripPackage(m.getName());
-    return findMethodAnnotation(name, m.getParameterTypes(), m.getDeclaringClass(), 
-        annotationClass, m_annotationTransformer);
+    IAnnotation result = 
+      findMethodAnnotation(name, m.getParameterTypes(), m.getDeclaringClass(), 
+        annotationClass, m_transformer);
+    
+    transform(result, null, m, null);
+    
+    return result;
   }
   
+  private void transform (IAnnotation a, Class testClass,
+      Constructor testConstructor, Method testMethod)
+  {
+    if (a instanceof ITest) {
+      m_transformer.transform((ITest) a, 
+          testClass, testConstructor, testMethod);
+    }
+  }
+
   private String stripPackage(String name) {
     String result = name;
     int index = result.lastIndexOf(".");

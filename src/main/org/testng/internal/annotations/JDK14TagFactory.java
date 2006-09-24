@@ -364,10 +364,7 @@ public class JDK14TagFactory {
     result.setSequential(Converter.getBoolean(dt.getNamedParameter("sequential"),
         result.getSequential()));    
     
-    throw new RuntimeException("FIXME");
-//    transformer.transform(result, null, null, null);
-//  
-//    return result;
+    return result;
   }
   
   private IAnnotation createConfigurationTag(DocletTag dt) {
