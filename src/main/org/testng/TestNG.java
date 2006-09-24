@@ -552,6 +552,9 @@ public class TestNG {
       if (listener instanceof IReporter) {
         addListener((IReporter) listener);
       }
+      if (listener instanceof IAnnotationTransformer) {
+        setAnnotationTransformer((IAnnotationTransformer) listener);
+      }
     }
   }
 
@@ -1083,7 +1086,8 @@ public class TestNG {
         result.setClientPort(Integer.parseInt(client));
       }
 
-      List<Class> listenerClasses = (List<Class>) cmdLineArgs.get(TestNGCommandLineArgs.LISTENER_COMMAND_OPT);
+      List<Class> listenerClasses = 
+        (List<Class>) cmdLineArgs.get(TestNGCommandLineArgs.LISTENER_COMMAND_OPT);
       if (null != listenerClasses) {
         result.setListenerClasses(listenerClasses);
       }
