@@ -22,8 +22,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that a condition is true. If it isn't it throws
-   * an AssertionError with the given message.
+   * Asserts that a condition is true. If it isn't, 
+   * an AssertionError, with the given message, is thrown.
    * @param condition the condition to evaluate 
    * @param message the assertion error message 
    */
@@ -34,8 +34,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that a condition is true. If it isn't it throws
-   * an AssertionError.
+   * Asserts that a condition is true. If it isn't, 
+   * an AssertionError is thrown.
    * @param condition the condition to evaluate 
    */
   static public void assertTrue(boolean condition) {
@@ -43,8 +43,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that a condition is false. If it isn't it throws
-   * an AssertionError with the given message.
+   * Asserts that a condition is false. If it isn't,   
+   * an AssertionError, with the given message, is thrown.
    * @param condition the condition to evaluate 
    * @param message the assertion error message 
    */
@@ -55,8 +55,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that a condition is false. If it isn't it throws
-   * an AssertionError.
+   * Asserts that a condition is false. If it isn't,    
+   * an AssertionError is thrown.
    * @param condition the condition to evaluate 
    */
   static public void assertFalse(boolean condition) {
@@ -92,8 +92,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two objects are equal. If they are not
-   * an AssertionError is thrown with the given message.
+   * Asserts that two objects are equal. If they are not,
+   * an AssertionError, with the given message, is thrown.
    * @param actual the actual value 
    * @param expected the expected value 
    * @param message the assertion error message 
@@ -109,7 +109,7 @@ public class Assert {
   }
   
   /**
-   * Asserts that two objects are equal. If they are not
+   * Asserts that two objects are equal. If they are not,
    * an AssertionError is thrown.
    * @param actual the actual value 
    * @param expected the expected value 
@@ -119,7 +119,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two Strings are equal.
+   * Asserts that two Strings are equal. If they are not,
+   * an AssertionError, with the given message, is thrown.
    * @param actual the actual value 
    * @param expected the expected value 
    * @param message the assertion error message 
@@ -129,7 +130,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two Strings are equal.
+   * Asserts that two Strings are equal. If they are not,
+   * an AssertionError is thrown.
    * @param actual the actual value 
    * @param expected the expected value 
    */
@@ -138,8 +140,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two doubles are equal concerning a delta.  If they are not
-   * an AssertionError is thrown with the given message.  If the expected
+   * Asserts that two doubles are equal concerning a delta.  If they are not,
+   * an AssertionError, with the given message, is thrown.  If the expected
    * value is infinity then the delta value is ignored.
    * @param actual the actual value 
    * @param expected the expected value 
@@ -160,8 +162,9 @@ public class Assert {
   }
   
   /**
-   * Asserts that two doubles are equal concerning a delta. If the expected
-   * value is infinity then the delta value is ignored.
+   * Asserts that two doubles are equal concerning a delta. If they are not,
+   * an AssertionError is thrown. If the expected value is infinity then the 
+   * delta value is ignored. 
    * @param actual the actual value 
    * @param expected the expected value 
    * @param delta the absolute tolerate value value between the actual and expected value 
@@ -171,8 +174,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two floats are equal concerning a delta. If they are not
-   * an AssertionError is thrown with the given message.  If the expected
+   * Asserts that two floats are equal concerning a delta. If they are not,
+   * an AssertionError, with the given message, is thrown.  If the expected
    * value is infinity then the delta value is ignored.
    * @param actual the actual value 
    * @param expected the expected value 
@@ -193,7 +196,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two floats are equal concerning a delta. If the expected
+   * Asserts that two floats are equal concerning a delta. If they are not,
+   * an AssertionError is thrown. If the expected
    * value is infinity then the delta value is ignored.
    * @param actual the actual value 
    * @param expected the expected value 
@@ -204,8 +208,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two longs are equal. If they are not
-   * an AssertionError is thrown with the given message.
+   * Asserts that two longs are equal. If they are not,
+   * an AssertionError, with the given message, is thrown.
    * @param actual the actual value 
    * @param expected the expected value 
    * @param message the assertion error message 
@@ -215,7 +219,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two longs are equal.
+   * Asserts that two longs are equal. If they are not,
+   * an AssertionError is thrown.
    * @param actual the actual value 
    * @param expected the expected value 
    */
@@ -224,8 +229,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two booleans are equal. If they are not
-   * an AssertionError is thrown with the given message.
+   * Asserts that two booleans are equal. If they are not,
+   * an AssertionError, with the given message, is thrown.
    * @param actual the actual value 
    * @param expected the expected value 
    * @param message the assertion error message 
@@ -235,7 +240,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two booleans are equal.
+   * Asserts that two booleans are equal. If they are not,
+   * an AssertionError is thrown.
    * @param actual the actual value 
    * @param expected the expected value 
    */
@@ -244,8 +250,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two bytes are equal. If they are not
-   * an AssertionError is thrown with the given message.
+   * Asserts that two bytes are equal. If they are not,
+   * an AssertionError, with the given message, is thrown.
    * @param actual the actual value 
    * @param expected the expected value 
    * @param message the assertion error message 
@@ -255,7 +261,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two bytes are equal.
+   * Asserts that two bytes are equal. If they are not,
+   * an AssertionError is thrown.
    * @param actual the actual value 
    * @param expected the expected value 
    */
@@ -264,8 +271,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two chars are equal. If they are not
-   * an AssertionFailedError is thrown with the given message.
+   * Asserts that two chars are equal. If they are not,
+   * an AssertionFailedError, with the given message, is thrown.
    * @param actual the actual value 
    * @param expected the expected value 
    * @param message the assertion error message 
@@ -275,7 +282,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two chars are equal.
+   * Asserts that two chars are equal. If they are not,
+   * an AssertionError is thrown.
    * @param actual the actual value 
    * @param expected the expected value 
    */
@@ -284,8 +292,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two shorts are equal. If they are not
-   * an AssertionFailedError is thrown with the given message.
+   * Asserts that two shorts are equal. If they are not,
+   * an AssertionFailedError, with the given message, is thrown.
    * @param actual the actual value 
    * @param expected the expected value 
    * @param message the assertion error message 
@@ -295,7 +303,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two shorts are equal.
+   * Asserts that two shorts are equal. If they are not,
+   * an AssertionError is thrown.
    * @param actual the actual value 
    * @param expected the expected value 
    */
@@ -304,8 +313,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two ints are equal. If they are not
-   * an AssertionFailedError is thrown with the given message.
+   * Asserts that two ints are equal. If they are not,
+   * an AssertionFailedError, with the given message, is thrown.
    * @param actual the actual value 
    * @param expected the expected value 
    * @param message the assertion error message 
@@ -315,7 +324,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two ints are equal.
+   * Asserts that two ints are equal. If they are not,
+   * an AssertionError is thrown.
    * @param actual the actual value 
    * @param expected the expected value 
    */
@@ -324,7 +334,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that an object isn't null.
+   * Asserts that an object isn't null. If it is,
+   * an AssertionError is thrown.
    * @param object the assertion object
    */
   static public void assertNotNull(Object object) {
@@ -332,8 +343,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that an object isn't null. If it is
-   * an AssertionFailedError is thrown with the given message.
+   * Asserts that an object isn't null. If it is,
+   * an AssertionFailedError, with the given message, is thrown.
    * @param object the assertion object
    * @param message the assertion error message 
    */
@@ -342,7 +353,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that an object is null.
+   * Asserts that an object is null. If it is,
+   * an AssertionError, with the given message, is thrown.
    * @param object the assertion object
    */
   static public void assertNull(Object object) {
@@ -350,8 +362,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that an object is null.  If it is not
-   * an AssertionFailedError is thrown with the given message.
+   * Asserts that an object is null.  If it is not,
+   * an AssertionFailedError, with the given message, is thrown.
    * @param object the assertion object 
    * @param message the assertion error message 
    */
@@ -360,8 +372,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two objects refer to the same object. If they are not
-   * an AssertionFailedError is thrown with the given message.
+   * Asserts that two objects refer to the same object. If they do not,
+   * an AssertionFailedError, with the given message, is thrown.
    * @param actual the actual value 
    * @param expected the expected value 
    * @param message the assertion error message 
@@ -374,8 +386,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two objects refer to the same object. If they are not
-   * the same an AssertionError is thrown.
+   * Asserts that two objects refer to the same object. If they do not,
+   * an AssertionError is thrown.
    * @param actual the actual value 
    * @param expected the expected value 
    */
@@ -384,8 +396,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two objects refer to the same object. If they are not
-   * an AssertionError is thrown with the given message.
+   * Asserts that two objects do not refer to the same objects. If they do,
+   * an AssertionError, with the given message, is thrown.
    * @param actual the actual value 
    * @param expected the expected value 
    * @param message the assertion error message 
@@ -397,8 +409,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two objects refer to the same object. If they are not
-   * the same an AssertionError is thrown.
+   * Asserts that two objects do not refer to the same object. If they do,
+   * an AssertionError is thrown.
    * @param actual the actual value 
    * @param expected the expected value 
    */
@@ -436,8 +448,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two collections contain the same elements. If they are not
-   * the same an AssertionError is thrown.
+   * Asserts that two collections contain the same elements in the same order. If they do not,
+   * an AssertionError is thrown.
    *
    * @param actual the actual value
    * @param expected the expected value
@@ -447,8 +459,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two collections contain the same elements in the same order. If they are not
-   * the same an AssertionError is thrown.
+   * Asserts that two collections contain the same elements in the same order. If they do not,
+   * an AssertionError, with the given message, is thrown.
    * @param actual the actual value
    * @param expected the expected value
    * @param message the assertion error message
@@ -473,8 +485,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two arrays contain the same elements in the same order. If they are not
-   * the same an AssertionError is thrown.
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError, with the given message, is thrown.
    * @param actual the actual value
    * @param expected the expected value
    * @param message the assertion error message
@@ -488,8 +500,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two arrays contain the same elements in no particular order. If they are not
-   * the same an AssertionError is thrown.
+   * Asserts that two arrays contain the same elements in no particular order. If they do not,
+   * an AssertionError, with the given message, is thrown.
    * @param actual the actual value
    * @param expected the expected value
    * @param message the assertion error message
@@ -514,8 +526,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two arrays contain the same elements in the same order. If they are not
-   * the same an AssertionError is thrown.
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError is thrown.
    *
    * @param actual the actual value
    * @param expected the expected value
@@ -525,8 +537,8 @@ public class Assert {
   }
   
   /**
-   Asserts that two arrays contain the same elements in no particular order. If they are not
-   * the same an AssertionError is thrown.
+   * Asserts that two arrays contain the same elements in no particular order. If they do not,
+   * an AssertionError is thrown.
    * @param actual the actual value
    * @param expected the expected value
    */
@@ -535,8 +547,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two arrays contain the same elements in the same order. If they are not
-   * the same an AssertionError is thrown.
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError is thrown.
    *
    * @param actual the actual value
    * @param expected the expected value
@@ -546,8 +558,8 @@ public class Assert {
   }
   
   /**
-   * Asserts that two arrays contain the same elements in the same order. If they are not
-   * the same an AssertionError is thrown.
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError, with the given message, is thrown.
    *
    * @param actual the actual value
    * @param expected the expected value
