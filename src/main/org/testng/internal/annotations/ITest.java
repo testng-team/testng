@@ -39,6 +39,7 @@ public interface ITest extends ITestOrConfiguration {
    * @see org.testng.annotations.DataProvider#DataProvider
    */
   public String getDataProvider();
+  public Class getDataProviderClass();
   
   /**
    * If set to true, this test method will always be run even if it depends

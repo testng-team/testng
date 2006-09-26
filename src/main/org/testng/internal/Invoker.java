@@ -3,6 +3,7 @@ package org.testng.internal;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -642,9 +643,10 @@ public class Invoker implements IInvoker {
     // Do we have a @DataProvider?  If yes, then we have several
     // sets of parameters for this method
     //
-    Method dataProvider = Parameters.findDataProvider(testMethod.getTestClass().getRealClass(),
-                                                      testMethod.getMethod(), 
-                                                      m_annotationFinder);
+    Method dataProvider = 
+      Parameters.findDataProvider(testMethod.getTestClass().getRealClass(),
+                                  testMethod.getMethod(), 
+                                  m_annotationFinder);
 
     if (null != dataProvider) {
       int parameterCount = testMethod.getMethod().getParameterTypes().length;
@@ -654,8 +656,11 @@ public class Invoker implements IInvoker {
         allParameterNames.put(n, n);
       }
 
+      boolean isStatic = 
+        (dataProvider.getModifiers() & Modifier.STATIC) != 0;
+      Object instance = isStatic ? null : testClass.getInstances(true)[0];
       result  = MethodHelper.invokeDataProvider(
-          testClass.getInstances(true)[0], /* a test instance */
+          instance, /* a test instance or null if the dataprovider is static*/
           dataProvider, 
           testMethod);
     }

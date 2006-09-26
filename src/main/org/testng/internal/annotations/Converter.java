@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.testng.internal.ClassHelper;
 import org.testng.internal.Utils;
 
 /**
@@ -65,6 +66,15 @@ public class Converter {
       result = (Class[]) vResult.toArray(new Class[vResult.size()]);
     }
 
+    return result;
+  }
+
+  public static Class getClass(String namedParameter) {
+    Class result = null;
+    if (namedParameter != null) {
+      result = ClassHelper.forName(namedParameter);
+    }
+    
     return result;
   }
 

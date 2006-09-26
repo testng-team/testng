@@ -2,6 +2,7 @@
 ===========================================================================
 5.3
 
+Added: Attribute dataProviderClass for @Test and @testng.test
 Fixed: Forgot to account for cases where both invocationCount and DataProviders are present
 Fixed: AfterGroups were invoked out of order with invocationCount and DataProviders
 Fixed: Reporter.getOutput() returned an empty array if a timeOut was specified

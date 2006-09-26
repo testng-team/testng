@@ -362,7 +362,8 @@ public class JDK14TagFactory {
     result.setTestName(Converter.getString(dt.getNamedParameter("testName"),
         result.getTestName()));
     result.setSequential(Converter.getBoolean(dt.getNamedParameter("sequential"),
-        result.getSequential()));    
+        result.getSequential()));
+    result.setDataProviderClass(Converter.getClass(dt.getNamedParameter("dataProviderClass")));
     
     return result;
   }

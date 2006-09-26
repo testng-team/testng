@@ -22,6 +22,7 @@ public class TestAnnotation extends TestOrConfiguration implements ITest {
   private String m_testName = TestNG.DEFAULT_TEST_NAME;
   private boolean m_sequential = false;
   private boolean m_reentering = false;
+  private Class m_dataProviderClass = null;
   
   /**
    * @return the expectedExceptions
@@ -43,6 +44,14 @@ public class TestAnnotation extends TestOrConfiguration implements ITest {
 
   public void setDataProvider(String dataProvider) {
     m_dataProvider = dataProvider;
+  }
+
+  public Class getDataProviderClass() {
+    return m_dataProviderClass;
+  }
+
+  public void setDataProviderClass(Class dataProviderClass) {
+    m_dataProviderClass = dataProviderClass;
   }
 
   public void setInvocationCount(int invocationCount) {

@@ -253,6 +253,7 @@
        <class name="test.dataprovider.MultipleDataProviderTest" />
        <class name="test.dataprovider.ChildUsingParentDataProviderTest" />
        <class name="test.dataprovider.ChildDataProvider" />
+      <class name="test.dataprovider.StaticDataProviderSampleTest" />
     </classes>
   </test>
 
