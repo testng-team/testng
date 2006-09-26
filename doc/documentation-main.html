@@ -323,18 +323,36 @@ The list of variables used to fill the parameters of this method.
 <td>
           If set to true, this test method will always be run even if it depends on a method that failed.
 </td>
+</tr>
+
 <tr>
 <td>
 </td>
 <td>
-
- 	
 <tt>dataProvider</tt>
 </td>
 <td>
-<tt>The name of the data provider for this test method.</tt>
-
+The name of the data provider for this test method.
 </td>
+</tr>
+
+
+<tr>
+<td>
+</td>
+<td>
+<tt>dataProviderClass</tt>
+</td>
+<td>
+The class where to look for the data provider.  If not specified, the data provider will be looked on the class of the current test method or one of its base classes. If this attribute is specified, the data provider method needs to be static on the specified class.  
+</td>
+</tr>
+
+
+
+
+
+
 <tr>
 <td>
 </td>
@@ -980,6 +998,25 @@ This name must correspond to a method on the same class annotated with <tt>@Data
 with a matching name.
 
 <p>
+By default, the data provider will be looked for in the current test class or one of its base classes.  If you want to put your data provider in a different class, it needs to be a static method and you specify the class where it can be found in the <tt>dataProviderClass</tt> attribute:
+
+<pre class="prettyprint">
+public static class StaticProvider {
+  @DataProvider(name = "create")
+  public static Object[][] createData() {
+    return new Object[][] {
+      new Object[] { new Integer(42) }
+    }
+  }
+}
+
+public class MyTest {
+  @Test(dataProvider = "create", dataProviderClass = StaticProvider.class)
+  public void test(Integer n) {
+    // ...
+  }
+}
+</pre>
 
 The Data Provider method can return one of the following two types:
 
