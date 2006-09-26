@@ -25,7 +25,7 @@ public class AnnotationTransformerTest extends BaseTest {
     
     tng.run();
     
-    List<ITestResult> passed = tla.getPassedTests();
+    List passed = tla.getPassedTests();
     Assert.assertEquals(15, passed.size());
   }
 
