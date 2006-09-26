@@ -324,6 +324,8 @@ public class JDK15TagFactory {
     result.setThreadPoolSize(test.threadPoolSize());
     result.setSuccessPercentage(test.successPercentage());
     result.setDataProvider(test.dataProvider());
+    result.setDataProviderClass(test.dataProviderClass() != Object.class ?
+        test.dataProviderClass() : null);
     result.setAlwaysRun(test.alwaysRun());
     result.setDescription(test.description());
     result.setExpectedExceptions(test.expectedExceptions());

@@ -26,7 +26,7 @@
       <class name="test.reports.ReportTest" />
 -->
     <classes>
-      <class name="test.annotationtransformer.AnnotationTransformerTest" />
+      <class name="test.dataprovider.StaticDataProviderSampleTest" />
     </classes>
   </test>
 
