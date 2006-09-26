@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -210,13 +211,18 @@ public class Parameters {
   private static Method findDataProvider(Class cls, 
     IAnnotationFinder finder, String name, Class dataProviderClass) 
   {
+    boolean shouldBeStatic = false;
     if (dataProviderClass != null) {
       cls = dataProviderClass;
+      shouldBeStatic = true;
     }
 
     for (Method m : ClassHelper.getAvailableMethods(cls)) {
       IDataProvider dp = (IDataProvider) finder.findAnnotation(m, IDataProvider.class);
       if (null != dp && dp.getName().equals(name)) {
+        if (shouldBeStatic && (m.getModifiers() & Modifier.STATIC) == 0) {
+          throw new TestNGException("DataProvider should be static: " + m); 
+        }
         return m;
       }
     }
