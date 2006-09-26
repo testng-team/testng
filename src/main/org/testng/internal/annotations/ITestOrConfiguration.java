@@ -11,6 +11,7 @@ public interface ITestOrConfiguration extends IParameterizable {
    * The list of groups this class/method belongs to. 
    */
   public String[] getGroups();
+  public void setGroups(String[] groups);
 
   /**
    * The list of groups this method depends on.  Every method
@@ -20,6 +21,7 @@ public interface ITestOrConfiguration extends IParameterizable {
    * run and will be flagged as a SKIP.  
    */
   public String[] getDependsOnGroups();
+  public void setDependsOnGroups(String[] groups);
   
   /**
    * The list of methods this method depends on.  There is no guarantee
@@ -33,7 +35,8 @@ public interface ITestOrConfiguration extends IParameterizable {
    *  versions will be run.
    */
   public String[] getDependsOnMethods();
-  
+  public void setDependsOnMethods(String[] dependsOnMethods);
+
   /**
    * Whether methods on this class/method are enabled.
    */

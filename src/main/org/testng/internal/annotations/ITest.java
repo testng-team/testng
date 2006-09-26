@@ -28,11 +28,13 @@ public interface ITest extends ITestOrConfiguration {
    * Note:  this attribute is ignored if invocationCount is not specified
    */
   public int getThreadPoolSize();
+  public void setThreadPoolSize(int n);
   
   /**
    * The percentage of success expected from this method.
    */
   public int getSuccessPercentage();
+  public void setSuccessPercentage(int s);
   
   /**
    * The name of the data provider for this test method.
@@ -47,30 +49,17 @@ public interface ITest extends ITestOrConfiguration {
    * doesn't depend on any method or group.
    */
   public boolean getAlwaysRun();
+  public void setAlwaysRun(boolean f);
 
-  public String[] getGroups();
-
-  public boolean getEnabled();
-
-  public void setDependsOnGroups(String[] dependsOnGroups);
-
-  public void setDependsOnMethods(String[] dependsOnMethods);
-
-  public void setEnabled(boolean enabled);
-
-  public void setGroups(String[] groups);
-
-  public String[] getDependsOnGroups();
-
-  public String[] getDependsOnMethods();
-
-  public String getDescription();
- 
   public Class[] getExpectedExceptions();
+  public void setExpectedExceptions(Class[] e);
   
   public String getSuiteName();
+  public void setSuiteName(String s);
   
   public String getTestName();
+  public void setTestName(String s);
   
   public boolean getSequential();
+  public void setSequential(boolean f);
 }
