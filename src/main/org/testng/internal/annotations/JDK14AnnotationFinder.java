@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.testng.TestRunner;
 import org.testng.internal.Utils;
+import org.testng.log4testng.Logger;
 
 import com.thoughtworks.qdox.JavaDocBuilder;
 import com.thoughtworks.qdox.directorywalker.DirectoryScanner;
@@ -26,6 +27,10 @@ import com.thoughtworks.qdox.model.JavaMethod;
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class JDK14AnnotationFinder implements IAnnotationFinder {
+  
+  /** This class' loge4testng Logger. */
+  private static final Logger LOGGER = Logger.getLogger(JDK14AnnotationFinder.class);
+  
   private JDK14TagFactory m_tagFactory = new JDK14TagFactory();
   private JavaDocBuilder m_docBuilder;
   private String[] m_dirPaths;
@@ -49,6 +54,7 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
         m_docBuilder.addSource(new FileReader(filePaths[i]));
       }
       catch(FileNotFoundException fnfe) {
+        LOGGER.warn("file or directory does not exist: " + filePaths[i]);
         ppp("File does not exist [" + filePaths[i] + "]");
       }
       catch(Throwable t) {
