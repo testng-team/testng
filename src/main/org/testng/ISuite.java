@@ -4,7 +4,7 @@ package org.testng;
 import java.util.Collection;
 import java.util.Map;
 
-import org.testng.internal.annotations.IAnnotationTransformer;
+import org.testng.internal.annotations.IAnnotationFinder;
 
 /**
  * Interface defining a Test Suite.
@@ -77,7 +77,7 @@ public interface ISuite {
   public SuiteRunState getSuiteState();
   
   /**
-   * @return the annotation transformer for this suite
+   * @return the annotation finder used for the specified type (JDK5 or javadoc)
    */
-  public IAnnotationTransformer getAnnotationTransformer();
+  public IAnnotationFinder getAnnotationFinder(String type);
 }

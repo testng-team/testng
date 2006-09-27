@@ -16,6 +16,9 @@ import org.testng.SuiteRunner;
 import org.testng.TestListenerAdapter;
 import org.testng.TestRunner;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
+import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.IAnnotationTransformer;
+import org.testng.internal.annotations.JDK14AnnotationFinder;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
 import org.testng.xml.XmlClass;
@@ -33,6 +36,8 @@ public class BaseTest {
 
   private XmlSuite            m_suite           = null;
   private ITestRunnerFactory  m_testRunnerFactory;
+  private IAnnotationTransformer m_defaultAnnotationTransformer= new DefaultAnnotationTransformer();
+  private IAnnotationFinder m_javadocAnnotationFinder;
 
   public BaseTest() {
     m_testRunnerFactory = new InternalTestRunnerFactory(this);
@@ -120,7 +125,7 @@ public class BaseTest {
     m_suite.setVerbose(new Integer(0));
     SuiteRunner suite = 
       new SuiteRunner(m_suite, m_outputDirectory, m_testRunnerFactory,
-          new DefaultAnnotationTransformer());
+          new IAnnotationFinder[] {m_javadocAnnotationFinder, null});
 
     suite.run();
   }
@@ -189,6 +194,8 @@ public class BaseTest {
    * @         testng.configuration beforeTestMethod="true" groups="init,initTest,current"
    */
   public void methodSetUp() {
+    m_javadocAnnotationFinder= new JDK14AnnotationFinder(m_defaultAnnotationTransformer);
+    m_javadocAnnotationFinder.addSourceDirs(new String[] {"./test-14/src"});
     m_suite = new XmlSuite();
     m_suite.setAnnotations("javadoc");
     m_tests.put(getId(), new XmlTest(m_suite));

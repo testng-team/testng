@@ -55,41 +55,49 @@ public class SuiteRunner implements ISuite, Serializable {
   // The remote host where this suite was run, or null if run locally
   private String m_host;
 
-  private IAnnotationTransformer m_annotationTransformer = null;
+  // The suite can run in some cases both JAVADOC and JDK5 annotated tests
+  transient private IAnnotationFinder m_javadocAnnotationFinder;
+  transient private IAnnotationFinder m_jdkAnnotationFinder;
+  
+//  transient private IAnnotationTransformer m_annotationTransformer = null;
 
-  public SuiteRunner(XmlSuite suite, String outputDir, 
-      IAnnotationTransformer transformer) 
+  public SuiteRunner(XmlSuite suite, String outputDir, IAnnotationFinder[] finders) 
   {
-    this(suite, outputDir, null, false, transformer);
+    this(suite, outputDir, null, false, finders);
   }
 
-  public SuiteRunner(XmlSuite suite, String outputDir, 
-      boolean reportResults, IAnnotationTransformer transformer) 
-  {
-    this(suite, outputDir, null, reportResults, transformer);
-  }
+//  public SuiteRunner(XmlSuite suite, String outputDir, 
+//      boolean reportResults, IAnnotationTransformer transformer) 
+//  {
+//    this(suite, outputDir, null, reportResults, transformer);
+//  }
   
   public SuiteRunner(XmlSuite suite, String outputDir, 
-      ITestRunnerFactory runnerFactory, IAnnotationTransformer transformer) 
+      ITestRunnerFactory runnerFactory, IAnnotationFinder[] finders) 
   {
-    this(suite, outputDir, runnerFactory, false, transformer);
+    this(suite, outputDir, runnerFactory, false, finders);
   }
   
-  public SuiteRunner(XmlSuite suite, String outputDir, 
-      ITestRunnerFactory runnerFactory, boolean useDefaultListeners,
-      IAnnotationTransformer transformer)
+  public SuiteRunner(XmlSuite suite, 
+                     String outputDir, 
+                     ITestRunnerFactory runnerFactory, 
+                     boolean useDefaultListeners,
+                     IAnnotationFinder[] finders)
   {
-    init(suite, outputDir, runnerFactory, useDefaultListeners, transformer);
+    init(suite, outputDir, runnerFactory, useDefaultListeners, finders);
   }
   
-  private void init(XmlSuite suite, String outputDir, 
-      ITestRunnerFactory runnerFactory, boolean useDefaultListeners,
-      IAnnotationTransformer transformer)
+  private void init(XmlSuite suite, 
+                    String outputDir, 
+                    ITestRunnerFactory runnerFactory, 
+                    boolean useDefaultListeners,
+                    IAnnotationFinder[] finders)
   {
     m_suite = suite;
     m_useDefaultListeners = useDefaultListeners;
     m_tmpRunnerFactory= runnerFactory;
-    m_annotationTransformer = transformer;
+    m_javadocAnnotationFinder= finders[0];
+    m_jdkAnnotationFinder= finders[1];
     setOutputDir(outputDir);
   }
 
@@ -136,7 +144,7 @@ public class SuiteRunner implements ISuite, Serializable {
     if (null == m_tmpRunnerFactory) {
       factory = new DefaultTestRunnerFactory(
           m_testlisteners.toArray(new ITestListener[m_testlisteners.size()]), 
-          m_useDefaultListeners, m_annotationTransformer);
+          m_useDefaultListeners);
     }
     else {
       factory = new ProxyTestRunnerFactory(
@@ -384,23 +392,31 @@ public class SuiteRunner implements ISuite, Serializable {
   /**
    * Determines the annotation type to be further used.
    */
-  public static IAnnotationFinder getAnnotationFinder(XmlTest test,
-      IAnnotationTransformer annotationTransformer) 
+  public IAnnotationFinder getAnnotationFinder(String type) 
   {
-    int annotationType = XmlSuite.JAVADOC_ANNOTATION_TYPE.equals(test.getAnnotations())
-      ? AnnotationConfiguration.JVM_14_CONFIG
-      : AnnotationConfiguration.JVM_15_CONFIG;
-
-    return getAnnotationFinder(annotationType, annotationTransformer);
+    IAnnotationFinder annoFinder= null;
+    
+    if(TestNG.JAVADOC_ANNOTATION_TYPE.equals(type)) {
+      annoFinder= m_javadocAnnotationFinder;
+    }
+    else {
+      annoFinder= m_jdkAnnotationFinder;
+    }
+    
+    if(null == annoFinder) {
+      throw new TestNGException("The annotation finder for " + type + " is not available");
+    }
+    
+    return annoFinder;
   }
   
-  public static IAnnotationFinder getAnnotationFinder(int annotationType, 
-      IAnnotationTransformer annotationTransformer) 
-  {
-    AnnotationConfiguration annotConfig= AnnotationConfiguration.getInstance();
-    annotConfig.initialize(annotationType);
-    return annotConfig.getAnnotationFinder(annotationTransformer);
-  }
+//  public static IAnnotationFinder getAnnotationFinder(int annotationType, 
+//      IAnnotationTransformer annotationTransformer) 
+//  {
+//    AnnotationConfiguration annotConfig= AnnotationConfiguration.getInstance();
+//    annotConfig.initialize(annotationType);
+//    return annotConfig.getAnnotationFinder(annotationTransformer);
+//  }
 
   public static void ppp(String s) {
     System.out.println("[SuiteRunner] " + s);
@@ -412,14 +428,10 @@ public class SuiteRunner implements ISuite, Serializable {
   public static class DefaultTestRunnerFactory implements ITestRunnerFactory {
     private ITestListener[] m_failureGenerators;
     private boolean m_useDefaultListeners;
-    private IAnnotationTransformer m_annotationTransformer;
     
-    public DefaultTestRunnerFactory(ITestListener[] failureListeners, 
-        boolean useDefaultListeners, IAnnotationTransformer transformer) 
-    {
+    public DefaultTestRunnerFactory(ITestListener[] failureListeners, boolean useDefaultListeners) {
       m_failureGenerators = failureListeners;
       m_useDefaultListeners = useDefaultListeners;
-      m_annotationTransformer = transformer;
     }
 
     /**
@@ -430,7 +442,7 @@ public class SuiteRunner implements ISuite, Serializable {
         new TestRunner(suite,
                         test,
                         suite.getOutputDirectory(),
-                        getAnnotationFinder(test, m_annotationTransformer));
+                        suite.getAnnotationFinder(test.getAnnotations()));
       
       if (m_useDefaultListeners) {
         testRunner.addTestListener(new TestHTMLReporter());
@@ -493,9 +505,4 @@ public class SuiteRunner implements ISuite, Serializable {
   public SuiteRunState getSuiteState() {
     return m_suiteState;
   }
-  
-  public IAnnotationTransformer getAnnotationTransformer() {
-    return m_annotationTransformer;
-  }
-
 }

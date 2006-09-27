@@ -24,6 +24,7 @@ import java.util.Properties;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.testng.internal.ClassHelper;
 import org.testng.internal.HostFile;
 import org.testng.internal.Invoker;
 import org.testng.internal.Utils;
@@ -32,6 +33,7 @@ import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IAnnotationTransformer;
 import org.testng.internal.annotations.ITest;
+import org.testng.internal.annotations.JDK14AnnotationFinder;
 import org.testng.internal.remote.SlavePool;
 import org.testng.internal.thread.IPooledExecutor;
 import org.testng.internal.thread.ThreadUtil;
@@ -106,12 +108,14 @@ public class TestNG {
   private static boolean m_isJdk14;
 
   protected List<XmlSuite> m_suites = new ArrayList<XmlSuite>();
-  protected XmlSuite[] m_cmdlineSuites;
+  protected List<XmlSuite> m_cmdlineSuites;
   protected String m_outputDir = DEFAULT_OUTPUTDIR;
   protected String[] m_sourceDirs;
   
   /** The annotation type for suites/tests that have not explicitly set this attribute. */
   protected String m_target;
+  protected IAnnotationFinder m_javadocAnnotationFinder;
+  protected IAnnotationFinder m_jdkAnnotationFinder;
   
   protected String[] m_includedGroups;
   protected String[] m_excludedGroups;
@@ -366,8 +370,9 @@ public class TestNG {
   }
 
   public void setCommandLineSuite(XmlSuite suite) {
-    m_cmdlineSuites = new XmlSuite[] { suite };
-    m_suites.add(m_cmdlineSuites[0]);
+    m_cmdlineSuites = new ArrayList<XmlSuite>();
+    m_cmdlineSuites.add(suite);
+    m_suites.add(suite);
   }
   
 
@@ -384,13 +389,13 @@ public class TestNG {
     m_commandLineTestClasses = classes;
   }
   
-  private int getVersion() {
-    return JDK5_ANNOTATION_TYPE.equals(m_target) 
-        ? AnnotationConfiguration.JVM_15_CONFIG
-        : AnnotationConfiguration.JVM_14_CONFIG;
+  private IAnnotationFinder getAnnotationFinder() {
+    return JDK5_ANNOTATION_TYPE.equals(m_target)
+          ? m_jdkAnnotationFinder
+          : m_javadocAnnotationFinder;
   }
   
-  private XmlSuite[] createCommandLineSuites(Class[] classes) {
+  private List<XmlSuite> createCommandLineSuites(Class[] classes) {
     //
     // See if any of the classes has an xmlSuite or xmlTest attribute.
     // If it does, create the appropriate XmlSuite, otherwise, create
@@ -398,8 +403,7 @@ public class TestNG {
     //
     XmlClass[] xmlClasses = Utils.classesToXmlClasses(classes);
     Map<String, XmlSuite> suites = new HashMap<String, XmlSuite>();
-    IAnnotationFinder finder = 
-      SuiteRunner.getAnnotationFinder(getVersion(), m_annotationTransformer);
+    IAnnotationFinder finder = getAnnotationFinder();
     
     for (int i = 0; i < classes.length; i++) {
       Class c = classes[i];
@@ -433,10 +437,10 @@ public class TestNG {
       xmlTest.getXmlClasses().add(xmlClasses[i]);
     }
     
-    XmlSuite[] result = 
-      (XmlSuite[]) suites.values().toArray(new XmlSuite[suites.size()]);
+//    XmlSuite[] result = 
+//      (XmlSuite[]) suites.values().toArray(new XmlSuite[suites.size()]);
         
-    return result;
+    return new ArrayList<XmlSuite>(suites.values());
   }
   
 
@@ -607,15 +611,6 @@ public class TestNG {
     m_verbose = new Integer(verbose);
   }
 
-  private void initializeSources() {
-    if(null != m_sourceDirs) {
-      if(isJdk14() || JAVADOC_ANNOTATION_TYPE.equals(m_target)) {
-        AnnotationConfiguration.getInstance().
-          getAnnotationFinder(getAnnotationTransformer()).addSourceDirs(m_sourceDirs);
-      }
-    }
-  }
-  
   private void initializeCommandLineSuites() {
     if(null != m_commandLineTestClasses) {
       m_cmdlineSuites = createCommandLineSuites(m_commandLineTestClasses);
@@ -663,12 +658,22 @@ public class TestNG {
     }
   }
   
+  private void initializeAnnotationFinders() {
+    m_javadocAnnotationFinder= new JDK14AnnotationFinder(getAnnotationTransformer()); 
+    if(null != m_sourceDirs) {
+      m_javadocAnnotationFinder.addSourceDirs(m_sourceDirs);
+    }
+    if(!isJdk14()) {
+      m_jdkAnnotationFinder= ClassHelper.createJdkAnnotationFinder(getAnnotationTransformer());
+    }
+  }
+  
   /**
    * Run TestNG.
    */
   public void run() {
     initializeListeners();
-    initializeSources();
+    initializeAnnotationFinders();
     initializeCommandLineSuites();
     initializeCommandLineSuitesParams();
     initializeCommandLineSuitesGroups();
@@ -822,7 +827,7 @@ public class TestNG {
       for (XmlSuite suite : m_suites) {
         suite.setVerbose(hostFile.getVerbose());
         SuiteRunner suiteRunner = 
-          new SuiteRunner(suite, m_outputDir, m_annotationTransformer);
+          new SuiteRunner(suite, m_outputDir, new IAnnotationFinder[] {m_javadocAnnotationFinder, m_jdkAnnotationFinder});
         for (XmlTest test : suite.getTests()) {
           XmlSuite tmpSuite = new XmlSuite();
           tmpSuite.setXmlPackages(suite.getXmlPackages());
@@ -925,11 +930,7 @@ public class TestNG {
 
     if (m_suites.size() > 0) {
       for (XmlSuite xmlSuite : m_suites) {
-        
-        // TODO CQ remove the ClassSuite
-//        if (xmlSuite instanceof ClassSuite) {
-//          xmlSuite.setAnnotations(m_target);
-//        }
+        xmlSuite.setDefaultAnnotations(m_target);
         
         if (null != m_isJUnit) {
           xmlSuite.setJUnit(m_isJUnit);
@@ -955,17 +956,13 @@ public class TestNG {
     return result;
   }
 
-  private SuiteRunner createAndRunSuiteRunners(XmlSuite xmlSuite) {
-    SuiteRunner result = null;
-    if (null != m_testRunnerFactory) {
-      result = new SuiteRunner(xmlSuite, m_outputDir, m_testRunnerFactory, 
-          m_useDefaultListeners, m_annotationTransformer);
-    }
-    else {
-      result = new SuiteRunner(xmlSuite, m_outputDir, 
-          m_useDefaultListeners, m_annotationTransformer);
-    }
-    
+  protected SuiteRunner createAndRunSuiteRunners(XmlSuite xmlSuite) {
+    SuiteRunner result = new SuiteRunner(xmlSuite, 
+        m_outputDir, 
+        m_testRunnerFactory, 
+        m_useDefaultListeners, 
+        new IAnnotationFinder[] {m_javadocAnnotationFinder, m_jdkAnnotationFinder});
+
     for (ISuiteListener isl : m_suiteListeners) {
       result.addListener(isl);
     }

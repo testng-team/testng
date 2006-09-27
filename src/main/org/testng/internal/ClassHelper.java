@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -12,6 +13,7 @@ import org.testng.TestNGException;
 import org.testng.TestRunner;
 import org.testng.internal.annotations.IAnnotation;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.IAnnotationTransformer;
 import org.testng.internal.annotations.IFactory;
 import org.testng.junit.IJUnitTestRunner;
 
@@ -22,6 +24,7 @@ import org.testng.junit.IJUnitTestRunner;
  */
 public final class ClassHelper {
   private static final String JUNIT_TESTRUNNER= "org.testng.junit.JUnitTestRunner";
+  private static final String JDK5_ANNOTATIONFINDER_CLASS = "org.testng.internal.annotations.JDK15AnnotationFinder";
 
   /** Hide constructor. */
   private ClassHelper() {
@@ -141,7 +144,19 @@ public final class ClassHelper {
       return tr;
     }
     catch(Exception ex) {
-      throw new TestNGException("Cannot create JUnit runner " + JUNIT_TESTRUNNER);
+      throw new TestNGException("Cannot create JUnit runner " + JUNIT_TESTRUNNER, ex);
+    }
+  }
+  
+  public static IAnnotationFinder createJdkAnnotationFinder(IAnnotationTransformer annoTransformer) {
+    try {
+      Class clazz= forName(JDK5_ANNOTATIONFINDER_CLASS);
+      Constructor ctor= clazz.getConstructor(new Class[] {IAnnotationTransformer.class});
+      return (IAnnotationFinder) ctor.newInstance(new Object[] {annoTransformer});
+    }
+    catch(Exception ex) {
+      throw new TestNGException("Cannot create/initialize the JDK5 annotation finder " + JDK5_ANNOTATIONFINDER_CLASS, 
+          ex); 
     }
   }
   

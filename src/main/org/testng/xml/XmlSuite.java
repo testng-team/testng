@@ -52,7 +52,10 @@ public class XmlSuite implements Serializable, Cloneable {
   private int m_threadCount = 5;
   
   /** The suite annotation type. */
-  private String m_annotations = JDK5_ANNOTATION_TYPE;
+  private String m_annotations;
+
+  /** The suite default annotation type. */
+  private String m_defaultAnnotations = JDK5_ANNOTATION_TYPE;
   
   /** The packages containing test classes. */
   private List<XmlPackage> m_xmlPackages = new ArrayList<XmlPackage>();
@@ -266,9 +269,22 @@ public class XmlSuite implements Serializable, Cloneable {
    * @return the annotation type.
    */
   public String getAnnotations() {
-    return m_annotations;
+    return m_annotations != null ? m_annotations : m_defaultAnnotations;
   }
 
+  /**
+   * Sets the overall default annotation (JDK5/javadoc).
+   * It is used to if the annotation attribute of the suite definition
+   * does not specify an explicit value
+   * 
+   * @param annotationType "JDK5" or "javadoc"
+   * @see TestNG#JAVADOC_ANNOTATION_TYPE
+   * @see TestNG#JDK5_ANNOTATION_TYPE
+   */
+  public void setDefaultAnnotations(String annotationType) {
+    m_defaultAnnotations = annotationType;
+  }
+  
   /**
    * Sets the annotation type.
    * 

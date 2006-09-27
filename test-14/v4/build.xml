@@ -84,9 +84,10 @@ JUNIT.REPORT  =${junit.report.dir}
       	<xmlfileset dir="${test14.dir}" includes="testng.xml"/>
      </testng-14>
 
-     <echo message="                                -- Running JDK 1.4 tests (v4)--" />
-     <echo message="                                -- ${jdk15.testng.jar} --" />
    	<!--
+     <echo message="                                - Running JDK 1.4 tests (v4)-" />
+     <echo message="                                - ${jdk15.testng.jar} -" />
+
    	JDK1.4 tests run with JDK5 are available through the test/build.xml
    	
      <taskdef name="testng-15" 

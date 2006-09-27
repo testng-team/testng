@@ -17,6 +17,10 @@ import org.testng.TestListenerAdapter;
 import org.testng.TestRunner;
 import org.testng.annotations.Configuration;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
+import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.IAnnotationTransformer;
+import org.testng.internal.annotations.JDK14AnnotationFinder;
+import org.testng.internal.annotations.JDK15AnnotationFinder;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
 import org.testng.xml.XmlClass;
@@ -37,9 +41,15 @@ public class BaseTest extends BaseDistributedTest {
   
   private XmlSuite m_suite = null;
   private ITestRunnerFactory m_testRunnerFactory;
+  private IAnnotationTransformer m_defaultAnnotationTransformer= new DefaultAnnotationTransformer();
+  private IAnnotationFinder m_jdkAnnotationFinder;
+  private IAnnotationFinder m_javadocAnnotationFinder;
+
   
   public BaseTest() {
      m_testRunnerFactory = new InternalTestRunnerFactory(this);
+     m_jdkAnnotationFinder= new JDK15AnnotationFinder(m_defaultAnnotationTransformer);
+     
    }
   
   protected void setDebug() {
@@ -58,46 +68,10 @@ public class BaseTest extends BaseDistributedTest {
     getTest().setJUnit(f);
   }
 
-  //
-  // Use this for sequential tests
-  //
-  //  private XmlTest m_test = null;
-  //  protected Map m_passedTests = null;
-  //  protected Map m_failedTests = null;
-  //  protected Map m_skippedTests = null;
-  //
-  //  public Map getPassedTests() {
-  //    return m_passedTests;
-  //  }
-  //  
-  //  public Map getSkippedTests() {
-  //    return m_skippedTests;
-  //  }
-  //  
-  //  public Map getFailedTests() {
-  //    return m_failedTests;
-  //  }
-  //  
-  //  public void setFailedTests(Map m) {
-  //    m_failedTests = m;
-  //  }
-  //  
-  //  public void setSkippedTests(Map m) {
-  //    m_skippedTests = m;
-  //  }
-  //  
-  //  public void setPassedTests(Map m) {
-  //    m_passedTests = m;
-  //  }
-
-  //
-  // Use this for parallel tests
-  //
-
-  private Map<Long, XmlTest>  m_tests                        = new HashMap<Long, XmlTest>();
-  private Map<Long, Map>    m_passedTests                    = new HashMap<Long, Map>();
-  private Map<Long, Map>    m_failedTests                    = new HashMap<Long, Map>();
-  private Map<Long, Map>    m_skippedTests                    = new HashMap<Long, Map>();
+  private Map<Long, XmlTest>  m_tests = new HashMap<Long, XmlTest>();
+  private Map<Long, Map>    m_passedTests = new HashMap<Long, Map>();
+  private Map<Long, Map>    m_failedTests = new HashMap<Long, Map>();
+  private Map<Long, Map>    m_skippedTests = new HashMap<Long, Map>();
   private Map<Long, Map>    m_failedButWithinSuccessPercentageTests  = new HashMap<Long, Map>();
 
   protected Map<String, List<ITestResult>> getTests(Map<Long, Map> map) {
@@ -159,8 +133,8 @@ public class BaseTest extends BaseDistributedTest {
     m_suite.setVerbose(0);
     SuiteRunner suite = new SuiteRunner(m_suite, 
                                         m_outputDirectory,
-					m_testRunnerFactory,
-                                        new DefaultAnnotationTransformer()
+                                        m_testRunnerFactory,
+                                        new IAnnotationFinder[] {m_javadocAnnotationFinder, m_jdkAnnotationFinder}
       );
 
       suite.run();
@@ -245,6 +219,7 @@ public class BaseTest extends BaseDistributedTest {
 
   @Configuration(beforeTestMethod = true, groups = {"init", "initTest"}) 
   public void methodSetUp() {
+    m_javadocAnnotationFinder= new JDK14AnnotationFinder(m_defaultAnnotationTransformer);
     m_suite = new XmlSuite();
     m_suite.setName("Internal suite");
     m_tests.put(getId(), new XmlTest(m_suite));
