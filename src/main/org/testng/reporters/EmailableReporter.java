@@ -23,6 +23,7 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.log4testng.Logger;
+import org.testng.reporters.util.StackTraceTools;
 import org.testng.xml.XmlSuite;
 
 /**
@@ -235,7 +236,7 @@ public class EmailableReporter implements IReporter {
                 m_out.println("<h3>"
                     +(wantsMinimalOutput?"Expected Exception":"Failure")
                     +"</h3>");
-              generateExceptionReport(exception, wantsMinimalOutput);
+              generateExceptionReport(exception,method);
             }
             if (hasParameters) {
               m_out.println("</td></tr>");
@@ -258,22 +259,28 @@ public class EmailableReporter implements IReporter {
   /** Reports excpetion results
    * @param wantsMinimalOutput if true the stack trace will display a fiew lines
    */
-  private void generateExceptionReport(Throwable exception, boolean wantsMinimalOutput) {
-    m_out.println("<p>"+exception.getLocalizedMessage()+"</p>");
+  protected void generateExceptionReport(Throwable exception,ITestNGMethod method) {
+    generateExceptionReport(exception, method, exception.getLocalizedMessage());
+  }
+
+  /** Reports excpetion results
+   * @param wantsMinimalOutput if true the stack trace will display a fiew lines
+   */
+  private void generateExceptionReport(Throwable exception,ITestNGMethod method,String title) {
+    m_out.println("<p>"+title+"</p>");
     StackTraceElement[] s1=exception.getStackTrace();
     Throwable t2=exception.getCause();
     if(t2==exception)
       t2=null;
-    int maxlines=Math.min((wantsMinimalOutput?5:(t2==null?100:10)),s1.length);
-    for(int x=0; x<maxlines; x++) {
-      m_out.println((x>0?"<br/>":"")+s1[x].toString());
+    int maxlines=Math.min(100,StackTraceTools.getTestRoot(s1, method));
+    for(int x=0; x<=maxlines; x++) {
+      m_out.println((x>0?"<br/>at ":"")+s1[x].toString());
     }
     if(maxlines<s1.length) {
       m_out.println("<br/>"+(s1.length-maxlines)+" lines not shown");
     }
     if(t2!=null) {
-      m_out.println("<p>Caused by</p>");
-      generateExceptionReport(t2, wantsMinimalOutput);
+      generateExceptionReport(t2, method, "Caused by "+t2.getLocalizedMessage());
     }
   }
 
