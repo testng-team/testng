@@ -2,6 +2,10 @@
 ===========================================================================
 5.3
 
+Fixed: Before/AfterGroup-s were behaving wrong when using invocationCount, dataProvider and threadPoolSize
+Fixed: improved support for running different annotation type tests in the same suite
+Fixed: testng-failed.xml was generated even if there were no failures/skipps
+Fixed: -usedefaultlisteners was wrongly passed to JVM instead of TestNG options
 Added: Attribute dataProviderClass for @Test and @testng.test
 Fixed: Forgot to account for cases where both invocationCount and DataProviders are present
 Fixed: AfterGroups were invoked out of order with invocationCount and DataProviders
