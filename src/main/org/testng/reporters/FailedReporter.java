@@ -67,9 +67,11 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
                       testContext.getFailedTests().getAllResults(), 
                       testContext.getSkippedTests().getAllResults());
     }
-   
-    Utils.writeFile(outputDir, TESTNG_FAILED_XML, failedSuite.toXml());
-    Utils.writeFile(suite.getOutputDirectory(), TESTNG_FAILED_XML, failedSuite.toXml());
+
+    if(null != failedSuite.getTests() && failedSuite.getTests().size() > 0) {
+      Utils.writeFile(outputDir, TESTNG_FAILED_XML, failedSuite.toXml());
+      Utils.writeFile(suite.getOutputDirectory(), TESTNG_FAILED_XML, failedSuite.toXml());
+    }
   }
 
   /**
