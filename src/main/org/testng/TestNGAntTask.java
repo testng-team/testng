@@ -377,8 +377,8 @@ public class TestNGAntTask extends Task {
     if (m_useDefaultListeners != null) {
       boolean useDefaultListeners = "yes".equalsIgnoreCase(m_useDefaultListeners)
         || "true".equalsIgnoreCase(m_useDefaultListeners);
-      cmd.createVmArgument().setValue(TestNGCommandLineArgs.USE_DEFAULT_LISTENERS);
-      cmd.createVmArgument().setValue(new Boolean(useDefaultListeners).toString());
+      argv.add(TestNGCommandLineArgs.USE_DEFAULT_LISTENERS);
+      argv.add(Boolean.TRUE.toString());
     }
 
     if((null != m_outputDir)) {
@@ -478,8 +478,6 @@ public class TestNGAntTask extends Task {
     }
     
     createClasspath().setLocation(findJar());
-    
-    cmd.createVmArgument().setValue("-ea");
     
     cmd.createArgument().setValue("@" + fileName);
 
