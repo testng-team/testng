@@ -84,6 +84,7 @@ import org.xml.sax.SAXException;
  * @author <a href = "mailto:the_mindstorm&#64;evolva.ro">Alex Popescu</a>
  */
 public class TestNG {
+
   /** This class' log4testng Logger. */
   private static final Logger LOGGER = Logger.getLogger(TestNG.class);
   
@@ -114,11 +115,13 @@ public class TestNG {
   protected List<XmlSuite> m_suites = new ArrayList<XmlSuite>();
   protected List<XmlSuite> m_cmdlineSuites;
   protected String m_outputDir = DEFAULT_OUTPUTDIR;
+  
+  /** The source directories as set by setSourcePath (or testng-sourcedir-override.properties). */
   protected String[] m_sourceDirs;
   
   /** The annotation type for suites/tests that have not explicitly set this attribute. */
   protected String m_target = m_isJdk14 ? JAVADOC_ANNOTATION_TYPE : JDK5_ANNOTATION_TYPE;
-
+  
   protected IAnnotationFinder m_javadocAnnotationFinder;
   protected IAnnotationFinder m_jdkAnnotationFinder;
   
@@ -178,6 +181,7 @@ public class TestNG {
 
   private void init(boolean useDefaultListeners) {
     m_instance = this;
+    
     m_useDefaultListeners = useDefaultListeners;
   }
 
@@ -225,13 +229,14 @@ public class TestNG {
   /**
    * The default annotation type for suites that have not explicitly set the annotation property.
    * The target is used only in JDK5+.
-   * @param target the default annotation type (JAVADOC_ANNOTATION_TYPE or JDK5_ANNOTATION_TYPE).
-   * For backward compatibility reasons we accept "1.4", "1.5" and any other value defaults to 
-   * JDK5_ANNOTATION_TYPE.
+   * @param target the default annotation type. This is one of the two constants 
+   * (TestNG.JAVADOC_ANNOTATION_TYPE or TestNG.JDK5_ANNOTATION_TYPE).
+   * For backward compatibility reasons we accept "1.4", "1.5". Any other value will
+   * default to TestNG.JDK5_ANNOTATION_TYPE.
    */
   public void setTarget(final String target) {
     // Target is used only in JDK 1.5 and may get null in JDK 1.4
-    if (null == target) { 
+    if (null == target) {
       return;
     }
     
@@ -246,29 +251,26 @@ public class TestNG {
     else if (target.equals("1.4") 
         || target.toLowerCase().equals(JAVADOC_ANNOTATION_TYPE.toLowerCase())) {
       // For backward compatibility only
-      // Log at info level 
       m_target = JAVADOC_ANNOTATION_TYPE;
-      log("Illegal target type " + target + " defaulting to " + JAVADOC_ANNOTATION_TYPE);
+      LOGGER.info("Illegal target type " + target + " defaulting to " + JAVADOC_ANNOTATION_TYPE);
     }
     else if ("1.5".equals(target) 
         || target.toLowerCase().equals(JDK5_ANNOTATION_TYPE.toLowerCase())) {
       // For backward compatibility only
-      // Log at info level 
       m_target = JDK5_ANNOTATION_TYPE;
-      log("Illegal target type " + target + " defaulting to " + JDK5_ANNOTATION_TYPE);
+      LOGGER.info("Illegal target type " + target + " defaulting to " + JDK5_ANNOTATION_TYPE);
     }
     else if (target.toLowerCase().equals("jdk15")) {
       // For backward compatibility only
-      // Log at info level 
       m_target = JDK5_ANNOTATION_TYPE;
-      log("Illegal target type " + target + " defaulting to " + JDK5_ANNOTATION_TYPE);
+      LOGGER.info("Illegal target type " + target + " defaulting to " + JDK5_ANNOTATION_TYPE);
     }
     else {
       // For backward compatibility only
       // Log at warn level 
       // TODO should we make this an error?
       m_target = JDK5_ANNOTATION_TYPE;
-      log("Illegal target type " + target + " defaulting to " + JDK5_ANNOTATION_TYPE);
+      LOGGER.warn("Illegal target type " + target + " defaulting to " + JDK5_ANNOTATION_TYPE);
     }
   }
 
@@ -289,7 +291,7 @@ public class TestNG {
    * @param sourcePaths a semi-colon separated list of source directories. 
    */
   public void setSourcePath(String sourcePaths) {
-    // Start of patch specific code
+    
     // This is an optimization to reduce the sourcePath scope
     // Is it OK to look only for the Thread context class loader?
     InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("testng-sourcedir-override.properties");
@@ -301,7 +303,7 @@ public class TestNG {
         props.load(is);
       }
       catch (IOException e) {
-        throw new RuntimeException(e);
+        throw new RuntimeException("Error loading testng-sourcedir-override.properties", e);
       }
       sourcePaths = props.getProperty("sourcedir");
     }
@@ -461,6 +463,7 @@ public class TestNG {
    */
   public void setTestSuites(List<String> suites) {
     for (String suiteXmlPath : suites) {
+      LOGGER.debug("suiteXmlPath: \"" + suiteXmlPath + "\"");
       try {
         Collection<XmlSuite> allSuites = new Parser(suiteXmlPath).parse();
         for (XmlSuite s : allSuites) {
@@ -1020,13 +1023,17 @@ public class TestNG {
   }
 
   /**
-   * TODO cquezel JavaDoc.
+   * TODO  JavaDoc.
    *
    * @param argv
    * @param listener
    * @return 
    */
   public static TestNG privateMain(String[] argv, ITestListener listener) {
+    for (int i = 0; i < argv.length; ++i)
+    {
+      LOGGER.debug("privateMain: argv[" + i + "] = \"" + argv[i] + "\"");
+    }
     Map cmdLineArgs = TestNGCommandLineArgs.parseCommandLine(argv);
 
     TestNG result = new TestNG();
@@ -1084,6 +1091,7 @@ public class TestNG {
 
       List<Class> listenerClasses = 
         (List<Class>) cmdLineArgs.get(TestNGCommandLineArgs.LISTENER_COMMAND_OPT);
+      
       if (null != listenerClasses) {
         result.setListenerClasses(listenerClasses);
       }
@@ -1123,7 +1131,7 @@ public class TestNG {
   public void setJUnit(Boolean isJUnit) {
     m_isJUnit = isJUnit;
   }
-
+  
   /**
    * @deprecated The TestNG version is now established at load time. This 
    * method is not required anymore and is now a no-op. 
@@ -1132,7 +1140,7 @@ public class TestNG {
   public static void setTestNGVersion() {
     LOGGER.info("setTestNGVersion has been deprecated.");
   }
-
+  
   /**
    * Returns true if this is the JDK 1.4 JAR version of TestNG, false otherwise.
    *
