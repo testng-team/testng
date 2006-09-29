@@ -117,7 +117,8 @@ public class TestNG {
   protected String[] m_sourceDirs;
   
   /** The annotation type for suites/tests that have not explicitly set this attribute. */
-  protected String m_target;
+  protected String m_target = m_isJdk14 ? JAVADOC_ANNOTATION_TYPE : JDK5_ANNOTATION_TYPE;
+
   protected IAnnotationFinder m_javadocAnnotationFinder;
   protected IAnnotationFinder m_jdkAnnotationFinder;
   
@@ -177,11 +178,6 @@ public class TestNG {
 
   private void init(boolean useDefaultListeners) {
     m_instance = this;
-    
-    // Set the default target for this version of TestNG
-    // TODO CQ Since we have two code bases shoulld'nt this simply be part 
-    // of a target specific class.
-    m_target = m_isJdk14 ? JAVADOC_ANNOTATION_TYPE : JDK5_ANNOTATION_TYPE;
     m_useDefaultListeners = useDefaultListeners;
   }
 
@@ -230,7 +226,8 @@ public class TestNG {
    * The default annotation type for suites that have not explicitly set the annotation property.
    * The target is used only in JDK5+.
    * @param target the default annotation type (JAVADOC_ANNOTATION_TYPE or JDK5_ANNOTATION_TYPE).
-   * For backward compatibility reasons we accept "1.4", "1.5" and any value
+   * For backward compatibility reasons we accept "1.4", "1.5" and any other value defaults to 
+   * JDK5_ANNOTATION_TYPE.
    */
   public void setTarget(final String target) {
     // Target is used only in JDK 1.5 and may get null in JDK 1.4
