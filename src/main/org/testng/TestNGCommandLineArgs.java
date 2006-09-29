@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.StringTokenizer;
 
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Utils;
+import org.testng.log4testng.Logger;
 
 /**
  * TestNG/RemoteTestNG command line arguments parser.
@@ -20,6 +22,9 @@ import org.testng.internal.Utils;
  * @author <a href = "mailto:the_mindstorm&#64;evolva.ro">Alexandru Popescu</a>
  */
 public final class TestNGCommandLineArgs {
+  /** This class's log4testng Logger. */
+  private static final Logger LOGGER = Logger.getLogger(TestNGCommandLineArgs.class);
+  
   public static final String SHOW_TESTNG_STACK_FRAMES = "testng.show.stack.frames";
   public static final String TEST_CLASSPATH = "testng.test.classpath";
   
@@ -79,7 +84,7 @@ public final class TestNGCommandLineArgs {
    * the map would contain an entry in which the key would be the "-sourcedir" String and
    * the value would be the "src/main" String.
    *
-   * @param argv the command line options.
+   * @param originalArgv the command line options.
    * @return the parsed parameters as a map from option string to parsed values. 
    */
   public static Map parseCommandLine(final String[] originalArgv) {
@@ -94,7 +99,7 @@ public final class TestNGCommandLineArgs {
           arguments.put(OUTDIR_COMMAND_OPT, argv[i + 1].trim());
         }
         else {
-          System.err.println("WARNING: missing output directory after -d.  ignored");
+          LOGGER.error("WARNING: missing output directory after -d.  ignored");
         }
         i++;
       }
@@ -107,7 +112,7 @@ public final class TestNGCommandLineArgs {
               option = argv[i + 1].substring(1, argv[i + 1].length() - 1);
             }
             else {
-              System.err.println("WARNING: groups option is not well quoted:" + argv[i + 1]);
+              LOGGER.error("WARNING: groups option is not well quoted:" + argv[i + 1]);
               option = argv[i + 1].substring(1);
             }
           }
@@ -120,7 +125,7 @@ public final class TestNGCommandLineArgs {
           arguments.put(opt, option);
         }
         else {
-          System.err.println("WARNING: missing groups parameter after -groups. ignored");
+          LOGGER.error("WARNING: missing groups parameter after -groups. ignored");
         }
         i++;
       }
@@ -129,7 +134,7 @@ public final class TestNGCommandLineArgs {
           arguments.put(LOG, Integer.valueOf(argv[i + 1].trim()));
         }
         else {
-          System.err.println("WARNING: missing log level after -log.  ignored");
+          LOGGER.error("WARNING: missing log level after -log.  ignored");
         }
         i++;
       }
@@ -142,7 +147,7 @@ public final class TestNGCommandLineArgs {
             arguments.put(TARGET_COMMAND_OPT, argv[i + 1]);
           }
           else {
-            System.err.println(
+            LOGGER.error(
                 "WARNING: missing/invalid target argument. Must be 1.4 or 1.5. Ignoring");
           }
           i++;
@@ -153,7 +158,7 @@ public final class TestNGCommandLineArgs {
           arguments.put(TESTRUNNER_FACTORY_COMMAND_OPT, fileToClass(argv[++i]));
         }
         else {
-          System.err.println("WARNING: missing ITestRunnerFactory class or file argument after "
+          LOGGER.error("WARNING: missing ITestRunnerFactory class or file argument after "
               + TESTRUNNER_FACTORY_COMMAND_OPT);
         }
       }
@@ -169,7 +174,7 @@ public final class TestNGCommandLineArgs {
           arguments.put(LISTENER_COMMAND_OPT, classes);
         }
         else {
-          System.err.println("WARNING: missing ITestListener class/file list argument after "
+          LOGGER.error("WARNING: missing ITestListener class/file list argument after "
               + LISTENER_COMMAND_OPT);
         }
       }
@@ -226,7 +231,7 @@ public final class TestNGCommandLineArgs {
           i++;
         }
         else {
-          System.out.println("WARNING: "
+          LOGGER.warn("WARNING: "
               + HOST_COMMAND_OPT
               + " option should be followed by the host address. "
               + "Using default localhost.");
@@ -311,6 +316,10 @@ public final class TestNGCommandLineArgs {
       }
     }
 
+    for (Map.Entry entry : arguments.entrySet())
+    {
+      LOGGER.debug("parseCommandLine argument: \"" + entry.getKey() + "\" = \"" + entry.getValue() + "\"");
+    }
     return arguments;
   }
 
@@ -319,11 +328,14 @@ public final class TestNGCommandLineArgs {
    * Expand the command line parameters to take @ parameters into account.
    * When @ is encountered, the content of the file that follows is inserted
    * in the command line
+   * @param originalArgv the original command line parameters
+   * @return the new and enriched command line parameters
    */
   private static String[] expandArgv(String[] originalArgv) {
     List<String> vResult = new ArrayList<String>();
     
     for (String arg : originalArgv) {
+
       if (arg.startsWith("@")) {
         String fileName = arg.substring(1);
         List<String> lines = readFile(fileName);
@@ -340,25 +352,145 @@ public final class TestNGCommandLineArgs {
     }
     
     return vResult.toArray(new String[vResult.size()]);
-  }
-  
+  }   
+   
+   
   /**
-   * Break a line of parameters into individual parameters.
-   * TODO(cbeust):  Handled double quotes
+   * Break a line of parameters into individual parameters as the command line parsing 
+   * would do. The line is assumed to contain only un-escaped double quotes. For example 
+   * the following Java string:
+   * " a    \"command\"\"line\" \"with quotes\"  a command line\" with quotes \"here there"
+   * would yield the following 7 tokens:
+   * a,commandline,with quotes,a,command,line with quotes here,there
+   * @param line the command line parameter to be parsed
+   * @return the list of individual command line tokens
    */
   private static List<String> parseArgs(String line) {
-    List<String> result = new ArrayList<String>();
+    LOGGER.debug("parseArgs line: \"" + line + "\"");
+    final String SPACE = " ";
+    final String DOUBLE_QUOTE = "\"";
     
-    StringTokenizer st = new StringTokenizer(line);
-    while (st.hasMoreTokens()) {
-      result.add(st.nextToken());
+    // If line contains no double quotes, the space character is the only
+    // separator. Easy to do return quickly (logic is also easier to follow)
+    if (line.indexOf(DOUBLE_QUOTE) == -1)
+    {
+      List<String> results = Arrays.asList(line.split(SPACE));
+      for (String result : results)
+      {
+        LOGGER.debug("parseArgs result: \"" + result + "\"");
+      }
+      return results;
     }
     
-    return result;
+    // TODO There must be an easier way to do this with a regular expression.
+    
+    StringTokenizer st = new StringTokenizer(line, SPACE + DOUBLE_QUOTE, true);
+    List<String> results = new ArrayList<String>();
+    
+    /** 
+     * isInDoubleQuote toggles from false to true when we reach a double
+     * quoted string and toggles back to false when we exit. We need to
+     * know if we are in a double quoted string to treat blanks as normal
+     * characters. Out of quotes blanks separate arguments. 
+     * 
+     * The following example shows these toggle points:
+     * 
+     * " a    \"command\"\"line\" \"with quotes\"  a command line\" with quotes \"here there"
+     *        T        F T     F  T            F                 T              F
+     *
+     * If the double quotes are not evenly matched, an exception is thrown.
+     */
+    boolean isInDoubleQuote = false;
+
+    /**
+     * isInArg toggles from false to true when we enter a command line argument
+     * and toggles back to false when we exit. The logic is that we toggle to
+     * true at the first non-whitespace character met. We toggle back to false
+     * at first whitespace character not in double quotes or at end of line. 
+     * 
+     * The following example shows these toggle points:
+     * 
+     * " a    \"command\"\"line\" \"with quotes\"  a command line\" with quotes \"here there"
+     *   TF   T                F  T             F  TFT      FT                             F
+     */
+    boolean isInArg = false;
+
+    /** arg is a string buffer to create the argument by concatenating all tokens
+     * that compose it.
+     * 
+     * The following example shows the token returned by the parser and the 
+     * (spaces, double quotes, others) and resultant argument:
+     * 
+     * Input (argument):
+     * "line\" with quotes \"here"
+     * 
+     * Tokens (9):
+     * line,", ,with, ,quote, ,",here
+     */
+    StringBuffer arg = new StringBuffer();
+    
+    while (st.hasMoreTokens()) {
+      String token = st.nextToken();
+      
+      if (token.equals(SPACE)){
+        if (isInArg){
+          if (isInDoubleQuote){
+            // Spaces within double quotes are treated as normal spaces
+            arg.append(SPACE);
+          }else{
+            // First spaces outside double quotes marks the end of the argument. 
+            isInArg = false;
+            results.add(arg.toString());
+            arg = new StringBuffer();
+          }
+        }
+      }else if (token.equals(DOUBLE_QUOTE)){
+        // If we encounter a double quote, we may be entering a new argument 
+        // (isInArg is false) or continuing the current argument (isInArg is true).
+        isInArg = true;
+        isInDoubleQuote = !isInDoubleQuote;
+      }else{
+        // We we encounter a new token, we may be entering a new argument 
+        // (isInArg is false) or continuing the current argument (isInArg is true).
+        isInArg = true;
+        arg.append(token);
+      }
+    }
+    
+    // In some (most) cases we exit this parsing because there are no tokens left
+    // but we have not encountered a token to indicate that the last argument has
+    // completely been read. For example, if the command line ends with a whitespace
+    // the isInArg will toggle to false and the argument will be completely read.
+    if (isInArg){
+      // End of last argument
+      results.add(arg.toString());
+    }
+    
+    // If we exit the parsing of the command line with an uneven number of double 
+    // quotes, throw an exception.
+    if (isInDoubleQuote)
+    {
+      throw new IllegalArgumentException("Unbalanced double quotes: \"" + line + "\"");
+    }
+    
+    for (String result : results)
+    {
+      LOGGER.debug("parseArgs result: \"" + result + "\"");
+    }
+    
+    return results;
   }
 
+  /**
+   * Reads the file specified by filename and returns the file content as a string.
+   * End of lines are replaced by a space
+   * 
+   * @param fileName the command line filename
+   * @return the file content as a string.
+   */
   public static List<String> readFile(String fileName) {
     List<String> result = new ArrayList<String>();
+
     try {
       //
       // Sets up a file reader to read the file passed on the command line one
@@ -382,15 +514,16 @@ public final class TestNGCommandLineArgs {
       }
 
       bufRead.close();
-
     }
     catch (IOException e) {
-      e.printStackTrace();
+      // TODO CQ why swallow exception here?
+      LOGGER.error("IO exception reading command line file", e);
     }
 
     return result;
+
   }
-  
+    
 
   /**
    * Returns the Class object corresponding to the given name. The name may be
@@ -524,5 +657,4 @@ public final class TestNGCommandLineArgs {
     System.out.println("");
     System.out.println("For details please consult documentation.");
   }
-  
 }

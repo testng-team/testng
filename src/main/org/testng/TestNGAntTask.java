@@ -74,6 +74,7 @@ import org.apache.tools.ant.types.selectors.FilenameSelector;
  * @author Cedric Beust
  */
 public class TestNGAntTask extends Task {
+  
   protected CommandlineJava m_javaCommand;
   
   protected List<FileSet> m_xmlFilesets = new ArrayList<FileSet>();
@@ -86,9 +87,15 @@ public class TestNGAntTask extends Task {
   protected Boolean m_isJUnit;
   private List<String> m_listeners = new ArrayList<String>();
   protected Environment m_environment = new Environment();
+  
+  /** The suite runner name (defaults to TestNG.class.getName(). */
   protected String m_mainClass = TestNG.class.getName();
   protected String m_target;
+  
+  /** True if the temporary file created by the Ant Task for command line parameters 
+   * to TestNG should be preserved after execution. */
   protected boolean m_dump;
+  
   protected boolean m_assertEnabled = true;
   protected boolean m_haltOnFailure;
   protected String m_onHaltTarget;
@@ -141,7 +148,10 @@ public class TestNGAntTask extends Task {
   }
   
   /**
-   * Sets the flag to log the command line.
+   * Sets the flag to log the command line. When verbose is set to true
+   * the command line parameters are stored in a temporary file stored 
+   * in the user's default temporary file directory. The file created is
+   * prefixed with "testng".
    */
   public void setDumpCommand(boolean verbose) {
     m_dump = verbose;
@@ -349,6 +359,11 @@ public class TestNGAntTask extends Task {
     }
   }
   
+  /**
+   * Launches TestNG in a new JVM. 
+   *
+   * {@inheritDoc}
+   */
   @Override
   public void execute() throws BuildException {
     validateOptions();
@@ -452,11 +467,12 @@ public class TestNGAntTask extends Task {
       File f = File.createTempFile("testng", "");
       fileName = f.getAbsolutePath();
       // If the user asked to see the command, preserve the file
-      if (! m_dump) f.deleteOnExit();
+      if (! m_dump) 
+        f.deleteOnExit(); 
       fw = new FileWriter(f);
       bw = new BufferedWriter(fw);
       for (String arg : argv) {
-        bw.write(arg);
+        bw.write(doubleQuote(arg));
         bw.write(" ");
       }
     }
@@ -478,6 +494,9 @@ public class TestNGAntTask extends Task {
     }
     
     createClasspath().setLocation(findJar());
+    
+    // TODO CQ why is this set here and elsewhere
+    cmd.createVmArgument().setValue("-ea");
     
     cmd.createArgument().setValue("@" + fileName);
 
@@ -574,6 +593,13 @@ public class TestNGAntTask extends Task {
     }
   }
 
+  /**
+   * Executes the command line as a new process. 
+   *
+   * @param cmd the command to execute
+   * @param watchdog 
+   * @return the exit status of the subprocess or INVALID. 
+   */
   protected int executeAsForked(CommandlineJava cmd, ExecuteWatchdog watchdog) {
     Execute execute = new Execute(new LogStreamHandler(this, Project.MSG_INFO, Project.MSG_WARN), watchdog);
     execute.setCommandline(cmd.getCommandline());
@@ -598,7 +624,6 @@ public class TestNGAntTask extends Task {
     
     log(cmd.describeCommand(), Project.MSG_VERBOSE);
     int retVal;
-    boolean wasKilled = false;
     try {
       retVal = execute.execute();
     } 
@@ -770,7 +795,15 @@ public class TestNGAntTask extends Task {
     return sb.toString();
   }
   
-  private List<String> fileset(List<FileSet> filesets) throws BuildException {
+  /**
+   * Returns the list of files corresponding to the filesets  
+   *
+   * @param filesets
+   * @return the list of files corresponding to the filesets
+   * @throws BuildException
+   */
+  private List<String> fileset(List<FileSet> filesets) throws BuildException 
+  {
     List<String> files = new ArrayList<String>();
     
     for(Iterator<FileSet> iterator = filesets.iterator(); iterator.hasNext(); ) {
@@ -799,6 +832,20 @@ public class TestNGAntTask extends Task {
 
     return buf.toString();
   }*/
+  
+  /**
+   * Adds double quotes to the command line argument if it contains spaces.
+   * @param pCommandLineArg the command line argument
+   * @return pCommandLineArg in double quotes if it contains space.
+   * 
+   */
+  private static String doubleQuote(String pCommandLineArg){
+    if (pCommandLineArg.indexOf(" ") != -1)
+    {
+      return "\"" + pCommandLineArg + "\"";
+    }
+    return pCommandLineArg;
+  }
   
   /**
    * Creates a string representation of the path.
