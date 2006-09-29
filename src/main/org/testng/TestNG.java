@@ -28,7 +28,6 @@ import org.testng.internal.ClassHelper;
 import org.testng.internal.HostFile;
 import org.testng.internal.Invoker;
 import org.testng.internal.Utils;
-import org.testng.internal.annotations.AnnotationConfiguration;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IAnnotationTransformer;
@@ -37,6 +36,8 @@ import org.testng.internal.annotations.JDK14AnnotationFinder;
 import org.testng.internal.remote.SlavePool;
 import org.testng.internal.thread.IPooledExecutor;
 import org.testng.internal.thread.ThreadUtil;
+import org.testng.internal.version.VersionInfo;
+import org.testng.log4testng.Logger;
 import org.testng.remote.ConnectionInfo;
 import org.testng.remote.RemoteSuiteWorker;
 import org.testng.remote.RemoteTestWorker;
@@ -83,6 +84,9 @@ import org.xml.sax.SAXException;
  * @author <a href = "mailto:the_mindstorm&#64;evolva.ro">Alex Popescu</a>
  */
 public class TestNG {
+  /** This class' log4testng Logger. */
+  private static final Logger LOGGER = Logger.getLogger(TestNG.class);
+  
   /** The default name for a suite launched from the command line */
   public static final String DEFAULT_SUITE_NAME = "Command line suite";
 
@@ -105,7 +109,7 @@ public class TestNG {
   private static TestNG m_instance;
 
   /** Indicates the TestNG JAR version (JDK 1.4 or JDK 5.0+). */  
-  private static boolean m_isJdk14;
+  private static final boolean m_isJdk14 = VersionInfo.IS_JDK14;
 
   protected List<XmlSuite> m_suites = new ArrayList<XmlSuite>();
   protected List<XmlSuite> m_cmdlineSuites;
@@ -173,7 +177,6 @@ public class TestNG {
 
   private void init(boolean useDefaultListeners) {
     m_instance = this;
-    setTestNGVersion();
     
     // Set the default target for this version of TestNG
     // TODO CQ Since we have two code bases shoulld'nt this simply be part 
@@ -1029,8 +1032,6 @@ public class TestNG {
   public static TestNG privateMain(String[] argv, ITestListener listener) {
     Map cmdLineArgs = TestNGCommandLineArgs.parseCommandLine(argv);
 
-    setTestNGVersion();
-
     TestNG result = new TestNG();
     if (null != listener) {
       result.addListener(listener);
@@ -1127,18 +1128,12 @@ public class TestNG {
   }
 
   /**
-   * Establish if TestNG for JDK1.4 or JDK 5.0+.
+   * @deprecated The TestNG version is now established at load time. This 
+   * method is not required anymore and is now a no-op. 
    */
+  @Deprecated
   public static void setTestNGVersion() {
-    // TODO CQ why go through all this when there are two code bases 
-    // and thus an easy way to get the version? 
-    try {
-      Class.forName("org.testng.annotations.Test");
-      m_isJdk14 = false;
-    }
-    catch(ClassNotFoundException ex) {
-      m_isJdk14 = true;
-    }
+    LOGGER.info("setTestNGVersion has been deprecated.");
   }
 
   /**
