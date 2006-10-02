@@ -1079,6 +1079,11 @@ public class TestNG {
       result.setJUnit((Boolean) cmdLineArgs.get(TestNGCommandLineArgs.JUNIT_DEF_OPT));
       result.setHostFile((String) cmdLineArgs.get(TestNGCommandLineArgs.HOSTFILE_OPT));
       
+      String parallelMode = (String) cmdLineArgs.get(TestNGCommandLineArgs.PARALLEL_MODE);
+      if (parallelMode != null) {
+        result.setParallel(parallelMode);
+      }
+      
       String threadCount = (String) cmdLineArgs.get(TestNGCommandLineArgs.THREAD_COUNT);
       if (threadCount != null) {
         result.setThreadCount(Integer.parseInt(threadCount));

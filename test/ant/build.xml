@@ -22,12 +22,15 @@
   	
     <testng classpath="build;${testng.jar}"
             outputdir="test-output"
-  	    threadcount="7"
+  	    parallel="methods"
+  	    threadcount="5"
 	    dumpCommand = "true"
     	listeners = "org.testng.reporters.FailedReporter, org.testng.reporters.DotTestListener"
+    	haltonfailure="true"
     	>
         <classfileset dir="build">
         	<include name="NoPackageTest.class" />
+        	<include name="MultipleThreadTest.class" />
         </classfileset>
     </testng>
 

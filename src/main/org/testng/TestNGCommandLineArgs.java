@@ -60,6 +60,7 @@ public final class TestNGCommandLineArgs {
   public static final String HOSTFILE_OPT = "-hostfile";
   public static final String THREAD_COUNT = "-threadcount";
   public static final String USE_DEFAULT_LISTENERS = "-usedefaultlisteners";
+  public static final String PARALLEL_MODE = "-parallel";
 
   /** 
    * When given a file name to form a class name, the file name is parsed and divided 
@@ -277,12 +278,18 @@ public final class TestNGCommandLineArgs {
         arguments.put(HOSTFILE_OPT, hostFile);
         i++;
       }
-      else if (THREAD_COUNT.equalsIgnoreCase(argv[i])) {
-        if ((i + 1) < argv.length) {
-          arguments.put(THREAD_COUNT, argv[i + 1]);
-          i++;
+      else if (PARALLEL_MODE.equalsIgnoreCase(argv[i])) {
+          if ((i + 1) < argv.length) {
+            arguments.put(PARALLEL_MODE, argv[i + 1]);
+            i++;
+          }
         }
-      }
+      else if (THREAD_COUNT.equalsIgnoreCase(argv[i])) {
+          if ((i + 1) < argv.length) {
+            arguments.put(THREAD_COUNT, argv[i + 1]);
+            i++;
+          }
+        }
       else if (USE_DEFAULT_LISTENERS.equalsIgnoreCase(argv[i])) {
         if ((i + 1) < argv.length) {
           arguments.put(USE_DEFAULT_LISTENERS, argv[i + 1]);
@@ -650,9 +657,13 @@ public final class TestNGCommandLineArgs {
         + " and/or "
         + ISuiteListener.class.getName()
         + "]");
+    System.out.println("[" + PARALLEL_MODE
+            + " methods|tests"
+            +"]");
+    System.out.println("\t\trun tests in parallel using the specified mode");
     System.out.println("[" + THREAD_COUNT
-        + " number of threads to use"
-        + "]");
+            + " number of threads to use when running tests in parallel"
+            + "]");
     System.out.println("[suite definition files*]");
     System.out.println("");
     System.out.println("For details please consult documentation.");

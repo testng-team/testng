@@ -42,12 +42,14 @@ import org.apache.tools.ant.types.selectors.FilenameSelector;
  * <li>junit (attribute)</li>
  * <li>listener (attribute)</li>
  * <li>outputdir (attribute)</li>
+ * <li>parallel (attribute)</li>
  * <li>reporter (attribute)</li>
  * <li>sourcedir (attribute)</li>
  * <li>sourcedirref (attribute)</li>
  * <li>suiterunnerclass (attribute)</li>
  * <li>target (attribute)</li>
  * <li>testjar (attribute)</li>
+ * <li>threadcount (attribute)</li>
  * <li>verbose (attribute)</li>
  * </ul>
  * 
@@ -106,13 +108,18 @@ public class TestNGAntTask extends Task {
   protected String m_fspPropertyName;
   protected String m_includedGroups;
   protected String m_excludedGroups;
+  protected String m_parallelMode;
   protected String m_threadCount;
   public String m_useDefaultListeners;
   
+  public void setParallel(String parallel) {
+	  m_parallelMode = parallel;
+	  }
+	  
   public void setThreadCount(String threadCount) {
-    m_threadCount = threadCount;
-  }
-  
+	    m_threadCount = threadCount;
+	  }
+	  
   public void setUseDefaultListeners(String f) {
     m_useDefaultListeners = f;
   }
@@ -447,6 +454,11 @@ public class TestNGAntTask extends Task {
         argv.add(TestNGCommandLineArgs.LISTENER_COMMAND_OPT);
         argv.add(listener);
       }
+    }
+    
+    if (m_parallelMode != null) {
+      argv.add(TestNGCommandLineArgs.PARALLEL_MODE);
+      argv.add(m_parallelMode);
     }
     
     if (m_threadCount != null) {

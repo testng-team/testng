@@ -73,10 +73,10 @@
 
 
   <target name="dev"
-          depends="prepare,validate,copy-resources,build,dist-jar,test-15,test-14" />
+          depends="prepare,validate,copy-resources,build,dist-jar,test-15,test-14,test-ant" />
 
   <target name="all"
-          depends="prepare,validate,copy-resources,build,dist-jar,test-15,test-14,javadocs,dist" />
+          depends="prepare,validate,copy-resources,build,dist-jar,test-15,test-14,test-ant,javadocs,dist" />
 
   <target name="build" depends="compile-14,compile-15,dist-jar" />
 
@@ -163,6 +163,11 @@
   <target name="test-14">
     <ant inheritall="no" antfile="test-14/build.xml" />
     <ant inheritall="no" antfile="test-14/v4/build.xml" />
+  </target>
+	
+  <target name="test-ant">
+    <echo message="                                 -- Testing ant testng task functionality --" />
+  	<ant inheritall="no" antfile="test/ant/build.xml" />
   </target>
 
   <!-- ==================================================================== -->
