@@ -23,6 +23,7 @@
 		<fileset dir="${lib.dir}">
 			<include name="junit.jar"/>
 			<include name="${beanshell.jar}"/>
+			<include name="${qdox.jar}"/>
 		</fileset>
   </path>
 
@@ -69,14 +70,14 @@ TESTNG.REPORT.DIR=${testng.report.dir}
   <path id="run.cp">
 		<path refid="compile.cp"/>
 		<pathelement location="${test.build.dir}"/>
-		<pathelement location="${lib.dir}/qdox-1.5.jar"/>
+		<pathelement location="${lib.dir}/${qdox.jar}"/>
 		<pathelement location="${java.home}/../lib/tools.jar"/>
   </path>
 
 	<path id="run14.cp">
 		<path refid="compile.cp" />
 		<pathelement location="${test14.build.dir}" />
-		<pathelement location="${lib.dir}/qdox-1.5.jar" />
+		<pathelement location="${lib.dir}/${qdox.jar}" />
 		<pathelement location="${java.home}/../lib/tools.jar" />
 	</path>
 		

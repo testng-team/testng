@@ -73,7 +73,7 @@ public class JDK14TagFactory {
     return result;
   }
   
-  private String getTagName(Class annotationClass) {
+  public String getTagName(Class annotationClass) {
     String result = (String) m_annotationMap.get(annotationClass); 
     Assert.assertNotNull(result, "No tag found for " + annotationClass);
     return result;

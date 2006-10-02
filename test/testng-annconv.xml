@@ -1,0 +1,14 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+  
+<suite name="Converter" verbose="3" parallel="false">
+  
+    <test name="AnnotationConverter">
+    <parameter name="source-directory" value="src/test/sample" />
+    <classes>
+    <class name="test.converter.AnnotationConverterTest" />
+    </classes>
+    </test>
+
+
+</suite>
+

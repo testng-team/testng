@@ -9,7 +9,7 @@
       <path refid="compile.cp"/>
 -->
 		<pathelement location="build" />
-		<pathelement location="${lib.dir}/qdox-1.5.jar"/>
+		<pathelement location="${lib.dir}/${qdox.jar}"/>
 		<pathelement location="${java.home}/../lib/tools.jar"/>
 	</path>
 

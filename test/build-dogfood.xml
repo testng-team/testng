@@ -1,0 +1,25 @@
+<project name="testng" default="run" basedir=".">
+	<property name="testng.home" value="${basedir}/../" />
+    <property name="lib.dir" value="${testng.home}/lib"/>
+ 	<property file="../build.properties"/>
+
+	<path id="run.cp">
+		<pathelement location="../z_build" />
+		<pathelement location="${java.home}/../lib/tools.jar"/>
+	</path>
+
+	<target name="run" description="Run tests" >
+		<echo>Defining task from ${basedir}/../${jdk15.testng.jar}</echo>
+		<taskdef name="testng"
+              classname="org.testng.TestNGAntTask"
+              classpath="${basedir}/../${jdk15.testng.jar}" />
+
+		<testng classpathref="run.cp"
+        dumpcommand="true" verbose="9" outputdir="test-outputs" haltonfailure="true">
+			<xmlfileset dir="${basedir}">
+				<include name="testng-annconv.xml" />
+			</xmlfileset>
+		</testng>
+	</target>
+
+</project>
