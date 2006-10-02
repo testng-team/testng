@@ -662,14 +662,25 @@ public class SuiteHTMLReporter implements IReporter {
     tableOfContents.append("</table>\n");
   }
   
+  /**
+   * Writes a property file for each suite result.
+   *
+   * @param xmlSuite
+   * @param suite
+   */
   private void generateSuites(XmlSuite xmlSuite, ISuite suite) {
     Map<String, ISuiteResult> suiteResults = suite.getResults();
 
+    // TODO CQ why not iterate over entry set if were going to use the key to get the value?
     for (String propertyFileName : suiteResults.keySet()) {
+      
+      // TODO CQ why this cast to SuiteResult instead of ISuiteResult? 
       SuiteResult sr = (SuiteResult) suiteResults.get(propertyFileName);
       ITestContext testContext = sr.getTestContext();
       
       StringBuffer sb = new StringBuffer();
+      
+      // TODO CQ why not iterate over entry set if were going to use the key to get the value?
       for (String name : suiteResults.keySet()) {
         ISuiteResult suiteResult = suiteResults.get(name);
         sb.append(suiteResult.toString());

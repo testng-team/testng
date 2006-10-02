@@ -133,14 +133,38 @@ public final class Utils {
     return result;
   }
 
+  /**
+   * Writes the content of the sb string buffer to the file named filename in outputDir. If 
+   * outDir does not exist, it is created.
+   *
+   * @param outputDir the output directory (may not exist).
+   * @param fileName the filename
+   * @param sb the file content
+   */
   public static void writeFile(String outputDir, String fileName, StringBuffer sb) {
     writeFile(outputDir, fileName, sb.toString());
   }
 
+  /**
+   * Writes the content of the sb string to the file named filename in outputDir. If 
+   * outDir does not exist, it is created.
+   *
+   * @param outputDir the ouptut directory (may not exist).
+   * @param fileName the filename
+   * @param sb the file content
+   */
   public static void writeFile(String outputDir, String fileName, String sb) {
     writeFile(new File(outputDir), fileName, sb);
   }
 
+  /**
+   * Writes the content of the sb string to the file named filename in outDir. If 
+   * outDir does not exist, it is created.
+   *
+   * @param outDir the output directory (may not exist).
+   * @param fileName the filename
+   * @param sb the file content
+   */
   public static void writeFile(File outDir, String fileName, String sb) {
     try {
       if (!outDir.exists()) {

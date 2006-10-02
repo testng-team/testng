@@ -79,6 +79,10 @@ private String m_propertyFileName =  null;
     return result;
   }
   
+  /**
+   * Returns the test context name. 
+   * {@inheritDoc}
+   */
   @Override
   public String toString() {
     return "[SuiteResult " + getTestContext().getName() + "]";
