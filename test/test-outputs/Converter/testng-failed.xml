@@ -1,4 +1,0 @@
-<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite thread-count="5" verbose="9" name="Failed suite [Converter]" parallel="false" annotations="JDK5">
-  <parameter name="source-directory" value="test/src/test/sample"/>
-</suite>
