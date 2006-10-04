@@ -432,12 +432,12 @@ public class TestNGAntTask extends Task {
       argv.add(srcPath);
     }
     
-    if(null != m_includedGroups) {
+    if(null != m_includedGroups&&!"".equals(m_includedGroups)) {
       argv.add(TestNGCommandLineArgs.GROUPS_COMMAND_OPT);
       argv.add(m_includedGroups);
     }
     
-    if(null != m_excludedGroups) {
+    if(null != m_excludedGroups&&!"".equals(m_excludedGroups)) {
       argv.add(TestNGCommandLineArgs.EXCLUDED_GROUPS_COMMAND_OPT);
       argv.add(m_excludedGroups);
     }
