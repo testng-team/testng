@@ -338,14 +338,14 @@ public class Invoker implements IInvoker {
    *
    */
   private List<ITestResult> invokeMethod(Object[] instances,
-                                              final ITestNGMethod tm,
-                                              Object[] parameterValues,
-                                              XmlSuite suite,
-                                              Map<String, String> params,
-                                              ITestClass testClass,
-                                              ITestNGMethod[] beforeMethods,
-                                              ITestNGMethod[] afterMethods,
-                                              ConfigurationGroupMethods groupMethods)
+                                         final ITestNGMethod tm,
+                                         Object[] parameterValues,
+                                         XmlSuite suite,
+                                         Map<String, String> params,
+                                         ITestClass testClass,
+                                         ITestNGMethod[] beforeMethods,
+                                         ITestNGMethod[] afterMethods,
+                                         ConfigurationGroupMethods groupMethods)
   {
     List<ITestResult> results = new ArrayList<ITestResult>();
     Method thisMethod= null;
@@ -394,8 +394,7 @@ public class Invoker implements IInvoker {
         thisMethod= tm.getMethod();
 
         if(confInvocationPassed(thisMethod.getDeclaringClass())) {
-          log(3,
-              "Invoking " + thisMethod.getDeclaringClass().getName() + "." + thisMethod.getName());
+          log(3, "Invoking " + thisMethod.getDeclaringClass().getName() + "." + thisMethod.getName());
 
           // If no timeOut, just invoke the method
           if(timeOut <= 0) {
@@ -420,7 +419,6 @@ public class Invoker implements IInvoker {
             }
           }
           else {
-
             //
             // Timeout was specified, use an Executor/CountDownLatch
             //
@@ -431,10 +429,10 @@ public class Invoker implements IInvoker {
             try {
               Reporter.setCurrentTestResult(testResult);
               InvokeMethodRunnable imr = 
-                new InvokeMethodRunnable(tm,
-                  instances[i],
-                  parameterValues,
-                  done);
+                  new InvokeMethodRunnable(tm,
+                      instances[i],
+                      parameterValues,
+                      done);
               IFutureResult future= exec.submitRunnable(imr);
               exec.shutdown();
               boolean finished= exec.awaitTermination(timeOut);
@@ -944,36 +942,18 @@ public class Invoker implements IInvoker {
 
   private List<ITestResult> runWorkers(ITestNGMethod testMethod, List<TestMethodWorker> workers, int threadPoolSize)
   {
+    
     long maxTimeOut= 10 * 1000; // 10 seconds
-    IPooledExecutor executor= ThreadUtil.createPooledExecutor(threadPoolSize);
 
     for(TestMethodWorker tmw : workers) {
       long mt= tmw.getMaxTimeOut();
       if(mt > maxTimeOut) {
         maxTimeOut= mt;
       }
-
-      executor.execute(tmw);
     }
-    try {
-      executor.shutdown();
-      log(3, "Waiting for termination, timeout:" + maxTimeOut);
-      executor.awaitTermination(maxTimeOut);
-      if(executor.isTerminated()) {
-        log(3, "Timeout done, successful termination");
-      }
-      else {
-        log(3, "Timeout done, execution not finished, waiting complete termination");
-        while(!executor.isTerminated()) {
-            executor.awaitTermination(100L);
-        }
-        log(3, "Successful complete termination");
-      }
-    }
-    catch(InterruptedException e) {
-      e.printStackTrace();
-    }    
     
+    ThreadUtil.execute(workers, threadPoolSize, maxTimeOut);
+
     //
     // Collect all the TestResults
     //

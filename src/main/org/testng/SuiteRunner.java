@@ -66,12 +66,6 @@ public class SuiteRunner implements ISuite, Serializable {
     this(suite, outputDir, null, false, finders);
   }
 
-//  public SuiteRunner(XmlSuite suite, String outputDir, 
-//      boolean reportResults, IAnnotationTransformer transformer) 
-//  {
-//    this(suite, outputDir, null, reportResults, transformer);
-//  }
-  
   public SuiteRunner(XmlSuite suite, String outputDir, 
       ITestRunnerFactory runnerFactory, IAnnotationFinder[] finders) 
   {
@@ -96,8 +90,14 @@ public class SuiteRunner implements ISuite, Serializable {
     m_suite = suite;
     m_useDefaultListeners = useDefaultListeners;
     m_tmpRunnerFactory= runnerFactory;
-    m_javadocAnnotationFinder= finders[0];
-    m_jdkAnnotationFinder= finders[1];
+    // TODO: very ugly code, but how to change it?
+    if(null != finders) {
+      m_javadocAnnotationFinder= finders[0];
+      
+      if(finders.length == 2) {
+        m_jdkAnnotationFinder= finders[1];
+      }
+    }
     setOutputDir(outputDir);
   }
 
@@ -148,7 +148,8 @@ public class SuiteRunner implements ISuite, Serializable {
     }
     else {
       factory = new ProxyTestRunnerFactory(
-          m_testlisteners.toArray(new ITestListener[m_testlisteners.size()]), m_tmpRunnerFactory);
+          m_testlisteners.toArray(new ITestListener[m_testlisteners.size()]), 
+          m_tmpRunnerFactory);
     }
     
     return factory;
@@ -240,7 +241,7 @@ public class SuiteRunner implements ISuite, Serializable {
         runSequentially();
       } 
       else {
-        runSuiteInParallel();
+        runConcurrently();
       }
   
       //
@@ -278,23 +279,13 @@ public class SuiteRunner implements ISuite, Serializable {
   }
 
 
-  private void runSuiteInParallel() {
-    // Default timeout for <test>:  2 minutes
-    long maxTimeOut = m_suite.getTimeOut(120 * 1000);
-    int nPoolSize = m_testRunners.size(); // Customize pool size?
-    IPooledExecutor executor = ThreadUtil.createPooledExecutor(nPoolSize);
-
-    for (TestRunner tr : m_testRunners) {
-      executor.execute(new SuiteWorker(tr));
+  private void runConcurrently() {
+    List<Runnable> tasks= new ArrayList<Runnable>(m_testRunners.size());
+    for(TestRunner tr: m_testRunners) {
+      tasks.add(new SuiteWorker(tr));
     }
-
-    try {
-      executor.shutdown();
-      executor.awaitTermination(maxTimeOut);
-    }
-    catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    
+    ThreadUtil.execute(tasks, m_testRunners.size(), m_suite.getTimeOut(120 * 1000));
   }
 
   private class SuiteWorker implements Runnable {
