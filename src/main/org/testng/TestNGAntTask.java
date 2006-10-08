@@ -5,16 +5,15 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
-
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.apache.tools.ant.BuildException;
@@ -76,6 +75,13 @@ import org.apache.tools.ant.types.selectors.FilenameSelector;
  * <li>skippedProperty (attribute)</li>
  * </ul>
  *
+ * Debug information:
+ * <ul>
+ * <li>dumpCommand (boolean)</li>
+ * <li>dumpEnv (boolean)</li>
+ * <li>dumpSys (boolean)</li>
+ * </ul>
+ * 
  * @author <a href="mailto:the_mindstorm@evolva.ro">Alexandru Popescu</a>
  * @author Cedric Beust
  */
@@ -101,7 +107,9 @@ public class TestNGAntTask extends Task {
   /** True if the temporary file created by the Ant Task for command line parameters
    * to TestNG should be preserved after execution. */
   protected boolean m_dump;
-
+  private boolean m_dumpEnv;
+  private boolean m_dumpSys;
+  
   protected boolean m_assertEnabled= true;
   protected boolean m_haltOnFailure;
   protected String m_onHaltTarget;
@@ -167,6 +175,24 @@ public class TestNGAntTask extends Task {
     m_dump= verbose;
   }
 
+  /**
+   * Sets the flag to write on <code>System.out</code> the Ant
+   * Environment properties.
+   * 
+   * @param verbose <tt>true</tt> for printing 
+   */
+  public void setDumpEnv(boolean verbose) {
+    m_dumpEnv= verbose;
+  }
+  
+  /**
+   * Sets te flag to write on <code>System.out</code> the system properties.
+   * @param verbose <tt>true</tt> for dumping the info
+   */
+  public void setDumpSys(boolean verbose) {
+    m_dumpSys= verbose;
+  }
+  
   public void setEnableAssert(boolean flag) {
     m_assertEnabled= flag;
   }
@@ -509,9 +535,7 @@ public class TestNGAntTask extends Task {
       }
     }
 
-    if(m_dump) {
-      dumpCommand(fileName);
-    }
+    printDebugInfo(fileName);
 
     createClasspath().setLocation(findJar());
 
@@ -527,6 +551,32 @@ public class TestNGAntTask extends Task {
     actOnResult(exitValue, wasKilled);
   }
 
+  private void printDebugInfo(String fileName) {
+    if(m_dumpSys) {
+      System.out.println("* SYSTEM PROPERTIES *");
+      Properties props= System.getProperties();
+      Enumeration en= props.propertyNames();
+      while(en.hasMoreElements()) {
+        String key= (String) en.nextElement();
+        System.out.println(key + ": " + props.getProperty(key));
+      }
+      System.out.println("");
+    }
+    if(m_dumpEnv) {
+      String[] vars= m_environment.getVariables();
+      if(null != vars && vars.length > 0) {
+        System.out.println("* ENVIRONMENT *");
+        for(String v: vars) {
+          System.out.println(v);
+        }
+        System.out.println("");
+      }
+    }
+    if(m_dump) {
+      dumpCommand(fileName);
+    }
+  }
+  
   private void ppp(String string) {
     System.out.println("[TestNGAntTask] " + string);
   }
