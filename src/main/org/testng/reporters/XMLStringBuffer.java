@@ -8,13 +8,22 @@ import java.util.Stack;
  * and popping tags from a stack maintained internally.
  * 
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a> Jul 21, 2003
- *
+ * TODO CQ have a method to set the XML version and encoding
  */
 public class XMLStringBuffer {
-  private StringBuffer m_buffer;
-  private Stack<Tag> m_tagStack = new Stack<Tag>();
-  private String m_defaultIndentIncrement = "  ";
-  private String m_defaultStart = "";
+  /** End of line */
+  private static final String EOL = System.getProperty("line.separator");
+  
+  /** Tab space indent for XML document */
+  private static final String DEFAULT_INDENT_INCREMENT = "  ";
+  
+  /** The buffer to hold the xml document */
+  private final StringBuffer m_buffer;
+  
+  /** The stack of tags to make sure XML document is well formed. */
+  private final Stack<Tag> m_tagStack = new Stack<Tag>();
+
+  /** A string of space character representing the current indentation. */
   private String m_currentIndent = "";
   
   /**
@@ -23,16 +32,16 @@ public class XMLStringBuffer {
    * to start the generation.
    */
   public XMLStringBuffer(String start) {
-    init(new StringBuffer(), start);
+    this(new StringBuffer(), start);
   }
   
   /**
    * Set the doctype for this document.
    * 
-   * @param docType The DOCTYPE, without the "!DOCTYPE " string
+   * @param docType The DOCTYPE string, without the "&lt;!DOCTYPE " "&gt;"
    */
   public void setDocType(String docType) {
-    m_buffer.append("<!DOCTYPE " + docType + ">\n");
+    m_buffer.append("<!DOCTYPE " + docType + ">" + EOL);
   }
   
   /**
@@ -43,13 +52,10 @@ public class XMLStringBuffer {
    * to start the generation.
    */
   public XMLStringBuffer(StringBuffer buffer, String start) {
-    init(buffer, start);
-  }
-  
-  private void init(StringBuffer buffer, String start) {
     m_buffer = buffer;
     m_currentIndent = start;
   }
+  
   
   /**
    * Push a new tag.  Its value is stored and will be compared against the parameter
@@ -62,7 +68,7 @@ public class XMLStringBuffer {
   public void push(String tagName, String schema, Properties attributes) {
     XMLUtils.xmlOpen(m_buffer, m_currentIndent, tagName + schema, attributes);
     m_tagStack.push(new Tag(m_currentIndent, tagName));
-    m_currentIndent += m_defaultIndentIncrement;
+    m_currentIndent += DEFAULT_INDENT_INCREMENT;
   }
 
   /**
@@ -111,13 +117,14 @@ public class XMLStringBuffer {
    * 
    * @param tagName The name of the tag this pop() is supposed to match.
    */
-  public void pop(String tagName) throws AssertionError {
-    m_currentIndent = m_currentIndent.substring(0, m_currentIndent.length() - m_defaultIndentIncrement.length());
-    Tag t = (Tag) m_tagStack.pop();
+  public void pop(String tagName) {
+    m_currentIndent = m_currentIndent.substring(DEFAULT_INDENT_INCREMENT.length());
+    Tag t = m_tagStack.pop();
     if (null != tagName) {
-      if (! tagName.equals(t.tagName)) {
+      if (!tagName.equals(t.tagName)) {
+        // TODO Is it normal to throw an Error here?
         throw new AssertionError(
-        "Popping the wrong tag: " + t.tagName + " but expected " + tagName);
+            "Popping the wrong tag: " + t.tagName + " but expected " + tagName);
       }
     }
     XMLUtils.xmlClose(m_buffer, m_currentIndent, t.tagName);
@@ -207,7 +214,7 @@ public class XMLStringBuffer {
   public void addEmptyElement(String tagName, Properties attributes) {
     m_buffer.append(m_currentIndent).append("<").append(tagName);
     XMLUtils.appendAttributes(m_buffer, attributes);
-    m_buffer.append("/>\n");
+    m_buffer.append("/>").append(EOL);
   }
   
   private static void ppp(String s) {
@@ -218,7 +225,7 @@ public class XMLStringBuffer {
    * Add a CDATA tag.
    */
   public void addCDATA(String content) {
-    m_buffer.append(m_currentIndent).append("<![CDATA[").append(content).append("]]>\n");
+    m_buffer.append(m_currentIndent).append("<![CDATA[").append(content).append("]]>" + EOL);
   }
   
   /**
@@ -252,7 +259,7 @@ public class XMLStringBuffer {
     
     System.out.println(result.toString());
     
-    assert "<family>\n<cedric>true</cedric>\n<alois>true</alois>\n</family>\n"
+    assert ("<family>" + EOL + "<cedric>true</cedric>" + EOL + "<alois>true</alois>" + EOL + "</family>"  + EOL)
       .equals(result.toString());
   }
 }
@@ -261,8 +268,8 @@ public class XMLStringBuffer {
 ////////////////////////
 
 class Tag {
-  public String tagName;
-  public String indent;
+  public final String tagName;
+  public final String indent;
   
   public Tag(String ind, String n) {
     tagName = n;
