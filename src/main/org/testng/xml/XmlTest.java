@@ -8,37 +8,45 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.testng.TestNG;
+import org.testng.internal.AnnotationTypeEnum;
 import org.testng.reporters.XMLStringBuffer;
 
 /**
- * This class describes the tag <test>  in testng.xml.
+ * This class describes the tag &lt;test&gt;  in testng.xml.
  * 
  * @author <a href = "mailto:cedric&#64;beust.com">Cedric Beust</a>
  * @author <a href = 'mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class XmlTest implements Serializable, Cloneable {
-  private XmlSuite m_suite = null;
+  private final XmlSuite m_suite;
   private String m_name = TestNG.DEFAULT_TEST_NAME;
-  private Integer m_verbose = null;
-  private Boolean m_isJUnit = null;
+  private Integer m_verbose;
+  private Boolean m_isJUnit;
   private List<XmlClass> m_xmlClasses = new ArrayList<XmlClass>();
   
   private List<String> m_includedGroups = new ArrayList<String>();
   private List<String> m_excludedGroups = new ArrayList<String>();
 
-  private Map<String, List<String>> m_metaGroups = new HashMap<String, List<String>>();
+  private final Map<String, List<String>> m_metaGroups = new HashMap<String, List<String>>();
   private Map<String, String> m_parameters = new HashMap<String, String>();
-  private String m_parallel = null;
-  private String m_annotations = null;
+  private String m_parallel;
+  
+  /** */
+  private AnnotationTypeEnum m_annotations;
   
   // BeanShell expression
-  private String m_expression = null;
+  private String m_expression;
   private List<XmlMethodSelector> m_methodSelectors = new ArrayList<XmlMethodSelector>();
   // test level packages
   private List<XmlPackage> m_xmlPackages = new ArrayList<XmlPackage>();
   
-  private String m_timeOut = null;
+  private String m_timeOut;
 
+  /**
+   * Constructs a <code>XmlTest</code> and adds it to suite's list of tests. 
+   *
+   * @param suite the parent suite.
+   */
   public XmlTest(XmlSuite suite) {
     m_suite = suite;
     m_suite.getTests().add(this);
@@ -60,6 +68,10 @@ public class XmlTest implements Serializable, Cloneable {
     m_methodSelectors = methodSelectors;
   }
   
+  /**
+   * Returns the suite this test is part of.
+   * @return the suite this test is part of.
+   */
   public XmlSuite getSuite() {
     return m_suite;
   }
@@ -72,7 +84,9 @@ public class XmlTest implements Serializable, Cloneable {
   }
   
   /**
+   * Sets the XML Classes.
    * @param classes The classes to set.
+   * @deprecated use setXmlClasses
    */
   public void setClassNames(List<XmlClass> classes) {
     m_xmlClasses = classes;
@@ -85,6 +99,10 @@ public class XmlTest implements Serializable, Cloneable {
     return m_xmlClasses;
   }
   
+  /**
+   * Sets the XML Classes.
+   * @param classes The classes to set.
+   */
   public void setXmlClasses(List<XmlClass> classes) {
     m_xmlClasses = classes;
   }
@@ -248,19 +266,11 @@ public class XmlTest implements Serializable, Cloneable {
 
   
   public String getAnnotations() {
-    String result = m_annotations;
-    if (null != m_annotations) {
-      result = m_annotations;
-    }
-    else {
-      result = m_suite.getAnnotations();
-    }
-    
-    return result;
+    return null != m_annotations ? m_annotations.toString() : m_suite.getAnnotations();
   }
   
   public void setAnnotations(String annotations) {
-    m_annotations = annotations;
+    m_annotations = AnnotationTypeEnum.valueOf(annotations);
   }
 
   public void setBeanShellExpression(String expression) {
@@ -283,7 +293,7 @@ public class XmlTest implements Serializable, Cloneable {
       p.setProperty("verbose", m_verbose.toString());
     }
     if (null != m_annotations) {
-      p.setProperty("annotations", m_annotations);
+      p.setProperty("annotations", m_annotations.toString());
     }
     
     xsb.push("test", p);
@@ -431,7 +441,7 @@ public class XmlTest implements Serializable, Cloneable {
    * - groups definitions
    * - parameters
    * 
-   * The &lt;classes&gt; subelement is ignored for the moment.
+   * The &lt;classes&gt; sub element is ignored for the moment.
    * 
    * @param suite
    * @param source

@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.testng.TestNG;
+import org.testng.internal.AnnotationTypeEnum;
+import org.testng.internal.version.VersionInfo;
 import org.testng.reporters.XMLStringBuffer;
 
 /**
@@ -26,10 +28,10 @@ public class XmlSuite implements Serializable, Cloneable {
   public static final String JAVADOC = "javadoc";
 
   /** The JDK50 annotation type ID ("JDK5"). */
-  public static final String JDK5_ANNOTATION_TYPE = TestNG.JDK5_ANNOTATION_TYPE;
+  public static final String JDK5_ANNOTATION_TYPE = AnnotationTypeEnum.JDK5.getName();
   
   /** The JavaDoc annotation type ID ("javadoc"). */
-  public static final String JAVADOC_ANNOTATION_TYPE = TestNG.JAVADOC_ANNOTATION_TYPE;
+  public static final String JAVADOC_ANNOTATION_TYPE = AnnotationTypeEnum.JAVADOC.getName();
   
   /** Parallel modes */
   public static final String PARALLEL_TESTS = "tests";
@@ -37,8 +39,11 @@ public class XmlSuite implements Serializable, Cloneable {
   
   private String m_test;
   
-  /** The suite name. */
-  private String m_name = TestNG.DEFAULT_SUITE_NAME;
+  /** The default suite name TODO CQ is this OK as a default name. */
+  private static final String DEFAULT_SUITE_NAME = TestNG.DEFAULT_SUITE_NAME;
+  
+  /** The suite name (defaults to DEFAULT_SUITE_NAME) */
+  private String m_name = DEFAULT_SUITE_NAME;
   
   /** The suite verbose flag. (0 to 10)*/
   private Integer m_verbose = new Integer(1);
@@ -52,10 +57,10 @@ public class XmlSuite implements Serializable, Cloneable {
   private int m_threadCount = 5;
   
   /** The suite annotation type. */
-  private String m_annotations;
+  private AnnotationTypeEnum m_annotations;
 
   /** The suite default annotation type. */
-  private String m_defaultAnnotations = JDK5_ANNOTATION_TYPE;
+  private AnnotationTypeEnum m_defaultAnnotations = VersionInfo.getDefaultAnnotationType();
   
   /** The packages containing test classes. */
   private List<XmlPackage> m_xmlPackages = new ArrayList<XmlPackage>();
@@ -96,6 +101,7 @@ public class XmlSuite implements Serializable, Cloneable {
 
   /**
    * Returns the parallel mode.
+   * @return the parallel mode.
    */
   public String getParallel() {
     return m_parallel;
@@ -103,6 +109,7 @@ public class XmlSuite implements Serializable, Cloneable {
 
   /**
    * Sets the parallel mode
+   * @param parallel the parallel mode
    */
   public void setParallel(String parallel) {
     m_parallel = parallel;
@@ -265,33 +272,39 @@ public class XmlSuite implements Serializable, Cloneable {
   }
 
   /**
-   * Returns the annotation type.
-   * @return the annotation type.
+   * Returns the annotation type for the suite. If an annotation type has
+   * not been explicitly set, the default annotation type is returned.
+   * @return the annotation type for the suite.
    */
   public String getAnnotations() {
-    return m_annotations != null ? m_annotations : m_defaultAnnotations;
+    return (m_annotations != null ? m_annotations : m_defaultAnnotations).toString();
   }
 
   /**
-   * Sets the overall default annotation (JDK5/javadoc).
-   * It is used to if the annotation attribute of the suite definition
-   * does not specify an explicit value
+   * Sets the overall default annotation type (JDK5/javadoc).
+   * It is used if the annotation attribute of the suite definition
+   * does not specify an explicit value.
    * 
-   * @param annotationType "JDK5" or "javadoc"
-   * @see TestNG#JAVADOC_ANNOTATION_TYPE
-   * @see TestNG#JDK5_ANNOTATION_TYPE
+   * @param annotationType one of the two string constant JAVADOC_ANNOTATION_TYPE or 
+   * JDK5_ANNOTATION_TYPE.
+   * @see #JAVADOC_ANNOTATION_TYPE
+   * @see #JDK5_ANNOTATION_TYPE
    */
   public void setDefaultAnnotations(String annotationType) {
-    m_defaultAnnotations = annotationType;
+    m_defaultAnnotations = AnnotationTypeEnum.valueOf(annotationType);
   }
   
   /**
-   * Sets the annotation type.
-   * 
-   * @param annotations the annotation type ("javadoc" or "JDK5").
+   * Sets the annotation type for the suite. If this value is not explicitly set,
+   * the suite annotation type defaults to the default annotation type. see
+   * setDefaultAnnotations  
+   * @param annotations one of the two string constant JAVADOC_ANNOTATION_TYPE or 
+   * JDK5_ANNOTATION_TYPE.
+   * @see #JAVADOC_ANNOTATION_TYPE
+   * @see #JDK5_ANNOTATION_TYPE
    */
   public void setAnnotations(String annotations) {
-    m_annotations = annotations;
+    m_annotations = AnnotationTypeEnum.valueOf(annotations);
   }
 
   /**
@@ -428,14 +441,31 @@ public class XmlSuite implements Serializable, Cloneable {
     return result;
   }
 
+    /**
+     * Sets the timeout.
+     *
+     * @param timeOut the timeout.
+     */
     public void setTimeOut(String timeOut) {
         m_timeOut = timeOut;
     }
-    
+
+    /**
+     * Returns the timeout.
+     * @return the timeout.
+     */
     public String getTimeOut() {
         return m_timeOut;
     }
     
+    /**
+     * Returns the timeout as a long value specifying the default value to be used if
+     * no timeout was specified.
+     *
+     * @param def the the default value to be used if no timeout was specified.
+     * @return the timeout as a long value specifying the default value to be used if
+     * no timeout was specified.
+     */
     public long getTimeOut(long def) {
         long result = def;
         if (m_timeOut != null) {
@@ -445,10 +475,19 @@ public class XmlSuite implements Serializable, Cloneable {
         return result;
     }
 
+    /**
+     * Sets the suite files.
+     *
+     * @param files the suite files.
+     */
     public void setSuiteFiles(List<String> files) {
       m_suiteFiles = files;
     }
     
+    /**
+     * Returns the suite files.
+     * @return the suite files.
+     */
     public List<String> getSuiteFiles() {
       return m_suiteFiles;
     }

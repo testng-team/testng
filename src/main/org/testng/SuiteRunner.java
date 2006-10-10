@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.IInvoker;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.AnnotationConfiguration;
@@ -381,33 +382,16 @@ public class SuiteRunner implements ISuite, Serializable {
   }
 
   /**
-   * Determines the annotation type to be further used.
+   * Returns the annotation finder for the given annotation type.
+   * @param pAnnotationType the annotation type 
+   * @return the annotation finder for the given annotation type. 
    */
-  public IAnnotationFinder getAnnotationFinder(String type) 
+  public IAnnotationFinder getAnnotationFinder(String pAnnotationType) 
   {
-    IAnnotationFinder annoFinder= null;
+    AnnotationTypeEnum annotationType = AnnotationTypeEnum.valueOf(pAnnotationType);
     
-    if(TestNG.JAVADOC_ANNOTATION_TYPE.equals(type)) {
-      annoFinder= m_javadocAnnotationFinder;
-    }
-    else {
-      annoFinder= m_jdkAnnotationFinder;
-    }
-    
-    if(null == annoFinder) {
-      throw new TestNGException("The annotation finder for " + type + " is not available");
-    }
-    
-    return annoFinder;
+    return annotationType == AnnotationTypeEnum.JDK5 ? m_jdkAnnotationFinder : m_javadocAnnotationFinder; 
   }
-  
-//  public static IAnnotationFinder getAnnotationFinder(int annotationType, 
-//      IAnnotationTransformer annotationTransformer) 
-//  {
-//    AnnotationConfiguration annotConfig= AnnotationConfiguration.getInstance();
-//    annotConfig.initialize(annotationType);
-//    return annotConfig.getAnnotationFinder(annotationTransformer);
-//  }
 
   public static void ppp(String s) {
     System.out.println("[SuiteRunner] " + s);

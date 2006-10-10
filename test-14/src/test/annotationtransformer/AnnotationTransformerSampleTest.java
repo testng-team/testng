@@ -56,7 +56,7 @@ public class AnnotationTransformerSampleTest {
 
   public static void main(String[] argv) {
     TestNG tng = new TestNG();
-    tng.setTarget(TestNG.JAVADOC_ANNOTATION_TYPE);
+    tng.setDefaultAnnotations(TestNG.JAVADOC_ANNOTATION_TYPE);
     tng.setSourcePath("test-14/src");
     tng.setAnnotationTransformer(new MyTransformer());
     tng.setTestClasses(new Class[] { AnnotationTransformerSampleTest.class});

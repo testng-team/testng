@@ -93,7 +93,7 @@ public class ReportTest {
   public void shouldHonorSuiteName() {
     TestNG testng = TestHelper.createTestNG();
     testng.setSourcePath("./test-14/src;src");
-    testng.setTarget("1.4");
+    testng.setDefaultAnnotations(TestNG.JAVADOC_ANNOTATION_TYPE);
     testng.setTestClasses(new Class[] { A.class, B.class });
     String outputDir = testng.getOutputDirectory();
     String dirA = outputDir + File.separatorChar + "SuiteA-JDK14";

@@ -24,6 +24,7 @@ import java.util.Properties;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.HostFile;
 import org.testng.internal.Invoker;
@@ -101,11 +102,10 @@ public class TestNG {
   public static final String SRC_SEPARATOR = ";";
   
   /** The JDK50 annotation type ID ("JDK5").*/
-  public static final String JDK5_ANNOTATION_TYPE = "JDK5";
+  public static final String JDK5_ANNOTATION_TYPE = AnnotationTypeEnum.JDK5.getName();
   
   /** The JavaDoc annotation type ID ("javadoc"). */
-  public static final String JAVADOC_ANNOTATION_TYPE = "javadoc";
-  
+  public static final String JAVADOC_ANNOTATION_TYPE = AnnotationTypeEnum.JAVADOC.getName();
   
   private static TestNG m_instance;
 
@@ -119,8 +119,12 @@ public class TestNG {
   /** The source directories as set by setSourcePath (or testng-sourcedir-override.properties). */
   protected String[] m_sourceDirs;
   
-  /** The annotation type for suites/tests that have not explicitly set this attribute. */
-  protected String m_target = m_isJdk14 ? JAVADOC_ANNOTATION_TYPE : JDK5_ANNOTATION_TYPE;
+  /** 
+   * The annotation type for suites/tests that have not explicitly set this attribute. 
+   * This member used to be protected but has been changed to private use the sewtTarget
+   * method instead.
+   */
+  private AnnotationTypeEnum m_defaultAnnotations = VersionInfo.getDefaultAnnotationType(); 
   
   protected IAnnotationFinder m_javadocAnnotationFinder;
   protected IAnnotationFinder m_jdkAnnotationFinder;
@@ -227,53 +231,36 @@ public class TestNG {
   }
   
   /**
-   * The default annotation type for suites that have not explicitly set the annotation property.
-   * The target is used only in JDK5+.
+   * Sets the default annotation type for suites that have not explicitly set the 
+   * annotation property. The target is used only in JDK5+.
    * @param target the default annotation type. This is one of the two constants 
    * (TestNG.JAVADOC_ANNOTATION_TYPE or TestNG.JDK5_ANNOTATION_TYPE).
    * For backward compatibility reasons we accept "1.4", "1.5". Any other value will
    * default to TestNG.JDK5_ANNOTATION_TYPE.
+   * 
+   * @deprecated use the setDefaultAnnotationType replacement method.
    */
-  public void setTarget(final String target) {
+  @Deprecated
+  public void setTarget(String target) {
     // Target is used only in JDK 1.5 and may get null in JDK 1.4
     if (null == target) {
       return;
     }
-    
-    // The following switch block could be simplified with three test but the intent
-    // is to log at different levels when warning.
-    if (target.equals(JAVADOC_ANNOTATION_TYPE)) {
-      m_target = JAVADOC_ANNOTATION_TYPE;
-    }
-    else if (target.equals(JDK5_ANNOTATION_TYPE)) {
-      m_target = JDK5_ANNOTATION_TYPE;
-    }
-    else if (target.equals("1.4") 
-        || target.toLowerCase().equals(JAVADOC_ANNOTATION_TYPE.toLowerCase())) {
-      // For backward compatibility only
-      m_target = JAVADOC_ANNOTATION_TYPE;
-      LOGGER.info("Illegal target type " + target + " defaulting to " + JAVADOC_ANNOTATION_TYPE);
-    }
-    else if ("1.5".equals(target) 
-        || target.toLowerCase().equals(JDK5_ANNOTATION_TYPE.toLowerCase())) {
-      // For backward compatibility only
-      m_target = JDK5_ANNOTATION_TYPE;
-      LOGGER.info("Illegal target type " + target + " defaulting to " + JDK5_ANNOTATION_TYPE);
-    }
-    else if (target.toLowerCase().equals("jdk15")) {
-      // For backward compatibility only
-      m_target = JDK5_ANNOTATION_TYPE;
-      LOGGER.info("Illegal target type " + target + " defaulting to " + JDK5_ANNOTATION_TYPE);
-    }
-    else {
-      // For backward compatibility only
-      // Log at warn level 
-      // TODO should we make this an error?
-      m_target = JDK5_ANNOTATION_TYPE;
-      LOGGER.warn("Illegal target type " + target + " defaulting to " + JDK5_ANNOTATION_TYPE);
-    }
+    setDefaultAnnotations(target);
   }
 
+  /**
+   * Sets the default annotation type for suites that have not explicitly set the 
+   * annotation property. The target is used only in JDK5+.
+   * @param annotationType the default annotation type. This is one of the two constants 
+   * (TestNG.JAVADOC_ANNOTATION_TYPE or TestNG.JDK5_ANNOTATION_TYPE).
+   * For backward compatibility reasons we accept "1.4", "1.5". Any other value will
+   * default to TestNG.JDK5_ANNOTATION_TYPE.
+   */
+  public void setDefaultAnnotations(String annotationType) {
+    m_defaultAnnotations = AnnotationTypeEnum.valueOf(annotationType);
+  }
+  
   /**
    * Sets the ; separated path of source directories. This is used only with JavaDoc type
    * annotations. The directories do not have to be the root of a class hierarchy. For 
@@ -391,8 +378,12 @@ public class TestNG {
     m_commandLineTestClasses = classes;
   }
   
+  /**
+   * TODO CQ m_defaultAnnotations is only a default, how can we commit to a specific 
+   * annotation finder?
+   */
   private IAnnotationFinder getAnnotationFinder() {
-    return JDK5_ANNOTATION_TYPE.equals(m_target)
+    return AnnotationTypeEnum.JDK5 == m_defaultAnnotations
           ? m_jdkAnnotationFinder
           : m_javadocAnnotationFinder;
   }
@@ -844,7 +835,7 @@ public class TestNG {
           XmlTest tmpTest = new XmlTest(tmpSuite);
           tmpTest.setAnnotations(test.getAnnotations());
           tmpTest.setBeanShellExpression(test.getExpression());
-          tmpTest.setClassNames(test.getXmlClasses());
+          tmpTest.setXmlClasses(test.getXmlClasses());
           tmpTest.setExcludedGroups(test.getExcludedGroups());
           tmpTest.setIncludedGroups(test.getIncludedGroups());
           tmpTest.setJUnit(test.isJUnit());
@@ -933,7 +924,7 @@ public class TestNG {
 
     if (m_suites.size() > 0) {
       for (XmlSuite xmlSuite : m_suites) {
-        xmlSuite.setDefaultAnnotations(m_target);
+        xmlSuite.setDefaultAnnotations(m_defaultAnnotations.toString());
         
         if (null != m_isJUnit) {
           xmlSuite.setJUnit(m_isJUnit);
@@ -1030,8 +1021,7 @@ public class TestNG {
    * @return 
    */
   public static TestNG privateMain(String[] argv, ITestListener listener) {
-    for (int i = 0; i < argv.length; ++i)
-    {
+    for (int i = 0; i < argv.length; ++i) {
       LOGGER.debug("privateMain: argv[" + i + "] = \"" + argv[i] + "\"");
     }
     Map cmdLineArgs = TestNGCommandLineArgs.parseCommandLine(argv);
@@ -1053,7 +1043,11 @@ public class TestNG {
       
       result.setOutputDirectory((String) cmdLineArgs.get(TestNGCommandLineArgs.OUTDIR_COMMAND_OPT));
       result.setSourcePath((String) cmdLineArgs.get(TestNGCommandLineArgs.SRC_COMMAND_OPT));
-      result.setTarget((String) cmdLineArgs.get(TestNGCommandLineArgs.TARGET_COMMAND_OPT));
+
+      // TODO CQ null pointer exception
+      AnnotationTypeEnum annotations = (AnnotationTypeEnum) cmdLineArgs.get(TestNGCommandLineArgs.DEFAULT_ANNOTATIONS_COMMAND_OPT);
+      if (annotations != null)
+        result.setDefaultAnnotations(annotations.getName());
 
       List<String> testClasses = (List<String>) cmdLineArgs.get(TestNGCommandLineArgs.TESTCLASS_COMMAND_OPT);
       if (null != testClasses) {
@@ -1103,7 +1097,7 @@ public class TestNG {
       
       result.run();
     }
-    catch(TestNGException ex) {
+    catch (TestNGException ex) {
       if (TestRunner.getVerbose() > 1) {
         ex.printStackTrace(System.out);
       }

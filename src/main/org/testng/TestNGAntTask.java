@@ -31,6 +31,8 @@ import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
 import org.apache.tools.ant.types.selectors.FilenameSelector;
+import org.testng.internal.AnnotationTypeEnum;
+import org.testng.internal.version.VersionInfo;
 
 /**
  * TestNG settings:
@@ -102,6 +104,8 @@ public class TestNGAntTask extends Task {
 
   /** The suite runner name (defaults to TestNG.class.getName(). */
   protected String m_mainClass= TestNG.class.getName();
+  
+  /** The default annotations (should be renamed to m_defaultAnnotations) */
   protected String m_target;
 
   /** True if the temporary file created by the Ant Task for command line parameters
@@ -342,6 +346,23 @@ public class TestNGAntTask extends Task {
     m_isJUnit= new Boolean(value);
   }
 
+  /**
+   * Sets the default annotation type for suites that have not explicitly set the 
+   * annotation property. The target is used only in JDK5+.
+   * @param defaultAnnotations the default annotation type. This is one of the two constants 
+   * (TestNG.JAVADOC_ANNOTATION_TYPE or TestNG.JDK5_ANNOTATION_TYPE).
+   *
+   * @since 5.2
+   */
+  public void setDefaultAnnotations(String defaultAnnotations) {
+    m_target = defaultAnnotations;
+  }
+
+  /**
+   * @param target 
+   * @deprecated use setDefaultAnnotations
+   */
+  @Deprecated
   public void setTarget(String target) {
     m_target= target;
   }
@@ -445,7 +466,7 @@ public class TestNGAntTask extends Task {
     }
 
     if(null != m_target) {
-      argv.add(TestNGCommandLineArgs.TARGET_COMMAND_OPT);
+      argv.add(TestNGCommandLineArgs.DEFAULT_ANNOTATIONS_COMMAND_OPT);
       argv.add(m_target);
     }
 
@@ -739,40 +760,27 @@ public class TestNGAntTask extends Task {
       throw new BuildException("No classfileset specified while using groups");
     }
 
-    if(usesJavadocAnnotations()) {
-      m_target= null; // reset the target
-
-      if(null == m_sourceDirPath) {
+    if (m_target != null) {
+      try {
+        m_target = AnnotationTypeEnum.valueOf(m_target).getName();
+      } 
+      catch (RuntimeException pEx) {
+        throw new BuildException("Illegal default annotations: " + m_target, pEx);
+      }
+    }
+    
+    if (VersionInfo.IS_JDK14) {
+      if (null == m_sourceDirPath) {
         throw new BuildException("No sourceDir is specified.");
       }
     }
-    else {
-      if(null == m_target) {
-        m_target= "1.5";
-      }
-      else if(!"1.4".equals(m_target) && !"1.5".equals(m_target)) {
-        throw new BuildException("Target attribute value unknown. Must be 1.4 or 1.5.");
-      }
-    }
+
     if(m_onHaltTarget != null) {
       if(!getProject().getTargets().containsKey(m_onHaltTarget)) {
         throw new BuildException("Target " + m_onHaltTarget + " not found in this project");
       }
     }
 
-  }
-
-  private boolean usesJavadocAnnotations() {
-    final String jversion= getJavaCommand().getVmversion();
-
-    if(jversion.startsWith("1.1")
-      || jversion.startsWith("1.2")
-      || jversion.startsWith("1.3")
-      || jversion.startsWith("1.4")) {
-      return true;
-    }
-
-    return false;
   }
 
   private FileSet createFileSet(Reference ref) {

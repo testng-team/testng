@@ -11,8 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Utils;
+import org.testng.internal.version.VersionInfo;
 import org.testng.log4testng.Logger;
 
 /**
@@ -47,8 +49,11 @@ public final class TestNGCommandLineArgs {
   /** The logging level option. */
   public static final String LOG = "-log";
   
-  /** The default target option (for JDK 5.0+) only. */
+  /** @deprecated replaced by DEFAULT_ANNOTATIONS_COMMAND_OPT. */
   public static final String TARGET_COMMAND_OPT = "-target";
+
+  /** The default annotations option (useful in TestNg 15 only). */
+  public static final String DEFAULT_ANNOTATIONS_COMMAND_OPT = "-defaultAnnotations";
   
   public static final String GROUPS_COMMAND_OPT = "-groups";
   public static final String EXCLUDED_GROUPS_COMMAND_OPT = "-excludegroups";
@@ -90,6 +95,7 @@ public final class TestNGCommandLineArgs {
    */
   public static Map parseCommandLine(final String[] originalArgv) {
     // TODO CQ In this method, is this OK to simply ignore invalid parameters?
+    LOGGER.debug("TestNG version: \"" + (VersionInfo.IS_JDK14 ? "14" : "15") + "\"");
     
     Map<String, Object> arguments = new HashMap<String, Object>();
     String[] argv = expandArgv(originalArgv);
@@ -144,13 +150,14 @@ public final class TestNGCommandLineArgs {
       }
       else if (TARGET_COMMAND_OPT.equalsIgnoreCase(argv[i])) {
         if ((i + 1) < argv.length) {
-          if ("1.4".equals(argv[i + 1]) || "1.5".equals(argv[i + 1])) {
-            arguments.put(TARGET_COMMAND_OPT, argv[i + 1]);
-          }
-          else {
-            LOGGER.error(
-                "WARNING: missing/invalid target argument. Must be 1.4 or 1.5. Ignoring");
-          }
+          arguments.put(DEFAULT_ANNOTATIONS_COMMAND_OPT, AnnotationTypeEnum.valueOf(argv[i + 1]));
+          LOGGER.info(TARGET_COMMAND_OPT + " has been deprecated use " + DEFAULT_ANNOTATIONS_COMMAND_OPT);
+          i++;
+        }
+      }
+      else if (DEFAULT_ANNOTATIONS_COMMAND_OPT.equalsIgnoreCase(argv[i])) {
+        if ((i + 1) < argv.length) {
+          arguments.put(DEFAULT_ANNOTATIONS_COMMAND_OPT, AnnotationTypeEnum.valueOf(argv[i + 1]));
           i++;
         }
       }
@@ -635,13 +642,25 @@ public final class TestNGCommandLineArgs {
   public static void usage() {
     System.out.println("Usage:");
     System.out.println("[" + OUTDIR_COMMAND_OPT + " output-directory]");
-    System.out.println("\t\tdefault output directory to : " + "test-output");
+    System.out.println("\t\tdefault output directory to : " + TestNG.DEFAULT_OUTPUTDIR);
     System.out.println("[" + TESTCLASS_COMMAND_OPT 
         + " list of .class files or list of class names]");
     System.out.println("[" + SRC_COMMAND_OPT + " a source directory]");
-    System.out.println("[" + TARGET_COMMAND_OPT + " 1.4 or 1.5]"); 
-    System.out.println("\t\tused only with JDK1.5 to specify the " 
-        + "annotation type used in test classes; default target: 1.5");
+    
+    if (VersionInfo.IS_JDK14) {
+      System.out.println("[" + DEFAULT_ANNOTATIONS_COMMAND_OPT + " " + AnnotationTypeEnum.JAVADOC.getName() + "]");
+      System.out.println("\t\tSpecifies the default annotation type to be used in suites when none is explicitly specified.");
+      System.out.println("\t\tThis version of TestNG (14) only supports " + AnnotationTypeEnum.JAVADOC.getName() + " annotation type.");
+      System.out.println("\t\tFor interface compatibility reasons, we allow this value to be explicitly set to " +
+          AnnotationTypeEnum.JAVADOC.getName() + "\"  ");
+    } else {
+      System.out.println("[" + DEFAULT_ANNOTATIONS_COMMAND_OPT + " " + AnnotationTypeEnum.JAVADOC.getName() + " or " + 
+          AnnotationTypeEnum.JAVADOC.getName() + "]");
+      System.out.println("\t\tSpecifies the default annotation type to be used in suites when none is explicitly");
+          
+      System.out.println("\t\tspecified. This version of TestNG (15) supports both \"" + AnnotationTypeEnum.JAVADOC.getName() + "\" and \"" + AnnotationTypeEnum.JDK5.getName() + "\" annotation types.");
+    }
+
     System.out.println("[" + GROUPS_COMMAND_OPT + " comma-separated list of group names to be run]");
     System.out.println("\t\tworks only with " + TESTCLASS_COMMAND_OPT);
     System.out.println("[" + EXCLUDED_GROUPS_COMMAND_OPT 
