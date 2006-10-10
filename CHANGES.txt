@@ -2,6 +2,8 @@
 ===========================================================================
 5.3
 
+Fixed: Before/After Suite were behaving wrong in parallel execution
+Added: A generic/extensible RemoteTestNG was added to the core
 Fixed: Before/AfterGroup-s were behaving wrong when using invocationCount, dataProvider and threadPoolSize
 Fixed: improved support for running different annotation type tests in the same suite
 Fixed: testng-failed.xml was generated even if there were no failures/skipps

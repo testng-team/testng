@@ -10,6 +10,8 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 
+import org.testng.TestNGException;
+
 /**
  * String based socket based communication.
  *
@@ -27,7 +29,7 @@ public class StringMessageSenderHelper {
   private PrintWriter    m_outStream;
 
   /** Ingoing message stream. */
-  private BufferedReader m_inStream;
+  private volatile BufferedReader m_inStream;
 
   private ReaderThread   m_readerThread;
   private Object lock = new Object();
@@ -41,6 +43,7 @@ public class StringMessageSenderHelper {
    * Starts the connection.
    *
    * @return <TT>true</TT> if the connection was successfull, <TT>false</TT> otherwise
+   * @throws TestNGException if an exception occured while establishing the connection
    */
   public boolean connect() {
     if(m_debugMode) {
@@ -53,24 +56,20 @@ public class StringMessageSenderHelper {
         m_clientSocket = new Socket(m_host, m_port);
 
         try {
-          m_outStream = 
-              new PrintWriter(
-                  new BufferedWriter(
-                      new OutputStreamWriter(m_clientSocket.getOutputStream(), "UTF-8")), //$NON-NLS-1$
-                  false /*autoflush*/);
+          m_outStream = new PrintWriter(new BufferedWriter(new OutputStreamWriter(m_clientSocket.getOutputStream(), "UTF-8")), //$NON-NLS-1$
+                                        false /*autoflush*/);
         }
-        catch(UnsupportedEncodingException e1) {
-          m_outStream = 
-              new PrintWriter(
-                  new BufferedWriter(new OutputStreamWriter(m_clientSocket.getOutputStream())),
-                  false /*autoflush*/);
+        catch(UnsupportedEncodingException ueex) {
+          // HINT: this should never happen
+          m_outStream = new PrintWriter(new BufferedWriter(new OutputStreamWriter(m_clientSocket.getOutputStream())),
+                                        false /*autoflush*/);
         }
 
         try {
-          m_inStream = new BufferedReader(new InputStreamReader(m_clientSocket.getInputStream(),
-                                                                "UTF-8")); //$NON-NLS-1$
+          m_inStream = new BufferedReader(new InputStreamReader(m_clientSocket.getInputStream(), "UTF-8")); //$NON-NLS-1$
         }
-        catch(UnsupportedEncodingException e1) {
+        catch(UnsupportedEncodingException ueex) {
+          // HINT: this should never happen
           m_inStream = new BufferedReader(new InputStreamReader(m_clientSocket.getInputStream()));
         }
 
@@ -87,12 +86,11 @@ public class StringMessageSenderHelper {
         Thread.sleep(2000);
       }
       catch(InterruptedException e) {
+        ;
       }
     }
 
-    exception.printStackTrace();
-
-    return false;
+    throw new TestNGException("Cannot establish connection: " + m_host + ":" + m_port, exception);
   }
 
   /**
@@ -165,10 +163,10 @@ public class StringMessageSenderHelper {
     synchronized(lock) {
       m_outStream.println(msg);
       m_outStream.flush();
-        try {
-            lock.wait();
-        } catch(InterruptedException e) {
-      }
+      try {
+          lock.wait();
+      } 
+      catch(InterruptedException e) { }
     }
   }
 
@@ -189,25 +187,24 @@ public class StringMessageSenderHelper {
     public void run() {
       try {
         String message;
-        if (m_inStream != null) {
-          while((message = m_inStream.readLine()) != null) {
-            if(m_debugMode) {
-              ppp("Reply:" + message); //$NON-NLS-1$
+        while((m_inStream != null) && (message = m_inStream.readLine()) != null) {
+          if(m_debugMode) {
+            ppp("Reply:" + message); //$NON-NLS-1$
+          }
+          boolean acknowledge = MessageHelper.ACK_MSG.equals(message);
+          boolean stop = MessageHelper.STOP_MSG.equals(message);
+          if(acknowledge || stop) {
+            synchronized(lock) {
+              lock.notifyAll();
             }
-            boolean acknowledge = MessageHelper.ACK_MSG.equals(message);
-            boolean stop = MessageHelper.STOP_MSG.equals(message);
-            if(acknowledge || stop) {
-              synchronized(lock) {
-                lock.notifyAll();
-              }
-              if (stop) {
-              	break;
-              }
+            if (stop) {
+            	break;
             }
           }
         }
       }
       catch(IOException ioe) {
+        ;
       }
     }
   }
