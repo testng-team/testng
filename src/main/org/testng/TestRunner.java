@@ -676,29 +676,16 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       //
       // Default timeout for individual methods:  10 seconds
       long maxTimeOut = m_xmlTest.getTimeOut(10 * 1000);
-      IPooledExecutor executor = ThreadUtil.createPooledExecutor(m_xmlTest.getSuite().getThreadCount());
-
       for (IMethodWorker tmw : workers) {
         long mt= tmw.getMaxTimeOut();
         if (mt > maxTimeOut) {
           maxTimeOut= mt;
         }
-
-        executor.execute(tmw);
-      }
-      try {
-        executor.shutdown();
-        log("Waiting for termination, timeout:" + maxTimeOut);
-        executor.awaitTermination(maxTimeOut);
-        log("Successful termination");
-      }
-      catch(InterruptedException e) {
-        e.printStackTrace();
       }
 
+      ThreadUtil.execute(workers, m_xmlTest.getSuite().getThreadCount(), maxTimeOut);
     }
     else {
-
       //
       // Sequential run
       //
