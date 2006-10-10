@@ -46,82 +46,82 @@ import org.springframework.util.StringUtils;
  */
 public abstract class AbstractSpringContextTests {
 
-	/**
-	 * Map of context keys returned by subclasses of this class, to
-	 * Spring Contexts. This needs to be static, as JUnit tests are
-	 * destroyed and recreated between running individual test methods.
-	 */
-	private static Map contextKeyToContextMap = new HashMap();
+  /**
+   * Map of context keys returned by subclasses of this class, to
+   * Spring Contexts. This needs to be static, as JUnit tests are
+   * destroyed and recreated between running individual test methods.
+   */
+  private static Map contextKeyToContextMap = new HashMap();
 
-	/**
-	 * Logger available to subclasses.
-	 */
-	protected final Log logger = LogFactory.getLog(getClass());
-
-
-	/**
-	 * Set custom locations dirty. This will cause them to be reloaded
-	 * from the cache before the next test case is executed.
-	 * <p>Call this method only if you change the state of a singleton
-	 * bean, potentially affecting future tests.
-	 */
-	protected void setDirty(String[] locations) {
-		String keyString = contextKeyString(locations);
-		ConfigurableApplicationContext ctx =
-				(ConfigurableApplicationContext) contextKeyToContextMap.remove(keyString);
-		if (ctx != null) {
-			ctx.close();
-		}
-	}
-
-	protected boolean hasCachedContext(Object contextKey) {
-		return contextKeyToContextMap.containsKey(contextKey);
-	}
-
-	/**
-	 * Subclasses can override this to return a String representation of
-	 * their contextKey for use in logging
-	 */
-	protected String contextKeyString(Object contextKey) {
-		if (contextKey instanceof String[]) {
-			return StringUtils.arrayToCommaDelimitedString((String[]) contextKey);
-		}
-		else {
-			return contextKey.toString();
-		}
-	}
-
-	protected ConfigurableApplicationContext getContext(Object key) {
-		String keyString = contextKeyString(key);
-		ConfigurableApplicationContext ctx =
-				(ConfigurableApplicationContext) contextKeyToContextMap.get(keyString);
-		if (ctx == null) {
-			if (key instanceof String[]) {
-				ctx = loadContextLocations((String[]) key);
-			}
-			else {
-				ctx = loadContext(key);
-			}
-			contextKeyToContextMap.put(keyString, ctx);
-		}
-		return ctx;
-	}
+  /**
+   * Logger available to subclasses.
+   */
+  protected final Log logger = LogFactory.getLog(getClass());
 
 
-	/**
-	 * Subclasses can invoke this to get a context key for the given location.
-	 * This doesn't affect the applicationContext instance variable in this class.
-	 * Dependency Injection cannot be applied from such contexts.
-	 */
-	protected ConfigurableApplicationContext loadContextLocations(String[] locations) {
-		if (logger.isInfoEnabled()) {
-			logger.info("Loading config for: " + StringUtils.arrayToCommaDelimitedString(locations));
-		}
-		return new ClassPathXmlApplicationContext(locations);
-	}
+  /**
+   * Set custom locations dirty. This will cause them to be reloaded
+   * from the cache before the next test case is executed.
+   * <p>Call this method only if you change the state of a singleton
+   * bean, potentially affecting future tests.
+   */
+  protected void setDirty(String[] locations) {
+    String keyString = contextKeyString(locations);
+    ConfigurableApplicationContext ctx =
+        (ConfigurableApplicationContext) contextKeyToContextMap.remove(keyString);
+    if (ctx != null) {
+      ctx.close();
+    }
+  }
 
-	protected ConfigurableApplicationContext loadContext(Object key) {
-		throw new UnsupportedOperationException("Subclasses may override this");
-	}
+  protected boolean hasCachedContext(Object contextKey) {
+    return contextKeyToContextMap.containsKey(contextKey);
+  }
+
+  /**
+   * Subclasses can override this to return a String representation of
+   * their contextKey for use in logging
+   */
+  protected String contextKeyString(Object contextKey) {
+    if (contextKey instanceof String[]) {
+      return StringUtils.arrayToCommaDelimitedString((String[]) contextKey);
+    }
+    else {
+      return contextKey.toString();
+    }
+  }
+
+  protected ConfigurableApplicationContext getContext(Object key) {
+    String keyString = contextKeyString(key);
+    ConfigurableApplicationContext ctx =
+        (ConfigurableApplicationContext) contextKeyToContextMap.get(keyString);
+    if (ctx == null) {
+      if (key instanceof String[]) {
+        ctx = loadContextLocations((String[]) key);
+      }
+      else {
+        ctx = loadContext(key);
+      }
+      contextKeyToContextMap.put(keyString, ctx);
+    }
+    return ctx;
+  }
+
+
+  /**
+   * Subclasses can invoke this to get a context key for the given location.
+   * This doesn't affect the applicationContext instance variable in this class.
+   * Dependency Injection cannot be applied from such contexts.
+   */
+  protected ConfigurableApplicationContext loadContextLocations(String[] locations) {
+    if (logger.isInfoEnabled()) {
+      logger.info("Loading config for: " + StringUtils.arrayToCommaDelimitedString(locations));
+    }
+    return new ClassPathXmlApplicationContext(locations);
+  }
+
+  protected ConfigurableApplicationContext loadContext(Object key) {
+    throw new UnsupportedOperationException("Subclasses may override this");
+  }
 
 }

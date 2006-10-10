@@ -68,216 +68,216 @@ import org.testng.annotations.Configuration;
  */
 public abstract class AbstractDependencyInjectionSpringContextTests extends AbstractSpringContextTests {
 
-	private boolean populateProtectedVariables = false;
-	
-	private boolean dependencyCheck = true;
+  private boolean populateProtectedVariables = false;
+  
+  private boolean dependencyCheck = true;
 
-	/**
-	 * Application context this test will run against.
-	 */
-	protected ConfigurableApplicationContext applicationContext;
+  /**
+   * Application context this test will run against.
+   */
+  protected ConfigurableApplicationContext applicationContext;
 
-	protected String[] managedVariableNames;
+  protected String[] managedVariableNames;
 
-	private int loadCount = 0;
-
-
-	/**
-	 * Set whether to populate protected variables of this test case.
-	 * Default is "false".
-	 */
-	public void setPopulateProtectedVariables(boolean populateFields) {
-		this.populateProtectedVariables = populateFields;
-	}
-
-	public boolean isPopulateProtectedVariables() {
-		return populateProtectedVariables;
-	}
-	
-	/**
-	 * Set whether or not dependency checking should be performed
-	 * for test properties set by Dependency Injection. The default
-	 * is true, meaning that tests cannot be run unless all properties
-	 * are populated.
-	 * @param dependencyCheck whether or not to perform
-	 * dependency checking on all object properties.
-	 */
-	public void setDependencyCheck(boolean dependencyCheck) {
-		this.dependencyCheck = dependencyCheck;
-	}
-	
-	public boolean isDependencyCheck() {
-		return dependencyCheck;
-	}
-
-	public final int getLoadCount() {
-		return loadCount;
-	}
+  private int loadCount = 0;
 
 
-	/**
-	 * Called to say that the "applicationContext" instance variable is dirty and
-	 * should be reloaded. We need to do this if a test has modified the context
-	 * (for example, by replacing a bean definition).
-	 */
-	public void setDirty() {
-		setDirty(getConfigLocations());
-	}
+  /**
+   * Set whether to populate protected variables of this test case.
+   * Default is "false".
+   */
+  public void setPopulateProtectedVariables(boolean populateFields) {
+    this.populateProtectedVariables = populateFields;
+  }
 
-	@Configuration(beforeTestMethod = true)
-	protected final void setUp() throws Exception {
-		this.applicationContext = getContext(contextKey());
+  public boolean isPopulateProtectedVariables() {
+    return populateProtectedVariables;
+  }
+  
+  /**
+   * Set whether or not dependency checking should be performed
+   * for test properties set by Dependency Injection. The default
+   * is true, meaning that tests cannot be run unless all properties
+   * are populated.
+   * @param dependencyCheck whether or not to perform
+   * dependency checking on all object properties.
+   */
+  public void setDependencyCheck(boolean dependencyCheck) {
+    this.dependencyCheck = dependencyCheck;
+  }
+  
+  public boolean isDependencyCheck() {
+    return dependencyCheck;
+  }
 
-		if (isPopulateProtectedVariables()) {
-			if (this.managedVariableNames == null) {
-				initManagedVariableNames();
-			}
-			populateProtectedVariables();
-		}
-		else {
-			this.applicationContext.getBeanFactory().autowireBeanProperties(
-			    this, AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, isDependencyCheck());
-		}
-
-		try {
-			onSetUp();
-		}
-		catch (Exception ex) {
-			logger.error("Setup error", ex);
-			throw ex;
-		}
-	}
-
-	/**
-	 * Return a key for this context. Usually based on config locations, but
-	 * a subclass overriding buildContext() might want to return its class.
-	 */
-	protected Object contextKey() {
-		return getConfigLocations();
-	}
-
-	protected ConfigurableApplicationContext loadContextLocations(String[] locations) {
-		++this.loadCount;
-		return super.loadContextLocations(locations);
-	}
-
-	protected void initManagedVariableNames() throws IllegalAccessException {
-		LinkedList managedVarNames = new LinkedList();
-		Class clazz = getClass();
-
-		do {
-			Field[] fields = clazz.getDeclaredFields();
-			if (logger.isDebugEnabled()) {
-				logger.debug("Found " + fields.length + " fields on " + clazz);
-			}
-
-			for (int i = 0; i < fields.length; i++) {
-				// TODO go up tree but not to this class
-				Field field = fields[i];
-				field.setAccessible(true);
-				if (logger.isDebugEnabled()) {
-					logger.debug("Candidate field: " + field);
-				}
-				if (!Modifier.isStatic(field.getModifiers()) && Modifier.isProtected(field.getModifiers())) {
-					Object oldValue = field.get(this);
-					if (oldValue == null) {
-						managedVarNames.add(field.getName());
-						if (logger.isDebugEnabled()) {
-							logger.debug("Added managed variable '" + field.getName() + "'");
-						}
-					}
-					else {
-						if (logger.isDebugEnabled()) {
-							logger.debug("Rejected managed variable '" + field.getName() + "'");
-						}
-					}
-				}
-			}
-			clazz = clazz.getSuperclass();
-		}
-		while (clazz != AbstractSpringContextTests.class);
-
-		this.managedVariableNames = (String[]) managedVarNames.toArray(new String[managedVarNames.size()]);
-	}
-
-	protected void populateProtectedVariables() throws IllegalAccessException {
-		for (int i = 0; i < this.managedVariableNames.length; i++) {
-			Object bean = null;
-			try {
-				Field field = findField(getClass(), this.managedVariableNames[i]);
-				// TODO what if not found?
-				bean = this.applicationContext.getBean(this.managedVariableNames[i], field.getType());
-				field.setAccessible(true);
-				field.set(this, bean);
-				if (logger.isDebugEnabled()) {
-					logger.debug("Populated field: " + field);
-				}
-			}
-			catch (NoSuchFieldException ex) {
-				logger.warn("No field with name '" + this.managedVariableNames[i] + "'");
-			}
-			catch (NoSuchBeanDefinitionException ex) {
-				logger.warn("No bean with name '" + this.managedVariableNames[i] + "'");
-			}
-		}
-	}
-
-	private Field findField(Class clazz, String name) throws NoSuchFieldException {
-		try {
-			return clazz.getDeclaredField(name);
-		}
-		catch (NoSuchFieldException ex) {
-			Class superclass = clazz.getSuperclass();
-			if (superclass != AbstractSpringContextTests.class) {
-				return findField(superclass, name);
-			}
-			else {
-				throw ex;
-			}
-		}
-	}
-
-	/**
-	 * Subclasses can override this method in place of the
-	 * <code>setUp()</code> method, which is final in this class.
-	 * This implementation does nothing.
-	 */
-	protected void onSetUp() throws Exception {
-	}
+  public final int getLoadCount() {
+    return loadCount;
+  }
 
 
-	/**
-	 * Reload the context if it's marked as dirty.
-	 * @see #onTearDown
-	 */
-	@Configuration(afterTestMethod = true)
-	protected final void tearDown() {
-		try {
-			onTearDown();
-		}
-		catch (Exception ex) {
-			logger.error("onTearDown error", ex);
-		}
-	}
+  /**
+   * Called to say that the "applicationContext" instance variable is dirty and
+   * should be reloaded. We need to do this if a test has modified the context
+   * (for example, by replacing a bean definition).
+   */
+  public void setDirty() {
+    setDirty(getConfigLocations());
+  }
 
-	/**
-	 * Subclasses can override this to add custom behavior on teardown.
-	 */
-	protected void onTearDown() throws Exception {
-	}
+  @Configuration(beforeTestMethod = true)
+  protected final void setUp() throws Exception {
+    this.applicationContext = getContext(contextKey());
+
+    if (isPopulateProtectedVariables()) {
+      if (this.managedVariableNames == null) {
+        initManagedVariableNames();
+      }
+      populateProtectedVariables();
+    }
+    else {
+      this.applicationContext.getBeanFactory().autowireBeanProperties(
+          this, AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, isDependencyCheck());
+    }
+
+    try {
+      onSetUp();
+    }
+    catch (Exception ex) {
+      logger.error("Setup error", ex);
+      throw ex;
+    }
+  }
+
+  /**
+   * Return a key for this context. Usually based on config locations, but
+   * a subclass overriding buildContext() might want to return its class.
+   */
+  protected Object contextKey() {
+    return getConfigLocations();
+  }
+
+  protected ConfigurableApplicationContext loadContextLocations(String[] locations) {
+    ++this.loadCount;
+    return super.loadContextLocations(locations);
+  }
+
+  protected void initManagedVariableNames() throws IllegalAccessException {
+    LinkedList managedVarNames = new LinkedList();
+    Class clazz = getClass();
+
+    do {
+      Field[] fields = clazz.getDeclaredFields();
+      if (logger.isDebugEnabled()) {
+        logger.debug("Found " + fields.length + " fields on " + clazz);
+      }
+
+      for (int i = 0; i < fields.length; i++) {
+        // TODO go up tree but not to this class
+        Field field = fields[i];
+        field.setAccessible(true);
+        if (logger.isDebugEnabled()) {
+          logger.debug("Candidate field: " + field);
+        }
+        if (!Modifier.isStatic(field.getModifiers()) && Modifier.isProtected(field.getModifiers())) {
+          Object oldValue = field.get(this);
+          if (oldValue == null) {
+            managedVarNames.add(field.getName());
+            if (logger.isDebugEnabled()) {
+              logger.debug("Added managed variable '" + field.getName() + "'");
+            }
+          }
+          else {
+            if (logger.isDebugEnabled()) {
+              logger.debug("Rejected managed variable '" + field.getName() + "'");
+            }
+          }
+        }
+      }
+      clazz = clazz.getSuperclass();
+    }
+    while (clazz != AbstractSpringContextTests.class);
+
+    this.managedVariableNames = (String[]) managedVarNames.toArray(new String[managedVarNames.size()]);
+  }
+
+  protected void populateProtectedVariables() throws IllegalAccessException {
+    for (int i = 0; i < this.managedVariableNames.length; i++) {
+      Object bean = null;
+      try {
+        Field field = findField(getClass(), this.managedVariableNames[i]);
+        // TODO what if not found?
+        bean = this.applicationContext.getBean(this.managedVariableNames[i], field.getType());
+        field.setAccessible(true);
+        field.set(this, bean);
+        if (logger.isDebugEnabled()) {
+          logger.debug("Populated field: " + field);
+        }
+      }
+      catch (NoSuchFieldException ex) {
+        logger.warn("No field with name '" + this.managedVariableNames[i] + "'");
+      }
+      catch (NoSuchBeanDefinitionException ex) {
+        logger.warn("No bean with name '" + this.managedVariableNames[i] + "'");
+      }
+    }
+  }
+
+  private Field findField(Class clazz, String name) throws NoSuchFieldException {
+    try {
+      return clazz.getDeclaredField(name);
+    }
+    catch (NoSuchFieldException ex) {
+      Class superclass = clazz.getSuperclass();
+      if (superclass != AbstractSpringContextTests.class) {
+        return findField(superclass, name);
+      }
+      else {
+        throw ex;
+      }
+    }
+  }
+
+  /**
+   * Subclasses can override this method in place of the
+   * <code>setUp()</code> method, which is final in this class.
+   * This implementation does nothing.
+   */
+  protected void onSetUp() throws Exception {
+  }
 
 
-	/**
-	 * Subclasses must implement this method to return the locations of their
-	 * config files. A plain path will be treated as class path location.
-	 * E.g.: "org/springframework/whatever/foo.xml". Note however that you may
-	 * prefix path locations with standard Spring resource prefixes. Therefore,
-	 * a config location path prefixed with "classpath:" with behave the same
-	 * as a plain path, but a config location such as
-	 * "file:/some/path/path/location/appContext.xml" will be treated as a
-	 * filesystem location.
-	 * @return an array of config locations
-	 */
-	protected abstract String[] getConfigLocations();
+  /**
+   * Reload the context if it's marked as dirty.
+   * @see #onTearDown
+   */
+  @Configuration(afterTestMethod = true)
+  protected final void tearDown() {
+    try {
+      onTearDown();
+    }
+    catch (Exception ex) {
+      logger.error("onTearDown error", ex);
+    }
+  }
+
+  /**
+   * Subclasses can override this to add custom behavior on teardown.
+   */
+  protected void onTearDown() throws Exception {
+  }
+
+
+  /**
+   * Subclasses must implement this method to return the locations of their
+   * config files. A plain path will be treated as class path location.
+   * E.g.: "org/springframework/whatever/foo.xml". Note however that you may
+   * prefix path locations with standard Spring resource prefixes. Therefore,
+   * a config location path prefixed with "classpath:" with behave the same
+   * as a plain path, but a config location such as
+   * "file:/some/path/path/location/appContext.xml" will be treated as a
+   * filesystem location.
+   * @return an array of config locations
+   */
+  protected abstract String[] getConfigLocations();
 
 }

@@ -55,162 +55,162 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
  */
 public abstract class AbstractTransactionalSpringContextTests extends AbstractDependencyInjectionSpringContextTests {
 
-	protected PlatformTransactionManager transactionManager;
+  protected PlatformTransactionManager transactionManager;
 
-	/**
-	 * TransactionStatus for this test. Typical subclasses won't need to use it.
-	 */
-	protected TransactionStatus transactionStatus;
+  /**
+   * TransactionStatus for this test. Typical subclasses won't need to use it.
+   */
+  protected TransactionStatus transactionStatus;
 
-	private boolean defaultRollback = true;
+  private boolean defaultRollback = true;
 
-	/**
-	 * Should we commit this transaction?
-	 */
-	private boolean complete;
-
-
-	/**
-	 * Subclasses can set this value in their constructor to change
-	 * default, which is always to roll the transaction back
-	 */
-	public void setDefaultRollback(boolean defaultRollback) {
-		this.defaultRollback = defaultRollback;
-	}
-
-	/**
-	 * The transaction manager to use. No transaction management will be available
-	 * if this is not set. (This mode works only if dependency checking is turned off in
-	 * the AbstractDependencyInjectionSpringContextTests superclass.)
-	 * Populated by dependency injection by superclass.
-	 */
-	public void setTransactionManager(PlatformTransactionManager ptm) {
-		this.transactionManager = ptm;
-	}
+  /**
+   * Should we commit this transaction?
+   */
+  private boolean complete;
 
 
-	/**
-	 * This implementation creates a transaction before test execution.
-	 * Override <code>onSetUpBeforeTransaction</code> and/or
-	 * <code>onSetUpInTransaction</code> to add custom set-up behavior.
-	 * @see #onSetUpBeforeTransaction()
-	 * @see #onSetUpInTransaction()
-	 */
-	protected final void onSetUp() throws Exception {
-		this.complete = !this.defaultRollback;
+  /**
+   * Subclasses can set this value in their constructor to change
+   * default, which is always to roll the transaction back
+   */
+  public void setDefaultRollback(boolean defaultRollback) {
+    this.defaultRollback = defaultRollback;
+  }
 
-		onSetUpBeforeTransaction();
-
-		if (this.transactionManager != null) {
-			// start a transaction
-			this.transactionStatus = this.transactionManager.getTransaction(new DefaultTransactionDefinition());
-				if (logger.isInfoEnabled()) {
-					logger.info("Began transaction: transaction manager [" + this.transactionManager + "]; defaultRollback "
-							+ this.defaultRollback);
-				}
-		}
-		else {
-			logger.info("No transaction manager set: tests will NOT run within a transaction");
-		}
-
-		onSetUpInTransaction();
-	}
-
-	/**
-	 * Subclasses can override this method to perform any setup operations,
-	 * such as populating a database table, <i>before</i> the transaction
-	 * created by this class.
-	 * @throws Exception simply let any exception propagate
-	 */
-	protected void onSetUpBeforeTransaction() throws Exception {
-	}
-
-	/**
-	 * Subclasses can override this method to perform any setup operations,
-	 * such as populating a database table, <i>within</i> the transaction
-	 * created by this class.
-	 * <p><b>NB:</b> Not called if there is no transaction management, due to no
-	 * transaction manager being provided in the context.
-	 * @throws Exception simply let any exception propagate
-	 */
-	protected void onSetUpInTransaction() throws Exception {
-	}
+  /**
+   * The transaction manager to use. No transaction management will be available
+   * if this is not set. (This mode works only if dependency checking is turned off in
+   * the AbstractDependencyInjectionSpringContextTests superclass.)
+   * Populated by dependency injection by superclass.
+   */
+  public void setTransactionManager(PlatformTransactionManager ptm) {
+    this.transactionManager = ptm;
+  }
 
 
-	/**
-	 * This implementation ends the transaction after test execution.
-	 * Override <code>onTearDownInTransaction</code> and/or
-	 * <code>onTearDownAfterTransaction</code> to add custom tear-down behavior.
-	 * @see #onTearDownInTransaction()
-	 * @see #onTearDownAfterTransaction()
-	 */
-	protected final void onTearDown() {
-		try {
-			onTearDownInTransaction();
-		}
-		finally {
-			endTransaction();
-		}
+  /**
+   * This implementation creates a transaction before test execution.
+   * Override <code>onSetUpBeforeTransaction</code> and/or
+   * <code>onSetUpInTransaction</code> to add custom set-up behavior.
+   * @see #onSetUpBeforeTransaction()
+   * @see #onSetUpInTransaction()
+   */
+  protected final void onSetUp() throws Exception {
+    this.complete = !this.defaultRollback;
 
-		onTearDownAfterTransaction();
-	}
+    onSetUpBeforeTransaction();
 
-	/**
-	 * Subclasses can override this method to run invariant tests here.
-	 * The transaction is <i>still open</i>, so any changes made in the
-	 * transaction will still be visible.
-	 * There is no need to clean up the database, as rollback will follow automatically.
-	 * <p><b>NB:</b> Not called if there is no transaction management, due to no
-	 * transaction manager being provided in the context.
-	 */
-	protected void onTearDownInTransaction() {
-	}
+    if (this.transactionManager != null) {
+      // start a transaction
+      this.transactionStatus = this.transactionManager.getTransaction(new DefaultTransactionDefinition());
+        if (logger.isInfoEnabled()) {
+          logger.info("Began transaction: transaction manager [" + this.transactionManager + "]; defaultRollback "
+              + this.defaultRollback);
+        }
+    }
+    else {
+      logger.info("No transaction manager set: tests will NOT run within a transaction");
+    }
 
-	/**
-	 * Subclasses can override this method to perform cleanup here.
-	 * The transaction is <i>not open anymore</i> at this point.
-	 */
-	protected void onTearDownAfterTransaction() {
-	}
+    onSetUpInTransaction();
+  }
+
+  /**
+   * Subclasses can override this method to perform any setup operations,
+   * such as populating a database table, <i>before</i> the transaction
+   * created by this class.
+   * @throws Exception simply let any exception propagate
+   */
+  protected void onSetUpBeforeTransaction() throws Exception {
+  }
+
+  /**
+   * Subclasses can override this method to perform any setup operations,
+   * such as populating a database table, <i>within</i> the transaction
+   * created by this class.
+   * <p><b>NB:</b> Not called if there is no transaction management, due to no
+   * transaction manager being provided in the context.
+   * @throws Exception simply let any exception propagate
+   */
+  protected void onSetUpInTransaction() throws Exception {
+  }
 
 
-	/**
-	 * Cause the transaction to commit for this test method,
-	 * even if default is set to rollback.
-	 * @throws UnsupportedOperationException if the operation cannot be set to
-	 * complete as no transaction manager was provided
-	 */
-	protected void setComplete() throws UnsupportedOperationException {
-		if (this.transactionManager == null) {
-			throw new UnsupportedOperationException("Cannot set complete: no transaction manager");
-		}
-		this.complete = true;
-	}
+  /**
+   * This implementation ends the transaction after test execution.
+   * Override <code>onTearDownInTransaction</code> and/or
+   * <code>onTearDownAfterTransaction</code> to add custom tear-down behavior.
+   * @see #onTearDownInTransaction()
+   * @see #onTearDownAfterTransaction()
+   */
+  protected final void onTearDown() {
+    try {
+      onTearDownInTransaction();
+    }
+    finally {
+      endTransaction();
+    }
 
-	/**
-	 * Immediately force a commit or rollback of the transaction,
-	 * according to the complete flag.
-	 * <p>Can be used to explicitly let the transaction end early,
-	 * for example to check whether lazy associations of persistent objects
-	 * work outside of a transaction (i.e. have been initialized properly).
-	 * @see #setComplete
-	 */
-	protected void endTransaction() {
-		if (this.transactionStatus != null) {
-			try {
-				if (!this.complete) {
-					this.transactionManager.rollback(this.transactionStatus);
-					logger.info("Rolled back transaction after test execution");
-				}
-				else {
-					this.transactionManager.commit(this.transactionStatus);
-					logger.info("Committed transaction after test execution");
-				}
-			}
-			finally {
-				this.transactionStatus = null;
-			}
-		}
-	}
+    onTearDownAfterTransaction();
+  }
+
+  /**
+   * Subclasses can override this method to run invariant tests here.
+   * The transaction is <i>still open</i>, so any changes made in the
+   * transaction will still be visible.
+   * There is no need to clean up the database, as rollback will follow automatically.
+   * <p><b>NB:</b> Not called if there is no transaction management, due to no
+   * transaction manager being provided in the context.
+   */
+  protected void onTearDownInTransaction() {
+  }
+
+  /**
+   * Subclasses can override this method to perform cleanup here.
+   * The transaction is <i>not open anymore</i> at this point.
+   */
+  protected void onTearDownAfterTransaction() {
+  }
+
+
+  /**
+   * Cause the transaction to commit for this test method,
+   * even if default is set to rollback.
+   * @throws UnsupportedOperationException if the operation cannot be set to
+   * complete as no transaction manager was provided
+   */
+  protected void setComplete() throws UnsupportedOperationException {
+    if (this.transactionManager == null) {
+      throw new UnsupportedOperationException("Cannot set complete: no transaction manager");
+    }
+    this.complete = true;
+  }
+
+  /**
+   * Immediately force a commit or rollback of the transaction,
+   * according to the complete flag.
+   * <p>Can be used to explicitly let the transaction end early,
+   * for example to check whether lazy associations of persistent objects
+   * work outside of a transaction (i.e. have been initialized properly).
+   * @see #setComplete
+   */
+  protected void endTransaction() {
+    if (this.transactionStatus != null) {
+      try {
+        if (!this.complete) {
+          this.transactionManager.rollback(this.transactionStatus);
+          logger.info("Rolled back transaction after test execution");
+        }
+        else {
+          this.transactionManager.commit(this.transactionStatus);
+          logger.info("Committed transaction after test execution");
+        }
+      }
+      finally {
+        this.transactionStatus = null;
+      }
+    }
+  }
 
 }
