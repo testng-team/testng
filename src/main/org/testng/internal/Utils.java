@@ -582,6 +582,9 @@ public final class Utils {
       return new String[0];
     }
 
+    // TODO How different is this from: 
+    // return string.split(sep);
+    
     int start = 0;
     int idx = string.indexOf(sep, start);
     int len = sep.length();
