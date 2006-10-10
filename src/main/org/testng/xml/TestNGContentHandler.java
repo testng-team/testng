@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.testng.TestNG;
+import org.testng.internal.version.VersionInfo;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -137,8 +138,8 @@ public class TestNGContentHandler extends DefaultHandler {
       if (null != timeOut) {
         m_currentSuite.setTimeOut(timeOut);
       }
-      if (TestNG.isJdk14()) {
-        m_currentSuite.setAnnotations(XmlSuite.JAVADOC);
+      if (VersionInfo.IS_JDK14) {
+        m_currentSuite.setAnnotations(XmlSuite.JAVADOC_ANNOTATION_TYPE);
       }
     }
     else {
@@ -237,7 +238,7 @@ public class TestNGContentHandler extends DefaultHandler {
       m_currentClasses = new ArrayList<XmlClass>();
     }
     else {
-      m_currentTest.setClassNames(m_currentClasses);
+      m_currentTest.setXmlClasses(m_currentClasses);
       m_currentClasses = null;
     }
   }

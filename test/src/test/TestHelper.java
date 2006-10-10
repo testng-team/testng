@@ -21,7 +21,7 @@ public class TestHelper {
     test.setName("TmpTest");
     List<XmlClass> classes = new ArrayList<XmlClass>();
     classes.add(new XmlClass(cls));
-    test.setClassNames(classes);
+    test.setXmlClasses(classes);
     
     return result;
   }
