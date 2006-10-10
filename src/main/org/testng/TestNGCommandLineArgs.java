@@ -152,13 +152,13 @@ public final class TestNGCommandLineArgs {
         if ((i + 1) < argv.length) {
           arguments.put(DEFAULT_ANNOTATIONS_COMMAND_OPT, AnnotationTypeEnum.valueOf(argv[i + 1]));
           LOGGER.info(TARGET_COMMAND_OPT + " has been deprecated use " + DEFAULT_ANNOTATIONS_COMMAND_OPT);
-          i++;
+          ++i;
         }
       }
       else if (DEFAULT_ANNOTATIONS_COMMAND_OPT.equalsIgnoreCase(argv[i])) {
         if ((i + 1) < argv.length) {
           arguments.put(DEFAULT_ANNOTATIONS_COMMAND_OPT, AnnotationTypeEnum.valueOf(argv[i + 1]));
-          i++;
+          ++i;
         }
       }
       else if (TESTRUNNER_FACTORY_COMMAND_OPT.equalsIgnoreCase(argv[i])) {
@@ -330,8 +330,7 @@ public final class TestNGCommandLineArgs {
       }
     }
 
-    for (Map.Entry entry : arguments.entrySet())
-    {
+    for (Map.Entry entry : arguments.entrySet()) {
       LOGGER.debug("parseCommandLine argument: \"" + entry.getKey() + "\" = \"" + entry.getValue() + "\"");
     }
     return arguments;
@@ -386,11 +385,9 @@ public final class TestNGCommandLineArgs {
     
     // If line contains no double quotes, the space character is the only
     // separator. Easy to do return quickly (logic is also easier to follow)
-    if (line.indexOf(DOUBLE_QUOTE) == -1)
-    {
+    if (line.indexOf(DOUBLE_QUOTE) == -1) {
       List<String> results = Arrays.asList(line.split(SPACE));
-      for (String result : results)
-      {
+      for (String result : results) {
         LOGGER.debug("parseArgs result: \"" + result + "\"");
       }
       return results;
@@ -446,24 +443,27 @@ public final class TestNGCommandLineArgs {
     while (st.hasMoreTokens()) {
       String token = st.nextToken();
       
-      if (token.equals(SPACE)){
-        if (isInArg){
-          if (isInDoubleQuote){
+      if (token.equals(SPACE)) {
+        if (isInArg) {
+          if (isInDoubleQuote) {
             // Spaces within double quotes are treated as normal spaces
             arg.append(SPACE);
-          }else{
+          }
+          else {
             // First spaces outside double quotes marks the end of the argument. 
             isInArg = false;
             results.add(arg.toString());
             arg = new StringBuffer();
           }
         }
-      }else if (token.equals(DOUBLE_QUOTE)){
+      }
+      else if (token.equals(DOUBLE_QUOTE)) {
         // If we encounter a double quote, we may be entering a new argument 
         // (isInArg is false) or continuing the current argument (isInArg is true).
         isInArg = true;
         isInDoubleQuote = !isInDoubleQuote;
-      }else{
+      }
+      else {
         // We we encounter a new token, we may be entering a new argument 
         // (isInArg is false) or continuing the current argument (isInArg is true).
         isInArg = true;
@@ -475,20 +475,18 @@ public final class TestNGCommandLineArgs {
     // but we have not encountered a token to indicate that the last argument has
     // completely been read. For example, if the command line ends with a whitespace
     // the isInArg will toggle to false and the argument will be completely read.
-    if (isInArg){
+    if (isInArg) {
       // End of last argument
       results.add(arg.toString());
     }
     
     // If we exit the parsing of the command line with an uneven number of double 
     // quotes, throw an exception.
-    if (isInDoubleQuote)
-    {
+    if (isInDoubleQuote) {
       throw new IllegalArgumentException("Unbalanced double quotes: \"" + line + "\"");
     }
     
-    for (String result : results)
-    {
+    for (String result : results) {
       LOGGER.debug("parseArgs result: \"" + result + "\"");
     }
     
