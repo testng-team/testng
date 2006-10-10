@@ -31,6 +31,27 @@ public final class ClassHelper {
     // Hide Constructor
   }
   
+  public static Object newInstance(Class clazz) {
+    try {
+      Object instance = clazz.newInstance();
+
+      return instance;
+    }
+    catch(IllegalAccessException iae) {
+      throw new TestNGException("Class " + clazz.getName() + " does not have a no-args constructor", iae);
+    }
+    catch(InstantiationException ie) {
+      throw new TestNGException("Cannot instantiate class " + clazz.getName(), ie);
+    }
+    catch(ExceptionInInitializerError eiierr) {
+      throw new TestNGException("An exception occurred in static initialization of class " + clazz.getName(),
+          eiierr);
+    }
+    catch(SecurityException se) {
+      throw new TestNGException(se);
+    }
+  }
+  
   /**
    * Tries to load the specified class using the context ClassLoader or if none,
    * than from the default ClassLoader. This method differs from the standard 

@@ -189,14 +189,6 @@ public class TestNG {
     m_useDefaultListeners = useDefaultListeners;
   }
 
-  /**
-   * @deprecated
-   */
-  @Deprecated
-  public static TestNG getDefault() {
-    return m_instance;
-  }
-
   public int getStatus() {
     return m_status;
   }
@@ -430,9 +422,6 @@ public class TestNG {
       xmlTest.getXmlClasses().add(xmlClasses[i]);
     }
     
-//    XmlSuite[] result = 
-//      (XmlSuite[]) suites.values().toArray(new XmlSuite[suites.size()]);
-        
     return new ArrayList<XmlSuite>(suites.values());
   }
   
@@ -454,7 +443,9 @@ public class TestNG {
    */
   public void setTestSuites(List<String> suites) {
     for (String suiteXmlPath : suites) {
-      LOGGER.debug("suiteXmlPath: \"" + suiteXmlPath + "\"");
+      if(LOGGER.isDebugEnabled()) {
+        LOGGER.debug("suiteXmlPath: \"" + suiteXmlPath + "\"");
+      }
       try {
         Collection<XmlSuite> allSuites = new Parser(suiteXmlPath).parse();
         for (XmlSuite s : allSuites) {
@@ -505,12 +496,12 @@ public class TestNG {
   }
   
 
-  private void setTestRunnerFactoryClass(Class testRunnerFactoryClass) {
-    setTestRunnerFactory((ITestRunnerFactory) newInstance(testRunnerFactoryClass));
+  protected void setTestRunnerFactoryClass(Class testRunnerFactoryClass) {
+    setTestRunnerFactory((ITestRunnerFactory) ClassHelper.newInstance(testRunnerFactoryClass));
   }
   
   
-  private void setTestRunnerFactory(ITestRunnerFactory itrf) {
+  protected void setTestRunnerFactory(ITestRunnerFactory itrf) {
     m_testRunnerFactory= itrf;
   }
   
@@ -523,7 +514,7 @@ public class TestNG {
    */
   public void setListenerClasses(List<Class> classes) {
     for (Class cls: classes) {
-      addListener(newInstance(cls));
+      addListener(ClassHelper.newInstance(cls));
     }
   }
   
@@ -590,8 +581,7 @@ public class TestNG {
   /** The verbosity level. TODO why not a simple int? */
   private Integer m_verbose;
 
-  private IAnnotationTransformer m_annotationTransformer
-    = new DefaultAnnotationTransformer();
+  private IAnnotationTransformer m_annotationTransformer = new DefaultAnnotationTransformer();
 
   /**
    * Sets the level of verbosity. This value will override the value specified 
@@ -774,6 +764,7 @@ public class TestNG {
     Utils.log("", 2, string);
   }
 
+  @SuppressWarnings({"unchecked"})
   private List<ISuite> runSuitesRemotely() {
     List<ISuite> result = new ArrayList<ISuite>();
     HostFile hostFile = new HostFile(m_hostFile);
@@ -976,33 +967,6 @@ public class TestNG {
     return result;
   }
 
-  private Object newInstance(Class clazz) {
-    try {
-      Object instance = clazz.newInstance();
-
-      return instance;
-    }
-    catch(IllegalAccessException iae) {
-      throw new TestNGException("Class " 
-          + clazz.getName()
-          + " does not have a no-args constructor",
-          iae);
-    }
-    catch(InstantiationException ie) {
-      throw new TestNGException("Cannot instantiate class "
-          + clazz.getName(),
-          ie);
-    }
-    catch(ExceptionInInitializerError eiierr) {
-      throw new TestNGException("An exception occurred in static initialization of class "
-          + clazz.getName(),
-          eiierr);
-    }
-    catch(SecurityException se) {
-      throw new TestNGException(se);
-    }
-  }
-
   /**
    * The TestNG entry point for command line execution. 
    *
@@ -1012,8 +976,9 @@ public class TestNG {
     TestNG testng = privateMain(argv, null);
     System.exit(testng.getStatus());
   }
-
+ 
   /**
+   * <B>Note</B>: this method is not part of the public API and is meant for internal usage only.
    * TODO  JavaDoc.
    *
    * @param argv
@@ -1021,93 +986,90 @@ public class TestNG {
    * @return 
    */
   public static TestNG privateMain(String[] argv, ITestListener listener) {
-    for (int i = 0; i < argv.length; ++i) {
-      LOGGER.debug("privateMain: argv[" + i + "] = \"" + argv[i] + "\"");
-    }
-    Map cmdLineArgs = TestNGCommandLineArgs.parseCommandLine(argv);
-
+    Map arguments= checkConditions(TestNGCommandLineArgs.parseCommandLine(argv));
+    
     TestNG result = new TestNG();
     if (null != listener) {
       result.addListener(listener);
     }
 
+    result.configure(arguments);
     try {
-      checkConditions(cmdLineArgs);
-      
-      {
-        Integer verbose = (Integer) cmdLineArgs.get(TestNGCommandLineArgs.LOG);
-        if (null != verbose) {
-          result.setVerbose(verbose.intValue());
-        }
-      }
-      
-      result.setOutputDirectory((String) cmdLineArgs.get(TestNGCommandLineArgs.OUTDIR_COMMAND_OPT));
-      result.setSourcePath((String) cmdLineArgs.get(TestNGCommandLineArgs.SRC_COMMAND_OPT));
-
-      // TODO CQ null pointer exception
-      AnnotationTypeEnum annotations = (AnnotationTypeEnum) cmdLineArgs.get(TestNGCommandLineArgs.DEFAULT_ANNOTATIONS_COMMAND_OPT);
-      if (annotations != null)
-        result.setDefaultAnnotations(annotations.getName());
-
-      List<String> testClasses = (List<String>) cmdLineArgs.get(TestNGCommandLineArgs.TESTCLASS_COMMAND_OPT);
-      if (null != testClasses) {
-        Class[] classes = (Class[]) testClasses.toArray(new Class[testClasses.size()]);
-        result.setTestClasses(classes);
-      }
-
-      List<String> testNgXml = 
-          (List<String>) cmdLineArgs.get(TestNGCommandLineArgs.SUITE_DEF_OPT);
-      if (null != testNgXml) {
-        result.setTestSuites(testNgXml);
-      }
-      
-      String useDefaultListeners = 
-          (String) cmdLineArgs.get(TestNGCommandLineArgs.USE_DEFAULT_LISTENERS);
-      if (null != useDefaultListeners) {
-        result.setUseDefaultListeners("true".equalsIgnoreCase(useDefaultListeners));
-      }
-      
-      result.setGroups((String) cmdLineArgs.get(TestNGCommandLineArgs.GROUPS_COMMAND_OPT));
-      result.setExcludedGroups((String) cmdLineArgs.get(TestNGCommandLineArgs.EXCLUDED_GROUPS_COMMAND_OPT));      
-      result.setTestJar((String) cmdLineArgs.get(TestNGCommandLineArgs.TESTJAR_COMMAND_OPT));
-      result.setJUnit((Boolean) cmdLineArgs.get(TestNGCommandLineArgs.JUNIT_DEF_OPT));
-      result.setHostFile((String) cmdLineArgs.get(TestNGCommandLineArgs.HOSTFILE_OPT));
-      
-      String parallelMode = (String) cmdLineArgs.get(TestNGCommandLineArgs.PARALLEL_MODE);
-      if (parallelMode != null) {
-        result.setParallel(parallelMode);
-      }
-      
-      String threadCount = (String) cmdLineArgs.get(TestNGCommandLineArgs.THREAD_COUNT);
-      if (threadCount != null) {
-        result.setThreadCount(Integer.parseInt(threadCount));
-      }
-      
-      String client = (String) cmdLineArgs.get(TestNGCommandLineArgs.SLAVE_OPT);
-      if (client != null) {
-        result.setClientPort(Integer.parseInt(client));
-      }
-
-      List<Class> listenerClasses = 
-        (List<Class>) cmdLineArgs.get(TestNGCommandLineArgs.LISTENER_COMMAND_OPT);
-      
-      if (null != listenerClasses) {
-        result.setListenerClasses(listenerClasses);
-      }
-      
       result.run();
     }
-    catch (TestNGException ex) {
+    catch(TestNGException ex) {
       if (TestRunner.getVerbose() > 1) {
         ex.printStackTrace(System.out);
       }
       else {
         System.err.println("[ERROR]: " + ex.getMessage());
       }
-      System.exit(1);
+      result.setStatus(HAS_FAILURE);
     }
 
     return result;
+  }
+
+  /**
+   * Configure the TestNG instance by reading the settings provided in the map.
+   * 
+   * @param cmdLineArgs map of settings
+   * @see TestNGCommandLineArgs for setting keys
+   */
+  @SuppressWarnings({"unchecked"})
+  public void configure(Map cmdLineArgs) {
+    {
+      Integer verbose = (Integer) cmdLineArgs.get(TestNGCommandLineArgs.LOG);
+      if (null != verbose) {
+        setVerbose(verbose.intValue());
+      }
+    }
+    
+    setOutputDirectory((String) cmdLineArgs.get(TestNGCommandLineArgs.OUTDIR_COMMAND_OPT));
+    setSourcePath((String) cmdLineArgs.get(TestNGCommandLineArgs.SRC_COMMAND_OPT));
+    setTarget((String) cmdLineArgs.get(TestNGCommandLineArgs.TARGET_COMMAND_OPT));
+
+    List<String> testClasses = (List<String>) cmdLineArgs.get(TestNGCommandLineArgs.TESTCLASS_COMMAND_OPT);
+    if (null != testClasses) {
+      Class[] classes = (Class[]) testClasses.toArray(new Class[testClasses.size()]);
+      setTestClasses(classes);
+    }
+
+    List<String> testNgXml = (List<String>) cmdLineArgs.get(TestNGCommandLineArgs.SUITE_DEF_OPT);
+    if (null != testNgXml) {
+      setTestSuites(testNgXml);
+    }
+    
+    String useDefaultListeners = (String) cmdLineArgs.get(TestNGCommandLineArgs.USE_DEFAULT_LISTENERS);
+    if (null != useDefaultListeners) {
+      setUseDefaultListeners("true".equalsIgnoreCase(useDefaultListeners));
+    }
+    
+    setGroups((String) cmdLineArgs.get(TestNGCommandLineArgs.GROUPS_COMMAND_OPT));
+    setExcludedGroups((String) cmdLineArgs.get(TestNGCommandLineArgs.EXCLUDED_GROUPS_COMMAND_OPT));      
+    setTestJar((String) cmdLineArgs.get(TestNGCommandLineArgs.TESTJAR_COMMAND_OPT));
+    setJUnit((Boolean) cmdLineArgs.get(TestNGCommandLineArgs.JUNIT_DEF_OPT));
+    setHostFile((String) cmdLineArgs.get(TestNGCommandLineArgs.HOSTFILE_OPT));
+    
+    String parallelMode = (String) cmdLineArgs.get(TestNGCommandLineArgs.PARALLEL_MODE);
+    if (parallelMode != null) {
+      setParallel(parallelMode);
+    }
+    
+    String threadCount = (String) cmdLineArgs.get(TestNGCommandLineArgs.THREAD_COUNT);
+    if (threadCount != null) {
+      setThreadCount(Integer.parseInt(threadCount));
+    }
+    
+    String client = (String) cmdLineArgs.get(TestNGCommandLineArgs.SLAVE_OPT);
+    if (client != null) {
+      setClientPort(Integer.parseInt(client));
+    }
+
+    List<Class> listenerClasses = (List<Class>) cmdLineArgs.get(TestNGCommandLineArgs.LISTENER_COMMAND_OPT);
+    if (null != listenerClasses) {
+      setListenerClasses(listenerClasses);
+    }
   }
 
   private void setClientPort(int clientPort) {
@@ -1156,7 +1118,8 @@ public class TestNG {
    * 
    * @param params the parsed command line parameters.
    */
-  private static void checkConditions(Map params) {
+  @SuppressWarnings({"unchecked"})
+  protected static Map checkConditions(Map params) {
     // TODO CQ document why sometimes we throw exceptions and sometimes we exit. 
     List<String> testClasses = (List<String>) params.get(TestNGCommandLineArgs.TESTCLASS_COMMAND_OPT);
     List<String> testNgXml = (List<String>) params.get(TestNGCommandLineArgs.SUITE_DEF_OPT);
@@ -1183,6 +1146,8 @@ public class TestNG {
     if ((null != groups || null != excludedGroups) && null == testClasses) {
       throw new TestNGException("Groups option should be used with testclass option");
     }
+    
+    return params;
   }
 
   private static void ppp(String s) {
@@ -1197,14 +1162,6 @@ public class TestNG {
   }
 
   /**
-   * @deprecated
-   */
-  @Deprecated
-  public void setHasFailure(boolean hasFailure) {
-    m_status |= HAS_FAILURE;
-  }
-
-  /**
    * @return true if at least one test failed within success percentage.
    */
   public boolean hasFailureWithinSuccessPercentage() {
@@ -1212,26 +1169,10 @@ public class TestNG {
   }
 
   /**
-   * @deprecated
-   */
-  @Deprecated
-  public void setHasFailureWithinSuccessPercentage(boolean hasFailureWithinSuccessPercentage) {
-    m_status |= HAS_FSP;
-  }
-
-  /**
    * @return true if at least one test was skipped.
    */
   public boolean hasSkip() {
     return (getStatus() & HAS_SKIPPED) == HAS_SKIPPED;
-  }
-
-  /**
-   * @deprecated
-   */
-  @Deprecated
-  public void setHasSkip(boolean hasSkip) {
-    m_status |= HAS_SKIPPED;
   }
   
   /**
@@ -1258,6 +1199,39 @@ public class TestNG {
   
   public void setAnnotationTransformer(IAnnotationTransformer t) {
     m_annotationTransformer = t;
+  }
+
+  // DEPRECATED: to be removed after a major version change
+  /**
+   * @deprecated since 5.1
+   */
+  @Deprecated
+  public static TestNG getDefault() {
+    return m_instance;
+  }
+
+  /**
+   * @deprecated since 5.1
+   */
+  @Deprecated
+  public void setHasFailure(boolean hasFailure) {
+    m_status |= HAS_FAILURE;
+  }
+
+  /**
+   * @deprecated since 5.1
+   */
+  @Deprecated
+  public void setHasFailureWithinSuccessPercentage(boolean hasFailureWithinSuccessPercentage) {
+    m_status |= HAS_FSP;
+  }
+
+  /**
+   * @deprecated since 5.1
+   */
+  @Deprecated
+  public void setHasSkip(boolean hasSkip) {
+    m_status |= HAS_SKIPPED;
   }
 
   public static class ExitCodeListener implements ITestListener {
