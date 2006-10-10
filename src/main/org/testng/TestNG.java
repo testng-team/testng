@@ -908,7 +908,7 @@ public class TestNG {
     if (TestRunner.getVerbose() > 0) {
       StringBuffer allFiles = new StringBuffer();
       for (XmlSuite s : m_suites) {
-        allFiles.append("  ").append(s.getFileName()).append("\n");
+        allFiles.append("  ").append(s.getFileName() != null ? s.getFileName() : DEFAULT_SUITE_NAME).append("\n");
       }
       Utils.log("Parser", 0, "Running:\n" + allFiles.toString());
     }
