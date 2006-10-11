@@ -39,7 +39,7 @@ public final class TestNGCommandLineArgs {
   /** */
   public static final String TESTJAR_COMMAND_OPT = "-testjar";
   
-  /** The source directory option (for JDK1.4). */
+  /** The source directory option (when using JavaDoc type annotations). */
   public static final String SRC_COMMAND_OPT = "-sourcedir";
   
   // These next two are used by the Eclipse plug-in
@@ -94,6 +94,9 @@ public final class TestNGCommandLineArgs {
    * @return the parsed parameters as a map from option string to parsed values. 
    */
   public static Map parseCommandLine(final String[] originalArgv) {
+    for (int i = 0; i < originalArgv.length; ++i) {
+      LOGGER.debug("originalArgv[" + i + "] = \"" + originalArgv + "\"");
+    }
     // TODO CQ In this method, is this OK to simply ignore invalid parameters?
     LOGGER.debug("TestNG version: \"" + (VersionInfo.IS_JDK14 ? "14" : "15") + "\"");
     
@@ -331,7 +334,8 @@ public final class TestNGCommandLineArgs {
     }
 
     for (Map.Entry entry : arguments.entrySet()) {
-      LOGGER.debug("parseCommandLine argument: \"" + entry.getKey() + "\" = \"" + entry.getValue() + "\"");
+      LOGGER.debug("parseCommandLine argument: \"" 
+        + entry.getKey() + "\" = \"" + entry.getValue() + "\"");
     }
     return arguments;
   }

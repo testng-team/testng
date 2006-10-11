@@ -109,9 +109,6 @@ public class TestNG {
   
   private static TestNG m_instance;
 
-  /** Indicates the TestNG JAR version (JDK 1.4 or JDK 5.0+). */  
-  private static final boolean m_isJdk14 = VersionInfo.IS_JDK14;
-
   protected List<XmlSuite> m_suites = new ArrayList<XmlSuite>();
   protected List<XmlSuite> m_cmdlineSuites;
   protected String m_outputDir = DEFAULT_OUTPUTDIR;
@@ -270,10 +267,12 @@ public class TestNG {
    * @param sourcePaths a semi-colon separated list of source directories. 
    */
   public void setSourcePath(String sourcePaths) {
+    LOGGER.debug("setSourcePath: \"" + sourcePaths + "\"");
     
     // This is an optimization to reduce the sourcePath scope
     // Is it OK to look only for the Thread context class loader?
-    InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("testng-sourcedir-override.properties");
+    InputStream is = Thread.currentThread().getContextClassLoader()
+      .getResourceAsStream("testng-sourcedir-override.properties");
 
     // Resource exists. Use override values and ignore given value
     if (is != null) {
@@ -285,6 +284,9 @@ public class TestNG {
         throw new RuntimeException("Error loading testng-sourcedir-override.properties", e);
       }
       sourcePaths = props.getProperty("sourcedir");
+      LOGGER.debug("setSourcePath ignoring sourcepath parameter and " 
+          + "using testng-sourcedir-override.properties: \"" + sourcePaths + "\"");
+      
     }
     if (null == sourcePaths || "".equals(sourcePaths.trim())) {
       return;
@@ -644,10 +646,10 @@ public class TestNG {
   
   private void initializeAnnotationFinders() {
     m_javadocAnnotationFinder= new JDK14AnnotationFinder(getAnnotationTransformer()); 
-    if(null != m_sourceDirs) {
+    if (null != m_sourceDirs) {
       m_javadocAnnotationFinder.addSourceDirs(m_sourceDirs);
     }
-    if(!isJdk14()) {
+    if (!VersionInfo.IS_JDK14) {
       m_jdkAnnotationFinder= ClassHelper.createJdkAnnotationFinder(getAnnotationTransformer());
     }
   }
@@ -1107,8 +1109,8 @@ public class TestNG {
    *
    * @return true if this is the JDK 1.4 JAR version of TestNG, false otherwise.
    */
-  public static boolean isJdk14() {
-    return m_isJdk14;
+  public static boolean isJdk142() {
+    return VersionInfo.IS_JDK14;
   }
 
   /**
@@ -1132,7 +1134,7 @@ public class TestNG {
       System.exit(-1);
     }
 
-    if (isJdk14()) {
+    if (VersionInfo.IS_JDK14) {
       String srcPath = (String) params.get(TestNGCommandLineArgs.SRC_COMMAND_OPT);
 
       if ((null == srcPath) || "".equals(srcPath)) {
