@@ -1109,7 +1109,7 @@ public class TestNG {
    *
    * @return true if this is the JDK 1.4 JAR version of TestNG, false otherwise.
    */
-  public static boolean isJdk142() {
+  public static boolean isJdk14() {
     return VersionInfo.IS_JDK14;
   }
 
