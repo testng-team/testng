@@ -95,7 +95,7 @@ public final class TestNGCommandLineArgs {
    */
   public static Map parseCommandLine(final String[] originalArgv) {
     for (int i = 0; i < originalArgv.length; ++i) {
-      LOGGER.debug("originalArgv[" + i + "] = \"" + originalArgv + "\"");
+      LOGGER.debug("originalArgv[" + i + "] = \"" + originalArgv[i] + "\"");
     }
     // TODO CQ In this method, is this OK to simply ignore invalid parameters?
     LOGGER.debug("TestNG version: \"" + (VersionInfo.IS_JDK14 ? "14" : "15") + "\"");
