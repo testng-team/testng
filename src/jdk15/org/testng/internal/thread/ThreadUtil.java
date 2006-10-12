@@ -40,7 +40,7 @@ public class ThreadUtil {
       }
     }
     catch(InterruptedException e) {
-      Utils.log("ThreadUtil:" + ThreadUtil.currentThreadInfo(), 2, e);
+      Utils.log("ThreadUtil:" + ThreadUtil.currentThreadInfo(), 3, "Error shutting down PooledExecutor " + e.getMessage());
     }
   }
 

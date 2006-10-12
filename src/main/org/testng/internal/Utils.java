@@ -347,9 +347,6 @@ public final class Utils {
     log("Utils", 2, msg);
   }
 
-  public static void log(String cls, int level, Throwable cause) {
-  }
-  
   /**
    * Logs the the message to System.out if level is greater than
    * or equal to TestRunner.getVerbose(). The message is logged as:
