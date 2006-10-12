@@ -6,7 +6,11 @@ import java.io.FileReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.testng.TestRunner;
 import org.testng.internal.Utils;
@@ -23,6 +27,9 @@ import com.thoughtworks.qdox.model.JavaMethod;
 /**
  * This class implements IAnnotationFinder with QDox for JDK 1.4
  * 
+ * TODO: this class needs some synchronization, because at this moment it can sometimes
+ * try to parse some files twice.
+ * 
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
@@ -30,6 +37,11 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
   
   /** This class' loge4testng Logger. */
   private static final Logger LOGGER = Logger.getLogger(JDK14AnnotationFinder.class);
+  
+  private Map<String, List<File>> m_sourceFiles= new HashMap<String, List<File>>();
+  private Map<String, String> m_parsedClasses= new HashMap<String, String>();
+
+  private Map<String, String> m_parsedFiles= new HashMap<String, String>();
   
   private JDK14TagFactory m_tagFactory = new JDK14TagFactory();
   private JavaDocBuilder m_docBuilder;
@@ -41,33 +53,9 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
     m_transformer = transformer;
   }
   
-  void addSources(String[] filePaths) {
-    if(filePaths == null) {
-      if (TestRunner.getVerbose() > 1) {
-        ppp("Array of source paths is null");
-      }
-
-      return;
-    }
-    for(int i = 0; i < filePaths.length; i++) {
-      try {
-        m_docBuilder.addSource(new FileReader(filePaths[i]));
-      }
-      catch(FileNotFoundException fnfe) {
-        LOGGER.warn("file or directory does not exist: " + filePaths[i]);
-        ppp("File does not exist [" + filePaths[i] + "]");
-      }
-      catch(Throwable t) {
-        Utils.log(getClass().getName(), 1, "[WARNING] cannot parse source: " + filePaths[i] + "\n    " + t.getMessage());
-      }
-    }
-  }
-
   public void addSourceDirs(String[] dirPaths) {
     if(dirPaths == null) {
-      if (TestRunner.getVerbose() > 1) {
-        ppp("Array of source directory paths is null");
-      }
+      Utils.log(getClass().getName(), 1, "[WARNING] Array of source directory paths is null");
       return;
     }
 
@@ -79,71 +67,153 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
       scanner.addFilter(new SuffixFilter(".java"));
       scanner.scan(new FileVisitor() {
         public void visitFile(File currentFile) {
-          addSources(new String[] { currentFile.getAbsolutePath() });
+          registerSourceFile(currentFile);
         }
       });
     }
   }
 
-  public IAnnotation findAnnotation(Class cls, Class annotationClass)
-  {
-    IAnnotation result = m_tagFactory.createTag(annotationClass, 
-        m_docBuilder.getClassByName(cls.getName()),
-        m_transformer);
+  /**
+   * Record in an internal map the existence of a source file.
+   * @param sourcefile the source file
+   */
+  private void registerSourceFile(File sourcefile) {
+    List<File> files= m_sourceFiles.get(sourcefile.getName());
+    if(null == files) {
+      files= new ArrayList<File>();
+      m_sourceFiles.put(sourcefile.getName(), files);
+    }
+    files.add(sourcefile);
+  }
+
+//private void addSources(String[] filePaths) {
+//if(filePaths == null) {
+//  Utils.log(getClass().getName(), 1, "[WARNING] Array of source paths is null");
+//
+//  return;
+//}
+//for(int i = 0; i < filePaths.length; i++) {
+//  addSource(filePaths[i]);
+//}
+//}
+
+  /**
+   * Must be synch to be assured that a file is not parsed twice
+   */
+  private synchronized boolean addSource(String filePath) {
+    if(m_parsedFiles.containsKey(filePath)) {
+      return true;
+    }
     
+    try {
+      m_docBuilder.addSource(new FileReader(filePath));
+      m_parsedFiles.put(filePath, filePath);
+
+      return true;
+    }
+    catch(FileNotFoundException fnfe) {
+      Utils.log(getClass().getName(), 1, "[WARNING] source file not found: " + filePath + "\n    " + fnfe.getMessage());
+    }
+    catch(Throwable t) {
+      Utils.log(getClass().getName(), 1, "[WARNING] cannot parse source: " + filePath + "\n    " + t.getMessage());
+    }
+
+    return false;
+  }
+  
+  private JavaClass getClassByName(Class clazz) {
+    if(m_parsedClasses.containsKey(clazz.getName())) {
+      JavaClass jc= m_docBuilder.getClassByName(clazz.getName());
+      return jc;
+    }
+    else {
+      parseSource(clazz);
+
+      return getClassByName(clazz);
+    }
+  }
+  
+  private void parseSource(Class clazz) {
+    final String className= clazz.getName();
+    int innerSignPos= className.indexOf('$');
+    final String fileName =  innerSignPos == -1 
+        ? className.substring(className.lastIndexOf('.') + 1) 
+        : clazz.getName().substring(className.lastIndexOf('.') + 1, innerSignPos);
+    
+    List<File> sourcefiles= m_sourceFiles.get(fileName + ".java");
+    if(null != sourcefiles) {
+      for(File f: sourcefiles) {
+        addSource(f.getAbsolutePath());
+      }
+    }
+    
+    m_parsedClasses.put(className, className);
+    
+    Class superClass= clazz.getSuperclass();
+    if(null != superClass && !Object.class.equals(superClass)) {
+      parseSource(superClass);
+    }
+  }
+  
+  public IAnnotation findAnnotation(Class cls, Class annotationClass) {
+    if(Object.class.equals(cls)) {
+      return null;
+    }
+    
+    IAnnotation result = m_tagFactory.createTag(annotationClass, getClassByName(cls), m_transformer);
+
     transform(result, cls, null, null);
 
     return result;
   }
 
-  public IAnnotation findAnnotation(Method m, Class annotationClass)
-  {
+  public IAnnotation findAnnotation(Method m, Class annotationClass) {
     IAnnotation result = findMethodAnnotation(m.getName(), m.getParameterTypes(), 
         m.getDeclaringClass(), annotationClass, m_transformer);
-    
+
     transform(result, null, null, m);
     
     return result;
   }
   
-  public IAnnotation findAnnotation(Constructor m, Class annotationClass)
-  {
+  public IAnnotation findAnnotation(Constructor m, Class annotationClass) {
     String name = stripPackage(m.getName());
-    IAnnotation result = 
-      findMethodAnnotation(name, m.getParameterTypes(), m.getDeclaringClass(), 
+    IAnnotation result = findMethodAnnotation(name, m.getParameterTypes(), m.getDeclaringClass(), 
         annotationClass, m_transformer);
-    
+
     transform(result, null, m, null);
     
     return result;
   }
   
-  private void transform (IAnnotation a, Class testClass,
-      Constructor testConstructor, Method testMethod)
-  {
+  private void transform (IAnnotation a, Class testClass, Constructor testConstructor, Method testMethod) {
     if (a instanceof ITest) {
-      m_transformer.transform((ITest) a, 
-          testClass, testConstructor, testMethod);
+      m_transformer.transform((ITest) a, testClass, testConstructor, testMethod);
     }
   }
 
   private String stripPackage(String name) {
-    String result = name;
-    int index = result.lastIndexOf(".");
-    if (index > 0) {
-      result = result.substring(index + 1);
-    }
-    
-    return result;
+    return name.substring(name.lastIndexOf('.'));
+//    String result = name;
+//    int index = result.lastIndexOf(".");
+//    if (index > 0) {
+//      result = result.substring(index + 1);
+//    }
+//    
+//    return result;
   }
   
   private IAnnotation findMethodAnnotation(String methodName, Class[] parameterTypes, 
       Class methodClass, Class annotationClass, IAnnotationTransformer transformer) 
   {
+    if(Object.class.equals(methodClass)) {
+      return null;
+    }
+    
     IAnnotation result = null;
-    JavaClass jc = m_docBuilder.getClassByName(methodClass.getName());
+    JavaClass jc = getClassByName(methodClass); 
     if (jc != null) {
-      List methods = new ArrayList();
+      List<JavaMethod> methods = new ArrayList<JavaMethod>();
       JavaMethod[] allMethods = jc.getMethods();
       for (int i = 0; i < allMethods.length; i++) {
         JavaMethod jm = allMethods[i];
@@ -152,19 +222,19 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
         }
       }
       
-      JavaMethod method =null;
+      JavaMethod method = null;
 //      if (methods.size() > 1) {
 //        ppp("WARNING:  method " + methodName + " is overloaded, only considering the first one");
 //      }
       
       if (methods.size() > 0) {
-        method = (JavaMethod) methods.get(0);
+        method = methods.get(0);
         result = findTag(annotationClass, result, method, transformer);
       }
       
     }
     else {
-      ppp("COULDN'T RESOLVE CLASS " + methodClass.getName());
+      Utils.log(getClass().getName(), 1, "[WARNING] cannot resolve class: " + methodClass.getName());
     }
     
     return result;
