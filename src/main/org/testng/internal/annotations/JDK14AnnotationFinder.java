@@ -193,7 +193,7 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
   }
 
   private String stripPackage(String name) {
-    return name.substring(name.lastIndexOf('.'));
+    return name.substring(name.lastIndexOf('.') + 1);
 //    String result = name;
 //    int index = result.lastIndexOf(".");
 //    if (index > 0) {
