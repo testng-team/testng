@@ -261,6 +261,8 @@ public class TestNG {
    *  
    * sourcedir=c:\java\src\org\testng;D:/dir2
    *
+   * Considering the syntax of a properties file, you must escape the usage of : and = in
+   * your paths.
    * Note that for the override to occur, this method must be called. i.e. it is not sufficient
    * to place "testng-sourcedir-override.properties" in the classpath.
    * 
