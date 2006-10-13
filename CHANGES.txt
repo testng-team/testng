@@ -15,6 +15,10 @@ Fixed: Reporter.getOutput() returned an empty array if a timeOut was specified
 Added: testng.xml now supports <suite-files>
 Added: ant task can receive several listeners
 Fixed: TESTNG-109 Skipped tests with expected exceptions are reported as failures
+Added: ant task can now select the parallel mode for running tests
+Fixed: ant task correctly deals with empty groups and excludedgroups parameters
+Added: ant task can override default suite and test names
+Added: comand line support for setting parallel mode, suite and test names
 
 Eclipse plug-in
 Added: Support for configuring per project usedefaultlisteners
