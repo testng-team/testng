@@ -79,7 +79,7 @@ accepts the following attributes: <br>
 	<tr>
 	  <td><tt>groups</tt></td>
 	  <td>
-   	The list of groups to run, separated by spaces or commas</td>
+   	The list of groups to run, separated by spaces or commas.</td>
 	  <td>
    	</td>
 	</tr>
@@ -146,8 +146,13 @@ accepts the following attributes: <br>
 	</tr>
 	
 	<tr>
+		<td><tt>parallel</tt> </td>
+		<td>The parallel mode to use for running the tests - either methods or tests</td>
+		<td>No - if not present, parallel mode will not be selected</td>
+	</tr>
+	<tr>
 		<td><tt>threadCount</tt> </td>
-		<td>The number of threads to use for this run</td>
+		<td>The number of threads to use for this run. Ignored unless the parallel mode is also specified</td>
 		<td>1</td>
 	</tr>
 
@@ -179,6 +184,16 @@ accepts the following attributes: <br>
 		<a href="http://ant.apache.org/manual/CoreTypes/fileset.html">FileSet</a> 
 		structure for the suite definitions to be run. </td>
 		<td>&nbsp; </td>
+	</tr>
+	<tr>
+		<td><tt>suitename</tt> </td>
+		<td>Sets the default name of the test suite, if one is not specified in a suite xml file or in the source code</td>
+		<td>No. Defaults to "Ant suite"</td>
+	</tr>
+	<tr>
+		<td><tt>testname</tt> </td>
+		<td>Sets the default name of the test, if one is not specified in a suite xml file or in the source code</td>
+		<td>No. defaults to "Ant test"</td>
 	</tr>
 </table>
 <br>

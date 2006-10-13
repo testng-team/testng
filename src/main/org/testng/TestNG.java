@@ -162,6 +162,9 @@ public class TestNG {
   private String m_parallelMode;
   private boolean m_useParallelMode;
   private Class[] m_commandLineTestClasses;
+  
+  private String m_defaultSuiteName=DEFAULT_SUITE_NAME;
+  private String m_defaultTestName=DEFAULT_TEST_NAME;
 
   /**
    * Default constructor. Setting also usage of default listeners/reporters.
@@ -397,8 +400,8 @@ public class TestNG {
     for (int i = 0; i < classes.length; i++) {
       Class c = classes[i];
       ITest test = (ITest) finder.findAnnotation(c, ITest.class);
-      String suiteName = DEFAULT_SUITE_NAME;
-      String testName = DEFAULT_TEST_NAME;
+      String suiteName = getDefaultSuiteName();
+      String testName = getDefaultTestName();
       if (test != null) {
         suiteName = test.getSuiteName();
         testName = test.getTestName();    
@@ -1070,6 +1073,16 @@ public class TestNG {
       setClientPort(Integer.parseInt(client));
     }
 
+    String defaultSuiteName = (String) cmdLineArgs.get(TestNGCommandLineArgs.SUITE_NAME_OPT);
+    if (defaultSuiteName != null) {
+      setDefaultSuiteName(defaultSuiteName);
+    }
+
+    String defaultTestName = (String) cmdLineArgs.get(TestNGCommandLineArgs.TEST_NAME_OPT);
+    if (defaultTestName != null) {
+      setDefaultTestName(defaultTestName);
+    }
+
     List<Class> listenerClasses = (List<Class>) cmdLineArgs.get(TestNGCommandLineArgs.LISTENER_COMMAND_OPT);
     if (null != listenerClasses) {
       setListenerClasses(listenerClasses);
@@ -1278,4 +1291,32 @@ public class TestNG {
       m_mainRunner.m_hasTests= true;
     }
   }
+
+/**
+ * @return the defaultSuiteName
+ */
+public String getDefaultSuiteName() {
+	return m_defaultSuiteName;
+}
+
+/**
+ * @param defaultSuiteName the defaultSuiteName to set
+ */
+public void setDefaultSuiteName(String defaultSuiteName) {
+	m_defaultSuiteName = defaultSuiteName;
+}
+
+/**
+ * @return the defaultTestName
+ */
+public String getDefaultTestName() {
+	return m_defaultTestName;
+}
+
+/**
+ * @param defaultTestName the defaultTestName to set
+ */
+public void setDefaultTestName(String defaultTestName) {
+	m_defaultTestName = defaultTestName;
+}
 }

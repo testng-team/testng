@@ -51,11 +51,14 @@ import org.testng.internal.version.VersionInfo;
  * <li>reporter (attribute)</li>
  * <li>sourcedir (attribute)</li>
  * <li>sourcedirref (attribute)</li>
+ * <li>suitename (attribute)</li>
  * <li>suiterunnerclass (attribute)</li>
  * <li>target (attribute)</li>
  * <li>testjar (attribute)</li>
+ * <li>testname (attribute)</li>
  * <li>threadcount (attribute)</li>
  * <li>verbose (attribute)</li>
+ * 
  * </ul>
  *
  * Ant settings:
@@ -127,6 +130,8 @@ public class TestNGAntTask extends Task {
   protected String m_parallelMode;
   protected String m_threadCount;
   public String m_useDefaultListeners;
+  private String m_suiteName="Ant suite";
+  private String m_testName="Ant test";
 
   public void setParallel(String parallel) {
     m_parallelMode= parallel;
@@ -341,6 +346,22 @@ public class TestNGAntTask extends Task {
     m_mainClass= s;
   }
 
+  /**
+   * Sets the suite name
+   * @param s the name of the suite 
+   */
+  public void setSuiteName(String s) {
+    m_suiteName= s;
+  }
+
+  /**
+   * Sets the test name
+   * @param s the name of the test 
+   */
+  public void setTestName(String s) {
+    m_testName= s;
+  }
+
   // TestNG settings
   public void setJUnit(boolean value) {
     m_isJUnit= new Boolean(value);
@@ -519,6 +540,16 @@ public class TestNGAntTask extends Task {
       for(String file : fileset(m_xmlFilesets)) {
         argv.add(file);
       }
+    }
+    
+    if(!"".equals(m_suiteName)) {
+    	argv.add(TestNGCommandLineArgs.SUITE_NAME_OPT);
+    	argv.add(m_suiteName);
+    }
+
+    if(!"".equals(m_testName)) {
+    	argv.add(TestNGCommandLineArgs.TEST_NAME_OPT);
+    	argv.add(m_testName);
     }
 
     String fileName= "";

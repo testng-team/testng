@@ -18,6 +18,7 @@ public class TestListenerAdapter implements ITestListener {
   private List<ITestResult> m_skippedTests = Collections.synchronizedList(new ArrayList<ITestResult>());
   private List<ITestResult> m_failedButWithinSuccessPercentageTests 
     = Collections.synchronizedList(new ArrayList<ITestResult>());
+  private List<ITestContext> m_testContexts= Collections.synchronizedList(new ArrayList<ITestContext>());;
 
   public void onTestSuccess(ITestResult tr) {
     m_allTestMethods.add(tr.getMethod());
@@ -44,6 +45,7 @@ public class TestListenerAdapter implements ITestListener {
   }
 
   public void onStart(ITestContext testContext) {
+	  m_testContexts.add(testContext);
   }
 
   public void onFinish(ITestContext testContext) {
@@ -111,4 +113,11 @@ public class TestListenerAdapter implements ITestListener {
 
   public void onTestStart(ITestResult result) {
   }
+
+	/**
+	 * @return
+	 */
+	public List<ITestContext> getTestContexts() {
+		return m_testContexts;
+	}
 }

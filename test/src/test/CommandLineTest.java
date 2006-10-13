@@ -4,9 +4,7 @@ import static org.testng.Assert.assertEquals;
 
 import java.util.List;
 
-import org.testng.ITestResult;
-import org.testng.TestListenerAdapter;
-import org.testng.TestNG;
+import org.testng.*;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.*;
@@ -56,6 +54,52 @@ public class CommandLineTest {
     List<ITestResult> passed = tla.getPassedTests();
     assertEquals(passed.size(), 0);
     }
+  
+  /**
+   * Test the ability to override the defauilt command line Suite name
+   */
+  @Test(groups = { "current" } )
+  public void suiteNameOverride() {
+    String suiteName="MySuiteName";
+    String[] argv = {
+      "-log", "0",
+      "-d", OutputDirectoryPatch.getOutputDirectory(),
+      "-junit", 
+      "-testclass", "test.sample.JUnitSample1",
+      "-suitename", "\""+suiteName+"\""
+    };
+    TestListenerAdapter tla = new TestListenerAdapter();
+    TestNG.privateMain(argv, tla);
+    
+    List<ITestContext> contexts = tla.getTestContexts();
+    assertTrue(contexts.size()>0);
+    for (ITestContext context:contexts) {
+    	assertEquals(context.getSuite().getName(),suiteName);
+    }
+  }
+  
+  /**
+   * Test the ability to override the defauilt command line test name
+   */
+  @Test(groups = { "current" } )
+  public void testNameOverride() {
+    String testName="My Test Name";
+    String[] argv = {
+      "-log", "0",
+      "-d", OutputDirectoryPatch.getOutputDirectory(),
+      "-junit", 
+      "-testclass", "test.sample.JUnitSample1",
+      "-testname", "\""+testName+"\""
+    };
+    TestListenerAdapter tla = new TestListenerAdapter();
+    TestNG.privateMain(argv, tla);
+    
+    List<ITestContext> contexts = tla.getTestContexts();
+    assertTrue(contexts.size()>0);
+    for (ITestContext context:contexts) {
+    	assertEquals(context.getName(),testName);
+    }
+  }
   
   private static void ppp(String s) {
     System.out.println("[CommandLineTest] " + s);

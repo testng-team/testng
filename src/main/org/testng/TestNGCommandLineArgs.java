@@ -66,6 +66,8 @@ public final class TestNGCommandLineArgs {
   public static final String THREAD_COUNT = "-threadcount";
   public static final String USE_DEFAULT_LISTENERS = "-usedefaultlisteners";
   public static final String PARALLEL_MODE = "-parallel";
+  public static final String SUITE_NAME_OPT = "-suitename";
+  public static final String TEST_NAME_OPT = "-testname";
 
   /** 
    * When given a file name to form a class name, the file name is parsed and divided 
@@ -93,7 +95,7 @@ public final class TestNGCommandLineArgs {
    * @param originalArgv the command line options.
    * @return the parsed parameters as a map from option string to parsed values. 
    */
-  public static Map parseCommandLine(final String[] originalArgv) {
+public static Map parseCommandLine(final String[] originalArgv) {
     for (int i = 0; i < originalArgv.length; ++i) {
       LOGGER.debug("originalArgv[" + i + "] = \"" + originalArgv[i] + "\"");
     }
@@ -301,11 +303,23 @@ public final class TestNGCommandLineArgs {
           }
         }
       else if (USE_DEFAULT_LISTENERS.equalsIgnoreCase(argv[i])) {
-        if ((i + 1) < argv.length) {
-          arguments.put(USE_DEFAULT_LISTENERS, argv[i + 1]);
-          i++;
+          if ((i + 1) < argv.length) {
+            arguments.put(USE_DEFAULT_LISTENERS, argv[i + 1]);
+            i++;
+          }
         }
-      }
+      else if (SUITE_NAME_OPT.equalsIgnoreCase(argv[i])) {
+          if ((i + 1) < argv.length) {
+            arguments.put(SUITE_NAME_OPT, trim(argv[i + 1]));
+            i++;
+          }
+        }
+      else if (TEST_NAME_OPT.equalsIgnoreCase(argv[i])) {
+          if ((i + 1) < argv.length) {
+            arguments.put(TEST_NAME_OPT, trim(argv[i + 1]));
+            i++;
+          }
+        }
 
       
       //
@@ -342,6 +356,24 @@ public final class TestNGCommandLineArgs {
 
 
   /**
+   * @param string
+   * @return
+   */
+  private static String trim(String string) {
+	String trimSpaces=string.trim();
+	if (trimSpaces.startsWith("\"")) {
+		if (trimSpaces.endsWith("\"")) {
+			return trimSpaces.substring(1, trimSpaces.length() - 1);
+		} else {
+			return trimSpaces.substring(1);
+		}
+	} else {
+		return trimSpaces;
+	}
+	
+}
+
+/**
    * Expand the command line parameters to take @ parameters into account.
    * When @ is encountered, the content of the file that follows is inserted
    * in the command line

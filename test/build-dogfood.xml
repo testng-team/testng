@@ -1,11 +1,16 @@
 <project name="testng" default="run" basedir=".">
 	<property name="testng.home" value="${basedir}/../" />
-    <property name="lib.dir" value="${testng.home}/lib"/>
+    <property name="lib.dir" value="${testng.home}/3rdparty"/>
  	<property file="../build.properties"/>
 
 	<path id="run.cp">
 		<pathelement location="../z_build" />
-		<pathelement location="${java.home}/../lib/tools.jar"/>
+		<fileset dir="${lib.dir}">
+			<include name="junit.jar"/>
+			<include name="${beanshell.jar}"/>
+			<include name="${qdox.jar}"/>
+		</fileset>
+ 		<pathelement location="${java.home}/../lib/tools.jar"/>
 	</path>
 
 	<target name="run" description="Run tests" >
@@ -17,7 +22,7 @@
 		<testng classpathref="run.cp"
         dumpcommand="true" verbose="9" outputdir="test-outputs" haltonfailure="true">
 			<xmlfileset dir="${basedir}">
-				<include name="testng-annconv.xml" />
+				<include name="testng-single.xml" />
 			</xmlfileset>
 		</testng>
 	</target>

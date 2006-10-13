@@ -19,6 +19,7 @@
         <xmlfileset dir="." includes="testng.xml"/>
     </testng>
 -->
+	<delete failonerror="false"><fileset dir="test-output" includes="**"/></delete>
   	
     <testng classpath="build;${testng.jar}"
             outputdir="test-output"
@@ -27,12 +28,18 @@
 	    dumpCommand = "true"
     	listeners = "org.testng.reporters.FailedReporter, org.testng.reporters.DotTestListener"
     	haltonfailure="true"
+    	suitename="Test Ant Suite"
+    	testname="Test Ant Test"
     	>
         <classfileset dir="build">
         	<include name="NoPackageTest.class" />
         	<include name="MultipleThreadTest.class" />
         </classfileset>
     </testng>
+  	
+  	<available file="test-output/Test Ant Suite/Test Ant Test.xml" type="file" property="test.exists"/>
+  	<fail unless="test.exists" message="The appropriately named output should have been created"/>
+  	
 
   </target>
 </project>
