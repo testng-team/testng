@@ -40,7 +40,7 @@ public class XmlSuite implements Serializable, Cloneable {
   private String m_test;
   
   /** The default suite name TODO CQ is this OK as a default name. */
-  private static final String DEFAULT_SUITE_NAME = TestNG.DEFAULT_SUITE_NAME;
+  private static final String DEFAULT_SUITE_NAME = "";
   
   /** The suite name (defaults to DEFAULT_SUITE_NAME) */
   private String m_name = DEFAULT_SUITE_NAME;

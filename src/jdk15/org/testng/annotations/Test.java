@@ -125,13 +125,13 @@ public @interface Test {
    * The name of the suite this test class should be placed in.  This
    * attribute is ignore if @Test is not at the class level.
    */
-  public String suiteName() default TestNG.DEFAULT_SUITE_NAME;
+  public String suiteName() default "";
 
   /**
    * The name of the test  this test class should be placed in.  This
    * attribute is ignore if @Test is not at the class level.
    */
-  public String testName() default TestNG.DEFAULT_TEST_NAME;
+  public String testName() default "";
   
   /**
    * If set to true, all the methods on this test class are guaranteed to run

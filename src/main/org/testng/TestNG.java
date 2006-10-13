@@ -90,10 +90,10 @@ public class TestNG {
   private static final Logger LOGGER = Logger.getLogger(TestNG.class);
   
   /** The default name for a suite launched from the command line */
-  public static final String DEFAULT_SUITE_NAME = "Command line suite";
-
+  public static final String DEFAULT_COMMAND_LINE_SUITE_NAME = "Command line suite";
+ 
   /** The default name for a test launched from the command line */
-  public static final String DEFAULT_TEST_NAME = "Command line test";
+  public static final String DEFAULT_COMMAND_LINE_TEST_NAME = "Command line test";
 
   /** The default name of the result's output directory. */
   public static final String DEFAULT_OUTPUTDIR = "test-output";
@@ -163,8 +163,8 @@ public class TestNG {
   private boolean m_useParallelMode;
   private Class[] m_commandLineTestClasses;
   
-  private String m_defaultSuiteName=DEFAULT_SUITE_NAME;
-  private String m_defaultTestName=DEFAULT_TEST_NAME;
+  private String m_defaultSuiteName=DEFAULT_COMMAND_LINE_SUITE_NAME;
+  private String m_defaultTestName=DEFAULT_COMMAND_LINE_TEST_NAME;
 
   /**
    * Default constructor. Setting also usage of default listeners/reporters.
@@ -403,8 +403,14 @@ public class TestNG {
       String suiteName = getDefaultSuiteName();
       String testName = getDefaultTestName();
       if (test != null) {
-        suiteName = test.getSuiteName();
-        testName = test.getTestName();    
+        final String candidateSuiteName = test.getSuiteName();
+        if (candidateSuiteName!=null&&!"".equals(candidateSuiteName)) {
+          suiteName = candidateSuiteName;
+        }
+        final String candidateTestName = test.getTestName();
+        if (candidateTestName!=null&&!"".equals(candidateTestName)) {
+		  testName = candidateTestName;   
+        }
       }  
       XmlSuite xmlSuite = suites.get(suiteName);
       if (xmlSuite == null) {
@@ -915,7 +921,7 @@ public class TestNG {
     if (TestRunner.getVerbose() > 0) {
       StringBuffer allFiles = new StringBuffer();
       for (XmlSuite s : m_suites) {
-        allFiles.append("  ").append(s.getFileName() != null ? s.getFileName() : DEFAULT_SUITE_NAME).append("\n");
+        allFiles.append("  ").append(s.getFileName() != null ? s.getFileName() : getDefaultSuiteName()).append("\n");
       }
       Utils.log("Parser", 0, "Running:\n" + allFiles.toString());
     }

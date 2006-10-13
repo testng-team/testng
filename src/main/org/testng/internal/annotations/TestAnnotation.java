@@ -18,8 +18,8 @@ public class TestAnnotation extends TestOrConfiguration implements ITest {
   private String m_dataProvider = "";
   private boolean m_alwaysRun = false;
   private Class[] m_expectedExceptions = {};
-  private String m_suiteName = TestNG.DEFAULT_SUITE_NAME;
-  private String m_testName = TestNG.DEFAULT_TEST_NAME;
+  private String m_suiteName = "";
+  private String m_testName = "";
   private boolean m_sequential = false;
   private boolean m_reentering = false;
   private Class m_dataProviderClass = null;

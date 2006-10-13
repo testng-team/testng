@@ -40,6 +40,22 @@
   	<available file="test-output/Test Ant Suite/Test Ant Test.xml" type="file" property="test.exists"/>
   	<fail unless="test.exists" message="The appropriately named output should have been created"/>
   	
+    <testng classpath="build;${testng.jar}"
+            outputdir="test-output"
+	    dumpCommand = "true"
+    	listeners = "org.testng.reporters.FailedReporter, org.testng.reporters.DotTestListener"
+    	haltonfailure="true"
+    	suitename="Test Ant Suite 2"
+    	testname="Test Ant Test 2"
+    	>
+        <classfileset dir="build">
+        	<include name="DontOverrideSuiteNameTest.class" />
+         </classfileset>
+    </testng>
+  	
+  	<available file="test-output/Test Ant Suite 2/Test Ant Test 2.xml" type="file" property="test.exists"/>
+  	<fail unless="test.exists" message="The appropriately named output should have been created"/>
+  	
 
   </target>
 </project>
