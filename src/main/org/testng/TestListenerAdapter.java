@@ -114,10 +114,10 @@ public class TestListenerAdapter implements ITestListener {
   public void onTestStart(ITestResult result) {
   }
 
-	/**
-	 * @return
-	 */
-	public List<ITestContext> getTestContexts() {
-		return m_testContexts;
-	}
+  /**
+   * @return
+   */
+  public List<ITestContext> getTestContexts() {
+    return m_testContexts;
+  }
 }

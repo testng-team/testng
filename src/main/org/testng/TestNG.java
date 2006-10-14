@@ -404,11 +404,11 @@ public class TestNG {
       String testName = getDefaultTestName();
       if (test != null) {
         final String candidateSuiteName = test.getSuiteName();
-        if (candidateSuiteName!=null&&!"".equals(candidateSuiteName)) {
+        if (candidateSuiteName != null && !"".equals(candidateSuiteName)) {
           suiteName = candidateSuiteName;
         }
         final String candidateTestName = test.getTestName();
-        if (candidateTestName!=null&&!"".equals(candidateTestName)) {
+        if (candidateTestName != null && !"".equals(candidateTestName)) {
 		  testName = candidateTestName;   
         }
       }  

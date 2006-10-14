@@ -291,44 +291,41 @@ public static Map parseCommandLine(final String[] originalArgv) {
         i++;
       }
       else if (PARALLEL_MODE.equalsIgnoreCase(argv[i])) {
-          if ((i + 1) < argv.length) {
-            arguments.put(PARALLEL_MODE, argv[i + 1]);
-            i++;
-          }
+        if ((i + 1) < argv.length) {
+          arguments.put(PARALLEL_MODE, argv[i + 1]);
+          i++;
         }
+      }
       else if (THREAD_COUNT.equalsIgnoreCase(argv[i])) {
-          if ((i + 1) < argv.length) {
-            arguments.put(THREAD_COUNT, argv[i + 1]);
-            i++;
-          }
+        if ((i + 1) < argv.length) {
+          arguments.put(THREAD_COUNT, argv[i + 1]);
+          i++;
         }
+      }
       else if (USE_DEFAULT_LISTENERS.equalsIgnoreCase(argv[i])) {
-          if ((i + 1) < argv.length) {
-            arguments.put(USE_DEFAULT_LISTENERS, argv[i + 1]);
-            i++;
-          }
+        if ((i + 1) < argv.length) {
+          arguments.put(USE_DEFAULT_LISTENERS, argv[i + 1]);
+          i++;
         }
+      }
       else if (SUITE_NAME_OPT.equalsIgnoreCase(argv[i])) {
-          if ((i + 1) < argv.length) {
-            arguments.put(SUITE_NAME_OPT, trim(argv[i + 1]));
-            i++;
-          }
+        if ((i + 1) < argv.length) {
+          arguments.put(SUITE_NAME_OPT, trim(argv[i + 1]));
+          i++;
         }
+      }
       else if (TEST_NAME_OPT.equalsIgnoreCase(argv[i])) {
-          if ((i + 1) < argv.length) {
-            arguments.put(TEST_NAME_OPT, trim(argv[i + 1]));
-            i++;
-          }
+        if ((i + 1) < argv.length) {
+          arguments.put(TEST_NAME_OPT, trim(argv[i + 1]));
+          i++;
         }
-
-      
+      }
       //
       // Unknown option
       //
       else if (argv[i].startsWith("-")) {
         TestNG.exitWithError("Unknown option: " + argv[i]);
-      }
-      
+      }      
       //
       // The XML files
       //
@@ -571,7 +568,6 @@ public static Map parseCommandLine(final String[] originalArgv) {
     return result;
 
   }
-    
 
   /**
    * Returns the Class object corresponding to the given name. The name may be
@@ -687,12 +683,13 @@ public static Map parseCommandLine(final String[] originalArgv) {
       System.out.println("\t\tThis version of TestNG (14) only supports " + AnnotationTypeEnum.JAVADOC.getName() + " annotation type.");
       System.out.println("\t\tFor interface compatibility reasons, we allow this value to be explicitly set to " +
           AnnotationTypeEnum.JAVADOC.getName() + "\"  ");
-    } else {
-      System.out.println("[" + DEFAULT_ANNOTATIONS_COMMAND_OPT + " " + AnnotationTypeEnum.JAVADOC.getName() + " or " + 
-          AnnotationTypeEnum.JAVADOC.getName() + "]");
-      System.out.println("\t\tSpecifies the default annotation type to be used in suites when none is explicitly");
-          
-      System.out.println("\t\tspecified. This version of TestNG (15) supports both \"" + AnnotationTypeEnum.JAVADOC.getName() + "\" and \"" + AnnotationTypeEnum.JDK5.getName() + "\" annotation types.");
+    } 
+    else {
+      System.out.println("[" + DEFAULT_ANNOTATIONS_COMMAND_OPT + " " + AnnotationTypeEnum.JAVADOC.getName() + " or " 
+          + AnnotationTypeEnum.JAVADOC.getName() + "]");
+      System.out.println("\t\tSpecifies the default annotation type to be used in suites when none is explicitly");      
+      System.out.println("\t\tspecified. This version of TestNG (15) supports both \"" 
+          + AnnotationTypeEnum.JAVADOC.getName() + "\" and \"" + AnnotationTypeEnum.JDK5.getName() + "\" annotation types.");
     }
 
     System.out.println("[" + GROUPS_COMMAND_OPT + " comma-separated list of group names to be run]");
@@ -711,19 +708,13 @@ public static Map parseCommandLine(final String[] originalArgv) {
         + ISuiteListener.class.getName()
         + "]");
     System.out.println("[" + PARALLEL_MODE
-            + " methods|tests"
-            +"]");
+            + " methods|tests]");
     System.out.println("\t\trun tests in parallel using the specified mode");
     System.out.println("[" + THREAD_COUNT
-            + " number of threads to use when running tests in parallel"
-            + "]");
-    System.out.println("[" + SUITE_NAME_OPT
-            + " name"
-            + "]");
+            + " number of threads to use when running tests in parallel]");
+    System.out.println("[" + SUITE_NAME_OPT + " name]");
     System.out.println("\t\tDefault name of test suite, if not specified in suite definition file or source code");
-    System.out.println("[" + TEST_NAME_OPT
-            + " Name"
-            + "]");
+    System.out.println("[" + TEST_NAME_OPT + " Name]");
     System.out.println("\t\tDefault name of test, if not specified in suite definition file or source code");
     System.out.println("[suite definition files*]");
     System.out.println("");
