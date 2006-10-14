@@ -19,7 +19,7 @@ import org.testng.reporters.XMLStringBuffer;
  */
 public class XmlTest implements Serializable, Cloneable {
   private final XmlSuite m_suite;
-  private String m_name = null;
+  private String m_name = TestNG.DEFAULT_COMMAND_LINE_SUITE_NAME;
   private Integer m_verbose;
   private Boolean m_isJUnit;
   private List<XmlClass> m_xmlClasses = new ArrayList<XmlClass>();

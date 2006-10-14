@@ -1,11 +1,8 @@
 
 import org.testng.annotations.Test;
 
-/**
- * @author Filippo Diotalevi
- */
 @Test
-public class NoPackageTest {
+public class DontOverrideSuiteNameTest {
 	private boolean m_run = false;
 
 	@Test(groups = {"nopackage"})
