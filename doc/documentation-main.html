@@ -96,6 +96,9 @@ google_ad_channel ="5560744946";
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#running-testng-programmatically">5.12 - Running TestNG programmatically</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#beanshell">5.13 - BeanShell and advanced group selection</a><br>
 
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#annotationtransformers">5.14 - Annotation transformers</a><br>
+
+
 &nbsp; <a class="summary" href="#test-results">6 - Test results</a>
 <br>
 &nbsp;&nbsp;&nbsp; <a class="summary" href="#success-failure">6.1 - Success, failure and assert</a>
@@ -1529,6 +1532,78 @@ You might want to surround your expression with a <tt>CDATA</tt> declaration (as
 </ul>
 
 
+<!-------------------------------------
+  ANNOTATION TRANSFORMERS
+ ------------------------------------>
+	
+<h4>
+<a name="annotationtransformers">5.14 - Annotation Transformers</a>
+</h4>
+
+TestNG allows you to modify the content of all the annotations at runtime.  This is especially useful if the annotations in the source code are right most of the time, but there are a few situations where you'd like to override their value.
+<p>
+
+In order to achieve this, you need to use an Annotation Transformer.
+
+<p>
+
+An Annotation Transformer is a class that implements the following interface:
+
+<pre class="prettyprint">
+public interface IAnnotationTransformer {
+
+  /**
+   * This method will be invoked by TestNG to give you a chance
+   * to modify a TestNG annotation read from your test classes.
+   * You can change the values you need by calling any of the
+   * setters on the ITest interface.
+   * 
+   * Note that only one of the three parameters testClass,
+   * testConstructor and testMethod will be non-null.
+   * 
+   * @param annotation The annotation that was read from your
+   * test class.
+   * @param testClass If the annotation was found on a class, this
+   * parameter represents this class (null otherwise).
+   * @param testConstructor If the annotation was found on a constructor,
+   * this parameter represents this constructor (null otherwise).
+   * @param testMethod If the annotation was found on a method,
+   * this parameter represents this method (null otherwise).
+   */
+  public void transform(ITest annotation, Class testClass,
+      Constructor testConstructor, Method testMethod);
+}
+</pre>
+
+Like all the other TestNG listeners, you can specify this class either on the command line or with ant:
+
+<pre class="prettyprint">
+  java org.testng.TestNG -listener MyTransformer testng.xml
+</pre>
+
+or programmatically:
+
+<pre class="prettyprint">
+  TestNG tng = new TestNG();
+  tng.setAnnotationTransformer(new MyTransformer());
+  // ...
+</pre>
+
+When the method <tt>transform()</tt> is invoked, you can call any of the setters on the <tt>ITest test</tt> parameter to alter its value before TestNG proceeds further.
+<p>
+For example, here is how you would override the attribute <tt>invocationCount</tt> but only on the test method <tt>invoke()</tt> of one of your test classes:
+
+<pre class="prettyprint">
+  public class MyTransformer implements IAnnotationTransformer {
+    public void transform(ITest annotation, Class testClass,
+        Constructor testConstructor, Method testMethod)
+    {
+      if ("invoke".equals(testMethod.getName())) {
+        annotation.setInvocationCount(5);
+      }
+    }
+  }
+</pre>
 
 <!------------------------------------
   TEST SUCCESS
