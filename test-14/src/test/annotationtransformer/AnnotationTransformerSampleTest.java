@@ -3,6 +3,8 @@ package test.annotationtransformer;
 import org.testng.Assert;
 import org.testng.TestNG;
 
+import test.annotationtransformer.MyTransformer;
+
 public class AnnotationTransformerSampleTest {
 
   private int m_two = 0;
@@ -15,7 +17,7 @@ public class AnnotationTransformerSampleTest {
    */
   public void two() {
     m_two++;
-    System.out.println("Should be invoked 2 times");
+    ppp("Should be invoked 2 times");
   }
 
   /**
@@ -23,7 +25,7 @@ public class AnnotationTransformerSampleTest {
    */
   public void four() {
     m_four++;
-    System.out.println("Should be invoked 4 times");
+    ppp("Should be invoked 4 times");
   }
   
   /**
@@ -31,7 +33,7 @@ public class AnnotationTransformerSampleTest {
    */
   public void three() {
     m_three++;
-    System.out.println("Should be invoked 3 times");
+    ppp("Should be invoked 3 times");
   }
 
   /**
@@ -39,12 +41,17 @@ public class AnnotationTransformerSampleTest {
    */
   public void five() {
     m_five++;
-    System.out.println("Should be invoked 5 times");
+    ppp("Should be invoked 5 times");
   }
 
-  /**
+  private void ppp(String string) {
+    if (false) {
+      System.out.println("[AnnotationTransformerSampleTest] " + string);
+    }
+  }
+
+/**
    * @testng.test dependsOnMethods = "two three four five"
-   *
    */
   public void verify() {
     Assert.assertEquals(m_two, 2);
@@ -56,6 +63,7 @@ public class AnnotationTransformerSampleTest {
 
   public static void main(String[] argv) {
     TestNG tng = new TestNG();
+    tng.setVerbose(0);
     tng.setDefaultAnnotations(TestNG.JAVADOC_ANNOTATION_TYPE);
     tng.setSourcePath("test-14/src");
     tng.setAnnotationTransformer(new MyTransformer());
@@ -63,4 +71,5 @@ public class AnnotationTransformerSampleTest {
     
     tng.run();
   }
+  
 }

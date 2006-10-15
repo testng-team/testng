@@ -76,6 +76,7 @@
        <class name="test.thread.SequentialTest" />
        <class name="test.configuration.GroupLessTest" />
        <class name="test.reports.ReportTest" />
+       <class name="test.annotationtransformer.AnnotationTransformerTest" />
      </classes>
    </test>
 <!-- 

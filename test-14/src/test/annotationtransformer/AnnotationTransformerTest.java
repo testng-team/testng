@@ -2,8 +2,8 @@ package test.annotationtransformer;
 
 import java.util.List;
 
-import org.testng.Assert;
-import org.testng.ITestResult;
+import junit.framework.Assert;
+
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 
@@ -16,6 +16,7 @@ public class AnnotationTransformerTest extends BaseTest {
    */
   public void verifyInvocationCount() {
     TestNG tng = new TestNG();
+    tng.setVerbose(0);
     tng.setDefaultAnnotations(TestNG.JAVADOC_ANNOTATION_TYPE);
     tng.setSourcePath("test-14/src");
     tng.setAnnotationTransformer(new MyTransformer());

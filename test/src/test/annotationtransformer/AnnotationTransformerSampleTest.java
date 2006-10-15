@@ -14,25 +14,25 @@ public class AnnotationTransformerSampleTest {
   @Test(invocationCount = 2)
   public void two() {
     m_two++;
-    System.out.println("Should be invoked 2 times");
+    ppp("Should be invoked 2 times");
   }
 
   @Test(invocationCount = 5)
   public void four() {
     m_four++;
-    System.out.println("Should be invoked 4 times");
+    ppp("Should be invoked 4 times");
   }
   
   @Test(invocationCount = 5)
   public void three() {
     m_three++;
-    System.out.println("Should be invoked 3 times");
+    ppp("Should be invoked 3 times");
   }
 
   @Test
   public void five() {
     m_five++;
-    System.out.println("Should be invoked 5 times");
+    ppp("Should be invoked 5 times");
   }
   
   @Test(dependsOnMethods = {"two", "three", "four", "five"})
@@ -50,5 +50,11 @@ public class AnnotationTransformerSampleTest {
     tng.setTestClasses(new Class[] { AnnotationTransformerSampleTest.class});
     
     tng.run();
+  }
+  
+  private void ppp(String string) {
+    if (false) {
+      System.out.println("[AnnotationTransformerSampleTest] " + string);
+    }
   }
 }
