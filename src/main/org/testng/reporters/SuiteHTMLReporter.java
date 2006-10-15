@@ -103,27 +103,35 @@ public class SuiteHTMLReporter implements IReporter {
       .append("<table border='1' width='80%' class='main-page'>")
       .append("<tr><th>Suite</th><th>Passed</th><th>Failed</th><th>Skipped</th><th>testng.xml</th></tr>\n");
     
-    int failedTests = 0;
-    int passedTests = 0;
-    int skippedTests = 0;
+    int totalFailedTests = 0;
+    int totalPassedTests = 0;
+    int totalSkippedTests = 0;
     
+    StringBuffer suiteBuf= new StringBuffer();
     for (ISuite suite : suites) {
       String name = suite.getName();
     
+      int failedTests= 0;
+      int passedTests= 0;
+      int skippedTests= 0;
+      
       Map<String, ISuiteResult> results = suite.getResults();
       for (String suiteName : results.keySet()) {
         ISuiteResult result = results.get(suiteName);
         ITestContext context = result.getTestContext();
         failedTests += context.getFailedTests().size();
+        totalFailedTests += context.getFailedTests().size();
         passedTests += context.getPassedTests().size();
+        totalPassedTests += context.getPassedTests().size();
         skippedTests += context.getSkippedTests().size();
+        totalSkippedTests += context.getSkippedTests().size();
       }
       
       String cls = failedTests > 0 ? "invocation-failed" : (passedTests > 0  ? "invocation-passed" : "invocation-failed");
-      sb.append("<tr align='center' class='" + cls + "'>")
+      suiteBuf.append("<tr align='center' class='").append(cls).append("'>")
         .append("<td><a href='").append(name).append("/index.html'>")
         .append(name).append("</a></td>\n");
-      sb.append("<td>" + passedTests + "</td>")
+      suiteBuf.append("<td>" + passedTests + "</td>")
         .append("<td>" + failedTests + "</td>")
         .append("<td>" + skippedTests + "</td>")
         .append("<td><a href='").append(name).append("/").append(TESTNG_XML).append("'>Link").append("</a></td>")
@@ -131,8 +139,16 @@ public class SuiteHTMLReporter implements IReporter {
       
     }
     
-    sb.append("</table>")
-    .append("</body></html>\n");
+    String cls= totalFailedTests > 0 ? "invocation-failed" : (totalPassedTests > 0 ? "invocation-passed" : "invocation-failed");
+    sb.append("<tr align='center' class='").append(cls).append("'>")
+      .append("<td>Total</td>")
+      .append("<td>").append(totalPassedTests).append("</td>")
+      .append("<td>").append(totalFailedTests).append("</td>")
+      .append("<td>").append(totalSkippedTests).append("</td>")
+      .append("<td>&nbsp;</td>")
+      .append("</tr>\n");
+    sb.append(suiteBuf);
+    sb.append("</table>").append("</body></html>\n");
   
     File outputFile = new File(m_outputDirectory + File.separatorChar + "index.html");
     Utils.writeFile(outputFile, sb.toString());
