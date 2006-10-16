@@ -1,8 +1,8 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
   
-<suite name="TestNG JDK 1.5" verbose="1" parallel="false" thread-count="2">
+<suite name="Suitename from xml" verbose="1" parallel="false" thread-count="2">
   
-  <test name="Nopackage">
+  <test name="TestName">
     <classes>
       <class name="NoPackageTest" />
     </classes>

@@ -536,21 +536,22 @@ public class TestNGAntTask extends Task {
       argv.add(m_threadCount);
     }
 
+    
+    if(!"".equals(m_suiteName)) {
+    	argv.add(TestNGCommandLineArgs.SUITE_NAME_OPT);
+    	argv.add(m_suiteName);
+    }
+
+    if(!"".equals(m_testName)) {
+    	argv.add(TestNGCommandLineArgs.TEST_NAME_OPT);
+    	argv.add(m_testName);
+    }
+
     if(m_xmlFilesets.size() > 0) {
       for(String file : fileset(m_xmlFilesets)) {
         argv.add(file);
       }
     }
-    
-//    if(!"".equals(m_suiteName)) {
-//    	argv.add(TestNGCommandLineArgs.SUITE_NAME_OPT);
-//    	argv.add(m_suiteName);
-//    }
-//
-//    if(!"".equals(m_testName)) {
-//    	argv.add(TestNGCommandLineArgs.TEST_NAME_OPT);
-//    	argv.add(m_testName);
-//    }
 
     String fileName= "";
     FileWriter fw= null;

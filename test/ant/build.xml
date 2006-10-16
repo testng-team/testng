@@ -25,11 +25,8 @@
             outputdir="test-output"
   	    parallel="methods"
   	    threadcount="5"
-	    dumpCommand = "true"
     	listeners = "org.testng.reporters.FailedReporter, org.testng.reporters.DotTestListener"
     	haltonfailure="true"
-    	suitename="Test Ant Suite"
-    	testname="Test Ant Test"
     	>
         <classfileset dir="build">
         	<include name="NoPackageTest.class" />
@@ -37,25 +34,34 @@
         </classfileset>
     </testng>
   	
-  	<available file="test-output/Test Ant Suite/Test Ant Test.xml" type="file" property="test.exists"/>
+  	<available file="test-output/Ant suite/Ant test.xml" type="file" property="test.exists"/>
   	<fail unless="test.exists" message="The appropriately named output should have been created"/>
   	
     <testng classpath="build;${testng.jar}"
             outputdir="test-output"
-	    dumpCommand = "true"
-    	listeners = "org.testng.reporters.FailedReporter, org.testng.reporters.DotTestListener"
+	   	listeners = "org.testng.reporters.FailedReporter, org.testng.reporters.DotTestListener"
     	haltonfailure="true"
-    	suitename="Test Ant Suite 2"
-    	testname="Test Ant Test 2"
+    	suitename="Test Ant Suite"
+    	testname="Test Ant Test"
     	>
         <classfileset dir="build">
         	<include name="DontOverrideSuiteNameTest.class" />
          </classfileset>
     </testng>
   	
-  	<available file="test-output/Test Ant Suite 2/Test Ant Test 2.xml" type="file" property="test.exists"/>
-  	<fail unless="test.exists" message="The appropriately named output should have been created"/>
+  	<available file="test-output/Test Ant Suite/Test Ant Test.xml" type="file" property="test2.exists"/>
+  	<fail unless="test2.exists" message="The appropriately named output should have been created"/>
   	
+  	<!-- Ensure standard tests get run -->
+    <testng classpath="build;${testng.jar}"
+            outputdir="test-output"
+    	listeners = "org.testng.reporters.FailedReporter, org.testng.reporters.DotTestListener"
+    	haltonfailure="true"
+    	>
+        <xmlfileset file="testng.xml"/>
+    </testng>
+  	<available file="test-output/Suitename from xml/TestName.xml" type="file" property="test3.exists"/>
+  	<fail unless="test3.exists" message="The appropriately named output should have been created"/>
 
   </target>
 </project>
