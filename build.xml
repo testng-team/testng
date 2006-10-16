@@ -167,9 +167,7 @@
 	
   <target name="test-ant">
     <echo message="                                 -- Testing ant testng task functionality --" />
-<!--
   	<ant inheritall="no" antfile="test/ant/build.xml" />
--->
   </target>
 
   <!-- ==================================================================== -->
