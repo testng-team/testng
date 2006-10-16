@@ -919,7 +919,7 @@ public class TestNGAntTask extends Task {
       DirectoryScanner ds= fileset.getDirectoryScanner(getProject());
 
       for(String file : ds.getIncludedFiles()) {
-        files.add(ds.getBasedir() + File.separator + file);
+        files.add("\"" + ds.getBasedir() + File.separator + file  + "\"");
       }
     }
 
