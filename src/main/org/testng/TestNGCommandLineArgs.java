@@ -686,7 +686,7 @@ public static Map parseCommandLine(final String[] originalArgv) {
     } 
     else {
       System.out.println("[" + ANNOTATIONS_COMMAND_OPT + " " + AnnotationTypeEnum.JAVADOC.getName() + " or " 
-          + AnnotationTypeEnum.JAVADOC.getName() + "]");
+          + AnnotationTypeEnum.JDK.getName() + "]");
       System.out.println("\t\tSpecifies the default annotation type to be used in suites when none is explicitly");      
       System.out.println("\t\tspecified. This version of TestNG (15) supports both \"" 
           + AnnotationTypeEnum.JAVADOC.getName() + "\" and \"" + AnnotationTypeEnum.JDK.getName() + "\" annotation types.");
