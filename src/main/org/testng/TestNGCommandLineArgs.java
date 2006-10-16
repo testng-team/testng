@@ -52,8 +52,8 @@ public final class TestNGCommandLineArgs {
   /** @deprecated replaced by DEFAULT_ANNOTATIONS_COMMAND_OPT. */
   public static final String TARGET_COMMAND_OPT = "-target";
 
-  /** The default annotations option (useful in TestNg 15 only). */
-  public static final String DEFAULT_ANNOTATIONS_COMMAND_OPT = "-defaultAnnotations";
+  /** The default annotations option (useful in TestNG 15 only). */
+  public static final String ANNOTATIONS_COMMAND_OPT = "-annotations";
   
   public static final String GROUPS_COMMAND_OPT = "-groups";
   public static final String EXCLUDED_GROUPS_COMMAND_OPT = "-excludegroups";
@@ -155,14 +155,14 @@ public static Map parseCommandLine(final String[] originalArgv) {
       }
       else if (TARGET_COMMAND_OPT.equalsIgnoreCase(argv[i])) {
         if ((i + 1) < argv.length) {
-          arguments.put(DEFAULT_ANNOTATIONS_COMMAND_OPT, AnnotationTypeEnum.valueOf(argv[i + 1]));
-          LOGGER.info(TARGET_COMMAND_OPT + " has been deprecated use " + DEFAULT_ANNOTATIONS_COMMAND_OPT);
+          arguments.put(ANNOTATIONS_COMMAND_OPT, AnnotationTypeEnum.valueOf(argv[i + 1]));
+          LOGGER.warn("The usage of " + TARGET_COMMAND_OPT + " has been deprecated. Please use " + ANNOTATIONS_COMMAND_OPT + " instead.");
           ++i;
         }
       }
-      else if (DEFAULT_ANNOTATIONS_COMMAND_OPT.equalsIgnoreCase(argv[i])) {
+      else if (ANNOTATIONS_COMMAND_OPT.equalsIgnoreCase(argv[i])) {
         if ((i + 1) < argv.length) {
-          arguments.put(DEFAULT_ANNOTATIONS_COMMAND_OPT, AnnotationTypeEnum.valueOf(argv[i + 1]));
+          arguments.put(ANNOTATIONS_COMMAND_OPT, AnnotationTypeEnum.valueOf(argv[i + 1]));
           ++i;
         }
       }
@@ -678,18 +678,18 @@ public static Map parseCommandLine(final String[] originalArgv) {
     System.out.println("[" + SRC_COMMAND_OPT + " a source directory]");
     
     if (VersionInfo.IS_JDK14) {
-      System.out.println("[" + DEFAULT_ANNOTATIONS_COMMAND_OPT + " " + AnnotationTypeEnum.JAVADOC.getName() + "]");
+      System.out.println("[" + ANNOTATIONS_COMMAND_OPT + " " + AnnotationTypeEnum.JAVADOC.getName() + "]");
       System.out.println("\t\tSpecifies the default annotation type to be used in suites when none is explicitly specified.");
       System.out.println("\t\tThis version of TestNG (14) only supports " + AnnotationTypeEnum.JAVADOC.getName() + " annotation type.");
       System.out.println("\t\tFor interface compatibility reasons, we allow this value to be explicitly set to " +
           AnnotationTypeEnum.JAVADOC.getName() + "\"  ");
     } 
     else {
-      System.out.println("[" + DEFAULT_ANNOTATIONS_COMMAND_OPT + " " + AnnotationTypeEnum.JAVADOC.getName() + " or " 
+      System.out.println("[" + ANNOTATIONS_COMMAND_OPT + " " + AnnotationTypeEnum.JAVADOC.getName() + " or " 
           + AnnotationTypeEnum.JAVADOC.getName() + "]");
       System.out.println("\t\tSpecifies the default annotation type to be used in suites when none is explicitly");      
       System.out.println("\t\tspecified. This version of TestNG (15) supports both \"" 
-          + AnnotationTypeEnum.JAVADOC.getName() + "\" and \"" + AnnotationTypeEnum.JDK5.getName() + "\" annotation types.");
+          + AnnotationTypeEnum.JAVADOC.getName() + "\" and \"" + AnnotationTypeEnum.JDK.getName() + "\" annotation types.");
     }
 
     System.out.println("[" + GROUPS_COMMAND_OPT + " comma-separated list of group names to be run]");

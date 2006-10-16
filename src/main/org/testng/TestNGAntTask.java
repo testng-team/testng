@@ -371,21 +371,23 @@ public class TestNGAntTask extends Task {
    * Sets the default annotation type for suites that have not explicitly set the 
    * annotation property. The target is used only in JDK5+.
    * @param defaultAnnotations the default annotation type. This is one of the two constants 
-   * (TestNG.JAVADOC_ANNOTATION_TYPE or TestNG.JDK5_ANNOTATION_TYPE).
+   * (TestNG.JAVADOC_ANNOTATION_TYPE or TestNG.JDK_ANNOTATION_TYPE).
    *
    * @since 5.2
    */
-  public void setDefaultAnnotations(String defaultAnnotations) {
+  public void setAnnotations(String defaultAnnotations) {
     m_target = defaultAnnotations;
   }
 
   /**
    * @param target 
-   * @deprecated use setDefaultAnnotations
+   * @deprecated use setAnnotations
    */
   @Deprecated
   public void setTarget(String target) {
     m_target= target;
+    log("The usage of " + TestNGCommandLineArgs.TARGET_COMMAND_OPT + " option is deprecated. Please use " 
+        + TestNGCommandLineArgs.ANNOTATIONS_COMMAND_OPT + " instead", Project.MSG_WARN);
   }
 
   /**
@@ -487,7 +489,7 @@ public class TestNGAntTask extends Task {
     }
 
     if(null != m_target) {
-      argv.add(TestNGCommandLineArgs.DEFAULT_ANNOTATIONS_COMMAND_OPT);
+      argv.add(TestNGCommandLineArgs.ANNOTATIONS_COMMAND_OPT);
       argv.add(m_target);
     }
 

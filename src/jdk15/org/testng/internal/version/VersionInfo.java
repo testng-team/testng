@@ -23,6 +23,6 @@ public final class VersionInfo {
    * @since 5.2
    */
   public static AnnotationTypeEnum getDefaultAnnotationType() {
-    return AnnotationTypeEnum.JDK5;
+    return AnnotationTypeEnum.JDK;
   }
 }

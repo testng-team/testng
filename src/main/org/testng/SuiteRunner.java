@@ -390,7 +390,7 @@ public class SuiteRunner implements ISuite, Serializable {
   {
     AnnotationTypeEnum annotationType = AnnotationTypeEnum.valueOf(pAnnotationType);
     
-    return annotationType == AnnotationTypeEnum.JDK5 ? m_jdkAnnotationFinder : m_javadocAnnotationFinder; 
+    return annotationType == AnnotationTypeEnum.JDK ? m_jdkAnnotationFinder : m_javadocAnnotationFinder; 
   }
 
   public static void ppp(String s) {

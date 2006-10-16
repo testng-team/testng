@@ -29,7 +29,7 @@ public class FailedBeforeTestMethodConfigurationBehaviorTest {
   public void beforeTestMethodFailureInTwoClasses() {
     TestNG testng = new TestNG();
     testng.setSourcePath("./test-14/src;src");
-    testng.setDefaultAnnotations(TestNG.JAVADOC_ANNOTATION_TYPE);
+    testng.setAnnotations(TestNG.JAVADOC_ANNOTATION_TYPE);
     testng.setTestClasses(new Class[] { Test1.class, Test2.class });
     testng.setVerbose(0);
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());

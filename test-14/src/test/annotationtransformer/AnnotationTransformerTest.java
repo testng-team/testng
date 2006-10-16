@@ -17,7 +17,7 @@ public class AnnotationTransformerTest extends BaseTest {
   public void verifyInvocationCount() {
     TestNG tng = new TestNG();
     tng.setVerbose(0);
-    tng.setDefaultAnnotations(TestNG.JAVADOC_ANNOTATION_TYPE);
+    tng.setAnnotations(TestNG.JAVADOC_ANNOTATION_TYPE);
     tng.setSourcePath("test-14/src");
     tng.setAnnotationTransformer(new MyTransformer());
     tng.setTestClasses(new Class[] { AnnotationTransformerSampleTest.class});

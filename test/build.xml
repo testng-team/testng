@@ -97,7 +97,7 @@ TESTNG.REPORT.DIR=${testng.report.dir}
   	<testng classpathref="run14.cp"
             outputdir="${testng.report.dir}"
             sourcedir="${test14.src.dir}"
-  					target="1.4">
+  					annotations="javadoc">
 			<xmlfileset dir="${test14.dir}" includes="testng.xml"/>
 		</testng>
   </target>

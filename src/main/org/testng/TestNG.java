@@ -102,7 +102,7 @@ public class TestNG {
   public static final String SRC_SEPARATOR = ";";
   
   /** The JDK50 annotation type ID ("JDK5").*/
-  public static final String JDK5_ANNOTATION_TYPE = AnnotationTypeEnum.JDK5.getName();
+  public static final String JDK_ANNOTATION_TYPE = AnnotationTypeEnum.JDK.getName();
   
   /** The JavaDoc annotation type ID ("javadoc"). */
   public static final String JAVADOC_ANNOTATION_TYPE = AnnotationTypeEnum.JAVADOC.getName();
@@ -226,31 +226,41 @@ public class TestNG {
    * Sets the default annotation type for suites that have not explicitly set the 
    * annotation property. The target is used only in JDK5+.
    * @param target the default annotation type. This is one of the two constants 
-   * (TestNG.JAVADOC_ANNOTATION_TYPE or TestNG.JDK5_ANNOTATION_TYPE).
+   * (TestNG.JAVADOC_ANNOTATION_TYPE or TestNG.JDK_ANNOTATION_TYPE).
    * For backward compatibility reasons we accept "1.4", "1.5". Any other value will
-   * default to TestNG.JDK5_ANNOTATION_TYPE.
+   * default to TestNG.JDK_ANNOTATION_TYPE.
    * 
    * @deprecated use the setDefaultAnnotationType replacement method.
    */
   @Deprecated
   public void setTarget(String target) {
     // Target is used only in JDK 1.5 and may get null in JDK 1.4
+    LOGGER.warn("The usage of " + TestNGCommandLineArgs.TARGET_COMMAND_OPT + " option is deprecated." +
+            " Please use " + TestNGCommandLineArgs.ANNOTATIONS_COMMAND_OPT + " instead.");
     if (null == target) {
       return;
     }
-    setDefaultAnnotations(target);
+    setAnnotations(target);
   }
 
   /**
    * Sets the default annotation type for suites that have not explicitly set the 
    * annotation property. The target is used only in JDK5+.
    * @param annotationType the default annotation type. This is one of the two constants 
-   * (TestNG.JAVADOC_ANNOTATION_TYPE or TestNG.JDK5_ANNOTATION_TYPE).
+   * (TestNG.JAVADOC_ANNOTATION_TYPE or TestNG.JDK_ANNOTATION_TYPE).
    * For backward compatibility reasons we accept "1.4", "1.5". Any other value will
-   * default to TestNG.JDK5_ANNOTATION_TYPE.
+   * default to TestNG.JDK_ANNOTATION_TYPE.
    */
-  public void setDefaultAnnotations(String annotationType) {
-    m_defaultAnnotations = AnnotationTypeEnum.valueOf(annotationType);
+  public void setAnnotations(String annotationType) {
+    if(null != annotationType && !"".equals(annotationType)) {
+      setAnnotations(AnnotationTypeEnum.valueOf(annotationType));
+    }
+  }
+  
+  private void setAnnotations(AnnotationTypeEnum annotationType) {
+    if(null != annotationType) {
+      m_defaultAnnotations= annotationType;
+    }
   }
   
   /**
@@ -382,7 +392,7 @@ public class TestNG {
    * annotation finder?
    */
   private IAnnotationFinder getAnnotationFinder() {
-    return AnnotationTypeEnum.JDK5 == m_defaultAnnotations
+    return AnnotationTypeEnum.JDK == m_defaultAnnotations
           ? m_jdkAnnotationFinder
           : m_javadocAnnotationFinder;
   }
@@ -1040,7 +1050,7 @@ public class TestNG {
     
     setOutputDirectory((String) cmdLineArgs.get(TestNGCommandLineArgs.OUTDIR_COMMAND_OPT));
     setSourcePath((String) cmdLineArgs.get(TestNGCommandLineArgs.SRC_COMMAND_OPT));
-    setTarget((String) cmdLineArgs.get(TestNGCommandLineArgs.TARGET_COMMAND_OPT));
+    setAnnotations(((AnnotationTypeEnum) cmdLineArgs.get(TestNGCommandLineArgs.ANNOTATIONS_COMMAND_OPT)));
 
     List<String> testClasses = (List<String>) cmdLineArgs.get(TestNGCommandLineArgs.TESTCLASS_COMMAND_OPT);
     if (null != testClasses) {

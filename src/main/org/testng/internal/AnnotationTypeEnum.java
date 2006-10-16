@@ -19,7 +19,7 @@ public final class AnnotationTypeEnum {
   private static final Logger LOGGER = Logger.getLogger(AnnotationTypeEnum.class);
   
   /** The JDK50 annotation type ID ("JDK5").*/
-  private static final String JDK5_ANNOTATION_TYPE = "JDK5";
+  private static final String JDK_ANNOTATION_TYPE = "JDK";
   
   /** The JavaDoc annotation type ID ("javadoc"). */
   private static final String JAVADOC_ANNOTATION_TYPE = "javadoc";
@@ -28,7 +28,7 @@ public final class AnnotationTypeEnum {
   public static final AnnotationTypeEnum JAVADOC = new AnnotationTypeEnum(JAVADOC_ANNOTATION_TYPE);
   
   /** JDK5 annotation type */
-  public static final AnnotationTypeEnum JDK5 = new AnnotationTypeEnum(JDK5_ANNOTATION_TYPE);
+  public static final AnnotationTypeEnum JDK = new AnnotationTypeEnum(JDK_ANNOTATION_TYPE);
   
   /** The enumeration name (one of JAVADOC_ANNOTATION_TYPE or JDK5_ANNOTATION_TYPE) */
   private String m_name;
@@ -57,8 +57,8 @@ public final class AnnotationTypeEnum {
     if (pAnnotationType.equals(JAVADOC_ANNOTATION_TYPE)) {
       annotationType = JAVADOC;
     }
-    else if (pAnnotationType.equals(JDK5_ANNOTATION_TYPE)) {
-      annotationType = JDK5;
+    else if (pAnnotationType.equals(JDK_ANNOTATION_TYPE)) {
+      annotationType = JDK;
     }
     else if (pAnnotationType.equals("1.4") 
         || pAnnotationType.toLowerCase().equals(JAVADOC_ANNOTATION_TYPE.toLowerCase())) {
@@ -67,14 +67,14 @@ public final class AnnotationTypeEnum {
       log(pAnnotationType, annotationType);
     }
     else if ("1.5".equals(pAnnotationType) 
-        || pAnnotationType.toLowerCase().equals(JDK5_ANNOTATION_TYPE.toLowerCase())) {
+        || pAnnotationType.toLowerCase().equals(JDK_ANNOTATION_TYPE.toLowerCase())) {
       // For backward compatibility only
-      annotationType = JDK5;
+      annotationType = JDK;
       log(pAnnotationType, annotationType);
     }
-    else if (pAnnotationType.toLowerCase().equals("jdk15")) {
+    else if ("jdk1.5".equals(pAnnotationType.toLowerCase()) || "jdk5".equals(pAnnotationType.toLowerCase())) {
       // For backward compatibility only
-      annotationType = JDK5;
+      annotationType = JDK;
       log(pAnnotationType, annotationType);
     }
     else {
@@ -84,7 +84,7 @@ public final class AnnotationTypeEnum {
       log(pAnnotationType, annotationType);
     }
     
-    if (VersionInfo.IS_JDK14 && annotationType == JDK5) {
+    if (VersionInfo.IS_JDK14 && annotationType == JDK) {
       throw new IllegalArgumentException(
           "Cannot specify \"" + pAnnotationType + "\" with 1.4 version of TestNG");
     }

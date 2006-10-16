@@ -28,7 +28,7 @@ public class XmlSuite implements Serializable, Cloneable {
   public static final String JAVADOC = "javadoc";
 
   /** The JDK50 annotation type ID ("JDK5"). */
-  public static final String JDK5_ANNOTATION_TYPE = AnnotationTypeEnum.JDK5.getName();
+  public static final String JDK5_ANNOTATION_TYPE = AnnotationTypeEnum.JDK.getName();
   
   /** The JavaDoc annotation type ID ("javadoc"). */
   public static final String JAVADOC_ANNOTATION_TYPE = AnnotationTypeEnum.JAVADOC.getName();
