@@ -27,9 +27,6 @@ import com.thoughtworks.qdox.model.JavaMethod;
 /**
  * This class implements IAnnotationFinder with QDox for JDK 1.4
  * 
- * TODO: this class needs some synchronization, because at this moment it can sometimes
- * try to parse some files twice.
- * 
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
@@ -39,8 +36,8 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
   private static final Logger LOGGER = Logger.getLogger(JDK14AnnotationFinder.class);
   
   private Map<String, List<File>> m_sourceFiles= new HashMap<String, List<File>>();
+  
   private Map<String, String> m_parsedClasses= new HashMap<String, String>();
-
   private Map<String, String> m_parsedFiles= new HashMap<String, String>();
   
   private JDK14TagFactory m_tagFactory = new JDK14TagFactory();
@@ -86,21 +83,7 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
     files.add(sourcefile);
   }
 
-//private void addSources(String[] filePaths) {
-//if(filePaths == null) {
-//  Utils.log(getClass().getName(), 1, "[WARNING] Array of source paths is null");
-//
-//  return;
-//}
-//for(int i = 0; i < filePaths.length; i++) {
-//  addSource(filePaths[i]);
-//}
-//}
-
-  /**
-   * Must be synch to be assured that a file is not parsed twice
-   */
-  private synchronized boolean addSource(String filePath) {
+  private boolean addSource(String filePath) {
     if(m_parsedFiles.containsKey(filePath)) {
       return true;
     }
@@ -120,8 +103,11 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
 
     return false;
   }
-  
-  private JavaClass getClassByName(Class clazz) {
+
+  /**
+   * Must be synch to be assured that a file is not parsed twice
+   */
+  private synchronized JavaClass getClassByName(Class clazz) {
     if(m_parsedClasses.containsKey(clazz.getName())) {
       JavaClass jc= m_docBuilder.getClassByName(clazz.getName());
       return jc;
@@ -133,7 +119,10 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
     }
   }
   
-  private void parseSource(Class clazz) {
+  /**
+   * Must be synch to be assured that a file is not parsed twice
+   */
+  private synchronized void parseSource(Class clazz) {
     final String className= clazz.getName();
     int innerSignPos= className.indexOf('$');
     final String fileName =  innerSignPos == -1 
