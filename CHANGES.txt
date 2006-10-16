@@ -2,6 +2,7 @@
 ===========================================================================
 5.3
 
+Fixed: filesets in the ant task didn't work if the paths have spaces in them
 Fixed: Before/After Suite were behaving wrong in parallel execution
 Added: A generic/extensible RemoteTestNG was added to the core
 Fixed: Before/AfterGroup-s were behaving wrong when using invocationCount, dataProvider and threadPoolSize
