@@ -1234,6 +1234,34 @@ public class TestNG {
     m_annotationTransformer = t;
   }
 
+  /**
+   * @return the defaultSuiteName
+   */
+  public String getDefaultSuiteName() {
+    return m_defaultSuiteName;
+  }
+
+  /**
+   * @param defaultSuiteName the defaultSuiteName to set
+   */
+  public void setDefaultSuiteName(String defaultSuiteName) {
+    m_defaultSuiteName = defaultSuiteName;
+  }
+
+  /**
+   * @return the defaultTestName
+   */
+  public String getDefaultTestName() {
+    return m_defaultTestName;
+  }
+
+  /**
+   * @param defaultTestName the defaultTestName to set
+   */
+  public void setDefaultTestName(String defaultTestName) {
+    m_defaultTestName = defaultTestName;
+  }
+  
   // DEPRECATED: to be removed after a major version change
   /**
    * @deprecated since 5.1
@@ -1279,18 +1307,22 @@ public class TestNG {
     }
     
     public void onTestFailure(ITestResult result) {
+      setHasRunTests();
       m_mainRunner.m_status |= HAS_FAILURE;
     }
 
     public void onTestSkipped(ITestResult result) {
+      setHasRunTests();
       m_mainRunner.m_status |= HAS_SKIPPED;
     }
 
     public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
+      setHasRunTests();
       m_mainRunner.m_status |= HAS_FSP;
     }
 
     public void onTestSuccess(ITestResult result) {
+      setHasRunTests();
     }
 
     public void onStart(ITestContext context) {
@@ -1307,32 +1339,4 @@ public class TestNG {
       m_mainRunner.m_hasTests= true;
     }
   }
-
-/**
- * @return the defaultSuiteName
- */
-public String getDefaultSuiteName() {
-	return m_defaultSuiteName;
-}
-
-/**
- * @param defaultSuiteName the defaultSuiteName to set
- */
-public void setDefaultSuiteName(String defaultSuiteName) {
-	m_defaultSuiteName = defaultSuiteName;
-}
-
-/**
- * @return the defaultTestName
- */
-public String getDefaultTestName() {
-	return m_defaultTestName;
-}
-
-/**
- * @param defaultTestName the defaultTestName to set
- */
-public void setDefaultTestName(String defaultTestName) {
-	m_defaultTestName = defaultTestName;
-}
 }
