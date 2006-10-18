@@ -25,12 +25,21 @@ public class ExecutorAdapter extends ThreadPoolExecutor implements IExecutor {
    }
 
 
-   public IFutureResult submitRunnable(final Runnable runnable) throws InterruptedException {
+   public IFutureResult submitRunnable(final Runnable runnable) {
       return new FutureResultAdapter(super.submit(runnable));
    }
 
-   public boolean awaitTermination(long timeout) throws InterruptedException {
-      return super.awaitTermination(timeout, TimeUnit.MILLISECONDS);
+   public boolean awaitTermination(long timeout) {
+     boolean result= false;
+     try {
+      result= super.awaitTermination(timeout, TimeUnit.MILLISECONDS);
+     }
+     catch(InterruptedException iex) {
+       System.out.println("[WARN] ThreadPoolExecutor has been interrupted while awaiting termination");
+       Thread.currentThread().interrupt();
+     }
+     
+     return result;
    }
 
    public void stopNow() {

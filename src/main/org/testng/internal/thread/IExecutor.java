@@ -6,11 +6,11 @@ package org.testng.internal.thread;
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public interface IExecutor {
-   IFutureResult submitRunnable(Runnable runnable) throws InterruptedException;
+   IFutureResult submitRunnable(Runnable runnable);
 
    void shutdown();
 
-   boolean awaitTermination(long timeout) throws InterruptedException;
+   boolean awaitTermination(long timeout);
 
    void stopNow();
 }

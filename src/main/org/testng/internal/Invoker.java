@@ -455,11 +455,6 @@ public class Invoker implements IInvoker {
 
                 testResult.setStatus(ITestResult.SUCCESS); // if no exception till here than SUCCESS
               }
-
-            }
-            catch(InterruptedException e) {
-              System.err.println("WARN: invocation of method " + thisMethod
-                                 + " has been interrupted.");
             }
             finally {
               Reporter.setCurrentTestResult(null);
@@ -943,7 +938,7 @@ public class Invoker implements IInvoker {
   private List<ITestResult> runWorkers(ITestNGMethod testMethod, List<TestMethodWorker> workers, int threadPoolSize)
   {
     
-    long maxTimeOut= 10 * 1000; // 10 seconds
+    long maxTimeOut= -1; // 10 seconds
 
     for(TestMethodWorker tmw : workers) {
       long mt= tmw.getMaxTimeOut();

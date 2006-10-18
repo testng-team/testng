@@ -34,7 +34,7 @@ public class ThreadUtil {
       else {
         log(3, "Timeout period passed, execution not finished, waiting complete termination");
         while(!executor.isTerminated()) {
-          executor.awaitTermination(100L);
+          executor.awaitTermination(500L);
         }
         log(3, "Successful complete termination");
       }
