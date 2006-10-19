@@ -286,8 +286,8 @@ public class XmlTest implements Serializable, Cloneable {
     Properties p = new Properties();
     p.setProperty("name", getName());
     p.setProperty("junit", m_isJUnit != null ? m_isJUnit.toString() : "false");
-    if (null != m_parallel) {
-      p.setProperty("parallel", "" + m_parallel);
+    if (null != m_parallel && !"".equals(m_parallel)) {
+      p.setProperty("parallel", m_parallel);
     }
     if (null != m_verbose) {
       p.setProperty("verbose", m_verbose.toString());

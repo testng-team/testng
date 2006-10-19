@@ -353,7 +353,10 @@ public class XmlSuite implements Serializable, Cloneable {
     Properties p = new Properties();
     p.setProperty("name", getName());
     p.setProperty("verbose", getVerbose().toString());
-    p.setProperty("parallel", "" + getParallel());
+    final String parallel= getParallel();
+    if(null != parallel && !"".equals(parallel)) {
+      p.setProperty("parallel", parallel);
+    }
     p.setProperty("thread-count", "" + getThreadCount());
     p.setProperty("annotations", getAnnotations());
 
