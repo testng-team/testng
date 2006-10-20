@@ -1,11 +1,12 @@
 package org.testng.reporters;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.testng.IReporter;
 import org.testng.ISuite;
@@ -14,7 +15,6 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
-import org.testng.TestRunner;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlClass;
@@ -181,29 +181,47 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
    */
   private List<XmlClass> createXmlClasses(List<ITestNGMethod> methods) {
     List<XmlClass> result = new ArrayList<XmlClass>();
+    Map<Class, Set<ITestNGMethod>> methodsMap= new HashMap<Class, Set<ITestNGMethod>>(); 
     Map<String, List<String>> map = new HashMap<String, List<String>>();
     
     for (ITestNGMethod m : methods) {
-      String className = m.getRealClass().getName();
-      String method = m.getMethod().getName();
-      List<String> methodList = map.get(className);
-      if (null == methodList) {
-        methodList = new ArrayList<String>();
-        map.put(className, methodList);
+      Object[] instances= m.getInstances();
+      Class clazz= instances == null || instances.length == 0 ? m.getRealClass() : instances[0].getClass();
+      Set<ITestNGMethod> methodList= methodsMap.get(clazz);
+      if(null == methodList) {
+        methodList= new HashSet<ITestNGMethod>();
+        methodsMap.put(clazz, methodList);
       }
-      methodList.add(method);
+      methodList.add(m);
     }
     
-    for (String className : map.keySet()) {
-      List<String> includedMethods = map.get(className);
-      XmlClass xmlClass = new XmlClass(className);
-      xmlClass.setIncludedMethods(includedMethods);
-      result.add(xmlClass);
+    for(Map.Entry<Class, Set<ITestNGMethod>> entry: methodsMap.entrySet()) {
+      Class clazz= entry.getKey();
+      Set<ITestNGMethod> methodList= entry.getValue();
+      if(hasTestMethod(methodList)) {
+        XmlClass xmlClass= new XmlClass(clazz.getName());
+        List<String> methodNames= new ArrayList<String>(methodList.size());
+        for(ITestNGMethod m: methodList) {
+          methodNames.add(m.getMethod().getName());
+        }
+        xmlClass.setIncludedMethods(methodNames);
+        result.add(xmlClass);
+      }
     }
-    
+        
     return result;
   }
 
+  private boolean hasTestMethod(Collection<ITestNGMethod> methods) {
+    for(ITestNGMethod m: methods) {
+      if(m.isTest()) {
+        return true;
+      }
+    }
+    
+    return false;
+  }
+  
   /**
    * TODO:  we might want to make that more flexible in the future, but for
    * now, hardcode the file name

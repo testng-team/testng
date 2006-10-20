@@ -2,6 +2,8 @@
 ===========================================================================
 5.3
 
+Fixed: super classes must not be listed in testng-failures.xml
+Fixed: parallel attribute must not appear if empty or null in testng-failures.xml
 Fixed: parsing for javadoc annotations is done on request only
 Added: improved multiple suite summary page report
 Added: -target option deprecated in favor of -annotations javadoc|jdk
