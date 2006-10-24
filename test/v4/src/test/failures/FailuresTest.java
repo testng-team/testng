@@ -21,7 +21,6 @@ public class FailuresTest extends BaseFailuresTest {
      String[] expected = new String[] {
        "<class name=\"test.failures.Child\">",
        "<include name=\"fail\"/>",
-       "<class name=\"test.failures.Base1\">",
        "<include name=\"failFromBase\"/>",
      };
      

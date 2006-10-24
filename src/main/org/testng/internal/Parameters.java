@@ -36,35 +36,35 @@ public class Parameters {
                                           XmlSuite xmlSuite)
   {
     return createParameters(ctor.toString(), ctor.getParameterTypes(),
-        methodAnnotation, parameterNames, params, xmlSuite);
+        methodAnnotation, parameterNames, new MethodParameters(params), xmlSuite);
   }
 
   public static Object[] createTestParameters(Method m, Map<String, String> params, 
       IAnnotationFinder finder, XmlSuite xmlSuite) 
   {
-    return createParameters(m, params, finder, xmlSuite, ITest.class, "@Test");
+    return createParameters(m, new MethodParameters(params), finder, xmlSuite, ITest.class, "@Test");
   }
   
-  public static Object[] createConfigurationParameters(Method m, Map<String, String> params,
+  public static Object[] createConfigurationParameters(Method m, Map<String, String> params, Method currentTestMethod,
       IAnnotationFinder finder, XmlSuite xmlSuite) 
   {
-    return createParameters(m, params, finder, xmlSuite, IConfiguration.class, "@Configuration");
+    return createParameters(m, new MethodParameters(params, currentTestMethod), finder, xmlSuite, IConfiguration.class, "@Configuration");
   }
 
   public static Object[] createFactoryParameters(Method m, Map<String, String> params,
       IAnnotationFinder finder, XmlSuite xmlSuite) 
   {
-    return createParameters(m, params, finder, xmlSuite, IFactory.class, "@Factory");
+    return createParameters(m, new MethodParameters(params), finder, xmlSuite, IFactory.class, "@Factory");
   }
   
   ////////////////////////////////////////////////////////
   
-  private static Object[] createParameters(Method m, String methodAnnotation,
-      String[] parameterNames, Map<String, String> params, XmlSuite xmlSuite) 
-  {
-    return createParameters(m.toString(), m.getParameterTypes(),
-        methodAnnotation, parameterNames, params, xmlSuite);
-  }
+//  private static Object[] createParameters(Method m, String methodAnnotation,
+//      String[] parameterNames, Map<String, String> params, XmlSuite xmlSuite) 
+//  {
+//    return createParameters(m.toString(), m.getParameterTypes(),
+//        methodAnnotation, parameterNames, params, xmlSuite);
+//  }
 
   
 
@@ -79,14 +79,15 @@ public class Parameters {
                                            Class[] parameterTypes,
                                            String methodAnnotation,
                                            String[] parameterNames,
-                                           Map<String, String> params,
+                                           MethodParameters params,
                                            XmlSuite xmlSuite)
   {
     Object[] result = new Object[0];
     if(parameterTypes.length > 0) {
       List<Object> vResult = new ArrayList<Object>();
   
-      if (parameterNames.length != parameterTypes.length) {
+      if (parameterNames.length != parameterTypes.length
+          && parameterTypes.length != parameterNames.length + 1) {
         throw new TestNGException( "Method " + methodName + " needs " 
             + parameterTypes.length + " parameters but " 
             + parameterNames.length
@@ -95,20 +96,42 @@ public class Parameters {
             + " annotation.");
       }
   
-      // Assign a value to each parameter
-      for(int i = 0; i < parameterNames.length; i++) {
-        String p = parameterNames[i];
-        String value = params.get(p);
-        if (null == value) {
-          throw new TestNGException("Parameter '" + p + "' is required by " 
-              + methodAnnotation
-              + " on method " 
-              + methodName
-              + "\nbut has not been defined in " + xmlSuite.getFileName());
-        }
-        
-        vResult.add(convertType(parameterTypes[i], value, p));
+      int i= 0;
+      int j= 0;
+      for(; i < parameterTypes.length; i++) {
+          if(Method.class.equals(parameterTypes[i])) {
+              vResult.add(params.m_currentTestMethod);
+          }
+          else {
+              String p = parameterNames[j];
+              String value = params.m_parameters.get(p);
+              if (null == value) {
+                throw new TestNGException("Parameter '" + p + "' is required by " 
+                    + methodAnnotation
+                    + " on method " 
+                    + methodName
+                    + "\nbut has not been defined in " + xmlSuite.getFileName());
+              }
+              
+              vResult.add(convertType(parameterTypes[i], value, p));
+              j++;
+          }
       }
+      
+      // Assign a value to each parameter
+//      for(int i = 0; i < parameterNames.length; i++) {
+//        String p = parameterNames[i];
+//        String value = params.get(p);
+//        if (null == value) {
+//          throw new TestNGException("Parameter '" + p + "' is required by " 
+//              + methodAnnotation
+//              + " on method " 
+//              + methodName
+//              + "\nbut has not been defined in " + xmlSuite.getFileName());
+//        }
+//        
+//        vResult.add(convertType(parameterTypes[i], value, p));
+//      }
       
       result = (Object[]) vResult.toArray(new Object[vResult.size()]);
     }
@@ -230,7 +253,7 @@ public class Parameters {
     return null;
   }
 
-  public static Object[] createParameters(Method m, Map<String, String> params,
+  private static Object[] createParameters(Method m, MethodParameters params,
       IAnnotationFinder finder, XmlSuite xmlSuite, Class annotationClass, String atName) 
   {
     Object[] result = new Object[0];
@@ -240,7 +263,7 @@ public class Parameters {
     IParameters annotation = (IParameters) finder.findAnnotation(m, IParameters.class);
     if(null != annotation) {
       String[] parameterNames = annotation.getValue();
-      result = createParameters(m, atName, parameterNames, params, xmlSuite);
+      result = createParameters(m.getName(), m.getParameterTypes(), atName, parameterNames, params, xmlSuite);
     }  
     
     //
@@ -250,10 +273,30 @@ public class Parameters {
       IParameterizable a = (IParameterizable) finder.findAnnotation(m, annotationClass);
       if(null != a) {
         String[] parameterNames = a.getParameters();
-        result = createParameters(m, "@Configuration", parameterNames, params, xmlSuite);
+        result = createParameters(m.getName(), m.getParameterTypes(), "@Configuration", parameterNames, params, xmlSuite);
+      }
+      else {
+          Class[] paramTypes= m.getParameterTypes();
+          if(paramTypes.length == 1 && Method.class.equals(paramTypes[0])) {
+              result = createParameters(m.getName(), paramTypes, "@Configuration", new String[0], params, xmlSuite);
+          }
       }
     }
     
     return result;
+  }
+  
+  private static class MethodParameters {
+      private final Map<String, String> m_parameters;
+      private final Method m_currentTestMethod;
+      
+      public MethodParameters(Map<String, String> params) {
+          this(params, null);
+      }
+      
+      public MethodParameters(Map<String, String> params, Method m) {
+          m_parameters= params;
+          m_currentTestMethod= m;
+      }
   }
 }

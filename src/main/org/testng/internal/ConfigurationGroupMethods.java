@@ -100,29 +100,6 @@ public class ConfigurationGroupMethods implements Serializable {
     return m_afterGroupsMethods;
   }
 
-//  synchronized public List<ITestNGMethod> getBeforeGroupsMethods() {
-//    return unique(m_beforeGroupsMethods.values());
-//  }
-//
-//  synchronized public List<ITestNGMethod> getAfterGroupsMethods() {
-//    return unique(m_afterGroupsMethods.values());
-//  }
-//
-//  synchronized private List<ITestNGMethod> unique(Collection<List<ITestNGMethod>> name) {
-//    Map<ITestNGMethod, ITestNGMethod> vResult = new HashMap();
-//
-//    for (List<ITestNGMethod> l : name) {
-//      for (ITestNGMethod m : l) {
-//        vResult.put(m, m);
-//      }
-//    }
-//
-//    List<ITestNGMethod> result = new ArrayList<ITestNGMethod>();
-//    result.addAll(vResult.values());
-//
-//    return result;
-//  }
-
   synchronized public void removeBeforeGroups(String[] groups) {
     for(String group : groups) {
 //      log("Removing before group " + group);

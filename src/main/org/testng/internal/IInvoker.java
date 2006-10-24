@@ -22,27 +22,33 @@ public interface IInvoker {
    * TODO:  Calculate ahead of time which methods should be
    * invoked for each class.   Might speed things up for users who invoke the same
    * test class with different parameters in the same suite run.
+   * 
+   * @param testClass the class whose configuration methods must be run
    */
-  public  void invokeConfigurations(IClass testClass, 
+  public  void invokeConfigurations(IClass testClass,
                                     ITestNGMethod[] allMethods,
-                                    XmlSuite suite, Map<String, String> parameters,
+                                    XmlSuite suite, 
+                                    Map<String, String> parameters,
                                     Object instance);
   
   /**
    * Invoke the given method
    * 
    * @param testMethod
-   * @param suite
-   * @param parameters
    * @param allTestMethods The list of all the test methods
    * @param methodIndex The index of testMethod in the allTestMethods array
+   * @param suite
+   * @param parameters
    * @param groupMethods
-   * @return
+   * 
+   * @return a list containing the results of the test methods invocations
    */
-  public List<ITestResult> invokeTestMethods(ITestNGMethod testMethod, XmlSuite suite, 
-      Map<String, String> parameters, 
-      ITestNGMethod[] allTestMethods, int methodIndex,
-      ConfigurationGroupMethods groupMethods);
+  public List<ITestResult> invokeTestMethods(ITestNGMethod testMethod, 
+                                             ITestNGMethod[] allTestMethods,
+                                             int methodIndex,
+                                             XmlSuite suite, 
+                                             Map<String, String> parameters, 
+                                             ConfigurationGroupMethods groupMethods);
 
   public void runTestListeners(ITestResult tr);
 }

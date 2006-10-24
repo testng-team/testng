@@ -83,6 +83,16 @@ public class Invoker implements IInvoker {
                                    Map<String, String> params,
                                    Object instance)
   {
+    invokeConfigurations(testClass, null, allMethods, suite, params, instance);
+  }
+
+  private void invokeConfigurations(IClass testClass,
+                                   ITestNGMethod currentTestMethod,
+                                   ITestNGMethod[] allMethods,
+                                   XmlSuite suite,
+                                   Map<String, String> params,
+                                   Object instance)
+  {
     if(null == allMethods) {
       log(5, "No @Configuration methods found");
 
@@ -113,8 +123,7 @@ public class Invoker implements IInvoker {
         // - the test is enabled and
         // - the Configuration method belongs to the same class or a parent
         if(MethodHelper.isEnabled(objectClass, m_annotationFinder)) {
-          configurationAnnotation= (IConfiguration)
-          AnnotationHelper.findConfiguration(m_annotationFinder, method);
+          configurationAnnotation= (IConfiguration) AnnotationHelper.findConfiguration(m_annotationFinder, method);
 
           boolean before= (null != configurationAnnotation)
             ? configurationAnnotation.getBeforeTestClass()
@@ -147,18 +156,18 @@ public class Invoker implements IInvoker {
           boolean isClassConfiguration= (null != configurationAnnotation) && (before || after);
 
           log(3, "Invoking " + tm);
-
+          
+          Method currentTestMeth= currentTestMethod != null ? currentTestMethod.getMethod() : null;
           Object[] parameters= Parameters.createConfigurationParameters(tm.getMethod(),
                                                                         params,
+                                                                        currentTestMeth,
                                                                         m_annotationFinder,
                                                                         suite);
           testResult.setParameters(parameters);
-//          Reporter.setCurrentOutput(tm.getExtraOutput().getOutput());
+
           Object[] newInstances= (null != instance) ? new Object[] { instance } : instances;
 
-          invokeConfigurationMethod(newInstances, tm, parameters, 
-              isClassConfiguration, testResult);
-//          Reporter.setCurrentOutput(null);
+          invokeConfigurationMethod(newInstances, tm, parameters, isClassConfiguration, testResult);
         } // if is enabled
         else {
           log(3,
@@ -176,21 +185,23 @@ public class Invoker implements IInvoker {
       // @Configuration method
       catch(TestNGException ex) {
         handleConfigurationFailure(ex, tm, testResult, configurationAnnotation, suite);
-        Utils.log("", 1, ex.getMessage());
       }
       catch(Throwable ex) { // covers the non-wrapper exceptions
         handleConfigurationFailure(ex, tm, testResult, configurationAnnotation, suite);
       }
     } // for methods
   }
-
+  
   private void handleConfigurationFailure(Throwable ite,
                                           ITestNGMethod tm,
                                           ITestResult testResult,
                                           IConfiguration annotation,
                                           XmlSuite suite) 
   {
-    handleException(ite.getCause(), tm, testResult, 1);
+    Throwable cause= ite.getCause() != null ? ite.getCause() : ite;
+    Utils.log("", 2, "Failed to invoke @Configuration method " 
+        + tm.getRealClass().getName() + "." + tm.getMethodName() + ":" + cause.getMessage());
+    handleException(cause, tm, testResult, 1);
     runTestListeners(testResult);
 
     // 
@@ -365,7 +376,7 @@ public class Invoker implements IInvoker {
       //
       // Invoke beforeMethod configurations
       //
-      invokeConfigurations(testClass, beforeMethods, suite, params, instances[i]);
+      invokeConfigurations(testClass, tm, beforeMethods, suite, params, instances[i]);
       
       //
       // Create the ExtraOutput for this method
@@ -490,13 +501,12 @@ public class Invoker implements IInvoker {
         //
         // Invoke afterMethods
         //
-        invokeConfigurations(testClass, afterMethods, suite, params, instances[i]);
+        invokeConfigurations(testClass, tm, afterMethods, suite, params, instances[i]);
         
         //
         // Invoke beforeGroups configurations
         //
-        invokeAfterGroupsConfigurations(testClass, tm, 
-            groupMethods, suite, params, instances[i]);
+        invokeAfterGroupsConfigurations(testClass, tm, groupMethods, suite, params, instances[i]);
       }
 
       
@@ -527,12 +537,13 @@ public class Invoker implements IInvoker {
         }
       }
       
+      ITestNGMethod[] beforeMethodsArray = filteredMethods.toArray(new ITestNGMethod[filteredMethods.size()]);
       //
       // Invoke the right groups methods
       //
-      ITestNGMethod[] beforeMethodsArray = 
-        filteredMethods.toArray(new ITestNGMethod[filteredMethods.size()]);
-      invokeConfigurations(testClass, beforeMethodsArray, suite, params, instance);
+      if(beforeMethodsArray.length > 0) {
+        invokeConfigurations(testClass,beforeMethodsArray, suite, params, instance);
+      }
       
       //
       // Remove them so they don't get run again
@@ -583,8 +594,7 @@ public class Invoker implements IInvoker {
       }
       
       // Got our afterMethods, invoke them
-      ITestNGMethod[] afterMethodsArray = 
-        afterMethods.keySet().toArray(new ITestNGMethod[afterMethods.size()]);
+      ITestNGMethod[] afterMethodsArray = afterMethods.keySet().toArray(new ITestNGMethod[afterMethods.size()]);
       invokeConfigurations(testClass, afterMethodsArray, suite, params, instance);
 
       // Remove the groups so they don't get run again
@@ -649,8 +659,7 @@ public class Invoker implements IInvoker {
         allParameterNames.put(n, n);
       }
 
-      boolean isStatic = 
-        (dataProvider.getModifiers() & Modifier.STATIC) != 0;
+      boolean isStatic = (dataProvider.getModifiers() & Modifier.STATIC) != 0;
       Object instance = isStatic ? null : testClass.getInstances(true)[0];
       result  = MethodHelper.invokeDataProvider(
           instance, /* a test instance or null if the dataprovider is static*/
@@ -692,11 +701,11 @@ public class Invoker implements IInvoker {
    * and afterTestMethod, if any.
    */
   public List<ITestResult> invokeTestMethods(ITestNGMethod testMethod,
-                                XmlSuite suite,
-                                Map<String, String> parameters,
-                                ITestNGMethod[] allTestMethods,
-                                int testMethodIndex,
-                                ConfigurationGroupMethods groupMethods)
+                                             ITestNGMethod[] allTestMethods,
+                                             int testMethodIndex,
+                                             XmlSuite suite,
+                                             Map<String, String> parameters,
+                                             ConfigurationGroupMethods groupMethods)
   {
     List<ITestResult> result = null;
     
@@ -737,28 +746,6 @@ public class Invoker implements IInvoker {
         // Invoke the test method if it's enabled
         //
         if (MethodHelper.isEnabled(testMethod.getMethod(), m_annotationFinder)) {
-
-            
-            // TODO: we should never hit this block, as JUnit is run
-            // completely independent now
-            // 
-            // Special behavior for JUnit:  call setName on the instance with
-            // the name of the method to be invoked
-            //
-//            if (JUnitUtils.isAssignableFromTestCase(testClass.getRealClass())) {
-//              String name = testMethod.getMethodName();
-//              try {
-//                Method m = 
-//                  testClass.getRealClass().getMethod("setName", new Class[] { String.class });
-//                for (Object instance : instances) {
-//                  m.invoke(instance, new Object[] { name });
-//                } 
-//              }
-//              catch (Exception e) {
-//                e.printStackTrace();
-//              }
-//            } // JUnit
-
             //
             // If threadPoolSize specified, run this method in its own
             // pool thread.  The extra boolean is here to make sure

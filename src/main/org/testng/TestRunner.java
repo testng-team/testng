@@ -348,34 +348,6 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     m_groupMethods = new ConfigurationGroupMethods(m_allTestMethods, beforeGroupMethods, afterGroupMethods);
   }
 
-//  private ConfigurationGroupMethods findGroupMethods(Collection<ITestClass> classes) {
-//    ConfigurationGroupMethods result = new ConfigurationGroupMethods(classes, m_allTestMethods);
-//    
-//    fillGroupMethods(classes, result.getBeforeGroupsMap(), true /* before */);
-//    fillGroupMethods(classes, result.getAfterGroupsMap(), false /* before */);
-//    
-//    return result;
-//  }
-
-//  private void fillGroupMethods(Collection<ITestClass> classes, 
-//      Map<String, List<ITestNGMethod>> map, boolean before) 
-//  {
-//    for (ITestClass cls : classes) {
-//      ITestNGMethod[] methods = 
-//        before ? cls.getBeforeGroupsMethods() : cls.getAfterGroupsMethods();
-//      for (ITestNGMethod method : methods) {
-//        for (String group : before ? method.getBeforeGroups() : method.getAfterGroups()) {
-//          List<ITestNGMethod> methodList = map.get(group);
-//          if (methodList == null) {
-//            methodList = new ArrayList<ITestNGMethod>();
-//            map.put(group, methodList);
-//          }
-//          methodList.add(method);
-//        }
-//      }
-//    }
-//  }
-  
   private static void ppp(String s) {
     if (true) {
       System.out.println("[TestRunner] " + s);
@@ -853,22 +825,23 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   /**
    * TODO: not used
    */
-  private void invokeClassConfigurations(ITestNGMethod[] classMethods,
-                                         XmlTest xmlTest,
-                                         boolean before) {
-    for (IClass testClass : m_classMap.values()) {
-      m_invoker.invokeConfigurations(testClass,
-                                     classMethods,
-                                     m_xmlTest.getSuite(),
-                                     xmlTest.getParameters(),
-                                     null /* instance */);
-
-      String msg= "Marking class " + testClass + " as " + (before ? "before" : "after")
-        + "ConfigurationClass =true";
-
-      log(3, msg);
-    }
-  }
+//  private void invokeClassConfigurations(ITestNGMethod[] classMethods,
+//                                         XmlTest xmlTest,
+//                                         boolean before) {
+//    for (IClass testClass : m_classMap.values()) {
+//      m_invoker.invokeConfigurations(testClass,
+//                                     null,
+//                                     classMethods,
+//                                     m_xmlTest.getSuite(),
+//                                     xmlTest.getParameters(),
+//                                     null /* instance */);
+//
+//      String msg= "Marking class " + testClass + " as " + (before ? "before" : "after")
+//        + "ConfigurationClass =true";
+//
+//      log(3, msg);
+//    }
+//  }
 
   /**
    * Logs the beginning of the {@link #privateRun()}.

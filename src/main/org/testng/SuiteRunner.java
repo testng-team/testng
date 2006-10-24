@@ -226,11 +226,13 @@ public class SuiteRunner implements ISuite, Serializable {
     // a <file-suite> tag and no real tests)
     //
     if (invoker != null) {
-      invoker.invokeConfigurations(null,
-          beforeSuiteMethods.values().toArray(new ITestNGMethod[beforeSuiteMethods.size()]),
-          m_suite, m_suite.getParameters(),
-          null /* instance */
-      );
+      if(beforeSuiteMethods.values().size() > 0) {
+        invoker.invokeConfigurations(null,
+            beforeSuiteMethods.values().toArray(new ITestNGMethod[beforeSuiteMethods.size()]),
+            m_suite, m_suite.getParameters(),
+            null /* instance */
+        );
+      }
 
       Utils.log("[SuiteRunner]", 3, "Created " + m_testRunners.size() + " TestRunners");
   
@@ -248,10 +250,12 @@ public class SuiteRunner implements ISuite, Serializable {
       //
       // Invoke afterSuite methods
       //
-      invoker.invokeConfigurations(null,
-            afterSuiteMethods.values().toArray(new ITestNGMethod[afterSuiteMethods.size()]),
-            m_suite, m_suite.getAllParameters(),
-            null /* instance */);
+      if(afterSuiteMethods.values().size() > 0) {
+        invoker.invokeConfigurations(null,
+              afterSuiteMethods.values().toArray(new ITestNGMethod[afterSuiteMethods.size()]),
+              m_suite, m_suite.getAllParameters(),
+              null /* instance */);
+      }
     }
   }
 
@@ -263,17 +267,24 @@ public class SuiteRunner implements ISuite, Serializable {
 
   private void runTest(TestRunner tr) {
     Map<String, String> parameters = tr.getTest().getParameters();
-    tr.getInvoker().invokeConfigurations(null,
-                                 tr.getBeforeTestConfigurationMethods(),
-                                 m_suite, parameters,
-                                 null /* instance */);
+    ITestNGMethod[] testConfigurationMethods= tr.getBeforeTestConfigurationMethods();
+    if(null != testConfigurationMethods && testConfigurationMethods.length > 0) {
+      tr.getInvoker().invokeConfigurations(null,
+                                           testConfigurationMethods,
+                                           m_suite, 
+                                           parameters,
+                                           null /* instance */);
+    }
     
     tr.run();
     
-    tr.getInvoker().invokeConfigurations(null,
-                                 tr.getAfterTestConfigurationMethods(),
-                                 m_suite, parameters,
-                                 null /* instance */);
+    testConfigurationMethods= tr.getAfterTestConfigurationMethods();
+    if(null != testConfigurationMethods && testConfigurationMethods.length > 0) {
+      tr.getInvoker().invokeConfigurations(null,
+                                   testConfigurationMethods,
+                                   m_suite, parameters,
+                                   null /* instance */);
+    }
 
     ISuiteResult sr = new SuiteResult(m_suite, tr);
     m_suiteResults.put(tr.getName(), sr);

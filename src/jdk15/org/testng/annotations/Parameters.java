@@ -1,16 +1,18 @@
 package org.testng.annotations;
 
-import java.lang.annotation.Target;
-import java.lang.annotation.Retention;
+import static java.lang.annotation.ElementType.CONSTRUCTOR;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static java.lang.annotation.ElementType.*;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
  * Describes how to pass parameters to a &#64;Test method.
  * 
  * @author <a href="mailto:cedric&#64;beust.com">Cedric Beust</a>
  */
-
 @Retention(RUNTIME)
 @Target({METHOD, CONSTRUCTOR, TYPE })
 public @interface Parameters {
@@ -30,12 +32,4 @@ public @interface Parameters {
    * </code>
    */
   public String[] value() default {};
-  
-  /**
-   * The values we will be using to invoke this test.  As opposed to value,
-   * no testng.xml is required in this case since the values are hardcoded
-   * directly in the annotation.
-   */
-//  public Object[] values() default {};
-
 }

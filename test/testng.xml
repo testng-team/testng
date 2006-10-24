@@ -49,6 +49,7 @@
       <class name="test.configuration.GroupsTest"/>
       <class name="test.configuration.ExternalConfigurationClass"/>
       <class name="test.privatemethod.PrivateMethodTest$PrivateMethodInnerTest"/>
+      <class name="test.configuration.ReflectMethodParametrizedConfigurationMethodTest" />
       <class name="test.configuration.MethodCallOrderTest"/>
       <class name="test.multiple.TestMultiple"/>
       <class name="test.ClassConfigurations"/>

@@ -610,8 +610,7 @@ public class MethodHelper {
     return result;
   }
 
-  public static Object invokeMethod(Method thisMethod, Object instance,
-      Object[] parameters) 
+  public static Object invokeMethod(Method thisMethod, Object instance, Object[] parameters) 
   throws InvocationTargetException, IllegalAccessException 
   {
     Object result = null;
@@ -623,11 +622,6 @@ public class MethodHelper {
       }
       result = thisMethod.invoke(instance, parameters);
     }
-//    catch(Exception ex) {
-//      if (TestRunner.getVerbose() > 2) {
-//        ex.printStackTrace();
-//      }
-//    }
     finally {
       if (!isPublic) {
         thisMethod.setAccessible(false);

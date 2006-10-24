@@ -130,10 +130,10 @@ public class TestMethodWorker implements IMethodWorker {
     // are unpredictable...  Need to think about this more (and make it
     // more efficient)
     List<ITestResult> testResults = m_invoker.invokeTestMethods(tm, 
-        m_suite, 
-        m_parameters, 
         m_allTestMethods, 
         indexOf(tm, m_allTestMethods), 
+        m_suite, 
+        m_parameters, 
         m_groupMethods);
     
     if (testResults != null) {
@@ -150,6 +150,10 @@ public class TestMethodWorker implements IMethodWorker {
     if(null == m_invokedBeforeClassMethods) {
       return;
     }
+    ITestNGMethod[] classMethods= testClass.getBeforeClassMethods();
+    if(null == classMethods || classMethods.length == 0) {
+      return;
+    }
     
     // the whole invocation must be synchronized as other threads must
     // get a full initialized test object (not the same for @After)
@@ -157,15 +161,21 @@ public class TestMethodWorker implements IMethodWorker {
       if (! m_invokedBeforeClassMethods.containsKey(testClass)) {  
         m_invokedBeforeClassMethods.put(testClass, testClass);
         m_invoker.invokeConfigurations(testClass,
-            testClass.getBeforeClassMethods(),
-            m_suite,
-            m_parameters,
-            null /* instance */);
+                                       testClass.getBeforeClassMethods(),
+                                       m_suite,
+                                       m_parameters,
+                                       null /* instance */);
       }
     }
   }
   
   protected void invokeAfterClassMethods(ITestClass testClass, ITestNGMethod tm) {
+    ITestNGMethod[] afterClassMethods= testClass.getAfterClassMethods();
+    
+    if(null == afterClassMethods || afterClassMethods.length == 0) {
+      return;
+    }
+    
     //
     // Invoke after class methods if this test method is the last one
     // on this class and it is not a parallel invocation
@@ -182,10 +192,10 @@ public class TestMethodWorker implements IMethodWorker {
         
         if(invokeAfter) {
           m_invoker.invokeConfigurations(testClass,
-              testClass.getAfterClassMethods(),
-              m_suite,
-              m_parameters,
-              null /* instance */);
+                                         afterClassMethods,
+                                         m_suite,
+                                         m_parameters,
+                                         null /* instance */);
         }
       }
     }
