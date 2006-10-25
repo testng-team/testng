@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import org.testng.IMethodSelector;
 import org.testng.ITestNGMethod;
+import org.testng.TestNGException;
 import org.testng.TestRunner;
 import org.testng.xml.XmlClass;
 
@@ -27,7 +28,8 @@ import bsh.Interpreter;
  * @author cbeust
  */
 public class XmlMethodSelector implements IMethodSelector {
-
+  private static Interpreter s_interpreter;
+  
   // Groups included and excluded for this run
   private Map<String, String> m_includedGroups= new HashMap<String, String>();
   private Map<String, String> m_excludedGroups= new HashMap<String, String>();
@@ -49,27 +51,58 @@ public class XmlMethodSelector implements IMethodSelector {
     return result;
   }
   
+  private static Interpreter getInterpreter() {
+    if(null == s_interpreter) {
+      s_interpreter= new Interpreter();
+    }
+    
+    return s_interpreter;
+  }
+  
   private boolean includeMethodFromExpression(ITestNGMethod tm,  boolean isTestMethod) {
     boolean result = false;
 
-    Interpreter interpreter = new Interpreter();
+    Interpreter interpreter= getInterpreter();
     try {
       Map<String, String> groups = new HashMap<String, String>();
       for (String group : tm.getGroups()) {
         groups.put(group, group);
       }
-      interpreter.set("method", tm.getMethod());
-      interpreter.set("groups", groups);
-      interpreter.set("testngMethod", tm);
+      setContext(interpreter, tm.getMethod(), groups, tm);
       Object evalResult = interpreter.eval(m_expression);
       result = ((Boolean) evalResult).booleanValue();
     }
-    catch (EvalError e) {
-      e.printStackTrace();
+    catch (EvalError evalError) {
+      Utils.log("bsh.Interpreter", 2, "Cannot evaluate expression:" + m_expression + ":" + evalError.getMessage());
+    }
+    finally {
+      resetContext(interpreter);
     }
 
     return result;
     
+  }
+  
+  private void resetContext(Interpreter interpreter) {
+    try {
+      interpreter.unset("method");
+      interpreter.unset("groups");
+      interpreter.unset("testngMethod");
+    }
+    catch(EvalError evalError) {
+      Utils.log("bsh.Interpreter", 2, "Cannot reset interpreter:" + evalError.getMessage());
+    }
+  }
+  
+  private void setContext(Interpreter interpreter, Method method, Map<String, String> groups, ITestNGMethod tm) {
+    try {
+      interpreter.set("method", method);
+      interpreter.set("groups", groups);
+      interpreter.set("testngMethod", tm);
+    }
+    catch(EvalError evalError) {
+      throw new TestNGException("Cannot set BSH interpreter", evalError);
+    }
   }
   
   private boolean includeMethodFromIncludeExclude(ITestNGMethod tm, boolean isTestMethod) {
@@ -341,16 +374,16 @@ public class XmlMethodSelector implements IMethodSelector {
     }
   }
 
-  private ITestNGMethod[] filterTestMethods(List<ITestNGMethod> methods) {
-    List<ITestNGMethod> vResult = new ArrayList<ITestNGMethod>();
-    for (ITestNGMethod m : methods) {
-      if (includeMethod(m, true)) {
-        vResult.add(m);
-      }
-    }
-    
-    return vResult.toArray(new ITestNGMethod[vResult.size()]);
-  }
+//  private ITestNGMethod[] filterTestMethods(List<ITestNGMethod> methods) {
+//    List<ITestNGMethod> vResult = new ArrayList<ITestNGMethod>();
+//    for (ITestNGMethod m : methods) {
+//      if (includeMethod(m, true)) {
+//        vResult.add(m);
+//      }
+//    }
+//    
+//    return vResult.toArray(new ITestNGMethod[vResult.size()]);
+//  }
 
   private boolean m_verbose = true;
   public void setVerbose(boolean b) {

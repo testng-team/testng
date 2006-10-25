@@ -2,6 +2,7 @@
 ===========================================================================
 5.3
 
+Fixed: use a single instance of bsh.Interpreter
 Added: @Before/@AfterMethod can declare a java.lang.reflect.Method parameter to be informed about the @Test method
 Fixed: super classes must not be listed in testng-failures.xml
 Fixed: parallel attribute must not appear if empty or null in testng-failures.xml
