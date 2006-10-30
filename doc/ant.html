@@ -30,6 +30,13 @@ accepts the following attributes: <br>
 		<th>Description </th>
 		<th>Required </th>
 	</tr>
+		<tr>
+		<td><tt>annotations</tt> </td>
+		<td>Either the string "JDK" or "Javadoc".  Defines which kind of annotations are used in these tests.
+		If you use "Javadoc", you will also need to specify "sourcedir".</td>
+		<td>No.  Defaults to "JDK" if you're using the JDK 5 jar and to "Javadoc" if you're using the JDK 1.4 jar.</td>
+	</tr>
+
 	<tr>
 		<td><tt>classfilesetref</tt> </td>
 		<td>A reference to a
@@ -136,13 +143,6 @@ accepts the following attributes: <br>
 		<td>
 		<p align="left">No.&nbsp; Defaults to <tt>
 		<a href="http://testng.org/javadocs/org/testng/TestNG.html">org.testng.TestNG</a> </tt></td>
-	</tr>
-	<tr>
-		<td><tt>target</tt> </td>
-		<td>Used only with JDK 1.5+ to specify the type of tests: 1.4 for 
-		javadoc annotated tests, 1.5 for JDK1.5 annotated tests. </td>
-		<td>No. When JDK1.4 default to 1.4; when JDK1.5+ default to 1.5 
-		</td>
 	</tr>
 	
 	<tr>
