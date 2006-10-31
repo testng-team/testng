@@ -21,7 +21,10 @@ import org.testng.xml.XmlTest;
 
 /**
  * Extension of TestNG registering a remote TestListener.
- *
+ * <p>
+ * <i>Developer note</i>: be aware that a copy of this source is distributed along with the
+ * Eclipse plugin to assure backward compatibility.
+ * </p>
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public class RemoteTestNG extends TestNG {

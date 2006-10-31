@@ -28,8 +28,8 @@ public class TestResultMessage implements IStringMessage {
   protected String m_stackTrace;
   protected long m_startMillis;
   protected long m_endMillis;
-  protected String[] m_parameters;
-  protected String[] m_paramTypes;
+  protected String[] m_parameters= new String[0];
+  protected String[] m_paramTypes= new String[0];
 
   TestResultMessage(final int resultType,
                     final String suiteName,

@@ -88,16 +88,32 @@ public class MessageHelper {
   public static TestResultMessage unmarshallTestResultMessage(final String message) {
     String[] messageParts = parseMessage(message);
     
-    
+    String parametersFragment= null;
+    String startTimestampFragment= null;
+    String stopTimestampFragment= null;
+    String stackTraceFragment= null;
+    if(messageParts.length == 9) {
+      parametersFragment= messageParts[5];
+      startTimestampFragment= messageParts[6];
+      stopTimestampFragment= messageParts[7];
+      stackTraceFragment= messageParts[8];
+    }
+    else {
+      // HINT: old protocol without parameters
+      parametersFragment= null;
+      startTimestampFragment= messageParts[5];
+      stopTimestampFragment= messageParts[6];
+      stackTraceFragment= messageParts[7];
+    }
     return new TestResultMessage(Integer.parseInt(messageParts[0]),
                                  messageParts[1],
                                  messageParts[2],
                                  messageParts[3],
                                  messageParts[4],
-                                 parseParameters(messageParts[5]),
-                                 Long.parseLong(messageParts[6]),
-                                 Long.parseLong(messageParts[7]),
-                                 replaceNewLineReplacer(messageParts[8])
+                                 parseParameters(parametersFragment),
+                                 Long.parseLong(startTimestampFragment),
+                                 Long.parseLong(stopTimestampFragment),
+                                 replaceNewLineReplacer(stackTraceFragment)
             );
   }
   
