@@ -16,6 +16,9 @@ import org.testng.ITestResult;
  */
 public class MessageHelper {
   public static final char DELIMITER = '\u0001';
+  public static final char PARAM_DELIMITER = '\u0004';
+  private static final char LINE_SEP_DELIMITER_1 = '\u0002';
+  private static final char LINE_SEP_DELIMITER_2 = '\u0003';
   
   public static final int GENERIC_SUITE_COUNT = 1;
   
@@ -36,8 +39,6 @@ public class MessageHelper {
   
   public static final String STOP_MSG = ">STOP";
   public static final String ACK_MSG = ">ACK";
-
-  
   
   public static int getMessageType(final String message) {
     int idx = message.indexOf(DELIMITER);
@@ -93,9 +94,10 @@ public class MessageHelper {
                                  messageParts[2],
                                  messageParts[3],
                                  messageParts[4],
-                                 Long.parseLong(messageParts[5]),
+                                 parseParameters(messageParts[5]),
                                  Long.parseLong(messageParts[6]),
-                                 replaceNewLineReplacer(messageParts[7])
+                                 Long.parseLong(messageParts[7]),
+                                 replaceNewLineReplacer(messageParts[8])
             );
   }
   
@@ -104,7 +106,7 @@ public class MessageHelper {
       return message;
     }
     
-    return message.replace('\n', '\u0002').replace('\r', '\u0003');
+    return message.replace('\n', LINE_SEP_DELIMITER_1).replace('\r', LINE_SEP_DELIMITER_2);
   }
   
   public static String replaceNewLineReplacer(String message) {
@@ -112,18 +114,26 @@ public class MessageHelper {
       return message;
     }
     
-    return message.replace('\u0002', '\n').replace('\u0003', '\r');
+    return message.replace(LINE_SEP_DELIMITER_1, '\n').replace(LINE_SEP_DELIMITER_2, '\r');
+  }
+  
+  private static String[] parseParameters(final String messagePart) {
+    return tokenize(messagePart, PARAM_DELIMITER);
   }
   
   private static String[] parseMessage(final String message) {
+    return tokenize(message, DELIMITER);
+  }
+  
+  private static String[] tokenize(final String message, final char separator) {
     if(null == message) {
       return new String[0];
     }
     
-    List tokens = new ArrayList();
+    List<String> tokens = new ArrayList<String>();
     int start = 0;
     for(int i = 0; i < message.length(); i++) {
-      if(DELIMITER == message.charAt(i)) {
+      if(separator == message.charAt(i)) {
         tokens.add(message.substring(start, i));
         start = i + 1;
       }
@@ -132,6 +142,6 @@ public class MessageHelper {
       tokens.add(message.substring(start, message.length()));
     }
     
-    return (String[]) tokens.toArray(new String[tokens.size()]);
+    return tokens.toArray(new String[tokens.size()]);
   }
 }

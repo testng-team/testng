@@ -3,9 +3,12 @@ package org.testng.remote.strprotocol;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.testng.ITestContext;
 import org.testng.ITestResult;
+import org.testng.internal.Utils;
 
 
 /**
@@ -14,6 +17,9 @@ import org.testng.ITestResult;
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class TestResultMessage implements IStringMessage {
+  private static final Object[] EMPTY_PARAMS= new Object[0];
+  private static final Class[] EMPTY_TYPES= new Class[0];
+  
   protected int    m_messageType;
   protected String m_suiteName;
   protected String m_testName;
@@ -22,12 +28,15 @@ public class TestResultMessage implements IStringMessage {
   protected String m_stackTrace;
   protected long m_startMillis;
   protected long m_endMillis;
+  protected String[] m_parameters;
+  protected String[] m_paramTypes;
 
   TestResultMessage(final int resultType,
                     final String suiteName,
                     final String testName,
                     final String className,
                     final String methodName,
+                    final String[] params,
                     final long startMillis,
                     final long endMillis,
                     final String stackTrace) 
@@ -39,7 +48,10 @@ public class TestResultMessage implements IStringMessage {
          methodName,
          stackTrace,
          startMillis,
-         endMillis
+         endMillis,
+         extractParams(params),
+         extractParamTypes(params)
+         
     );
   }
 
@@ -71,7 +83,9 @@ public class TestResultMessage implements IStringMessage {
          result.getMethod().getMethod().getName(),
          stackTrace,
          result.getStartMillis(),
-         result.getEndMillis()
+         result.getEndMillis(),
+         toString(result.getParameters(), result.getMethod().getMethod().getParameterTypes()),
+         toString(result.getMethod().getMethod().getParameterTypes())
     );
   }
   
@@ -86,7 +100,9 @@ public class TestResultMessage implements IStringMessage {
                     final String methodName,
                     final String stackTrace,
                     final long startMillis,
-                    final long endMillis) {
+                    final long endMillis,
+                    final String[] parameters,
+                    final String[] types) {
     m_messageType = resultType;
     m_suiteName = suiteName;
     m_testName = testName;
@@ -95,6 +111,8 @@ public class TestResultMessage implements IStringMessage {
     m_stackTrace = stackTrace;
     m_startMillis= startMillis;
     m_endMillis= endMillis;
+    m_parameters= parameters;
+    m_paramTypes= types;
   }
 
   public int getResult() {
@@ -103,6 +121,14 @@ public class TestResultMessage implements IStringMessage {
 
   public String getMessageAsString() {
     StringBuffer buf = new StringBuffer();
+    StringBuffer parambuf = new StringBuffer();
+    
+    if(null != m_parameters && m_parameters.length > 0) {
+      for (int j = 0; j < m_parameters.length; j++) {
+        if (j > 0) parambuf.append(MessageHelper.PARAM_DELIMITER);
+        parambuf.append(m_paramTypes[j] + ":" + m_parameters[j]);
+      }
+    }
 
     buf.append(m_messageType)
        .append(MessageHelper.DELIMITER)
@@ -113,6 +139,8 @@ public class TestResultMessage implements IStringMessage {
        .append(m_testClassName)
        .append(MessageHelper.DELIMITER)
        .append(m_testMethodName)
+       .append(MessageHelper.DELIMITER)
+       .append(parambuf)
        .append(MessageHelper.DELIMITER)
        .append(m_startMillis)
        .append(MessageHelper.DELIMITER)
@@ -152,6 +180,35 @@ public class TestResultMessage implements IStringMessage {
     return m_startMillis;
   }
 
+  public String[] getParameters() {
+    return m_parameters;
+  }
+  
+  public String[] getParameterTypes() {
+    return m_paramTypes;
+  }
+  
+  public String toDisplayString() {
+    StringBuffer buf= new StringBuffer(m_testMethodName);
+    
+    if(null != m_parameters && m_parameters.length > 0) {
+      buf.append("(");
+      for(int i= 0; i < m_parameters.length; i++) {
+        if(i > 0) buf.append(", ");
+        if("java.lang.String".equals(m_paramTypes[i]) && !("null".equals(m_parameters[i]) || "\"\"".equals(m_parameters[i]))) {
+          buf.append("\"").append(m_parameters[i]).append("\"");
+        }
+        else {
+          buf.append(m_parameters[i]);
+        }
+
+      }
+      buf.append(")");
+    }
+    
+    return buf.toString();
+  }
+  
   @Override
   public boolean equals(Object o) {
     if(this == o) return true;
@@ -174,5 +231,58 @@ public class TestResultMessage implements IStringMessage {
     result = 29 * result + m_testClassName.hashCode();
     result = 29 * result + m_testMethodName.hashCode();
     return result;
+  }
+  
+  private String[] toString(Object[] objects, Class[] objectClasses) {
+    if(null == objects) return new String[0];
+    List<String> result= new ArrayList<String>(objects.length);
+    for(Object o: objects) {
+      if(null == o) {
+        result.add("null");
+      }
+      else {
+        String tostring= o.toString();
+        if("".equals(tostring)) {
+          result.add("\"\"");
+        }
+        else {
+          result.add(tostring);
+        }
+      }
+    }
+    
+    return result.toArray(new String[result.size()]);
+  }
+  
+  private String[] toString(Class[] classes) {
+    if(null == classes) return new String[0];
+    List<String> result= new ArrayList<String>(classes.length);
+    for(Class cls: classes) {
+      result.add(cls.getName());
+    }
+    
+    return result.toArray(new String[result.size()]);
+  }
+  
+  /**
+   * @param params
+   * @return
+   */
+  private String[] extractParamTypes(String[] params) {
+    List<String> result= new ArrayList<String>(params.length);
+    for(String s: params) {
+      result.add(s.substring(0, s.indexOf(':')));
+    }
+    
+    return result.toArray(new String[result.size()]);
+  }
+
+  private String[] extractParams(String[] params) {
+    List<String> result= new ArrayList<String>(params.length);
+    for(String s: params) {
+      result.add(s.substring(s.indexOf(':') + 1));
+    }
+    
+    return result.toArray(new String[result.size()]);
   }
 }

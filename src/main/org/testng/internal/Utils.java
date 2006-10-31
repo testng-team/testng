@@ -734,4 +734,24 @@ public final class Utils {
     
     return buf.toString();
   }
+
+  /**
+   * @param object
+   * @return
+   */
+  public static String toString(Object object, Class objectClass) {
+    if(null == object) {
+      return "null";
+    }
+    final String toString= object.toString();
+    if("".equals(toString)) {
+      return "\"\"";
+    }
+    else if (String.class.equals(objectClass)) {
+      return "\"" + toString + "\"";
+    }
+    else {
+      return toString;
+    }
+  }
 }

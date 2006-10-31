@@ -55,23 +55,25 @@ public class TextReporter extends TestListenerAdapter {
     //
     for(Object o : getPassedTests()) {
       ITestResult tr = (ITestResult) o;
-      logResult("PASSED", tr.getName(), tr.getMethod().getDescription());
+      logResult("PASSED", tr.getName(), tr.getMethod().getDescription(), null, tr.getParameters(), tr.getMethod().getMethod().getParameterTypes());
     }
 
     for(Object o : getFailedTests()) {
       ITestResult tr = (ITestResult) o;
       Throwable ex = tr.getThrowable();
-      logResult("FAILED", tr.getName(), tr.getMethod().getDescription());
+      String stackTrace= "";
       if (ex != null) {
         if (m_verbose >= 2) {
-          logResult("",  Utils.stackTrace(ex, false)[0], null);
+          stackTrace= Utils.stackTrace(ex, false)[0];
         }
       }
+
+      logResult("FAILED", tr.getName(), tr.getMethod().getDescription(), stackTrace, tr.getParameters(), tr.getMethod().getMethod().getParameterTypes());
     }
 
     for(Object o : getSkippedTests()) {
       ITestResult tr = (ITestResult) o;
-      logResult("SKIPPED", tr.getName(), tr.getMethod().getDescription());
+      logResult("SKIPPED", tr.getName(), tr.getMethod().getDescription(), null, tr.getParameters(), tr.getMethod().getMethod().getParameterTypes());
     }
 
     ITestNGMethod[] ft = resultsToMethods(getFailedTests());
@@ -81,31 +83,78 @@ public class TextReporter extends TestListenerAdapter {
         + ", Skips: "
         + Utils.calculateInvokedMethodCount(resultsToMethods(getSkippedTests()))
         + "\n===============================================\n";
-    logResult("", stats, null);
+    logResult("", stats);
   }
   
   private String getName() {
     return m_testName;
   }
   
-  private void logResult(String status, String name, String description) {
-    if (! "".equals(status)) {
-      System.out.print(status + ": ");
+  private void logResult(String status, String message) {
+    StringBuffer buf= new StringBuffer();
+    if(!"".equals(status)) {
+      buf.append(status).append(": ");
     }
-    System.out.println(name);
-    if (! Utils.isStringEmpty(description)) {
-      StringBuffer sb = new StringBuffer();
-      for (int i = 0; i < status.length() + 2; i++) {
-        sb.append(" ");
-      }
-      sb.append(description);
-      System.out.println(sb.toString());
-    }
+    buf.append(message);
+    
+    System.out.println(buf);
   }
   
-  private void logResult(Throwable s) {
-    System.out.println(s.getMessage());
+  private void logResult(String status, String name, String description, String stackTrace, Object[] params, Class[] paramTypes) {
+    StringBuffer msg= new StringBuffer(name);
+
+    if(null != params && params.length > 0) {
+      msg.append("(");
+      for(int i= 0; i < params.length; i++) {
+        if(i > 0) msg.append(", ");
+        msg.append(Utils.toString(params[i], paramTypes[i]));
+      }
+      
+      msg.append(")");
+    }
+    if (! Utils.isStringEmpty(description)) {
+      msg.append("\n");
+      for (int i = 0; i < status.length() + 2; i++) {
+        msg.append(" ");
+      }
+      msg.append(description);
+    }
+    if ( ! Utils.isStringEmpty(stackTrace)) {
+      msg.append("\n").append(stackTrace);
+    }
+    
+    logResult(status, msg.toString());
+
+//    if (! "".equals(status)) {
+//      System.out.print(status + ": ");
+//    }
+//    {
+//      StringBuffer sb= new StringBuffer(name);
+//      if(null != params && params.length > 0) {
+//        sb.append("(");
+//        for(int i= 0; i < params.length; i++) {
+//          if(i > 0) sb.append(", ");
+//          sb.append(Utils.toString(params[i]));
+//        }
+//        
+//        sb.append(")");
+//      }
+//      
+//      System.out.println(sb);
+//    }
+//    if (! Utils.isStringEmpty(description)) {
+//      StringBuffer sb = new StringBuffer();
+//      for (int i = 0; i < status.length() + 2; i++) {
+//        sb.append(" ");
+//      }
+//      sb.append(description);
+//      System.out.println(sb.toString());
+//    }
   }
+  
+//  private void logResult(Throwable s) {
+//    System.out.println(s.getMessage());
+//  }
   
   public void ppp(String s) {
     System.out.println("[TextReporter " + getName() + "] " + s);
