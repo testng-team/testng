@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.internal.Utils;
+import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
@@ -52,7 +54,7 @@ public class JUnitXMLReporter implements ITestListener {
   private int m_numFailed= 0;
   private int m_numSkipped= 0;
   private int m_numFailedButIgnored= 0;
-  private List<ITestResult> m_allTests= new ArrayList<ITestResult>();
+  private List<ITestResult> m_allTests= Collections.synchronizedList(new ArrayList<ITestResult>());
 
   public void onTestStart(ITestResult result) {
   }
@@ -124,16 +126,6 @@ public class JUnitXMLReporter implements ITestListener {
       // properties. just TestNG properties or also System properties?
       ISuite suite= m_testContext.getSuite();
 
-      // TODO for Jolly:
-      // Do something with this suite
-//      Map<String, ISuiteResult> suiteResults= suite.getResults();
-//      for(String name : suiteResults.keySet()) {
-//        ISuiteResult suiteResult= suiteResults.get(name);
-//        String testName= suiteResult.getTestContext().getName();
-//        IResultMap failedTests= suiteResult.getTestContext().getFailedTests();
-//        // ...
-//      }
-
       rootElement.setAttribute(XMLConstants.ATTR_TESTS, "" + m_allTests.size());
       rootElement.setAttribute(XMLConstants.ATTR_FAILURES, "" + m_numFailed);
       rootElement.setAttribute(XMLConstants.ATTR_ERRORS, "0"); // FIXME
@@ -160,8 +152,7 @@ public class JUnitXMLReporter implements ITestListener {
             if ((message != null) && (message.length() > 0)) {
               nested.setAttribute(XMLConstants.ATTR_MESSAGE, message);
             }
-            
-            Text trace = d.createTextNode(Utils.stackTrace(t, true)[0]);
+            CDATASection trace= d.createCDATASection(Utils.stackTrace(t, false)[0]);
             nested.appendChild(trace);
           }
         }

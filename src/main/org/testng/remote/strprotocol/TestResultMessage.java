@@ -214,12 +214,13 @@ public class TestResultMessage implements IStringMessage {
     if(this == o) return true;
     if(o == null || getClass() != o.getClass()) return false;
 
-    final TestResultMessage that = (TestResultMessage)o;
+    final TestResultMessage that = (TestResultMessage) o;
 
     if(m_suiteName != null ? !m_suiteName.equals(that.m_suiteName) : that.m_suiteName != null) return false;
-    if(!m_testClassName.equals(that.m_testClassName)) return false;
-    if(!m_testMethodName.equals(that.m_testMethodName)) return false;
     if(m_testName != null ? !m_testName.equals(that.m_testName) : that.m_testName != null) return false;
+    if(m_testClassName != null ? !m_testClassName.equals(that.m_testClassName) : that.m_testClassName != null) return false;
+    String toDisplayString= toDisplayString();
+    if(toDisplayString != null ? !toDisplayString.equals(that.toDisplayString()) : that.toDisplayString() != null) return false;
 
     return true;
   }
@@ -229,7 +230,7 @@ public class TestResultMessage implements IStringMessage {
     int result = (m_suiteName != null ? m_suiteName.hashCode() : 0);
     result = 29 * result + (m_testName != null ? m_testName.hashCode() : 0);
     result = 29 * result + m_testClassName.hashCode();
-    result = 29 * result + m_testMethodName.hashCode();
+    result = 29 * result + toDisplayString().hashCode();
     return result;
   }
   
