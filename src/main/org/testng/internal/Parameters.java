@@ -190,16 +190,11 @@ public class Parameters {
     if (null != annotation) {
       String dataProviderName = annotation.getDataProvider();
       if (null != dataProviderName && ! "".equals(dataProviderName)) {
-        result = 
-          findDataProvider(clazz, finder, dataProviderName,
-              annotation.getDataProviderClass());
-        if (null != result) {
-          return result;
-        }
+        result = findDataProvider(clazz, finder, dataProviderName, annotation.getDataProviderClass());
       }
     }
 
-    return null;
+    return result;
   }
   
   /**
@@ -231,8 +226,7 @@ public class Parameters {
   /**
    * Find a method that has a @DataProvider(name=name)
    */
-  private static Method findDataProvider(Class cls, 
-    IAnnotationFinder finder, String name, Class dataProviderClass) 
+  private static Method findDataProvider(Class cls, IAnnotationFinder finder, String name, Class dataProviderClass) 
   {
     boolean shouldBeStatic = false;
     if (dataProviderClass != null) {
@@ -242,10 +236,11 @@ public class Parameters {
 
     for (Method m : ClassHelper.getAvailableMethods(cls)) {
       IDataProvider dp = (IDataProvider) finder.findAnnotation(m, IDataProvider.class);
-      if (null != dp && dp.getName().equals(name)) {
+      if (null != dp && (dp.getName().equals(name) || m.getName().equals(name))) {
         if (shouldBeStatic && (m.getModifiers() & Modifier.STATIC) == 0) {
           throw new TestNGException("DataProvider should be static: " + m); 
         }
+        
         return m;
       }
     }

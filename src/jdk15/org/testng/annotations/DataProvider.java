@@ -6,7 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Mark a method as supplying data for a test method.
+ * Mark a method as supplying data for a test method. The data provider name
+ * defaults to method name.
  * The annotated method must return an Object[][] where each
  * Object[] can be assigned the parameter list of the test method.
  * The @Test method that wants to receive data from this DataProvider
@@ -21,5 +22,5 @@ public @interface DataProvider {
   /**
    * The name of this DataProvider.
    */
-  public String name();
+  public String name() default "";
 }

@@ -342,6 +342,7 @@
       <class name="test.dataprovider.BooleanTest" />
       <class name="test.dataprovider.MethodTest"/>
       <class name="test.dataprovider.StaticDataProviderSampleTest" />
+      <class name="test.dataprovider.UnnamedDataProviderTest" />
     </classes>
   </test>
 	

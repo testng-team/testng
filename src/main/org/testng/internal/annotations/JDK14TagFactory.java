@@ -412,8 +412,7 @@ public class JDK14TagFactory {
   
   private IAnnotation createDataProviderTag(DocletTag dt) {
     DataProviderAnnotation result = new DataProviderAnnotation();
-    result.setName(Converter.getString(dt.getNamedParameter("name"),
-        result.getName()));
+    result.setName(Converter.getString(dt.getNamedParameter("name"), result.getName()));
     
     return result;
   }
