@@ -3,6 +3,7 @@ package org.testng.internal;
 import java.lang.reflect.Method;
 import java.util.Comparator;
 
+import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -16,6 +17,7 @@ import org.testng.internal.annotations.ITest;
  * @author <a href = "mailto:the_mindstorm&#64;evolva.ro">Alexandru Popescu</a>
  */
 public class TestNGMethod extends BaseTestMethod {
+  private int m_threadPoolSize = 0;
   private int m_invocationCount = 1;
   private int m_successPercentage = 100;
   private long m_timeOut = 0;
@@ -27,11 +29,17 @@ public class TestNGMethod extends BaseTestMethod {
    * @param finder
    */
   public TestNGMethod(Method method, IAnnotationFinder finder) {
-    super(method, finder);
-    
-    init();
+    this(method, finder, true);
   }
 
+  private TestNGMethod(Method method, IAnnotationFinder finder, boolean initialize) {
+    super(method, finder);
+
+    if(initialize) {
+      init();
+    }
+  }
+  
   /**
    * {@inheritDoc}
    */
@@ -76,11 +84,10 @@ public class TestNGMethod extends BaseTestMethod {
       }
 
       if (null != testAnnotation) {
-        m_invocationCount = testAnnotation.getInvocationCount();
         m_successPercentage = testAnnotation.getSuccessPercentage();
         
-        // Integer.valueOf would be much better here but it is jdk5+ specific
-        setThreadPoolSize(new Integer(testAnnotation.getThreadPoolSize()));
+        setInvocationCount(testAnnotation.getInvocationCount());
+        setThreadPoolSize(testAnnotation.getThreadPoolSize());
       }
 
       // Groups
@@ -96,6 +103,66 @@ public class TestNGMethod extends BaseTestMethod {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  public int getThreadPoolSize() {
+    return m_threadPoolSize;
+  }
+  
+  /**
+   * Sets the number of threads on which this method should be invoked.
+   */
+  public void setThreadPoolSize(int threadPoolSize) {
+    m_threadPoolSize = threadPoolSize;
+  }
+  
+  /**
+   * Sets the number of invocations for this method.
+   */
+  public void setInvocationCount(int counter) {
+    m_invocationCount= counter;
+  }
+  
+  /**
+   * Clones the current <code>TestNGMethod</code> and its @BeforeMethod and @AfterMethod methods.
+   * @see org.testng.internal.BaseTestMethod#clone()
+   */
+  public TestNGMethod clone() {
+    TestNGMethod clone= new TestNGMethod(getMethod(), getAnnotationFinder(), false);
+    ITestClass tc= getTestClass();
+    NoOpTestClass testClass= new NoOpTestClass(tc);
+    testClass.setBeforeTestMethods(clone(tc.getBeforeTestMethods()));
+    testClass.setAfterTestMethod(clone(tc.getAfterTestMethods()));
+    clone.m_testClass= testClass;
+    clone.setDate(getDate());
+    clone.setGroups(getGroups());
+    clone.setGroupsDependedUpon(getGroupsDependedUpon());
+    clone.setMethodsDependedUpon(getMethodsDependedUpon());
+    clone.setAlwaysRun(isAlwaysRun());
+    clone.m_beforeGroups= getBeforeGroups();
+    clone.m_afterGroups= getAfterGroups();
+    clone.m_currentInvocationCount= m_currentInvocationCount;
+    clone.setMissingGroup(getMissingGroup());
+    clone.setThreadPoolSize(getThreadPoolSize());
+    clone.setDescription(getDescription());
+    clone.setParameterInvocationCount(getParameterInvocationCount());
+    clone.setInvocationCount(getInvocationCount());
+    clone.m_successPercentage = getSuccessPercentage();
+    clone.m_timeOut = getTimeOut();
+
+    return clone;
+  }
+  
+  private ITestNGMethod[] clone(ITestNGMethod[] sources) {
+    ITestNGMethod[] clones= new ITestNGMethod[sources.length];
+    for(int i= 0; i < sources.length; i++) {
+      clones[i]= sources[i].clone();
+    }
+    
+    return clones;
+  }
+  
   /** Sorts ITestNGMethod by Class name. */
   public static final Comparator<ITestNGMethod> SORT_BY_CLASS =
     new Comparator<ITestNGMethod>() {

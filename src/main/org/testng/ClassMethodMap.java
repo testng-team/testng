@@ -6,19 +6,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class maintains a map of <Class, List<methods>>.
+ * This class maintains a map of <CODE><Class, List<ITestNGMethod>></CODE>.
  * It is used by TestWorkers to determine if the method they just ran
  * is the last of its class, in which case it's time to invoke all the
- * afterClass methods
+ * afterClass methods.
  */
 public class ClassMethodMap {
   private Map<Class, List<ITestNGMethod>> m_classMap = new HashMap<Class, List<ITestNGMethod>>();
   
   public ClassMethodMap(ITestNGMethod[] methods) {
-    this(methods, false);
-  }
-  
-  public ClassMethodMap(ITestNGMethod[] methods, boolean expandOnInvocationCount) {    
     for (ITestNGMethod m : methods) {
       Class c = getMethodClass(m);
       List<ITestNGMethod> l = m_classMap.get(c);
@@ -27,13 +23,7 @@ public class ClassMethodMap {
         m_classMap.put(c, l);
       }
       l.add(m);
-      if(expandOnInvocationCount && m.getInvocationCount() > 1) {
-        for(int i= 1; i < m.getInvocationCount(); i++) {
-          l.add(m);
-        }
-      }
     }
-
   }
   
   /**
@@ -50,6 +40,4 @@ public class ClassMethodMap {
   private Class getMethodClass(ITestNGMethod m) {
     return m.getTestClass().getRealClass();
   }
-  
-  
 }

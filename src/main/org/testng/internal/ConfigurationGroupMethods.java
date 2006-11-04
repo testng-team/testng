@@ -52,8 +52,7 @@ public class ConfigurationGroupMethods implements Serializable {
    */
   public synchronized boolean isLastMethodForGroup(String group, ITestNGMethod method) {
 
-    // If we have more invocation to do, this is not the last
-    // one yet
+    // If we have more invocation to do, this is not the last one yet
     int invocationCount= method.getCurrentInvocationCount();
     if(invocationCount < (method.getInvocationCount() * method.getParameterInvocationCount())) {
       return false;
@@ -70,8 +69,8 @@ public class ConfigurationGroupMethods implements Serializable {
       }
     }
 
-    // Note:  == is good enough here
-    return m_afterGroupsMap.get(group) == method;
+    // Note:  == is not good enough here as we may work with ITestNGMethod clones
+    return m_afterGroupsMap.isEmpty() ? false : m_afterGroupsMap.get(group).equals(method);
 
   }
 

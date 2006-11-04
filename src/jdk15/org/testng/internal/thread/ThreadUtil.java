@@ -49,7 +49,8 @@ public class ThreadUtil {
   }
 
   public static final String currentThreadInfo() {
-    return String.valueOf(Thread.currentThread().getId());
+    Thread thread= Thread.currentThread();
+    return String.valueOf(thread.getName() + "@" + thread.hashCode());
   }
 
   public static final ICountDown createCountDown(int count) {
@@ -68,6 +69,10 @@ public class ThreadUtil {
     return new ThreadFactoryImpl(name);
   }
 
+  public static final IAtomicInteger createAtomicInteger(int initialValue) {
+    return new AtomicIntegerAdapter(initialValue);
+  }
+  
   public static class ThreadFactoryImpl implements IThreadFactory, ThreadFactory {
     private String m_methodName;
 

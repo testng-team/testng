@@ -4,9 +4,12 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.testng.ITestClass;
+import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -45,10 +48,22 @@ public class Parameters {
     return createParameters(m, new MethodParameters(params), finder, xmlSuite, ITest.class, "@Test");
   }
   
-  public static Object[] createConfigurationParameters(Method m, Map<String, String> params, Method currentTestMethod,
+  /**
+   * Creates the parameters needed for the specified <code>Method</code>.
+   * 
+   * @param m the configuraton method
+   * @param params 
+   * @param currentTestMethod the current @Test method or <code>null</code> if no @Test is available (this is not
+   *    only in case the configuration method is a @Before/@AfterMethod
+   * @param finder the annotation finder
+   * @param xmlSuite
+   * @return
+   */
+  public static Object[] createConfigurationParameters(Method m, Map<String, String> params, ITestNGMethod currentTestMethod,
       IAnnotationFinder finder, XmlSuite xmlSuite) 
   {
-    return createParameters(m, new MethodParameters(params, currentTestMethod), finder, xmlSuite, IConfiguration.class, "@Configuration");
+    Method currentTestMeth= currentTestMethod != null ? currentTestMethod.getMethod() : null;
+    return createParameters(m, new MethodParameters(params, currentTestMeth), finder, xmlSuite, IConfiguration.class, "@Configuration");
   }
 
   public static Object[] createFactoryParameters(Method m, Map<String, String> params,
@@ -293,5 +308,64 @@ public class Parameters {
           m_parameters= params;
           m_currentTestMethod= m;
       }
+  }
+
+  /**
+   * If the method has parameters, fill them in.  Either by using a @DataProvider
+   * if any was provided, or by looking up <parameters> in testng.xml
+   */
+  public static Iterator<Object[]> handleParameters(ITestNGMethod testMethod, 
+                                                    Map<String, String> allParameterNames,
+                                                    ITestClass testClass, 
+                                                    Map<String, String> parameters, 
+                                                    XmlSuite xmlSuite, 
+                                                    IAnnotationFinder annotationFinder)
+  {
+    Iterator<Object[]> result = null;
+    
+    //
+    // Do we have a @DataProvider?  If yes, then we have several
+    // sets of parameters for this method
+    //
+    Method dataProvider = findDataProvider(testMethod.getTestClass().getRealClass(),
+                                           testMethod.getMethod(), 
+                                           annotationFinder);
+  
+    if (null != dataProvider) {
+      int parameterCount = testMethod.getMethod().getParameterTypes().length;
+  
+      for (int i = 0; i < parameterCount; i++) {
+        String n = "param" + i;
+        allParameterNames.put(n, n);
+      }
+  
+      boolean isStatic = (dataProvider.getModifiers() & Modifier.STATIC) != 0;
+      Object instance = isStatic ? null : testClass.getInstances(true)[0];
+      result  = MethodHelper.invokeDataProvider(
+          instance, /* a test instance or null if the dataprovider is static*/
+          dataProvider, 
+          testMethod);
+    }
+    else {
+      //
+      // Normal case:  we have only one set of parameters coming from testng.xml
+      //
+      allParameterNames.putAll(parameters);
+      // Create an Object[][] containing just one row of parameters
+      Object[][] allParameterValuesArray = new Object[1][];
+      allParameterValuesArray[0] = createTestParameters(testMethod.getMethod(),
+            parameters,
+            annotationFinder,
+            xmlSuite);
+      
+      // Mark that this method needs to have at least a certain
+      // number of invocations (needed later to call AfterGroups
+      // at the right time).
+      testMethod.setParameterInvocationCount(allParameterValuesArray.length);
+      // Turn it into an Iterable
+      result  = MethodHelper.createArrayIterator(allParameterValuesArray);
+    }
+    
+    return result;
   }
 }

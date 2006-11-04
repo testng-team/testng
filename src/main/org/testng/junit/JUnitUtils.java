@@ -70,7 +70,7 @@ public class JUnitUtils {
     private int m_parameterInvocationCount = 0;
 
     private long m_date;
-    private long m_id;
+    private String m_id;
     
     public JUnitTestMethod(Test test, JUnitTestClass testClass) {
       m_testClass= testClass;
@@ -114,7 +114,7 @@ public class JUnitUtils {
     /**
      * @see org.testng.ITestNGMethod#getId()
      */
-    public long getId() {
+    public String getId() {
       return m_id;
     }
 
@@ -163,7 +163,7 @@ public class JUnitUtils {
     /**
      * @see org.testng.ITestNGMethod#setId(long)
      */
-    public void setId(long id) {
+    public void setId(String id) {
       m_id= id;
     }
 
@@ -392,6 +392,24 @@ public class JUnitUtils {
 
     public String toString() {
       return m_signature;
+    }
+    
+    public ITestNGMethod clone() {
+      throw new IllegalStateException("clone is not supported for JUnit"); 
+    }
+
+    /**
+     * @see org.testng.ITestNGMethod#setInvocationCount(int)
+     */
+    public void setInvocationCount(int count) {
+      throw new IllegalStateException("setInvocationCount is not supported for JUnit");
+    }
+
+    /**
+     * @see org.testng.ITestNGMethod#setThreadPoolSize(int)
+     */
+    public void setThreadPoolSize(int threadPoolSize) {
+      throw new IllegalStateException("setThreadPoolSize is not supported for JUnit");
     }
   }
   

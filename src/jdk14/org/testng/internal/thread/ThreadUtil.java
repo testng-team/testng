@@ -6,6 +6,7 @@ import java.util.List;
 import org.testng.internal.Utils;
 import org.testng.internal.thread.IPooledExecutor;
 import org.testng.internal.thread.ThreadUtil;
+import org.testng.internal.thread.port.AtomicIntegerAdapter;
 
 /**
  * Utility class to level up threading according to JDK 1.4
@@ -53,7 +54,8 @@ public class ThreadUtil {
   }
 
   public static final String currentThreadInfo() {
-    return String.valueOf(Thread.currentThread().hashCode());
+    Thread currentThread= Thread.currentThread();
+    return String.valueOf(currentThread.getName() + "@" + currentThread.hashCode());
   }
 
   public static final ICountDown createCountDown(int count) {
@@ -72,6 +74,10 @@ public class ThreadUtil {
     return new ThreadFactoryImpl(name);
   }
 
+  public static final IAtomicInteger createAtomicInteger(int initialValue) {
+    return new AtomicIntegerAdapter(initialValue);
+  }
+  
   public static class ThreadFactoryImpl implements IThreadFactory,
     edu.emory.mathcs.backport.java.util.concurrent.ThreadFactory {
     private String m_methodName;

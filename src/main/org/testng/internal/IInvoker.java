@@ -49,6 +49,4 @@ public interface IInvoker {
                                              XmlSuite suite, 
                                              Map<String, String> parameters, 
                                              ConfigurationGroupMethods groupMethods);
-
-  public void runTestListeners(ITestResult tr);
 }

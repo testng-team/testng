@@ -36,21 +36,23 @@ public class ConfigurationMethod extends BaseTestMethod {
   
   private boolean m_inheritGroupsFromTestClass = false;
 
-  public ConfigurationMethod(Method method, 
-                             IAnnotationFinder annotationFinder,
-                             boolean isBeforeSuite,
-                             boolean isAfterSuite,
-                             boolean isBeforeTest,
-                             boolean isAfterTest,
-                             boolean isBeforeClass, 
-                             boolean isAfterClass,
-                             boolean isBeforeMethod, 
-                             boolean isAfterMethod,
-                             String[] beforeGroups,
-                             String[] afterGroups) 
-  {
+  private ConfigurationMethod(Method method, 
+                              IAnnotationFinder annotationFinder,
+                              boolean isBeforeSuite,
+                              boolean isAfterSuite,
+                              boolean isBeforeTest,
+                              boolean isAfterTest,
+                              boolean isBeforeClass, 
+                              boolean isAfterClass,
+                              boolean isBeforeMethod, 
+                              boolean isAfterMethod,
+                              String[] beforeGroups,
+                              String[] afterGroups,
+                              boolean initialize) {
     super(method, annotationFinder);
-    init();
+    if(initialize) {
+      init();
+    }
     
     m_isBeforeSuiteConfiguration = isBeforeSuite;
     m_isAfterSuiteConfiguration = isAfterSuite;
@@ -66,6 +68,23 @@ public class ConfigurationMethod extends BaseTestMethod {
     
     m_beforeGroups = beforeGroups;
     m_afterGroups = afterGroups;
+  }
+  
+  public ConfigurationMethod(Method method, 
+                             IAnnotationFinder annotationFinder,
+                             boolean isBeforeSuite,
+                             boolean isAfterSuite,
+                             boolean isBeforeTest,
+                             boolean isAfterTest,
+                             boolean isBeforeClass, 
+                             boolean isAfterClass,
+                             boolean isBeforeMethod, 
+                             boolean isAfterMethod,
+                             String[] beforeGroups,
+                             String[] afterGroups) 
+  {
+    this(method, annotationFinder, isBeforeSuite, isAfterSuite, isBeforeTest, isAfterTest,
+        isBeforeClass, isAfterClass, isBeforeMethod, isAfterMethod, beforeGroups, afterGroups, true);
   }
 
   
@@ -319,11 +338,37 @@ public class ConfigurationMethod extends BaseTestMethod {
     }
   }
   
-  
   private static void ppp(String s) {
     System.out.println("[ConfigurationMethod] " + s);
   }
 
+  public ConfigurationMethod clone() {
+    ConfigurationMethod clone= new ConfigurationMethod(getMethod(),
+        getAnnotationFinder(),
+        isBeforeSuiteConfiguration(),
+        isAfterSuiteConfiguration(),
+        isBeforeTestConfiguration(),
+        isAfterTestConfiguration(),
+        isBeforeClassConfiguration(),
+        isAfterClassConfiguration(),
+        isBeforeMethodConfiguration(),
+        isAfterMethodConfiguration(),
+        getBeforeGroups(),
+        getAfterGroups(),
+        false /* do not call init() */
+        );
+    clone.m_testClass= getTestClass();
+    clone.setDate(getDate());
+    clone.setGroups(getGroups());
+    clone.setGroupsDependedUpon(getGroupsDependedUpon());
+    clone.setMethodsDependedUpon(getMethodsDependedUpon());
+    clone.setAlwaysRun(isAlwaysRun());
+    clone.setMissingGroup(getMissingGroup());
+    clone.setDescription(getDescription());
+    clone.setParameterInvocationCount(getParameterInvocationCount());
+    clone.m_inheritGroupsFromTestClass= inheritGroupsFromTestClass();
 
+    return clone;
+  }
 }
 

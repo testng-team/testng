@@ -10,6 +10,8 @@ import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.ITestOrConfiguration;
+import org.testng.internal.thread.IAtomicInteger;
+import org.testng.internal.thread.ThreadUtil;
 
 /**
  * Superclass to represent both &#64;Test and &#64;Configuration methods.
@@ -21,7 +23,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   
   protected final transient Class m_methodClass;
   protected final transient Method m_method;
-  protected long m_id = -1;
+  protected String m_id = "";
   protected long m_date = System.currentTimeMillis();
   protected final transient IAnnotationFinder m_annotationFinder;
   protected String[] m_groups = {};
@@ -36,9 +38,8 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   private final String m_methodName;
   // If a depended group is not found
   private String m_missingGroup;
-  private Integer m_threadPoolSize = 0;
   private String m_description = null;
-  private int m_currentInvocationCount = 0;
+  protected IAtomicInteger m_currentInvocationCount = ThreadUtil.createAtomicInteger(0);
   private int m_parameterInvocationCount = 1;
   
   /**
@@ -259,6 +260,11 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return 1;
   }
   
+  /**
+   * No-op.
+   */
+  public void setInvocationCount(int counter) {
+  }
 
   /**
    * {@inheritDoc} Default value for successPercentage.
@@ -270,14 +276,14 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   /**
    * {@inheritDoc}
    */
-  public long getId() {
+  public String getId() {
     return m_id;
   }
 
   /**
    * {@inheritDoc}
    */
-  public void setId(long id) {
+  public void setId(String id) {
     m_id = id;
   }
   
@@ -523,16 +529,14 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    * {@inheritDoc}
    */
   public int getThreadPoolSize() {
-    return m_threadPoolSize.intValue();
+    return 0;
   }
 
   /**
-   * TODO cquezel JavaDoc.
-   *
+   * No-op.
    * @param threadPoolSize
    */
-  protected void setThreadPoolSize(Integer threadPoolSize) {
-    m_threadPoolSize = threadPoolSize;
+  public void setThreadPoolSize(int threadPoolSize) {
   }
 
   /**
@@ -565,12 +569,12 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return m_afterGroups;
   }
   
-  synchronized public void incrementCurrentInvocationCount() {
-    m_currentInvocationCount++;
+  public void incrementCurrentInvocationCount() {
+    m_currentInvocationCount.incrementAndGet();
   }
   
-  synchronized public int getCurrentInvocationCount() {
-    return m_currentInvocationCount;
+  public int getCurrentInvocationCount() {
+    return m_currentInvocationCount.get();
   }
 
   public void setParameterInvocationCount(int n) {
@@ -579,5 +583,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   
   public int getParameterInvocationCount() {
     return m_parameterInvocationCount;
-  }
+  }  
+  
+  public abstract ITestNGMethod clone();
 }

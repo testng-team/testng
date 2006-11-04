@@ -1,6 +1,7 @@
 package org.testng;
 
 import org.testng.internal.ConfigurationMethod;
+import org.testng.internal.NoOpTestClass;
 import org.testng.internal.RunInfo;
 import org.testng.internal.TestNGMethod;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -20,37 +21,19 @@ import java.util.Map;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
-public class TestClass implements ITestClass {
+public class TestClass extends NoOpTestClass implements ITestClass {
 	/* generated */
 	private static final long serialVersionUID = -8077917128278361294L;
-private IClass m_iClass = null;
-  private Class m_testClass = null;
   transient private IAnnotationFinder m_annotationFinder = null;
-  // Information about this test run
-  private String m_testName = null;
-  
   // The Strategy used to locate test methods (TestNG, JUnit, etc...)
   transient private ITestMethodFinder m_testMethodFinder = null;
-  
-  // Test methods
-  private ITestNGMethod[] m_beforeClassMethods = null;
-  private ITestNGMethod[] m_beforeTestMethods = null;
-  private ITestNGMethod[] m_testMethods = null;
-  private ITestNGMethod[] m_afterTestMethods = null;
-  private ITestNGMethod[] m_afterClassMethods = null;
-  private ITestNGMethod[] m_beforeSuiteMethods = null;
-  private ITestNGMethod[] m_afterSuiteMethods = null;
-  private ITestNGMethod[] m_beforeTestConfMethods = null;
-  private ITestNGMethod[] m_afterTestConfMethods = null;
-  private ITestNGMethod[] m_beforeGroupsMethods = null;
-  private ITestNGMethod[] m_afterGroupsMethods = null;
-  
-  transient private Map<Class, Class> m_testClasses = new HashMap<Class, Class>();
-  transient private Map<Class, Object[]> m_instanceMap = new HashMap<Class, Object[]>();
-  
-  private RunInfo m_runInfo = null;
 
+  transient protected Map<Class, Class> m_testClasses = new HashMap<Class, Class>();
+  transient protected Map<Class, Object[]> m_instanceMap = new HashMap<Class, Object[]>();
+  
+  private IClass m_iClass = null;
   private TestRunner m_testRunner = null;
+  private RunInfo m_runInfo = null;
   
   public TestClass(IClass cls, 
                    String testName,
@@ -225,17 +208,9 @@ private IClass m_iClass = null;
     System.out.println("[TestClass] " + s);
   }
 
-  public String getName() {
-    return m_testClass.getName();
-  }
-  
-  public Class getRealClass() {
-    return m_testClass;
-  }
-  
-  public Class[] getTestClasses() {
-    return m_testClasses.keySet().toArray(new Class[m_testClasses.size()]);
-  }
+//  public Class[] getTestClasses() {
+//    return m_testClasses.keySet().toArray(new Class[m_testClasses.size()]);
+//  }
   
   public void dump() {
     ppp("\n======\nTESTCLASS: " + m_testClass.getName());
@@ -257,70 +232,9 @@ private IClass m_iClass = null;
     ppp("\n======\n");
   }
   
-  /**
-   * @return Returns the afterClassMethods.
-   */
-  public ITestNGMethod[] getAfterClassMethods() {
-    return m_afterClassMethods;
-  }
-  /**
-   * @return Returns the afterTestMethods.
-   */
-  public ITestNGMethod[] getAfterTestMethods() {
-    return m_afterTestMethods;
-  }
-  /**
-   * @return Returns the beforeClassMethods.
-   */
-  public ITestNGMethod[] getBeforeClassMethods() {
-    return m_beforeClassMethods;
-  }
-  /**
-   * @return Returns the beforeTestMethods.
-   */
-  public ITestNGMethod[] getBeforeTestMethods() {
-    return m_beforeTestMethods;
-  }
-  /**
-   * @return Returns the testMethods.
-   */
-  public ITestNGMethod[] getTestMethods() {
-    return m_testMethods;
-  }
-  
-  public ITestNGMethod[] getBeforeSuiteMethods() {
-    return m_beforeSuiteMethods;
-  }
-  
-  public ITestNGMethod[] getAfterSuiteMethods() {
-    return m_afterSuiteMethods;
-  }
-
-  public ITestNGMethod[] getBeforeTestConfigurationMethods() {
-    return m_beforeTestConfMethods;
-  }
-
-  public ITestNGMethod[] getAfterTestConfigurationMethods() {
-    return m_afterTestConfMethods;
-  }
-  
-  /**
-   * @return all @Configuration methods that should be invoked before certain groups
-   */
-  public ITestNGMethod[] getBeforeGroupsMethods() {
-    return m_beforeGroupsMethods;
-  }
-
-  /**
-   * @return all @Configuration methods that should be invoked after certain groups
-   */
-  public ITestNGMethod[] getAfterGroupsMethods() {
-    return m_afterGroupsMethods;    
-  }
-
-  
   @Override
   public String toString() {
     return "[TestClass " + m_testClass + "]";
   }
+  
 }

@@ -12,8 +12,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.testng.IHookCallBack;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
+import org.testng.Reporter;
 import org.testng.TestNGException;
 import org.testng.TestRunner;
 import org.testng.internal.annotations.AnnotationHelper;
@@ -23,6 +26,13 @@ import org.testng.internal.annotations.IConfiguration;
 import org.testng.internal.annotations.IExpectedExceptions;
 import org.testng.internal.annotations.ITest;
 import org.testng.internal.annotations.ITestOrConfiguration;
+import org.testng.internal.thread.ICountDown;
+import org.testng.internal.thread.IExecutor;
+import org.testng.internal.thread.IFutureResult;
+import org.testng.internal.thread.IThreadFactory;
+import org.testng.internal.thread.ThreadExecutionException;
+import org.testng.internal.thread.ThreadTimeoutException;
+import org.testng.internal.thread.ThreadUtil;
 
 /**
  * Collection of helper methods to help sort and arrange methods.
@@ -600,8 +610,7 @@ public class MethodHelper {
    * @param allTestMethods
    * @return A sorted array containing all the methods 'method' depends on
    */
-  public static List<ITestNGMethod> getMethodsDependedUpon(
-      ITestNGMethod method, ITestNGMethod[] methods) {
+  public static List<ITestNGMethod> getMethodsDependedUpon(ITestNGMethod method, ITestNGMethod[] methods) {
     List<ITestNGMethod> parallelList = new ArrayList<ITestNGMethod>();
     List<ITestNGMethod> sequentialList = new ArrayList<ITestNGMethod>();
     Graph g = topologicalSort(methods, sequentialList, parallelList);
@@ -636,9 +645,8 @@ public class MethodHelper {
     return result;
   }
 
-  public static Iterator<Object[]> invokeDataProvider(Object instance, 
-      Method dataProvider, ITestNGMethod method)
-   {
+  public static Iterator<Object[]> invokeDataProvider(Object instance, Method dataProvider, ITestNGMethod method)
+  {
     Iterator<Object[]> result = null;
     Method testMethod = method.getMethod();
 
@@ -677,9 +685,6 @@ public class MethodHelper {
             + returnType);
       }
     }
-//    catch (InstantiationException e) {
-//      throw new TestNGException(e);
-//    }
     catch (InvocationTargetException e) {
       throw new TestNGException(e);
     }
@@ -701,6 +706,88 @@ public class MethodHelper {
     }
     
     return result != null ? calculateMethodCanonicalName(result) : null;
+  }
+
+  /**
+   * Invokes the <code>run</code> method of the <code>IHookable</code>.
+   * 
+   * @param instance the instance to invoke the method in
+   * @param parameters the parameters to be passed to <code>IHookCallBack</code>
+   * @param testClass the test class
+   * @param thisMethod the method to be invoked through the <code>IHookCallBack</code>
+   * @param testResult the current <code>ITestResult</code> passed to <code>IHookable.run</code>
+   * @throws NoSuchMethodException
+   * @throws IllegalAccessException
+   * @throws InvocationTargetException
+   * @throws Throwable thrown if the reflective call to <tt>thisMethod</code> results in an exception
+   */
+  public static void invokeHookable(final Object instance, 
+                                    final Object[] parameters, 
+                                    ITestClass testClass, 
+                                    final Method thisMethod, 
+                                    TestResult testResult) 
+  throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, Throwable 
+  {
+    Method runMethod = testClass.getRealClass().getMethod("run", 
+        new Class[] { IHookCallBack.class, ITestResult.class });
+    final Throwable[] error = new Throwable[1];
+    
+    IHookCallBack callback = new IHookCallBack() {
+      public void runTestMethod(ITestResult tr) {
+        try {
+          invokeMethod(thisMethod, instance, parameters);
+         }
+         catch(Throwable t) {
+           error[0] = t;
+         }
+       }
+    };
+    runMethod.invoke(instance, new Object[]{callback, testResult});
+    if (error[0] != null) {
+      throw error[0];
+    }
+  }
+
+  /**
+   * Invokes a method on a separate thread in order to allow us to timeout the invocation.
+   * It uses as implementation an <code>Executor</code> and a <code>CountDownLatch</code>.
+   * @param tm the 
+   * @param instance
+   * @param parameterValues
+   * @param testResult
+   * @throws InterruptedException
+   * @throws ThreadExecutionException
+   */
+  public static void invokeWithTimeout(ITestNGMethod tm, Object instance, Object[] parameterValues, ITestResult testResult) 
+  throws InterruptedException, ThreadExecutionException {
+    ICountDown done= ThreadUtil.createCountDown(1);
+    IThreadFactory factory= ThreadUtil.createFactory(tm.getMethod().getName());
+    IExecutor exec= ThreadUtil.createExecutor(1, factory);
+  
+    InvokeMethodRunnable imr = new InvokeMethodRunnable(tm, instance, parameterValues, done);
+    IFutureResult future= exec.submitRunnable(imr);
+    exec.shutdown();
+    boolean finished= exec.awaitTermination(tm.getTimeOut());
+  
+    if(!finished) {
+      exec.stopNow();
+      testResult.setThrowable(new ThreadTimeoutException("Method "
+                                                  + tm.getMethod()
+                                                  + " didn't finish within the time-out "
+                                                  + tm.getTimeOut()));
+      testResult.setStatus(ITestResult.FAILURE);
+    }
+    else {
+      Utils.log("Invoker " + Thread.currentThread().hashCode(), 3, 
+          "Method " + tm.getMethod() + " completed within the time-out " + tm.getTimeOut());
+      
+      // We don't need the result from the future but invoking get() on it
+      // will trigger the exception that was thrown, if any
+      future.get();
+      done.await();
+  
+      testResult.setStatus(ITestResult.SUCCESS); // if no exception till here than SUCCESS
+    }
   }
 }
 

@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
  *
  * @author Cedric Beust, May 3, 2004
  */
-public interface ITestNGMethod extends Comparable, Serializable {
+public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
 
   /**
    * @return The real class on which this method was declared
@@ -124,9 +124,19 @@ public interface ITestNGMethod extends Comparable, Serializable {
    */
   boolean isAfterSuiteConfiguration();
 
+  /**
+   * @return <tt>true</tt> if this method is a @BeforeTest (@Configuration beforeTest=true)
+   */
   boolean isBeforeTestConfiguration();
 
+  /**
+   * @return <tt>true</tt> if this method is an @AfterTest (@Configuration afterTest=true)
+   */
   boolean isAfterTestConfiguration();
+
+  boolean isBeforeGroupsConfiguration();
+
+  boolean isAfterGroupsConfiguration();
 
   /**
    * @return The timeout in milliseconds.
@@ -138,6 +148,8 @@ public interface ITestNGMethod extends Comparable, Serializable {
    */
   int getInvocationCount();
 
+  void setInvocationCount(int count);
+  
   /**
    * @return the success percentage for this method (between 0 and 100).
    */
@@ -146,9 +158,9 @@ public interface ITestNGMethod extends Comparable, Serializable {
   /**
    * @return The id of the thread this method was run in.
    */
-  long getId();
+  String getId();
 
-  void setId(long id);
+  void setId(String id);
 
   long getDate();
 
@@ -164,17 +176,19 @@ public interface ITestNGMethod extends Comparable, Serializable {
    */
   boolean isAlwaysRun();
 
+  /**
+   * @return the number of threads to be used when invoking the method on parallel
+   */
   int getThreadPoolSize();
 
+  void setThreadPoolSize(int threadPoolSize);
+  
   public String getDescription();
-
-  public boolean isBeforeGroupsConfiguration();
-
-  public boolean isAfterGroupsConfiguration();
 
   public void incrementCurrentInvocationCount();
   public int getCurrentInvocationCount();
   public void setParameterInvocationCount(int n);
   public int getParameterInvocationCount();
 
+  public ITestNGMethod clone();
 }

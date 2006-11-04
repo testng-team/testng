@@ -3,6 +3,7 @@ package org.testng.internal;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
@@ -55,5 +56,9 @@ public class FactoryMethod extends BaseTestMethod {
     }
     
     return result;
+  }
+  
+  public ITestNGMethod clone() {
+    throw new IllegalStateException("clone is not supported for FactoryMethod"); 
   }
 }
