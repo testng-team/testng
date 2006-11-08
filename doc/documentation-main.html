@@ -97,6 +97,8 @@ google_ad_channel ="5560744946";
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#beanshell">5.13 - BeanShell and advanced group selection</a><br>
 
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#annotationtransformers">5.14 - Annotation transformers</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#jdk-14-migration">5.15 - Migrating to JDK annotations from javadoc annotations</a>
+<br>
 
 
 &nbsp; <a class="summary" href="#test-results">6 - Test results</a>
@@ -688,7 +690,7 @@ Here are the properties that TestNG understands:
     <td>A semi-colon separated series of directories that contain your test classes.</td>
     <td>If this property is set, TestNG will use it to look for your test classes instead of the class path.  This is convenient if you are using the <tt>package</tt> tag in your XML file and you have a lot of classes in your classpath, most of them not being test classes.
     </tr>
-</table
+</table>
 
 <br>
 
@@ -1380,8 +1382,8 @@ public class SimpleTest {
 <p>The rules for the JavaDoc syntax are pretty straightforward and the only 
 difference with JDK 1.5 annotations is that arrays of strings should be 
 specified as a single, comma or space-separated string.&nbsp; Although double quotes 
-around values are optional, I recommend using them anyway so that future 
-migration to JDK 1.5 will be made easier.</p><p>You will also need to specify the <tt>sourcedir</tt> attribute in the <tt>&lt;testng&gt;</tt> ant 
+around values are optional, I recommend using them anyway so that <a href="#jdk-14-migration">future 
+migration to JDK 1.5</a> will be made easier.</p><p>You will also need to specify the <tt>sourcedir</tt> attribute in the <tt>&lt;testng&gt;</tt> ant 
 task (or <tt>-sourcedir</tt> on the command line) so that TestNG can find the sources of your test files in order to parse 
 the JavaDoc annotations.</p><p>Here is a table comparing how the syntax varies for JDK 1.4 and JDK 5 
 annotations:</p><table border="1" width="100%" id="table5"><th>JDK 5</th><th>JDK 1.4</th><tr>
@@ -1531,7 +1533,6 @@ You might want to surround your expression with a <tt>CDATA</tt> declaration (as
 </li>
 </ul>
 
-
 <!-------------------------------------
   ANNOTATION TRANSFORMERS
  ------------------------------------>
@@ -1604,6 +1605,25 @@ For example, here is how you would override the attribute <tt>invocationCount</t
     }
   }
 </pre>
+
+<!-------------------------------------
+  MIGRATION TO JDK ANNOTATIONS
+ ------------------------------------>
+	
+<h4>
+<a name="jdk-14-migration">5.15 - Migrating to JDK annotations from javadoc annotations</a>
+</h4>
+
+
+<p>If you have started using javadoc annotations in a project but later wish to convert to JDK annotations, you will need to convert all the old-style annotations into new-style ones.</p>
+<p>TestNG provides a utility to save you time in what could otherwise be quite a labour-intensive operation</p>
+<p>
+<pre class="code">
+java org.testng.AnnotationConverter -srcdir <i>directory</i> [-overwrite|-d <i>destdir</i>] [-quiet]
+</pre>
+will convert source files from one format to the other - run the command with no arguments for a description of what the parameters do.
+</p>
+<p>Note that the destination files will not be very pretty and should be checked to confirm correctness. It is important to be using a source control system so you can undo the changes if you don't like them! The converter also assumes that you have used the syntactic conventions recommended <a href="#jdk-14">above.</a></p>
 
 <!------------------------------------
   TEST SUCCESS
