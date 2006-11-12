@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.testng.TestNG;
+import org.testng.internal.Utils;
 import org.testng.internal.version.VersionInfo;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -64,16 +64,13 @@ public class TestNGContentHandler extends DefaultHandler {
    *      java.lang.String)
    */
   @Override
-  public InputSource resolveEntity(String systemId, String publicId)
-      throws IOException, SAXException {
+  public InputSource resolveEntity(String systemId, String publicId) throws IOException, SAXException {
     InputSource result = null;
     if (Parser.DEPRECATED_TESTNG_DTD_URL.equals(publicId)
         || Parser.TESTNG_DTD_URL.equals(publicId)) {
-      InputStream is = getClass().getClassLoader().getResourceAsStream(
-          Parser.TESTNG_DTD);
+      InputStream is = getClass().getClassLoader().getResourceAsStream(Parser.TESTNG_DTD);
       if (null == is) {
-        is = Thread.currentThread().getContextClassLoader()
-            .getResourceAsStream(Parser.TESTNG_DTD);
+        is = Thread.currentThread().getContextClassLoader().getResourceAsStream(Parser.TESTNG_DTD);
         if (null == is) {
           System.out.println("WARNING: couldn't find in classpath " + publicId
               + "\n" + "Fetching it from the Web site.");
@@ -124,7 +121,16 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       String parallel = attributes.getValue("parallel");
       if (null != parallel) {
-        m_currentSuite.setParallel(parallel);
+        if(XmlSuite.PARALLEL_METHODS.equals(parallel)
+            || XmlSuite.PARALLEL_TESTS.equals(parallel)
+            || XmlSuite.PARALLEL_NONE.equals(parallel)
+            || "true".equals(parallel)
+            || "false".equals(parallel)) {
+          m_currentSuite.setParallel(parallel);
+        }
+        else {
+          Utils.log("Parser", 1, "[WARN] Unknown value of attribute 'parallel' at suite level: '" + parallel + "'.");
+        }
       }
       String threadCount = attributes.getValue("thread-count");
       if (null != threadCount) {
@@ -134,12 +140,12 @@ public class TestNGContentHandler extends DefaultHandler {
       if (null != annotations) {
         m_currentSuite.setAnnotations(annotations);
       }
+      else if (VersionInfo.IS_JDK14) {
+        m_currentSuite.setAnnotations(XmlSuite.JAVADOC_ANNOTATION_TYPE);
+      }
       String timeOut = attributes.getValue("time-out");
       if (null != timeOut) {
         m_currentSuite.setTimeOut(timeOut);
-      }
-      if (VersionInfo.IS_JDK14) {
-        m_currentSuite.setAnnotations(XmlSuite.JAVADOC_ANNOTATION_TYPE);
       }
     }
     else {
@@ -208,7 +214,15 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       String parallel = attributes.getValue("parallel");
       if (null != parallel) {
-        m_currentTest.setParallel(parallel);
+        if(XmlSuite.PARALLEL_METHODS.equals(parallel)
+            || XmlSuite.PARALLEL_NONE.equals(parallel)
+            || "true".equals(parallel)
+            || "false".equals(parallel)) {
+          m_currentTest.setParallel(parallel);
+        }
+        else {
+          Utils.log("Parser", 1, "[WARN] Unknown value of attribute 'parallel' for test '" + name + "': '" + parallel + "'");
+        }
       }
       String annotations = attributes.getValue("annotations");
       if (null != annotations) {
@@ -343,8 +357,7 @@ public class TestNGContentHandler extends DefaultHandler {
    * the code is inlined below in the startElement() method.
    */
   @Override
-  public void startElement(String uri, String localName, String qName,
-      Attributes attributes) throws SAXException {
+  public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
     String name = attributes.getValue("name");
 
     // ppp("START ELEMENT uri:" + uri + " sName:" + localName + " qName:" + qName +
@@ -442,8 +455,7 @@ public class TestNGContentHandler extends DefaultHandler {
   }
 
   @Override
-  public void endElement(String uri, String localName, String qName)
-      throws SAXException {
+  public void endElement(String uri, String localName, String qName) throws SAXException {
     if ("suite".equals(qName)) {
       xmlSuite(false, null);
     }

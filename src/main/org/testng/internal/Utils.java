@@ -473,13 +473,12 @@ public final class Utils {
       }
     }
     catch (TestNGException ex) {
-
       // We need to pass this along
       throw ex;
     }
     catch (InvocationTargetException ex) {
-      ppp("FAILED TO CREATE CLASS " + declaringClass);
-      throw new TestNGException(ex);
+//      ppp("FAILED TO CREATE CLASS " + declaringClass);
+      throw new TestNGException("Cannot instantiate class " + declaringClass.getName(), ex);
 //      result = tryOtherConstructor(declaringClass);
     }
     catch (IllegalAccessException ex) {
@@ -491,10 +490,9 @@ public final class Utils {
     catch (InstantiationException ex) {
       result = tryOtherConstructor(declaringClass);
     }
-    catch (Exception ex) {
-
+    catch (Throwable cause) {
       // Something else went wrong when running the constructor
-      throw new TestNGException(ex);
+      throw new TestNGException("An error occured while instantiating class " + declaringClass.getName(), cause);
     }
 
     return result;

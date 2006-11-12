@@ -50,7 +50,7 @@ public final class AnnotationTypeEnum {
    */
   public static AnnotationTypeEnum valueOf(String pAnnotationType) {
     if (pAnnotationType == null) {
-      throw new IllegalArgumentException("pAnnotationType is null");
+      throw new IllegalArgumentException("annotation is null");
     }
     
     AnnotationTypeEnum annotationType;
@@ -64,29 +64,28 @@ public final class AnnotationTypeEnum {
         || pAnnotationType.toLowerCase().equals(JAVADOC_ANNOTATION_TYPE.toLowerCase())) {
       // For backward compatibility only
       annotationType = JAVADOC;
-      log(pAnnotationType, annotationType);
+      log(2, pAnnotationType, annotationType);
     }
     else if ("1.5".equals(pAnnotationType) 
         || pAnnotationType.toLowerCase().equals(JDK_ANNOTATION_TYPE.toLowerCase())) {
       // For backward compatibility only
       annotationType = JDK;
-      log(pAnnotationType, annotationType);
+      log(2, pAnnotationType, annotationType);
     }
     else if ("jdk1.5".equals(pAnnotationType.toLowerCase()) || "jdk5".equals(pAnnotationType.toLowerCase())) {
       // For backward compatibility only
       annotationType = JDK;
-      log(pAnnotationType, annotationType);
+      log(2, pAnnotationType, annotationType);
     }
     else {
       // For backward compatibility only
       // TODO should we make this an error?
       annotationType = VersionInfo.getDefaultAnnotationType();
-      log(pAnnotationType, annotationType);
+      log(1, pAnnotationType, annotationType);
     }
     
     if (VersionInfo.IS_JDK14 && annotationType == JDK) {
-      throw new IllegalArgumentException(
-          "Cannot specify \"" + pAnnotationType + "\" with 1.4 version of TestNG");
+      throw new IllegalArgumentException("Cannot specify \"" + pAnnotationType + "\" with 1.4 version of TestNG");
     }
     return annotationType;
   }
@@ -111,11 +110,10 @@ public final class AnnotationTypeEnum {
   }
 
   
-  private static void log(String pAnnotationType, AnnotationTypeEnum pDefault) {
-    String msg = "Illegal pAnnotationType type \"" + pAnnotationType 
-      + "\" defaulting to \"" + pDefault + "\"";
+  private static void log(int level, String pAnnotationType, AnnotationTypeEnum pDefault) {
+    final String msg = "Illegal annotation type '" + pAnnotationType + "' defaulting to '" + pDefault + "'";
     LOGGER.info(msg);
-    Utils.log("", 2, msg);
+    Utils.log("AnnotationTypeEnum", level, "[WARN] " + msg);
   }
   
   private AnnotationTypeEnum(String pName) {
