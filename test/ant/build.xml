@@ -8,10 +8,11 @@
   	classpath="${jdk15.testng.jar}" />
 
   <target name="all">
-  	<mkdir dir="build" />
+    <delete failonerror="false" dir="${this.directory}/build" />
+  	<mkdir dir="${this.directory}/build" />
   	
   	<javac classpath="${jdk15.testng.jar}"
-  		  destdir="build" srcdir="${this.directory}" includes="*.java" />
+  		  destdir="${this.directory}/build" srcdir="${this.directory}" includes="*.java" />
 
 <!--
     <testng classpath="build;../../testng-5.2beta-jdk15.jar"
@@ -23,7 +24,7 @@
 	<delete failonerror="false">
 	<fileset dir="${test-output}" includes="**"/></delete>
   	
-    <testng classpath="build;${jdk15.testng.jar}"
+    <testng classpath="${this.directory}/build;${jdk15.testng.jar}"
             outputdir="${test-output}"
   	    parallel="methods"
   	    threadcount="5"
@@ -41,7 +42,7 @@
   	<fail unless="test.exists" 
   		message="The appropriately named output should have been created"/>
   	
-    <testng classpath="build;${jdk15.testng.jar}"
+    <testng classpath="${this.directory}/build;${jdk15.testng.jar}"
             outputdir="${test-output}"
 	   	listeners = "org.testng.reporters.FailedReporter, org.testng.reporters.DotTestListener"
     	haltonfailure="true"
