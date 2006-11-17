@@ -13,7 +13,7 @@
    <target name="all" depends="prepare,compile,run,reports" />
 
     <path id="compile.cp">
-       <pathelement location="${jdk14.testng.jar}" />
+       <pathelement location="${build.jdk14.dir}" />
        <fileset dir="${lib.dir}">
           <include name="junit.jar" />
           <include name="${qdox.jar}" />
@@ -76,7 +76,7 @@ JUNIT.REPORT  =${junit.report.dir}
    	
      <taskdef name="testng-14" 
           classname="org.testng.TestNGAntTask"
-          classpath="${jdk14.testng.jar}"/>
+          classpath="${build.jdk14.dir}"/>
   
      <testng-14 classpathref="run.cp" 
      		 outputDir="${testng.report.dir}" 

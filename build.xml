@@ -73,10 +73,10 @@
 
 
   <target name="dev"
-          depends="prepare,validate,copy-resources,build,dist-jar,test-15,test-14,test-ant" />
+          depends="prepare,validate,copy-resources,build,dist-jar,test-15,test-15-jdk14,test-14,test-ant" />
 
   <target name="all"
-          depends="prepare,validate,copy-resources,build,dist-jar,test-15,test-14,test-ant,javadocs,dist" />
+          depends="prepare,validate,copy-resources,build,dist-jar,test-15,test-15-jdk14,test-14,test-ant,javadocs,dist" />
 
   <target name="build" depends="compile-14,compile-15,dist-jar" />
 
@@ -146,25 +146,29 @@
     <ant inheritall="no" antfile="examples/build.xml" />
   </target>
 
-  <target name="test-15" depends="test-15-v4">
+  <target name="test-15" depends="compile-15" description="runs all JDK5 tests with JDK5 distro">
   	<ant inheritall="no" antfile="test/build.xml" />
-    <ant inheritall="no" antfile="test/build.xml" target="run-jdk14" />
+  	<ant inheritall="no" antfile="test/v4/build.xml" />
   </target>
-  
-  <target name="test-15-v4">
-    <ant inheritall="no" antfile="test/v4/build.xml" />
+	
+  <target name="test-15-jdk14" depends="compile-15,compile-14" description="runs javadoc-tests with JDK5 distro">
+		<ant inheritall="no" antfile="test-14/build.xml" target="compile" />
+		<ant inheritall="no" antfile="test/build.xml" target="run-jdk14" />
+		<ant inheritall="no" antfile="test-14/v4/build.xml" target="compile" />
     <ant inheritall="no" antfile="test/v4/build.xml" target="run-jdk14" />
   </target>
-
-  <target name="tmp">
-    <ant inheritall="no" antfile="test/v4/build.xml" target="run-jdk14" />
-  </target>
-
-  <target name="test-14">
+	
+  <target name="test-14" depends="compile-14" description="runs javadoc-based tests with JDK1.4 distro">
     <ant inheritall="no" antfile="test-14/build.xml" />
     <ant inheritall="no" antfile="test-14/v4/build.xml" />
   </target>
-	
+
+	<!--
+  <target name="tmp">
+    <ant inheritall="no" antfile="test/v4/build.xml" target="run-jdk14" />
+  </target>
+  -->
+
   <target name="test-ant">
     <echo message="                                 -- Testing ant testng task functionality --" />
   	<ant inheritall="no" antfile="test/ant/build.xml" />
