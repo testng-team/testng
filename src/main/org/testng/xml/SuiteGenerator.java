@@ -16,6 +16,43 @@ public class SuiteGenerator {
     return new LaunchSuite.ExistingSuite(xmlSuitePath);
   }
 
+  public static LaunchSuite createSuite(final String projectName,
+                                                  final Collection<String> packageNames,
+                                                  final Map<String, Collection<String>> classAndMethodNames,
+                                                  final Collection<String> groupNames,
+                                                  final Map<String, String> parameters,
+                                                  final String annotationType,
+                                                  final int logLevel) {
+    if((null != groupNames) && !groupNames.isEmpty()) {
+      return new LaunchSuite.ClassListSuite(projectName,
+                                            packageNames,
+                                            classAndMethodNames != null ? classAndMethodNames.keySet() : null,
+                                            groupNames,
+                                            parameters,
+                                            annotationType,
+                                            logLevel);
+    }
+    else if(packageNames != null && packageNames.size() > 0) {
+      return new LaunchSuite.ClassListSuite(projectName,
+                                            packageNames,
+                                            classAndMethodNames != null ? classAndMethodNames.keySet() : null,
+                                            groupNames,
+                                            parameters,
+                                            annotationType,
+                                            logLevel);
+    }
+    else {
+      return new LaunchSuite.ClassesAndMethodsSuite(projectName,
+                                          classAndMethodNames,
+                                          parameters,
+                                          annotationType,
+                                          logLevel);
+    }
+  }
+
+  /**
+   * @deprecated use {@link #createSuite(String, java.util.Collection, java.util.Map, java.util.Collection, java.util.Map, String, int)} instead.
+   */
   public static LaunchSuite createCustomizedSuite(final String projectName,
                                                   final Collection<String> packageNames,
                                                   final Collection<String> classNames,

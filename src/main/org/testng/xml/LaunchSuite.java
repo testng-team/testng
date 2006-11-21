@@ -278,6 +278,63 @@ public abstract class LaunchSuite {
     }
   }
 
+  static class ClassesAndMethodsSuite extends CustomizedSuite {
+    protected Map<String, Collection<String>> m_classes;
+    protected int m_logLevel;
+    
+    ClassesAndMethodsSuite(final String projectName,
+        final Map<String, Collection<String>> classes,
+        final Map<String, String> parameters,
+        final String annotationType,
+        final int logLevel) {
+      super(projectName, "Custom suite", parameters, annotationType);
+      m_classes = classes;
+      m_logLevel = logLevel;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void initContentBuffer(XMLStringBuffer suiteBuffer) {
+      Properties testAttrs = new Properties();
+      testAttrs.setProperty("name", m_projectName);
+      if (m_annotationType != null) {
+        testAttrs.setProperty("annotations", m_annotationType.getName());
+      }
+      testAttrs.setProperty("verbose", String.valueOf(m_logLevel));
+      
+      suiteBuffer.push("test", testAttrs);
+      
+      suiteBuffer.push("classes");
+      
+      for(Map.Entry<String, Collection<String>> entry : m_classes.entrySet()) {
+        Properties classAttrs = new Properties();
+        classAttrs.setProperty("name", entry.getKey());
+        
+        if ((null != entry.getValue()) && (entry.getValue().size() > 0)) {
+          suiteBuffer.push("class", classAttrs);
+          
+          suiteBuffer.push("methods");
+          
+          for (String methodName : entry.getValue()) {
+            Properties methodAttrs = new Properties();
+            methodAttrs.setProperty("name", methodName);
+            suiteBuffer.addEmptyElement("include", methodAttrs);
+          }
+          
+          suiteBuffer.pop("methods");
+          suiteBuffer.pop("class");
+        }
+        else {
+          suiteBuffer.addEmptyElement("class", classAttrs);
+        }
+      }
+      suiteBuffer.pop("classes");
+      suiteBuffer.pop("test");
+    }
+  }
+  
   /**
    * <code>ClassListSuite</code> TODO cquezel JavaDoc.
    */
