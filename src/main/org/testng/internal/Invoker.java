@@ -860,7 +860,7 @@ public class Invoker implements IInvoker {
       }
     }
     
-    ThreadUtil.execute(workers, threadPoolSize, maxTimeOut);
+    ThreadUtil.execute(workers, threadPoolSize, maxTimeOut, true);
 
     //
     // Collect all the TestResults

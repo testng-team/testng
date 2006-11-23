@@ -297,7 +297,7 @@ public class SuiteRunner implements ISuite, Serializable {
       tasks.add(new SuiteWorker(tr));
     }
     
-    ThreadUtil.execute(tasks, m_testRunners.size(), m_suite.getTimeOut(m_suite.getTests().size() * 1000L));
+    ThreadUtil.execute(tasks, m_testRunners.size(), m_suite.getTimeOut(m_suite.getTests().size() * 1000L), false);
   }
 
   private class SuiteWorker implements Runnable {

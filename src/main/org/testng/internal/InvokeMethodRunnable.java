@@ -18,20 +18,14 @@ public class InvokeMethodRunnable implements Runnable {
   private ITestNGMethod m_method = null;
   private Object m_instance = null;
   private Object[] m_parameters = null;
-  private ICountDown m_done = null;
-  private List<String> m_output = new ArrayList<String>();
 
   public InvokeMethodRunnable(ITestNGMethod thisMethod,
                               Object instance,
-                              Object[] parameters,
-                              ICountDown done)
-//                              List<String> output) 
+                              Object[] parameters) 
   {
     m_method = thisMethod;
     m_instance = instance;
     m_parameters = parameters;
-    m_done = done;
-//    m_output = output;
   }
 
   public void run() throws TestNGRuntimeException {
@@ -53,7 +47,6 @@ public class InvokeMethodRunnable implements Runnable {
       }
     }
     finally {
-      m_done.countDown();
       m_method.incrementCurrentInvocationCount();
     }
   }

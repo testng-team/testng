@@ -655,7 +655,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
         }
       }
 
-      ThreadUtil.execute(workers, m_xmlTest.getSuite().getThreadCount(), maxTimeOut);
+      ThreadUtil.execute(workers, m_xmlTest.getSuite().getThreadCount(), maxTimeOut, false);
     }
     else {
       //

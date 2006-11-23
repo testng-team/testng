@@ -875,27 +875,7 @@ public class TestNG {
       }
     }
 
-    //
-    // Launch all the workers
-    //
-    IPooledExecutor executor= ThreadUtil.createPooledExecutor(1);
-    for (Runnable r : workers) {
-      executor.execute(r);
-    }
-
-    //
-    // Wait for completion
-    //
-    executor.shutdown();
-    // TODO(cbeust)
-    // Need to make this configurable
-    long maxTimeOut= 10 * 1000; // 10 minutes
-    try {
-      executor.awaitTermination(maxTimeOut);
-    }
-    catch (InterruptedException e) {
-      e.printStackTrace(System.out);
-    }
+    ThreadUtil.execute(workers, 1, 10 * 1000L, false);
     
     //
     // Run test listeners

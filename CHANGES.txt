@@ -1,6 +1,8 @@
 ===========================================================================
 5.3.1
 
+Added: the load @Tests (invocationCount + threadPoolSize) are triggered simultaneous
+Fixed: reports are correctly displaying the thread info
 Added: @DataProvider name defaults to method name
 Added: support for remote protocol to pass parameter information
 Fixed: TextReporter logs information about the parameters of the test methods

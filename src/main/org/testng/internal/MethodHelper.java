@@ -760,11 +760,11 @@ public class MethodHelper {
    */
   public static void invokeWithTimeout(ITestNGMethod tm, Object instance, Object[] parameterValues, ITestResult testResult) 
   throws InterruptedException, ThreadExecutionException {
-    ICountDown done= ThreadUtil.createCountDown(1);
-    IThreadFactory factory= ThreadUtil.createFactory(tm.getMethod().getName());
-    IExecutor exec= ThreadUtil.createExecutor(1, factory);
+//    ICountDown done= ThreadUtil.createCountDown(1);
+//    IThreadFactory factory= ThreadUtil.createFactory();
+    IExecutor exec= ThreadUtil.createExecutor(1, tm.getMethod().getName());
   
-    InvokeMethodRunnable imr = new InvokeMethodRunnable(tm, instance, parameterValues, done);
+    InvokeMethodRunnable imr = new InvokeMethodRunnable(tm, instance, parameterValues);
     IFutureResult future= exec.submitRunnable(imr);
     exec.shutdown();
     boolean finished= exec.awaitTermination(tm.getTimeOut());
@@ -784,7 +784,7 @@ public class MethodHelper {
       // We don't need the result from the future but invoking get() on it
       // will trigger the exception that was thrown, if any
       future.get();
-      done.await();
+//      done.await();
   
       testResult.setStatus(ITestResult.SUCCESS); // if no exception till here than SUCCESS
     }
