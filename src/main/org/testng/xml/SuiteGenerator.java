@@ -3,6 +3,7 @@ package org.testng.xml;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -12,21 +13,24 @@ import java.util.Map;
  *         Time: 1:12:18 PM
  */
 public class SuiteGenerator {
+  private static final Collection<String> EMPTY_CLASS_LIST= Collections.emptyList();
+  
   public static LaunchSuite createProxiedXmlSuite(final File xmlSuitePath) {
     return new LaunchSuite.ExistingSuite(xmlSuitePath);
   }
 
   public static LaunchSuite createSuite(final String projectName,
-                                                  final Collection<String> packageNames,
-                                                  final Map<String, Collection<String>> classAndMethodNames,
-                                                  final Collection<String> groupNames,
-                                                  final Map<String, String> parameters,
-                                                  final String annotationType,
-                                                  final int logLevel) {
+                                        final Collection<String> packageNames,
+                                        final Map<String, Collection<String>> classAndMethodNames,
+                                        final Collection<String> groupNames,
+                                        final Map<String, String> parameters,
+                                        final String annotationType,
+                                        final int logLevel) {
+    Collection<String> classes= classAndMethodNames != null ? classAndMethodNames.keySet() : EMPTY_CLASS_LIST;
     if((null != groupNames) && !groupNames.isEmpty()) {
       return new LaunchSuite.ClassListSuite(projectName,
                                             packageNames,
-                                            classAndMethodNames != null ? classAndMethodNames.keySet() : null,
+                                            classes,
                                             groupNames,
                                             parameters,
                                             annotationType,
@@ -35,7 +39,7 @@ public class SuiteGenerator {
     else if(packageNames != null && packageNames.size() > 0) {
       return new LaunchSuite.ClassListSuite(projectName,
                                             packageNames,
-                                            classAndMethodNames != null ? classAndMethodNames.keySet() : null,
+                                            classes,
                                             groupNames,
                                             parameters,
                                             annotationType,
@@ -43,10 +47,10 @@ public class SuiteGenerator {
     }
     else {
       return new LaunchSuite.ClassesAndMethodsSuite(projectName,
-                                          classAndMethodNames,
-                                          parameters,
-                                          annotationType,
-                                          logLevel);
+                                                    classAndMethodNames,
+                                                    parameters,
+                                                    annotationType,
+                                                    logLevel);
     }
   }
 

@@ -91,7 +91,7 @@ TESTNG.REPORT.DIR=${testng.report.dir}
   </target>
 
   <target name="run-jdk14" description="Run tests on javadoc annotations" depends="compile">
-  	<echo message="                                 -- Running JDK 1.5 tests (v4)--"/>
+  	<echo message="                                 -- Running JDK 1.4 tests (v4)--"/>
   	<echo message="                                 -- ${jdk15.testng.jar} --" />
 
   	<testng classpathref="run14.cp"

@@ -49,6 +49,26 @@ public final class AnnotationTypeEnum {
    * specified <code>pAnnotationType</code>. 
    */
   public static AnnotationTypeEnum valueOf(String pAnnotationType) {
+    return valueOf(pAnnotationType, true);
+  }
+
+  /**
+   * Returns an <code>AnnotationTypeEnum</code> object holding the value of the 
+   * specified <code>pAnnotationType</code>. This method throws an IllegalArgumentException
+   * if pAnnotationType is an illegal value or if this is version 14 and JDK5 annotations
+   * are specified.
+   * 
+   * @param pAnnotationType the annotation type. This is one of the two constants 
+   * (AnnotationTypeEnum.JAVADOC_ANNOTATION_TYPE or AnnotationTypeEnum.JDK5_ANNOTATION_TYPE).
+   * For backward compatibility we accept "1.4", "1.5". Any other value will default to 
+   * AnnotationTypeEnum.JDK5 if this is the 1.5 version of TestNG or
+   * AnnotationTypeEnum.JAVADOC if this is the 1.4 version of TestNG. 
+   * @param strict flag indicating if compatibility check should be performed
+   * 
+   * @return an <code>AnnotationTypeEnum</code> object holding the value of the 
+   * specified <code>pAnnotationType</code>. 
+   */
+  public static AnnotationTypeEnum valueOf(String pAnnotationType, boolean strict) {
     if (pAnnotationType == null) {
       throw new IllegalArgumentException("annotation is null");
     }
@@ -84,12 +104,15 @@ public final class AnnotationTypeEnum {
       log(1, pAnnotationType, annotationType);
     }
     
-    if (VersionInfo.IS_JDK14 && annotationType == JDK) {
-      throw new IllegalArgumentException("Cannot specify \"" + pAnnotationType + "\" with 1.4 version of TestNG");
+    if(strict) {
+      if (VersionInfo.IS_JDK14 && annotationType == JDK) {
+        throw new IllegalArgumentException("Cannot specify \"" + pAnnotationType + "\" with 1.4 version of TestNG");
+      }
     }
+    
     return annotationType;
   }
-
+  
   /**
    * Returns a human readable representation of the enum, suitable to be converted
    * back to the enumeration by the valueOf method.

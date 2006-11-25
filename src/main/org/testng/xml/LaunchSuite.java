@@ -114,9 +114,7 @@ public abstract class LaunchSuite {
       m_projectName = projectName;
       m_suiteName = className;
       m_parameters = parameters;
-      
-      // TODO CQ check what happens when this throws.
-      m_annotationType = annotationType == null ? null : AnnotationTypeEnum.valueOf(annotationType);
+      m_annotationType = annotationType == null ? null : AnnotationTypeEnum.valueOf(annotationType, false);
     }
 
     /**
