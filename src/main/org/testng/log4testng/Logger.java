@@ -36,7 +36,7 @@ import org.testng.Assert;
  * # log4testng will log its own behavior (generally used for debugging this package only).
  * log4testng.debug=true
  *
- * # Specifies the root Logger’s logging level. Will log DEBUG level and above
+ * # Specifies the root Loggers logging level. Will log DEBUG level and above
  * log4testng.rootLogger=DEBUG
  *
  * # The org.testng.reporters.EmailableReporter Logger will log TRACE level and above

@@ -11,6 +11,7 @@ Fixed: output of JUnitXMLReporter must be CDATA
 Fixed: XML unsupported annotations/parallel attribute values are reported
 
 Eclipse plug-in
+Fixed: groups with multi-attribute javadoc annotations
 Fixed: consistent behavior for dependsOnMethods
 Fixed: consistent behavior for tests with dependsOnGroups (a warning is emitted)
 Fixed: consistent merge of configuration arguments when an existing launch configuration exists 

@@ -26,7 +26,8 @@ import org.testng.xml.XmlSuite;
  * used to invoke methods.
  * 
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
- * 
+ * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
+ *  
  * @@ANNOTATIONS@@
  */
 public class Parameters {
@@ -251,7 +252,7 @@ public class Parameters {
 
     for (Method m : ClassHelper.getAvailableMethods(cls)) {
       IDataProvider dp = (IDataProvider) finder.findAnnotation(m, IDataProvider.class);
-      if (null != dp && (dp.getName().equals(name) || m.getName().equals(name))) {
+      if (null != dp && (name.equals(dp.getName()) || name.equals(m.getName()))) {
         if (shouldBeStatic && (m.getModifiers() & Modifier.STATIC) == 0) {
           throw new TestNGException("DataProvider should be static: " + m); 
         }
