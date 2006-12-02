@@ -100,17 +100,30 @@ public class TextReporter extends TestListenerAdapter {
     System.out.println(buf);
   }
   
-  private void logResult(String status, String name, String description, String stackTrace, Object[] params, Class[] paramTypes) {
+  private void logResult(String status, String name, 
+          String description, String stackTrace, 
+          Object[] params, Class[] paramTypes) {
     StringBuffer msg= new StringBuffer(name);
 
     if(null != params && params.length > 0) {
       msg.append("(");
-      for(int i= 0; i < params.length; i++) {
-        if(i > 0) msg.append(", ");
-        msg.append(Utils.toString(params[i], paramTypes[i]));
-      }
       
-      msg.append(")");
+      // The error might be a data provider parameter mismatch, so make
+      // a special case here
+      if (params.length != paramTypes.length) {
+        msg.append(name + ": Wrong number of arguments were passed by " +
+                "the Data Provider: found " + params.length + " but " +
+                "expected " + paramTypes.length
+                + ")");
+      }
+      else {
+        for(int i= 0; i < params.length; i++) {
+          if(i > 0) msg.append(", ");
+          msg.append(Utils.toString(params[i], paramTypes[i]));
+        }
+          
+        msg.append(")");
+      }
     }
     if (! Utils.isStringEmpty(description)) {
       msg.append("\n");
