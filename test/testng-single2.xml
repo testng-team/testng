@@ -1,16 +1,31 @@
-<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
   
-<suite name="Single" verbose="3" parallel="false"  >
-  
-  <test name="JUnit" junit="true">
+<suite name="Single" verbose="3" parallel="false"  >  
+  <test name="BeforeGroups-AfterGroups-1" >
     <classes>
-      <class name="test.sample.JUnitSample1" />
-      <class name="test.sample.JUnitSample2" />
-      <!-- <class name="test.sample.AllJUnitTests" /> -->
-      <class name="test.sample.JUnitSample3" />
+      <!--<class name="test.configuration.ConfigurationGroups1SampleTest" />
+      <class name="test.configuration.ConfigurationGroups2SampleTest" />-->
+      <class name="test.configuration.ConfigurationGroups3SampleTest" />
+      <!--
+      <class name="test.configuration.ConfigurationGroups4SampleTest" />
+      <class name="test.configuration.ConfigurationGroups5SampleTest" />
+      <class name="test.configuration.ConfigurationGroups6SampleTest" />
+      <class name="test.configuration.ConfigurationGroups7SampleTest" />
+      -->
     </classes>
   </test>
-
-
+  <!--
+  <test name="BeforeGroups-AfterGroups-2" >
+    <groups>
+      <run>
+        <include name="A" />
+        <include name="B" />
+      </run>
+    </groups>
+    <classes>
+      <class name="test.configuration.ConfigurationGroups8SampleTest" />
+    </classes>
+  </test>
+  -->
 </suite>
 

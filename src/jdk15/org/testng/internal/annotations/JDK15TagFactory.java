@@ -132,10 +132,11 @@ public class JDK15TagFactory {
     }
     else if (annotationClass == IBeforeGroups.class) {
       BeforeGroups bs = (BeforeGroups) a;
+      final String[] groups= bs.value().length > 0 ? bs.value() : bs.groups();
       result = createConfigurationTag(cls, a, 
           false, false,
           false, false, 
-          bs.value(), new String[0], 
+          groups, new String[0], 
           false, false, 
           false, false,
           bs.alwaysRun(),
@@ -145,10 +146,11 @@ public class JDK15TagFactory {
     }
     else if (annotationClass == IAfterGroups.class) {
       AfterGroups bs = (AfterGroups) a;
+      final String[] groups= bs.value().length > 0 ? bs.value() : bs.groups();
       result = createConfigurationTag(cls, a, 
           false, false,
           false, false, 
-          new String[0], bs.value(),
+          new String[0], groups,
           false, false, 
           false, false,
           bs.alwaysRun(),

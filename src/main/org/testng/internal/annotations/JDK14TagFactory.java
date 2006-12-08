@@ -126,8 +126,8 @@ public class JDK14TagFactory {
     boolean enabled = Converter.getBoolean(dt.getNamedParameter("enabled"), result.getEnabled());
     String[] groups = Converter.getStringArray(dt.getNamedParameter("groups"), result.getGroups());
     boolean inheritGroups = Converter.getBoolean(dt.getNamedParameter("inheritGroups"), result.getInheritGroups());
-    String[] beforeGroups = Converter.getStringArray(dt.getNamedParameter("before-groups"), result.getBeforeGroups());
-    String[] afterGroups = Converter.getStringArray(dt.getNamedParameter("after-groups"), result.getAfterGroups());
+    String[] beforeGroups = Converter.getStringArray(dt.getNamedParameter("before-groups"), groups);
+    String[] afterGroups = Converter.getStringArray(dt.getNamedParameter("after-groups"), groups);
 //    String parameters = Converter.getString(dt.getNamedParameter("parameters"), result.getParameters());
 
     if (BEFORE_SUITE.equals(dt.getName())) {

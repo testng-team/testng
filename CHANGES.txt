@@ -1,6 +1,8 @@
 ===========================================================================
 5.4
 
+Added: for @BeforeGroups and @AfterGroups specifying the groups() attribute will auto-include the method
+			 into those groups by default (previously you had to also provide the value() attribute).
 Added: the load @Tests (invocationCount + threadPoolSize) are triggered simultaneous
 Fixed: reports are correctly displaying the thread info
 Added: @DataProvider name defaults to method name
