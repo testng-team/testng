@@ -27,6 +27,11 @@ public class SampleExceptions {
   public void shouldFail2() {
   }
   
+//  @Test(expectedExceptions = NumberFormatException.class)
+//  public void throwWrongException() {
+//      throw new NullPointerException();
+//  }
+  
 //  @Test
 //  @ExpectedExceptions({ FileNotFoundException.class, IOException.class })
 //  public void shouldPass2() throws Exception {

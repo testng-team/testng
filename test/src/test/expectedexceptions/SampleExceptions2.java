@@ -1,6 +1,5 @@
 package test.expectedexceptions;
 
-import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Test;
 
 /**

@@ -26,7 +26,7 @@
       <class name="test.CommandLineTest" ></class>
 -->
     <classes>
-      <class name="test.annotationtransformer.AnnotationTransformerTest" />
+      <class name="test.expectedexceptions.ExpectedExceptionsTest" />
     </classes>
   </test>
 
