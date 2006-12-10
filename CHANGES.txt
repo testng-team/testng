@@ -1,6 +1,7 @@
 ===========================================================================
 5.4
 
+Fixed: Ant task issue with paths containing spaces
 Added: for @BeforeGroups and @AfterGroups specifying the groups() attribute will auto-include the method
 			 into those groups by default (previously you had to also provide the value() attribute).
 Added: the load @Tests (invocationCount + threadPoolSize) are triggered simultaneous

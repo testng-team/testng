@@ -951,7 +951,7 @@ public class TestNGAntTask extends Task {
    *
    */
   private static String doubleQuote(String pCommandLineArg) {
-    if(pCommandLineArg.indexOf(" ") != -1) {
+    if(pCommandLineArg.indexOf(" ") != -1 && !(pCommandLineArg.startsWith("\"") && pCommandLineArg.endsWith("\""))) {
       return "\"" + pCommandLineArg + "\"";
     }
 
