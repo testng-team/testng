@@ -144,9 +144,7 @@ public class MethodHelper {
     List<ITestNGMethod> vResult = new ArrayList<ITestNGMethod>();
     String currentRegexp = null;
     for (String fullyQualifiedRegexp : regexps) {
-//      int ind = fullyQualifiedRegexp.lastIndexOf(".");
-//      String regexp = ind >= 0 ? fullyQualifiedRegexp.substring(ind + 1) : fullyQualifiedRegexp;
-      String regexp = fullyQualifiedRegexp;
+      String regexp = escapeRegexp(fullyQualifiedRegexp);
       boolean foundAtLeastAMethod = false;
       if (regexp != null) {
         currentRegexp = regexp;
@@ -176,6 +174,13 @@ public class MethodHelper {
     return result;
   }
 
+  /**
+   * Escapes $ in regexps as it is not meant for end-line matching, but inner class matches.
+   */
+  private static String escapeRegexp(String regex) {
+    return regex.replace("$", "\\$");
+  }
+  
   /**
    * Read the expected exceptions, if any (need to handle both the old and new
    * syntax

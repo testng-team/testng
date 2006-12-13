@@ -1,6 +1,7 @@
 ===========================================================================
 5.5
 
+Fixed: TESTNG-113 Dependent methods within the same static inner class are not found
 Fixed: TESTNG-125 TestNG failed for test classes under *.java*.* pakages
 
 ===========================================================================
