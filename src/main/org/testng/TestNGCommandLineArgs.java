@@ -584,19 +584,32 @@ public static Map parseCommandLine(final String[] originalArgv) {
    */
   private static Class fileToClass(String file) {
     Class result = null;
-    int classIndex = file.indexOf(".class");
-    if (-1 == classIndex) {
-      classIndex = file.indexOf(".java");
-      if (-1 == classIndex) {
-        // Doesn't end in .java or .class, assume it's a class name
-        result = ClassHelper.forName(file);
+    
+    if(!file.endsWith(".class") && !file.endsWith(".java")) {
+      // Doesn't end in .java or .class, assume it's a class name
+      result = ClassHelper.forName(file);
 
-        if (null == result) {
-          throw new TestNGException("Cannot load class from file: " + file);
-        }
-
-        return result;
+      if (null == result) {
+        throw new TestNGException("Cannot load class from file: " + file);
       }
+
+      return result;
+    }
+    
+    int classIndex = file.lastIndexOf(".class");
+    if (-1 == classIndex) {
+      classIndex = file.lastIndexOf(".java");
+//
+//      if(-1 == classIndex) {
+//        result = ClassHelper.forName(file);
+//  
+//        if (null == result) {
+//          throw new TestNGException("Cannot load class from file: " + file);
+//        }
+//  
+//        return result;
+//      }
+//
     }
 
     // Transforms the file name into a class name.

@@ -1,4 +1,9 @@
 ===========================================================================
+5.5
+
+Fixed: TESTNG-125 TestNG failed for test classes under *.java*.* pakages
+
+===========================================================================
 5.4
 
 Fixed: Ant task issue with paths containing spaces
