@@ -60,6 +60,9 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
     
     for (int i = 0; i < m_dirPaths.length; i++) {
       File dir = new File(m_dirPaths[i]);
+      if(!dir.exists() || dir.isDirectory()) {
+        Utils.log(getClass().getName(), 1, "[WARNING] Invalid source directory " + m_dirPaths[i] + " ignored");
+      }
       DirectoryScanner scanner = new DirectoryScanner(dir);
       scanner.addFilter(new SuffixFilter(".java"));
       scanner.scan(new FileVisitor() {
