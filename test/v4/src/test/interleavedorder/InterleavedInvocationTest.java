@@ -35,17 +35,16 @@ public class InterleavedInvocationTest extends BaseTest {
     final String log= LOG.toString();
     final String clsName= TestChild1.class.getName();
         
-    List<String> expected = new ArrayList<String>();
-    expected.add("beforeTestChild1Class");
-    expected.add("test1");
-    expected.add("test2");    
-    expected.add("afterTestChild1Class");
-    
-    expected.add("beforeTestChild2Class");
-    expected.add("test1");
-    expected.add("test2");    
-    expected.add("afterTestChild2Class");
-    Assert.assertEquals(LOG, expected);
+    Assert.assertEquals(LOG.size(), 8, "invocations");
+    // @Configuration ordering
+    Assert.assertEquals(LOG.get(0), "beforeTestChild1Class");
+    Assert.assertTrue(("test1".equals(LOG.get(1)) && "test2".equals(LOG.get(2)))
+        || ("test2".equals(LOG.get(1)) && "test1".equals(LOG.get(2))), "test methods were not invoked correctly");
+    Assert.assertEquals(LOG.get(3), "afterTestChild1Class");
+    Assert.assertEquals(LOG.get(4), "beforeTestChild2Class");
+    Assert.assertTrue(("test1".equals(LOG.get(5)) && "test2".equals(LOG.get(6)))
+        || ("test2".equals(LOG.get(5)) && "test1".equals(LOG.get(6))), "test methods were not invoked correctly");
+    Assert.assertEquals(LOG.get(7), "afterTestChild2Class");
   }
 
   private void ppp(String s) {

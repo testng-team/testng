@@ -1,31 +1,23 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
   
-<suite name="Single" verbose="3" parallel="false"  >  
-  <test name="BeforeGroups-AfterGroups-1" >
+<suite name="Single" verbose="3" parallel="false"  >
+  <test name="Test order invocation">
     <classes>
-      <!--<class name="test.configuration.ConfigurationGroups1SampleTest" />
-      <class name="test.configuration.ConfigurationGroups2SampleTest" />-->
-      <class name="test.configuration.ConfigurationGroups3SampleTest" />
-      <!--
-      <class name="test.configuration.ConfigurationGroups4SampleTest" />
-      <class name="test.configuration.ConfigurationGroups5SampleTest" />
-      <class name="test.configuration.ConfigurationGroups6SampleTest" />
-      <class name="test.configuration.ConfigurationGroups7SampleTest" />
-      -->
+      <class name="test.interleavedorder.InterleavedInvocationTest" />
     </classes>
   </test>
-  <!--
-  <test name="BeforeGroups-AfterGroups-2" >
-    <groups>
-      <run>
-        <include name="A" />
-        <include name="B" />
-      </run>
-    </groups>
+  <test name="Regression2">
     <classes>
-      <class name="test.configuration.ConfigurationGroups8SampleTest" />
+      <class name="test.GraphTest"/>
+      <class name="test.mannotation.MAnnotationSampleTest" />
+      <class name="test.mannotation.MAnnotation2SampleTest" />
     </classes>
   </test>
-  -->
+  <test name="Dependents">
+    <parameter name="foo" value="Cedric" />
+    <classes>
+      <class name="test.dependent.DependentTest" />
+    </classes>
+  </test>
 </suite>
 

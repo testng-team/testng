@@ -2,7 +2,8 @@ package test;
 
 import java.util.List;
 
-import org.testng.annotations.*;
+import org.testng.annotations.ExpectedExceptions;
+import org.testng.annotations.Test;
 import org.testng.internal.Graph;
 
 
@@ -94,17 +95,18 @@ public class GraphTest {
     
     {
       List<String> predecessors = g.findPredecessors("3");
+
       assert predecessors.size() == 4;
       assert predecessors.get(0).equals("1");
-      assert predecessors.get(1).equals("2.1") ||
-        predecessors.get(2).equals("2.2") ||
-        predecessors.get(2).equals("2");
-      assert predecessors.get(2).equals("2.1") ||
-      predecessors.get(2).equals("2.2") ||
-      predecessors.get(2).equals("2");
-      assert predecessors.get(3).equals("2.1") ||
-      predecessors.get(2).equals("2.2") ||
-      predecessors.get(2).equals("2");
+      assert predecessors.get(1).equals("2.1") 
+        || predecessors.get(1).equals("2.2") 
+        || predecessors.get(1).equals("2");
+      assert predecessors.get(2).equals("2.1") 
+        || predecessors.get(2).equals("2.2") 
+        || predecessors.get(2).equals("2");
+      assert predecessors.get(3).equals("2.1") 
+        || predecessors.get(3).equals("2.2") 
+        || predecessors.get(3).equals("2");
     }
   }
 }

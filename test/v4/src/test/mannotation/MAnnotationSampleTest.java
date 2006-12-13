@@ -30,19 +30,18 @@ public class MAnnotationSampleTest {
     //
     ITest test1 = (ITest) m_finder.findAnnotation(MTest1.class, ITest.class);
     Assert.assertTrue(test1.getEnabled());
-    String[] groups = test1.getGroups();
-    Assert.assertEquals(new String[] { "group1", "group2" }, groups);
+    Assert.assertEquals(test1.getGroups(), new String[] { "group1", "group2" });
     Assert.assertTrue(test1.getAlwaysRun());
-    Assert.assertEquals(new String[] { "param1", "param2" }, test1.getParameters());
-    Assert.assertEquals(new String[] { "dg1", "dg2" }, test1.getDependsOnGroups());
-    Assert.assertEquals(new String[] { "dm1", "dm2" }, test1.getDependsOnMethods());
-    Assert.assertEquals(42, test1.getTimeOut());
-    Assert.assertEquals(43, test1.getInvocationCount());
-    Assert.assertEquals(44, test1.getSuccessPercentage());
-    Assert.assertEquals(3, test1.getThreadPoolSize());
-    Assert.assertEquals("dp", test1.getDataProvider());
-    Assert.assertEquals("Class level description", test1.getDescription());
-    
+    Assert.assertEquals(test1.getParameters(), new String[] { "param1", "param2" });
+    Assert.assertEqualsNoOrder(test1.getDependsOnGroups(), new String[] { "dg1", "dg2" },  "depends on groups");
+    Assert.assertEqualsNoOrder( test1.getDependsOnMethods(), new String[] { "dm1", "dm2" });
+    Assert.assertEquals(test1.getTimeOut(), 42);
+    Assert.assertEquals(test1.getInvocationCount(), 43);
+    Assert.assertEquals(test1.getSuccessPercentage(), 44);
+    Assert.assertEquals(test1.getThreadPoolSize(), 3);
+    Assert.assertEquals(test1.getDataProvider(), "dp");
+    Assert.assertEquals(test1.getDescription(), "Class level description");
+
     //
     // Tests on MTest1SampleTest (test defaults)
     //
@@ -50,14 +49,13 @@ public class MAnnotationSampleTest {
     // test default for enabled
     Assert.assertTrue(test2.getEnabled());
     Assert.assertFalse(test2.getAlwaysRun());
-    Assert.assertEquals(0, test2.getTimeOut());
-    Assert.assertEquals(1, test2.getInvocationCount());
-    Assert.assertEquals(100, test2.getSuccessPercentage());
-    Assert.assertEquals("", test2.getDataProvider());
+    Assert.assertEquals(test2.getTimeOut(), 0);
+    Assert.assertEquals(test2.getInvocationCount(), 1);
+    Assert.assertEquals(test2.getSuccessPercentage(), 100);
+    Assert.assertEquals(test2.getDataProvider(), "");
   }
   
-  public void verifyTestMethodLevel() 
-    throws SecurityException, NoSuchMethodException 
+  public void verifyTestMethodLevel() throws SecurityException, NoSuchMethodException 
   {
     //
     // Tests on MTest1SampleTest
@@ -65,21 +63,19 @@ public class MAnnotationSampleTest {
     Method method = MTest1.class.getMethod("f", new Class[0]);
     ITest test1 = (ITest) m_finder.findAnnotation(method, ITest.class);
     Assert.assertTrue(test1.getEnabled());
-    String[] groups = test1.getGroups();
-    Assert.assertEquals(new String[] { "group1", "group3", "group4", "group2" }, groups);
+    Assert.assertEqualsNoOrder(test1.getGroups(), new String[] { "group1", "group3", "group4", "group2" });
     Assert.assertTrue(test1.getAlwaysRun());
-    Assert.assertEquals(new String[] { "param3", "param4" }, test1.getParameters());
-    Assert.assertEqualsNoOrder(new String[] { "dg1", "dg2", "dg3", "dg4" }, test1.getDependsOnGroups());
-    Assert.assertEqualsNoOrder(new String[] { "dm1", "dm2", "dm3", "dm4" }, test1.getDependsOnMethods());
-    Assert.assertEquals(142, test1.getTimeOut());
-    Assert.assertEquals(143, test1.getInvocationCount());
-    Assert.assertEquals(61, test1.getSuccessPercentage());
-    Assert.assertEquals("dp2", test1.getDataProvider());
-    Assert.assertEquals("Method description", test1.getDescription());
+    Assert.assertEquals(test1.getParameters(), new String[] { "param3", "param4" });
+    Assert.assertEqualsNoOrder(test1.getDependsOnGroups(), new String[] { "dg1", "dg2", "dg3", "dg4" });
+    Assert.assertEqualsNoOrder(test1.getDependsOnMethods(), new String[] { "dm1", "dm2", "dm3", "dm4" });
+    Assert.assertEquals(test1.getTimeOut(), 142);
+    Assert.assertEquals(test1.getInvocationCount(), 143);
+    Assert.assertEquals(test1.getSuccessPercentage(), 61);
+    Assert.assertEquals(test1.getDataProvider(), "dp2");
+    Assert.assertEquals(test1.getDescription(), "Method description");
   }  
   
-  public void verifyTestConstructorLevel() 
-    throws SecurityException, NoSuchMethodException 
+  public void verifyTestConstructorLevel() throws SecurityException, NoSuchMethodException 
   {
     //
     // Tests on MTest1SampleTest
@@ -88,21 +84,19 @@ public class MAnnotationSampleTest {
     ITest test1 = (ITest) m_finder.findAnnotation(constructor, ITest.class);
     Assert.assertNotNull(test1);
     Assert.assertTrue(test1.getEnabled());
-    String[] groups = test1.getGroups();
-    Assert.assertEquals(new String[] { "group5", "group1", "group6", "group2" }, groups);
+    Assert.assertEqualsNoOrder(test1.getGroups(), new String[] { "group5", "group1", "group6", "group2" });
     Assert.assertTrue(test1.getAlwaysRun());
-    Assert.assertEquals(new String[] { "param5", "param6" }, test1.getParameters());
-    Assert.assertEqualsNoOrder(new String[] { "dg1", "dg2", "dg5", "dg6" }, test1.getDependsOnGroups());
-    Assert.assertEqualsNoOrder(new String[] { "dm1", "dm2", "dm5", "dm6" }, test1.getDependsOnMethods());
-    Assert.assertEquals(242, test1.getTimeOut());
-    Assert.assertEquals(243, test1.getInvocationCount());
-    Assert.assertEquals(62, test1.getSuccessPercentage());
-    Assert.assertEquals("dp3", test1.getDataProvider());
-    Assert.assertEquals("Constructor description", test1.getDescription());
+    Assert.assertEquals(test1.getParameters(), new String[] { "param5", "param6" });
+    Assert.assertEqualsNoOrder(test1.getDependsOnGroups(), new String[] { "dg1", "dg2", "dg5", "dg6" });
+    Assert.assertEqualsNoOrder(test1.getDependsOnMethods(), new String[] { "dm1", "dm2", "dm5", "dm6" });
+    Assert.assertEquals(test1.getTimeOut(), 242);
+    Assert.assertEquals(test1.getInvocationCount(), 243);
+    Assert.assertEquals(test1.getSuccessPercentage(), 62);
+    Assert.assertEquals(test1.getDataProvider(), "dp3");
+    Assert.assertEquals(test1.getDescription(), "Constructor description");
   }  
   
-  public void verifyConfigurationBefore() 
-    throws SecurityException, NoSuchMethodException 
+  public void verifyConfigurationBefore() throws SecurityException, NoSuchMethodException 
   {
     Method method = MTest1.class.getMethod("before", new Class[0]);
     IConfiguration configuration = 
@@ -128,8 +122,7 @@ public class MAnnotationSampleTest {
     Assert.assertFalse(configuration.getAlwaysRun());
   }
   
-  public void verifyConfigurationAfter() 
-    throws SecurityException, NoSuchMethodException 
+  public void verifyConfigurationAfter() throws SecurityException, NoSuchMethodException 
   {
     Method method = MTest1.class.getMethod("after", new Class[0]);
     IConfiguration configuration = 
@@ -155,8 +148,7 @@ public class MAnnotationSampleTest {
     Assert.assertFalse(configuration.getAlwaysRun());
   }  
   
-  public void verifyConfigurationOthers() 
-    throws SecurityException, NoSuchMethodException 
+  public void verifyConfigurationOthers() throws SecurityException, NoSuchMethodException 
   {
     Method method = MTest1.class.getMethod("otherConfigurations", new Class[0]);
     IConfiguration configuration = 
@@ -170,12 +162,12 @@ public class MAnnotationSampleTest {
     Assert.assertFalse(configuration.getAfterTestMethod());
     Assert.assertFalse(configuration.getAfterTest());
     Assert.assertFalse(configuration.getAfterTestClass());
-    
+
     Assert.assertFalse(configuration.getEnabled());
-    Assert.assertEquals(new String[] { "oparam1", "oparam2" }, configuration.getParameters());
-    Assert.assertEquals(new String[] { "group1", "ogroup1", "ogroup2", "group2" }, configuration.getGroups());
-    Assert.assertEquals(new String[] { "odg1", "odg2" }, configuration.getDependsOnGroups());
-    Assert.assertEquals(new String[] { "odm1", "odm2" }, configuration.getDependsOnMethods());
+    Assert.assertEquals(configuration.getParameters(), new String[] { "oparam1", "oparam2" });
+    Assert.assertEqualsNoOrder(configuration.getGroups(), new String[] { "group1", "ogroup1", "ogroup2", "group2" }, "groups");
+    Assert.assertEqualsNoOrder(configuration.getDependsOnGroups(), new String[] { "odg1", "odg2" }, "depends on groups");
+    Assert.assertEqualsNoOrder(configuration.getDependsOnMethods(), new String[] { "odm1", "odm2" }, "depends on methods");
     Assert.assertFalse(configuration.getInheritGroups());
     Assert.assertTrue(configuration.getAlwaysRun());
     Assert.assertEquals(configuration.getDescription(), "beforeSuite description");

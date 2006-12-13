@@ -144,25 +144,27 @@ public class MethodHelper {
     List<ITestNGMethod> vResult = new ArrayList<ITestNGMethod>();
     String currentRegexp = null;
     for (String fullyQualifiedRegexp : regexps) {
-      String regexp = escapeRegexp(fullyQualifiedRegexp);
       boolean foundAtLeastAMethod = false;
-      if (regexp != null) {
+      
+      if(null != fullyQualifiedRegexp) {
+        String regexp = escapeRegexp(fullyQualifiedRegexp);
         currentRegexp = regexp;
         boolean usePackage = regexp.indexOf(".") != -1;
+  
         for (ITestNGMethod method : methods) {
           Method thisMethod = method.getMethod();
           String thisMethodName = thisMethod.getName();
           String methodName = usePackage ?
               calculateMethodCanonicalName(thisMethod)
               : thisMethodName;
-//          ppp("COMPARING\n" + regexp + "\n" + methodName);
+//            ppp("COMPARING\n" + regexp + "\n" + methodName);
           if (Pattern.matches(regexp, methodName)) {
             vResult.add(method);
             foundAtLeastAMethod = true;
           }
         }
       }
-
+      
       if (!foundAtLeastAMethod) {
         throw new TestNGException(mainMethod
             + "() is depending on nonexistent method " + currentRegexp);
