@@ -95,7 +95,7 @@ public class JUnitDirectoryConverter {
       xsb.pop("test");
       xsb.pop("suite");
 
-      Utils.writeFile(m_outDir, "testng.xml", xsb.toXML());
+      Utils.writeFile(m_outDir.getAbsolutePath(), "testng.xml", xsb.toXML());
    }
 
    private boolean isTestFile(File f) {

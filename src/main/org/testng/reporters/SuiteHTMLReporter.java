@@ -150,8 +150,7 @@ public class SuiteHTMLReporter implements IReporter {
     sb.append(suiteBuf);
     sb.append("</table>").append("</body></html>\n");
   
-    File outputFile = new File(m_outputDirectory + File.separatorChar + "index.html");
-    Utils.writeFile(outputFile, sb.toString());
+    Utils.writeFile(m_outputDirectory, "index.html", sb.toString());
   }
 
   private void generateExcludedMethodsReport(XmlSuite xmlSuite, ISuite suite) {

@@ -50,16 +50,16 @@ public class TestHTMLReporter extends TestListenerAdapter {
   // implements ITestListener
   /////
 
-  private static File getOutputFile(String outputDirectory, ITestContext context) {
-    String result = 
+  private static String getOutputFile(ITestContext context) {
+    return context.getName() + ".html";
+//    String result = 
 //      context.getSuite().getName() + File.separatorChar +
-      outputDirectory + File.separator + context.getName() + ".html";
+//      outputDirectory + File.separator + context.getName() + ".html";
 //    File result = new File(base);
 //    String path = result.getAbsolutePath();
 //    int index = path.lastIndexOf(".");
 //    base = "file://" + path.substring(0, index) + ".out";
-    
-    return new File(result);
+//    return new File(result);
   }
   
   public static void generateTable(StringBuffer sb, String title, 
@@ -237,7 +237,6 @@ public class TestHTMLReporter extends TestListenerAdapter {
       Collection<ITestResult> passedTests, Collection<ITestResult> failedTests,
       Collection<ITestResult> skippedTests, Collection<ITestResult> percentageTests)
   {
-    File htmlOutputFile = getOutputFile(outputDirectory, testContext);
     StringBuffer sb = new StringBuffer();
     sb.append("<html>\n<head>\n")
       .append("<title>TestNG:  ").append(testContext.getName()).append("</title>\n")
@@ -295,7 +294,7 @@ public class TestHTMLReporter extends TestListenerAdapter {
     
     sb.append("</body>\n</html>");
     
-    Utils.writeFile(htmlOutputFile, sb.toString());
+    Utils.writeFile(outputDirectory, getOutputFile(testContext), sb.toString());
   }
 
   private static void ppp(String s) {

@@ -109,16 +109,12 @@ public final class Utils {
     for (Class cls : classes) {
       if (!result.containsKey(cls)) {
         result.put(cls, cls);
-//        Class[] nestedClasses = cls.getClasses();
-//        if (nestedClasses.length > 0) {
-//          findAllClasses(nestedClasses, result);
-//        }
       }
     }
   }
 
   public static String[] parseMultiLine(String line) {
-    List vResult = new ArrayList();
+    List<String> vResult = new ArrayList<String>();
     if ((null != line) && !"".equals(line.trim())) {
       StringTokenizer st = new StringTokenizer(line, " ");
       while (st.hasMoreTokens()) {
@@ -128,7 +124,7 @@ public final class Utils {
       //      result = line.split(" ");
     }
 
-    String[] result = (String[]) vResult.toArray(new String[vResult.size()]);
+    String[] result = vResult.toArray(new String[vResult.size()]);
 
     return result;
   }
@@ -146,30 +142,21 @@ public final class Utils {
   }
 
   /**
-   * Writes the content of the sb string to the file named filename in outputDir. If 
+   * Writes the content of the sb string to the file named filename in outDir. If 
    * outDir does not exist, it is created.
    *
-   * @param outputDir the ouptut directory (may not exist).
+   * @param outDir the output directory (may not exist). If <tt>null</tt> then current directory is used.
    * @param fileName the filename
    * @param sb the file content
    */
   public static void writeFile(String outputDir, String fileName, String sb) {
-    writeFile(new File(outputDir), fileName, sb);
-  }
-
-  /**
-   * Writes the content of the sb string to the file named filename in outDir. If 
-   * outDir does not exist, it is created.
-   *
-   * @param outDir the output directory (may not exist).
-   * @param fileName the filename
-   * @param sb the file content
-   */
-  public static void writeFile(File outDir, String fileName, String sb) {
     try {
+      final String outDirPath= outputDir != null ? outputDir : "";
+      final File outDir= new File(outDirPath);
       if (!outDir.exists()) {
         outDir.mkdirs();
       }
+      
       File outputFile = new File(outDir, fileName);
       outputFile.delete();
       outputFile.createNewFile();
@@ -186,7 +173,7 @@ public final class Utils {
     }
   }
 
-  public static void writeFile(File outputFile, String sb) {
+  private static void writeFile(File outputFile, String sb) {
     BufferedWriter fw = null;
     try {
       if (! outputFile.exists()) outputFile.createNewFile();
@@ -196,8 +183,13 @@ public final class Utils {
       Utils.log("", 3, "Creating " + outputFile.getAbsolutePath());
     }
     catch(IOException ex) {
-      System.err.println("ERROR WHILE WRITING TO " + outputFile);
-      ex.printStackTrace();
+      if (TestRunner.getVerbose() > 1) {
+        System.err.println("ERROR WHILE WRITING TO " + outputFile);
+        ex.printStackTrace();
+      }
+      else {
+        log("[Utils]", 1, "Error while writing to " + outputFile + ": " + ex.getMessage());
+      }
     }
     finally {
       try {
