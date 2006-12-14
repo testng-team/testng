@@ -16,9 +16,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.testng.TestNGException;
 import org.testng.TestRunner;
+import org.testng.internal.ClassHelper;
 import org.testng.internal.Utils;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 
 /**
  * <code>Parser</code> is a parser for a TestNG XML test suite file.   
@@ -125,29 +129,18 @@ public class Parser {
    * @throws IOException if an I/O error occurs while parsing the test suite file or
    * if the default testng.xml file is not found.
    */
-  public Collection<XmlSuite> parse()
-    throws ParserConfigurationException, SAXException, IOException 
+  public Collection<XmlSuite> parse() throws ParserConfigurationException, SAXException, IOException 
   {
     // Each suite found is put in this map, keyed by their canonical
     // path to make sure we don't add a same file twice
     // (e.g. "testng.xml" and "./testng.xml")
     Map<String, XmlSuite> mapResult = new HashMap<String, XmlSuite>();
     
-    SAXParserFactory spf = null;
-    try {
-      spf = SAXParserFactory.newInstance();
+    SAXParserFactory spf= loadSAXParserFactory();
+        
+    if(supportsValidation(spf)) {
+      spf.setValidating(true);
     }
-    catch(FactoryConfigurationError ex) {
-      // If running with JDK 1.4
-      try {
-        Class cl = Class.forName("org.apache.crimson.jaxp.SAXParserFactoryImpl");
-        spf = (SAXParserFactory) cl.newInstance();
-      }
-      catch(Exception ex2) {
-        ex2.printStackTrace();
-      }
-    }
-    spf.setValidating(true);
     SAXParser saxParser = spf.newSAXParser();
     
     String mainFilePath = new File(m_fileName).getCanonicalPath();
@@ -196,6 +189,70 @@ public class Parser {
 
   }
   
+  /**
+   * Tries to load a <code>SAXParserFactory</code> by trying in order the following:
+   * <tt>com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl</tt> (SUN JDK5)
+   * <tt>org.apache.crimson.jaxp.SAXParserFactoryImpl</tt> (SUN JDK1.4) and 
+   * last <code>SAXParserFactory.newInstance()</code>.
+   * 
+   * @return a <code>SAXParserFactory</code> implementation
+   * @throws TestNGException thrown if no <code>SAXParserFactory</code> can be loaded
+   */
+  private SAXParserFactory loadSAXParserFactory() {
+    SAXParserFactory spf = null;
+    
+    StringBuffer errorLog= new StringBuffer();
+    try {
+      Class factoryClass= ClassHelper.forName("com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
+      spf = (SAXParserFactory) factoryClass.newInstance();
+    }
+    catch(Exception ex) {
+      errorLog.append("JDK5 SAXParserFactory cannot be loaded: " + ex.getMessage());
+    }
+
+    if(null == spf) {
+      // If running with JDK 1.4
+      try {
+        Class factoryClass = ClassHelper.forName("org.apache.crimson.jaxp.SAXParserFactoryImpl");
+        spf = (SAXParserFactory) factoryClass.newInstance();
+      }
+      catch(Exception ex) {
+        errorLog.append("\n").append("JDK1.4 SAXParserFactory cannot be loaded: " + ex.getMessage());
+      }
+    }
+    
+    Throwable cause= null;
+    if(null == spf) {
+      try {
+        spf= SAXParserFactory.newInstance();
+      }
+      catch(FactoryConfigurationError fcerr) {
+        cause= fcerr;
+      }
+    }
+    
+    if(null == spf) {      
+      throw new TestNGException("Cannot initialize a SAXParserFactory\n" + errorLog.toString(), cause);
+    }
+    
+    return spf;
+  }
+  
+
+  /**
+   * Tests if the current <code>SAXParserFactory</code> supports DTD validation.
+   * @param spf
+   * @return
+   */
+  private boolean supportsValidation(SAXParserFactory spf) {
+    try {
+      return spf.getFeature("http://xml.org/sax/features/validation");
+    }
+    catch(Exception ex) { ; }
+    
+    return false;
+  }
+
   private XmlSuite parseOneFile(SAXParser saxParser, String fileName)
     throws ParserConfigurationException, SAXException, IOException
   {
