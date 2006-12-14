@@ -469,10 +469,14 @@ public class TestNGAntTask extends Task {
     }
 
     if(m_useDefaultListeners != null) {
-      boolean useDefaultListeners= "yes".equalsIgnoreCase(m_useDefaultListeners)
-        || "true".equalsIgnoreCase(m_useDefaultListeners);
+      String useDefaultListeners = "false";
+      if ("yes".equalsIgnoreCase(m_useDefaultListeners) 
+          || "true".equalsIgnoreCase(m_useDefaultListeners))
+      {
+        useDefaultListeners = "true";
+      }
       argv.add(TestNGCommandLineArgs.USE_DEFAULT_LISTENERS);
-      argv.add(Boolean.TRUE.toString());
+      argv.add(useDefaultListeners);
     }
 
     if((null != m_outputDir)) {
