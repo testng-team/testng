@@ -17,7 +17,7 @@
 <!--                                                        -->
 <!-- Full documentation:  http://testng.org                 -->
 <!--                                                        -->
-<!-- Cedric Beust                                           -->
+<!-- Cedric Beust & Alexandru Popescu                       -->
 <!-- ====================================================== -->
 
 
@@ -25,19 +25,22 @@
 <!ELEMENT suite (packages|test|parameter|method-selectors|suite-files)* >
 
 <!-- Attributes: -->
-<!-- name:  The name of this suite (as it will appear in the reports)       -->
-<!-- verbose:  (0-10) How verbose the output on the console                 -->
-<!--           will be.  This setting has no impact on the HTML reports     -->
-<!-- parallel:  (methods|tests) Whether TestNG should use different threads -->
-<!-- to run your tests (might speed up the process)                         -->
-<!-- thread-count:  An integer giving the size of the thread pool to use    -->
-<!--                if you set parallel      (default is 5)                 -->
-<!-- annotations:   (javadoc|JDK5)  If "javadoc", TestNG will look for      -->
-<!--                JavaDoc annotations in your sources, otherwise it will  -->
-<!--                use JDK5 annotations                                    -->
-<!-- time-out:  the time to wait in milliseconds before aborting            -->
-<!--       the method (if parallel="methods") or the test                   -->
-<!--       (if parallel="tests")                                            -->
+<!--
+  name:         The name of this suite (as it will appear in the reports)
+  verbose:      (0-10) How verbose the output on the console will be.  
+	              This setting has no impact on the HTML reports.
+                Default value: 1
+  parallel:     (methods|tests) Whether TestNG should use different threads
+								to run your tests (might speed up the process)
+								Default value: none (no parallel mode)
+	thread-count: An integer giving the size of the thread pool to use
+                if you set parallel. Default value: 5
+  annotations:  (javadoc|JDK5)  If "javadoc", TestNG will look for
+                JavaDoc annotations in your sources, otherwise it will
+                use JDK5 annotations. Default value: JDK5
+  time-out:     the time to wait in milliseconds before aborting the
+                method (if parallel="methods") or the test (parallel="tests")
+-->
 <!ATTLIST suite 
     name CDATA #REQUIRED
     verbose CDATA #IMPLIED
@@ -84,17 +87,20 @@
 <!ELEMENT test (method-selectors?,parameter*,groups?,packages?,classes?) >
 
 <!-- Attributes:                                                            -->
-<!-- name:  The name of this test (as it will appear in the reports)        -->
-<!-- junit:  (true|false) Whether to run in JUnit mode                      -->
-<!-- verbose:  (0-10) How verbose the output on the console                 -->
-<!--           will be.  This setting has no impact on the HTML reports     -->
-<!-- parallel:  (methods)       Whether TestNG should use different threads -->
-<!-- to run your tests (might speed up the process)                         -->
-<!-- annotations:   (javadoc|JDK5)  If "javadoc", TestNG will look for      -->
-<!--                JavaDoc annotations in your sources, otherwise it will  -->
-<!--                use JDK5 annotations                                    -->
-<!-- timeout:  the time to wait in milliseconds before aborting -->
-<!--       the method (if parallel="methods") or the test (if parallel="tests") -->
+<!--
+	name:        The name of this test (as it will appear in the reports)
+	junit:       (true|false) Whether to run in JUnit mode. Default value: false.
+	verbose:     (0-10) How verbose the output on the console will be.  
+               This setting has no impact on the HTML reports. 
+               Default value: suite level verbose.
+	parallel:    (methods) Whether TestNG should use different threads
+	             to run your tests (might speed up the process)
+	annotations: (javadoc|JDK5)  If "javadoc", TestNG will look for 
+							 JavaDoc annotations in your sources, otherwise it will
+               use JDK5 annotations. Default value: JDK5
+	timeout:     the time to wait in milliseconds before aborting 
+							 the method (if parallel="methods") or the test (if parallel="tests") 
+-->
 <!ATTLIST test
     name CDATA #REQUIRED 
     junit CDATA #IMPLIED
@@ -139,6 +145,3 @@
 
 <!-- The list of methodes to include/exclude from this test                 -->
 <!ELEMENT methods (include?,exclude?)* >
-
-    
-
