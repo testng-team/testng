@@ -444,4 +444,7 @@
     </classes>
   </test>
   
+	<suite-files>
+		<suite-file path="test/src/test/regression/groupsordering/testng.xml" />
+	</suite-files>
 </suite>

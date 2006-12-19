@@ -35,7 +35,7 @@ public class ConfigurationGroupMethods implements Serializable {
   private final ITestNGMethod[] m_allMethods;
 
   /**A map that returns the last method belonging to the given group */
-  private Map<String, ITestNGMethod> m_afterGroupsMap= null;
+  private Map<String, List<ITestNGMethod>> m_afterGroupsMap= null;
 
   public ConfigurationGroupMethods(ITestNGMethod[] allMethods,
                                    Map<String, List<ITestNGMethod>> beforeGroupsMethods,
@@ -60,20 +60,37 @@ public class ConfigurationGroupMethods implements Serializable {
 
     // Lazy initialization since we might never be called
     if(m_afterGroupsMap == null) {
-      m_afterGroupsMap= new HashMap<String, ITestNGMethod>();
-      for(ITestNGMethod m : m_allMethods) {
-        String[] groups= m.getGroups();
-        for(String g : groups) {
-          m_afterGroupsMap.put(g, m);
-        }
-      }
+      m_afterGroupsMap= initializeAfterGroupsMap();
     }
 
+    List<ITestNGMethod> methodsInGroup= m_afterGroupsMap.get(group);
+    
+    if(null == methodsInGroup || methodsInGroup.isEmpty()) return false;
+    
+    methodsInGroup.remove(method);
+    
     // Note:  == is not good enough here as we may work with ITestNGMethod clones
-    return m_afterGroupsMap.isEmpty() ? false : m_afterGroupsMap.get(group).equals(method);
+    return methodsInGroup.isEmpty();
 
   }
 
+  private synchronized Map<String, List<ITestNGMethod>> initializeAfterGroupsMap() {
+    Map<String, List<ITestNGMethod>> result= new HashMap<String, List<ITestNGMethod>>();
+    for(ITestNGMethod m : m_allMethods) {
+      String[] groups= m.getGroups();
+      for(String g : groups) {
+        List<ITestNGMethod> methodsInGroup= result.get(g);
+        if(null == methodsInGroup) {
+          methodsInGroup= new ArrayList<ITestNGMethod>();
+          result.put(g, methodsInGroup);
+        }
+        methodsInGroup.add(m);
+      }
+    }
+
+    return result;
+  }
+  
   public synchronized void removeBeforeMethod(String group, ITestNGMethod method) {
     List<ITestNGMethod> methods= m_beforeGroupsMethods.get(group);
     if(methods != null) {

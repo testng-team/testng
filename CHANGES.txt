@@ -1,6 +1,7 @@
 ===========================================================================
 5.5
 
+Fixed: @Before/@AfterGroups invocation order
 Fixed: TESTNG-27: Parameters are not used on <test> level anymore
 Fixed: TESTNG-107 don't create an output directory if "outputDirectory" is null
 Fixed: TESTNG-127 UseDefaultListeners in Ant Task does not work
