@@ -310,10 +310,11 @@ public class XmlTest implements Serializable, Cloneable {
     
     // parameters
     if (!m_parameters.isEmpty()) {
-      for (String paramName: m_parameters.keySet()) {
-        Properties paramProps = new Properties();
-        paramProps.setProperty("name", paramName);
-        paramProps.setProperty("value", m_parameters.get(paramName));
+      for(Map.Entry<String, String> para: m_parameters.entrySet()) {
+        Properties paramProps= new Properties();
+        paramProps.setProperty("name", para.getKey());
+        paramProps.setProperty("value", para.getValue());
+        xsb.addEmptyElement("property", paramProps); // BUGFIX: TESTNG-27
       }
     }
     
