@@ -1,14 +1,12 @@
 package org.testng.reporters;
 
+import java.util.List;
+
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.internal.Utils;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintWriter;
-import java.util.List;
 
 /**
  * A simple reporter that collects the results and does nothing else.
@@ -46,11 +44,6 @@ public class TextReporter extends TestListenerAdapter {
 
   private void logResults() {
     //
-    // Log HTML
-    //
-    //    m_htmlLogger.generateLog();
-
-    //
     // Log Text
     //
     for(Object o : getPassedTests()) {
@@ -77,7 +70,9 @@ public class TextReporter extends TestListenerAdapter {
     }
 
     ITestNGMethod[] ft = resultsToMethods(getFailedTests());
-    String stats = "\n===============================================\n" + "    " + m_testName
+    String stats = 
+        "\n===============================================\n" 
+        + "    " + m_testName
         + "\n" + "    Tests run: " + Utils.calculateInvokedMethodCount(getAllTestMethods())
         + ", Failures: " + Utils.calculateInvokedMethodCount(ft)
         + ", Skips: "
@@ -137,37 +132,7 @@ public class TextReporter extends TestListenerAdapter {
     }
     
     logResult(status, msg.toString());
-
-//    if (! "".equals(status)) {
-//      System.out.print(status + ": ");
-//    }
-//    {
-//      StringBuffer sb= new StringBuffer(name);
-//      if(null != params && params.length > 0) {
-//        sb.append("(");
-//        for(int i= 0; i < params.length; i++) {
-//          if(i > 0) sb.append(", ");
-//          sb.append(Utils.toString(params[i]));
-//        }
-//        
-//        sb.append(")");
-//      }
-//      
-//      System.out.println(sb);
-//    }
-//    if (! Utils.isStringEmpty(description)) {
-//      StringBuffer sb = new StringBuffer();
-//      for (int i = 0; i < status.length() + 2; i++) {
-//        sb.append(" ");
-//      }
-//      sb.append(description);
-//      System.out.println(sb.toString());
-//    }
   }
-  
-//  private void logResult(Throwable s) {
-//    System.out.println(s.getMessage());
-//  }
   
   public void ppp(String s) {
     System.out.println("[TextReporter " + getName() + "] " + s);

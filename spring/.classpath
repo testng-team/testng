@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/common"/>
+	<classpathentry kind="src" path="src/jdk15"/>
+	<classpathentry kind="src" path="sandbox/src"/>
+	<classpathentry kind="lib" path="3rdparty/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="lib" path="3rdparty/spring-beans-1.2.3.jar"/>
+	<classpathentry kind="lib" path="3rdparty/spring-context-1.2.3.jar"/>
+	<classpathentry kind="lib" path="3rdparty/spring-core-1.2.3.jar"/>
+	<classpathentry kind="lib" path="3rdparty/spring-dao-1.2.3.jar"/>
+	<classpathentry kind="lib" path="3rdparty/spring-jdbc-1.2.3.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/TestNG"/>
+	<classpathentry kind="output" path="z_build"/>
+</classpath>

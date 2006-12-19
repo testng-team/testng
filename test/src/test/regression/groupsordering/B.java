@@ -1,6 +1,8 @@
-package test.tmp;
+package test.regression.groupsordering;
 
 import org.testng.annotations.Test;
+
+import test.tmp.Base;
 
 public class B extends Base{
 
