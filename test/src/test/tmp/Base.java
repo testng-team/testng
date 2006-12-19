@@ -1,22 +1,21 @@
 package test.tmp;
 
-import org.testng.annotations.Configuration;
+import org.testng.annotations.AfterGroups;
+import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
 
-@Test(groups = {"base"})
-public class Base {
-  protected boolean m_beforeTest = false;
-  protected boolean m_afterTest = false;
+public abstract class Base {
 
-    @Configuration(beforeTestClass = true)
-    public void baseSetup() {
-      m_beforeTest = true;
-      System.out.println("base before class");
+    @BeforeGroups(value = "a", groups = "a")
+    public void setUp() throws Exception {
+        System.out.println("class is " + getClass().getName() + " Before group  ");
     }
 
-    @Configuration(afterTestClass = true)
-    public void baseTeardown() {
-      m_afterTest = true;
-      System.out.println("base after class");
+    @AfterGroups(value = "a", groups = "a")
+    public void tearDown(){
+        System.out.println("class is " + getClass().getName() + " After group  ");
     }
-}
+
+ }
+
+
