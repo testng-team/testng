@@ -48,5 +48,6 @@ public interface IInvoker {
                                              int methodIndex,
                                              XmlSuite suite, 
                                              Map<String, String> parameters, 
-                                             ConfigurationGroupMethods groupMethods);
+                                             ConfigurationGroupMethods groupMethods,
+                                             Object[] instances);
 }

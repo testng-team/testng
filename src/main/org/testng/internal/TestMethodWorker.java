@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.testng.ClassMethodMap;
 import org.testng.ITestClass;
@@ -24,7 +25,10 @@ import org.testng.xml.XmlSuite;
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class TestMethodWorker implements IMethodWorker {
-  protected ITestNGMethod[] m_testMethods;
+  // Map of the test methods and their associated instances
+  // It has to be a set because the same method can be passed several times
+  // and associated to a different instance
+  protected MethodInstance[] m_testMethods;
   protected IInvoker m_invoker = null;
   protected Map<String, String> m_parameters = null;
   protected XmlSuite m_suite = null;
@@ -36,7 +40,7 @@ public class TestMethodWorker implements IMethodWorker {
   protected ClassMethodMap m_classMethodMap = null;
   
   public TestMethodWorker(IInvoker invoker, 
-                          ITestNGMethod[] testMethods,
+                          MethodInstance[] testMethods,
                           XmlSuite suite,
                           Map<String, String> parameters,
                           Map<ITestClass, ITestClass> invokedBeforeClassMethods,
@@ -54,6 +58,8 @@ public class TestMethodWorker implements IMethodWorker {
     m_allTestMethods = allTestMethods;
     m_groupMethods = groupMethods;
     m_classMethodMap = classMethodMap;
+    
+    ppp("CREATED METHOD WORKER " + testMethods.length);
   }
   
   /**
@@ -64,7 +70,8 @@ public class TestMethodWorker implements IMethodWorker {
    */
   public long getMaxTimeOut() {
     long result = 0;
-    for (ITestNGMethod tm : m_testMethods) {
+    for (MethodInstance mi : m_testMethods) {
+      ITestNGMethod tm = mi.getMethod();
       if (tm.getTimeOut() > result) {
         result = tm.getTimeOut();
       }
@@ -75,7 +82,8 @@ public class TestMethodWorker implements IMethodWorker {
   
   @Override
   public String toString() {
-    return "[Worker on thread:" + Thread.currentThread().getId() + " " + m_testMethods[0] + "]";
+    return "[Worker on thread:" + Thread.currentThread().getId() + " " 
+    + m_testMethods[0].getMethod() + "]";
   }
   
   /**
@@ -87,7 +95,7 @@ public class TestMethodWorker implements IMethodWorker {
     // Using an index here because we need to tell the invoker
     // the index of the current method
     for (int indexMethod = 0; indexMethod < m_testMethods.length; indexMethod++) {
-      ITestNGMethod tm = m_testMethods[indexMethod];
+      ITestNGMethod tm = m_testMethods[indexMethod].getMethod();
   
       ITestClass testClass = tm.getTestClass();
 
@@ -97,7 +105,7 @@ public class TestMethodWorker implements IMethodWorker {
       // Invoke test method
       //
       try {
-        invokeTestMethods(tm);
+        invokeTestMethods(tm, m_testMethods[indexMethod].getInstances());
       }
       finally {
         invokeAfterClassMethods(testClass, tm);
@@ -105,7 +113,7 @@ public class TestMethodWorker implements IMethodWorker {
     }
   }
   
-  protected void invokeTestMethods(ITestNGMethod tm) {
+  protected void invokeTestMethods(ITestNGMethod tm, Object[] instances) {
     // Potential bug here:  we look up the method index of tm among all
     // the test methods (not very efficient) but if this method appears
     // several times and these methods are run in parallel, the results
@@ -116,7 +124,8 @@ public class TestMethodWorker implements IMethodWorker {
                                                                 indexOf(tm, m_allTestMethods), 
                                                                 m_suite, 
                                                                 m_parameters, 
-                                                                m_groupMethods);
+                                                                m_groupMethods,
+                                                                instances);
     
     if (testResults != null) {
       m_testResults.addAll(testResults);        
@@ -229,13 +238,13 @@ class SingleTestMethodWorker extends TestMethodWorker {
     new ConfigurationGroupMethods(new ITestNGMethod[0], new HashMap<String, List<ITestNGMethod>>(), new HashMap<String, List<ITestNGMethod>>());
   
   public SingleTestMethodWorker(IInvoker invoker, 
-                                ITestNGMethod testMethod,
+                                MethodInstance testMethod,
                                 XmlSuite suite,
                                 Map<String, String> parameters,
                                 ITestNGMethod[] allTestMethods)
   {
     super(invoker,
-          new ITestNGMethod[] {testMethod},
+          new MethodInstance[] {testMethod},
           suite,
           parameters,
           null,

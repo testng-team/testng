@@ -620,7 +620,8 @@ public class Invoker implements IInvoker {
                                              int testMethodIndex,
                                              XmlSuite suite,
                                              Map<String, String> parameters,
-                                             ConfigurationGroupMethods groupMethods)
+                                             ConfigurationGroupMethods groupMethods,
+                                             Object[] instances)
   {
     // Potential bug here if the test method was declared on a parent class
     assert null != testMethod.getTestClass() : "COULDN'T FIND TESTCLASS FOR " + testMethod.getMethod().getDeclaringClass();
@@ -677,7 +678,7 @@ public class Invoker implements IInvoker {
 
               while (allParameterValues.hasNext()) {
                 Object[] parameterValues= allParameterValues.next();
-                Object[] instances = testClass.getInstances(true);
+//                Object[] instances = testClass.getInstances(true);
 
                 try {
                     result = invokeTestMethod(instances,
@@ -755,8 +756,9 @@ public class Invoker implements IInvoker {
       clonedMethod.setInvocationCount(1);
       clonedMethod.setThreadPoolSize(1);
       clones.add(clonedMethod);
+      MethodInstance mi = new MethodInstance(clonedMethod, clonedMethod.getTestClass().getInstances(true));
       workers.add(new SingleTestMethodWorker(this,
-          clonedMethod,
+          mi,
           suite, 
           parameters,
           allTestMethods));

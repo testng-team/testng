@@ -3,6 +3,7 @@ package org.testng;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -21,6 +22,7 @@ import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.InvokedMethod;
 import org.testng.internal.Invoker;
 import org.testng.internal.MethodHelper;
+import org.testng.internal.MethodInstance;
 import org.testng.internal.ResultMap;
 import org.testng.internal.RunInfo;
 import org.testng.internal.TestMethodWorker;
@@ -30,7 +32,6 @@ import org.testng.internal.TestNGMethodFinder;
 import org.testng.internal.Utils;
 import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.thread.IPooledExecutor;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.junit.IJUnitTestRunner;
 import org.testng.xml.XmlClass;
@@ -604,8 +605,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     // will be invoked sequentially
     if (sequentialList.size() > 0) {
       for (List<ITestNGMethod> sl : sequentialList) {
+        
         workers.add(new TestMethodWorker(m_invoker,
-                                         sl.toArray(new ITestNGMethod[sl.size()]),
+                                         methodsToMethodInstances(sl),
                                          m_xmlTest.getSuite(),
                                          params,
                                          beforeClassMethods, 
@@ -620,19 +622,45 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     // invoked in parallel
     if (parallelList.size() > 0) {
       for (ITestNGMethod tm : parallelList) {
-        workers.add(new TestMethodWorker(m_invoker,
-                                         new ITestNGMethod[] { tm },
-                                         m_xmlTest.getSuite(),
-                                         params,
-                                         beforeClassMethods, 
-                                         afterClassMethods,
-                                         m_allTestMethods,
-                                         m_groupMethods,
-                                         cmm));
+//        MethodInstance mi = new MethodInstance(tm, tm.getTestClass().getInstances(true));
+        MethodInstance[] methodInstances = methodsToMultipleMethodInstances(Arrays.asList(new ITestNGMethod[] {tm}));
+        for (MethodInstance mi : methodInstances) {
+          workers.add(new TestMethodWorker(m_invoker,
+                                           new MethodInstance[] { mi },
+                                           m_xmlTest.getSuite(),
+                                           params,
+                                           beforeClassMethods, 
+                                           afterClassMethods,
+                                           m_allTestMethods,
+                                           m_groupMethods,
+                                           cmm));
+        }
       }
     }
 
     runWorkers(workers, xmlTest.getParallel());
+  }
+
+  private MethodInstance[] methodsToMultipleMethodInstances(List<ITestNGMethod> sl) {
+    List<MethodInstance> vResult = new ArrayList<MethodInstance>();
+    for (ITestNGMethod m : sl) {
+      Object[] instances = m.getTestClass().getInstances(true);
+      for (Object instance : instances) {
+        vResult.add(new MethodInstance(m, new Object[] { instance }));
+      }
+    }
+    
+    MethodInstance[] result = vResult.toArray(new MethodInstance[vResult.size()]);
+    return result;
+  }
+
+  private MethodInstance[] methodsToMethodInstances(List<ITestNGMethod> sl) {
+    MethodInstance[] result = new MethodInstance[sl.size()];
+    for (int i = 0; i < result.length; i++) {
+      result[i] = new MethodInstance(sl.get(i), sl.get(i).getTestClass().getInstances(true));
+    }
+    
+    return result;
   }
 
   //
