@@ -264,6 +264,7 @@ public class Parameters {
     return null;
   }
 
+  @SuppressWarnings({"deprecation"})
   private static Object[] createParameters(Method m, MethodParameters params,
       IAnnotationFinder finder, XmlSuite xmlSuite, Class annotationClass, String atName) 
   {

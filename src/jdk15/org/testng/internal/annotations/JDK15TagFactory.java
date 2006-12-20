@@ -214,6 +214,7 @@ public class JDK15TagFactory {
     return result;
   }
 
+  @SuppressWarnings({"deprecation"})
   private IAnnotation createConfigurationTag(Class cls, Annotation a) {
     ConfigurationAnnotation result = new ConfigurationAnnotation();
     Configuration c = (Configuration) a;
@@ -284,6 +285,7 @@ public class JDK15TagFactory {
     return result;
   }
 
+  @SuppressWarnings({"deprecation"})
   private IAnnotation createExpectedExceptionsTag(Annotation a) {
     ExpectedExceptionsAnnotation result = new ExpectedExceptionsAnnotation ();
     ExpectedExceptions c = (ExpectedExceptions ) a;
@@ -292,6 +294,7 @@ public class JDK15TagFactory {
     return result;
   }
 
+  @SuppressWarnings({"deprecation"})
   private IAnnotation createFactoryTag(Annotation a) {
     FactoryAnnotation result = new FactoryAnnotation();
     Factory c = (Factory) a;
@@ -308,6 +311,7 @@ public class JDK15TagFactory {
     return result;
   }
   
+  @SuppressWarnings({"deprecation"})
   private IAnnotation createTestTag(Class cls, Annotation a, 
       IAnnotationTransformer transformer) 
   {
@@ -370,25 +374,6 @@ public class JDK15TagFactory {
     String[] result = vResult.keySet().toArray(new String[vResult.size()]);
     return result;
   }
-
-//  private Boolean findInheritedBoolean(Class cls, Class annotationClass,
-//      String methodName, Boolean result)
-//  {
-//    Map<String, String> vResult = new HashMap<String, String>();
-//    
-//    while (cls != Object.class) {
-//      Annotation annotation = cls.getAnnotation(annotationClass);
-//      if (annotation != null) {
-//        return (Boolean) invokeMethod(annotation, methodName);
-//      }
-//      else {
-//        cls = cls.getSuperclass();
-//      }
-//      
-//    }
-//    
-//    return result;
-//  }
 
   private Object invokeMethod(Annotation test, String methodName) {
     Object result = null;

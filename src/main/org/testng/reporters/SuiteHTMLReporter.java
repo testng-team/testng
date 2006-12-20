@@ -319,6 +319,7 @@ public class SuiteHTMLReporter implements IReporter {
     Collection<ITestNGMethod> invokedMethods = suite.getInvokedMethods();
     
     if (alphabetical) {
+      @SuppressWarnings({"unchecked"})
       Comparator<? super ITestNGMethod>  alphabeticalComparator = new Comparator(){
         public int compare(Object o1, Object o2) {
           ITestNGMethod m1 = (ITestNGMethod) o1;

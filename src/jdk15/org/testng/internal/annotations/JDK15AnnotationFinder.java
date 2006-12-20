@@ -35,6 +35,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     new HashMap<Class<?>, Class<?>>();
   private IAnnotationTransformer m_transformer = null;
   
+  @SuppressWarnings({"deprecation"})
   public JDK15AnnotationFinder(IAnnotationTransformer transformer) {
     m_transformer = transformer;
     

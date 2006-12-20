@@ -130,6 +130,7 @@ public class AnnotationHelper {
     return result;
   }
   
+  @SuppressWarnings({"deprecation"})
   private static void finishInitialize(ConfigurationAnnotation result, IConfiguration bs) {
     result.setFakeConfiguration(true);
     result.setAlwaysRun(bs.getAlwaysRun());
