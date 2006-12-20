@@ -261,8 +261,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
                                    m_testName,
                                    testMethodFinder,
                                    m_annotationFinder,
-                                   m_runInfo,
-                                   this);
+                                   m_runInfo);
       m_classMap.put(ic.getRealClass(), tc);
     }
     
