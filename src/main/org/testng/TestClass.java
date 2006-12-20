@@ -32,16 +32,14 @@ public class TestClass extends NoOpTestClass implements ITestClass {
   transient protected Map<Class, Object[]> m_instanceMap = new HashMap<Class, Object[]>();
   
   private IClass m_iClass = null;
-  private TestRunner m_testRunner = null;
   private RunInfo m_runInfo = null;
   
   public TestClass(IClass cls, 
                    String testName,
                    ITestMethodFinder testMethodFinder, 
                    IAnnotationFinder annotationFinder,
-                   RunInfo runInfo, 
-                   TestRunner testRunner) {
-    init(cls, testName, testMethodFinder, annotationFinder, runInfo, testRunner);
+                   RunInfo runInfo) {
+    init(cls, testName, testMethodFinder, annotationFinder, runInfo);
   }
   
   public TestClass(IClass cls, TestClass tc) {
@@ -49,8 +47,7 @@ public class TestClass extends NoOpTestClass implements ITestClass {
          tc.getTestName(), 
          tc.getTestMethodFinder(), 
          tc.getAnnotationFinder(),
-         tc.getRunInfo(), 
-         tc.getTestRunner());
+         tc.getRunInfo());
   }
   
   public String getTestName() {
@@ -65,17 +62,14 @@ public class TestClass extends NoOpTestClass implements ITestClass {
                     String testName,
                     ITestMethodFinder testMethodFinder, 
                     IAnnotationFinder annotationFinder,
-                    RunInfo runInfo, 
-                    TestRunner testRunner) {
+                    RunInfo runInfo) {
     log(3, "Creating TestClass for " + cls);
     m_iClass = cls;
     m_testClass = cls.getRealClass();
     m_testName = testName;
     m_runInfo = runInfo;
-    m_testRunner = testRunner;
     m_testMethodFinder = testMethodFinder;
     m_annotationFinder = annotationFinder;
-//    m_testMethodFinder.setTestClass(this);
     initMethods();
     initTestClassesAndInstances();
   }
@@ -186,10 +180,6 @@ public class TestClass extends NoOpTestClass implements ITestClass {
     return result;
   }
   
-  private TestRunner getTestRunner() {
-    return m_testRunner;
-  }
-  
   private RunInfo getRunInfo() {
     return m_runInfo;
   }
@@ -207,10 +197,6 @@ public class TestClass extends NoOpTestClass implements ITestClass {
   private static void ppp(String s) {
     System.out.println("[TestClass] " + s);
   }
-
-//  public Class[] getTestClasses() {
-//    return m_testClasses.keySet().toArray(new Class[m_testClasses.size()]);
-//  }
   
   public void dump() {
     ppp("\n======\nTESTCLASS: " + m_testClass.getName());
