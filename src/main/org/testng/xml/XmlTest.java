@@ -314,7 +314,7 @@ public class XmlTest implements Serializable, Cloneable {
         Properties paramProps= new Properties();
         paramProps.setProperty("name", para.getKey());
         paramProps.setProperty("value", para.getValue());
-        xsb.addEmptyElement("property", paramProps); // BUGFIX: TESTNG-27
+        xsb.addEmptyElement("parameter", paramProps); // BUGFIX: TESTNG-27
       }
     }
     
