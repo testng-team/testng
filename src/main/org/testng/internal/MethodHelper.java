@@ -16,20 +16,15 @@ import org.testng.IHookCallBack;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.Reporter;
 import org.testng.TestNGException;
-import org.testng.TestRunner;
 import org.testng.internal.annotations.AnnotationHelper;
-import org.testng.internal.annotations.IAnnotation;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IConfiguration;
 import org.testng.internal.annotations.IExpectedExceptions;
 import org.testng.internal.annotations.ITest;
 import org.testng.internal.annotations.ITestOrConfiguration;
-import org.testng.internal.thread.ICountDown;
 import org.testng.internal.thread.IExecutor;
 import org.testng.internal.thread.IFutureResult;
-import org.testng.internal.thread.IThreadFactory;
 import org.testng.internal.thread.ThreadExecutionException;
 import org.testng.internal.thread.ThreadTimeoutException;
 import org.testng.internal.thread.ThreadUtil;
@@ -602,12 +597,6 @@ public class MethodHelper {
   // }
   // return result;
   // }
-  private static void log(int level, String s) {
-    if (level <= TestRunner.getVerbose()) {
-      ppp(s);
-    }
-  }
-
   public static void ppp(String s) {
     System.out.println("[MethodHelper] " + s);
   }

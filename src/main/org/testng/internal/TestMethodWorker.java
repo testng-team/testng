@@ -9,7 +9,6 @@ import org.testng.ClassMethodMap;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.TestRunner;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.xml.XmlSuite;
 
@@ -217,9 +216,7 @@ public class TestMethodWorker implements IMethodWorker {
   }
 
   private void ppp(String s) {
-    if (TestRunner.getVerbose() >= 2) {
-      System.out.println("[TestMethodWorker " + ThreadUtil.currentThreadInfo() + "] " + s);
-    }
+    Utils.log("TestMethodWorker", 2, ThreadUtil.currentThreadInfo() + ":" + s);
   }
 
   public void setAllTestMethods(ITestNGMethod[] allTestMethods) {

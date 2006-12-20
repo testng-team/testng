@@ -1,16 +1,17 @@
 package org.testng;
 
-import org.testng.internal.ConfigurationMethod;
-import org.testng.internal.NoOpTestClass;
-import org.testng.internal.RunInfo;
-import org.testng.internal.TestNGMethod;
-import org.testng.internal.annotations.IAnnotationFinder;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.testng.internal.ConfigurationMethod;
+import org.testng.internal.NoOpTestClass;
+import org.testng.internal.RunInfo;
+import org.testng.internal.TestNGMethod;
+import org.testng.internal.Utils;
+import org.testng.internal.annotations.IAnnotationFinder;
 
 /**
  * This class represents a test class:
@@ -189,9 +190,7 @@ public class TestClass extends NoOpTestClass implements ITestClass {
   }
   
   private void log(int level, String s) {
-    if (TestRunner.getVerbose() >= level) {
-      ppp(s);
-    }
+    Utils.log("TestClass", level, s);
   }
   
   private static void ppp(String s) {

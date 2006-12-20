@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 import org.testng.IMethodSelector;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
-import org.testng.TestRunner;
 import org.testng.xml.XmlClass;
 
 import bsh.EvalError;
@@ -185,7 +184,7 @@ public class XmlMethodSelector implements IMethodSelector {
             Utils.log("XmlMethodSelector", 1, "Cannot find class in classpath " + xmlClass.getName());
             continue;
           }
-          if(!cls.isAssignableFrom(methodClass) && !methodClass.isAssignableFrom(cls)) {
+          if(!assignable(methodClass, cls)) {
             continue;
           }
           
@@ -210,6 +209,11 @@ public class XmlMethodSelector implements IMethodSelector {
     logInclusion(result ? "Including" : "Excluding", "method", methodName + "()");
 
     return result;
+  }
+  
+  @SuppressWarnings({"unchecked"})
+  private boolean assignable(Class sourceClass, Class targetClass) {
+    return sourceClass.isAssignableFrom(targetClass) || targetClass.isAssignableFrom(sourceClass);
   }
   
   private Map<String, String> m_logged = new HashMap<String, String>();
@@ -325,9 +329,7 @@ public class XmlMethodSelector implements IMethodSelector {
   }
     
   private static void log(int level, String s) {
-    if (level <= TestRunner.getVerbose()) {
-      ppp(s);
-    }
+    Utils.log("XmlMethodSelector", level, s);
   }
   
   private static void ppp(String s) {
