@@ -530,6 +530,16 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
 
     // Invoke listeners
     fireEvent(true /*start*/);
+    
+    // invoke @BeforeTest
+    ITestNGMethod[] testConfigurationMethods= getBeforeTestConfigurationMethods();
+    if(null != testConfigurationMethods && testConfigurationMethods.length > 0) {
+      m_invoker.invokeConfigurations(null,
+                                     testConfigurationMethods,
+                                     m_xmlTest.getSuite(), 
+                                     m_xmlTest.getParameters(),
+                                     null /* instance */);
+    }
   }
 
   private void privateRunJUnit(XmlTest xmlTest) {
@@ -695,6 +705,16 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   }
   
   private void afterRun() {
+    // invoke @AfterTest
+    ITestNGMethod[] testConfigurationMethods= getAfterTestConfigurationMethods();
+    if(null != testConfigurationMethods && testConfigurationMethods.length > 0) {
+      m_invoker.invokeConfigurations(null,
+                                     testConfigurationMethods,
+                                     m_xmlTest.getSuite(), 
+                                     m_xmlTest.getParameters(),
+                                     null /* instance */);
+    }
+
     //
     // Log the end date
     //
@@ -968,10 +988,6 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     }
 
     return result;
-  }
-
-  public ITestNGMethod[] getTestMethods() {
-    return m_allTestMethods;
   }
 
   private void logFailedTest(ITestNGMethod method,

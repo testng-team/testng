@@ -266,25 +266,7 @@ public class SuiteRunner implements ISuite, Serializable {
   }
 
   private void runTest(TestRunner tr) {
-    Map<String, String> parameters = tr.getTest().getParameters();
-    ITestNGMethod[] testConfigurationMethods= tr.getBeforeTestConfigurationMethods();
-    if(null != testConfigurationMethods && testConfigurationMethods.length > 0) {
-      tr.getInvoker().invokeConfigurations(null,
-                                           testConfigurationMethods,
-                                           m_suite, 
-                                           parameters,
-                                           null /* instance */);
-    }
-    
     tr.run();
-    
-    testConfigurationMethods= tr.getAfterTestConfigurationMethods();
-    if(null != testConfigurationMethods && testConfigurationMethods.length > 0) {
-      tr.getInvoker().invokeConfigurations(null,
-                                   testConfigurationMethods,
-                                   m_suite, parameters,
-                                   null /* instance */);
-    }
 
     ISuiteResult sr = new SuiteResult(m_suite, tr);
     m_suiteResults.put(tr.getName(), sr);
@@ -348,7 +330,7 @@ public class SuiteRunner implements ISuite, Serializable {
     Map<String, Collection<ITestNGMethod>> result= new HashMap<String, Collection<ITestNGMethod>>();
 
     for (TestRunner tr : m_testRunners) {
-      ITestNGMethod[] methods = tr.getTestMethods();
+      ITestNGMethod[] methods = tr.getAllTestMethods();
       for (ITestNGMethod m : methods) {
         String[] groups = m.getGroups();
         for (String groupName : groups) {
