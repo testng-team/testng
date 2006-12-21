@@ -101,8 +101,8 @@ public class RemoteTestNG extends TestNG {
           public TestRunner newTestRunner(ISuite suite, XmlTest xmlTest) {
             TestRunner runner= new TestRunner(suite, xmlTest);
             if(m_useDefaultListeners) {
-              runner.addTestListener(new TestHTMLReporter());
-              runner.addTestListener(new JUnitXMLReporter());
+              runner.addListener(new TestHTMLReporter());
+              runner.addListener(new JUnitXMLReporter());
             }
 
             return runner;
@@ -150,7 +150,7 @@ public class RemoteTestNG extends TestNG {
 
     public TestRunner newTestRunner(ISuite suite, XmlTest test) {
       TestRunner tr= m_delagateFactory.newTestRunner(suite, test);
-      tr.addTestListener(new RemoteMessageSenderTestListener(suite, test, m_messageSender));
+      tr.addListener(new RemoteMessageSenderTestListener(suite, test, m_messageSender));
 
       return tr;
     }

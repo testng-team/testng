@@ -4,6 +4,7 @@ import org.testng.ISuite;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
+import org.testng.internal.IResultListener;
 import org.testng.xml.XmlTest;
 
 /**
@@ -11,7 +12,7 @@ import org.testng.xml.XmlTest;
  * 
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
-public class RemoteMessageSenderTestListener implements ITestListener {
+public class RemoteMessageSenderTestListener implements IResultListener {
   private final StringMessageSenderHelper m_sender;
   private ISuite m_suite;
   private XmlTest m_xmlTest;
@@ -80,5 +81,25 @@ public class RemoteMessageSenderTestListener implements ITestListener {
     else {
       m_sender.sendMessage(new TestResultMessage(m_currentTestContext, testResult));
     }
+  }
+
+  /**
+   * @see org.testng.internal.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
+   */
+  public void onConfigurationFailure(ITestResult itr) {
+    onTestFailure(itr);
+  }
+
+  /**
+   * @see org.testng.internal.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
+   */
+  public void onConfigurationSkip(ITestResult itr) {
+    onTestSkipped(itr);
+  }
+
+  /**
+   * @see org.testng.internal.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
+   */
+  public void onConfigurationSuccess(ITestResult itr) {
   }
 }

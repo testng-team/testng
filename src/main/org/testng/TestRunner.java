@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.Constants;
+import org.testng.internal.IConfigurationListener;
 import org.testng.internal.IInvoker;
 import org.testng.internal.IMethodWorker;
 import org.testng.internal.ITestResultNotifier;
@@ -61,7 +62,10 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
 
   /** ITestListeners support. */
   transient private List<ITestListener> m_testListeners = new ArrayList<ITestListener>();
+  transient private List<IConfigurationListener> m_configurationListeners= new ArrayList<IConfigurationListener>();
 
+  private IConfigurationListener m_confListener= new ConfigurationListener();
+  
   /**
    * All the test methods we found, associated with their respective classes.
    * Note that these test methods might belong to different classes.
@@ -194,6 +198,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       initMethods();
     }
 
+    addConfigurationListener(m_confListener);
   }
 
   /**
@@ -383,24 +388,6 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     return null;
   }
 
-  public String getName() {
-    return m_testName;
-  }
-
-  public String[] getIncludedGroups() {
-    Map<String, String> ig= m_xmlMethodSelector.getIncludedGroups();
-    String[] result= (String[]) ig.values().toArray((new String[ig.size()]));
-
-    return result;
-  }
-
-  public String[] getExcludedGroups() {
-    Map<String, String> eg= m_xmlMethodSelector.getExcludedGroups();
-    String[] result= (String[]) eg.values().toArray((new String[eg.size()]));
-
-    return result;
-  }
-
   public void setTestName(String name) {
     m_testName = name;
   }
@@ -410,24 +397,6 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     File file = new File(od);
     file.mkdirs();
     m_outputDirectory= file.getAbsolutePath();
-  }
-
-  public String getOutputDirectory() {
-    return m_outputDirectory;
-  }
-
-  /**
-   * @return Returns the endDate.
-   */
-  public Date getEndDate() {
-    return m_endDate;
-  }
-
-  /**
-   * @return Returns the startDate.
-   */
-  public Date getStartDate() {
-    return m_startDate;
   }
 
   private void addMetaGroup(String name, List<String> groupNames) {
@@ -870,27 +839,6 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   }
 
   /**
-   * TODO: not used
-   */
-//  private void invokeClassConfigurations(ITestNGMethod[] classMethods,
-//                                         XmlTest xmlTest,
-//                                         boolean before) {
-//    for (IClass testClass : m_classMap.values()) {
-//      m_invoker.invokeConfigurations(testClass,
-//                                     null,
-//                                     classMethods,
-//                                     m_xmlTest.getSuite(),
-//                                     xmlTest.getParameters(),
-//                                     null /* instance */);
-//
-//      String msg= "Marking class " + testClass + " as " + (before ? "before" : "after")
-//        + "ConfigurationClass =true";
-//
-//      log(3, msg);
-//    }
-//  }
-
-  /**
    * Logs the beginning of the {@link #privateRun()}.
    */
   private void logStart() {
@@ -923,6 +871,113 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     }
   }
 
+  /////
+  // ITestContext
+  //
+  public String getName() {
+    return m_testName;
+  }
+
+  /**
+   * @return Returns the startDate.
+   */
+  public Date getStartDate() {
+    return m_startDate;
+  }
+
+  /**
+   * @return Returns the endDate.
+   */
+  public Date getEndDate() {
+    return m_endDate;
+  }
+
+  public IResultMap getPassedTests() {
+    return m_passedTests;
+  }
+
+  public IResultMap getSkippedTests() {
+    return m_skippedTests;
+  }
+
+  public IResultMap getFailedTests() {
+    return m_failedTests;
+  }
+
+  public IResultMap getFailedButWithinSuccessPercentageTests() {
+    return m_failedButWithinSuccessPercentageTests;
+  }
+
+  public String[] getIncludedGroups() {
+    Map<String, String> ig= m_xmlMethodSelector.getIncludedGroups();
+    String[] result= (String[]) ig.values().toArray((new String[ig.size()]));
+
+    return result;
+  }
+
+  public String[] getExcludedGroups() {
+    Map<String, String> eg= m_xmlMethodSelector.getExcludedGroups();
+    String[] result= (String[]) eg.values().toArray((new String[eg.size()]));
+
+    return result;
+  }
+
+  public String getOutputDirectory() {
+    return m_outputDirectory;
+  }
+
+  /**
+   * @return Returns the suite.
+   */
+  public ISuite getSuite() {
+    return m_suite;
+  }
+
+  public ITestNGMethod[] getAllTestMethods() {
+    return m_allTestMethods;
+  }
+
+  
+  public String getHost() {
+    return m_host;
+  }
+
+  public Collection<ITestNGMethod> getExcludedMethods() {
+    Map<ITestNGMethod, ITestNGMethod> vResult = 
+      new HashMap<ITestNGMethod, ITestNGMethod>();
+    
+    for (ITestNGMethod m : m_excludedMethods) {
+      vResult.put(m, m);
+    }
+    
+    return vResult.keySet();
+  }
+
+  /**
+   * @see org.testng.ITestContext#getFailedConfigurations()
+   */
+  public IResultMap getFailedConfigurations() {
+    return m_failedConfigurations;
+  }
+
+  /**
+   * @see org.testng.ITestContext#getPassedConfigurations()
+   */
+  public IResultMap getPassedConfigurations() {
+    return m_passedConfigurations;
+  }
+
+  /**
+   * @see org.testng.ITestContext#getSkippedConfigurations()
+   */
+  public IResultMap getSkippedConfigurations() {
+    return m_skippedConfigurations;
+  }
+  
+  //
+  // ITestContext
+  /////
+  
   /////
   // ITestResultNotifier
   //
@@ -966,29 +1021,16 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     return m_testListeners;
   }
 
+  public List<IConfigurationListener> getConfigurationListeners() {
+    return m_configurationListeners;
+  }
   //
   // ITestResultNotifier
   /////
 
-  /**
-   * FIXME: not used
-   * 
-   * @param declaringClass
-   * @return
-   */
-  private IClass findTestClass(Class<?> declaringClass) {
-    IClass result= m_classMap.get(declaringClass);
-    if (null == result) {
-      for (Class cls : m_classMap.keySet()) {
-        if (declaringClass.isAssignableFrom(cls)) {
-          result= m_classMap.get(cls);
-          assert null != result : "Should never happen";
-        }
-      }
-    }
-
-    return result;
-  }
+//  public ITestNGMethod[] getTestMethods() {
+//    return m_allTestMethods;
+//  }
 
   private void logFailedTest(ITestNGMethod method,
                              ITestResult tr,
@@ -1030,46 +1072,30 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     Utils.log("TestRunner", 2, s);
   }
 
-  public IResultMap getPassedTests() {
-    return m_passedTests;
-  }
-
-  public IResultMap getSkippedTests() {
-    return m_skippedTests;
-  }
-
-  public IResultMap getFailedTests() {
-    return m_failedTests;
-  }
-
-  public IResultMap getFailedButWithinSuccessPercentageTests() {
-    return m_failedButWithinSuccessPercentageTests;
-  }
-
   /////
   // Listeners
   //
-
+  public void addListener(Object listener) {
+    if(listener instanceof ITestListener) {
+      addTestListener((ITestListener) listener);
+    }
+    if(listener instanceof IConfigurationListener) {
+      addConfigurationListener((IConfigurationListener) listener);
+    }
+  }
+  
   public void addTestListener(ITestListener il) {
     m_testListeners.add(il);
   }
 
+  public void addConfigurationListener(IConfigurationListener icl) {
+    m_configurationListeners.add(icl);
+  }
   //
   // Listeners
   /////
 
-  /**
-   * @return Returns the suite.
-   */
-  public ISuite getSuite() {
-    return m_suite;
-  }
-
   private List<InvokedMethod> m_invokedMethods = new ArrayList<InvokedMethod>();
-
-  public ITestNGMethod[] getAllTestMethods() {
-    return m_allTestMethods;
-  }
 
   private void dumpInvokedMethods() {
     System.out.println("\n*********** INVOKED METHODS\n");
@@ -1101,20 +1127,28 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
 
     return result;
   }
-  
-  public String getHost() {
-    return m_host;
-  }
 
-  public Collection<ITestNGMethod> getExcludedMethods() {
-    Map<ITestNGMethod, ITestNGMethod> vResult = 
-      new HashMap<ITestNGMethod, ITestNGMethod>();
-    
-    for (ITestNGMethod m : m_excludedMethods) {
-      vResult.put(m, m);
-    }
-    
-    return vResult.keySet();
-  }
+  private IResultMap m_passedConfigurations= new ResultMap();
+  private IResultMap m_skippedConfigurations= new ResultMap();
+  private IResultMap m_failedConfigurations= new ResultMap();
   
+  private class ConfigurationListener implements IConfigurationListener {
+    public void onConfigurationFailure(ITestResult itr) {
+      synchronized(m_failedConfigurations) {
+        m_failedConfigurations.addResult(itr, itr.getMethod());
+      }
+    }
+
+    public void onConfigurationSkip(ITestResult itr) {
+      synchronized(m_skippedConfigurations) {
+        m_skippedConfigurations.addResult(itr, itr.getMethod());
+      }
+    }
+
+    public void onConfigurationSuccess(ITestResult itr) {
+      synchronized(m_passedConfigurations) {
+        m_passedConfigurations.addResult(itr, itr.getMethod());
+      }
+    }
+  }
 } // TestRunner

@@ -26,7 +26,9 @@ import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
+import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.internal.IResultListener;
 import org.testng.internal.Utils;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
@@ -41,7 +43,7 @@ import org.w3c.dom.Text;
  * 
  * @TODO: clean up
  */
-public class JUnitXMLReporter implements ITestListener {
+public class JUnitXMLReporter implements IResultListener {
 
   private String m_outputFileName= null;
   private File m_outputFile= null;
@@ -55,6 +57,7 @@ public class JUnitXMLReporter implements ITestListener {
   private int m_numSkipped= 0;
   private int m_numFailedButIgnored= 0;
   private List<ITestResult> m_allTests= Collections.synchronizedList(new ArrayList<ITestResult>());
+  private List<ITestResult> m_configIssues= Collections.synchronizedList(new ArrayList<ITestResult>());
 
   public void onTestStart(ITestResult result) {
   }
@@ -134,32 +137,12 @@ public class JUnitXMLReporter implements ITestListener {
         - m_testContext.getStartDate().getTime();
       rootElement.setAttribute(XMLConstants.ATTR_TIME, "" + (elapsedTimeMillis / 1000.0));
 
+      for(ITestResult tr: m_configIssues) {
+        Element element= createElement(d, tr);
+        rootElement.appendChild(element);
+      }
       for(ITestResult tr : m_allTests) {
-        Element testCaseElement= d.createElement(XMLConstants.TESTCASE);
-        elapsedTimeMillis= tr.getEndMillis() - tr.getStartMillis();
-        testCaseElement.setAttribute(XMLConstants.ATTR_NAME, tr.getName());
-        testCaseElement.setAttribute(XMLConstants.ATTR_CLASSNAME,
-                                     tr.getTestClass().getRealClass().getName());
-        testCaseElement.setAttribute(XMLConstants.ATTR_TIME, 
-                                     "" + ((double) elapsedTimeMillis)/1000);
-        if (ITestResult.FAILURE == tr.getStatus()) {
-          Element nested = d.createElement(XMLConstants.FAILURE);
-          testCaseElement.appendChild(nested);
-          Throwable t = tr.getThrowable();
-          if (t != null) {
-            nested.setAttribute(XMLConstants.ATTR_TYPE, t.getClass().getName());
-            String message = t.getMessage();
-            if ((message != null) && (message.length() > 0)) {
-              nested.setAttribute(XMLConstants.ATTR_MESSAGE, message);
-            }
-            CDATASection trace= d.createCDATASection(Utils.stackTrace(t, false)[0]);
-            nested.appendChild(trace);
-          }
-        }
-        else if (ITestResult.SKIP == tr.getStatus()) {
-          Element nested = d.createElement("skipped");
-          testCaseElement.appendChild(nested);
-        }
+        Element testCaseElement= createElement(d, tr);
         rootElement.appendChild(testCaseElement);
       }
 
@@ -182,5 +165,66 @@ public class JUnitXMLReporter implements ITestListener {
       te.printStackTrace();
       System.err.println("Error while writing out JUnitXML because of " + te);
     }
+  }
+
+  private Element createElement(Document doc, ITestResult tr) {
+    Element resultElement= doc.createElement(XMLConstants.TESTCASE);
+    long elapsedTimeMillis= tr.getEndMillis() - tr.getStartMillis();
+    String name= tr.getMethod().isTest() ? tr.getName() : Utils.detailedMethodName(tr.getMethod());
+    resultElement.setAttribute(XMLConstants.ATTR_NAME, name);
+    resultElement.setAttribute(XMLConstants.ATTR_CLASSNAME,
+                               tr.getTestClass().getRealClass().getName());
+    resultElement.setAttribute(XMLConstants.ATTR_TIME, 
+                               "" + ((double) elapsedTimeMillis)/1000);
+    if (ITestResult.FAILURE == tr.getStatus()) {
+      Element nested = createFailureElement(doc, tr); 
+      resultElement.appendChild(nested);
+    }
+    else if (ITestResult.SKIP == tr.getStatus()) {
+      Element nested = createSkipElement(doc, tr);
+      resultElement.appendChild(nested);
+    }
+    
+    return resultElement;
+  }
+  
+  private Element createFailureElement(Document doc, ITestResult tr) {
+    Element nested= doc.createElement(XMLConstants.FAILURE);
+    Throwable t = tr.getThrowable();
+    if (t != null) {
+      nested.setAttribute(XMLConstants.ATTR_TYPE, t.getClass().getName());
+      String message = t.getMessage();
+      if ((message != null) && (message.length() > 0)) {
+        nested.setAttribute(XMLConstants.ATTR_MESSAGE, message);
+      }
+      CDATASection trace= doc.createCDATASection(Utils.stackTrace(t, false)[0]);
+      nested.appendChild(trace);
+    }
+    
+    return nested;
+  }
+  
+  private Element createSkipElement(Document doc, ITestResult tr) {
+    return doc.createElement("skipped");
+  }
+  
+  /**
+   * @see org.testng.internal.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
+   */
+  public void onConfigurationFailure(ITestResult itr) {
+    m_configIssues.add(itr);
+  }
+
+  /**
+   * @see org.testng.internal.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
+   */
+  public void onConfigurationSkip(ITestResult itr) {
+    m_configIssues.add(itr);
+  }
+
+  /**
+   * @see org.testng.internal.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
+   */
+  public void onConfigurationSuccess(ITestResult itr) {
   }
 }

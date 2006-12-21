@@ -18,8 +18,8 @@ public class Misc extends BaseTest {
     run();
     String[] passed = {
       };
+      // @Configuration failures are not reported in the ITestListener
       String[] failed = {
-          "setUp",
       };
       String[] skipped = {
           "test",

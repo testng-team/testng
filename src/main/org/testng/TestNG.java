@@ -27,6 +27,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.HostFile;
+import org.testng.internal.IResultListener;
 import org.testng.internal.Invoker;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
@@ -1275,7 +1276,7 @@ public class TestNG {
     m_status |= HAS_SKIPPED;
   }
 
-  public static class ExitCodeListener implements ITestListener {
+  public static class ExitCodeListener implements IResultListener {
     protected TestNG m_mainRunner;
     
     public ExitCodeListener() {
@@ -1288,17 +1289,17 @@ public class TestNG {
     
     public void onTestFailure(ITestResult result) {
       setHasRunTests();
-      m_mainRunner.m_status |= HAS_FAILURE;
+      m_mainRunner.setStatus(HAS_FAILURE);
     }
 
     public void onTestSkipped(ITestResult result) {
       setHasRunTests();
-      m_mainRunner.m_status |= HAS_SKIPPED;
+      m_mainRunner.setStatus(HAS_SKIPPED);
     }
 
     public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
       setHasRunTests();
-      m_mainRunner.m_status |= HAS_FSP;
+      m_mainRunner.setStatus(HAS_FSP);
     }
 
     public void onTestSuccess(ITestResult result) {
@@ -1317,6 +1318,26 @@ public class TestNG {
     
     private void setHasRunTests() {
       m_mainRunner.m_hasTests= true;
+    }
+
+    /**
+     * @see org.testng.internal.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
+     */
+    public void onConfigurationFailure(ITestResult itr) {
+      m_mainRunner.setStatus(HAS_FAILURE);
+    }
+
+    /**
+     * @see org.testng.internal.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
+     */
+    public void onConfigurationSkip(ITestResult itr) {
+      m_mainRunner.setStatus(HAS_SKIPPED);
+    }
+
+    /**
+     * @see org.testng.internal.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
+     */
+    public void onConfigurationSuccess(ITestResult itr) {
     }
   }
 }

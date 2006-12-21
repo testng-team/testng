@@ -744,4 +744,44 @@ public final class Utils {
       return toString;
     }
   }
+
+  /**
+   * @param method
+   * @return
+   */
+  public static String detailedMethodName(ITestNGMethod method) {
+    StringBuffer buf= new StringBuffer();
+    if(method.isBeforeSuiteConfiguration()) {
+      buf.append("@BeforeSuite ");
+    }
+    else if(method.isBeforeTestConfiguration()) {
+      buf.append("@BeforeTest ");
+    }
+    else if(method.isBeforeClassConfiguration()) {
+      buf.append("@BeforeClass ");
+    }
+    else if(method.isBeforeGroupsConfiguration()) {
+      buf.append("@BeforeGroups ");
+    }
+    else if(method.isBeforeMethodConfiguration()) {
+      buf.append("@BeforeMethod ");
+    }
+    else if(method.isAfterMethodConfiguration()) {
+      buf.append("@AfterMethod ");
+    }
+    else if(method.isAfterGroupsConfiguration()) {
+      buf.append("@AfterGroups ");
+    }
+    else if(method.isAfterClassConfiguration()) {
+      buf.append("@AfterClass ");
+    }
+    else if(method.isAfterTestConfiguration()) {
+      buf.append("@AfterTest ");
+    }
+    else if(method.isAfterSuiteConfiguration()) {
+      buf.append("@AfterSuite ");
+    }
+    
+    return buf.append(method.getMethodName()).toString(); 
+  }
 }

@@ -99,7 +99,8 @@ public class Invoker implements IInvoker {
         testClass= tm.getTestClass();
       }
 
-      ITestResult testResult= new TestResult(testClass, instance,
+      ITestResult testResult= new TestResult(testClass, 
+                                             instance,
                                              tm,
                                              null,
                                              System.currentTimeMillis(),
@@ -122,7 +123,7 @@ public class Invoker implements IInvoker {
           boolean alwaysRun= isAlwaysRun(configurationAnnotation);
 
           if(!confInvocationPassed(tm.getRealClass()) && !alwaysRun) {
-            skip(tm, testResult);
+            handleConfigurationSkip(tm, testResult);
             continue;
           }
 
@@ -138,6 +139,10 @@ public class Invoker implements IInvoker {
           Object[] newInstances= (null != instance) ? new Object[] { instance } : instances;
 
           invokeConfigurationMethod(newInstances, tm, parameters, isClassConfiguration, testResult);
+          
+          // TODO: probably we should trigger the event for each instance???
+          testResult.setEndMillis(System.currentTimeMillis());
+          runConfigurationListeners(testResult);
         } // if is enabled
         else {
           log(3,
@@ -165,10 +170,9 @@ public class Invoker implements IInvoker {
   /**
    * Marks the currect <code>TestResult</code> as skipped and invokes the listeners.
    */
-  private void skip(ITestNGMethod tm, ITestResult testResult) {
+  private void handleConfigurationSkip(ITestNGMethod tm, ITestResult testResult) {
     testResult.setStatus(ITestResult.SKIP);
-    m_notifier.addSkippedTest(tm, testResult);
-    runTestListeners(testResult);
+    runConfigurationListeners(testResult);
   }
   
   /**
@@ -218,10 +222,10 @@ public class Invoker implements IInvoker {
                                           XmlSuite suite) 
   {
     Throwable cause= ite.getCause() != null ? ite.getCause() : ite;
-    Utils.log("", 2, "Failed to invoke @Configuration method " 
+    Utils.log("", 3, "Failed to invoke @Configuration method " 
         + tm.getRealClass().getName() + "." + tm.getMethodName() + ":" + cause.getMessage());
-    handleException(cause, tm, testResult, 1);
-    runTestListeners(testResult);
+    handleException(cause, tm, testResult, 1, false);
+    runConfigurationListeners(testResult);
 
     // 
     // If in TestNG mode, need to take a look at the annotation to figure out
@@ -810,7 +814,7 @@ public class Invoker implements IInvoker {
           status= ITestResult.SUCCESS;
         }
         else {
-          handleException(ite, testMethod, testResult, failureCount++);
+          handleException(ite, testMethod, testResult, failureCount++, true);
           status= testResult.getStatus();
         }
       }
@@ -953,7 +957,8 @@ public class Invoker implements IInvoker {
   private void handleException(Throwable throwable,
                                ITestNGMethod testMethod,
                                ITestResult testResult,
-                               int failureCount) {
+                               int failureCount,
+                               boolean notify) {
     testResult.setThrowable(throwable);
     int successPercentage= testMethod.getSuccessPercentage();
     int invocationCount= testMethod.getInvocationCount();
@@ -961,11 +966,16 @@ public class Invoker implements IInvoker {
 
     if(failureCount < numberOfTestsThatCanFail) {
       testResult.setStatus(ITestResult.SUCCESS_PERCENTAGE_FAILURE);
-      m_notifier.addFailedButWithinSuccessPercentageTest(testMethod, testResult);
+      if(notify) {
+        m_notifier.addFailedButWithinSuccessPercentageTest(testMethod, testResult);  
+      }
+      
     }
     else {
       testResult.setStatus(ITestResult.FAILURE);
-      m_notifier.addFailedTest(testMethod, testResult);
+      if(notify) {
+        m_notifier.addFailedTest(testMethod, testResult);
+      } 
     }
 
   }
@@ -1061,10 +1071,27 @@ public class Invoker implements IInvoker {
     return result;
   }
 
+  private void runConfigurationListeners(ITestResult tr) {
+    for(IConfigurationListener icl: m_notifier.getConfigurationListeners()) {
+      switch(tr.getStatus()) {
+        case ITestResult.SKIP:
+          icl.onConfigurationSkip(tr);
+          break;
+        case ITestResult.FAILURE:
+          icl.onConfigurationFailure(tr);
+          break;
+        case ITestResult.SUCCESS:
+          icl.onConfigurationSuccess(tr);
+          break;
+      }
+    }
+  }
+  
   private void runTestListeners(ITestResult tr) {
     runTestListeners(tr, m_notifier.getTestListeners());
   }
   
+  // TODO: move this from here as it is directly called from TestNG
   public static void runTestListeners(ITestResult tr, List<ITestListener> listeners) {
     for (ITestListener itl : listeners) {
       switch(tr.getStatus()) {

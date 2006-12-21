@@ -12,6 +12,7 @@ import org.testng.internal.Utils;
  * A simple reporter that collects the results and does nothing else.
  * 
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
+ * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public class TextReporter extends TestListenerAdapter {
   private int m_verbose = 0;
@@ -46,6 +47,36 @@ public class TextReporter extends TestListenerAdapter {
     //
     // Log Text
     //
+    for(Object o : getConfigurationFailures()) {
+      ITestResult tr = (ITestResult) o;
+      Throwable ex = tr.getThrowable();
+      String stackTrace= "";
+      if (ex != null) {
+        if (m_verbose >= 2) {
+          stackTrace= Utils.stackTrace(ex, false)[0];
+        }
+      }
+
+      logResult("FAILED CONFIGURATION", 
+          Utils.detailedMethodName(tr.getMethod()), 
+          tr.getMethod().getDescription(), 
+          stackTrace, 
+          tr.getParameters(), 
+          tr.getMethod().getMethod().getParameterTypes()
+      );
+    }
+
+    for(Object o : getConfigurationSkips()) {
+      ITestResult tr = (ITestResult) o;
+      logResult("SKIPPED CONFIGURATION", 
+          Utils.detailedMethodName(tr.getMethod()), 
+          tr.getMethod().getDescription(), 
+          null, 
+          tr.getParameters(), 
+          tr.getMethod().getMethod().getParameterTypes()
+      );
+    }
+    
     for(Object o : getPassedTests()) {
       ITestResult tr = (ITestResult) o;
       logResult("PASSED", tr.getName(), tr.getMethod().getDescription(), null, tr.getParameters(), tr.getMethod().getMethod().getParameterTypes());

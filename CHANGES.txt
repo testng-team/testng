@@ -1,6 +1,8 @@
 ===========================================================================
 5.5
 
+Added: Clean separation between @Test invocation events and @Configuration invocation events
+       (see also TESTNG-111)
 Added: Test instances created by @Factory now run in multiple threads if parallel="methods"
 Fixed: @Before/@AfterGroups invocation order
 Fixed: TESTNG-27: Parameters are not used on <test> level anymore

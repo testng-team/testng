@@ -13,7 +13,7 @@ import java.util.Map;
  * environment.
  *
  * @author Cedric Beust, Aug 6, 2004
- * 
+ * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public interface ITestContext extends Serializable {
   
@@ -93,4 +93,21 @@ public interface ITestContext extends Serializable {
    */
   public Collection<ITestNGMethod> getExcludedMethods();
   
+  /**
+   * Retrieves information about the successful configuration method invocations.
+   * @return
+   */
+  IResultMap getPassedConfigurations();
+  
+  /**
+   * Retrieves information about the skipped configuration method invocations.
+   * @return
+   */
+  IResultMap getSkippedConfigurations();
+  
+  /**
+   * Retrieves information about the failed configuration method invocations.
+   * @return
+   */
+  IResultMap getFailedConfigurations();
 }

@@ -23,9 +23,12 @@ import org.testng.internal.Utils;
  * This class implements an HTML reporter for individual tests.
  *
  * @author Cedric Beust, May 2, 2004
- * 
+ * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public class TestHTMLReporter extends TestListenerAdapter {
+  private static final Comparator<ITestResult> NAME_COMPARATOR= new NameComparator();
+  private static final Comparator<ITestResult> CONFIGURATION_COMPARATOR= new ConfigurationComparator();
+  
   private ITestContext m_testContext = null;
   
   /////
@@ -40,7 +43,9 @@ public class TestHTMLReporter extends TestListenerAdapter {
   public void onFinish(ITestContext context) {
     generateLog(m_testContext, 
                 null /* host */,
-                m_testContext.getOutputDirectory(), 
+                m_testContext.getOutputDirectory(),
+                getConfigurationFailures(),
+                getConfigurationSkips(),
                 getPassedTests(), 
                 getFailedTests(),
                 getSkippedTests(), 
@@ -52,18 +57,10 @@ public class TestHTMLReporter extends TestListenerAdapter {
 
   private static String getOutputFile(ITestContext context) {
     return context.getName() + ".html";
-//    String result = 
-//      context.getSuite().getName() + File.separatorChar +
-//      outputDirectory + File.separator + context.getName() + ".html";
-//    File result = new File(base);
-//    String path = result.getAbsolutePath();
-//    int index = path.lastIndexOf(".");
-//    base = "file://" + path.substring(0, index) + ".out";
-//    return new File(result);
   }
   
   public static void generateTable(StringBuffer sb, String title, 
-      Collection<ITestResult> tests, String cssClass)
+      Collection<ITestResult> tests, String cssClass, Comparator<ITestResult> comparator)
   {
     sb.append("<table width='100%' border='1' class='invocation-").append(cssClass).append("'>\n")
       .append("<tr><td colspan='3' align='center'><b>").append(title).append("</b></td></tr>\n")    
@@ -73,16 +70,10 @@ public class TestHTMLReporter extends TestListenerAdapter {
       .append("<td width=\"30%\"><b>Exception</b></td>\n")
       .append("</tr>\n");
     
-    Comparator testResultComparator = new Comparator<ITestResult>() {
-      public int compare(ITestResult o1, ITestResult o2) {
-        String c1 = o1.getName();
-        String c2 = o2.getName();
-        return c1.compareTo(c2);
-      }
-    };
+
     
     if (tests instanceof List) {
-      Collections.sort((List) tests, testResultComparator);
+      Collections.sort((List<ITestResult>) tests, comparator);
     }
 
     int i = 0;
@@ -97,8 +88,8 @@ public class TestHTMLReporter extends TestListenerAdapter {
       // Test method
       ITestNGMethod method = tr.getMethod();
 
-      String fqName = tr.getName();
-      sb.append("<td title='").append(tr.getTestClass().getName()).append(".").append(fqName).append("()'>").append(fqName);
+      String fqName = Utils.detailedMethodName(method);
+      sb.append("<td title='").append(tr.getTestClass().getName()).append(".").append(tr.getName()).append("()'>").append(fqName);
       
       // Method description
       if (! Utils.isStringEmpty(method.getDescription())) {
@@ -233,9 +224,14 @@ public class TestHTMLReporter extends TestListenerAdapter {
       "\n";
   
   public static void generateLog(ITestContext testContext, 
-      String host, String outputDirectory,
-      Collection<ITestResult> passedTests, Collection<ITestResult> failedTests,
-      Collection<ITestResult> skippedTests, Collection<ITestResult> percentageTests)
+      String host,
+      String outputDirectory,
+      Collection<ITestResult> failedConfs,
+      Collection<ITestResult> skippedConfs,
+      Collection<ITestResult> passedTests, 
+      Collection<ITestResult> failedTests,
+      Collection<ITestResult> skippedTests, 
+      Collection<ITestResult> percentageTests)
   {
     StringBuffer sb = new StringBuffer();
     sb.append("<html>\n<head>\n")
@@ -278,18 +274,24 @@ public class TestHTMLReporter extends TestListenerAdapter {
     ;
     
     sb.append("<small><i>(Hover the method name to see the test class name)</i></small><p/>\n");
+    if (failedConfs.size() > 0) {
+      generateTable(sb, "FAILED CONFIGURATIONS", failedConfs, "failed", CONFIGURATION_COMPARATOR);
+    }
+    if (skippedConfs.size() > 0) {
+      generateTable(sb, "SKIPPED CONFIGURATIONS", skippedConfs, "skipped", CONFIGURATION_COMPARATOR);
+    }
     if (failedTests.size() > 0) {
-      generateTable(sb, "FAILED TESTS", failedTests, "failed");
+      generateTable(sb, "FAILED TESTS", failedTests, "failed", NAME_COMPARATOR);
     }
     if (percentageTests.size() > 0) {
       generateTable(sb, "FAILED TESTS BUT WITHIN SUCCESS PERCENTAGE",
-          percentageTests, "percent");
+          percentageTests, "percent", NAME_COMPARATOR);
     }
     if (passedTests.size() > 0) {
-      generateTable(sb, "PASSED TESTS", passedTests, "passed");
+      generateTable(sb, "PASSED TESTS", passedTests, "passed", NAME_COMPARATOR);
     }
     if (skippedTests.size() > 0) {
-      generateTable(sb, "SKIPPED TESTS", skippedTests, "skipped");
+      generateTable(sb, "SKIPPED TESTS", skippedTests, "skipped", NAME_COMPARATOR);
     }
     
     sb.append("</body>\n</html>");
@@ -299,6 +301,58 @@ public class TestHTMLReporter extends TestListenerAdapter {
 
   private static void ppp(String s) {
     System.out.println("[TestHTMLReporter] " + s);
+  }
+  
+  private static class NameComparator implements Comparator<ITestResult> {
+    public int compare(ITestResult o1, ITestResult o2) {
+      String c1 = o1.getName();
+      String c2 = o2.getName();
+      return c1.compareTo(c2);
+    }
+  
+  }
+  
+  private static class ConfigurationComparator implements Comparator<ITestResult> {
+    public int compare(ITestResult o1, ITestResult o2) {
+      ITestNGMethod tm1= o1.getMethod();
+      ITestNGMethod tm2= o2.getMethod();
+      return annotationValue(tm2) - annotationValue(tm1);
+    }
+    
+    private static int annotationValue(ITestNGMethod method) {
+      if(method.isBeforeSuiteConfiguration()) {
+        return 10;
+      }
+      if(method.isBeforeTestConfiguration()) {
+        return 9;
+      }
+      if(method.isBeforeClassConfiguration()) {
+        return 8;
+      }
+      if(method.isBeforeGroupsConfiguration()) {
+        return 7;
+      }
+      if(method.isBeforeMethodConfiguration()) {
+        return 6;
+      }
+      if(method.isAfterMethodConfiguration()) {
+        return 5;
+      }
+      if(method.isAfterGroupsConfiguration()) {
+        return 4;
+      }
+      if(method.isAfterClassConfiguration()) {
+        return 3;
+      }
+      if(method.isAfterTestConfiguration()) {
+        return 2;
+      }
+      if(method.isAfterSuiteConfiguration()) {
+        return 1;
+      }
+      
+      return 0;
+    }
   }
   
 }

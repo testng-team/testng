@@ -45,6 +45,8 @@ public class RemoteTestWorker extends RemoteWorker implements Runnable {
         TestHTMLReporter.generateLog(tc,
             remoteSuiteRunner.getHost(),
             m_suiteRunner.getOutputDirectory(),
+            tc.getFailedConfigurations().getAllResults(),
+            tc.getSkippedConfigurations().getAllResults(),
             tc.getPassedTests().getAllResults(),
             tc.getFailedTests().getAllResults(),
             tc.getSkippedTests().getAllResults(),

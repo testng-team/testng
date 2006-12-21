@@ -9,25 +9,29 @@ import org.testng.ITestResult;
 import org.testng.xml.XmlTest;
 
 /**
- * This class
+ * An interface defining the notification for @Test results and also
+ * @Configuration results.
  * 
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
+ * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public interface ITestResultNotifier {
   
-  public Set<ITestResult> getPassedTests(ITestNGMethod tm);
+  Set<ITestResult> getPassedTests(ITestNGMethod tm);
   
-  public void addPassedTest(ITestNGMethod tm, ITestResult tr);  
+  void addPassedTest(ITestNGMethod tm, ITestResult tr);  
   
-  public void addSkippedTest(ITestNGMethod tm, ITestResult tr);
+  void addSkippedTest(ITestNGMethod tm, ITestResult tr);
   
-  public void addFailedTest(ITestNGMethod tm, ITestResult tr);
+  void addFailedTest(ITestNGMethod tm, ITestResult tr);
 
-  public void addFailedButWithinSuccessPercentageTest(ITestNGMethod tm, ITestResult tr);
+  void addFailedButWithinSuccessPercentageTest(ITestNGMethod tm, ITestResult tr);
 
-  public void addInvokedMethod(InvokedMethod im);
+  void addInvokedMethod(InvokedMethod im);
   
-  public XmlTest getTest();
+  XmlTest getTest();
   
-  public List<ITestListener> getTestListeners();
+  List<ITestListener> getTestListeners();
+  
+  List<IConfigurationListener> getConfigurationListeners();
 }

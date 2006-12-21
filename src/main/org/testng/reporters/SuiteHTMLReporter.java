@@ -29,6 +29,7 @@ import org.testng.xml.XmlSuite;
  * This class implements an HTML reporter for suites.
  * 
  * @author cbeust
+ * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public class SuiteHTMLReporter implements IReporter {
   public static final String METHODS_CHRONOLOGICAL = "methods.html";
@@ -190,40 +191,6 @@ public class SuiteHTMLReporter implements IReporter {
     
     Utils.writeFile(getOutputDirectory(xmlSuite), REPORTER_OUTPUT, sb);    
   }
-//      Map<String, ISuiteResult> results = suite.getResults();
-//      for (String testName : results.keySet()) {
-//        ISuiteResult sr = results.get(testName);
-//        ITestContext testContext = sr.getTestContext();
-//        Map<ITestNGMethod, ITestResult>[] all = new Map[] {
-//            testContext.getPassedTests(), 
-//            testContext.getFailedTests(),
-//            testContext.getSkippedTests(),
-//            testContext.getFailedButWithinSuccessPercentageTests()
-//        };
-//        
-//        //
-//        // Iterate through all the methods
-//        for (Map<ITestNGMethod, ITestResult> resultSet : all) {
-//          for (ITestNGMethod m : resultSet.keySet()) {
-//            // NOTE(cbeust)
-//            // Should use a map instead of a list for contains()
-//            if (invokedMethods.contains(m)) {
-//              sb.append("<tr>\n");
-//              ITestResult tr = resultSet.get(m);
-//              List<String> output = tr.getExtraOutput().getOutput();
-//              for (String line : output) {
-//                sb.append("<td><em>[").append(m.getMethodName()).append("]</em></td>\n")
-//                  .append("<td>").append(line).append("</td></tr>\n");
-//              }
-//            }
-//            else {
-//              methodsNotRun.add(m);
-//            }
-//          }
-//        }
-        
-//      }  // for testName: result
-//    }
     
   private void generateClasses(XmlSuite xmlSuite, ISuite suite) {
     StringBuffer sb = new StringBuffer();
