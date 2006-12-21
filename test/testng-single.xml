@@ -26,7 +26,10 @@
       <class name="test.CommandLineTest" ></class>
 -->
     <classes>
-      <class name="test.tmp.FactoryTest" />
+<!--
+      <class name="test.annotationtransformer.AnnotationTransformerClassSampleTest" />
+-->
+      <class name="test.annotationtransformer.AnnotationTransformerTest" />
     </classes>
   </test>
 

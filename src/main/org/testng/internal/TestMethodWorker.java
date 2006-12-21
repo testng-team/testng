@@ -58,8 +58,6 @@ public class TestMethodWorker implements IMethodWorker {
     m_allTestMethods = allTestMethods;
     m_groupMethods = groupMethods;
     m_classMethodMap = classMethodMap;
-    
-    ppp("CREATED METHOD WORKER " + testMethods.length);
   }
   
   /**

@@ -77,7 +77,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     return result;
   }
   
-  private void transform (IAnnotation a, Class testClass,
+  private void transform(IAnnotation a, Class testClass,
       Constructor testConstructor, Method testMethod)
   {
     if (a instanceof ITest) {
@@ -101,8 +101,12 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     return result;
   }
 
-  private IAnnotation findAnnotation(Class cls, Annotation a, Class annotationClass) {
-    return m_tagFactory.createTag(cls, a, annotationClass, m_transformer);
+  private IAnnotation findAnnotation(Class cls, Annotation a, 
+      Class annotationClass) 
+  {
+    IAnnotation result = 
+      m_tagFactory.createTag(cls, a, annotationClass, m_transformer);
+    return result;
   }
 
   private void ppp(String string) {

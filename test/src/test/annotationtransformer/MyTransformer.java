@@ -11,6 +11,7 @@ public class MyTransformer implements IAnnotationTransformer {
   public void transform(ITest annotation, Class testClass, 
       Constructor testConstructor, Method testMethod) 
   {
+    annotation.setTimeOut(10000);
     if (testMethod != null) {
       String name = testMethod.getName();
       if ("three".equals(name)) {

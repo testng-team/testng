@@ -71,13 +71,19 @@ public class TestNGMethod extends BaseTestMethod {
   public boolean isTest() {
     return true;
   }
+  
+  private void ppp(String s) {
+    System.out.println("[TestNGMethod] " + s);
+  }
 
-  /**
-   * TODO cquezel JavaDoc.
-   */
   private void init() {
     {
       ITest testAnnotation = AnnotationHelper.findTest(getAnnotationFinder(), m_method);
+      
+      if (testAnnotation == null) {
+        // Try on the class
+        testAnnotation = AnnotationHelper.findTest(getAnnotationFinder(), m_method.getDeclaringClass());
+      }
 
       if (null != testAnnotation) {
         m_timeOut = testAnnotation.getTimeOut();
@@ -85,7 +91,7 @@ public class TestNGMethod extends BaseTestMethod {
 
       if (null != testAnnotation) {
         m_successPercentage = testAnnotation.getSuccessPercentage();
-        
+
         setInvocationCount(testAnnotation.getInvocationCount());
         setThreadPoolSize(testAnnotation.getThreadPoolSize());
       }
