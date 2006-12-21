@@ -1,6 +1,8 @@
 ===========================================================================
 5.5
 
+Fixed: Annotation Transformers now work on class-level annotations
+Fixed: Some class-level @Test attributes were not always honored
 Added: Clean separation between @Test invocation events and @Configuration invocation events
        (see also TESTNG-111)
 Added: Test instances created by @Factory now run in multiple threads if parallel="methods"
