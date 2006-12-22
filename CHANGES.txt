@@ -14,6 +14,10 @@ Fixed: TESTNG-119 Running TestNG runner with invalid '-sourcedir' on JDK14 JavaD
 Fixed: TESTNG-113 Dependent methods within the same static inner class are not found
 Fixed: TESTNG-125 TestNG failed for test classes under *.java*.* pakages
 
+Eclipse plug-in
+Fixed: issue with launch configuration
+Fixed: TESTNG-124: setting location of testng reports output
+
 ===========================================================================
 5.4
 
