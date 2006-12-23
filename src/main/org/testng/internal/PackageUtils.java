@@ -73,12 +73,12 @@ public class PackageUtils {
               packageName = name.substring(0, idx).replace('/', '.');
             }
   
-            Utils.log("Package name is " + packageName);
+            Utils.log("PackageUtils", 4, "Package name is " + packageName);
             if ((idx != -1) || recursive) {
               //it's not inside a deeper dir
               if (name.endsWith(".class") && !entry.isDirectory()) {
                 String className = name.substring(packageName.length() + 1, name.length() - 6);
-                Utils.log("Found class " + className + ", seeing it if it's included or excluded");
+                Utils.log("PackageUtils", 4, "Found class " + className + ", seeing it if it's included or excluded");
                 includeOrExcludeClass(packageName, className, included, excluded, vResult);
               }
             }
@@ -177,7 +177,7 @@ public class PackageUtils {
           }
         });
   
-    Utils.log("Looking for test classes in the directory: " + dir);
+    Utils.log("PackageUtils", 4, "Looking for test classes in the directory: " + dir);
     for (File file : dirfiles) {
       if (file.isDirectory()) {
         findClassesInDirPackage(packageName + "." + file.getName(),
@@ -189,7 +189,7 @@ public class PackageUtils {
       }
       else {
         String className = file.getName().substring(0, file.getName().length() - 6);
-        Utils.log("Found class " + className + ", seeing it if it's included or excluded");
+        Utils.log("PackageUtils", 4, "Found class " + className + ", seeing it if it's included or excluded");
         includeOrExcludeClass(packageName, className, included, excluded, classes);
       }
     }
@@ -199,11 +199,11 @@ public class PackageUtils {
       List<String> included, List<String> excluded, List<String> classes) 
   {
     if (isIncluded(className, included, excluded)) {
-      Utils.log("... Including class " + className);
+      Utils.log("PackageUtils", 4, "... Including class " + className);
       classes.add(packageName + '.' + className);
     }
     else {
-      Utils.log("... Excluding class " + className);
+      Utils.log("PackageUtils", 4, "... Excluding class " + className);
     }
   }
 
@@ -243,5 +243,4 @@ public class PackageUtils {
     }
     return false;
   }
-
 }

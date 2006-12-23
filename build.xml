@@ -31,9 +31,12 @@
   <!-- ====================================================================== -->
 
   <target name="validate" description="Validates the build environment.">
-    <!-- java 1.5 required to build -->
+    <!-- java greater than 1.5 required to build -->
     <condition property="requiredJavaVersion">
-      <equals arg1="${ant.java.version}" arg2="1.5" />
+    	<or>
+   			<equals arg1="${ant.java.version}" arg2="1.5" />
+    		<equals arg1="${ant.java.version}" arg2="1.6" />
+    	</or>
     </condition>
     <fail unless="requiredJavaVersion"
           message="Java version 1.5 required." />

@@ -88,7 +88,7 @@ public class TestHTMLReporter extends TestListenerAdapter {
       // Test method
       ITestNGMethod method = tr.getMethod();
 
-      String fqName = Utils.detailedMethodName(method);
+      String fqName = Utils.detailedMethodName(method, false);
       sb.append("<td title='").append(tr.getTestClass().getName()).append(".").append(tr.getName()).append("()'>").append(fqName);
       
       // Method description

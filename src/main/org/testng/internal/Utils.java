@@ -749,7 +749,7 @@ public final class Utils {
    * @param method
    * @return
    */
-  public static String detailedMethodName(ITestNGMethod method) {
+  public static String detailedMethodName(ITestNGMethod method, boolean fqn) {
     StringBuffer buf= new StringBuffer();
     if(method.isBeforeSuiteConfiguration()) {
       buf.append("@BeforeSuite ");
@@ -782,6 +782,6 @@ public final class Utils {
       buf.append("@AfterSuite ");
     }
     
-    return buf.append(method.getMethodName()).toString(); 
+    return buf.append(fqn ? method.toString() : method.getMethodName()).toString(); 
   }
 }

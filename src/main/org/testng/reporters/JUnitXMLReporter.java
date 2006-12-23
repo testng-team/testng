@@ -170,7 +170,7 @@ public class JUnitXMLReporter implements IResultListener {
   private Element createElement(Document doc, ITestResult tr) {
     Element resultElement= doc.createElement(XMLConstants.TESTCASE);
     long elapsedTimeMillis= tr.getEndMillis() - tr.getStartMillis();
-    String name= tr.getMethod().isTest() ? tr.getName() : Utils.detailedMethodName(tr.getMethod());
+    String name= tr.getMethod().isTest() ? tr.getName() : Utils.detailedMethodName(tr.getMethod(), false);
     resultElement.setAttribute(XMLConstants.ATTR_NAME, name);
     resultElement.setAttribute(XMLConstants.ATTR_CLASSNAME,
                                tr.getTestClass().getRealClass().getName());

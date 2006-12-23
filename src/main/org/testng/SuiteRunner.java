@@ -234,7 +234,7 @@ public class SuiteRunner implements ISuite, Serializable {
         );
       }
 
-      Utils.log("[SuiteRunner]", 3, "Created " + m_testRunners.size() + " TestRunners");
+      Utils.log("SuiteRunner", 3, "Created " + m_testRunners.size() + " TestRunners");
   
       //
       // Run all the test runners

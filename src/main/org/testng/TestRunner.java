@@ -159,8 +159,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     setVerbose(test.getVerbose());
 
     if (suite.getParallel() != null) {
-      log(3, "Running the tests in parallel mode:" + suite.getParallel());
-    }
+      log(3, "Running the tests in '" + test.getName() + "' with parallel mode:" + suite.getParallel());
+    } 
 
     setOutputDirectory(outputDirectory);
 

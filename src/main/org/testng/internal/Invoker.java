@@ -127,7 +127,7 @@ public class Invoker implements IInvoker {
             continue;
           }
 
-          log(3, "Invoking " + tm);
+          log(3, "Invoking " + Utils.detailedMethodName(tm, true));
           
           Object[] parameters= Parameters.createConfigurationParameters(tm.getMethod(),
                                                                         params,
@@ -147,7 +147,7 @@ public class Invoker implements IInvoker {
         else {
           log(3,
               "Skipping "
-              + method.getDeclaringClass().getName() + "." + method.getName() + "()"
+              + Utils.detailedMethodName(tm, true)
               + " because "
               + objectClass.getName()
               + " is not enabled");

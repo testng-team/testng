@@ -58,7 +58,7 @@ public class TextReporter extends TestListenerAdapter {
       }
 
       logResult("FAILED CONFIGURATION", 
-          Utils.detailedMethodName(tr.getMethod()), 
+          Utils.detailedMethodName(tr.getMethod(), false), 
           tr.getMethod().getDescription(), 
           stackTrace, 
           tr.getParameters(), 
@@ -69,7 +69,7 @@ public class TextReporter extends TestListenerAdapter {
     for(Object o : getConfigurationSkips()) {
       ITestResult tr = (ITestResult) o;
       logResult("SKIPPED CONFIGURATION", 
-          Utils.detailedMethodName(tr.getMethod()), 
+          Utils.detailedMethodName(tr.getMethod(), false), 
           tr.getMethod().getDescription(), 
           null, 
           tr.getParameters(), 

@@ -219,7 +219,7 @@ public class XmlMethodSelector implements IMethodSelector {
   private Map<String, String> m_logged = new HashMap<String, String>();
   private void logInclusion(String including, String type, String name) {
     if (! m_logged.containsKey(name)) {
-      log(3, including + " " + type + " " + name);
+      log(4, including + " " + type + " " + name);
       m_logged.put(name, name);
     }
   }
@@ -341,7 +341,6 @@ public class XmlMethodSelector implements IMethodSelector {
   }
 
   public void setTestMethods(List<ITestNGMethod> testMethods) {
-//    ITestNGMethod[] methods = testMethods.toArray(new ITestNGMethod[testMethods.size()]);
     String[] groups = m_includedGroups.keySet().toArray(new String[m_includedGroups.size()]);
     Set<String> groupClosure = new HashSet<String>();
     Set<ITestNGMethod> methodClosure = new HashSet<ITestNGMethod>();
@@ -362,12 +361,11 @@ public class XmlMethodSelector implements IMethodSelector {
       m_includedGroups = new HashMap<String, String>();
       for (String g : groupClosure) {
         m_includedGroups.put(g, g);
-        log(3, "Including group " + (m_includedGroups.containsKey(g) ? ": " : "(implicit): ") + g);
+        log(4, "Including group " + (m_includedGroups.containsKey(g) ? ": " : "(implicit): ") + g);
       }
     
       // Make the transitive closure our new included methods
       for (ITestNGMethod m : methodClosure) {
-  //      ppp("METHOD:" + m.getMethod() + " CL:" + m.getMethod().getDeclaringClass());
         String methodName = 
          m.getMethod().getDeclaringClass().getName() + "." + m.getMethodName();
         m_includedMethods.put(methodName, methodName);
@@ -375,17 +373,6 @@ public class XmlMethodSelector implements IMethodSelector {
       }
     }
   }
-
-//  private ITestNGMethod[] filterTestMethods(List<ITestNGMethod> methods) {
-//    List<ITestNGMethod> vResult = new ArrayList<ITestNGMethod>();
-//    for (ITestNGMethod m : methods) {
-//      if (includeMethod(m, true)) {
-//        vResult.add(m);
-//      }
-//    }
-//    
-//    return vResult.toArray(new ITestNGMethod[vResult.size()]);
-//  }
 
   private boolean m_verbose = true;
   public void setVerbose(boolean b) {

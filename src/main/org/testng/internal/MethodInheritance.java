@@ -108,7 +108,7 @@ public class MethodInheritance {
             ITestNGMethod m1 = l.get(i - 1);
             ITestNGMethod m2 = l.get(i);
             if (! equalsEffectiveClass(m1, m2)) {
-              Utils.log("", 3, m2 + " DEPENDS ON " + m1);
+              Utils.log("MethodInheritance", 4, m2 + " DEPENDS ON " + m1);
               m2.addMethodDependedUpon(MethodHelper.calculateMethodCanonicalName(m1));
             }
           }
@@ -119,7 +119,7 @@ public class MethodInheritance {
             ITestNGMethod m2 = l.get(i + 1);
             if (! equalsEffectiveClass(m1, m2)) {
               m2.addMethodDependedUpon(MethodHelper.calculateMethodCanonicalName(m1));
-              Utils.log("", 3, m2 + " DEPENDS ON " + m1);
+              Utils.log("MethodInheritance", 4, m2 + " DEPENDS ON " + m1);
             }
           }          
         }

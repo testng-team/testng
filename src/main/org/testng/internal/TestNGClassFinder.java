@@ -122,9 +122,9 @@ public class TestNGClassFinder extends BaseClassFinder {
             } // if moreClasses.size() > 0
           }
         } // null != ic
-      } // if cls is abstract
+      } // if not TestNG class
       else {
-        Utils.log("TestNGClassFinder", 2, "SKIPPING CLASS " + cls);
+        Utils.log("TestNGClassFinder", 3, "SKIPPING CLASS " + cls + " no TestNG annotations found");
       }
     } // for
 
