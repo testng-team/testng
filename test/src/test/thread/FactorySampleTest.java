@@ -1,10 +1,11 @@
-package test.tmp;
+package test.thread;
 
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
+
 @Test
-public class FactoryTest {
+public class FactorySampleTest {
   
   @Factory
   public Object[] init() {

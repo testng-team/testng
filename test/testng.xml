@@ -63,6 +63,7 @@
       <class name="test.thread.ThreadPoolSizeTest" />
       <class name="test.thread.SequentialTest" />
       <class name="test.thread.ParallelTestTest" />
+      <class name="test.thread.FactoryTest" />
       <class name="test.simple.IncludedExcludedTest" />
       <class name="test.reports.ReportTest" />
       <!-- <class name="test.output.OutputTest" /> -->
@@ -443,8 +444,26 @@
         <class name="test.ant.TestCommandLineArgs" />
     </classes>
   </test>
+ 
+  <!-- Group ordering 1 --> 
+  <test name="Class Run">
+    <classes>
+      <class name="test.regression.groupsordering.A" />
+      <class name="test.regression.groupsordering.B" />
+    </classes>
+  </test>
+	
+  <!-- Group ordering 2 --> 
+  <test name="Groups Run">
+    <groups>
+      <run>
+        <include name="a" />
+      </run>
+    </groups>
+    <classes>
+      <class name="test.regression.groupsordering.A" />
+      <class name="test.regression.groupsordering.B" />
+    </classes>
+  </test>
   
-	<suite-files>
-		<suite-file path="test/src/test/regression/groupsordering/testng.xml" />
-	</suite-files>
 </suite>

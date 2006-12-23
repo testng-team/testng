@@ -12,13 +12,13 @@ public abstract class Base {
 
   @BeforeGroups(value= "a", groups= "a")
   public void setUp() throws Exception {
-    System.out.println("class is " + getClass().getName() + " Before group  ");
+//    System.out.println("class is " + getClass().getName() + " Before group  ");
     Assert.assertFalse(s_childBWasRun || s_childBWasRun, "Static field was not reset: @AfterGroup method not invoked");
   }
 
   @AfterGroups(value= "a", groups= "a")
   public void tearDown() {
-    System.out.println("class is " + getClass().getName() + " After group  ");
+//    System.out.println("class is " + getClass().getName() + " After group  ");
     Assert.assertTrue(s_childAWasRun, "Child A was not run");
     Assert.assertTrue(s_childBWasRun, "Child B was not run");
     s_childAWasRun= false;

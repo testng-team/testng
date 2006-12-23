@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="Single" verbose="2" parallel="methods" thread-count="5">
+<suite name="Single" verbose="2" >
 
 <!--
 <suite-files>
@@ -29,7 +29,7 @@
 <!--
       <class name="test.annotationtransformer.AnnotationTransformerClassSampleTest" />
 -->
-      <class name="test.annotationtransformer.AnnotationTransformerTest" />
+      <class name="test.thread.FactoryTest" />
     </classes>
   </test>
 

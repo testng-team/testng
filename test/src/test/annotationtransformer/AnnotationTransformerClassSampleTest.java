@@ -15,10 +15,10 @@ public class AnnotationTransformerClassSampleTest {
   public void one() {
     try {
       Thread.sleep(2000);
-      ppp("FINISHED SLEEPING");
+//      ppp("FINISHED SLEEPING");
     }
     catch (InterruptedException e) {
-      ppp("WAS INTERRUPTED");
+//      ppp("WAS INTERRUPTED");
       // ignore
     }
   }
