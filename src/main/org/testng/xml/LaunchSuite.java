@@ -4,7 +4,9 @@ package org.testng.xml;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -108,7 +110,8 @@ public abstract class LaunchSuite {
     private CustomizedSuite(final String projectName,
         final String className,
         final Map<String, String> parameters,
-        final String annotationType) {
+        final String annotationType) 
+    {
       super(true);
       
       m_projectName = projectName;
@@ -310,12 +313,13 @@ public abstract class LaunchSuite {
         Properties classAttrs = new Properties();
         classAttrs.setProperty("name", entry.getKey());
         
-        if ((null != entry.getValue()) && (entry.getValue().size() > 0)) {
+        Collection<String> methodNames= sanitize(entry.getValue());
+        if ((null != methodNames) && (methodNames.size() > 0)) {
           suiteBuffer.push("class", classAttrs);
           
           suiteBuffer.push("methods");
           
-          for (String methodName : entry.getValue()) {
+          for (String methodName : methodNames) {
             Properties methodAttrs = new Properties();
             methodAttrs.setProperty("name", methodName);
             suiteBuffer.addEmptyElement("include", methodAttrs);
@@ -330,6 +334,19 @@ public abstract class LaunchSuite {
       }
       suiteBuffer.pop("classes");
       suiteBuffer.pop("test");
+    }
+    
+    private Collection<String> sanitize(Collection<String> source) {
+      if(null == source) return null;
+      
+      List<String> result= new ArrayList<String>();
+      for(String name: source) {
+        if(!"".equals(name)) {
+          result.add(name);
+        }
+      }
+      
+      return result;
     }
   }
   
