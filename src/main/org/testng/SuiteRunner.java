@@ -413,19 +413,19 @@ public class SuiteRunner implements ISuite, Serializable {
                         suite.getAnnotationFinder(test.getAnnotations()));
       
       if (m_useDefaultListeners) {
-        testRunner.addTestListener(new TestHTMLReporter());
-        testRunner.addTestListener(new JUnitXMLReporter());
+        testRunner.addListener(new TestHTMLReporter());
+        testRunner.addListener(new JUnitXMLReporter());
         
         //TODO: Moved these here because maven2 has output reporters running
         //already, the output from these causes directories to be created with
         //files. This is not the desired behaviour of running tests in maven2. 
         //Don't know what to do about this though, are people relying on these
         //to be added even with defaultListeners set to false?
-        testRunner.addTestListener(new TextReporter(testRunner.getName(), TestRunner.getVerbose()));
+        testRunner.addListener(new TextReporter(testRunner.getName(), TestRunner.getVerbose()));
       }
       
       for (ITestListener itl : m_failureGenerators) {
-        testRunner.addTestListener(itl);
+        testRunner.addListener(itl);
       }
 
       return testRunner;
@@ -447,10 +447,10 @@ public class SuiteRunner implements ISuite, Serializable {
     public TestRunner newTestRunner(ISuite suite, XmlTest test) {
       TestRunner testRunner= m_target.newTestRunner(suite, test);
 
-      testRunner.addTestListener(new TextReporter(testRunner.getName(), TestRunner.getVerbose()));
+      testRunner.addListener(new TextReporter(testRunner.getName(), TestRunner.getVerbose()));
 
       for (ITestListener itl : m_failureGenerators) {
-        testRunner.addTestListener(itl);
+        testRunner.addListener(itl);
       }
 
       return testRunner;
