@@ -641,7 +641,8 @@ public class MethodHelper {
     return result;
   }
 
-  public static Iterator<Object[]> invokeDataProvider(Object instance, Method dataProvider, ITestNGMethod method)
+  public static Iterator<Object[]> invokeDataProvider(Object instance, 
+      Method dataProvider, ITestNGMethod method)
   {
     Iterator<Object[]> result = null;
     Method testMethod = method.getMethod();

@@ -303,8 +303,12 @@ public class TestNGContentHandler extends DefaultHandler {
    */
   public void xmlSelectorClass(boolean start, Attributes attributes) {
     if (start) {
-      m_currentSelector.setName(attributes.getValue("class-name"));
-      m_currentSelector.setPriority(new Integer(attributes.getValue("priority")));
+      m_currentSelector.setName(attributes.getValue("name"));
+      String priority = attributes.getValue("priority");
+      if (priority == null) {
+        priority = "0";
+      }
+      m_currentSelector.setPriority(new Integer(priority));
     }
     else {
       // do nothing

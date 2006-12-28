@@ -628,7 +628,8 @@ public class Invoker implements IInvoker {
                                              Object[] instances)
   {
     // Potential bug here if the test method was declared on a parent class
-    assert null != testMethod.getTestClass() : "COULDN'T FIND TESTCLASS FOR " + testMethod.getMethod().getDeclaringClass();
+    assert null != testMethod.getTestClass() 
+    : "COULDN'T FIND TESTCLASS FOR " + testMethod.getMethod().getDeclaringClass();
     
     List<ITestResult> result = new ArrayList<ITestResult>();
     
@@ -647,7 +648,8 @@ public class Invoker implements IInvoker {
     
     int failureCount = 0;
 
-    Class[] expectedExceptionClasses = MethodHelper.findExpectedExceptions(m_annotationFinder, testMethod.getMethod());
+    Class[] expectedExceptionClasses = 
+      MethodHelper.findExpectedExceptions(m_annotationFinder, testMethod.getMethod());
     while(invocationCount-- > 0) {
       boolean okToProceed = checkDependencies(testMethod, testClass, allTestMethods);
 
@@ -678,7 +680,8 @@ public class Invoker implements IInvoker {
 
               Map<String, String> allParameterNames = new HashMap<String, String>();
               Iterator<Object[]> allParameterValues =
-                Parameters.handleParameters(testMethod, allParameterNames, testClass, parameters, suite, m_annotationFinder);
+                Parameters.handleParameters(testMethod, allParameterNames, 
+                    testClass, parameters, suite, m_annotationFinder);
 
               while (allParameterValues.hasNext()) {
                 Object[] parameterValues= allParameterValues.next();
