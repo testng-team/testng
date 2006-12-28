@@ -593,7 +593,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
                                          afterClassMethods,
                                          m_allTestMethods,
                                          m_groupMethods,
-                                         cmm));
+                                         cmm,
+                                         this));
       }
     }
 
@@ -612,7 +613,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
                                            afterClassMethods,
                                            m_allTestMethods,
                                            m_groupMethods,
-                                           cmm));
+                                           cmm,
+                                           this));
         }
       }
     }

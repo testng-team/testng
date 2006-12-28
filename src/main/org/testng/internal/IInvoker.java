@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.testng.IClass;
+import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.xml.XmlSuite;
@@ -49,5 +50,6 @@ public interface IInvoker {
                                              XmlSuite suite, 
                                              Map<String, String> parameters, 
                                              ConfigurationGroupMethods groupMethods,
-                                             Object[] instances);
+                                             Object[] instances,
+                                             ITestContext testContext);
 }

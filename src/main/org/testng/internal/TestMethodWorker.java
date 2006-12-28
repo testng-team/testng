@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.testng.ClassMethodMap;
 import org.testng.ITestClass;
+import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.internal.thread.ThreadUtil;
@@ -38,6 +38,7 @@ public class TestMethodWorker implements IMethodWorker {
   protected List<ITestResult> m_testResults = new ArrayList<ITestResult>();
   protected ConfigurationGroupMethods m_groupMethods = null;
   protected ClassMethodMap m_classMethodMap = null;
+  private ITestContext m_testContext = null;
   
   public TestMethodWorker(IInvoker invoker, 
                           MethodInstance[] testMethods,
@@ -47,7 +48,8 @@ public class TestMethodWorker implements IMethodWorker {
                           Map<ITestClass, ITestClass> invokedAfterClassMethods,
                           ITestNGMethod[] allTestMethods,
                           ConfigurationGroupMethods groupMethods,
-                          ClassMethodMap classMethodMap)
+                          ClassMethodMap classMethodMap,
+                          ITestContext testContext)
   {
     m_invoker = invoker;
     m_testMethods = testMethods;
@@ -58,6 +60,7 @@ public class TestMethodWorker implements IMethodWorker {
     m_allTestMethods = allTestMethods;
     m_groupMethods = groupMethods;
     m_classMethodMap = classMethodMap;
+    m_testContext = testContext;
   }
   
   /**
@@ -103,7 +106,7 @@ public class TestMethodWorker implements IMethodWorker {
       // Invoke test method
       //
       try {
-        invokeTestMethods(tm, m_testMethods[indexMethod].getInstances());
+        invokeTestMethods(tm, m_testMethods[indexMethod].getInstances(), m_testContext);
       }
       finally {
         invokeAfterClassMethods(testClass, tm);
@@ -111,7 +114,9 @@ public class TestMethodWorker implements IMethodWorker {
     }
   }
   
-  protected void invokeTestMethods(ITestNGMethod tm, Object[] instances) {
+  protected void invokeTestMethods(ITestNGMethod tm, Object[] instances,
+      ITestContext testContext) 
+  {
     // Potential bug here:  we look up the method index of tm among all
     // the test methods (not very efficient) but if this method appears
     // several times and these methods are run in parallel, the results
@@ -123,7 +128,8 @@ public class TestMethodWorker implements IMethodWorker {
                                                                 m_suite, 
                                                                 m_parameters, 
                                                                 m_groupMethods,
-                                                                instances);
+                                                                instances,
+                                                                testContext);
     
     if (testResults != null) {
       m_testResults.addAll(testResults);        
@@ -239,7 +245,8 @@ class SingleTestMethodWorker extends TestMethodWorker {
                                 MethodInstance testMethod,
                                 XmlSuite suite,
                                 Map<String, String> parameters,
-                                ITestNGMethod[] allTestMethods)
+                                ITestNGMethod[] allTestMethods,
+                                ITestContext testContext)
   {
     super(invoker,
           new MethodInstance[] {testMethod},
@@ -249,7 +256,8 @@ class SingleTestMethodWorker extends TestMethodWorker {
           null,
           allTestMethods,
           EMPTY_GROUP_METHODS,
-          null);
+          null,
+          testContext);
   }
 
   protected void invokeAfterClassMethods(ITestClass testClass, ITestNGMethod tm) {

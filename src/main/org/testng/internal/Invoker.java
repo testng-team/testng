@@ -625,7 +625,8 @@ public class Invoker implements IInvoker {
                                              XmlSuite suite,
                                              Map<String, String> parameters,
                                              ConfigurationGroupMethods groupMethods,
-                                             Object[] instances)
+                                             Object[] instances,
+                                             ITestContext testContext)
   {
     // Potential bug here if the test method was declared on a parent class
     assert null != testMethod.getTestClass() 
@@ -663,7 +664,8 @@ public class Invoker implements IInvoker {
             //
             if (testMethod.getThreadPoolSize() > 1) {
               try {
-                result= invokePooledTestMethods(testMethod, allTestMethods, suite, parameters, groupMethods);
+                result = invokePooledTestMethods(testMethod, allTestMethods, suite, 
+                    parameters, groupMethods, testContext);
               }
               finally {
                 failureCount = handleInvocationResults(testMethod, result, failureCount, expectedExceptionClasses, false);
@@ -681,7 +683,7 @@ public class Invoker implements IInvoker {
               Map<String, String> allParameterNames = new HashMap<String, String>();
               Iterator<Object[]> allParameterValues =
                 Parameters.handleParameters(testMethod, allParameterNames, 
-                    testClass, parameters, suite, m_annotationFinder);
+                    testClass, parameters, suite, m_annotationFinder, testContext);
 
               while (allParameterValues.hasNext()) {
                 Object[] parameterValues= allParameterValues.next();
@@ -742,7 +744,9 @@ public class Invoker implements IInvoker {
                                                     ITestNGMethod[] allTestMethods, 
                                                     XmlSuite suite, 
                                                     Map<String, String> parameters, 
-                                                    ConfigurationGroupMethods groupMethods) {
+                                                    ConfigurationGroupMethods groupMethods,
+                                                    ITestContext testContext) 
+  {
     // HINT: invoke @BeforeGroups on the original method (reduce thread contention, and also solve thread confinement)
     ITestClass testClass= testMethod.getTestClass();
     Object[] instances = testClass.getInstances(true);
@@ -768,7 +772,8 @@ public class Invoker implements IInvoker {
           mi,
           suite, 
           parameters,
-          allTestMethods));
+          allTestMethods,
+          testContext));
     }
 
     try {

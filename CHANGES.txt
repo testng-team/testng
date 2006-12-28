@@ -1,6 +1,7 @@
 ===========================================================================
 5.5
 
+Added: DataProvider can now take an ITestContext parameter
 Fixed: Wasn't parsing <selector-class-name> correctly 
 Fixed: Annotation Transformers now work on class-level annotations
 Fixed: Some class-level @Test attributes were not always honored

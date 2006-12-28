@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.testng.ITestClass;
+import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
 import org.testng.internal.annotations.AnnotationHelper;
@@ -321,7 +322,8 @@ public class Parameters {
                                                     ITestClass testClass, 
                                                     Map<String, String> parameters, 
                                                     XmlSuite xmlSuite, 
-                                                    IAnnotationFinder annotationFinder)
+                                                    IAnnotationFinder annotationFinder,
+                                                    ITestContext testContext)
   {
     Iterator<Object[]> result = null;
     
@@ -346,7 +348,8 @@ public class Parameters {
       result  = MethodHelper.invokeDataProvider(
           instance, /* a test instance or null if the dataprovider is static*/
           dataProvider, 
-          testMethod);
+          testMethod,
+          testContext);
     }
     else {
       //

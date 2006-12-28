@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 
 import org.testng.IHookCallBack;
 import org.testng.ITestClass;
+import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
@@ -642,27 +643,41 @@ public class MethodHelper {
   }
 
   public static Iterator<Object[]> invokeDataProvider(Object instance, 
-      Method dataProvider, ITestNGMethod method)
+      Method dataProvider, ITestNGMethod method, ITestContext testContext)
   {
     Iterator<Object[]> result = null;
     Method testMethod = method.getMethod();
 
     // If it returns an Object[][], convert it to an Iterable<Object[]>
     try {
-      Object[] parameters = null;
-      
-      // If the DataProvider accepts a Method as first parameter, pass the
-      // current test method
+      List<Object> lParameters = new ArrayList<Object>();
+
+      // Go through all the parameters declared on this Data Provider and
+      // make sure we have at most one Method and one ITestContext.
+      // Anything else is an error
       Class[] parameterTypes = dataProvider.getParameterTypes();
-      if (parameterTypes.length > 0 && parameterTypes[0].equals(Method.class)) {
-        parameters = new Object[] {
-          testMethod
-        };
+      if (parameterTypes.length > 2) {
+        throw new TestNGException("DataProvider " + dataProvider + " cannot have more than two parameters");
       }
-      else if (parameterTypes.length > 0) {
-        throw new TestNGException("DataProvider " + dataProvider + " needs to have "
-            + " either zero parameters or one parameter of type java.lang.reflect.Method");
+      
+      for (Class cls : parameterTypes) {
+        if (cls.equals(Method.class)) {
+          lParameters.add(testMethod);
+        }
+        else if (cls.equals(ITestContext.class)) {
+          lParameters.add(testContext);
+        }
       }
+      Object[] parameters = lParameters.toArray(new Object[lParameters.size()]);
+//      if (parameterTypes.length > 0 && parameterTypes[0].equals(Method.class)) {
+//        parameters = new Object[] {
+//          testMethod
+//        };
+//      }
+//      else if (parameterTypes.length > 0) {
+//        throw new TestNGException("DataProvider " + dataProvider + " needs to have "
+//            + " either zero parameters or one parameter of type java.lang.reflect.Method");
+//      }
       
       Class< ? > returnType = dataProvider.getReturnType();
       if (Object[][].class.isAssignableFrom(returnType)) {

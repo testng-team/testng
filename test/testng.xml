@@ -344,6 +344,7 @@
       <class name="test.dataprovider.MethodTest"/>
       <class name="test.dataprovider.StaticDataProviderSampleTest" />
       <class name="test.dataprovider.UnnamedDataProviderTest" />
+      <class name="test.dataprovider.TestContextTest" />
     </classes>
   </test>
 	

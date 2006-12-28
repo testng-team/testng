@@ -9,29 +9,31 @@
 </suite-files>
 -->
   
-  <test name="TestSingle">
+  <test name="TestContextDataProvider1">
 <!--
     <groups>
       <run>
-        <include name="twice"/>
+        <include name="5"/>
       </run>
     </groups>
-      <class name="test.configuration.ExternalConfigurationClass"/>
-      <class name="test.thread.SequentialSampleTest" />
-      <class name="test.thread.SequentialSample2Test" />
-      <class name="test.thread.SequentialSample3Test" />
-    <parameter name="source-directory" value="test/src/test/converter" />
-      <class name="test.thread.ParallelTestTest" />
-      <class name="test.reports.ReportTest" />
-      <class name="test.CommandLineTest" ></class>
--->
+    -->
     <classes>
-<!--
-      <class name="test.annotationtransformer.AnnotationTransformerClassSampleTest" />
--->
-      <class name="test.dataprovider.MethodTest" />
+      <class name="test.dataprovider.TestContextTest" />
     </classes>
   </test>
+  
+<!--
+  <test name="TestContextDataProvider2">
+    <groups>
+      <run>
+        <include name="10"/>
+      </run>
+    </groups>
+    <classes>
+      <class name="test.dataprovider.TestContextTest" />
+    </classes>
+  </test>
+-->  
 
 
 </suite>
