@@ -122,7 +122,7 @@ public class Invoker implements IInvoker {
           boolean isClassConfiguration= isClassConfiguration(configurationAnnotation);
           boolean alwaysRun= isAlwaysRun(configurationAnnotation);
 
-          if(!confInvocationPassed(tm.getRealClass()) && !alwaysRun) {
+          if(!confInvocationPassed(tm) && !alwaysRun) {
             handleConfigurationSkip(tm, testResult);
             continue;
           }
@@ -291,15 +291,23 @@ public class Invoker implements IInvoker {
         setClassInvocationFailure(xmlClass.getSupportClass(), false);
       }
     }
+    String[] beforeGroups= annotation.getBeforeGroups();
+    if(null != beforeGroups && beforeGroups.length > 0) {
+      for(String group: beforeGroups) {
+        m_beforegroupsFailures.put(group, Boolean.FALSE);
+      }
+    }
   }
   
   /**
    * @return true if this class has successfully run all its @Configuration
    * method or false if at least one of these methods failed.
    */
-  private boolean confInvocationPassed(Class cls) {
+  private boolean confInvocationPassed(ITestNGMethod method) {
     boolean result= true;
 
+    Class cls= method.getMethod().getDeclaringClass();
+    
     if(m_suiteState.isFailed()) {
       result= false;
     }
@@ -317,9 +325,22 @@ public class Invoker implements IInvoker {
       }
     }
 
+    // check if there are failed @BeforeGroups
+    String[] groups= method.getGroups();
+    if(null != groups && groups.length > 0) {
+      for(String group: groups) {
+        if(m_beforegroupsFailures.containsKey(group)) {
+          result= false;
+          break;
+        }
+      }
+    }
     return result;
   }
 
+  /** Group failures must be synched as the Invoker is accessed concurrently */
+  private Map<String, Boolean> m_beforegroupsFailures= new Hashtable<String, Boolean>();
+  
   /** Class failures must be synched as the Invoker is accessed concurrently */
   private Map<Class, Boolean> m_classInvocationResults= new Hashtable<Class, Boolean>();
 
@@ -437,7 +458,7 @@ public class Invoker implements IInvoker {
         
         Method thisMethod= tm.getMethod();
 
-        if(confInvocationPassed(thisMethod.getDeclaringClass())) {
+        if(confInvocationPassed(tm)) {
           log(3, "Invoking " + thisMethod.getDeclaringClass().getName() + "." + thisMethod.getName());
 
           // If no timeOut, just invoke the method
@@ -544,7 +565,9 @@ public class Invoker implements IInvoker {
       // Invoke the right groups methods
       //
       if(beforeMethodsArray.length > 0) {
-        invokeConfigurations(testClass, beforeMethodsArray, suite, params, instance);
+        // don't pass the IClass or the instance as the method may be external
+        // the invocation must be similar to @BeforeTest/@BeforeSuite
+        invokeConfigurations(null, beforeMethodsArray, suite, params, null);
       }
       
       //
@@ -561,9 +584,6 @@ public class Invoker implements IInvoker {
                                                Map<String, String> params, 
                                                Object instance) 
   {
-    // Skip this if no afterGroups have been defined
-    if (testClass.getAfterGroupsMethods().length == 0) return;
-    
     // Skip this if the current method doesn't belong to any group
     // (only a method that belongs to a group can trigger the invocation
     // of afterGroups methods)
@@ -601,7 +621,9 @@ public class Invoker implements IInvoker {
       
       // Got our afterMethods, invoke them
       ITestNGMethod[] afterMethodsArray = afterMethods.keySet().toArray(new ITestNGMethod[afterMethods.size()]);
-      invokeConfigurations(testClass, afterMethodsArray, suite, params, instance);
+      // don't pass the IClass or the instance as the method may be external
+      // the invocation must be similar to @BeforeTest/@BeforeSuite
+      invokeConfigurations(null, afterMethodsArray, suite, params, null);
 
       // Remove the groups so they don't get run again
       groupMethods.removeAfterGroups(filteredGroups.keySet());      

@@ -1,0 +1,33 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Groups run" verbose="2">
+  <test name="External group invocation">
+		<groups>
+			<run>
+				<include name="a" />
+			</run>
+		</groups>
+		<classes>
+			<class name="test.groupinvocation.GroupConfiguration" />
+			<class name="test.groupinvocation.DummyTest" />
+		</classes>
+  </test>
+	<test name="Failing External BeforeGroups - Group run">
+		<groups>
+			<run>
+				<include name="A" />
+			</run>
+		</groups>
+		<classes>
+			<class name="test.groupinvocation.FailingBeforeGroupMethod" />
+			<class name="test.groupinvocation.DummyTest2" />
+		</classes>
+  </test>
+	
+	<test name="Failing External BeforeGroups - No group run">
+		<classes>
+			<class name="test.groupinvocation.FailingBeforeGroupMethod" />
+			<class name="test.groupinvocation.DummyTest2" />
+		</classes>
+  </test>
+</suite>
+

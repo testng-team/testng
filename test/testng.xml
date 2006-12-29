@@ -467,4 +467,15 @@
     </classes>
   </test>
   
+  <test name="External group invocation">
+		<groups>
+			<run>
+				<include name="a" />
+			</run>
+		</groups>
+		<classes>
+			<class name="test.groupinvocation.GroupConfiguration" />
+			<class name="test.groupinvocation.DummyTest" />
+		</classes>
+  </test>
 </suite>
