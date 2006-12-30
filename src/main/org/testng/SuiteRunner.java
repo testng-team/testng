@@ -177,13 +177,22 @@ public class SuiteRunner implements ISuite, Serializable {
         int total = m_textReporter.getAllTestMethods().length;
         List<ITestResult> skipped = m_textReporter.getSkippedTests();
         List<ITestResult> failed = m_textReporter.getFailedTests();
-        String totalTestsRun = getName() +
-        	"\n" + "Total tests run: " + total + ", Failures: " + failed.size()
-        	                           + ", Skips: " + skipped.size() + "\n";
+        int confFailures= m_textReporter.getConfigurationFailures().size();
+        int confSkips= m_textReporter.getConfigurationSkips().size();
+        StringBuffer bufLog= new StringBuffer(getName());
+        bufLog.append("\nTotal tests run: ")
+            .append(total)
+            .append(", Failures: ").append(failed.size())
+            .append(", Skips: ").append(skipped.size());;
+        if(confFailures > 0 || confSkips > 0) {
+          bufLog.append("\nConfiguration Failures: ").append(confFailures)
+              .append(", Skips: ").append(confSkips)
+              ;
+        }
             
          System.out.println("\n===============================================\n"
-                           + totalTestsRun
-                           + "===============================================\n");
+                           + bufLog.toString()
+                           + "\n===============================================\n");
       }
     }
   }
@@ -204,7 +213,7 @@ public class SuiteRunner implements ISuite, Serializable {
 
       // Reuse the same text reporter so we can accumulate all the results
       // (this is used to display the final suite report at the end)
-      tr.addTestListener(m_textReporter);
+      tr.addListener(m_textReporter);
       m_testRunners.add(tr);
 
       // TODO: Code smell.  Invoker should belong to SuiteRunner, not TestRunner

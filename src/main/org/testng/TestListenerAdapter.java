@@ -125,10 +125,9 @@ public class TestListenerAdapter implements IResultListener {
     return m_testContexts;
   }
 
-  protected List<ITestResult> getConfigurationFailures() {
+  public List<ITestResult> getConfigurationFailures() {
     return m_failedConfs;
   }
-  
   
   /**
    * @see org.testng.internal.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
@@ -137,7 +136,7 @@ public class TestListenerAdapter implements IResultListener {
     m_failedConfs.add(itr);
   }
 
-  protected List<ITestResult> getConfigurationSkips() {
+  public List<ITestResult> getConfigurationSkips() {
     return m_skippedConfs;
   }
   

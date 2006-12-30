@@ -101,15 +101,19 @@ public class TextReporter extends TestListenerAdapter {
     }
 
     ITestNGMethod[] ft = resultsToMethods(getFailedTests());
-    String stats = 
-        "\n===============================================\n" 
-        + "    " + m_testName
-        + "\n" + "    Tests run: " + Utils.calculateInvokedMethodCount(getAllTestMethods())
-        + ", Failures: " + Utils.calculateInvokedMethodCount(ft)
-        + ", Skips: "
-        + Utils.calculateInvokedMethodCount(resultsToMethods(getSkippedTests()))
-        + "\n===============================================\n";
-    logResult("", stats);
+    StringBuffer logBuf= new StringBuffer("\n===============================================\n");
+    logBuf.append("    ").append(m_testName).append("\n");
+    logBuf.append("    Tests run: ").append(Utils.calculateInvokedMethodCount(getAllTestMethods()))
+        .append(", Failures: ").append(Utils.calculateInvokedMethodCount(ft))
+        .append(", Skips: ").append(Utils.calculateInvokedMethodCount(resultsToMethods(getSkippedTests())));
+    int confFailures= getConfigurationFailures().size();
+    int confSkips= getConfigurationSkips().size();
+    if(confFailures > 0 || confSkips > 0) {
+      logBuf.append("\n").append("    Configuration Failures: ").append(confFailures)
+          .append(", Skips: ").append(confSkips);
+    }
+    logBuf.append("\n===============================================\n");
+    logResult("", logBuf.toString());
   }
   
   private String getName() {
