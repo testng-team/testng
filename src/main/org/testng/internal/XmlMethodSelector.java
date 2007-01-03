@@ -1,5 +1,8 @@
 package org.testng.internal;
 
+import bsh.EvalError;
+import bsh.Interpreter;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,12 +14,10 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.testng.IMethodSelector;
+import org.testng.IMethodSelectorContext;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
 import org.testng.xml.XmlClass;
-
-import bsh.EvalError;
-import bsh.Interpreter;
 
 /**
  * This class is the default method selector used by TestNG to determine
@@ -38,12 +39,14 @@ public class XmlMethodSelector implements IMethodSelector {
   // List of methods included implicitly
   private Map<String, String> m_includedMethods = new HashMap<String, String>();
   
-  public boolean  includeMethod(ITestNGMethod tm, boolean isTestMethod) {
-    ppp("XML METHOD SELECTOR " + tm + " " + m_isInitialized);
+  public boolean  includeMethod(IMethodSelectorContext context,
+      ITestNGMethod tm, boolean isTestMethod) 
+  {
+//    ppp("XML METHOD SELECTOR " + tm + " " + m_isInitialized);
     
     if (! m_isInitialized) {
       m_isInitialized = true;
-      init();
+      init(context);
     }
     
     boolean result = false;
@@ -354,14 +357,14 @@ public class XmlMethodSelector implements IMethodSelector {
     m_testMethods = testMethods;
   }
   
-  private void init() {
+  private void init(IMethodSelectorContext context) {
     String[] groups = m_includedGroups.keySet().toArray(new String[m_includedGroups.size()]);
     Set<String> groupClosure = new HashSet<String>();
     Set<ITestNGMethod> methodClosure = new HashSet<ITestNGMethod>();
     
     List<ITestNGMethod> includedMethods = new ArrayList<ITestNGMethod>();
     for (ITestNGMethod m : m_testMethods) {
-      if (includeMethod(m, true)) includedMethods.add(m);
+      if (includeMethod(context, m, true)) includedMethods.add(m);
     }
     MethodHelper.findGroupTransitiveClosure(this, includedMethods, m_testMethods, 
         groups, groupClosure, methodClosure);

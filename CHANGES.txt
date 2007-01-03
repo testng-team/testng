@@ -1,6 +1,7 @@
 ===========================================================================
 5.5
 
+Added: Method selectors receive a Context and can stop the chain with setStopped()
 Fixed: XmlMethodSelector was always run first regardless of its priority
 Added: @BeforeGroups/@AfterGroups can live in classes without @Test methods
 Added: DataProvider can now take an ITestContext parameter

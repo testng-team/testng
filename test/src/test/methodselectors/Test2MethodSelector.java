@@ -3,13 +3,17 @@ package test.methodselectors;
 import java.util.List;
 
 import org.testng.IMethodSelector;
+import org.testng.IMethodSelectorContext;
 import org.testng.ITestNGMethod;
 
 public class Test2MethodSelector implements IMethodSelector {
 
-  public boolean includeMethod(ITestNGMethod method, boolean isTestMethod) {
+  public boolean includeMethod(IMethodSelectorContext context,
+      ITestNGMethod method, boolean isTestMethod) 
+  {
     for (String group : method.getGroups()) {
       if (group.equals("test2")) {
+        context.setStopped(true);
         return true;
       }
     }

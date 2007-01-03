@@ -9,7 +9,7 @@
 </suite-files>
 -->
   
-  <test name="TestContextDataProvider1">
+  <test name="Priority">
 <!--
     <groups>
       <run>
@@ -18,7 +18,10 @@
     </groups>
     -->
     <classes>
-      <class name="test.annotationtransformer.AnnotationTransformerTest" />
+      <class name="test.methodselectors.MethodSelectorTest" />
+<!--
+      <class name="test.methodselectors.PriorityTest" />
+-->
     </classes>
   </test>
   

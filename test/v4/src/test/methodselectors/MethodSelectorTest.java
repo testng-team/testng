@@ -50,6 +50,21 @@ public class MethodSelectorTest extends BaseTest {
   }
   
   @Test
+  public void greaterThanPriorityTest1Test2() {
+    addClass("test.methodselectors.SampleTest");
+    addIncludedGroup("test1");
+    addMethodSelector("test.methodselectors.Test2MethodSelector", 15);
+    run();
+    String[] passed = {
+        "test2", 
+    };
+    String[] failed = {
+    };
+    verifyTests("Passed", passed, getPassedTests());
+    verifyTests("Failed", failed, getFailedTests());
+  }    
+
+  @Test
   public void lessThanPriorityAllTests() {
     addClass("test.methodselectors.SampleTest");
     addIncludedGroup("test1");
@@ -64,22 +79,7 @@ public class MethodSelectorTest extends BaseTest {
     verifyTests("Failed", failed, getFailedTests());
   }  
 
-  @Test
-  public void greaterThanPriorityTest1Test2() {
-    addClass("test.methodselectors.SampleTest");
-    addIncludedGroup("test1");
-    addMethodSelector("test.methodselectors.Test2MethodSelector", 15);
-    run();
-    String[] passed = {
-        "test1", "test2", 
-    };
-    String[] failed = {
-    };
-    verifyTests("Passed", passed, getPassedTests());
-    verifyTests("Failed", failed, getFailedTests());
-  }    
-
-  private static void ppp(String s) {
+  public static void ppp(String s) {
     System.out.println("[MethodSelectorTest] " + s);
   }
 }

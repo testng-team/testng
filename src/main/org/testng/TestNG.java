@@ -1,6 +1,8 @@
 package org.testng;
 
 
+import static org.testng.TestNG.usage;
+
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,6 +31,7 @@ import org.testng.internal.ClassHelper;
 import org.testng.internal.HostFile;
 import org.testng.internal.IResultListener;
 import org.testng.internal.Invoker;
+import org.testng.internal.MethodSelectorDescriptor;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -36,7 +39,6 @@ import org.testng.internal.annotations.IAnnotationTransformer;
 import org.testng.internal.annotations.ITest;
 import org.testng.internal.annotations.JDK14AnnotationFinder;
 import org.testng.internal.remote.SlavePool;
-import org.testng.internal.thread.IPooledExecutor;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.internal.version.VersionInfo;
 import org.testng.log4testng.Logger;
@@ -48,6 +50,7 @@ import org.testng.reporters.FailedReporter;
 import org.testng.reporters.SuiteHTMLReporter;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlClass;
+import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.xml.sax.SAXException;
@@ -166,6 +169,9 @@ public class TestNG {
   
   private String m_defaultSuiteName=DEFAULT_COMMAND_LINE_SUITE_NAME;
   private String m_defaultTestName=DEFAULT_COMMAND_LINE_TEST_NAME;
+  
+  private Map<String, Integer> m_methodDescriptors = new HashMap<String, Integer>();
+
 
   /**
    * Default constructor. Setting also usage of default listeners/reporters.
@@ -420,7 +426,7 @@ public class TestNG {
         }
         final String candidateTestName = test.getTestName();
         if (candidateTestName != null && !"".equals(candidateTestName)) {
-		  testName = candidateTestName;   
+		      testName = candidateTestName;   
         }
       }  
       XmlSuite xmlSuite = suites.get(suiteName);
@@ -442,6 +448,14 @@ public class TestNG {
         xmlTest = new XmlTest(xmlSuite);
         xmlTest.setName(testName);
       }
+
+      List<XmlMethodSelector> selectors = xmlTest.getMethodSelectors();
+      for (String name : m_methodDescriptors.keySet()) {
+        XmlMethodSelector xms = new XmlMethodSelector();
+        xms.setName(name);
+        xms.setPriority(m_methodDescriptors.get(name));
+        selectors.add(xms);
+      }
       
       xmlTest.getXmlClasses().add(xmlClasses[i]);
     }
@@ -449,6 +463,9 @@ public class TestNG {
     return new ArrayList<XmlSuite>(suites.values());
   }
   
+  public void addMethodSelector(String className, int priority) {
+    m_methodDescriptors.put(className, priority);
+  }
 
   /**
    * Set the suites file names to be run by this TestNG object. This method tries to load and
