@@ -18,7 +18,7 @@
     </groups>
     -->
     <classes>
-      <class name="test.dataprovider.TestContextTest" />
+      <class name="test.annotationtransformer.AnnotationTransformerTest" />
     </classes>
   </test>
   

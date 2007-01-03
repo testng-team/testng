@@ -10,43 +10,21 @@ import java.io.Serializable;
 public interface IClass extends Serializable {
   
   /**
-   * Returns this test class' name. This is the name of the corresponding Java class.
-   * @return this test class' name.
+   * @return this test class name.  This is the name of the 
+   * corresponding Java class.
    */
   String getName();
 
   /**
-   * Returns the Java class corresponding to this IClass.
    * @return the Java class corresponding to this IClass.
    */
   Class getRealClass();
 
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @param create
-   * @return
-   */
   Object[] getInstances(boolean create);
   
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @return
-   */
   int getInstanceCount();
   
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @return
-   */
   long[] getInstanceHashCodes();
 
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @param instance
-   */
   void addInstance(Object instance);
 }

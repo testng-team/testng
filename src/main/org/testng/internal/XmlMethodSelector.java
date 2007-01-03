@@ -39,6 +39,13 @@ public class XmlMethodSelector implements IMethodSelector {
   private Map<String, String> m_includedMethods = new HashMap<String, String>();
   
   public boolean  includeMethod(ITestNGMethod tm, boolean isTestMethod) {
+    ppp("XML METHOD SELECTOR " + tm + " " + m_isInitialized);
+    
+    if (! m_isInitialized) {
+      m_isInitialized = true;
+      init();
+    }
+    
     boolean result = false;
     if (null != m_expression) {
       result = includeMethodFromExpression(tm, isTestMethod);
@@ -339,17 +346,24 @@ public class XmlMethodSelector implements IMethodSelector {
   public void setExpression(String expression) {
     m_expression = expression;
   }
+  
+  private boolean m_isInitialized = false;
+  private List<ITestNGMethod> m_testMethods = null;
 
   public void setTestMethods(List<ITestNGMethod> testMethods) {
+    m_testMethods = testMethods;
+  }
+  
+  private void init() {
     String[] groups = m_includedGroups.keySet().toArray(new String[m_includedGroups.size()]);
     Set<String> groupClosure = new HashSet<String>();
     Set<ITestNGMethod> methodClosure = new HashSet<ITestNGMethod>();
     
     List<ITestNGMethod> includedMethods = new ArrayList<ITestNGMethod>();
-    for (ITestNGMethod m : testMethods) {
+    for (ITestNGMethod m : m_testMethods) {
       if (includeMethod(m, true)) includedMethods.add(m);
     }
-    MethodHelper.findGroupTransitiveClosure(this, includedMethods, testMethods, 
+    MethodHelper.findGroupTransitiveClosure(this, includedMethods, m_testMethods, 
         groups, groupClosure, methodClosure);
     
     // If we are asked to include or exclude specific groups, calculate

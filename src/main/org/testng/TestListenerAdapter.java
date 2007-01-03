@@ -8,7 +8,16 @@ import org.testng.internal.IResultListener;
 
 
 /**
- * Simple ITestListener adapter.
+ * A simple ITestListener adapter that stores all the tests
+ * that were run.  You can retrieve these results with the
+ * following methods:
+ * getPassedTests()
+ * getFailedTests()
+ * getSkippedTests()
+ * 
+ * If you extend this class in order to override any of these
+ * methods, remember to call their super equivalent if you want
+ * this list of tests to be maintained.
  *
  * @author Cedric Beust, Aug 6, 2004
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>

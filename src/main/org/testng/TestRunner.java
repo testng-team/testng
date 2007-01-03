@@ -254,7 +254,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
                                              m_xmlTest,
                                              m_annotationFinder);
     ITestMethodFinder testMethodFinder= new TestNGMethodFinder(m_runInfo, m_annotationFinder);
-
+    
+    m_runInfo.setTestMethods(testMethods);
+    
     //
     // Initialize TestClasses
     //
@@ -277,8 +279,6 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     Map<String, List<ITestNGMethod>> beforeGroupMethods= MethodHelper.findGroupsMethods(m_classMap.values(), true);
     Map<String, List<ITestNGMethod>> afterGroupMethods= MethodHelper.findGroupsMethods(m_classMap.values(), false);
 
-   
-
     //
     // Walk through all the TestClasses, store their method
     // and initialize them with the correct ITestClass
@@ -298,8 +298,6 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       fixMethodsWithClass(tc.getAfterGroupsMethods(), tc, 
           MethodHelper.uniqueMethodList(afterGroupMethods.values()));
     }
-    
-    m_runInfo.setTestMethods(testMethods);
 
     //
     // Sort the methods
