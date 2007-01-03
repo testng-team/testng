@@ -14,14 +14,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.testng.IReporter;
-import org.testng.IResultMap;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.Reporter;
-import org.testng.SuiteResult;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlSuite;
 
@@ -83,7 +81,8 @@ public class SuiteHTMLReporter implements IReporter {
     
     StringBuffer sb = new StringBuffer("<html>");
     
-    sb.append("<head><title>").append("testng.xml for ").append(xmlSuite.getName()).append("</title></head><body><tt>")
+    sb.append("<head><title>").append("testng.xml for ")
+      .append(xmlSuite.getName()).append("</title></head><body><tt>")
       .append(content)
       .append("</tt></body></html>");
     
@@ -101,7 +100,7 @@ public class SuiteHTMLReporter implements IReporter {
       .append(HtmlHelper.getCssString("."))
       .append("</head><body>\n")
       .append("<h2><p align='center'>").append(title).append("</p></h2>\n")
-      .append("<table border='1' width='80%' class='main-page'>")
+      .append("<table border='1' width='100%' class='main-page'>")
       .append("<tr><th>Suite</th><th>Passed</th><th>Failed</th><th>Skipped</th><th>testng.xml</th></tr>\n");
     
     int totalFailedTests = 0;
@@ -128,7 +127,8 @@ public class SuiteHTMLReporter implements IReporter {
         totalSkippedTests += context.getSkippedTests().size();
       }
       
-      String cls = failedTests > 0 ? "invocation-failed" : (passedTests > 0  ? "invocation-passed" : "invocation-failed");
+      String cls = failedTests > 0 ? "invocation-failed" 
+          : (passedTests > 0  ? "invocation-passed" : "invocation-failed");
       suiteBuf.append("<tr align='center' class='").append(cls).append("'>")
         .append("<td><a href='").append(name).append("/index.html'>")
         .append(name).append("</a></td>\n");
@@ -140,12 +140,13 @@ public class SuiteHTMLReporter implements IReporter {
       
     }
     
-    String cls= totalFailedTests > 0 ? "invocation-failed" : (totalPassedTests > 0 ? "invocation-passed" : "invocation-failed");
+    String cls= totalFailedTests > 0 ? "invocation-failed" 
+        : (totalPassedTests > 0 ? "invocation-passed" : "invocation-failed");
     sb.append("<tr align='center' class='").append(cls).append("'>")
-      .append("<td>Total</td>")
+      .append("<td><em>Total</td>")
       .append("<td>").append(totalPassedTests).append("</td>")
       .append("<td>").append(totalFailedTests).append("</td>")
-      .append("<td>").append(totalSkippedTests).append("</td>")
+      .append("<td>").append(totalSkippedTests).append("</em><br></td>")
       .append("<td>&nbsp;</td>")
       .append("</tr>\n");
     sb.append(suiteBuf);
@@ -194,10 +195,18 @@ public class SuiteHTMLReporter implements IReporter {
     
   private void generateClasses(XmlSuite xmlSuite, ISuite suite) {
     StringBuffer sb = new StringBuffer();
-    sb.append("<h2>Test classes</h2>");
+    sb.append("<table border='1'>\n")
+    .append("<tr>\n")
+    .append("<th>Class name</th>\n")
+    .append("<th>Method name</th>\n")
+    .append("<th>Groups</th>\n")
+    .append("</tr>")
+    ;
     for (ITestClass tc : m_classes.values()) {
       sb.append(generateClass(tc));      
     }
+    
+    sb.append("</table>\n");
     
     Utils.writeFile(getOutputDirectory(xmlSuite), CLASSES, sb);    
   }
@@ -209,41 +218,89 @@ public class SuiteHTMLReporter implements IReporter {
   
   private String generateClass(ITestClass cls) {
     StringBuffer sb = new StringBuffer();
-    sb.append("<hr width='100%'/>")
-    .append("<h3>").append(cls.getRealClass().getName()).append("</h3>\n");
-
-    sb.append("<div>").append(SP3).append("Test methods\n")
-      .append(dumpMethods(cls.getTestMethods())).append("</div>\n")
-      .append("<div>").append(SP3).append("@BeforeClass\n") 
-      .append(dumpMethods(cls.getBeforeClassMethods())).append("</div>\n")
-      .append("<div>").append(SP3).append("@BeforeMethod\n") 
-      .append(dumpMethods(cls.getBeforeTestMethods())).append("</div>\n")
-      .append("<div>").append(SP3).append("@AfterMethod\n") 
-      .append(dumpMethods(cls.getAfterTestMethods())).append("</div>\n")
-      .append("<div>").append(SP3).append("@AfterClass\n") 
-      .append(dumpMethods(cls.getAfterClassMethods())).append("</div>\n")
-     ;
+    
+    sb.append("<tr>\n")
+      .append("<td>").append(cls.getRealClass().getName()).append("</td>\n")
+      .append("<td>&nbsp;</td>")
+      .append("<td>&nbsp;</td>")
+      .append("</tr>\n")
+      ;
+    
+    String[] tags = new String[] {
+        "@Test",
+        "@BeforeClass",
+        "@BeforeMethod",
+        "@AfterMethod",
+        "@AfterClass"
+    };
+    ITestNGMethod[][] methods = new ITestNGMethod[][] {
+      cls.getTestMethods(),
+      cls.getBeforeClassMethods(),
+      cls.getBeforeTestMethods(),
+      cls.getAfterTestMethods(),
+      cls.getAfterClassMethods()
+    };
+    
+    for (int i = 0; i < tags.length; i++) {
+      sb.append("<tr>\n")
+      .append("<td align='center' colspan='3'>").append(tags[i]).append("</td>\n")
+      .append("</tr>\n")
+      .append(dumpMethods(methods[i]))
+      ;
+    }
+//    sb.append("<hr width='100%'/>")
+//    .append("<h3>").append(cls.getRealClass().getName()).append("</h3>\n");
+//
+//    sb.append("<div>").append(SP3).append("Test methods\n")
+//      .append(dumpMethods(cls.getTestMethods())).append("</div>\n")
+//      .append("<div>").append(SP3).append("@BeforeClass\n") 
+//      .append(dumpMethods(cls.getBeforeClassMethods())).append("</div>\n")
+//      .append("<div>").append(SP3).append("@BeforeMethod\n") 
+//      .append(dumpMethods(cls.getBeforeTestMethods())).append("</div>\n")
+//      .append("<div>").append(SP3).append("@AfterMethod\n") 
+//      .append(dumpMethods(cls.getAfterTestMethods())).append("</div>\n")
+//      .append("<div>").append(SP3).append("@AfterClass\n") 
+//      .append(dumpMethods(cls.getAfterClassMethods())).append("</div>\n")
+//     ;
     
     String result = sb.toString();
     return result;
   }
   
   private String dumpMethods(ITestNGMethod[] testMethods) {
+    StringBuffer sb = new StringBuffer("");
     if(null == testMethods || testMethods.length == 0) {
       return "";
     }
     
-    StringBuffer sb = new StringBuffer("<br/>");  //"<table bgcolor=\"#c0c0c0\"/>");
-    for (ITestNGMethod tm : testMethods) {
-      sb
-//      .append("<td>")
-      .append(SP4).append(tm.getMethodName()).append("()\n")
-      .append(dumpGroups(tm.getGroups()))
-      .append("<br/>");
-      
-//      .append("</td>")
-      ;
-    }
+    for (ITestNGMethod m : testMethods) {
+      sb.append("<tr>\n");
+      sb.append("<td>&nbsp;</td>\n")
+        .append("<td>").append(m.getMethodName()).append("</td>\n")
+        ;
+      String[] groups = m.getGroups();
+      if (groups != null && groups.length > 0) {
+        sb.append("<td>");
+        for (String g : groups) {
+          sb.append(g).append(" ");
+        }
+        sb.append("</td>\n");
+      }
+      else {
+        sb.append("<td>&nbsp;</td>");
+      }
+      sb.append("</tr>\n");
+    }    
+    
+//    StringBuffer sb = new StringBuffer("<br/>");  //"<table bgcolor=\"#c0c0c0\"/>");
+//    for (ITestNGMethod tm : testMethods) {
+//      sb
+//      .append(SP4).append(tm.getMethodName()).append("()\n")
+//      .append(dumpGroups(tm.getGroups()))
+//      .append("<br/>");
+//      ;
+//    }
+    
     
     String result = sb.toString();
     return result;
