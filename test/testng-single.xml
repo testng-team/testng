@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="Single" verbose="2" >
+<suite name="Single" parallel="tests" verbose="2" >
 
 <!--
 <suite-files>
@@ -18,26 +18,10 @@
     </groups>
     -->
     <classes>
-      <class name="test.methodselectors.MethodSelectorTest" />
-<!--
-      <class name="test.methodselectors.PriorityTest" />
--->
+      <class name="test.tmp.B" />
     </classes>
   </test>
-  
-<!--
-  <test name="TestContextDataProvider2">
-    <groups>
-      <run>
-        <include name="10"/>
-      </run>
-    </groups>
-    <classes>
-      <class name="test.dataprovider.TestContextTest" />
-    </classes>
-  </test>
--->  
-
+ 
 
 </suite>
 

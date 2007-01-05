@@ -1,9 +1,13 @@
 package test.tmp;
 
-public class B extends A {
-	@Override
-	public Object createObject() {
-    System.out.println("CREATING OBJECT");
-		return new Object();
-	}
+import org.testng.annotations.Factory;
+
+public class B {
+  
+  @Factory
+  public Object[] create() {
+    return new Object[] {
+        new A(), new A()
+    };
+  }
 }

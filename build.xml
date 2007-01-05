@@ -320,11 +320,11 @@
     <mkdir dir="${other.jars.dir}" />
   </target>
 
-  <target name="eclipse">
+  <target name="eclipse" description="Used by Cedric to build distributions">
     <property name="jdk14.jar"
-              value="${testng-eclipse.dir}/plugin/lib/testng-jdk14.jar" />
+              value="${testng-eclipse.dir}/lib/testng-jdk14.jar" />
     <property name="jdk15.jar"
-              value="${testng-eclipse.dir}/plugin/lib/testng-jdk15.jar" />
+              value="${testng-eclipse.dir}/lib/testng-jdk15.jar" />
 
     <delete file="${jdk14.jar}" />
     <delete file="${jdk15.jar}" />

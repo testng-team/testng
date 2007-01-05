@@ -4,12 +4,10 @@ import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertTrue;
 
-public abstract class A {
-  @Test
-	public abstract Object createObject();
+public class A {
 
-	@Test(dependsOnMethods = { "createObject" })
+	@Test
 	public void testObject() {
-		assertTrue(createObject() instanceof Object);
+    System.out.println("TEST, THREAD:" + Thread.currentThread().getId());
 	}
 }
