@@ -143,10 +143,10 @@ public class SuiteHTMLReporter implements IReporter {
     String cls= totalFailedTests > 0 ? "invocation-failed" 
         : (totalPassedTests > 0 ? "invocation-passed" : "invocation-failed");
     sb.append("<tr align='center' class='").append(cls).append("'>")
-      .append("<td><em>Total</td>")
-      .append("<td>").append(totalPassedTests).append("</td>")
-      .append("<td>").append(totalFailedTests).append("</td>")
-      .append("<td>").append(totalSkippedTests).append("</em><br></td>")
+      .append("<td><em>Total</em></td>")
+      .append("<td><em>").append(totalPassedTests).append("</em></td>")
+      .append("<td><em>").append(totalFailedTests).append("</em></td>")
+      .append("<td><em>").append(totalSkippedTests).append("</em></td>")
       .append("<td>&nbsp;</td>")
       .append("</tr>\n");
     sb.append(suiteBuf);

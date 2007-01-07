@@ -174,9 +174,19 @@ public class MethodHelper {
 
   /**
    * Escapes $ in regexps as it is not meant for end-line matching, but inner class matches.
+   * Impl.is weird as the String methods are not available in 1.4
    */
   private static String escapeRegexp(String regex) {
-    return regex.replace("$", "\\$");
+    if(regex.indexOf('$') == -1) return regex;
+    String[] fragments= regex.split("\\$");
+    StringBuffer result= new StringBuffer();
+    for(int i= 0; i < fragments.length - 1; i++) {
+      result.append(fragments[i]).append("\\$");
+    }
+    result.append(fragments[fragments.length - 1]);
+    if(regex.endsWith("$")) result.append("\\$");
+    
+    return result.toString();
   }
   
   /**
