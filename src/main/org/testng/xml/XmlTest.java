@@ -22,6 +22,8 @@ public class XmlTest implements Serializable, Cloneable {
   private String m_name = TestNG.DEFAULT_COMMAND_LINE_SUITE_NAME;
   private Integer m_verbose;
   private Boolean m_isJUnit;
+  private int m_threadCount= -1;
+
   private List<XmlClass> m_xmlClasses = new ArrayList<XmlClass>();
   
   private List<String> m_includedGroups = new ArrayList<String>();
@@ -122,21 +124,29 @@ public class XmlTest implements Serializable, Cloneable {
   }
 
   /**
-   * @param i
+   * @param v
    */
   public void setVerbose(int v) {
     m_verbose = new Integer(v);
   }
+
+  public int getThreadCount() {
+    return m_threadCount > 0 ? m_threadCount : getSuite().getThreadCount();
+  }
+
+  public void setThreadCount(int threadCount) {
+    m_threadCount = threadCount;
+  }
   
   /**
-   * @param currentIncludedGroups
+   * @param g
    */
   public void setIncludedGroups(List<String> g) {
     m_includedGroups = g;
   }
 
   /**
-   * @param excludedGrousps The excludedGrousps to set.
+   * @param g The excludedGrousps to set.
    */
   public void setExcludedGroups(List<String> g) {
     m_excludedGroups = g;
@@ -191,7 +201,7 @@ public class XmlTest implements Serializable, Cloneable {
   }
   
   /**
-   * @param currentTestParameters
+   * @param parameters
    */
   public void setParameters(Map parameters) {
     m_parameters = parameters;
@@ -444,9 +454,7 @@ public class XmlTest implements Serializable, Cloneable {
    * 
    * The &lt;classes&gt; sub element is ignored for the moment.
    * 
-   * @param suite
-   * @param source
-   * @return
+   * @return a clone of the current XmlTest
    */
   @Override
   public Object clone() {

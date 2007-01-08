@@ -224,6 +224,10 @@ public class TestNGContentHandler extends DefaultHandler {
           Utils.log("Parser", 1, "[WARN] Unknown value of attribute 'parallel' for test '" + name + "': '" + parallel + "'");
         }
       }
+      String threadCount = attributes.getValue("thread-count");
+      if(null != threadCount) {
+        m_currentTest.setThreadCount(Integer.parseInt(threadCount));
+      }
       String annotations = attributes.getValue("annotations");
       if (null != annotations) {
         m_currentTest.setAnnotations(annotations);

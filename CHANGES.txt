@@ -1,6 +1,7 @@
 ===========================================================================
 5.5
 
+Added: Support for thread-count at test level
 Added: Method selectors receive a Context and can stop the chain with setStopped()
 Fixed: XmlMethodSelector was always run first regardless of its priority
 Added: @BeforeGroups/@AfterGroups can live in classes without @Test methods

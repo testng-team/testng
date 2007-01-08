@@ -1,0 +1,13 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Thread Counters" verbose="2" thread-count="2">
+  <test name="Test level thread-count" thread-count="3" parallel="methods">
+    <classes>
+      <class name="test.thread.TestThreadCountTest" />
+    </classes>
+  </test>
+  <test name="Suite level thread-count" parallel="methods">
+    <classes>
+      <class name="test.thread.SuiteThreadCountTest" />
+    </classes>
+  </test>
+</suite>

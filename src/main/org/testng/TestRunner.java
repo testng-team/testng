@@ -663,7 +663,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
         }
       }
 
-      ThreadUtil.execute(workers, m_xmlTest.getSuite().getThreadCount(), maxTimeOut, false);
+      ThreadUtil.execute(workers, m_xmlTest.getThreadCount(), maxTimeOut, false);
     }
     else {
       //
@@ -721,8 +721,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
 
   /**
    * Creates the
-   * @param sequentialList
-   * @param parallelList
+   * @param sl the sequential list of methods
+   * @param parallelList the list of methods that can be run in parallel
    */
   private void computeTestLists(List<List<ITestNGMethod>> sl,
                                 List<ITestNGMethod> parallelList) 
@@ -841,7 +841,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   }
 
   /**
-   * Logs the beginning of the {@link #privateRun()}.
+   * Logs the beginning of the {@link #beforeRun()} .
    */
   private void logStart() {
     log(3,
