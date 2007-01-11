@@ -14,7 +14,13 @@
 			<class name="org.testng.internal.conflistener.FailingAfterTest" />
 		</classes>
   </test>
-	<!--
+	<test name="Class Configuration">
+		<classes>
+			<class name="org.testng.internal.conflistener.FailingBeforeClass" />
+      <class name="org.testng.internal.conflistener.FailingAfterClass" />
+    </classes>
+  </test>
+  <!--
 	<test name="X Configuration">
 		<classes>
 			<class name="org.testng.internal.conflistener." />

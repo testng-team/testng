@@ -79,9 +79,11 @@ public class EmailableReporter implements IReporter {
       Map<String, ISuiteResult> r = suite.getResults();
       for (ISuiteResult r2 : r.values()) {
         ITestContext test = r2.getTestContext();
-        resultSummary(test.getFailedTests(), test.getName(), "failed");
-        resultSummary(test.getSkippedTests(), test.getName(), "skipped");
-        resultSummary(test.getPassedTests(), test.getName(), "passed");
+        resultSummary(test.getFailedConfigurations(), test.getName(), "failed", " (configuration methods)");
+        resultSummary(test.getFailedTests(), test.getName(), "failed", "");
+        resultSummary(test.getSkippedConfigurations(), test.getName(), "skipped", " (configuration methods)");
+        resultSummary(test.getSkippedTests(), test.getName(), "skipped", "");
+        resultSummary(test.getPassedTests(), test.getName(), "passed", "");
       }
     }
     m_out.println("</table>");
@@ -96,7 +98,9 @@ public class EmailableReporter implements IReporter {
         if (r.values().size() > 0) {
           m_out.println("<h1>" + r2.getTestContext().getName() + "</h1>");
         }
+        resultDetail(r2.getTestContext().getFailedConfigurations(), "failed");
         resultDetail(r2.getTestContext().getFailedTests(), "failed");
+        resultDetail(r2.getTestContext().getSkippedConfigurations(), "skipped");
         resultDetail(r2.getTestContext().getSkippedTests(), "skipped");
         resultDetail(r2.getTestContext().getPassedTests(), "passed");
       }
@@ -106,7 +110,7 @@ public class EmailableReporter implements IReporter {
   /**
    * @param tests
    */
-  private void resultSummary(IResultMap tests, String testname, String style) {
+  private void resultSummary(IResultMap tests, String testname, String style, String details) {
     if (tests.getAllResults().size() > 0) {
       StringBuffer buff = new StringBuffer();
       String lastc = "";
@@ -117,7 +121,7 @@ public class EmailableReporter implements IReporter {
         m_methodIndex += 1;
         String cname = method.getTestClass().getName();
         if (mq == 0) {
-          titleRow(testname + " &#8212; " + style, 4);
+          titleRow(testname + " &#8212; " + style + details, 4);
         }
         if (!cname.equalsIgnoreCase(lastc)) {
           if (mq > 0) {
