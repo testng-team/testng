@@ -25,13 +25,9 @@ public class FactoryTest {
     runTest("methods", 2);
   }
 
-  /**
-   * In parallel mode "tests", we should have as many thread id's
-   * as there are test methods on B (2).
-   */
   @Test 
   public void verifyFactoryParallelTests() {
-    runTest("tests", 2);
+    runTest("tests", 1);
   }
   
   private void runTest(String parallelMode, int expectedThreadIdCount) {

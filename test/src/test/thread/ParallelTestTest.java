@@ -16,6 +16,24 @@ import test.BaseTest;
 
 public class ParallelTestTest extends BaseTest {
     
+  @Test
+  public void verifyParallelNone() {
+    verifyExpected(XmlSuite.PARALLEL_NONE, 1);
+  }
+  
+  @Test
+  public void verifyParallelTests() {
+    verifyExpected(XmlSuite.PARALLEL_TESTS, 2);
+  }
+
+  @Test
+  public void verifyParallelMethods() {
+    verifyExpected(XmlSuite.PARALLEL_METHODS, 4);
+  }
+  
+  public static final String CLASS1 = "test.thread.Test1Test";
+  public static final String CLASS2 = "test.thread.Test2Test";
+    
   private void createTest(XmlSuite xmlSuite, String className) {
     XmlTest result = new XmlTest(xmlSuite);
     List<XmlClass> classes = result.getXmlClasses();
@@ -23,17 +41,12 @@ public class ParallelTestTest extends BaseTest {
     classes.add(xmlClass);
   }
   
-  @Test
-  public void verifySequential() {
-    int threadCount = 2;
-    String class1 = "test.thread.Test1Test";
-    String class2 = "test.thread.Test2Test";
-    
+  private void verifyExpected(String parallelMode, int expectedThreadCount) {
     XmlSuite xmlSuite = new XmlSuite();
     xmlSuite.setName("ParallelTestTest");
-    xmlSuite.setParallel(XmlSuite.PARALLEL_TESTS);
-    createTest(xmlSuite, class1);
-    createTest(xmlSuite, class2);
+    xmlSuite.setParallel(parallelMode);
+    createTest(xmlSuite, CLASS1);
+    createTest(xmlSuite, CLASS2);
     
     TestNG tng = new TestNG();
     tng.setVerbose(0);
@@ -41,30 +54,19 @@ public class ParallelTestTest extends BaseTest {
     
     Helper.reset();
     
-    tng.run();
+    tng.run();    
     
     Map<Long, Long>[] maps = new Map[] {
-        Helper.getMap(class1),
-        Helper.getMap(class2),
+        Helper.getMap(CLASS1),
+        Helper.getMap(CLASS2),
     };
-
-    for(Map m : maps) {
-      Assert.assertEquals(m.size(), 1);
+    
+    Map<Long, Long> mergedMap = new HashMap<Long, Long>();
+    for (Map<Long, Long>m : maps) {
+      mergedMap.putAll(m);
     }
     
-    long[] ids = new long[] {
-        maps[0].keySet().iterator().next().longValue(),
-        maps[1].keySet().iterator().next().longValue(),
-    };
-    Map<Long, Long> verifyMap = new HashMap<Long, Long>();
-    
-    for (long id : ids) {
-      verifyMap.put(id, id);
-    }
-    
-    Assert.assertEquals(verifyMap.size(), 2);
-    
-    ppp("COUNT:" + threadCount  + " THREAD ID'S:" + ids[0] + " " + ids[1]);
+    Assert.assertEquals(mergedMap.size(), expectedThreadCount);
   }
 
   private static void ppp(String s) {

@@ -648,7 +648,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   private void runWorkers(List<? extends IMethodWorker> workers, String parallelMode) {
     if (XmlSuite.PARALLEL_METHODS.equals(parallelMode) 
         || "true".equalsIgnoreCase(parallelMode)
-        || XmlSuite.PARALLEL_TESTS.equals(parallelMode)
+//        || XmlSuite.PARALLEL_TESTS.equals(parallelMode)
         ) 
     {
       //

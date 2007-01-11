@@ -18,7 +18,9 @@ public class BaseSequentialSample {
 
   protected void ppp(String s) {
     if (false) {
-      System.out.println("[" + getClass().getName() + "] " + s);
+      System.out.println("[" + getClass().getName() + " " 
+          + Thread.currentThread().getId() + " " 
+          + "] " + s);
     }
   }
 }
