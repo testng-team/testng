@@ -1,19 +1,20 @@
-<project name="testng-spring" default="compile" basedir=".">
+<project name="testng-spring" default="both" basedir=".">
 
 	<target name="init">
 		<tstamp />
+    <property file="../build.properties" />
 		<property file="build.properties" />
 		<!-- Settings -->
 		<property name="jdk" value="jdk14" />
-	  	<property name="optimize" value="false" />
-	  	<property name="debug" value="true" />
+    <property name="optimize" value="false" />
+    <property name="debug" value="true" />
 		
-	  	<!--  Directories -->
-	  	<property name="src.dir" location="src" />
-	  	<property name="topbuild.dir" location="build" />
-	  	<property name="build.dir" location="${topbuild.dir}/${jdk}" />
-	  	<property name="classes.dir" location="${build.dir}/classes" />	  	
-	  	<property name="dependencies.dir" location="3rdparty" />
+    <!--  Directories -->
+    <property name="src.dir" location="src" />
+    <property name="topbuild.dir" location="build" />
+    <property name="build.dir" location="${topbuild.dir}/${jdk}" />
+    <property name="classes.dir" location="${build.dir}/classes" />	  	
+    <property name="dependencies.dir" location="3rdparty" />
 		<property name="topjavadocs.dir" location="javadocs" />
 		<property name="javadocs.dir" location="${topjavadocs.dir}/${jdk}" />
 		
@@ -29,13 +30,10 @@
 			<pathelement path="${src.dir}/${jdk}" />
 		</path>
 		<path id="compile.path">
-			<pathelement path="../testng-4.7-${jdk}.jar" />
-			<pathelement path="${dependencies.dir}/spring-core-1.2.3.jar" />
-			<pathelement path="${dependencies.dir}/spring-context-1.2.3.jar" />
-			<pathelement path="${dependencies.dir}/spring-beans-1.2.3.jar" />
-			<pathelement path="${dependencies.dir}/spring-dao-1.2.3.jar" />
-			<pathelement path="${dependencies.dir}/spring-jdbc-1.2.3.jar" />
-			<pathelement path="${dependencies.dir}/commons-logging-1.0.4.jar" />
+      <fileset dir="${dependencies.dir}">
+        <include name="*.jar" />
+      </fileset>
+			<pathelement path="../testng-${testng.version}-${jdk}.jar" />
 		</path>
 	</target>
 	
@@ -86,7 +84,7 @@
 	
 	<target name="all" depends="dist,javadocs" description="build jar files and javadocs" />
 	
-	<target name="clean-all" depends="paths" description="cleans all">
+	<target name="clean" depends="paths" description="cleans all">
 		<delete dir="${topbuild.dir}" />
 		<delete dir="${topjavadocs.dir}" />
 		<delete file="testng-spring-jdk14.jar" />

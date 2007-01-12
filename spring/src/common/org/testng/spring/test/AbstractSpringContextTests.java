@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2005 the original author or authors.
+ * Copyright 2002-2006 the original author or authors.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,10 @@ package org.testng.spring.test;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.util.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.util.StringUtils;
 
 /**
  * Superclass for TestNG test cases using a Spring context.
@@ -32,13 +30,19 @@ import org.springframework.util.StringUtils;
  * <p>Maintains a static cache of contexts by key. This has significant performance
  * benefit if initializing the context would take time. While initializing a 
  * Spring context itself is very quick, some beans in a context, such as
- * a LocalSessionFactoryBean for working with Hibernate, may take time to
- * initialize. Hence it often makes sense to do that initializing once.
+ * a LocalSessionFactoryBean for working with Hibernate, may take some time
+ * to initialize. Hence it often makes sense to do that initializing once.
  *
- * <p>Normally you won't extend this class directly, but extend one
- * of its subclasses.
+ * <p>Any ApplicationContext created by this class will be asked to register a JVM
+ * shutdown hook for itself. Unless the context gets closed early, all context
+ * instances will be automatically closed on JVM shutdown. This allows for freeing
+ * external resources held by beans within the context, e.g. temporary files.
+ *
+ * <p>Normally you won't extend this class directly but rather extend one of
+ * its subclasses.
  *
  * @author Rod Johnson
+ * @author Juergen Hoeller
  * @since 1.1.1
  * @see AbstractDependencyInjectionSpringContextTests
  * @see AbstractTransactionalSpringContextTests
@@ -46,82 +50,91 @@ import org.springframework.util.StringUtils;
  */
 public abstract class AbstractSpringContextTests {
 
+  /** Logger available to subclasses */
+  protected final Log logger = LogFactory.getLog(getClass());
+  
   /**
    * Map of context keys returned by subclasses of this class, to
-   * Spring Contexts. This needs to be static, as JUnit tests are
+	 * Spring contexts. This needs to be static, as JUnit tests are
    * destroyed and recreated between running individual test methods.
    */
   private static Map contextKeyToContextMap = new HashMap();
 
-  /**
-   * Logger available to subclasses.
-   */
-  protected final Log logger = LogFactory.getLog(getClass());
-
 
   /**
-   * Set custom locations dirty. This will cause them to be reloaded
-   * from the cache before the next test case is executed.
-   * <p>Call this method only if you change the state of a singleton
-   * bean, potentially affecting future tests.
+	 * Default constructor for AbstractSpringContextTests.
    */
-  protected void setDirty(String[] locations) {
-    String keyString = contextKeyString(locations);
-    ConfigurableApplicationContext ctx =
-        (ConfigurableApplicationContext) contextKeyToContextMap.remove(keyString);
-    if (ctx != null) {
-      ctx.close();
-    }
-  }
+	public AbstractSpringContextTests() {
+	}
 
-  protected boolean hasCachedContext(Object contextKey) {
-    return contextKeyToContextMap.containsKey(contextKey);
+	/**
+	 * Explicitly add an ApplicationContext instance under a given key.
+	 * <p>This is not meant to be used by subclasses. It is rather exposed
+	 * for special test suite environments.
+	 * @param key the context key
+	 * @param context the ApplicationContext instance
+	 */
+	public final void addContext(Object key, ConfigurableApplicationContext context) {
+		assert context != null : "ApplicationContext must not be null";
+		contextKeyToContextMap.put(contextKeyString(key), context);
   }
 
   /**
-   * Subclasses can override this to return a String representation of
-   * their contextKey for use in logging
+	 * Return whether there is a cached context for the given key.
+	 * @param contextKey the context key
    */
-  protected String contextKeyString(Object contextKey) {
-    if (contextKey instanceof String[]) {
-      return StringUtils.arrayToCommaDelimitedString((String[]) contextKey);
-    }
-    else {
-      return contextKey.toString();
-    }
+	protected final boolean hasCachedContext(Object contextKey) {
+		return contextKeyToContextMap.containsKey(contextKey);
   }
 
-  protected ConfigurableApplicationContext getContext(Object key) {
+  /**
+   * Obtain an ApplicationContext for the given key, potentially cached.
+   * @param key the context key
+   * @return the corresponding ApplicationContext instance (potentially cached)
+   */
+  protected final ConfigurableApplicationContext getContext(Object key) throws Exception {
     String keyString = contextKeyString(key);
     ConfigurableApplicationContext ctx =
         (ConfigurableApplicationContext) contextKeyToContextMap.get(keyString);
     if (ctx == null) {
-      if (key instanceof String[]) {
-        ctx = loadContextLocations((String[]) key);
-      }
-      else {
-        ctx = loadContext(key);
-      }
+      ctx = loadContext(key);
+      ctx.registerShutdownHook();
       contextKeyToContextMap.put(keyString, ctx);
     }
     return ctx;
   }
 
-
   /**
-   * Subclasses can invoke this to get a context key for the given location.
-   * This doesn't affect the applicationContext instance variable in this class.
-   * Dependency Injection cannot be applied from such contexts.
+	 * Mark the context with the given key as dirty. This will cause the
+	 * cached context to be reloaded before the next test case is executed.
+	 * <p>Call this method only if you change the state of a singleton
+	 * bean, potentially affecting future tests.
    */
-  protected ConfigurableApplicationContext loadContextLocations(String[] locations) {
-    if (logger.isInfoEnabled()) {
-      logger.info("Loading config for: " + StringUtils.arrayToCommaDelimitedString(locations));
+	protected final void setDirty(Object contextKey) {
+		String keyString = contextKeyString(contextKey);
+		ConfigurableApplicationContext ctx =
+				(ConfigurableApplicationContext) contextKeyToContextMap.remove(keyString);
+		if (ctx != null) {
+			ctx.close();
     }
-    return new ClassPathXmlApplicationContext(locations);
   }
 
-  protected ConfigurableApplicationContext loadContext(Object key) {
-    throw new UnsupportedOperationException("Subclasses may override this");
-  }
+
+	/**
+	 * Subclasses can override this to return a String representation of
+	 * their context key for use in logging.
+	 * @param contextKey the context key
+	 */
+	protected String contextKeyString(Object contextKey) {
+		return ObjectUtils.nullSafeToString(contextKey);
+	}
+
+	/**
+	 * Load a new ApplicationContext for the given key.
+	 * <p>To be implemented by subclasses.
+	 * @param key the context key
+	 * @return the corresponding ApplicationContext instance (new)
+	 */
+	protected abstract ConfigurableApplicationContext loadContext(Object key) throws Exception;
 
 }
