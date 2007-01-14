@@ -72,7 +72,7 @@ public abstract class AbstractSingleSpringContextTests extends AbstractSpringCon
 	 * Override <code>onSetUp</code> for custom behavior.
 	 * @see #onSetUp()
 	 */
-  @BeforeMethod
+  @BeforeMethod(groups="spring-init")
   protected final void setUp() throws Exception {
 		this.applicationContext = getContext(contextKey());
 		prepareTestInstance();
@@ -110,7 +110,7 @@ public abstract class AbstractSingleSpringContextTests extends AbstractSpringCon
 	 * Override <code>onTearDown</code> for custom behavior.
 	 * @see #onTearDown()
 	 */
-  @AfterMethod
+  @AfterMethod(groups="spring-init")
   protected final void tearDown() throws Exception {
 		onTearDown();
 	}

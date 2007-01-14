@@ -260,7 +260,20 @@ public abstract class AbstractTransactionalSpringContextTests extends AbstractDe
 		this.complete = true;
 	}
 
-	/**
+  /**
+   * Cause the transaction to rollback for this test method,
+   * even if default is set to complete.
+   * @throws IllegalStateException if the operation cannot be set to
+   * complete as no transaction manager was provided
+   */
+  protected void setRollback() throws UnsupportedOperationException {
+    if (this.transactionManager == null) {
+      throw new IllegalStateException("No transaction manager set");
+    }
+    this.complete = false;
+  }
+  
+  /**
 	 * Immediately force a commit or rollback of the transaction,
 	 * according to the complete flag.
 	 * <p>Can be used to explicitly let the transaction end early,
