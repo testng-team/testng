@@ -25,9 +25,11 @@ public class FactoryTest {
     runTest("methods", 2);
   }
 
-  @Test 
+  @Test(groups = "broken",
+      description = "Known bug:  when parallel='tests', tests returned" +
+        " by a @Factory are run in the same thread")
   public void verifyFactoryParallelTests() {
-    runTest("tests", 1);
+    runTest("tests", 2);
   }
   
   private void runTest(String parallelMode, int expectedThreadIdCount) {

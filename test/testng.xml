@@ -40,6 +40,11 @@
   
   
   <test name="Regression2">
+    <groups>
+      <run>
+        <exclude name="broken" />
+      </run>
+    </groups>
     <classes>
       <class name="test.Test1" />
       <class name="test.MethodTest" />
