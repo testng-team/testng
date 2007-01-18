@@ -1,6 +1,7 @@
 ===========================================================================
 5.5
 
+Fixed: @BeforeGroup methods were run twice with a @Test at class level
 Fixed: parallel="tests" didn't work as advertised
 Added: Support for thread-count at test level
 Added: Method selectors receive a Context and can stop the chain with setStopped()

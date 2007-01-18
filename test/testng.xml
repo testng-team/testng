@@ -76,6 +76,7 @@
       <class name="test.configuration.SuiteTest" />
       <class name="test.configuration.VerifySuiteTest" />
       <class name="test.annotationtransformer.AnnotationTransformerTest" />
+      <class name="test.configuration.MultipleBeforeGroupTest" />
     </classes>
   </test>
   

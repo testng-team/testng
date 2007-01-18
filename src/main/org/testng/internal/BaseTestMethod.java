@@ -1,9 +1,9 @@
 package org.testng.internal;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.testng.IClass;
 import org.testng.ITestClass;
@@ -454,19 +454,19 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    * @return
    */
   protected String[] getStringArray(String[] methodArray, String[] classArray) {
-    List<String> vResult = new ArrayList<String>();
+    Map<String, String> vResult = new HashMap<String, String>();
     if (null != methodArray) {
       for (String m : methodArray) {
-        vResult.add(m);
+        vResult.put(m, m);
       }
     }
     if (null != classArray) {
       for (String m : classArray) {
-        vResult.add(m);
+        vResult.put(m, m);
       }
     }
     
-    return vResult.toArray(new String[vResult.size()]);
+    return vResult.values().toArray(new String[vResult.size()]);
   }
 
   protected void setGroups(String[] groups) {
