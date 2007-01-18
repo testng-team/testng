@@ -1324,6 +1324,7 @@ public class TestNG {
     }
 
     public void onStart(ITestContext context) {
+      setHasRunTests();
     }
 
     public void onFinish(ITestContext context) {
