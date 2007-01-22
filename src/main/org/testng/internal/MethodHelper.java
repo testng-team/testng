@@ -761,6 +761,7 @@ public class MethodHelper {
          }
          catch(Throwable t) {
            error[0] = t;
+           tr.setThrowable( t ); // make Throwable available to IHookable
          }
        }
     };

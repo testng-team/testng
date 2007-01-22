@@ -5,6 +5,7 @@ import org.testng.annotations.Test;
 
 @Test( groups = "foo" )
 public class A {
+  public A(int n) {}
    @BeforeGroups( "foo" )
    public void beforeGroups() {
        System.out.println( "beforeGroups" );
@@ -14,5 +15,9 @@ public class A {
    public void test() {
        System.out.println( "test" );
    }
+   
+   public static void main(String[] args) {
+//    A a = new A();
+  }
 
 }
