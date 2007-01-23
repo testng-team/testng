@@ -1,22 +1,26 @@
 package test.tmp;
 
-import org.testng.annotations.Configuration;
+import org.testng.Assert;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
 
 @Test(groups = {"base"})
 public class Base {
-  protected boolean m_beforeTest = false;
-  protected boolean m_afterTest = false;
-
-    @Configuration(beforeTestClass = true)
-    public void baseSetup() {
-      m_beforeTest = true;
-      System.out.println("base before class");
-    }
-
-    @Configuration(afterTestClass = true)
-    public void baseTeardown() {
-      m_afterTest = true;
-      System.out.println("base after class");
-    }
+  private static int m_count = 0;
+  
+  @BeforeGroups(groups = "foo")
+  public void beforeGroups() {
+    ppp("BEFORE_GROUPS");
+    m_count++;
+  }
+  
+  @AfterTest
+  public void verify() {
+    Assert.assertEquals(m_count, 1);
+  }
+  
+  private static void ppp(String s) {
+    System.out.println("[Base] " + s);
+  }
 }

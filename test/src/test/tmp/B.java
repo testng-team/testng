@@ -1,13 +1,10 @@
 package test.tmp;
 
-import org.testng.annotations.Factory;
+import org.testng.annotations.Test;
 
-public class B {
-  
-  @Factory
-  public Object[] create() {
-    return new Object[] {
-        new A(), new A()
-    };
-  }
+public class B extends Base {
+   @Test(groups = "foo")
+   public void b() {
+       System.out.println( "b" );
+   }
 }

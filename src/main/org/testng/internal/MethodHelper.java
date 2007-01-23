@@ -341,7 +341,13 @@ public class MethodHelper {
             methodList = new ArrayList<ITestNGMethod>();
             result.put(group, methodList);
           }
-          methodList.add(method);
+          // NOTE(cbeust, 2007/01/23)
+          // BeforeGroups/AfterGroups methods should only be invoked once.
+          // I should probably use a map instead of a list for a contains(), but 
+          // this list should usually be fairly short
+          if (! methodList.contains(method)) {
+            methodList.add(method);
+          }
         }
       }
     }

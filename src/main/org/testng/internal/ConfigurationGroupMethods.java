@@ -2,14 +2,12 @@ package org.testng.internal;
 
 
 import java.io.Serializable;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 
 /**
@@ -39,7 +37,8 @@ public class ConfigurationGroupMethods implements Serializable {
 
   public ConfigurationGroupMethods(ITestNGMethod[] allMethods,
                                    Map<String, List<ITestNGMethod>> beforeGroupsMethods,
-                                   Map<String, List<ITestNGMethod>> afterGroupsMethods) {
+                                   Map<String, List<ITestNGMethod>> afterGroupsMethods) 
+  {
     m_allMethods= allMethods;
     m_beforeGroupsMethods= beforeGroupsMethods;
     m_afterGroupsMethods= afterGroupsMethods;
