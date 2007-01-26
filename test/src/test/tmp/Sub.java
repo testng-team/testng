@@ -6,6 +6,8 @@ import org.testng.annotations.Test;
 
 @Test(groups = {"sub"})
 public class Sub extends Base {
+  boolean m_beforeTest;
+  boolean m_afterTest;
 
     @Configuration(beforeTestClass = true)
     public void subSetup() {
