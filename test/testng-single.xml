@@ -18,7 +18,7 @@
     </groups>
     -->
     <classes>
-      <class name="test.configuration.BaseGroupsTest" />
+      <class name="test.tmp.A" />
     </classes>
   </test>
  

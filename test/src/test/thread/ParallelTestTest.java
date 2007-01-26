@@ -21,7 +21,7 @@ public class ParallelTestTest extends BaseTest {
     verifyExpected(XmlSuite.PARALLEL_NONE, 1);
   }
   
-  @Test
+  @Test(groups = "broken")
   public void verifyParallelTests() {
     verifyExpected(XmlSuite.PARALLEL_TESTS, 2);
   }
