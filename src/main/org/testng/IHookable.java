@@ -10,13 +10,13 @@ package org.testng;
  * be implemented as follows:
  * 
  * <pre>
- * public void run(final IHookCallBack icb) {
+ * public void run(final IHookCallBack icb, ITestResult testResult) {
  *   // Preferably initialized in a @Configuration method
  *   mySubject = authenticateWithJAAs();
  *   
  *   Subject.doAs(mySubject, new PrivilegedExceptionAction() {
  *     public Object run() {
- *       icb.callback();
+ *       icb.callback(testResult);
  *     }
  *   };
  * }
