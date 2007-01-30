@@ -123,16 +123,19 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   public TestRunner(ISuite suite,
                     XmlTest test,
                     String outputDirectory,
-                    IAnnotationFinder finder) {
+                    IAnnotationFinder finder) 
+  {
     init(suite, test, outputDirectory, finder);
   }
 
-  public TestRunner(ISuite suite, XmlTest test, IAnnotationFinder finder) {
+  public TestRunner(ISuite suite, XmlTest test, IAnnotationFinder finder) 
+  {
     init(suite, test, suite.getOutputDirectory(), finder);
   }
 
   public TestRunner(ISuite suite, XmlTest test) {
-    init(suite, test, suite.getOutputDirectory(), suite.getAnnotationFinder(test.getAnnotations()));
+    init(suite, test, suite.getOutputDirectory(), 
+        suite.getAnnotationFinder(test.getAnnotations()));
   }
 
   private void init(ISuite suite,
@@ -145,7 +148,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     m_testName = test.getName();
     m_host = suite.getHost();
     m_testClassesFromXml= test.getXmlClasses();
-
+    
     m_packageNamesFromXml= test.getXmlPackages();    
     if(null != m_packageNamesFromXml) {
       for(XmlPackage xp: m_packageNamesFromXml) {

@@ -97,17 +97,17 @@ public interface ITestContext extends Serializable {
    * Retrieves information about the successful configuration method invocations.
    * @return
    */
-  IResultMap getPassedConfigurations();
+  public IResultMap getPassedConfigurations();
   
   /**
    * Retrieves information about the skipped configuration method invocations.
    * @return
    */
-  IResultMap getSkippedConfigurations();
+  public IResultMap getSkippedConfigurations();
   
   /**
    * Retrieves information about the failed configuration method invocations.
    * @return
    */
-  IResultMap getFailedConfigurations();
+  public IResultMap getFailedConfigurations();
 }

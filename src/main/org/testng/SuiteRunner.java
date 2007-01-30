@@ -101,6 +101,10 @@ public class SuiteRunner implements ISuite, Serializable {
     }
     setOutputDir(outputDir);
   }
+  
+  public XmlSuite getXmlSuite() {
+    return m_suite;
+  }
 
   public String getName() {
     return m_suite.getName();

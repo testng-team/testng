@@ -152,8 +152,10 @@ public class JUnitConverter {
      */
    private static void usage() {
       System.out.println("Converts JUnit test cases to TestNG.");
-      System.out.println("Usage: java -cp <> org.testng.JUnitConverter "
-            + "(-annotation | -javadoc) -srcdir <source_dir> (-d <output_dir> -restore | -overwrite)"
+      System.out.println("Usage: java -cp <> org.testng.JUnitConverter"
+            + " (-annotation | -javadoc) -srcdir <source_dir> "
+            + " (-d <output_dir> -overwrite)"
+            + " -groups <groups>"
             + " [-source <release>]");
       System.out.println("");
       System.out.println("-annotation\t Generated tests will use JDK1.5 annotations");
@@ -163,6 +165,7 @@ public class JUnitConverter {
       System.out.println("-overwrite\t Overwrite the original JUnit files with the new ones"
             + "\n\t\t The flag cannot be used when -d is used.");
       System.out.println("-source\t Provide source compatibility with specified release");
+      System.out.println("-groups\t The groups that the methods will belong to");
       System.out.println("-quiet\t Don't display any output");
    }
 

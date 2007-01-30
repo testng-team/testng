@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.xml.XmlSuite;
 
 /**
  * Interface defining a Test Suite.
@@ -80,4 +81,9 @@ public interface ISuite {
    * @return the annotation finder used for the specified type (JDK5 or javadoc)
    */
   public IAnnotationFinder getAnnotationFinder(String type);
+
+  /**
+   * @return The representation of the current XML suite file.
+   */
+  public XmlSuite getXmlSuite();
 }
