@@ -10,12 +10,10 @@ import org.testng.annotations.Test;
 public class FailingAfterSuite {
   @AfterSuite(alwaysRun=true)
   public void afterSuite() {
-    System.out.println("afterSuite");
     throw new RuntimeException("Test exception");
   }
   
   @Test
   public void dummytest() {
-    System.out.println("dummytest");
   }
 }

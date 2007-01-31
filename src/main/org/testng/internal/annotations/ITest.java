@@ -35,14 +35,7 @@ public interface ITest extends ITestOrConfiguration {
    */
   public int getSuccessPercentage();
   public void setSuccessPercentage(int s);
-  
-  /**
-   * The name of the data provider for this test method.
-   * @see org.testng.annotations.DataProvider#DataProvider
-   */
-  public String getDataProvider();
-  public Class getDataProviderClass();
-  
+
   /**
    * If set to true, this test method will always be run even if it depends
    * on a method that failed.  This attribute will be ignored if this test
@@ -62,4 +55,7 @@ public interface ITest extends ITestOrConfiguration {
   
   public boolean getSequential();
   public void setSequential(boolean f);
+  
+  public String getDataProvider();
+  public Class getDataProviderClass();
 }

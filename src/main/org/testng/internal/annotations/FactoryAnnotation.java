@@ -11,7 +11,16 @@ public class FactoryAnnotation
   implements IFactory 
 {
   private String[] m_parameters = {};
+  private String m_dataProvider = null;
   
+  public String getDataProvider() {
+    return m_dataProvider;
+  }
+
+  public void setDataProvider(String dataProvider) {
+    m_dataProvider = dataProvider;
+  }
+
   public String[] getParameters() {
     return m_parameters;
   }

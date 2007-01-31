@@ -11,10 +11,7 @@ import java.util.Map;
 
 import org.testng.IClass;
 import org.testng.IInstanceInfo;
-import org.testng.ITestClass;
-import org.testng.ITestMethodFinder;
-import org.testng.TestClass;
-import org.testng.TestRunner;
+import org.testng.ITestContext;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotation;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -26,14 +23,17 @@ import org.testng.xml.XmlTest;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class TestNGClassFinder extends BaseClassFinder {
-
+  private ITestContext m_testContext = null;
   private Map<Class, List<Object>> m_instanceMap= new HashMap<Class, List<Object>>();
 
   public TestNGClassFinder(Class[] classes,
                            Map<Class, List<Object>> instanceMap,
                            XmlTest xmlTest,
-                           IAnnotationFinder annotationFinder) 
+                           IAnnotationFinder annotationFinder,
+                           ITestContext testContext) 
   {
+    m_testContext = testContext;
+    
     if(null == instanceMap) {
       instanceMap= new HashMap<Class, List<Object>>();
     }
@@ -79,7 +79,8 @@ public class TestNGClassFinder extends BaseClassFinder {
               factoryMethod,
               instance,
               xmlTest,
-              annotationFinder);
+              annotationFinder,
+              m_testContext);
             List<Class> moreClasses= new ArrayList<Class>();
 
             {
@@ -109,11 +110,13 @@ public class TestNGClassFinder extends BaseClassFinder {
             }
 
             if(moreClasses.size() > 0) {
-              TestNGClassFinder finder= new TestNGClassFinder(moreClasses.toArray(new Class[moreClasses
-                                                                                  .size()]),
-                                                              m_instanceMap,
-                                                              xmlTest,
-                                                              annotationFinder);
+              TestNGClassFinder finder= 
+                new TestNGClassFinder(moreClasses.toArray(
+                    new Class[moreClasses.size()]),
+                    m_instanceMap,
+                    xmlTest,
+                    annotationFinder,
+                    m_testContext);
 
               IClass[] moreIClasses= finder.findTestClasses();
               for(IClass ic2 : moreIClasses) {

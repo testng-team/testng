@@ -299,6 +299,7 @@ public class JDK15TagFactory {
     FactoryAnnotation result = new FactoryAnnotation();
     Factory c = (Factory) a;
     result.setParameters(c.parameters());
+    result.setDataProvider(c.dataProvider());
     
     return result;
   }

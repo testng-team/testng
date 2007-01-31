@@ -3,6 +3,7 @@ package org.testng.internal;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -703,9 +704,11 @@ public class Invoker implements IInvoker {
 
 
               Map<String, String> allParameterNames = new HashMap<String, String>();
+//              boolean isStatic = (dataProvider.getModifiers() & Modifier.STATIC) != 0;
+              Object instance = testClass.getInstances(true)[0];
               Iterator<Object[]> allParameterValues =
                 Parameters.handleParameters(testMethod, allParameterNames, 
-                    testClass, parameters, suite, m_annotationFinder, testContext);
+                    instance, parameters, suite, m_annotationFinder, testContext);
 
               while (allParameterValues.hasNext()) {
                 Object[] parameterValues= allParameterValues.next();

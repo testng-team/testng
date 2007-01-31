@@ -21,4 +21,10 @@ public @interface Factory {
    */
   @Deprecated
   public String[] parameters() default {};
+  
+  /**
+   * The name of the data provider for this test method.
+   * @see org.testng.annotations.DataProvider
+   */
+  public String dataProvider() default "";
 }

@@ -10,13 +10,11 @@ import org.testng.annotations.BeforeGroups;
 public class GroupConfiguration {
   @BeforeGroups(groups={"a"})
   public void beforeGroups() {
-    System.out.println(".beforeGroups");
     DummyTest.recordInvocation("beforeGroups", hashCode());
   }
   
   @AfterGroups(groups={"a"})
   public void afterGroups() {
-    System.out.println(".afterGroups");
     DummyTest.recordInvocation("afterGroups", hashCode());
   }
 }

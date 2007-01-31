@@ -28,6 +28,10 @@ public class AnnotationHelper {
     return (ITest) finder.findAnnotation(m, ITest.class);
   }
   
+  public static IFactory findFactory(IAnnotationFinder finder, Method m) {
+    return (IFactory) finder.findAnnotation(m, IFactory.class);
+  }
+
   public static ITest findTest(IAnnotationFinder finder, Constructor ctor) {
     return (ITest) finder.findAnnotation(ctor, ITest.class);
   }

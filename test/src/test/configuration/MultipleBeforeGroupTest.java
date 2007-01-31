@@ -11,12 +11,10 @@ public class MultipleBeforeGroupTest {
   @BeforeGroups( "foo" )
   public void beforeGroups() {
     m_count++;
-    System.out.println( "beforeGroups" );
   }
 
   @Test()
   public void test() {
-      System.out.println( "test" );
   }
   
   @Test(dependsOnMethods = "test")

@@ -61,17 +61,21 @@ public class Parameters {
    * @param xmlSuite
    * @return
    */
-  public static Object[] createConfigurationParameters(Method m, Map<String, String> params, ITestNGMethod currentTestMethod,
+  public static Object[] createConfigurationParameters(Method m, 
+      Map<String, String> params, ITestNGMethod currentTestMethod,
       IAnnotationFinder finder, XmlSuite xmlSuite) 
   {
-    Method currentTestMeth= currentTestMethod != null ? currentTestMethod.getMethod() : null;
-    return createParameters(m, new MethodParameters(params, currentTestMeth), finder, xmlSuite, IConfiguration.class, "@Configuration");
+    Method currentTestMeth= currentTestMethod != null ? 
+        currentTestMethod.getMethod() : null;
+    return createParameters(m, new MethodParameters(params, currentTestMeth), 
+        finder, xmlSuite, IConfiguration.class, "@Configuration");
   }
 
   public static Object[] createFactoryParameters(Method m, Map<String, String> params,
       IAnnotationFinder finder, XmlSuite xmlSuite) 
   {
-    return createParameters(m, new MethodParameters(params), finder, xmlSuite, IFactory.class, "@Factory");
+    return createParameters(m, new MethodParameters(params), finder, 
+        xmlSuite, IFactory.class, "@Factory");
   }
   
   ////////////////////////////////////////////////////////
@@ -103,36 +107,45 @@ public class Parameters {
     if(parameterTypes.length > 0) {
       List<Object> vResult = new ArrayList<Object>();
   
-      if (parameterNames.length != parameterTypes.length
-          && parameterTypes.length != parameterNames.length + 1) {
-        throw new TestNGException( "Method " + methodName + " needs " 
-            + parameterTypes.length + " parameters but " 
-            + parameterNames.length
-            + " were supplied in the "
-            + methodAnnotation
-            + " annotation.");
+      if (parameterNames.length != parameterTypes.length) {
+        if (parameterTypes.length != parameterNames.length + 1) {
+          throw new TestNGException( "Method " + methodName + " needs " 
+              + parameterNames.length + " parameters but " 
+              + parameterTypes.length
+              + " were supplied in the "
+              + methodAnnotation
+              + " annotation.");
+        }
+        else {
+          //
+          // If we have one more parameter than parameter expected,
+          // it has to be an ITestContext
+          //
+          if (! ITestContext.class.equals(parameterTypes[parameterNames.length])) {
+          }
+        }
       }
   
       int i= 0;
       int j= 0;
       for(; i < parameterTypes.length; i++) {
-          if(Method.class.equals(parameterTypes[i])) {
-              vResult.add(params.m_currentTestMethod);
+        if (Method.class.equals(parameterTypes[i])) {
+            vResult.add(params.m_currentTestMethod);
+        }
+        else {
+          String p = parameterNames[j];
+          String value = params.m_parameters.get(p);
+          if (null == value) {
+            throw new TestNGException("Parameter '" + p + "' is required by " 
+                + methodAnnotation
+                + " on method " 
+                + methodName
+                + "\nbut has not been defined in " + xmlSuite.getFileName());
           }
-          else {
-              String p = parameterNames[j];
-              String value = params.m_parameters.get(p);
-              if (null == value) {
-                throw new TestNGException("Parameter '" + p + "' is required by " 
-                    + methodAnnotation
-                    + " on method " 
-                    + methodName
-                    + "\nbut has not been defined in " + xmlSuite.getFileName());
-              }
-              
-              vResult.add(convertType(parameterTypes[i], value, p));
-              j++;
-          }
+          
+          vResult.add(convertType(parameterTypes[i], value, p));
+          j++;
+        }
       }
       
       // Assign a value to each parameter
@@ -203,12 +216,26 @@ public class Parameters {
   
   public static Method findDataProvider(Class clazz, Method m, IAnnotationFinder finder) {
     Method result = null;
+    String dataProviderName = null;
+    Class dataProviderClass = null;
+    
     ITest annotation = AnnotationHelper.findTest(finder, m);
-    if (null != annotation) {
-      String dataProviderName = annotation.getDataProvider();
-      if (null != dataProviderName && ! "".equals(dataProviderName)) {
-        result = findDataProvider(clazz, finder, dataProviderName, annotation.getDataProviderClass());
+    if (annotation != null) {
+      dataProviderName = annotation.getDataProvider();
+      dataProviderClass = annotation.getDataProviderClass();
+    }
+    
+    if (dataProviderName == null) {
+      IFactory factory = AnnotationHelper.findFactory(finder, m);
+      if (factory != null) {
+        dataProviderName = factory.getDataProvider();
+        dataProviderClass = null;
       }
+    }
+    
+    if (null != dataProviderName && ! "".equals(dataProviderName)) {
+      result = 
+        findDataProvider(clazz, finder, dataProviderName, dataProviderClass);
     }
 
     return result;
@@ -243,7 +270,8 @@ public class Parameters {
   /**
    * Find a method that has a @DataProvider(name=name)
    */
-  private static Method findDataProvider(Class cls, IAnnotationFinder finder, String name, Class dataProviderClass) 
+  private static Method findDataProvider(Class cls, IAnnotationFinder finder,
+      String name, Class dataProviderClass) 
   {
     boolean shouldBeStatic = false;
     if (dataProviderClass != null) {
@@ -276,7 +304,8 @@ public class Parameters {
     IParameters annotation = (IParameters) finder.findAnnotation(m, IParameters.class);
     if(null != annotation) {
       String[] parameterNames = annotation.getValue();
-      result = createParameters(m.getName(), m.getParameterTypes(), atName, parameterNames, params, xmlSuite);
+      result = createParameters(m.getName(), m.getParameterTypes(), 
+          atName, parameterNames, params, xmlSuite);
     }  
     
     //
@@ -286,12 +315,14 @@ public class Parameters {
       IParameterizable a = (IParameterizable) finder.findAnnotation(m, annotationClass);
       if(null != a) {
         String[] parameterNames = a.getParameters();
-        result = createParameters(m.getName(), m.getParameterTypes(), "@Configuration", parameterNames, params, xmlSuite);
+        result = createParameters(m.getName(), m.getParameterTypes(), 
+            "@Configuration", parameterNames, params, xmlSuite);
       }
       else {
           Class[] paramTypes= m.getParameterTypes();
           if(paramTypes.length == 1 && Method.class.equals(paramTypes[0])) {
-              result = createParameters(m.getName(), paramTypes, "@Configuration", new String[0], params, xmlSuite);
+              result = createParameters(m.getName(), paramTypes, 
+                  "@Configuration", new String[0], params, xmlSuite);
           }
       }
     }
@@ -312,14 +343,20 @@ public class Parameters {
           m_currentTestMethod= m;
       }
   }
+  
+  private static void ppp(String s) {
+    System.out.println("[Parameters] " + s);
+  }
 
   /**
    * If the method has parameters, fill them in.  Either by using a @DataProvider
    * if any was provided, or by looking up <parameters> in testng.xml
+   * @return An Iterator over the values for each parameter of this
+   * method.
    */
   public static Iterator<Object[]> handleParameters(ITestNGMethod testMethod, 
                                                     Map<String, String> allParameterNames,
-                                                    ITestClass testClass, 
+                                                    Object instance,
                                                     Map<String, String> parameters, 
                                                     XmlSuite xmlSuite, 
                                                     IAnnotationFinder annotationFinder,
@@ -331,7 +368,7 @@ public class Parameters {
     // Do we have a @DataProvider?  If yes, then we have several
     // sets of parameters for this method
     //
-    Method dataProvider = findDataProvider(testMethod.getTestClass().getRealClass(),
+    Method dataProvider = findDataProvider(testMethod.getRealClass(),
                                            testMethod.getMethod(), 
                                            annotationFinder);
   
@@ -343,8 +380,6 @@ public class Parameters {
         allParameterNames.put(n, n);
       }
   
-      boolean isStatic = (dataProvider.getModifiers() & Modifier.STATIC) != 0;
-      Object instance = isStatic ? null : testClass.getInstances(true)[0];
       result  = MethodHelper.invokeDataProvider(
           instance, /* a test instance or null if the dataprovider is static*/
           dataProvider, 

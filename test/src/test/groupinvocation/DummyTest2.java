@@ -13,7 +13,6 @@ public class DummyTest2 {
   
   @Test(groups={"A"})
   public void dummyTest() {
-    System.out.println(".dummyTest: should NOT be invoked");
     m_invoked= true;
   }
   

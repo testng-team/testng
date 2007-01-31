@@ -9,6 +9,7 @@
 </suite-files>
 -->
   
+  <parameter name="factory-param" value="FactoryParam" />
   <test name="Priority">
 <!--
     <groups>
@@ -18,7 +19,12 @@
     </groups>
     -->
     <classes>
-      <class name="test.tmp.A" />
+      <class name="test.dataprovider.TestContextTest" />
+<!--
+      <class name="test.factory.FactoryWithDataProvider" />
+      <class name="test.factory.FactoryWithInstanceInfoTest" />
+      <class name="test.factory.VerifyFactoryWithInstanceInfoTest" />
+-->
     </classes>
   </test>
  

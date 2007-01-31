@@ -7,4 +7,5 @@ package org.testng.internal.annotations;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public interface IFactory extends IParameterizable {
+  public String getDataProvider();
 }
