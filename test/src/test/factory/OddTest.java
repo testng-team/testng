@@ -14,4 +14,8 @@ public class OddTest {
   public void verify() {
     Assert.assertTrue(m_n % 2 == 1);
   }
+  
+  private static void ppp(String s) {
+    System.out.println("[OddTest] " + s);
+  }
 }

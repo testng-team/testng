@@ -204,12 +204,7 @@
       <class name="test.factory.VerifyFactoryWithInstanceInfoTest" />
       <class name="test.factory.TestClassAnnotationTest" />
       
-
-<!--
-      <class name="test.factory.NestedStaticFactoryTest" />
-      <class name="test.factory.NestedFactoryTest" />
--->
-
+      <class name="test.factory.FactoryWithDataProviderTest" />
     </classes>
   </test>
 

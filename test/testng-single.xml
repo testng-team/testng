@@ -10,21 +10,18 @@
 -->
   
   <parameter name="factory-param" value="FactoryParam" />
-  <test name="Priority">
-<!--
-    <groups>
-      <run>
-        <include name="5"/>
-      </run>
-    </groups>
-    -->
+  <test name="Factory">
     <classes>
-      <class name="test.dataprovider.TestContextTest" />
-<!--
-      <class name="test.factory.FactoryWithDataProvider" />
+      <class name="test.factory.FactoryTest" />
+      <class name="test.factory.VerifyFactoryTest" />
+      <class name="test.factory.FactoryInSeparateClass" />
+      <class name="test.factory.Factory2Test" />
+	  
       <class name="test.factory.FactoryWithInstanceInfoTest" />
       <class name="test.factory.VerifyFactoryWithInstanceInfoTest" />
--->
+      <class name="test.factory.TestClassAnnotationTest" />
+      
+      <class name="test.factory.FactoryWithDataProviderTest" />
     </classes>
   </test>
  

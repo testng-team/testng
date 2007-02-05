@@ -91,19 +91,21 @@ public class TestNGClassFinder extends BaseClassFinder {
               // If the factory returned IInstanceInfo, get the class from it,
               // otherwise, just call getClass() on the returned instances
               //
-              Class elementClass= instances.getClass().getComponentType();
-              if(IInstanceInfo.class.isAssignableFrom(elementClass)) {
-                IInstanceInfo[] infos= (IInstanceInfo[]) instances;
-                for(IInstanceInfo o : infos) {
-                  addInstance(o.getInstanceClass(), o.getInstance());
-                  moreClasses.add(o.getInstanceClass());
+              if (instances.length > 0) {
+                Class elementClass = instances[0].getClass();
+                if(IInstanceInfo.class.isAssignableFrom(elementClass)) {
+                  for(Object o : instances) {
+                    IInstanceInfo ii = (IInstanceInfo) o;
+                    addInstance(ii.getInstanceClass(), ii.getInstance());
+                    moreClasses.add(ii.getInstanceClass());
+                  }
                 }
-              }
-              else {
-                for(Object o : instances) {
-                  addInstance(o.getClass(), o);
-                  if(!classExists(o.getClass())) {
-                    moreClasses.add(o.getClass());
+                else {
+                  for(Object o : instances) {
+                    addInstance(o.getClass(), o);
+                    if(!classExists(o.getClass())) {
+                      moreClasses.add(o.getClass());
+                    }
                   }
                 }
               }

@@ -2,8 +2,10 @@ package org.testng.internal;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.testng.ITestContext;
@@ -48,7 +50,7 @@ public class FactoryMethod extends BaseTestMethod {
   }
   
   public Object[] invoke() {
-    Object[] result = new Object[0];
+    List<Object> result = new ArrayList<Object>();
     
 //    Object[] parameters = null; 
 //      Parameters.createFactoryParameters(getMethod(), 
@@ -71,7 +73,11 @@ public class FactoryMethod extends BaseTestMethod {
     try {
       while (parameterIterator.hasNext()) {
         Object[] parameters = parameterIterator.next();
-        result = (Object[]) getMethod().invoke(m_instance, parameters);
+        Object[] testInstances = 
+          (Object[]) getMethod().invoke(m_instance, parameters);
+        for (Object testInstance : testInstances) {
+          result.add(testInstance);
+        }
       }
     }
     catch (IllegalArgumentException e) {
@@ -84,7 +90,7 @@ public class FactoryMethod extends BaseTestMethod {
       e.printStackTrace();
     }
     
-    return result;
+    return result.toArray(new Object[result.size()]);
   }
   
   public ITestNGMethod clone() {
