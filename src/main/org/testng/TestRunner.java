@@ -258,7 +258,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
                                              m_annotationFinder,
                                              this);
     ITestMethodFinder testMethodFinder
-      = new TestNGMethodFinder(m_runInfo, m_annotationFinder, this);
+      = new TestNGMethodFinder(m_runInfo, m_annotationFinder);
     
     m_runInfo.setTestMethods(testMethods);
     

@@ -11,11 +11,6 @@ public class DataProviderAnnotation
   implements IDataProvider 
 {
   private String m_name;
-  private Class m_class;
-  
-//  public DataProviderAnnotation(Class cls) {
-//    m_class = cls;
-//  }
 
   public String getName() {
     return m_name;
@@ -24,9 +19,4 @@ public class DataProviderAnnotation
   public void setName(String name) {
     m_name = name;
   }
-  
-//  public Class getDataProviderClass() {
-//    return m_class;
-//  }
-  
 }

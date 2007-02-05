@@ -36,15 +36,12 @@ public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
     
   private RunInfo m_runInfo = null;
   private IAnnotationFinder m_annotationFinder = null;
-  private ITestContext m_testContext = null;
 
   public TestNGMethodFinder(RunInfo runInfo,
-                            IAnnotationFinder annotationFinder,
-                            ITestContext testContext)
+                            IAnnotationFinder annotationFinder)
   {
     m_runInfo = runInfo;
     m_annotationFinder = annotationFinder;
-    m_testContext = testContext;
   }
 
   public ITestNGMethod[] getTestMethods(Class clazz) {
