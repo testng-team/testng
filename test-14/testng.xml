@@ -214,6 +214,7 @@
       <class name="test.factory.VerifyFactoryTest" />
       <class name="test.factory.FactoryInSeparateClass" />
       <class name="test.factory.IInstanceFactory" />
+      <class name="test.factory.FactoryWithDataProviderTest" />
     </classes>
   </test>
 <!-- -->

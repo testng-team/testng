@@ -61,9 +61,6 @@ public class FactoryMethod extends BaseTestMethod {
 //          m_xmlTest.getParameters(), getAnnotationFinder(), m_xmlTest.getSuite());
     
     
-    //
-    // Temporary test for data providers on factories
-    //
     Map<String, String> allParameterNames = new HashMap<String, String>();
     Iterator<Object[]> parameterIterator =
       Parameters.handleParameters(this, 
@@ -71,9 +68,7 @@ public class FactoryMethod extends BaseTestMethod {
           m_xmlTest.getParameters(), 
           m_xmlTest.getSuite(), m_annotationFinder, 
           m_testContext);
-    //
-    // end
-    //
+    
     try {
       while (parameterIterator.hasNext()) {
         Object[] parameters = parameterIterator.next();

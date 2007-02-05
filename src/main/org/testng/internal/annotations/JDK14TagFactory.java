@@ -437,6 +437,8 @@ public class JDK14TagFactory {
     FactoryAnnotation result = new FactoryAnnotation();
     result.setParameters(Converter.getStringArray(dt.getNamedParameter("parameters"),
         result.getParameters()));
+    result.setDataProvider(Converter.getString(dt.getNamedParameter("dataProvider"),
+        result.getDataProvider()));
 
     return result;
   }
