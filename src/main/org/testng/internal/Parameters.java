@@ -368,7 +368,7 @@ public class Parameters {
     // Do we have a @DataProvider?  If yes, then we have several
     // sets of parameters for this method
     //
-    Method dataProvider = findDataProvider(testMethod.getRealClass(),
+    Method dataProvider = findDataProvider(testMethod.getTestClass().getRealClass(),
                                            testMethod.getMethod(), 
                                            annotationFinder);
   

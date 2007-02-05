@@ -160,4 +160,8 @@ public class NoOpTestClass implements ITestClass {
    */
   public void addInstance(Object instance) {
   }
+
+  public void setTestClass(Class< ? > declaringClass) {
+    m_testClass = declaringClass;
+  }
 }

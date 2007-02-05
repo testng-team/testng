@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
@@ -43,6 +44,9 @@ public class FactoryMethod extends BaseTestMethod {
     m_instance = instance;
     m_xmlTest = xmlTest;
     m_testContext = testContext;
+    NoOpTestClass tc = new NoOpTestClass();
+    tc.setTestClass(method.getDeclaringClass());
+    m_testClass = tc;
   }
   
   private static void ppp(String s) {
