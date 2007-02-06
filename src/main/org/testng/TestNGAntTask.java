@@ -525,11 +525,14 @@ public class TestNGAntTask extends Task {
       }
     }
 
-    if(m_listeners != null) {
-      for(String listener : m_listeners) {
-        argv.add(TestNGCommandLineArgs.LISTENER_COMMAND_OPT);
-        argv.add(listener);
+    if(m_listeners != null && m_listeners.size() > 0) {
+      argv.add(TestNGCommandLineArgs.LISTENER_COMMAND_OPT);
+      StringBuffer listeners= new StringBuffer();
+      for(int i= 0; i < m_listeners.size(); i++) {
+        listeners.append(m_listeners.get(i));
+        if(i < m_listeners.size() - 1) listeners.append(";");
       }
+      argv.add(listeners.toString());
     }
 
     if(m_parallelMode != null) {
