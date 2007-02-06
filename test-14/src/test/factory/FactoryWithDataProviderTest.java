@@ -3,6 +3,7 @@ package test.factory;
 import org.testng.Assert;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
+import org.testng.internal.AnnotationTypeEnum;
 
 public class FactoryWithDataProviderTest {
 
@@ -13,6 +14,7 @@ public class FactoryWithDataProviderTest {
     TestNG tng = new TestNG();
     tng.setSourcePath("./test-14/src;src");
 //    tng.setVerbose(0);
+    tng.setAnnotations(AnnotationTypeEnum.JAVADOC.toString());
     tng.setTestClasses(new Class[] { FactoryWithDataProvider.class });
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
