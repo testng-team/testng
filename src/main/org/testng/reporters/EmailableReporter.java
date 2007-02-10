@@ -271,23 +271,29 @@ public class EmailableReporter implements IReporter {
    * @param wantsMinimalOutput if true the stack trace will display a fiew lines
    */
   private void generateExceptionReport(Throwable exception,ITestNGMethod method,String title) {
-    m_out.println("<p>"+title+"</p>");
-    StackTraceElement[] s1=exception.getStackTrace();
-    Throwable t2=exception.getCause();
-    if(t2==exception)
-      t2=null;
-    int maxlines=Math.min(100,StackTraceTools.getTestRoot(s1, method));
-    for(int x=0; x<=maxlines; x++) {
-      m_out.println((x>0?"<br/>at ":"")+s1[x].toString());
+    System.out.println("generateExceptionReport::" + title);
+    m_out.println("<p>" + escape(title) + "</p>");
+    StackTraceElement[] s1= exception.getStackTrace();
+    Throwable t2= exception.getCause();
+    if(t2 == exception) {
+      t2= null;
     }
-    if(maxlines<s1.length) {
-      m_out.println("<br/>"+(s1.length-maxlines)+" lines not shown");
+    int maxlines= Math.min(100,StackTraceTools.getTestRoot(s1, method));
+    for(int x= 0; x <= maxlines; x++) {
+      m_out.println((x>0 ? "<br/>at " : "") + escape(s1[x].toString()));
     }
-    if(t2!=null) {
-      generateExceptionReport(t2, method, "Caused by "+t2.getLocalizedMessage());
+    if(maxlines < s1.length) {
+      m_out.println("<br/>" + (s1.length-maxlines) + " lines not shown");
+    }
+    if(t2 != null) {
+      generateExceptionReport(t2, method, "Caused by " + t2.getLocalizedMessage());
     }
   }
 
+  private static String escape(String string) {
+    return string.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+  }
+  
   /**
    * @param tests
    * @return
