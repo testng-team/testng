@@ -4,6 +4,7 @@
 Added: dataProvider to @Factory
 Added: ISuite now gives access to the current XmlSuite
 Fixed: TESTNG-139 dependsOnMethods gets confused when dependency is "protected"
+Fixed: TESTNG-141 junit attribute set to false in testng-failed.xml when it should be true
 
 ===========================================================================
 5.5

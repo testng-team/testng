@@ -360,6 +360,7 @@ public class XmlSuite implements Serializable, Cloneable {
     }
     p.setProperty("thread-count", "" + getThreadCount());
     p.setProperty("annotations", getAnnotations());
+    p.setProperty("junit", m_isJUnit != null ? m_isJUnit.toString() : "false"); // TESTNG-141
 
     xsb.push("suite", p);
 
@@ -441,6 +442,7 @@ public class XmlSuite implements Serializable, Cloneable {
     result.setXmlPackages(getXmlPackages());
     result.setBeanShellExpression(getExpression());
     result.setMethodSelectors(getMethodSelectors());
+    result.setJUnit(isJUnit()); // TESTNG-141
 
     return result;
   }
