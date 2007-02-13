@@ -127,7 +127,7 @@ public class XmlTest implements Serializable, Cloneable {
    * @param v
    */
   public void setVerbose(int v) {
-    m_verbose = new Integer(v);
+    m_verbose = Integer.valueOf(v);
   }
 
   public int getThreadCount() {
@@ -203,7 +203,7 @@ public class XmlTest implements Serializable, Cloneable {
   /**
    * @param parameters
    */
-  public void setParameters(Map parameters) {
+  public void setParameters(Map<String, String> parameters) {
     m_parameters = parameters;
   }
   
@@ -228,8 +228,9 @@ public class XmlTest implements Serializable, Cloneable {
    */
   public Map<String, String> getParameters() {
     Map<String, String> result = new HashMap<String, String>();
-    for (String key : getSuite().getParameters().keySet()) {
-      result.put(key, getSuite().getParameters().get(key));
+    Map<String, String> parameters = getSuite().getParameters();
+    for (Map.Entry<String, String> parameter : parameters.entrySet()) {
+      result.put(parameter.getKey(), parameter.getValue());
     }
     for (String key : m_parameters.keySet()) {
       result.put(key, m_parameters.get(key));
@@ -471,8 +472,8 @@ public class XmlTest implements Serializable, Cloneable {
     result.setXmlPackages(getXmlPackages());
     
     Map<String, List<String>> metagroups = getMetaGroups();
-    for (String groupName: metagroups.keySet()) {
-      result.addMetaGroup(groupName, metagroups.get(groupName));
+    for (Map.Entry<String, List<String>> group: metagroups.entrySet()) {
+      result.addMetaGroup(group.getKey(), group.getValue());
     }
     
     return result;
