@@ -118,6 +118,7 @@
       <class name="test.dependent.ClassWide2Test" />
       <class name="test.dependent.DepBugSampleTest" />
       <class name="test.dependent.DepBugVerifyTest" />
+			<class name="test.dependent.DependsOnProtectedMethodTest" />
     </classes>      
   </test>
   

@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
@@ -34,24 +33,21 @@ import org.testng.xml.XmlSuite;
 public class Parameters {
   private static final String NULL_VALUE= "null";
   
-  public static Object[] createParameters(Constructor ctor, 
-                                          String methodAnnotation, 
-                                          String[] parameterNames, 
-                                          Map<String, String> params,
-                                          XmlSuite xmlSuite)
+  /**
+   * Creates the parameters needed for constructing a test class instance.
+   */
+  public static Object[] createInstantiationParameters(Constructor ctor, 
+      String methodAnnotation, 
+      String[] parameterNames, 
+      Map<String, String> params,
+      XmlSuite xmlSuite)
   {
     return createParameters(ctor.toString(), ctor.getParameterTypes(),
         methodAnnotation, parameterNames, new MethodParameters(params), xmlSuite);
   }
 
-  public static Object[] createTestParameters(Method m, Map<String, String> params, 
-      IAnnotationFinder finder, XmlSuite xmlSuite) 
-  {
-    return createParameters(m, new MethodParameters(params), finder, xmlSuite, ITest.class, "@Test");
-  }
-  
   /**
-   * Creates the parameters needed for the specified <code>Method</code>.
+   * Creates the parameters needed for the specified <tt>@Configuration</tt> <code>Method</code>.
    * 
    * @param m the configuraton method
    * @param params 
@@ -62,8 +58,10 @@ public class Parameters {
    * @return
    */
   public static Object[] createConfigurationParameters(Method m, 
-      Map<String, String> params, ITestNGMethod currentTestMethod,
-      IAnnotationFinder finder, XmlSuite xmlSuite) 
+                                                       Map<String, String> params, 
+                                                       ITestNGMethod currentTestMethod,
+                                                       IAnnotationFinder finder, 
+                                                       XmlSuite xmlSuite) 
   {
     Method currentTestMeth= currentTestMethod != null ? 
         currentTestMethod.getMethod() : null;
@@ -71,23 +69,7 @@ public class Parameters {
         finder, xmlSuite, IConfiguration.class, "@Configuration");
   }
 
-  public static Object[] createFactoryParameters(Method m, Map<String, String> params,
-      IAnnotationFinder finder, XmlSuite xmlSuite) 
-  {
-    return createParameters(m, new MethodParameters(params), finder, 
-        xmlSuite, IFactory.class, "@Factory");
-  }
-  
   ////////////////////////////////////////////////////////
-  
-//  private static Object[] createParameters(Method m, String methodAnnotation,
-//      String[] parameterNames, Map<String, String> params, XmlSuite xmlSuite) 
-//  {
-//    return createParameters(m.toString(), m.getParameterTypes(),
-//        methodAnnotation, parameterNames, params, xmlSuite);
-//  }
-
-  
 
   /**
    * @param m
@@ -95,7 +77,6 @@ public class Parameters {
    * @return An array of parameters suitable to invoke this method, possibly
    * picked from the property file
    */
-  
   private static Object[] createParameters(String methodName,
                                            Class[] parameterTypes,
                                            String methodAnnotation,
@@ -107,28 +88,9 @@ public class Parameters {
     if(parameterTypes.length > 0) {
       List<Object> vResult = new ArrayList<Object>();
   
-      if (parameterNames.length != parameterTypes.length) {
-        if (parameterTypes.length != parameterNames.length + 1) {
-          throw new TestNGException( "Method " + methodName + " needs " 
-              + parameterNames.length + " parameters but " 
-              + parameterTypes.length
-              + " were supplied in the "
-              + methodAnnotation
-              + " annotation.");
-        }
-        else {
-          //
-          // If we have one more parameter than parameter expected,
-          // it has to be an ITestContext
-          //
-          if (! ITestContext.class.equals(parameterTypes[parameterNames.length])) {
-          }
-        }
-      }
+      checkParameterTypes(methodName, parameterTypes, methodAnnotation, parameterNames);
   
-      int i= 0;
-      int j= 0;
-      for(; i < parameterTypes.length; i++) {
+      for(int i =0, j = 0; i < parameterTypes.length; i++) {
         if (Method.class.equals(parameterTypes[i])) {
             vResult.add(params.m_currentTestMethod);
         }
@@ -147,28 +109,37 @@ public class Parameters {
           j++;
         }
       }
-      
-      // Assign a value to each parameter
-//      for(int i = 0; i < parameterNames.length; i++) {
-//        String p = parameterNames[i];
-//        String value = params.get(p);
-//        if (null == value) {
-//          throw new TestNGException("Parameter '" + p + "' is required by " 
-//              + methodAnnotation
-//              + " on method " 
-//              + methodName
-//              + "\nbut has not been defined in " + xmlSuite.getFileName());
-//        }
-//        
-//        vResult.add(convertType(parameterTypes[i], value, p));
-//      }
-      
+            
       result = (Object[]) vResult.toArray(new Object[vResult.size()]);
     }
   
     return result;
   }
 
+  // FIXME
+  private static void checkParameterTypes(String methodName, 
+      Class[] parameterTypes, String methodAnnotation, String[] parameterNames) 
+  {
+    if (parameterNames.length != parameterTypes.length) {
+      if (parameterTypes.length != parameterNames.length + 1) {
+        throw new TestNGException( "Method " + methodName + " needs " 
+            + parameterNames.length + " parameters but " 
+            + parameterTypes.length
+            + " were supplied in the "
+            + methodAnnotation
+            + " annotation.");
+      }
+      else {
+        //
+        // If we have one more parameter than parameter expected,
+        // it has to be an ITestContext
+        //
+        if (! ITestContext.class.equals(parameterTypes[parameterNames.length])) {
+        }
+      }
+    }    
+  }
+  
   private static Object convertType(Class type, String value, String paramName) {
     Object result = null;
     
@@ -214,7 +185,7 @@ public class Parameters {
     return result;
   }
   
-  public static Method findDataProvider(Class clazz, Method m, IAnnotationFinder finder) {
+  private static Method findDataProvider(Class clazz, Method m, IAnnotationFinder finder) {
     Method result = null;
     String dataProviderName = null;
     Class dataProviderClass = null;
@@ -234,38 +205,11 @@ public class Parameters {
     }
     
     if (null != dataProviderName && ! "".equals(dataProviderName)) {
-      result = 
-        findDataProvider(clazz, finder, dataProviderName, dataProviderClass);
+      result = findDataProvider(clazz, finder, dataProviderName, dataProviderClass);
     }
 
     return result;
   }
-  
-  /**
-   * @return the values for Parameters, if any was supplied in a @DataProvider
-   * (@Parameters (values = { "a", "b" }))
-   */
-  /*public static Iterator<Object[]> getParameterValues(Method m, Map<String, String> params,
-    IAnnotationFinder finder)
-  {
-//    return new String[][] {
-//        new String[] { "Cedric", "Beust" },
-//        new String[] { "Anne Marie", "Condie" },
-//    };
-    Iterator<Object[]> result = null;
-    //
-    // Try to find an @Parameters annotation
-    //
-    Method dataProvider = findDataProvider(m, finder);
-    if (null != dataProvider) {
-      // NOTE(cbeust)
-      // Should reuse an existing instance?
-      Utils.log("", 3, "Invoking DataProvider " + dataProvider + " for test method " + m);
-      result = MethodHelper.invokeDataProvider(dataProvider);
-    }
-    
-    return result;
-  }*/
   
   /**
    * Find a method that has a @DataProvider(name=name)
@@ -316,13 +260,13 @@ public class Parameters {
       if(null != a) {
         String[] parameterNames = a.getParameters();
         result = createParameters(m.getName(), m.getParameterTypes(), 
-            "@Configuration", parameterNames, params, xmlSuite);
+            atName, parameterNames, params, xmlSuite);
       }
       else {
           Class[] paramTypes= m.getParameterTypes();
           if(paramTypes.length == 1 && Method.class.equals(paramTypes[0])) {
               result = createParameters(m.getName(), paramTypes, 
-                  "@Configuration", new String[0], params, xmlSuite);
+                  atName, new String[0], params, xmlSuite);
           }
       }
     }
@@ -330,24 +274,6 @@ public class Parameters {
     return result;
   }
   
-  private static class MethodParameters {
-      private final Map<String, String> m_parameters;
-      private final Method m_currentTestMethod;
-      
-      public MethodParameters(Map<String, String> params) {
-          this(params, null);
-      }
-      
-      public MethodParameters(Map<String, String> params, Method m) {
-          m_parameters= params;
-          m_currentTestMethod= m;
-      }
-  }
-  
-  private static void ppp(String s) {
-    System.out.println("[Parameters] " + s);
-  }
-
   /**
    * If the method has parameters, fill them in.  Either by using a @DataProvider
    * if any was provided, or by looking up <parameters> in testng.xml
@@ -393,10 +319,8 @@ public class Parameters {
       allParameterNames.putAll(parameters);
       // Create an Object[][] containing just one row of parameters
       Object[][] allParameterValuesArray = new Object[1][];
-      allParameterValuesArray[0] = createTestParameters(testMethod.getMethod(),
-            parameters,
-            annotationFinder,
-            xmlSuite);
+      allParameterValuesArray[0] = createParameters(testMethod.getMethod(), 
+          new MethodParameters(parameters), annotationFinder, xmlSuite, ITest.class, "@Test");
       
       // Mark that this method needs to have at least a certain
       // number of invocations (needed later to call AfterGroups
@@ -407,5 +331,24 @@ public class Parameters {
     }
     
     return result;
+  }
+
+  private static void ppp(String s) {
+    System.out.println("[Parameters] " + s);
+  }
+
+  /** A parameter passing helper class. */
+  private static class MethodParameters {
+    private final Map<String, String> m_parameters;
+    private final Method m_currentTestMethod;
+    
+    public MethodParameters(Map<String, String> params) {
+        this(params, null);
+    }
+    
+    public MethodParameters(Map<String, String> params, Method m) {
+        m_parameters= params;
+        m_currentTestMethod= m;
+    }
   }
 }

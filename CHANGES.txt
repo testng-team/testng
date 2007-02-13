@@ -3,6 +3,7 @@
 
 Added: dataProvider to @Factory
 Added: ISuite now gives access to the current XmlSuite
+Fixed: TESTNG-139 dependsOnMethods gets confused when dependency is "protected"
 
 ===========================================================================
 5.5

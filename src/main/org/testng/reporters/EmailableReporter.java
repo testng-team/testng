@@ -271,7 +271,6 @@ public class EmailableReporter implements IReporter {
    * @param wantsMinimalOutput if true the stack trace will display a fiew lines
    */
   private void generateExceptionReport(Throwable exception,ITestNGMethod method,String title) {
-    System.out.println("generateExceptionReport::" + title);
     m_out.println("<p>" + escape(title) + "</p>");
     StackTraceElement[] s1= exception.getStackTrace();
     Throwable t2= exception.getCause();
@@ -291,6 +290,7 @@ public class EmailableReporter implements IReporter {
   }
 
   private static String escape(String string) {
+    if(null == string) return string;
     return string.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
   }
   

@@ -139,15 +139,13 @@ public class TestClass extends NoOpTestClass implements ITestClass {
                                          false);
     
     m_beforeGroupsMethods = ConfigurationMethod
-    .createBeforeConfigurationMethods(m_testMethodFinder.getBeforeGroupsConfigurationMethods(m_testClass), 
+        .createBeforeConfigurationMethods(m_testMethodFinder.getBeforeGroupsConfigurationMethods(m_testClass), 
                                           m_annotationFinder,
                                           true);
     m_afterGroupsMethods = ConfigurationMethod
-    .createAfterConfigurationMethods(m_testMethodFinder.getAfterGroupsConfigurationMethods(m_testClass),
-                                          m_annotationFinder,
-                                          false); 
-    
-
+        .createAfterConfigurationMethods(m_testMethodFinder.getAfterGroupsConfigurationMethods(m_testClass),
+                                         m_annotationFinder,
+                                         false); 
 
     m_beforeTestMethods = ConfigurationMethod
         .createTestMethodConfigurationMethods(m_testMethodFinder.getBeforeTestMethods(m_testClass), 

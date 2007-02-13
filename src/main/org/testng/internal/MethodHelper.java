@@ -524,7 +524,7 @@ public class MethodHelper {
     return calculateMethodCanonicalName(m.getMethod());
   }
   
-  public static String calculateMethodCanonicalName(Method m) {
+  private static String calculateMethodCanonicalName(Method m) {
     String packageName = m.getDeclaringClass().getName() + "." + m.getName(); 
     
     // Try to find the method on this class or parents
@@ -573,47 +573,6 @@ public class MethodHelper {
     return result;
   }
 
-  /**
-   * Perform a topological sort on the methods based on their dependents.
-   */
-  // private static List<ITestNGMethod> sortMethods(boolean forTests,
-  // List<ITestNGMethod> allMethods,
-  // IAnnotationFinder finder)
-  // {
-  // Graph g = new Graph<ITestNGMethod>();
-  // for(ITestNGMethod tm : allMethods) {
-  //      
-  // // Add this ITestNGMethod as a node
-  // g.addNode(tm);
-  //      
-  // // If it has any dependents, add them as predecessors on the graph
-  // String[] groups = {};
-  // Method m = tm.getMethod();
-  // if (forTests) {
-  // groups = Utils.dependentGroupsForThisMethodForTest(m, finder);
-  // }
-  // else {
-  // groups = Utils.dependentGroupsForThisMethodForConfiguration(m, finder);
-  // }
-  // for (String group : groups) {
-  // ITestNGMethod[] dependentMethods = getMethodsThatBelongToGroup(allMethods,
-  // group);
-  // for (ITestNGMethod dependentMethod : dependentMethods) {
-  // g.addPredecessor(tm, dependentMethod);
-  // }
-  // }
-  // }
-  //    
-  // g.topologicalSort();
-  // List<ITestNGMethod> result = new ArrayList<ITestNGMethod>();
-  // result.addAll(g.getIndependentNodes());
-  // result.addAll(g.getStrictlySortedNodes());
-  // if (TestRunner.getVerbose() >= 10) {
-  // ppp("BEFORE:"); Utils.dumpMethods(allMethods);
-  // ppp("AFTER:"); Utils.dumpMethods(result);
-  // }
-  // return result;
-  // }
   public static void ppp(String s) {
     System.out.println("[MethodHelper] " + s);
   }
@@ -685,15 +644,6 @@ public class MethodHelper {
         }
       }
       Object[] parameters = lParameters.toArray(new Object[lParameters.size()]);
-//      if (parameterTypes.length > 0 && parameterTypes[0].equals(Method.class)) {
-//        parameters = new Object[] {
-//          testMethod
-//        };
-//      }
-//      else if (parameterTypes.length > 0) {
-//        throw new TestNGException("DataProvider " + dataProvider + " needs to have "
-//            + " either zero parameters or one parameter of type java.lang.reflect.Method");
-//      }
       
       Class< ? > returnType = dataProvider.getReturnType();
       if (Object[][].class.isAssignableFrom(returnType)) {
@@ -724,7 +674,7 @@ public class MethodHelper {
   }
 
   public static String calculateMethodCanonicalName(Class methodClass, String methodName) {
-    Method[] methods = methodClass.getMethods();
+    Set<Method> methods = ClassHelper.getAvailableMethods(methodClass); // TESTNG-139
     Method result = null;
     for (Method m : methods) {
       if (methodName.equals(m.getName())) {

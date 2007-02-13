@@ -415,7 +415,7 @@ public final class Utils {
                                                                      IParameters.class);
 
         String[] parameterNames = annotation.getValue();
-        Object[] parameters = Parameters.createParameters(constructor,
+        Object[] parameters = Parameters.createInstantiationParameters(constructor,
                                                           "@Parameters",
                                                           parameterNames,
                                                           xmlTest.getParameters(),
