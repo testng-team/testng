@@ -127,7 +127,7 @@ public class XmlTest implements Serializable, Cloneable {
    * @param v
    */
   public void setVerbose(int v) {
-    m_verbose = Integer.valueOf(v);
+    m_verbose = new Integer( v);
   }
 
   public int getThreadCount() {
