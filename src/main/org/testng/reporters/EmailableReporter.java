@@ -52,7 +52,7 @@ public class EmailableReporter implements IReporter {
   /** Creates summary of the run */
   public void generateReport(List<XmlSuite> xml, List<ISuite> suites, String outdir) {
     try {
-      m_out = new PrintWriter(new BufferedWriter(new FileWriter(new File(outdir, "emailable-report.html"))));
+      m_out = createWriter(outdir);
     } 
     catch (IOException e) {
       L.error("output file", e);
@@ -65,6 +65,10 @@ public class EmailableReporter implements IReporter {
     endHtml(m_out);
     m_out.flush();
     m_out.close();
+  }
+
+  protected PrintWriter createWriter(String outdir) throws IOException {
+    return new PrintWriter(new BufferedWriter(new FileWriter(new File(outdir, "emailable-report.html"))));
   }
 
   /** Creates a table showing the highlights of each test method with links to the method details */
@@ -260,16 +264,10 @@ public class EmailableReporter implements IReporter {
     }
   }
 
-  /** Reports excpetion results
-   * @param wantsMinimalOutput if true the stack trace will display a fiew lines
-   */
   protected void generateExceptionReport(Throwable exception,ITestNGMethod method) {
     generateExceptionReport(exception, method, exception.getLocalizedMessage());
   }
-
-  /** Reports excpetion results
-   * @param wantsMinimalOutput if true the stack trace will display a fiew lines
-   */
+  
   private void generateExceptionReport(Throwable exception,ITestNGMethod method,String title) {
     m_out.println("<p>" + escape(title) + "</p>");
     StackTraceElement[] s1= exception.getStackTrace();
