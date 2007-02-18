@@ -122,9 +122,9 @@ public class Parameters {
   {
     if (parameterNames.length != parameterTypes.length) {
       if (parameterTypes.length != parameterNames.length + 1) {
-        throw new TestNGException( "Method " + methodName + " needs " 
-            + parameterNames.length + " parameters but " 
-            + parameterTypes.length
+        throw new TestNGException( "Method " + methodName + " requires " 
+            + parameterTypes.length + " parameters but " 
+            + parameterNames.length
             + " were supplied in the "
             + methodAnnotation
             + " annotation.");
