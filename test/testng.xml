@@ -80,6 +80,12 @@
       <class name="test.configuration.BaseGroupsTest" />
     </classes>
   </test>
+	
+	<test name="Factory tests">
+		<classes>
+			<class name="test.factory.classconf.XClassOrderWithFactoryTest" />
+		</classes>
+	</test>
   
   <test name="Basic" >
     <classes>
@@ -348,6 +354,7 @@
       <class name="test.dataprovider.StaticDataProviderSampleTest" />
       <class name="test.dataprovider.UnnamedDataProviderTest" />
       <class name="test.dataprovider.TestContextTest" />
+			<class name="test.dataprovider.FailingDataProviderTest" />
     </classes>
   </test>
 	

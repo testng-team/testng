@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -529,7 +530,11 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       public long getMaxTimeOut() {
         return 0;
       }
-      
+            
+      public List<ITestResult> getTestResults() {
+        return null;
+      }
+
       /**
        * @see java.lang.Runnable#run()
        */
@@ -567,33 +572,20 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     log(3, "Found " + (sequentialList.size() + parallelList.size()) + " applicable methods");
     
     //
-    // Find out all the group methods
-    //
-//    m_groupMethods = findGroupMethods(m_classMap.values());
-
-    //
     // Create the workers
     //
     List<TestMethodWorker> workers = new ArrayList<TestMethodWorker>();
-    
-    // These two variables are used throughout the workers to keep track
-    // of what beforeClass/afterClass methods have been invoked
-    Map<ITestClass, ITestClass> beforeClassMethods = new HashMap<ITestClass, ITestClass>();
-    Map<ITestClass, ITestClass> afterClassMethods = new HashMap<ITestClass, ITestClass>();
     
     ClassMethodMap cmm = new ClassMethodMap(m_allTestMethods);
     
     // All the sequential tests are place in one worker, guaranteeing they
     // will be invoked sequentially
     if (sequentialList.size() > 0) {
-      for (List<ITestNGMethod> sl : sequentialList) {
-        
+      for (List<ITestNGMethod> sl : sequentialList) {        
         workers.add(new TestMethodWorker(m_invoker,
                                          methodsToMethodInstances(sl),
                                          m_xmlTest.getSuite(),
                                          params,
-                                         beforeClassMethods, 
-                                         afterClassMethods,
                                          m_allTestMethods,
                                          m_groupMethods,
                                          cmm,
@@ -605,15 +597,12 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     // invoked in parallel
     if (parallelList.size() > 0) {
       for (ITestNGMethod tm : parallelList) {
-//        MethodInstance mi = new MethodInstance(tm, tm.getTestClass().getInstances(true));
-        MethodInstance[] methodInstances = methodsToMultipleMethodInstances(Arrays.asList(new ITestNGMethod[] {tm}));
+        List<MethodInstance> methodInstances = methodsToMultipleMethodInstances(Arrays.asList(new ITestNGMethod[] {tm}));
         for (MethodInstance mi : methodInstances) {
           workers.add(new TestMethodWorker(m_invoker,
                                            new MethodInstance[] { mi },
                                            m_xmlTest.getSuite(),
                                            params,
-                                           beforeClassMethods, 
-                                           afterClassMethods,
                                            m_allTestMethods,
                                            m_groupMethods,
                                            cmm,
@@ -622,10 +611,15 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       }
     }
 
-    runWorkers(workers, xmlTest.getParallel());
+    try {
+      runWorkers(workers, xmlTest.getParallel());
+    }
+    finally {
+      cmm.clear();
+    }
   }
 
-  private MethodInstance[] methodsToMultipleMethodInstances(List<ITestNGMethod> sl) {
+  private List<MethodInstance> methodsToMultipleMethodInstances(List<ITestNGMethod> sl) {
     List<MethodInstance> vResult = new ArrayList<MethodInstance>();
     for (ITestNGMethod m : sl) {
       Object[] instances = m.getTestClass().getInstances(true);
@@ -634,8 +628,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       }
     }
     
-    MethodInstance[] result = vResult.toArray(new MethodInstance[vResult.size()]);
-    return result;
+    return vResult;
   }
 
   private MethodInstance[] methodsToMethodInstances(List<ITestNGMethod> sl) {
@@ -652,9 +645,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   //
   private void runWorkers(List<? extends IMethodWorker> workers, String parallelMode) {
     if (XmlSuite.PARALLEL_METHODS.equals(parallelMode) 
-        || "true".equalsIgnoreCase(parallelMode)
-//        || XmlSuite.PARALLEL_TESTS.equals(parallelMode)
-        ) 
+        || "true".equalsIgnoreCase(parallelMode) ) 
     {
       //
       // Parallel run

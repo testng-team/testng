@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -641,6 +642,11 @@ public class Invoker implements IInvoker {
    * <p/>
    * Note that this method also takes care of invoking the beforeTestMethod
    * and afterTestMethod, if any.
+   * 
+   * Note (alex): this method can be refactored to use a SingleTestMethodWorker that 
+   * directly invokes 
+   * {@link #invokeTestMethod(Object[], ITestNGMethod, Object[], XmlSuite, Map, ITestClass, ITestNGMethod[], ITestNGMethod[], ConfigurationGroupMethods)}
+   * and this would simplify the implementation (see how DataTestMethodWorker is used)
    */
   public List<ITestResult> invokeTestMethods(ITestNGMethod testMethod,
                                              ITestNGMethod[] allTestMethods,
@@ -673,7 +679,7 @@ public class Invoker implements IInvoker {
     int failureCount = 0;
 
     Class[] expectedExceptionClasses = 
-      MethodHelper.findExpectedExceptions(m_annotationFinder, testMethod.getMethod());
+        MethodHelper.findExpectedExceptions(m_annotationFinder, testMethod.getMethod());
     while(invocationCount-- > 0) {
       boolean okToProceed = checkDependencies(testMethod, testClass, allTestMethods);
 
@@ -685,7 +691,7 @@ public class Invoker implements IInvoker {
             //
             // HINT: If threadPoolSize specified, run this method in its own pool thread.
             //
-            if (testMethod.getThreadPoolSize() > 1) {
+            if (testMethod.getThreadPoolSize() > 1 && testMethod.getInvocationCount() > 1) {
               try {
                 result = invokePooledTestMethods(testMethod, allTestMethods, suite, 
                     parameters, groupMethods, testContext);
@@ -704,29 +710,54 @@ public class Invoker implements IInvoker {
 
 
               Map<String, String> allParameterNames = new HashMap<String, String>();
-//              boolean isStatic = (dataProvider.getModifiers() & Modifier.STATIC) != 0;
               Object instance = testClass.getInstances(true)[0];
-              Iterator<Object[]> allParameterValues =
-                Parameters.handleParameters(testMethod, allParameterNames, 
-                    instance, parameters, suite, m_annotationFinder, testContext);
+              ParameterBag bag= handleParameters(testMethod, 
+                  instance, allParameterNames, parameters, suite, testContext);
 
-              while (allParameterValues.hasNext()) {
-                Object[] parameterValues= allParameterValues.next();
-//                Object[] instances = testClass.getInstances(true);
-
+              if(bag.hasErrors()) {
+                failureCount = handleInvocationResults(testMethod, 
+                    bag.errorResults, failureCount, expectedExceptionClasses, true);
+                // there is nothing we can do more
+                continue;
+              }
+              
+              Iterator<Object[]> allParameterValues= bag.parameterValues;
+              
+              if(testMethod.getThreadPoolSize() > 1) {
                 try {
-                    result = invokeTestMethod(instances,
-                                              testMethod,
-                                              parameterValues,
-                                              suite,
-                                              allParameterNames,
-                                              testClass,
-                                              beforeMethods,
-                                              afterMethods,
-                                              groupMethods);
+                  result = invokePooledTestMethods(instances, 
+                      testMethod, 
+                      allTestMethods, 
+                      beforeMethods, 
+                      afterMethods, 
+                      groupMethods, 
+                      suite, 
+                      parameters, 
+                      allParameterNames, 
+                      allParameterValues);
                 }
                 finally {
                   failureCount = handleInvocationResults(testMethod, result, failureCount, expectedExceptionClasses, true);
+                }                
+              }
+              else {
+                while (allParameterValues.hasNext()) {
+                  Object[] parameterValues= allParameterValues.next();
+  
+                  try {
+                      result = invokeTestMethod(instances,
+                                                testMethod,
+                                                parameterValues,
+                                                suite,
+                                                allParameterNames,
+                                                testClass,
+                                                beforeMethods,
+                                                afterMethods,
+                                                groupMethods);
+                  }
+                  finally {
+                    failureCount = handleInvocationResults(testMethod, result, failureCount, expectedExceptionClasses, true);
+                  }
                 }
               } // for parameters
             }
@@ -760,10 +791,65 @@ public class Invoker implements IInvoker {
     
   } // invokeTestMethod
 
+  private ParameterBag handleParameters(ITestNGMethod testMethod,
+      Object instance,
+      Map<String, String> allParameterNames,
+      Map<String, String> parameters,
+      XmlSuite suite,
+      ITestContext testContext)
+  {
+    try {
+      return new ParameterBag(Parameters.handleParameters(testMethod,
+          allParameterNames, instance, parameters, suite, m_annotationFinder, testContext), null);
+    }
+    catch(Throwable cause) {
+      return new ParameterBag(null, 
+          new TestResult(
+              testMethod.getTestClass(), 
+              instance, 
+              testMethod, 
+              cause, 
+              System.currentTimeMillis(),
+              System.currentTimeMillis()));
+    }
+    
+  }
+  
+  private List<ITestResult> invokePooledTestMethods(Object[] instances,
+      ITestNGMethod testMethod, 
+      ITestNGMethod[] allTestMethods, 
+      ITestNGMethod[] beforeMethods,
+      ITestNGMethod[] afterMethods,
+      ConfigurationGroupMethods groupMethods,
+      XmlSuite suite, 
+      Map<String, String> parameters, 
+      Map<String, String> allParameterNames,
+      Iterator<Object[]> allParameterValues) 
+  {
+    List<ITestResult> result= new ArrayList<ITestResult>();
+    //
+    // Create the workers
+    //
+    List<IMethodWorker> workers= new ArrayList<IMethodWorker>();    
+    
+    while (allParameterValues.hasNext()) {
+      Object[] parameterValues= allParameterValues.next();
+
+      workers.add(new DataTestMethodWorker(instances, 
+          testMethod,
+          parameterValues,
+          beforeMethods,
+          afterMethods,
+          groupMethods,
+          suite,
+          allParameterNames));
+    }
+    
+    return runWorkers(testMethod, workers, testMethod.getThreadPoolSize(), groupMethods, suite, parameters);
+  }
+  
   /**
    * Invokes a method that has a specified threadPoolSize. 
-   * To reduce thread contention and also to correctly handle thread-confinement
-   * this method invokes the @BeforeGroups and @AfterGroups corresponding to the current @Test method.
    */
   private List<ITestResult> invokePooledTestMethods(ITestNGMethod testMethod, 
                                                     ITestNGMethod[] allTestMethods, 
@@ -772,19 +858,11 @@ public class Invoker implements IInvoker {
                                                     ConfigurationGroupMethods groupMethods,
                                                     ITestContext testContext) 
   {
-    // HINT: invoke @BeforeGroups on the original method (reduce thread contention, and also solve thread confinement)
-    ITestClass testClass= testMethod.getTestClass();
-    Object[] instances = testClass.getInstances(true);
-    for(Object instance: instances) {
-      invokeBeforeGroupsConfigurations(testClass, testMethod, groupMethods, suite, parameters, instance);
-    }
-    
-    
     List<ITestResult> result= new ArrayList<ITestResult>();
     //
     // Create the workers
     //
-    List<TestMethodWorker> workers= new ArrayList<TestMethodWorker>();    
+    List<IMethodWorker> workers= new ArrayList<IMethodWorker>();    
     List<ITestNGMethod> clones= new ArrayList<ITestNGMethod>(testMethod.getInvocationCount());
     
     for (int i = 0; i < testMethod.getInvocationCount(); i++) {
@@ -802,7 +880,7 @@ public class Invoker implements IInvoker {
     }
 
     try {
-      result = runWorkers(testMethod, workers, testMethod.getThreadPoolSize());
+      result = runWorkers(testMethod, workers, testMethod.getThreadPoolSize(), groupMethods, suite, parameters);
     }
     finally {
       for(ITestNGMethod clone: clones) {
@@ -810,10 +888,6 @@ public class Invoker implements IInvoker {
       }
       clones.clear();
       clones= null;
-
-      for(Object instance: instances) {
-        invokeAfterGroupsConfigurations(testClass, testMethod, groupMethods, suite, parameters, instance);
-      }
     }
     
     return result;
@@ -888,11 +962,28 @@ public class Invoker implements IInvoker {
     return failureCount;
   }
   
-  private List<ITestResult> runWorkers(ITestNGMethod testMethod, List<TestMethodWorker> workers, int threadPoolSize)
+  /**
+   * To reduce thread contention and also to correctly handle thread-confinement
+   * this method invokes the @BeforeGroups and @AfterGroups corresponding to the current @Test method.
+   */
+  private List<ITestResult> runWorkers(ITestNGMethod testMethod, 
+      List<IMethodWorker> workers, 
+      int threadPoolSize, 
+      ConfigurationGroupMethods groupMethods, 
+      XmlSuite suite, 
+      Map<String, String> parameters)
   {
+    // HINT: invoke @BeforeGroups on the original method (reduce thread contention, and also solve thread confinement)
+    ITestClass testClass= testMethod.getTestClass();
+    Object[] instances = testClass.getInstances(true);
+    for(Object instance: instances) {
+      invokeBeforeGroupsConfigurations(testClass, testMethod, groupMethods, suite, parameters, instance);
+    }
+    
+    
     long maxTimeOut= -1; // 10 seconds
 
-    for(TestMethodWorker tmw : workers) {
+    for(IMethodWorker tmw : workers) {
       long mt= tmw.getMaxTimeOut();
       if(mt > maxTimeOut) {
         maxTimeOut= mt;
@@ -905,8 +996,12 @@ public class Invoker implements IInvoker {
     // Collect all the TestResults
     //
     List<ITestResult> result = new ArrayList<ITestResult>();
-    for (TestMethodWorker tmw : workers) {
+    for (IMethodWorker tmw : workers) {
       result.addAll(tmw.getTestResults());
+    }
+    
+    for(Object instance: instances) {
+      invokeAfterGroupsConfigurations(testClass, testMethod, groupMethods, suite, parameters, instance);
     }
     
     return result;
@@ -1163,5 +1258,72 @@ public class Invoker implements IInvoker {
 
   private void log(int level, String s) {
     Utils.log("Invoker " + Thread.currentThread().hashCode(), level, s);
+  }
+  
+  private class DataTestMethodWorker implements IMethodWorker {
+    final Object[] m_instances;
+    final ITestNGMethod m_testMethod;
+    final ITestNGMethod[] m_beforeMethods;
+    final ITestNGMethod[] m_afterMethods;
+    final ConfigurationGroupMethods m_groupMethods;
+    final Object[] m_parameters;
+    final XmlSuite m_suite;
+    final Map<String, String> m_allParameterNames;
+    
+    List<ITestResult> m_results;
+    
+    public DataTestMethodWorker(Object[] instances, 
+        ITestNGMethod testMethod, 
+        Object[] params,
+        ITestNGMethod[] befores, 
+        ITestNGMethod[] afters, 
+        ConfigurationGroupMethods groupMethods, 
+        XmlSuite suite, 
+        Map<String, String> paramNames) {
+      m_instances= instances;
+      m_testMethod= testMethod;
+      m_parameters= params;
+      m_beforeMethods= befores;
+      m_afterMethods= afters;
+      m_groupMethods= groupMethods;
+      m_suite= suite;
+      m_allParameterNames= paramNames;
+    }
+    
+    public long getMaxTimeOut() {
+      return 0;
+    }
+
+    public void run() {
+      m_results= invokeTestMethod(m_instances,
+          m_testMethod,
+          m_parameters,
+          m_suite,
+          m_allParameterNames,
+          m_testMethod.getTestClass(),
+          m_beforeMethods,
+          m_afterMethods,
+          m_groupMethods);
+    }
+
+    public List<ITestResult> getTestResults() {
+      return m_results;
+    }
+  }
+  
+  private static class ParameterBag {
+    final Iterator<Object[]> parameterValues;
+    final List<ITestResult> errorResults= new ArrayList<ITestResult>();
+    
+    public ParameterBag(Iterator<Object[]> params, TestResult tr) {
+      parameterValues= params;
+      if(tr != null) {
+        errorResults.add(tr);
+      }
+    }
+    
+    public boolean hasErrors() {
+      return !errorResults.isEmpty();
+    }
   }
 }
