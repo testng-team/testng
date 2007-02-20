@@ -834,9 +834,8 @@ public class Invoker implements IInvoker {
     
     while (allParameterValues.hasNext()) {
       Object[] parameterValues= allParameterValues.next();
-
       workers.add(new DataTestMethodWorker(instances, 
-          testMethod,
+          testMethod.clone(), // we use clones for reporting purposes
           parameterValues,
           beforeMethods,
           afterMethods,
@@ -862,14 +861,14 @@ public class Invoker implements IInvoker {
     //
     // Create the workers
     //
-    List<IMethodWorker> workers= new ArrayList<IMethodWorker>();    
-    List<ITestNGMethod> clones= new ArrayList<ITestNGMethod>(testMethod.getInvocationCount());
+    List<IMethodWorker> workers= new ArrayList<IMethodWorker>();
     
     for (int i = 0; i < testMethod.getInvocationCount(); i++) {
+      // we use clones for reporting purposes
       ITestNGMethod clonedMethod= testMethod.clone();
       clonedMethod.setInvocationCount(1);
       clonedMethod.setThreadPoolSize(1);
-      clones.add(clonedMethod);
+
       MethodInstance mi = new MethodInstance(clonedMethod, clonedMethod.getTestClass().getInstances(true));
       workers.add(new SingleTestMethodWorker(this,
           mi,
@@ -879,18 +878,7 @@ public class Invoker implements IInvoker {
           testContext));
     }
 
-    try {
-      result = runWorkers(testMethod, workers, testMethod.getThreadPoolSize(), groupMethods, suite, parameters);
-    }
-    finally {
-      for(ITestNGMethod clone: clones) {
-        clone= null;
-      }
-      clones.clear();
-      clones= null;
-    }
-    
-    return result;
+    return runWorkers(testMethod, workers, testMethod.getThreadPoolSize(), groupMethods, suite, parameters);
   }
   
   /**
