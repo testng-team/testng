@@ -13,7 +13,7 @@ public class FactoryWithDataProviderTest {
   public void verifyDataProvider() {
     TestNG tng = new TestNG();
     tng.setSourcePath("./test-14/src;src");
-//    tng.setVerbose(0);
+    tng.setVerbose(0);
     tng.setAnnotations(AnnotationTypeEnum.JAVADOC.toString());
     tng.setTestClasses(new Class[] { FactoryWithDataProvider.class });
     TestListenerAdapter tla = new TestListenerAdapter();

@@ -56,18 +56,14 @@ public class FactoryMethod extends BaseTestMethod {
   public Object[] invoke() {
     List<Object> result = new ArrayList<Object>();
     
-//    Object[] parameters = null; 
-//      Parameters.createFactoryParameters(getMethod(), 
-//          m_xmlTest.getParameters(), getAnnotationFinder(), m_xmlTest.getSuite());
-    
-    
     Map<String, String> allParameterNames = new HashMap<String, String>();
     Iterator<Object[]> parameterIterator =
       Parameters.handleParameters(this, 
-          allParameterNames, m_instance,
-          m_xmlTest.getParameters(), 
-          m_xmlTest.getSuite(), m_annotationFinder, 
-          m_testContext);
+          allParameterNames, 
+          m_instance,
+          new Parameters.MethodParameters(m_xmlTest.getParameters(), null, m_testContext), 
+          m_xmlTest.getSuite(), 
+          m_annotationFinder);
     
     try {
       while (parameterIterator.hasNext()) {

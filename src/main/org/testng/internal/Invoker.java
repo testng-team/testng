@@ -135,7 +135,8 @@ public class Invoker implements IInvoker {
                                                                         params,
                                                                         currentTestMethod,
                                                                         m_annotationFinder,
-                                                                        suite);
+                                                                        suite,
+                                                                        m_testContext);
           testResult.setParameters(parameters);
 
           Object[] newInstances= (null != instance) ? new Object[] { instance } : instances;
@@ -800,7 +801,11 @@ public class Invoker implements IInvoker {
   {
     try {
       return new ParameterBag(Parameters.handleParameters(testMethod,
-          allParameterNames, instance, parameters, suite, m_annotationFinder, testContext), null);
+          allParameterNames, 
+          instance, 
+          new Parameters.MethodParameters(parameters, testMethod.getMethod(), testContext), 
+          suite, 
+          m_annotationFinder), null);
     }
     catch(Throwable cause) {
       return new ParameterBag(null, 

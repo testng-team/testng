@@ -61,11 +61,12 @@ public class Parameters {
                                                        Map<String, String> params, 
                                                        ITestNGMethod currentTestMethod,
                                                        IAnnotationFinder finder, 
-                                                       XmlSuite xmlSuite) 
+                                                       XmlSuite xmlSuite,
+                                                       ITestContext ctx) 
   {
     Method currentTestMeth= currentTestMethod != null ? 
         currentTestMethod.getMethod() : null;
-    return createParameters(m, new MethodParameters(params, currentTestMeth), 
+    return createParameters(m, new MethodParameters(params, currentTestMeth, ctx), 
         finder, xmlSuite, IConfiguration.class, "@Configuration");
   }
 
@@ -92,11 +93,14 @@ public class Parameters {
   
       for(int i =0, j = 0; i < parameterTypes.length; i++) {
         if (Method.class.equals(parameterTypes[i])) {
-            vResult.add(params.m_currentTestMethod);
+          vResult.add(params.currentTestMethod);
+        }
+        else if (ITestContext.class.equals(parameterTypes[i])) {
+          vResult.add(params.context);
         }
         else {
           String p = parameterNames[j];
-          String value = params.m_parameters.get(p);
+          String value = params.xmlParameters.get(p);
           if (null == value) {
             throw new TestNGException("Parameter '" + p + "' is required by " 
                 + methodAnnotation
@@ -120,24 +124,19 @@ public class Parameters {
   private static void checkParameterTypes(String methodName, 
       Class[] parameterTypes, String methodAnnotation, String[] parameterNames) 
   {
-    if (parameterNames.length != parameterTypes.length) {
-      if (parameterTypes.length != parameterNames.length + 1) {
+    if(parameterNames.length == parameterTypes.length) return;
+    
+    for(int i= parameterTypes.length - 1; i >= parameterNames.length; i--) {
+      if(!ITestContext.class.equals(parameterTypes[i])
+          && !Method.class.equals(parameterTypes[i])) {
         throw new TestNGException( "Method " + methodName + " requires " 
             + parameterTypes.length + " parameters but " 
             + parameterNames.length
             + " were supplied in the "
             + methodAnnotation
-            + " annotation.");
+            + " annotation.");        
       }
-      else {
-        //
-        // If we have one more parameter than parameter expected,
-        // it has to be an ITestContext
-        //
-        if (! ITestContext.class.equals(parameterTypes[parameterNames.length])) {
-        }
-      }
-    }    
+    }
   }
   
   private static Object convertType(Class type, String value, String paramName) {
@@ -263,11 +262,8 @@ public class Parameters {
             atName, parameterNames, params, xmlSuite);
       }
       else {
-          Class[] paramTypes= m.getParameterTypes();
-          if(paramTypes.length == 1 && Method.class.equals(paramTypes[0])) {
-              result = createParameters(m.getName(), paramTypes, 
-                  atName, new String[0], params, xmlSuite);
-          }
+        result = createParameters(m.getName(), m.getParameterTypes(), 
+            atName, new String[0], params, xmlSuite);
       }
     }
     
@@ -283,10 +279,9 @@ public class Parameters {
   public static Iterator<Object[]> handleParameters(ITestNGMethod testMethod, 
                                                     Map<String, String> allParameterNames,
                                                     Object instance,
-                                                    Map<String, String> parameters, 
+                                                    MethodParameters methodParams, 
                                                     XmlSuite xmlSuite, 
-                                                    IAnnotationFinder annotationFinder,
-                                                    ITestContext testContext)
+                                                    IAnnotationFinder annotationFinder)
   {
     Iterator<Object[]> result = null;
     
@@ -310,17 +305,17 @@ public class Parameters {
           instance, /* a test instance or null if the dataprovider is static*/
           dataProvider, 
           testMethod,
-          testContext);
+          methodParams.context);
     }
     else {
       //
       // Normal case:  we have only one set of parameters coming from testng.xml
       //
-      allParameterNames.putAll(parameters);
+      allParameterNames.putAll(methodParams.xmlParameters);
       // Create an Object[][] containing just one row of parameters
       Object[][] allParameterValuesArray = new Object[1][];
       allParameterValuesArray[0] = createParameters(testMethod.getMethod(), 
-          new MethodParameters(parameters), annotationFinder, xmlSuite, ITest.class, "@Test");
+          methodParams, annotationFinder, xmlSuite, ITest.class, "@Test");
       
       // Mark that this method needs to have at least a certain
       // number of invocations (needed later to call AfterGroups
@@ -338,17 +333,23 @@ public class Parameters {
   }
 
   /** A parameter passing helper class. */
-  private static class MethodParameters {
-    private final Map<String, String> m_parameters;
-    private final Method m_currentTestMethod;
+  public static class MethodParameters {
+    private final Map<String, String> xmlParameters;
+    private final Method currentTestMethod;
+    private final ITestContext context;
     
     public MethodParameters(Map<String, String> params) {
-        this(params, null);
+      this(params, null, null);
     }
     
     public MethodParameters(Map<String, String> params, Method m) {
-        m_parameters= params;
-        m_currentTestMethod= m;
+      this(params, m, null);
+    }
+    
+    public MethodParameters(Map<String, String> params, Method m, ITestContext ctx) {
+      xmlParameters= params;
+      currentTestMethod= m;
+      context= ctx;
     }
   }
 }

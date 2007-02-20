@@ -12,7 +12,7 @@ public class PriorityTest {
 
   private void runTest(int priority, String[] passedTests) {
     TestNG tng = new TestNG();
-//    tng.setVerbose(2);
+    tng.setVerbose(0);
     tng.setTestClasses(new Class[] { PrioritySampleTest.class });
     tng.addMethodSelector("test.methodselectors.NoTestSelector", priority);
     TestListenerAdapter tla = new TestListenerAdapter();
