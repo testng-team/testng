@@ -8,7 +8,6 @@ import java.util.Stack;
  * and popping tags from a stack maintained internally.
  * 
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a> Jul 21, 2003
- * TODO CQ have a method to set the XML version and encoding
  */
 public class XMLStringBuffer {
   /** End of line */
@@ -34,6 +33,16 @@ public class XMLStringBuffer {
   public XMLStringBuffer(String start) {
     this(new StringBuffer(), start);
   }
+
+  /**
+   * Set the xml version and encoding for this document.
+   * 
+   * @param v the XML version
+   * @param enc the XML encoding
+   */
+  public void setXmlDetails(String v, String enc) {
+    m_buffer.append("<?xml version=\"" + v + "\" encoding=\"" + enc + "\"?>").append(EOL);
+  }
   
   /**
    * Set the doctype for this document.
@@ -43,6 +52,7 @@ public class XMLStringBuffer {
   public void setDocType(String docType) {
     m_buffer.append("<!DOCTYPE " + docType + ">" + EOL);
   }
+  
   
   /**
    * 

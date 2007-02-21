@@ -2,46 +2,25 @@ package org.testng.reporters;
 
 
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintStream;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Properties;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.testng.IResultMap;
-import org.testng.ISuite;
-import org.testng.ISuiteResult;
 import org.testng.ITestContext;
-import org.testng.ITestListener;
-import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.internal.IResultListener;
 import org.testng.internal.Utils;
-import org.w3c.dom.CDATASection;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
 
 /**
- * this XML Reporter will produce XML format compatible with the XMLJUnitResultFormatter from ant
- * this enables TestNG output to be processed by tools that already handle this format
+ * A JUnit XML report generator (replacing the original JUnitXMLReporter that was
+ * based on XML APIs).
  *
- * borrows heavily from ideas in org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter
- * 
- * @TODO: clean up
+ * @author <a href='mailto:the[dot]mindstorm[at]gmail[dot]com'>Alex Popescu</a>
  */
 public class JUnitXMLReporter implements IResultListener {
 
@@ -112,103 +91,6 @@ public class JUnitXMLReporter implements IResultListener {
   }
 
   /**
-   * generate the XML report given what we know from all the test results
-   */
-  protected void generateReport() {
-    try {
-      DocumentBuilderFactory docBuilderFactory= DocumentBuilderFactory.newInstance();
-      docBuilderFactory.setNamespaceAware(true); // so we can transform it later
-      DocumentBuilder docBuilder= docBuilderFactory.newDocumentBuilder();
-      Document d= docBuilder.newDocument();
-      Element rootElement= d.createElement(XMLConstants.TESTSUITE);
-      rootElement.setAttribute(XMLConstants.ATTR_NAME, m_testContext.getName());
-
-      Element propsElement= d.createElement(XMLConstants.PROPERTIES);
-      rootElement.appendChild(propsElement);
-
-      // properties. just TestNG properties or also System properties?
-      ISuite suite= m_testContext.getSuite();
-
-      rootElement.setAttribute(XMLConstants.ATTR_TESTS, "" + m_allTests.size());
-      rootElement.setAttribute(XMLConstants.ATTR_FAILURES, "" + m_numFailed);
-      rootElement.setAttribute(XMLConstants.ATTR_ERRORS, "0"); // FIXME
-
-      long elapsedTimeMillis= m_testContext.getEndDate().getTime()
-        - m_testContext.getStartDate().getTime();
-      rootElement.setAttribute(XMLConstants.ATTR_TIME, "" + (elapsedTimeMillis / 1000.0));
-
-      for(ITestResult tr: m_configIssues) {
-        Element element= createElement(d, tr);
-        rootElement.appendChild(element);
-      }
-      for(ITestResult tr : m_allTests) {
-        Element testCaseElement= createElement(d, tr);
-        rootElement.appendChild(testCaseElement);
-      }
-
-      BufferedWriter fw= new BufferedWriter(new FileWriter(m_outputFile));
-
-      Transformer transformer= TransformerFactory.newInstance().newTransformer();
-      transformer.transform(new DOMSource(rootElement), new StreamResult(fw));
-      fw.flush();
-      fw.close();
-    }
-    catch(IOException ioe) {
-      ioe.printStackTrace();
-      System.err.println("failed to create JUnitXML because of " + ioe);
-    }
-    catch(ParserConfigurationException pce) {
-      pce.printStackTrace();
-      System.err.println("failed to create JUnitXML because of " + pce);
-    }
-    catch(TransformerException te) {
-      te.printStackTrace();
-      System.err.println("Error while writing out JUnitXML because of " + te);
-    }
-  }
-
-  private Element createElement(Document doc, ITestResult tr) {
-    Element resultElement= doc.createElement(XMLConstants.TESTCASE);
-    long elapsedTimeMillis= tr.getEndMillis() - tr.getStartMillis();
-    String name= tr.getMethod().isTest() ? tr.getName() : Utils.detailedMethodName(tr.getMethod(), false);
-    resultElement.setAttribute(XMLConstants.ATTR_NAME, name);
-    resultElement.setAttribute(XMLConstants.ATTR_CLASSNAME,
-                               tr.getTestClass().getRealClass().getName());
-    resultElement.setAttribute(XMLConstants.ATTR_TIME, 
-                               "" + ((double) elapsedTimeMillis)/1000);
-    if (ITestResult.FAILURE == tr.getStatus()) {
-      Element nested = createFailureElement(doc, tr); 
-      resultElement.appendChild(nested);
-    }
-    else if (ITestResult.SKIP == tr.getStatus()) {
-      Element nested = createSkipElement(doc, tr);
-      resultElement.appendChild(nested);
-    }
-    
-    return resultElement;
-  }
-  
-  private Element createFailureElement(Document doc, ITestResult tr) {
-    Element nested= doc.createElement(XMLConstants.FAILURE);
-    Throwable t = tr.getThrowable();
-    if (t != null) {
-      nested.setAttribute(XMLConstants.ATTR_TYPE, t.getClass().getName());
-      String message = t.getMessage();
-      if ((message != null) && (message.length() > 0)) {
-        nested.setAttribute(XMLConstants.ATTR_MESSAGE, message);
-      }
-      CDATASection trace= doc.createCDATASection(Utils.stackTrace(t, false)[0]);
-      nested.appendChild(trace);
-    }
-    
-    return nested;
-  }
-  
-  private Element createSkipElement(Document doc, ITestResult tr) {
-    return doc.createElement("skipped");
-  }
-  
-  /**
    * @see org.testng.internal.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
    */
   public void onConfigurationFailure(ITestResult itr) {
@@ -226,5 +108,89 @@ public class JUnitXMLReporter implements IResultListener {
    * @see org.testng.internal.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
    */
   public void onConfigurationSuccess(ITestResult itr) {
+  }
+
+  /**
+   * generate the XML report given what we know from all the test results
+   */
+  protected void generateReport() {
+    try {
+      XMLStringBuffer document= new XMLStringBuffer("");
+      document.setXmlDetails("1.0", "UTF-8");
+      Properties attrs= new Properties();
+      attrs.setProperty(XMLConstants.ATTR_NAME, m_testContext.getName());
+      attrs.setProperty(XMLConstants.ATTR_TESTS, "" + m_allTests.size());
+      attrs.setProperty(XMLConstants.ATTR_FAILURES, "" + m_numFailed);
+      attrs.setProperty(XMLConstants.ATTR_ERRORS, "0");
+      attrs.setProperty(XMLConstants.ATTR_TIME, ""
+          + ((m_testContext.getEndDate().getTime() - m_testContext.getStartDate().getTime()) / 1000.0));
+
+      document.push(XMLConstants.TESTSUITE, attrs);
+      document.addEmptyElement(XMLConstants.PROPERTIES);
+
+      for(ITestResult tr : m_configIssues) {
+        createElement(document, tr);
+      }
+      for(ITestResult tr : m_allTests) {
+        createElement(document, tr);
+      }
+
+      document.pop();
+      BufferedWriter fw= new BufferedWriter(new FileWriter(m_outputFile));
+      fw.write(document.toXML());
+      fw.flush();
+      fw.close();
+    }
+    catch(IOException ioe) {
+      ioe.printStackTrace();
+      System.err.println("failed to create JUnitXML because of " + ioe);
+    }
+  }
+
+  private void createElement(XMLStringBuffer doc, ITestResult tr) {
+    Properties attrs= new Properties();
+    long elapsedTimeMillis= tr.getEndMillis() - tr.getStartMillis();
+    String name= tr.getMethod().isTest() ? tr.getName() : Utils.detailedMethodName(tr.getMethod(), false);
+    attrs.setProperty(XMLConstants.ATTR_NAME, name);
+    attrs.setProperty(XMLConstants.ATTR_CLASSNAME, tr.getTestClass().getRealClass().getName());
+    attrs.setProperty(XMLConstants.ATTR_TIME, "" + (((double) elapsedTimeMillis) / 1000));
+
+    if((ITestResult.FAILURE == tr.getStatus()) || (ITestResult.SKIP == tr.getStatus())) {
+      doc.push(XMLConstants.TESTCASE, attrs);
+
+      if(ITestResult.FAILURE == tr.getStatus()) {
+        createFailureElement(doc, tr);
+      }
+      else if(ITestResult.SKIP == tr.getStatus()) {
+        createSkipElement(doc, tr);
+      }
+
+      doc.pop();
+    }
+    else {
+      doc.addEmptyElement(XMLConstants.TESTCASE, attrs);
+    }
+  }
+
+  private void createFailureElement(XMLStringBuffer doc, ITestResult tr) {
+    Properties attrs= new Properties();
+    Throwable t= tr.getThrowable();
+    if(t != null) {
+      attrs.setProperty(XMLConstants.ATTR_TYPE, t.getClass().getName());
+      String message= t.getMessage();
+      if((message != null) && (message.length() > 0)) {
+        attrs.setProperty(XMLConstants.ATTR_MESSAGE, message);
+      }
+      doc.push(XMLConstants.FAILURE, attrs);
+      doc.addCDATA(Utils.stackTrace(t, false)[0]);
+      doc.pop();
+    }
+    else {
+      doc.addEmptyElement(XMLConstants.FAILURE); // THIS IS AN ERROR
+    }
+  }
+
+  private void createSkipElement(XMLStringBuffer doc, ITestResult tr) {
+    doc.addEmptyElement("skipped");
   }
 }

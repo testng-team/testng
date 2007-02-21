@@ -11,6 +11,9 @@ Added: Improved behavior for @Before/@AfterClass when using @Factory
 Added: Support for concurrent execution for invocationCount=1 threadPoolSize>1 and @DataProvider
 (http://forums.opensymphony.com/thread.jspa?threadID=64738&tstart=0)
 
+Eclipse plug-in
+
+Fixed: Bug that made group launch configurations unusable
 ===========================================================================
 5.5
 
