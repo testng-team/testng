@@ -384,13 +384,7 @@ public static Map parseCommandLine(final String[] originalArgv) {
 
       if (arg.startsWith("@")) {
         String fileName = arg.substring(1);
-        List<String> lines = readFile(fileName);
-        for (String line : lines) {
-          List<String> args = parseArgs(line);
-          for (String oneArg : args) {
-            vResult.add(oneArg);
-          }
-        }
+        vResult.addAll(readFile(fileName));
       }
       else {
         vResult.add(arg);
@@ -537,31 +531,18 @@ public static Map parseCommandLine(final String[] originalArgv) {
     List<String> result = new ArrayList<String>();
 
     try {
-      //
-      // Sets up a file reader to read the file passed on the command line one
-      // character at a time
-      //
-      FileReader input = new FileReader(fileName);
+      BufferedReader bufRead = new BufferedReader(new FileReader(fileName));
 
-      /*
-       * Filter FileReader through a Buffered read to read a line at a time
-       */
-      BufferedReader bufRead = new BufferedReader(input);
-
-      String line; // String that holds current file line
-      // Read first line
-      line = bufRead.readLine();
+      String line;
 
       // Read through file one line at time. Print line # and line
-      while (line != null) {
+      while ((line = bufRead.readLine()) != null) {
         result.add(line);
-        line = bufRead.readLine();
       }
 
       bufRead.close();
     }
     catch (IOException e) {
-      // TODO CQ why swallow exception here?
       LOGGER.error("IO exception reading command line file", e);
     }
 

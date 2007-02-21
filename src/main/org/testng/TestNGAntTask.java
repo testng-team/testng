@@ -576,9 +576,10 @@ public class TestNGAntTask extends Task {
       fw= new FileWriter(f);
       bw= new BufferedWriter(fw);
       for(String arg : argv) {
-        bw.write(doubleQuote(arg));
-        bw.write(" ");
+        bw.write(arg);
+        bw.newLine();
       }
+      bw.flush();
     }
     catch(IOException e) {
       e.printStackTrace();
@@ -929,27 +930,12 @@ public class TestNGAntTask extends Task {
       DirectoryScanner ds= fileset.getDirectoryScanner(getProject());
 
       for(String file : ds.getIncludedFiles()) {
-        files.add("\"" + ds.getBasedir() + File.separator + file  + "\"");
+        files.add(ds.getBasedir() + File.separator + file);
       }
     }
 
     return files;
   }
-
-  /*private String filesetToString(List<FileSet> filesets, String sep) throws BuildException {
-    final StringBuffer buf = new StringBuffer();
-
-    for(Iterator<FileSet> iterator = filesets.iterator(); iterator.hasNext();) {
-      FileSet          fileset = iterator.next();
-      DirectoryScanner ds = fileset.getDirectoryScanner(getProject());
-      for(int i = 0; i < ds.getIncludedFiles().length; i++) {
-        String file = ds.getIncludedFiles()[i];
-        buf.append(ds.getBasedir() + File.separator + file).append(sep);
-      }
-    }
-
-    return buf.toString();
-  }*/
 
   /**
    * Adds double quotes to the command line argument if it contains spaces.
