@@ -215,6 +215,7 @@
     <jar destfile="${jdk14.testng.jar}" update="true">
       <manifest>
         <attribute name="Main-Class" value="org.testng.TestNG" />
+      	<attribute name="Implementation-Version" value="${testng.version}-${DSTAMP}${TSTAMP}" />
       </manifest>
       <fileset dir="${build.3rdparty.dir}" />
       <fileset dir="${build.jdk14.dir}" />
@@ -227,6 +228,7 @@
     <jar destfile="${other.jars.dir}/${jdk14.testng.nobsh.jar}" update="true">
       <manifest>
         <attribute name="Main-Class" value="org.testng.TestNG" />
+      	<attribute name="Implementation-Version" value="${testng.version}-${DSTAMP}${TSTAMP}" />
       </manifest>
       <fileset dir="${build.3rdparty.dir}" />
       <fileset dir="${build.jdk14.dir}" />
@@ -267,6 +269,7 @@
     <jar destfile="${jdk15.testng.jar}">
       <manifest>
         <attribute name="Main-Class" value="org.testng.TestNG" />
+      	<attribute name="Implementation-Version" value="${testng.version}-${DSTAMP}${TSTAMP}" />
       </manifest>
       <fileset dir="${build.jdk15.dir}" />
       <fileset dir="${build.3rdparty.dir}" />
@@ -279,6 +282,7 @@
     <jar destfile="${other.jars.dir}/${jdk15.testng.nobsh.jar}" update="true">
       <manifest>
         <attribute name="Main-Class" value="org.testng.TestNG" />
+      	<attribute name="Implementation-Version" value="${testng.version}-${DSTAMP}${TSTAMP}" />
       </manifest>
       <fileset dir="${build.jdk15.dir}" />
       <fileset dir="${build.3rdparty.dir}" />
