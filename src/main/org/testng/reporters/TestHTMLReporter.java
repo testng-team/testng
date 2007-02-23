@@ -147,9 +147,8 @@ public class TestHTMLReporter extends TestListenerAdapter {
       
       if (null != tw) {
         String[] stackTraces = Utils.stackTrace(tw, true);
-        String shortStackTrace = stackTraces[0].replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-        fullStackTrace = stackTraces[1].replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-        stackTrace = "<div><pre>" + shortStackTrace  + "</pre></div>";
+        fullStackTrace = stackTraces[1];
+        stackTrace = "<div><pre>" + stackTraces[0]  + "</pre></div>";
         
         sb.append(stackTrace);
         // JavaScript link

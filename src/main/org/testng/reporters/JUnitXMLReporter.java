@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.testng.ITestContext;
 import org.testng.ITestResult;
@@ -23,7 +25,11 @@ import org.testng.internal.Utils;
  * @author <a href='mailto:the[dot]mindstorm[at]gmail[dot]com'>Alex Popescu</a>
  */
 public class JUnitXMLReporter implements IResultListener {
+  private static final Pattern ENTITY= Pattern.compile("&[a-zA-Z]+;.*");
+  private static final Pattern LESS= Pattern.compile("<");
+  private static final Pattern GREATER= Pattern.compile(">");
 
+  
   private String m_outputFileName= null;
   private File m_outputFile= null;
   private ITestContext m_testContext= null;
@@ -118,7 +124,7 @@ public class JUnitXMLReporter implements IResultListener {
       XMLStringBuffer document= new XMLStringBuffer("");
       document.setXmlDetails("1.0", "UTF-8");
       Properties attrs= new Properties();
-      attrs.setProperty(XMLConstants.ATTR_NAME, m_testContext.getName());
+      attrs.setProperty(XMLConstants.ATTR_NAME, encodeAttr(m_testContext.getName())); // ENCODE
       attrs.setProperty(XMLConstants.ATTR_TESTS, "" + m_allTests.size());
       attrs.setProperty(XMLConstants.ATTR_FAILURES, "" + m_numFailed);
       attrs.setProperty(XMLConstants.ATTR_ERRORS, "0");
@@ -179,7 +185,7 @@ public class JUnitXMLReporter implements IResultListener {
       attrs.setProperty(XMLConstants.ATTR_TYPE, t.getClass().getName());
       String message= t.getMessage();
       if((message != null) && (message.length() > 0)) {
-        attrs.setProperty(XMLConstants.ATTR_MESSAGE, message);
+        attrs.setProperty(XMLConstants.ATTR_MESSAGE, encodeAttr(message)); // ENCODE
       }
       doc.push(XMLConstants.FAILURE, attrs);
       doc.addCDATA(Utils.stackTrace(t, false)[0]);
@@ -192,5 +198,33 @@ public class JUnitXMLReporter implements IResultListener {
 
   private void createSkipElement(XMLStringBuffer doc, ITestResult tr) {
     doc.addEmptyElement("skipped");
+  }
+  
+  private String encodeAttr(String attr) {
+    String result= replaceAmpersand(attr, ENTITY);
+    result= LESS.matcher(result).replaceAll("&lt;");
+    return GREATER.matcher(result).replaceAll("&gt;");
+  }
+
+  private String replaceAmpersand(String str, Pattern pattern) {
+    int start = 0;
+    int idx = str.indexOf('&', start);
+    if(idx == -1) return str;
+    StringBuffer result= new StringBuffer();
+    while(idx != -1) {
+      result.append(str.substring(start, idx));
+      if(pattern.matcher(str.substring(idx)).matches()) {
+        // do nothing it is an entity;
+        result.append("&");
+      }
+      else {
+        result.append("&amp;");
+      }
+      start= idx + 1;
+      idx= str.indexOf('&', start);
+    }
+    result.append(str.substring(start));
+    
+    return result.toString();
   }
 }
