@@ -8,7 +8,9 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,7 +30,16 @@ public class JUnitXMLReporter implements IResultListener {
   private static final Pattern ENTITY= Pattern.compile("&[a-zA-Z]+;.*");
   private static final Pattern LESS= Pattern.compile("<");
   private static final Pattern GREATER= Pattern.compile(">");
-
+  private static final Pattern SINGLE_QUOTE = Pattern.compile("'");
+  private static final Pattern QUOTE = Pattern.compile("\"");
+  private static final Map<String, Pattern> ATTR_ESCAPES= new HashMap<String, Pattern>();
+  
+  static {
+    ATTR_ESCAPES.put("&lt;", LESS);
+    ATTR_ESCAPES.put("&gt;", GREATER);
+    ATTR_ESCAPES.put("&apos;", SINGLE_QUOTE);
+    ATTR_ESCAPES.put("&quot;", QUOTE);
+  }
   
   private String m_outputFileName= null;
   private File m_outputFile= null;
@@ -202,8 +213,11 @@ public class JUnitXMLReporter implements IResultListener {
   
   private String encodeAttr(String attr) {
     String result= replaceAmpersand(attr, ENTITY);
-    result= LESS.matcher(result).replaceAll("&lt;");
-    return GREATER.matcher(result).replaceAll("&gt;");
+    for(Map.Entry<String, Pattern> e: ATTR_ESCAPES.entrySet()) {
+      result= e.getValue().matcher(result).replaceAll(e.getKey());
+    }
+
+    return result;
   }
 
   private String replaceAmpersand(String str, Pattern pattern) {
