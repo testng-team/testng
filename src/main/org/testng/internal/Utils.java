@@ -24,7 +24,13 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.testng.*;
+import org.testng.IClass;
+import org.testng.IObjectFactory;
+import org.testng.IResultMap;
+import org.testng.ITestNGMethod;
+import org.testng.TestNGCommandLineArgs;
+import org.testng.TestNGException;
+import org.testng.TestRunner;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IConfiguration;
@@ -336,7 +342,7 @@ public final class Utils {
     // Why this coupling on a static member of TestRunner.getVerbose()?
     if (TestRunner.getVerbose() >= level) {
       if (cls.length() > 0) {
-        System.out.println('[' + cls + "] " + msg);
+        System.out.println("[" + cls + "] " + msg);
       }
       else {
         System.out.println(msg);
@@ -592,7 +598,7 @@ public final class Utils {
   }
 
   public static void writeResourceToFile(File file, String resourceName, Class<?> clasz) throws IOException {
-    InputStream inputStream = clasz.getResourceAsStream('/' + resourceName);
+    InputStream inputStream = clasz.getResourceAsStream("/" + resourceName);
     if (inputStream == null) {
       System.err.println("Couldn't find resource on the class path: " + resourceName);
 //      throw new IllegalArgumentException("Resource does not exist: " + resourceName);
@@ -707,7 +713,7 @@ public final class Utils {
       return "\"\"";
     }
     else if (String.class.equals(objectClass)) {
-      return '\"' + toString + '\"';
+      return "\"" + toString + '\"';
     }
     else {
       return toString;

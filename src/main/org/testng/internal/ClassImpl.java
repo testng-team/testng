@@ -76,9 +76,6 @@ public class ClassImpl implements IClass {
           Utils.createInstance(m_class, m_classes, m_xmlTest, m_annotationFinder, m_objectFactory) 
         };
       }
-//      else {
-//        result = new Object[] { getDefaultInstance() };        
-//      }
     }
     else {
       result = new Object[] { getDefaultInstance() };

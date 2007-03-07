@@ -1,20 +1,10 @@
 package test;
 
-import java.util.Collection;
-
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.testng.junit.JUnitClassFinder;
 
 import test.junit.SetNameTest;
-import test.junit.Suite1;
-import test.junit.TestAa;
-import test.junit.TestAb;
-import test.junit.TestAc;
-import test.junit.TestAd;
-import test.junit.TestAe;
-import test.junit.TestAf;
 import test.sample.JUnitSample1;
 import test.sample.JUnitSample2;
 
@@ -89,39 +79,6 @@ public class JUnitTest1 extends BaseTest {
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Failed", failed, getFailedTests());  
   }  
-  
-  @Test
-  public void suitesOfSuites() {
-    Class[] expected = {
-      TestAa.class, TestAb.class,
-      TestAc.class, TestAd.class,
-      TestAe.class, TestAf.class,
-    };
-    Collection<Class> result = JUnitClassFinder.invokeSuite(
-        new Class[] { test.junit.MainSuite.class});
-
-    for (Class c : expected) {
-      boolean success = result.remove(c);
-      Assert.assertTrue(success, "Expected to find class " + c);
-    }
-    Assert.assertEquals(result.size(), 0, "Returned result contains extra classes");
-  }
-  
-  @Test
-  public void suitesOfSuites2() {
-    Class[] expected = { 
-      TestAa.class, TestAb.class 
-    };
-    Collection<Class> result = JUnitClassFinder
-        .invokeSuite(new Class[] { Suite1.class });
-
-    for (Class c : expected) {
-      boolean success = result.remove(c);
-      Assert.assertTrue(success, "Expected to find class " + c);
-    }
-    Assert.assertEquals(result.size(), 0,
-        "Returned result contains extra classes");
-  }
   
   @Test
   public void setUpFailingShouldCauseMethodsToBeSkipped() {

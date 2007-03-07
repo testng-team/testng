@@ -95,7 +95,8 @@ public class SuiteRunner implements ISuite, Serializable {
                     String outputDir, 
                     ITestRunnerFactory runnerFactory, 
                     boolean useDefaultListeners,
-                    IAnnotationFinder[] finders, IObjectFactory factory)
+                    IAnnotationFinder[] finders, 
+                    IObjectFactory factory)
   {
     m_suite = suite;
     m_useDefaultListeners = useDefaultListeners;
@@ -123,9 +124,8 @@ public class SuiteRunner implements ISuite, Serializable {
     return m_suite.getName();
   }
 
-  public void setObjectFactory(IObjectFactory objectFactory)
-  {
-    this.m_objectFactory = objectFactory;
+  public void setObjectFactory(IObjectFactory objectFactory) {
+    m_objectFactory = objectFactory;
   }
 
   public void setTestListeners(List<ITestListener> testlisteners) {
@@ -405,8 +405,7 @@ public class SuiteRunner implements ISuite, Serializable {
     return result;
   }
 
-  public IObjectFactory getObjectFactory()
-  {
+  public IObjectFactory getObjectFactory() {
     return m_objectFactory;
   }
 

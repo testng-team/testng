@@ -116,7 +116,7 @@ public class XmlSuite implements Serializable, Cloneable {
   }
 
   public void setObjectFactory(IObjectFactory objectFactory) {
-    this.m_objectFactory = objectFactory;
+    m_objectFactory = objectFactory;
   }
 
   /**

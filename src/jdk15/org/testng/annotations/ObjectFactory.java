@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
  * and the method must return an instance of {@link org.testng.IObjectFactory}.
  * 
  * @author Hani Suleiman
+ * @since 5.6
  */
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target(java.lang.annotation.ElementType.METHOD)

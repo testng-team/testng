@@ -25,7 +25,9 @@ public interface ITestClass extends IClass, Serializable {
    * This will typically be an array of one object in the absence
    * of a @Factory annotation.
    * 
-   *@param reuse @return All the instances the methods will be invoked upon.
+   * @param reuse flag if a new set of instances must be returned
+   *  (if set to <tt>false</tt>) 
+   * @return All the instances the methods will be invoked upon.
    * 
    * {@inheritDoc}
    */

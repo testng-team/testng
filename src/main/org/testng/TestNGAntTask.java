@@ -612,7 +612,7 @@ public class TestNGAntTask extends Task {
 
     createClasspath().setLocation(findJar());
 
-    cmd.createArgument().setValue('@' + fileName);
+    cmd.createArgument().setValue("@" + fileName);
 
     ExecuteWatchdog watchdog= createWatchdog();
     boolean wasKilled= false;
@@ -955,7 +955,7 @@ public class TestNGAntTask extends Task {
    */
   private static String doubleQuote(String pCommandLineArg) {
     if(pCommandLineArg.indexOf(" ") != -1 && !(pCommandLineArg.startsWith("\"") && pCommandLineArg.endsWith("\""))) {
-      return '\"' + pCommandLineArg + '\"';
+      return "\"" + pCommandLineArg + '\"';
     }
 
     return pCommandLineArg;

@@ -4,10 +4,13 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.testng.*;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
+
+import org.testng.IClass;
+import org.testng.ITestClass;
+import org.testng.ITestNGMethod;
+import org.testng.TestNGException;
 
 /**
  * Help methods for JUnit
@@ -19,36 +22,6 @@ public class JUnitUtils {
   private static final String[] EMTPY_STRINGARRAY= new String[0];
   private static final ITestNGMethod[] EMPTY_METHODARRAY= new ITestNGMethod[0];
   
-//  public static boolean isJUnitClass(Class cls) {
-//    return isAssignableFromTestCase(cls) || isAssignableFromTest(cls);
-//  }
-  
-//  public static boolean isAssignableFromTestCase(Class cls) {
-//    boolean result = false;
-//    
-//    try {
-//      result = TestCase.class.isAssignableFrom(cls);
-//    }
-//    catch (NoClassDefFoundError ex) {
-//      // couldn't find JUnit classes, do nothing
-//    }
-//    
-//    return result;    
-//  }
-  
-//  public static boolean isAssignableFromTest(Class cls) {
-//    boolean result = false;
-//    
-//    try {
-//      result = Test.class.isAssignableFrom(cls);
-//    }
-//    catch (NoClassDefFoundError ex) {
-//      // couldn't find JUnit classes, do nothing
-//    }
-//    
-//    return result;    
-//  }
-
   /**
    * An <code>ITestNMethod</code> implementation for test methods in JUnit.
    * 
