@@ -59,6 +59,7 @@ public final class TestNGCommandLineArgs {
   public static final String EXCLUDED_GROUPS_COMMAND_OPT = "-excludegroups";
   public static final String TESTRUNNER_FACTORY_COMMAND_OPT = "-testrunfactory";
   public static final String LISTENER_COMMAND_OPT = "-listener";
+  public static final String OBJECT_FACTORY_COMMAND_OPT = "-objectfactory";
   public static final String SUITE_DEF_OPT = "testng.suite.definitions";
   public static final String JUNIT_DEF_OPT = "-junit";
   public static final String SLAVE_OPT = "-slave";
@@ -173,6 +174,16 @@ public static Map parseCommandLine(final String[] originalArgv) {
         else {
           LOGGER.error("WARNING: missing ITestRunnerFactory class or file argument after "
               + TESTRUNNER_FACTORY_COMMAND_OPT);
+        }
+      }
+      else if (OBJECT_FACTORY_COMMAND_OPT.equalsIgnoreCase(argv[i])) {
+        if ((i + 1) < argv.length) {
+          Class cls = fileToClass(argv[++i]);
+          arguments.put(OBJECT_FACTORY_COMMAND_OPT, cls);
+        }
+        else {
+          LOGGER.error("WARNING: missing ITestListener class/file list argument after "
+              + LISTENER_COMMAND_OPT);
         }
       }
       else if (LISTENER_COMMAND_OPT.equalsIgnoreCase(argv[i])) {

@@ -1,6 +1,5 @@
 package org.testng.internal.annotations;
 
-import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -155,7 +154,7 @@ public class AnnotationHelper {
     IFactory.class, IParameters.class, 
     IBeforeSuite.class, IAfterSuite.class,
     IBeforeTest.class, IAfterTest.class,
-    IBeforeGroups.class, IAfterGroups.class,
+    IBeforeGroups.class, IAfterGroups.class
   };
   
   public static Class[] CONFIGURATION_CLASSES = new Class[] {
@@ -169,8 +168,8 @@ public class AnnotationHelper {
 
   public static Class[] getAllAnnotations() {
     return ALL_ANNOTATIONS;
-  };  
-  
+  }
+
   /**
    * Delegation method for creating the list of <CODE>ITestMethod</CODE>s to be
    * analysed.
@@ -237,7 +236,7 @@ public class AnnotationHelper {
     catch (SecurityException e) {
       e.printStackTrace();
     }
-    ITestNGMethod[] result = (ITestNGMethod[]) vResult.values().toArray(new ITestNGMethod[vResult.size()]);
+    ITestNGMethod[] result = vResult.values().toArray(new ITestNGMethod[vResult.size()]);
       
   //    for (Method m : result) {
   //      ppp("   METHOD FOUND: " + m);
@@ -273,7 +272,7 @@ public class AnnotationHelper {
   private static String createMethodKey(Method m) {
     StringBuffer result = new StringBuffer(m.getName());
     for (Class paramClass : m.getParameterTypes()) {
-      result.append(" ").append(paramClass.toString());
+      result.append(' ').append(paramClass.toString());
     }
     
     return result.toString();

@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import org.testng.IClass;
 import org.testng.ITestClassFinder;
+import org.testng.IObjectFactory;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
 
@@ -37,11 +38,12 @@ abstract public class BaseClassFinder implements ITestClassFinder {
    */
   protected IClass findOrCreateIClass(Class cls, Object instance,
       XmlTest xmlTest,
-      IAnnotationFinder annotationFinder)
+      IAnnotationFinder annotationFinder,
+      IObjectFactory objectFactory)
   {
     IClass result = m_classes.get(cls);
     if (null == result) {
-      result = new ClassImpl(cls, instance, m_classes, xmlTest, annotationFinder);
+      result = new ClassImpl(cls, instance, m_classes, xmlTest, annotationFinder, objectFactory);
       m_classes.put(cls, result);
     }
 

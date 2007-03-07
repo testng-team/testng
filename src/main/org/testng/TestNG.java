@@ -1,8 +1,6 @@
 package org.testng;
 
 
-import static org.testng.TestNG.usage;
-
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,7 +29,6 @@ import org.testng.internal.ClassHelper;
 import org.testng.internal.HostFile;
 import org.testng.internal.IResultListener;
 import org.testng.internal.Invoker;
-import org.testng.internal.MethodSelectorDescriptor;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -172,7 +169,8 @@ public class TestNG {
   
   private Map<String, Integer> m_methodDescriptors = new HashMap<String, Integer>();
 
-
+  private IObjectFactory m_objectFactory;
+  
   /**
    * Default constructor. Setting also usage of default listeners/reporters.
    */
@@ -546,6 +544,9 @@ public class TestNG {
     m_testRunnerFactory= itrf;
   }
   
+  public void setObjectFactory(Class c) {
+    m_objectFactory = (IObjectFactory)ClassHelper.newInstance(c);
+  }
   
   /**
    * Define which listeners to user for this run.
@@ -864,6 +865,7 @@ public class TestNG {
           tmpSuite.setParameters(suite.getParameters());
           tmpSuite.setThreadCount(suite.getThreadCount());
           tmpSuite.setVerbose(suite.getVerbose());
+          tmpSuite.setObjectFactory(suite.getObjectFactory());
           XmlTest tmpTest = new XmlTest(tmpSuite);
           tmpTest.setAnnotations(test.getAnnotations());
           tmpTest.setBeanShellExpression(test.getExpression());
@@ -967,7 +969,7 @@ public class TestNG {
         m_outputDir, 
         m_testRunnerFactory, 
         m_useDefaultListeners, 
-        new IAnnotationFinder[] {m_javadocAnnotationFinder, m_jdkAnnotationFinder});
+        new IAnnotationFinder[] {m_javadocAnnotationFinder, m_jdkAnnotationFinder}, m_objectFactory);
 
     for (ISuiteListener isl : m_suiteListeners) {
       result.addListener(isl);
@@ -1100,6 +1102,11 @@ public class TestNG {
     List<Class> listenerClasses = (List<Class>) cmdLineArgs.get(TestNGCommandLineArgs.LISTENER_COMMAND_OPT);
     if (null != listenerClasses) {
       setListenerClasses(listenerClasses);
+    }
+    
+    Class objectFactory = (Class) cmdLineArgs.get(TestNGCommandLineArgs.OBJECT_FACTORY_COMMAND_OPT);
+    if(null != objectFactory) {
+      setObjectFactory(objectFactory);
     }
   }
 

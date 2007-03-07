@@ -12,7 +12,6 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -25,12 +24,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.testng.IClass;
-import org.testng.IResultMap;
-import org.testng.ITestNGMethod;
-import org.testng.TestNGCommandLineArgs;
-import org.testng.TestNGException;
-import org.testng.TestRunner;
+import org.testng.*;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IConfiguration;
@@ -145,7 +139,7 @@ public final class Utils {
    * Writes the content of the sb string to the file named filename in outDir. If 
    * outDir does not exist, it is created.
    *
-   * @param outDir the output directory (may not exist). If <tt>null</tt> then current directory is used.
+   * @param outputDir the output directory (may not exist). If <tt>null</tt> then current directory is used.
    * @param fileName the filename
    * @param sb the file content
    */
@@ -231,9 +225,6 @@ public final class Utils {
   }
 
   /**
-   *
-   * @param cls
-   * @param m
    * @return The list of dependent groups for this method, including the
    * class groups
    */
@@ -264,9 +255,6 @@ public final class Utils {
   }
 
   /**
-   *
-   * @param cls
-   * @param m
    * @return The list of groups this method belongs to, including the
    * class groups
    */
@@ -297,9 +285,6 @@ public final class Utils {
   }
 
   /**
-   *
-   * @param cls
-   * @param m
    * @return The list of groups this method belongs to, including the
    * class groups
    */
@@ -316,9 +301,6 @@ public final class Utils {
   }
 
   /**
-   *
-   * @param cls
-   * @param m
    * @return The list of groups this method depends on, including the
    * class groups
    */
@@ -354,7 +336,7 @@ public final class Utils {
     // Why this coupling on a static member of TestRunner.getVerbose()?
     if (TestRunner.getVerbose() >= level) {
       if (cls.length() > 0) {
-        System.out.println("[" + cls + "] " + msg);
+        System.out.println('[' + cls + "] " + msg);
       }
       else {
         System.out.println(msg);
@@ -394,15 +376,13 @@ public final class Utils {
 
   /**
    * Create an instance for the given class.
-   *
-   * @param declaringClass
-   * @return
    */
   public static Object createInstance(Class declaringClass,
                                       Map<Class, IClass> classes,
                                       XmlTest xmlTest,
-                                      IAnnotationFinder finder) {
-    Object result = null;
+                                      IAnnotationFinder finder,
+                                      IObjectFactory objectFactory) {
+    Object result;
 
     try {
 
@@ -420,7 +400,7 @@ public final class Utils {
                                                           parameterNames,
                                                           xmlTest.getParameters(),
                                                           xmlTest.getSuite());
-        result = constructor.newInstance(parameters);
+        result = objectFactory.newInstance(constructor, parameters);
       }
 
       //
@@ -443,11 +423,11 @@ public final class Utils {
           // Create an instance of the enclosing class so we can instantiate
           // the nested class (actually, we reuse the existing instance).
           IClass enclosingIClass = classes.get(ec);
-          Object[] enclosingInstances = null;
+          Object[] enclosingInstances;
           if (null != enclosingIClass) {
             enclosingInstances = enclosingIClass.getInstances(false);
             if ((null == enclosingInstances) || (enclosingInstances.length == 0)) {
-              Object o = ec.newInstance();
+              Object o = objectFactory.newInstance(ec.getConstructor(parameterTypes));
               enclosingIClass.addInstance(o);
               enclosingInstances = new Object[] { o };
             }
@@ -461,25 +441,14 @@ public final class Utils {
           parameters = new Object[] { enclosingClassInstance };
         } // isStatic
         Constructor ct = declaringClass.getDeclaredConstructor(parameterTypes);
-        result = ct.newInstance(parameters);
+        result = objectFactory.newInstance(ct, parameters);
       }
     }
     catch (TestNGException ex) {
       // We need to pass this along
       throw ex;
     }
-    catch (InvocationTargetException ex) {
-//      ppp("FAILED TO CREATE CLASS " + declaringClass);
-      throw new TestNGException("Cannot instantiate class " + declaringClass.getName(), ex);
-//      result = tryOtherConstructor(declaringClass);
-    }
-    catch (IllegalAccessException ex) {
-      result = tryOtherConstructor(declaringClass);
-    }
     catch (NoSuchMethodException ex) {
-      result = tryOtherConstructor(declaringClass);
-    }
-    catch (InstantiationException ex) {
       result = tryOtherConstructor(declaringClass);
     }
     catch (Throwable cause) {
@@ -512,8 +481,8 @@ public final class Utils {
     return result;
   }
 
-  private static Object tryOtherConstructor(Class declaringClass) {
-    Object result = null;
+  public static Object tryOtherConstructor(Class declaringClass) {
+    Object result;
     try {
       Constructor ctor = declaringClass.getConstructor(new Class[] { String.class });
       result = ctor.newInstance(new Object[] { "Default test name" });
@@ -610,20 +579,20 @@ public final class Utils {
     if (n >= 0) {
       clsName = clsName.substring(n + 1);
     }
-    String methodName = clsName + "." + thisMethod.getName();
+    String methodName = clsName + '.' + thisMethod.getName();
     if (TestRunner.getVerbose() >= 2) {
       StringBuffer paramString = new StringBuffer();
       if (parameters != null) {
         for (Object p : parameters) {
-          paramString.append(p.toString()).append(" ");
+          paramString.append(p.toString()).append(' ');
         }
       }
-      log("", 2, "Invoking " + reason + methodName + "(" + paramString + ")");
+      log("", 2, "Invoking " + reason + methodName + '(' + paramString + ')');
     }
   }
 
   public static void writeResourceToFile(File file, String resourceName, Class<?> clasz) throws IOException {
-    InputStream inputStream = clasz.getResourceAsStream("/" + resourceName);
+    InputStream inputStream = clasz.getResourceAsStream('/' + resourceName);
     if (inputStream == null) {
       System.err.println("Couldn't find resource on the class path: " + resourceName);
 //      throw new IllegalArgumentException("Resource does not exist: " + resourceName);
@@ -659,7 +628,7 @@ public final class Utils {
     pw.flush();
     
     String fullStackTrace = sw.getBuffer().toString();
-    String shortStackTrace = null;
+    String shortStackTrace;
     
     if (Boolean.getBoolean(TestNGCommandLineArgs.SHOW_TESTNG_STACK_FRAMES)
         || TestRunner.getVerbose() == -1) {
@@ -738,7 +707,7 @@ public final class Utils {
       return "\"\"";
     }
     else if (String.class.equals(objectClass)) {
-      return "\"" + toString + "\"";
+      return '\"' + toString + '\"';
     }
     else {
       return toString;

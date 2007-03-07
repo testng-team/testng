@@ -15,6 +15,7 @@ import junit.framework.TestSuite;
 import org.testng.IClass;
 import org.testng.internal.BaseClassFinder;
 import org.testng.internal.Utils;
+import org.testng.internal.ObjectFactoryImpl;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
 
@@ -36,7 +37,9 @@ public class JUnitClassFinder extends BaseClassFinder {
     Collection<Class> allClasses = invokeSuite(classes);
     
     for (Class cls : allClasses) {
-      IClass ic = findOrCreateIClass(cls, null, xmlTest, finder);
+      //we don't use any specified object factory since we want to simulate junit behavior,
+      //so no injection or custom test instance creation
+      IClass ic = findOrCreateIClass(cls, null, xmlTest, finder, new ObjectFactoryImpl());
       Utils.log("JUnitClassFinder", 3, "Looking up ClassFinder for " + cls + " " + cls.hashCode() + " " + finder.hashCode());
       if (null != ic) {
         putIClass(cls, ic);

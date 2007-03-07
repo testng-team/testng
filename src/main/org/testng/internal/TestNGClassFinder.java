@@ -9,9 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.testng.IClass;
-import org.testng.IInstanceInfo;
-import org.testng.ITestContext;
+import org.testng.*;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotation;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -43,6 +41,33 @@ public class TestNGClassFinder extends BaseClassFinder {
     //
     Class[] allClasses= classes;
 
+    
+    IObjectFactory objectFactory = testContext.getSuite().getObjectFactory();
+    //very first pass is to find ObjectFactory, can't create anything else until then
+    if(objectFactory == null) {
+      objectFactory = new ObjectFactoryImpl();
+      outer:
+      for(Class cls : allClasses) {
+        for(Method m : cls.getMethods()) {
+          IAnnotation a = annotationFinder.findAnnotation(m, org.testng.internal.annotations.IObjectFactory.class);
+          if(null != a) {
+            if(!org.testng.IObjectFactory.class.isAssignableFrom(m.getReturnType())) {
+              throw new TestNGException("Return type of " + m + " is not IObjectFactory");
+            }
+            try {
+              Object instance = cls.newInstance();
+              instanceMap.put(cls, java.util.Arrays.asList(instance));
+              objectFactory = (IObjectFactory)m.invoke(instance);
+              break outer;
+            }
+            catch(Exception ex) {
+              throw new TestNGException("Error creating object factory", ex);
+            }
+          }
+        }
+      }
+    }
+    
     for(Class cls : allClasses) {
       if((null == cls)) {
         ppp("FOUND NULL CLASS IN FOLLOWING ARRAY:");
@@ -64,7 +89,8 @@ public class TestNGClassFinder extends BaseClassFinder {
           continue;
         }
         
-        IClass ic= findOrCreateIClass(cls, thisInstance, xmlTest, annotationFinder);
+        IClass ic= findOrCreateIClass(cls, thisInstance, xmlTest, annotationFinder, 
+                                      objectFactory);
         if(null != ic) {
           Object[] theseInstances = ic.getInstances(false);
           if (theseInstances.length == 0) {

@@ -22,6 +22,7 @@ public class JDK14TagFactory {
   // Some of these variables are used in the Eclipse plug-in
   static public final String CONFIGURATION = "testng.configuration";
   static public final String FACTORY = "testng.factory";
+  static public final String OBJECT_FACTORY = "testng.object-factory";
   static public final String TEST = "testng.test";
   static public final String EXPECTED_EXCEPTIONS = "testng.expected-exceptions";
   static public final String DATA_PROVIDER = "testng.data-provider";
@@ -43,6 +44,7 @@ public class JDK14TagFactory {
     m_annotationMap.put(IDataProvider.class, DATA_PROVIDER);
     m_annotationMap.put(IExpectedExceptions.class, EXPECTED_EXCEPTIONS);
     m_annotationMap.put(IFactory.class, FACTORY);
+    m_annotationMap.put(IObjectFactory.class, OBJECT_FACTORY);
     m_annotationMap.put(IParameters.class, PARAMETERS);
     m_annotationMap.put(ITest.class, TEST);
     m_annotationMap.put(IBeforeSuite.class, BEFORE_SUITE);
@@ -94,6 +96,9 @@ public class JDK14TagFactory {
     }
     else if (annotationClass == IFactory.class) {
       result = createFactoryTag(dt);
+    }
+    else if (annotationClass == IObjectFactory.class) {
+      result = createObjectFactoryTag(dt);
     }
     else if (annotationClass == IParameters.class) {
       result = createParametersTag(dt);
@@ -431,6 +436,10 @@ public class JDK14TagFactory {
         result.getValue()));
     
     return result;
+  }
+  
+  private IAnnotation createObjectFactoryTag(DocletTag dt) {
+    return new ObjectFactoryAnnotation();
   }
   
   private IAnnotation createFactoryTag(DocletTag dt) {

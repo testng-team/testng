@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.testng.IClass;
+import org.testng.IObjectFactory;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
 
@@ -23,15 +24,17 @@ public class ClassImpl implements IClass {
   private int m_instanceCount;
   private long[] m_instanceHashCodes;
   private Object m_instance;
-  
+  private IObjectFactory m_objectFactory;
+
   public ClassImpl(Class cls, Object instance, Map<Class, IClass> classes,
-      XmlTest xmlTest, IAnnotationFinder annotationFinder) 
+      XmlTest xmlTest, IAnnotationFinder annotationFinder, IObjectFactory objectFactory) 
   {
     m_class = cls;
     m_classes = classes;
     m_xmlTest = xmlTest;
     m_annotationFinder = annotationFinder;
     m_instance = instance;
+    m_objectFactory = objectFactory;
   }
   
   private static void ppp(String s) {
@@ -58,7 +61,7 @@ public class ClassImpl implements IClass {
     if (m_defaultInstance == null) {
       m_defaultInstance = 
         m_instance != null ? m_instance : 
-          Utils.createInstance(m_class, m_classes, m_xmlTest, m_annotationFinder);
+          Utils.createInstance(m_class, m_classes, m_xmlTest, m_annotationFinder, m_objectFactory);
     }
     
     return m_defaultInstance;
@@ -70,7 +73,7 @@ public class ClassImpl implements IClass {
     if (m_xmlTest.isJUnit()) {
       if (create) {
         result = new Object[] { 
-          Utils.createInstance(m_class, m_classes, m_xmlTest, m_annotationFinder) 
+          Utils.createInstance(m_class, m_classes, m_xmlTest, m_annotationFinder, m_objectFactory) 
         };
       }
 //      else {

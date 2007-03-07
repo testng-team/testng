@@ -57,6 +57,8 @@ public class SuiteRunner implements ISuite, Serializable {
   transient private IAnnotationFinder m_javadocAnnotationFinder;
   transient private IAnnotationFinder m_jdkAnnotationFinder;
   
+  transient private IObjectFactory m_objectFactory;
+  
 //  transient private IAnnotationTransformer m_annotationTransformer = null;
 
   public SuiteRunner(XmlSuite suite, String outputDir, IAnnotationFinder[] finders) 
@@ -76,14 +78,24 @@ public class SuiteRunner implements ISuite, Serializable {
                      boolean useDefaultListeners,
                      IAnnotationFinder[] finders)
   {
-    init(suite, outputDir, runnerFactory, useDefaultListeners, finders);
+    this(suite, outputDir, runnerFactory, useDefaultListeners, finders, null);
+  }
+  
+  public SuiteRunner(XmlSuite suite, 
+                     String outputDir, 
+                     ITestRunnerFactory runnerFactory, 
+                     boolean useDefaultListeners,
+                     IAnnotationFinder[] finders,
+                     IObjectFactory factory)
+  {
+    init(suite, outputDir, runnerFactory, useDefaultListeners, finders, factory);
   }
   
   private void init(XmlSuite suite, 
                     String outputDir, 
                     ITestRunnerFactory runnerFactory, 
                     boolean useDefaultListeners,
-                    IAnnotationFinder[] finders)
+                    IAnnotationFinder[] finders, IObjectFactory factory)
   {
     m_suite = suite;
     m_useDefaultListeners = useDefaultListeners;
@@ -97,6 +109,10 @@ public class SuiteRunner implements ISuite, Serializable {
       }
     }
     setOutputDir(outputDir);
+    m_objectFactory = factory;
+    if(m_objectFactory == null) {
+      m_objectFactory = suite.getObjectFactory();
+    }
   }
   
   public XmlSuite getXmlSuite() {
@@ -105,6 +121,11 @@ public class SuiteRunner implements ISuite, Serializable {
 
   public String getName() {
     return m_suite.getName();
+  }
+
+  public void setObjectFactory(IObjectFactory objectFactory)
+  {
+    this.m_objectFactory = objectFactory;
   }
 
   public void setTestListeners(List<ITestListener> testlisteners) {
@@ -382,6 +403,11 @@ public class SuiteRunner implements ISuite, Serializable {
     }
 
     return result;
+  }
+
+  public IObjectFactory getObjectFactory()
+  {
+    return m_objectFactory;
   }
 
   /**

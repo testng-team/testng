@@ -20,6 +20,7 @@ import org.testng.annotations.Configuration;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Factory;
+import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
@@ -43,6 +44,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     m_annotationMap.put(IDataProvider.class, DataProvider.class);
     m_annotationMap.put(IExpectedExceptions.class, ExpectedExceptions.class);
     m_annotationMap.put(IFactory.class, Factory.class);
+    m_annotationMap.put(IObjectFactory.class, ObjectFactory.class);
     m_annotationMap.put(IParameters.class, Parameters.class);
     m_annotationMap.put(ITest.class, Test.class);
     m_annotationMap.put(IBeforeSuite.class, BeforeSuite.class);

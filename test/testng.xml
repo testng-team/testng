@@ -264,6 +264,12 @@
     </classes>
   </test>
 
+  <test name="Object factory">
+    <classes>
+      <class name="test.objectfactory.CustomFactoryTest" />
+    </classes>
+  </test>
+  
   <!-- Test parameters for constructors -->  
   <parameter name="string" value="Cedric" />
   <parameter name="int" value="42" />

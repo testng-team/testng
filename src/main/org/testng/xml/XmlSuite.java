@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.testng.TestNG;
+import org.testng.IObjectFactory;
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.version.VersionInfo;
 import org.testng.reporters.XMLStringBuffer;
@@ -86,6 +86,9 @@ public class XmlSuite implements Serializable, Cloneable {
 
   private List<String> m_suiteFiles = new ArrayList<String>();
 
+  private IObjectFactory m_objectFactory;
+  private static final long serialVersionUID = 4999962288272750226L;
+
   /**
    * @return the fileName
    */
@@ -106,6 +109,14 @@ public class XmlSuite implements Serializable, Cloneable {
    */
   public String getParallel() {
     return m_parallel;
+  }
+
+  public IObjectFactory getObjectFactory() {
+    return m_objectFactory;
+  }
+
+  public void setObjectFactory(IObjectFactory objectFactory) {
+    this.m_objectFactory = objectFactory;
   }
 
   /**
@@ -350,7 +361,7 @@ public class XmlSuite implements Serializable, Cloneable {
    */
   public String toXml() {
     XMLStringBuffer xsb = new XMLStringBuffer("");
-    xsb.setDocType("suite SYSTEM \"" + Parser.TESTNG_DTD_URL + "\"");
+    xsb.setDocType("suite SYSTEM \"" + Parser.TESTNG_DTD_URL + '\"');
     Properties p = new Properties();
     p.setProperty("name", getName());
     p.setProperty("verbose", getVerbose().toString());
@@ -358,10 +369,11 @@ public class XmlSuite implements Serializable, Cloneable {
     if(null != parallel && !"".equals(parallel)) {
       p.setProperty("parallel", parallel);
     }
-    p.setProperty("thread-count", "" + getThreadCount());
+    p.setProperty("thread-count", String.valueOf(getThreadCount()));
     p.setProperty("annotations", getAnnotations());
     p.setProperty("junit", m_isJUnit != null ? m_isJUnit.toString() : "false"); // TESTNG-141
-
+    if(null != m_objectFactory)
+      p.setProperty("object-factory", m_objectFactory.getClass().getName());
     xsb.push("suite", p);
 
     for (String paramName : m_parameters.keySet()) {
@@ -411,7 +423,7 @@ public class XmlSuite implements Serializable, Cloneable {
       result.append("  " + t.toString()).append(" ");
     }
 
-    result.append("]");
+    result.append(']');
 
     return result.toString();
   }
@@ -443,7 +455,7 @@ public class XmlSuite implements Serializable, Cloneable {
     result.setBeanShellExpression(getExpression());
     result.setMethodSelectors(getMethodSelectors());
     result.setJUnit(isJUnit()); // TESTNG-141
-
+    result.setObjectFactory(getObjectFactory());
     return result;
   }
 

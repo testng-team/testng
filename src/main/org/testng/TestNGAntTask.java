@@ -103,6 +103,8 @@ public class TestNGAntTask extends Task {
   private Integer m_timeout;
   protected Boolean m_isJUnit;
   private List<String> m_listeners= new ArrayList<String>();
+  private String m_objectFactory;
+  
   protected Environment m_environment= new Environment();
 
   /** The suite runner name (defaults to TestNG.class.getName(). */
@@ -208,7 +210,7 @@ public class TestNGAntTask extends Task {
 
   /**
    * The directory to invoke the VM in.
-   * @param   dir     the directory to invoke the JVM from.
+   * @param workingDir the directory to invoke the JVM from.
    */
   public void setWorkingDir(File workingDir) {
     m_workingDir= workingDir;
@@ -424,6 +426,10 @@ public class TestNGAntTask extends Task {
     m_listeners.add(listener);
   }
 
+  public void setObjectFactory(String className) {
+    m_objectFactory = className;
+  }
+  
   /**
    * @deprecated Use "listeners"
    */
@@ -530,11 +536,15 @@ public class TestNGAntTask extends Task {
       StringBuffer listeners= new StringBuffer();
       for(int i= 0; i < m_listeners.size(); i++) {
         listeners.append(m_listeners.get(i));
-        if(i < m_listeners.size() - 1) listeners.append(";");
+        if(i < m_listeners.size() - 1) listeners.append(';');
       }
       argv.add(listeners.toString());
     }
 
+    if(m_objectFactory != null) {
+      argv.add(TestNGCommandLineArgs.OBJECT_FACTORY_COMMAND_OPT);
+      argv.add(m_objectFactory);
+    }
     if(m_parallelMode != null) {
       argv.add(TestNGCommandLineArgs.PARALLEL_MODE);
       argv.add(m_parallelMode);
@@ -602,7 +612,7 @@ public class TestNGAntTask extends Task {
 
     createClasspath().setLocation(findJar());
 
-    cmd.createArgument().setValue("@" + fileName);
+    cmd.createArgument().setValue('@' + fileName);
 
     ExecuteWatchdog watchdog= createWatchdog();
     boolean wasKilled= false;
@@ -945,7 +955,7 @@ public class TestNGAntTask extends Task {
    */
   private static String doubleQuote(String pCommandLineArg) {
     if(pCommandLineArg.indexOf(" ") != -1 && !(pCommandLineArg.startsWith("\"") && pCommandLineArg.endsWith("\""))) {
-      return "\"" + pCommandLineArg + "\"";
+      return '\"' + pCommandLineArg + '\"';
     }
 
     return pCommandLineArg;

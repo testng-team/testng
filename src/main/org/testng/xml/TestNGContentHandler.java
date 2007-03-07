@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.testng.internal.Utils;
 import org.testng.internal.version.VersionInfo;
+import org.testng.IObjectFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -146,6 +147,15 @@ public class TestNGContentHandler extends DefaultHandler {
       String timeOut = attributes.getValue("time-out");
       if (null != timeOut) {
         m_currentSuite.setTimeOut(timeOut);
+      }
+      String objectFactory = attributes.getValue("object-factory");
+      if(null != objectFactory) {
+        try {
+          m_currentSuite.setObjectFactory((IObjectFactory)Class.forName(objectFactory).newInstance());
+        }
+        catch(Exception e) {
+          Utils.log("Parser", 1, "[ERROR] Unable to create custom object factory '" + objectFactory + "' :" + e);
+        }
       }
     }
     else {

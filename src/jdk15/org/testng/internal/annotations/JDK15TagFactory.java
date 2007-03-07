@@ -6,22 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.testng.TestNGException;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterGroups;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeGroups;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Configuration;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.ExpectedExceptions;
-import org.testng.annotations.Factory;
-import org.testng.annotations.Parameters;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 /**
  * This class creates implementations of IAnnotations based on the JDK5
@@ -52,6 +37,9 @@ public class JDK15TagFactory {
       }
       else if (annotationClass == IParameters.class) {      
         result = createParametersTag(a);
+      }
+      else if (annotationClass == IObjectFactory.class) {      
+        result = createObjectFactoryTag(a);
       }
       else if (annotationClass == ITest.class) {      
         result = createTestTag(cls, a, transformer);
@@ -304,6 +292,10 @@ public class JDK15TagFactory {
     return result;
   }
 
+  private IAnnotation createObjectFactoryTag(Annotation a) {
+    return new ObjectFactoryAnnotation();
+  }
+  
   private IAnnotation createParametersTag(Annotation a) {
     ParametersAnnotation result = new ParametersAnnotation();
     Parameters c = (Parameters) a;

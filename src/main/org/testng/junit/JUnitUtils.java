@@ -4,11 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.testng.IClass;
-import org.testng.ITestClass;
-import org.testng.ITestNGMethod;
-import org.testng.TestNGException;
-import org.testng.TestRunner;
+import org.testng.*;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -430,10 +426,6 @@ public class JUnitUtils {
       m_instanceHashes= new long[] {test.hashCode()};
     }
     
-    /**
-     * 
-     * @param method
-     */
     List<ITestNGMethod> getTestMethodList() {
       return m_testMethods;
     }
@@ -452,9 +444,6 @@ public class JUnitUtils {
       return m_instanceHashes;
     }
 
-    /**
-     * @see org.testng.ITestClass#getInstances(boolean)
-     */
     public Object[] getInstances(boolean reuse) {
       return m_instances;
     }

@@ -26,6 +26,11 @@ public interface ISuite {
   public Map<String, ISuiteResult> getResults();
 
   /**
+   * @return The object factory used to create all test instances.
+   */
+  public IObjectFactory getObjectFactory();
+  
+  /**
    * @return The output directory used for the reports.
    */
   public String getOutputDirectory();
