@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -121,6 +120,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   // The host where this test was run, or null if run locally
   private String m_host;
 
+  private Map<String, Object> m_attributes = new HashMap<String, Object>();
+  
   public TestRunner(ISuite suite,
                     XmlTest test,
                     String outputDirectory,
@@ -190,6 +191,14 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
 
   public ITestNGMethod[] getAfterTestConfigurationMethods() {
     return m_afterXmlTestMethods;
+  }
+
+  public Object getAttribute(String name) {
+    return m_attributes.get(name);
+  }
+
+  public void setAttribute(String name, Object value) {
+    m_attributes.put(name, value);
   }
 
   private void init() {

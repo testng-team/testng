@@ -48,6 +48,14 @@ public class CustomFactoryTest
     assert LoggingObjectFactory.invoked == 1 : "Logging factory invoked " + LoggingObjectFactory.invoked + " times";    
   }
   
+  @Test
+  public void factoryReceivesContext() {
+    XmlSuite suite = TestHelper.createSuite("test.objectfactory.Simple", "objectfactory");
+    suite.getTests().get(0).getXmlClasses().add(new XmlClass("test.objectfactory.ContextAwareFactoryFactory"));
+    TestNG tng = TestHelper.createTestNG(suite);
+    tng.run();
+  }
+  
   @Test(expectedExceptions = TestNGException.class)
   public void setInvalidMethodFactoryByAnnotation() {
     XmlSuite suite = TestHelper.createSuite("test.objectfactory.Simple", "objectfactory");

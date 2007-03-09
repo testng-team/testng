@@ -45,7 +45,6 @@ public class TestNGClassFinder extends BaseClassFinder {
     //
     Class[] allClasses= classes;
 
-    
     IObjectFactory objectFactory = testContext.getSuite().getObjectFactory();
     //very first pass is to find ObjectFactory, can't create anything else until then
     if(objectFactory == null) {
@@ -61,7 +60,11 @@ public class TestNGClassFinder extends BaseClassFinder {
             try {
               Object instance = cls.newInstance();
               instanceMap.put(cls, java.util.Arrays.asList(instance));
-              objectFactory = (IObjectFactory)m.invoke(instance);
+              if(m.getParameterTypes().length > 0 && m.getParameterTypes()[0].equals(ITestContext.class)) {
+                objectFactory = (IObjectFactory)m.invoke(instance, testContext);
+              } else {
+                objectFactory = (IObjectFactory)m.invoke(instance);
+              }
               break outer;
             }
             catch(Exception ex) {

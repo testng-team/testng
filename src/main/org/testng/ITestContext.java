@@ -3,7 +3,6 @@ package org.testng;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Map;
 
 
 /**
@@ -22,6 +21,17 @@ public interface ITestContext extends Serializable {
    */
   public String getName();
 
+  /**
+   * Return a context attribute
+   * @param name The name of the attribute to return
+   */
+  public Object getAttribute(String name);
+
+  /**
+   * Set a custom attribute in the current context
+   */
+  public void setAttribute(String name, Object value);
+  
   /**
    * When this test started running.
    */
