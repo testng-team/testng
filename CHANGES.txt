@@ -1,6 +1,7 @@
 ===========================================================================
 5.6
 
+Added: get/setAttribute to ITestContext
 Added: plugging in factory objects to handle the actual instantiation of tests
 Added: dataProvider to @Factory
 Added: ISuite now gives access to the current XmlSuite
