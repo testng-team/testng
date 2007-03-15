@@ -134,7 +134,7 @@ public class MethodInheritance {
       
       boolean isEqual = c1 == null ? c2 == null : c1.equals(c2);
       
-      return isEqual && m1.getMethod().equals(m2.getMethod());
+      return isEqual; // && m1.getMethod().equals(m2.getMethod());
     }
     catch(Exception ex) {
       return false;
