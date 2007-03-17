@@ -19,4 +19,8 @@ public class MethodInstance {
     return m_instances;
   }
   
+  public String toString() {
+    return "[MethodInstance m:" + m_method + " i:" + m_instances[0];
+  }
+  
 }
