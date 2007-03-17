@@ -29,7 +29,7 @@ public class Assert {
    */
   static public void assertTrue(boolean condition, String message) {
     if(!condition) {
-      failNotEquals(new Boolean(condition), new Boolean(true), message);
+      failNotEquals( Boolean.valueOf(condition), Boolean.TRUE, message);
     }
   }
   
@@ -50,7 +50,7 @@ public class Assert {
    */
   static public void assertFalse(boolean condition, String message) {
     if(condition) {
-      failNotEquals(new Boolean(condition), new Boolean(false), message); // TESTNG-81
+      failNotEquals( Boolean.valueOf(condition), Boolean.FALSE, message); // TESTNG-81
     }
   }
   
@@ -236,7 +236,7 @@ public class Assert {
    * @param message the assertion error message 
    */
   static public void assertEquals(boolean actual, boolean expected, String message) {
-    assertEquals(new Boolean(actual), new Boolean(expected), message);
+    assertEquals( Boolean.valueOf(actual), Boolean.valueOf(expected), message);
   }
   
   /**
