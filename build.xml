@@ -105,6 +105,9 @@
         <include name="junit.jar" />
         <include name="${qdox.jar}" />
       	<include name="${concurrent.jar}" />
+      	<include name="${gigaspaces.jar}"/>
+      	<include name="${jinilib.jar}"/>
+      	<include name="${jiniplatform.jar}"/>	
       </fileset>
     </path>
 
