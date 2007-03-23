@@ -129,8 +129,12 @@
         <include name="junit.jar" />
         <include name="${qdox.jar}" />
         <include name="${beanshell.jar}" />
+      	<include name="${gigaspaces.jar}"/>
+      	<include name="${jinilib.jar}"/>
+      	<include name="${jiniplatform.jar}"/>	
       </fileset>
     </path>
+  	<echo message="${compile2.cp}" />
 
     <javac classpathref="compile2.cp"
            verbose="false"
