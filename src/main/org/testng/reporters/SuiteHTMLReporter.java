@@ -57,6 +57,7 @@ public class SuiteHTMLReporter implements IReporter {
       // Generate the various reports
       //
       XmlSuite xmlSuite = xmlSuites.get(i);
+      if (xmlSuite.getTests().size() == 0) continue;
       ISuite suite = suites.get(i);
       generateTableOfContents(xmlSuite, suite);
       generateSuites(xmlSuite, suite);
@@ -109,6 +110,8 @@ public class SuiteHTMLReporter implements IReporter {
     
     StringBuffer suiteBuf= new StringBuffer();
     for (ISuite suite : suites) {
+      if (suite.getResults().size() == 0) continue;
+      
       String name = suite.getName();
     
       int failedTests= 0;

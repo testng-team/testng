@@ -1,6 +1,7 @@
 ===========================================================================
 5.6
 
+Added: Suite files that only contain other suites do not get reported
 Fixed: @BeforeClass methods would incorrectly report cyclic graphs
 Added: get/setAttribute to ITestContext
 Added: plugging in factory objects to handle the actual instantiation of tests
