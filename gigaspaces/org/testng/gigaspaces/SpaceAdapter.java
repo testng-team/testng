@@ -25,58 +25,66 @@ import com.j_spaces.core.client.FinderException;
 import com.j_spaces.core.client.LocalTransactionManager;
 import com.j_spaces.core.client.SpaceFinder;
 
+
 /**
  * @author	Guy Korland
  * @version	1.0
  */
 public class SpaceAdapter
 {
-	final private TestNG _testNG;
-	final IJSpace _space;
+	final private TestNG				_testNG;
+	final IJSpace						_space;
 
-	final private static XmlSuite _suiteTemplate = createTemplate(); 
 
-	public SpaceAdapter( String url, TestNG testNG) throws FinderException
+	public SpaceAdapter(String url, TestNG testNG) throws FinderException
 	{
-		_space = (IJSpace)SpaceFinder.find(url);
-		_testNG 	= testNG;
+		_space = (IJSpace) SpaceFinder.find(url);
+		_testNG = testNG;
 	}
 
 	public void waitForSuites()
 	{
-		try {
+		SuiteEntry suiteTemplate	= new SuiteEntry();
+		try
+		{
 			TransactionManager tm = LocalTransactionManager.getInstance(_space);
-			while (true) {
+			while (true)
+			{
 				Transaction txn = TransactionFactory.create(tm, 100000).transaction;
-				XmlSuite suite = (XmlSuite)_space.read( _suiteTemplate, txn, Long.MAX_VALUE);
+				SuiteEntry entry = (SuiteEntry) _space.read(suiteTemplate, txn, Long.MAX_VALUE);
+				XmlSuite suite = entry.getSuite();
 
 				ArrayList<XmlSuite> suites = new ArrayList<XmlSuite>();
-				suites.add( suite);
-				_testNG.setXmlSuites( suites);
+				suites.add(suite);
+				_testNG.setXmlSuites(suites);
 				List<ISuite> suiteRunners = _testNG.runSuitesLocally();
-				for( ISuite sr : suiteRunners)
+				for (ISuite sr : suiteRunners)
 				{
-					_space.write( new ResultEntry( sr), txn, Lease.FOREVER);
+					_space.write(new ResultEntry(sr), txn, Lease.FOREVER);
 				}
 
 				txn.commit();
 			}
 		}
-		catch(Exception ex) {
+		catch (Exception ex)
+		{
 			ex.printStackTrace(System.out);
 		}
 	}
 
-	public List<ISuite> runSuitesRemotely( List<XmlSuite> suites, IAnnotationFinder javadocAnnotationFinder,
-	                                       IAnnotationFinder jdkAnnotationFinder) throws Exception 
-	                                       {
+	public List<ISuite> runSuitesRemotely(List<XmlSuite> suites,
+			IAnnotationFinder javadocAnnotationFinder,
+			IAnnotationFinder jdkAnnotationFinder) throws Exception
+	{
 
 		int tests = 0;
-		for (XmlSuite suite : suites) {
-			SuiteRunner suiteRunner = 
-				new SuiteRunner(suite, _testNG.getOutputDirectory(),
-				                new IAnnotationFinder[] {javadocAnnotationFinder, jdkAnnotationFinder});
-			for (XmlTest test : suite.getTests()) {
+		for (XmlSuite suite : suites)
+		{
+			SuiteRunner suiteRunner = new SuiteRunner(suite, _testNG
+					.getOutputDirectory(), new IAnnotationFinder[] {
+					javadocAnnotationFinder, jdkAnnotationFinder });
+			for (XmlTest test : suite.getTests())
+			{
 				XmlSuite tmpSuite = new XmlSuite();
 				tmpSuite.setXmlPackages(suite.getXmlPackages());
 				tmpSuite.setAnnotations(suite.getAnnotations());
@@ -106,29 +114,36 @@ public class SpaceAdapter
 				++tests;
 				_space.write(tmpSuite, null, Lease.FOREVER);
 			}
-		}        
+		}
 
 		ResultEntry resultTemplate = new ResultEntry();
 		List<ISuite> result = new ArrayList<ISuite>();
-		for( int i=0 ; i<tests ; ++i)
+		for (int i = 0; i < tests; ++i)
 		{
-			ResultEntry rs = (ResultEntry)_space.take( resultTemplate, null, Long.MAX_VALUE);
+			ResultEntry rs = (ResultEntry) _space.take(resultTemplate, null,
+																		Long.MAX_VALUE);
 			result.add(rs.getSuite());
 		}
 
 		//
 		// Run test listeners
 		//
-		for (ISuite suite : result) {
-			for (ISuiteResult suiteResult : suite.getResults().values()) {
+		for (ISuite suite : result)
+		{
+			for (ISuiteResult suiteResult : suite.getResults().values())
+			{
 				Collection<ITestResult> allTests[] = new Collection[] {
 						suiteResult.getTestContext().getPassedTests().getAllResults(),
-						suiteResult.getTestContext().getFailedTests().getAllResults(),  
-						suiteResult.getTestContext().getSkippedTests().getAllResults(),  
-						suiteResult.getTestContext().getFailedButWithinSuccessPercentageTests().getAllResults(),  
-				};
-				for (Collection<ITestResult> all : allTests) {
-					for (ITestResult tr : all) {
+						suiteResult.getTestContext().getFailedTests().getAllResults(),
+						suiteResult.getTestContext().getSkippedTests()
+								.getAllResults(),
+						suiteResult.getTestContext()
+								.getFailedButWithinSuccessPercentageTests()
+								.getAllResults(), };
+				for (Collection<ITestResult> all : allTests)
+				{
+					for (ITestResult tr : all)
+					{
 						Invoker.runTestListeners(tr, _testNG.getTestListeners());
 					}
 				}
@@ -136,27 +151,6 @@ public class SpaceAdapter
 		}
 
 		return result;
-	                                       }
-
-
-	private static XmlSuite createTemplate()
-	{
-		XmlSuite template = new XmlSuite();
-		Method[] methods =  XmlSuite.class.getMethods();
-		for (Method method : methods)
-		{
-			if( method.getName().startsWith("set"))
-			{
-				try
-				{
-					method.invoke(template, (Object[])null);
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace( System.out);
-				}
-			}
-		}
-		return template;
 	}
+
 }
