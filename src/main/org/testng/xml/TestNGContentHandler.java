@@ -47,6 +47,7 @@ public class TestNGContentHandler extends DefaultHandler {
   private String m_currentLanguage = null;
   private String m_currentExpression = null;
   private List<String> m_suiteFiles = new ArrayList<String>();
+  private boolean m_enabledTest;
   
   private String m_fileName;
 
@@ -210,10 +211,9 @@ public class TestNGContentHandler extends DefaultHandler {
    */
   private void xmlTest(boolean start, Attributes attributes) {
     if (start) {
-      String name = attributes.getValue("name");
       m_currentTest = new XmlTest(m_currentSuite);
       m_currentTestParameters = new HashMap<String, String>();
-      m_currentTest.setName(name);
+      m_currentTest.setName(attributes.getValue("name"));
       String verbose = attributes.getValue("verbose");
       if (null != verbose) {
         m_currentTest.setVerbose(Integer.parseInt(verbose));
@@ -231,7 +231,7 @@ public class TestNGContentHandler extends DefaultHandler {
           m_currentTest.setParallel(parallel);
         }
         else {
-          Utils.log("Parser", 1, "[WARN] Unknown value of attribute 'parallel' for test '" + name + "': '" + parallel + "'");
+          Utils.log("Parser", 1, "[WARN] Unknown value of attribute 'parallel' for test '" + m_currentTest.getName() + "': '" + parallel + "'");
         }
       }
       String threadCount = attributes.getValue("thread-count");
@@ -243,6 +243,10 @@ public class TestNGContentHandler extends DefaultHandler {
         m_currentTest.setAnnotations(annotations);
       }
       m_inTest = true;
+      String enabledTestString = attributes.getValue("enabled");
+      if(null != enabledTestString) {
+        m_enabledTest = Boolean.valueOf(enabledTestString);
+      }
     }
     else {
       if (null != m_currentTestParameters && m_currentTestParameters.size() > 0) {
@@ -255,6 +259,10 @@ public class TestNGContentHandler extends DefaultHandler {
       m_currentTest = null;
       m_currentTestParameters = null;
       m_inTest = false;
+      if(!m_enabledTest) {
+        List<XmlTest> tests= m_currentSuite.getTests();
+        tests.remove(tests.size() - 1);
+      }
     }
   }
 

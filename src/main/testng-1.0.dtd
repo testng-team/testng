@@ -100,8 +100,9 @@
 	annotations:  (javadoc|JDK5)  If "javadoc", TestNG will look for
 							  JavaDoc annotations in your sources, otherwise it will
                 use JDK5 annotations. Default value: JDK5
-	timeout:      the time to wait in milliseconds before aborting
-							  the method (if parallel="methods") or the test (if parallel="tests") 
+	time-out:     the time to wait in milliseconds before aborting
+							  the method (if parallel="methods") or the test (if parallel="tests")
+	enabled:      flag to enable/disable current test. Default value: true 
 -->
 <!ATTLIST test
     name CDATA #REQUIRED 
@@ -111,6 +112,7 @@
     thread-count CDATA #IMPLIED
     annotations CDATA #IMPLIED
     time-out CDATA #IMPLIED
+	  enabled CDATA #IMPLIED
 >
 
 <!-- Defines additional groups ("groups of groups") and also which groups   -->

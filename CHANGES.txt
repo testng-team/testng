@@ -1,6 +1,7 @@
 ===========================================================================
 5.6
 
+Added: <test>s can now be disabled at xml level using <test enabled="false">
 Added: Suite files that only contain other suites do not get reported
 Fixed: @BeforeClass methods would incorrectly report cyclic graphs
 Added: get/setAttribute to ITestContext

@@ -40,17 +40,21 @@
 <span class="xml-comment">&lt;!--           will be.  This setting has no impact on the HTML reports     --&gt;</span>
 <span class="xml-comment">&lt;!-- parallel:  (methods|tests) Whether TestNG should use different threads --&gt;</span>
 <span class="xml-comment">&lt;!--            to run your tests (might speed up the process)              --&gt;</span>
+<span class="xml-comment">&lt;!--            (default: empty; no parallel execution)                     --&gt;</span>
 <span class="xml-comment">&lt;!-- thread-count:  An integer giving the size of the thread pool to use    --&gt;</span>
 <span class="xml-comment">&lt;!--                if you set parallel=true (default is 5)                 --&gt;</span>
 <span class="xml-comment">&lt;!-- annotations:   (javadoc|JDK5)  If "javadoc", TestNG will look for      --&gt;</span>
 <span class="xml-comment">&lt;!--                JavaDoc annotations in your sources, otherwise it will  --&gt;</span>
 <span class="xml-comment">&lt;!--                use JDK5 annotations                                    --&gt;</span>
+<span class="xml-comment">&lt;!-- time-out: the time to wait in milliseconds before aborting the         --&gt;</span>
+<span class="xml-comment">&lt;!--           method (if parallel="methods") or the test (parallel="tests")--&gt;</span>
 &lt;!ATTLIST suite 
     name CDATA #REQUIRED
     verbose CDATA #IMPLIED
     parallel CDATA #IMPLIED
     thread-count CDATA #IMPLIED
     annotations CDATA #IMPLIED
+	  time-out CDATA #IMPLIED
 &gt;
 
 <span class="xml-comment">&lt;!-- Parameters can be defined at the <span class="tag">&lt;suite&gt;</span> or at the <span class="tag">&lt;test&gt;</span> level        --&gt;</span>
@@ -93,12 +97,17 @@
 <span class="xml-comment">&lt;!-- annotations:   (javadoc|JDK5)  If "javadoc", TestNG will look for      --&gt;</span>
 <span class="xml-comment">&lt;!--                JavaDoc annotations in your sources, otherwise it will  --&gt;</span>
 <span class="xml-comment">&lt;!--                use JDK5 annotations                                    --&gt;</span>
+<span class="xml-comment">&lt;!-- time-out: the time to wait in milliseconds before aborting the         --&gt;</span>
+<span class="xml-comment">&lt;!--           method (if parallel="methods") or the test (parallel="tests")--&gt;</span>
+<span class="xml-comment">&lt;!-- enabled: flag to enable/disable current test. Default value: true      --&gt;</span>
 &lt;!ATTLIST test
     name CDATA #REQUIRED 
     junit CDATA #IMPLIED
     verbose CDATA #IMPLIED
     parallel CDATA #IMPLIED 
     annotations CDATA #IMPLIED
+    time-out CDATA #IMPLIED
+    enabled CDATA #IMPLIED
 &gt;
 
 <span class="xml-comment">&lt;!-- Defines additional groups ("groups of groups") and also which groups   --&gt;</span>
