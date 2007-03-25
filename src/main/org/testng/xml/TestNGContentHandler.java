@@ -243,6 +243,7 @@ public class TestNGContentHandler extends DefaultHandler {
         m_currentTest.setAnnotations(annotations);
       }
       m_inTest = true;
+      m_enabledTest= true;
       String enabledTestString = attributes.getValue("enabled");
       if(null != enabledTestString) {
         m_enabledTest = Boolean.valueOf(enabledTestString);
