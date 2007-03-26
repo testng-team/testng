@@ -366,7 +366,7 @@ public class TestNGAntTask extends Task {
 
   // TestNG settings
   public void setJUnit(boolean value) {
-    m_isJUnit= new Boolean(value);
+    m_isJUnit= Boolean.valueOf(value);
   }
 
   /**

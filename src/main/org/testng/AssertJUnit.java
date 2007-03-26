@@ -178,7 +178,7 @@ public class AssertJUnit {
    * an AssertionFailedError is thrown with the given message.
    */
   static public void assertEquals(String message, boolean expected, boolean actual) {
-    assertEquals(message, new Boolean(expected), new Boolean(actual));
+    assertEquals(message, Boolean.valueOf(expected), Boolean.valueOf(actual));
   }
 
   /**

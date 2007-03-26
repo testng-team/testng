@@ -189,7 +189,7 @@ public class TestNGContentHandler extends DefaultHandler {
     if (start) {
 //      ppp("OPEN SCRIPT");
       m_currentLanguage = attributes.getValue("language");
-      m_currentExpression = new String();
+      m_currentExpression = "";
     }
     else {
 //      ppp("CLOSE SCRIPT:@@" + m_currentExpression + "@@");
