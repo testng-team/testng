@@ -1,24 +1,23 @@
 package org.testng.reporters;
 
-import java.io.File;
-import java.util.Properties;
-import java.text.SimpleDateFormat;
-
+import org.testng.IResultMap;
 import org.testng.ISuiteResult;
 import org.testng.ITestResult;
-import org.testng.IResultMap;
 import org.testng.internal.Utils;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Properties;
+
 /**
- * Utility writing a ISuiteResult to an XMLStringBuffer. Depending on the settings in the <code>config</code> property
+ * Utility writing an ISuiteResult to an XMLStringBuffer. Depending on the settings in the <code>config</code> property
  * it might generate an additional XML file with the actual content and only reference the file with an <code>url</code>
  * attribute in the passed XMLStringBuffer.
  *
  * @author Cosmin Marginean, Mar 16, 2007
  */
 
-public class XMLSuiteResultWriter
-{
+public class XMLSuiteResultWriter {
 
   private XMLReporterConfig config;
 
@@ -42,8 +41,13 @@ public class XMLSuiteResultWriter
               config.getOutputDirectory() + File.separatorChar + suiteResult.getTestContext().getSuite().getName();
       File file = referenceSuiteResult(xmlBuffer, parentDir, suiteResult);
       XMLStringBuffer suiteXmlBuffer = new XMLStringBuffer("");
+      suiteXmlBuffer.push(XMLReporterConfig.TAG_TESTNG_RESULTS);
+      suiteXmlBuffer.push(XMLReporterConfig.TAG_SUITE,
+              XMLReporter.getSuiteAttributes(suiteResult.getTestContext().getSuite()));
       writeAllToBuffer(suiteXmlBuffer, suiteResult);
-      Utils.writeFile(file.getAbsoluteFile().getParent(), file.getName(), suiteXmlBuffer.toString());
+      suiteXmlBuffer.pop();
+      suiteXmlBuffer.pop();
+      Utils.writeFile(file.getAbsoluteFile().getParent(), file.getName(), suiteXmlBuffer.toXML());
     }
   }
 
@@ -79,6 +83,7 @@ public class XMLSuiteResultWriter
 
   private void addTestResult(XMLStringBuffer xmlBuffer, ITestResult testResult) {
     xmlBuffer.push(XMLReporterConfig.TAG_TEST_METHOD, getTestResultAttributes(testResult));
+    addTestMethodParams(xmlBuffer, testResult);
     addTestResultException(xmlBuffer, testResult);
     xmlBuffer.pop();
   }
@@ -108,6 +113,33 @@ public class XMLSuiteResultWriter
     return attributes;
   }
 
+  public void addTestMethodParams(XMLStringBuffer xmlBuffer, ITestResult testResult) {
+    Object[] parameters = testResult.getParameters();
+    if ((parameters != null) && (parameters.length > 0)) {
+      xmlBuffer.push(XMLReporterConfig.TAG_PARAMS);
+      for (int i = 0; i < parameters.length; i++) {
+        addParameter(xmlBuffer, parameters[i], i);
+      }
+      xmlBuffer.pop();
+    }
+  }
+
+  private void addParameter(XMLStringBuffer xmlBuffer, Object parameter, int i) {
+    Properties attrs = new Properties();
+    attrs.setProperty(XMLReporterConfig.ATTR_INDEX, String.valueOf(i));
+    xmlBuffer.push(XMLReporterConfig.TAG_PARAM, attrs);
+    if (parameter == null) {
+      Properties valueAttrs = new Properties();
+      valueAttrs.setProperty(XMLReporterConfig.ATTR_IS_NULL, "true");
+      xmlBuffer.addEmptyElement(XMLReporterConfig.TAG_PARAM_VALUE, valueAttrs);
+    } else {
+      xmlBuffer.push(XMLReporterConfig.TAG_PARAM_VALUE);
+      xmlBuffer.addCDATA(parameter.toString());
+      xmlBuffer.pop();
+    }
+    xmlBuffer.pop();
+  }
+
   private void addTestResultException(XMLStringBuffer xmlBuffer, ITestResult testResult) {
     Throwable exception = testResult.getThrowable();
     if (exception != null) {
@@ -122,12 +154,14 @@ public class XMLSuiteResultWriter
       }
 
       String[] stackTraces = Utils.stackTrace(exception, true);
-      if ((config.getStackTraceOutputMethod() & XMLReporterConfig.STACKTRACE_SHORT) == XMLReporterConfig.STACKTRACE_SHORT) {
+      if ((config.getStackTraceOutputMethod() & XMLReporterConfig.STACKTRACE_SHORT) == XMLReporterConfig
+              .STACKTRACE_SHORT) {
         xmlBuffer.push(XMLReporterConfig.TAG_SHORT_STACKTRACE);
         xmlBuffer.addCDATA(stackTraces[0]);
         xmlBuffer.pop();
       }
-      if ((config.getStackTraceOutputMethod() & XMLReporterConfig.STACKTRACE_FULL) == XMLReporterConfig.STACKTRACE_FULL) {
+      if ((config.getStackTraceOutputMethod() & XMLReporterConfig.STACKTRACE_FULL) == XMLReporterConfig.STACKTRACE_FULL)
+      {
         xmlBuffer.push(XMLReporterConfig.TAG_FULL_STACKTRACE);
         xmlBuffer.addCDATA(stackTraces[1]);
         xmlBuffer.pop();

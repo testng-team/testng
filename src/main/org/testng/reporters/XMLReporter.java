@@ -1,11 +1,14 @@
 package org.testng.reporters;
 
-import java.util.*;
-import java.io.File;
-
-import org.testng.*;
+import org.testng.IReporter;
+import org.testng.ISuite;
+import org.testng.ISuiteResult;
+import org.testng.ITestNGMethod;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlSuite;
+
+import java.io.File;
+import java.util.*;
 
 /**
  * The main entry for the XML generation operation
@@ -22,11 +25,11 @@ public class XMLReporter implements IReporter {
 
     rootBuffer = new XMLStringBuffer("");
     rootBuffer.push(XMLReporterConfig.TAG_TESTNG_RESULTS);
-    for(int i = 0; i < suites.size(); i++) {
+    for (int i = 0; i < suites.size(); i++) {
       writeSuite(xmlSuites.get(i), suites.get(i));
     }
     rootBuffer.pop();
-    Utils.writeFile(outputDirectory, "testng-results.xml", rootBuffer.toString());
+    Utils.writeFile(outputDirectory, "testng-results.xml", rootBuffer.toXML());
   }
 
   private void writeSuite(XmlSuite xmlSuite, ISuite suite) {
@@ -43,16 +46,18 @@ public class XMLReporter implements IReporter {
 
   private void writeSuiteToFile(File suiteFile, ISuite suite) {
     XMLStringBuffer xmlBuffer = new XMLStringBuffer("");
+    xmlBuffer.push(XMLReporterConfig.TAG_TESTNG_RESULTS);
     writeSuiteToBuffer(xmlBuffer, suite);
+    xmlBuffer.pop();
     File parentDir = suiteFile.getParentFile();
     if (parentDir.exists() || suiteFile.getParentFile().mkdirs()) {
-      Utils.writeFile(parentDir.getAbsolutePath(), "testng-results.xml", xmlBuffer.toString());      
+      Utils.writeFile(parentDir.getAbsolutePath(), "testng-results.xml", xmlBuffer.toXML());
     }
   }
 
   private File referenceSuite(XMLStringBuffer xmlBuffer, ISuite suite) {
     String relativePath = suite.getName() + File.separatorChar + "suite.xml";
-    File suiteFile = new File(config.getOutputDirectory(),  relativePath);
+    File suiteFile = new File(config.getOutputDirectory(), relativePath);
     Properties attrs = new Properties();
     attrs.setProperty(XMLReporterConfig.ATTR_URL, relativePath);
     xmlBuffer.addEmptyElement(XMLReporterConfig.TAG_SUITE, attrs);
@@ -85,7 +90,7 @@ public class XMLReporter implements IReporter {
     xmlBuffer.pop();
   }
 
-  private Properties getSuiteAttributes(ISuite suite) {
+  protected static Properties getSuiteAttributes(ISuite suite) {
     Properties props = new Properties();
     props.setProperty(XMLReporterConfig.ATTR_NAME, suite.getName());
     return props;
@@ -93,13 +98,10 @@ public class XMLReporter implements IReporter {
 
 
   private Set getUniqueMethodSet(Collection<ITestNGMethod> methods) {
-    //TODO: Cosmin - not synchronized
-    Set result = new HashSet();
+    Set result = new LinkedHashSet();
     for (ITestNGMethod method : methods) {
       result.add(method);
     }
     return result;
-}
-
-
+  }
 }

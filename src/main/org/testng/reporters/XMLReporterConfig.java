@@ -5,9 +5,8 @@ package org.testng.reporters;
  *         Date: Mar 27, 2007
  *         Time: 9:16:28 AM
  */
-public class XMLReporterConfig
-{
-/**
+public class XMLReporterConfig {
+  /**
    * Indicates that no file fragmentation should be performed. This value indicates the XML generator to write all the
    * results in one big file. Not recommended for large test suites.
    */
@@ -41,7 +40,7 @@ public class XMLReporterConfig
    */
   public static final int STACKTRACE_BOTH = 3;
 
- public static final String TAG_TEST = "test";
+  public static final String TAG_TEST = "test";
   public static final String TAG_PASSED = "passed";
   public static final String TAG_FAILED = "failed";
   public static final String TAG_SKIPPED = "skipped";
@@ -55,19 +54,25 @@ public class XMLReporterConfig
   public static final String TAG_GROUPS = "groups";
   public static final String TAG_GROUP = "group";
   public static final String TAG_METHOD = "method";
+  public static final String TAG_PARAMS = "params";
+  public static final String TAG_PARAM = "param";
+  public static final String TAG_PARAM_VALUE = "value";
 
   public static final String ATTR_URL = "url";
   public static final String ATTR_NAME = "name";
   public static final String ATTR_METHOD = "method";
   public static final String ATTR_GROUPS = "groups";
   public static final String ATTR_CLASS = "class";
+  public static final String ATTR_INDEX = "index";
+  public static final String ATTR_IS_NULL = "is-null";
+
   static final String FMT_DAY_MONTH_YEAR_TIME = "dd/MM/yyyy HH:mm:ss";
-  
+
   /**
    * Indicates the way that the file fragmentation should be performed. Set this property to one of the FF_LEVEL_*
    * values for the desired output structure
    */
-  private int fileFragmentationLevel = FF_LEVEL_NONE;
+  private int fileFragmentationLevel = FF_LEVEL_SUITE_RESULT;
 
   /**
    * Stack trace output method for the failed tests using one of the STACKTRACE_* constants.
@@ -130,5 +135,5 @@ public class XMLReporterConfig
 
   public void setTimestampFormat(String timestampFormat) {
     this.timestampFormat = timestampFormat;
-  }  
+  }
 }
