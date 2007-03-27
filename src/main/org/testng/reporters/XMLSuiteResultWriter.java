@@ -17,11 +17,12 @@ import org.testng.internal.Utils;
  * @author Cosmin Marginean, Mar 16, 2007
  */
 
-public class SuiteResultWriter {
+public class XMLSuiteResultWriter
+{
 
   private XMLReporterConfig config;
 
-  public SuiteResultWriter(XMLReporterConfig config) {
+  public XMLSuiteResultWriter(XMLReporterConfig config) {
     this.config = config;
   }
 

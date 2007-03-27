@@ -77,7 +77,7 @@ public class XMLReporter implements IReporter {
     xmlBuffer.pop();
 
     Map<String, ISuiteResult> results = suite.getResults();
-    SuiteResultWriter suiteResultWriter = new SuiteResultWriter(config);
+    XMLSuiteResultWriter suiteResultWriter = new XMLSuiteResultWriter(config);
     for (Map.Entry<String, ISuiteResult> result : results.entrySet()) {
       suiteResultWriter.writeSuiteResult(xmlBuffer, result.getValue());
     }
