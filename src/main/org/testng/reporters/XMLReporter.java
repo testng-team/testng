@@ -1,76 +1,105 @@
 package org.testng.reporters;
 
-import java.util.Map;
+import java.util.*;
+import java.io.File;
 
-import org.testng.ISuite;
-import org.testng.ISuiteListener;
-import org.testng.ISuiteResult;
-import org.testng.ITestContext;
-import org.testng.ITestResult;
-
+import org.testng.*;
+import org.testng.internal.Utils;
+import org.testng.xml.XmlSuite;
 
 /**
- * An XML reporter for TestNG.
+ * The main entry for the XML generation operation
  *
- * @author Cedric Beust, Aug 6, 2004
- * 
+ * @author Cosmin Marginean, Mar 16, 2007
  */
-public class XMLReporter implements ISuiteListener {
-//  private List<ITestResult> m_passedTests = new ArrayList<ITestResult>();
-//  private List<ITestResult> m_failedTests = new ArrayList<ITestResult>();
-//  
-//  public void onTestSuccess(ITestResult tr) {
-//    m_passedTests.add(tr);
-//  }
-//
-//  public void onTestFailure(ITestResult tr) {
-//    m_failedTests.add(tr);
-//  }
+public class XMLReporter implements IReporter {
 
-  public void onStart(ISuite suite) {
-    
+  private XMLReporterConfig config;
+  private XMLStringBuffer rootBuffer;
+
+  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+    config = new XMLReporterConfig(outputDirectory);
+
+    rootBuffer = new XMLStringBuffer("");
+    rootBuffer.push(XMLReporterConfig.TAG_TESTNG_RESULTS);
+    for(int i = 0; i < suites.size(); i++) {
+      writeSuite(xmlSuites.get(i), suites.get(i));
+    }
+    rootBuffer.pop();
+    Utils.writeFile(outputDirectory, "testng-results.xml", rootBuffer.toString());
   }
-  
-  public void onFinish(ISuite context) {
-    XMLStringBuffer xsb = new XMLStringBuffer("");
-    
-    xsb.push("suite-results");
-    
-    Map<String, ISuiteResult> results = context.getResults();
-    
-    for (String name : results.keySet()) {
-      ISuiteResult sr = results.get(name);
-      ITestContext tc = sr.getTestContext();
-      
-      xsb.push("test");
-      
-      xsb.addRequired("name", tc.getName());
-      
-      xsb.push("passed");
-      for (ITestResult tr : tc.getPassedTests().getAllResults()) {
-        xsb.addRequired("method-name", tr.getName());
-      }
-      xsb.pop("passed");
-      
-  
-      xsb.push("failed");
-      for (ITestResult tr : tc.getFailedTests().getAllResults()) {
-        xsb.addRequired("method-name", tr.getName());
-      }
-      xsb.pop("failed"); 
 
-      xsb.pop("test");
+  private void writeSuite(XmlSuite xmlSuite, ISuite suite) {
+    switch (config.getFileFragmentationLevel()) {
+      case XMLReporterConfig.FF_LEVEL_NONE:
+        writeSuiteToBuffer(rootBuffer, suite);
+        break;
+      case XMLReporterConfig.FF_LEVEL_SUITE:
+      case XMLReporterConfig.FF_LEVEL_SUITE_RESULT:
+        File suiteFile = referenceSuite(rootBuffer, suite);
+        writeSuiteToFile(suiteFile, suite);
+    }
+  }
+
+  private void writeSuiteToFile(File suiteFile, ISuite suite) {
+    XMLStringBuffer xmlBuffer = new XMLStringBuffer("");
+    writeSuiteToBuffer(xmlBuffer, suite);
+    File parentDir = suiteFile.getParentFile();
+    if (parentDir.exists() || suiteFile.getParentFile().mkdirs()) {
+      Utils.writeFile(parentDir.getAbsolutePath(), "testng-results.xml", xmlBuffer.toString());      
+    }
+  }
+
+  private File referenceSuite(XMLStringBuffer xmlBuffer, ISuite suite) {
+    String relativePath = suite.getName() + File.separatorChar + "suite.xml";
+    File suiteFile = new File(config.getOutputDirectory(),  relativePath);
+    Properties attrs = new Properties();
+    attrs.setProperty(XMLReporterConfig.ATTR_URL, relativePath);
+    xmlBuffer.addEmptyElement(XMLReporterConfig.TAG_SUITE, attrs);
+    return suiteFile;
+  }
+
+  private void writeSuiteToBuffer(XMLStringBuffer xmlBuffer, ISuite suite) {
+    xmlBuffer.push(XMLReporterConfig.TAG_SUITE, getSuiteAttributes(suite));
+    xmlBuffer.push(XMLReporterConfig.TAG_GROUPS);
+    for (String groupName : suite.getMethodsByGroups().keySet()) {
+      Properties groupAttrs = new Properties();
+      groupAttrs.setProperty(XMLReporterConfig.ATTR_NAME, groupName);
+      xmlBuffer.push(XMLReporterConfig.TAG_GROUP, groupAttrs);
+      Set<ITestNGMethod> groupMethods = getUniqueMethodSet(suite.getMethodsByGroups().get(groupName));
+      for (ITestNGMethod groupMethod : groupMethods) {
+        Properties methodAttrs = new Properties();
+        methodAttrs.setProperty(XMLReporterConfig.ATTR_NAME, groupMethod.toString());
+        xmlBuffer.addEmptyElement(XMLReporterConfig.TAG_METHOD, methodAttrs);
+      }
+      xmlBuffer.pop();
+    }
+    xmlBuffer.pop();
+
+    Map<String, ISuiteResult> results = suite.getResults();
+    SuiteResultWriter suiteResultWriter = new SuiteResultWriter(config);
+    for (Map.Entry<String, ISuiteResult> result : results.entrySet()) {
+      suiteResultWriter.writeSuiteResult(xmlBuffer, result.getValue());
     }
 
-    xsb.pop("suite-results");
-    
-    ppp("\n" + xsb.toXML());
-  }
-  
-  private static void ppp(String s) {
-    System.out.println("[XMLReporter] " + s);
+    xmlBuffer.pop();
   }
 
+  private Properties getSuiteAttributes(ISuite suite) {
+    Properties props = new Properties();
+    props.setProperty(XMLReporterConfig.ATTR_NAME, suite.getName());
+    return props;
+  }
+
+
+  private Set getUniqueMethodSet(Collection<ITestNGMethod> methods) {
+    //TODO: Cosmin - not synchronized
+    Set result = new HashSet();
+    for (ITestNGMethod method : methods) {
+      result.add(method);
+    }
+    return result;
+}
 
 
 }

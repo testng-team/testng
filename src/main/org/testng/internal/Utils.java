@@ -459,7 +459,7 @@ public final class Utils {
     }
     catch (Throwable cause) {
       // Something else went wrong when running the constructor
-      throw new TestNGException("An error occured while instantiating class " + declaringClass.getName(), cause);
+      throw new TestNGException("An error occured while instantiating class " + declaringClass.getName() + ": " + cause.getMessage(), cause);
     }
 
     return result;
