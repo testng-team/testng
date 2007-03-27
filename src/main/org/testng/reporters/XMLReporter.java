@@ -46,9 +46,7 @@ public class XMLReporter implements IReporter {
 
   private void writeSuiteToFile(File suiteFile, ISuite suite) {
     XMLStringBuffer xmlBuffer = new XMLStringBuffer("");
-    xmlBuffer.push(XMLReporterConfig.TAG_TESTNG_RESULTS);
     writeSuiteToBuffer(xmlBuffer, suite);
-    xmlBuffer.pop();
     File parentDir = suiteFile.getParentFile();
     if (parentDir.exists() || suiteFile.getParentFile().mkdirs()) {
       Utils.writeFile(parentDir.getAbsolutePath(), "testng-results.xml", xmlBuffer.toXML());
@@ -56,7 +54,7 @@ public class XMLReporter implements IReporter {
   }
 
   private File referenceSuite(XMLStringBuffer xmlBuffer, ISuite suite) {
-    String relativePath = suite.getName() + File.separatorChar + "suite.xml";
+    String relativePath = suite.getName() + File.separatorChar + "testng-results.xml";
     File suiteFile = new File(config.getOutputDirectory(), relativePath);
     Properties attrs = new Properties();
     attrs.setProperty(XMLReporterConfig.ATTR_URL, relativePath);
@@ -90,7 +88,7 @@ public class XMLReporter implements IReporter {
     xmlBuffer.pop();
   }
 
-  protected static Properties getSuiteAttributes(ISuite suite) {
+  private Properties getSuiteAttributes(ISuite suite) {
     Properties props = new Properties();
     props.setProperty(XMLReporterConfig.ATTR_NAME, suite.getName());
     return props;

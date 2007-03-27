@@ -41,12 +41,7 @@ public class XMLSuiteResultWriter {
               config.getOutputDirectory() + File.separatorChar + suiteResult.getTestContext().getSuite().getName();
       File file = referenceSuiteResult(xmlBuffer, parentDir, suiteResult);
       XMLStringBuffer suiteXmlBuffer = new XMLStringBuffer("");
-      suiteXmlBuffer.push(XMLReporterConfig.TAG_TESTNG_RESULTS);
-      suiteXmlBuffer.push(XMLReporterConfig.TAG_SUITE,
-              XMLReporter.getSuiteAttributes(suiteResult.getTestContext().getSuite()));
-      writeAllToBuffer(suiteXmlBuffer, suiteResult);
-      suiteXmlBuffer.pop();
-      suiteXmlBuffer.pop();
+      writeAllToBuffer(suiteXmlBuffer, suiteResult);      
       Utils.writeFile(file.getAbsoluteFile().getParent(), file.getName(), suiteXmlBuffer.toXML());
     }
   }
