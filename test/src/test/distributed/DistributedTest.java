@@ -114,7 +114,7 @@ public class DistributedTest extends BaseDistributedTest {
   @Test
   public void twoHostsWithTestStrategy() throws IOException {
     int port = new Random().nextInt(50000) + 2000;
-    m_ports = new String[] { new Integer(port).toString(), new Integer(port+1).toString() };
+    m_ports = new String[] { Integer.toString(port), Integer.toString(port+1)};
     startSlaves();
     TestListenerAdapter listener = twoHosts(HostFile.STRATEGY_TEST);
     
@@ -132,7 +132,7 @@ public class DistributedTest extends BaseDistributedTest {
   @Test
   public void twoHostsWithSuiteStrategy() throws IOException {
     int port = new Random().nextInt(50000) + 2000;
-    m_ports = new String[] { new Integer(port).toString(), new Integer(port+1).toString() };
+    m_ports = new String[] { Integer.toString(port), Integer.toString(port+1)};
     startSlaves();
     TestListenerAdapter listener = twoHosts(HostFile.STRATEGY_SUITE);
   }
