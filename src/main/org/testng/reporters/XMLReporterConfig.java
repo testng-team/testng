@@ -60,6 +60,7 @@ public class XMLReporterConfig {
 
   public static final String ATTR_URL = "url";
   public static final String ATTR_NAME = "name";
+  public static final String ATTR_DESC = "description";
   public static final String ATTR_METHOD = "method";
   public static final String ATTR_GROUPS = "groups";
   public static final String ATTR_CLASS = "class";
@@ -72,7 +73,7 @@ public class XMLReporterConfig {
    * Indicates the way that the file fragmentation should be performed. Set this property to one of the FF_LEVEL_*
    * values for the desired output structure
    */
-  private int fileFragmentationLevel = FF_LEVEL_SUITE_RESULT;
+  private int fileFragmentationLevel = FF_LEVEL_NONE;
 
   /**
    * Stack trace output method for the failed tests using one of the STACKTRACE_* constants.

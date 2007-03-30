@@ -41,7 +41,7 @@ public class XMLSuiteResultWriter {
               config.getOutputDirectory() + File.separatorChar + suiteResult.getTestContext().getSuite().getName();
       File file = referenceSuiteResult(xmlBuffer, parentDir, suiteResult);
       XMLStringBuffer suiteXmlBuffer = new XMLStringBuffer("");
-      writeAllToBuffer(suiteXmlBuffer, suiteResult);      
+      writeAllToBuffer(suiteXmlBuffer, suiteResult);
       Utils.writeFile(file.getAbsoluteFile().getParent(), file.getName(), suiteXmlBuffer.toXML());
     }
   }
@@ -86,6 +86,10 @@ public class XMLSuiteResultWriter {
   private Properties getTestResultAttributes(ITestResult testResult) {
     Properties attributes = new Properties();
     attributes.setProperty(XMLReporterConfig.ATTR_NAME, testResult.getName());
+    String description = testResult.getMethod().getDescription();
+    if (!Utils.isStringEmpty(description)) {
+      attributes.setProperty(XMLReporterConfig.ATTR_DESC, description);
+    }
     attributes.setProperty(XMLReporterConfig.ATTR_METHOD, testResult.getMethod().toString());
 
     //TODO: Cosmin - not finished, constants
