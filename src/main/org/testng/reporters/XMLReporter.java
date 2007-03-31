@@ -72,7 +72,9 @@ public class XMLReporter implements IReporter {
       Set<ITestNGMethod> groupMethods = getUniqueMethodSet(suite.getMethodsByGroups().get(groupName));
       for (ITestNGMethod groupMethod : groupMethods) {
         Properties methodAttrs = new Properties();
-        methodAttrs.setProperty(XMLReporterConfig.ATTR_NAME, groupMethod.toString());
+        methodAttrs.setProperty(XMLReporterConfig.ATTR_NAME, groupMethod.getMethodName());
+        methodAttrs.setProperty(XMLReporterConfig.ATTR_METHOD_SIG, groupMethod.toString());
+        methodAttrs.setProperty(XMLReporterConfig.ATTR_CLASS, groupMethod.getRealClass().getName());
         xmlBuffer.addEmptyElement(XMLReporterConfig.TAG_METHOD, methodAttrs);
       }
       xmlBuffer.pop();
@@ -95,8 +97,8 @@ public class XMLReporter implements IReporter {
   }
 
 
-  private Set getUniqueMethodSet(Collection<ITestNGMethod> methods) {
-    Set result = new LinkedHashSet();
+  private Set<ITestNGMethod> getUniqueMethodSet(Collection<ITestNGMethod> methods) {
+    Set<ITestNGMethod> result = new LinkedHashSet<ITestNGMethod>();
     for (ITestNGMethod method : methods) {
       result.add(method);
     }

@@ -61,13 +61,14 @@ public class XMLReporterConfig {
   public static final String ATTR_URL = "url";
   public static final String ATTR_NAME = "name";
   public static final String ATTR_DESC = "description";
-  public static final String ATTR_METHOD = "method";
+  public static final String ATTR_METHOD_SIG = "signature";
   public static final String ATTR_GROUPS = "groups";
   public static final String ATTR_CLASS = "class";
   public static final String ATTR_INDEX = "index";
   public static final String ATTR_IS_NULL = "is-null";
 
-  static final String FMT_DAY_MONTH_YEAR_TIME = "dd/MM/yyyy HH:mm:ss";
+  //note: We're hardcoding the 'Z' because Java doesn't support all the intricacies of ISO-8601.
+  static final String FMT_DAY_MONTH_YEAR_TIME = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
   /**
    * Indicates the way that the file fragmentation should be performed. Set this property to one of the FF_LEVEL_*

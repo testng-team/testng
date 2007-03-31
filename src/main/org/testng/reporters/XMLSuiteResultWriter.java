@@ -90,7 +90,7 @@ public class XMLSuiteResultWriter {
     if (!Utils.isStringEmpty(description)) {
       attributes.setProperty(XMLReporterConfig.ATTR_DESC, description);
     }
-    attributes.setProperty(XMLReporterConfig.ATTR_METHOD, testResult.getMethod().toString());
+    attributes.setProperty(XMLReporterConfig.ATTR_CLASS, testResult.getMethod().getRealClass().getName());
 
     //TODO: Cosmin - not finished, constants
     SimpleDateFormat format = new SimpleDateFormat(XMLReporterConfig.FMT_DAY_MONTH_YEAR_TIME);
@@ -109,6 +109,8 @@ public class XMLSuiteResultWriter {
         attributes.setProperty(XMLReporterConfig.ATTR_GROUPS, groupNamesStr);
       }
     }
+    
+    attributes.setProperty(XMLReporterConfig.ATTR_METHOD_SIG, testResult.getMethod().toString());
     return attributes;
   }
 
