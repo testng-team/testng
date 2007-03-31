@@ -66,7 +66,7 @@ public class Constants {
     String r = properties.getProperty(propertyName, p.getDefault());
     boolean result = "true".equalsIgnoreCase(r);
   
-    return new Boolean(result).booleanValue();
+    return Boolean.valueOf( result).booleanValue();
   }
 
   public static int getIntegerPropertyValue(Properties properties, String propertyName) {

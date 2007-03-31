@@ -271,7 +271,7 @@ public class SuiteHTMLReporter implements IReporter {
   }
   
   private String dumpMethods(ITestNGMethod[] testMethods) {
-    StringBuffer sb = new StringBuffer("");
+    StringBuffer sb = new StringBuffer();
     if(null == testMethods || testMethods.length == 0) {
       return "";
     }

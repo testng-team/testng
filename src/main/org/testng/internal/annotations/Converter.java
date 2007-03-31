@@ -17,7 +17,7 @@ public class Converter {
 
   public static boolean  getBoolean(String tagValue, boolean def) {
     boolean result = def;
-    if (tagValue != null) result = new Boolean(tagValue).booleanValue();
+    if (tagValue != null) result = Boolean.valueOf(tagValue).booleanValue();
     return result;
   }
 

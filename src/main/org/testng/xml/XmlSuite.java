@@ -60,7 +60,7 @@ public class XmlSuite implements Serializable, Cloneable {
   /** The suite annotation type. */
   private AnnotationTypeEnum m_annotations;
 
-  /** The suite default annotation type. */
+  /** The suite default annotation type. */ 
   private AnnotationTypeEnum m_defaultAnnotations = VersionInfo.getDefaultAnnotationType();
   
   /** The packages containing test classes. */
@@ -244,14 +244,14 @@ public class XmlSuite implements Serializable, Cloneable {
    */
   public Map<String, String> getAllParameters() {
     Map<String, String> result = new HashMap<String, String>();
-    for (String key : m_parameters.keySet()) {
-      result.put(key, m_parameters.get(key));
+    for (Map.Entry<String, String> entry : m_parameters.entrySet()) {
+      result.put(entry.getKey(), entry.getValue());
     }
 
     for (XmlTest test : getTests()) {
       Map<String, String> tp = test.getParameters();
-      for (String key : tp.keySet()) {
-        result.put(key, tp.get(key));
+      for (Map.Entry<String, String> entry : tp.entrySet()) {
+        result.put(entry.getKey(), entry.getValue());
       }
     }
 
@@ -417,10 +417,10 @@ public class XmlSuite implements Serializable, Cloneable {
    */
   @Override
   public String toString() {
-    StringBuffer result = new StringBuffer("[Suite: \"" + m_name + "\" ");
+    StringBuffer result = new StringBuffer("[Suite: \"").append( m_name).append( "\" ");
 
     for (XmlTest t : m_tests) {
-      result.append("  " + t.toString()).append(" ");
+      result.append("  ").append( t.toString()).append(' ');
     }
 
     result.append(']');

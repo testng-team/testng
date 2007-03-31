@@ -220,7 +220,7 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       String jUnit = attributes.getValue("junit");
       if (null != jUnit) {
-        m_currentTest.setJUnit(new Boolean(jUnit).booleanValue());
+        m_currentTest.setJUnit( Boolean.valueOf(jUnit).booleanValue());
       }
       String parallel = attributes.getValue("parallel");
       if (null != parallel) {

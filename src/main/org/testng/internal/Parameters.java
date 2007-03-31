@@ -157,7 +157,7 @@ public class Parameters {
       result = new Integer(Integer.parseInt(value));
     }
     else if(type == boolean.class || type == Boolean.class) {
-      result = new Boolean(value);          
+      result = Boolean.valueOf(value);          
     }
     else if(type == byte.class || type == Byte.class) {
       result = new Byte(Byte.parseByte(value));                    
