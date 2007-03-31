@@ -1,0 +1,101 @@
+<project name="testng-gigaspaces" default="both" basedir=".">
+
+	<target name="init">
+		<tstamp />
+		<property file="../build.properties" />
+		<property file="build.properties" />
+		<!-- Settings -->
+		<property name="jdk" value="jdk15" />
+		<property name="optimize" value="false" />
+		<property name="debug" value="true" />
+
+		<!--  Directories -->
+		<property name="src.dir" location="src" />
+		<property name="topbuild.dir" location="build" />
+		<property name="build.dir" location="${topbuild.dir}/${jdk}" />
+		<property name="classes.dir" location="${build.dir}/classes" />
+		<property name="dependencies.dir" location="3rdparty" />
+		<property name="topjavadocs.dir" location="javadocs" />
+		<property name="javadocs.dir" location="${topjavadocs.dir}/${jdk}" />
+
+		<property name="testng.gigaspaces.jar" location="testng-gigaspaces-${jdk}.jar" />
+
+		<condition property="source.version" value="1.4">
+			<equals arg1="${jdk}" arg2="jdk14"/>
+		</condition>
+		<condition property="source.version" value="1.5">
+			<equals arg1="${jdk}" arg2="jdk15"/>
+		</condition>
+	</target>
+
+	<target name="paths" depends="init">
+		<path id="src.path">
+			<pathelement path="${src.dir}" />
+		</path>
+		<path id="compile.path">
+			<fileset dir="${dependencies.dir}">
+				<include name="*.jar" />
+			</fileset>
+			<pathelement path="../testng-${testng.version}-${jdk}.jar" />
+		</path>
+	</target>
+
+	<target name="compile" depends="paths" description="compile sources">
+		<echo message="                                 -- Compiling ${jdk} sources --" />
+		<mkdir dir="${classes.dir}"/>
+		<javac 	target="jsr14"
+				debug="${debug}" optimize="${optimize}" 
+		        destdir="${classes.dir}">
+			<src refid="src.path" />
+			<classpath refid="compile.path" />
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile">
+		<echo message="                                 -- Creating ${jdk} jar --" />
+		<jar destfile="${testng.gigaspaces.jar}">
+			<fileset dir="${classes.dir}" />
+		</jar>
+	</target>
+
+	<target name="javadoc" depends="paths" description="generate api documentation">
+		<echo message="                                 -- Generating javadocs for ${jdk} --" />
+		<mkdir dir="${javadocs.dir}" />
+		<javadoc destdir="${javadocs.dir}" source="${source.version}" windowtitle="TestNG GigaSpaces Support" classpathref="compile.path">
+			<fileset dir="${src.dir}/common" defaultexcludes="yes" includes="**/*.java" />
+			<fileset dir="${src.dir}/${jdk}" defaultexcludes="yes" includes="**/*.java" />
+		</javadoc>
+	</target>
+
+	<target name="both">
+		<property name="target" value="jar"/>
+		<antcall target="${target}">
+			<param name="jdk" value="jdk14"/>
+		</antcall>
+		<antcall target="${target}">
+			<param name="jdk" value="jdk15"/>
+		</antcall>
+	</target>
+
+	<target name="dist" description="builds both jdk14 and jdk15 variants">
+		<antcall target="both">
+			<param name="target" value="jar"/>
+		</antcall>
+	</target>
+
+	<target name="javadocs" description="builds both jdk14 and jdk15 javadocs">
+		<antcall target="both">
+			<param name="target" value="javadoc"/>
+		</antcall>
+	</target>
+
+	<target name="all" depends="dist,javadocs" description="build jar files and javadocs" />
+
+	<target name="clean" depends="paths" description="cleans all">
+		<delete dir="${topbuild.dir}" />
+		<delete dir="${topjavadocs.dir}" />
+		<delete file="testng-gigaspaces-jdk14.jar" />
+		<delete file="testng-gigaspaces-jdk15.jar" />
+	</target>
+
+</project>
