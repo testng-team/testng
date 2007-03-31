@@ -2,9 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="3rdparty/JSpaces.jar"/>
-	<classpathentry kind="lib" path="3rdparty/jsk-lib.jar"/>
-	<classpathentry kind="lib" path="3rdparty/jsk-platform.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/TestNG"/>
+	<classpathentry kind="lib" path="3rdparty/jini/jsk-lib.jar"/>
+	<classpathentry kind="lib" path="3rdparty/jini/jsk-platform.jar"/>
 	<classpathentry kind="output" path="z_build"/>
 </classpath>
