@@ -53,6 +53,7 @@ public class XMLReporterConfig {
   public static final String TAG_SUITE = "suite";
   public static final String TAG_GROUPS = "groups";
   public static final String TAG_GROUP = "group";
+  public static final String TAG_CLASS = "class";
   public static final String TAG_METHOD = "method";
   public static final String TAG_PARAMS = "params";
   public static final String TAG_PARAM = "param";

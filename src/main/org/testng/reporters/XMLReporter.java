@@ -33,6 +33,7 @@ public class XMLReporter implements IReporter {
   }
 
   private void writeSuite(XmlSuite xmlSuite, ISuite suite) {
+    Utils.writeFile(config.getOutputDirectory(), xmlSuite.getName() + "-testng.xml", xmlSuite.toXml());
     switch (config.getFileFragmentationLevel()) {
       case XMLReporterConfig.FF_LEVEL_NONE:
         writeSuiteToBuffer(rootBuffer, suite);

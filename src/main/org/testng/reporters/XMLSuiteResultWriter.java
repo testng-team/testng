@@ -7,7 +7,7 @@ import org.testng.internal.Utils;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Utility writing an ISuiteResult to an XMLStringBuffer. Depending on the settings in the <code>config</code> property
@@ -70,17 +70,42 @@ public class XMLSuiteResultWriter {
 
   private void addTestResults(XMLStringBuffer xmlBuffer, String tagName, IResultMap results) {
     xmlBuffer.push(tagName);
-    for (ITestResult testResult : results.getAllResults()) {
-      addTestResult(xmlBuffer, testResult);
+    Map<String, List<ITestResult>> testsGroupedByClass = buildTestClassGroups(results);
+    for(Map.Entry<String, List<ITestResult>> result : testsGroupedByClass.entrySet()) {
+      Properties attributes = new Properties();
+      attributes.setProperty(XMLReporterConfig.ATTR_NAME, result.getKey());
+      xmlBuffer.push(XMLReporterConfig.TAG_CLASS, attributes);      
+      for (ITestResult testResult : result.getValue()) {
+        addTestResult(xmlBuffer, testResult);
+      }
+      xmlBuffer.pop();
     }
     xmlBuffer.pop();
   }
 
+  private Map<String, List<ITestResult>> buildTestClassGroups(IResultMap results) {
+    Map<String, List<ITestResult>> map = new HashMap<String, List<ITestResult>>();    
+    for(ITestResult result : results.getAllResults()) {
+      String className = result.getTestClass().getName();
+      List<ITestResult> list = map.get(className);
+      if(list == null) {
+        list = new ArrayList<ITestResult>();
+        map.put(className, list);
+      }
+      list.add(result);
+    }
+    return map;
+  }
+
   private void addTestResult(XMLStringBuffer xmlBuffer, ITestResult testResult) {
-    xmlBuffer.push(XMLReporterConfig.TAG_TEST_METHOD, getTestResultAttributes(testResult));
-    addTestMethodParams(xmlBuffer, testResult);
-    addTestResultException(xmlBuffer, testResult);
-    xmlBuffer.pop();
+    if(testResult.getParameters().length == 0 && testResult.getThrowable() == null) {
+      xmlBuffer.addEmptyElement(XMLReporterConfig.TAG_TEST_METHOD, getTestResultAttributes(testResult));
+    } else {
+      xmlBuffer.push(XMLReporterConfig.TAG_TEST_METHOD, getTestResultAttributes(testResult));
+      addTestMethodParams(xmlBuffer, testResult);
+      addTestResultException(xmlBuffer, testResult);
+      xmlBuffer.pop();
+    }
   }
 
   private Properties getTestResultAttributes(ITestResult testResult) {
@@ -90,7 +115,6 @@ public class XMLSuiteResultWriter {
     if (!Utils.isStringEmpty(description)) {
       attributes.setProperty(XMLReporterConfig.ATTR_DESC, description);
     }
-    attributes.setProperty(XMLReporterConfig.ATTR_CLASS, testResult.getMethod().getRealClass().getName());
 
     //TODO: Cosmin - not finished, constants
     SimpleDateFormat format = new SimpleDateFormat(XMLReporterConfig.FMT_DAY_MONTH_YEAR_TIME);
@@ -101,7 +125,6 @@ public class XMLSuiteResultWriter {
     long duration = testResult.getEndMillis() - testResult.getStartMillis();
     String strDuration = Long.toString(duration);
     attributes.setProperty("duration-ms", strDuration);
-
 
     if (config.isGenerateGroupsAttribute()) {
       String groupNamesStr = getGroupNamesString(testResult);
