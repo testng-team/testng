@@ -1,6 +1,5 @@
 package org.testng.gigaspaces;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -112,7 +111,8 @@ public class SpaceAdapter
 				tmpTest.setXmlPackages(test.getXmlPackages());
 
 				++tests;
-				_space.write(tmpSuite, null, Lease.FOREVER);
+				SuiteEntry suiteEntry	= new SuiteEntry(tmpSuite);
+				_space.write(suiteEntry, null, Lease.FOREVER);
 			}
 		}
 
