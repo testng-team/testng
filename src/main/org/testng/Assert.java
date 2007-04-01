@@ -466,7 +466,13 @@ public class Assert {
    * @param message the assertion error message
    */
   static public void assertEquals(Collection actual, Collection expected, String message) {
-    if (null == message) message = "";
+    if(actual == expected) return;
+    
+    if ((actual == null && expected != null) || (actual != null && expected == null)) {
+      if (message != null) fail(message);
+      else fail("Arrays not equal: " + expected + " and " + actual);
+    }
+    
     assertEquals(actual.size(), expected.size(), message + ": lists don't have the same size");
     
     Iterator actIt = actual.iterator();
@@ -477,7 +483,7 @@ public class Assert {
       Object e = expIt.next();
       Object a = actIt.next();
       String errorMessage = message == null 
-      ? "Lists differ at element [" + i + "]: " + e + " != " + a
+          ? "Lists differ at element [" + i + "]: " + e + " != " + a
           : message + ": Lists differ at element [" + i + "]: " + e + " != " + a;
       
       assertEquals(a, e, errorMessage);
@@ -492,6 +498,8 @@ public class Assert {
    * @param message the assertion error message
    */
   static public void assertEquals(Object[] actual, Object[] expected, String message) {
+    if(actual == expected) return;
+    
     if ((actual == null && expected != null) || (actual != null && expected == null)) {
       if (message != null) fail(message);
       else fail("Arrays not equal: " + expected + " and " + actual);
@@ -507,6 +515,8 @@ public class Assert {
    * @param message the assertion error message
    */
   static public void assertEqualsNoOrder(Object[] actual, Object[] expected, String message) {
+    if(actual == expected) return;
+    
     if ((actual == null && expected != null) || (actual != null && expected == null)) {
       if (message != null) fail(message);
       else fail("Arrays not equal: " + expected + " and " + actual);
