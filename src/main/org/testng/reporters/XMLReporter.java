@@ -1,9 +1,6 @@
 package org.testng.reporters;
 
-import org.testng.IReporter;
-import org.testng.ISuite;
-import org.testng.ISuiteResult;
-import org.testng.ITestNGMethod;
+import org.testng.*;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlSuite;
 
@@ -65,12 +62,25 @@ public class XMLReporter implements IReporter {
 
   private void writeSuiteToBuffer(XMLStringBuffer xmlBuffer, ISuite suite) {
     xmlBuffer.push(XMLReporterConfig.TAG_SUITE, getSuiteAttributes(suite));
+    writeSuiteGroups(xmlBuffer, suite);
+
+    Map<String, ISuiteResult> results = suite.getResults();
+    XMLSuiteResultWriter suiteResultWriter = new XMLSuiteResultWriter(config);
+    for (Map.Entry<String, ISuiteResult> result : results.entrySet()) {
+      suiteResultWriter.writeSuiteResult(xmlBuffer, result.getValue());
+    }
+
+    xmlBuffer.pop();
+  }
+
+  private void writeSuiteGroups(XMLStringBuffer xmlBuffer, ISuite suite) {
     xmlBuffer.push(XMLReporterConfig.TAG_GROUPS);
-    for (String groupName : suite.getMethodsByGroups().keySet()) {
+    Map<String, Collection<ITestNGMethod>> methodsByGroups = suite.getMethodsByGroups();
+    for (String groupName : methodsByGroups.keySet()) {
       Properties groupAttrs = new Properties();
       groupAttrs.setProperty(XMLReporterConfig.ATTR_NAME, groupName);
       xmlBuffer.push(XMLReporterConfig.TAG_GROUP, groupAttrs);
-      Set<ITestNGMethod> groupMethods = getUniqueMethodSet(suite.getMethodsByGroups().get(groupName));
+      Set<ITestNGMethod> groupMethods = getUniqueMethodSet(methodsByGroups.get(groupName));
       for (ITestNGMethod groupMethod : groupMethods) {
         Properties methodAttrs = new Properties();
         methodAttrs.setProperty(XMLReporterConfig.ATTR_NAME, groupMethod.getMethodName());
@@ -80,14 +90,6 @@ public class XMLReporter implements IReporter {
       }
       xmlBuffer.pop();
     }
-    xmlBuffer.pop();
-
-    Map<String, ISuiteResult> results = suite.getResults();
-    XMLSuiteResultWriter suiteResultWriter = new XMLSuiteResultWriter(config);
-    for (Map.Entry<String, ISuiteResult> result : results.entrySet()) {
-      suiteResultWriter.writeSuiteResult(xmlBuffer, result.getValue());
-    }
-
     xmlBuffer.pop();
   }
 
