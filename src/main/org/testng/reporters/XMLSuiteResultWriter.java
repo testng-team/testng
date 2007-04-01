@@ -95,7 +95,7 @@ public class XMLSuiteResultWriter {
     attributes.setProperty(XMLReporterConfig.ATTR_PACKAGE,
             testResult.getMethod().getRealClass().getPackage().getName());
     attributes.setProperty(XMLReporterConfig.ATTR_CLASS, testResult.getMethod().getRealClass().getSimpleName());
-    attributes.setProperty(XMLReporterConfig.ATTR_METHOD, removeClassName(testResult.getMethod().toString()));
+    attributes.setProperty(XMLReporterConfig.ATTR_METHOD_SIG, removeClassName(testResult.getMethod().toString()));
 
     //TODO: Cosmin - not finished
     SimpleDateFormat format = new SimpleDateFormat(config.getTimestampFormat());
