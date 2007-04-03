@@ -114,7 +114,7 @@ public class XMLSuiteResultWriter {
 
     String className = testResult.getTestClass().getName();
     int dot = className.lastIndexOf('.');
-    attributes.setProperty(XMLReporterConfig.ATTR_PACKAGE, dot > -1 ? className.substring(0, dot) : "<default>");
+    attributes.setProperty(XMLReporterConfig.ATTR_PACKAGE, dot > -1 ? className.substring(0, dot) : "[default]");
     attributes.setProperty(XMLReporterConfig.ATTR_CLASS,
             dot > -1 ? className.substring(dot + 1, className.length()) : className);
     attributes.setProperty(XMLReporterConfig.ATTR_METHOD_SIG, removeClassName(testResult.getMethod().toString()));
