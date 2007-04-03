@@ -41,9 +41,6 @@ public class XMLReporterConfig {
   public static final int STACKTRACE_BOTH = 3;
 
   public static final String TAG_TEST = "test";
-  public static final String TAG_PASSED = "passed";
-  public static final String TAG_FAILED = "failed";
-  public static final String TAG_SKIPPED = "skipped";
   public static final String TAG_TEST_METHOD = "test-method";
   public static final String TAG_EXCEPTION = "exception";
   public static final String TAG_MESSAGE = "message";
@@ -61,6 +58,7 @@ public class XMLReporterConfig {
 
   public static final String ATTR_URL = "url";
   public static final String ATTR_NAME = "name";
+  public static final String ATTR_STATUS = "status";
   public static final String ATTR_DESC = "description";
   public static final String ATTR_METHOD_SIG = "signature";
   public static final String ATTR_GROUPS = "groups";
@@ -72,6 +70,10 @@ public class XMLReporterConfig {
   public static final String ATTR_FINISHED_AT = "finished-at";
   public static final String ATTR_DURATION_MS = "duration-ms";
 
+  public static final String TEST_PASSED = "PASS";
+  public static final String TEST_FAILED = "FAIL";
+  public static final String TEST_SKIPPED = "SKIP";
+  
   //note: We're hardcoding the 'Z' because Java doesn't support all the intricacies of ISO-8601.
   static final String FMT_DAY_MONTH_YEAR_TIME = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 

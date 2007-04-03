@@ -7,7 +7,6 @@ import org.testng.internal.Utils;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Properties;
 
 /**
@@ -49,9 +48,9 @@ public class XMLSuiteResultWriter {
 
   private void writeAllToBuffer(XMLStringBuffer xmlBuffer, ISuiteResult suiteResult) {
     xmlBuffer.push(XMLReporterConfig.TAG_TEST, getSuiteResultAttributes(suiteResult));
-    addTestResults(xmlBuffer, XMLReporterConfig.TAG_PASSED, suiteResult.getTestContext().getPassedTests());
-    addTestResults(xmlBuffer, XMLReporterConfig.TAG_FAILED, suiteResult.getTestContext().getFailedTests());
-    addTestResults(xmlBuffer, XMLReporterConfig.TAG_SKIPPED, suiteResult.getTestContext().getSkippedTests());
+    addTestResults(xmlBuffer, suiteResult.getTestContext().getPassedTests(), XMLReporterConfig.TEST_PASSED);
+    addTestResults(xmlBuffer, suiteResult.getTestContext().getFailedTests(), XMLReporterConfig.TEST_FAILED);
+    addTestResults(xmlBuffer, suiteResult.getTestContext().getSkippedTests(), XMLReporterConfig.TEST_SKIPPED);
     xmlBuffer.pop();
   }
 
@@ -69,16 +68,16 @@ public class XMLSuiteResultWriter {
     return attributes;
   }
 
-  private void addTestResults(XMLStringBuffer xmlBuffer, String tagName, IResultMap results) {
-    xmlBuffer.push(tagName);
+  private void addTestResults(XMLStringBuffer xmlBuffer, IResultMap results, String resultType) {
     for (ITestResult testResult : results.getAllResults()) {
-      addTestResult(xmlBuffer, testResult);
+      addTestResult(xmlBuffer, testResult, resultType);
     }
-    xmlBuffer.pop();
   }
 
-  private void addTestResult(XMLStringBuffer xmlBuffer, ITestResult testResult) {
-    xmlBuffer.push(XMLReporterConfig.TAG_TEST_METHOD, getTestResultAttributes(testResult));
+  private void addTestResult(XMLStringBuffer xmlBuffer, ITestResult testResult, String resultType) {
+    Properties attribs = getTestResultAttributes(testResult);
+    attribs.setProperty(XMLReporterConfig.ATTR_STATUS, resultType);
+    xmlBuffer.push(XMLReporterConfig.TAG_TEST_METHOD, attribs);
     addTestMethodParams(xmlBuffer, testResult);
     addTestResultException(xmlBuffer, testResult);
     xmlBuffer.pop();
@@ -92,9 +91,10 @@ public class XMLSuiteResultWriter {
       attributes.setProperty(XMLReporterConfig.ATTR_DESC, description);
     }
 
-    attributes.setProperty(XMLReporterConfig.ATTR_PACKAGE,
-            testResult.getMethod().getRealClass().getPackage().getName());
-    attributes.setProperty(XMLReporterConfig.ATTR_CLASS, testResult.getMethod().getRealClass().getSimpleName());
+    String className = testResult.getTestClass().getName();
+    int dot = className.lastIndexOf('.');
+    attributes.setProperty(XMLReporterConfig.ATTR_PACKAGE, dot > -1 ? className.substring(0, dot) : "");
+    attributes.setProperty(XMLReporterConfig.ATTR_CLASS, dot > -1 ? className.substring(dot + 1, className.length()) : className);
     attributes.setProperty(XMLReporterConfig.ATTR_METHOD_SIG, removeClassName(testResult.getMethod().toString()));
 
     //TODO: Cosmin - not finished
