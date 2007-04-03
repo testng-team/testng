@@ -7,7 +7,7 @@ import org.testng.internal.Utils;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Utility writing an ISuiteResult to an XMLStringBuffer. Depending on the settings in the <code>config</code> property
@@ -69,9 +69,30 @@ public class XMLSuiteResultWriter {
   }
 
   private void addTestResults(XMLStringBuffer xmlBuffer, IResultMap results, String resultType) {
-    for (ITestResult testResult : results.getAllResults()) {
-      addTestResult(xmlBuffer, testResult, resultType);
+    Map<String, List<ITestResult>> testsGroupedByClass = buildTestClassGroups(results);
+    for (Map.Entry<String, List<ITestResult>> result : testsGroupedByClass.entrySet()) {
+      Properties attributes = new Properties();
+      attributes.setProperty(XMLReporterConfig.ATTR_NAME, result.getKey());
+      xmlBuffer.push(XMLReporterConfig.TAG_CLASS, attributes);
+      for (ITestResult testResult : result.getValue()) {
+        addTestResult(xmlBuffer, testResult, resultType);
+      }
+      xmlBuffer.pop();
     }
+  }
+
+  private Map<String, List<ITestResult>> buildTestClassGroups(IResultMap results) {
+    Map<String, List<ITestResult>> map = new HashMap<String, List<ITestResult>>();
+    for (ITestResult result : results.getAllResults()) {
+      String className = result.getTestClass().getName();
+      List<ITestResult> list = map.get(className);
+      if (list == null) {
+        list = new ArrayList<ITestResult>();
+        map.put(className, list);
+      }
+      list.add(result);
+    }
+    return map;
   }
 
   private void addTestResult(XMLStringBuffer xmlBuffer, ITestResult testResult, String resultType) {
@@ -94,7 +115,8 @@ public class XMLSuiteResultWriter {
     String className = testResult.getTestClass().getName();
     int dot = className.lastIndexOf('.');
     attributes.setProperty(XMLReporterConfig.ATTR_PACKAGE, dot > -1 ? className.substring(0, dot) : "<default>");
-    attributes.setProperty(XMLReporterConfig.ATTR_CLASS, dot > -1 ? className.substring(dot + 1, className.length()) : className);
+    attributes.setProperty(XMLReporterConfig.ATTR_CLASS,
+            dot > -1 ? className.substring(dot + 1, className.length()) : className);
     attributes.setProperty(XMLReporterConfig.ATTR_METHOD_SIG, removeClassName(testResult.getMethod().toString()));
 
     //TODO: Cosmin - not finished
