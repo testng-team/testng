@@ -48,10 +48,22 @@ public class XMLSuiteResultWriter {
 
   private void writeAllToBuffer(XMLStringBuffer xmlBuffer, ISuiteResult suiteResult) {
     xmlBuffer.push(XMLReporterConfig.TAG_TEST, getSuiteResultAttributes(suiteResult));
-    addTestResults(xmlBuffer, suiteResult.getTestContext().getPassedTests(), XMLReporterConfig.TEST_PASSED);
-    addTestResults(xmlBuffer, suiteResult.getTestContext().getFailedTests(), XMLReporterConfig.TEST_FAILED);
-    addTestResults(xmlBuffer, suiteResult.getTestContext().getSkippedTests(), XMLReporterConfig.TEST_SKIPPED);
+    Set<ITestResult> testResults = new HashSet();
+    addAllTestResults(testResults, suiteResult.getTestContext().getPassedTests());
+    addAllTestResults(testResults, suiteResult.getTestContext().getFailedTests());
+    addAllTestResults(testResults, suiteResult.getTestContext().getSkippedTests());
+    addAllTestResults(testResults, suiteResult.getTestContext().getPassedConfigurations());
+    addAllTestResults(testResults, suiteResult.getTestContext().getSkippedConfigurations());
+    addAllTestResults(testResults, suiteResult.getTestContext().getFailedConfigurations());
+    addAllTestResults(testResults, suiteResult.getTestContext().getFailedButWithinSuccessPercentageTests());
+    addTestResults(xmlBuffer, testResults);
     xmlBuffer.pop();
+  }
+
+  private void addAllTestResults(Set<ITestResult> testResults, IResultMap resultMap) {
+    if (resultMap != null) {
+      testResults.addAll(resultMap.getAllResults());
+    }
   }
 
   private File referenceSuiteResult(XMLStringBuffer xmlBuffer, String parentDir, ISuiteResult suiteResult) {
@@ -68,22 +80,31 @@ public class XMLSuiteResultWriter {
     return attributes;
   }
 
-  private void addTestResults(XMLStringBuffer xmlBuffer, IResultMap results, String resultType) {
-    Map<String, List<ITestResult>> testsGroupedByClass = buildTestClassGroups(results);
+  private void addTestResults(XMLStringBuffer xmlBuffer, Set<ITestResult> testResults) {
+    Map<String, List<ITestResult>> testsGroupedByClass = buildTestClassGroups(testResults);
     for (Map.Entry<String, List<ITestResult>> result : testsGroupedByClass.entrySet()) {
       Properties attributes = new Properties();
-      attributes.setProperty(XMLReporterConfig.ATTR_NAME, result.getKey());
+      String className = result.getKey();
+      if (config.isSplitClassAndPackageNames()) {
+        int dot = className.lastIndexOf('.');
+        attributes.setProperty(XMLReporterConfig.ATTR_NAME,
+                dot > -1 ? className.substring(dot + 1, className.length()) : className);
+        attributes.setProperty(XMLReporterConfig.ATTR_PACKAGE, dot > -1 ? className.substring(0, dot) : "[default]");
+      } else {
+        attributes.setProperty(XMLReporterConfig.ATTR_NAME, className);
+      }
+
       xmlBuffer.push(XMLReporterConfig.TAG_CLASS, attributes);
       for (ITestResult testResult : result.getValue()) {
-        addTestResult(xmlBuffer, testResult, resultType);
+        addTestResult(xmlBuffer, testResult);
       }
       xmlBuffer.pop();
     }
   }
 
-  private Map<String, List<ITestResult>> buildTestClassGroups(IResultMap results) {
+  private Map<String, List<ITestResult>> buildTestClassGroups(Set<ITestResult> testResults) {
     Map<String, List<ITestResult>> map = new HashMap<String, List<ITestResult>>();
-    for (ITestResult result : results.getAllResults()) {
+    for (ITestResult result : testResults) {
       String className = result.getTestClass().getName();
       List<ITestResult> list = map.get(className);
       if (list == null) {
@@ -95,28 +116,40 @@ public class XMLSuiteResultWriter {
     return map;
   }
 
-  private void addTestResult(XMLStringBuffer xmlBuffer, ITestResult testResult, String resultType) {
+  private void addTestResult(XMLStringBuffer xmlBuffer, ITestResult testResult) {
     Properties attribs = getTestResultAttributes(testResult);
-    attribs.setProperty(XMLReporterConfig.ATTR_STATUS, resultType);
+    attribs.setProperty(XMLReporterConfig.ATTR_STATUS, getStatusString(testResult.getStatus()));
     xmlBuffer.push(XMLReporterConfig.TAG_TEST_METHOD, attribs);
     addTestMethodParams(xmlBuffer, testResult);
     addTestResultException(xmlBuffer, testResult);
     xmlBuffer.pop();
   }
 
+  private String getStatusString(int testResultStatus) {
+    switch (testResultStatus) {
+      case ITestResult.SUCCESS:
+        return "PASS";
+      case ITestResult.FAILURE:
+        return "FAIL";
+      case ITestResult.SKIP:
+        return "SKIP";
+      case ITestResult.SUCCESS_PERCENTAGE_FAILURE:
+        return "SUCCESS_PERCENTAGE_FAILURE";
+    }
+    return null;
+  }
+
   private Properties getTestResultAttributes(ITestResult testResult) {
     Properties attributes = new Properties();
+    if (!testResult.getMethod().isTest()) {
+      attributes.setProperty(XMLReporterConfig.ATTR_IS_CONFIG, "true");
+    }
     attributes.setProperty(XMLReporterConfig.ATTR_NAME, testResult.getName());
     String description = testResult.getMethod().getDescription();
     if (!Utils.isStringEmpty(description)) {
       attributes.setProperty(XMLReporterConfig.ATTR_DESC, description);
     }
 
-    String className = testResult.getTestClass().getName();
-    int dot = className.lastIndexOf('.');
-    attributes.setProperty(XMLReporterConfig.ATTR_PACKAGE, dot > -1 ? className.substring(0, dot) : "[default]");
-    attributes.setProperty(XMLReporterConfig.ATTR_CLASS,
-            dot > -1 ? className.substring(dot + 1, className.length()) : className);
     attributes.setProperty(XMLReporterConfig.ATTR_METHOD_SIG, removeClassName(testResult.getMethod().toString()));
 
     //TODO: Cosmin - not finished

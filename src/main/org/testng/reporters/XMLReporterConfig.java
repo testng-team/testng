@@ -1,9 +1,7 @@
 package org.testng.reporters;
 
 /**
- * @author Hani Suleiman
- *         Date: Mar 27, 2007
- *         Time: 9:16:28 AM
+ * @author Hani Suleiman Date: Mar 27, 2007 Time: 9:16:28 AM
  */
 public class XMLReporterConfig {
   /**
@@ -69,13 +67,14 @@ public class XMLReporterConfig {
   public static final String ATTR_STARTED_AT = "started-at";
   public static final String ATTR_FINISHED_AT = "finished-at";
   public static final String ATTR_DURATION_MS = "duration-ms";
+  public static final String ATTR_IS_CONFIG = "is-config";
 
   public static final String TEST_PASSED = "PASS";
   public static final String TEST_FAILED = "FAIL";
   public static final String TEST_SKIPPED = "SKIP";
-  
+
   //note: We're hardcoding the 'Z' because Java doesn't support all the intricacies of ISO-8601.
-  static final String FMT_DAY_MONTH_YEAR_TIME = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+  static final String FMT_DEFAULT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
   /**
    * Indicates the way that the file fragmentation should be performed. Set this property to one of the FF_LEVEL_*
@@ -95,16 +94,23 @@ public class XMLReporterConfig {
   private String outputDirectory;
 
   /**
-   * Indicates wheather the <code>groups</code> attribute should be generated for a <code>test-method</code> element.
+   * Indicates whether the <code>groups</code> attribute should be generated for a <code>test-method</code> element.
    * Defaults to false due to the fact that this might be considered reduntant because of the group generation in the
    * suite file.
    */
   private boolean generateGroupsAttribute = false;
 
   /**
+   * When <code>true</code> it will generate the &lt;class&lt; element with a <code>name</code> and a
+   * <code>package</code> attribute. Otherwise, the fully qualified name will be used for the <code>name</code>
+   * attribute.
+   */
+  private boolean splitClassAndPackageNames = false;
+
+  /**
    * The output format for timestamps
    */
-  private String timestampFormat = FMT_DAY_MONTH_YEAR_TIME;
+  private String timestampFormat = FMT_DEFAULT;
 
   public XMLReporterConfig(String outputDirectory) {
     this.outputDirectory = outputDirectory;
@@ -144,5 +150,13 @@ public class XMLReporterConfig {
 
   public void setTimestampFormat(String timestampFormat) {
     this.timestampFormat = timestampFormat;
+  }
+
+  public boolean isSplitClassAndPackageNames() {
+    return splitClassAndPackageNames;
+  }
+
+  public void setSplitClassAndPackageNames(boolean splitClassAndPackageNames) {
+    this.splitClassAndPackageNames = splitClassAndPackageNames;
   }
 }
