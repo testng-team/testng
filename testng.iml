@@ -7,6 +7,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/jdk15" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test/src" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -58,7 +59,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$JDK_LIB_PATH$/tools.jar!/" />
+          <root url="jar:///usr/local/jdk1.6.0_01/lib/tools.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

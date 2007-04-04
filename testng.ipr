@@ -70,6 +70,12 @@
     <option name="OUTPUT_DIRECTORY" />
   </component>
   <component name="GUI Designer component loader factory" />
+  <component name="HandyEdit.TapestrySupport" tapestryProject="false" askEnableTapestry="false">
+    <locations pageRoot="" componentRoot="" applicationFile="" pagePropertiesRoot="" />
+    <packages page="" component="" />
+    <completion properties="true" methods="false" htmlAttributes="true" />
+    <ext extensionComponentSpec="jwc" extensionPageSpec="page" extensionScript="script" />
+  </component>
   <component name="IdProvider" IDEtalkID="D0F72A6908483D7C8BCC5C9C6390E3DE" />
   <component name="InspectionProjectProfileManager">
     <option name="PROJECT_PROFILE" value="Project Default" />
@@ -137,6 +143,35 @@
     <option name="FILTER_WARNINGS" value="false" />
     <option name="FILTER_INFO" value="true" />
     <option name="CUSTOM_FILTER" />
+  </component>
+  <component name="Maven Reloaded">
+    <option name="config">
+      <value>
+        <option name="pluginEnabled" value="false" />
+        <option name="updateClasspathsEnabled" value="true" />
+        <option name="sortDependenciesEnabled" value="false" />
+        <option name="removeDuplicateDependenciesEnabled" value="false" />
+        <option name="respondToPomChangesEnabled" value="true" />
+        <option name="manageSourceRootsEnabled" value="true" />
+        <option name="manageModuleInterdependenciesEnabled" value="true" />
+        <option name="downloadSourcesEnabled" value="false" />
+        <option name="downloadJavadocEnabled" value="false" />
+        <option name="generateSourcesEnabled" value="false" />
+        <option name="settingsPath" value="$USERPROFILE$/.m2/settings.xml" />
+        <option name="searchFilter" value="" />
+        <option name="disabledPoms">
+          <value>
+            <collection type="java.util.TreeSet" />
+          </value>
+        </option>
+        <option name="moduleInterDependencies">
+          <value>
+            <map type="java.util.TreeMap" />
+          </value>
+        </option>
+        <option name="logLevel" value="1" />
+      </value>
+    </option>
   </component>
   <component name="Palette2">
     <group name="Swing">
@@ -264,7 +299,7 @@
       <module fileurl="file://$PROJECT_DIR$/testng.iml" filepath="$PROJECT_DIR$/testng.iml" />
     </modules>
   </component>
-  <component name="ProjectRootManager" version="2" assert-keyword="true" jdk-15="true" project-jdk-name="JDK1.5" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" assert-keyword="true" jdk-15="true" project-jdk-name="1.5" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/z_build" />
   </component>
   <component name="ProjectRunConfigurationManager" />
@@ -290,7 +325,7 @@
     <option name="DEFAULT_LAYOUT_MANAGER" value="GridLayoutManager" />
   </component>
   <UsedPathMacros>
-    <macro name="JDK_LIB_PATH" />
+    <macro name="USERPROFILE" />
   </UsedPathMacros>
 </project>
 
