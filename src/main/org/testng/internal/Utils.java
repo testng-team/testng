@@ -358,10 +358,10 @@ public final class Utils {
    * @return The number of methods invoked, taking into account the number
    * of instances.
    */
-  public static int calculateInvokedMethodCount(IResultMap map) {
-    return calculateInvokedMethodCount(
-        (ITestNGMethod[]) map.getAllMethods().toArray(new ITestNGMethod[map.size()]));
-  }
+//  public static int calculateInvokedMethodCount(IResultMap map) {
+//    return calculateInvokedMethodCount(
+//        (ITestNGMethod[]) map.getAllMethods().toArray(new ITestNGMethod[map.size()]));
+//  }
   
   public static int calculateInvokedMethodCount(ITestNGMethod[] methods) {
     return methods.length;
