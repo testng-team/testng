@@ -7,6 +7,8 @@
  */
 package org.testng.internal;
 
+import java.io.Serializable;
+
 import org.testng.internal.version.VersionInfo;
 import org.testng.log4testng.Logger;
 
@@ -14,7 +16,7 @@ import org.testng.log4testng.Logger;
  * <code>AnnotationTypeEnum</code> is an enumeration value representing the annotation type. 
  * @author cquezel
  */
-public final class AnnotationTypeEnum {
+public final class AnnotationTypeEnum implements Serializable {
   /** This class's log4testng Logger. */
   private static final Logger LOGGER = Logger.getLogger(AnnotationTypeEnum.class);
   
