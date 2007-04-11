@@ -22,11 +22,22 @@ public class XMLReporter implements IReporter {
 
     rootBuffer = new XMLStringBuffer("");
     rootBuffer.push(XMLReporterConfig.TAG_TESTNG_RESULTS);
+    writeReporterOutput(rootBuffer);
     for (int i = 0; i < suites.size(); i++) {
       writeSuite(xmlSuites.get(i), suites.get(i));
     }
     rootBuffer.pop();
     Utils.writeFile(outputDirectory, "testng-results.xml", rootBuffer.toXML());
+  }
+
+  private void writeReporterOutput(XMLStringBuffer xmlBuffer) {
+    //TODO: Cosmin - maybe a <line> element isn't indicated for each line. Also escaping might be considered
+    xmlBuffer.push(XMLReporterConfig.TAG_REPORTER_OUTPUT);
+    List<String> output = Reporter.getOutput();    
+    for (String line : output) {
+      xmlBuffer.addRequired(XMLReporterConfig.TAG_LINE, line);
+    }
+    xmlBuffer.pop();
   }
 
   private void writeSuite(XmlSuite xmlSuite, ISuite suite) {

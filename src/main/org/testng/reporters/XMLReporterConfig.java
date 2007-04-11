@@ -53,6 +53,8 @@ public class XMLReporterConfig {
   public static final String TAG_PARAMS = "params";
   public static final String TAG_PARAM = "param";
   public static final String TAG_PARAM_VALUE = "value";
+  public static final String TAG_REPORTER_OUTPUT = "reporter-output";
+  public static final String TAG_LINE = "line";
 
   public static final String ATTR_URL = "url";
   public static final String ATTR_NAME = "name";
