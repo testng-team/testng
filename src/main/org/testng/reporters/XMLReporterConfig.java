@@ -86,7 +86,7 @@ public class XMLReporterConfig implements Serializable
    * Indicates the way that the file fragmentation should be performed. Set this property to one of the FF_LEVEL_*
    * values for the desired output structure
    */
-  private int fileFragmentationLevel = FF_LEVEL_NONE;
+  private int fileFragmentationLevel = FF_LEVEL_SUITE;
 
   /**
    * Stack trace output method for the failed tests using one of the STACKTRACE_* constants.

@@ -5,7 +5,9 @@ import org.testng.internal.Utils;
 import org.testng.xml.XmlSuite;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
+import java.net.URLEncoder;
 
 /**
  * The main entry for the XML generation operation
@@ -33,7 +35,7 @@ public class XMLReporter implements IReporter {
   private void writeReporterOutput(XMLStringBuffer xmlBuffer) {
     //TODO: Cosmin - maybe a <line> element isn't indicated for each line. Also escaping might be considered
     xmlBuffer.push(XMLReporterConfig.TAG_REPORTER_OUTPUT);
-    List<String> output = Reporter.getOutput();    
+    List<String> output = Reporter.getOutput();
     for (String line : output) {
       xmlBuffer.addRequired(XMLReporterConfig.TAG_LINE, line);
     }
@@ -41,7 +43,11 @@ public class XMLReporter implements IReporter {
   }
 
   private void writeSuite(XmlSuite xmlSuite, ISuite suite) {
-    Utils.writeFile(config.getOutput(),  xmlSuite.getName() + "-testng.xml", xmlSuite.toXml());
+    try {
+      Utils.writeFile(config.getOutput(),  URLEncoder.encode(xmlSuite.getName(), "utf-8") + "-testng.xml", xmlSuite.toXml());
+    } catch(UnsupportedEncodingException e) {
+      throw new RuntimeException("no utf-8 in your JVM, awful awful things are happening", e);      
+    }
     switch (config.getFileFragmentationLevel()) {
       case XMLReporterConfig.FF_LEVEL_NONE:
         writeSuiteToBuffer(rootBuffer, suite);
@@ -63,7 +69,12 @@ public class XMLReporter implements IReporter {
   }
 
   private File referenceSuite(XMLStringBuffer xmlBuffer, ISuite suite) {
-    String relativePath = suite.getName() + File.separatorChar + "testng-results.xml";
+    String relativePath;
+    try {
+      relativePath = URLEncoder.encode(suite.getName(), "utf-8") + File.separatorChar + "testng-results.xml";
+    } catch(UnsupportedEncodingException e) {
+      throw new RuntimeException("no utf-8 in your JVM, awful awful things are happening", e);
+    }
     File suiteFile = new File(config.getOutput(), relativePath);
     Properties attrs = new Properties();
     attrs.setProperty(XMLReporterConfig.ATTR_URL, relativePath);
