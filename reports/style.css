@@ -1,0 +1,146 @@
+body {
+	background: #fff;
+	margin: 0;
+	padding: 0;
+  font:normal 9pt verdana
+}
+
+p {
+	font-size: 11px;
+	line-height: 1.4em;
+	font-weight: normal;
+}
+
+h1 {
+	font-size: 16px;
+	margin: 0 0 4px 0;
+}
+
+h2 {
+	line-height: 1.2em;
+	font-size: 14px;
+	margin: 0 0 3px 0;
+}
+
+h3 {
+	margin: 0 0 2px 0;
+	font-size: 12px;
+}
+
+a {
+	color: #3252b2;
+}
+
+a img {
+	border: 0;
+}
+
+
+span.highlight {
+	background-color: #ffc;
+}
+
+td, th {
+	vertical-align: top;
+}
+
+div.colorless {
+	background-color: transparent;
+}
+
+.classnode {
+  color: black;
+}
+
+.testnode {
+  color: black;
+}
+
+.table_PASS {
+  background-color: #cfc;
+}
+
+.table_SKIP {
+  background-color: #ffc;
+}
+
+.table_FAIL {
+  background-color: #fcc;
+}
+
+.dynvalue {
+  font-weight: bold;
+  padding-right: 5px;
+}
+
+td.passed-bar {
+	font-size: 2px;
+  height: 14px;
+  background: #00df00;
+  border-left:#9c9c9c 1px solid;
+  border-top:#9c9c9c 1px solid;
+  border-bottom:#9c9c9c 1px solid;
+}
+
+td.failed-bar {
+	font-size: 2px;
+  height: 12px;
+  background: #df0000;
+  border:#9c9c9c 1px solid;
+}
+
+.x-tree-node-icon {
+  height: 16px;
+}
+
+.clearfix:after {
+    content: "."; 
+    display: block; 
+    height: 0; 
+    clear: both; 
+    visibility: hidden;
+}
+
+.clearfix {display: inline-block;}
+
+/* Hides from IE-mac \*/
+* html .clearfix {height: 1%;}
+.clearfix {display: block;}
+/* End hide from IE-mac */
+
+/*-------------------------------------------------
+header
+-------------------------------------------------*/
+div#header {
+  border-top: 1px solid #dbc0ae;
+  border-bottom: 1px solid #dbc0ae;
+  padding: 2px 0 2px 0;
+  clear: both;
+  margin: 1px auto;
+  width: 100%;
+  font-size: 10px;
+}
+
+/*-------------------------------------------------
+footer
+-------------------------------------------------*/
+div#footer {
+	text-align: center;
+	background-color: #eee;
+	color: #999;
+	padding: 5px 0;
+	font-size: 10px;
+	line-height: 1.4em;
+}
+
+.msg .x-box-mc {
+    font-size:14px;
+}
+#msg-div {
+    position:absolute;
+    left:35%;
+    top:10px;
+    width:250px;
+    z-index:20000;
+}
+
