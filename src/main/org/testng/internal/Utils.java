@@ -150,9 +150,21 @@ public final class Utils {
    * @param sb the file content
    */
   public static void writeFile(String outputDir, String fileName, String sb) {
+    final String outDirPath= outputDir != null ? outputDir : "";
+    final File outDir= new File(outDirPath);
+    writeFile(outDir, fileName, sb);
+  }
+  
+  /**
+   * Writes the content of the sb string to the file named filename in outDir. If 
+   * outDir does not exist, it is created.
+   *
+   * @param outDir the output directory (may not exist). If <tt>null</tt> then current directory is used.
+   * @param fileName the filename
+   * @param sb the file content
+   */
+  public static void writeFile(File outDir, String fileName, String sb) {
     try {
-      final String outDirPath= outputDir != null ? outputDir : "";
-      final File outDir= new File(outDirPath);
       if (!outDir.exists()) {
         outDir.mkdirs();
       }
