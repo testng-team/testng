@@ -137,7 +137,8 @@ Ext.testng = function() {
     '<div class="x-box-bl"><div class="x-box-br"><div class="x-box-bc"></div></div></div>',
     '</div>'].join('');
   }
-  return {
+
+    return {
     msg : function(title, format) {
       if(!msgCt) {
         msgCt = Ext.DomHelper.insertFirst(document.body, {id:'msg-div'}, true);
@@ -150,7 +151,8 @@ Ext.testng = function() {
   };
 }();
 
-Ext.testng.reports = 'reports';
+Ext.testng.reports = getQueryVariable('rd');
+if(!Ext.testng.reports) Ext.testng.reports = '../test-output/xml'
 
 Ext.testng.ClassStatusHolder = function() {
   this.passCount = 0;
@@ -158,6 +160,18 @@ Ext.testng.ClassStatusHolder = function() {
   this.skipCount = 0;
   this.status = "PASS";
 };
+
+function getQueryVariable(variable) {
+  var query = window.location.search.substring(1);
+  var vars = query.split("&");
+  for(var i = 0; i < vars.length; i++) {
+    var pair = vars[i].split("=");
+    if(pair[0] == variable) {
+      return pair[1];
+    }
+  }
+  return null;
+}
 
 function updateHeader() {
   var q = Ext.DomQuery;
