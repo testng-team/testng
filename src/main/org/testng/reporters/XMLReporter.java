@@ -27,7 +27,7 @@ public class XMLReporter implements IReporter {
       writeSuite(xmlSuites.get(i), suites.get(i));
     }
     rootBuffer.pop();
-    Utils.writeFile(outputDirectory, "testng-results.xml", rootBuffer.toXML());
+    Utils.writeFile(config.getOutput(), "testng-results.xml", rootBuffer.toXML());
   }
 
   private void writeReporterOutput(XMLStringBuffer xmlBuffer) {
@@ -41,7 +41,7 @@ public class XMLReporter implements IReporter {
   }
 
   private void writeSuite(XmlSuite xmlSuite, ISuite suite) {
-    Utils.writeFile(config.getOutputDirectory(), xmlSuite.getName() + "-testng.xml", xmlSuite.toXml());
+    Utils.writeFile(config.getOutput(),  xmlSuite.getName() + "-testng.xml", xmlSuite.toXml());
     switch (config.getFileFragmentationLevel()) {
       case XMLReporterConfig.FF_LEVEL_NONE:
         writeSuiteToBuffer(rootBuffer, suite);
@@ -64,7 +64,7 @@ public class XMLReporter implements IReporter {
 
   private File referenceSuite(XMLStringBuffer xmlBuffer, ISuite suite) {
     String relativePath = suite.getName() + File.separatorChar + "testng-results.xml";
-    File suiteFile = new File(config.getOutputDirectory(), relativePath);
+    File suiteFile = new File(config.getOutput(), relativePath);
     Properties attrs = new Properties();
     attrs.setProperty(XMLReporterConfig.ATTR_URL, relativePath);
     xmlBuffer.addEmptyElement(XMLReporterConfig.TAG_SUITE, attrs);

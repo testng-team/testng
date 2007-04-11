@@ -1,9 +1,13 @@
 package org.testng.reporters;
 
+import java.io.File;
+import java.io.Serializable;
+
 /**
  * @author Hani Suleiman Date: Mar 27, 2007 Time: 9:16:28 AM
  */
-public class XMLReporterConfig {
+public class XMLReporterConfig implements Serializable
+{
   /**
    * Indicates that no file fragmentation should be performed. This value indicates the XML generator to write all the
    * results in one big file. Not recommended for large test suites.
@@ -114,8 +118,19 @@ public class XMLReporterConfig {
    */
   private String timestampFormat = FMT_DEFAULT;
 
+  private String subDirectory = "xml";
+  private static final long serialVersionUID = 5375520916207107244L;
+
   public XMLReporterConfig(String outputDirectory) {
     this.outputDirectory = outputDirectory;
+  }
+
+  public String getSubDirectory() {
+    return subDirectory;
+  }
+
+  public void setSubDirectory(String subDirectory) {
+    this.subDirectory = subDirectory;
   }
 
   public int getStackTraceOutputMethod() {
@@ -138,6 +153,12 @@ public class XMLReporterConfig {
     return outputDirectory;
   }
 
+  public File getOutput() {
+    if(subDirectory != null && subDirectory.length() > 0)
+      return new File(outputDirectory, subDirectory);
+    return new File(outputDirectory);
+  }
+  
   public boolean isGenerateGroupsAttribute() {
     return generateGroupsAttribute;
   }

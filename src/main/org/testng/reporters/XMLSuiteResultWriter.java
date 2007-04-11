@@ -38,7 +38,7 @@ public class XMLSuiteResultWriter {
       writeAllToBuffer(xmlBuffer, suiteResult);
     } else {
       String parentDir =
-              config.getOutputDirectory() + File.separatorChar + suiteResult.getTestContext().getSuite().getName();
+              config.getOutput().getAbsolutePath() + File.separatorChar + suiteResult.getTestContext().getSuite().getName();
       File file = referenceSuiteResult(xmlBuffer, parentDir, suiteResult);
       XMLStringBuffer suiteXmlBuffer = new XMLStringBuffer("");
       writeAllToBuffer(suiteXmlBuffer, suiteResult);
@@ -48,7 +48,7 @@ public class XMLSuiteResultWriter {
 
   private void writeAllToBuffer(XMLStringBuffer xmlBuffer, ISuiteResult suiteResult) {
     xmlBuffer.push(XMLReporterConfig.TAG_TEST, getSuiteResultAttributes(suiteResult));
-    Set<ITestResult> testResults = new HashSet();
+    Set<ITestResult> testResults = new HashSet<ITestResult>();
     addAllTestResults(testResults, suiteResult.getTestContext().getPassedTests());
     addAllTestResults(testResults, suiteResult.getTestContext().getFailedTests());
     addAllTestResults(testResults, suiteResult.getTestContext().getSkippedTests());
