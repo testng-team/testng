@@ -5,6 +5,7 @@ var testng = Sarissa.getDomDocument();
 var dataStore;
 var grid;
 var toolbar;
+var rootXPath = '';
 
 Ext.onReady(function() {
   Ext.QuickTips.init();
@@ -175,10 +176,11 @@ function getQueryVariable(variable) {
 
 function updateHeader() {
   var q = Ext.DomQuery;
-  var suite = q.select('testng-results/suite', testng)[0];
+  var suite = q.select(rootXPath + 'suite', testng)[0];
   var suiteName = q.selectValue('@name', suite);
   Ext.get('suitename').dom.innerHTML = suiteName;
   var v = Ext.get('tngxml');
+  if(rootXPath == '') suiteName = '../' + suiteName;
   v.dom.value = loadFile(suiteName + '-testng.xml');
 }
 
@@ -223,7 +225,7 @@ function loadTree(showPassed, updateCounts) {
       root.removeChild(root.firstChild);
     }
   }
-  var tests = q.select('testng-results/suite/test', testng);
+  var tests = q.select(rootXPath + 'suite/test', testng);
   var hasFails = false;
   var index = 1;
   var testIndex;
@@ -318,7 +320,7 @@ function loadTree(showPassed, updateCounts) {
 
 function showAllTestsInTable() {
   var showPass = toolbar.items.get('show-passed').pressed ? "" : "[@status != 'PASS']";
-  var xpath = 'testng-results/suite/test/class/test-method';
+  var xpath = rootXPath + 'suite/test/class/test-method';
   dataStore.reader = createReader(xpath + showPass);
   dataStore.load();
 }
@@ -328,9 +330,9 @@ function syncTableWithNode(node) {
     var showPass = toolbar.items.get('show-passed').pressed ? "" : "[@status != 'PASS']";
     var xpath;
     if(node.attributes.type == 'test')
-      xpath = "testng-results/suite/test[@name='" + node.id + "']/class/test-method"; 
+      xpath = rootXPath + "suite/test[@name='" + node.id + "']/class/test-method"; 
     else if(node.attributes.type == 'class')
-      xpath = "testng-results/suite/test[@name='" + node.attributes.test + "]/class[@name='" + node.id + "']/test-method";
+      xpath = rootXPath + "suite/test[@name='" + node.attributes.test + "]/class[@name='" + node.id + "']/test-method";
     dataStore.reader = createReader(xpath + showPass);
     dataStore.load();
   }
@@ -386,8 +388,8 @@ function createReader(xpath) {
 function tableInit() {
   dataStore = new Ext.data.Store({
     proxy: new Ext.data.MemoryProxy(testng),
-    reader: createReader('testng-results/suite/test/class/test-method')
-//    reader: createReader('testng-results/suite/test/class/test-method[@status != "PASS"]')
+    reader: createReader(rootXPath + 'suite/test/class/test-method')
+//    reader: createReader(rootXPath + '/suite/test/class/test-method[@status != "PASS"]')
   });
   dataStore.setDefaultSort('status', "DESC");
   
@@ -429,7 +431,7 @@ function tableInit() {
 
 function loadFile(name) {
   var xmlhttp = new XMLHttpRequest();
-  xmlhttp.open("GET", Ext.testng.reports + '/' + name, false);
+  xmlhttp.open("GET", Ext.testng.reports + '/' + name.replace(/ /g, '+'), false);
   xmlhttp.send('');
   return xmlhttp.responseText;
 }
@@ -467,6 +469,9 @@ function layout() {
 
 Ext.onReady(function() {
   testng = (new DOMParser()).parseFromString(loadFile('testng-results.xml'), "text/xml");
+  if(Ext.query('testng-results', testng).length > 0) {
+    rootXPath = 'testng-results/';
+  }
   updateHeader();
   treeInit();
   tableInit();
