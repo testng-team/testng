@@ -45,6 +45,7 @@ import org.testng.remote.RemoteTestWorker;
 import org.testng.reporters.EmailableReporter;
 import org.testng.reporters.FailedReporter;
 import org.testng.reporters.SuiteHTMLReporter;
+import org.testng.reporters.XMLReporter;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlMethodSelector;
@@ -218,10 +219,12 @@ public class TestNG {
    * <ul>
    * <li>org.testng.reporters.TestHTMLReporter
    * <li>org.testng.reporters.JUnitXMLReporter
+   * <li>org.testng.reporters.XMLReporter
    * </ul>
    * 
    * @see org.testng.reporters.TestHTMLReporter
    * @see org.testng.reporters.JUnitXMLReporter
+   * @see org.testng.reporters.XMLReporter
    */
   public void setUseDefaultListeners(boolean useDefaultListeners) {
     m_useDefaultListeners = useDefaultListeners;
@@ -680,6 +683,7 @@ public class TestNG {
     if(m_useDefaultListeners) {
       m_reporters.add(new SuiteHTMLReporter());
       m_reporters.add(new FailedReporter());
+      m_reporters.add(new XMLReporter());
       m_reporters.add(new EmailableReporter());
     }
   }
