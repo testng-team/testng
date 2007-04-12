@@ -5,14 +5,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import edu.emory.mathcs.backport.java.util.concurrent.ConcurrentHashMap;
 
 import org.testng.IResultMap;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 
 public class ResultMap implements IResultMap {
-  private Map<ITestResult, ITestNGMethod> m_map =
-    new HashMap<ITestResult, ITestNGMethod>();
+  private Map<ITestResult, ITestNGMethod> m_map = new ConcurrentHashMap/*<ITestResult, ITestNGMethod>*/();
 
   public void addResult(ITestResult result, ITestNGMethod method) {
     m_map.put(result, method);

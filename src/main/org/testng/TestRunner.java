@@ -990,9 +990,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   //
 
   public void addPassedTest(ITestNGMethod tm, ITestResult tr) {
-    synchronized(m_passedTests) {
-      m_passedTests.addResult(tr, tm);
-    }
+    m_passedTests.addResult(tr, tm);
   }
 
   public Set<ITestResult> getPassedTests(ITestNGMethod tm) {
@@ -1000,9 +998,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   }
 
   public void addSkippedTest(ITestNGMethod tm, ITestResult tr) {
-    synchronized(m_skippedTests) {
-      m_skippedTests.addResult(tr, tm);
-    }
+    m_skippedTests.addResult(tr, tm);
   }
 
   public void addInvokedMethod(InvokedMethod im) {
@@ -1035,22 +1031,14 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   // ITestResultNotifier
   /////
 
-//  public ITestNGMethod[] getTestMethods() {
-//    return m_allTestMethods;
-//  }
-
   private void logFailedTest(ITestNGMethod method,
                              ITestResult tr,
                              boolean withinSuccessPercentage) {
     if (withinSuccessPercentage) {
-      synchronized(m_failedButWithinSuccessPercentageTests) {
-        m_failedButWithinSuccessPercentageTests.addResult(tr, method);
-      }
+      m_failedButWithinSuccessPercentageTests.addResult(tr, method);
     }
     else {
-      synchronized(m_failedTests) {
-        m_failedTests.addResult(tr, method);
-      }
+      m_failedTests.addResult(tr, method);
     }
   }
 
@@ -1141,21 +1129,15 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   
   private class ConfigurationListener implements IConfigurationListener {
     public void onConfigurationFailure(ITestResult itr) {
-      synchronized(m_failedConfigurations) {
-        m_failedConfigurations.addResult(itr, itr.getMethod());
-      }
+      m_failedConfigurations.addResult(itr, itr.getMethod());
     }
 
     public void onConfigurationSkip(ITestResult itr) {
-      synchronized(m_skippedConfigurations) {
-        m_skippedConfigurations.addResult(itr, itr.getMethod());
-      }
+      m_skippedConfigurations.addResult(itr, itr.getMethod());
     }
 
     public void onConfigurationSuccess(ITestResult itr) {
-      synchronized(m_passedConfigurations) {
-        m_passedConfigurations.addResult(itr, itr.getMethod());
-      }
+      m_passedConfigurations.addResult(itr, itr.getMethod());
     }
   }
 } // TestRunner
