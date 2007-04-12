@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.testng.ITestContext;
 import org.testng.ITestResult;
+import org.testng.SkipException;
 import org.testng.internal.Utils;
 
 
@@ -73,7 +74,10 @@ public class TestResultMessage implements IStringMessage {
       else {
         stackTrace= "unknown stack trace";
       }
-      
+    }
+    else if(ITestResult.SKIP == result.getStatus() 
+        && (result.getThrowable() != null && SkipException.class.isAssignableFrom(result.getThrowable().getClass()))) {
+      stackTrace= result.getThrowable().getMessage();
     }
 
     init(MessageHelper.TEST_RESULT + result.getStatus(),
