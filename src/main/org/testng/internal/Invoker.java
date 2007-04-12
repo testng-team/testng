@@ -22,6 +22,7 @@ import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
+import org.testng.SkipException;
 import org.testng.SuiteRunState;
 import org.testng.TestException;
 import org.testng.TestNGException;
@@ -225,6 +226,15 @@ public class Invoker implements IInvoker {
                                           XmlSuite suite) 
   {
     Throwable cause= ite.getCause() != null ? ite.getCause() : ite;
+    
+    if(SkipException.class.isAssignableFrom(cause.getClass())) {
+      SkipException skipEx= (SkipException) cause;
+      if(!skipEx.isSkip()) {
+        testResult.setThrowable(skipEx);
+        handleConfigurationSkip(tm, testResult);
+        return;
+      }
+    }
     Utils.log("", 3, "Failed to invoke @Configuration method " 
         + tm.getRealClass().getName() + "." + tm.getMethodName() + ":" + cause.getMessage());
     handleException(cause, tm, testResult, 1, false);
@@ -912,6 +922,16 @@ public class Invoker implements IInvoker {
         if(isExpectedException(ite, expectedExceptionClasses)) {
           testResult.setStatus(ITestResult.SUCCESS);
           status= ITestResult.SUCCESS;
+        }
+        else if (SkipException.class.isAssignableFrom(ite.getClass())){
+          SkipException skipEx= (SkipException) ite;
+          if(skipEx.isSkip()) {
+            status= ITestResult.SKIP;
+          }
+          else {
+            handleException(ite, testMethod, testResult, failureCount++, true);
+            status= ITestResult.FAILURE;
+          }
         }
         else {
           handleException(ite, testMethod, testResult, failureCount++, true);

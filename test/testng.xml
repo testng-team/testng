@@ -494,4 +494,10 @@
 			<class name="test.groupinvocation.DummyTest" />
 		</classes>
   </test>
+	
+	<test name="SkipExceptions">
+		<classes>
+			<class name="test.skipex.SkippedExceptionTest" />
+		</classes>
+	</test>
 </suite>
