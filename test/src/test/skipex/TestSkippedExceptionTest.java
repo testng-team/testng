@@ -1,7 +1,7 @@
 package test.skipex;
 
 import org.testng.SkipException;
-import org.testng.TimeBombedSkipException;
+import org.testng.TimebombSkipException;
 import org.testng.annotations.Test;
 
 
@@ -16,6 +16,6 @@ public class TestSkippedExceptionTest {
   
   @Test
   public void timedSkipException() {
-    throw new TimeBombedSkipException("timedSkipException is time bombed", "2007/04/10");
+    throw new TimebombSkipException("timedSkipException is time bombed", "2007/04/10");
   }
 }
