@@ -20,6 +20,12 @@ Added: Support for concurrent execution for invocationCount=1 threadPoolSize>1 a
 Eclipse plug-in
 
 Fixed: Bug that made group launch configurations unusable
+
+IDEA plug-in
+
+Fixed: IDEA 7.0 compatibility
+Fixed: occasional 'illegal arguments exception'
+Fixed: TESTNG-151 Final passing test result is not properly hidden
 ===========================================================================
 5.5
 
