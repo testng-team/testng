@@ -26,6 +26,8 @@ IDEA plug-in
 Fixed: IDEA 7.0 compatibility
 Fixed: occasional 'illegal arguments exception'
 Fixed: TESTNG-151 Final passing test result is not properly hidden
+Added: Auto-completion for dependsOnMethods
+Added: Highlighting of invalid groups/methods in dependsOn*
 ===========================================================================
 5.5
 
