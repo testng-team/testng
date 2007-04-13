@@ -18,14 +18,15 @@ public interface IMasterAdapter
 	/**
 	 * Initializes the Master adapter.  
 	 * @param properties holds the properties loaded from the remote.properties file. 
+	 * @throws Exception adapter might throw any exception on initialization, which will abort this adapter.
 	 */
-	void init( Properties prop);
+	void init( Properties prop) throws Exception;
 	
 	/**
 	 * Run a suite remotely.
 	 * @param suite the suite to send.
 	 * @param listener the corresponded listener, should be called when result is ready. 
-	 * @throws IOException might be thrown on error  
+	 * @throws IOException might be thrown on IO error.  
 	 */
 	void runSuitesRemotely( XmlSuite suite, RemoteResultListener listener) throws IOException;
 	

@@ -1,5 +1,6 @@
 package org.testng.remote.adapter;
 
+import java.io.IOException;
 import java.util.Properties;
 
 import org.testng.ISuite;
@@ -17,21 +18,24 @@ public interface IWorkerApadter
 {
 	/**
 	 * Initializes the worker adapter.  
-	 * @param properties holds the properties loaded from the remote.properties file. 
+	 * @param properties holds the properties loaded from the remote.properties file.
+	 * @throws Exception adapter might throw any exception on initialization, which will abort this adapter. 
 	 */
-	void init( Properties properties);
+	void init( Properties properties) throws Exception;
 	
 	/**
 	 * A blocking call to get the next Suite to test. 
 	 * @param timeout the maximum time to wait for the next suite. 
 	 * @return the next suite avaliable or <code>null</code> if the timeout has reached.
-	 * @throws InterruptedException
+	 * @throws IOException might be thrown on IO error.
+	 * @throws InterruptedException if interrupted while waiting.
 	 */
-	XmlSuite getSuite( long timeout) throws InterruptedException;
+	XmlSuite getSuite( long timeout) throws InterruptedException, IOException;
 	
 	/**
 	 * Return a suite result.
 	 * @param result the result to return
+	 * @throws IOException might be thrown on IO error.
 	 */
-	void returnResult( ISuite result);
+	void returnResult( ISuite result) throws IOException;
 }
