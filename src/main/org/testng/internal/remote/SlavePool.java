@@ -25,11 +25,13 @@ public class SlavePool {
   }
   
   public void addSlave(Socket s) {
-    ConnectionInfo ci = new ConnectionInfo();
-    ci.setSocket(s);
-    addSlave(s, ci);
+	  if( s==null)
+		  return;
+	  ConnectionInfo ci = new ConnectionInfo();
+	  ci.setSocket(s);
+	  addSlave(s, ci);
   }
-  
+
   private void addSlave(Socket s, ConnectionInfo ci) {
     m_hosts.add(s);
     m_connectionInfos.put(s, ci);
