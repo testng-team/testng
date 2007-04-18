@@ -251,7 +251,7 @@ public class TestResultMessage implements IStringMessage {
           result.add("\"\"");
         }
         else {
-          result.add(tostring);
+          result.add(MessageHelper.replaceNewLine(tostring));
         }
       }
     }
@@ -285,7 +285,7 @@ public class TestResultMessage implements IStringMessage {
   private String[] extractParams(String[] params) {
     List<String> result= new ArrayList<String>(params.length);
     for(String s: params) {
-      result.add(s.substring(s.indexOf(':') + 1));
+      result.add(MessageHelper.replaceNewLineReplacer(s.substring(s.indexOf(':') + 1)));
     }
     
     return result.toArray(new String[result.size()]);
