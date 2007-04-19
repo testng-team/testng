@@ -678,7 +678,7 @@ public class TestNG {
     if(m_useDefaultListeners) {
       m_reporters.add(new SuiteHTMLReporter());
       m_reporters.add(new FailedReporter());
-//      m_reporters.add(new XMLReporter());
+      m_reporters.add(new XMLReporter());
       m_reporters.add(new EmailableReporter());
     }
   }
