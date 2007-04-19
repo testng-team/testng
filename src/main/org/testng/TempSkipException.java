@@ -20,7 +20,7 @@ import java.util.Date;
  * @author <a href='mailto:the[dot]mindstorm[at]gmail[dot]com'>Alex Popescu</a>
  * @since 5.6
  */
-public class TimebombSkipException extends SkipException {
+public class TempSkipException extends SkipException {
   private static final SimpleDateFormat SDF= new SimpleDateFormat("yyyy/MM/dd");
   private Calendar m_expireDate;
   private DateFormat m_inFormat= SDF;
@@ -33,7 +33,7 @@ public class TimebombSkipException extends SkipException {
    * @param msg exception message
    * @param expirationDate time limit after which the SKIP becomes a FAILURE
    */
-  public TimebombSkipException(String msg, Date expirationDate) {
+  public TempSkipException(String msg, Date expirationDate) {
     super(msg);
     initExpireDate(expirationDate);
   }
@@ -45,7 +45,7 @@ public class TimebombSkipException extends SkipException {
    * @param expirationDate time limit after which the SKIP becomes a FAILURE
    * @param format format for the time comparison
    */
-  public TimebombSkipException(String msg, Date expirationDate, String format) {
+  public TempSkipException(String msg, Date expirationDate, String format) {
     super(msg);
     m_inFormat= new SimpleDateFormat(format);
     m_outFormat= new SimpleDateFormat(format);
@@ -58,7 +58,7 @@ public class TimebombSkipException extends SkipException {
    * @param msg exception message
    * @param date time limit after which the SKIP becomes a FAILURE
    */
-  public TimebombSkipException(String msg, String date) {
+  public TempSkipException(String msg, String date) {
     super(msg);
     initExpireDate(date);
   }
@@ -71,7 +71,7 @@ public class TimebombSkipException extends SkipException {
    * @param date time limit after which the SKIP becomes a FAILURE
    * @param format format of the passed in <tt>date</tt> and of the time comparison
    */
-  public TimebombSkipException(String msg, String date, String format) {
+  public TempSkipException(String msg, String date, String format) {
     this(msg, date, format, format);
   }
   
@@ -84,7 +84,7 @@ public class TimebombSkipException extends SkipException {
    * @param inFormat format of the passed in <tt>date</tt>
    * @param outFormat format of the time comparison
    */
-  public TimebombSkipException(String msg, String date, String inFormat, String outFormat) {
+  public TempSkipException(String msg, String date, String inFormat, String outFormat) {
     super(msg);
     m_inFormat= new SimpleDateFormat(inFormat);
     m_outFormat= new SimpleDateFormat(outFormat);
