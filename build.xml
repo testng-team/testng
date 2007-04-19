@@ -131,7 +131,6 @@
         <include name="${beanshell.jar}" />
       </fileset>
     </path>
-  	<echo message="${compile2.cp}" />
 
     <javac classpathref="compile2.cp"
            verbose="false"
