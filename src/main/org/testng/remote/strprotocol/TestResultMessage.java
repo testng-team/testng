@@ -31,12 +31,14 @@ public class TestResultMessage implements IStringMessage {
   protected long m_endMillis;
   protected String[] m_parameters= new String[0];
   protected String[] m_paramTypes= new String[0];
+  private String m_testDescription;
 
   TestResultMessage(final int resultType,
                     final String suiteName,
                     final String testName,
                     final String className,
                     final String methodName,
+                    final String testDescriptor,
                     final String[] params,
                     final long startMillis,
                     final long endMillis,
@@ -51,8 +53,8 @@ public class TestResultMessage implements IStringMessage {
          startMillis,
          endMillis,
          extractParams(params),
-         extractParamTypes(params)
-         
+         extractParamTypes(params),
+         testDescriptor
     );
   }
 
@@ -89,7 +91,8 @@ public class TestResultMessage implements IStringMessage {
          result.getStartMillis(),
          result.getEndMillis(),
          toString(result.getParameters(), result.getMethod().getMethod().getParameterTypes()),
-         toString(result.getMethod().getMethod().getParameterTypes())
+         toString(result.getMethod().getMethod().getParameterTypes()),
+         result.getName()
     );
   }
   
@@ -106,7 +109,8 @@ public class TestResultMessage implements IStringMessage {
                     final long startMillis,
                     final long endMillis,
                     final String[] parameters,
-                    final String[] types) {
+                    final String[] types,
+                    final String testDescription) {
     m_messageType = resultType;
     m_suiteName = suiteName;
     m_testName = testName;
@@ -117,6 +121,7 @@ public class TestResultMessage implements IStringMessage {
     m_endMillis= endMillis;
     m_parameters= parameters;
     m_paramTypes= types;
+    m_testDescription= testDescription;
   }
 
   public int getResult() {
@@ -151,6 +156,8 @@ public class TestResultMessage implements IStringMessage {
        .append(m_endMillis)
        .append(MessageHelper.DELIMITER)
        .append(MessageHelper.replaceNewLine(m_stackTrace))
+       .append(MessageHelper.DELIMITER)
+       .append(MessageHelper.replaceNewLine(m_testDescription))
        ;
 
     return buf.toString();
@@ -190,6 +197,10 @@ public class TestResultMessage implements IStringMessage {
   
   public String[] getParameterTypes() {
     return m_paramTypes;
+  }
+  
+  public String getTestDescription() {
+    return m_testDescription;
   }
   
   public String toDisplayString() {

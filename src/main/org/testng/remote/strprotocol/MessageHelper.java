@@ -92,24 +92,40 @@ public class MessageHelper {
     String startTimestampFragment= null;
     String stopTimestampFragment= null;
     String stackTraceFragment= null;
-    if(messageParts.length == 9) {
-      parametersFragment= messageParts[5];
-      startTimestampFragment= messageParts[6];
-      stopTimestampFragment= messageParts[7];
-      stackTraceFragment= messageParts[8];
-    }
-    else {
-      // HINT: old protocol without parameters
-      parametersFragment= null;
-      startTimestampFragment= messageParts[5];
-      stopTimestampFragment= messageParts[6];
-      stackTraceFragment= messageParts[7];
+    String testDescriptor= null;
+    switch(messageParts.length) {
+      case 10:
+      {
+        parametersFragment= messageParts[5];
+        startTimestampFragment= messageParts[6];
+        stopTimestampFragment= messageParts[7];
+        stackTraceFragment= messageParts[8];
+        testDescriptor= messageParts[9];
+      }
+      break;
+      case 9:
+      {
+        parametersFragment= messageParts[5];
+        startTimestampFragment= messageParts[6];
+        stopTimestampFragment= messageParts[7];
+        stackTraceFragment= messageParts[8];        
+      }
+      break;
+      default:
+      {
+        // HINT: old protocol without parameters
+        parametersFragment= null;
+        startTimestampFragment= messageParts[5];
+        stopTimestampFragment= messageParts[6];
+        stackTraceFragment= messageParts[7];        
+      }
     }
     return new TestResultMessage(Integer.parseInt(messageParts[0]),
                                  messageParts[1],
                                  messageParts[2],
                                  messageParts[3],
                                  messageParts[4],
+                                 replaceNewLineReplacer(testDescriptor),
                                  parseParameters(parametersFragment),
                                  Long.parseLong(startTimestampFragment),
                                  Long.parseLong(stopTimestampFragment),
