@@ -138,8 +138,9 @@ public class Parameters {
       }
     }
   }
-  
-  private static Object convertType(Class type, String value, String paramName) {
+
+  //TODO: Cosmin - making this public is not the best solution
+  public static Object convertType(Class type, String value, String paramName) {
     Object result = null;
     
     if(NULL_VALUE.equals(value.toLowerCase())) {

@@ -135,6 +135,11 @@ public class TestNGAntTask extends Task {
   private String m_suiteName="Ant suite";
   private String m_testName="Ant test";
 
+  /**
+   * The list of report listeners added via &lt;reporter&gt; sub-element of the Ant task
+   */
+  private List<ReporterConfig> reporterConfigs = new ArrayList<ReporterConfig>();
+
   public void setParallel(String parallel) {
     m_parallelMode= parallel;
   }
@@ -566,6 +571,13 @@ public class TestNGAntTask extends Task {
     	argv.add(m_testName);
     }
 
+    if (!reporterConfigs.isEmpty()) {
+      for (ReporterConfig reporterConfig : reporterConfigs) {
+        argv.add(TestNGCommandLineArgs.REPORTER);
+        argv.add(reporterConfig.serialize());
+      }
+    }
+
     if(m_xmlFilesets.size() > 0) {
       for(String file : fileset(m_xmlFilesets)) {
         argv.add(file);
@@ -994,5 +1006,9 @@ public class TestNGAntTask extends Task {
     for(String line : lines) {
       ppp(line);
     }
+  }
+
+  public void addConfiguredReporter(ReporterConfig reporterConfig) {
+    reporterConfigs.add(reporterConfig);
   }
 }

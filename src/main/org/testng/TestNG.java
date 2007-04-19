@@ -24,12 +24,7 @@ import java.util.Properties;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.testng.internal.AnnotationTypeEnum;
-import org.testng.internal.ClassHelper;
-import org.testng.internal.HostFile;
-import org.testng.internal.IResultListener;
-import org.testng.internal.Invoker;
-import org.testng.internal.Utils;
+import org.testng.internal.*;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IAnnotationTransformer;
@@ -683,7 +678,7 @@ public class TestNG {
     if(m_useDefaultListeners) {
       m_reporters.add(new SuiteHTMLReporter());
       m_reporters.add(new FailedReporter());
-      m_reporters.add(new XMLReporter());
+//      m_reporters.add(new XMLReporter());
       m_reporters.add(new EmailableReporter());
     }
   }
@@ -1111,6 +1106,23 @@ public class TestNG {
     Class objectFactory = (Class) cmdLineArgs.get(TestNGCommandLineArgs.OBJECT_FACTORY_COMMAND_OPT);
     if(null != objectFactory) {
       setObjectFactory(objectFactory);
+    }
+
+    List<ReporterConfig> reporterConfigs =
+            (List<ReporterConfig>) cmdLineArgs.get(TestNGCommandLineArgs.REPORTERS_LIST);
+    if (reporterConfigs != null) {
+      for (ReporterConfig reporterConfig : reporterConfigs) {
+        addReporter(reporterConfig);
+      }
+    }
+  }
+
+  private void addReporter(ReporterConfig reporterConfig) {
+    Object instance = reporterConfig.newReporterInstance();
+    if (instance != null) {
+      addListener(instance);
+    } else {
+      LOGGER.warn("Could not find reporte class : " + reporterConfig.getClassname());
     }
   }
 

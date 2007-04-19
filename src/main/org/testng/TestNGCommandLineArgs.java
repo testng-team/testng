@@ -69,6 +69,14 @@ public final class TestNGCommandLineArgs {
   public static final String PARALLEL_MODE = "-parallel";
   public static final String SUITE_NAME_OPT = "-suitename";
   public static final String TEST_NAME_OPT = "-testname";
+  /**
+   * Used to pass a reporter configuration in the form <code>-reporter <reporter_name_or_class>:option=value[,option=value]</code>
+   */
+  public static final String REPORTER = "-reporter";
+  /**
+   * Used as map key for the complete list of report listeners provided with the above argument
+   */
+  public static final String REPORTERS_LIST = "-reporterslist";
 
   /** 
    * When given a file name to form a class name, the file name is parsed and divided 
@@ -328,6 +336,16 @@ public static Map parseCommandLine(final String[] originalArgv) {
       else if (TEST_NAME_OPT.equalsIgnoreCase(argv[i])) {
         if ((i + 1) < argv.length) {
           arguments.put(TEST_NAME_OPT, trim(argv[i + 1]));
+          i++;
+        }
+      }
+      else if (REPORTER.equalsIgnoreCase(argv[i])) {
+        if ((i + 1) < argv.length) {
+          ReporterConfig reporterConfig = ReporterConfig.deserialize(trim(argv[i + 1]));
+          if (arguments.get(REPORTERS_LIST) == null) {
+            arguments.put(REPORTERS_LIST, new ArrayList<ReporterConfig>());
+          }
+          ((List<ReporterConfig>)arguments.get(REPORTERS_LIST)).add(reporterConfig);
           i++;
         }
       }

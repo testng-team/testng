@@ -1,13 +1,9 @@
 package org.testng.reporters;
 
-import java.io.File;
-import java.io.Serializable;
-
 /**
  * @author Hani Suleiman Date: Mar 27, 2007 Time: 9:16:28 AM
  */
-public class XMLReporterConfig implements Serializable
-{
+public class XMLReporterConfig {
   /**
    * Indicates that no file fragmentation should be performed. This value indicates the XML generator to write all the
    * results in one big file. Not recommended for large test suites.
@@ -86,7 +82,7 @@ public class XMLReporterConfig implements Serializable
    * Indicates the way that the file fragmentation should be performed. Set this property to one of the FF_LEVEL_*
    * values for the desired output structure
    */
-  private int fileFragmentationLevel = FF_LEVEL_SUITE;
+  private int fileFragmentationLevel = FF_LEVEL_NONE;
 
   /**
    * Stack trace output method for the failed tests using one of the STACKTRACE_* constants.
@@ -118,19 +114,12 @@ public class XMLReporterConfig implements Serializable
    */
   private String timestampFormat = FMT_DEFAULT;
 
-  private String subDirectory = "xml";
-  private static final long serialVersionUID = 5375520916207107244L;
-
-  public XMLReporterConfig(String outputDirectory) {
-    this.outputDirectory = outputDirectory;
+  public int getFileFragmentationLevel() {
+    return fileFragmentationLevel;
   }
 
-  public String getSubDirectory() {
-    return subDirectory;
-  }
-
-  public void setSubDirectory(String subDirectory) {
-    this.subDirectory = subDirectory;
+  public void setFileFragmentationLevel(int fileFragmentationLevel) {
+    this.fileFragmentationLevel = fileFragmentationLevel;
   }
 
   public int getStackTraceOutputMethod() {
@@ -141,24 +130,14 @@ public class XMLReporterConfig implements Serializable
     this.stackTraceOutputMethod = stackTraceOutputMethod;
   }
 
-  public int getFileFragmentationLevel() {
-    return fileFragmentationLevel;
-  }
-
-  public void setFileFragmentationLevel(int fileFragmentationLevel) {
-    this.fileFragmentationLevel = fileFragmentationLevel;
-  }
-
   public String getOutputDirectory() {
     return outputDirectory;
   }
 
-  public File getOutput() {
-    if(subDirectory != null && subDirectory.length() > 0)
-      return new File(outputDirectory, subDirectory);
-    return new File(outputDirectory);
+  public void setOutputDirectory(String outputDirectory) {
+    this.outputDirectory = outputDirectory;
   }
-  
+
   public boolean isGenerateGroupsAttribute() {
     return generateGroupsAttribute;
   }
@@ -167,19 +146,19 @@ public class XMLReporterConfig implements Serializable
     this.generateGroupsAttribute = generateGroupsAttribute;
   }
 
-  public String getTimestampFormat() {
-    return timestampFormat;
-  }
-
-  public void setTimestampFormat(String timestampFormat) {
-    this.timestampFormat = timestampFormat;
-  }
-
   public boolean isSplitClassAndPackageNames() {
     return splitClassAndPackageNames;
   }
 
   public void setSplitClassAndPackageNames(boolean splitClassAndPackageNames) {
     this.splitClassAndPackageNames = splitClassAndPackageNames;
+  }
+
+  public String getTimestampFormat() {
+    return timestampFormat;
+  }
+
+  public void setTimestampFormat(String timestampFormat) {
+    this.timestampFormat = timestampFormat;
   }
 }

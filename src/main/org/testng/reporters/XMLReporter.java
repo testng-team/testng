@@ -5,9 +5,7 @@ import org.testng.internal.Utils;
 import org.testng.xml.XmlSuite;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
-import java.net.URLEncoder;
 
 /**
  * The main entry for the XML generation operation
@@ -16,11 +14,13 @@ import java.net.URLEncoder;
  */
 public class XMLReporter implements IReporter {
 
-  private XMLReporterConfig config;
+  private XMLReporterConfig config = new XMLReporterConfig();
   private XMLStringBuffer rootBuffer;
 
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
-    config = new XMLReporterConfig(outputDirectory);
+    if (Utils.isStringEmpty(config.getOutputDirectory())) {
+      config.setOutputDirectory(outputDirectory);
+    }
 
     rootBuffer = new XMLStringBuffer("");
     rootBuffer.push(XMLReporterConfig.TAG_TESTNG_RESULTS);
@@ -29,7 +29,7 @@ public class XMLReporter implements IReporter {
       writeSuite(xmlSuites.get(i), suites.get(i));
     }
     rootBuffer.pop();
-    Utils.writeFile(config.getOutput(), "testng-results.xml", rootBuffer.toXML());
+    Utils.writeFile(config.getOutputDirectory(), "testng-results.xml", rootBuffer.toXML());
   }
 
   private void writeReporterOutput(XMLStringBuffer xmlBuffer) {
@@ -43,11 +43,6 @@ public class XMLReporter implements IReporter {
   }
 
   private void writeSuite(XmlSuite xmlSuite, ISuite suite) {
-    try {
-      Utils.writeFile(config.getOutput(),  URLEncoder.encode(xmlSuite.getName(), "utf-8") + "-testng.xml", xmlSuite.toXml());
-    } catch(UnsupportedEncodingException e) {
-      throw new RuntimeException("no utf-8 in your JVM, awful awful things are happening", e);      
-    }
     switch (config.getFileFragmentationLevel()) {
       case XMLReporterConfig.FF_LEVEL_NONE:
         writeSuiteToBuffer(rootBuffer, suite);
@@ -69,13 +64,8 @@ public class XMLReporter implements IReporter {
   }
 
   private File referenceSuite(XMLStringBuffer xmlBuffer, ISuite suite) {
-    String relativePath;
-    try {
-      relativePath = URLEncoder.encode(suite.getName(), "utf-8") + File.separatorChar + "testng-results.xml";
-    } catch(UnsupportedEncodingException e) {
-      throw new RuntimeException("no utf-8 in your JVM, awful awful things are happening", e);
-    }
-    File suiteFile = new File(config.getOutput(), relativePath);
+    String relativePath = suite.getName() + File.separatorChar + "testng-results.xml";
+    File suiteFile = new File(config.getOutputDirectory(), relativePath);
     Properties attrs = new Properties();
     attrs.setProperty(XMLReporterConfig.ATTR_URL, relativePath);
     xmlBuffer.addEmptyElement(XMLReporterConfig.TAG_SUITE, attrs);
@@ -128,5 +118,54 @@ public class XMLReporter implements IReporter {
       result.add(method);
     }
     return result;
+  }
+
+  //TODO: This is not the smartest way to implement the config
+  public int getFileFragmentationLevel() {
+    return config.getFileFragmentationLevel();
+  }
+
+  public void setFileFragmentationLevel(int fileFragmentationLevel) {
+    config.setFileFragmentationLevel(fileFragmentationLevel);
+  }
+
+  public int getStackTraceOutputMethod() {
+    return config.getStackTraceOutputMethod();
+  }
+
+  public void setStackTraceOutputMethod(int stackTraceOutputMethod) {
+    config.setStackTraceOutputMethod(stackTraceOutputMethod);
+  }
+
+  public String getOutputDirectory() {
+    return config.getOutputDirectory();
+  }
+
+  public void setOutputDirectory(String outputDirectory) {
+    config.setOutputDirectory(outputDirectory);
+  }
+
+  public boolean isGenerateGroupsAttribute() {
+    return config.isGenerateGroupsAttribute();
+  }
+
+  public void setGenerateGroupsAttribute(boolean generateGroupsAttribute) {
+    config.setGenerateGroupsAttribute(generateGroupsAttribute);
+  }
+
+  public boolean isSplitClassAndPackageNames() {
+    return config.isSplitClassAndPackageNames();
+  }
+
+  public void setSplitClassAndPackageNames(boolean splitClassAndPackageNames) {
+    config.setSplitClassAndPackageNames(splitClassAndPackageNames);
+  }
+
+  public String getTimestampFormat() {
+    return config.getTimestampFormat();
+  }
+
+  public void setTimestampFormat(String timestampFormat) {
+    config.setTimestampFormat(timestampFormat);
   }
 }
