@@ -1,10 +1,12 @@
 package org.testng.internal.thread;
 
+import java.io.Serializable;
+
 
 /**
  * This class/interface 
  */
-public interface IAtomicInteger {
+public interface IAtomicInteger extends Serializable{
   /**
    * Get the current value.
    * @return the current value
