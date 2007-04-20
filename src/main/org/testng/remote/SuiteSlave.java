@@ -30,9 +30,9 @@ public class SuiteSlave
 	public static final String SLAVE_ADPATER = "testng.slave.adpter";
 
 
-	final private int _verbose;
-	final private IWorkerApadter _slaveAdpter;
-	final TestNG _testng;
+	final private int m_verbose;
+	final private IWorkerApadter m_slaveAdpter;
+	final private TestNG m_testng;
 
 	/**
 	 * Creates a new suite dispatcher.
@@ -44,24 +44,24 @@ public class SuiteSlave
 	{
 		try
 		{
-			_testng = testng;
+			m_testng = testng;
 
 			PropertiesFile file = new PropertiesFile( propertiesFile);
 			Properties properties = file.getProperties();
 
-			_verbose = Integer.parseInt( properties.getProperty(VERBOSE, "1"));
+			m_verbose = Integer.parseInt( properties.getProperty(VERBOSE, "1"));
 
 			String adapter = properties.getProperty(SLAVE_ADPATER);
 			if( adapter == null)
 			{
-				_slaveAdpter = new DefaultWorkerAdapter();
+				m_slaveAdpter = new DefaultWorkerAdapter();
 			}
 			else
 			{
 				Class clazz = Class.forName(adapter);
-				_slaveAdpter = (IWorkerApadter)clazz.newInstance();
+				m_slaveAdpter = (IWorkerApadter)clazz.newInstance();
 			}
-			_slaveAdpter.init(properties);
+			m_slaveAdpter.init(properties);
 		}
 		catch( Exception e)
 		{
@@ -79,15 +79,15 @@ public class SuiteSlave
 		try {
 			while (true) {
 				//TODO set timeout
-				XmlSuite s = _slaveAdpter.getSuite(Long.MAX_VALUE);
+				XmlSuite s = m_slaveAdpter.getSuite(Long.MAX_VALUE);
 				log("Processing " + s.getName());
 				List<XmlSuite> suites = new ArrayList<XmlSuite>();
 				suites.add(s);
-				_testng.setXmlSuites(suites);
-				List<ISuite> suiteRunners = _testng.runSuitesLocally();
+				m_testng.setXmlSuites(suites);
+				List<ISuite> suiteRunners = m_testng.runSuitesLocally();
 				ISuite sr = suiteRunners.get(0);
 				log("Done processing " + s.getName());
-				_slaveAdpter.returnResult(sr);
+				m_slaveAdpter.returnResult(sr);
 			}
 		}
 		catch(Exception ex) {

@@ -25,7 +25,7 @@ public class RemoteResultListener
 	/**
 	 * Holds the corresponded {@link SuiteRunner} for the processed {@link org.testng.xml.XmlSuite}.
 	 */
-	final private SuiteRunner _runner;
+	final private SuiteRunner m_runner;
 
 	/**
 	 * Creates a listener for an {@link org.testng.xml.XmlSuite} result.
@@ -33,7 +33,7 @@ public class RemoteResultListener
 	 */
 	public RemoteResultListener( SuiteRunner runner)
 	{
-		_runner = runner;
+		m_runner = runner;
 	}
 
 	/**
@@ -42,16 +42,16 @@ public class RemoteResultListener
 	 */
 	public void onResult( SuiteRunner remoteSuiteRunner)
 	{
-		_runner.setHost(remoteSuiteRunner.getHost());
+		m_runner.setHost(remoteSuiteRunner.getHost());
 		Map<String, ISuiteResult> tmpResults = remoteSuiteRunner.getResults();
-		Map<String, ISuiteResult> suiteResults = _runner.getResults();
+		Map<String, ISuiteResult> suiteResults = m_runner.getResults();
 		for (String tests : tmpResults.keySet()) 
 		{
 			ISuiteResult suiteResult = tmpResults.get(tests);
 			suiteResults.put(tests, suiteResult);
 			ITestContext tc = suiteResult.getTestContext();
 			TestHTMLReporter.generateLog(tc, remoteSuiteRunner.getHost(),
-			                             _runner.getOutputDirectory(),
+			                             m_runner.getOutputDirectory(),
 			                             tc.getFailedConfigurations().getAllResults(),
 			                             tc.getSkippedConfigurations().getAllResults(),
 			                             tc.getPassedTests().getAllResults(),

@@ -42,10 +42,10 @@ public class SuiteDispatcher
 	public static final String STRATEGY_TEST = "test";
 	public static final String STRATEGY_SUITE = "suite";
 
-	final private int _verbose;
-	final private boolean _isStrategyTest;
+	final private int m_verbose;
+	final private boolean m_isStrategyTest;
 
-	final private IMasterAdapter _masterAdpter;
+	final private IMasterAdapter m_masterAdpter;
 
 
 	/**
@@ -61,22 +61,22 @@ public class SuiteDispatcher
 			PropertiesFile file = new PropertiesFile( propertiesFile);
 			Properties properties = file.getProperties();
 
-			_verbose = Integer.parseInt( properties.getProperty(VERBOSE, "1"));
+			m_verbose = Integer.parseInt( properties.getProperty(VERBOSE, "1"));
 
 			String strategy = properties.getProperty(MASTER_STRATEGY, STRATEGY_SUITE);
-			_isStrategyTest = STRATEGY_TEST.equalsIgnoreCase(strategy);
+			m_isStrategyTest = STRATEGY_TEST.equalsIgnoreCase(strategy);
 
 			String adapter = properties.getProperty(MASTER_ADPATER);
 			if( adapter == null)
 			{
-				_masterAdpter = new DefaultMastertAdapter();
+				m_masterAdpter = new DefaultMastertAdapter();
 			}
 			else
 			{
 				Class clazz = Class.forName(adapter);
-				_masterAdpter = (IMasterAdapter)clazz.newInstance();
+				m_masterAdpter = (IMasterAdapter)clazz.newInstance();
 			}
-			_masterAdpter.init(properties);
+			m_masterAdpter.init(properties);
 		}
 		catch( Exception e)
 		{
@@ -104,11 +104,11 @@ public class SuiteDispatcher
 			//
 
 			for (XmlSuite suite : suites) {
-				suite.setVerbose(_verbose);
+				suite.setVerbose(m_verbose);
 				SuiteRunner suiteRunner = new SuiteRunner(suite, outputDir,
 				                                          new IAnnotationFinder[] {javadocAnnotationFinder,	jdkAnnotationFinder});
 				RemoteResultListener listener = new RemoteResultListener( suiteRunner);
-				if (_isStrategyTest) {
+				if (m_isStrategyTest) {
 					for (XmlTest test : suite.getTests()) {
 						XmlSuite tmpSuite = new XmlSuite();
 						tmpSuite.setXmlPackages(suite.getXmlPackages());
@@ -135,17 +135,17 @@ public class SuiteDispatcher
 						tmpTest.setXmlClasses(test.getXmlClasses());
 						tmpTest.setXmlPackages(test.getXmlPackages());
 
-						_masterAdpter.runSuitesRemotely(tmpSuite, listener); 
+						m_masterAdpter.runSuitesRemotely(tmpSuite, listener); 
 					}
 				}
 				else
 				{
-					_masterAdpter.runSuitesRemotely(suite, listener);
+					m_masterAdpter.runSuitesRemotely(suite, listener);
 				}
 				result.add(suiteRunner);  
 			}        
 
-			_masterAdpter.awaitTermination(100000);
+			m_masterAdpter.awaitTermination(100000);
 
 			//
 			// Run test listeners

@@ -25,7 +25,7 @@ implements IMasterAdapter
 {
 	public static final String HOSTS 	= "testng.hosts";
 
-	private String[] _hosts;
+	private String[] m_hosts;
 
 	final private SlavePool m_slavePool = new SlavePool();
 	final private List<Runnable> m_workers = new ArrayList<Runnable>();
@@ -37,14 +37,14 @@ implements IMasterAdapter
 	public void init(Properties properties)
 	{
 		String hostLine = properties.getProperty(HOSTS);
-		_hosts =  hostLine.split(" ");
+		m_hosts =  hostLine.split(" ");
 
 		//
 		// Create one socket per host found
 		//
-		Socket[] sockets = new Socket[_hosts.length];
-		for (int i = 0; i < _hosts.length; i++) {
-			String host = _hosts[i];
+		Socket[] sockets = new Socket[m_hosts.length];
+		for (int i = 0; i < m_hosts.length; i++) {
+			String host = m_hosts[i];
 			String[] s = host.split(":");
 			try {
 				sockets[i] = new Socket(s[0], Integer.parseInt(s[1]));

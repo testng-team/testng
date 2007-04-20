@@ -6,30 +6,30 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class ConnectionInfo {
-  private Socket socket;
-  private ObjectInputStream ois;
-  private ObjectOutputStream oos;
+  private Socket m_socket;
+  private ObjectInputStream m_ois;
+  private ObjectOutputStream m_oos;
   
   public ObjectInputStream getOis() throws IOException {
-    if (ois == null) {
-      ois = new ObjectInputStream(socket.getInputStream());
+    if (m_ois == null) {
+      m_ois = new ObjectInputStream(m_socket.getInputStream());
     }
-    return ois;
+    return m_ois;
   }
   
   public ObjectOutputStream getOos() throws IOException {
-    if (oos == null) {
-      oos = new ObjectOutputStream(socket.getOutputStream());
+    if (m_oos == null) {
+      m_oos = new ObjectOutputStream(m_socket.getOutputStream());
     }
-    return oos;
+    return m_oos;
   }
 
   public void setSocket(Socket s) {
-    socket = s;
+    m_socket = s;
   }
   
   public Socket getSocket() {
-    return socket;
+    return m_socket;
   }
 
 }
