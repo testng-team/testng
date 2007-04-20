@@ -37,7 +37,7 @@ public class PropertyUtils {
 
   public static Class getPropertyType(Class instanceClass, String propertyName) {
     if (instanceClass == null) {
-      LOGGER.warn("Cannot retreive property class for " + propertyName + ". Target instance class is null");
+      LOGGER.warn("Cannot retrieve property class for " + propertyName + ". Target instance class is null");
     }
     PropertyDescriptor propDesc = getPropertyDescriptor(instanceClass, propertyName);
     return propDesc.getPropertyType();
@@ -46,7 +46,7 @@ public class PropertyUtils {
   private static PropertyDescriptor getPropertyDescriptor(Class targetClass, String propertyName) {
     PropertyDescriptor result = null;
     if (targetClass == null) {
-      LOGGER.warn("Cannot retreive property " + propertyName + ". Class is null");
+      LOGGER.warn("Cannot retrieve property " + propertyName + ". Class is null");
     } else {
       try {
         BeanInfo beanInfo = Introspector.getBeanInfo(targetClass);
@@ -58,7 +58,7 @@ public class PropertyUtils {
           }
         }
       } catch (IntrospectionException ie) {
-        LOGGER.warn("Cannot retreive property " + propertyName + ". Cause is: " + ie);
+        LOGGER.warn("Cannot retrieve property " + propertyName + ". Cause is: " + ie);
       }
     }
     return result;

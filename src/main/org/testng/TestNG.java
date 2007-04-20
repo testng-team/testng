@@ -922,7 +922,7 @@ public class TestNG {
     if (instance != null) {
       addListener(instance);
     } else {
-      LOGGER.warn("Could not find reporte class : " + reporterConfig.getClassname());
+      LOGGER.warn("Could not find reporte class : " + reporterConfig.getClassName());
     }
   }
 

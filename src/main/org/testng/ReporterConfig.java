@@ -18,7 +18,7 @@ public class ReporterConfig {
   /**
    * The class name of the reporter listener
    */
-  private String m_classname;
+  private String m_className;
 
   /**
    * The properties of the reporter listener
@@ -33,17 +33,17 @@ public class ReporterConfig {
     return m_properties;
   }
 
-  public String getClassname() {
-    return m_classname;
+  public String getClassName() {
+    return m_className;
   }
 
-  public void setClassname(String classname) {
-    this.m_classname = classname;
+  public void setClassName(String className) {
+    this.m_className = className;
   }
 
   public String serialize() {
     StringBuffer sb = new StringBuffer();
-    sb.append(m_classname);
+    sb.append(m_className);
     if (!m_properties.isEmpty()) {
       sb.append(":");
 
@@ -66,9 +66,9 @@ public class ReporterConfig {
       reporterConfig = new ReporterConfig();
       int clsNameEndIndex = inputString.indexOf(":");
       if (clsNameEndIndex == -1) {
-        reporterConfig.setClassname(inputString);
+        reporterConfig.setClassName(inputString);
       } else {
-        reporterConfig.setClassname(inputString.substring(0, clsNameEndIndex));
+        reporterConfig.setClassName(inputString.substring(0, clsNameEndIndex));
         String propString = inputString.substring(clsNameEndIndex + 1, inputString.length());
         String[] props = propString.split(",");
         if ((props != null) && (props.length > 0)) {
@@ -93,7 +93,7 @@ public class ReporterConfig {
    */
   public Object newReporterInstance() {
     Object result = null;
-    Class reporterClass = ClassHelper.forName(m_classname);
+    Class reporterClass = ClassHelper.forName(m_className);
     if (reporterClass != null) {
       result = ClassHelper.newInstance(reporterClass);
       for (ReporterConfig.Property property : m_properties) {
@@ -126,7 +126,7 @@ public class ReporterConfig {
 
   public String toString() {
     StringBuffer buf = new StringBuffer();
-    buf.append("\nClass = " + m_classname);
+    buf.append("\nClass = " + m_className);
     for (Property prop : m_properties) {
       buf.append("\n\t " + prop.getName() + "=" + prop.getValue());
     }
