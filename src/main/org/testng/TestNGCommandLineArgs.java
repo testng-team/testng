@@ -63,7 +63,7 @@ public final class TestNGCommandLineArgs {
   public static final String SUITE_DEF_OPT = "testng.suite.definitions";
   public static final String JUNIT_DEF_OPT = "-junit";
   public static final String SLAVE_OPT = "-slave";
-  public static final String HOSTFILE_OPT = "-hostfile";
+  public static final String MASTER_OPT = "-master";
   public static final String THREAD_COUNT = "-threadcount";
   public static final String USE_DEFAULT_LISTENERS = "-usedefaultlisteners";
   public static final String PARALLEL_MODE = "-parallel";
@@ -286,27 +286,27 @@ public static Map parseCommandLine(final String[] originalArgv) {
         i++;
       }
       else if (SLAVE_OPT.equals(argv[i])) {
-        String clientPortNumber = null;
+        String propertiesFile = null;
         if ((i + 1) < argv.length) {
-          clientPortNumber = argv[i + 1].trim();
+          propertiesFile = argv[i + 1].trim();
         }
         else {
-          TestNG.exitWithError(SLAVE_OPT + " option should be followed by a valid port number.");
+          TestNG.exitWithError(SLAVE_OPT + " option should be followed by a valid file path.");
         }
-
-        arguments.put(SLAVE_OPT, clientPortNumber);
+        
+        arguments.put(SLAVE_OPT, propertiesFile);
         i++;
       }
-      else if (HOSTFILE_OPT.equals(argv[i])) {
-        String hostFile = null;
+      else if (MASTER_OPT.equals(argv[i])) {
+        String propertiesFile = null;
         if ((i + 1) < argv.length) {
-          hostFile = argv[i + 1].trim();
+      	  propertiesFile = argv[i + 1].trim();
         }
         else {
-          TestNG.exitWithError(HOSTFILE_OPT + " option should be followed by the name of a file.");
+          TestNG.exitWithError(MASTER_OPT + " option should be followed by a valid file path.");
         }
 
-        arguments.put(HOSTFILE_OPT, hostFile);
+        arguments.put(MASTER_OPT, propertiesFile);
         i++;
       }
       else if (PARALLEL_MODE.equalsIgnoreCase(argv[i])) {

@@ -1,19 +1,13 @@
 package org.testng;
 
 
-import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,13 +24,10 @@ import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IAnnotationTransformer;
 import org.testng.internal.annotations.ITest;
 import org.testng.internal.annotations.JDK14AnnotationFinder;
-import org.testng.internal.remote.SlavePool;
-import org.testng.internal.thread.ThreadUtil;
 import org.testng.internal.version.VersionInfo;
 import org.testng.log4testng.Logger;
-import org.testng.remote.ConnectionInfo;
-import org.testng.remote.RemoteSuiteWorker;
-import org.testng.remote.RemoteTestWorker;
+import org.testng.remote.SuiteDispatcher;
+import org.testng.remote.SuiteSlave;
 import org.testng.reporters.EmailableReporter;
 import org.testng.reporters.FailedReporter;
 import org.testng.reporters.SuiteHTMLReporter;
@@ -144,15 +135,9 @@ public class TestNG {
   protected int m_status;
   protected boolean m_hasTests= false;
   
-  /** The port on which this client will listen. */
-  private int m_clientPort = 0;
-
-  /** The name of the file containing the list of hosts where distributed
-   * tests will be dispatched. */
-  private String m_hostFile;
-
-  private SlavePool m_slavePool = new SlavePool();
-
+  private String m_slavefileName = null;
+  private String m_masterfileName = null;
+  
   // Command line suite parameters
   private int m_threadCount;
   private boolean m_useThreadCount;
@@ -557,12 +542,6 @@ public class TestNG {
       addListener(ClassHelper.newInstance(cls));
     }
   }
-  
-  private void setListeners(List<Object> itls) {
-    for (Object obj: itls) {
-      addListener(obj);
-    }
-  }
     
   public void addListener(Object listener) {
     if (! (listener instanceof ISuiteListener) 
@@ -708,14 +687,15 @@ public class TestNG {
     //
     // Slave mode
     //
-    if (m_clientPort != 0) {
-      waitForSuites();
+    if (m_slavefileName != null) {
+   	 SuiteSlave slave = new SuiteSlave( m_slavefileName, this );
+   	 slave.waitForSuites();
     }
     
     //
     // Regular mode
     //
-    else if (m_hostFile == null) {
+    else if (m_masterfileName == null) {
       suiteRunners = runSuitesLocally();
     }
     
@@ -723,7 +703,9 @@ public class TestNG {
     // Master mode
     //
     else {
-      suiteRunners = runSuitesRemotely();
+   	 SuiteDispatcher dispatcher = new SuiteDispatcher( m_masterfileName);
+   	 suiteRunners = dispatcher.dispatch(m_suites, getOutputDirectory(),
+   	                                    m_javadocAnnotationFinder, m_jdkAnnotationFinder, getTestListeners());
     }
     
     if(null != suiteRunners) {
@@ -749,174 +731,6 @@ public class TestNG {
       }
     }
   }
-  
-  private static ConnectionInfo resetSocket(int clientPort, ConnectionInfo oldCi) 
-    throws IOException 
-  {
-    ConnectionInfo result = new ConnectionInfo();
-    ServerSocket serverSocket = new ServerSocket(clientPort);
-    serverSocket.setReuseAddress(true);
-    log("Waiting for connections on port " + clientPort);
-    Socket socket = serverSocket.accept();
-    result.setSocket(socket);
-    
-    return result;
-  }
-
-  /**
-   * Invoked in client mode.  In this case, wait for a connection
-   * on the given port, run the XmlSuite we received and return the SuiteRunner
-   * created to run it.
-   * @throws IOException 
-   */
-  private void waitForSuites() {
-    try {
-      ConnectionInfo ci = resetSocket(m_clientPort, null);
-      while (true) {
-        try {
-          XmlSuite s = (XmlSuite) ci.getOis().readObject();
-          log("Processing " + s.getName());
-          m_suites = new ArrayList<XmlSuite>();
-          m_suites.add(s);
-          List<ISuite> suiteRunners = runSuitesLocally();
-          ISuite sr = suiteRunners.get(0);
-          log("Done processing " + s.getName());
-          ci.getOos().writeObject(sr);
-        }
-        catch (ClassNotFoundException e) {
-          e.printStackTrace(System.out);
-        }      
-        catch(EOFException ex) {
-          log("Connection closed " + ex.getMessage());
-          ci = resetSocket(m_clientPort, ci);
-        }
-        catch(SocketException ex) {
-          log("Connection closed " + ex.getMessage());
-          ci = resetSocket(m_clientPort, ci);
-        }
-      }
-    }
-    catch(IOException ex) {
-      ex.printStackTrace(System.out);
-    }
-  }
-
-  private static void log(String string) {
-    Utils.log("", 2, string);
-  }
-
-  @SuppressWarnings({"unchecked"})
-  private List<ISuite> runSuitesRemotely() {
-    List<ISuite> result = new ArrayList<ISuite>();
-    HostFile hostFile = new HostFile(m_hostFile);
-    
-    //
-    // Create one socket per host found
-    //
-    String[] hosts = hostFile.getHosts();
-    Socket[] sockets = new Socket[hosts.length];
-    for (int i = 0; i < hosts.length; i++) {
-      String host = hosts[i];
-      String[] s = host.split(":");
-      try {
-        sockets[i] = new Socket(s[0], Integer.parseInt(s[1]));
-      }
-      catch (NumberFormatException e) {
-        e.printStackTrace(System.out);
-      }
-      catch (UnknownHostException e) {
-        e.printStackTrace(System.out);
-      }
-      catch (IOException e) {
-        Utils.error("Couldn't connect to " + host + ": " + e.getMessage());
-      }
-    }
-    
-    //
-    // Add these hosts to the pool
-    //
-    try {
-      m_slavePool.addSlaves(sockets);
-    }
-    catch (IOException e1) {
-      e1.printStackTrace(System.out);
-    }
-
-    //
-    // Dispatch the suites/tests to each host
-    //
-    List<Runnable> workers = new ArrayList<Runnable>();
-    //
-    // Send one XmlTest at a time to remote hosts
-    //
-    if (hostFile.isStrategyTest()) {
-      for (XmlSuite suite : m_suites) {
-        suite.setVerbose(hostFile.getVerbose());
-        SuiteRunner suiteRunner = 
-          new SuiteRunner(suite, m_outputDir, new IAnnotationFinder[] {m_javadocAnnotationFinder, m_jdkAnnotationFinder});
-        for (XmlTest test : suite.getTests()) {
-          XmlSuite tmpSuite = new XmlSuite();
-          tmpSuite.setXmlPackages(suite.getXmlPackages());
-          tmpSuite.setAnnotations(suite.getAnnotations());
-          tmpSuite.setJUnit(suite.isJUnit());
-          tmpSuite.setName("Temporary suite for " + test.getName());
-          tmpSuite.setParallel(suite.getParallel());
-          tmpSuite.setParameters(suite.getParameters());
-          tmpSuite.setThreadCount(suite.getThreadCount());
-          tmpSuite.setVerbose(suite.getVerbose());
-          tmpSuite.setObjectFactory(suite.getObjectFactory());
-          XmlTest tmpTest = new XmlTest(tmpSuite);
-          tmpTest.setAnnotations(test.getAnnotations());
-          tmpTest.setBeanShellExpression(test.getExpression());
-          tmpTest.setXmlClasses(test.getXmlClasses());
-          tmpTest.setExcludedGroups(test.getExcludedGroups());
-          tmpTest.setIncludedGroups(test.getIncludedGroups());
-          tmpTest.setJUnit(test.isJUnit());
-          tmpTest.setMethodSelectors(test.getMethodSelectors());
-          tmpTest.setName(test.getName());
-          tmpTest.setParallel(test.getParallel());
-          tmpTest.setParameters(test.getParameters());
-          tmpTest.setVerbose(test.getVerbose());
-          tmpTest.setXmlClasses(test.getXmlClasses());
-          tmpTest.setXmlPackages(test.getXmlPackages());
-          
-          workers.add(new RemoteTestWorker(tmpSuite, m_slavePool, suiteRunner, result));
-        }
-        result.add(suiteRunner);  
-      }        
-    }
-    //
-    // Send one XmlSuite at a time to remote hosts
-    //
-    else {
-      for (XmlSuite suite : m_suites) {
-        workers.add(new RemoteSuiteWorker(suite, m_slavePool, result));
-      }
-    }
-
-    ThreadUtil.execute(workers, 1, 10 * 1000L, false);
-    
-    //
-    // Run test listeners
-    //
-    for (ISuite suite : result) {
-      for (ISuiteResult suiteResult : suite.getResults().values()) {
-        Collection<ITestResult> allTests[] = new Collection[] {
-            suiteResult.getTestContext().getPassedTests().getAllResults(),
-            suiteResult.getTestContext().getFailedTests().getAllResults(),  
-            suiteResult.getTestContext().getSkippedTests().getAllResults(),  
-            suiteResult.getTestContext().getFailedButWithinSuccessPercentageTests().getAllResults(),  
-        };
-        for (Collection<ITestResult> all : allTests) {
-          for (ITestResult tr : all) {
-            Invoker.runTestListeners(tr, m_testListeners);
-          }
-        }
-      }
-    }
-    
-    return result;
-  }
 
   /**
    * This needs to be public for maven2, for now..At least
@@ -925,12 +739,11 @@ public class TestNG {
    */
   public List<ISuite> runSuitesLocally() {
     List<ISuite> result = new ArrayList<ISuite>();
-    int v = TestRunner.getVerbose();
     
     if (TestRunner.getVerbose() > 0) {
       StringBuffer allFiles = new StringBuffer();
       for (XmlSuite s : m_suites) {
-        allFiles.append("  ").append(s.getFileName() != null ? s.getFileName() : getDefaultSuiteName()).append("\n");
+        allFiles.append("  ").append(s.getFileName() != null ? s.getFileName() : getDefaultSuiteName()).append('\n');
       }
       Utils.log("Parser", 0, "Running:\n" + allFiles.toString());
     }
@@ -975,15 +788,6 @@ public class TestNG {
     }
     
     result.setTestListeners(m_testListeners);
-    // Set the hostname, if any
-    if (m_clientPort != 0) {
-      try {
-        result.setHost(InetAddress.getLocalHost() + ":" + m_clientPort);
-      }
-      catch (UnknownHostException e) {
-        e.printStackTrace(System.out);
-      }
-    }
 
     result.run();
     return result;
@@ -1071,7 +875,8 @@ public class TestNG {
     setExcludedGroups((String) cmdLineArgs.get(TestNGCommandLineArgs.EXCLUDED_GROUPS_COMMAND_OPT));      
     setTestJar((String) cmdLineArgs.get(TestNGCommandLineArgs.TESTJAR_COMMAND_OPT));
     setJUnit((Boolean) cmdLineArgs.get(TestNGCommandLineArgs.JUNIT_DEF_OPT));
-    setHostFile((String) cmdLineArgs.get(TestNGCommandLineArgs.HOSTFILE_OPT));
+    setMaster( (String)cmdLineArgs.get(TestNGCommandLineArgs.MASTER_OPT));
+    setSlave( (String)cmdLineArgs.get(TestNGCommandLineArgs.SLAVE_OPT));
     
     String parallelMode = (String) cmdLineArgs.get(TestNGCommandLineArgs.PARALLEL_MODE);
     if (parallelMode != null) {
@@ -1083,11 +888,6 @@ public class TestNG {
       setThreadCount(Integer.parseInt(threadCount));
     }
     
-    String client = (String) cmdLineArgs.get(TestNGCommandLineArgs.SLAVE_OPT);
-    if (client != null) {
-      setClientPort(Integer.parseInt(client));
-    }
-
     String defaultSuiteName = (String) cmdLineArgs.get(TestNGCommandLineArgs.SUITE_NAME_OPT);
     if (defaultSuiteName != null) {
       setDefaultSuiteName(defaultSuiteName);
@@ -1126,18 +926,24 @@ public class TestNG {
     }
   }
 
-  private void setClientPort(int clientPort) {
-    m_clientPort = clientPort;
-  }
-
   /**
-   * Set the path to the file that contains the list of slaves.
-   * @param hostFile
+   * Specify if this run should be in Master-Slave mode as Master
+   * 
+   * @param fileName remote.properties path
    */
-  public void setHostFile(String hostFile) {
-    m_hostFile = hostFile;
+  public void setMaster(String fileName) {
+	  m_masterfileName = fileName;
   }
-
+  
+  /**
+   * Specify if this run should be in Master-Slave mode as slave
+   * 
+   * @param fileName remote.properties path
+   */
+  public void setSlave(String fileName) {
+	  m_slavefileName = fileName;
+  }
+  
   /**
    * Specify if this run should be made in JUnit mode
    * 
@@ -1178,9 +984,9 @@ public class TestNG {
     List<String> testClasses = (List<String>) params.get(TestNGCommandLineArgs.TESTCLASS_COMMAND_OPT);
     List<String> testNgXml = (List<String>) params.get(TestNGCommandLineArgs.SUITE_DEF_OPT);
     Object testJar = params.get(TestNGCommandLineArgs.TESTJAR_COMMAND_OPT);
-    Object port = params.get(TestNGCommandLineArgs.SLAVE_OPT);
+    Object slave = params.get(TestNGCommandLineArgs.SLAVE_OPT);
 
-    if (testClasses == null && testNgXml == null && port == null && testJar == null) {
+    if (testClasses == null && testNgXml == null && slave == null && testJar == null) {
       System.err.println("You need to specify at least one testng.xml or one class");
       usage();
       System.exit(-1);
@@ -1201,11 +1007,14 @@ public class TestNG {
       throw new TestNGException("Groups option should be used with testclass option");
     }
     
+    // -slave & -master can't be set together
+    if( params.containsKey(TestNGCommandLineArgs.SLAVE_OPT) && 
+   		 params.containsKey(TestNGCommandLineArgs.MASTER_OPT)) {
+   	 throw new TestNGException(TestNGCommandLineArgs.SLAVE_OPT + " can't be combined with " +
+   	                           TestNGCommandLineArgs.MASTER_OPT);
+    }
+    
     return params;
-  }
-
-  private static void ppp(String s) {
-    System.out.println("[TestNG] " + s);
   }
 
   /**

@@ -64,7 +64,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   transient private List<ITestListener> m_testListeners = new ArrayList<ITestListener>();
   transient private List<IConfigurationListener> m_configurationListeners= new ArrayList<IConfigurationListener>();
 
-  private IConfigurationListener m_confListener= new ConfigurationListener();
+  transient private IConfigurationListener m_confListener= new ConfigurationListener();
   
   /**
    * All the test methods we found, associated with their respective classes.

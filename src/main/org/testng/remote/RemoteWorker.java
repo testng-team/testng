@@ -1,20 +1,19 @@
 package org.testng.remote;
 
 import java.io.IOException;
-import java.util.List;
 
-import org.testng.ISuite;
 import org.testng.SuiteRunner;
 import org.testng.internal.Utils;
 import org.testng.internal.remote.SlavePool;
+import org.testng.remote.adapter.RemoteResultListener;
 import org.testng.xml.XmlSuite;
 
 public class RemoteWorker {
-  protected List<ISuite> m_result;
+  protected RemoteResultListener m_listener;
   private SlavePool m_slavePool;
 
-  public RemoteWorker(List<ISuite> result, SlavePool slavePool) {
-    m_result = result;
+  public RemoteWorker(RemoteResultListener listener, SlavePool slavePool) {
+    m_listener = listener;
     m_slavePool = slavePool;
   }
   

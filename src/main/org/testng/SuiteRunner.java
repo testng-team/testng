@@ -37,7 +37,7 @@ public class SuiteRunner implements ISuite, Serializable {
   private static final String DEFAULT_OUTPUT_DIR = "test-output";
 
   private Map<String, ISuiteResult> m_suiteResults = new HashMap<String, ISuiteResult>();
-  private List<TestRunner> m_testRunners = new ArrayList<TestRunner>();
+  transient private List<TestRunner> m_testRunners = new ArrayList<TestRunner>();
   transient private List<ISuiteListener> m_listeners = new ArrayList<ISuiteListener>();
   transient private TestListenerAdapter m_textReporter= new TestListenerAdapter();
 
