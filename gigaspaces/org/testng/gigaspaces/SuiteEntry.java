@@ -1,47 +1,59 @@
 package org.testng.gigaspaces;
 
+import java.util.UUID;
+
 import org.testng.xml.XmlSuite;
 
 /**
- * TODO	add Javadoc
+ * @author	Guy Korland
  * 
- * @author	Guyk
- * @version	1.0
- * @since	5.0
+ * @date 	April 20, 2007
  */
 public class SuiteEntry
 {
-	private XmlSuite _suite;
+	private XmlSuite m_suite;
+	private UUID 	  m_testID;	
 	
 	public SuiteEntry() {}
 	
-	public SuiteEntry( XmlSuite suite)
+	public SuiteEntry( XmlSuite suite, UUID testID)
 	{
-		_suite = suite;
+		m_suite = suite;
+		m_testID = testID;
 	}
 	
 	public XmlSuite getSuite()
 	{
-		return _suite;
+		return m_suite;
 	}
 	
 	public void setSuite( XmlSuite suite)
 	{
-		_suite = suite;
+		m_suite = suite;
 	}
 	
 	public String getSuiteName()
 	{
-		return _suite.getName();
+		return m_suite.getName();
 	}
 	
 	public String getTestName()
 	{
-		return _suite.getTest();
+		return m_suite.getTest();
 	}
 	
 	public boolean isJUnit()
 	{
-		return _suite.isJUnit();
+		return m_suite.isJUnit();
+	}
+
+	public UUID getTestID()
+	{
+		return m_testID;
+	}
+
+	public void setTestID(UUID testid)
+	{
+		m_testID = testid;
 	}
 }
