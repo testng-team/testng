@@ -6,5 +6,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/TestNG"/>
 	<classpathentry kind="lib" path="3rdparty/jini/jsk-lib.jar"/>
 	<classpathentry kind="lib" path="3rdparty/jini/jsk-platform.jar"/>
+	<classpathentry kind="lib" path="3rdparty/common/backport-util-concurrent.jar"/>
 	<classpathentry kind="output" path="z_build"/>
 </classpath>
