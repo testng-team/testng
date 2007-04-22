@@ -8,6 +8,7 @@ package org.testng.remote.adapter;
 
 import java.util.Map;
 
+import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.SuiteRunner;
@@ -40,7 +41,7 @@ public class RemoteResultListener
 	 * Should called by the {@link IWorkerApadter} implementation when a remote suite result is ready. 
 	 * @param remoteSuiteRunner remote result.
 	 */
-	public void onResult( SuiteRunner remoteSuiteRunner)
+	public void onResult( ISuite remoteSuiteRunner)
 	{
 		m_runner.setHost(remoteSuiteRunner.getHost());
 		Map<String, ISuiteResult> tmpResults = remoteSuiteRunner.getResults();
