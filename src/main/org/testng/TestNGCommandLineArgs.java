@@ -1,21 +1,16 @@
 package org.testng;
 
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Utils;
 import org.testng.internal.version.VersionInfo;
 import org.testng.log4testng.Logger;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * TestNG/RemoteTestNG command line arguments parser.
@@ -49,7 +44,7 @@ public final class TestNGCommandLineArgs {
   /** The logging level option. */
   public static final String LOG = "-log";
   
-  /** @deprecated replaced by DEFAULT_ANNOTATIONS_COMMAND_OPT. */
+  /** @deprecated replaced by ANNOTATIONS_COMMAND_OPT. */
   public static final String TARGET_COMMAND_OPT = "-target";
 
   /** The default annotations option (useful in TestNG 15 only). */
@@ -104,7 +99,7 @@ public final class TestNGCommandLineArgs {
    * @param originalArgv the command line options.
    * @return the parsed parameters as a map from option string to parsed values. 
    */
-public static Map parseCommandLine(final String[] originalArgv) {
+  public static Map parseCommandLine(final String[] originalArgv) {
     for (int i = 0; i < originalArgv.length; ++i) {
       LOGGER.debug("originalArgv[" + i + "] = \"" + originalArgv[i] + "\"");
     }
@@ -399,7 +394,7 @@ public static Map parseCommandLine(final String[] originalArgv) {
 	
 }
 
-/**
+  /**
    * Expand the command line parameters to take @ parameters into account.
    * When @ is encountered, the content of the file that follows is inserted
    * in the command line

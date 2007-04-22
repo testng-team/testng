@@ -43,6 +43,7 @@
     <version>5.6-SNAPSHOT</version>
     <description>TestNG is a unit testing framework.</description>
     <url>http://testng.org</url>
+    
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -55,22 +56,16 @@
         <url>http://testng.googlecode.com/svn/trunk</url>
     </scm>
 
+    <properties>
+        
+    </properties>
+
     <profiles>
         <profile>
             <id>jdk14</id>
             <activation>
                 <jdk>1.4</jdk>
             </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>backport-util-concurrent</groupId>
-                    <artifactId>backport-util-concurrent</artifactId>
-                    <version>1.0</version>
-                    <!-- I can't find where this version really came from -->
-                    <systemPath>${basedir}/3rdparty/util-concurrent.jar</systemPath>
-                    <scope>system</scope>
-                </dependency>
-            </dependencies>
             <build>
                 <plugins>
                     <plugin>
@@ -92,6 +87,10 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <source>1.4</source>
+                            <target>1.4</target>
+                        </configuration>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -107,21 +106,19 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!-- Won't work, it's not the right dep
-                              <plugin>
-                                <groupId>org.codehaus.mojo</groupId>
-                                <artifactId>dependency-maven-plugin</artifactId>
-                                <configuration>
-                                  <artifactItems>
-                                    <artifactItem>
-                                      <groupId>backport-util-concurrent</groupId>
-                                      <artifactId>backport-util-concurrent</artifactId>
-                                      <version>1.0</version>
-                                    </artifactItem>
-                                  </artifactItems>
-                                </configuration>
-                              </plugin>
-                    -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>dependency-maven-plugin</artifactId>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>backport-util-concurrent</groupId>
+                                    <artifactId>backport-util-concurrent</artifactId>
+                                    <version>2.2</version>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
@@ -130,7 +127,7 @@
                                 <phase>process-sources</phase>
                                 <configuration>
                                     <tasks>
-                                        <unzip dest="target/classes" src="3rdparty/util-concurrent.jar" />
+                                        <unzip dest="target/classes" src="3rdparty/backport-util-concurrent-2.2.jar" />
                                     </tasks>
                                 </configuration>
                                 <goals>
@@ -210,6 +207,7 @@
             </dependencies>
         </profile>
     </profiles>
+    
     <dependencies>
         <dependency>
             <groupId>ant</groupId>
@@ -235,8 +233,18 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+    
     <build>
         <sourceDirectory>src/main</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>src/main</directory>
+                <includes>
+                    <include>**/*.dtd</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -274,18 +282,34 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive>
+                        <index>true</index>
+                        <compress>true</compress>
                         <manifest>
                             <mainClass>org.testng.TestNG</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
+        
     </build>
+
     <distributionManagement>
         <snapshotRepository>
             <id>snapshots</id>
             <url>scp://beaver.codehaus.org/home/projects/maven/repository-staging/snapshots/maven2</url>
         </snapshotRepository>
     </distributionManagement>
+    
 </project>

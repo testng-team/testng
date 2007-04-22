@@ -1,29 +1,13 @@
 package org.testng;
 
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.testng.internal.*;
-import org.testng.internal.annotations.DefaultAnnotationTransformer;
-import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.IAnnotationTransformer;
+import org.testng.internal.AnnotationTypeEnum;
+import org.testng.internal.ClassHelper;
+import org.testng.internal.IResultListener;
+import org.testng.internal.Utils;
+import org.testng.internal.annotations.*;
 import org.testng.internal.annotations.ITest;
-import org.testng.internal.annotations.JDK14AnnotationFinder;
+import org.testng.internal.config.MapConfigurationParser;
 import org.testng.internal.version.VersionInfo;
 import org.testng.log4testng.Logger;
 import org.testng.remote.SuiteDispatcher;
@@ -32,12 +16,18 @@ import org.testng.reporters.EmailableReporter;
 import org.testng.reporters.FailedReporter;
 import org.testng.reporters.SuiteHTMLReporter;
 import org.testng.reporters.XMLReporter;
-import org.testng.xml.Parser;
-import org.testng.xml.XmlClass;
-import org.testng.xml.XmlMethodSelector;
-import org.testng.xml.XmlSuite;
-import org.testng.xml.XmlTest;
+import org.testng.xml.*;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.*;
 
 /**
  * This class is the main entry point for running tests in the TestNG framework.
@@ -125,7 +115,7 @@ public class TestNG {
   // These listeners can be overridden from the command line
   protected List<ITestListener> m_testListeners = new ArrayList<ITestListener>();
   protected List<ISuiteListener> m_suiteListeners = new ArrayList<ISuiteListener>();
-  private List<IReporter> m_reporters = new ArrayList<IReporter>();
+  List<IReporter> m_reporters = new ArrayList<IReporter>();
 
   public static final int HAS_FAILURE = 1;
   public static final int HAS_SKIPPED = 2;
@@ -139,14 +129,14 @@ public class TestNG {
   private String m_masterfileName = null;
   
   // Command line suite parameters
-  private int m_threadCount;
-  private boolean m_useThreadCount;
-  private String m_parallelMode;
-  private boolean m_useParallelMode;
-  private Class[] m_commandLineTestClasses;
+  int m_threadCount;
+  boolean m_useThreadCount;
+  String m_parallelMode;
+  boolean m_useParallelMode;
+  Class[] m_commandLineTestClasses;
   
-  private String m_defaultSuiteName=DEFAULT_COMMAND_LINE_SUITE_NAME;
-  private String m_defaultTestName=DEFAULT_COMMAND_LINE_TEST_NAME;
+  String m_defaultSuiteName=DEFAULT_COMMAND_LINE_SUITE_NAME;
+  String m_defaultTestName=DEFAULT_COMMAND_LINE_TEST_NAME;
   
   private Map<String, Integer> m_methodDescriptors = new HashMap<String, Integer>();
 
@@ -917,7 +907,42 @@ public class TestNG {
     }
   }
 
-  private void addReporter(ReporterConfig reporterConfig) {
+  /**
+   * Configures this test instance and executes the configured set of tests.
+   *
+   * Note: Main entry point for maven2 based tests.
+   *
+   * @param config
+   *          The map of configuration parameters. All name/key value pairs are
+   *          currently expected to be strings only - which will then be iterated over
+   *          and parsed/etc into the various objects required to properly configure
+   *          this test instance.
+   */
+  public void configureAndRun(Map config)
+  {
+    ITestNGConfiguration testConfig = new MapConfigurationParser();
+
+    testConfig.load(config);
+    testConfig.configure(this);
+
+    try {
+      
+      run();
+    }
+    catch(TestNGException ex) {
+      if (TestRunner.getVerbose() > 1) {
+        ex.printStackTrace(System.out);
+      }
+      else {
+        System.err.println("[ERROR]: " + ex.getMessage());
+      }
+
+      setStatus(HAS_FAILURE);
+    }
+  }
+
+  public void addReporter(ReporterConfig reporterConfig) {
+    
     Object instance = reporterConfig.newReporterInstance();
     if (instance != null) {
       addListener(instance);

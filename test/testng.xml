@@ -500,4 +500,12 @@
 			<class name="test.skipex.SkippedExceptionTest" />
 		</classes>
 	</test>
+
+  <test name="Configuration" >
+    <classes>
+      <class name="org.testng.MapConfigurationParserTest" />
+      <class name="org.testng.TestNGConfigureTest" />
+    </classes>
+  </test>
+
 </suite>
