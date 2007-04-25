@@ -206,6 +206,12 @@ public class Parameters {
     
     if (null != dataProviderName && ! "".equals(dataProviderName)) {
       result = findDataProvider(clazz, finder, dataProviderName, dataProviderClass);
+      
+      if(null == result) {
+        throw new TestNGException("Method " + m + " requires a @DataProvider named : " 
+            + dataProviderName + (dataProviderClass != null ? " in class " + dataProviderClass.getName() : "") 
+            );
+      }
     }
 
     return result;
