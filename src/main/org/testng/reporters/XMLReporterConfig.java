@@ -4,6 +4,46 @@ package org.testng.reporters;
  * @author Hani Suleiman Date: Mar 27, 2007 Time: 9:16:28 AM
  */
 public class XMLReporterConfig {
+
+  public static final String TAG_TEST = "test";
+  public static final String TAG_TEST_METHOD = "test-method";
+  public static final String TAG_EXCEPTION = "exception";
+  public static final String TAG_MESSAGE = "message";
+  public static final String TAG_SHORT_STACKTRACE = "short-stacktrace";
+  public static final String TAG_FULL_STACKTRACE = "full-stacktrace";
+  public static final String TAG_TESTNG_RESULTS = "testng-results";
+  public static final String TAG_SUITE = "suite";
+  public static final String TAG_GROUPS = "groups";
+  public static final String TAG_GROUP = "group";
+  public static final String TAG_CLASS = "class";
+  public static final String TAG_METHOD = "method";
+  public static final String TAG_PARAMS = "params";
+  public static final String TAG_PARAM = "param";
+  public static final String TAG_PARAM_VALUE = "value";
+  public static final String TAG_REPORTER_OUTPUT = "reporter-output";
+  public static final String TAG_LINE = "line";
+
+  public static final String ATTR_URL = "url";
+  public static final String ATTR_NAME = "name";
+  public static final String ATTR_STATUS = "status";
+  public static final String ATTR_DESC = "description";
+  public static final String ATTR_METHOD_SIG = "signature";
+  public static final String ATTR_GROUPS = "groups";
+  public static final String ATTR_CLASS = "class";
+  public static final String ATTR_INDEX = "index";
+  public static final String ATTR_IS_NULL = "is-null";
+  public static final String ATTR_PACKAGE = "package";
+  public static final String ATTR_STARTED_AT = "started-at";
+  public static final String ATTR_FINISHED_AT = "finished-at";
+  public static final String ATTR_DURATION_MS = "duration-ms";
+  public static final String ATTR_IS_CONFIG = "is-config";
+  public static final String ATTR_DEPENDS_ON_METHODS = "depends-on-methods";
+  public static final String ATTR_DEPENDS_ON_GROUPS = "depends-on-groups";
+
+  public static final String TEST_PASSED = "PASS";
+  public static final String TEST_FAILED = "FAIL";
+  public static final String TEST_SKIPPED = "SKIP";
+
   /**
    * Indicates that no file fragmentation should be performed. This value indicates the XML generator to write all the
    * results in one big file. Not recommended for large test suites.
@@ -38,43 +78,6 @@ public class XMLReporterConfig {
    */
   public static final int STACKTRACE_BOTH = 3;
 
-  public static final String TAG_TEST = "test";
-  public static final String TAG_TEST_METHOD = "test-method";
-  public static final String TAG_EXCEPTION = "exception";
-  public static final String TAG_MESSAGE = "message";
-  public static final String TAG_SHORT_STACKTRACE = "short-stacktrace";
-  public static final String TAG_FULL_STACKTRACE = "full-stacktrace";
-  public static final String TAG_TESTNG_RESULTS = "testng-results";
-  public static final String TAG_SUITE = "suite";
-  public static final String TAG_GROUPS = "groups";
-  public static final String TAG_GROUP = "group";
-  public static final String TAG_CLASS = "class";
-  public static final String TAG_METHOD = "method";
-  public static final String TAG_PARAMS = "params";
-  public static final String TAG_PARAM = "param";
-  public static final String TAG_PARAM_VALUE = "value";
-  public static final String TAG_REPORTER_OUTPUT = "reporter-output";
-  public static final String TAG_LINE = "line";
-
-  public static final String ATTR_URL = "url";
-  public static final String ATTR_NAME = "name";
-  public static final String ATTR_STATUS = "status";
-  public static final String ATTR_DESC = "description";
-  public static final String ATTR_METHOD_SIG = "signature";
-  public static final String ATTR_GROUPS = "groups";
-  public static final String ATTR_CLASS = "class";
-  public static final String ATTR_INDEX = "index";
-  public static final String ATTR_IS_NULL = "is-null";
-  public static final String ATTR_PACKAGE = "package";
-  public static final String ATTR_STARTED_AT = "started-at";
-  public static final String ATTR_FINISHED_AT = "finished-at";
-  public static final String ATTR_DURATION_MS = "duration-ms";
-  public static final String ATTR_IS_CONFIG = "is-config";
-
-  public static final String TEST_PASSED = "PASS";
-  public static final String TEST_FAILED = "FAIL";
-  public static final String TEST_SKIPPED = "SKIP";
-
   //note: We're hardcoding the 'Z' because Java doesn't support all the intricacies of ISO-8601.
   static final String FMT_DEFAULT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
@@ -108,6 +111,18 @@ public class XMLReporterConfig {
    * attribute.
    */
   private boolean splitClassAndPackageNames = false;
+
+  /**
+   * Indicates whether the <code>depends-on-methods</code> attribute should be generated for a <code>test-method</code>
+   * element
+   */
+  private boolean generateDependsOnMethods = true;
+
+  /**
+   * Indicates whether the <code>depends-on-groups</code> attribute should be generated for a <code>test-method</code>
+   * element
+   */
+  private boolean generateDependsOnGroups = true;
 
   /**
    * The output format for timestamps
@@ -160,5 +175,21 @@ public class XMLReporterConfig {
 
   public void setTimestampFormat(String timestampFormat) {
     this.timestampFormat = timestampFormat;
+  }
+
+  public boolean isGenerateDependsOnMethods() {
+    return generateDependsOnMethods;
+  }
+
+  public void setGenerateDependsOnMethods(boolean generateDependsOnMethods) {
+    this.generateDependsOnMethods = generateDependsOnMethods;
+  }
+
+  public boolean isGenerateDependsOnGroups() {
+    return generateDependsOnGroups;
+  }
+
+  public void setGenerateDependsOnGroups(boolean generateDependsOnGroups) {
+    this.generateDependsOnGroups = generateDependsOnGroups;
   }
 }

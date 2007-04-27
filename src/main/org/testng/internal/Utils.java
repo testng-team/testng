@@ -771,4 +771,17 @@ public final class Utils {
     
     return buf.append(fqn ? method.toString() : method.getMethodName()).toString(); 
   }
+
+  public static String arrayToString(String[] strings) {
+    String result = "";
+    if ((strings != null) && (strings.length > 0)) {
+      for (int i = 0; i < strings.length; i++) {
+        result += strings[i];
+        if (i < strings.length - 1) {
+          result += ", ";
+        }
+      }
+    }
+    return result;
+  }
 }

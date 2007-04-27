@@ -168,4 +168,20 @@ public class XMLReporter implements IReporter {
   public void setTimestampFormat(String timestampFormat) {
     config.setTimestampFormat(timestampFormat);
   }
+
+  public boolean isGenerateDependsOnMethods() {
+    return config.isGenerateDependsOnMethods();
+  }
+
+  public void setGenerateDependsOnMethods(boolean generateDependsOnMethods) {
+    config.setGenerateDependsOnMethods(generateDependsOnMethods);
+  }
+
+  public void setGenerateDependsOnGroups(boolean generateDependsOnGroups) {
+    config.setGenerateDependsOnGroups(generateDependsOnGroups);
+  }
+
+  public boolean isGenerateDependsOnGroups() {
+    return config.isGenerateDependsOnGroups();
+  }
 }

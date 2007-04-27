@@ -152,7 +152,6 @@ public class XMLSuiteResultWriter {
 
     attributes.setProperty(XMLReporterConfig.ATTR_METHOD_SIG, removeClassName(testResult.getMethod().toString()));
 
-    //TODO: Cosmin - not finished
     SimpleDateFormat format = new SimpleDateFormat(config.getTimestampFormat());
     String startTime = format.format(testResult.getStartMillis());
     String endTime = format.format(testResult.getEndMillis());
@@ -163,11 +162,26 @@ public class XMLSuiteResultWriter {
     attributes.setProperty(XMLReporterConfig.ATTR_DURATION_MS, strDuration);
 
     if (config.isGenerateGroupsAttribute()) {
-      String groupNamesStr = getGroupNamesString(testResult);
+      String groupNamesStr = Utils.arrayToString(testResult.getMethod().getGroups());
       if (!Utils.isStringEmpty(groupNamesStr)) {
         attributes.setProperty(XMLReporterConfig.ATTR_GROUPS, groupNamesStr);
       }
     }
+
+    if (config.isGenerateDependsOnMethods()) {
+      String dependsOnStr = Utils.arrayToString(testResult.getMethod().getMethodsDependedUpon());
+      if (!Utils.isStringEmpty(dependsOnStr)) {
+        attributes.setProperty(XMLReporterConfig.ATTR_DEPENDS_ON_METHODS, dependsOnStr);
+      }
+    }
+
+    if (config.isGenerateDependsOnGroups()) {
+      String dependsOnStr = Utils.arrayToString(testResult.getMethod().getGroupsDependedUpon());
+      if (!Utils.isStringEmpty(dependsOnStr)) {
+        attributes.setProperty(XMLReporterConfig.ATTR_DEPENDS_ON_GROUPS, dependsOnStr);
+      }
+    }
+
     return attributes;
   }
 
@@ -220,8 +234,8 @@ public class XMLSuiteResultWriter {
               .STACKTRACE_SHORT) {
         xmlBuffer.addRequired(XMLReporterConfig.TAG_SHORT_STACKTRACE, stackTraces[0]);
       }
-      if ((config.getStackTraceOutputMethod() & XMLReporterConfig.STACKTRACE_FULL) == XMLReporterConfig.STACKTRACE_FULL)
-      {
+      if ((config.getStackTraceOutputMethod() & XMLReporterConfig.STACKTRACE_FULL) == XMLReporterConfig
+              .STACKTRACE_FULL) {
         xmlBuffer.addRequired(XMLReporterConfig.TAG_FULL_STACKTRACE, stackTraces[1]);
       }
 
@@ -229,17 +243,4 @@ public class XMLSuiteResultWriter {
     }
   }
 
-  private String getGroupNamesString(ITestResult testResult) {
-    String result = "";
-    String[] groupNames = testResult.getMethod().getGroups();
-    if ((groupNames != null) && (groupNames.length > 0)) {
-      for (int i = 0; i < groupNames.length; i++) {
-        result += groupNames[i];
-        if (i < groupNames.length - 1) {
-          result += ", ";
-        }
-      }
-    }
-    return result;
-  }
 }
