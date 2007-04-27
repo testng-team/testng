@@ -80,6 +80,8 @@ public class SuiteSlave
 			while (true) {
 				//TODO set timeout
 				XmlSuite s = m_slaveAdpter.getSuite(Long.MAX_VALUE);
+				if( s== null)
+					continue;
 				log("Processing " + s.getName());
 				List<XmlSuite> suites = new ArrayList<XmlSuite>();
 				suites.add(s);
