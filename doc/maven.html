@@ -82,19 +82,14 @@ TestNG has plug-ins for both Maven 1 and Maven 2.
 <!--  begin maven2  -->
 <h3 id="maven2">Maven 2</h3>
 
-<p>Maven2 has changed quite a bit from the first release. Maven2 should support TestNG out of 
-the box without the need to download any additional plugins <em>(other than TestNG itself)</em>. In fact,
-other than specifying testng as one of your build dependencies,  most people shouldn't really have 
-to do any other configuration for the majority of cases. Most of it just works.</p>
+<p>Maven2 has changed quite a bit from the first release. Maven2 should support TestNG out of the box without the need to download any additional plugins <em>(other than TestNG itself)</em>. In fact, other than specifying testng as one of your build dependencies,  most people shouldn't really have to do any other configuration for the majority of cases.
 
 <h4>Snapshot Build Updates</h4>
 <p>
-  A few issues have cropped up in the latest TestNG / maven2 plugin from the standard distributions that have been fixed
-  but are still available only in snapshot form. The latest current good version of the plugin that you want is
-  <b>2.4-SNAPSHOT</b>.
+The latest current good version of the plugin that you want is <b>2.4-SNAPSHOT</b>.
 </p>
 <p>
-  To get the apache ibiblio snapshot repository added to your maven project you will need to add a section like
+  To get the apache ibiblio snapshot repository added to your Maven project you will need to add a section like
   the following to your <code>pom.xml</code>:
 </p>
 
@@ -109,16 +104,12 @@ to do any other configuration for the majority of cases. Most of it just works.<
 
 <h4>Reference</h4>
 <p>Though this section will include a lot more TestNG specific
-features, the overall test plugin properties should be mostly
-covered on mavens site.</p>
+features, the overall test plugin properties should be mostly covered on Mavens site.</p>
 
 <em>Maven2 TestNG Documentation:</em> <a href="http://maven.apache.org/plugins/maven-surefire-plugin/testng.html">Maven TestNG</a>
 
 <h4>Overview</h4>
-<p>Most of the configuration aspects with maven will be
-centered around your pom.xml's <tt>build</tt> section. <i>(<a
-    href="http://maven.apache.org/maven-model/maven.html">reference</a>)</i>
-In here you define things like build output directories,
+<p>Most of the configuration aspects with Maven will be centered around your pom.xml's <a href="http://maven.apache.org/maven-model/maven.html">build section</a>.  In here you define things like build output directories,
 location of test source code, as well as configure plugin
 parameters, like those you will need to get TestNG setup the
 way that you prefer. Following is a sample portion of this
@@ -184,7 +175,7 @@ the configurable TestNG properties.
     <tr>
         <th>Goal</th><th>Description</th></tr><tr>
         <td><tt>test</tt></td><td>Compiles and runs your tests</td></tr><tr>
-        <td><tt>site</tt></td><td>Creates your maven generated site, which will include the TestNG report output.</td></tr></table><h4>Properties</h4><table border="1" id="table3">
+        <td><tt>site</tt></td><td>Creates your Maven generated site, which will include the TestNG report output.</td></tr></table><h4>Properties</h4><table border="1" id="table3">
     <tr>
         <th>Property</th><th>Optional?</th><th>Description</th></tr><tr>
         <td><tt>includes</tt></td><td>No</td><td>Comma delimited list of regexp patterns to include source files with. Ie **/Test*.java</td></tr><tr>
@@ -199,7 +190,7 @@ the configurable TestNG properties.
 
 <h3>Java 1.4</h3>
 <p>
-In order to use javadoc style annotations you currently <em>must</em> run maven with a java 1.4 jvm in order for them to be seen. If 
+In order to use javadoc style annotations you currently <em>must</em> run Maven with a java 1.4 jvm in order for them to be seen. If 
 you try running your javadoc annotated tests in a 1.5 jvm they will most likely not be found. It is hoped in a future release this problem
 will be eliminated.
 </p>
@@ -214,7 +205,7 @@ A sample surefire report with TestNG can be found <a href="samplereport/index.ht
 <!-- maven2 archetype -->
 <h3 id="archetype">Maven TestNG Archetype <em>(Martin Gilday)</em></h3>
 <p>
-  Martin Gilday has added a new archetype for maven2 users that should make it easier to get going with TestNG. You can find more about
+  Martin Gilday has added a new archetype for Maven2 users that should make it easier to get going with TestNG. You can find more about
   this in his blog entry <a href="http://www.martingilday.org/updates/Maven+TestNG+Archetype">here</a>,  but the basics for configuring it have been pasted below.
 </p>
 <p>
@@ -225,7 +216,7 @@ A sample surefire report with TestNG can be found <a href="samplereport/index.ht
     -DarchetypeVersion=1.0-SNAPSHOT -DremoteRepositories=http://www.martingilday.org/repository/</pre>
 
 <p>Of course substitute in your own groupId and artifactId.</p>
-<p>Don't forget to keep checking back at <a href="http://www.martingilday.org/updates/Maven+TestNG+Archetype">Martins blog</a> for more updates. </p>
+<p>Don't forget to keep checking back at <a href="http://www.martingilday.org/updates/Maven+TestNG+Archetype">Martin's blog</a> for more updates. </p>
 <!-- end maven2 archetype -->
 
 <br/><br/>
@@ -241,8 +232,7 @@ directory.</p>
 
 <p>For the latest version of the plug-in (1.2 as of 12/12/05),
 update your <tt>maven.repo.remote</tt> to include <tt>http://www.vanwardtechnologies.com/repository/</tt>
-and then issue the following command: <tt>maven
-plugin:download</tt>. Maven will issue a series of questions,
+and then issue the following command: <tt>maven plugin:download</tt>. Maven will issue a series of questions,
 answer them as follows: <BR>
 <BR>
 <TABLE border="1" id="table1">
