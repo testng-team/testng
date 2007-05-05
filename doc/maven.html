@@ -102,11 +102,14 @@ The latest current good version of the plugin that you want is <b>2.4-SNAPSHOT</
 &lt;/pluginRepositories&gt;
 </pre>
 
+<h4>Surefire Documentation</h4>
+<p>
+  <em>Maven2 TestNG Documentation:</em> <a href="http://maven.apache.org/plugins/maven-surefire-plugin/testng.html">Maven TestNG</a>
+</p>
+
 <h4>Reference</h4>
 <p>Though this section will include a lot more TestNG specific
 features, the overall test plugin properties should be mostly covered on Mavens site.</p>
-
-<em>Maven2 TestNG Documentation:</em> <a href="http://maven.apache.org/plugins/maven-surefire-plugin/testng.html">Maven TestNG</a>
 
 <h4>Overview</h4>
 <p>Most of the configuration aspects with Maven will be centered around your pom.xml's <a href="http://maven.apache.org/maven-model/maven.html">build section</a>.  In here you define things like build output directories,
@@ -116,43 +119,18 @@ way that you prefer. Following is a sample portion of this
 section in a pom.xml file.</p>
 
 <pre class="prettyprint">
+&lt;dependencies&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;org.testng&lt;/groupId&gt;
+  &lt;artifactId&gt;testng&lt;/artifactId&gt;
+  &lt;version&gt;5.5&lt;/version&gt;
+  &lt;scope&gt;test&lt;/scope&gt;
+  &lt;classifier&gt;jdk15&lt;/classifier&gt;
+&lt;/dependency&gt;
+&lt;dependencies&gt;
+
 &lt;build&gt;
- &lt;defaultGoal&gt;package&lt;/defaultGoal&gt;
- &lt;sourceDirectory&gt;src/java&lt;/sourceDirectory&gt;
-
-  &lt;resources&gt;
-    &lt;resource&gt;
-      &lt;directory&gt;src/js/dojo&lt;/directory&gt;
-      &lt;includes&gt;
-        &lt;include&gt;**&lt;/include&gt;
-      &lt;/includes&gt;
-      &lt;targetPath&gt;net/sf/tacos/ajax/components/dojo&lt;/targetPath&gt;
-    &lt;/resource&gt;
-
-    &lt;resource&gt;
-      &lt;directory&gt;src/descriptor/META-INF&lt;/directory&gt;
-        &lt;includes&gt;
-          &lt;include&gt;**&lt;/include&gt;
-        &lt;/includes&gt;
-        
-        &lt;targetPath&gt;META-INF&lt;/targetPath
-      &lt;/resource&gt;
-    &lt;/resources&gt;
-
-    &lt;testSourceDirectory&gt;src/test&lt;/testSourceDirectory&gt;
-
-    &lt;testResources&gt;
-      &lt;testResource&gt;
-        &lt;directory&gt;src/test-data&lt;/directory&gt;
-        &lt;includes&gt;
-          &lt;include&gt;*.*&lt;/include&gt;
-        &lt;/includes&gt;
-      &lt;excludes&gt;
-        &lt;exclude&gt;*.launch&lt;/exclude&gt;
-      &lt;/excludes&gt;
-    &lt;/testResource&gt;
-  &lt;/testResources&gt;
-
+..
   &lt;plugins&gt;
     &lt;plugin&gt;
       &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
