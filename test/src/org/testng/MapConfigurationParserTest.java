@@ -27,7 +27,7 @@ public class MapConfigurationParserTest {
   public void test_Group_Configuration() {
 
     TestNG test = new TestNG(false);
-    ITestNGConfiguration parser = new MapConfigurationParser();
+    MapConfigurationParser parser = new MapConfigurationParser();
 
     Properties props = new Properties();
     props.put(ITestNGConfiguration.GROUPS, "snuggly,bunnies,die");
@@ -60,7 +60,7 @@ public class MapConfigurationParserTest {
   public void test_Class_Configuration() {
 
     TestNG test = new TestNG(false);
-    ITestNGConfiguration parser = new MapConfigurationParser();
+    MapConfigurationParser parser = new MapConfigurationParser();
 
     Properties props = new Properties();
     props.put(ITestNGConfiguration.TEST_CLASSES, "org.testng.MapConfigurationParserTest, test.Exclude");
@@ -78,7 +78,7 @@ public class MapConfigurationParserTest {
   public void test_Invalid_Class_Configuration() {
 
     TestNG test = new TestNG(false);
-    ITestNGConfiguration parser = new MapConfigurationParser();
+    MapConfigurationParser parser = new MapConfigurationParser();
 
     Properties props = new Properties();
     props.put(ITestNGConfiguration.TEST_CLASSES, "org.testng.MapConfigurationParserTest, test.Unknown");

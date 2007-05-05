@@ -1,16 +1,6 @@
 package org.testng;
 
 
-import java.io.File;
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.IInvoker;
 import org.testng.internal.Utils;
@@ -21,6 +11,11 @@ import org.testng.reporters.TestHTMLReporter;
 import org.testng.reporters.TextReporter;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+
+import java.io.File;
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * <CODE>SuiteRunner</CODE> is responsible for running all the tests included in one
@@ -171,8 +166,9 @@ public class SuiteRunner implements ISuite, Serializable {
     }
     else {
       factory = new ProxyTestRunnerFactory(
-          m_testlisteners.toArray(new ITestListener[m_testlisteners.size()]), 
-          m_tmpRunnerFactory);
+              m_testlisteners.toArray(new ITestListener[m_testlisteners.size()]),
+              m_tmpRunnerFactory,
+              m_useDefaultListeners);
     }
     
     return factory;
@@ -445,7 +441,7 @@ public class SuiteRunner implements ISuite, Serializable {
         new TestRunner(suite,
                         test,
                         suite.getOutputDirectory(),
-                        suite.getAnnotationFinder(test.getAnnotations()));
+                        suite.getAnnotationFinder(test.getAnnotations()), m_useDefaultListeners);
       
       if (m_useDefaultListeners) {
         testRunner.addListener(new TestHTMLReporter());
@@ -470,10 +466,12 @@ public class SuiteRunner implements ISuite, Serializable {
   public static class ProxyTestRunnerFactory implements ITestRunnerFactory {
     private ITestListener[] m_failureGenerators;
     private ITestRunnerFactory m_target;
+    private boolean m_useDefaultListeners;
 
-    public ProxyTestRunnerFactory(ITestListener[] failureListeners, ITestRunnerFactory target) {
+    public ProxyTestRunnerFactory(ITestListener[] failureListeners, ITestRunnerFactory target, boolean useDefaultListeners) {
       m_failureGenerators = failureListeners;
       m_target= target;
+      m_useDefaultListeners = useDefaultListeners;
     }
 
     /**
@@ -482,7 +480,9 @@ public class SuiteRunner implements ISuite, Serializable {
     public TestRunner newTestRunner(ISuite suite, XmlTest test) {
       TestRunner testRunner= m_target.newTestRunner(suite, test);
 
-      testRunner.addListener(new TextReporter(testRunner.getName(), TestRunner.getVerbose()));
+      if (m_useDefaultListeners) {
+        testRunner.addListener(new TextReporter(testRunner.getName(), TestRunner.getVerbose()));
+      }
 
       for (ITestListener itl : m_failureGenerators) {
         testRunner.addListener(itl);

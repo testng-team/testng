@@ -910,8 +910,10 @@ public class TestNG {
   /**
    * Configures this test instance and executes the configured set of tests.
    *
-   * Note: Main entry point for maven2 based tests.
-   *
+   * <p>
+   * <b>Note:</b> Main entry point for maven2 based tests.
+   * </p>
+   * 
    * @param config
    *          The map of configuration parameters. All name/key value pairs are
    *          currently expected to be strings only - which will then be iterated over
@@ -920,16 +922,19 @@ public class TestNG {
    */
   public void configureAndRun(Map config)
   {
-    ITestNGConfiguration testConfig = new MapConfigurationParser();
+    MapConfigurationParser testConfig = new MapConfigurationParser();
 
     testConfig.load(config);
     testConfig.configure(this);
 
+    // run actual tests
+    
     try {
       
       run();
     }
-    catch(TestNGException ex) {
+    catch(TestNGException ex)
+    {
       if (TestRunner.getVerbose() > 1) {
         ex.printStackTrace(System.out);
       }

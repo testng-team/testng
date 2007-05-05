@@ -19,8 +19,13 @@ import java.util.*;
 public class MapConfigurationParser implements ITestNGConfiguration {
 
   private static final Logger LOGGER = Logger.getLogger(MapConfigurationParser.class);
-  
+
+  // Set of properties originally given to parser
   Map m_props;
+  // ClassLoader to use to resolve test classes
+  ClassLoader m_classLoader;
+  // Classpath directory to use
+  String m_classPath;
 
   // Generated reports output directory
   String m_outputDirectory;
@@ -72,6 +77,8 @@ public class MapConfigurationParser implements ITestNGConfiguration {
   List<ReporterConfig> m_reporters;
   // XML Suite definitions
   List<String> m_xmlSuites;
+  // Configured single test to run
+  String m_testSetName;
 
   private int m_lastGoodRootIndex = -1;
 
@@ -133,10 +140,10 @@ public class MapConfigurationParser implements ITestNGConfiguration {
 
   @SuppressWarnings("all")
   public void load(Map config) {
-    
+
     Defense.notNull(config, "config");
     m_props = config;
-    
+
     Iterator it = config.keySet().iterator();
     while (it.hasNext()) {
 
@@ -172,11 +179,11 @@ public class MapConfigurationParser implements ITestNGConfiguration {
         AnnotationTypeEnum type = AnnotationTypeEnum.valueOf((String)value);
         if (type != null)
           m_annotationType = type;
-        
+
       } else if (TESTRUNNER_FACTORY.equalsIgnoreCase(key)) {
 
         m_testRunnerFactory = fileToClass((String)value);
-        
+
       } else if (OBJECT_FACTORY.equalsIgnoreCase(key)) {
 
         m_objectFactory = fileToClass((String)value);
@@ -195,7 +202,7 @@ public class MapConfigurationParser implements ITestNGConfiguration {
 
           m_listeners = csvToClassList((String)value);
         }
-        
+
       } else if (SUITE_LISTENER.equalsIgnoreCase(key)) {
 
         if (ISuiteListener.class.isInstance(value)) {
@@ -260,7 +267,7 @@ public class MapConfigurationParser implements ITestNGConfiguration {
 
         m_reporters = new ArrayList<ReporterConfig>();
         m_reporters.add(ReporterConfig.deserialize((String)value));
-        
+
       } else if (XML_SUITES.equalsIgnoreCase(key)) {
 
         String[] files = Utils.split((String)value, ",");
@@ -271,6 +278,14 @@ public class MapConfigurationParser implements ITestNGConfiguration {
           if (file.endsWith(".xml"))
             m_xmlSuites.add(file);
         }
+      } else if (TEST_CLASSPATH.equalsIgnoreCase(key)) {
+
+        m_classPath = (String) value;
+
+      } else if (CLASS_LOADER.equalsIgnoreCase(key)) {
+
+        m_classLoader = (ClassLoader) value;
+        
       } else {
 
         LOGGER.warn("Unknown configuration key with [" + key + " = " + value + "]");

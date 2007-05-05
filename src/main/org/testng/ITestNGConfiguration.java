@@ -1,7 +1,5 @@
 package org.testng;
 
-import java.util.Map;
-
 /**
  * Represents the various name/value pairs that may be used to configure a
  * testng instance via the {@link TestNG#configureAndRun(java.util.Map)} method.
@@ -12,6 +10,8 @@ public interface ITestNGConfiguration {
 
   String SHOW_TESTNG_STACK_FRAMESTRING = "testng.show.stack.frames";
   String TEST_CLASSPATH = "testng.test.classpath";
+  String CLASS_LOADER = "classloader";
+  String TEST_SET_NAME = "testsetname";
 
   /** The test report output directory option. */
   String OUTPUT_DIRECTORy = "d";
@@ -56,14 +56,6 @@ public interface ITestNGConfiguration {
    * Used as map key for the complete list of report listeners provided with the above argument
    */
   String REPORTERS_LIST = "reporterslist";
-
-  /**
-   * Parses and sets up all of the properties needed by {@link TestNG}.
-   *
-   * @param config
-   *          The properties in string name/value pairs.
-   */
-  void load(Map config);
 
   /**
    * Configures the specified test with whatever configuration properties this parser

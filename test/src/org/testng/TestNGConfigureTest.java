@@ -41,7 +41,6 @@ public class TestNGConfigureTest {
   }
 
   
-  
   class ConfigSuiteListener implements ISuiteListener {
 
     int m_suiteStart, m_suiteFinish = 0;
