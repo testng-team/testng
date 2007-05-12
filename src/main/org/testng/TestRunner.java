@@ -1,7 +1,37 @@
 package org.testng;
 
 
-import org.testng.internal.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+
+import org.testng.internal.ClassHelper;
+import org.testng.internal.ConfigurationGroupMethods;
+import org.testng.internal.Constants;
+import org.testng.internal.IConfigurationListener;
+import org.testng.internal.IInvoker;
+import org.testng.internal.IMethodWorker;
+import org.testng.internal.ITestResultNotifier;
+import org.testng.internal.InvokedMethod;
+import org.testng.internal.Invoker;
+import org.testng.internal.MethodHelper;
+import org.testng.internal.MethodInstance;
+import org.testng.internal.ResultMap;
+import org.testng.internal.RunInfo;
+import org.testng.internal.TestMethodWorker;
+import org.testng.internal.TestNGClassFinder;
+import org.testng.internal.TestNGMethod;
+import org.testng.internal.TestNGMethodFinder;
+import org.testng.internal.Utils;
+import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.junit.IJUnitTestRunner;
@@ -9,10 +39,6 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
-import java.io.File;
-import java.util.*;
-import java.util.regex.Pattern;
 
 /**
  * This class takes care of running one Test.
@@ -57,8 +83,6 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
 
   /** Where the reports will be created. */
   private String m_outputDirectory= Constants.getDefaultValueFor(Constants.PROP_OUTPUT_DIR);
-  /** Whether or not to create the reports at all */
-  private boolean m_useDefaultListeners = true;
 
   // The XML method selector (groups/methods included/excluded in XML)
   private XmlMethodSelector m_xmlMethodSelector = new XmlMethodSelector();
@@ -97,48 +121,37 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   private String m_host;
 
   private Map<String, Object> m_attributes = new HashMap<String, Object>();
-
-  public TestRunner(ISuite suite,
-                    XmlTest test,
-                    String outputDirectory,
-                    IAnnotationFinder finder,
-                    boolean useDefaultListeners)
-  {
-    init(suite, test, outputDirectory, finder, useDefaultListeners);
-  }
-
+  
   public TestRunner(ISuite suite,
                     XmlTest test,
                     String outputDirectory,
                     IAnnotationFinder finder) 
   {
-    init(suite, test, outputDirectory, finder, true);
+    init(suite, test, outputDirectory, finder);
   }
 
   public TestRunner(ISuite suite, XmlTest test, IAnnotationFinder finder) 
   {
-    init(suite, test, suite.getOutputDirectory(), finder, true);
+    init(suite, test, suite.getOutputDirectory(), finder);
   }
 
   public TestRunner(ISuite suite, XmlTest test) {
     init(suite, test, suite.getOutputDirectory(), 
-        suite.getAnnotationFinder(test.getAnnotations()), true);
+        suite.getAnnotationFinder(test.getAnnotations()));
   }
 
   private void init(ISuite suite,
                     XmlTest test,
                     String outputDirectory,
-                    IAnnotationFinder annotationFinder,
-                    boolean useDefaultListeners)
+                    IAnnotationFinder annotationFinder)
   {
     m_xmlTest= test;
     m_suite = suite;
     m_testName = test.getName();
     m_host = suite.getHost();
     m_testClassesFromXml= test.getXmlClasses();
-    m_useDefaultListeners = useDefaultListeners;
     
-    m_packageNamesFromXml= test.getXmlPackages();
+    m_packageNamesFromXml= test.getXmlPackages();    
     if(null != m_packageNamesFromXml) {
       for(XmlPackage xp: m_packageNamesFromXml) {
         m_testClassesFromXml.addAll(xp.getXmlClasses());
@@ -393,14 +406,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   }
 
   public void setOutputDirectory(String od) {
-    if (od == null) {
-      m_outputDirectory = null;
-      return;
-    } //for maven2
-
-    if (!m_useDefaultListeners)
-      return;
-
+  if (od == null) { m_outputDirectory = null; return; } //for maven2
     File file = new File(od);
     file.mkdirs();
     m_outputDirectory= file.getAbsolutePath();

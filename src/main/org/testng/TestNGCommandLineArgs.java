@@ -1,16 +1,21 @@
 package org.testng;
 
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Utils;
 import org.testng.internal.version.VersionInfo;
 import org.testng.log4testng.Logger;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.*;
 
 /**
  * TestNG/RemoteTestNG command line arguments parser.
@@ -44,7 +49,7 @@ public final class TestNGCommandLineArgs {
   /** The logging level option. */
   public static final String LOG = "-log";
   
-  /** @deprecated replaced by ANNOTATIONS_COMMAND_OPT. */
+  /** @deprecated replaced by DEFAULT_ANNOTATIONS_COMMAND_OPT. */
   public static final String TARGET_COMMAND_OPT = "-target";
 
   /** The default annotations option (useful in TestNG 15 only). */
