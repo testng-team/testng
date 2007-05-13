@@ -1,25 +1,13 @@
 package org.testng.internal;
 
 
-import com.sun.javadoc.ClassDoc;
-
-import com.thoughtworks.qdox.JavaDocBuilder;
-import com.thoughtworks.qdox.model.AbstractJavaEntity;
-import com.thoughtworks.qdox.model.DocletTag;
-import com.thoughtworks.qdox.model.JavaClass;
-import com.thoughtworks.qdox.model.JavaMethod;
-import com.thoughtworks.qdox.model.JavaSource;
-import com.thoughtworks.qdox.parser.ParseException;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-
 import java.lang.reflect.Method;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,6 +18,14 @@ import org.testng.AnnotationConverter;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotation;
 import org.testng.internal.annotations.JDK14TagFactory;
+
+import com.thoughtworks.qdox.JavaDocBuilder;
+import com.thoughtworks.qdox.model.AbstractJavaEntity;
+import com.thoughtworks.qdox.model.DocletTag;
+import com.thoughtworks.qdox.model.JavaClass;
+import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.JavaSource;
+import com.thoughtworks.qdox.parser.ParseException;
 
 /**
  * Converts the set of java fiels passen into TestNG java annotation format
@@ -42,7 +38,7 @@ public class AnnotationTestConverter {
   private static File[] m_fileNames;
   private static Map<String, String> m_convertedTags= new HashMap<String, String>();
 
-  private static File findFileName(ClassDoc cd) {
+  /*private static File findFileName(ClassDoc cd) {
     for(File fn : m_fileNames) {
       if(fn.getAbsolutePath().endsWith(cd.name() + ".java")) {
         return fn;
@@ -52,7 +48,7 @@ public class AnnotationTestConverter {
     assert false : "COULDN'T FIND FILE " + cd.name();
 
     return null;
-  }
+  }*/
 
   /**
    * @param tag
@@ -74,13 +70,13 @@ public class AnnotationTestConverter {
     StringBuilder builder= new StringBuilder("  @");
     builder.append(tagForOriginalName(originalName));
 
-    Map parameters= tag.getNamedParameterMap();
+    Map<?, ?> parameters= tag.getNamedParameterMap();
 
     if(parameters.size() > 0) {
       builder.append("(");
-      for(Iterator keyIterator= parameters.keySet().iterator(); keyIterator.hasNext();) {
+      for(Iterator<?> keyIterator= parameters.keySet().iterator(); keyIterator.hasNext();) {
         String key= keyIterator.next().toString();
-        Class expectedValueType= expectedValueTypeForKey(tag, key);
+        Class<?> expectedValueType= expectedValueTypeForKey(tag, key);
         String value= tag.getNamedParameter(key);
         if(key.equals("value")) {
           insertArrayOfValues(builder, value, expectedValueType.getComponentType());
@@ -115,7 +111,7 @@ public class AnnotationTestConverter {
    * @return
    */
   @SuppressWarnings("deprecation")
-  private Class expectedValueTypeForKey(DocletTag tag, String key) {
+  private Class<?> expectedValueTypeForKey(DocletTag tag, String key) {
     Class<IAnnotation> annotationClass= m_annotationMap.get(tag.getName());
     if(annotationClass == null) {
       ppp("Found unknown testng annotation " + tag.getName() + " in file "
@@ -146,7 +142,7 @@ public class AnnotationTestConverter {
    * @param builder
    * @param value
    */
-  private void insertArrayOfValues(StringBuilder builder, String value, Class type) {
+  private void insertArrayOfValues(StringBuilder builder, String value, Class<?> type) {
     String[] values= Utils.stringToArray(value);
     builder.append("{");
     for(int i= 0; i < values.length; i++) {
@@ -164,7 +160,7 @@ public class AnnotationTestConverter {
    * @param type
    * @return
    */
-  private String suffixForClass(Class type) {
+  private String suffixForClass(Class<?> type) {
     if(String.class.isAssignableFrom(type)) {
       return "\"";
     }
@@ -179,7 +175,7 @@ public class AnnotationTestConverter {
    * @param type
    * @return
    */
-  private Object prefixForClass(Class type) {
+  private Object prefixForClass(Class<?> type) {
     if(String.class.isAssignableFrom(type)) {
       return "\"";
     }

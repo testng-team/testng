@@ -8,46 +8,43 @@ import java.util.Map;
 import java.util.Set;
 
 import org.testng.TestNGException;
-
-
 /**
  * Simple graph class to implement topological sort (used to sort methods based on what groups
  * they depend on).
  *
  * @author Cedric Beust, Aug 19, 2004
- * 
  */
 public class Graph<T extends Object> {
   private static boolean m_verbose = false;
-  private Map<T, Node> m_nodes = new HashMap<T, Node>();
+  private Map<T, Node<T>> m_nodes = new HashMap<T, Node<T>>();
   private List<T> m_strictlySortedNodes = null;
   
   //  A map of nodes that are not the predecessors of any node
   // (not needed for the algorithm but convenient to calculate
   // the parallel/sequential lists in TestNG).
-  private Map<T, Node> m_independentNodes = null;
+  private Map<T, Node<T>> m_independentNodes = null;
 
   public void addNode(T tm) {
     ppp("ADDING NODE " + tm + " " + tm.hashCode());
-    m_nodes.put(tm, new Node(tm));
+    m_nodes.put(tm, new Node<T>(tm));
     // Initially, all the nodes are put in the independent list as well
   }
   
-  private boolean hasBeenSorted() {
+  /*private boolean hasBeenSorted() {
     return null != m_strictlySortedNodes;
-  }
+  }*/
   
   public boolean isIndependent(T object) {
     return m_independentNodes.containsKey(object);
   }
   
-  private Node findNode(T object) {
+  private Node<T> findNode(T object) {
     return m_nodes.get(object);
   }
   
   public void addPredecessor(T tm, T predecessor) {
     ppp("ADDING PREDECESSOR(" + tm + ") = " + predecessor);
-    Node node = findNode(tm);
+    Node<T> node = findNode(tm);
     if (null == node) {
       throw new TestNGException("Non-existing node: " + tm);
     }
@@ -55,7 +52,7 @@ public class Graph<T extends Object> {
       node.addPredecessor(predecessor);
       // Remove these two nodes from the independent list
       if (null == m_independentNodes) {
-        m_independentNodes = new HashMap<T, Node>();
+        m_independentNodes = new HashMap<T, Node<T>>();
         for (T k : m_nodes.keySet()) {
           m_independentNodes.put(k, m_nodes.get(k));
         }
@@ -66,7 +63,7 @@ public class Graph<T extends Object> {
     }
   }
   
-  private Collection<Node> getNodes() {
+  private Collection<Node<T>> getNodes() {
     return m_nodes.values();
   }
   
@@ -89,15 +86,15 @@ public class Graph<T extends Object> {
     ppp("================ SORTING");
     m_strictlySortedNodes = new ArrayList<T>();
     if (null == m_independentNodes) {
-      m_independentNodes = new HashMap<T, Node>();
+      m_independentNodes = new HashMap<T, Node<T>>();
     }
     
     //
     // Clone the list of nodes but only keep those that are
     // not independent.
     //
-    List<Node> nodes2 = new ArrayList<Node>();
-    for (Node n : getNodes()) {
+    List<Node<T>> nodes2 = new ArrayList<Node<T>>();
+    for (Node<T> n : getNodes()) {
       if (! isIndependent((T) n.getObject())) {
         ppp("ADDING FOR SORT: " + n.getObject());
         nodes2.add(n.clone());
@@ -110,14 +107,13 @@ public class Graph<T extends Object> {
     //
     // Sort
     //
-    int i = 0;
     while (! nodes2.isEmpty()) {
       
       //
       // Find all the nodes that don't have any predecessors, add
       // them to the result and mark them for removal
       //
-      Node node = findNodeWithNoPredecessors(nodes2);
+      Node<T> node = findNodeWithNoPredecessors(nodes2);
       if (null == node) {
         throw new TestNGException("Cyclic graph of methods");
       }
@@ -143,7 +139,7 @@ public class Graph<T extends Object> {
 
   private void dumpGraph() {
     System.out.println("====== GRAPH");
-    for (Node n : m_nodes.values()) {
+    for (Node<T> n : m_nodes.values()) {
       System.out.println("  " + n);
     }
   }
@@ -152,9 +148,9 @@ public class Graph<T extends Object> {
    * Remove a node from a list of nodes and update the list of predecessors
    * for all the remaining nodes.
    */
-  private static void removeFromNodes(List<Node> nodes, Node node) {
+  private void removeFromNodes(List<Node<T>> nodes, Node<T> node) {
     nodes.remove(node);
-    for (Node n : nodes) {
+    for (Node<T> n : nodes) {
       n.removePredecessor(node.getObject());
     }
   }
@@ -165,8 +161,8 @@ public class Graph<T extends Object> {
     }
   }
   
-  private Node findNodeWithNoPredecessors(List<Node> nodes) {
-    for (Node n : nodes) {
+  private Node<T> findNodeWithNoPredecessors(List<Node<T>> nodes) {
+    for (Node<T> n : nodes) {
       if (! n.hasPredecessors()) {
         return n;
       }
@@ -182,13 +178,13 @@ public class Graph<T extends Object> {
   public List<T> findPredecessors(T o) {
     List<T> result = new ArrayList<T>();
     // Locate the node
-    Node node = findNode(o);
+    Node<T> node = findNode(o);
     
     if (null == node) {
       throw new AssertionError("No such node: " + o);
     }
     else {
-      List<Node> nodesToWalk = new ArrayList<Node>();
+      List<Node<T>> nodesToWalk = new ArrayList<Node<T>>();
       
       // Found the nodes, now find all its predecessors
       for (Node<T> n : getNodes()) {
@@ -240,7 +236,7 @@ public class Graph<T extends Object> {
     }
     
     @Override
-    public Node clone() {
+    public Node<T> clone() {
       Node<T> result = new Node<T>(m_object);
       for (T pred : m_predecessors.values()) {
         result.addPredecessor(pred);

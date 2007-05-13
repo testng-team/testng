@@ -61,7 +61,7 @@ public class ClassImpl implements IClass {
     if (m_defaultInstance == null) {
       m_defaultInstance = 
         m_instance != null ? m_instance : 
-          Utils.createInstance(m_class, m_classes, m_xmlTest, m_annotationFinder, m_objectFactory);
+          ClassHelper.createInstance(m_class, m_classes, m_xmlTest, m_annotationFinder, m_objectFactory);
     }
     
     return m_defaultInstance;
@@ -73,7 +73,7 @@ public class ClassImpl implements IClass {
     if (m_xmlTest.isJUnit()) {
       if (create) {
         result = new Object[] { 
-          Utils.createInstance(m_class, m_classes, m_xmlTest, m_annotationFinder, m_objectFactory) 
+          ClassHelper.createInstance(m_class, m_classes, m_xmlTest, m_annotationFinder, m_objectFactory) 
         };
       }
     }

@@ -11,9 +11,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -24,21 +22,15 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.testng.IClass;
-import org.testng.IObjectFactory;
-import org.testng.IResultMap;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGCommandLineArgs;
-import org.testng.TestNGException;
 import org.testng.TestRunner;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IConfiguration;
-import org.testng.internal.annotations.IParameters;
 import org.testng.internal.annotations.ITest;
 import org.testng.log.TextFormatter;
 import org.testng.xml.XmlClass;
-import org.testng.xml.XmlTest;
 
 /**
  * Helper methods to parse annotations.
@@ -75,24 +67,24 @@ public final class Utils {
     return result;
   }
 
-  public static Class[] xmlClassesToClasses(List<XmlClass> classes) {
-    List<Class> result = new ArrayList<Class>();
+  public static Class<?>[] xmlClassesToClasses(List<XmlClass> classes) {
+    List<Class<?>> result = new ArrayList<Class<?>>();
 
     for (XmlClass xmlClass : classes) {
       result.add(xmlClass.getSupportClass());
     }
 
-    Class[] xmlClasses = result.toArray(new Class[classes.size()]);
-    Map<Class, Class> withNestedClasses = new HashMap<Class, Class>();
+    Class<?>[] xmlClasses = result.toArray(new Class[classes.size()]);
+    Map<Class<?>, Class<?>> withNestedClasses = new HashMap<Class<?>, Class<?>>();
     findAllClasses(xmlClasses, withNestedClasses);
 
     return withNestedClasses.values().toArray(new Class[withNestedClasses.size()]);
   }
 
-  public static XmlClass[] classesToXmlClasses(Class[] classes) {
+  public static XmlClass[] classesToXmlClasses(Class<?>[] classes) {
     List<XmlClass> result = new ArrayList<XmlClass>();
 
-    for (Class cls : classes) {
+    for (Class<?> cls : classes) {
       result.add(new XmlClass(cls));
     }
 
@@ -105,8 +97,8 @@ public final class Utils {
    * @param classes
    * @return
    */
-  private static void findAllClasses(Class[] classes, Map<Class, Class> result) {
-    for (Class cls : classes) {
+  private static void findAllClasses(Class<?>[] classes, Map<Class<?>, Class<?>> result) {
+    for (Class<?> cls : classes) {
       if (!result.containsKey(cls)) {
         result.put(cls, cls);
       }
@@ -222,9 +214,9 @@ public final class Utils {
   /**
    * @param result
    */
-  public static void dumpMap(Map result) {
+  public static void dumpMap(Map<?, ?> result) {
     System.out.println("vvvvv");
-    for (Iterator it = result.keySet().iterator(); it.hasNext();) {
+    for (Iterator<?> it = result.keySet().iterator(); it.hasNext();) {
       Object key = it.next();
       Object value = result.get(key);
       System.out.println(key + " => " + value);
@@ -248,7 +240,7 @@ public final class Utils {
    */
   public static String[] dependentGroupsForThisMethodForTest(Method m, IAnnotationFinder finder) {
     List<String> vResult = new ArrayList<String>();
-    Class cls = m.getDeclaringClass();
+    Class<?> cls = m.getDeclaringClass();
 
     // Collect groups on the class
     ITest tc = AnnotationHelper.findTest(finder, cls);
@@ -278,7 +270,7 @@ public final class Utils {
    */
   public static String[] groupsForThisMethodForTest(Method m, IAnnotationFinder finder) {
     List<String> vResult = new ArrayList<String>();
-    Class cls = m.getDeclaringClass();
+    Class<?> cls = m.getDeclaringClass();
 
     // Collect groups on the class
     ITest tc = AnnotationHelper.findTest(finder, cls);
@@ -393,162 +385,6 @@ public final class Utils {
 //  }
 
   /**
-   * Create an instance for the given class.
-   */
-  public static Object createInstance(Class declaringClass,
-                                      Map<Class, IClass> classes,
-                                      XmlTest xmlTest,
-                                      IAnnotationFinder finder,
-                                      IObjectFactory objectFactory) {
-    Object result;
-
-    try {
-
-      //
-      // Any annotated constructor?
-      //
-      Constructor constructor = findAnnotatedConstructor(finder, declaringClass);
-      if (null != constructor) {
-        IParameters annotation = (IParameters) finder.findAnnotation(constructor,
-                                                                     IParameters.class);
-
-        String[] parameterNames = annotation.getValue();
-        Object[] parameters = Parameters.createInstantiationParameters(constructor,
-                                                          "@Parameters",
-                                                          parameterNames,
-                                                          xmlTest.getParameters(),
-                                                          xmlTest.getSuite());
-        result = objectFactory.newInstance(constructor, parameters);
-      }
-
-      //
-      // No, just try to instantiate the parameterless constructor (or the one
-      // with a String)
-      //
-      else {
-
-        // If this class is a (non-static) nested class, the constructor contains a hidden
-        // parameter of the type of the enclosing class
-        Class[] parameterTypes = new Class[0];
-        Object[] parameters = new Object[0];
-        Class ec = getEnclosingClass(declaringClass);
-        boolean isStatic = 0 != (declaringClass.getModifiers() & Modifier.STATIC);
-
-        // Only add the extra parameter if the nested class is not static
-        if ((null != ec) && !isStatic) {
-          parameterTypes = new Class[] { ec };
-
-          // Create an instance of the enclosing class so we can instantiate
-          // the nested class (actually, we reuse the existing instance).
-          IClass enclosingIClass = classes.get(ec);
-          Object[] enclosingInstances;
-          if (null != enclosingIClass) {
-            enclosingInstances = enclosingIClass.getInstances(false);
-            if ((null == enclosingInstances) || (enclosingInstances.length == 0)) {
-              Object o = objectFactory.newInstance(ec.getConstructor(parameterTypes));
-              enclosingIClass.addInstance(o);
-              enclosingInstances = new Object[] { o };
-            }
-          }
-          else {
-            enclosingInstances = new Object[] { ec.newInstance() };
-          }
-          Object enclosingClassInstance = enclosingInstances[0];
-
-          // Utils.createInstance(ec, classes, xmlTest, finder);
-          parameters = new Object[] { enclosingClassInstance };
-        } // isStatic
-        Constructor ct = declaringClass.getDeclaredConstructor(parameterTypes);
-        result = objectFactory.newInstance(ct, parameters);
-      }
-    }
-    catch (TestNGException ex) {
-      // We need to pass this along
-      throw ex;
-    }
-    catch (NoSuchMethodException ex) {
-      result = tryOtherConstructor(declaringClass);
-    }
-    catch (Throwable cause) {
-      // Something else went wrong when running the constructor
-      throw new TestNGException("An error occured while instantiating class " + declaringClass.getName() + ": " + cause.getMessage(), cause);
-    }
-
-    return result;
-  }
-
-  /**
-   * Class.getEnclosingClass() only exists on JDK5, so reimplementing it
-   * here.
-   */
-  private static Class getEnclosingClass(Class declaringClass) {
-    Class result = null;
-
-    String className = declaringClass.getName();
-    int index = className.indexOf("$");
-    if (index != -1) {
-      String ecn = className.substring(0, index);
-      try {
-        result = Class.forName(ecn);
-      }
-      catch (ClassNotFoundException e) {
-        e.printStackTrace();
-      }
-    }
-
-    return result;
-  }
-
-  public static Object tryOtherConstructor(Class declaringClass) {
-    Object result;
-    try {
-      Constructor ctor = declaringClass.getConstructor(new Class[] { String.class });
-      result = ctor.newInstance(new Object[] { "Default test name" });
-    }
-    catch (Exception e) {
-      String message = e.getMessage();
-      if ((message == null) && (e.getCause() != null)) {
-        message = e.getCause().getMessage();
-      }
-      String error = "Could not create an instance of class " + declaringClass
-      + ((message != null) ? (": " + message) : "")
-        + ".\nPlease make sure it has a constructor that accepts either a String or no parameter.";
-      throw new TestNGException(error);
-    }
-
-    return result;
-  }
-
-  /**
-   * Find the best constructor given the parameters found on the annotation
-   */
-  private static Constructor findAnnotatedConstructor(IAnnotationFinder finder,
-                                                      Class declaringClass) {
-    Constructor[] constructors = declaringClass.getDeclaredConstructors();
-
-    for (int i = 0; i < constructors.length; i++) {
-      Constructor result = constructors[i];
-      IParameters annotation = (IParameters) finder.findAnnotation(result, IParameters.class);
-
-      if (null != annotation) {
-        String[] parameters = annotation.getValue();
-        Class[] parameterTypes = result.getParameterTypes();
-        if (parameters.length != parameterTypes.length) {
-          throw new TestNGException("Parameter count mismatch:  " + result + "\naccepts "
-                                    + parameterTypes.length
-                                    + " parameters but the @Test annotation declares "
-                                    + parameters.length);
-        }
-        else {
-          return result;
-        }
-      }
-    }
-
-    return null;
-  }
-
-  /**
    * Tokenize the string using the separator.
    */
   public static String[] split(String string, String sep) {
@@ -562,7 +398,7 @@ public final class Utils {
     int start = 0;
     int idx = string.indexOf(sep, start);
     int len = sep.length();
-    List strings = new ArrayList();
+    List<String> strings = new ArrayList<String>();
 
     while (idx != -1) {
       strings.add(string.substring(start, idx).trim());
@@ -572,7 +408,7 @@ public final class Utils {
 
     strings.add(string.substring(start).trim());
 
-    return (String[]) strings.toArray(new String[strings.size()]);
+    return strings.toArray(new String[strings.size()]);
   }
 
   public static void initLogger(Logger logger, String outputLogPath) {
@@ -716,7 +552,7 @@ public final class Utils {
    * @param object
    * @return
    */
-  public static String toString(Object object, Class objectClass) {
+  public static String toString(Object object, Class<?> objectClass) {
     if(null == object) {
       return "null";
     }

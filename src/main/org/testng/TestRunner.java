@@ -746,7 +746,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       // If the class this method belongs to has @Test(sequential = true), we
       // put this method in the sequential list right away
       //
-      Class cls = tm.getMethod().getDeclaringClass();
+      Class<?> cls = tm.getMethod().getDeclaringClass();
       org.testng.internal.annotations.ITest test = 
         (org.testng.internal.annotations.ITest) m_annotationFinder.
           findAnnotation(cls, org.testng.internal.annotations.ITest.class);

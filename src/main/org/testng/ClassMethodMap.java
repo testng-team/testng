@@ -15,7 +15,7 @@ import java.util.Set;
  * @author <a href='mailto:the[dot]mindstorm[at]gmail[dot]com'>Alex Popescu</a>
  */
 public class ClassMethodMap {
-  private Map<Class, List<ITestNGMethod>> m_classMap = new HashMap<Class, List<ITestNGMethod>>();
+  private Map<Class<?>, List<ITestNGMethod>> m_classMap = new HashMap<Class<?>, List<ITestNGMethod>>();
   // These two variables are used throughout the workers to keep track
   // of what beforeClass/afterClass methods have been invoked
   private Map<ITestClass, Set<Object>> m_beforeClassMethods = new HashMap<ITestClass, Set<Object>>();
@@ -25,7 +25,7 @@ public class ClassMethodMap {
   
   public ClassMethodMap(ITestNGMethod[] methods) {
     for (ITestNGMethod m : methods) {
-      Class c = getMethodClass(m);
+      Class<?> c = getMethodClass(m);
       List<ITestNGMethod> l = m_classMap.get(c);
       if (l == null) {
         l = new ArrayList<ITestNGMethod>();
@@ -40,13 +40,13 @@ public class ClassMethodMap {
    * of its class.
    */
   public synchronized boolean removeAndCheckIfLast(ITestNGMethod m) {
-    Class c = getMethodClass(m);
+    Class<?> c = getMethodClass(m);
     List<ITestNGMethod> l = m_classMap.get(c);
     l.remove(m);
     return l.size() == 0;
   }
 
-  private Class getMethodClass(ITestNGMethod m) {
+  private Class<?> getMethodClass(ITestNGMethod m) {
     return m.getTestClass().getRealClass();
   }
   

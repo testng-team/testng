@@ -689,7 +689,7 @@ public class Invoker implements IInvoker {
     
     int failureCount = 0;
 
-    Class[] expectedExceptionClasses = 
+    Class<?>[] expectedExceptionClasses = 
         MethodHelper.findExpectedExceptions(m_annotationFinder, testMethod.getMethod());
     while(invocationCount-- > 0) {
       boolean okToProceed = checkDependencies(testMethod, testClass, allTestMethods);

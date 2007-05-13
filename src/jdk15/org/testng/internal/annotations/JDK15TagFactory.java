@@ -16,8 +16,8 @@ import org.testng.annotations.*;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class JDK15TagFactory {
-  public IAnnotation createTag(Class cls, Annotation a, 
-      Class annotationClass,
+  public IAnnotation createTag(Class<?> cls, Annotation a, 
+      Class<?> annotationClass,
       IAnnotationTransformer transformer) 
   {
     IAnnotation result = null;
@@ -61,8 +61,8 @@ public class JDK15TagFactory {
     return result;
   }
 
-  private IAnnotation maybeCreateNewConfigurationTag(Class cls, Annotation a,
-      Class annotationClass) 
+  private IAnnotation maybeCreateNewConfigurationTag(Class<?> cls, Annotation a,
+      Class<?> annotationClass) 
   {
     IAnnotation result = null;
     
@@ -203,7 +203,7 @@ public class JDK15TagFactory {
   }
 
   @SuppressWarnings({"deprecation"})
-  private IAnnotation createConfigurationTag(Class cls, Annotation a) {
+  private IAnnotation createConfigurationTag(Class<?> cls, Annotation a) {
     ConfigurationAnnotation result = new ConfigurationAnnotation();
     Configuration c = (Configuration) a;
     result.setBeforeTestClass(c.beforeTestClass());
@@ -229,7 +229,7 @@ public class JDK15TagFactory {
     return result;
   }
   
-  private IAnnotation createConfigurationTag(Class cls, Annotation a,
+  private IAnnotation createConfigurationTag(Class<?> cls, Annotation a,
       boolean beforeSuite, boolean afterSuite,
       boolean beforeTest, boolean afterTest,
       String[] beforeGroups, String[] afterGroups,
@@ -305,7 +305,7 @@ public class JDK15TagFactory {
   }
   
   @SuppressWarnings({"deprecation"})
-  private IAnnotation createTestTag(Class cls, Annotation a, 
+  private IAnnotation createTestTag(Class<?> cls, Annotation a, 
       IAnnotationTransformer transformer) 
   {
     TestAnnotation result = new TestAnnotation();
@@ -347,7 +347,7 @@ public class JDK15TagFactory {
     return vResult.keySet().toArray(new String[vResult.size()]);
   }
 
-  private String[] findInheritedStringArray(Class cls, Class annotationClass, String methodName)
+  private String[] findInheritedStringArray(Class<?> cls, Class<? extends Annotation> annotationClass, String methodName)
   {
     if (null == cls) return new String[0];
     

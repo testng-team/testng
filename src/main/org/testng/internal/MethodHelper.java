@@ -63,15 +63,15 @@ public class MethodHelper {
         outExcludedMethods);
   }
 
-  public static ITestNGMethod[] collectAndOrderMethods(ITestNGMethod[] methods,
+  /*public static ITestNGMethod[] collectAndOrderMethods(ITestNGMethod[] methods,
       boolean forTests, RunInfo runInfo, IAnnotationFinder finder,
       List<ITestNGMethod> outExcludedMethods) 
   {
     return collectAndOrderMethods(methods, forTests, runInfo, finder, 
-        false /* unique */, outExcludedMethods);
-  }
+        false  unique , outExcludedMethods);
+  }*/
 
-  public static ITestNGMethod[] collectAndOrderMethods(ITestNGMethod[] methods,
+  private static ITestNGMethod[] collectAndOrderMethods(ITestNGMethod[] methods,
       boolean forTests, RunInfo runInfo, IAnnotationFinder finder,
       boolean unique, List<ITestNGMethod> outExcludedMethods) 
   {
@@ -193,8 +193,8 @@ public class MethodHelper {
    * Read the expected exceptions, if any (need to handle both the old and new
    * syntax
    */
-  public static Class[] findExpectedExceptions(IAnnotationFinder finder, Method method) {
-    Class[] result = {};
+  public static Class<?>[] findExpectedExceptions(IAnnotationFinder finder, Method method) {
+    Class<?>[] result = {};
     IExpectedExceptions expectedExceptions= 
       (IExpectedExceptions) finder.findAnnotation(method,
         IExpectedExceptions.class);
@@ -207,7 +207,7 @@ public class MethodHelper {
       ITest testAnnotation = 
         (ITest) finder.findAnnotation(method, ITest.class);
       if (testAnnotation != null) {
-        Class[] ee = testAnnotation.getExpectedExceptions();
+        Class<?>[] ee = testAnnotation.getExpectedExceptions();
         if (testAnnotation != null && ee.length > 0) {
           result = ee; 
         }
@@ -475,7 +475,7 @@ public class MethodHelper {
     return false;
   }
 
-  static public Graph topologicalSort(ITestNGMethod[] methods,
+  static public Graph<ITestNGMethod> topologicalSort(ITestNGMethod[] methods,
       List<ITestNGMethod> sequentialList, List<ITestNGMethod> parallelList) {
     Graph<ITestNGMethod> result = new Graph<ITestNGMethod>();
 
@@ -585,7 +585,7 @@ public class MethodHelper {
   public static List<ITestNGMethod> getMethodsDependedUpon(ITestNGMethod method, ITestNGMethod[] methods) {
     List<ITestNGMethod> parallelList = new ArrayList<ITestNGMethod>();
     List<ITestNGMethod> sequentialList = new ArrayList<ITestNGMethod>();
-    Graph g = topologicalSort(methods, sequentialList, parallelList);
+    Graph<ITestNGMethod> g = topologicalSort(methods, sequentialList, parallelList);
 
     List<ITestNGMethod> result = g.findPredecessors(method);
     return result;

@@ -21,7 +21,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    * necessarily the declaring class. */
   protected ITestClass m_testClass;
   
-  protected final transient Class m_methodClass;
+  protected final transient Class<?> m_methodClass;
   protected final transient Method m_method;
   protected String m_id = "";
   protected long m_date = System.currentTimeMillis();
@@ -75,7 +75,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   /**
    * {@inheritDoc}
    */
-  public Class getRealClass() {
+  public Class<?> getRealClass() {
     return m_methodClass;
   }
 
@@ -106,8 +106,8 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    */
   public int compareTo(Object o) {
     int result = -2;
-    Class thisClass = getRealClass();
-    Class otherClass = ((ITestNGMethod) o).getRealClass();
+    Class<?> thisClass = getRealClass();
+    Class<?> otherClass = ((ITestNGMethod) o).getRealClass();
     if (thisClass.isAssignableFrom(otherClass)) 
       result = -1;
     else if (otherClass.isAssignableFrom(thisClass)) 
@@ -345,7 +345,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    *
    * @param annotationClass
    */
-  protected void initGroups(Class annotationClass) {
+  protected void initGroups(Class<?> annotationClass) {
     //
     // Init groups
     //
@@ -428,7 +428,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     String cls = m.getDeclaringClass().getName();
     StringBuffer result = new StringBuffer(cls + "." + m.getName() + "(");
     int i = 0;
-    for (Class p : m.getParameterTypes()) {
+    for (Class<?> p : m.getParameterTypes()) {
       if (i++ > 0) result.append(", ");
       result.append(p.getName());
     }
@@ -498,7 +498,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   }
 
   /** Compares two ITestNGMethod by date. */
-  public static final Comparator DATE_COMPARATOR = new Comparator() {
+  public static final Comparator<?> DATE_COMPARATOR = new Comparator<Object>() {
     public int compare(Object o1, Object o2) {
       try {
         ITestNGMethod m1 = (ITestNGMethod) o1;

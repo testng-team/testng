@@ -26,10 +26,10 @@ public class ObjectFactoryImpl implements IObjectFactory {
       return constructor.newInstance(params);
     }
     catch (IllegalAccessException ex) {
-      return Utils.tryOtherConstructor(constructor.getDeclaringClass());
+      return ClassHelper.tryOtherConstructor(constructor.getDeclaringClass());
     }
     catch (InstantiationException ex) {
-      return Utils.tryOtherConstructor(constructor.getDeclaringClass());
+      return ClassHelper.tryOtherConstructor(constructor.getDeclaringClass());
     }
     catch(Exception ex) {
       throw new TestNGException("Cannot instantiate class " + constructor.getDeclaringClass().getName(), ex);
