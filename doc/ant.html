@@ -250,6 +250,40 @@ the same as for <em>environment variables</em>:</p>
 
 <p>will run the test and make the <code>basedir</code> property 
 available to the test.</p>
+
+<h4>reporter</h4>
+<p>An inner <tt>&lt;reporter&gt;</tt> element is an alternative way to inject a
+custom report listener allowing the user to set custom properties in order to fine-tune
+the behavior of the reporter at run-time.
+<br>
+The element has one <tt>classname</tt> attribute which is mandatory, indicating
+the class of the custom listener. In order to set the properties of the reporter, the
+<tt>&lt;reporter&gt;</tt> element can contain several nested <tt>&lt;property&gt;</tt>
+elements which will provide the <tt>name</tt> and <tt>value</tt> attributes as seen below:
+</p>
+<pre class="prettyprint">
+&lt;testng ...&gt;
+   ...
+   &lt;reporter classname="com.test.MyReporter"&gt;
+      &lt;property name="methodFilter" value="*insert*"/&gt;
+      &lt;property name="enableFiltering" value="true"/&gt;
+   &lt;/reporter&gt;
+   ...
+&lt;/testng&gt;
+</pre>
+<pre class="prettyprint">
+public class MyReporter {
+
+  public String getMethodFilter() {...}
+  public void setMethodFilter(String methodFilter) {...}
+  public boolean isEnableFiltering() {...}
+  public void setEnableFiltering(boolean enableFiltering) {...}
+  ...
+}
+</pre>
+You have to consider though that for the moment only a limited set of property types are supported:
+<tt>String, int, boolean, byte, char, double, float, long, short</tt>.
+
 <h4>env</h4>
 <p>It is possible to specify environment variables to pass to the TestNG forked 
 virtual machine via nested <tt>&lt;env&gt;</tt> elements. For a description of the <tt>
