@@ -12,8 +12,7 @@
   <parameter name="factory-param" value="FactoryParam" />
   <test name="Factory">
     <classes>
-      <class name="test.cyclic.SomeConcreteTests" />
-      <class name="test.cyclic.HibernateConcreteTests" />
+      <class name="test.dataprovider.CreateDataTest" />
     </classes>
   </test>
  
