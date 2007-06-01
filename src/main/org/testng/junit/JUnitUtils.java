@@ -8,6 +8,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 
 import org.testng.IClass;
+import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
@@ -40,6 +41,8 @@ public class JUnitUtils {
 
     private long m_date;
     private String m_id;
+    
+    private IRetryAnalyzer retryAnalyzer = null;
     
     public JUnitTestMethod(Test test, JUnitTestClass testClass) {
       m_testClass= testClass;
@@ -379,6 +382,14 @@ public class JUnitUtils {
      */
     public void setThreadPoolSize(int threadPoolSize) {
       throw new IllegalStateException("setThreadPoolSize is not supported for JUnit");
+    }
+
+    public IRetryAnalyzer getRetryAnalyzer() {
+      return retryAnalyzer;
+    }
+
+    public void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer) {
+      this.retryAnalyzer = retryAnalyzer;
     }
   }
   

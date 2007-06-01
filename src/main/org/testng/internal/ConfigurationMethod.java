@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.testng.IRetryAnalyzer;
 import org.testng.ITestNGMethod;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAfterClass;
@@ -370,5 +371,6 @@ public class ConfigurationMethod extends BaseTestMethod {
 
     return clone;
   }
+  
 }
 

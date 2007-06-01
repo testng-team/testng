@@ -135,4 +135,11 @@ public @interface Test {
    */
   public boolean sequential() default false;
 
+  /**
+   * The name of the class that should be called to test if the test
+   * should be retried.
+   * @return String The name of the class that will test if a test method
+   * should be retried.
+   */
+  public Class retryAnalyzer() default Class.class;
 }

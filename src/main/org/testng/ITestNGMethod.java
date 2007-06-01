@@ -191,4 +191,7 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
   public int getParameterInvocationCount();
 
   public ITestNGMethod clone();
+  
+  public IRetryAnalyzer getRetryAnalyzer();
+  public void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer);
 }

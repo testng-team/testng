@@ -1,5 +1,7 @@
 package org.testng.internal.annotations;
 
+import org.testng.IRetryAnalyzer;
+
 /**
  * Encapsulate the &#64;Test / &#64;testng.test annotation.
  * 
@@ -58,4 +60,7 @@ public interface ITest extends ITestOrConfiguration {
   
   public String getDataProvider();
   public Class getDataProviderClass();
+  
+  public IRetryAnalyzer getRetryAnalyzer();
+  public void setRetryAnalyzer(Class c);
 }

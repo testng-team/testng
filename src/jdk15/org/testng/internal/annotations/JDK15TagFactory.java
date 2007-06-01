@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.testng.IRetryAnalyzer;
 import org.testng.TestNGException;
 import org.testng.annotations.*;
 
@@ -331,7 +332,8 @@ public class JDK15TagFactory {
     result.setSuiteName(test.suiteName());
     result.setTestName(test.testName());
     result.setSequential(test.sequential());
-    
+    result.setRetryAnalyzer(test.retryAnalyzer());
+
     return result;
   }
 

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.testng.IClass;
+import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -41,6 +42,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   private String m_description = null;
   protected IAtomicInteger m_currentInvocationCount = ThreadUtil.createAtomicInteger(0);
   private int m_parameterInvocationCount = 1;
+  private IRetryAnalyzer retryAnalyzer = null;
   
   /**
    * Constructs a <code>BaseTestMethod</code> TODO cquezel JavaDoc.
@@ -586,4 +588,12 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   }  
   
   public abstract ITestNGMethod clone();
+  
+  public IRetryAnalyzer getRetryAnalyzer() {
+    return retryAnalyzer;
+  }
+  
+  public void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer) {
+    this.retryAnalyzer = retryAnalyzer;
+  }
 }

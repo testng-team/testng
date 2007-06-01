@@ -1,5 +1,6 @@
 package org.testng.internal.annotations;
 
+import org.testng.IRetryAnalyzer;
 import org.testng.ITestResult;
 import org.testng.TestNG;
 
@@ -23,6 +24,7 @@ public class TestAnnotation extends TestOrConfiguration implements ITest {
   private boolean m_sequential = false;
   private boolean m_reentering = false;
   private Class m_dataProviderClass = null;
+  private IRetryAnalyzer retryAnalyzer = null;
   
   /**
    * @return the expectedExceptions
@@ -116,6 +118,34 @@ public class TestAnnotation extends TestOrConfiguration implements ITest {
   
   public void setSequential(boolean sequential) {
     m_sequential = sequential;
+  }
+
+  public IRetryAnalyzer getRetryAnalyzer() {
+    return retryAnalyzer;
+  }
+
+  private boolean implementsRetryAnalyzer(Class c) {
+    for (Class retryAnalyzeInterface : c.getInterfaces()) {
+      if (retryAnalyzeInterface.getName().equals(
+          IRetryAnalyzer.class.getName())) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  public void setRetryAnalyzer(Class c) {
+    this.retryAnalyzer = null;
+
+    if (c != null && implementsRetryAnalyzer(c)) {
+      try {
+        this.retryAnalyzer = (IRetryAnalyzer)c.newInstance();
+      } catch (InstantiationException e) {
+        // The class will never be called.
+      } catch (IllegalAccessException e) {
+        // The class will never be called.
+      }
+    }
   }
   
 }

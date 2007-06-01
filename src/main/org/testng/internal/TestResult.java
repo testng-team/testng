@@ -25,6 +25,7 @@ public class TestResult implements ITestResult {
   private String m_name = null;
   private String m_host;
   private Object[] m_parameters = {};
+  private Object instance = null;
 
   /**
    * @param testClass
@@ -174,4 +175,5 @@ public class TestResult implements ITestResult {
   public void setParameters(Object[] parameters) {
     m_parameters = parameters;
   }
+ 
 }
