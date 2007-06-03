@@ -301,10 +301,15 @@ public class AnnotationTestConverter {
     List<String> result= new ArrayList<String>();
     BufferedReader br= new BufferedReader(new FileReader(file));
 
-    String line= br.readLine();
-    while(null != line) {
-      result.add(line);
-      line= br.readLine();
+    try {
+      String line= br.readLine();
+      while(null != line) {
+        result.add(line);
+        line= br.readLine();
+      }
+    }
+    finally {
+      br.close();
     }
 
     return result;
@@ -339,7 +344,7 @@ public class AnnotationTestConverter {
 
         for(DocletTag tag : tags) {
           if(isTestNGTag(tag)) {
-            lines.add(i - 1, lineForTag(tag));
+            lines.add(i, lineForTag(tag));
           }
         }
       }
@@ -379,8 +384,8 @@ public class AnnotationTestConverter {
                         + cd.getParentSource().getURL().toExternalForm() + "\n");
     }
     else {
-      assert (entities[lineNumber] == null) : "Can't have class and method declarations in the same place!";
-      entities[lineNumber]= cd;
+      assert (entities[lineNumber - 1] == null) : "Can't have class and method declarations in the same place!";
+      entities[lineNumber - 1]= cd;
     }
 
     // Now look through nested classes
@@ -399,8 +404,8 @@ public class AnnotationTestConverter {
                             + cd.getParentSource().getURL().toExternalForm() + "\n");
         }
         else {
-          assert (entities[methodLineNumber] == null) : "Can't have class and method declarations in the same place!";
-          entities[methodLineNumber]= md;
+          assert (entities[methodLineNumber - 1] == null) : "Can't have class and method declarations in the same place!";
+          entities[methodLineNumber - 1]= md;
         }
       }
     }

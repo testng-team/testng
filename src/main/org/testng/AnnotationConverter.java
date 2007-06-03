@@ -9,7 +9,8 @@ import java.util.Map;
 import org.testng.internal.AnnotationDirectoryConverter;
 
 /**
- * Converts between javadoc annotations and java 5 annotations
+ * Converts between javadoc annotations and java 5 annotations.
+ * 
  * @author micheb10 12-Sep-2006
  * @since 5.3
  */
@@ -31,7 +32,7 @@ public class AnnotationConverter {
       return;
     }
 
-    Map params= extractOptions(args);
+    Map<String, Object> params= extractOptions(args);
 
     if(null != params.get(QUIET)) {
       m_logLevel= 0;
@@ -96,8 +97,8 @@ public class AnnotationConverter {
   /**
    * Extract command line options.
    */
-  private static Map extractOptions(String[] args) {
-    Map options= new HashMap();
+  private static Map<String, Object> extractOptions(String[] args) {
+    Map<String, Object> options= new HashMap<String, Object>();
 
     for(int i= 0; i < args.length; i++) {
       if(SRC_DIR_OPT.equals(args[i])) {
