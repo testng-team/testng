@@ -1,9 +1,13 @@
 package test.sample;
+import java.util.Iterator;
+
+/*
+ * Created on 12-Sep-2006 by micheb10
+ */
 
 /**
  * Sample file for the Javadoc annotations to Java 5 annotations converter for a non-default package
  * @author micheb10 12-Sep-2006
- * 
  * @testng.test
  */
 public class ConverterSample3 {
