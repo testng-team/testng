@@ -42,7 +42,7 @@ public class XMLSuiteResultWriter {
       File file = referenceSuiteResult(xmlBuffer, parentDir, suiteResult);
       XMLStringBuffer suiteXmlBuffer = new XMLStringBuffer("");
       writeAllToBuffer(suiteXmlBuffer, suiteResult);
-      Utils.writeFile(file.getAbsoluteFile().getParent(), file.getName(), suiteXmlBuffer.toXML());
+      Utils.writeUtf8File(file.getAbsoluteFile().getParent(), file.getName(), suiteXmlBuffer.toXML());
     }
   }
 

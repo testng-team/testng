@@ -87,7 +87,7 @@ public class SuiteHTMLReporter implements IReporter {
       .append(content)
       .append("</tt></body></html>");
     
-    Utils.writeFile(getOutputDirectory(xmlSuite), TESTNG_XML, sb);
+    Utils.writeFile(getOutputDirectory(xmlSuite), TESTNG_XML, sb.toString());
   }
 
   /**
@@ -174,7 +174,7 @@ public class SuiteHTMLReporter implements IReporter {
       }
       sb2.append("</table>");
       
-      Utils.writeFile(getOutputDirectory(xmlSuite), METHODS_NOT_RUN, sb2);
+      Utils.writeFile(getOutputDirectory(xmlSuite), METHODS_NOT_RUN, sb2.toString());
   }
 
   private void generateReporterOutput(XmlSuite xmlSuite, ISuite suite) {
@@ -193,7 +193,7 @@ public class SuiteHTMLReporter implements IReporter {
     
     sb.append("</table>");
     
-    Utils.writeFile(getOutputDirectory(xmlSuite), REPORTER_OUTPUT, sb);    
+    Utils.writeFile(getOutputDirectory(xmlSuite), REPORTER_OUTPUT, sb.toString());    
   }
     
   private void generateClasses(XmlSuite xmlSuite, ISuite suite) {
@@ -211,7 +211,7 @@ public class SuiteHTMLReporter implements IReporter {
     
     sb.append("</table>\n");
     
-    Utils.writeFile(getOutputDirectory(xmlSuite), CLASSES, sb);    
+    Utils.writeFile(getOutputDirectory(xmlSuite), CLASSES, sb.toString());    
   }
   
   private final static String SP = "&nbsp;";
@@ -428,7 +428,7 @@ public class SuiteHTMLReporter implements IReporter {
       table.append("</table>\n");
       sb.append(table.toString());
     }
-    Utils.writeFile(getOutputDirectory(xmlSuite), outputFileName, sb);    
+    Utils.writeFile(getOutputDirectory(xmlSuite), outputFileName, sb.toString());    
     
   }
   
@@ -472,7 +472,7 @@ public class SuiteHTMLReporter implements IReporter {
       result.append("<td title=\"").append(s).append("\">");
       int open = s.lastIndexOf("(");
       int start = s.substring(0, open).lastIndexOf(".");
-      int end = s.lastIndexOf(")");
+//      int end = s.lastIndexOf(")");
       if (start >= 0) {
         result.append(prefix + s.substring(start + 1, open));
       }
@@ -524,7 +524,7 @@ public class SuiteHTMLReporter implements IReporter {
   
       sb.append("</table>\n");
     }
-    Utils.writeFile(getOutputDirectory(xmlSuite), GROUPS, sb);    
+    Utils.writeFile(getOutputDirectory(xmlSuite), GROUPS, sb.toString());    
   }
   
   private void generateIndex(XmlSuite xmlSuite, ISuite sr) {
@@ -537,7 +537,7 @@ public class SuiteHTMLReporter implements IReporter {
     .append("</html>\n")
     ;
     
-    Utils.writeFile(getOutputDirectory(xmlSuite), "index.html", index);    
+    Utils.writeFile(getOutputDirectory(xmlSuite), "index.html", index.toString());    
   }
   
   private String makeTitle(ISuite suite) {
@@ -551,7 +551,7 @@ public class SuiteHTMLReporter implements IReporter {
     .append("</html>\n")
     ;
     
-    Utils.writeFile(getOutputDirectory(xmlSuite), "main.html", index);    
+    Utils.writeFile(getOutputDirectory(xmlSuite), "main.html", index.toString());    
   }  
   
   /**
@@ -658,7 +658,7 @@ public class SuiteHTMLReporter implements IReporter {
       }
     
     tableOfContents.append("</body></html>");
-    Utils.writeFile(getOutputDirectory(xmlSuite), "toc.html", tableOfContents);
+    Utils.writeFile(getOutputDirectory(xmlSuite), "toc.html", tableOfContents.toString());
   }
   
   private String pluralize(int count, String singular) {
@@ -727,7 +727,7 @@ public class SuiteHTMLReporter implements IReporter {
         ISuiteResult suiteResult = suiteResults.get(name);
         sb.append(suiteResult.toString());
       }
-      Utils.writeFile(getOutputDirectory(xmlSuite), testContext.getName() + ".properties", sb);
+      Utils.writeFile(getOutputDirectory(xmlSuite), testContext.getName() + ".properties", sb.toString());
     }    
   }
 }

@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -122,17 +123,19 @@ public final class Utils {
   }
 
   /**
-   * Writes the content of the sb string buffer to the file named filename in outputDir. If 
-   * outDir does not exist, it is created.
+   * Writes the content of the sb string to the file named filename in outDir encoding the output as UTF-8. 
+   * If outDir does not exist, it is created.
    *
-   * @param outputDir the output directory (may not exist).
+   * @param outputDir the output directory (may not exist). If <tt>null</tt> then current directory is used.
    * @param fileName the filename
    * @param sb the file content
    */
-  public static void writeFile(String outputDir, String fileName, StringBuffer sb) {
-    writeFile(outputDir, fileName, sb.toString());
+  public static void writeUtf8File(String outputDir, String fileName, String sb) {
+    final String outDirPath= outputDir != null ? outputDir : "";
+    final File outDir= new File(outDirPath);
+    writeFile(outDir, fileName, sb, "UTF-8");    
   }
-
+  
   /**
    * Writes the content of the sb string to the file named filename in outDir. If 
    * outDir does not exist, it is created.
@@ -144,7 +147,7 @@ public final class Utils {
   public static void writeFile(String outputDir, String fileName, String sb) {
     final String outDirPath= outputDir != null ? outputDir : "";
     final File outDir= new File(outDirPath);
-    writeFile(outDir, fileName, sb);
+    writeFile(outDir, fileName, sb, null);
   }
   
   /**
@@ -155,7 +158,7 @@ public final class Utils {
    * @param fileName the filename
    * @param sb the file content
    */
-  public static void writeFile(File outDir, String fileName, String sb) {
+  private static void writeFile(File outDir, String fileName, String sb, String encoding) {
     try {
       if (!outDir.exists()) {
         outDir.mkdirs();
@@ -165,7 +168,7 @@ public final class Utils {
       outputFile.delete();
       outputFile.createNewFile();
       
-      writeFile(outputFile, sb);
+      writeFile(outputFile, sb, encoding);
     }
     catch (IOException e) {
       if (TestRunner.getVerbose() > 1) {
@@ -177,11 +180,18 @@ public final class Utils {
     }
   }
 
-  private static void writeFile(File outputFile, String sb) {
+  private static void writeFile(File outputFile, String sb, String encoding) {
     BufferedWriter fw = null;
     try {
       if (! outputFile.exists()) outputFile.createNewFile();
-      fw = new BufferedWriter(new FileWriter(outputFile, false));
+      OutputStreamWriter osw= null;
+      if(null != encoding) {
+        osw= new OutputStreamWriter(new FileOutputStream(outputFile, false), encoding);
+      }
+      else {
+        osw= new OutputStreamWriter(new FileOutputStream(outputFile, false));
+      }
+      fw = new BufferedWriter(osw);
       fw.write(sb);
   
       Utils.log("", 3, "Creating " + outputFile.getAbsolutePath());

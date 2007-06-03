@@ -1,11 +1,20 @@
 package org.testng.reporters;
 
-import org.testng.*;
+import java.io.File;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
+import org.testng.IReporter;
+import org.testng.ISuite;
+import org.testng.ISuiteResult;
+import org.testng.ITestNGMethod;
+import org.testng.Reporter;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlSuite;
-
-import java.io.File;
-import java.util.*;
 
 /**
  * The main entry for the XML generation operation
@@ -29,7 +38,7 @@ public class XMLReporter implements IReporter {
       writeSuite(xmlSuites.get(i), suites.get(i));
     }
     rootBuffer.pop();
-    Utils.writeFile(config.getOutputDirectory(), "testng-results.xml", rootBuffer.toXML());
+    Utils.writeUtf8File(config.getOutputDirectory(), "testng-results.xml", rootBuffer.toXML());
   }
 
   private void writeReporterOutput(XMLStringBuffer xmlBuffer) {
