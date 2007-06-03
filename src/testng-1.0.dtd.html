@@ -139,6 +139,8 @@
 
 <span class="xml-comment">&lt;!-- The list of packages to include in this test                           --&gt;</span>
 &lt;!ELEMENT packages (package*) &gt;
+<span class="xml-comment">&lt;!-- The package description.                                               --&gt;</span>
+<span class="xml-comment">&lt;!-- If the package name ends with .* then subpackages are included         --&gt;</span>
 &lt;!ELEMENT package (include?,exclude?)*&gt;
 &lt;!ATTLIST package
     name CDATA #REQUIRED &gt;

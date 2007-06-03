@@ -144,6 +144,9 @@
 
 <!-- The list of packages to include in this test                           -->
 <!ELEMENT packages (package*) >
+<!-- The package description. 
+     If the package name ends with .* then subpackages are included too.
+-->
 <!ELEMENT package (include?,exclude?)*>
 <!ATTLIST package
     name CDATA #REQUIRED >
