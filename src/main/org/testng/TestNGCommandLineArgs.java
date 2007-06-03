@@ -186,18 +186,18 @@ public final class TestNGCommandLineArgs {
       }
       else if (OBJECT_FACTORY_COMMAND_OPT.equalsIgnoreCase(argv[i])) {
         if ((i + 1) < argv.length) {
-          Class cls = fileToClass(argv[++i]);
+          Class<?> cls = fileToClass(argv[++i]);
           arguments.put(OBJECT_FACTORY_COMMAND_OPT, cls);
         }
         else {
-          LOGGER.error("WARNING: missing ITestListener class/file list argument after "
-              + LISTENER_COMMAND_OPT);
+          LOGGER.error("WARNING: missing IObjectFactory class/file list argument after "
+              + OBJECT_FACTORY_COMMAND_OPT);
         }
       }
       else if (LISTENER_COMMAND_OPT.equalsIgnoreCase(argv[i])) {
         if ((i + 1) < argv.length) {
           String[] strs = Utils.split(argv[++i], ";");
-          List<Class> classes = new ArrayList<Class>();
+          List<Class<?>> classes = new ArrayList<Class<?>>();
 
           for (String cls : strs) {
             classes.add(fileToClass(cls));
@@ -217,12 +217,12 @@ public final class TestNGCommandLineArgs {
             if (!nextArg.toLowerCase().endsWith(".xml") && !nextArg.startsWith("-")) {
 
               // Assume it's a class name
-              List<Class> l = (List<Class>) arguments.get(TESTCLASS_COMMAND_OPT);
+              List<Class<?>> l = (List<Class<?>>) arguments.get(TESTCLASS_COMMAND_OPT);
               if (null == l) {
-                l = new ArrayList<Class>();
+                l = new ArrayList<Class<?>>();
                 arguments.put(TESTCLASS_COMMAND_OPT, l);
               }
-              Class cls = fileToClass(nextArg);
+              Class<?> cls = fileToClass(nextArg);
               if (null != cls) {
                 l.add(cls);
               }
@@ -424,130 +424,130 @@ public final class TestNGCommandLineArgs {
   }   
    
    
-  /**
-   * Break a line of parameters into individual parameters as the command line parsing 
-   * would do. The line is assumed to contain only un-escaped double quotes. For example 
-   * the following Java string:
-   * " a    \"command\"\"line\" \"with quotes\"  a command line\" with quotes \"here there"
-   * would yield the following 7 tokens:
-   * a,commandline,with quotes,a,command,line with quotes here,there
-   * @param line the command line parameter to be parsed
-   * @return the list of individual command line tokens
-   */
-  private static List<String> parseArgs(String line) {
-    LOGGER.debug("parseArgs line: \"" + line + "\"");
-    final String SPACE = " ";
-    final String DOUBLE_QUOTE = "\"";
-    
-    // If line contains no double quotes, the space character is the only
-    // separator. Easy to do return quickly (logic is also easier to follow)
-    if (line.indexOf(DOUBLE_QUOTE) == -1) {
-      List<String> results = Arrays.asList(line.split(SPACE));
-      for (String result : results) {
-        LOGGER.debug("parseArgs result: \"" + result + "\"");
-      }
-      return results;
-    }
-    
-    // TODO There must be an easier way to do this with a regular expression.
-    
-    StringTokenizer st = new StringTokenizer(line, SPACE + DOUBLE_QUOTE, true);
-    List<String> results = new ArrayList<String>();
-    
-    /** 
-     * isInDoubleQuote toggles from false to true when we reach a double
-     * quoted string and toggles back to false when we exit. We need to
-     * know if we are in a double quoted string to treat blanks as normal
-     * characters. Out of quotes blanks separate arguments. 
-     * 
-     * The following example shows these toggle points:
-     * 
-     * " a    \"command\"\"line\" \"with quotes\"  a command line\" with quotes \"here there"
-     *        T        F T     F  T            F                 T              F
-     *
-     * If the double quotes are not evenly matched, an exception is thrown.
-     */
-    boolean isInDoubleQuote = false;
-
-    /**
-     * isInArg toggles from false to true when we enter a command line argument
-     * and toggles back to false when we exit. The logic is that we toggle to
-     * true at the first non-whitespace character met. We toggle back to false
-     * at first whitespace character not in double quotes or at end of line. 
-     * 
-     * The following example shows these toggle points:
-     * 
-     * " a    \"command\"\"line\" \"with quotes\"  a command line\" with quotes \"here there"
-     *   TF   T                F  T             F  TFT      FT                             F
-     */
-    boolean isInArg = false;
-
-    /** arg is a string buffer to create the argument by concatenating all tokens
-     * that compose it.
-     * 
-     * The following example shows the token returned by the parser and the 
-     * (spaces, double quotes, others) and resultant argument:
-     * 
-     * Input (argument):
-     * "line\" with quotes \"here"
-     * 
-     * Tokens (9):
-     * line,", ,with, ,quote, ,",here
-     */
-    StringBuffer arg = new StringBuffer();
-    
-    while (st.hasMoreTokens()) {
-      String token = st.nextToken();
-      
-      if (token.equals(SPACE)) {
-        if (isInArg) {
-          if (isInDoubleQuote) {
-            // Spaces within double quotes are treated as normal spaces
-            arg.append(SPACE);
-          }
-          else {
-            // First spaces outside double quotes marks the end of the argument. 
-            isInArg = false;
-            results.add(arg.toString());
-            arg = new StringBuffer();
-          }
-        }
-      }
-      else if (token.equals(DOUBLE_QUOTE)) {
-        // If we encounter a double quote, we may be entering a new argument 
-        // (isInArg is false) or continuing the current argument (isInArg is true).
-        isInArg = true;
-        isInDoubleQuote = !isInDoubleQuote;
-      }
-      else {
-        // We we encounter a new token, we may be entering a new argument 
-        // (isInArg is false) or continuing the current argument (isInArg is true).
-        isInArg = true;
-        arg.append(token);
-      }
-    }
-    
-    // In some (most) cases we exit this parsing because there are no tokens left
-    // but we have not encountered a token to indicate that the last argument has
-    // completely been read. For example, if the command line ends with a whitespace
-    // the isInArg will toggle to false and the argument will be completely read.
-    if (isInArg) {
-      // End of last argument
-      results.add(arg.toString());
-    }
-    
-    // If we exit the parsing of the command line with an uneven number of double 
-    // quotes, throw an exception.
-    if (isInDoubleQuote) {
-      throw new IllegalArgumentException("Unbalanced double quotes: \"" + line + "\"");
-    }
-    
-    for (String result : results) {
-      LOGGER.debug("parseArgs result: \"" + result + "\"");
-    }
-    
-    return results;
-  }
+//  /**
+//   * Break a line of parameters into individual parameters as the command line parsing 
+//   * would do. The line is assumed to contain only un-escaped double quotes. For example 
+//   * the following Java string:
+//   * " a    \"command\"\"line\" \"with quotes\"  a command line\" with quotes \"here there"
+//   * would yield the following 7 tokens:
+//   * a,commandline,with quotes,a,command,line with quotes here,there
+//   * @param line the command line parameter to be parsed
+//   * @return the list of individual command line tokens
+//   */
+//  private static List<String> parseArgs(String line) {
+//    LOGGER.debug("parseArgs line: \"" + line + "\"");
+//    final String SPACE = " ";
+//    final String DOUBLE_QUOTE = "\"";
+//    
+//    // If line contains no double quotes, the space character is the only
+//    // separator. Easy to do return quickly (logic is also easier to follow)
+//    if (line.indexOf(DOUBLE_QUOTE) == -1) {
+//      List<String> results = Arrays.asList(line.split(SPACE));
+//      for (String result : results) {
+//        LOGGER.debug("parseArgs result: \"" + result + "\"");
+//      }
+//      return results;
+//    }
+//    
+//    // TODO There must be an easier way to do this with a regular expression.
+//    
+//    StringTokenizer st = new StringTokenizer(line, SPACE + DOUBLE_QUOTE, true);
+//    List<String> results = new ArrayList<String>();
+//    
+//    /* 
+//     * isInDoubleQuote toggles from false to true when we reach a double
+//     * quoted string and toggles back to false when we exit. We need to
+//     * know if we are in a double quoted string to treat blanks as normal
+//     * characters. Out of quotes blanks separate arguments. 
+//     * 
+//     * The following example shows these toggle points:
+//     * 
+//     * " a    \"command\"\"line\" \"with quotes\"  a command line\" with quotes \"here there"
+//     *        T        F T     F  T            F                 T              F
+//     *
+//     * If the double quotes are not evenly matched, an exception is thrown.
+//     */
+//    boolean isInDoubleQuote = false;
+//
+//    /*
+//     * isInArg toggles from false to true when we enter a command line argument
+//     * and toggles back to false when we exit. The logic is that we toggle to
+//     * true at the first non-whitespace character met. We toggle back to false
+//     * at first whitespace character not in double quotes or at end of line. 
+//     * 
+//     * The following example shows these toggle points:
+//     * 
+//     * " a    \"command\"\"line\" \"with quotes\"  a command line\" with quotes \"here there"
+//     *   TF   T                F  T             F  TFT      FT                             F
+//     */
+//    boolean isInArg = false;
+//
+//    /* arg is a string buffer to create the argument by concatenating all tokens
+//     * that compose it.
+//     * 
+//     * The following example shows the token returned by the parser and the 
+//     * (spaces, double quotes, others) and resultant argument:
+//     * 
+//     * Input (argument):
+//     * "line\" with quotes \"here"
+//     * 
+//     * Tokens (9):
+//     * line,", ,with, ,quote, ,",here
+//     */
+//    StringBuffer arg = new StringBuffer();
+//    
+//    while (st.hasMoreTokens()) {
+//      String token = st.nextToken();
+//      
+//      if (token.equals(SPACE)) {
+//        if (isInArg) {
+//          if (isInDoubleQuote) {
+//            // Spaces within double quotes are treated as normal spaces
+//            arg.append(SPACE);
+//          }
+//          else {
+//            // First spaces outside double quotes marks the end of the argument. 
+//            isInArg = false;
+//            results.add(arg.toString());
+//            arg = new StringBuffer();
+//          }
+//        }
+//      }
+//      else if (token.equals(DOUBLE_QUOTE)) {
+//        // If we encounter a double quote, we may be entering a new argument 
+//        // (isInArg is false) or continuing the current argument (isInArg is true).
+//        isInArg = true;
+//        isInDoubleQuote = !isInDoubleQuote;
+//      }
+//      else {
+//        // We we encounter a new token, we may be entering a new argument 
+//        // (isInArg is false) or continuing the current argument (isInArg is true).
+//        isInArg = true;
+//        arg.append(token);
+//      }
+//    }
+//    
+//    // In some (most) cases we exit this parsing because there are no tokens left
+//    // but we have not encountered a token to indicate that the last argument has
+//    // completely been read. For example, if the command line ends with a whitespace
+//    // the isInArg will toggle to false and the argument will be completely read.
+//    if (isInArg) {
+//      // End of last argument
+//      results.add(arg.toString());
+//    }
+//    
+//    // If we exit the parsing of the command line with an uneven number of double 
+//    // quotes, throw an exception.
+//    if (isInDoubleQuote) {
+//      throw new IllegalArgumentException("Unbalanced double quotes: \"" + line + "\"");
+//    }
+//    
+//    for (String result : results) {
+//      LOGGER.debug("parseArgs result: \"" + result + "\"");
+//    }
+//    
+//    return results;
+//  }
 
   /**
    * Reads the file specified by filename and returns the file content as a string.
@@ -592,8 +592,8 @@ public final class TestNGCommandLineArgs {
    *          the class name.
    * @return the class corresponding to the name specified.
    */
-  private static Class fileToClass(String file) {
-    Class result = null;
+  private static Class<?> fileToClass(String file) {
+    Class<?> result = null;
     
     if(!file.endsWith(".class") && !file.endsWith(".java")) {
       // Doesn't end in .java or .class, assume it's a class name
