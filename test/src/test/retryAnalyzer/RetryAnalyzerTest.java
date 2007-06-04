@@ -1,7 +1,7 @@
 package test.retryAnalyzer;
 
 import org.testng.Assert;
-import org.testng.IRetryAnalyzer;
+import org.testng.util.RetryAnalyzerCount;
 import org.testng.ITestResult;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -11,16 +11,22 @@ import org.testng.annotations.Test;
  * @author tocman@gmail.com (Jeremie Lenfant-Engelmann)
  *
  */
-public final class RetryAnalyzerTest implements IRetryAnalyzer {
+public final class RetryAnalyzerTest extends RetryAnalyzerCount {
 
   private static int r = 1;
   private static int r2 = 1;
+  private static int r3 = 1;
+  private static int value = 42;
+
+  public RetryAnalyzerTest() {
+    setCount(2);
+  }
 
   @Test(retryAnalyzer=RetryAnalyzerTest.class)
   public void testAnnotation() {
     Assert.assertTrue(true);
   }
-  
+
   @Test(retryAnalyzer=RetryAnalyzerTest.class)
   public void testAnnotationWithOneRetry() {
     if (r == 1) {
@@ -38,6 +44,13 @@ public final class RetryAnalyzerTest implements IRetryAnalyzer {
         { 1, false } };
   }
 
+  @DataProvider(name="dataProvider2")
+  private Object[][] dataProvider2() {
+    value = 42;
+
+    return new Object[][] { { true }, { true } };
+  }
+
   @Test(retryAnalyzer=RetryAnalyzerTest.class, dataProvider="dataProvider")
   public void testAnnotationWithDataProvider(int paf, boolean test) {
     if (paf == 1 && test == false) {
@@ -52,8 +65,19 @@ public final class RetryAnalyzerTest implements IRetryAnalyzer {
       Assert.assertTrue(true);
     }
   }
-  
-  public boolean retry(ITestResult result) {
+
+  @Test(retryAnalyzer=RetryAnalyzerTest.class, dataProvider="dataProvider2")
+  public void testAnnotationWithDataProviderAndRecreateParameters(boolean dummy) {
+    if (r3 == 1) {
+      this.value = 0;
+      r3--;
+      Assert.assertTrue(false);
+    } else if (r3 == 0) {
+      Assert.assertEquals(this.value, 42);
+    }
+  }
+
+  public boolean retryMethod(ITestResult result) {
     return true;
   }
 }

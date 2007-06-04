@@ -1,10 +1,10 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
   
-<suite name="Single" verbose="3" parallel="false"  >
-  <test name="Test order invocation">
-    <classes>
-      <class name="test.configuration.ReflectMethodParametrizedConfigurationMethodTest" />
-    </classes>
+<suite name="Single" verbose="1" parallel="false"  >
+  <test name="RetryAnalyzer">
+	<classes>
+		<class name="test.retryAnalyzer.RetryAnalyzerTest" />
+	</classes>
   </test>
 </suite>
 

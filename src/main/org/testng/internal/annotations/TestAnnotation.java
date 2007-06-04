@@ -1,8 +1,6 @@
 package org.testng.internal.annotations;
 
 import org.testng.IRetryAnalyzer;
-import org.testng.ITestResult;
-import org.testng.TestNG;
 
 
 /**
@@ -18,25 +16,24 @@ public class TestAnnotation extends TestOrConfiguration implements ITest {
   private int m_successPercentage = 100;
   private String m_dataProvider = "";
   private boolean m_alwaysRun = false;
-  private Class[] m_expectedExceptions = {};
+  private Class<?>[] m_expectedExceptions = {};
   private String m_suiteName = "";
   private String m_testName = "";
   private boolean m_sequential = false;
-  private boolean m_reentering = false;
-  private Class m_dataProviderClass = null;
-  private IRetryAnalyzer retryAnalyzer = null;
+  private Class<?> m_dataProviderClass = null;
+  private IRetryAnalyzer m_retryAnalyzer = null;
   
   /**
    * @return the expectedExceptions
    */
-  public Class[] getExpectedExceptions() {
+  public Class<?>[] getExpectedExceptions() {
     return m_expectedExceptions;
   }
 
   /**
    * @param expectedExceptions the expectedExceptions to set
    */
-  public void setExpectedExceptions(Class[] expectedExceptions) {
+  public void setExpectedExceptions(Class<?>[] expectedExceptions) {
     m_expectedExceptions = expectedExceptions;
   }
 
@@ -48,11 +45,11 @@ public class TestAnnotation extends TestOrConfiguration implements ITest {
     m_dataProvider = dataProvider;
   }
 
-  public Class getDataProviderClass() {
+  public Class<?> getDataProviderClass() {
     return m_dataProviderClass;
   }
 
-  public void setDataProviderClass(Class dataProviderClass) {
+  public void setDataProviderClass(Class<?> dataProviderClass) {
     m_dataProviderClass = dataProviderClass;
   }
 
@@ -121,31 +118,23 @@ public class TestAnnotation extends TestOrConfiguration implements ITest {
   }
 
   public IRetryAnalyzer getRetryAnalyzer() {
-    return retryAnalyzer;
+    return m_retryAnalyzer;
   }
 
-  private boolean implementsRetryAnalyzer(Class c) {
-    for (Class retryAnalyzeInterface : c.getInterfaces()) {
-      if (retryAnalyzeInterface.getName().equals(
-          IRetryAnalyzer.class.getName())) {
-        return true;
-      }
-    }
-    return false;
-  }
-  
-  public void setRetryAnalyzer(Class c) {
-    this.retryAnalyzer = null;
+  public void setRetryAnalyzer(Class<?> c) {
+    m_retryAnalyzer = null;
 
-    if (c != null && implementsRetryAnalyzer(c)) {
+    if (c != null && IRetryAnalyzer.class.isAssignableFrom(c)) {
       try {
-        this.retryAnalyzer = (IRetryAnalyzer)c.newInstance();
-      } catch (InstantiationException e) {
+        m_retryAnalyzer = (IRetryAnalyzer) c.newInstance();
+      } 
+      catch (InstantiationException e) {
         // The class will never be called.
-      } catch (IllegalAccessException e) {
+      } 
+      catch (IllegalAccessException e) {
         // The class will never be called.
       }
     }
   }
-  
+
 }

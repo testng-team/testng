@@ -228,7 +228,7 @@
   </test>
 
   <!-- Tests for included and excluded methods -->
-    <test name="Method1">
+  <test name="Method1">
     <classes>
         <class name="test.methods.SampleMethod1">
           <methods>
@@ -440,19 +440,19 @@
     </classes>
   </test>
     
-    <test name="JUnitConverter">
+  <test name="JUnitConverter">
     <parameter name="source-directory" value="test/src/test/converter" />
     <classes>
-    <class name="test.converter.JUnitConverterTest" />
+      <class name="test.converter.JUnitConverterTest" />
     </classes>
-    </test>
+  </test>
 
-    <test name="AnnotationConverter">
+  <test name="AnnotationConverter">
     <parameter name="source-directory" value="test/src/test/sample" />
     <classes>
-    <class name="test.converter.AnnotationConverterTest" />
+      <class name="test.converter.AnnotationConverterTest" />
     </classes>
-    </test>
+  </test>
   
   <!-- TestNG ant task related tests -->
   <test name="Ant-ClassFileResolution" >
@@ -501,8 +501,8 @@
 	</test>
 
   <test name="RetryAnalyzer">
-	<classes>
-		<class name="test.retryAnalyzer.RetryAnalyzerTest" />
-	</classes>
+    <classes>
+      <class name="test.retryAnalyzer.RetryAnalyzerTest" />
+    </classes>
   </test>  
 </suite>

@@ -25,13 +25,15 @@ public class TestResult implements ITestResult {
   private String m_name = null;
   private String m_host;
   private Object[] m_parameters = {};
-  private Object instance = null;
 
   /**
+   * 
    * @param testClass
-   * @param testMethod
-   * @param status
+   * @param instance
+   * @param method
    * @param throwable
+   * @param start
+   * @param end
    */
   public TestResult(IClass testClass,
                     Object instance,
