@@ -232,11 +232,15 @@ public class XMLSuiteResultWriter {
       String[] stackTraces = Utils.stackTrace(exception, true);
       if ((config.getStackTraceOutputMethod() & XMLReporterConfig.STACKTRACE_SHORT) == XMLReporterConfig
               .STACKTRACE_SHORT) {
-        xmlBuffer.addRequired(XMLReporterConfig.TAG_SHORT_STACKTRACE, stackTraces[0]);
+        xmlBuffer.push(XMLReporterConfig.TAG_SHORT_STACKTRACE);
+        xmlBuffer.addCDATA(stackTraces[0]);
+        xmlBuffer.pop();
       }
       if ((config.getStackTraceOutputMethod() & XMLReporterConfig.STACKTRACE_FULL) == XMLReporterConfig
               .STACKTRACE_FULL) {
-        xmlBuffer.addRequired(XMLReporterConfig.TAG_FULL_STACKTRACE, stackTraces[1]);
+        xmlBuffer.push(XMLReporterConfig.TAG_FULL_STACKTRACE);
+        xmlBuffer.addCDATA(stackTraces[1]);
+        xmlBuffer.pop();
       }
 
       xmlBuffer.pop();
