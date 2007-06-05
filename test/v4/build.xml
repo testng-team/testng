@@ -140,6 +140,7 @@ TESTNG.REPORT.DIR=${testng.report.dir}
 			<fileset dir="${testng.report.dir}">
 				<include name="*.xml"/>
 				<exclude name="testng-failures.xml"/>
+        <exclude name="testng-results.xml" />
 			</fileset>
 			<report format="noframes" todir="${junit.report.dir}"/>
 		</junitreport>
