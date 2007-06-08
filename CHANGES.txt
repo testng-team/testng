@@ -1,4 +1,10 @@
 ===========================================================================
+5.7
+
+Added: RetryAnalyzer (experimental) (Jeremie)
+
+
+===========================================================================
 5.6
 
 Added: SkipException/TimeBombedSkipException for manual skipping
