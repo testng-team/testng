@@ -1802,7 +1802,7 @@ get this to work for now.</em>
 &nbsp;&nbsp;<a name="logging-reporter-api"><em>6.2.4 - Reporter API</em></a>
 
 <p>
-If you need to log messages that should appear in the generated HTML reports, you can the class <tt><a href="../javadocs/org/testng/Reporter.html">org.testng.Reporter</a></tt>:
+If you need to log messages that should appear in the generated HTML reports, you can use the class <tt><a href="../javadocs/org/testng/Reporter.html">org.testng.Reporter</a></tt>:
 
 <blockquote class="code">
 <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">Reporter.log</font><font color="#000000">(</font><font color="#2a00ff">&#34;M3 WAS CALLED&#34;</font><font color="#000000">)</font><font color="#000000">;</font>
@@ -1818,9 +1818,7 @@ If you need to log messages that should appear in the generated HTML reports, yo
 
 &nbsp;&nbsp;<a name="logging-xml-reports"><em>6.2.5 - XML Reports</em></a>
 <p>
-Starting with the 5.6 version, TestNG introduces an XML reporter capturing TestNG specific information that is not available in JUnit reports. This is particulary usefull when
-the user's test environment needs to consume XML results with TestNG-specific data that the JUnit format can't provide.  
-Below is a sample of the output of such a reporter.
+TestNG offers an XML reporter capturing TestNG specific information that is not available in JUnit reports. This is particulary useful when the user's test environment needs to consume XML results with TestNG-specific data that the JUnit format can't provide.  Below is a sample of the output of such a reporter:
 </p>
 <pre class="prettyprint">
 &lt;testng-results&gt;
@@ -1857,8 +1855,7 @@ Below is a sample of the output of such a reporter.
     &lt;/suite&gt;
 &lt;/testng-results&gt;
 </pre>
-<p>This reporter is injected along with the other default listeners so you can get this type of output by default. The listener provides however some properties that can tweak the reporter to fit your needs. The following table contains
-a list of these properties with a short explanation.
+<p>This reporter is injected along with the other default listeners so you can get this type of output by default. The listener provides some properties that can tweak the reporter to fit your needs. The following table contains a list of these properties with a short explanation:
 </p>
 <table border="1" width="100%" id="table6">
   <tr>
