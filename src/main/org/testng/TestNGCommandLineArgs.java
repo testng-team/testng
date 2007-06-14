@@ -739,6 +739,7 @@ public final class TestNGCommandLineArgs {
     System.out.println("\t\tDefault name of test suite, if not specified in suite definition file or source code");
     System.out.println("[" + TEST_NAME_OPT + " Name]");
     System.out.println("\t\tDefault name of test, if not specified in suite definition file or source code");
+    System.out.println("[" + REPORTER + " Extended configuration for custom report listener]");    
     System.out.println("[suite definition files*]");
     System.out.println("");
     System.out.println("For details please consult documentation.");
