@@ -25,10 +25,11 @@ public class MethodInstance {
     return "[MethodInstance m:" + m_method + " i:" + m_instances[0];
   }
 
-  public static final Comparator<MethodInstance> SORT_BY_CLASS = new Comparator<MethodInstance>() {
-    @Override
+  public static final Comparator<MethodInstance> SORT_BY_CLASS 
+    = new Comparator<MethodInstance>() {
     public int compare(MethodInstance o1, MethodInstance o2) {
-      int result= o1.getMethod().getTestClass().getName().compareTo(o2.getMethod().getTestClass().getName());
+      int result= o1.getMethod().getTestClass().getName()
+        .compareTo(o2.getMethod().getTestClass().getName());
       if(result == 0) {
         // if they have a single instance try to use it while performing the order 
         Object[] i1= o1.getInstances();

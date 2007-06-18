@@ -196,7 +196,12 @@ public final class TestNGCommandLineArgs {
       }
       else if (LISTENER_COMMAND_OPT.equalsIgnoreCase(argv[i])) {
         if ((i + 1) < argv.length) {
-          String[] strs = Utils.split(argv[++i], ";");
+          String strClass = argv[++i];
+          String sep = ";";
+          if (strClass.indexOf(",") >= 0) {
+            sep = ",";
+          }
+          String[] strs = Utils.split(strClass, sep);
           List<Class<?>> classes = new ArrayList<Class<?>>();
 
           for (String cls : strs) {
