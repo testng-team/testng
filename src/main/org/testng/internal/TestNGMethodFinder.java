@@ -187,12 +187,9 @@ public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
       }
     }
 
-    ITestNGMethod[] unorderedResult = vResult.toArray(new ITestNGMethod[vResult.size()]);
-
     List<ITestNGMethod> excludedMethods = new ArrayList<ITestNGMethod>();
-    boolean unique = 
-      configurationType == BEFORE_SUITE || configurationType == AFTER_SUITE;
-    ITestNGMethod[] tmResult = MethodHelper.collectAndOrderConfigurationMethods(unorderedResult,
+    boolean unique = configurationType == BEFORE_SUITE || configurationType == AFTER_SUITE;
+    ITestNGMethod[] tmResult = MethodHelper.collectAndOrderConfigurationMethods(vResult,
                                                                                 m_runInfo,
                                                                                 m_annotationFinder,
                                                                                 unique,
@@ -203,7 +200,7 @@ public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
    
 
 
-  private void addConfigurationMethod(Class clazz,
+  private void addConfigurationMethod(Class<?> clazz,
                                       List<ITestNGMethod> results,
                                       Method method,
                                       boolean isBeforeSuite,

@@ -37,58 +37,17 @@ import org.testng.internal.thread.ThreadUtil;
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class MethodHelper {
-  static private boolean m_quiet = true;
+//  static private boolean m_quiet = true;
 
   // ///
   // public methods
   //
 
-  public static ITestNGMethod[] collectAndOrderMethods(
-      List<ITestNGMethod> methods, boolean forTests, RunInfo runInfo,
-      IAnnotationFinder finder, List<ITestNGMethod> outExcludedMethods) 
+  public static ITestNGMethod[] collectAndOrderMethods(List<ITestNGMethod> methods, 
+      RunInfo runInfo, IAnnotationFinder finder, List<ITestNGMethod> outExcludedMethods) 
   {
-    return collectAndOrderMethods((ITestNGMethod[]) methods
-        .toArray(new ITestNGMethod[methods.size()]), forTests, runInfo, finder,
-        false /* unique */, outExcludedMethods);
-  }
-
-  public static ITestNGMethod[] collectAndOrderMethods(
-      List<ITestNGMethod> methods, boolean forTests, RunInfo runInfo,
-      IAnnotationFinder finder, boolean unique,
-      List<ITestNGMethod> outExcludedMethods) 
-  {
-    return collectAndOrderMethods((ITestNGMethod[]) methods
-        .toArray(new ITestNGMethod[methods.size()]), forTests, runInfo, finder,
-        unique,
-        outExcludedMethods);
-  }
-
-  /*public static ITestNGMethod[] collectAndOrderMethods(ITestNGMethod[] methods,
-      boolean forTests, RunInfo runInfo, IAnnotationFinder finder,
-      List<ITestNGMethod> outExcludedMethods) 
-  {
-    return collectAndOrderMethods(methods, forTests, runInfo, finder, 
-        false  unique , outExcludedMethods);
-  }*/
-
-  private static ITestNGMethod[] collectAndOrderMethods(ITestNGMethod[] methods,
-      boolean forTests, RunInfo runInfo, IAnnotationFinder finder,
-      boolean unique, List<ITestNGMethod> outExcludedMethods) 
-  {
-    List<ITestNGMethod> includedMethods = new ArrayList<ITestNGMethod>();
-    collectMethodsByGroup(methods, forTests, 
-        includedMethods, outExcludedMethods, 
-        runInfo, finder, unique);
-    List<ITestNGMethod> vResult = sortMethods(forTests, includedMethods, finder);
-
-    ITestNGMethod[] result = vResult.toArray(new ITestNGMethod[vResult.size()]);
-
-    // Method[] result = new Method[vResult.size()];
-    // for (int i = 0; i < vResult.size(); i++) {
-    // result[i] = vResult.get(i).getMethod();
-    // }
-
-    return result;
+    return internalCollectAndOrderMethods(methods.toArray(new ITestNGMethod[methods.size()]), 
+        true /* forTest */, runInfo, finder, false /* unique */, outExcludedMethods);
   }
 
   /**
@@ -96,13 +55,32 @@ public class MethodHelper {
    * @return All the methods that match the filtered groups. If a method belongs
    *         to an excluded group, it is automatically excluded.
    */
-  public static ITestNGMethod[] collectAndOrderConfigurationMethods(
-      ITestNGMethod[] methods, RunInfo runInfo, IAnnotationFinder finder,
+  public static ITestNGMethod[] collectAndOrderConfigurationMethods(List<ITestNGMethod> methods, 
+      RunInfo runInfo, IAnnotationFinder finder, boolean unique, List<ITestNGMethod> outExcludedMethods) 
+  {
+    return internalCollectAndOrderMethods(methods.toArray(new ITestNGMethod[methods.size()]), 
+          false /* forTests */, runInfo, finder, unique, outExcludedMethods);      
+  }
+
+  private static ITestNGMethod[] internalCollectAndOrderMethods(ITestNGMethod[] methods,
+      boolean forTests, RunInfo runInfo, IAnnotationFinder finder,
       boolean unique, List<ITestNGMethod> outExcludedMethods) 
   {
-    return collectAndOrderMethods(methods, false /* forTests */, runInfo,
-        finder, unique, outExcludedMethods);
+    List<ITestNGMethod> includedMethods = new ArrayList<ITestNGMethod>();
+    collectMethodsByGroup(methods, 
+        forTests, 
+        includedMethods, 
+        outExcludedMethods, 
+        runInfo, 
+        finder, 
+        unique);
+    List<ITestNGMethod> vResult = sortMethods(forTests, includedMethods, finder);
+
+    ITestNGMethod[] result = vResult.toArray(new ITestNGMethod[vResult.size()]);
+
+    return result;
   }
+
 
   /**
    * @return all the methods that belong to the group specified by the regular
@@ -221,7 +199,7 @@ public class MethodHelper {
   // End of public methods
   // ///
 
-  public static boolean isEnabled(Class objectClass, IAnnotationFinder finder) {
+  public static boolean isEnabled(Class<?> objectClass, IAnnotationFinder finder) {
     ITest testClassAnnotation= AnnotationHelper.findTest(finder, objectClass);
 
     return isEnabled(testClassAnnotation);
@@ -385,9 +363,7 @@ public class MethodHelper {
   }
   
   private static boolean includeMethod(ITestOrConfiguration annotation,
-      RunInfo runInfo, ITestNGMethod tm, 
-      boolean forTests, boolean unique,
-      List<ITestNGMethod> outIncludedMethods)
+      RunInfo runInfo, ITestNGMethod tm, boolean forTests, boolean unique, List<ITestNGMethod> outIncludedMethods)
   {
     boolean result = false;
     
@@ -464,8 +440,8 @@ public class MethodHelper {
       Method jm2 = tm.getMethod();
       if (jm1.getName().equals(jm2.getName())) {
         // Same names, see if they are in the same hierarchy
-        Class c1 = jm1.getDeclaringClass();
-        Class c2 = jm2.getDeclaringClass();
+        Class<?> c1 = jm1.getDeclaringClass();
+        Class<?> c2 = jm2.getDeclaringClass();
         if (c1.isAssignableFrom(c2) || c2.isAssignableFrom(c1)) {
           return true;
         }
@@ -499,8 +475,8 @@ public class MethodHelper {
       }
       if (groupsDependedUpon.length > 0) {
         for (String group : groupsDependedUpon) {
-          ITestNGMethod[] methodsThatBelongToGroup = MethodHelper
-              .findMethodsThatBelongToGroup(m, methods, group);
+          ITestNGMethod[] methodsThatBelongToGroup = 
+            MethodHelper.findMethodsThatBelongToGroup(m, methods, group);
           for (ITestNGMethod pred : methodsThatBelongToGroup) {
             predecessors.put(pred, pred);
           }
@@ -528,7 +504,7 @@ public class MethodHelper {
     String packageName = m.getDeclaringClass().getName() + "." + m.getName(); 
     
     // Try to find the method on this class or parents
-    Class cls = m.getDeclaringClass();
+    Class<?> cls = m.getDeclaringClass();
     while (cls != Object.class) {
       try {
         if (cls.getDeclaredMethod(m.getName(), m.getParameterTypes()) != null) {
@@ -546,17 +522,15 @@ public class MethodHelper {
     return result;
   }
 
-  private static List<ITestNGMethod> sortMethods(boolean forTests,
+  private static List<ITestNGMethod> sortMethods(boolean forTests, 
       List<ITestNGMethod> allMethods, IAnnotationFinder finder) {
     List<ITestNGMethod> sl = new ArrayList<ITestNGMethod>();
     List<ITestNGMethod> pl = new ArrayList<ITestNGMethod>();
-    ITestNGMethod[] allMethodsArray = allMethods
-        .toArray(new ITestNGMethod[allMethods.size()]);
+    ITestNGMethod[] allMethodsArray = allMethods.toArray(new ITestNGMethod[allMethods.size()]);
 
     // Fix the method inheritance if these are @Configuration methods to make
     // sure base classes are invoked before child classes if 'before' and the
-    // other
-    // way around if they are 'after'
+    // other way around if they are 'after'
     if (!forTests && allMethodsArray.length > 0) {
       ITestNGMethod m = allMethodsArray[0];
       boolean before = m.isBeforeClassConfiguration()
@@ -630,12 +604,12 @@ public class MethodHelper {
       // Go through all the parameters declared on this Data Provider and
       // make sure we have at most one Method and one ITestContext.
       // Anything else is an error
-      Class[] parameterTypes = dataProvider.getParameterTypes();
+      Class<?>[] parameterTypes = dataProvider.getParameterTypes();
       if (parameterTypes.length > 2) {
         throw new TestNGException("DataProvider " + dataProvider + " cannot have more than two parameters");
       }
       
-      for (Class cls : parameterTypes) {
+      for (Class<?> cls : parameterTypes) {
         if (cls.equals(Method.class)) {
           lParameters.add(testMethod);
         }
@@ -673,7 +647,7 @@ public class MethodHelper {
     return result;
   }
 
-  public static String calculateMethodCanonicalName(Class methodClass, String methodName) {
+  public static String calculateMethodCanonicalName(Class<?> methodClass, String methodName) {
     Set<Method> methods = ClassHelper.getAvailableMethods(methodClass); // TESTNG-139
     Method result = null;
     for (Method m : methods) {
