@@ -385,8 +385,8 @@ public abstract class BaseTestMethod implements ITestNGMethod {
       for (int i = 0; i < methodsDependedUpon.length; i++) {
         String m = methodsDependedUpon[i];
         if (m.indexOf(".") < 0) {
-          methodsDependedUpon[i] = 
-            MethodHelper.calculateMethodCanonicalName(m_methodClass, methodsDependedUpon[i]);
+          m = MethodHelper.calculateMethodCanonicalName(m_methodClass, methodsDependedUpon[i]); 
+          methodsDependedUpon[i] = m != null ? m : methodsDependedUpon[i];            
         }
       }
       setMethodsDependedUpon(methodsDependedUpon);

@@ -1,6 +1,7 @@
 ===========================================================================
 5.7
 
+Fixed: TESTNG-169 Error message: <method> is depending on nonexistent method null ("null" is uninformative)
 Fixed: -listener takes comma-separated classes
 Added: RetryAnalyzer (experimental) (Jeremie)
 
