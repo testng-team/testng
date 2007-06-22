@@ -1221,12 +1221,20 @@ public class TestWebServer {
 <tt>testng.xml:</tt></p>
 
 <pre class="prettyprint">
-&lt;parameter name="number-of-times"   value="10"/&gt;
-&lt;class name= "TestWebServer" /&gt;
-&lt;parameter name="number-of-times"   value="20"/&gt;
-&lt;class name= "TestWebServer"/&gt;
-&lt;parameter name="number-of-times"   value="30"/&gt;
-&lt;class name= "TestWebServer"/&gt;
+&lt;test name="T1"&gt;
+&nbsp;&nbsp;&lt;parameter name="number-of-times" value="10"/&gt;
+&nbsp;&nbsp;&lt;class name= "TestWebServer" /&gt;
+&lt;/test&gt;
+
+&lt;test name="T2"&gt;
+&nbsp;&nbsp;&lt;parameter name="number-of-times" value="20"/&gt;
+&nbsp;&nbsp;&lt;class name= "TestWebServer"/&gt;
+&lt;/test&gt;
+
+&lt;test name="T3"&gt;
+&nbsp;&nbsp;&lt;parameter name="number-of-times" value="30"/&gt;
+&nbsp;&nbsp;&lt;class name= "TestWebServer"/&gt;
+&lt;/test&gt;
 </pre>
 
 <p>This can become quickly impossible to manage, so instead, you should use a 
