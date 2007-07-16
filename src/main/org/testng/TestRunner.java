@@ -365,10 +365,12 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   }
 
   public void setOutputDirectory(String od) {
-  if (od == null) { m_outputDirectory = null; return; } //for maven2
-    File file = new File(od);
-    file.mkdirs();
-    m_outputDirectory= file.getAbsolutePath();
+    m_outputDirectory= od;
+//  FIX: empty directories were created
+//    if (od == null) { m_outputDirectory = null; return; } //for maven2
+//    File file = new File(od);
+//    file.mkdirs();
+//    m_outputDirectory= file.getAbsolutePath();
   }
 
   private void addMetaGroup(String name, List<String> groupNames) {
