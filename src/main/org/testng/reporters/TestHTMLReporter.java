@@ -1,10 +1,5 @@
 package org.testng.reporters;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -76,8 +71,6 @@ public class TestHTMLReporter extends TestListenerAdapter {
       Collections.sort((List<ITestResult>) tests, comparator);
     }
 
-    int i = 0;
-    
     // User output?
     String id = "";
     Throwable tw = null;
@@ -115,7 +108,7 @@ public class TestHTMLReporter extends TestListenerAdapter {
           // Method name
           String divId = "Output-" + tr.hashCode();
           sb.append("\n<a href=\"#").append(divId).append("\"")
-            .append(" onClick=\"toggleBox('").append(divId).append("');\">")
+            .append(" onClick='toggleBox(\"").append(divId).append("\", this, \"Show output\", \"Hide output\");'>")
             .append("Show output</a>\n")
             .append("\n<a href=\"#").append(divId).append("\"")
             .append(" onClick=\"toggleAllBoxes();\">Show all outputs</a>\n")
@@ -153,7 +146,7 @@ public class TestHTMLReporter extends TestListenerAdapter {
         sb.append(stackTrace);
         // JavaScript link
         sb.append("<a href='#' onClick='toggleBox(\"")
-        .append(id).append("\")'>")
+        .append(id).append("\", this, \"Click to show all stack frames\", \"Click to hide stack frames\")'>")
         .append("Click to show all stack frames").append("</a>\n")
         .append("<div class='stack-trace' id='" + id + "'>")
         .append("<pre>" + fullStackTrace + "</pre>")
@@ -188,21 +181,26 @@ public class TestHTMLReporter extends TestListenerAdapter {
       "  current = e.style.display;\n" +
       "  if (current == 'block') {\n" +
       "    e.style.display = 'none';\n" +
+      "    return 0;\n" +
       "  }\n" +
       "  else {\n" +
       "    e.style.display = 'block';\n" +
+      "    return 1;\n" +
       "  }\n" +
       "}\n" +
       "\n" +
-      "function toggleBox(szDivId)\n" +
+      "function toggleBox(szDivId, elem, msg1, msg2)\n" +
       "{\n" +
+      "  var res = -1;" +
       "  if (document.getElementById) {\n" +
-      "    flip(document.getElementById(szDivId));\n" +
+      "    res = flip(document.getElementById(szDivId));\n" +
       "  }\n" +
       "  else if (document.all) {\n" +
       "    // this is the way old msie versions work\n" +
-      "    var style2 = document.all[szDivId].style;\n" +
-      "    style2.display = style2.display? \"\":\"block\";\n" +
+      "    res = flip(document.all[szDivId]);\n" +
+      "  }\n" +
+      "  if(elem) {\n" +
+      "    if(res == 0) elem.innerHTML = msg1; else elem.innerHTML = msg2;\n" + 
       "  }\n" +
       "\n" +
       "}\n" +
