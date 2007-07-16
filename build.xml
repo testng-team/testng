@@ -290,29 +290,30 @@
   </target>
 
   <target name="dist-all-zip" depends="dist-prepare,dist-jar,javadocs">
+  	<property name="zip.dir" value="testng-${testng.version}" />
     <zip zipfile="${testng.zip}">
-      <zipfileset dir="${basedir}" includesfile="FILES" />
-      <zipfileset dir="${basedir}">
+      <zipfileset prefix="${zip.dir}" dir="${basedir}" includesfile="FILES" />
+      <zipfileset prefix="${zip.dir}" dir="${basedir}">
         <include name="${jdk14.testng.jar}" />
         <include name="${jdk15.testng.jar}" />
       </zipfileset>
-      <zipfileset dir="${other.jars.dir}" prefix="${other.jars.dir}"/>
-      <zipfileset dir="javadocs" prefix="javadocs" />
-      <zipfileset dir="src" prefix="src" />
-      <zipfileset dir="doc" prefix="doc" />
-    	<zipfileset dir="resources"
-    							prefix="resources" 
-    							includes="**/*.css"/>
+      <zipfileset dir="${other.jars.dir}" prefix="${zip.dir}/${other.jars.dir}"/>
+      <zipfileset dir="javadocs" prefix="${zip.dir}/javadocs" />
+      <zipfileset dir="src" prefix="${zip.dir}/src" />
+      <zipfileset dir="doc" prefix="${zip.dir}/doc" />
+      <zipfileset dir="resources"
+    	   		  prefix="${zip.dir}/resources" 
+    			  includes="**/*.css"/>
       <zipfileset dir="test"
-                  prefix="test"
+                  prefix="${zip.dir}/test"
                   includes="**/*.properties,**/*.java,build.xml,testng.xml"
                   excludes="test-output/**,report/**,v4/**" />
       <zipfileset dir="test-14"
-                  prefix="test-14"
+                  prefix="${zip.dir}/test-14"
                   includes="**/*.properties,**/*.java,build.xml,testng.xml"
                   excludes="test-output/**,report/**,v4/**" />
       <zipfileset dir="3rdparty"
-                  prefix="3rdparty"
+                  prefix="${zip.dir}/3rdparty"
                   includes="${qdox.jar},${beanshell.jar},${concurrent.jar}" />
     </zip>
   </target>
