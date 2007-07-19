@@ -1,5 +1,6 @@
                                        TODO for TestNG
 
+* Pass parameters from ant
 * Make it possible to specify groups on command line and classes in testng.xml
 (and any combinations thereof:  command line, ant, testng.xml)
 * Retry patch
