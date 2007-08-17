@@ -825,32 +825,37 @@ public class Invoker implements IInvoker {
                 
                 while (allParameterValues.hasNext()) {
                   Object[] parameterValues= allParameterValues.next();
-  
+                  List<ITestResult> tmpResults = new ArrayList<ITestResult>();
+
                   try {
-                      result = invokeTestMethod(instances,
-                                                testMethod,
-                                                parameterValues,
-                                                suite,
-                                                allParameterNames,
-                                                testClass,
-                                                beforeMethods,
-                                                afterMethods,
-                                                groupMethods);
+                    tmpResults.addAll(invokeTestMethod(instances,
+                                                       testMethod,
+                                                       parameterValues,
+                                                       suite,
+                                                       allParameterNames,
+                                                       testClass,
+                                                       beforeMethods,
+                                                       afterMethods,
+                                                       groupMethods));
                   }
                   finally {
                     List<Object> failedInstances = new ArrayList<Object>();
-                    
-                    failureCount = handleInvocationResults(testMethod, result,
-                        failedInstances, failureCount, expectedExceptionClasses, true);
-                    for (int i = 0; i < failedInstances.size(); i++) {
-                      List<ITestResult> retryResults = new ArrayList<ITestResult>();
 
-                      failureCount = retryFailed(failedInstances.toArray(),
-                          i, testMethod, suite, testClass, beforeMethods,
-                          afterMethods, groupMethods, retryResults,
-                          failureCount, expectedExceptionClasses,
-                          testContext, parameters, parametersIndex);
-                      result.addAll(retryResults);
+                    failureCount = handleInvocationResults(testMethod, tmpResults,
+                        failedInstances, failureCount, expectedExceptionClasses, true);
+                    if (failedInstances.isEmpty()) {
+                      result.addAll(tmpResults);
+                    } else {
+                      for (int i = 0; i < failedInstances.size(); i++) {
+                        List<ITestResult> retryResults = new ArrayList<ITestResult>();
+
+                        failureCount = retryFailed(failedInstances.toArray(),
+                                                   i, testMethod, suite, testClass, beforeMethods,
+                                                   afterMethods, groupMethods, retryResults,
+                                                   failureCount, expectedExceptionClasses,
+                                                   testContext, parameters, parametersIndex);
+                        result.addAll(retryResults);
+                      }
                     }
                   }
                   parametersIndex++;
