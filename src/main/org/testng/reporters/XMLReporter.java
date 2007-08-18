@@ -46,7 +46,9 @@ public class XMLReporter implements IReporter {
     xmlBuffer.push(XMLReporterConfig.TAG_REPORTER_OUTPUT);
     List<String> output = Reporter.getOutput();
     for (String line : output) {
-      xmlBuffer.addRequired(XMLReporterConfig.TAG_LINE, line);
+      xmlBuffer.push(XMLReporterConfig.TAG_LINE);
+      xmlBuffer.addCDATA(line);
+      xmlBuffer.pop();
     }
     xmlBuffer.pop();
   }
