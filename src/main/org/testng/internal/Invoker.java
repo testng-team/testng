@@ -688,10 +688,10 @@ public class Invoker implements IInvoker {
                            ITestContext testContext,
                            Map<String, String> parameters,
                            int parametersIndex) {
-    
-    List<Object> failedInstances = new ArrayList<Object>();
+    List<Object> failedInstances;
 
-    do {  
+    do {
+      failedInstances = new ArrayList<Object>();
       Map<String, String> allParameters = new HashMap<String, String>();
       /**
        * TODO: This recreates all the parameters every time when we only need
