@@ -125,11 +125,11 @@ public class MessageHelper {
                                  messageParts[2],
                                  messageParts[3],
                                  messageParts[4],
-                                 replaceNewLineReplacer(testDescriptor),
+                                 replaceAsciiCharactersWithUnicode(replaceNewLineReplacer(testDescriptor)),
                                  parseParameters(parametersFragment),
                                  Long.parseLong(startTimestampFragment),
                                  Long.parseLong(stopTimestampFragment),
-                                 replaceNewLineReplacer(stackTraceFragment)
+                                 replaceAsciiCharactersWithUnicode(replaceNewLineReplacer(stackTraceFragment))
             );
   }
   
@@ -140,7 +140,29 @@ public class MessageHelper {
     
     return message.replace('\n', LINE_SEP_DELIMITER_1).replace('\r', LINE_SEP_DELIMITER_2);
   }
-  
+
+  public static String replaceUnicodeCharactersWithAscii(String message) {
+    if(null == message) {
+      return message;
+    }
+
+    return message.replace("\u0001", "\\u0001")
+            .replace("\u0002", "\\u0002")
+            .replace("\u0003", "\\u0003")
+            .replace("\u0004", "\\u0004");
+  }
+
+  public static String replaceAsciiCharactersWithUnicode(String message) {
+    if(null == message) {
+      return message;
+    }
+
+    return message.replace("\\u0001", "\u0001")
+            .replace("\\u0002", "\u0002")
+            .replace("\\u0003", "\u0003")
+            .replace("\\u0004", "\u0004");
+  }
+
   public static String replaceNewLineReplacer(String message) {
     if(null == message) {
       return message;

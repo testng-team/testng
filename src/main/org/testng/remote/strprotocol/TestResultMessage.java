@@ -9,7 +9,6 @@ import java.util.List;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.SkipException;
-import org.testng.internal.Utils;
 
 
 /**
@@ -87,12 +86,12 @@ public class TestResultMessage implements IStringMessage {
          testName,
          result.getTestClass().getName(),
          result.getMethod().getMethod().getName(),
-         stackTrace,
+         MessageHelper.replaceUnicodeCharactersWithAscii(stackTrace),
          result.getStartMillis(),
          result.getEndMillis(),
          toString(result.getParameters(), result.getMethod().getMethod().getParameterTypes()),
          toString(result.getMethod().getMethod().getParameterTypes()),
-         result.getName()
+         MessageHelper.replaceUnicodeCharactersWithAscii(result.getName())
     );
   }
   
