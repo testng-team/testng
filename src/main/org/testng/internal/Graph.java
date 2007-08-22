@@ -43,7 +43,6 @@ public class Graph<T extends Object> {
   }
   
   public void addPredecessor(T tm, T predecessor) {
-    ppp("ADDING PREDECESSOR(" + tm + ") = " + predecessor);
     Node<T> node = findNode(tm);
     if (null == node) {
       throw new TestNGException("Non-existing node: " + tm);
@@ -291,7 +290,7 @@ public class Graph<T extends Object> {
     }
     
     public void addPredecessor(T tm) {
-      ppp("  ADDING PREDECESSOR " + m_object + " " + tm);
+      ppp("  ADDING PREDECESSOR FOR " + m_object + " ==> " + tm);
       m_predecessors.put(tm, tm);
     }
     

@@ -122,14 +122,15 @@ public class TestMethodWorker implements IMethodWorker {
     // several times and these methods are run in parallel, the results
     // are unpredictable...  Need to think about this more (and make it
     // more efficient)
-    List<ITestResult> testResults = m_invoker.invokeTestMethods(tm, 
-                                                                m_allTestMethods, 
-                                                                indexOf(tm, m_allTestMethods), 
-                                                                m_suite, 
-                                                                m_parameters, 
-                                                                m_groupMethods,
-                                                                instances,
-                                                                testContext);
+    List<ITestResult> testResults = 
+        m_invoker.invokeTestMethods(tm, 
+            m_allTestMethods, 
+            indexOf(tm, m_allTestMethods), 
+            m_suite, 
+            m_parameters, 
+            m_groupMethods,
+            instances,
+            testContext);
     
     if (testResults != null) {
       m_testResults.addAll(testResults);        

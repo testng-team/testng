@@ -455,6 +455,8 @@ public class MethodHelper {
       List<ITestNGMethod> sequentialList, List<ITestNGMethod> parallelList) {
     Graph<ITestNGMethod> result = new Graph<ITestNGMethod>();
 
+    if (methods.length == 0) return result;
+    
     //
     // Create the graph
     //
