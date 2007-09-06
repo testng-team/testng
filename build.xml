@@ -300,6 +300,7 @@
       <zipfileset dir="${other.jars.dir}" prefix="${zip.dir}/${other.jars.dir}"/>
       <zipfileset dir="javadocs" prefix="${zip.dir}/javadocs" />
       <zipfileset dir="src" prefix="${zip.dir}/src" />
+      <zipfileset dir="spring" prefix="${zip.dir}/spring" />
       <zipfileset dir="doc" prefix="${zip.dir}/doc" />
       <zipfileset dir="resources"
     	   		  prefix="${zip.dir}/resources" 
