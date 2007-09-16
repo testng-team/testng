@@ -62,6 +62,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   transient private List<IConfigurationListener> m_configurationListeners= new ArrayList<IConfigurationListener>();
 
   transient private IConfigurationListener m_confListener= new ConfigurationListener();
+  transient private boolean m_skipFailedInvocationCounts;
   
   /**
    * All the test methods we found, associated with their respective classes.
@@ -120,31 +121,38 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   public TestRunner(ISuite suite,
                     XmlTest test,
                     String outputDirectory,
-                    IAnnotationFinder finder) 
+                    IAnnotationFinder finder,
+                    boolean skipFailedInvocationCounts) 
   {
-    init(suite, test, outputDirectory, finder);
+    init(suite, test, outputDirectory, finder, skipFailedInvocationCounts);
   }
 
-  public TestRunner(ISuite suite, XmlTest test, IAnnotationFinder finder) 
+  public TestRunner(ISuite suite, XmlTest test, 
+    IAnnotationFinder finder, boolean skipFailedInvocationCounts) 
   {
-    init(suite, test, suite.getOutputDirectory(), finder);
+    init(suite, test, suite.getOutputDirectory(), finder, skipFailedInvocationCounts);
   }
 
-  public TestRunner(ISuite suite, XmlTest test) {
+  public TestRunner(ISuite suite, XmlTest test, 
+    boolean skipFailedInvocationCounts)
+  {
     init(suite, test, suite.getOutputDirectory(), 
-        suite.getAnnotationFinder(test.getAnnotations()));
+        suite.getAnnotationFinder(test.getAnnotations()),
+        skipFailedInvocationCounts);
   }
 
   private void init(ISuite suite,
                     XmlTest test,
                     String outputDirectory,
-                    IAnnotationFinder annotationFinder)
+                    IAnnotationFinder annotationFinder,
+                    boolean skipFailedInvocationCounts)
   {
     m_xmlTest= test;
     m_suite = suite;
     m_testName = test.getName();
     m_host = suite.getHost();
     m_testClassesFromXml= test.getXmlClasses();
+    m_skipFailedInvocationCounts = skipFailedInvocationCounts;
     
     m_packageNamesFromXml= test.getXmlPackages();    
     if(null != m_packageNamesFromXml) {
@@ -154,7 +162,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     }
 
     m_annotationFinder= annotationFinder;
-    m_invoker= new Invoker(this, this, m_suite.getSuiteState(), m_annotationFinder);
+    m_invoker = 
+      new Invoker(this, this, m_suite.getSuiteState(), 
+        m_annotationFinder, m_skipFailedInvocationCounts);
 
     setVerbose(test.getVerbose());
 

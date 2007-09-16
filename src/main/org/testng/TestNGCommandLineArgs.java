@@ -69,6 +69,8 @@ public final class TestNGCommandLineArgs {
   public static final String PARALLEL_MODE = "-parallel";
   public static final String SUITE_NAME_OPT = "-suitename";
   public static final String TEST_NAME_OPT = "-testname";
+  public static final String SKIP_FAILED_INVOCATION_COUNT_OPT = "-skipfailedinvocationcounts";
+
   /**
    * Used to pass a reporter configuration in the form <code>-reporter <reporter_name_or_class>:option=value[,option=value]</code>
    */
@@ -353,6 +355,9 @@ public final class TestNGCommandLineArgs {
           ((List<ReporterConfig>)arguments.get(REPORTERS_LIST)).add(reporterConfig);
           i++;
         }
+      }
+      else if (SKIP_FAILED_INVOCATION_COUNT_OPT.equalsIgnoreCase(argv[i])) {
+        arguments.put(SKIP_FAILED_INVOCATION_COUNT_OPT, Boolean.TRUE);
       }
       //
       // Unknown option

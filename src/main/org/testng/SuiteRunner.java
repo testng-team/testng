@@ -58,6 +58,7 @@ public class SuiteRunner implements ISuite, Serializable {
   transient private IAnnotationFinder m_jdkAnnotationFinder;
   
   transient private IObjectFactory m_objectFactory;
+  transient private Boolean m_skipFailedInvocationCounts = Boolean.FALSE;
   
 //  transient private IAnnotationTransformer m_annotationTransformer = null;
 
@@ -167,7 +168,7 @@ public class SuiteRunner implements ISuite, Serializable {
     if (null == m_tmpRunnerFactory) {
       factory = new DefaultTestRunnerFactory(
           m_testlisteners.toArray(new ITestListener[m_testlisteners.size()]), 
-          m_useDefaultListeners);
+          m_useDefaultListeners, m_skipFailedInvocationCounts);
     }
     else {
       factory = new ProxyTestRunnerFactory(
@@ -431,21 +432,31 @@ public class SuiteRunner implements ISuite, Serializable {
   public static class DefaultTestRunnerFactory implements ITestRunnerFactory {
     private ITestListener[] m_failureGenerators;
     private boolean m_useDefaultListeners;
+    private boolean m_skipFailedInvocationCounts;
     
-    public DefaultTestRunnerFactory(ITestListener[] failureListeners, boolean useDefaultListeners) {
+    public DefaultTestRunnerFactory(ITestListener[] failureListeners,
+        boolean useDefaultListeners,
+        boolean skipFailedInvocationCounts)
+    {
       m_failureGenerators = failureListeners;
       m_useDefaultListeners = useDefaultListeners;
+      m_skipFailedInvocationCounts = skipFailedInvocationCounts;
     }
 
     /**
      * @see ITestRunnerFactory#newTestRunner(org.testng.ISuite, org.testng.xml.XmlTest)
      */
     public TestRunner newTestRunner(ISuite suite, XmlTest test) {
+      boolean skip = m_skipFailedInvocationCounts;
+      if (! skip) {
+        skip = test.skipFailedInvocationCounts();
+      }
       TestRunner testRunner = 
         new TestRunner(suite,
                         test,
                         suite.getOutputDirectory(),
-                        suite.getAnnotationFinder(test.getAnnotations()));
+                        suite.getAnnotationFinder(test.getAnnotations()),
+                        skip);
       
       if (m_useDefaultListeners) {
         testRunner.addListener(new TestHTMLReporter());
@@ -462,7 +473,7 @@ public class SuiteRunner implements ISuite, Serializable {
       for (ITestListener itl : m_failureGenerators) {
         testRunner.addListener(itl);
       }
-
+      
       return testRunner;
     }
   }
@@ -501,11 +512,17 @@ public class SuiteRunner implements ISuite, Serializable {
   }
 
   private SuiteRunState m_suiteState= new SuiteRunState();
-  
+
   /**
    * @see org.testng.ISuite#getSuiteState()
    */
   public SuiteRunState getSuiteState() {
     return m_suiteState;
+  }
+
+  public void setSkipFailedInvocationCounts(Boolean skipFailedInvocationCounts) {
+    if (skipFailedInvocationCounts != null) {
+      m_skipFailedInvocationCounts = skipFailedInvocationCounts;
+    }
   }
 }

@@ -602,6 +602,8 @@ public class TestNG {
 
   private IAnnotationTransformer m_annotationTransformer = new DefaultAnnotationTransformer();
 
+  private Boolean m_skipFailedInvocationCounts = false;
+
   /**
    * Sets the level of verbosity. This value will override the value specified 
    * in the test suites.
@@ -756,6 +758,15 @@ public class TestNG {
           xmlSuite.setJUnit(m_isJUnit);
         }
         
+        // If the skip flag was invoked on the command line, it
+        // takes precedence
+        if (null != m_skipFailedInvocationCounts) {
+          xmlSuite.setSkipFailedInvocationCounts(m_skipFailedInvocationCounts);
+        }
+        else {
+          m_skipFailedInvocationCounts = xmlSuite.skipFailedInvocationCounts();
+        }
+        
         // TODO CQ is this OK? Should the command line verbose flag override 
         // what is explicitly specified in the suite?
         if (null != m_verbose) {
@@ -781,7 +792,12 @@ public class TestNG {
         m_outputDir, 
         m_testRunnerFactory, 
         m_useDefaultListeners, 
-        new IAnnotationFinder[] {m_javadocAnnotationFinder, m_jdkAnnotationFinder}, m_objectFactory);
+        new IAnnotationFinder[] {
+          m_javadocAnnotationFinder, 
+          m_jdkAnnotationFinder
+        },
+        m_objectFactory);
+    result.setSkipFailedInvocationCounts(m_skipFailedInvocationCounts);
 
     for (ISuiteListener isl : m_suiteListeners) {
       result.addListener(isl);
@@ -877,6 +893,9 @@ public class TestNG {
     setJUnit((Boolean) cmdLineArgs.get(TestNGCommandLineArgs.JUNIT_DEF_OPT));
     setMaster( (String)cmdLineArgs.get(TestNGCommandLineArgs.MASTER_OPT));
     setSlave( (String)cmdLineArgs.get(TestNGCommandLineArgs.SLAVE_OPT));
+    setSkipFailedInvocationCounts(
+      (Boolean) cmdLineArgs.get(
+        TestNGCommandLineArgs.SKIP_FAILED_INVOCATION_COUNT_OPT));
     
     String parallelMode = (String) cmdLineArgs.get(TestNGCommandLineArgs.PARALLEL_MODE);
     if (parallelMode != null) {
@@ -915,6 +934,10 @@ public class TestNG {
         addReporter(reporterConfig);
       }
     }
+  }
+
+  private void setSkipFailedInvocationCounts(Boolean skip) {
+    m_skipFailedInvocationCounts = skip;
   }
 
   private void addReporter(ReporterConfig reporterConfig) {
@@ -1058,6 +1081,14 @@ public class TestNG {
   
   public IAnnotationTransformer getAnnotationTransformer() {
     return m_annotationTransformer;
+  }
+  
+  public boolean getSkipFailedInvocationCounts() {
+    return m_skipFailedInvocationCounts;
+  }
+  
+  public void setSkipFailedInvocationCounts(boolean skip) {
+    m_skipFailedInvocationCounts = skip;
   }
   
   public void setAnnotationTransformer(IAnnotationTransformer t) {

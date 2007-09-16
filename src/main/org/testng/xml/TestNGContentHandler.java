@@ -134,6 +134,10 @@ public class TestNGContentHandler extends DefaultHandler {
           Utils.log("Parser", 1, "[WARN] Unknown value of attribute 'parallel' at suite level: '" + parallel + "'.");
         }
       }
+      String skip = attributes.getValue("skipfailedinvocationcounts");
+      if (skip != null) {
+        m_currentSuite.setSkipFailedInvocationCounts(Boolean.valueOf(skip));
+      }
       String threadCount = attributes.getValue("thread-count");
       if (null != threadCount) {
         m_currentSuite.setThreadCount(Integer.parseInt(threadCount));
@@ -221,6 +225,10 @@ public class TestNGContentHandler extends DefaultHandler {
       String jUnit = attributes.getValue("junit");
       if (null != jUnit) {
         m_currentTest.setJUnit( Boolean.valueOf(jUnit).booleanValue());
+      }
+      String skip = attributes.getValue("skipfailedinvocationcounts");
+      if (skip != null) {
+        m_currentTest.setSkipFailedInvocationCounts(Boolean.valueOf(skip).booleanValue());
       }
       String parallel = attributes.getValue("parallel");
       if (null != parallel) {

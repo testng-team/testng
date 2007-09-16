@@ -99,8 +99,10 @@ public class RemoteTestNG extends TestNG {
     if(null == m_customTestRunnerFactory) {
       m_customTestRunnerFactory= new ITestRunnerFactory() {
           public TestRunner newTestRunner(ISuite suite, XmlTest xmlTest) {
-            TestRunner runner= new TestRunner(suite, xmlTest);
-            if(m_useDefaultListeners) {
+            TestRunner runner =
+              new TestRunner(suite, xmlTest,
+              false /*skipFailedInvocationCounts */);
+            if (m_useDefaultListeners) {
               runner.addListener(new TestHTMLReporter());
               runner.addListener(new JUnitXMLReporter());
             }

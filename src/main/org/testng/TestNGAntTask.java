@@ -134,6 +134,7 @@ public class TestNGAntTask extends Task {
   public String m_useDefaultListeners;
   private String m_suiteName="Ant suite";
   private String m_testName="Ant test";
+  private Boolean m_skipFailedInvocationCounts;
 
   /**
    * The list of report listeners added via &lt;reporter&gt; sub-element of the Ant task
@@ -464,11 +465,18 @@ public class TestNGAntTask extends Task {
 
     List<String> argv= new ArrayList<String>();
 
-    if(null != m_isJUnit) {
+    if (null != m_isJUnit) {
       if(m_isJUnit.booleanValue()) {
         argv.add(TestNGCommandLineArgs.JUNIT_DEF_OPT);
       }
     }
+    
+    if (null != m_skipFailedInvocationCounts) {
+      if(m_skipFailedInvocationCounts.booleanValue()) {
+        argv.add(TestNGCommandLineArgs.SKIP_FAILED_INVOCATION_COUNT_OPT);
+      }
+    }
+    
 
     if(null != m_verbose) {
       argv.add(TestNGCommandLineArgs.LOG);
@@ -1010,5 +1018,9 @@ public class TestNGAntTask extends Task {
 
   public void addConfiguredReporter(ReporterConfig reporterConfig) {
     reporterConfigs.add(reporterConfig);
+  }
+  
+  public void setSkipFailedInvocationCounts(boolean skip) {
+    m_skipFailedInvocationCounts = Boolean.valueOf(skip);
   }
 }

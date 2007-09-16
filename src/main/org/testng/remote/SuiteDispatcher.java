@@ -114,6 +114,7 @@ public class SuiteDispatcher
 						tmpSuite.setXmlPackages(suite.getXmlPackages());
 						tmpSuite.setAnnotations(suite.getAnnotations());
 						tmpSuite.setJUnit(suite.isJUnit());
+           tmpSuite.setSkipFailedInvocationCounts(suite.skipFailedInvocationCounts());
 						tmpSuite.setName("Temporary suite for " + test.getName());
 						tmpSuite.setParallel(suite.getParallel());
 						tmpSuite.setParameters(suite.getParameters());

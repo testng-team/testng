@@ -43,6 +43,7 @@ public class XmlTest implements Serializable, Cloneable {
   private List<XmlPackage> m_xmlPackages = new ArrayList<XmlPackage>();
   
   private String m_timeOut;
+  private Boolean m_skipFailedInvocationCounts;
 
   /**
    * Constructs a <code>XmlTest</code> and adds it to suite's list of tests. 
@@ -187,6 +188,22 @@ public class XmlTest implements Serializable, Cloneable {
    */
   public void setJUnit(boolean isJUnit) {
     m_isJUnit = isJUnit;
+  }
+  
+  public void setSkipFailedInvocationCounts(boolean skip) {
+    m_skipFailedInvocationCounts = skip;
+  }
+  
+  /**
+   * @return Returns the isJUnit.
+   */
+  public boolean skipFailedInvocationCounts() {
+    Boolean result = m_skipFailedInvocationCounts;
+    if (null == result) {
+      result = m_suite.skipFailedInvocationCounts();
+    }
+    
+    return result;
   }
   
   public void addMetaGroup(String name, List<String> metaGroup) {

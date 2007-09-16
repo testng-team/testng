@@ -54,6 +54,8 @@ public class XmlSuite implements Serializable, Cloneable {
   /** JUnit compatibility flag. */
   private Boolean m_isJUnit = Boolean.FALSE;
   
+  private Boolean m_skipFailedInvocationCounts = Boolean.FALSE;
+  
   /** The thread count. */
   private int m_threadCount = 5;
   
@@ -326,7 +328,7 @@ public class XmlSuite implements Serializable, Cloneable {
   public Boolean isJUnit() {
     return m_isJUnit;
   }
-
+  
   /**
    * Sets the JUnit compatibility flag.
    *
@@ -334,6 +336,14 @@ public class XmlSuite implements Serializable, Cloneable {
    */
   public void setJUnit(Boolean isJUnit) {
     m_isJUnit = isJUnit;
+  }
+
+  public Boolean skipFailedInvocationCounts() {
+    return m_skipFailedInvocationCounts;
+  }
+
+  public void setSkipFailedInvocationCounts(boolean skip) {
+    m_skipFailedInvocationCounts = skip;
   }
 
   /**
@@ -372,6 +382,9 @@ public class XmlSuite implements Serializable, Cloneable {
     p.setProperty("thread-count", String.valueOf(getThreadCount()));
     p.setProperty("annotations", getAnnotations());
     p.setProperty("junit", m_isJUnit != null ? m_isJUnit.toString() : "false"); // TESTNG-141
+    p.setProperty("skipfailedinvocationCounts", 
+        m_skipFailedInvocationCounts != null
+          ? m_skipFailedInvocationCounts.toString() : "false");
     if(null != m_objectFactory)
       p.setProperty("object-factory", m_objectFactory.getClass().getName());
     xsb.push("suite", p);
@@ -455,6 +468,7 @@ public class XmlSuite implements Serializable, Cloneable {
     result.setBeanShellExpression(getExpression());
     result.setMethodSelectors(getMethodSelectors());
     result.setJUnit(isJUnit()); // TESTNG-141
+    result.setSkipFailedInvocationCounts(skipFailedInvocationCounts());
     result.setObjectFactory(getObjectFactory());
     return result;
   }

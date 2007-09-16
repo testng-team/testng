@@ -52,4 +52,5 @@ public interface IInvoker {
                                              ConfigurationGroupMethods groupMethods,
                                              Object[] instances,
                                              ITestContext testContext);
+
 }
