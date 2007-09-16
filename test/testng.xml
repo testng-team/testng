@@ -224,6 +224,7 @@
     <parameter name="count" value="10" />
     <classes>
       <class name="test.InvocationAndSuccessPercentageTest" />
+      <class name="test.invocationcount.FailedInvocationCountTest" />
     </classes>
   </test>
 

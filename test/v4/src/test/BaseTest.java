@@ -302,7 +302,7 @@ public class BaseTest extends BaseDistributedTest {
      * @see org.testng.ITestRunnerFactory#newTestRunner(org.testng.ISuite, org.testng.xml.XmlTest)
      */
     public TestRunner newTestRunner(ISuite suite, XmlTest test) {
-      TestRunner testRunner = new TestRunner(suite, test);
+      TestRunner testRunner = new TestRunner(suite, test, false);
       
       testRunner.addTestListener(new TestHTMLReporter());
       testRunner.addTestListener(new JUnitXMLReporter());

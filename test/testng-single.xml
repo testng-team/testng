@@ -1,6 +1,8 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="Single" parallel="tests" verbose="10" >
+<suite name="Single" parallel="tests" verbose="2"
+    
+  >
 
 <!--
 <suite-files>
@@ -9,10 +11,9 @@
 </suite-files>
 -->
   
-  <parameter name="factory-param" value="FactoryParam" />
-  <test name="Factory">
+  <test name="Factory" skipfailedinvocationcounts="false">
     <classes>
-      <class name="test.dataprovider.CreateDataTest" />
+      <class name="test.invocationcount.FailedInvocationCount" />
     </classes>
   </test>
  
