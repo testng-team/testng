@@ -63,4 +63,7 @@ public interface ITest extends ITestOrConfiguration {
   
   public IRetryAnalyzer getRetryAnalyzer();
   public void setRetryAnalyzer(Class<?> c);
+  
+  public boolean skipFailedInvocations();
+  public void setSkipFailedInvocations(boolean skip);
 }

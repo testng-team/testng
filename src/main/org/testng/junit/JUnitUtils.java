@@ -391,6 +391,14 @@ public class JUnitUtils {
     public void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer) {
       this.retryAnalyzer = retryAnalyzer;
     }
+
+    public void setSkipFailedInvocations(boolean skip) {
+      // nop
+    }
+
+    public boolean skipFailedInvocations() {
+      return false;
+    }
   }
   
   /**

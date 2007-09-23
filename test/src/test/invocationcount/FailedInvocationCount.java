@@ -17,4 +17,5 @@ public class FailedInvocationCount {
       throw new RuntimeException();
     }
   }
+  
 }

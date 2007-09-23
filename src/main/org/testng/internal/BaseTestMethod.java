@@ -42,7 +42,8 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   private String m_description = null;
   protected IAtomicInteger m_currentInvocationCount = ThreadUtil.createAtomicInteger(0);
   private int m_parameterInvocationCount = 1;
-  private IRetryAnalyzer retryAnalyzer = null;
+  private IRetryAnalyzer m_retryAnalyzer = null;
+  private boolean m_skipFailedInvocations = true;
   
   /**
    * Constructs a <code>BaseTestMethod</code> TODO cquezel JavaDoc.
@@ -590,10 +591,18 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   public abstract ITestNGMethod clone();
   
   public IRetryAnalyzer getRetryAnalyzer() {
-    return retryAnalyzer;
+    return m_retryAnalyzer;
   }
   
   public void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer) {
-    this.retryAnalyzer = retryAnalyzer;
+    m_retryAnalyzer = retryAnalyzer;
+  }
+
+  public boolean skipFailedInvocations() {
+    return m_skipFailedInvocations;
+  }
+  
+  public void setSkipFailedInvocations(boolean s) {
+    m_skipFailedInvocations = s;
   }
 }

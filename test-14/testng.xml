@@ -228,6 +228,7 @@
   <test name="InvocationCount">
     <classes>
       <class name="test.InvocationAndSuccessPercentageTest" />
+      <class name="test.invocationcount.FailedInvocationCountTest" />
     </classes>
   </test>
 

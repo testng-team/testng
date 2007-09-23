@@ -22,6 +22,7 @@ public class TestAnnotation extends TestOrConfiguration implements ITest {
   private boolean m_sequential = false;
   private Class<?> m_dataProviderClass = null;
   private IRetryAnalyzer m_retryAnalyzer = null;
+  private boolean m_skipFailedInvocations = false;
   
   /**
    * @return the expectedExceptions
@@ -135,6 +136,14 @@ public class TestAnnotation extends TestOrConfiguration implements ITest {
         // The class will never be called.
       }
     }
+  }
+
+  public void setSkipFailedInvocations(boolean skip) {
+    m_skipFailedInvocations = skip;
+  }
+
+  public boolean skipFailedInvocations() {
+    return m_skipFailedInvocations;
   }
 
 }

@@ -24,7 +24,7 @@ public class TestNGMethod extends BaseTestMethod {
   private long m_timeOut = 0;
 
   /**
-   * Constructs a <code>TestNGMethod</code> TODO cquezel JavaDoc.
+   * Constructs a <code>TestNGMethod</code>
    *
    * @param method
    * @param finder
@@ -95,6 +95,7 @@ public class TestNGMethod extends BaseTestMethod {
         setAlwaysRun(testAnnotation.getAlwaysRun());
         setDescription(testAnnotation.getDescription());
         setRetryAnalyzer(testAnnotation.getRetryAnalyzer());
+        setSkipFailedInvocations(testAnnotation.skipFailedInvocations());
       }
 
       // Groups
@@ -152,6 +153,7 @@ public class TestNGMethod extends BaseTestMethod {
     clone.m_successPercentage = getSuccessPercentage();
     clone.m_timeOut = getTimeOut();
     clone.setRetryAnalyzer(getRetryAnalyzer());
+    clone.setSkipFailedInvocations(skipFailedInvocations());
 
     return clone;
   }

@@ -24,12 +24,27 @@ public class FailedInvocationCountTest {
   }
   
   @Test
-  public void failedShouldStop() {
+  public void verifyGloballyShouldStop() {
     runTest(true, 4, 1, 5);
   }
   
   @Test
-  public void failedShouldNotStop() {
+  public void verifyGloballyShouldNotStop() {
     runTest(false, 4, 6, 0);
+  }
+  
+  @Test
+  public void verifyAttributeShouldStop() {
+    TestNG testng = new TestNG();
+    testng.setVerbose(0);
+    testng.setTestClasses(new Class[] { FailedInvocationCount2.class });
+    TestListenerAdapter tla = new TestListenerAdapter();
+    testng.addListener(tla);
+    testng.run();
+    
+    Assert.assertEquals(tla.getPassedTests().size(), 8);
+    Assert.assertEquals(tla.getFailedTests().size(), 7);
+    Assert.assertEquals(tla.getSkippedTests().size(), 5);
+    
   }
 }

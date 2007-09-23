@@ -221,6 +221,13 @@ public class AnnotationHelper {
                 continue;
               }
               
+              // Skip the method if it has a return type
+              if (m.getReturnType() != void.class) {
+                Utils.log("", 3, "Method " + m + " has a @Test annotation"
+                    + " but also a return value:  ignoring it.");
+                continue;
+              }
+              
               String key = createMethodKey(m);
               if (null == vResult.get(key)) {
                 ITestNGMethod tm = new TestNGMethod(/* m.getDeclaringClass(), */ m, annotationFinder);

@@ -866,6 +866,13 @@ public class Invoker implements IInvoker {
                     // If we have a failure, skip all the
                     // other invocationCounts
                     //
+                    
+                    // If not specified globally, use the attribute
+                    // on the annotation
+                    //
+                    if (! m_skipFailedInvocationCounts) {
+                      m_skipFailedInvocationCounts = testMethod.skipFailedInvocations();
+                    }
                     if (failureCount > 0 && m_skipFailedInvocationCounts) {
                       while (invocationCount-- > 0) {
                         ITestResult r = 

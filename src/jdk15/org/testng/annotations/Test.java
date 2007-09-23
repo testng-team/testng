@@ -142,4 +142,12 @@ public @interface Test {
    * should be retried.
    */
   public Class retryAnalyzer() default Class.class;
+  
+  /**
+   * If true and invocationCount is specified with a value > 1,
+   * then all invocations after a failure will be marked as a SKIP
+   * instead of a FAIL.
+   * @return
+   */
+  public boolean skipFailedInvocations() default false;
 }

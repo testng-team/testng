@@ -333,6 +333,7 @@ public class JDK15TagFactory {
     result.setTestName(test.testName());
     result.setSequential(test.sequential());
     result.setRetryAnalyzer(test.retryAnalyzer());
+    result.setSkipFailedInvocations(test.skipFailedInvocations());
 
     return result;
   }

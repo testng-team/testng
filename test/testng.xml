@@ -360,7 +360,8 @@
       <class name="test.dataprovider.StaticDataProviderSampleTest" />
       <class name="test.dataprovider.UnnamedDataProviderTest" />
       <class name="test.dataprovider.TestContextTest" />
-			<class name="test.dataprovider.FailingDataProviderTest" />
+      <class name="test.dataprovider.FailingDataProviderTest" />
+      <class name="test.dataprovider.DataProviderAsTest" />
     </classes>
   </test>
 	

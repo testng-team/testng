@@ -147,7 +147,6 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
    * @return the number of times this method needs to be invoked.
    */
   int getInvocationCount();
-
   void setInvocationCount(int count);
   
   /**
@@ -194,4 +193,7 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
   
   public IRetryAnalyzer getRetryAnalyzer();
   public void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer);
+  
+  public boolean skipFailedInvocations();
+  public void setSkipFailedInvocations(boolean skip);
 }
