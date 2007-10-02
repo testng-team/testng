@@ -92,7 +92,7 @@ public class TestNGClassFinder extends BaseClassFinder {
         
         // If annotation class and instances are abstract, skip them
         if ((null == thisInstance) && Modifier.isAbstract(cls.getModifiers())) {
-          Utils.log("", 2, "[WARN] Found an abstract class with no valid instance attached: " + cls);
+          Utils.log("", 5, "[WARN] Found an abstract class with no valid instance attached: " + cls);
           continue;
         }
         
