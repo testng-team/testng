@@ -101,12 +101,17 @@ public class Parameters {
         else {
           String p = parameterNames[j];
           String value = params.xmlParameters.get(p);
+          if(null == value) {
+            // try SysEnv entries
+            value= System.getProperty(p);
+          }
           if (null == value) {
             throw new TestNGException("Parameter '" + p + "' is required by " 
                 + methodAnnotation
                 + " on method " 
                 + methodName
-                + "\nbut has not been defined in " + xmlSuite.getFileName());
+                + "\nbut has not been defined " 
+                + (xmlSuite.getFileName() != null ? "in " + xmlSuite.getFileName() : ""));
           }
           
           vResult.add(convertType(parameterTypes[i], value, p));
