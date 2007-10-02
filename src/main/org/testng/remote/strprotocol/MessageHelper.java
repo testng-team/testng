@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.testng.ITestResult;
 
@@ -146,10 +148,13 @@ public class MessageHelper {
       return message;
     }
 
-    return message.replace("\u0001", "\\u0001")
-            .replace("\u0002", "\\u0002")
-            .replace("\u0003", "\\u0003")
-            .replace("\u0004", "\\u0004");
+    return replace(
+              replace(
+                  replace(
+                    replace(message, "\u0004", "\\u0004"), 
+                  "\u0003", "\\u0003"), 
+              "\u0002", "\\u0002"), 
+           "\u0001", "\\u0001");
   }
 
   public static String replaceAsciiCharactersWithUnicode(String message) {
@@ -157,12 +162,15 @@ public class MessageHelper {
       return message;
     }
 
-    return message.replace("\\u0001", "\u0001")
-            .replace("\\u0002", "\u0002")
-            .replace("\\u0003", "\u0003")
-            .replace("\\u0004", "\u0004");
+    return replace(
+            replace(
+                replace(
+                    replace(message, "\\u0004", "\u0004"), 
+                    "\\u0003", "\u0003"), 
+                "\\u0002", "\u0002"), 
+            "\\u0001", "\u0001");
   }
-
+  
   public static String replaceNewLineReplacer(String message) {
     if(null == message) {
       return message;
@@ -198,4 +206,32 @@ public class MessageHelper {
     
     return tokens.toArray(new String[tokens.size()]);
   }
+  
+  /**
+   * Implementation according to JDK5 String.replace(CharSequence,CharSequence)
+   */
+  private static final String replace(String original, CharSequence target, CharSequence replacement) {
+      return Pattern.compile(target.toString(), Pattern.LITERAL).matcher(original)
+          .replaceAll(quoteReplacement(replacement.toString()));
+  }
+  
+  /**
+   * Implementation according to JDK5 String.replace(CharSequence,CharSequence)
+   */
+  private static String quoteReplacement(String s) {
+      if ((s.indexOf('\\') == -1) && (s.indexOf('$') == -1))
+          return s;
+      StringBuffer sb = new StringBuffer();
+      for (int i=0; i<s.length(); i++) {
+          char c = s.charAt(i);
+          if (c == '\\') {
+              sb.append('\\'); sb.append('\\');
+          } else if (c == '$') {
+              sb.append('\\'); sb.append('$');
+          } else {
+              sb.append(c);
+          }
+      }
+      return sb.toString();
+  }  
 }
