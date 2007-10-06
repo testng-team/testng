@@ -109,8 +109,10 @@ public abstract class AbstractRemoteTestRunnerClient {
    */
   public synchronized void stopTest() {
     if(isRunning()) {
-      m_outputWriter.println(MessageHelper.STOP_MSG);
-      m_outputWriter.flush();
+      if(null != m_outputWriter) {
+        m_outputWriter.println(MessageHelper.STOP_MSG);
+        m_outputWriter.flush();
+      }
       shutdown();
     }
   }
@@ -145,7 +147,7 @@ public abstract class AbstractRemoteTestRunnerClient {
       }
     } 
     finally {
-      if(isRunning()) {
+      if(isRunning() && (null != m_outputWriter)) {
         m_outputWriter.println(MessageHelper.ACK_MSG);
         m_outputWriter.flush();
       }
