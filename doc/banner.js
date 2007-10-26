@@ -1,7 +1,7 @@
 //****************************************************************
-// Writes a table data element to the document. If pHRef equals 
+// Writes a table data element to the document. If pHRef equals
 // pCurrentPage then 'class="current"' is added to the td element.
-// For example: 
+// For example:
 //    writeTD("a.html", "a.html", "b")
 // Would write
 //    <td class="current"><a href="a.html">b</a><td>
@@ -12,13 +12,13 @@
 //****************************************************************
 function writeTD(pCurrentPage, pHRef, pValue)
 {
-    document.write('                <td')
-    document.write(pCurrentPage == pHRef ? ' class="current"' : '')
-    document.write('><a href="')
-    document.write(pHRef)
-    document.write('">')
-    document.write(pValue)
-    document.writeln('</a></td>')
+   document.write('                <td')
+   document.write(pCurrentPage == pHRef ? ' class="current"' : '')
+   document.write('><a href="')
+   document.write(pHRef)
+   document.write('">')
+   document.write(pValue)
+   document.writeln('</a></td>')
 }
 
 //******************************************************************
@@ -26,25 +26,25 @@ function writeTD(pCurrentPage, pHRef, pValue)
 // @param pCurrentPage the current page. For example "index.html"
 //******************************************************************
 function displayMenu(pCurrentPage) {
-    document.writeln('<div id="topmenu">')
-    document.writeln('    <table width="100%">')
-    document.writeln('            <tr>')
-        writeTD(pCurrentPage,             "index.html", "Welcome")
-        writeTD(pCurrentPage,          "download.html", "Download")
-        writeTD(pCurrentPage,"documentation-main.html", "Documentation")
-        writeTD(pCurrentPage,         "migrating.html", "Migrating from JUnit")
-        writeTD(pCurrentPage, "../javadocs/index.html", "JavaDoc")
-    document.writeln('            </tr>')
-    document.writeln('            <tr>')
-        writeTD(pCurrentPage,           "eclipse.html", "Eclipse")
-        writeTD(pCurrentPage,              "idea.html", "IDEA")
-        writeTD(pCurrentPage,             "maven.html", "Maven")
-        writeTD(pCurrentPage,               "ant.html", "Ant")
-        writeTD(pCurrentPage,              "misc.html", "Miscellaneous")
-    document.writeln('            </tr>')
-    document.writeln('        </table>')
-    document.writeln('    </div>')
+   document.writeln('<div id="topmenu">')
+   document.writeln('    <table width="100%">')
+   document.writeln('            <tr>')
+       writeTD(pCurrentPage,             "index.html", "Welcome")
+       writeTD(pCurrentPage,          "download.html", "Download")
+       writeTD(pCurrentPage,"documentation-main.html", "Documentation")
+       writeTD(pCurrentPage,         "migrating.html", "Migrating from JUnit")
+       writeTD(pCurrentPage, "../javadocs/index.html", "JavaDoc")
+       writeTD(pCurrentPage,              "book.html", "<em>Book (NEW!)</em>")
+   document.writeln('            </tr>')
+   document.writeln('            <tr>')
+       writeTD(pCurrentPage,           "eclipse.html", "Eclipse")
+       writeTD(pCurrentPage,              "idea.html", "IDEA")
+       writeTD(pCurrentPage,             "maven.html", "Maven")
+       writeTD(pCurrentPage,               "ant.html", "Ant")
+       writeTD(pCurrentPage,              "misc.html", "Miscellaneous")
+   document.writeln('            </tr>')
+   document.writeln('        </table>')
+   document.writeln('    </div>')
 
 }
-
 

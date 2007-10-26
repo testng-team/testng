@@ -1,55 +1,65 @@
 <html>
-    <head>
-        <title>TestNG - Welcome</title>
+   <head>
+       <title>TestNG - Welcome</title>
 
-        <link rel="stylesheet" href="testng.css" type="text/css" />
-        <link type="text/css" rel="stylesheet" href="http://beust.com/beust.css"  />
-        <script type="text/javascript" src="http://beust.com/prettify.js"></script>
-        <script type="text/javascript" src="http://testng.org/doc/banner.js"></script>
-      </head>
+       <link rel="stylesheet" href="testng.css" type="text/css" />
+       <link type="text/css" rel="stylesheet" href="http://beust.com/beust.css"  />
+       <script type="text/javascript" src="http://beust.com/prettify.js"></script>
+       <script type="text/javascript" src="http://testng.org/doc/banner.js"></script>
+     </head>
 
 <body onload="prettyPrint()">
 
 <script type="text/javascript">
-    displayMenu("index.html");
+   displayMenu("index.html");
 </script>
 
 
-
 <h2 >TestNG</h2>
-<h3 align="center" style="border-bottom: none;background:none;"><i>&quot;Testing, the Next Generation&quot;</i></h3>
+<h2>Our book is now available</h2>
+<p align="center">
+<a href="book.html">
+<img border="0" src="http://beust.com/pics/book-cover.jpg" />
+</a>
+</p>
+<p align="center">
+<a href="book.html">Click for more details.</a>
+</p>
+
+
+
 <p align="right"><font size="-2"><em>C&eacute;dric Beust (cedric at beust.com)<br>
 Alexandru Popescu (the.mindstorm at gmail.com)<br>
 Current version: 5.6<br>
 Created:&nbsp;April 27th, 2004<br>
-Last Modified:&nbsp; May 25th, 2007</em></font></p>
+Last Modified:&nbsp; October 25th, 2007</em></font></p>
+
+
 <p>TestNG is a testing framework inspired from JUnit and NUnit but introducing
 some new functionalities that make it more powerful and easier to use, such as:</p>
 <ul>
-        <li>JDK 5 Annotations (JDK 1.4 is also supported with JavaDoc annotations).
-        </li>
-        <li>Flexible test configuration.
-        </li>
-        <li>Support for data-driven testing (with <tt>@DataProvider</tt>).</li>
-        <li>Support for parameters.</li>
-		<li>Allows distribution of tests on slave machines.</li>
-        <li>Powerful execution model (no more <tt>TestSuite</tt>).
-        </li>
-        <li>Supported by a variety of tools and plug-ins (Eclipse, IDEA, Maven,
-        etc...).
-        </li>
-        <li>Embeds BeanShell for further flexibility.
-        </li>
-        <li>Default JDK functions for runtime and logging (no dependencies).
-        </li>
-        <li>Dependent methods for application server testing.</li>
+       <li>JDK 5 Annotations (JDK 1.4 is also supported with JavaDoc annotations).
+       </li>
+       <li>Flexible test configuration.
+       </li>
+       <li>Support for data-driven testing (with <tt>@DataProvider</tt>).</li>
+       <li>Support for parameters.</li>
+               <li>Allows distribution of tests on slave machines.</li>
+       <li>Powerful execution model (no more <tt>TestSuite</tt>).
+       </li>
+       <li>Supported by a variety of tools and plug-ins (Eclipse, IDEA, Maven,
+       etc...).
+       </li>
+       <li>Embeds BeanShell for further flexibility.
+       </li>
+       <li>Default JDK functions for runtime and logging (no dependencies).
+       </li>
+       <li>Dependent methods for application server testing.</li>
 </ul>
-<p>TestNG is designed to cover all categories of tests:&nbsp; unit, functional, 
+<p>TestNG is designed to cover all categories of tests:&nbsp; unit, functional,
 end-to-end, integration, etc...</p>
 <p>I started TestNG out of frustration for some JUnit deficiencies which I have
-documented on my weblog <a href="http://jroller.com/page/cbeust/20030425">here</a>,
-<a href="http://www.jroller.com/page/cbeust/20030317">here</a>, <a href="http://www.beust.com/weblog/archives/000173.html">here</a> and in
-particular, <a href="http://www.beust.com/weblog/archives/000082.html">here</a>
+documented on my weblog <a href="http://www.beust.com/weblog/archives/000173.html">here</a> and <a href="http://www.beust.com/weblog/archives/000082.html">here</a>
 Reading these entries might give you a better idea of the goal I am trying to
 achieve with TestNG.&nbsp; You can also check out a quick
 <a href="http://www.beust.com/weblog/archives/000176.html">overview of the main
@@ -65,64 +75,64 @@ import org.testng.annotations.*;
 
 public class SimpleTest {
 
-  @BeforeClass
-  public void setUp() {
-    // code that will be invoked when this test is instantiated
-  }
+ @BeforeClass
+ public void setUp() {
+   // code that will be invoked when this test is instantiated
+ }
 
-  @Test(groups = { "fast" })
-  public void aFastTest() {
-    System.out.println("Fast test");
-  }
+ @Test(groups = { "fast" })
+ public void aFastTest() {
+   System.out.println("Fast test");
+ }
 
-  @Test(groups = { "slow" })
-  public void aSlowTest() {
-     System.out.println("Slow test");
-  }
+ @Test(groups = { "slow" })
+ public void aSlowTest() {
+    System.out.println("Slow test");
+ }
 
 }
 </pre>
 
 The method <tt>setUp()</tt> will be invoked after the test class has been built and before
-any test method is run.&nbsp; In this example, we will be running the group 
-fast, so <tt>aFastTest()</tt> will be invoked while <tt>aSlowTest()</tt> will be 
+any test method is run.&nbsp; In this example, we will be running the group
+fast, so <tt>aFastTest()</tt> will be invoked while <tt>aSlowTest()</tt> will be
 skipped.<p>
 <!-------------------------------------
 
-  WRITING A TEST
+ WRITING A TEST
 
-  ------------------------------------>
+ ------------------------------------>
 
 Things to note:</p><ul>
-        <li>No need to extend a class or implement an interface.</li><li>Even though the example above uses the JUnit conventions, our methods
-        can be called any name you like, it's the annotations that tell TestNG what
-        they are.</li><li>A test method can belong to one or several groups. These groups will be
-        used at runtime to determine what test methods should be invoked..</li></ul>
+       <li>No need to extend a class or implement an interface.</li><li>Even though the example above uses the JUnit conventions, our methods
+       can be called any name you like, it's the annotations that tell TestNG what
+       they are.</li><li>A test method can belong to one or several groups. These groups will be
+       used at runtime to determine what test methods should be invoked..</li></ul>
 
-        <p>
+       <p>
 
-Once you have compiled your test class into the <tt>build</tt> directory, you 
-can invoke your test with the command line, an ant task (shown below) or an XML 
+Once you have compiled your test class into the <tt>build</tt> directory, you
+can invoke your test with the command line, an ant task (shown below) or an XML
 file:
 
 
 <pre class="prettyprint">
 &lt;project default="test"&gt;
 
-  &lt;path id="cp"&gt;
-    &lt;pathelement location="lib/testng-testng-4.4-jdk15.jar"/&gt;
-    &lt;pathelement location="build"/&gt;
-  &lt;/path&gt;
- 
-  &lt;taskdef name="testng" classpathref="cp"
-           classname="org.testng.TestNGAntTask" /&gt;
+ &lt;path id="cp"&gt;
+   &lt;pathelement location="lib/testng-testng-4.4-jdk15.jar"/&gt;
+   &lt;pathelement location="build"/&gt;
+ &lt;/path&gt;
 
-  &lt;target name="test"&gt;
-    &lt;testng classpathref="cp" groups="fast"&gt;
-      &lt;classfileset dir="build" includes="example1/*.class"/&gt;
-    &lt;/testng&gt;
-  &lt;/target&gt;
- 
+ &lt;taskdef name="testng" classpathref="cp"
+          classname="org.testng.TestNGAntTask" /&gt;
+
+ &lt;target name="test"&gt;
+   &lt;testng classpathref="cp" groups="fast"&gt;
+     &lt;classfileset dir="build" includes="example1/*.class"/&gt;
+   &lt;/testng&gt;
+ &lt;/target&gt;
+
 &lt;/project&gt;
 </pre>
 
@@ -139,7 +149,7 @@ test:
 
 
 BUILD SUCCESSFUL
-Total time: 4 seconds</pre><a name="browse_results" />Then you can browse the 
+Total time: 4 seconds</pre><a name="browse_results" />Then you can browse the
 result of your tests:<pre class="code">
 start test-output\index.html <em>(on Windows)</em></pre>
 <h3><a name="requirements">Requirements</a></h3>
@@ -151,10 +161,10 @@ can easily be translated to JDK 1.4 JavaDoc-type annotations.&nbsp; See the JDK
 <h3><a name="mailing-lists">Mailing-lists</a></h3>
 <p>The users mailing-list can be found in two different places:</p>
 <ul>
-        <li>As an email mailing-list on
-        <a href="http://groups-beta.google.com/group/testng-users/">Google Groups</a>.</li>
-        <li>As a <a href="http://testng.org/forums">Web
-        forum</a>, kindly hosted by <a href="http://opensymphony.com">Open Symphony</a>.</li>
+       <li>As an email mailing-list on
+       <a href="http://groups-beta.google.com/group/testng-users/">Google Groups</a>.</li>
+       <li>As a <a href="http://testng.org/forums">Web
+       forum</a>, kindly hosted by <a href="http://opensymphony.com">Open Symphony</a>.</li>
 </ul>
 <p>The Web forum and the mailing-list are connected to each other, so you only
 need to subscribe to one.&nbsp; More specialized mailing-lists (developers,
@@ -162,29 +172,29 @@ issues, cvs, etc...) are
 <a href="https://testng.dev.java.net/servlets/ProjectMailingListList">available
 at Java.net.</a></p>
 <h3><a name="locations-projects">Locations of the projects</a></h3>
-<p>If you are interested in contributing to TestNG or one of the IDE plug-ins, 
+<p>If you are interested in contributing to TestNG or one of the IDE plug-ins,
 you will find them in the following locations:</p>
 <ul>
-	<li><a href="http://code.google.com/p/testng/">TestNG</a></li>
-	<li><a href="http://code.google.com/p/testng-eclipse">Eclipse plug-in</a></li>
-	<li><a href="http://www.javaforge.com/proj/summary.do?proj_id=4">IDEA 
-	IntelliJ plug-in</a></li>
-	<li><a href="http://blogs.sun.com/xzajo?entry=test_ng_plugin_for_netbeans">
-	NetBeans plug-in</a></li>
+       <li><a href="http://code.google.com/p/testng/">TestNG</a></li>
+       <li><a href="http://code.google.com/p/testng-eclipse">Eclipse plug-in</a></li>
+       <li><a href="http://www.javaforge.com/proj/summary.do?proj_id=4">IDEA
+       IntelliJ plug-in</a></li>
+       <li><a href="http://blogs.sun.com/xzajo?entry=test_ng_plugin_for_netbeans">
+       NetBeans plug-in</a></li>
 </ul>
 <h3><a name="bug-reports">Bug reports</a></h3>
 <p>The TestNG project is administered by
-<a href="http://jira.opensymphony.com/browse/TESTNG">OpenSymphony's JIRA</a> and 
+<a href="http://jira.opensymphony.com/browse/TESTNG">OpenSymphony's JIRA</a> and
 you can file a bug report
 <a href="http://jira.opensymphony.com/secure/CreateIssue!default.jspa">here</a>.</p>
 
 <!-------------------------------------
 
-  REQUIREMENTS
+ REQUIREMENTS
 
-  ------------------------------------>
-<p>For more information, you can either <a href="download.html">download TestNG</a>, 
-read the <a href="documentation-main.html">manual</a> or browse the links at the 
+ ------------------------------------>
+<p>For more information, you can either <a href="download.html">download TestNG</a>,
+read the <a href="documentation-main.html">manual</a> or browse the links at the
 <a href="#top">top</a>.</p>
 
 
@@ -199,3 +209,4 @@ urchinTracker();
 </body>
 
 </html>
+
