@@ -252,14 +252,32 @@ public class Parameters {
   private static Object[] createParameters(Method m, MethodParameters params,
       IAnnotationFinder finder, XmlSuite xmlSuite, Class annotationClass, String atName) 
   {
-    Object[] result = new Object[0];
+    List<Object> result = new ArrayList<Object>();
+    
+    //
+    // If the configuration method has a Method or an ITestContext parameter,
+    // fill it
+    //
+    Method currentTestMethod = params.currentTestMethod;
+    if (currentTestMethod != null) {
+      for (Class cls : currentTestMethod.getParameterTypes()) {
+        if (cls.equals(Method.class)) {
+          result.add(currentTestMethod);
+        }
+        else if (cls.equals(ITestContext.class)) {
+          result.add(params.context);
+        }
+      }
+    }
+    
+    Object[] extraParameters = new Object[0];
     //
     // Try to find an @Parameters annotation
     //
     IParameters annotation = (IParameters) finder.findAnnotation(m, IParameters.class);
     if(null != annotation) {
       String[] parameterNames = annotation.getValue();
-      result = createParameters(m.getName(), m.getParameterTypes(), 
+      extraParameters = createParameters(m.getName(), m.getParameterTypes(), 
           atName, parameterNames, params, xmlSuite);
     }  
     
@@ -270,16 +288,23 @@ public class Parameters {
       IParameterizable a = (IParameterizable) finder.findAnnotation(m, annotationClass);
       if(null != a) {
         String[] parameterNames = a.getParameters();
-        result = createParameters(m.getName(), m.getParameterTypes(), 
+        extraParameters = createParameters(m.getName(), m.getParameterTypes(), 
             atName, parameterNames, params, xmlSuite);
       }
       else {
-        result = createParameters(m.getName(), m.getParameterTypes(), 
+        extraParameters = createParameters(m.getName(), m.getParameterTypes(), 
             atName, new String[0], params, xmlSuite);
       }
     }
     
-    return result;
+    //
+    // Add the extra parameters we found
+    //
+    for (Object p : extraParameters) {
+      result.add(p);
+    }
+    
+    return result.toArray(new Object[result.size()]);
   }
   
   /**

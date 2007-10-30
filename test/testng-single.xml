@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="Single" parallel="tests" verbose="3"
+<suite name="Single" parallel="tests" verbose="1"
     
   >
 
@@ -11,9 +11,9 @@
 </suite-files>
 -->
   
-  <test name="Factory" skipfailedinvocationcounts="false">
+  <test name="Factory" >
     <classes>
-      <class name="test.dataprovider.DataProviderAsTest" />
+      <class name="test.configuration.BeforeMethodTest" />
     </classes>
   </test>
  

@@ -80,7 +80,11 @@
     </classes>
   </test>
 	
-	<test name="Factory tests">
+  <test name="BeforeMethod">
+    <class name="test.configuration.BeforeMethodTest" />      
+  </test>
+
+  <test name="Factory tests">
 		<classes>
 			<class name="test.factory.classconf.XClassOrderWithFactoryTest" />
 		</classes>

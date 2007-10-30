@@ -142,7 +142,8 @@ public class Invoker implements IInvoker {
 
           Object[] newInstances= (null != instance) ? new Object[] { instance } : instances;
 
-          invokeConfigurationMethod(newInstances, tm, parameters, isClassConfiguration, testResult);
+          invokeConfigurationMethod(newInstances, tm,
+            parameters, isClassConfiguration, testResult);
           
           // TODO: probably we should trigger the event for each instance???
           testResult.setEndMillis(System.currentTimeMillis());
