@@ -1,12 +1,8 @@
 package org.testng.internal;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.testng.IRetryAnalyzer;
 import org.testng.ITestNGMethod;
 import org.testng.internal.annotations.AnnotationHelper;
+import org.testng.internal.annotations.ConfigurationAnnotation;
 import org.testng.internal.annotations.IAfterClass;
 import org.testng.internal.annotations.IAfterGroups;
 import org.testng.internal.annotations.IAfterMethod;
@@ -22,6 +18,10 @@ import org.testng.internal.annotations.IBeforeTest;
 import org.testng.internal.annotations.IConfiguration;
 import org.testng.internal.annotations.ITest;
 
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+
 public class ConfigurationMethod extends BaseTestMethod {
   private final boolean m_isBeforeSuiteConfiguration;
   private final boolean m_isAfterSuiteConfiguration;
@@ -34,7 +34,7 @@ public class ConfigurationMethod extends BaseTestMethod {
 
   private final boolean m_isBeforeMethodConfiguration;
   private final boolean m_isAfterMethodConfiguration;
-  
+
   private boolean m_inheritGroupsFromTestClass = false;
 
   private ConfigurationMethod(Method method, 
@@ -49,7 +49,8 @@ public class ConfigurationMethod extends BaseTestMethod {
                               boolean isAfterMethod,
                               String[] beforeGroups,
                               String[] afterGroups,
-                              boolean initialize) {
+                              boolean initialize)
+  {
     super(method, annotationFinder);
     if(initialize) {
       init();
@@ -69,6 +70,7 @@ public class ConfigurationMethod extends BaseTestMethod {
     
     m_beforeGroups = beforeGroups;
     m_afterGroups = afterGroups;
+    
   }
   
   public ConfigurationMethod(Method method, 
@@ -372,5 +374,23 @@ public class ConfigurationMethod extends BaseTestMethod {
     return clone;
   }
   
+  public boolean isFirstTimeOnly() {
+    boolean result = false;
+    IAnnotation before = m_annotationFinder.findAnnotation(getMethod(), IBeforeMethod.class);
+    if (before != null) {
+      result = ((ConfigurationAnnotation) before).isFirstTimeOnly();
+    }
+    return result;
+  }
+
+  public boolean isLastTimeOnly() {
+    boolean result = false;
+    IAnnotation before = m_annotationFinder.findAnnotation(getMethod(), IAfterMethod.class);
+    if (before != null) {
+      result = ((ConfigurationAnnotation) before).isLastTimeOnly();
+    }
+    return result;
+  }
+
 }
 

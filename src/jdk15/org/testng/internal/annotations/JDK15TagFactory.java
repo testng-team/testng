@@ -78,7 +78,8 @@ public class JDK15TagFactory {
           bs.alwaysRun(),
           bs.dependsOnGroups(), bs.dependsOnMethods(),
           bs.description(), bs.enabled(), bs.groups(),
-          bs.inheritGroups(), null);
+          bs.inheritGroups(), null,
+          false, false);
     }
     else if (annotationClass == IAfterSuite.class) {
       AfterSuite bs = (AfterSuite) a;
@@ -91,7 +92,8 @@ public class JDK15TagFactory {
           bs.alwaysRun(),
           bs.dependsOnGroups(), bs.dependsOnMethods(),
           bs.description(), bs.enabled(), bs.groups(),
-          bs.inheritGroups(), null);
+          bs.inheritGroups(), null,
+          false, false);
     }
     else if (annotationClass == IBeforeTest.class) {
       BeforeTest bs = (BeforeTest) a;
@@ -104,7 +106,8 @@ public class JDK15TagFactory {
           bs.alwaysRun(),
           bs.dependsOnGroups(), bs.dependsOnMethods(),
           bs.description(), bs.enabled(), bs.groups(),
-          bs.inheritGroups(), null);
+          bs.inheritGroups(), null,
+          false, false);
     }
     else if (annotationClass == IAfterTest.class) {
       AfterTest bs = (AfterTest) a;
@@ -117,7 +120,8 @@ public class JDK15TagFactory {
           bs.alwaysRun(),
           bs.dependsOnGroups(), bs.dependsOnMethods(),
           bs.description(), bs.enabled(), bs.groups(),
-          bs.inheritGroups(), null);
+          bs.inheritGroups(), null,
+          false, false);
     }
     else if (annotationClass == IBeforeGroups.class) {
       BeforeGroups bs = (BeforeGroups) a;
@@ -131,7 +135,8 @@ public class JDK15TagFactory {
           bs.alwaysRun(),
           bs.dependsOnGroups(), bs.dependsOnMethods(),
           bs.description(), bs.enabled(), bs.groups(),
-          bs.inheritGroups(), null);
+          bs.inheritGroups(), null,
+          false, false);
     }
     else if (annotationClass == IAfterGroups.class) {
       AfterGroups bs = (AfterGroups) a;
@@ -145,7 +150,8 @@ public class JDK15TagFactory {
           bs.alwaysRun(),
           bs.dependsOnGroups(), bs.dependsOnMethods(),
           bs.description(), bs.enabled(), bs.groups(),
-          bs.inheritGroups(), null);
+          bs.inheritGroups(), null,
+          false, false);
     }
     else if (annotationClass == IBeforeClass.class) {
       BeforeClass bs = (BeforeClass) a;
@@ -158,7 +164,8 @@ public class JDK15TagFactory {
           bs.alwaysRun(),
           bs.dependsOnGroups(), bs.dependsOnMethods(),
           bs.description(), bs.enabled(), bs.groups(),
-          bs.inheritGroups(), null);
+          bs.inheritGroups(), null,
+          false, false);
     }
     else if (annotationClass == IAfterClass.class) {
       AfterClass bs = (AfterClass) a;
@@ -171,7 +178,8 @@ public class JDK15TagFactory {
           bs.alwaysRun(),
           bs.dependsOnGroups(), bs.dependsOnMethods(),
           bs.description(), bs.enabled(), bs.groups(),
-          bs.inheritGroups(), null);
+          bs.inheritGroups(), null,
+          false, false);
     }
     else if (annotationClass == IBeforeMethod.class) {
       BeforeMethod bs = (BeforeMethod) a;
@@ -184,7 +192,8 @@ public class JDK15TagFactory {
           bs.alwaysRun(),
           bs.dependsOnGroups(), bs.dependsOnMethods(),
           bs.description(), bs.enabled(), bs.groups(),
-          bs.inheritGroups(), null);
+          bs.inheritGroups(), null,
+          bs.firstTimeOnly(), false);
     }
     else if (annotationClass == IAfterMethod.class) {
       AfterMethod bs = (AfterMethod) a;
@@ -197,7 +206,8 @@ public class JDK15TagFactory {
           bs.alwaysRun(),
           bs.dependsOnGroups(), bs.dependsOnMethods(),
           bs.description(), bs.enabled(), bs.groups(),
-          bs.inheritGroups(), null);
+          bs.inheritGroups(), null,
+          false, bs.lastTimeOnly());
     }
     
     return result;
@@ -239,7 +249,8 @@ public class JDK15TagFactory {
       boolean alwaysRun,
       String[] dependsOnGroups, String[] dependsOnMethods,
       String description, boolean enabled, String[] groups,
-      boolean inheritGroups, String[] parameters)
+      boolean inheritGroups, String[] parameters,
+      boolean firstTimeOnly, boolean lastTimeOnly)
   {
     ConfigurationAnnotation result = new ConfigurationAnnotation();
     result.setFakeConfiguration(true);
@@ -262,6 +273,8 @@ public class JDK15TagFactory {
     result.setGroups(groups);
     result.setInheritGroups(inheritGroups);
     result.setParameters(parameters);
+    result.setFirstTimeOnly(firstTimeOnly);
+    result.setLastTimeOnly(lastTimeOnly);
     
     return result;
   }

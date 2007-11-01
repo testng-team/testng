@@ -145,5 +145,4 @@ public class TestAnnotation extends TestOrConfiguration implements ITest {
   public boolean skipFailedInvocations() {
     return m_skipFailedInvocations;
   }
-
 }

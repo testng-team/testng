@@ -399,6 +399,14 @@ public class JUnitUtils {
     public boolean skipFailedInvocations() {
       return false;
     }
+
+    public boolean isFirstTimeOnly() {
+      return false;
+    }
+
+    public boolean isLastTimeOnly() {
+      return false;
+    }
   }
   
   /**

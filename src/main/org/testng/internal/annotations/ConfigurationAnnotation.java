@@ -22,6 +22,8 @@ public class ConfigurationAnnotation extends TestOrConfiguration implements ICon
   private String[] m_beforeGroups = {};
   private String[] m_afterGroups = {};
   private boolean m_isFakeConfiguration;
+  private boolean m_firstTimeOnly = false;
+  private boolean m_lastTimeOnly = false;
 
   public ConfigurationAnnotation() {
     
@@ -139,5 +141,21 @@ public class ConfigurationAnnotation extends TestOrConfiguration implements ICon
 
   public boolean isFakeConfiguration() {
     return m_isFakeConfiguration;
+  }
+
+  public void setFirstTimeOnly(boolean f) {
+    m_firstTimeOnly = f;
+  }
+
+  public boolean isFirstTimeOnly() {
+    return m_firstTimeOnly;
+  }
+
+  public void setLastTimeOnly(boolean f) {
+    m_lastTimeOnly = f;
+  }
+
+  public boolean isLastTimeOnly() {
+    return m_lastTimeOnly;
   }
 }

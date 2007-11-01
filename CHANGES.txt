@@ -1,6 +1,7 @@
 ===========================================================================
 5.7
 
+Added: @BeforeMethod(firstTimeOnly) and @AfterMethod(lastTimeOnly)
 Added: @BeforeMethods can now take a Method and ITestContext parameters (like @DataProvider)
 Fixed: logging about abstract classes moved to level 5
 Added: if @Parameter is missing from testng.xml then it is read from Sys env.

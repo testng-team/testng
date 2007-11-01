@@ -420,10 +420,14 @@ public class Invoker implements IInvoker {
         instances[instanceIndex]);
 
     //
-    // Invoke beforeMethod configurations
+    // Invoke beforeMethods only if
+    // - firstTimeOnly is not set
+    // - firstTimeOnly is set, and we are reaching at the first invocationCount
     //
-    invokeConfigurations(testClass, tm, beforeMethods, suite, params,
-        instances[instanceIndex]);
+    invokeConfigurations(testClass, tm, 
+      filterConfigurationMethods(tm, beforeMethods, true /* beforeMethods */),
+      suite, params,
+      instances[instanceIndex]);
     
     //
     // Create the ExtraOutput for this method
@@ -520,13 +524,17 @@ public class Invoker implements IInvoker {
         testResult.setEndMillis(System.currentTimeMillis());
       }
       //
-      // Invoke afterMethods
+      // Invoke afterMethods only if
+      // - lastTimeOnly is not set
+      // - lastTimeOnly is set, and we are reaching the last invocationCount
       //
-      invokeConfigurations(testClass, tm, afterMethods, suite, params,
+      invokeConfigurations(testClass, tm, 
+          filterConfigurationMethods(tm, afterMethods, false /* beforeMethods */),
+          suite, params,
           instances[instanceIndex]);
       
       //
-      // Invoke beforeGroups configurations
+      // Invoke afterGroups configurations
       //
       invokeAfterGroupsConfigurations(testClass, tm, groupMethods, suite,
           params, instances[instanceIndex]);
@@ -534,6 +542,37 @@ public class Invoker implements IInvoker {
     return testResult;
   }
   
+  /**
+   * The array of methods contains @BeforeMethods if isBefore if true, @AfterMethods
+   * otherwise.  This function removes all the methods that should not be run at this
+   * point because they are either firstTimeOnly or lastTimeOnly and we haven't reached
+   * the current invocationCount yet
+   */
+  private ITestNGMethod[] filterConfigurationMethods(ITestNGMethod tm,
+      ITestNGMethod[] methods, boolean isBefore)
+  {
+    List<ITestNGMethod> result = new ArrayList<ITestNGMethod>();
+    for (ITestNGMethod m : methods) {
+      ConfigurationMethod cm = (ConfigurationMethod) m;
+      if (isBefore) {
+        if (! cm.isFirstTimeOnly() ||
+            (cm.isFirstTimeOnly() && tm.getCurrentInvocationCount() == 0))
+        {
+          result.add(m);
+        }
+      }
+      else {
+        if (! cm.isLastTimeOnly() ||
+            (cm.isLastTimeOnly() && tm.getCurrentInvocationCount() == tm.getInvocationCount() - 1))
+        {
+          result.add(m);
+        }
+      }
+    }
+
+    return result.toArray(new ITestNGMethod[result.size()]);
+  }
+
   /**
    * {@link #invokeTestMethods()} eventually converge here to invoke a single @Test method.  
    * <p/>

@@ -605,4 +605,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   public void setSkipFailedInvocations(boolean s) {
     m_skipFailedInvocations = s;
   }
+
+
+
 }

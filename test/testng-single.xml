@@ -11,9 +11,10 @@
 </suite-files>
 -->
   
-  <test name="Factory" >
+  <test name="InvocationCountFirstAndLastTime" >
     <classes>
-      <class name="test.configuration.BeforeMethodTest" />
+      <class name="test.invocationcount.InvocationCountOnlyFirstTimeTest" />
+      <class name="test.invocationcount.InvocationCountOnlyFirstTimeVerifyTest" />
     </classes>
   </test>
  
