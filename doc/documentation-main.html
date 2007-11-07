@@ -85,19 +85,21 @@ google_ad_channel ="5560744946";
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#factories">5.7 - Factories</a>
 <br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#parallel-running">5.8 - Parallel running and time-outs</a> 
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#class-level">5.8 - Class level Annotations</a>
 <br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#rerunning">5.9 - Rerunning failed tests</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#parallel-running">5.9 - Parallel running and time-outs</a> 
 <br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#junit">5.10 - JUnit tests</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#rerunning">5.10 - Rerunning failed tests</a>
 <br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#jdk-14">5.11 - JDK 1.4</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#junit">5.11 - JUnit tests</a>
 <br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#running-testng-programmatically">5.12 - Running TestNG programmatically</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#beanshell">5.13 - BeanShell and advanced group selection</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#jdk-14">5.12 - JDK 1.4</a>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#running-testng-programmatically">5.13 - Running TestNG programmatically</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#beanshell">5.14 - BeanShell and advanced group selection</a><br>
 
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#annotationtransformers">5.14 - Annotation transformers</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#jdk-14-migration">5.15 - Migrating to JDK annotations from javadoc annotations</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#annotationtransformers">5.15 - Annotation transformers</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#jdk-14-migration">5.16 - Migrating to JDK annotations from javadoc annotations</a>
 <br>
 
 
@@ -1197,7 +1199,9 @@ overloaded methods will be invoked.&nbsp; If you only want to invoke one of the
 overloaded methods, you should use <tt>dependsOnGroups</tt>.</p><p>For a more advanced example of dependent methods, please refer to 
 <a href="http://beust.com/weblog/archives/000171.html">this article</a>, which 
 uses inheritance to provide an elegant solution to the problem of multiple 
-dependencies.</p><!-------------------------------------
+dependencies.</p>
+
+<!-------------------------------------
   FACTORIES
   ------------------------------------><h4>
 <a name="factories">5.7 - Factories</a>
@@ -1289,12 +1293,48 @@ case they will be ignored by TestNG).</p>
 
 <!-- end maven stuff -->
 
+<!-------------------------------------
+  CLASS LEVEL ANNOTATIONS
+  ------------------------------------>
+
+<h4><a name="class-level">5.8 - Class level annotations</a></h4>
+
+The <tt>@Test</tt> annotation can be put on a class instead of a test method:
+
+<pre class="prettyprint">
+@Test
+public class Test1 {
+  public void test1() {
+  }
+
+  public void test2() {
+  }
+}
+</pre>
+The effect of a class level <tt>@Test</tt> annotation is to make all the public methods of this class to become test methods even if they are not annotated.  You can still repeat the <tt>@Test</tt> annotation on a method if you want to add certain attributes.
+<p>
+For example:
+<pre class="prettyprint">
+@Test
+public class Test1 {
+  public void test1() {
+  }
+
+  @Test(groups = "g1")
+  public void test2() {
+  }
+}
+</pre>
+will make both <tt>test1()</tt> and <tt>test2()</tt> test methods but on top of that, <tt>test2()</tt> now belongs to the group "g1".
+<p>
+
+
 
 <!-------------------------------------
   PARALLEL RUNNING
   ------------------------------------>
 
-<h4><a name="parallel-running">5.8 - Parallel running and time-outs</a></h4>You can 
+<h4><a name="parallel-running">5.9 - Parallel running and time-outs</a></h4>You can 
 instruct TestNG to run your tests in separate threads by using the <i>parallel</i> 
 attribute on the suite tag.  This attribute can take one of two values:
 
@@ -1340,7 +1380,7 @@ In this example, the function <tt>testServer</tt> will be invoked ten times from
   ------------------------------------>
 
 
-<h4><a name="rerunning">5.9 - Rerunning failed tests</a></h4>Every time tests fail in a suite, TestNG creates a file called <tt>testng-failed.xml</tt> in the output directory.
+<h4><a name="rerunning">5.10 - Rerunning failed tests</a></h4>Every time tests fail in a suite, TestNG creates a file called <tt>testng-failed.xml</tt> in the output directory.
 This XML file contains the necessary information to rerun only these methods 
 that failed, allowing you to quickly reproduce the failures without having to 
 run the entirety of your tests.&nbsp; Therefore, a typical session would look 
@@ -1353,7 +1393,7 @@ java -classpath testng.jar;%CLASSPATH% org.testng.TestNG -d test-outputs test-ou
 
 <p>Note that <tt>testng-failed.xml</tt> will contain all the necessary dependent 
 methods so that you are guaranteed to run the methods that failed without any 
-SKIP failures.</p><h4><a name="junit">5.10 - JUnit tests</a></h4>TestNG can run JUnit tests.&nbsp; All you need to do is specify your JUnit test 
+SKIP failures.</p><h4><a name="junit">5.11 - JUnit tests</a></h4>TestNG can run JUnit tests.&nbsp; All you need to do is specify your JUnit test 
 classes in the <tt>testng.classNames</tt> property and set the <tt>testng.junit</tt> property to 
 true:<br>
 <p></p>
@@ -1372,7 +1412,7 @@ true:<br>
 	this method will be invoked</li></ul><!-------------------------------------
   JUNIT
  ------------------------------------><h4>
-<a name="jdk-14">5.11 - JDK 1.4</a>
+<a name="jdk-14">5.12 - JDK 1.4</a>
 
 </h4>
 
@@ -1464,7 +1504,7 @@ annotations:</p><table border="1" width="100%" id="table5"><th>JDK 5</th><th>JDK
 JDK 1.5 tests ported to JavaDoc annotations.</p><!-------------------------------------
   RUNNING TESTNG
  ------------------------------------><h4>
-<a name="running-testng-programmatically">5.12 - Running TestNG programmatically</a>
+<a name="running-testng-programmatically">5.13 - Running TestNG programmatically</a>
 </h4>
 
 <p>You can invoke TestNG from your own programs very easily:</p>
@@ -1522,7 +1562,7 @@ tng.run();
  ------------------------------------>
 	
 <h4>
-<a name="beanshell">5.13 - BeanShell and advanced group selection</a>
+<a name="beanshell">5.14 - BeanShell and advanced group selection</a>
 </h4>
 
 
@@ -1557,7 +1597,7 @@ You might want to surround your expression with a <tt>CDATA</tt> declaration (as
  ------------------------------------>
 	
 <h4>
-<a name="annotationtransformers">5.14 - Annotation Transformers</a>
+<a name="annotationtransformers">5.15 - Annotation Transformers</a>
 </h4>
 
 TestNG allows you to modify the content of all the annotations at runtime.  This is especially useful if the annotations in the source code are right most of the time, but there are a few situations where you'd like to override their value.
@@ -1630,7 +1670,7 @@ For example, here is how you would override the attribute <tt>invocationCount</t
  ------------------------------------>
 	
 <h4>
-<a name="jdk-14-migration">5.15 - Migrating to JDK annotations from javadoc annotations</a>
+<a name="jdk-14-migration">5.16 - Migrating to JDK annotations from javadoc annotations</a>
 </h4>
 
 
