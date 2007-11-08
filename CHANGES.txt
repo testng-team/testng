@@ -4,7 +4,7 @@
 Added: @BeforeMethod(firstTimeOnly) and @AfterMethod(lastTimeOnly)
 Added: @BeforeMethods can now take a Method and ITestContext parameters (like @DataProvider)
 Fixed: logging about abstract classes moved to level 5
-Added: if @Parameter is missing from testng.xml then it is read from Sys env.
+Added: if @Parameter is missing from testng.xml then it is read from the System properties
 Fixed: Don't run a @DataProvider method as a test when a class-level @Test is present
 Added: Attribute @Test#skipFailedInvocations
 Fixed: TESTNG-169 Error message: <method> is depending on nonexistent method null ("null" is uninformative)

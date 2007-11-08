@@ -64,8 +64,8 @@ public @interface BeforeMethod {
   public String description() default "";
 
   /**
-   * If true and that a @Test method has an invocationCount > 0, this
-   * @BeforeMethod will only be invoked once (before the first invocation).
+   * If true and the @Test method about to be run has an invocationCount > 1, this
+   * BeforeMethod will only be invoked once (before the first test invocation).
    */
   public boolean firstTimeOnly() default false;
 }

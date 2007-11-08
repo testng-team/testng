@@ -64,8 +64,8 @@ public @interface AfterMethod {
   public String description() default "";
 
   /**
-   * If true and that a @Test method has an invocationCount > 0, this
-   * @AfterMethod will only be invoked once (after the last invocation).
+   * If true and the @Test method that was just run has an invocationCount > 1, this
+   * AfterMethod will only be invoked once (after the last test invocation).
    */
   public boolean lastTimeOnly() default false;
 
