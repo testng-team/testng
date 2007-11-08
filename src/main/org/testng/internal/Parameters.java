@@ -254,22 +254,6 @@ public class Parameters {
   {
     List<Object> result = new ArrayList<Object>();
     
-    //
-    // If the configuration method has a Method or an ITestContext parameter,
-    // fill it
-    //
-    Method currentTestMethod = params.currentTestMethod;
-    if (currentTestMethod != null) {
-      for (Class cls : currentTestMethod.getParameterTypes()) {
-        if (cls.equals(Method.class)) {
-          result.add(currentTestMethod);
-        }
-        else if (cls.equals(ITestContext.class)) {
-          result.add(params.context);
-        }
-      }
-    }
-    
     Object[] extraParameters = new Object[0];
     //
     // Try to find an @Parameters annotation
@@ -286,7 +270,7 @@ public class Parameters {
     //
     else {    
       IParameterizable a = (IParameterizable) finder.findAnnotation(m, annotationClass);
-      if(null != a) {
+      if(null != a && a.getParameters().length > 0) {
         String[] parameterNames = a.getParameters();
         extraParameters = createParameters(m.getName(), m.getParameterTypes(), 
             atName, parameterNames, params, xmlSuite);
