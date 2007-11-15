@@ -10,6 +10,7 @@ import java.util.Map;
 import org.testng.internal.Utils;
 import org.testng.internal.version.VersionInfo;
 import org.testng.IObjectFactory;
+import org.testng.TestNGException;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -217,6 +218,10 @@ public class TestNGContentHandler extends DefaultHandler {
     if (start) {
       m_currentTest = new XmlTest(m_currentSuite);
       m_currentTestParameters = new HashMap<String, String>();
+      final String testName= attributes.getValue("name");
+      if(null == testName || "".equals(testName.trim())) {
+        throw new TestNGException("Test <test> element must define the name attribute");
+      }
       m_currentTest.setName(attributes.getValue("name"));
       String verbose = attributes.getValue("verbose");
       if (null != verbose) {
