@@ -1,5 +1,6 @@
 5.7.1
 
+Added: antlib.xml to allow autodiscovery of Ant task definition
 Fixed: name attribute on <test> is required
 ===========================================================================
 5.7

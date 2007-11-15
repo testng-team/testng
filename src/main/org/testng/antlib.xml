@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+  <!-- ant1.6+ antlib declaration for the classes
+  use with the declaration xmlns:tng="antlib:org.testng" to
+  trigger ant's autoload of this file, provided the relevant jars
+  are in the antlib directory, or a dir stated with -lib on the command line"
+  Alternatively, load with something like
+
+  <typedef uri="antlib:antlib:org.testng"
+      classpathref="testng.classpath"  />
+
+  -->
+<antlib>
+  <taskdef resource="testngtasks"/>
+</antlib>
+
