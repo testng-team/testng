@@ -11,12 +11,19 @@
 </suite-files>
 -->
   
+<!-- 
   <test name="InvocationCountFirstAndLastTime" >
     <classes>
-      <class name="test.tmp.InjectTest" />
-    </classes>
+      <class name="test.invocationcount.VerifyTest" />
+     </classes>
   </test>
+-->
  
+  <test name="BeforeMethod">
+    <classes>
+      <class name="test.inject.InjectTest" />
+    </classes>      
+  </test>
 
 </suite>
 

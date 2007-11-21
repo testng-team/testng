@@ -70,19 +70,26 @@
       <class name="test.thread.FactoryTest" />
       <class name="test.simple.IncludedExcludedTest" />
       <class name="test.reports.ReportTest" />
-      <!-- <class name="test.output.OutputTest" /> -->
       <class name="test.configuration.BeforeTestOrderingTest" />
       <class name="test.configuration.SuiteTest" />
       <class name="test.configuration.VerifySuiteTest" />
       <class name="test.annotationtransformer.AnnotationTransformerTest" />
       <class name="test.configuration.MultipleBeforeGroupTest" />
       <class name="test.configuration.BaseGroupsTest" />
+    </classes>
+  </test>
+  
+  <test name="Injection">
+    <classes>
+      <!--  Need to be in a <test> of its own -->
       <class name="test.inject.InjectTest" />
     </classes>
   </test>
 	
   <test name="BeforeMethod">
-    <class name="test.configuration.BeforeMethodTest" />      
+    <classes>
+      <class name="test.configuration.BeforeMethodTest" />
+    </classes>      
   </test>
 
   <test name="Factory tests">
@@ -230,6 +237,7 @@
     <classes>
       <class name="test.InvocationAndSuccessPercentageTest" />
       <class name="test.invocationcount.FailedInvocationCountTest" />
+      <class name="test.invocationcount.FirstAndLastTimeTest" />
     </classes>
   </test>
 
@@ -513,10 +521,4 @@
     </classes>
   </test>
 
-  <test name="InvocationCountFirstAndLastTime" >
-    <classes>
-      <class name="test.invocationcount.InvocationCountOnlyFirstTimeTest" />
-      <class name="test.invocationcount.InvocationCountOnlyFirstTimeVerifyTest" />
-    </classes>
-  </test>
 </suite>

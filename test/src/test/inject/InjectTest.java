@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 public class InjectTest {
 
   @Test
-  public void verifyTextContextInjection(ITestContext tc) {
+  public void verifyTestContextInjection(ITestContext tc) {
     Assert.assertNotNull(tc);
     ITestNGMethod[] allMethods = tc.getAllTestMethods();
     Assert.assertEquals(allMethods.length, 1);

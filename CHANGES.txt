@@ -1,7 +1,9 @@
 5.7.1
 
+Fixed: @AfterMethod(lastTimeOnly) didn't work properly with data providers
 Added: antlib.xml to allow autodiscovery of Ant task definition
 Fixed: name attribute on <test> is required
+
 ===========================================================================
 5.7
 
@@ -14,7 +16,6 @@ Added: Attribute @Test#skipFailedInvocations
 Fixed: TESTNG-169 Error message: <method> is depending on nonexistent method null ("null" is uninformative)
 Fixed: -listener takes comma-separated classes
 Added: RetryAnalyzer (experimental) (Jeremie)
-
 
 ===========================================================================
 5.6

@@ -562,9 +562,21 @@ public class Invoker implements IInvoker {
         }
       }
       else {
-        if (! cm.isLastTimeOnly() ||
-            (cm.isLastTimeOnly() && tm.getCurrentInvocationCount() == tm.getInvocationCount() - 1))
-        {
+        int current = tm.getCurrentInvocationCount();
+        boolean isLast = false;
+        if (tm.getParameterInvocationCount() > 0) {
+          isLast = current == tm.getParameterInvocationCount();
+        }
+        else if (tm.getInvocationCount() > 1) {
+          isLast = current == tm.getInvocationCount();
+        }
+//        boolean isLastInvocationCount
+//          = tm.getInvocationCount() == 1 || 
+//            current == tm.getInvocationCount();
+//        boolean isLastParameterInvocationCount
+//          = tm.getParameterInvocationCount() > 0 &&
+//            current == tm.getParameterInvocationCount(); 
+        if (! cm.isLastTimeOnly() || (cm.isLastTimeOnly() && isLast)) {
           result.add(m);
         }
       }
