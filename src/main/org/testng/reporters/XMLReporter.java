@@ -1,20 +1,11 @@
 package org.testng.reporters;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
-import org.testng.IReporter;
-import org.testng.ISuite;
-import org.testng.ISuiteResult;
-import org.testng.ITestNGMethod;
-import org.testng.Reporter;
+import org.testng.*;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlSuite;
+
+import java.io.File;
+import java.util.*;
 
 /**
  * The main entry for the XML generation operation
@@ -42,13 +33,15 @@ public class XMLReporter implements IReporter {
   }
 
   private void writeReporterOutput(XMLStringBuffer xmlBuffer) {
-    //TODO: Cosmin - maybe a <line> element isn't indicated for each line. Also escaping might be considered
+    //TODO: Cosmin - maybe a <line> element isn't indicated for each line
     xmlBuffer.push(XMLReporterConfig.TAG_REPORTER_OUTPUT);
     List<String> output = Reporter.getOutput();
     for (String line : output) {
-      xmlBuffer.push(XMLReporterConfig.TAG_LINE);
-      xmlBuffer.addCDATA(line);
-      xmlBuffer.pop();
+      if (line != null) {
+        xmlBuffer.push(XMLReporterConfig.TAG_LINE);
+        xmlBuffer.addCDATA(XMLUtils.escape(line));
+        xmlBuffer.pop();
+      }
     }
     xmlBuffer.pop();
   }

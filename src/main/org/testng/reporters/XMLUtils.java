@@ -1,8 +1,10 @@
 package org.testng.reporters;
 
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
 import java.util.Iterator;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 
 /**
@@ -86,5 +88,31 @@ public final class XMLUtils {
                                                  String tag)
   {
     result.append(indent).append("</").append(tag).append(">").append(EOL);
+  }
+
+  public static String escape(String input) {
+    if (input == null) {
+      return null;
+    }
+    StringBuilder result = new StringBuilder();
+    StringCharacterIterator iterator = new StringCharacterIterator(input);
+    char character = iterator.current();
+    while (character != CharacterIterator.DONE) {
+      if (character == '<') {
+        result.append("&lt;");
+      } else if (character == '>') {
+        result.append("&gt;");
+      } else if (character == '\"') {
+        result.append("&quot;");
+      } else if (character == '\'') {
+        result.append("&#039;");
+      } else if (character == '&') {
+        result.append("&amp;");
+      } else {
+        result.append(character);
+      }
+      character = iterator.next();
+    }
+    return result.toString();
   }
 }
