@@ -39,7 +39,7 @@ public class XMLReporter implements IReporter {
     for (String line : output) {
       if (line != null) {
         xmlBuffer.push(XMLReporterConfig.TAG_LINE);
-        xmlBuffer.addCDATA(XMLUtils.escape(line));
+        xmlBuffer.addCDATA(line);
         xmlBuffer.pop();
       }
     }

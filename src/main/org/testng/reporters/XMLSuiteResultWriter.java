@@ -212,7 +212,7 @@ public class XMLSuiteResultWriter {
       xmlBuffer.addEmptyElement(XMLReporterConfig.TAG_PARAM_VALUE, valueAttrs);
     } else {
       xmlBuffer.push(XMLReporterConfig.TAG_PARAM_VALUE);
-      xmlBuffer.addCDATA(XMLUtils.escape(parameter.toString()));
+      xmlBuffer.addCDATA(parameter.toString());
       xmlBuffer.pop();
     }
     xmlBuffer.pop();
