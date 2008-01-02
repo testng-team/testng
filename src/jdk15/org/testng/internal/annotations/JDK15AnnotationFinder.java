@@ -1,11 +1,5 @@
 package org.testng.internal.annotations;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterGroups;
 import org.testng.annotations.AfterMethod;
@@ -23,6 +17,13 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
+import org.testng.annotations.TestInstance;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class implements IAnnotationFinder with JDK5 annotations
@@ -117,5 +118,16 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   
   public void addSourceDirs(String[] dirs) {
     // no-op for JDK 15
+  }
+
+  public boolean hasTestInstance(Method method, int i) {
+    boolean result = false;
+    Annotation[][] annotations = method.getParameterAnnotations();
+    if (annotations.length > 0 && annotations[i].length > 0) {
+      Annotation a = annotations[i][0];
+      result = a instanceof TestInstance;
+    }
+    
+    return result;
   }
 }

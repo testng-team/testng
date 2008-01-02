@@ -40,4 +40,9 @@ public interface IAnnotationFinder {
   
   // No op for JDK15
   public void addSourceDirs(String[] dirs);
+
+  /**
+   * @return true if the ith parameter of the given method has the annotation @TestInstance.
+   */
+  public boolean hasTestInstance(Method method, int i);
 }

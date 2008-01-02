@@ -1,17 +1,5 @@
 package org.testng.internal;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
-
 import org.testng.IHookCallBack;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
@@ -29,6 +17,18 @@ import org.testng.internal.thread.IFutureResult;
 import org.testng.internal.thread.ThreadExecutionException;
 import org.testng.internal.thread.ThreadTimeoutException;
 import org.testng.internal.thread.ThreadUtil;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Collection of helper methods to help sort and arrange methods.
@@ -594,7 +594,8 @@ public class MethodHelper {
   }
 
   public static Iterator<Object[]> invokeDataProvider(Object instance, 
-      Method dataProvider, ITestNGMethod method, ITestContext testContext)
+      Method dataProvider, ITestNGMethod method, ITestContext testContext,
+      Object fedInstance, IAnnotationFinder annotationFinder)
   {
     Iterator<Object[]> result = null;
     Method testMethod = method.getMethod();
@@ -611,12 +612,17 @@ public class MethodHelper {
         throw new TestNGException("DataProvider " + dataProvider + " cannot have more than two parameters");
       }
       
+      int i = 0;
       for (Class<?> cls : parameterTypes) {
+        boolean isTestInstance = annotationFinder.hasTestInstance(dataProvider, i++); 
         if (cls.equals(Method.class)) {
           lParameters.add(testMethod);
         }
         else if (cls.equals(ITestContext.class)) {
           lParameters.add(testContext);
+        }
+        else if (isTestInstance) {
+          lParameters.add(fedInstance);
         }
       }
       Object[] parameters = lParameters.toArray(new Object[lParameters.size()]);

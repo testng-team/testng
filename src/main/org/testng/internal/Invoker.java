@@ -751,7 +751,7 @@ public class Invoker implements IInvoker {
        * one specific set. Should optimize it by only recreating the set needed.
        */
       ParameterBag bag = createParameters(testClass, tm, parameters,
-          allParameters, suite, testContext);
+          allParameters, suite, testContext, null /* fedInstance */);
       Object[] parameterValues = getParametersFromIndex(bag.parameterValues, parametersIndex);
 
       result.add(
@@ -769,10 +769,11 @@ public class Invoker implements IInvoker {
                                         Map<String, String> parameters,
                                         Map<String, String> allParameterNames,
                                         XmlSuite suite,
-                                        ITestContext testContext) {
+                                        ITestContext testContext,
+                                        Object fedInstance) {
     Object instance = testClass.getInstances(true)[0];
     ParameterBag bag= handleParameters(testMethod, 
-        instance, allParameterNames, parameters, suite, testContext);
+        instance, allParameterNames, parameters, suite, testContext, fedInstance);
 
     return bag;
   }
@@ -850,7 +851,7 @@ public class Invoker implements IInvoker {
 
               Map<String, String> allParameterNames = new HashMap<String, String>();
               ParameterBag bag = createParameters(testClass, testMethod,
-                  parameters, allParameterNames, suite, testContext);
+                  parameters, allParameterNames, suite, testContext, instances[0]);
 
               if(bag.hasErrors()) {
                 failureCount = handleInvocationResults(testMethod, 
@@ -979,7 +980,8 @@ public class Invoker implements IInvoker {
       Map<String, String> allParameterNames,
       Map<String, String> parameters,
       XmlSuite suite,
-      ITestContext testContext)
+      ITestContext testContext,
+      Object fedInstance)
   {
     try {
       return new ParameterBag(Parameters.handleParameters(testMethod,
@@ -987,7 +989,8 @@ public class Invoker implements IInvoker {
           instance, 
           new Parameters.MethodParameters(parameters, testMethod.getMethod(), testContext), 
           suite, 
-          m_annotationFinder), null);
+          m_annotationFinder,
+          fedInstance), null);
     }
     catch(Throwable cause) {
       return new ParameterBag(null, 

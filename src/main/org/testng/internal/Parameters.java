@@ -302,7 +302,8 @@ public class Parameters {
                                                     Object instance,
                                                     MethodParameters methodParams, 
                                                     XmlSuite xmlSuite, 
-                                                    IAnnotationFinder annotationFinder)
+                                                    IAnnotationFinder annotationFinder,
+                                                    Object fedInstance)
   {
     Iterator<Object[]> result = null;
     
@@ -321,12 +322,14 @@ public class Parameters {
         String n = "param" + i;
         allParameterNames.put(n, n);
       }
-  
+
       result  = MethodHelper.invokeDataProvider(
           instance, /* a test instance or null if the dataprovider is static*/
           dataProvider, 
           testMethod,
-          methodParams.context);
+          methodParams.context,
+          fedInstance,
+          annotationFinder);
     }
     else {
       //

@@ -375,6 +375,7 @@
       <class name="test.dataprovider.TestContextTest" />
       <class name="test.dataprovider.FailingDataProviderTest" />
       <class name="test.dataprovider.DataProviderAsTest" />
+      <class name="test.dataprovider.TestInstanceFactory" />
     </classes>
   </test>
 	

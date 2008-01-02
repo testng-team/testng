@@ -249,4 +249,8 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
   private static void ppp(String s) {
     System.out.println("[JDK14AnnotationFinder] " + s);
   }
+
+  public boolean hasTestInstance(Method method, int i) {
+    return false;
+  }
 }

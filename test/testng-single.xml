@@ -21,7 +21,7 @@
  
   <test name="BeforeMethod">
     <classes>
-      <class name="test.inject.InjectTest" />
+      <class name="test.dataprovider.TestInstanceFactory" />
     </classes>      
   </test>
 

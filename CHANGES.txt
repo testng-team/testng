@@ -1,5 +1,6 @@
 5.7.1
 
+Added: @TestInstance on a data provider method parameter
 Fixed: @AfterMethod(lastTimeOnly) didn't work properly with data providers
 Added: antlib.xml to allow autodiscovery of Ant task definition
 Fixed: name attribute on <test> is required
