@@ -371,14 +371,18 @@ public class XmlMethodSelector implements IMethodSelector {
     
     // If we are asked to include or exclude specific groups, calculate
     // the transitive closure of all the included groups.  If no include groups
-    // were specified, don't do anything
-    
+    // were specified, don't do anything.
+    // Any group that is part of the transitive closure but not part of
+    // m_includedGroups is being added implicitly by TestNG so that if someone
+    // includes a group z that depends on a, b and c, they don't need to 
+    // include a, b and c explicitly.
     if (m_includedGroups.size() > 0) {
       // Make the transitive closure our new included groups
-      m_includedGroups = new HashMap<String, String>();
       for (String g : groupClosure) {
+        log(4, "Including group "
+            + (m_includedGroups.containsKey(g) ?
+                ": " : "(implicitly): ") + g);
         m_includedGroups.put(g, g);
-        log(4, "Including group " + (m_includedGroups.containsKey(g) ? ": " : "(implicit): ") + g);
       }
     
       // Make the transitive closure our new included methods
