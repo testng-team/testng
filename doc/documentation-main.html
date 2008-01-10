@@ -1542,7 +1542,8 @@ suite.setName("TmpSuite");
 XmlTest test = new XmlTest(suite);
 test.setName("TmpTest");
 List&lt;XmlClass&gt; classes = new ArrayList&lt;XmlClass&gt;();
-classes.add(new XmlClass("test.failures.Child")); 
+classes.add(new XmlClass("test.failures.Child"));
+test.setXmlClasses(classes) ;
 </pre>
 And then you can pass this <tt>XmlSuite</tt> to TestNG:
 
