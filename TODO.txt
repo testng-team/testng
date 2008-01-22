@@ -11,6 +11,10 @@
 * Add a servlet so TestNG can be invoked from a web browser
 * Make it possible to add listeners from the Eclipse plug-in
 
+Doc:
+
+* Document the fact that @Test methods with return values are ignored.
+
 ===========================================================================
 Older TODO's:
 
