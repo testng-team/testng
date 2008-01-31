@@ -81,11 +81,14 @@ TestNG has plug-ins for both Maven 1 and Maven 2.
 <!--  begin maven2  -->
 <h3 id="maven2">Maven 2</h3>
 
-<p>Maven2 has changed quite a bit from the first release. Maven2 should support TestNG out of the box without the need to download any additional plugins <em>(other than TestNG itself)</em>. In fact, other than specifying testng as one of your build dependencies,  most people shouldn't really have to do any other configuration for the majority of cases.
+<p>Maven2 should support TestNG out of the box without the need to download any additional plugins <em>(other than TestNG itself)</em>.
 
 <h4>Snapshot Build Updates</h4>
 <p>
-The latest current good version of the plugin that you want is <b>2.4-SNAPSHOT</b>.
+The latest current good version of the Surefire plugin that you want is <b>2.4</b>.  You can find the full instructions on the <a href="http://maven.apache.org/plugins/maven-surefire-plugin/">Surefire web site</a> (here are the <a href="http://maven.apache.org/plugins/maven-surefire-plugin/examples/testng.html">TestNG-specific instructions</a>).
+
+<!--
+
 </p>
 <p>
   To get the apache ibiblio snapshot repository added to your Maven project you will need to add a section like
@@ -100,6 +103,8 @@ The latest current good version of the plugin that you want is <b>2.4-SNAPSHOT</
    &lt;/pluginRepository&gt;
 &lt;/pluginRepositories&gt;
 </pre>
+
+
 
 <h4>Surefire Documentation</h4>
 The TestNG Surefire documentation can be found on <a href="http://maven.apache.org/plugins/maven-surefire-plugin/testng.html">Apache's web site</a>.
@@ -145,6 +150,8 @@ section in a pom.xml file.</p>
 The most notable section is the <tt>configuration</tt> element. Within the boundaries of this element you can define all of
 the configurable TestNG properties.
 </p>
+
+-->
 
 <h4>Configuration</h4><h5>Goals</h5><table border="1" id="table2">
     <tr>
