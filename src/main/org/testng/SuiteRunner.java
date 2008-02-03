@@ -59,6 +59,8 @@ public class SuiteRunner implements ISuite, Serializable {
   
   transient private IObjectFactory m_objectFactory;
   transient private Boolean m_skipFailedInvocationCounts = Boolean.FALSE;
+
+  private IMethodInterceptor m_methodInterceptor;
   
 //  transient private IAnnotationTransformer m_annotationTransformer = null;
 
@@ -79,7 +81,7 @@ public class SuiteRunner implements ISuite, Serializable {
                      boolean useDefaultListeners,
                      IAnnotationFinder[] finders)
   {
-    this(suite, outputDir, runnerFactory, useDefaultListeners, finders, null);
+    this(suite, outputDir, runnerFactory, useDefaultListeners, finders, null, null);
   }
   
   public SuiteRunner(XmlSuite suite, 
@@ -87,9 +89,11 @@ public class SuiteRunner implements ISuite, Serializable {
                      ITestRunnerFactory runnerFactory, 
                      boolean useDefaultListeners,
                      IAnnotationFinder[] finders,
-                     IObjectFactory factory)
+                     IObjectFactory factory,
+                     IMethodInterceptor methodInterceptor)
   {
-    init(suite, outputDir, runnerFactory, useDefaultListeners, finders, factory);
+    init(suite, outputDir, runnerFactory, useDefaultListeners, finders, factory,
+      methodInterceptor);
   }
   
   private void init(XmlSuite suite, 
@@ -97,11 +101,13 @@ public class SuiteRunner implements ISuite, Serializable {
                     ITestRunnerFactory runnerFactory, 
                     boolean useDefaultListeners,
                     IAnnotationFinder[] finders, 
-                    IObjectFactory factory)
+                    IObjectFactory factory,
+                    IMethodInterceptor methodInterceptor)
   {
     m_suite = suite;
     m_useDefaultListeners = useDefaultListeners;
     m_tmpRunnerFactory= runnerFactory;
+    m_methodInterceptor = methodInterceptor;
     // TODO: very ugly code, but how to change it?
     if(null != finders) {
       m_javadocAnnotationFinder= finders[0];
@@ -233,6 +239,9 @@ public class SuiteRunner implements ISuite, Serializable {
     //
     for (XmlTest test : m_suite.getTests()) {
       TestRunner tr = m_runnerFactory.newTestRunner(this, test);
+      if (m_methodInterceptor != null) {
+        tr.setMethodInterceptor(m_methodInterceptor);
+      }
 
       // Reuse the same text reporter so we can accumulate all the results
       // (this is used to display the final suite report at the end)

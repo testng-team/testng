@@ -11,19 +11,20 @@
 </suite-files>
 -->
   
-<!-- 
-  <test name="InvocationCountFirstAndLastTime" >
+  <test name="Single" >
     <classes>
-      <class name="test.invocationcount.VerifyTest" />
+      <class name="test.methodinterceptors.MethodInterceptorTest" />
      </classes>
   </test>
--->
  
-  <test name="BeforeMethod">
-    <classes>
-      <class name="test.dataprovider.TestInstanceFactory" />
-    </classes>      
+<!--
+  <test name="Nested" >
+	<packages>
+		<package name="test.methodinterceptors.MethodInterceptorTest">
+		</package>
+	</packages>
   </test>
+-->
 
 </suite>
 

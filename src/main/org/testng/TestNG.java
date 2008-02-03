@@ -1,24 +1,12 @@
 package org.testng;
 
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.testng.internal.*;
+import org.testng.internal.AnnotationTypeEnum;
+import org.testng.internal.ClassHelper;
+import org.testng.internal.IResultListener;
+import org.testng.internal.Utils;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IAnnotationTransformer;
@@ -38,6 +26,21 @@ import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.xml.sax.SAXException;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * This class is the main entry point for running tests in the TestNG framework.
@@ -547,9 +550,12 @@ public class TestNG {
     if (! (listener instanceof ISuiteListener) 
         && ! (listener instanceof ITestListener)
         && ! (listener instanceof IReporter)
-        && ! (listener instanceof IAnnotationTransformer))
+        && ! (listener instanceof IAnnotationTransformer)
+        && ! (listener instanceof IMethodInterceptor))
     {
-      exitWithError("Listener " + listener + " must be one of ITestListener, ISuiteListener, IReporter or IAnnotationTransformer");
+      exitWithError("Listener " + listener 
+          + " must be one of ITestListener, ISuiteListener, IReporter, "
+          + " IAnnotationTransformer or IMethodInterceptor");
     }
     else {
       if (listener instanceof ISuiteListener) {
@@ -563,6 +569,9 @@ public class TestNG {
       }
       if (listener instanceof IAnnotationTransformer) {
         setAnnotationTransformer((IAnnotationTransformer) listener);
+      }
+      if (listener instanceof IMethodInterceptor) {
+        m_methodInterceptor = (IMethodInterceptor) listener;
       }
     }
   }
@@ -603,6 +612,8 @@ public class TestNG {
   private IAnnotationTransformer m_annotationTransformer = new DefaultAnnotationTransformer();
 
   private Boolean m_skipFailedInvocationCounts = false;
+
+  private IMethodInterceptor m_methodInterceptor = null;
 
   /**
    * Sets the level of verbosity. This value will override the value specified 
@@ -796,7 +807,8 @@ public class TestNG {
           m_javadocAnnotationFinder, 
           m_jdkAnnotationFinder
         },
-        m_objectFactory);
+        m_objectFactory,
+        m_methodInterceptor);
     result.setSkipFailedInvocationCounts(m_skipFailedInvocationCounts);
 
     for (ISuiteListener isl : m_suiteListeners) {
@@ -826,6 +838,11 @@ public class TestNG {
    * @param argv
    * @param listener
    * @return 
+   */
+  /**
+   * @param argv
+   * @param listener
+   * @return
    */
   public static TestNG privateMain(String[] argv, ITestListener listener) {
     Map arguments= checkConditions(TestNGCommandLineArgs.parseCommandLine(argv));
@@ -1220,5 +1237,9 @@ public class TestNG {
      */
     public void onConfigurationSuccess(ITestResult itr) {
     }
+  }
+
+  public void setMethodInterceptor(IMethodInterceptor methodInterceptor) {
+    m_methodInterceptor = methodInterceptor;
   }
 }

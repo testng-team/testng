@@ -117,6 +117,16 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   private String m_host;
 
   private Map<String, Object> m_attributes = new HashMap<String, Object>();
+  private IMethodInterceptor m_methodInterceptor = new IMethodInterceptor() {
+
+    public List<IMethodInstance> intercept(List<IMethodInstance> methods,
+        ITestContext context)
+    {
+      Collections.sort(methods, MethodInstance.SORT_BY_CLASS);
+      return methods;
+    }
+    
+  };
   
   public TestRunner(ISuite suite,
                     XmlTest test,
@@ -575,7 +585,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
 
     if(parallel.isEmpty()) return;
     
-    List<MethodInstance> methodInstances = new ArrayList<MethodInstance>();
+    List<IMethodInstance> methodInstances = new ArrayList<IMethodInstance>();
     for (ITestNGMethod tm : parallel) {
       methodInstances.addAll(methodsToMultipleMethodInstances(tm));
     }
@@ -583,11 +593,11 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     //
     // Finally, sort the parallel methods by classes
     //
-    Collections.sort(methodInstances, MethodInstance.SORT_BY_CLASS);
+    methodInstances = m_methodInterceptor.intercept(methodInstances, this);
 
     if (getVerbose() >= 2) {
       log(3, "WILL BE RUN IN RANDOM ORDER:");
-      for (MethodInstance mi : methodInstances) {
+      for (IMethodInstance mi : methodInstances) {
         log(3, "  " + mi.getMethod());
         log(3, "      on instances");
         for(Object o: mi.getInstances()) {
@@ -597,9 +607,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       log(3, "===");
     }
 
-    for (MethodInstance mi : methodInstances) {
+    for (IMethodInstance mi : methodInstances) {
       workers.add(new TestMethodWorker(m_invoker,
-                                       new MethodInstance[] { mi },
+                                       new IMethodInstance[] { mi },
                                        m_xmlTest.getSuite(),
                                        params,
                                        m_allTestMethods,
@@ -1125,5 +1135,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     public void onConfigurationSuccess(ITestResult itr) {
       m_passedConfigurations.addResult(itr, itr.getMethod());
     }
+  }
+
+  public void setMethodInterceptor(IMethodInterceptor methodInterceptor) {
+    m_methodInterceptor = methodInterceptor;
   }
 } // TestRunner

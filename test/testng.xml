@@ -413,9 +413,9 @@
       </run>        
     </groups>
 
-		<packages>
-			<package name="test.nested.*"/>
-		</packages>
+	<packages>
+		<package name="test.nested.*"/>
+	</packages>
   </test>
 
   <test name="Hookable" >
@@ -522,4 +522,9 @@
     </classes>
   </test>
 
+  <test name="MethodInterceptor">
+    <classes>
+      <class name="test.methodinterceptors.MethodInterceptorTest" />
+    </classes>
+  </test>
 </suite>

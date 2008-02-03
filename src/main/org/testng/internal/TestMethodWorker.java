@@ -1,19 +1,20 @@
 package org.testng.internal;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.testng.ClassMethodMap;
+import org.testng.IMethodInstance;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.xml.XmlSuite;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * FIXME: reduce contention when this class is used through parallel invocation due to
@@ -30,7 +31,7 @@ public class TestMethodWorker implements IMethodWorker {
   // Map of the test methods and their associated instances
   // It has to be a set because the same method can be passed several times
   // and associated to a different instance
-  protected MethodInstance[] m_testMethods;
+  protected IMethodInstance[] m_testMethods;
   protected IInvoker m_invoker = null;
   protected Map<String, String> m_parameters = null;
   protected XmlSuite m_suite = null;
@@ -43,7 +44,7 @@ public class TestMethodWorker implements IMethodWorker {
   private ITestContext m_testContext = null;
   
   public TestMethodWorker(IInvoker invoker, 
-                          MethodInstance[] testMethods,
+                          IMethodInstance[] testMethods,
                           XmlSuite suite,
                           Map<String, String> parameters,
                           ITestNGMethod[] allTestMethods,
@@ -71,7 +72,7 @@ public class TestMethodWorker implements IMethodWorker {
    */
   public long getMaxTimeOut() {
     long result = 0;
-    for (MethodInstance mi : m_testMethods) {
+    for (IMethodInstance mi : m_testMethods) {
       ITestNGMethod tm = mi.getMethod();
       if (tm.getTimeOut() > result) {
         result = tm.getTimeOut();
@@ -140,7 +141,7 @@ public class TestMethodWorker implements IMethodWorker {
   //
   // Invoke the before class methods if not done already
   //
-  protected void invokeBeforeClassMethods(ITestClass testClass, MethodInstance mi) {
+  protected void invokeBeforeClassMethods(ITestClass testClass, IMethodInstance mi) {
     // if no BeforeClass than return immediately
     // used for parallel case when BeforeClass were already invoked
     if( (null == m_classMethodMap) || (null == m_classMethodMap.getInvokedBeforeClassMethods())) {
@@ -173,7 +174,7 @@ public class TestMethodWorker implements IMethodWorker {
     }
   }
   
-  protected void invokeAfterClassMethods(ITestClass testClass, MethodInstance mi) {
+  protected void invokeAfterClassMethods(ITestClass testClass, IMethodInstance mi) {
     // if no BeforeClass than return immediately
     // used for parallel case when BeforeClass were already invoked
     if( (null == m_classMethodMap) || (null == m_classMethodMap.getInvokedAfterClassMethods()) ) {

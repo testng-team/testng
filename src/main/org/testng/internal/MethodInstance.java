@@ -1,10 +1,11 @@
 package org.testng.internal;
 
-import java.util.Comparator;
-
+import org.testng.IMethodInstance;
 import org.testng.ITestNGMethod;
 
-public class MethodInstance {
+import java.util.Comparator;
+
+public class MethodInstance implements IMethodInstance {
   private ITestNGMethod m_method;
   private Object[] m_instances;
 
@@ -25,9 +26,9 @@ public class MethodInstance {
     return "[MethodInstance m:" + m_method + " i:" + m_instances[0];
   }
 
-  public static final Comparator<MethodInstance> SORT_BY_CLASS 
-    = new Comparator<MethodInstance>() {
-    public int compare(MethodInstance o1, MethodInstance o2) {
+  public static final Comparator<IMethodInstance> SORT_BY_CLASS 
+    = new Comparator<IMethodInstance>() {
+    public int compare(IMethodInstance o1, IMethodInstance o2) {
       int result= o1.getMethod().getTestClass().getName()
         .compareTo(o2.getMethod().getTestClass().getName());
       if(result == 0) {
