@@ -1676,14 +1676,14 @@ For example, here is how you would override the attribute <tt>invocationCount</t
 <h4>
 <a name="methodinterceptors">5.16 - Method Interceptors</a>
 </h4>
-Once TestNG has calculated in what order the test methods will be invoked, it actually splits these test methods in two groups:
+Once TestNG has calculated in what order the test methods will be invoked, these methods are split in two groups:
 
 <ul>
-  <li>Methods run sequentially.  These are all the test methods that have dependencies or that depend on other test methods.  These methods will be run in a specific order.
-  <li>Methods run in no particular order.  These are all the methods that don't belong in the first category.  The order in which these test methods are run is random and can vary from one run to the next (although by default, TestNG will try to group test methods by class).
+  <li><em>Methods run sequentially</em>.  These are all the test methods that have dependencies or dependents.  These methods will be run in a specific order.
+  <li><em>Methods run in no particular order</em>.  These are all the methods that don't belong in the first category.  The order in which these test methods are run is random and can vary from one run to the next (although by default, TestNG will try to group test methods by class).
 </ul>
 
-In order to give you more control on groups belong to the second category, TestNG defines the following interface:
+In order to give you more control on the methods that belong to the second category, TestNG defines the following interface:
 
 <pre class="prettyprint">
 public interface IMethodInterceptor {
@@ -1702,7 +1702,7 @@ The list of methods passed in parameters are all the methods that can be run in 
   <li>A bigger list of <tt>IMethodInstance</tt> objects.
 </ul>
 
-Once you have defined your interceptor, you pass it to TestNG as a listener, as usual.  For example:
+Once you have defined your interceptor, you pass it to TestNG as a listener.  For example:
 
 <pre class="prettyprint">
 java -classpath "testng-jdk15.jar:test/build" org.testng.TestNG -listener test.methodinterceptors.NullMethodInterceptor \<br>  -testclass test.methodinterceptors.FooTest
