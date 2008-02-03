@@ -99,7 +99,10 @@ google_ad_channel ="5560744946";
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#beanshell">5.14 - BeanShell and advanced group selection</a><br>
 
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#annotationtransformers">5.15 - Annotation transformers</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#jdk-14-migration">5.16 - Migrating to JDK annotations from javadoc annotations</a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#methodinterceptors">5.16 - Method Interceptors</a><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#jdk-14-migration">5.17 - Migrating to JDK annotations from javadoc annotations</a>
 <br>
 
 
@@ -1667,11 +1670,76 @@ For example, here is how you would override the attribute <tt>invocationCount</t
 </pre>
 
 <!-------------------------------------
+  METHOD INTERCEPTORS
+ ------------------------------------>
+	
+<h4>
+<a name="methodinterceptors">5.16 - Method Interceptors</a>
+</h4>
+Once TestNG has calculated in what order the test methods will be invoked, it actually splits these test methods in two groups:
+
+<ul>
+  <li>Methods run sequentially.  These are all the test methods that have dependencies or that depend on other test methods.  These methods will be run in a specific order.
+  <li>Methods run in no particular order.  These are all the methods that don't belong in the first category.  The order in which these test methods are run is random and can vary from one run to the next (although by default, TestNG will try to group test methods by class).
+</ul>
+
+In order to give you more control on groups belong to the second category, TestNG defines the following interface:
+
+<pre class="prettyprint">
+public interface IMethodInterceptor {
+  
+  List&lt;IMethodInstance&gt; intercept(List&lt;IMethodInstance&gt; methods, ITestContext context);
+
+}
+
+</pre>
+
+The list of methods passed in parameters are all the methods that can be run in any order.  Your <tt>intercept</tt> method is expected to return a similar list of <tt>IMethodInstance</tt>, which can be either of the following:
+
+<ul>
+  <li>The same list you received in parameter but in a different order.
+  <li>A smaller list of <tt>IMethodInstance</tt> objects.
+  <li>A bigger list of <tt>IMethodInstance</tt> objects.
+</ul>
+
+Once you have defined your interceptor, you pass it to TestNG as a listener, as usual.  For example:
+
+<pre class="prettyprint">
+java -classpath "testng-jdk15.jar:test/build" org.testng.TestNG -listener test.methodinterceptors.NullMethodInterceptor \<br>  -testclass test.methodinterceptors.FooTest
+</pre>
+
+For the equivalent <tt>ant</tt> syntax, see the <tt>listeners</tt> attribute in the <a href="ant.html">ant documentation</a>.
+<p>
+For example, here is a Method Interceptor that will reorder the methods so that test methods that belong to the group "fast" are always run first:
+
+<pre class="prettyprint">
+public List&lt;IMethodInstance&gt; intercept(List&lt;IMethodInstance&gt; methods, ITestContext context) {
+  List&lt;IMethodInstance&gt; result = new ArrayList&lt;IMethodInstance&gt;();
+  for (IMethodInstance m : methods) {
+    Test test = m.getMethod().getMethod().getAnnotation(Test.class);
+    Set&lt;String&gt; groups = new HashSet&lt;String&gt;();
+    for (String group : test.groups()) {
+      groups.add(group);
+    }
+    if (groups.contains("fast")) {
+      result.add(0, m);
+    }
+    else {
+      result.add(m);
+    }
+  }
+  return result;
+}
+</pre>
+
+
+
+<!-------------------------------------
   MIGRATION TO JDK ANNOTATIONS
  ------------------------------------>
 	
 <h4>
-<a name="jdk-14-migration">5.16 - Migrating to JDK annotations from javadoc annotations</a>
+<a name="jdk-14-migration">5.17 - Migrating to JDK annotations from javadoc annotations</a>
 </h4>
 
 
