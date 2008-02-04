@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.testng.internal.AnnotationTypeEnum;
+import org.testng.internal.ClassHelper;
 import org.testng.internal.IInvoker;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -233,12 +234,18 @@ public class SuiteRunner implements ISuite, Serializable {
     Map<Method, ITestNGMethod> afterSuiteMethods = new LinkedHashMap<Method, ITestNGMethod>();
 
     IInvoker invoker = null;
-
+    
     //
     // First, we create all the test runners so we can discover all the ITestClasses
     //
     for (XmlTest test : m_suite.getTests()) {
+
+
       TestRunner tr = m_runnerFactory.newTestRunner(this, test);
+      
+      //
+      // Install the method interceptor, if any was passed
+      //
       if (m_methodInterceptor != null) {
         tr.setMethodInterceptor(m_methodInterceptor);
       }

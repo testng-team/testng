@@ -1,5 +1,6 @@
 5.7.1
 
+Added: Support for <listeners> in testng.xml
 Added: IMethodInterceptor
 Added: @TestInstance on a data provider method parameter
 Fixed: @AfterMethod(lastTimeOnly) didn't work properly with data providers

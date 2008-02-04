@@ -22,18 +22,18 @@
 
 
 <!-- A suite is the top-level element of a testng.xml file                  -->
-<!ELEMENT suite (packages|test|parameter|method-selectors|suite-files)* >
+<!ELEMENT suite (listeners|packages|test|parameter|method-selectors|suite-files)* >
 
 <!-- Attributes: -->
 <!--
   name:         The name of this suite (as it will appear in the reports)
   verbose:      (0-10) How verbose the output on the console will be.  
-	              This setting has no impact on the HTML reports.
+                This setting has no impact on the HTML reports.
                 Default value: 1
   parallel:     (methods|tests) Whether TestNG should use different threads
-								to run your tests (might speed up the process)
-								Default value: none (no parallel mode)
-	thread-count: An integer giving the size of the thread pool to use
+                to run your tests (might speed up the process)
+                Default value: none (no parallel mode)
+  thread-count: An integer giving the size of the thread pool to use
                 if you set parallel. Default value: 5
   annotations:  (javadoc|JDK5)  If "javadoc", TestNG will look for
                 JavaDoc annotations in your sources, otherwise it will
@@ -75,7 +75,7 @@
 <!ELEMENT selector-class ANY>
 <!ATTLIST selector-class
     name CDATA #REQUIRED
-	priority CDATA #IMPLIED
+  priority CDATA #IMPLIED
 >
 <!ELEMENT script ANY>
 <!ATTLIST script
@@ -88,21 +88,21 @@
 
 <!-- Attributes:                                                            -->
 <!--
-	name:         The name of this test (as it will appear in the reports)
-	junit:        (true|false) Whether to run in JUnit mode. Default value: false.
-	verbose:      (0-10) How verbose the output on the console will be.
+  name:         The name of this test (as it will appear in the reports)
+  junit:        (true|false) Whether to run in JUnit mode. Default value: false.
+  verbose:      (0-10) How verbose the output on the console will be.
                 This setting has no impact on the HTML reports.
                 Default value: suite level verbose.
-	parallel:     (methods) Whether TestNG should use different threads
-	              to run your tests (might speed up the process)
-	thread-count: An integer giving teh size of the thread pool to be used if
-	              parallel mode is used. Overrides the suite level value.
-	annotations:  (javadoc|JDK5)  If "javadoc", TestNG will look for
-							  JavaDoc annotations in your sources, otherwise it will
+  parallel:     (methods) Whether TestNG should use different threads
+                to run your tests (might speed up the process)
+  thread-count: An integer giving teh size of the thread pool to be used if
+                parallel mode is used. Overrides the suite level value.
+  annotations:  (javadoc|JDK5)  If "javadoc", TestNG will look for
+                JavaDoc annotations in your sources, otherwise it will
                 use JDK5 annotations. Default value: JDK5
-	time-out:     the time to wait in milliseconds before aborting
-							  the method (if parallel="methods") or the test (if parallel="tests")
-	enabled:      flag to enable/disable current test. Default value: true 
+  time-out:     the time to wait in milliseconds before aborting
+                the method (if parallel="methods") or the test (if parallel="tests")
+  enabled:      flag to enable/disable current test. Default value: true 
 -->
 <!ATTLIST test
     name CDATA #REQUIRED 
@@ -112,7 +112,7 @@
     thread-count CDATA #IMPLIED
     annotations CDATA #IMPLIED
     time-out CDATA #IMPLIED
-	  enabled CDATA #IMPLIED
+    enabled CDATA #IMPLIED
 >
 
 <!-- Defines additional groups ("groups of groups") and also which groups   -->
@@ -153,3 +153,10 @@
 
 <!-- The list of methodes to include/exclude from this test                 -->
 <!ELEMENT methods (include?,exclude?)* >
+
+<!-- Listeners -->
+<!ELEMENT listeners (listener*) >
+
+<!ELEMENT listener ANY>
+<!ATTLIST listener
+    class-name CDATA #REQUIRED >

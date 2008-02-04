@@ -189,6 +189,19 @@ public class Parser {
 
   }
   
+  public List<XmlSuite> parseToList() 
+    throws ParserConfigurationException, SAXException, IOException
+  {
+    List<XmlSuite> result = new ArrayList<XmlSuite>();
+    Collection<XmlSuite> suites = parse();
+    for (XmlSuite suite : suites) {
+      result.add(suite);
+    }
+    
+    return result;
+  }
+
+  
   /**
    * Tries to load a <code>SAXParserFactory</code> by trying in order the following:
    * <tt>com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl</tt> (SUN JDK5)

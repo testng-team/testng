@@ -1,8 +1,9 @@
 package org.testng;
 
-import java.util.List;
-
 import org.testng.xml.XmlSuite;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * This interface can be implemented by clients to generate a report.  Its method 

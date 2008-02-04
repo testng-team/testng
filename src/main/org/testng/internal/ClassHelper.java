@@ -74,8 +74,7 @@ public final class ClassHelper {
         return classLoader.loadClass(className);
       }
       catch(Exception ex) {
-        // TODO document why we catch all Exceptions instead of just 
-        // ClassNotFoundException.
+        logInstantiationError(className, ex);
       }
     }
     
@@ -83,8 +82,14 @@ public final class ClassHelper {
       return Class.forName(className);
     }
     catch(ClassNotFoundException cnfe) {
+      logInstantiationError(className, cnfe);
       return null;
     }
+  }
+
+  private static void logInstantiationError(String className, Exception ex) {
+    Utils.log("ClassHelper", 2, "Could not instantiate " + className + ": "
+        + ex.getMessage());
   }
 
   /**

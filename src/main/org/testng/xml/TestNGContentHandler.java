@@ -49,6 +49,7 @@ public class TestNGContentHandler extends DefaultHandler {
   private String m_currentExpression = null;
   private List<String> m_suiteFiles = new ArrayList<String>();
   private boolean m_enabledTest;
+  private List<String> m_listeners;
   
   private String m_fileName;
 
@@ -292,6 +293,31 @@ public class TestNGContentHandler extends DefaultHandler {
       m_currentClasses = null;
     }
   }
+  
+  /**
+   * Parse <listeners>
+   */
+  public void xmlListeners(boolean start, Attributes attributes) {
+    if (start) {
+      m_listeners = new ArrayList<String>();
+    }
+    else {
+      if (null != m_listeners) {
+        m_currentSuite.setListeners(m_listeners);
+        m_listeners = null;
+      }
+    }
+  }
+  
+  /**
+   * Parse <listener>
+   */
+  public void xmlListener(boolean start, Attributes attributes) {
+    if (start) {
+      String listener = attributes.getValue("class-name");
+      m_listeners.add(listener);
+    }
+  }
 
   /**
    * Parse <packages>
@@ -429,6 +455,12 @@ public class TestNGContentHandler extends DefaultHandler {
     else if ("packages".equals(qName)) {
       xmlPackages(true, attributes);
     }
+    else if ("listeners".equals(qName)) {
+      xmlListeners(true, attributes);
+    }
+    else if ("listener".equals(qName)) {
+      xmlListener(true, attributes);
+    }
     else if ("class".equals(qName)) {
       // If m_currentClasses is null, the XML is invalid and SAX
       // will complain, but in the meantime, dodge the NPE so SAX
@@ -519,6 +551,9 @@ public class TestNGContentHandler extends DefaultHandler {
     }
     else if ("classes".equals(qName)) {
       xmlPackages(false, null);
+    }
+    else if ("listeners".equals(qName)) {
+      xmlListeners(false, null);
     }
     else if ("method-selector".equals(qName)) {
       xmlMethodSelector(false, null);

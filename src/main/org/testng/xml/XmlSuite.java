@@ -89,6 +89,8 @@ public class XmlSuite implements Serializable, Cloneable {
   private List<String> m_suiteFiles = new ArrayList<String>();
 
   private IObjectFactory m_objectFactory;
+
+  private List<String> m_listeners = new ArrayList<String>();
   private static final long serialVersionUID = 4999962288272750226L;
 
   /**
@@ -522,5 +524,13 @@ public class XmlSuite implements Serializable, Cloneable {
      */
     public List<String> getSuiteFiles() {
       return m_suiteFiles;
+    }
+
+    public void setListeners(List<String> listeners) {
+      m_listeners = listeners;
+    }
+    
+    public List<String> getListeners() {
+      return m_listeners;
     }
 }

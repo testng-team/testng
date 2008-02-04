@@ -765,6 +765,15 @@ public class TestNG {
           xmlSuite.setJUnit(m_isJUnit);
         }
         
+        //
+        // Install the listeners
+        //
+        for (String listenerName : xmlSuite.getListeners()) {
+          Class<?> listenerClass = ClassHelper.forName(listenerName);
+          Object listener = ClassHelper.newInstance(listenerClass);
+          addListener(listener);
+        }
+        
         // If the skip flag was invoked on the command line, it
         // takes precedence
         if (null != m_skipFailedInvocationCounts) {

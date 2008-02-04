@@ -1,18 +1,22 @@
 package test.methodinterceptors;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.testng.Assert;
-import org.testng.IMethodInstance;
-import org.testng.IMethodInterceptor;
-import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.xml.Parser;
+import org.testng.xml.XmlSuite;
+import org.xml.sax.SAXException;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
 public class MethodInterceptorTest {
   
@@ -20,6 +24,10 @@ public class MethodInterceptorTest {
   public void noMethodsShouldRun() {
     TestNG tng = new TestNG();
     tng.setTestClasses(new Class[] { FooTest.class });
+    testNullInterceptor(tng);
+  }
+  
+  private void testNullInterceptor(TestNG tng) {
     tng.setVerbose(0);
     tng.setMethodInterceptor(new NullMethodInterceptor());
     TestListenerAdapter tla = new TestListenerAdapter();
@@ -30,31 +38,13 @@ public class MethodInterceptorTest {
     Assert.assertEquals(tla.getFailedTests().size(), 0);
     Assert.assertEquals(tla.getSkippedTests().size(), 0);
   }
-  
+
   @Test
   public void fastShouldRunFirst() {
     TestNG tng = new TestNG();
     tng.setTestClasses(new Class[] { FooTest.class });
     tng.setVerbose(0);
-    tng.setMethodInterceptor(new IMethodInterceptor() {
-      public List<IMethodInstance> intercept(List<IMethodInstance> methods, ITestContext context) {
-        List<IMethodInstance> result = new ArrayList<IMethodInstance>();
-        for (IMethodInstance m : methods) {
-          Test test = m.getMethod().getMethod().getAnnotation(Test.class);
-          Set<String> groups = new HashSet<String>();
-          for (String group : test.groups()) {
-            groups.add(group);
-          }
-          if (groups.contains("fast")) {
-            result.add(0, m);
-          }
-          else {
-            result.add(m);
-          }
-        }
-        return result;
-      }
-    });
+    tng.setMethodInterceptor(new FastTestsFirstInterceptor());
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
     tng.run();
@@ -62,6 +52,47 @@ public class MethodInterceptorTest {
     Assert.assertEquals(tla.getPassedTests().size(), 2);
     ITestResult first = tla.getPassedTests().get(0);
     Assert.assertEquals(first.getMethod().getMethodName(), "fast");
+  }
+  
+  @Test
+  public void listenersWorkInTestngXml()
+      throws IOException, ParserConfigurationException, SAXException {
+    String xml = "<!DOCTYPE suite SYSTEM \"http://beust.com/testng/testng-1.0.dtd\" >" +
+    "" +
+    "<suite name=\"Single\" verbose=\"10\">" +
+    "" +
+    "<listeners>" +
+    "  <listener class-name=\"test.methodinterceptors.NullMethodInterceptor\" />" +
+    "</listeners>" +
+    "" +
+    "  <test name=\"Single\" >" +
+    "    <classes>" +
+    "      <class name=\"test.methodinterceptors.FooTest\" />" +
+    "     </classes>" +
+    "  </test>" +
+    "" +
+    "</suite>";
+
+    File f = File.createTempFile("testng-tests-", "");
+    f.deleteOnExit();
+    BufferedWriter bw = new BufferedWriter(new FileWriter(f));
+    bw.write(xml);
+    bw.close();
+    
+    FileInputStream fis = null;
+    try {
+      List<XmlSuite> xmlSuites = new Parser(f.getAbsolutePath()).parseToList();
+      
+      TestNG tng = new TestNG();
+      tng.setXmlSuites(xmlSuites);
+      testNullInterceptor(tng);
+    }
+    catch(Exception ex) {
+      ex.printStackTrace();
+    }
+    finally {
+      if (fis != null) fis.close();
+    }
   }
 
 }
