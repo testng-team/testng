@@ -7,7 +7,7 @@ package org.testng;
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  * @author Hani Suleiman
  */
-public interface ITestListener {
+public interface ITestListener extends ITestNGListener {
   /**
    * Invoked each time before a test will be invoked.
    * The <code>ITestResult</code> is only partially filled with the references to 

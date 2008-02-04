@@ -27,7 +27,7 @@ import java.util.List;
  *  
  * @author cbeust
  */
-public interface IMethodInterceptor {
+public interface IMethodInterceptor extends ITestNGListener {
   
   List<IMethodInstance> intercept(List<IMethodInstance> methods, ITestContext context);
 

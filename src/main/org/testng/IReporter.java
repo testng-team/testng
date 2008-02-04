@@ -12,7 +12,7 @@ import org.testng.xml.XmlSuite;
  * @author cbeust
  * @date Feb 17, 2006
  */
-public interface IReporter {
+public interface IReporter extends ITestNGListener {
   /**
    * Generate a report for the given suites into the specified output directory.
    */

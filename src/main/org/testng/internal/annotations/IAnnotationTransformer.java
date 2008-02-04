@@ -1,9 +1,11 @@
 package org.testng.internal.annotations;
 
+import org.testng.ITestNGListener;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-public interface IAnnotationTransformer {
+public interface IAnnotationTransformer extends ITestNGListener {
 
   /**
    * This method will be invoked by TestNG to give you a chance

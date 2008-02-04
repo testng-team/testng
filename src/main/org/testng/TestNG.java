@@ -547,11 +547,7 @@ public class TestNG {
   }
     
   public void addListener(Object listener) {
-    if (! (listener instanceof ISuiteListener) 
-        && ! (listener instanceof ITestListener)
-        && ! (listener instanceof IReporter)
-        && ! (listener instanceof IAnnotationTransformer)
-        && ! (listener instanceof IMethodInterceptor))
+    if (! (listener instanceof ITestNGListener))
     {
       exitWithError("Listener " + listener 
           + " must be one of ITestListener, ISuiteListener, IReporter, "

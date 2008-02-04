@@ -7,7 +7,7 @@ package org.testng;
  * @author Cedric Beust, Aug 6, 2004
  * 
  */
-public interface ISuiteListener {
+public interface ISuiteListener extends ITestNGListener {
   /**
    * This method is invoked before the SuiteRunner starts.
    */
