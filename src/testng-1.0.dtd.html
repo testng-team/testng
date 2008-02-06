@@ -7,6 +7,7 @@
     </head>
 <body>
 
+
 <pre class="code"><span class="xml-comment">&lt;!-- ====================================================== --&gt;</span>
 <span class="xml-comment">&lt;!-- DTD for TestNG 1.0                                     --&gt;</span>
 <span class="xml-comment">&lt;!--                                                        --&gt;</span>
@@ -26,35 +27,45 @@
 <span class="xml-comment">&lt;!--                                                        --&gt;</span>
 <span class="xml-comment">&lt;!-- Full documentation:  http://testng.org                 --&gt;</span>
 <span class="xml-comment">&lt;!--                                                        --&gt;</span>
-<span class="xml-comment">&lt;!-- Cedric Beust                                           --&gt;</span>
-<span class="xml-comment">&lt;!-- Alex Popescu                                           --&gt;</span>
+<span class="xml-comment">&lt;!-- Cedric Beust & Alexandru Popescu                       --&gt;</span>
 <span class="xml-comment">&lt;!-- ====================================================== --&gt;</span>
 
 
 <span class="xml-comment">&lt;!-- A suite is the top-level element of a testng.xml file                  --&gt;</span>
-&lt;!ELEMENT suite (packages|test|parameter|method-selectors)* &gt;
+&lt;!ELEMENT suite (listeners|packages|test|parameter|method-selectors|suite-files)* &gt;
 
 <span class="xml-comment">&lt;!-- Attributes: --&gt;</span>
-<span class="xml-comment">&lt;!-- name:  The name of this suite (as it will appear in the reports)       --&gt;</span>
-<span class="xml-comment">&lt;!-- verbose:  (0-10) How verbose the output on the console                 --&gt;</span>
-<span class="xml-comment">&lt;!--           will be.  This setting has no impact on the HTML reports     --&gt;</span>
-<span class="xml-comment">&lt;!-- parallel:  (methods|tests) Whether TestNG should use different threads --&gt;</span>
-<span class="xml-comment">&lt;!--            to run your tests (might speed up the process)              --&gt;</span>
-<span class="xml-comment">&lt;!--            (default: empty; no parallel execution)                     --&gt;</span>
-<span class="xml-comment">&lt;!-- thread-count:  An integer giving the size of the thread pool to use    --&gt;</span>
-<span class="xml-comment">&lt;!--                if you set parallel=true (default is 5)                 --&gt;</span>
-<span class="xml-comment">&lt;!-- annotations:   (javadoc|JDK5)  If "javadoc", TestNG will look for      --&gt;</span>
-<span class="xml-comment">&lt;!--                JavaDoc annotations in your sources, otherwise it will  --&gt;</span>
-<span class="xml-comment">&lt;!--                use JDK5 annotations                                    --&gt;</span>
-<span class="xml-comment">&lt;!-- time-out: the time to wait in milliseconds before aborting the         --&gt;</span>
-<span class="xml-comment">&lt;!--           method (if parallel="methods") or the test (parallel="tests")--&gt;</span>
+<span class="xml-comment">&lt;!--
+  name:         The name of this suite (as it will appear in the reports)
+  verbose:      (0-10) How verbose the output on the console will be.  
+                This setting has no impact on the HTML reports.
+                Default value: 1
+  parallel:     (methods|tests) Whether TestNG should use different threads
+                to run your tests (might speed up the process)
+                Default value: none (no parallel mode)
+  thread-count: An integer giving the size of the thread pool to use
+                if you set parallel. Default value: 5
+  annotations:  (javadoc|JDK5)  If "javadoc", TestNG will look for
+                JavaDoc annotations in your sources, otherwise it will
+                use JDK5 annotations. Default value: JDK5
+  time-out:     the time to wait in milliseconds before aborting the
+                method (if <span class="attribute">parallel="methods"</span> ) or the test (parallel="tests")
+--&gt;</span>
 &lt;!ATTLIST suite 
     name CDATA #REQUIRED
     verbose CDATA #IMPLIED
     parallel CDATA #IMPLIED
     thread-count CDATA #IMPLIED
     annotations CDATA #IMPLIED
-	  time-out CDATA #IMPLIED
+    time-out CDATA #IMPLIED
+&gt;
+
+<span class="xml-comment">&lt;!-- A list of XML files that contain more suite descriptions --&gt;</span>
+&lt;!ELEMENT suite-files (suite-file)* &gt;
+
+&lt;!ELEMENT suite-file ANY &gt;
+&lt;!ATTLIST suite-file
+    path CDATA #REQUIRED
 &gt;
 
 <span class="xml-comment">&lt;!-- Parameters can be defined at the <span class="tag">&lt;suite&gt;</span> or at the <span class="tag">&lt;test&gt;</span> level        --&gt;</span>
@@ -74,7 +85,7 @@
 &lt;!ELEMENT selector-class ANY&gt;
 &lt;!ATTLIST selector-class
     name CDATA #REQUIRED
-	priority CDATA #IMPLIED
+  priority CDATA #IMPLIED
 &gt;
 &lt;!ELEMENT script ANY&gt;
 &lt;!ATTLIST script
@@ -86,25 +97,29 @@
 &lt;!ELEMENT test (method-selectors?,parameter*,groups?,packages?,classes?) &gt;
 
 <span class="xml-comment">&lt;!-- Attributes:                                                            --&gt;</span>
-<span class="xml-comment">&lt;!-- name:  The name of this test (as it will appear in the reports)        --&gt;</span>
-<span class="xml-comment">&lt;!-- junit:  (true|false) Whether to run in JUnit mode                      --&gt;</span>
-<span class="xml-comment">&lt;!-- verbose:  (0-10) How verbose the output on the console                 --&gt;</span>
-<span class="xml-comment">&lt;!--           will be.  This setting has no impact on the HTML reports     --&gt;</span>
-<span class="xml-comment">&lt;!-- parallel:  (true|false) Whether TestNG should use different threads to --&gt;</span>
-<span class="xml-comment">&lt;!--             run your tests (might speed up the process)                --&gt;</span>
-<span class="xml-comment">&lt;!-- thread-count:  An integer giving the size of the thread pool to use    --&gt;</span>
-<span class="xml-comment">&lt;!--                if parallel mode is on (overrides suite level value)    --&gt;</span>
-<span class="xml-comment">&lt;!-- annotations:   (javadoc|JDK5)  If "javadoc", TestNG will look for      --&gt;</span>
-<span class="xml-comment">&lt;!--                JavaDoc annotations in your sources, otherwise it will  --&gt;</span>
-<span class="xml-comment">&lt;!--                use JDK5 annotations                                    --&gt;</span>
-<span class="xml-comment">&lt;!-- time-out: the time to wait in milliseconds before aborting the         --&gt;</span>
-<span class="xml-comment">&lt;!--           method (if parallel="methods") or the test (parallel="tests")--&gt;</span>
-<span class="xml-comment">&lt;!-- enabled: flag to enable/disable current test. Default value: true      --&gt;</span>
+<span class="xml-comment">&lt;!--
+  name:         The name of this test (as it will appear in the reports)
+  junit:        (true|false) Whether to run in JUnit mode. Default value: false.
+  verbose:      (0-10) How verbose the output on the console will be.
+                This setting has no impact on the HTML reports.
+                Default value: suite level verbose.
+  parallel:     (methods) Whether TestNG should use different threads
+                to run your tests (might speed up the process)
+  thread-count: An integer giving teh size of the thread pool to be used if
+                parallel mode is used. Overrides the suite level value.
+  annotations:  (javadoc|JDK5)  If "javadoc", TestNG will look for
+                JavaDoc annotations in your sources, otherwise it will
+                use JDK5 annotations. Default value: JDK5
+  time-out:     the time to wait in milliseconds before aborting
+                the method (if <span class="attribute">parallel="methods"</span> ) or the test (if <span class="attribute">parallel="tests"</span> )
+  enabled:      flag to enable/disable current test. Default value: true 
+--&gt;</span>
 &lt;!ATTLIST test
     name CDATA #REQUIRED 
     junit CDATA #IMPLIED
     verbose CDATA #IMPLIED
-    parallel CDATA #IMPLIED 
+    parallel CDATA #IMPLIED
+    thread-count CDATA #IMPLIED
     annotations CDATA #IMPLIED
     time-out CDATA #IMPLIED
     enabled CDATA #IMPLIED
@@ -139,19 +154,22 @@
 
 <span class="xml-comment">&lt;!-- The list of packages to include in this test                           --&gt;</span>
 &lt;!ELEMENT packages (package*) &gt;
-<span class="xml-comment">&lt;!-- The package description.                                               --&gt;</span>
-<span class="xml-comment">&lt;!-- If the package name ends with .* then subpackages are included         --&gt;</span>
+<span class="xml-comment">&lt;!-- The package description. 
+     If the package name ends with .* then subpackages are included too.
+--&gt;</span>
 &lt;!ELEMENT package (include?,exclude?)*&gt;
 &lt;!ATTLIST package
     name CDATA #REQUIRED &gt;
 
-<span class="xml-comment">&lt;!-- The list of methodes to include/exclude from this test                 --&gt;</span>
+<span class="xml-comment">&lt;!-- The list of methods to include/exclude from this test                 --&gt;</span>
 &lt;!ELEMENT methods (include?,exclude?)* &gt;
 
-    
+<span class="xml-comment">&lt;!-- The list of listeners that will be passed to TestNG --&gt;</span>
+&lt;!ELEMENT listeners (listener*) &gt;
 
-</pre>
-    
-</body>
+&lt;!ELEMENT listener ANY&gt;
+&lt;!ATTLIST listener
+    class-name CDATA #REQUIRED &gt;
+</pre></body>
 </html>
 

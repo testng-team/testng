@@ -151,10 +151,10 @@
 <!ATTLIST package
     name CDATA #REQUIRED >
 
-<!-- The list of methodes to include/exclude from this test                 -->
+<!-- The list of methods to include/exclude from this test                 -->
 <!ELEMENT methods (include?,exclude?)* >
 
-<!-- Listeners -->
+<!-- The list of listeners that will be passed to TestNG -->
 <!ELEMENT listeners (listener*) >
 
 <!ELEMENT listener ANY>
