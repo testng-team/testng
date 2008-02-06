@@ -1,5 +1,6 @@
 5.7.1
 
+Added: Doc for IMethodInterceptor (5.16) and TestNG listeners (5.18)
 Added: Support for <listeners> in testng.xml
 Added: IMethodInterceptor
 Added: @TestInstance on a data provider method parameter
