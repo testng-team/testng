@@ -102,7 +102,11 @@ google_ad_channel ="5560744946";
 
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#methodinterceptors">5.16 - Method Interceptors</a><br>
 
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#jdk-14-migration">5.17 - Migrating to JDK annotations from javadoc annotations</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#jdk-14-migration">5.17 - Migrating to JDK annotations from javadoc annotations</a><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#testng-listeners">5.18 - TestNG Listeners</a>
+
+
 <br>
 
 
@@ -113,9 +117,9 @@ google_ad_channel ="5560744946";
 &nbsp;&nbsp;&nbsp; <a class="summary" href="#logging">6.2 - Logging and results</a>
 
 <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#logging-listeners">6.2.1 - Listeners</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#logging-listeners">6.2.1 - Logging Listeners</a>
 <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#logging-reporters">6.2.2 - Reporters</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#logging-reporters">6.2.2 - Logging Reporters</a>
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#logging-junitreports">6.2.3 - JUnitReports</a>
 <br>
@@ -1753,6 +1757,47 @@ will convert source files from one format to the other - run the command with no
 </p>
 <p>Note that the destination files will not be very pretty and should be checked to confirm correctness. It is important to be using a source control system so you can undo the changes if you don't like them! The converter also assumes that you have used the syntactic conventions recommended <a href="#jdk-14">above.</a></p>
 
+
+<!-------------------------------------
+  TESTNG LISTENERS
+ ------------------------------------>
+	
+<h4>
+<a name="testng-listeners">5.18 - TestNG Listeners</a>
+</h4>
+
+There are several interfaces that allow you to modify TestNG's behavior.  These interfaces are broadly called "TestNG Listeners", and as of the current version, they are:
+
+<ul>
+  <li><tt>IAnnotationTransformer</tt> (<a href="#annotationtransformers">doc</a>, <a href="../javadocs/org/testng/IAnnotationTransformer.html">javadoc</a>)
+  <li><tt>IReporter</tt> (<a href="#logging-reporters">doc</a>, <a href="../javadocs/org/testng/IReporter.html">javadoc</a>)
+  <li><tt>ITestListener</tt> (<a href="#logging-listeners">doc</a>, <a href="../javadocs/org/testng/ITestListener.html">javadoc</a>)
+  <li><tt>IMethodInterceptor</tt> (<a href="#methodinterceptors">doc</a>, <a href="../javadocs/org/testng/IMethodInterceptor.html">javadoc</a>)
+</ul>
+
+When you implement one of these interfaces, you can let TestNG know about it with either of the following ways:
+
+<ul>
+  <li><a href="#running-testng">Using -listener on the command line.</a>
+  <li><a href="ant.html">Using &lt;listeners&gt; with ant.</a>
+  <li>Using &lt;listeners&gt; in your <tt>testng.xml</tt> file.
+</ul>
+
+Here is how you can define listenersin your <tt>testng.xml</tt> file:
+
+<pre class="prettyprint">
+&lt;suite&gt;
+
+&lt;listeners&gt;
+  &lt;listener class-name="com.example.MyListener" /&gt;
+  &lt;listener class-name="com.example.MyMethodInterceptor" /&gt;
+&lt;/listeners&gt;
+
+...
+
+</pre>
+
+
 <!------------------------------------
   TEST SUCCESS
   ------------------------------------>
@@ -1816,7 +1861,7 @@ It's very easy to generate your own reports with TestNG with Listeners and Repor
 
 <p>
 
-&nbsp;&nbsp;<a name="logging-listeners"><em>6.2.1 - Listeners</em></a>
+&nbsp;&nbsp;<a name="logging-listeners"><em>6.2.1 - Logging Listeners</em></a>
 <p>
 
 Here is a listener that displays a "." for each passed test, a "F" for each failure and a "S" for each skip:
@@ -1841,7 +1886,7 @@ public class DotTestListener extends TestListenerAdapter {
   }
 
   private void log(String string) {
-    System.out.print(".");
+    System.out.print(string);
     if (m_count++ % 40 == 0) {
       System.out.println("");
     }
@@ -1876,7 +1921,7 @@ Note that when you use <tt>-listener</tt>, TestNG will automatically determine t
 
 <p>
 
-&nbsp;&nbsp;<a name="logging-reporters"><em>6.2.2 - Reporters</em></a>
+&nbsp;&nbsp;<a name="logging-reporters"><em>6.2.2 - Logging Reporters</em></a>
 
 <p>
 
