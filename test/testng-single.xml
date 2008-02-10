@@ -17,9 +17,14 @@
 -->
   
   <test name="Single" >
+    <groups>
+      <run>
+        <exclude name="foo" />
+      </run>
+    </groups>
     <classes>
-      <class name="test.methodinterceptors.MethodInterceptorTest" />
-     </classes>
+      <class name="test.dataprovider.FailedDataProviderTest" />
+    </classes>
   </test>
  
 <!--
