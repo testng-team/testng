@@ -17,13 +17,20 @@
 -->
   
   <test name="Single" >
+<!--
     <groups>
       <run>
-        <exclude name="foo" />
+        <include name="tests.functional.upload" />
       </run>
     </groups>
+-->
     <classes>
-      <class name="test.dataprovider.FailedDataProviderTest" />
+<!-- 
+      <class name="test.dependent.functionality1.Test1" />
+      <class name="test.dependent.functionality1.Test2" />
+      <class name="test.dependent.functionality1.Config" />
+ -->
+      <class name="test.tmp.A" />
     </classes>
   </test>
  

@@ -1,13 +1,14 @@
 package org.testng.internal;
 
+import org.testng.TestNGException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.testng.TestNGException;
 /**
  * Simple graph class to implement topological sort (used to sort methods based on what groups
  * they depend on).
@@ -30,6 +31,10 @@ public class Graph<T extends Object> {
     // Initially, all the nodes are put in the independent list as well
   }
   
+  public Set<T> getPredecessors(T node) {
+    return findNode(node).getPredecessors().keySet();
+  }
+  
   /*private boolean hasBeenSorted() {
     return null != m_strictlySortedNodes;
   }*/
@@ -41,7 +46,7 @@ public class Graph<T extends Object> {
   private Node<T> findNode(T object) {
     return m_nodes.get(object);
   }
-  
+
   public void addPredecessor(T tm, T predecessor) {
     Node<T> node = findNode(tm);
     if (null == node) {
@@ -49,6 +54,7 @@ public class Graph<T extends Object> {
     }
     else {
       node.addPredecessor(predecessor);
+      addNeighbor(tm, predecessor);
       // Remove these two nodes from the independent list
       if (null == m_independentNodes) {
         m_independentNodes = new HashMap<T, Node<T>>();
@@ -61,9 +67,26 @@ public class Graph<T extends Object> {
       ppp("  REMOVED " + predecessor + " FROM INDEPENDENT OBJECTS");
     }
   }
+
+  private void addNeighbor(T tm, T predecessor) {
+    findNode(tm).addNeighbor(findNode(predecessor));
+  }
   
+  public Set<T> getNeighbors(T t) {
+    Set<T> result = new HashSet<T>();
+    for (Node<T> n : findNode(t).getNeighbors()) {
+      result.add(n.getObject());
+    }
+    
+    return result;
+  }
+
   private Collection<Node<T>> getNodes() {
     return m_nodes.values();
+  }
+
+  public Collection<T> getNodeValues() {
+    return m_nodes.keySet();
   }
   
   /**
@@ -114,7 +137,13 @@ public class Graph<T extends Object> {
       //
       Node<T> node = findNodeWithNoPredecessors(nodes2);
       if (null == node) {
-        throw new TestNGException("Cyclic graph of methods");
+        List<T> cycle = new Tarjan<T>(this, nodes2.get(0).getObject()).getCycle();
+        StringBuffer sb = new StringBuffer();
+        sb.append("The following methods have cyclic dependencies:\n");
+        for (T m : cycle) {
+          sb.append(m).append("\n");
+        }
+        throw new TestNGException(sb.toString());
       }
       else {
         m_strictlySortedNodes.add((T) node.getObject());
@@ -226,7 +255,7 @@ public class Graph<T extends Object> {
   /////
   // class Node
   //
-  static class Node<T> {
+  public static class Node<T> {
     private T m_object = null;
     private Map<T, T> m_predecessors = new HashMap<T, T>();
     
@@ -234,6 +263,15 @@ public class Graph<T extends Object> {
       m_object = tm;
     }
     
+    private Set<Node<T>> m_neighbors = new HashSet<Node<T>>();
+    public void addNeighbor(Node<T> neighbor) {
+      m_neighbors.add(neighbor);
+    }
+    
+    public Set<Node<T>> getNeighbors() {
+      return m_neighbors;
+    }
+        
     @Override
     public Node<T> clone() {
       Node<T> result = new Node<T>(m_object);

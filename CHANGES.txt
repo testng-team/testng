@@ -1,5 +1,6 @@
-5.7.1
+5.8
 
+Added: Methods that form a cycle are now shown when the cycle is detected
 Added: Doc for IMethodInterceptor (5.16) and TestNG listeners (5.18)
 Added: Support for <listeners> in testng.xml
 Added: IMethodInterceptor

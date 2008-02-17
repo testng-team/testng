@@ -1,10 +1,12 @@
 package test;
 
-import java.util.List;
-
-import org.testng.annotations.ExpectedExceptions;
+import org.testng.Assert;
+import org.testng.TestNGException;
 import org.testng.annotations.Test;
 import org.testng.internal.Graph;
+import org.testng.internal.Tarjan;
+
+import java.util.List;
 
 
 /**
@@ -48,9 +50,27 @@ public class GraphTest {
     
   }
   
-  @Test
-  @ExpectedExceptions({org.testng.TestNGException.class })
+  @Test(expectedExceptions = org.testng.TestNGException.class)
   public void cycleShouldFail() {
+    Graph<String> g = createCyclicGraph();
+    g.topologicalSort();
+  }
+  
+  @Test
+  public void cycleShouldBeCorrect() {
+    Graph<String> g = null;
+    try {
+      g = createCyclicGraph();
+      g.topologicalSort();
+    }
+    catch(TestNGException ex) {
+      Tarjan<String> t = new Tarjan<String>(g, "1");
+      Assert.assertEquals(t.getCycle().size(), 3);
+    }
+    
+  }
+  
+  private Graph<String> createCyclicGraph() {
     Graph<String> g = new Graph<String>();
     g.addNode("3");
     g.addNode("2");
@@ -60,7 +80,7 @@ public class GraphTest {
     g.addPredecessor("2", "1");
     g.addPredecessor("1", "3");
 
-    g.topologicalSort();
+    return g;
   }
 
   @Test
