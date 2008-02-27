@@ -22,7 +22,7 @@ public class DotTestListener extends TestListenerAdapter {
   }
 
   private void log(String string) {
-    System.out.print(".");
+    System.out.print(string);
     if (m_count++ % 40 == 0) {
       System.out.println("");
     }
