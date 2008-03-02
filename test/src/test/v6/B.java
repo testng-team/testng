@@ -13,7 +13,7 @@ public class B {
   public void f2() {
   }
 
-  @Test
+  @Test(groups = "1")
   public void f1() {}
   
   @Test public void f3() {}
@@ -21,7 +21,7 @@ public class B {
   @BeforeMethod
   public void beforeMethod() {}
   
-  @AfterMethod
+  @AfterMethod(groups = "1")
   public void afterMethod() {}
   
   @BeforeSuite

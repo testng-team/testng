@@ -43,6 +43,14 @@ public class ConfigurationGroupMethods implements Serializable {
     m_beforeGroupsMethods= beforeGroupsMethods;
     m_afterGroupsMethods= afterGroupsMethods;
   }
+  
+  public Map<String, List<ITestNGMethod>> getBeforeGroupsMethods() {
+    return m_beforeGroupsMethods;
+  }
+
+  public Map<String, List<ITestNGMethod>> getAfterGroupsMethods() {
+    return m_afterGroupsMethods;
+  }
 
   /**
    * @return true if the passed method is the last to run for the group.
@@ -127,6 +135,7 @@ public class ConfigurationGroupMethods implements Serializable {
 //      log("Removing before group " + group);
       m_afterGroupsMethods.remove(group);
     }
+    
   }
 
 }

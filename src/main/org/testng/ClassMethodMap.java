@@ -21,8 +21,6 @@ public class ClassMethodMap {
   private Map<ITestClass, Set<Object>> m_beforeClassMethods = new HashMap<ITestClass, Set<Object>>();
   private Map<ITestClass, Set<Object>> m_afterClassMethods = new HashMap<ITestClass, Set<Object>>();
   
-
-  
   public ClassMethodMap(ITestNGMethod[] methods) {
     for (ITestNGMethod m : methods) {
       Class<?> c = getMethodClass(m);

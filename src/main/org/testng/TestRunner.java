@@ -33,6 +33,7 @@ import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.junit.IJUnitTestRunner;
+import org.testng.v6.TestPlan;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
@@ -571,6 +572,10 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     // All the parallel tests are placed in a separate worker, so they can be
     // invoked in parallel
     createParallelWorkers(parallelList, xmlTest.getParameters(), cmm, workers);
+    
+    new TestPlan(sequentialList, parallelList, cmm,
+      getBeforeSuiteMethods(), getAfterSuiteMethods(),
+      m_groupMethods);
 
     try {
       runWorkers(workers, xmlTest.getParallel());

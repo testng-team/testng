@@ -25,13 +25,16 @@
     </groups>
 -->
     <classes>
+      <class name="test.v6.A" />
+      <class name="test.v6.B" />
 <!-- 
-      <class name="test.dependent.functionality1.Test1" />
-      <class name="test.dependent.functionality1.Test2" />
-      <class name="test.dependent.functionality1.Config" />
- -->
       <class name="test.tmp.A" />
+ -->
     </classes>
+  </test>
+  
+  <test name="test2">
+      <class name="test.v6.C" />
   </test>
  
 <!--

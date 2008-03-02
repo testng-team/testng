@@ -2,24 +2,41 @@ package org.testng.v6;
 
 import org.testng.ITestNGMethod;
 
+import java.util.List;
+
 public class Operation {
 
   private ITestNGMethod m_method;
   private Object m_object;
   private Object m_parameters;
   private int m_affinity;
+  private List<RunGroup> m_runGroups = Lists.newArrayList();
+  private IRunGroupFactory m_runGroupFactory;
+  private Integer[] m_after = {};
   
-  public Operation(ITestNGMethod method) {
-    init(method, 0);
+  public Operation(ITestNGMethod method, IRunGroupFactory runGroupFactory) {
+    init(method, 0, runGroupFactory);
   }
   
-  public Operation(ITestNGMethod method, int threadAffinity) {
-    init(method, threadAffinity);
+  public Operation(ITestNGMethod method, int threadAffinity, IRunGroupFactory runGroupFactory) {
+    init(method, threadAffinity, runGroupFactory);
   }
 
-  private void init(ITestNGMethod method, int affinity) {
+  private void init(ITestNGMethod method, int affinity, IRunGroupFactory runGroupFactory) {
     m_method = method;
     m_affinity = affinity;
+    m_runGroupFactory = runGroupFactory;
+
+    m_runGroups.add(m_runGroupFactory.getRunGroup(RunGroup.CLASS,
+        method.getTestClass().getRealClass().getName()));
+    
+    for (String group : method.getGroups()) {
+      m_runGroups.add(m_runGroupFactory.getRunGroup(RunGroup.GROUP, group));
+    }
+  }
+  
+  public List<RunGroup> getRunGroups() {
+    return m_runGroups;
   }
   
   public ITestNGMethod getMethod() {
@@ -27,27 +44,40 @@ public class Operation {
   }
 
   public String toString() {
-    int padding = 0;
+    String padding;
     if (m_method.isBeforeClassConfiguration() || m_method.isAfterClassConfiguration()) {
-      padding = 2;
+      padding = "    ";
+    }
+    else if (m_method.isBeforeGroupsConfiguration() || m_method.isAfterGroupsConfiguration()) {
+      padding = "        ";
     }
     else if (m_method.isBeforeMethodConfiguration() || m_method.isAfterMethodConfiguration()) {
-      padding = 6;
+      padding = "            ";
     }
     else if (m_method.isBeforeSuiteConfiguration() || m_method.isAfterSuiteConfiguration()) {
-      padding = 0;
+      padding = "";
     }
     else {
-      padding = 8;
+      padding = "                -- ";
     }
     
-    String p = "";
-    for (int i = 0; i < padding; i++) {
-      p += " ";
+//    String p = "";
+//    for (int i = 0; i < padding; i++) {
+//      p += " ";
+//    }
+    
+    String after = "";
+    if (m_after.length > 0) {
+      after = "after:";
+      for (int i : m_after) {
+        after += i + " ";
+      }
     }
     
     String method = m_method.getTestClass().getName() + "." + m_method.getMethod().getName();
-    String result = p + "[" + method + " affinity:" + m_affinity
+    String result = padding + "[" + method + " affinity:" + m_affinity
+      + " groups:" + m_runGroups
+      + after
       + "]";
     
     return result;
@@ -55,6 +85,30 @@ public class Operation {
 
   public int getAffinity() {
     return m_affinity;
+  }
+  
+  public boolean mustRunAfter(Operation o) {
+    List<RunGroup> runGroups = o.getRunGroups();
+    for (int after : m_after) {
+      for (RunGroup rg : runGroups) {
+        if (rg.getId() == after) {
+          System.out.println(this + " MUST RUN AFTER " + o);
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  
+  /**
+   * @return the array of RunGroups we must run after, or an empty array if not applicable.
+   */
+  public Integer[] getAfter() {
+    return m_after;
+  }
+  
+  public void setAfter(Integer[] after) {
+    m_after = after;
   }
 
 }
