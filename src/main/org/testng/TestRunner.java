@@ -1,17 +1,6 @@
 package org.testng;
 
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
-
 import org.testng.internal.ClassHelper;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.Constants;
@@ -33,11 +22,20 @@ import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.junit.IJUnitTestRunner;
-import org.testng.v6.TestPlan;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * This class takes care of running one Test.
@@ -120,7 +118,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   private Map<String, Object> m_attributes = new HashMap<String, Object>();
   private IMethodInterceptor m_methodInterceptor = new IMethodInterceptor() {
 
-    public List<IMethodInstance> intercept(List<IMethodInstance> methods,
+  public List<IMethodInstance> intercept(List<IMethodInstance> methods,
         ITestContext context)
     {
       Collections.sort(methods, MethodInstance.SORT_BY_CLASS);
@@ -128,7 +126,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     }
     
   };
-  
+
   public TestRunner(ISuite suite,
                     XmlTest test,
                     String outputDirectory,
@@ -573,9 +571,10 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     // invoked in parallel
     createParallelWorkers(parallelList, xmlTest.getParameters(), cmm, workers);
     
-    new TestPlan(sequentialList, parallelList, cmm,
-      getBeforeSuiteMethods(), getAfterSuiteMethods(),
-      m_groupMethods);
+//    m_testPlan =
+//      new TestPlan(sequentialList, parallelList, cmm,
+//        getBeforeSuiteMethods(), getAfterSuiteMethods(),
+//        m_groupMethods, xmlTest);
 
     try {
       runWorkers(workers, xmlTest.getParallel());
@@ -584,6 +583,13 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       cmm.clear();
     }
   }
+  
+//  private TestPlan m_testPlan;
+//  private IRunGroupFactory m_runGroupFactory;
+//
+//  public TestPlan getTestPlan() {
+//    return m_testPlan;
+//  }
 
   private void createParallelWorkers(List<ITestNGMethod> parallel, 
       Map<String, String> params, ClassMethodMap cmm, List<TestMethodWorker> workers) {

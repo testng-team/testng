@@ -16,6 +16,12 @@
 </suite-files>
 -->
   
+  <test name="test2">
+    <classes>
+      <class name="test.v6.C" />
+    </classes>
+  </test>
+
   <test name="Single" >
 <!--
     <groups>
@@ -27,24 +33,9 @@
     <classes>
       <class name="test.v6.A" />
       <class name="test.v6.B" />
-<!-- 
-      <class name="test.tmp.A" />
- -->
     </classes>
   </test>
   
-  <test name="test2">
-      <class name="test.v6.C" />
-  </test>
- 
-<!--
-  <test name="Nested" >
-	<packages>
-		<package name="test.methodinterceptors.FooTest">
-		</package>
-	</packages>
-  </test>
--->
 
 </suite>
 

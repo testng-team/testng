@@ -4,12 +4,13 @@ import org.testng.ClassMethodMap;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.internal.ConfigurationGroupMethods;
+import org.testng.xml.XmlTest;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class TestPlan implements IRunGroupFactory {
+public class TestPlan {
   ClassMethodMap m_classMethodMap;
   private Map<ITestClass, Set<Object>> m_beforeClassMethods;
   private Set<ITestClass> m_classesSeen = Sets.newHashSet();
@@ -18,47 +19,60 @@ public class TestPlan implements IRunGroupFactory {
   private List<ITestNGMethod> m_parallelList;
   private List<Operation> m_operations;
   private ConfigurationGroupMethods m_groupMethods;
+  private XmlTest m_xmlTest;
+  private IRunGroupFactory m_runGroupFactory;
+  private ITestNGMethod[] m_beforeSuiteMethods;
+  private ITestNGMethod[] m_afterSuiteMethods;
 
-  public TestPlan(List<List<ITestNGMethod>> sequentialList,
+  public TestPlan(
+      List<List<ITestNGMethod>> sequentialList,
       List<ITestNGMethod> parallelList, ClassMethodMap cmm, 
       ITestNGMethod[] beforeSuiteMethods, ITestNGMethod[] afterSuiteMethods,
-      ConfigurationGroupMethods groupMethods)
+      ConfigurationGroupMethods groupMethods, XmlTest xmlTest)
   {
     m_sequentialList = sequentialList;
     m_parallelList = parallelList;
     m_groupMethods = groupMethods;
+    m_xmlTest = xmlTest;
+    m_beforeSuiteMethods = beforeSuiteMethods;
+    m_afterSuiteMethods = afterSuiteMethods;
+    m_sequentialList = sequentialList;
+    m_parallelList = parallelList;
 
     m_classMethodMap = cmm;
     m_beforeClassMethods = cmm.getInvokedBeforeClassMethods();
     m_operations = Lists.newArrayList();
-    
-    for (ITestNGMethod m : beforeSuiteMethods) {
-      m_operations.add(new Operation(m, this));
+  }
+  
+  public void init(IRunGroupFactory runGroupFactory) {
+    m_runGroupFactory = runGroupFactory;
+    for (ITestNGMethod m : m_beforeSuiteMethods) {
+      m_operations.add(createOperation(m, m_runGroupFactory));
     }
     
     int affinity = 1;
-    for (List<ITestNGMethod> seq : sequentialList) {
+    for (List<ITestNGMethod> seq : m_sequentialList) {
       for (ITestNGMethod m : seq) {
-        addTestOperation(new Operation(m, affinity, this));
+        addTestOperation(createOperation(m, affinity, m_runGroupFactory));
       }
       affinity++;
       p("  ");
     }
   
-    for (ITestNGMethod m : parallelList) {
-      addTestOperation(new Operation(m, affinity, this));
+    for (ITestNGMethod m : m_parallelList) {
+      addTestOperation(createOperation(m, affinity, m_runGroupFactory));
     }
     
     addAfterClassAndGroupsMethods();
     
-    for (ITestNGMethod m : afterSuiteMethods) {
-      m_operations.add(new Operation(m, this));
+    for (ITestNGMethod m : m_afterSuiteMethods) {
+      m_operations.add(createOperation(m, m_runGroupFactory));
     }
     
-    System.out.println("LIST OF GROUPS:");
-    for (RunGroup r : m_runGroups.keySet()) {
-      System.out.println(r.getName() + ":" + r.getId());
-    }
+//    System.out.println("LIST OF GROUPS:");
+//    for (RunGroup r : m_runGroups.keySet()) {
+//      System.out.println(r.getName() + ":" + r.getId());
+//    }
 
     for (Operation o : m_operations) {
       System.out.println(o);
@@ -66,13 +80,14 @@ public class TestPlan implements IRunGroupFactory {
     System.out.println("");
   }  
   
+
   private void addAfterClassAndGroupsMethods() {
     Set<Operation> afterOperations = Sets.newHashSet();
 
     for (ITestClass cl : m_classesSeen) {
-      Integer id = findRunGroup(RunGroup.CLASS, cl.getName());
+      Integer id = m_runGroupFactory.findRunGroup(RunGroup.CLASS, cl.getName());
       for (ITestNGMethod m : cl.getAfterClassMethods()) {
-        Operation o = new Operation(m, 0, this);
+        Operation o = createOperation(m, 0, m_runGroupFactory);
         o.setAfter(new Integer[] { id });
         afterOperations.add(o);
       }
@@ -81,10 +96,10 @@ public class TestPlan implements IRunGroupFactory {
     Map<String, List<ITestNGMethod>> afterGroups = m_groupMethods.getAfterGroupsMethods();
     for (String group : m_groupsSeen) {
       List<ITestNGMethod> afterMethods = afterGroups.get(group);
-      Integer id = findRunGroup(RunGroup.GROUP, group);
+      Integer id = m_runGroupFactory.findRunGroup(RunGroup.GROUP, group);
       if (afterMethods != null) {
         for (ITestNGMethod m : afterMethods) {
-          Operation o = new Operation(m, 0, this);
+          Operation o = createOperation(m, 0, m_runGroupFactory);
           o.setAfter(new Integer[] { id });
           afterOperations.add(o);
         }
@@ -123,10 +138,6 @@ public class TestPlan implements IRunGroupFactory {
 //    }
   }
 
-  private Integer findRunGroup(int type, String name) {
-    return m_runGroups.get(new RunGroup(type, name, 0));
-  }
-   
 //  private void addAfterClassAndGroupsMethods() {
 //    Set<ITestClass> classesSeen = Sets.newHashSet();
 //    Set<String> groupsSeen = Sets.newHashSet();
@@ -170,11 +181,13 @@ public class TestPlan implements IRunGroupFactory {
       if (! m_groupsSeen.contains(group)) {
         List<ITestNGMethod> beforeMethods
           = m_groupMethods.getBeforeGroupsMap().get(group); 
-        ITestNGMethod[] beforeGroupMethods
-          = beforeMethods.toArray(new ITestNGMethod[beforeMethods.size()]);
-        addMethods(beforeGroupMethods,
-            o.getAffinity(), m_operations.size());
-        m_groupsSeen.add(group);
+        if (beforeMethods != null) {
+          ITestNGMethod[] beforeGroupMethods
+            = beforeMethods.toArray(new ITestNGMethod[beforeMethods.size()]);
+          addMethods(beforeGroupMethods,
+              o.getAffinity(), m_operations.size());
+          m_groupsSeen.add(group);
+        }
       }
     }
     
@@ -189,29 +202,29 @@ public class TestPlan implements IRunGroupFactory {
       int affinity, int index)
   {
     for (ITestNGMethod m : methods) {
-      m_operations.add(index, new Operation(m, affinity, this));
+      m_operations.add(index, createOperation(m, affinity, m_runGroupFactory));
     }
   }
 
-  private void addMethods(List<ITestNGMethod> methods,
-      int affinity, int index)
-  {
-    addMethods(methods.toArray(new ITestNGMethod[methods.size()]),
-        affinity, index);
-  }
+//  private void addMethods(List<ITestNGMethod> methods,
+//      int affinity, int index)
+//  {
+//    addMethods(methods.toArray(new ITestNGMethod[methods.size()]),
+//        affinity, index);
+//  }
 
 
 //  private void addMethod(List<Operation> operations, ITestNGMethod m, int affinity) {
 //    ITestNGMethod[] beforeMethods = m.getTestClass().getBeforeTestMethods();
 //    for (ITestNGMethod bm : beforeMethods) {
-//      operations.add(new Operation(bm, affinity));
+//      operations.add(createOperation(bm, affinity));
 //    }
 //    
-//    operations.add(new Operation(m, affinity));
+//    operations.add(createOperation(m, affinity));
 //
 //    ITestNGMethod[] afterMethods = m.getTestClass().getAfterTestMethods();
 //    for (ITestNGMethod am : afterMethods) {
-//      operations.add(new Operation(am, affinity));
+//      operations.add(createOperation(am, affinity));
 //    }
 //  }
   
@@ -219,19 +232,13 @@ public class TestPlan implements IRunGroupFactory {
     System.out.println(s);
   }
 
-  private Map<RunGroup, Integer> m_runGroups = Maps.newHashMap();
-  private int m_currentGroupId = 1;
-
-  public RunGroup getRunGroup(int type, String name) {
-    RunGroup result = new RunGroup(type, name, m_currentGroupId);
-    Integer id = m_runGroups.get(result);
-    if (id == null) {
-      m_runGroups.put(result, m_currentGroupId);
-      m_currentGroupId++;
-    }
-    else {
-      result.setId(id);
-    }
+  private Operation createOperation(ITestNGMethod m, int affinity, IRunGroupFactory factory) {
+    Operation result = new Operation(m, factory, m_xmlTest);
     return result;
   }
+
+  private Operation createOperation(ITestNGMethod m, IRunGroupFactory factory) {
+    return createOperation(m, 0, factory);
+  }
+
 }

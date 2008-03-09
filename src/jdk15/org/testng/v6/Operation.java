@@ -1,6 +1,7 @@
 package org.testng.v6;
 
 import org.testng.ITestNGMethod;
+import org.testng.xml.XmlTest;
 
 import java.util.List;
 
@@ -13,23 +14,31 @@ public class Operation {
   private List<RunGroup> m_runGroups = Lists.newArrayList();
   private IRunGroupFactory m_runGroupFactory;
   private Integer[] m_after = {};
+  private XmlTest m_xmlTest;
   
-  public Operation(ITestNGMethod method, IRunGroupFactory runGroupFactory) {
-    init(method, 0, runGroupFactory);
+  public Operation(ITestNGMethod method, IRunGroupFactory runGroupFactory, XmlTest xmlTest) {
+    init(method, 0, runGroupFactory, xmlTest);
   }
   
-  public Operation(ITestNGMethod method, int threadAffinity, IRunGroupFactory runGroupFactory) {
-    init(method, threadAffinity, runGroupFactory);
+  public Operation(ITestNGMethod method, int threadAffinity, IRunGroupFactory runGroupFactory,
+      XmlTest xmlTest) 
+  {
+    init(method, threadAffinity, runGroupFactory, xmlTest);
   }
 
-  private void init(ITestNGMethod method, int affinity, IRunGroupFactory runGroupFactory) {
+  private void init(ITestNGMethod method, int affinity, IRunGroupFactory runGroupFactory,
+      XmlTest xmlTest) 
+  {
     m_method = method;
     m_affinity = affinity;
     m_runGroupFactory = runGroupFactory;
+    m_xmlTest = xmlTest;
 
     m_runGroups.add(m_runGroupFactory.getRunGroup(RunGroup.CLASS,
         method.getTestClass().getRealClass().getName()));
-    
+
+    m_runGroups.add(m_runGroupFactory.getRunGroup(RunGroup.XML_TEST, m_xmlTest.getName()));
+
     for (String group : method.getGroups()) {
       m_runGroups.add(m_runGroupFactory.getRunGroup(RunGroup.GROUP, group));
     }

@@ -1,18 +1,7 @@
 package org.testng;
 
 
-import java.io.File;
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.testng.internal.AnnotationTypeEnum;
-import org.testng.internal.ClassHelper;
 import org.testng.internal.IInvoker;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -22,6 +11,16 @@ import org.testng.reporters.TestHTMLReporter;
 import org.testng.reporters.TextReporter;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+
+import java.io.File;
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <CODE>SuiteRunner</CODE> is responsible for running all the tests included in one
@@ -294,6 +293,11 @@ public class SuiteRunner implements ISuite, Serializable {
       else {
         runConcurrently();
       }
+      
+//      SuitePlan sp = new SuitePlan();
+//      for (TestRunner tr : m_testRunners) {
+//        tr.getTestPlan().init(sp);
+//      }
   
       //
       // Invoke afterSuite methods
