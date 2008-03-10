@@ -22,6 +22,8 @@ import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.junit.IJUnitTestRunner;
+import org.testng.v6.IRunGroupFactory;
+import org.testng.v6.TestPlan;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
@@ -571,10 +573,10 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     // invoked in parallel
     createParallelWorkers(parallelList, xmlTest.getParameters(), cmm, workers);
     
-//    m_testPlan =
-//      new TestPlan(sequentialList, parallelList, cmm,
-//        getBeforeSuiteMethods(), getAfterSuiteMethods(),
-//        m_groupMethods, xmlTest);
+    m_testPlan =
+      new TestPlan(sequentialList, parallelList, cmm,
+        getBeforeSuiteMethods(), getAfterSuiteMethods(),
+        m_groupMethods, xmlTest);
 
     try {
       runWorkers(workers, xmlTest.getParallel());
@@ -584,12 +586,12 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     }
   }
   
-//  private TestPlan m_testPlan;
-//  private IRunGroupFactory m_runGroupFactory;
-//
-//  public TestPlan getTestPlan() {
-//    return m_testPlan;
-//  }
+  private TestPlan m_testPlan;
+  private IRunGroupFactory m_runGroupFactory;
+
+  public TestPlan getTestPlan() {
+    return m_testPlan;
+  }
 
   private void createParallelWorkers(List<ITestNGMethod> parallel, 
       Map<String, String> params, ClassMethodMap cmm, List<TestMethodWorker> workers) {

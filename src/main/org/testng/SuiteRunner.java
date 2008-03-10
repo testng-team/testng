@@ -9,6 +9,7 @@ import org.testng.internal.thread.ThreadUtil;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
 import org.testng.reporters.TextReporter;
+import org.testng.v6.SuitePlan;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
@@ -296,13 +297,15 @@ public class SuiteRunner implements ISuite, Serializable {
       
 //      SuitePlan sp = new SuitePlan();
 //      for (TestRunner tr : m_testRunners) {
-//        tr.getTestPlan().init(sp);
+//        sp.addTestPlan(tr.getTestPlan());
 //      }
+      
+//      sp.dump();
   
       //
       // Invoke afterSuite methods
       //
-      if(afterSuiteMethods.values().size() > 0) {
+      if (afterSuiteMethods.values().size() > 0) {
         invoker.invokeConfigurations(null,
               afterSuiteMethods.values().toArray(new ITestNGMethod[afterSuiteMethods.size()]),
               m_suite, m_suite.getAllParameters(),
