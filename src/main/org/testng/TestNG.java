@@ -603,7 +603,7 @@ public class TestNG {
   }
 
   /** The verbosity level. TODO why not a simple int? */
-  private Integer m_verbose;
+  private int m_verbose = 1;
 
   private IAnnotationTransformer m_annotationTransformer = new DefaultAnnotationTransformer();
 
@@ -620,7 +620,7 @@ public class TestNG {
    * in debug mode (no longer slicing off stack traces and all). 
    */
   public void setVerbose(int verbose) {
-    m_verbose = new Integer(verbose);
+    m_verbose = verbose;
   }
 
   private void initializeCommandLineSuites() {
@@ -749,7 +749,7 @@ public class TestNG {
   public List<ISuite> runSuitesLocally() {
     List<ISuite> result = new ArrayList<ISuite>();
     
-    if (TestRunner.getVerbose() > 0) {
+    if (m_verbose > 0) {
       StringBuffer allFiles = new StringBuffer();
       for (XmlSuite s : m_suites) {
         allFiles.append("  ").append(s.getFileName() != null ? s.getFileName() : getDefaultSuiteName()).append('\n');
@@ -783,11 +783,7 @@ public class TestNG {
           m_skipFailedInvocationCounts = xmlSuite.skipFailedInvocationCounts();
         }
         
-        // TODO CQ is this OK? Should the command line verbose flag override 
-        // what is explicitly specified in the suite?
-        if (null != m_verbose) {
-          xmlSuite.setVerbose(m_verbose);
-        }
+        xmlSuite.setVerbose(m_verbose);
         
         result.add(createAndRunSuiteRunners(xmlSuite));
       }
