@@ -253,4 +253,12 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
   public boolean hasTestInstance(Method method, int i) {
     return false;
   }
+  
+  public String[] findOptionalValues(Method method) {
+    return null;
+  }
+  
+  public String[] findOptionalValues(Constructor method) {
+    return null;
+  }
 }

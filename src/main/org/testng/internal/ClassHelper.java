@@ -282,6 +282,7 @@ public final class ClassHelper {
         String[] parameterNames = annotation.getValue();
         Object[] parameters = Parameters.createInstantiationParameters(constructor,
                                                           "@Parameters",
+                                                          finder,
                                                           parameterNames,
                                                           xmlTest.getParameters(),
                                                           xmlTest.getSuite());

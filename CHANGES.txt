@@ -1,5 +1,6 @@
 5.8
 
+Added: TestNG-213: @Optional on a method parameter to allow optional @Parameters
 Fixed: TestNG-214: SkipException and TimeBombSkipException should accept nested exceptions
 Fixed: TestNG-211: new Parser(inputStream) doesn't work
 Added: Methods that form a cycle are now shown when the cycle is detected

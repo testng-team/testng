@@ -20,10 +20,10 @@ public class ParameterTest extends BaseTest {
   public void stringSingle() {
     addClass("test.parameters.ParameterSample");
     setParameter("first-name", "Cedric");
-    addIncludedGroup("singleString");
     run();
     String[] passed = {
       "testSingleString",
+      "testNonExistentParameter",
     };
     String[] failed = {
     };

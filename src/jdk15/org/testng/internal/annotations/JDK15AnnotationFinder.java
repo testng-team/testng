@@ -15,6 +15,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Factory;
 import org.testng.annotations.ObjectFactory;
+import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.testng.annotations.TestInstance;
@@ -128,6 +129,27 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
       result = a instanceof TestInstance;
     }
     
+    return result;
+  }
+  
+  public String[] findOptionalValues(Method method) {
+    return optionalValues(method.getParameterAnnotations());
+  }
+  
+  public String[] findOptionalValues(Constructor method) {
+    return optionalValues(method.getParameterAnnotations());
+  }
+
+  private String[] optionalValues(Annotation[][] annotations) {
+    String[] result = new String[annotations.length];
+    for (int i = 0; i < annotations.length; i++) {
+      for (Annotation a : annotations[i]) {
+        if (a instanceof Optional) {
+          result[i] = ((Optional)a).value();
+          break;
+        }
+      }
+    }
     return result;
   }
 }

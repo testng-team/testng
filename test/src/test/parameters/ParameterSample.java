@@ -1,8 +1,13 @@
 package test.parameters;
 
+import java.io.ByteArrayInputStream;
+
+import org.testng.TestNG;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
+import org.testng.xml.Parser;
 
 /**
  * This class
@@ -27,6 +32,21 @@ public class ParameterSample {
   public void testSingleString(String firstName) {
 //    System.out.println("[ParameterSample] Invoked testString " + firstName);
     assert "Cedric".equals(firstName);
+  }
+  
+  @Parameters({"this parameter doesn't exist"})
+  @Test
+  public void testNonExistentParameter(@Optional String foo) {
+    
+  }
+  
+  public static void main(String[] args) throws Exception {
+    TestNG tng = new TestNG();
+    String xml = "<suite name=\"dgf\" verbose=\"10\"><parameter name=\"first-name\" value=\"Cedric\" /><test name=\"dgf\"><classes><class name=\"test.parameters.ParameterSample\"></class></classes></test></suite>";
+    System.out.println(xml);
+    ByteArrayInputStream is = new ByteArrayInputStream(xml.getBytes());
+    tng.setXmlSuites(new Parser(is).parseToList());
+    tng.run();
   }
   
 }

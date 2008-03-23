@@ -31,19 +31,20 @@ import org.testng.xml.XmlSuite;
  * @@ANNOTATIONS@@
  */
 public class Parameters {
-  private static final String NULL_VALUE= "null";
+  public static final String NULL_VALUE= "null";
   
   /**
    * Creates the parameters needed for constructing a test class instance.
+   * @param finder TODO
    */
   public static Object[] createInstantiationParameters(Constructor ctor, 
       String methodAnnotation, 
+      IAnnotationFinder finder, 
       String[] parameterNames, 
-      Map<String, String> params,
-      XmlSuite xmlSuite)
+      Map<String, String> params, XmlSuite xmlSuite)
   {
     return createParameters(ctor.toString(), ctor.getParameterTypes(),
-        methodAnnotation, parameterNames, new MethodParameters(params), xmlSuite);
+        finder.findOptionalValues(ctor), methodAnnotation, finder, parameterNames, new MethodParameters(params), xmlSuite);
   }
 
   /**
@@ -73,6 +74,9 @@ public class Parameters {
   ////////////////////////////////////////////////////////
 
   /**
+   * @param optionalValues TODO
+   * @param finder TODO
+   * @param parameterAnnotations TODO
    * @param m
    * @param instance
    * @return An array of parameters suitable to invoke this method, possibly
@@ -80,10 +84,10 @@ public class Parameters {
    */
   private static Object[] createParameters(String methodName,
                                            Class[] parameterTypes,
+                                           String[] optionalValues,
                                            String methodAnnotation,
-                                           String[] parameterNames,
-                                           MethodParameters params,
-                                           XmlSuite xmlSuite)
+                                           IAnnotationFinder finder,
+                                           String[] parameterNames, MethodParameters params, XmlSuite xmlSuite)
   {
     Object[] result = new Object[0];
     if(parameterTypes.length > 0) {
@@ -106,12 +110,18 @@ public class Parameters {
             value= System.getProperty(p);
           }
           if (null == value) {
+            if (optionalValues != null) {
+              value = optionalValues[i];
+            }
+            if (null == value) {
             throw new TestNGException("Parameter '" + p + "' is required by " 
                 + methodAnnotation
                 + " on method " 
                 + methodName
-                + "\nbut has not been defined " 
-                + (xmlSuite.getFileName() != null ? "in " + xmlSuite.getFileName() : ""));
+                  + "\nbut has not been marked @Optional or defined "
+                  + (xmlSuite.getFileName() != null ? "in "
+                      + xmlSuite.getFileName() : ""));
+            }
           }
           
           vResult.add(convertType(parameterTypes[i], value, p));
@@ -262,7 +272,7 @@ public class Parameters {
     if(null != annotation) {
       String[] parameterNames = annotation.getValue();
       extraParameters = createParameters(m.getName(), m.getParameterTypes(), 
-          atName, parameterNames, params, xmlSuite);
+          finder.findOptionalValues(m), atName, finder, parameterNames, params, xmlSuite);
     }  
     
     //
@@ -273,11 +283,11 @@ public class Parameters {
       if(null != a && a.getParameters().length > 0) {
         String[] parameterNames = a.getParameters();
         extraParameters = createParameters(m.getName(), m.getParameterTypes(), 
-            atName, parameterNames, params, xmlSuite);
+            finder.findOptionalValues(m), atName, finder, parameterNames, params, xmlSuite);
       }
       else {
         extraParameters = createParameters(m.getName(), m.getParameterTypes(), 
-            atName, new String[0], params, xmlSuite);
+            finder.findOptionalValues(m), atName, finder, new String[0], params, xmlSuite);
       }
     }
     
