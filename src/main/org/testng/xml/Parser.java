@@ -138,12 +138,16 @@ public class Parser {
       spf.setValidating(true);
     }
     SAXParser saxParser = spf.newSAXParser();
-    
-    String mainFilePath = m_fileName;
+
+    File parentFile = null;
+    String mainFilePath = null;
+
     if (m_fileName != null) {
-      mainFilePath = new File(m_fileName).getCanonicalPath();
+        File mainFile = new File(m_fileName);
+        mainFilePath = mainFile.getCanonicalPath();
+        parentFile = mainFile.getParentFile();
     }
-    
+
     List<String> toBeParsed = new ArrayList<String>();
     List<String> toBeAdded = new ArrayList<String>();
     List<String> toBeRemoved = new ArrayList<String>();
@@ -167,9 +171,14 @@ public class Parser {
         List<String> suiteFiles = currentXmlSuite.getSuiteFiles();
         if (suiteFiles.size() > 0) {
           for (String path : suiteFiles) {
-            currentFile = new File(path).getCanonicalPath();
-            if (! mapResult.containsKey(currentFile)) {
-              toBeAdded.add(currentFile);
+            String canonicalPath;
+            if (parentFile != null && new File(parentFile, path).exists()) {
+              canonicalPath = new File(parentFile, path).getCanonicalPath();
+            } else {
+              canonicalPath = new File(path).getCanonicalPath();
+            }
+            if (! mapResult.containsKey(canonicalPath)) {
+              toBeAdded.add(canonicalPath);
             }
           }
         }

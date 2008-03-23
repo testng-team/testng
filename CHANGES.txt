@@ -1,5 +1,6 @@
 5.8
 
+Fixed: TestNG-224: Fix for relative suite filenames in XML file
 Added: TestNG-213: @Optional on a method parameter to allow optional @Parameters
 Fixed: TestNG-214: SkipException and TimeBombSkipException should accept nested exceptions
 Fixed: TestNG-211: new Parser(inputStream) doesn't work
