@@ -17,12 +17,8 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.testng.TestNGException;
-import org.testng.TestRunner;
 import org.testng.internal.ClassHelper;
-import org.testng.internal.Utils;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
 
 /**
  * <code>Parser</code> is a parser for a TestNG XML test suite file.   
@@ -143,7 +139,10 @@ public class Parser {
     }
     SAXParser saxParser = spf.newSAXParser();
     
-    String mainFilePath = new File(m_fileName).getCanonicalPath();
+    String mainFilePath = m_fileName;
+    if (m_fileName != null) {
+      mainFilePath = new File(m_fileName).getCanonicalPath();
+    }
     
     List<String> toBeParsed = new ArrayList<String>();
     List<String> toBeAdded = new ArrayList<String>();
@@ -153,18 +152,24 @@ public class Parser {
     while (toBeParsed.size() > 0) {
       
       for (String currentFile : toBeParsed) {
-        String canonicalPath = new File(currentFile).getCanonicalPath();
-
-        XmlSuite currentXmlSuite = parseOneFile(saxParser, canonicalPath);
-        mapResult.put(canonicalPath, currentXmlSuite);
-        toBeRemoved.add(canonicalPath);
+        TestNGContentHandler ch = new TestNGContentHandler(currentFile);
+        InputStream inputStream = currentFile != null ?
+            new FileInputStream(currentFile) : m_inputStream;
+        saxParser.parse(inputStream, ch);
+        if (currentFile != null) {
+          inputStream.close();
+        }
+        XmlSuite result = ch.getSuite();
+        XmlSuite currentXmlSuite = result;
+        mapResult.put(currentFile, currentXmlSuite);
+        toBeRemoved.add(currentFile);
         
         List<String> suiteFiles = currentXmlSuite.getSuiteFiles();
         if (suiteFiles.size() > 0) {
           for (String path : suiteFiles) {
-            canonicalPath = new File(path).getCanonicalPath();
-            if (! mapResult.containsKey(canonicalPath)) {
-              toBeAdded.add(canonicalPath);
+            currentFile = new File(path).getCanonicalPath();
+            if (! mapResult.containsKey(currentFile)) {
+              toBeAdded.add(currentFile);
             }
           }
         }
@@ -264,18 +269,6 @@ public class Parser {
     catch(Exception ex) { ; }
     
     return false;
-  }
-
-  private XmlSuite parseOneFile(SAXParser saxParser, String fileName)
-    throws ParserConfigurationException, SAXException, IOException
-  {
-    TestNGContentHandler ch = new TestNGContentHandler(fileName);
-    InputStream inputStream = new FileInputStream(fileName);
-    saxParser.parse(inputStream, ch);     
-    inputStream.close();
-    XmlSuite result = ch.getSuite();
-    
-    return result;
   }
   
 //  private static void ppp(String s) {
