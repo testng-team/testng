@@ -78,7 +78,7 @@ public class XmlPackage {
       String[] classes = PackageUtils.findClassesInPackage(m_name, m_include, m_exclude);
       
       for(String className: classes) {
-        result.add(new XmlClass(className));
+        result.add(new XmlClass(className, Boolean.FALSE));
       }
     }
     catch(IOException ioex) {

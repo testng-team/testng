@@ -20,18 +20,28 @@ public class XmlClass implements Serializable, Cloneable {
   private List<String> m_excludedMethods = new ArrayList<String>();
   private String       m_name = null;
   private Class        m_class = null;
+  private Boolean      m_declaredClass = null;
 
   public XmlClass(String name) {
-    init(name, null);
+    init(name, null, Boolean.TRUE);
   }
 
   public XmlClass(Class className) {
-    init(className.getName(), className);
+    init(className.getName(), null, Boolean.TRUE );
   }
 
-  private void init(String name, Class className) {
+  public XmlClass(String name, Boolean declaredClass) {
+    init(name, null, declaredClass);
+  }
+
+  public XmlClass(Class className, Boolean declaredClass) {
+    init(className.getName(), className, declaredClass);
+  }
+
+  private void init(String name, Class className, Boolean declaredClass) {
     m_name = name;
     m_class = className;
+    m_declaredClass = declaredClass;
   }
 
   /**
@@ -98,6 +108,14 @@ public class XmlClass implements Serializable, Cloneable {
     m_name = name;
   }
 
+  public Boolean getDeclaredClass() {
+    return m_declaredClass;
+  }
+
+  public void setDeclaredClass(Boolean declaredClass) {
+    this.m_declaredClass = declaredClass;
+  }
+
   @Override
   public String toString() {
     return "[Class: " + m_name + "]";
@@ -139,12 +157,11 @@ public class XmlClass implements Serializable, Cloneable {
   /**
    * Clone an XmlClass by copying all its components.
    * 
-   * @param source
    * @return
    */
   @Override
   public Object clone() {
-    XmlClass result = new XmlClass(getName());
+    XmlClass result = new XmlClass(getName(), getDeclaredClass());
     result.setExcludedMethods(getExcludedMethods());
     result.setIncludedMethods(getIncludedMethods());
     

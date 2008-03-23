@@ -200,7 +200,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       Class clazz= entry.getKey();
       Set<ITestNGMethod> methodList= entry.getValue();
       if(hasTestMethod(methodList)) {
-        XmlClass xmlClass= new XmlClass(clazz.getName());
+        XmlClass xmlClass= new XmlClass(clazz.getName(), Boolean.FALSE);
         List<String> methodNames= new ArrayList<String>(methodList.size());
         for(ITestNGMethod m: methodList) {
           methodNames.add(m.getMethod().getName());

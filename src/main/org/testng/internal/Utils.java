@@ -72,10 +72,17 @@ public final class Utils {
     List<Class<?>> result = new ArrayList<Class<?>>();
 
     for (XmlClass xmlClass : classes) {
-      result.add(xmlClass.getSupportClass());
+      try {
+        result.add(xmlClass.getSupportClass());
+      } catch (NoClassDefFoundError e) {
+        log("[Utils]", 1, "Unable to open class " + xmlClass.getName() + " - unable to resolve class reference " + e.getMessage());
+        if (xmlClass.getDeclaredClass() == Boolean.TRUE) {
+          throw e;
+        }
+      }
     }
 
-    Class<?>[] xmlClasses = result.toArray(new Class[classes.size()]);
+    Class<?>[] xmlClasses = result.toArray(new Class[result.size()]);
     Map<Class<?>, Class<?>> withNestedClasses = new HashMap<Class<?>, Class<?>>();
     findAllClasses(xmlClasses, withNestedClasses);
 
@@ -86,11 +93,10 @@ public final class Utils {
     List<XmlClass> result = new ArrayList<XmlClass>();
 
     for (Class<?> cls : classes) {
-      result.add(new XmlClass(cls));
+      result.add(new XmlClass(cls, Boolean.TRUE));
     }
 
     return result.toArray(new XmlClass[classes.length]);
-
   }
   
   /**

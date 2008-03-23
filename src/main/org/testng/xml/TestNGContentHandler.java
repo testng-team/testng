@@ -466,7 +466,7 @@ public class TestNGContentHandler extends DefaultHandler {
       // will complain, but in the meantime, dodge the NPE so SAX
       // can finish parsing the file.
       if (null != m_currentClasses) {
-        m_currentClass = new XmlClass(name);
+        m_currentClass = new XmlClass(name, Boolean.TRUE);
         m_currentClasses.add(m_currentClass);
       }
     }
