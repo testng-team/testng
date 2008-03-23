@@ -986,6 +986,19 @@ public void beforeTest(String ds, String driver) {
 This time, the two Java parameter <i>ds</i> 
 and <i>driver</i> will receive the value given to the properties <tt>datasource</tt> 
 and <tt>jdbc-driver </tt>respectively.&nbsp;
+
+<p>
+
+Parameters can be declared optional with the <a href="../javadocs/org/testng/annotations/Optional.html"><tt>Optional</tt></a> annotation:
+
+<pre class="prettyprint">
+@Parameters("db")
+@Test
+public void testNonExistentParameter(@Optional("mysql") String db) { ... }
+</pre>
+
+If no parameter named "db" is found in your <tt>testng.xml</tt> file, your test method will receive the default value specified inside the <tt>@Optional</tt> annotation: "mysql".
+
 <p>The <tt>@Parameters</tt> annotation can be placed at the following locations:</p><ul>
 	<li>On any method that already has a <tt>@Test</tt>, <tt>@Before/After</tt> 
 	or <tt>@Factory</tt> annotation.</li><li>On at most one constructor of your test class.&nbsp; In this case, 
