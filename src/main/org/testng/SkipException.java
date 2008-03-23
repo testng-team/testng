@@ -28,6 +28,10 @@ public class SkipException extends RuntimeException {
     super(skipMessage);
   }
   
+  public SkipException(String skipMessage, Throwable cause) {
+    super(skipMessage, cause);
+  }
+  
   /**
    * Flag if the current exception marks a skipped method (<tt>true</tt>)
    * or a failure (<tt>false</tt>). By default Subclasses should override this method

@@ -91,6 +91,90 @@ public class TimeBombSkipException extends SkipException {
     initExpireDate(date);
   }
   
+  /**
+   * Creates a {@code TimeBombedSkipException} using the <tt>expirationDate</tt>.
+   * The format used for date comparison is <tt>yyyy/MM/dd</tt>
+   * @param msg exception message
+   * @param expirationDate time limit after which the SKIP becomes a FAILURE
+   * @param cause the cause (which is saved for later retrieval by the
+   *         {@link #getCause()} method).  (A <tt>null</tt> value is
+   *         permitted, and indicates that the cause is nonexistent or
+   *         unknown.)
+   */
+  public TimeBombSkipException(String msg, Date expirationDate, Throwable cause) {
+    super(msg, cause);
+    initExpireDate(expirationDate);
+  }
+  
+  /**
+   * Creates a {@code TimeBombedSkipException} using the <tt>expirationDate</tt>.
+   * The <tt>format</tt> parameter wiil be used for performing the time comparison.
+   * @param msg exception message
+   * @param expirationDate time limit after which the SKIP becomes a FAILURE
+   * @param format format for the time comparison
+   * @param cause the cause (which is saved for later retrieval by the
+   *         {@link #getCause()} method).  (A <tt>null</tt> value is
+   *         permitted, and indicates that the cause is nonexistent or
+   *         unknown.)
+   */
+  public TimeBombSkipException(String msg, Date expirationDate, String format, Throwable cause) {
+    super(msg, cause);
+    m_inFormat= new SimpleDateFormat(format);
+    m_outFormat= new SimpleDateFormat(format);
+    initExpireDate(expirationDate);
+  }
+  
+  /**
+   * Creates a {@code TimeBombedSkipException} using the <tt>date</tt>
+   * in the format <tt>yyyy/MM/dd</tt>.
+   * @param msg exception message
+   * @param date time limit after which the SKIP becomes a FAILURE
+   * @param cause the cause (which is saved for later retrieval by the
+   *         {@link #getCause()} method).  (A <tt>null</tt> value is
+   *         permitted, and indicates that the cause is nonexistent or
+   *         unknown.)
+   */
+  public TimeBombSkipException(String msg, String date, Throwable cause) {
+    super(msg, cause);
+    initExpireDate(date);
+  }
+  
+  /**
+   * Creates a {@code TimeBombedSkipException} using the <tt>date</tt>
+   * in the specified format <tt>format</tt>. The same format is used
+   * when performing the time comparison.
+   * @param msg exception message
+   * @param date time limit after which the SKIP becomes a FAILURE
+   * @param format format of the passed in <tt>date</tt> and of the time comparison
+   * @param cause the cause (which is saved for later retrieval by the
+   *         {@link #getCause()} method).  (A <tt>null</tt> value is
+   *         permitted, and indicates that the cause is nonexistent or
+   *         unknown.)
+   */
+  public TimeBombSkipException(String msg, String date, String format, Throwable cause) {
+    this(msg, date, format, format, cause);
+  }
+  
+  /**
+   * Creates a {@code TimeBombedSkipException} using the <tt>date</tt>
+   * in the specified format <tt>inFormat</tt>. The <tt>outFormat</tt> will be
+   * used to perform the time comparison and display.
+   * @param msg exception message
+   * @param date time limit after which the SKIP becomes a FAILURE
+   * @param inFormat format of the passed in <tt>date</tt>
+   * @param outFormat format of the time comparison
+   * @param cause the cause (which is saved for later retrieval by the
+   *         {@link #getCause()} method).  (A <tt>null</tt> value is
+   *         permitted, and indicates that the cause is nonexistent or
+   *         unknown.)
+   */
+  public TimeBombSkipException(String msg, String date, String inFormat, String outFormat, Throwable cause) {
+    super(msg, cause);
+    m_inFormat= new SimpleDateFormat(inFormat);
+    m_outFormat= new SimpleDateFormat(outFormat);
+    initExpireDate(date);
+  }
+  
   private void initExpireDate(Date expireDate) {
     m_expireDate= Calendar.getInstance();
     m_expireDate.setTime(expireDate);    
