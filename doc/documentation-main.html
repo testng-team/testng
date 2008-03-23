@@ -104,10 +104,9 @@ google_ad_channel ="5560744946";
 
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#jdk-14-migration">5.17 - Migrating to JDK annotations from javadoc annotations</a><br>
 
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#testng-listeners">5.18 - TestNG Listeners</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#testng-listeners">5.18 - TestNG Listeners</a><br>
 
-
-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#dependency-injection">5.19 - Dependency injection</a></br>
 
 
 &nbsp; <a class="summary" href="#test-results">6 - Test results</a>
@@ -1809,6 +1808,29 @@ Here is how you can define listenersin your <tt>testng.xml</tt> file:
 ...
 
 </pre>
+
+
+<!-------------------------------------
+  DEPENDENCY INJECTION
+ ------------------------------------>
+	
+<h4>
+<a name="dependency-injection">5.19 - Dependency injection</a>
+</h4>
+
+TestNG lets you declare additional parameters in your methods.  When this happens, TestNG will automatically fill these parameters with the right value.  Depencency injection can be used in the following places:
+
+<ul>
+  
+<li>
+  Any @Before method or @Test method can declare a parameter of type <tt>ITestContext</tt>.
+<li>
+  Any @BeforeMethod can declare a parameter of type <tt>java.lang.reflect.Method</tt>.  This parameter will receive the test method that will be called once this @BeforeMethod finishes.
+<li>
+  Any @DataProvider can declare a parameter of type <tt>ITestContext</tt>.
+</ul>
+
+
 
 
 <!------------------------------------

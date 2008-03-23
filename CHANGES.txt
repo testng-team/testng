@@ -12,6 +12,11 @@ Fixed: @AfterMethod(lastTimeOnly) didn't work properly with data providers
 Added: antlib.xml to allow autodiscovery of Ant task definition
 Fixed: name attribute on <test> is required
 
+Doc:
+Added: Method Interceptor
+Added: @Optional
+Added: 5.19: Dependency injection
+
 ===========================================================================
 5.7
 
