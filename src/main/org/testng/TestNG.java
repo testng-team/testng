@@ -783,7 +783,9 @@ public class TestNG {
           m_skipFailedInvocationCounts = xmlSuite.skipFailedInvocationCounts();
         }
         
-        xmlSuite.setVerbose(m_verbose);
+        if (xmlSuite.getVerbose() == null) {
+          xmlSuite.setVerbose(m_verbose);
+        }
         
         result.add(createAndRunSuiteRunners(xmlSuite));
       }

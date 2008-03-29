@@ -47,7 +47,7 @@ public class XmlSuite implements Serializable, Cloneable {
   private String m_name = DEFAULT_SUITE_NAME;
   
   /** The suite verbose flag. (0 to 10)*/
-  private Integer m_verbose = new Integer(1);
+  private Integer m_verbose = null;
   
   private String m_parallel = null;
   
