@@ -1,6 +1,10 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="Example" >
+<suite name="Example" verbose="10">
+
+  <listeners>
+    <listener class-name="priority.PriorityInterceptor" />
+  </listeners>
   
   <test name="Simple example" >
 <!--
@@ -16,6 +20,12 @@
 -->
     <classes>
       <class name="example1.Test1" />
+    </classes>
+  </test>
+  
+  <test name="Method interceptor example" >
+    <classes>
+      <class name="priority.PriorityTest" />
     </classes>
   </test>
 

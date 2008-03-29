@@ -57,7 +57,7 @@
       <echo message="                                  testng-run "/>
       <java fork="yes"
             classpathref="run.cp"
-            classname="com.beust.testng.TestNG">
+            classname="org.testng.TestNG">
          <arg value="-d"/>
          <arg value="${test.output}"/>
          <arg value="${example.dir}/testng.xml"/>
