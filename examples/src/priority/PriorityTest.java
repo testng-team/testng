@@ -4,18 +4,19 @@ import org.testng.annotations.Test;
 
 import priority.Priority;
 
+@Priority(10)
 public class PriorityTest {
 
   @Test
-  public void b1() { System.out.println("Priority 0");}
+  public void b1() { System.out.println("Default");}
   
-  @Priority(-1)
+  @Priority(-3)
   @Test
-  public void a1()  { System.out.println("Priority -1");}
+  public void a1()  { System.out.println("Priority -3");}
   
-  @Priority(-1)
+  @Priority(-3)
   @Test
-  public void a2()  { System.out.println("Priority -1");}
+  public void a2()  { System.out.println("Priority -3");}
 
   @Priority(3)
   @Test

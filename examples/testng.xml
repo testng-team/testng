@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="Example" verbose="10">
+<suite name="Example" verbose="1">
 
   <listeners>
     <listener class-name="priority.PriorityInterceptor" />

@@ -20,6 +20,12 @@ public class PriorityInterceptor implements IMethodInterceptor {
         Priority a1 = mi.getMethod().getMethod().getAnnotation(Priority.class);
         if (a1 != null) {
           result = a1.value();
+        } else {
+          Class<?> cls = mi.getMethod().getMethod().getDeclaringClass();
+          Priority classPriority = cls.getAnnotation(Priority.class);
+          if (classPriority != null) {
+            result = classPriority.value();
+          }
         }
         return result;
       }
