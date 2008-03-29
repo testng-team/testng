@@ -8,7 +8,7 @@ import priority.Priority;
 public class PriorityTest {
 
   @Test
-  public void b1() { System.out.println("Default");}
+  public void b1() { System.out.println("Default priority");}
   
   @Priority(-3)
   @Test
