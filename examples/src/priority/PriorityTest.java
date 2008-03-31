@@ -4,7 +4,6 @@ import org.testng.annotations.Test;
 
 import priority.Priority;
 
-@Priority(10)
 public class PriorityTest {
 
   @Test

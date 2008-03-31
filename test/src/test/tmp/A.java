@@ -1,16 +1,14 @@
 package test.tmp;
 
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 public class A {
 
-  @Test(groups = "a")
-  public void f1() {
-    
+  @Parameters("foo")
+  @Test
+  public void f1(String param) {
+    System.out.println(param);
   }
   
-  @Test(groups = "b", dependsOnGroups = "a")
-  public void f2() {
-    
-  }
 }

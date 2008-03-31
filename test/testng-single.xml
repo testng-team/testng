@@ -2,12 +2,9 @@
   
 <suite name="Single" verbose="10">
 
-<!--
-
 <listeners>
-  <listener class-name="test.methodinterceptors.FastTestsFirstInterceptor" />
+  <listener class-name="priority.PriorityInterceptor" />
 </listeners>
--->
 
 <!--
 <suite-files>
@@ -18,23 +15,23 @@
   
   <test name="test2">
     <classes>
-      <class name="test.v6.C" />
+      <class name="priority.PriorityTest" />
     </classes>
   </test>
 
-  <test name="Single" >
 <!--
+  <test name="Single" >
     <groups>
       <run>
         <include name="tests.functional.upload" />
       </run>
     </groups>
--->
     <classes>
       <class name="test.v6.A" />
       <class name="test.v6.B" />
     </classes>
   </test>
+-->
   
 
 </suite>

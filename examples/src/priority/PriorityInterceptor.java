@@ -4,6 +4,7 @@ import org.testng.IMethodInstance;
 import org.testng.IMethodInterceptor;
 import org.testng.ITestContext;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -17,11 +18,12 @@ public class PriorityInterceptor implements IMethodInterceptor {
       
       private int getPriority(IMethodInstance mi) {
         int result = 0;
-        Priority a1 = mi.getMethod().getMethod().getAnnotation(Priority.class);
+        Method method = mi.getMethod().getMethod();
+        Priority a1 = method.getAnnotation(Priority.class);
         if (a1 != null) {
           result = a1.value();
         } else {
-          Class<?> cls = mi.getMethod().getMethod().getDeclaringClass();
+          Class<?> cls = method.getDeclaringClass();
           Priority classPriority = cls.getAnnotation(Priority.class);
           if (classPriority != null) {
             result = classPriority.value();
