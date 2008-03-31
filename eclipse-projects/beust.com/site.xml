@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.testng.feature_5.8.0.2.jar" id="org.testng.feature" version="5.8.0.2">
+      <category name="TestNG"/>
+   </feature>
+   <category-def name="TestNG" label="TestNG"/>
+</site>
