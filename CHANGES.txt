@@ -1,3 +1,8 @@
+===========================================================================
+5.9
+TESTNG-231: NullPointerException thrown converting a suite to XML (Mark)
+
+===========================================================================
 5.8
 
 Fixed: TestNG-220: Ignore class definition/loader issues when scanning classpath for implicit classes
