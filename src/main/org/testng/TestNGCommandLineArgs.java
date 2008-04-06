@@ -30,18 +30,6 @@ public final class TestNGCommandLineArgs {
   public static final String SHOW_TESTNG_STACK_FRAMES = "testng.show.stack.frames";
   public static final String TEST_CLASSPATH = "testng.test.classpath";
   
-  /** The test report output directory option. */
-  public static final String OUTDIR_COMMAND_OPT = "-d";
-  
-  /** The list of test classes option. */
-  public static final String TESTCLASS_COMMAND_OPT = "-testclass";
-  
-  /** */
-  public static final String TESTJAR_COMMAND_OPT = "-testjar";
-  
-  /** The source directory option (when using JavaDoc type annotations). */
-  public static final String SRC_COMMAND_OPT = "-sourcedir";
-  
   // These next two are used by the Eclipse plug-in
   public static final String PORT_COMMAND_OPT = "-port";
   public static final String HOST_COMMAND_OPT = "-host";
@@ -54,31 +42,38 @@ public final class TestNGCommandLineArgs {
 
   /** The default annotations option (useful in TestNG 15 only). */
   public static final String ANNOTATIONS_COMMAND_OPT = "-annotations";
-  
-  public static final String GROUPS_COMMAND_OPT = "-groups";
+  /** The test report output directory option. */
+  public static final String OUTDIR_COMMAND_OPT = "-d";
   public static final String EXCLUDED_GROUPS_COMMAND_OPT = "-excludegroups";
-  public static final String TESTRUNNER_FACTORY_COMMAND_OPT = "-testrunfactory";
-  public static final String LISTENER_COMMAND_OPT = "-listener";
-  public static final String OBJECT_FACTORY_COMMAND_OPT = "-objectfactory";
-  public static final String SUITE_DEF_OPT = "testng.suite.definitions";
+  public static final String GROUPS_COMMAND_OPT = "-groups";
   public static final String JUNIT_DEF_OPT = "-junit";
-  public static final String SLAVE_OPT = "-slave";
+  public static final String LISTENER_COMMAND_OPT = "-listener";
   public static final String MASTER_OPT = "-master";
-  public static final String THREAD_COUNT = "-threadcount";
-  public static final String USE_DEFAULT_LISTENERS = "-usedefaultlisteners";
-  public static final String PARALLEL_MODE = "-parallel";
-  public static final String SUITE_NAME_OPT = "-suitename";
-  public static final String TEST_NAME_OPT = "-testname";
-  public static final String SKIP_FAILED_INVOCATION_COUNT_OPT = "-skipfailedinvocationcounts";
-
+  public static final String OBJECT_FACTORY_COMMAND_OPT = "-objectfactory";
   /**
-   * Used to pass a reporter configuration in the form <code>-reporter <reporter_name_or_class>:option=value[,option=value]</code>
+   * Used to pass a reporter configuration in the form
+   * <code>-reporter <reporter_name_or_class>:option=value[,option=value]</code>
    */
   public static final String REPORTER = "-reporter";
   /**
    * Used as map key for the complete list of report listeners provided with the above argument
    */
   public static final String REPORTERS_LIST = "-reporterslist";
+  public static final String PARALLEL_MODE = "-parallel";
+  public static final String SKIP_FAILED_INVOCATION_COUNT_OPT = "-skipfailedinvocationcounts";
+  public static final String SLAVE_OPT = "-slave";
+  /** The source directory option (when using JavaDoc type annotations). */
+  public static final String SRC_COMMAND_OPT = "-sourcedir";
+  public static final String SUITE_NAME_OPT = "-suitename";
+  /** The list of test classes option. */
+  public static final String TESTCLASS_COMMAND_OPT = "-testclass";
+  public static final String TESTJAR_COMMAND_OPT = "-testjar";
+  public static final String TEST_NAME_OPT = "-testname";
+  public static final String TESTRUNNER_FACTORY_COMMAND_OPT = "-testrunfactory";
+  public static final String THREAD_COUNT = "-threadcount";
+  public static final String USE_DEFAULT_LISTENERS = "-usedefaultlisteners";
+  public static final String SUITE_DEF_OPT = "testng.suite.definitions";
+
 
   /** 
    * When given a file name to form a class name, the file name is parsed and divided 

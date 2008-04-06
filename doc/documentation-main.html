@@ -598,74 +598,95 @@ You need to specify at least one XML file describing the TestNG suite you are tr
     <colgroup class="argument"/>
     <colgroup class="documentation"/>
     <thead>
+
         <tr>
-            <th>Option</th><th>Argument</th><th>Documentation</th></tr></thead><tbody>
-        <tr>
-            <td>-d</td><td>A directory</td><td>The directory where the reports will be generated (defaults to <tt>test-output</tt>).</td></tr><tr>
-            <td>-sourcedir</td><td>A semi-colon separated list of directories.</td><td>
-                The directories where your javadoc annotated test sources are. This 
-                option is only necessary if you are using javadoc type annotations.
-                (e.g. <tt>"src/test"</tt> or 
-                <tt>"src/test/org/testng/eclipse-plugin;src/test/org/testng/testng"</tt>).
-            </td>
+            <th>Option</th>
+    	<th>Argument</th>
+    	<th>Documentation</th>
         </tr>
-        
+    </thead>
+
+    <tbody>
         <tr>
-            <td>-testclass</td><td>A comma-separated list of classes that can be found in your classpath.</td><td>A list of class files separated by commas (e.g. <tt>"org.foo.Test1,org.foo.test2"</tt>).</td></tr><tr>
-            <td>-groups</td><td>A comma-separated list of groups.</td><td>The list of groups you want to run (e.g. <tt>"windows,linux,regression"</tt>).</td></tr><tr>
-            <td>-excludegroups</td><td>A comma-separated list of groups.</td><td>The list of groups you want to be excluded from this run.</td></tr><tr>
-            <td>-testrunfactory</td><td>A Java classes that can be found on your classpath.</td><td>
-                Lets you specify your own test runners.  The class needs to implement 
-                <a href="../javadocs/org/testng/ITestRunnerFactory.html">
-                    <tt>org.testng.ITestRunnerFactory</tt>
-                </a>.
-            </td>
-        </tr>
-        
-        <tr>
-            <td>-listener</td><td>A comma-separated list of Java classes that can be found on your classpath.</td><td>
-                Lets you specify your own test listeners.  The classes need to implement 
-                <a href="../javadocs/org/testng/ITestListener.html">
-                    <tt>org.testng.ITestListener</tt>
-                </a>
-            </td>
-        </tr>
-        
-        <tr>
-            <td>-parallel</td><td>methods|tests</td><td>If specified, sets the default mechanism used to determine how to use parallel threads when running tests. If not set, default mechanism is not to use parallel threads at all.
-            This can be overridden in the suite definition.
-            </td>
-        </tr>
-        <tr>
-            <td>-threadcount</td><td>The default number of threads to use when running tests in parallel.</td><td>
-                This sets the default maximum number of threads to use for running tests in parallel. It will only take effect if the parallel mode has been selected (for example, with the -parallel option).
-                This can be overridden in the suite definition.
-            </td>
-        </tr>
-        
-       <tr>
-            <td>-suitename</td><td>The default name to use for a test suite.</td><td>
-                This specifies the suite name for a test suite defined on the command line. This option is ignored if the suite.xml file or the source code specifies a different suite name.
-                It is possible to create a suite name with spaces in it if you surround it with double-quotes "like this".
-            </td>
-        </tr>
-        
-        <tr>
-            <td>-testname</td><td>The default name to use for a test.</td><td>
-                This specifies the name for a test defined on the command line. This option is ignored if the suite.xml file or the source code specifies a different test name.
-                It is possible to create a test name with spaces in it if you surround it with double-quotes "like this".
-            </td>
+            <td>-d</td>
+	    <td>A directory</td>
+	    <td>The directory where the reports will be generated (defaults to <tt>test-output</tt>).</td>
         </tr>
 
-          <tr>
-            <td>-reporter</td><td>The extended configuration for a custom report listener.</td><td>
-                Similar to the <tt>-listener</tt> option, except that it allows the configuration of JavaBeans-style properties on the reporter instance.
-            <br>
-            Example: <tt>-reporter com.test.MyReporter:methodFilter=*insert*,enableFiltering=true</tt>
-            <br>
-            You can have as many occurences of this option, one for each reporter that needs to be added.
-            </td>
+        <tr>
+            <td>-excludegroups</td>
+	    <td>A comma-separated list of groups.</td><td>The list of groups you want to be excluded from this run.</td>
         </tr>
+	  
+        <tr>
+            <td>-groups</td>
+	    <td>A comma-separated list of groups.</td>
+	    <td>The list of groups you want to run (e.g. <tt>"windows,linux,regression"</tt>).</td>
+	</tr>
+
+        <tr>
+            <td>-listener</td>
+	    <td>A comma-separated list of Java classes that can be found on your classpath.</td>
+	    <td>Lets you specify your own test listeners.  The classes need to implement <a href="../javadocs/org/testng/ITestListener.html"> <tt>org.testng.ITestListener</tt></a></td>
+        </tr>
+
+        <tr>
+            <td>-parallel</td>
+	    <td>methods|tests</td>
+	    <td>If specified, sets the default mechanism used to determine how to use parallel threads when running tests. If not set, default mechanism is not to use parallel threads at all. This can be overridden in the suite definition.</td>
+        </tr>
+
+        <tr>
+            <td>-reporter</td>
+	    <td>The extended configuration for a custom report listener.</td>
+	    <td>Similar to the <tt>-listener</tt> option, except that it allows the configuration of JavaBeans-style properties on the reporter instance.
+	      <br>
+            Example: <tt>-reporter com.test.MyReporter:methodFilter=*insert*,enableFiltering=true</tt>
+	      <br>
+            You can have as many occurences of this option, one for each reporter that needs to be added.</td>
+        </tr>
+
+        <tr>
+            <td>-sourcedir</td>
+    	    <td>A semi-colon separated list of directories.</td>
+            <td>The directories where your javadoc annotated test sources are. This option is only necessary if you are using javadoc type annotations. (e.g. <tt>"src/test"</tt> or <tt>"src/test/org/testng/eclipse-plugin;src/test/org/testng/testng"</tt>).</td>
+        </tr>
+
+       <tr>
+           <td>-suitename</td>
+	   <td>The default name to use for a test suite.</td>
+	   <td>This specifies the suite name for a test suite defined on the command line. This option is ignored if the suite.xml file or the source code specifies a different suite name.  It is possible to create a suite name with spaces in it if you surround it with double-quotes "like this".</td>
+        </tr>
+        
+        <tr>
+            <td>-testclass</td>
+	    <td>A comma-separated list of classes that can be found in your classpath.</td><td>A list of class files separated by commas (e.g. <tt>"org.foo.Test1,org.foo.test2"</tt>).</td>
+	</tr>
+
+         <tr>
+            <td>-testjar</td>
+	    <td>A jar file.</td>
+	    <td>Specifies a jar file that contains test classes.  If a <tt>testng.xml</tt> file is found at the root of that jar file, it will be used, otherwise, all the test classes found in this jar file will be considered test classes.</td>
+        </tr>
+
+        <tr>
+            <td>-testname</td>
+	    <td>The default name to use for a test.</td>
+	    <td>This specifies the name for a test defined on the command line. This option is ignored if the suite.xml file or the source code specifies a different test name. It is possible to create a test name with spaces in it if you surround it with double-quotes "like this".</td>
+        </tr>
+
+        <tr>
+            <td>-testrunfactory</td>
+	    <td>A Java classes that can be found on your classpath.</td>
+	    <td>Lets you specify your own test runners.  The class needs to implement <a href="../javadocs/org/testng/ITestRunnerFactory.html"> <tt>org.testng.ITestRunnerFactory</tt></a>.</td>
+        </tr>
+
+        <tr>
+            <td>-threadcount</td>
+	    <td>The default number of threads to use when running tests in parallel.</td>
+	    <td>This sets the default maximum number of threads to use for running tests in parallel. It will only take effect if the parallel mode has been selected (for example, with the -parallel option). This can be overridden in the suite definition.</td>
+        </tr>
+           
     </tbody>
 </table>
 
