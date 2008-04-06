@@ -13,9 +13,10 @@
 </suite-files>
 -->
   
+  <parameter name="factory-param" value="FactoryParam" />
   <test name="test2">
     <classes>
-      <class name="priority.PriorityTest" />
+      <class name="test.jar.JarTest" />
     </classes>
   </test>
 

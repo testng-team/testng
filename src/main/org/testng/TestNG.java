@@ -37,10 +37,13 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /**
  * This class is the main entry point for running tests in the TestNG framework.
@@ -312,28 +315,55 @@ public class TestNG {
     }
 
     File jarFile = new File(jarPath);
+
+
     try {
-      URL jarfile = new URL("jar", "", "file:" + jarFile.getAbsolutePath() + "!/");
-      URLClassLoader jarLoader = new URLClassLoader(new URL[] { jarfile });
+      URL jarfileUrl = new URL("jar", "", "file:" + jarFile.getAbsolutePath() + "!/");
+      URLClassLoader jarLoader = new URLClassLoader(new URL[] { jarfileUrl });
       Thread.currentThread().setContextClassLoader(jarLoader);
 
-      m_suites.addAll(new Parser().parse());
+      JarFile jf = new JarFile(jarFile);
+      Enumeration<JarEntry> entries = jf.entries();
+      List<String> classes = new ArrayList<String>();
+      boolean foundTestngXml = false;
+      while (entries.hasMoreElements()) {
+        JarEntry je = entries.nextElement();
+        if (je.getName().equals("testng.xml")) {
+          Parser parser = new Parser(jf.getInputStream(je));
+          m_suites.addAll(parser.parse());
+          foundTestngXml = true;
+          break;
+        }
+        else if (je.getName().endsWith(".class")) {
+          int n = je.getName().length() - ".class".length();
+          classes.add(je.getName().replace("/", ".").substring(0, n));
+        }
+      }
+      if (! foundTestngXml) {
+        XmlSuite xmlSuite = new XmlSuite();
+        xmlSuite.setVerbose(1);
+        xmlSuite.setName("Jar suite");
+        XmlTest xmlTest = new XmlTest(xmlSuite);
+        List<XmlClass> xmlClasses = new ArrayList<XmlClass>();
+        for (String cls : classes) {
+          XmlClass xmlClass = new XmlClass(cls);
+          xmlClasses.add(xmlClass);
+        }
+        xmlTest.setXmlClasses(xmlClasses);
+        m_suites.add(xmlSuite);
+      }
     }
-    catch(MalformedURLException mfurle) {
-      System.err.println("could not find jar file named: " + jarFile.getAbsolutePath());
+    catch(ParserConfigurationException ex) {
+      ex.printStackTrace();
     }
-    catch(IOException ioe) {
-      System.out.println("An exception occurred while trying to load testng.xml from within jar "
-                         + jarFile.getAbsolutePath());
+    catch(SAXException ex) {
+      ex.printStackTrace();
     }
-    catch(SAXException saxe) {
-      System.out.println("testng.xml from within jar "
-                         + jarFile.getAbsolutePath()
-                         + " is not well formatted");
-      saxe.printStackTrace(System.out);
+    catch(MalformedURLException ex) {
+      ex.printStackTrace();
     }
-    catch(ParserConfigurationException pce) {
-      pce.printStackTrace(System.out);
+    catch(IOException ex) {
+      ex.printStackTrace();
     }
   }
 

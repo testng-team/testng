@@ -76,6 +76,7 @@
       <class name="test.annotationtransformer.AnnotationTransformerTest" />
       <class name="test.configuration.MultipleBeforeGroupTest" />
       <class name="test.configuration.BaseGroupsTest" />
+      <class name="test.jar.JarTest" />
     </classes>
   </test>
   
