@@ -6,7 +6,6 @@ Added: TestNG-213: @Optional on a method parameter to allow optional @Parameters
 Fixed: TestNG-214: SkipException and TimeBombSkipException should accept nested exceptions
 Fixed: TestNG-211: new Parser(inputStream) doesn't work
 Added: Methods that form a cycle are now shown when the cycle is detected
-Added: Doc for IMethodInterceptor (5.16) and TestNG listeners (5.18)
 Added: Support for <listeners> in testng.xml
 Added: IMethodInterceptor
 Added: @TestInstance on a data provider method parameter
@@ -17,6 +16,7 @@ Fixed: name attribute on <test> is required
 Doc:
 Added: Method Interceptor
 Added: @Optional
+Added: Doc for IMethodInterceptor (5.16) and TestNG listeners (5.18)
 Added: 5.19: Dependency injection
 
 ===========================================================================
