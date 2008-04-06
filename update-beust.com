@@ -9,3 +9,6 @@ scp doc/*.html doc/*.css ${U}@beust.com:w/testng/doc
 scp -r javadocs ${U}@beust.com:w/testng
 (cd ~/java/beust.com; scp -r . ${U}@beust.com:w/eclipse)
 
+
+# scp testng-eclipse-${ev}.zip doc/download.html ${U}@beust.com:w/testng
+

@@ -376,6 +376,9 @@ public class XmlSuite implements Serializable, Cloneable {
     xsb.setDocType("suite SYSTEM \"" + Parser.TESTNG_DTD_URL + '\"');
     Properties p = new Properties();
     p.setProperty("name", getName());
+    if (getVerbose() != null) {
+      p.setProperty("verbose", getVerbose().toString());
+    }
     p.setProperty("verbose", getVerbose().toString());
     final String parallel= getParallel();
     if(null != parallel && !"".equals(parallel)) {
