@@ -62,6 +62,7 @@ public class SuiteRunner implements ISuite, Serializable {
   transient private Boolean m_skipFailedInvocationCounts = Boolean.FALSE;
 
   private IMethodInterceptor m_methodInterceptor;
+  private IInvokedMethodListener m_invokedMethodListener;
   
 //  transient private IAnnotationTransformer m_annotationTransformer = null;
 
@@ -82,7 +83,8 @@ public class SuiteRunner implements ISuite, Serializable {
                      boolean useDefaultListeners,
                      IAnnotationFinder[] finders)
   {
-    this(suite, outputDir, runnerFactory, useDefaultListeners, finders, null, null);
+    this(suite, outputDir, runnerFactory, useDefaultListeners, finders, null, null,
+        null);
   }
   
   public SuiteRunner(XmlSuite suite, 
@@ -91,10 +93,11 @@ public class SuiteRunner implements ISuite, Serializable {
                      boolean useDefaultListeners,
                      IAnnotationFinder[] finders,
                      IObjectFactory factory,
-                     IMethodInterceptor methodInterceptor)
+                     IMethodInterceptor methodInterceptor,
+                     IInvokedMethodListener invokedMethodListener)
   {
     init(suite, outputDir, runnerFactory, useDefaultListeners, finders, factory,
-      methodInterceptor);
+      methodInterceptor, invokedMethodListener);
   }
   
   private void init(XmlSuite suite, 
@@ -103,7 +106,8 @@ public class SuiteRunner implements ISuite, Serializable {
                     boolean useDefaultListeners,
                     IAnnotationFinder[] finders, 
                     IObjectFactory factory,
-                    IMethodInterceptor methodInterceptor)
+                    IMethodInterceptor methodInterceptor,
+                    IInvokedMethodListener invokedMethodListener)
   {
     m_suite = suite;
     m_useDefaultListeners = useDefaultListeners;
@@ -122,6 +126,7 @@ public class SuiteRunner implements ISuite, Serializable {
     if(m_objectFactory == null) {
       m_objectFactory = suite.getObjectFactory();
     }
+    m_invokedMethodListener = invokedMethodListener;
   }
   
   public XmlSuite getXmlSuite() {
@@ -175,7 +180,8 @@ public class SuiteRunner implements ISuite, Serializable {
     if (null == m_tmpRunnerFactory) {
       factory = new DefaultTestRunnerFactory(
           m_testlisteners.toArray(new ITestListener[m_testlisteners.size()]), 
-          m_useDefaultListeners, m_skipFailedInvocationCounts);
+          m_useDefaultListeners, m_skipFailedInvocationCounts, 
+          m_invokedMethodListener);
     }
     else {
       factory = new ProxyTestRunnerFactory(
@@ -456,14 +462,17 @@ public class SuiteRunner implements ISuite, Serializable {
     private ITestListener[] m_failureGenerators;
     private boolean m_useDefaultListeners;
     private boolean m_skipFailedInvocationCounts;
+    private IInvokedMethodListener m_invokedMethodListener;
     
     public DefaultTestRunnerFactory(ITestListener[] failureListeners,
         boolean useDefaultListeners,
-        boolean skipFailedInvocationCounts)
+        boolean skipFailedInvocationCounts,
+        IInvokedMethodListener invokedMethodListener)
     {
       m_failureGenerators = failureListeners;
       m_useDefaultListeners = useDefaultListeners;
       m_skipFailedInvocationCounts = skipFailedInvocationCounts;
+      m_invokedMethodListener = invokedMethodListener;
     }
 
     /**
@@ -479,7 +488,8 @@ public class SuiteRunner implements ISuite, Serializable {
                         test,
                         suite.getOutputDirectory(),
                         suite.getAnnotationFinder(test.getAnnotations()),
-                        skip);
+                        skip,
+                        m_invokedMethodListener);
       
       if (m_useDefaultListeners) {
         testRunner.addListener(new TestHTMLReporter());

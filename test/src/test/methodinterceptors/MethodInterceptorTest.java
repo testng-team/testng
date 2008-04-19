@@ -11,6 +11,8 @@ import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
 import org.xml.sax.SAXException;
 
+import test.SimpleBaseTest;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,17 +20,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-public class MethodInterceptorTest {
+public class MethodInterceptorTest extends SimpleBaseTest {
   
   @Test
   public void noMethodsShouldRun() {
-    TestNG tng = new TestNG();
+    TestNG tng = create();
     tng.setTestClasses(new Class[] { FooTest.class });
     testNullInterceptor(tng);
   }
   
   private void testNullInterceptor(TestNG tng) {
-    tng.setVerbose(0);
     tng.setMethodInterceptor(new NullMethodInterceptor());
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
@@ -41,9 +42,8 @@ public class MethodInterceptorTest {
 
   @Test
   public void fastShouldRunFirst() {
-    TestNG tng = new TestNG();
+    TestNG tng = create();
     tng.setTestClasses(new Class[] { FooTest.class });
-    tng.setVerbose(0);
     tng.setMethodInterceptor(new FastTestsFirstInterceptor());
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
@@ -59,7 +59,7 @@ public class MethodInterceptorTest {
       throws IOException, ParserConfigurationException, SAXException {
     String xml = "<!DOCTYPE suite SYSTEM \"http://beust.com/testng/testng-1.0.dtd\" >" +
     "" +
-    "<suite name=\"Single\" verbose=\"10\">" +
+    "<suite name=\"Single\" verbose=\"0\">" +
     "" +
     "<listeners>" +
     "  <listener class-name=\"test.methodinterceptors.NullMethodInterceptor\" />" +
@@ -83,7 +83,7 @@ public class MethodInterceptorTest {
     try {
       List<XmlSuite> xmlSuites = new Parser(f.getAbsolutePath()).parseToList();
       
-      TestNG tng = new TestNG();
+      TestNG tng = create();
       tng.setXmlSuites(xmlSuites);
       testNullInterceptor(tng);
     }

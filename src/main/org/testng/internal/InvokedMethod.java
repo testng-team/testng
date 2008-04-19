@@ -2,9 +2,10 @@ package org.testng.internal;
 
 import java.io.Serializable;
 
+import org.testng.IInvokedMethod;
 import org.testng.ITestNGMethod;
 
-public class InvokedMethod implements Serializable {
+public class InvokedMethod implements Serializable, IInvokedMethod {
   transient private Object m_instance;
   private ITestNGMethod m_testMethod;
   private Object[] m_parameters;
@@ -31,8 +32,8 @@ public class InvokedMethod implements Serializable {
     m_date = date;
   }
   
-  /**
-   * @return
+  /* (non-Javadoc)
+   * @see org.testng.internal.IInvokedMethod#isTestMethod()
    */
   public boolean isTestMethod() {
     return m_isTest;
@@ -49,17 +50,23 @@ public class InvokedMethod implements Serializable {
     return result.toString();
   }
   
-  /**
-   * @return Returns the isClass.
+  /* (non-Javadoc)
+   * @see org.testng.internal.IInvokedMethod#isConfigurationMethod()
    */
   public boolean isConfigurationMethod() {
     return m_isConfigurationMethod;
   }
   
+  /* (non-Javadoc)
+   * @see org.testng.internal.IInvokedMethod#getTestMethod()
+   */
   public ITestNGMethod getTestMethod() {
     return m_testMethod;
   }
 
+  /* (non-Javadoc)
+   * @see org.testng.internal.IInvokedMethod#getDate()
+   */
   public long getDate() {
     return m_date;
   }

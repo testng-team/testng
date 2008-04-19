@@ -128,20 +128,24 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     }
     
   };
+  private IInvokedMethodListener m_invokedMethodListener;
 
   public TestRunner(ISuite suite,
                     XmlTest test,
                     String outputDirectory,
                     IAnnotationFinder finder,
-                    boolean skipFailedInvocationCounts) 
+                    boolean skipFailedInvocationCounts,
+                    IInvokedMethodListener invokedMethodListener) 
   {
-    init(suite, test, outputDirectory, finder, skipFailedInvocationCounts);
+    init(suite, test, outputDirectory, finder, skipFailedInvocationCounts,
+        invokedMethodListener);
   }
 
   public TestRunner(ISuite suite, XmlTest test, 
     IAnnotationFinder finder, boolean skipFailedInvocationCounts) 
   {
-    init(suite, test, suite.getOutputDirectory(), finder, skipFailedInvocationCounts);
+    init(suite, test, suite.getOutputDirectory(), finder, skipFailedInvocationCounts,
+        null);
   }
 
   public TestRunner(ISuite suite, XmlTest test, 
@@ -149,14 +153,15 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   {
     init(suite, test, suite.getOutputDirectory(), 
         suite.getAnnotationFinder(test.getAnnotations()),
-        skipFailedInvocationCounts);
+        skipFailedInvocationCounts, null);
   }
 
   private void init(ISuite suite,
                     XmlTest test,
                     String outputDirectory,
                     IAnnotationFinder annotationFinder,
-                    boolean skipFailedInvocationCounts)
+                    boolean skipFailedInvocationCounts,
+                    IInvokedMethodListener invokedMethodListener)
   {
     m_xmlTest= test;
     m_suite = suite;
@@ -164,6 +169,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     m_host = suite.getHost();
     m_testClassesFromXml= test.getXmlClasses();
     m_skipFailedInvocationCounts = skipFailedInvocationCounts;
+    m_invokedMethodListener = invokedMethodListener;
     
     m_packageNamesFromXml= test.getXmlPackages();    
     if(null != m_packageNamesFromXml) {
@@ -175,7 +181,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     m_annotationFinder= annotationFinder;
     m_invoker = 
       new Invoker(this, this, m_suite.getSuiteState(), 
-        m_annotationFinder, m_skipFailedInvocationCounts);
+        m_annotationFinder, m_skipFailedInvocationCounts,
+        invokedMethodListener);
 
     setVerbose(test.getVerbose());
 
@@ -1103,7 +1110,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
 
   private void dumpInvokedMethods() {
     System.out.println("\n*********** INVOKED METHODS\n");
-    for (InvokedMethod im : m_invokedMethods) {
+    for (IInvokedMethod im : m_invokedMethods) {
       if (im.isTestMethod()) {
         System.out.print("\t\t");
       }
@@ -1123,7 +1130,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
    */
   public List<ITestNGMethod> getInvokedMethods() {
     List<ITestNGMethod> result= new ArrayList<ITestNGMethod>();
-    for (InvokedMethod im : m_invokedMethods) {
+    for (IInvokedMethod im : m_invokedMethods) {
       ITestNGMethod tm= im.getTestMethod();
       tm.setDate(im.getDate());
       result.add(tm);

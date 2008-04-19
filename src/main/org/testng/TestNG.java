@@ -158,6 +158,8 @@ public class TestNG {
 
   private IObjectFactory m_objectFactory;
   
+  private IInvokedMethodListener m_invokedMethodListener;
+  
   /**
    * Default constructor. Setting also usage of default listeners/reporters.
    */
@@ -581,7 +583,7 @@ public class TestNG {
     {
       exitWithError("Listener " + listener 
           + " must be one of ITestListener, ISuiteListener, IReporter, "
-          + " IAnnotationTransformer or IMethodInterceptor");
+          + " IAnnotationTransformer, IMethodInterceptor or IInvokedMethodListener");
     }
     else {
       if (listener instanceof ISuiteListener) {
@@ -598,6 +600,9 @@ public class TestNG {
       }
       if (listener instanceof IMethodInterceptor) {
         m_methodInterceptor = (IMethodInterceptor) listener;
+      }
+      if (listener instanceof IInvokedMethodListener) {
+        m_invokedMethodListener = (IInvokedMethodListener) listener;
       }
     }
   }
@@ -618,6 +623,10 @@ public class TestNG {
     if (null != listener) {
       m_reporters.add(listener);
     }
+  }
+  
+  public void setInvokedMethodListener(IInvokedMethodListener listener) {
+    m_invokedMethodListener = listener;
   }
   
   public List<IReporter> getReporters() {
@@ -841,7 +850,8 @@ public class TestNG {
           m_jdkAnnotationFinder
         },
         m_objectFactory,
-        m_methodInterceptor);
+        m_methodInterceptor,
+        m_invokedMethodListener);
     result.setSkipFailedInvocationCounts(m_skipFailedInvocationCounts);
 
     for (ISuiteListener isl : m_suiteListeners) {

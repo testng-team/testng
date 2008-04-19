@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.testng.IClass;
 import org.testng.IHookable;
+import org.testng.IInvokedMethodListener;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
@@ -50,17 +51,20 @@ public class Invoker implements IInvoker {
   private IAnnotationFinder m_annotationFinder;
   private SuiteRunState m_suiteState;
   private boolean m_skipFailedInvocationCounts;
+  private IInvokedMethodListener m_invokedMethodListener;
 
   public Invoker(ITestContext testContext,
                  ITestResultNotifier notifier,
                  SuiteRunState state,
                  IAnnotationFinder annotationFinder,
-                 boolean skipFailedInvocationCounts) {
+                 boolean skipFailedInvocationCounts,
+                 IInvokedMethodListener invokedMethodListener) {
     m_testContext= testContext;
     m_suiteState= state;
     m_notifier= notifier;
     m_annotationFinder= annotationFinder;
     m_skipFailedInvocationCounts = skipFailedInvocationCounts;
+    m_invokedMethodListener = invokedMethodListener;
   }
 
   /**
@@ -391,6 +395,9 @@ public class Invoker implements IInvoker {
                                           isClass, /* ??? */
                                           System.currentTimeMillis());
 
+      if (m_invokedMethodListener != null) {
+        m_invokedMethodListener.beforeInvocation(im, testResult);
+      }
       m_notifier.addInvokedMethod(im);
 
       try {
@@ -399,6 +406,9 @@ public class Invoker implements IInvoker {
       } 
       finally {
         Reporter.setCurrentTestResult(testResult);
+        if (m_invokedMethodListener != null) {
+          m_invokedMethodListener.afterInvocation(im, testResult);
+        }
       }      
     }
   }
@@ -433,6 +443,7 @@ public class Invoker implements IInvoker {
     // Create the ExtraOutput for this method
     //
     TestResult testResult = null;
+    InvokedMethod invokedMethod = null;
     try {
       testResult= new TestResult(testClass, instances[instanceIndex],
                                  tm,
@@ -444,12 +455,16 @@ public class Invoker implements IInvoker {
       testResult.setStatus(ITestResult.STARTED);
       runTestListeners(testResult);
 
-      InvokedMethod invokedMethod= new InvokedMethod(instances[instanceIndex],
+      invokedMethod= new InvokedMethod(instances[instanceIndex],
           tm,
           parameterValues,
           true,
           false,
           System.currentTimeMillis());
+
+      if (m_invokedMethodListener != null) {
+        m_invokedMethodListener.beforeInvocation(invokedMethod, testResult);
+      }
 
       m_notifier.addInvokedMethod(invokedMethod);
       
@@ -515,6 +530,11 @@ public class Invoker implements IInvoker {
       testResult.setThrowable(thr);
     }
     finally {
+      
+      if (m_invokedMethodListener != null) {
+        m_invokedMethodListener.afterInvocation(invokedMethod, testResult);
+      }
+
       //
       // Increment the invocation count for this method
       //

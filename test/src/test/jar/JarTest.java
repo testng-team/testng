@@ -5,11 +5,13 @@ import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
+import test.SimpleBaseTest;
+
 import java.io.File;
 
-public class JarTest {
+public class JarTest extends SimpleBaseTest {
   private TestListenerAdapter init(String jarFile) {
-    TestNG tng = new TestNG();
+    TestNG tng = create();
     File currentDir = new File(".");
     String path = currentDir.getAbsolutePath();
     char s = File.separatorChar;

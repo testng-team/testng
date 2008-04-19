@@ -4,20 +4,20 @@ import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
+import test.SimpleBaseTest;
 import testhelper.OutputDirectoryPatch;
 
 import static org.testng.Assert.assertTrue;
 
-public class AlwaysRunTest {
+public class AlwaysRunTest extends SimpleBaseTest {
   
   @Test
   public void withAlwaysRunAfter() {
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG testng = new TestNG();
+    TestNG testng = create();
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     testng.setTestClasses(new Class[] { AlwaysRunAfter1.class });
     testng.addListener(tla);
-    testng.setVerbose(0);
     testng.run();
     assertTrue(AlwaysRunAfter1.success(), "afterTestMethod should have run");
   }
@@ -25,11 +25,10 @@ public class AlwaysRunTest {
   @Test
   public void withoutAlwaysRunAfter() {
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG testng = new TestNG();
+    TestNG testng = create();
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     testng.setTestClasses(new Class[] { AlwaysRunAfter2.class });
     testng.addListener(tla);
-    testng.setVerbose(0);
     testng.run();
     assertTrue(AlwaysRunAfter2.success(), "afterTestMethod should not have run");
   }
@@ -37,12 +36,11 @@ public class AlwaysRunTest {
   @Test
   public void withoutAlwaysRunBefore() {
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG testng = new TestNG();
+    TestNG testng = create();
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     testng.setTestClasses(new Class[] { AlwaysRunBefore1.class });
     testng.setGroups("A");
     testng.addListener(tla);
-    testng.setVerbose(0);
     testng.run();
     assertTrue(AlwaysRunBefore1.success(), "before alwaysRun methods should have been run");
   }
