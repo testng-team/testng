@@ -108,6 +108,8 @@ google_ad_channel ="5560744946";
 
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#dependency-injection">5.19 - Dependency injection</a></br>
 
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#invokedmethodlistener">5.20 - Invoked method listeners</a></br>
+
 
 &nbsp; <a class="summary" href="#test-results">6 - Test results</a>
 <br>
@@ -1799,13 +1801,14 @@ will convert source files from one format to the other - run the command with no
 <a name="testng-listeners">5.18 - TestNG Listeners</a>
 </h4>
 
-There are several interfaces that allow you to modify TestNG's behavior.  These interfaces are broadly called "TestNG Listeners", and as of the current version, they are:
+There are several interfaces that allow you to modify TestNG's behavior.  These interfaces are broadly called "TestNG Listeners".  Here is a list of the supported listeners:
 
 <ul>
   <li><tt>IAnnotationTransformer</tt> (<a href="#annotationtransformers">doc</a>, <a href="../javadocs/org/testng/IAnnotationTransformer.html">javadoc</a>)
   <li><tt>IReporter</tt> (<a href="#logging-reporters">doc</a>, <a href="../javadocs/org/testng/IReporter.html">javadoc</a>)
   <li><tt>ITestListener</tt> (<a href="#logging-listeners">doc</a>, <a href="../javadocs/org/testng/ITestListener.html">javadoc</a>)
   <li><tt>IMethodInterceptor</tt> (<a href="#methodinterceptors">doc</a>, <a href="../javadocs/org/testng/IMethodInterceptor.html">javadoc</a>)
+  <li><tt>IInvokedMethodListener</tt> (<a href="#invokedmethodlistener">doc</a>, <a href="../javadocs/org/testng/IInvokedMethodListener.html">javadoc</a>)
 </ul>
 
 When you implement one of these interfaces, you can let TestNG know about it with either of the following ways:
@@ -1816,7 +1819,7 @@ When you implement one of these interfaces, you can let TestNG know about it wit
   <li>Using &lt;listeners&gt; in your <tt>testng.xml</tt> file.
 </ul>
 
-Here is how you can define listenersin your <tt>testng.xml</tt> file:
+Here is how you can define listeners in your <tt>testng.xml</tt> file:
 
 <pre class="prettyprint">
 &lt;suite&gt;
@@ -1850,6 +1853,29 @@ TestNG lets you declare additional parameters in your methods.  When this happen
 <li>
   Any @DataProvider can declare a parameter of type <tt>ITestContext</tt>.
 </ul>
+
+
+<!-------------------------------------
+  INVOKED METHOD LISTENERS
+ ------------------------------------>
+	
+<h4>
+<a name="invokedmethodlistener">5.20 - Listening to method invocations</a>
+</h4>
+
+The listener <tt><a href="../javadocs/org/testng/IInvokedMethodListener.html">IInvokedMethodListener</a></tt> allows you to be notified whenever TestNG is about to invoke a test (annotated with <tt>@Test</tt>) or configuration (annotated with any of the <tt>@Before</tt> or <tt>@After</tt> annotation) method.  You need to implement the following interface:
+
+<pre class="prettyprint">
+public interface IInvokedMethodListener extends ITestNGListener {
+  void beforeInvocation(IInvokedMethod method, ITestResult testResult);
+  void afterInvocation(IInvokedMethod method, ITestResult testResult);
+}
+</pre>
+
+and declare it as a listener, as explained in <a href="#testng-listeners">the section about TestNG listeners</a>.
+
+<p>
+
 
 
 

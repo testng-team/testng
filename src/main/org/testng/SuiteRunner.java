@@ -62,7 +62,7 @@ public class SuiteRunner implements ISuite, Serializable {
   transient private Boolean m_skipFailedInvocationCounts = Boolean.FALSE;
 
   private IMethodInterceptor m_methodInterceptor;
-  private IInvokedMethodListener m_invokedMethodListener;
+  private List<IInvokedMethodListener> m_invokedMethodListener;
   
 //  transient private IAnnotationTransformer m_annotationTransformer = null;
 
@@ -94,7 +94,7 @@ public class SuiteRunner implements ISuite, Serializable {
                      IAnnotationFinder[] finders,
                      IObjectFactory factory,
                      IMethodInterceptor methodInterceptor,
-                     IInvokedMethodListener invokedMethodListener)
+                     List<IInvokedMethodListener> invokedMethodListener)
   {
     init(suite, outputDir, runnerFactory, useDefaultListeners, finders, factory,
       methodInterceptor, invokedMethodListener);
@@ -107,7 +107,7 @@ public class SuiteRunner implements ISuite, Serializable {
                     IAnnotationFinder[] finders, 
                     IObjectFactory factory,
                     IMethodInterceptor methodInterceptor,
-                    IInvokedMethodListener invokedMethodListener)
+                    List<IInvokedMethodListener> invokedMethodListener)
   {
     m_suite = suite;
     m_useDefaultListeners = useDefaultListeners;
@@ -462,12 +462,12 @@ public class SuiteRunner implements ISuite, Serializable {
     private ITestListener[] m_failureGenerators;
     private boolean m_useDefaultListeners;
     private boolean m_skipFailedInvocationCounts;
-    private IInvokedMethodListener m_invokedMethodListener;
+    private List<IInvokedMethodListener> m_invokedMethodListener;
     
     public DefaultTestRunnerFactory(ITestListener[] failureListeners,
         boolean useDefaultListeners,
         boolean skipFailedInvocationCounts,
-        IInvokedMethodListener invokedMethodListener)
+        List<IInvokedMethodListener> invokedMethodListener)
     {
       m_failureGenerators = failureListeners;
       m_useDefaultListeners = useDefaultListeners;

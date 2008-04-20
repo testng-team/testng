@@ -7,7 +7,8 @@ Added: -testjar supports jar file with no testng.xml file
 Fixed: TESTNG-231: NullPointerException thrown converting a suite to XML (Mark)
 
 Doc:
-Added -testjar
+Added: 5.20: Invoked method listener
+Added: -testjar
 
 ===========================================================================
 5.8

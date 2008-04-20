@@ -2,7 +2,7 @@ package org.testng;
 
 /**
  * A listener that gets invoked before and after a method is invoked by TestNG.
- * This listener will only be invoked for configuration or test methods.
+ * This listener will only be invoked for configuration and test methods.
  */
 public interface IInvokedMethodListener extends ITestNGListener {
 

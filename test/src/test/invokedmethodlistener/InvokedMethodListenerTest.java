@@ -12,7 +12,7 @@ public class InvokedMethodListenerTest extends SimpleBaseTest {
     TestNG tng = create();
     tng.setTestClasses(classes);
     MyListener l = new MyListener();
-    tng.setInvokedMethodListener(l);
+    tng.addInvokedMethodListener(l);
     tng.run();
     
     Assert.assertEquals(l.getBeforeCount(), 9);

@@ -1,18 +1,9 @@
 package org.testng.internal;
 
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.testng.IClass;
 import org.testng.IHookable;
+import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
@@ -35,6 +26,16 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * This class is responsible for invoking methods:
  * - test methods
@@ -51,20 +52,20 @@ public class Invoker implements IInvoker {
   private IAnnotationFinder m_annotationFinder;
   private SuiteRunState m_suiteState;
   private boolean m_skipFailedInvocationCounts;
-  private IInvokedMethodListener m_invokedMethodListener;
+  private List<IInvokedMethodListener> m_invokedMethodListeners;
 
   public Invoker(ITestContext testContext,
                  ITestResultNotifier notifier,
                  SuiteRunState state,
                  IAnnotationFinder annotationFinder,
                  boolean skipFailedInvocationCounts,
-                 IInvokedMethodListener invokedMethodListener) {
+                 List<IInvokedMethodListener> invokedMethodListeners) {
     m_testContext= testContext;
     m_suiteState= state;
     m_notifier= notifier;
     m_annotationFinder= annotationFinder;
     m_skipFailedInvocationCounts = skipFailedInvocationCounts;
-    m_invokedMethodListener = invokedMethodListener;
+    m_invokedMethodListeners = invokedMethodListeners;
   }
 
   /**
@@ -395,9 +396,7 @@ public class Invoker implements IInvoker {
                                           isClass, /* ??? */
                                           System.currentTimeMillis());
 
-      if (m_invokedMethodListener != null) {
-        m_invokedMethodListener.beforeInvocation(im, testResult);
-      }
+      runInvokedMethodListeners(true /* before */, im, testResult);
       m_notifier.addInvokedMethod(im);
 
       try {
@@ -406,10 +405,25 @@ public class Invoker implements IInvoker {
       } 
       finally {
         Reporter.setCurrentTestResult(testResult);
-        if (m_invokedMethodListener != null) {
-          m_invokedMethodListener.afterInvocation(im, testResult);
-        }
+        runInvokedMethodListeners(false /* after */, im, testResult);
       }      
+    }
+  }
+
+  private void runInvokedMethodListeners(boolean before, IInvokedMethod method, 
+      ITestResult testResult)
+  {
+    if (m_invokedMethodListeners != null) {
+      if (before) {
+        for (IInvokedMethodListener l : m_invokedMethodListeners) {
+          l.beforeInvocation(method, testResult);
+        }
+      }
+      else {
+        for (IInvokedMethodListener l : m_invokedMethodListeners) {
+          l.afterInvocation(method, testResult);
+        }
+      }
     }
   }
 
@@ -462,9 +476,7 @@ public class Invoker implements IInvoker {
           false,
           System.currentTimeMillis());
 
-      if (m_invokedMethodListener != null) {
-        m_invokedMethodListener.beforeInvocation(invokedMethod, testResult);
-      }
+      runInvokedMethodListeners(true, invokedMethod, testResult);
 
       m_notifier.addInvokedMethod(invokedMethod);
       
@@ -531,9 +543,7 @@ public class Invoker implements IInvoker {
     }
     finally {
       
-      if (m_invokedMethodListener != null) {
-        m_invokedMethodListener.afterInvocation(invokedMethod, testResult);
-      }
+      runInvokedMethodListeners(false, invokedMethod, testResult);
 
       //
       // Increment the invocation count for this method

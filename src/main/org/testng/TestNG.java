@@ -158,7 +158,8 @@ public class TestNG {
 
   private IObjectFactory m_objectFactory;
   
-  private IInvokedMethodListener m_invokedMethodListener;
+  private List<IInvokedMethodListener> m_invokedMethodListeners
+    = new ArrayList<IInvokedMethodListener>();
   
   /**
    * Default constructor. Setting also usage of default listeners/reporters.
@@ -601,10 +602,11 @@ public class TestNG {
       if (listener instanceof IMethodInterceptor) {
         m_methodInterceptor = (IMethodInterceptor) listener;
       }
-      if (listener instanceof IInvokedMethodListener) {
-        m_invokedMethodListener = (IInvokedMethodListener) listener;
-      }
     }
+  }
+
+  public void addListener(IInvokedMethodListener listener) {
+    m_invokedMethodListeners.add((IInvokedMethodListener) listener);
   }
 
   public void addListener(ISuiteListener listener) {
@@ -625,8 +627,8 @@ public class TestNG {
     }
   }
   
-  public void setInvokedMethodListener(IInvokedMethodListener listener) {
-    m_invokedMethodListener = listener;
+  public void addInvokedMethodListener(IInvokedMethodListener listener) {
+    m_invokedMethodListeners.add(listener);
   }
   
   public List<IReporter> getReporters() {
@@ -851,7 +853,7 @@ public class TestNG {
         },
         m_objectFactory,
         m_methodInterceptor,
-        m_invokedMethodListener);
+        m_invokedMethodListeners);
     result.setSkipFailedInvocationCounts(m_skipFailedInvocationCounts);
 
     for (ISuiteListener isl : m_suiteListeners) {
