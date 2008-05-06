@@ -49,6 +49,20 @@ public class TimeOutTest extends BaseTest {
       verifyTests("Passed", passed, getPassedTests());
       verifyTests("Failed", failed, getFailedTests());
   }
+  
+  @Test
+  public void verifyInvocationTimeOut() {
+    addClass("test.timeout.InvocationTimeOutSampleTest");
+    run();
+    String[] passed = {
+        "shouldPass", 
+      };
+      String[] failed = {
+          "shouldFail"
+      };
+      verifyTests("Passed", passed, getPassedTests());
+      verifyTests("Failed", failed, getFailedTests());
+  }
 
   public Long getId() {
     return m_id;

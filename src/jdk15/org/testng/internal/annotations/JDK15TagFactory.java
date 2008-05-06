@@ -333,6 +333,7 @@ public class JDK15TagFactory {
     result.setDependsOnMethods(join(test.dependsOnMethods(), 
         findInheritedStringArray(cls, Test.class, "dependsOnMethods")));
     result.setTimeOut(test.timeOut());
+    result.setInvocationTimeOut(test.invocationTimeOut());
     result.setInvocationCount(test.invocationCount());
     result.setThreadPoolSize(test.threadPoolSize());
     result.setSuccessPercentage(test.successPercentage());

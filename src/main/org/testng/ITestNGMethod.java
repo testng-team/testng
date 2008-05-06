@@ -196,4 +196,9 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
   
   public boolean skipFailedInvocations();
   public void setSkipFailedInvocations(boolean skip);
+  
+  /**
+   * The time under which all invocationCount methods need to complete by.
+   */
+  public long getInvocationTimeOut();
 }

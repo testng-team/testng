@@ -96,6 +96,7 @@ public class TestNGMethod extends BaseTestMethod {
         setDescription(testAnnotation.getDescription());
         setRetryAnalyzer(testAnnotation.getRetryAnalyzer());
         setSkipFailedInvocations(testAnnotation.skipFailedInvocations());
+        setInvocationTimeOut(testAnnotation.invocationTimeOut());
       }
 
       // Groups

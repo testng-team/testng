@@ -708,6 +708,11 @@ public class MethodHelper {
       throw error[0];
     }
   }
+  
+  public static long calculateTimeOut(ITestNGMethod tm) {
+    long result = tm.getTimeOut() > 0 ? tm.getTimeOut() : tm.getInvocationTimeOut();
+    return result;
+  }
 
   /**
    * Invokes a method on a separate thread in order to allow us to timeout the invocation.
@@ -719,7 +724,8 @@ public class MethodHelper {
    * @throws InterruptedException
    * @throws ThreadExecutionException
    */
-  public static void invokeWithTimeout(ITestNGMethod tm, Object instance, Object[] parameterValues, ITestResult testResult) 
+  public static void invokeWithTimeout(ITestNGMethod tm, Object instance, Object[] parameterValues, 
+      ITestResult testResult) 
   throws InterruptedException, ThreadExecutionException {
 //    ICountDown done= ThreadUtil.createCountDown(1);
 //    IThreadFactory factory= ThreadUtil.createFactory();
@@ -728,14 +734,15 @@ public class MethodHelper {
     InvokeMethodRunnable imr = new InvokeMethodRunnable(tm, instance, parameterValues);
     IFutureResult future= exec.submitRunnable(imr);
     exec.shutdown();
-    boolean finished= exec.awaitTermination(tm.getTimeOut());
+    long realTimeOut = calculateTimeOut(tm);
+    boolean finished= exec.awaitTermination(realTimeOut);
   
     if(!finished) {
       exec.stopNow();
       testResult.setThrowable(new ThreadTimeoutException("Method "
                                                   + tm.getMethod()
                                                   + " didn't finish within the time-out "
-                                                  + tm.getTimeOut()));
+                                                  + realTimeOut));
       testResult.setStatus(ITestResult.FAILURE);
     }
     else {

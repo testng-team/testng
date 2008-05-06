@@ -407,6 +407,11 @@ public class JUnitUtils {
     public boolean isLastTimeOnly() {
       return false;
     }
+
+    public long getInvocationTimeOut() {
+      return 0;
+    }
+
   }
   
   /**
@@ -546,5 +551,6 @@ public class JUnitUtils {
       return m_realClass;
     }
   }
+
 
 }

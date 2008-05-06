@@ -1,42 +1,10 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="Single" verbose="0">
-
-<!--
-<listeners>
-  <listener class-name="priority.PriorityInterceptor" />
-</listeners>
--->
-
-<!--
-<suite-files>
-  <suite-file path="./testng.xml" />
-  <suite-file path="../test-14/testng.xml" />
-</suite-files>
--->
-
-<!--
-  <parameter name="factory-param" value="FactoryParam" />
-  <test name="test2">
-    <classes>
-      <class name="test.jar.JarTest" />
-    </classes>
-  </test>
--->
+<suite name="Single" verbose="2">
 
   <test name="Single" >
-<!--
-    <groups>
-      <run>
-        <include name="tests.functional.upload" />
-      </run>
-    </groups>
--->
     <classes>
-      <class name="test.methodinterceptors.MethodInterceptorTest" />
-<!--
-      <class name="test.jar.JarTest" />
--->
+      <class name="test.timeout.TimeOutTest" />
     </classes>
   </test>
   

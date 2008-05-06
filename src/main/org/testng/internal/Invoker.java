@@ -487,7 +487,7 @@ public class Invoker implements IInvoker {
             thisMethod.getName());
 
         // If no timeOut, just invoke the method
-        if(tm.getTimeOut() <= 0) {
+        if (MethodHelper.calculateTimeOut(tm) <= 0) {
           //
           // If this method is a IHookable, invoke its run() method
           //
@@ -512,6 +512,9 @@ public class Invoker implements IInvoker {
           }
         }
         else {
+          //
+          // Method with a timeout
+          //
           try {
             Reporter.setCurrentTestResult(testResult);
             MethodHelper.invokeWithTimeout(tm, instances[instanceIndex],
@@ -849,7 +852,11 @@ public class Invoker implements IInvoker {
     // - [DONE] solve the results different approaches: assignment and addAll
     //
     // For invocationCount>1 and threadPoolSize>1 the method will be invoked on a thread pool
-    int invocationCount = (testMethod.getThreadPoolSize() > 1 ? 1 : testMethod.getInvocationCount());
+    long timeOutInvocationCount = testMethod.getInvocationTimeOut();
+    boolean onlyOne = testMethod.getThreadPoolSize() > 1 ||
+      timeOutInvocationCount > 0;
+      
+    int invocationCount = onlyOne ? 1 : testMethod.getInvocationCount();
     
     int failureCount = 0;
 

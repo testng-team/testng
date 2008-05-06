@@ -44,6 +44,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   private int m_parameterInvocationCount = 1;
   private IRetryAnalyzer m_retryAnalyzer = null;
   private boolean m_skipFailedInvocations = true;
+  private long m_invocationTimeOut = 0L;
   
   /**
    * Constructs a <code>BaseTestMethod</code> TODO cquezel JavaDoc.
@@ -605,7 +606,13 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   public void setSkipFailedInvocations(boolean s) {
     m_skipFailedInvocations = s;
   }
+  
+  public void setInvocationTimeOut(long timeOut) {
+    m_invocationTimeOut = timeOut;
+  }
 
-
+  public long getInvocationTimeOut() {
+    return m_invocationTimeOut;
+  }
 
 }

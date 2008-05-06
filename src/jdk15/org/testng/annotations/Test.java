@@ -63,6 +63,14 @@ public @interface Test {
   public long timeOut() default 0;
   
   /**
+   * The maximum number of milliseconds that the total number of invocations on this test
+   * method should take.  This annotation will be ignored if the attribute invocationCount
+   * is not specified on this method.
+   * If it hasn't returned after this time, it will be marked as a FAIL.
+   */
+  public long invocationTimeOut() default 0;
+  
+  /**
    * The number of times this method should be invoked.
    */
   public int invocationCount() default 1;

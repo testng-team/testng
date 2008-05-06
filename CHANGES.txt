@@ -1,6 +1,7 @@
 ===========================================================================
 5.8.1
 
+Added: @Test(invocationTimeOut), which lets you set a time out for the total time taken by invocationCount
 Added: IInvokedMethodListener
 Fixed: NPE in XmlSuite#toXml
 Added: -testjar supports jar file with no testng.xml file

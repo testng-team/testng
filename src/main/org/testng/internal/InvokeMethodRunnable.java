@@ -29,6 +29,19 @@ public class InvokeMethodRunnable implements Runnable {
   }
 
   public void run() throws TestNGRuntimeException {
+    // If there is an invocation time out, all the invocations need to be done within this
+    // Runnable
+    if (m_method.getInvocationTimeOut() > 0) {
+      for (int i = 0; i < m_method.getInvocationCount(); i++) {
+        runOne();
+      }
+    }
+    else {
+      runOne();
+    }
+  }
+  
+  private void runOne() {
     try {
       RuntimeException t = null;
       try {

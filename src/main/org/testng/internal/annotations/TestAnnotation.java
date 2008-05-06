@@ -11,6 +11,7 @@ import org.testng.IRetryAnalyzer;
  */
 public class TestAnnotation extends TestOrConfiguration implements ITest {
   private long m_timeOut = 0;
+  private long m_invocationTimeOut = 0;
   private int m_invocationCount = 1;
   private int m_threadPoolSize = 0;
   private int m_successPercentage = 100;
@@ -73,6 +74,15 @@ public class TestAnnotation extends TestOrConfiguration implements ITest {
   public int getInvocationCount() {
     return m_invocationCount;
   }
+  
+  public long invocationTimeOut() {
+   return m_invocationTimeOut; 
+  }
+
+  public void setInvocationTimeOut(long timeOut) {
+    m_invocationTimeOut = timeOut;
+  }
+
 
   public int getSuccessPercentage() {
     return m_successPercentage;

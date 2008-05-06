@@ -66,4 +66,7 @@ public interface ITest extends ITestOrConfiguration {
   
   public boolean skipFailedInvocations();
   public void setSkipFailedInvocations(boolean skip);
+
+  public long invocationTimeOut();
+  public void setInvocationTimeOut(long timeOut);
 }
