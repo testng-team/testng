@@ -2041,7 +2041,7 @@ Here</a> is an example, and the ant task to create this report:
 &lt;target name="reports"&gt;
   &lt;junitreport todir="test-report"&gt;
     &lt;fileset dir="test-output"&gt;
-      &lt;include name="*.xml"/&gt;
+      &lt;include name="*/*.xml"/&gt;
     &lt;/fileset&gt;
  
     &lt;report format="noframes"  todir="test-report"/&gt;
