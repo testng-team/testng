@@ -1,10 +1,14 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="Single" verbose="2">
+<suite name="Single" verbose="10">
 
   <test name="Single" >
     <classes>
-      <class name="test.timeout.TimeOutTest" />
+      <class name="test.annotationtransformer.AnnotationTransformerTest">
+        <methods>
+          <include name="verifyConfigurationTransformer" />
+        </methods>
+      </class>
     </classes>
   </test>
   

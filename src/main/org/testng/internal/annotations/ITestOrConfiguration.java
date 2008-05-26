@@ -41,6 +41,7 @@ public interface ITestOrConfiguration extends IParameterizable {
    * Whether methods on this class/method are enabled.
    */
   public boolean getEnabled();
+  public void setEnabled(boolean enabled);
 
   /**
    * The description for this method, which will be shown in the reports.

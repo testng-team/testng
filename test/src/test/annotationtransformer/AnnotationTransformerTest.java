@@ -88,4 +88,18 @@ public class AnnotationTransformerTest {
   }
 
 
+  @Test(enabled=true)
+  public void verifyConfigurationTransformer() {
+    TestNG tng = new TestNG();
+    tng.setAnnotationTransformer(new ConfigurationTransformer());
+    tng.setVerbose(0);
+    tng.setTestClasses(new Class[] { ConfigurationSampleTest.class});
+    TestListenerAdapter tla = new TestListenerAdapter();
+    tng.addListener(tla);
+    
+    tng.run();
+
+    Assert.assertEquals(ConfigurationSampleTest.getBefore(), "correct");
+  }
+
 }

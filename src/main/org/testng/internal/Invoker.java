@@ -127,32 +127,40 @@ public class Invoker implements IInvoker {
         if(MethodHelper.isEnabled(objectClass, m_annotationFinder)) {
           configurationAnnotation= (IConfiguration) AnnotationHelper.findConfiguration(m_annotationFinder, method);
 
-          boolean isClassConfiguration= isClassConfiguration(configurationAnnotation);
-          boolean alwaysRun= isAlwaysRun(configurationAnnotation);
-
-          if(!confInvocationPassed(tm) && !alwaysRun) {
-            handleConfigurationSkip(tm, testResult);
-            continue;
+          if (MethodHelper.isEnabled(configurationAnnotation)) {
+            boolean isClassConfiguration= isClassConfiguration(configurationAnnotation);
+            boolean alwaysRun= isAlwaysRun(configurationAnnotation);
+  
+            if(!confInvocationPassed(tm) && !alwaysRun) {
+              handleConfigurationSkip(tm, testResult);
+              continue;
+            }
+  
+            log(3, "Invoking " + Utils.detailedMethodName(tm, true));
+            
+            Object[] parameters= Parameters.createConfigurationParameters(tm.getMethod(),
+                                                                          params,
+                                                                          currentTestMethod,
+                                                                          m_annotationFinder,
+                                                                          suite,
+                                                                          m_testContext);
+            testResult.setParameters(parameters);
+  
+            Object[] newInstances= (null != instance) ? new Object[] { instance } : instances;
+  
+            invokeConfigurationMethod(newInstances, tm,
+              parameters, isClassConfiguration, testResult);
+            
+            // TODO: probably we should trigger the event for each instance???
+            testResult.setEndMillis(System.currentTimeMillis());
+            runConfigurationListeners(testResult);
           }
-
-          log(3, "Invoking " + Utils.detailedMethodName(tm, true));
-          
-          Object[] parameters= Parameters.createConfigurationParameters(tm.getMethod(),
-                                                                        params,
-                                                                        currentTestMethod,
-                                                                        m_annotationFinder,
-                                                                        suite,
-                                                                        m_testContext);
-          testResult.setParameters(parameters);
-
-          Object[] newInstances= (null != instance) ? new Object[] { instance } : instances;
-
-          invokeConfigurationMethod(newInstances, tm,
-            parameters, isClassConfiguration, testResult);
-          
-          // TODO: probably we should trigger the event for each instance???
-          testResult.setEndMillis(System.currentTimeMillis());
-          runConfigurationListeners(testResult);
+          else {
+            log(3,
+                "Skipping "
+                + Utils.detailedMethodName(tm, true)
+                + " because it is not enabled");
+          }
         } // if is enabled
         else {
           log(3,

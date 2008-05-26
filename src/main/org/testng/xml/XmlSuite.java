@@ -379,7 +379,6 @@ public class XmlSuite implements Serializable, Cloneable {
     if (getVerbose() != null) {
       p.setProperty("verbose", getVerbose().toString());
     }
-    p.setProperty("verbose", getVerbose().toString());
     final String parallel= getParallel();
     if(null != parallel && !"".equals(parallel)) {
       p.setProperty("parallel", parallel);

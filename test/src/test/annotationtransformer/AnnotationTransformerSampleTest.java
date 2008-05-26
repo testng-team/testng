@@ -53,7 +53,7 @@ public class AnnotationTransformerSampleTest {
   }
   
   private void ppp(String string) {
-    if (false) {
+    if (true) {
       System.out.println("[AnnotationTransformerSampleTest] " + string);
     }
   }

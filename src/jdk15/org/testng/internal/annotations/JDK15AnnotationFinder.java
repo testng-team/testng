@@ -74,9 +74,9 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   public IAnnotation findAnnotation(Method m, Class annotationClass) {
     Class a = m_annotationMap.get(annotationClass);
     assert a != null : "Annotation class not found:" + annotationClass;
-    IAnnotation result = findAnnotation(m.getDeclaringClass(), m.getAnnotation(a), annotationClass);
-
-    transform(result, null, null, m);
+    IAnnotation result =
+      findAnnotation(m.getDeclaringClass(), m.getAnnotation(a), annotationClass,
+          null, null, m);
     
     return result;
   }
@@ -87,30 +87,123 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     if (a instanceof ITest) {
       m_transformer.transform((ITest) a, testClass, testConstructor, testMethod);
     }
+    else if ((m_transformer instanceof IAnnotationTransformer2 && a instanceof IConfiguration)) {
+      IConfiguration configuration = (IConfiguration) a;
+      ((IAnnotationTransformer2) m_transformer).transform(configuration,
+        testClass, testConstructor, testMethod);
+    }
   }
   
   public IAnnotation findAnnotation(Class cls, Class annotationClass) {
     Class a = m_annotationMap.get(annotationClass);
-    IAnnotation result = findAnnotation(cls, findAnnotationInSuperClasses(cls, a), annotationClass);
-    transform(result, cls, null, null);
-    
+    IAnnotation result =
+      findAnnotation(cls, findAnnotationInSuperClasses(cls, a), annotationClass,
+          cls, null, null);
+
     return result;
   }
   
   public IAnnotation findAnnotation(Constructor m, Class annotationClass) {
     Class a = m_annotationMap.get(annotationClass);
-    IAnnotation result = findAnnotation(m.getDeclaringClass(), m.getAnnotation(a), annotationClass);
-    transform(result, null, m, null);
+    IAnnotation result =
+      findAnnotation(m.getDeclaringClass(), m.getAnnotation(a), annotationClass,
+          null, m, null);
     
     return result;
   }
 
+  private Map<Pair, IAnnotation> m_annotations = Maps.newHashMap();
+
   private IAnnotation findAnnotation(Class cls, Annotation a, 
-      Class annotationClass) 
+      Class annotationClass,
+      Class testClass, Constructor testConstructor, Method testMethod) 
   {
-    IAnnotation result = 
-      m_tagFactory.createTag(cls, a, annotationClass, m_transformer);
+
+    IAnnotation result = null;
+    Pair<Annotation, Class> p1;
+    Pair<Annotation, Constructor> p2;
+    Pair<Annotation, Class> p3;
+    
+    Pair p;
+    if (testClass != null) {
+      p = new Pair(a, testClass);
+    }
+    else if (testConstructor != null) {
+      p = new Pair(a, testConstructor);
+    }
+    else {
+      p = new Pair(a, testMethod);
+    }
+    result = m_annotations.get(p);
+    if (result == null) {
+      result = m_tagFactory.createTag(cls, a, annotationClass, m_transformer);
+      m_annotations.put(p, result);
+      transform(result, testClass, testConstructor, testMethod);
+    }
+//    if (a instanceof org.testng.annotations.Test) {
+//      System.out.println("FINDING ANNOTATION @Test" + " ON METHOD " + testMethod);
+//    }
+//    Transformation t = m_annotations.get(a);
+////    if (t == null) {
+//      result = m_tagFactory.createTag(cls, a, annotationClass, m_transformer);
+//      m_annotations.put(a, new Transformation(result, testClass, testConstructor, testMethod));
+//      transform(result, testClass, testConstructor, testMethod);
+//    }
+//    else {
+//      result = t.annotation;
+//      System.out.println(result + " " + ((ITest) result).getInvocationCount() 
+//          + " IS CACHE FOR:" + ((org.testng.annotations.Test) a).invocationCount());
+//    }
+//
+//    if (result != null) {
+//      System.out.println("ORIG:" + ((org.testng.annotations.Test) a).invocationCount()
+//          + " TRANSFORMED:" + ((ITest) result).getInvocationCount());
+//    }
     return result;
+  }
+  
+  class Pair<A, B> {
+    public A a;
+    public B b;
+
+    public Pair(A a, B b) {
+      this.a = a;
+      this.b = b;
+    }
+
+    @Override
+    public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((a == null) ? 0 : a.hashCode());
+      result = prime * result + ((b == null) ? 0 : b.hashCode());
+      return result;
+    }
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj)
+        return true;
+      if (obj == null)
+        return false;
+      if (getClass() != obj.getClass())
+        return false;
+      final Pair other = (Pair) obj;
+      if (a == null) {
+        if (other.a != null)
+          return false;
+      }
+      else if (!a.equals(other.a))
+        return false;
+      if (b == null) {
+        if (other.b != null)
+          return false;
+      }
+      else if (!b.equals(other.b))
+        return false;
+      return true;
+    }
+    
+    
   }
 
   private void ppp(String string) {
