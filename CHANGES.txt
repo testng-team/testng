@@ -1,6 +1,8 @@
 ===========================================================================
 5.8.1
 
+Added: IAnnotationTransformer2
+Fixed: IIinvokedMethodListener was not correctly added in TestNG
 Added: @Test(invocationTimeOut), which lets you set a time out for the total time taken by invocationCount
 Added: IInvokedMethodListener
 Fixed: NPE in XmlSuite#toXml
@@ -8,7 +10,7 @@ Added: -testjar supports jar file with no testng.xml file
 Fixed: TESTNG-231: NullPointerException thrown converting a suite to XML (Mark)
 
 Doc:
-Added: 5.20: Invoked method listener
+Added: 5.20: IInvokedMethodListener
 Added: -testjar
 
 ===========================================================================
