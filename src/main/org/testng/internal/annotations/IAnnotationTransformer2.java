@@ -7,4 +7,5 @@ public interface IAnnotationTransformer2 extends IAnnotationTransformer {
   public void transform(IConfiguration annotation, Class testClass,
       Constructor testConstructor, Method testMethod);
   
+  public void transform(IDataProvider annotation, Method testMethod);
 }

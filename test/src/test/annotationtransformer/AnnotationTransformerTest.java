@@ -1,7 +1,5 @@
 package test.annotationtransformer;
 
-import java.util.List;
-
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
@@ -9,7 +7,11 @@ import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.internal.annotations.IAnnotationTransformer;
 
-public class AnnotationTransformerTest {
+import test.SimpleBaseTest;
+
+import java.util.List;
+
+public class AnnotationTransformerTest extends SimpleBaseTest {
   
   /**
    * Make sure that without a transformer in place, a class-level
@@ -88,7 +90,7 @@ public class AnnotationTransformerTest {
   }
 
 
-  @Test(enabled=true)
+  @Test
   public void verifyConfigurationTransformer() {
     TestNG tng = new TestNG();
     tng.setAnnotationTransformer(new ConfigurationTransformer());
@@ -100,6 +102,19 @@ public class AnnotationTransformerTest {
     tng.run();
 
     Assert.assertEquals(ConfigurationSampleTest.getBefore(), "correct");
+  }
+
+  @Test
+  public void verifyDataProviderTransformer() {
+    TestNG tng = create();
+    tng.setAnnotationTransformer(new DataProviderTransformer());
+    tng.setTestClasses(new Class[] { AnnotationTransformerDataProviderSampleTest.class});
+    TestListenerAdapter tla = new TestListenerAdapter();
+    tng.addListener(tla);
+    
+    tng.run();
+
+    Assert.assertEquals(tla.getPassedTests().size(), 1);
   }
 
 }

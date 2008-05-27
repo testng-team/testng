@@ -103,7 +103,7 @@ public class DependentTest extends BaseTest {
   }
   
   /**
-   * @testng.test
+   * @testng.test enabled=false
    * @testng.expected-exceptions value="org.testng.TestNGException" 
    */
   public void dependentMethodsWithCycle() {

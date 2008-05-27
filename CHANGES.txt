@@ -1,6 +1,7 @@
 ===========================================================================
 5.8.1
 
+Fixed: enabled was not working on configuration methods
 Added: IAnnotationTransformer2
 Fixed: IIinvokedMethodListener was not correctly added in TestNG
 Added: @Test(invocationTimeOut), which lets you set a time out for the total time taken by invocationCount

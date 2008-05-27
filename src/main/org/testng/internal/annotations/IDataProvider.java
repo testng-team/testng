@@ -11,4 +11,5 @@ public interface IDataProvider extends IAnnotation {
    * The name of this DataProvider.
    */
   public String getName();
+  public void setName(String name);
 }

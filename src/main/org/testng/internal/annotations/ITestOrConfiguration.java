@@ -47,5 +47,6 @@ public interface ITestOrConfiguration extends IParameterizable {
    * The description for this method, which will be shown in the reports.
    */
   public String getDescription();
+  public void setDescription(String description);
 
 }

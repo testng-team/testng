@@ -6,7 +6,7 @@
     <classes>
       <class name="test.annotationtransformer.AnnotationTransformerTest">
         <methods>
-          <include name="verifyConfigurationTransformer" />
+          <include name="verifyDataProviderTransformer" />
         </methods>
       </class>
     </classes>

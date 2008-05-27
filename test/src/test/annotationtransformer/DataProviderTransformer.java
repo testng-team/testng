@@ -8,25 +8,19 @@ import org.testng.internal.annotations.ITest;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-public class ConfigurationTransformer implements IAnnotationTransformer2 {
+public class DataProviderTransformer implements IAnnotationTransformer2 {
+
+  public void transform(IConfiguration annotation, Class testClass,
+      Constructor testConstructor, Method testMethod) 
+  {
+  }
+
+  public void transform(IDataProvider annotation, Method testMethod) {
+    annotation.setName("dataProvider");
+  }
 
   public void transform(ITest annotation, Class testClass,
       Constructor testConstructor, Method testMethod)
   {
   }
-
-  public void transform(IConfiguration annotation, Class testClass,
-      Constructor testConstructor, Method testMethod)
-  {
-    if (annotation.getBeforeTestMethod()) {
-      System.out.println("disabling " + testMethod + " "
-          + testMethod.hashCode() 
-          + " " + annotation.hashCode());
-      annotation.setEnabled(false);
-    }
-  }
-
-  public void transform(IDataProvider annotation, Method testMethod) {
-  }
-
 }

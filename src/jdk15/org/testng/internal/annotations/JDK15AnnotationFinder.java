@@ -84,13 +84,30 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   private void transform(IAnnotation a, Class testClass,
       Constructor testConstructor, Method testMethod)
   {
+    //
+    // Transform @Test
+    //
     if (a instanceof ITest) {
       m_transformer.transform((ITest) a, testClass, testConstructor, testMethod);
     }
-    else if ((m_transformer instanceof IAnnotationTransformer2 && a instanceof IConfiguration)) {
-      IConfiguration configuration = (IConfiguration) a;
-      ((IAnnotationTransformer2) m_transformer).transform(configuration,
-        testClass, testConstructor, testMethod);
+    
+    else if (m_transformer instanceof IAnnotationTransformer2) {
+      IAnnotationTransformer2 transformer2 = (IAnnotationTransformer2) m_transformer;
+
+      //
+      // Transform a configuration annotation
+      //
+      if (a instanceof IConfiguration) {
+        IConfiguration configuration = (IConfiguration) a;
+        transformer2.transform(configuration,testClass, testConstructor, testMethod);
+      }
+      
+      //
+      // Transform @DataProvider
+      //
+      else if (a instanceof IDataProvider) {
+        transformer2.transform((IDataProvider) a, testMethod);
+      }
     }
   }
   
@@ -140,25 +157,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
       m_annotations.put(p, result);
       transform(result, testClass, testConstructor, testMethod);
     }
-//    if (a instanceof org.testng.annotations.Test) {
-//      System.out.println("FINDING ANNOTATION @Test" + " ON METHOD " + testMethod);
-//    }
-//    Transformation t = m_annotations.get(a);
-////    if (t == null) {
-//      result = m_tagFactory.createTag(cls, a, annotationClass, m_transformer);
-//      m_annotations.put(a, new Transformation(result, testClass, testConstructor, testMethod));
-//      transform(result, testClass, testConstructor, testMethod);
-//    }
-//    else {
-//      result = t.annotation;
-//      System.out.println(result + " " + ((ITest) result).getInvocationCount() 
-//          + " IS CACHE FOR:" + ((org.testng.annotations.Test) a).invocationCount());
-//    }
-//
-//    if (result != null) {
-//      System.out.println("ORIG:" + ((org.testng.annotations.Test) a).invocationCount()
-//          + " TRANSFORMED:" + ((ITest) result).getInvocationCount());
-//    }
+
     return result;
   }
   
