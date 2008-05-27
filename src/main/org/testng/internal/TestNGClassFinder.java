@@ -11,8 +11,8 @@ import org.testng.IInstanceInfo;
 import org.testng.IObjectFactory;
 import org.testng.ITestContext;
 import org.testng.TestNGException;
+import org.testng.annotations.IAnnotation;
 import org.testng.internal.annotations.AnnotationHelper;
-import org.testng.internal.annotations.IAnnotation;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
 import org.testng.xml.XmlClass;
@@ -52,7 +52,7 @@ public class TestNGClassFinder extends BaseClassFinder {
         try {
           if (null != cls) {
             for (Method m : cls.getMethods()) {
-              IAnnotation a = annotationFinder.findAnnotation(m, org.testng.internal.annotations.IObjectFactory.class);
+              IAnnotation a = annotationFinder.findAnnotation(m, org.testng.annotations.IObjectFactory.class);
               if (null != a) {
                 if (!IObjectFactory.class.isAssignableFrom(m.getReturnType())) {
                   throw new TestNGException("Return type of " + m + " is not IObjectFactory");

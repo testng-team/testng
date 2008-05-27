@@ -1,15 +1,14 @@
 package test.mannotation;
 
-import java.lang.reflect.Method;
-
 import org.testng.Assert;
 import org.testng.annotations.Configuration;
+import org.testng.annotations.IConfiguration;
+import org.testng.annotations.ITest;
 import org.testng.annotations.Test;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
-import org.testng.internal.annotations.IConfiguration;
-import org.testng.internal.annotations.ITest;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
-import org.testng.internal.annotations.DefaultAnnotationTransformer;
+
+import java.lang.reflect.Method;
 
 public class MAnnotation2SampleTest {
   private JDK15AnnotationFinder m_finder;

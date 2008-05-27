@@ -1,5 +1,7 @@
 package org.testng.internal.annotations;
 
+import org.testng.annotations.IConfiguration;
+
 
 /**
  * An implementation of IConfiguration

@@ -1,4 +1,4 @@
-package org.testng.internal.annotations;
+package org.testng.annotations;
 
 /**
  * This interface captures methods common to @Test and @Configuration

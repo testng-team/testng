@@ -1,5 +1,7 @@
 package org.testng.internal.annotations;
 
+import org.testng.annotations.IFactory;
+
 /**
  * An implementation of IFactory
  * 

@@ -5,16 +5,16 @@ import java.lang.reflect.Method;
 
 import org.testng.Assert;
 import org.testng.annotations.Configuration;
+import org.testng.annotations.IConfiguration;
+import org.testng.annotations.IDataProvider;
+import org.testng.annotations.IExpectedExceptions;
+import org.testng.annotations.IFactory;
+import org.testng.annotations.IParameters;
+import org.testng.annotations.ITest;
 import org.testng.annotations.Test;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAfterSuite;
 import org.testng.internal.annotations.IBeforeSuite;
-import org.testng.internal.annotations.IConfiguration;
-import org.testng.internal.annotations.IDataProvider;
-import org.testng.internal.annotations.IExpectedExceptions;
-import org.testng.internal.annotations.IFactory;
-import org.testng.internal.annotations.IParameters;
-import org.testng.internal.annotations.ITest;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
 
 @Test(enabled = true)

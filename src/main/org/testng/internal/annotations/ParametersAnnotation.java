@@ -1,5 +1,7 @@
 package org.testng.internal.annotations;
 
+import org.testng.annotations.IParameters;
+
 
 /**
  * An implementation of IParameters

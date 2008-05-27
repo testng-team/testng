@@ -4,6 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.testng.Assert;
+import org.testng.annotations.IAnnotation;
+import org.testng.annotations.IConfiguration;
+import org.testng.annotations.IDataProvider;
+import org.testng.annotations.IExpectedExceptions;
+import org.testng.annotations.IFactory;
+import org.testng.annotations.IObjectFactory;
+import org.testng.annotations.IParameters;
+import org.testng.annotations.ITest;
 
 import com.thoughtworks.qdox.model.AbstractInheritableJavaEntity;
 import com.thoughtworks.qdox.model.DocletTag;

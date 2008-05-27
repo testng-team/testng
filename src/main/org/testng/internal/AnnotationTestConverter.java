@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.testng.AnnotationConverter;
+import org.testng.annotations.IAnnotation;
 import org.testng.internal.annotations.AnnotationHelper;
-import org.testng.internal.annotations.IAnnotation;
 import org.testng.internal.annotations.JDK14TagFactory;
 
 import com.thoughtworks.qdox.JavaDocBuilder;

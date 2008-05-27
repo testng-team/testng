@@ -1,6 +1,9 @@
 package org.testng.internal;
 
 import org.testng.ITestNGMethod;
+import org.testng.annotations.IAnnotation;
+import org.testng.annotations.IConfiguration;
+import org.testng.annotations.ITest;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.ConfigurationAnnotation;
 import org.testng.internal.annotations.IAfterClass;
@@ -8,15 +11,12 @@ import org.testng.internal.annotations.IAfterGroups;
 import org.testng.internal.annotations.IAfterMethod;
 import org.testng.internal.annotations.IAfterSuite;
 import org.testng.internal.annotations.IAfterTest;
-import org.testng.internal.annotations.IAnnotation;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IBeforeClass;
 import org.testng.internal.annotations.IBeforeGroups;
 import org.testng.internal.annotations.IBeforeMethod;
 import org.testng.internal.annotations.IBeforeSuite;
 import org.testng.internal.annotations.IBeforeTest;
-import org.testng.internal.annotations.IConfiguration;
-import org.testng.internal.annotations.ITest;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;

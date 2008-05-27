@@ -1,5 +1,7 @@
 package org.testng.internal.annotations;
 
+import org.testng.annotations.ITestOrConfiguration;
+
 public class TestOrConfiguration 
   extends BaseAnnotation
   implements ITestOrConfiguration 

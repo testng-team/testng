@@ -3,11 +3,11 @@ package org.testng.xml;
 import java.util.Arrays;
 
 import org.testng.SuiteRunner;
+import org.testng.annotations.ITest;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.AnnotationConfiguration;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.ITest;
 
 /**
  * This class represents an XML <code>&lt;suite&gt;</code> made up of one test which is

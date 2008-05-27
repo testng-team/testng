@@ -1,19 +1,17 @@
 package test.mannotation;
 
-import java.io.File;
+import org.testng.Assert;
+import org.testng.annotations.IConfiguration;
+import org.testng.annotations.IDataProvider;
+import org.testng.annotations.IExpectedExceptions;
+import org.testng.annotations.IFactory;
+import org.testng.annotations.IParameters;
+import org.testng.annotations.ITest;
+import org.testng.internal.annotations.DefaultAnnotationTransformer;
+import org.testng.internal.annotations.JDK14AnnotationFinder;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-
-import org.testng.Assert;
-import org.testng.internal.annotations.DefaultAnnotationTransformer;
-import org.testng.internal.annotations.IConfiguration;
-import org.testng.internal.annotations.IDataProvider;
-import org.testng.internal.annotations.IExpectedExceptions;
-import org.testng.internal.annotations.IFactory;
-import org.testng.internal.annotations.IParameters;
-import org.testng.internal.annotations.ITest;
-import org.testng.internal.annotations.JDK14AnnotationFinder;
-import org.testng.internal.annotations.DefaultAnnotationTransformer;
 
 /**
  * @testng.test

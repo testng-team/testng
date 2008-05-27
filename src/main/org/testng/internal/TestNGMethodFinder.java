@@ -9,10 +9,10 @@ import java.util.Set;
 import org.testng.ITestContext;
 import org.testng.ITestMethodFinder;
 import org.testng.ITestNGMethod;
+import org.testng.annotations.IConfiguration;
+import org.testng.annotations.ITest;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.IConfiguration;
-import org.testng.internal.annotations.ITest;
 
 /**
  * The default strategy for finding test methods:  look up

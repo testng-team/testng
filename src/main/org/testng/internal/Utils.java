@@ -26,10 +26,10 @@ import java.util.logging.Logger;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGCommandLineArgs;
 import org.testng.TestRunner;
+import org.testng.annotations.IConfiguration;
+import org.testng.annotations.ITest;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.IConfiguration;
-import org.testng.internal.annotations.ITest;
 import org.testng.log.TextFormatter;
 import org.testng.xml.XmlClass;
 

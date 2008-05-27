@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.testng.TestRunner;
+import org.testng.annotations.IAnnotation;
+import org.testng.annotations.ITest;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 

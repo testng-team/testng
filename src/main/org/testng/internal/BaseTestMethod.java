@@ -9,8 +9,8 @@ import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
+import org.testng.annotations.ITestOrConfiguration;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.ITestOrConfiguration;
 import org.testng.internal.thread.IAtomicInteger;
 import org.testng.internal.thread.ThreadUtil;
 

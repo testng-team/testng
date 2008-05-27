@@ -1,6 +1,7 @@
 package org.testng.internal.annotations;
 
 import org.testng.IRetryAnalyzer;
+import org.testng.annotations.ITest;
 
 
 /**

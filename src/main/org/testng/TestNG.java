@@ -3,6 +3,7 @@ package org.testng;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.testng.annotations.ITest;
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.IResultListener;
@@ -10,7 +11,6 @@ import org.testng.internal.Utils;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IAnnotationTransformer;
-import org.testng.internal.annotations.ITest;
 import org.testng.internal.annotations.JDK14AnnotationFinder;
 import org.testng.internal.version.VersionInfo;
 import org.testng.log4testng.Logger;

@@ -14,11 +14,11 @@ import org.testng.IMethodSelector;
 import org.testng.IObjectFactory;
 import org.testng.TestNGException;
 import org.testng.TestRunner;
-import org.testng.internal.annotations.IAnnotation;
+import org.testng.annotations.IAnnotation;
+import org.testng.annotations.IFactory;
+import org.testng.annotations.IParameters;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IAnnotationTransformer;
-import org.testng.internal.annotations.IFactory;
-import org.testng.internal.annotations.IParameters;
 import org.testng.junit.IJUnitTestRunner;
 import org.testng.xml.XmlTest;
 

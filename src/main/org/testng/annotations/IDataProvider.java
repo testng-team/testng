@@ -1,4 +1,4 @@
-package org.testng.internal.annotations;
+package org.testng.annotations;
 
 /**
  * Encapsulate the @DataProvider / @testng.data-provider annotation

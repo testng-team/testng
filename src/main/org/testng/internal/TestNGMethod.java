@@ -6,9 +6,9 @@ import java.util.Comparator;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
+import org.testng.annotations.ITest;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.ITest;
 
 
 /**

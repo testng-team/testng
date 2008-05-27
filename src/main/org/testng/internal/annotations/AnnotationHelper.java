@@ -7,6 +7,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.testng.ITestNGMethod;
+import org.testng.annotations.IConfiguration;
+import org.testng.annotations.IDataProvider;
+import org.testng.annotations.IExpectedExceptions;
+import org.testng.annotations.IFactory;
+import org.testng.annotations.IParameters;
+import org.testng.annotations.ITest;
 import org.testng.internal.TestNGMethod;
 import org.testng.internal.Utils;
 

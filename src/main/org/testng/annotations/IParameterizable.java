@@ -1,4 +1,4 @@
-package org.testng.internal.annotations;
+package org.testng.annotations;
 
 /**
  * Parent interface for annotations that can receive parameters.

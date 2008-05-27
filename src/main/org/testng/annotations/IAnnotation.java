@@ -1,5 +1,4 @@
-package org.testng.internal.annotations;
-
+package org.testng.annotations;
 
 /**
  * The parent interface for all the annotations.

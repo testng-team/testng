@@ -15,6 +15,14 @@ import org.testng.annotations.Configuration;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Factory;
+import org.testng.annotations.IAnnotation;
+import org.testng.annotations.IConfiguration;
+import org.testng.annotations.IDataProvider;
+import org.testng.annotations.IExpectedExceptions;
+import org.testng.annotations.IFactory;
+import org.testng.annotations.IObjectFactory;
+import org.testng.annotations.IParameters;
+import org.testng.annotations.ITest;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 

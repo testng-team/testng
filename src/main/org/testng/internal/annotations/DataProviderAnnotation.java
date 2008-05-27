@@ -1,5 +1,7 @@
 package org.testng.internal.annotations;
 
+import org.testng.annotations.IDataProvider;
+
 /**
  * An implementation of IDataProvider.
  * 

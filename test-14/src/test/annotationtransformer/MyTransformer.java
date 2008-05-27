@@ -4,7 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 import org.testng.internal.annotations.IAnnotationTransformer;
-import org.testng.internal.annotations.ITest;
+import org.testng.annotations.ITest;
 
 public class MyTransformer implements IAnnotationTransformer {
 
