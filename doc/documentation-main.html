@@ -1719,6 +1719,8 @@ For example, here is how you would override the attribute <tt>invocationCount</t
   }
 </pre>
 
+<tt>IAnnotationTransformer</tt> only lets you modify a <tt>@Test</tt> annotation.  If you need to modify another TestNG annotation (a configuration annotation, <tt>@Factory</tt> or <tt>@DataProvider</tt>), use an <tt>IAnnotationTransformer2</tt>.
+
 <!-------------------------------------
   METHOD INTERCEPTORS
  ------------------------------------>
