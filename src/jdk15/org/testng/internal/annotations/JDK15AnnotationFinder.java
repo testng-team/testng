@@ -1,5 +1,7 @@
 package org.testng.internal.annotations;
 
+import org.testng.IAnnotationTransformer;
+import org.testng.IAnnotationTransformer2;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterGroups;
 import org.testng.annotations.AfterMethod;

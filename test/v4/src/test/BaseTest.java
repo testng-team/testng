@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.testng.IAnnotationTransformer;
 import org.testng.ISuite;
 import org.testng.ITestResult;
 import org.testng.ITestRunnerFactory;
@@ -18,7 +19,6 @@ import org.testng.TestRunner;
 import org.testng.annotations.Configuration;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.IAnnotationTransformer;
 import org.testng.internal.annotations.JDK14AnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
 import org.testng.reporters.JUnitXMLReporter;

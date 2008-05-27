@@ -1,6 +1,5 @@
-package org.testng.internal.annotations;
+package org.testng;
 
-import org.testng.ITestNGListener;
 import org.testng.annotations.ITest;
 
 import java.lang.reflect.Constructor;

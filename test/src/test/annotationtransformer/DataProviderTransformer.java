@@ -4,7 +4,7 @@ import org.testng.annotations.IConfiguration;
 import org.testng.annotations.IDataProvider;
 import org.testng.annotations.IFactory;
 import org.testng.annotations.ITest;
-import org.testng.internal.annotations.IAnnotationTransformer2;
+import org.testng.IAnnotationTransformer2;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;

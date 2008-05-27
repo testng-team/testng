@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.testng.Assert;
+import org.testng.IAnnotationTransformer;
 import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IConfiguration;
 import org.testng.annotations.IDataProvider;

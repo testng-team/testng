@@ -17,7 +17,7 @@ import org.testng.TestListenerAdapter;
 import org.testng.TestRunner;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.IAnnotationTransformer;
+import org.testng.IAnnotationTransformer;
 import org.testng.internal.annotations.JDK14AnnotationFinder;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;

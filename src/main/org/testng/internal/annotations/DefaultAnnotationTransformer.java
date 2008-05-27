@@ -1,5 +1,6 @@
 package org.testng.internal.annotations;
 
+import org.testng.IAnnotationTransformer;
 import org.testng.annotations.ITest;
 
 import java.lang.reflect.Constructor;

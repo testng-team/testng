@@ -1,4 +1,4 @@
-package org.testng.internal.annotations;
+package org.testng;
 
 import org.testng.annotations.IConfiguration;
 import org.testng.annotations.IDataProvider;

@@ -12,6 +12,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import org.testng.IAnnotationTransformer;
 import org.testng.TestRunner;
 import org.testng.annotations.IAnnotation;
 import org.testng.annotations.ITest;

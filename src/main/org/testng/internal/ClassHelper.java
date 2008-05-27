@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.testng.IAnnotationTransformer;
 import org.testng.IClass;
 import org.testng.IMethodSelector;
 import org.testng.IObjectFactory;
@@ -18,7 +19,6 @@ import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IFactory;
 import org.testng.annotations.IParameters;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.IAnnotationTransformer;
 import org.testng.junit.IJUnitTestRunner;
 import org.testng.xml.XmlTest;
 

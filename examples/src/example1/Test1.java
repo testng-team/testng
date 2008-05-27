@@ -1,7 +1,9 @@
 package example1;
 
-import org.testng.annotations.Configuration;
-
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Test;
 
@@ -15,27 +17,27 @@ import org.testng.annotations.Test;
 @Test(groups = { "functest" }, enabled = true )
 public class Test1 {
   
-  @Configuration(beforeTestClass = true)
+  @BeforeClass
   public static void setupClass() {
     ppp("SETTING UP THE CLASS");
   }
 
-  @Configuration(afterTestClass = true)
+  @AfterClass
   public static void tearDownClass1() {
     ppp("TEARING DOWN THE CLASS PART 1");
   }
 
-  @Configuration(afterTestClass = true)
+  @AfterClass
   public static void tearDownClass2() {
     ppp("TEARING DOWN THE CLASS PART 2");
   }
 
-  @Configuration(beforeTestMethod = true)
+  @BeforeMethod
   public void beforeTestMethod() {
     ppp("BEFORE METHOD");  
   }
   
-  @Configuration(afterTestMethod = true)
+  @AfterMethod
   public void afterTestMethod() {
     ppp("AFTER METHOD");  
   }
@@ -65,14 +67,14 @@ public class Test1 {
     ppp(".....  TEST BROKEN");
   }
   
-  @Test(groups = { "fail" })
-  @ExpectedExceptions( { NumberFormatException.class, ArithmeticException.class } )
+  @Test(groups = { "fail" }, expectedExceptions =
+      { NumberFormatException.class, ArithmeticException.class } )
   public void throwExpectedException1ShouldPass() {
     throw new NumberFormatException();
   }
 
-  @Test(groups = { "fail" })
-  @ExpectedExceptions( { NumberFormatException.class, ArithmeticException.class } )
+  @Test(groups = { "fail" }, expectedExceptions = 
+    { NumberFormatException.class, ArithmeticException.class } )
   public void throwExpectedException2ShouldPass() {
     throw new ArithmeticException();
   }

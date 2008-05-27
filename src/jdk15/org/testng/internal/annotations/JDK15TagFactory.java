@@ -1,5 +1,6 @@
 package org.testng.internal.annotations;
 
+import org.testng.IAnnotationTransformer;
 import org.testng.TestNGException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterGroups;

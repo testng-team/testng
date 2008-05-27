@@ -23,7 +23,7 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.IAnnotationTransformer;
+import org.testng.IAnnotationTransformer;
 import org.testng.internal.annotations.JDK14AnnotationFinder;
 
 

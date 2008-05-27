@@ -5,7 +5,7 @@ import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.internal.annotations.IAnnotationTransformer;
+import org.testng.IAnnotationTransformer;
 
 import test.SimpleBaseTest;
 

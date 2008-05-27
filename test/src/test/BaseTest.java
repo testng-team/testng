@@ -1,15 +1,7 @@
 package test;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import org.testng.IAnnotationTransformer;
 import org.testng.ISuite;
 import org.testng.ITestResult;
 import org.testng.ITestRunnerFactory;
@@ -19,7 +11,6 @@ import org.testng.TestRunner;
 import org.testng.annotations.BeforeMethod;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.IAnnotationTransformer;
 import org.testng.internal.annotations.JDK14AnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
 import org.testng.reporters.JUnitXMLReporter;
@@ -29,6 +20,15 @@ import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Base class for tests
