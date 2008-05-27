@@ -120,7 +120,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
   @Test
   public void verifyFactoryTransformer() {
     TestNG tng = create();
-    tng.setAnnotationTransformer(new DataProviderTransformer());
+    tng.setAnnotationTransformer(new FactoryTransformer());
     tng.setTestClasses(new Class[] { AnnotationTransformerFactorySampleTest.class});
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);

@@ -1,17 +1,13 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="Single" verbose="10">
+<suite name="Single" verbose="1">
 
   <test name="Single" >
     <classes>
 <!--
-      <class name="test.annotationtransformer.AnnotationTransformerFactorySampleTest" />
+      <class name="test.annotationtransformer.AnnotationTransformerTest"/>
 -->
-      <class name="test.annotationtransformer.AnnotationTransformerTest">
-        <methods>
-          <include name="verifyFactoryTransformer" />
-        </methods>
-      </class>
+      <class name="test.tmp.dataprovider.InstanceDataProviderTest" />
     </classes>
   </test>
   

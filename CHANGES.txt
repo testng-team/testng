@@ -1,6 +1,7 @@
 ===========================================================================
 5.8.1
 
+Fixed: DataProviders from @Factory-created tests were all invoked from the same instance
 Fixed: enabled was not working on configuration methods
 Added: IAnnotationTransformer2
 Fixed: IIinvokedMethodListener was not correctly added in TestNG

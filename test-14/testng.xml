@@ -72,7 +72,9 @@
        <class name="test.enabled.VerifyEnabledTest" />
        <class name="test.mannotation.MAnnotationSampleTest" />
        <class name="test.abstractbaseclass.DummyTest" />
+<!--
        <class name="test.thread.ThreadPoolSizeTest" />
+-->
        <class name="test.thread.SequentialTest" />
        <class name="test.configuration.GroupLessTest" />
        <class name="test.reports.ReportTest" />

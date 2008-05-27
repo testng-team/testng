@@ -9,7 +9,7 @@ import org.testng.internal.annotations.ITest;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-public class DataProviderTransformer implements IAnnotationTransformer2 {
+public class FactoryTransformer implements IAnnotationTransformer2 {
 
   public void transform(IConfiguration annotation, Class testClass,
       Constructor testConstructor, Method testMethod) 
@@ -17,7 +17,6 @@ public class DataProviderTransformer implements IAnnotationTransformer2 {
   }
 
   public void transform(IDataProvider annotation, Method testMethod) {
-    annotation.setName("dataProvider");
   }
 
   public void transform(ITest annotation, Class testClass,
@@ -26,5 +25,6 @@ public class DataProviderTransformer implements IAnnotationTransformer2 {
   }
 
   public void transform(IFactory annotation, Method testMethod) {
+    annotation.setDataProvider("dataProvider");
   }
 }

@@ -811,8 +811,17 @@ public class Invoker implements IInvoker {
                                         Map<String, String> allParameterNames,
                                         XmlSuite suite,
                                         ITestContext testContext,
-                                        Object fedInstance) {
-    Object instance = testClass.getInstances(true)[0];
+                                        Object fedInstance)
+  {
+    Object instance;
+    if (fedInstance != null) {
+      instance = fedInstance;
+    }
+    else {
+      Object[] instances = testClass.getInstances(true);
+      instance = instances[0];
+    }
+    
     ParameterBag bag= handleParameters(testMethod, 
         instance, allParameterNames, parameters, suite, testContext, fedInstance);
 
