@@ -3,6 +3,7 @@ package test.annotationtransformer;
 import org.testng.internal.annotations.IAnnotationTransformer2;
 import org.testng.internal.annotations.IConfiguration;
 import org.testng.internal.annotations.IDataProvider;
+import org.testng.internal.annotations.IFactory;
 import org.testng.internal.annotations.ITest;
 
 import java.lang.reflect.Constructor;
@@ -27,6 +28,9 @@ public class ConfigurationTransformer implements IAnnotationTransformer2 {
   }
 
   public void transform(IDataProvider annotation, Method testMethod) {
+  }
+
+  public void transform(IFactory annotation, Method testMethod) {
   }
 
 }

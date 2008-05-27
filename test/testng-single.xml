@@ -4,9 +4,12 @@
 
   <test name="Single" >
     <classes>
+<!--
+      <class name="test.annotationtransformer.AnnotationTransformerFactorySampleTest" />
+-->
       <class name="test.annotationtransformer.AnnotationTransformerTest">
         <methods>
-          <include name="verifyDataProviderTransformer" />
+          <include name="verifyFactoryTransformer" />
         </methods>
       </class>
     </classes>

@@ -108,6 +108,13 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
       else if (a instanceof IDataProvider) {
         transformer2.transform((IDataProvider) a, testMethod);
       }
+
+      //
+      // Transform @Factory
+      //
+      else if (a instanceof IFactory) {
+        transformer2.transform((IFactory) a, testMethod);
+      }
     }
   }
   

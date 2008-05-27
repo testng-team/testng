@@ -3,6 +3,7 @@ package test.annotationtransformer;
 import org.testng.internal.annotations.IAnnotationTransformer2;
 import org.testng.internal.annotations.IConfiguration;
 import org.testng.internal.annotations.IDataProvider;
+import org.testng.internal.annotations.IFactory;
 import org.testng.internal.annotations.ITest;
 
 import java.lang.reflect.Constructor;
@@ -16,11 +17,14 @@ public class DataProviderTransformer implements IAnnotationTransformer2 {
   }
 
   public void transform(IDataProvider annotation, Method testMethod) {
-    annotation.setName("dataProvider");
   }
 
   public void transform(ITest annotation, Class testClass,
       Constructor testConstructor, Method testMethod)
   {
+  }
+
+  public void transform(IFactory annotation, Method testMethod) {
+    annotation.setDataProvider("dataProvider");
   }
 }

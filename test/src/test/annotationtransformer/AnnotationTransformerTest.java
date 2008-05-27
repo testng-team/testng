@@ -117,4 +117,16 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     Assert.assertEquals(tla.getPassedTests().size(), 1);
   }
 
+  @Test
+  public void verifyFactoryTransformer() {
+    TestNG tng = create();
+    tng.setAnnotationTransformer(new DataProviderTransformer());
+    tng.setTestClasses(new Class[] { AnnotationTransformerFactorySampleTest.class});
+    TestListenerAdapter tla = new TestListenerAdapter();
+    tng.addListener(tla);
+    
+    tng.run();
+
+    Assert.assertEquals(tla.getPassedTests().size(), 1);
+  }
 }

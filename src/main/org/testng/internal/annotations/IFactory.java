@@ -8,4 +8,5 @@ package org.testng.internal.annotations;
  */
 public interface IFactory extends IParameterizable {
   public String getDataProvider();
+  public void setDataProvider(String dataProvider);
 }

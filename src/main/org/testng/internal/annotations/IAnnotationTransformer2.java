@@ -8,4 +8,6 @@ public interface IAnnotationTransformer2 extends IAnnotationTransformer {
       Constructor testConstructor, Method testMethod);
   
   public void transform(IDataProvider annotation, Method testMethod);
+
+  public void transform(IFactory annotation, Method testMethod);
 }
