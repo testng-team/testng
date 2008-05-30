@@ -6,7 +6,7 @@ package org.testng.annotations;
  * Created on Dec 20, 2005
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
-public interface IConfiguration extends ITestOrConfiguration {
+public interface IConfigurationAnnotation extends ITestOrConfiguration {
   /**
    * If true, the annotated method will be run after the test class is instantiated
    * and before the test method is invoked.

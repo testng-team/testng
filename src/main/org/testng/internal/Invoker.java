@@ -16,7 +16,7 @@ import org.testng.SkipException;
 import org.testng.SuiteRunState;
 import org.testng.TestException;
 import org.testng.TestNGException;
-import org.testng.annotations.IConfiguration;
+import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.internal.InvokeMethodRunnable.TestNGRuntimeException;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -114,7 +114,7 @@ public class Invoker implements IInvoker {
                                              System.currentTimeMillis(),
                                              System.currentTimeMillis());
 
-      IConfiguration configurationAnnotation= null;
+      IConfigurationAnnotation configurationAnnotation= null;
       try {
         Object[] instances= tm.getInstances();
         if (instances == null || instances.length == 0) instances = new Object[] { instance };
@@ -125,7 +125,7 @@ public class Invoker implements IInvoker {
         // - the test is enabled and
         // - the Configuration method belongs to the same class or a parent
         if(MethodHelper.isEnabled(objectClass, m_annotationFinder)) {
-          configurationAnnotation= (IConfiguration) AnnotationHelper.findConfiguration(m_annotationFinder, method);
+          configurationAnnotation= (IConfigurationAnnotation) AnnotationHelper.findConfiguration(m_annotationFinder, method);
 
           if (MethodHelper.isEnabled(configurationAnnotation)) {
             boolean isClassConfiguration= isClassConfiguration(configurationAnnotation);
@@ -196,7 +196,7 @@ public class Invoker implements IInvoker {
   /**
    * Is the current <code>IConfiguration</code> a class-level method.
    */
-  private  boolean isClassConfiguration(IConfiguration configurationAnnotation) {
+  private  boolean isClassConfiguration(IConfigurationAnnotation configurationAnnotation) {
     if(null == configurationAnnotation) {
       return false;
     }
@@ -215,7 +215,7 @@ public class Invoker implements IInvoker {
   /**
    * Is the <code>IConfiguration</code> marked as alwaysRun.
    */
-  private boolean isAlwaysRun(IConfiguration configurationAnnotation) {
+  private boolean isAlwaysRun(IConfigurationAnnotation configurationAnnotation) {
     if(null == configurationAnnotation) {
       return false;
     }
@@ -236,7 +236,7 @@ public class Invoker implements IInvoker {
   private void handleConfigurationFailure(Throwable ite,
                                           ITestNGMethod tm,
                                           ITestResult testResult,
-                                          IConfiguration annotation,
+                                          IConfigurationAnnotation annotation,
                                           XmlSuite suite) 
   {
     Throwable cause= ite.getCause() != null ? ite.getCause() : ite;
@@ -292,7 +292,7 @@ public class Invoker implements IInvoker {
    * Record internally the failure of a Configuration, so that we can determine
    * later if @Test should be skipped.
    */
-  private void recordConfigurationInvocationFailed(ITestNGMethod tm, IConfiguration annotation, XmlSuite suite) {
+  private void recordConfigurationInvocationFailed(ITestNGMethod tm, IConfigurationAnnotation annotation, XmlSuite suite) {
     // If beforeTestClass/beforeTestMethod or afterTestClass/afterTestMethod 
     // failed, mark this entire class as failed, but only this class (the other 
     // classes should keep running normally)

@@ -1,6 +1,6 @@
 package org.testng.internal.annotations;
 
-import org.testng.annotations.IExpectedExceptions;
+import org.testng.annotations.IExpectedExceptionsAnnotation;
 
 /**
  * An implementation of IExpectedExceptions
@@ -10,7 +10,7 @@ import org.testng.annotations.IExpectedExceptions;
  */
 public class ExpectedExceptionsAnnotation 
   extends BaseAnnotation
-  implements IExpectedExceptions 
+  implements IExpectedExceptionsAnnotation 
 {
   private Class[] m_value = {};
   

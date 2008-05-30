@@ -17,13 +17,13 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Factory;
 import org.testng.annotations.IAnnotation;
-import org.testng.annotations.IConfiguration;
-import org.testng.annotations.IDataProvider;
-import org.testng.annotations.IExpectedExceptions;
-import org.testng.annotations.IFactory;
-import org.testng.annotations.IObjectFactory;
-import org.testng.annotations.IParameters;
-import org.testng.annotations.ITest;
+import org.testng.annotations.IConfigurationAnnotation;
+import org.testng.annotations.IDataProviderAnnotation;
+import org.testng.annotations.IExpectedExceptionsAnnotation;
+import org.testng.annotations.IFactoryAnnotation;
+import org.testng.annotations.IObjectFactoryAnnotation;
+import org.testng.annotations.IParametersAnnotation;
+import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
@@ -49,25 +49,25 @@ public class JDK15TagFactory {
     IAnnotation result = null;
 
     if (a != null) {
-      if (annotationClass == IConfiguration.class) {
+      if (annotationClass == IConfigurationAnnotation.class) {
         result = createConfigurationTag(cls, a);
       }
-      else if (annotationClass == IDataProvider.class) {      
+      else if (annotationClass == IDataProviderAnnotation.class) {      
         result = createDataProviderTag(a);
       }
-      else if (annotationClass == IExpectedExceptions.class) {      
+      else if (annotationClass == IExpectedExceptionsAnnotation.class) {      
         result = createExpectedExceptionsTag(a);
       }
-      else if (annotationClass == IFactory.class) {
+      else if (annotationClass == IFactoryAnnotation.class) {
         result = createFactoryTag(a);
       }
-      else if (annotationClass == IParameters.class) {      
+      else if (annotationClass == IParametersAnnotation.class) {      
         result = createParametersTag(a);
       }
-      else if (annotationClass == IObjectFactory.class) {      
+      else if (annotationClass == IObjectFactoryAnnotation.class) {      
         result = createObjectFactoryTag(a);
       }
-      else if (annotationClass == ITest.class) {      
+      else if (annotationClass == ITestAnnotation.class) {      
         result = createTestTag(cls, a, transformer);
       }
       else if (annotationClass == IBeforeSuite.class || annotationClass == IAfterSuite.class || 

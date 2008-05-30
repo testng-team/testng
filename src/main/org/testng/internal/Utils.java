@@ -26,8 +26,8 @@ import java.util.logging.Logger;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGCommandLineArgs;
 import org.testng.TestRunner;
-import org.testng.annotations.IConfiguration;
-import org.testng.annotations.ITest;
+import org.testng.annotations.IConfigurationAnnotation;
+import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.log.TextFormatter;
@@ -259,7 +259,7 @@ public final class Utils {
     Class<?> cls = m.getDeclaringClass();
 
     // Collect groups on the class
-    ITest tc = AnnotationHelper.findTest(finder, cls);
+    ITestAnnotation tc = AnnotationHelper.findTest(finder, cls);
     if (null != tc) {
       for (String group : tc.getDependsOnGroups()) {
         vResult.add(group);
@@ -267,7 +267,7 @@ public final class Utils {
     }
 
     // Collect groups on the method
-    ITest tm = AnnotationHelper.findTest(finder, m);
+    ITestAnnotation tm = AnnotationHelper.findTest(finder, m);
     if (null != tm) {
       String[] groups = tm.getDependsOnGroups();
 
@@ -289,7 +289,7 @@ public final class Utils {
     Class<?> cls = m.getDeclaringClass();
 
     // Collect groups on the class
-    ITest tc = AnnotationHelper.findTest(finder, cls);
+    ITestAnnotation tc = AnnotationHelper.findTest(finder, cls);
     if (null != tc) {
       for (String group : tc.getGroups()) {
         vResult.add(group);
@@ -297,7 +297,7 @@ public final class Utils {
     }
 
     // Collect groups on the method
-    ITest tm = AnnotationHelper.findTest(finder, m);
+    ITestAnnotation tm = AnnotationHelper.findTest(finder, m);
     if (null != tm) {
       String[] groups = tm.getGroups();
 
@@ -318,7 +318,7 @@ public final class Utils {
     String[] result = {};
 
     // Collect groups on the method
-    ITest tm = AnnotationHelper.findTest(finder, m);
+    ITestAnnotation tm = AnnotationHelper.findTest(finder, m);
     if (null != tm) {
       result = tm.getGroups();
     }
@@ -335,7 +335,7 @@ public final class Utils {
     String[] result = {};
 
     // Collect groups on the method
-    IConfiguration tm = AnnotationHelper.findConfiguration(finder, m);
+    IConfigurationAnnotation tm = AnnotationHelper.findConfiguration(finder, m);
     if (null != tm) {
       result = tm.getDependsOnGroups();
     }

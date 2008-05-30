@@ -1,7 +1,7 @@
 package org.testng.internal.annotations;
 
 import org.testng.IRetryAnalyzer;
-import org.testng.annotations.ITest;
+import org.testng.annotations.ITestAnnotation;
 
 
 /**
@@ -10,7 +10,7 @@ import org.testng.annotations.ITest;
  * Created on Dec 20, 2005
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
-public class TestAnnotation extends TestOrConfiguration implements ITest {
+public class TestAnnotation extends TestOrConfiguration implements ITestAnnotation {
   private long m_timeOut = 0;
   private long m_invocationTimeOut = 0;
   private int m_invocationCount = 1;

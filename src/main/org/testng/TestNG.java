@@ -3,7 +3,7 @@ package org.testng;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.testng.annotations.ITest;
+import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.IResultListener;
@@ -432,7 +432,7 @@ public class TestNG {
     
     for (int i = 0; i < classes.length; i++) {
       Class c = classes[i];
-      ITest test = (ITest) finder.findAnnotation(c, ITest.class);
+      ITestAnnotation test = (ITestAnnotation) finder.findAnnotation(c, ITestAnnotation.class);
       String suiteName = getDefaultSuiteName();
       String testName = getDefaultTestName();
       if (test != null) {

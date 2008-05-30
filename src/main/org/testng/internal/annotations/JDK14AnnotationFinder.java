@@ -15,7 +15,7 @@ import java.util.Map;
 import org.testng.IAnnotationTransformer;
 import org.testng.TestRunner;
 import org.testng.annotations.IAnnotation;
-import org.testng.annotations.ITest;
+import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 
@@ -183,8 +183,8 @@ public class JDK14AnnotationFinder implements IAnnotationFinder {
   }
   
   private void transform (IAnnotation a, Class testClass, Constructor testConstructor, Method testMethod) {
-    if (a instanceof ITest) {
-      m_transformer.transform((ITest) a, testClass, testConstructor, testMethod);
+    if (a instanceof ITestAnnotation) {
+      m_transformer.transform((ITestAnnotation) a, testClass, testConstructor, testMethod);
     }
   }
 

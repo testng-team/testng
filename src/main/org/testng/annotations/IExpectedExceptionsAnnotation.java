@@ -5,7 +5,7 @@ package org.testng.annotations;
  * Created on Dec 20, 2005
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
-public interface IExpectedExceptions extends IAnnotation {
+public interface IExpectedExceptionsAnnotation extends IAnnotation {
   /**
    * The list of exceptions expected to be thrown by this method.
    */

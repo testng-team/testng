@@ -6,7 +6,7 @@ import java.util.Comparator;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
-import org.testng.annotations.ITest;
+import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 
@@ -79,7 +79,7 @@ public class TestNGMethod extends BaseTestMethod {
 
   private void init() {
     {
-      ITest testAnnotation = AnnotationHelper.findTest(getAnnotationFinder(), m_method);
+      ITestAnnotation testAnnotation = AnnotationHelper.findTest(getAnnotationFinder(), m_method);
       
       if (testAnnotation == null) {
         // Try on the class
@@ -101,7 +101,7 @@ public class TestNGMethod extends BaseTestMethod {
 
       // Groups
       {
-        initGroups(ITest.class);
+        initGroups(ITestAnnotation.class);
       }
     }
   }

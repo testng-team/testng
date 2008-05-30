@@ -1,8 +1,8 @@
 package org.testng;
 
-import org.testng.annotations.IConfiguration;
-import org.testng.annotations.IDataProvider;
-import org.testng.annotations.IFactory;
+import org.testng.annotations.IConfigurationAnnotation;
+import org.testng.annotations.IDataProviderAnnotation;
+import org.testng.annotations.IFactoryAnnotation;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -27,7 +27,7 @@ public interface IAnnotationTransformer2 extends IAnnotationTransformer {
    * @param testMethod If the annotation was found on a method,
    * this parameter represents this method (null otherwise).
    */
-  public void transform(IConfiguration annotation, Class testClass,
+  public void transform(IConfigurationAnnotation annotation, Class testClass,
       Constructor testConstructor, Method testMethod);
   
   /**
@@ -35,12 +35,12 @@ public interface IAnnotationTransformer2 extends IAnnotationTransformer {
    *
    * @param method The method annotated with the IDataProvider annotation.
    */
-  public void transform(IDataProvider annotation, Method method);
+  public void transform(IDataProviderAnnotation annotation, Method method);
 
   /**
    * Transform an IFactory annotation. 
    *
    * @param method The method annotated with the IFactory annotation.
    */
-  public void transform(IFactory annotation, Method method);
+  public void transform(IFactoryAnnotation annotation, Method method);
 }

@@ -7,12 +7,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.testng.ITestNGMethod;
-import org.testng.annotations.IConfiguration;
-import org.testng.annotations.IDataProvider;
-import org.testng.annotations.IExpectedExceptions;
-import org.testng.annotations.IFactory;
-import org.testng.annotations.IParameters;
-import org.testng.annotations.ITest;
+import org.testng.annotations.IConfigurationAnnotation;
+import org.testng.annotations.IDataProviderAnnotation;
+import org.testng.annotations.IExpectedExceptionsAnnotation;
+import org.testng.annotations.IFactoryAnnotation;
+import org.testng.annotations.IParametersAnnotation;
+import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.TestNGMethod;
 import org.testng.internal.Utils;
 
@@ -25,35 +25,35 @@ import org.testng.internal.Utils;
  */
 public class AnnotationHelper {
 
-  public static ITest findTest(IAnnotationFinder finder, Class cls) {
-    return (ITest) finder.findAnnotation(cls, ITest.class);
+  public static ITestAnnotation findTest(IAnnotationFinder finder, Class cls) {
+    return (ITestAnnotation) finder.findAnnotation(cls, ITestAnnotation.class);
   }
   
-  public static ITest findTest(IAnnotationFinder finder, Method m) {
-    return (ITest) finder.findAnnotation(m, ITest.class);
+  public static ITestAnnotation findTest(IAnnotationFinder finder, Method m) {
+    return (ITestAnnotation) finder.findAnnotation(m, ITestAnnotation.class);
   }
   
-  public static IFactory findFactory(IAnnotationFinder finder, Method m) {
-    return (IFactory) finder.findAnnotation(m, IFactory.class);
+  public static IFactoryAnnotation findFactory(IAnnotationFinder finder, Method m) {
+    return (IFactoryAnnotation) finder.findAnnotation(m, IFactoryAnnotation.class);
   }
 
-  public static ITest findTest(IAnnotationFinder finder, Constructor ctor) {
-    return (ITest) finder.findAnnotation(ctor, ITest.class);
+  public static ITestAnnotation findTest(IAnnotationFinder finder, Constructor ctor) {
+    return (ITestAnnotation) finder.findAnnotation(ctor, ITestAnnotation.class);
   }
 
-  public static IConfiguration findConfiguration(IAnnotationFinder finder, Constructor ctor) {
-    IConfiguration result = (IConfiguration) finder.findAnnotation(ctor, IConfiguration.class);
+  public static IConfigurationAnnotation findConfiguration(IAnnotationFinder finder, Constructor ctor) {
+    IConfigurationAnnotation result = (IConfigurationAnnotation) finder.findAnnotation(ctor, IConfigurationAnnotation.class);
     if (result == null) {
-      IConfiguration bs = (IConfiguration) finder.findAnnotation(ctor, IBeforeSuite.class);
-      IConfiguration as = (IConfiguration) finder.findAnnotation(ctor, IAfterSuite.class);
-      IConfiguration bt = (IConfiguration) finder.findAnnotation(ctor, IBeforeTest.class);
-      IConfiguration at = (IConfiguration) finder.findAnnotation(ctor, IAfterTest.class);
-      IConfiguration bg = (IConfiguration) finder.findAnnotation(ctor, IBeforeGroups.class);
-      IConfiguration ag = (IConfiguration) finder.findAnnotation(ctor, IAfterGroups.class);
-      IConfiguration bc = (IConfiguration) finder.findAnnotation(ctor, IBeforeClass.class);
-      IConfiguration ac = (IConfiguration) finder.findAnnotation(ctor, IAfterClass.class);
-      IConfiguration bm = (IConfiguration) finder.findAnnotation(ctor, IBeforeMethod.class);
-      IConfiguration am = (IConfiguration) finder.findAnnotation(ctor, IAfterMethod.class);
+      IConfigurationAnnotation bs = (IConfigurationAnnotation) finder.findAnnotation(ctor, IBeforeSuite.class);
+      IConfigurationAnnotation as = (IConfigurationAnnotation) finder.findAnnotation(ctor, IAfterSuite.class);
+      IConfigurationAnnotation bt = (IConfigurationAnnotation) finder.findAnnotation(ctor, IBeforeTest.class);
+      IConfigurationAnnotation at = (IConfigurationAnnotation) finder.findAnnotation(ctor, IAfterTest.class);
+      IConfigurationAnnotation bg = (IConfigurationAnnotation) finder.findAnnotation(ctor, IBeforeGroups.class);
+      IConfigurationAnnotation ag = (IConfigurationAnnotation) finder.findAnnotation(ctor, IAfterGroups.class);
+      IConfigurationAnnotation bc = (IConfigurationAnnotation) finder.findAnnotation(ctor, IBeforeClass.class);
+      IConfigurationAnnotation ac = (IConfigurationAnnotation) finder.findAnnotation(ctor, IAfterClass.class);
+      IConfigurationAnnotation bm = (IConfigurationAnnotation) finder.findAnnotation(ctor, IBeforeMethod.class);
+      IConfigurationAnnotation am = (IConfigurationAnnotation) finder.findAnnotation(ctor, IAfterMethod.class);
       
       if (bs != null || as != null || bt != null || at != null || bg != null || ag != null
           || bc != null || ac != null || bm != null || am != null) 
@@ -65,19 +65,19 @@ public class AnnotationHelper {
     return result;
   }
 
-  public static IConfiguration findConfiguration(IAnnotationFinder finder, Method m) {
-    IConfiguration result = (IConfiguration) finder.findAnnotation(m, IConfiguration.class);
+  public static IConfigurationAnnotation findConfiguration(IAnnotationFinder finder, Method m) {
+    IConfigurationAnnotation result = (IConfigurationAnnotation) finder.findAnnotation(m, IConfigurationAnnotation.class);
     if (result == null) {
-      IConfiguration bs = (IConfiguration) finder.findAnnotation(m, IBeforeSuite.class);
-      IConfiguration as = (IConfiguration) finder.findAnnotation(m, IAfterSuite.class);
-      IConfiguration bt = (IConfiguration) finder.findAnnotation(m, IBeforeTest.class);
-      IConfiguration at = (IConfiguration) finder.findAnnotation(m, IAfterTest.class);
-      IConfiguration bg = (IConfiguration) finder.findAnnotation(m, IBeforeGroups.class);
-      IConfiguration ag = (IConfiguration) finder.findAnnotation(m, IAfterGroups.class);
-      IConfiguration bc = (IConfiguration) finder.findAnnotation(m, IBeforeClass.class);
-      IConfiguration ac = (IConfiguration) finder.findAnnotation(m, IAfterClass.class);
-      IConfiguration bm = (IConfiguration) finder.findAnnotation(m, IBeforeMethod.class);
-      IConfiguration am = (IConfiguration) finder.findAnnotation(m, IAfterMethod.class);
+      IConfigurationAnnotation bs = (IConfigurationAnnotation) finder.findAnnotation(m, IBeforeSuite.class);
+      IConfigurationAnnotation as = (IConfigurationAnnotation) finder.findAnnotation(m, IAfterSuite.class);
+      IConfigurationAnnotation bt = (IConfigurationAnnotation) finder.findAnnotation(m, IBeforeTest.class);
+      IConfigurationAnnotation at = (IConfigurationAnnotation) finder.findAnnotation(m, IAfterTest.class);
+      IConfigurationAnnotation bg = (IConfigurationAnnotation) finder.findAnnotation(m, IBeforeGroups.class);
+      IConfigurationAnnotation ag = (IConfigurationAnnotation) finder.findAnnotation(m, IAfterGroups.class);
+      IConfigurationAnnotation bc = (IConfigurationAnnotation) finder.findAnnotation(m, IBeforeClass.class);
+      IConfigurationAnnotation ac = (IConfigurationAnnotation) finder.findAnnotation(m, IAfterClass.class);
+      IConfigurationAnnotation bm = (IConfigurationAnnotation) finder.findAnnotation(m, IBeforeMethod.class);
+      IConfigurationAnnotation am = (IConfigurationAnnotation) finder.findAnnotation(m, IAfterMethod.class);
       
       if (bs != null || as != null || bt != null || at != null || bg != null || ag != null
           || bc != null || ac != null || bm != null || am != null) 
@@ -89,9 +89,9 @@ public class AnnotationHelper {
     return result;
   }
   
-  private static IConfiguration createConfiguration(IConfiguration bs, IConfiguration as, 
-      IConfiguration bt, IConfiguration at, IConfiguration bg, IConfiguration ag, 
-      IConfiguration bc, IConfiguration ac, IConfiguration bm, IConfiguration am) 
+  private static IConfigurationAnnotation createConfiguration(IConfigurationAnnotation bs, IConfigurationAnnotation as, 
+      IConfigurationAnnotation bt, IConfigurationAnnotation at, IConfigurationAnnotation bg, IConfigurationAnnotation ag, 
+      IConfigurationAnnotation bc, IConfigurationAnnotation ac, IConfigurationAnnotation bm, IConfigurationAnnotation am) 
   {
     ConfigurationAnnotation result = new ConfigurationAnnotation();
     
@@ -140,7 +140,7 @@ public class AnnotationHelper {
   }
   
   @SuppressWarnings({"deprecation"})
-  private static void finishInitialize(ConfigurationAnnotation result, IConfiguration bs) {
+  private static void finishInitialize(ConfigurationAnnotation result, IConfigurationAnnotation bs) {
     result.setFakeConfiguration(true);
     result.setAlwaysRun(bs.getAlwaysRun());
     result.setDependsOnGroups(bs.getDependsOnGroups());
@@ -153,18 +153,18 @@ public class AnnotationHelper {
   }
 
   private static Class[] ALL_ANNOTATIONS = new Class[] { 
-    ITest.class, IConfiguration.class, 
+    ITestAnnotation.class, IConfigurationAnnotation.class, 
     IBeforeClass.class, IAfterClass.class,
     IBeforeMethod.class, IAfterMethod.class,
-    IDataProvider.class, IExpectedExceptions.class, 
-    IFactory.class, IParameters.class, 
+    IDataProviderAnnotation.class, IExpectedExceptionsAnnotation.class, 
+    IFactoryAnnotation.class, IParametersAnnotation.class, 
     IBeforeSuite.class, IAfterSuite.class,
     IBeforeTest.class, IAfterTest.class,
     IBeforeGroups.class, IAfterGroups.class
   };
   
   public static Class[] CONFIGURATION_CLASSES = new Class[] {
-    IConfiguration.class,
+    IConfigurationAnnotation.class,
     IBeforeSuite.class, IAfterSuite.class,   
     IBeforeTest.class, IAfterTest.class,   
     IBeforeGroups.class, IAfterGroups.class,   
@@ -209,8 +209,8 @@ public class AnnotationHelper {
             Method m = methods[i];
             boolean hasMethodAnnotation = isAnnotationPresent(annotationFinder, m, annotationClass);
             boolean hasTestNGAnnotation =
-              isAnnotationPresent(annotationFinder, m, IFactory.class) ||
-              isAnnotationPresent(annotationFinder, m, ITest.class) ||
+              isAnnotationPresent(annotationFinder, m, IFactoryAnnotation.class) ||
+              isAnnotationPresent(annotationFinder, m, ITestAnnotation.class) ||
               isAnnotationPresent(annotationFinder, m, CONFIGURATION_CLASSES);
             boolean isPublic = Modifier.isPublic(m.getModifiers());
             if ((isPublic && hasClassAnnotation && (! hasTestNGAnnotation)) || hasMethodAnnotation) {     
@@ -218,8 +218,8 @@ public class AnnotationHelper {
               // Small hack to allow users to specify @Configuration classes even though
               // a class-level @Test annotation is present.  In this case, don't count
               // that method as a @Test
-              if (isAnnotationPresent(annotationFinder, m, IConfiguration.class) &&
-                  isAnnotationPresent(annotationFinder, cls, ITest.class)) 
+              if (isAnnotationPresent(annotationFinder, m, IConfigurationAnnotation.class) &&
+                  isAnnotationPresent(annotationFinder, cls, ITestAnnotation.class)) 
               {
                 Utils.log("", 3, "Method " + m + " has a local @Configuration and a class-level @Test." +
                     "This method will only be kept as a @Configuration.");

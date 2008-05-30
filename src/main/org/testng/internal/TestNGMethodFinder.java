@@ -9,8 +9,8 @@ import java.util.Set;
 import org.testng.ITestContext;
 import org.testng.ITestMethodFinder;
 import org.testng.ITestNGMethod;
-import org.testng.annotations.IConfiguration;
-import org.testng.annotations.ITest;
+import org.testng.annotations.IConfigurationAnnotation;
+import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 
@@ -46,7 +46,7 @@ public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
 
   public ITestNGMethod[] getTestMethods(Class clazz) {
     return AnnotationHelper.findMethodsWithAnnotation(
-        clazz, ITest.class, m_annotationFinder);
+        clazz, ITestAnnotation.class, m_annotationFinder);
   }
 
   public ITestNGMethod[] getBeforeClassMethods(Class cls) {
@@ -107,7 +107,7 @@ public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
     Set<Method> methods = ClassHelper.getAvailableMethods(clazz);
 
     for(Method m : methods) {
-      IConfiguration configuration = AnnotationHelper.findConfiguration(m_annotationFinder, m);
+      IConfigurationAnnotation configuration = AnnotationHelper.findConfiguration(m_annotationFinder, m);
 
       if(null == configuration) {
         continue;

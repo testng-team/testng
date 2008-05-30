@@ -6,7 +6,7 @@ package org.testng.annotations;
  * Created on Dec 20, 2005
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
-public interface IParameters extends IAnnotation {
+public interface IParametersAnnotation extends IAnnotation {
   /**
    * The list of variables used to fill the parameters of this method.
    * These variables must be defined in your testng.xml file.

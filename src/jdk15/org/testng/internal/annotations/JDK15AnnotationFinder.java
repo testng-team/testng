@@ -17,13 +17,13 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Factory;
 import org.testng.annotations.IAnnotation;
-import org.testng.annotations.IConfiguration;
-import org.testng.annotations.IDataProvider;
-import org.testng.annotations.IExpectedExceptions;
-import org.testng.annotations.IFactory;
-import org.testng.annotations.IObjectFactory;
-import org.testng.annotations.IParameters;
-import org.testng.annotations.ITest;
+import org.testng.annotations.IConfigurationAnnotation;
+import org.testng.annotations.IDataProviderAnnotation;
+import org.testng.annotations.IExpectedExceptionsAnnotation;
+import org.testng.annotations.IFactoryAnnotation;
+import org.testng.annotations.IObjectFactoryAnnotation;
+import org.testng.annotations.IParametersAnnotation;
+import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
@@ -52,13 +52,13 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   public JDK15AnnotationFinder(IAnnotationTransformer transformer) {
     m_transformer = transformer;
     
-    m_annotationMap.put(IConfiguration.class, Configuration.class);
-    m_annotationMap.put(IDataProvider.class, DataProvider.class);
-    m_annotationMap.put(IExpectedExceptions.class, ExpectedExceptions.class);
-    m_annotationMap.put(IFactory.class, Factory.class);
-    m_annotationMap.put(IObjectFactory.class, ObjectFactory.class);
-    m_annotationMap.put(IParameters.class, Parameters.class);
-    m_annotationMap.put(ITest.class, Test.class);
+    m_annotationMap.put(IConfigurationAnnotation.class, Configuration.class);
+    m_annotationMap.put(IDataProviderAnnotation.class, DataProvider.class);
+    m_annotationMap.put(IExpectedExceptionsAnnotation.class, ExpectedExceptions.class);
+    m_annotationMap.put(IFactoryAnnotation.class, Factory.class);
+    m_annotationMap.put(IObjectFactoryAnnotation.class, ObjectFactory.class);
+    m_annotationMap.put(IParametersAnnotation.class, Parameters.class);
+    m_annotationMap.put(ITestAnnotation.class, Test.class);
     m_annotationMap.put(IBeforeSuite.class, BeforeSuite.class);
     m_annotationMap.put(IAfterSuite.class, AfterSuite.class);
     m_annotationMap.put(IBeforeTest.class, BeforeTest.class);
@@ -97,8 +97,8 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     //
     // Transform @Test
     //
-    if (a instanceof ITest) {
-      m_transformer.transform((ITest) a, testClass, testConstructor, testMethod);
+    if (a instanceof ITestAnnotation) {
+      m_transformer.transform((ITestAnnotation) a, testClass, testConstructor, testMethod);
     }
     
     else if (m_transformer instanceof IAnnotationTransformer2) {
@@ -107,23 +107,23 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
       //
       // Transform a configuration annotation
       //
-      if (a instanceof IConfiguration) {
-        IConfiguration configuration = (IConfiguration) a;
+      if (a instanceof IConfigurationAnnotation) {
+        IConfigurationAnnotation configuration = (IConfigurationAnnotation) a;
         transformer2.transform(configuration,testClass, testConstructor, testMethod);
       }
       
       //
       // Transform @DataProvider
       //
-      else if (a instanceof IDataProvider) {
-        transformer2.transform((IDataProvider) a, testMethod);
+      else if (a instanceof IDataProviderAnnotation) {
+        transformer2.transform((IDataProviderAnnotation) a, testMethod);
       }
 
       //
       // Transform @Factory
       //
-      else if (a instanceof IFactory) {
-        transformer2.transform((IFactory) a, testMethod);
+      else if (a instanceof IFactoryAnnotation) {
+        transformer2.transform((IFactoryAnnotation) a, testMethod);
       }
     }
   }

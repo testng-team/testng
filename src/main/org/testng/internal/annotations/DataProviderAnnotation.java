@@ -1,6 +1,6 @@
 package org.testng.internal.annotations;
 
-import org.testng.annotations.IDataProvider;
+import org.testng.annotations.IDataProviderAnnotation;
 
 /**
  * An implementation of IDataProvider.
@@ -10,7 +10,7 @@ import org.testng.annotations.IDataProvider;
  */
 public class DataProviderAnnotation 
   extends BaseAnnotation
-  implements IDataProvider 
+  implements IDataProviderAnnotation 
 {
   private String m_name;
 

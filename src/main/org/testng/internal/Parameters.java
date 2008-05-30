@@ -11,12 +11,12 @@ import java.util.Map;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
-import org.testng.annotations.IConfiguration;
-import org.testng.annotations.IDataProvider;
-import org.testng.annotations.IFactory;
+import org.testng.annotations.IConfigurationAnnotation;
+import org.testng.annotations.IDataProviderAnnotation;
+import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParameterizable;
-import org.testng.annotations.IParameters;
-import org.testng.annotations.ITest;
+import org.testng.annotations.IParametersAnnotation;
+import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlSuite;
@@ -68,7 +68,7 @@ public class Parameters {
     Method currentTestMeth= currentTestMethod != null ? 
         currentTestMethod.getMethod() : null;
     return createParameters(m, new MethodParameters(params, currentTestMeth, ctx), 
-        finder, xmlSuite, IConfiguration.class, "@Configuration");
+        finder, xmlSuite, IConfigurationAnnotation.class, "@Configuration");
   }
 
   ////////////////////////////////////////////////////////
@@ -205,14 +205,14 @@ public class Parameters {
     String dataProviderName = null;
     Class dataProviderClass = null;
     
-    ITest annotation = AnnotationHelper.findTest(finder, m);
+    ITestAnnotation annotation = AnnotationHelper.findTest(finder, m);
     if (annotation != null) {
       dataProviderName = annotation.getDataProvider();
       dataProviderClass = annotation.getDataProviderClass();
     }
     
     if (dataProviderName == null) {
-      IFactory factory = AnnotationHelper.findFactory(finder, m);
+      IFactoryAnnotation factory = AnnotationHelper.findFactory(finder, m);
       if (factory != null) {
         dataProviderName = factory.getDataProvider();
         dataProviderClass = null;
@@ -245,7 +245,7 @@ public class Parameters {
     }
 
     for (Method m : ClassHelper.getAvailableMethods(cls)) {
-      IDataProvider dp = (IDataProvider) finder.findAnnotation(m, IDataProvider.class);
+      IDataProviderAnnotation dp = (IDataProviderAnnotation) finder.findAnnotation(m, IDataProviderAnnotation.class);
       if (null != dp && (name.equals(dp.getName()) || name.equals(m.getName()))) {
         if (shouldBeStatic && (m.getModifiers() & Modifier.STATIC) == 0) {
           throw new TestNGException("DataProvider should be static: " + m); 
@@ -268,7 +268,7 @@ public class Parameters {
     //
     // Try to find an @Parameters annotation
     //
-    IParameters annotation = (IParameters) finder.findAnnotation(m, IParameters.class);
+    IParametersAnnotation annotation = (IParametersAnnotation) finder.findAnnotation(m, IParametersAnnotation.class);
     if(null != annotation) {
       String[] parameterNames = annotation.getValue();
       extraParameters = createParameters(m.getName(), m.getParameterTypes(), 
@@ -349,7 +349,7 @@ public class Parameters {
       // Create an Object[][] containing just one row of parameters
       Object[][] allParameterValuesArray = new Object[1][];
       allParameterValuesArray[0] = createParameters(testMethod.getMethod(), 
-          methodParams, annotationFinder, xmlSuite, ITest.class, "@Test");
+          methodParams, annotationFinder, xmlSuite, ITestAnnotation.class, "@Test");
       
       // Mark that this method needs to have at least a certain
       // number of invocations (needed later to call AfterGroups

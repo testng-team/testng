@@ -6,13 +6,13 @@ import java.util.Map;
 import org.testng.Assert;
 import org.testng.IAnnotationTransformer;
 import org.testng.annotations.IAnnotation;
-import org.testng.annotations.IConfiguration;
-import org.testng.annotations.IDataProvider;
-import org.testng.annotations.IExpectedExceptions;
-import org.testng.annotations.IFactory;
-import org.testng.annotations.IObjectFactory;
-import org.testng.annotations.IParameters;
-import org.testng.annotations.ITest;
+import org.testng.annotations.IConfigurationAnnotation;
+import org.testng.annotations.IDataProviderAnnotation;
+import org.testng.annotations.IExpectedExceptionsAnnotation;
+import org.testng.annotations.IFactoryAnnotation;
+import org.testng.annotations.IObjectFactoryAnnotation;
+import org.testng.annotations.IParametersAnnotation;
+import org.testng.annotations.ITestAnnotation;
 
 import com.thoughtworks.qdox.model.AbstractInheritableJavaEntity;
 import com.thoughtworks.qdox.model.DocletTag;
@@ -49,13 +49,13 @@ public class JDK14TagFactory {
   
   
   static {
-    m_annotationMap.put(IConfiguration.class, CONFIGURATION);
-    m_annotationMap.put(IDataProvider.class, DATA_PROVIDER);
-    m_annotationMap.put(IExpectedExceptions.class, EXPECTED_EXCEPTIONS);
-    m_annotationMap.put(IFactory.class, FACTORY);
-    m_annotationMap.put(IObjectFactory.class, OBJECT_FACTORY);
-    m_annotationMap.put(IParameters.class, PARAMETERS);
-    m_annotationMap.put(ITest.class, TEST);
+    m_annotationMap.put(IConfigurationAnnotation.class, CONFIGURATION);
+    m_annotationMap.put(IDataProviderAnnotation.class, DATA_PROVIDER);
+    m_annotationMap.put(IExpectedExceptionsAnnotation.class, EXPECTED_EXCEPTIONS);
+    m_annotationMap.put(IFactoryAnnotation.class, FACTORY);
+    m_annotationMap.put(IObjectFactoryAnnotation.class, OBJECT_FACTORY);
+    m_annotationMap.put(IParametersAnnotation.class, PARAMETERS);
+    m_annotationMap.put(ITestAnnotation.class, TEST);
     m_annotationMap.put(IBeforeSuite.class, BEFORE_SUITE);
     m_annotationMap.put(IAfterSuite.class, AFTER_SUITE);
     m_annotationMap.put(IBeforeTest.class, BEFORE_TEST);
@@ -94,25 +94,25 @@ public class JDK14TagFactory {
       IAnnotationTransformer transformer) 
   {
     IAnnotation result = null;
-    if (annotationClass == IConfiguration.class) {
+    if (annotationClass == IConfigurationAnnotation.class) {
       result = createConfigurationTag(dt);
     }
-    else if (annotationClass == IDataProvider.class) {
+    else if (annotationClass == IDataProviderAnnotation.class) {
       result = createDataProviderTag(dt);
     }
-    else if (annotationClass == IExpectedExceptions.class) {
+    else if (annotationClass == IExpectedExceptionsAnnotation.class) {
       result = createExpectedExceptionsTag(dt);
     }
-    else if (annotationClass == IFactory.class) {
+    else if (annotationClass == IFactoryAnnotation.class) {
       result = createFactoryTag(dt);
     }
-    else if (annotationClass == IObjectFactory.class) {
+    else if (annotationClass == IObjectFactoryAnnotation.class) {
       result = createObjectFactoryTag(dt);
     }
-    else if (annotationClass == IParameters.class) {
+    else if (annotationClass == IParametersAnnotation.class) {
       result = createParametersTag(dt);
     }
-    else if (annotationClass == ITest.class) {
+    else if (annotationClass == ITestAnnotation.class) {
       result = createTestTag(dt, transformer);
     }
     else if (annotationClass == IBeforeSuite.class || annotationClass == IAfterSuite.class || 
@@ -131,7 +131,7 @@ public class JDK14TagFactory {
   }
 
   private IAnnotation maybeCreateNewConfigurationTag(Class cls, DocletTag dt) {
-    IConfiguration result = new ConfigurationAnnotation();
+    IConfigurationAnnotation result = new ConfigurationAnnotation();
 
     boolean alwaysRun = Converter.getBoolean(dt.getNamedParameter("alwaysRun"), result.getAlwaysRun());
     String[] dependsOnGroups = Converter.getStringArray(dt.getNamedParameter("dependsOnGroups"), result.getDependsOnGroups());
@@ -308,7 +308,7 @@ public class JDK14TagFactory {
     return result;
   }
 
-  private IConfiguration createConfigurationTag(Class cls, DocletTag dt, 
+  private IConfigurationAnnotation createConfigurationTag(Class cls, DocletTag dt, 
       boolean beforeSuite, boolean afterSuite,
       boolean beforeTest, boolean afterTest,
       String[] beforeGroups, String[] afterGroups,

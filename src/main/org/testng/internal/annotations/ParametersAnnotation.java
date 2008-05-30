@@ -1,6 +1,6 @@
 package org.testng.internal.annotations;
 
-import org.testng.annotations.IParameters;
+import org.testng.annotations.IParametersAnnotation;
 
 
 /**
@@ -11,7 +11,7 @@ import org.testng.annotations.IParameters;
  */
 public class ParametersAnnotation 
   extends BaseAnnotation
-  implements IParameters 
+  implements IParametersAnnotation 
 {
   private String[] m_value  = {};
 

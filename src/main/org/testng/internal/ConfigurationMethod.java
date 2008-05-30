@@ -2,8 +2,8 @@ package org.testng.internal;
 
 import org.testng.ITestNGMethod;
 import org.testng.annotations.IAnnotation;
-import org.testng.annotations.IConfiguration;
-import org.testng.annotations.ITest;
+import org.testng.annotations.IConfigurationAnnotation;
+import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.ConfigurationAnnotation;
 import org.testng.internal.annotations.IAfterClass;
@@ -298,7 +298,7 @@ public class ConfigurationMethod extends BaseTestMethod {
   
   private void init() {
     IAnnotation a = AnnotationHelper.findConfiguration(m_annotationFinder, m_method); 
-    IConfiguration annotation = (IConfiguration) a;
+    IConfigurationAnnotation annotation = (IConfigurationAnnotation) a;
     if (a != null) {
       m_inheritGroupsFromTestClass = annotation.getInheritGroups();
       setDescription(annotation.getDescription());
@@ -317,14 +317,14 @@ public class ConfigurationMethod extends BaseTestMethod {
      if (annotation.getAfterTestMethod()) initGroups(IAfterMethod.class);  
     }
     else {
-      initGroups(IConfiguration.class);
+      initGroups(IConfigurationAnnotation.class);
     }
 
     // If this configuration method has inherit-groups=true, add the groups
     // defined in the @Test class
     if (inheritGroupsFromTestClass()) {
-      ITest classAnnotation = 
-        (ITest) m_annotationFinder.findAnnotation(m_methodClass, ITest.class);
+      ITestAnnotation classAnnotation = 
+        (ITestAnnotation) m_annotationFinder.findAnnotation(m_methodClass, ITestAnnotation.class);
       if (classAnnotation != null) {
         String[] groups = classAnnotation.getGroups();
         Map<String, String> newGroups = new HashMap<String, String>(); 

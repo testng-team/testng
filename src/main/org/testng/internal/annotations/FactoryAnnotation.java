@@ -1,6 +1,6 @@
 package org.testng.internal.annotations;
 
-import org.testng.annotations.IFactory;
+import org.testng.annotations.IFactoryAnnotation;
 
 /**
  * An implementation of IFactory
@@ -10,7 +10,7 @@ import org.testng.annotations.IFactory;
  */
 public class FactoryAnnotation 
   extends BaseAnnotation
-  implements IFactory 
+  implements IFactoryAnnotation 
 {
   private String[] m_parameters = {};
   private String m_dataProvider = null;

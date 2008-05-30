@@ -1,6 +1,6 @@
 package org.testng;
 
-import org.testng.annotations.ITest;
+import org.testng.annotations.ITestAnnotation;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -25,7 +25,7 @@ public interface IAnnotationTransformer extends ITestNGListener {
    * @param testMethod If the annotation was found on a method,
    * this parameter represents this method (null otherwise).
    */
-  public void transform(ITest annotation, Class testClass,
+  public void transform(ITestAnnotation annotation, Class testClass,
       Constructor testConstructor, Method testMethod);
   
 }

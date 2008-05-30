@@ -788,9 +788,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       // put this method in the sequential list right away
       //
       Class<?> cls= tm.getRealClass();
-      org.testng.annotations.ITest test = 
-        (org.testng.annotations.ITest) m_annotationFinder.
-          findAnnotation(cls, org.testng.annotations.ITest.class);
+      org.testng.annotations.ITestAnnotation test = 
+        (org.testng.annotations.ITestAnnotation) m_annotationFinder.
+          findAnnotation(cls, org.testng.annotations.ITestAnnotation.class);
       if (test != null) {
         if (test.getSequential()) {
           String className = cls.getName();

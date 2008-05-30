@@ -6,9 +6,9 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
-import org.testng.annotations.IConfiguration;
-import org.testng.annotations.IExpectedExceptions;
-import org.testng.annotations.ITest;
+import org.testng.annotations.IConfigurationAnnotation;
+import org.testng.annotations.IExpectedExceptionsAnnotation;
+import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.ITestOrConfiguration;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -173,17 +173,17 @@ public class MethodHelper {
    */
   public static Class<?>[] findExpectedExceptions(IAnnotationFinder finder, Method method) {
     Class<?>[] result = {};
-    IExpectedExceptions expectedExceptions= 
-      (IExpectedExceptions) finder.findAnnotation(method,
-        IExpectedExceptions.class);
+    IExpectedExceptionsAnnotation expectedExceptions= 
+      (IExpectedExceptionsAnnotation) finder.findAnnotation(method,
+        IExpectedExceptionsAnnotation.class);
     // Old syntax
     if (expectedExceptions != null) {
       result = expectedExceptions.getValue();
     }
     else {
       // New syntax
-      ITest testAnnotation = 
-        (ITest) finder.findAnnotation(method, ITest.class);
+      ITestAnnotation testAnnotation = 
+        (ITestAnnotation) finder.findAnnotation(method, ITestAnnotation.class);
       if (testAnnotation != null) {
         Class<?>[] ee = testAnnotation.getExpectedExceptions();
         if (testAnnotation != null && ee.length > 0) {
@@ -200,13 +200,13 @@ public class MethodHelper {
   // ///
 
   public static boolean isEnabled(Class<?> objectClass, IAnnotationFinder finder) {
-    ITest testClassAnnotation= AnnotationHelper.findTest(finder, objectClass);
+    ITestAnnotation testClassAnnotation= AnnotationHelper.findTest(finder, objectClass);
 
     return isEnabled(testClassAnnotation);
   }
   
   public static boolean isEnabled(Method m, IAnnotationFinder finder) {
-    ITest annotation = AnnotationHelper.findTest(finder, m);
+    ITestAnnotation annotation = AnnotationHelper.findTest(finder, m);
     
     // If no method annotation, look for one on the class
     if (null == annotation) {
@@ -409,7 +409,7 @@ public class MethodHelper {
       // @Configuration method
       //
       else {
-        IConfiguration annotation = AnnotationHelper.findConfiguration(finder, m);
+        IConfigurationAnnotation annotation = AnnotationHelper.findConfiguration(finder, m);
         if (annotation.getAlwaysRun()) {
           in = true;
         }

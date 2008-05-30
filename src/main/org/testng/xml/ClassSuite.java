@@ -3,7 +3,7 @@ package org.testng.xml;
 import java.util.Arrays;
 
 import org.testng.SuiteRunner;
-import org.testng.annotations.ITest;
+import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.AnnotationConfiguration;

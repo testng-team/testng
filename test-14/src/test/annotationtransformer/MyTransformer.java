@@ -4,11 +4,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 import org.testng.internal.annotations.IAnnotationTransformer;
-import org.testng.annotations.ITest;
+import org.testng.annotations.ITestAnnotation;
 
 public class MyTransformer implements IAnnotationTransformer {
 
-  public void transform(ITest annotation, Class testClass, 
+  public void transform(ITestAnnotation annotation, Class testClass, 
       Constructor testConstructor, Method testMethod) 
   {
     if (testMethod != null) {

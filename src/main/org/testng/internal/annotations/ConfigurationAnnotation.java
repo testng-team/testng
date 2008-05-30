@@ -1,6 +1,6 @@
 package org.testng.internal.annotations;
 
-import org.testng.annotations.IConfiguration;
+import org.testng.annotations.IConfigurationAnnotation;
 
 
 /**
@@ -9,7 +9,7 @@ import org.testng.annotations.IConfiguration;
  * Created on Dec 16, 2005
  * @author cbeust
  */
-public class ConfigurationAnnotation extends TestOrConfiguration implements IConfiguration {
+public class ConfigurationAnnotation extends TestOrConfiguration implements IConfigurationAnnotation {
   private boolean m_beforeTestClass = false;
   private boolean m_afterTestClass = false;
   private boolean m_beforeTestMethod = false;

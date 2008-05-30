@@ -16,8 +16,8 @@ import org.testng.IObjectFactory;
 import org.testng.TestNGException;
 import org.testng.TestRunner;
 import org.testng.annotations.IAnnotation;
-import org.testng.annotations.IFactory;
-import org.testng.annotations.IParameters;
+import org.testng.annotations.IFactoryAnnotation;
+import org.testng.annotations.IParametersAnnotation;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.junit.IJUnitTestRunner;
 import org.testng.xml.XmlTest;
@@ -108,7 +108,7 @@ public final class ClassHelper {
     Method result = null;
 
     for (Method method : cls.getDeclaredMethods()) {
-      IAnnotation f = finder.findAnnotation(method, IFactory.class);
+      IAnnotation f = finder.findAnnotation(method, IFactoryAnnotation.class);
 
       if (null != f) {
         if (null != result) {
@@ -276,8 +276,8 @@ public final class ClassHelper {
       //
       Constructor<?> constructor = findAnnotatedConstructor(finder, declaringClass);
       if (null != constructor) {
-        IParameters annotation = (IParameters) finder.findAnnotation(constructor,
-                                                                     IParameters.class);
+        IParametersAnnotation annotation = (IParametersAnnotation) finder.findAnnotation(constructor,
+                                                                     IParametersAnnotation.class);
   
         String[] parameterNames = annotation.getValue();
         Object[] parameters = Parameters.createInstantiationParameters(constructor,
@@ -376,7 +376,7 @@ public final class ClassHelper {
 
     for (int i = 0; i < constructors.length; i++) {
       Constructor<?> result = constructors[i];
-      IParameters annotation = (IParameters) finder.findAnnotation(result, IParameters.class);
+      IParametersAnnotation annotation = (IParametersAnnotation) finder.findAnnotation(result, IParametersAnnotation.class);
 
       if (null != annotation) {
         String[] parameters = annotation.getValue();

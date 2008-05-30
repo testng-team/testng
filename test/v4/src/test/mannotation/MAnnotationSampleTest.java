@@ -6,12 +6,12 @@ import java.lang.reflect.Method;
 import org.testng.Assert;
 import org.testng.annotations.Configuration;
 import org.testng.annotations.Test;
-import org.testng.annotations.IConfiguration;
-import org.testng.annotations.IDataProvider;
-import org.testng.annotations.IExpectedExceptions;
-import org.testng.annotations.IFactory;
-import org.testng.annotations.IParameters;
-import org.testng.annotations.ITest;
+import org.testng.annotations.IConfigurationAnnotation;
+import org.testng.annotations.IDataProviderAnnotation;
+import org.testng.annotations.IExpectedExceptionsAnnotation;
+import org.testng.annotations.IFactoryAnnotation;
+import org.testng.annotations.IParametersAnnotation;
+import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
 
@@ -28,7 +28,7 @@ public class MAnnotationSampleTest {
     //
     // Tests on MTest1SampleTest
     //
-    ITest test1 = (ITest) m_finder.findAnnotation(MTest1.class, ITest.class);
+    ITestAnnotation test1 = (ITestAnnotation) m_finder.findAnnotation(MTest1.class, ITestAnnotation.class);
     Assert.assertTrue(test1.getEnabled());
     Assert.assertEquals(test1.getGroups(), new String[] { "group1", "group2" });
     Assert.assertTrue(test1.getAlwaysRun());
@@ -45,7 +45,7 @@ public class MAnnotationSampleTest {
     //
     // Tests on MTest1SampleTest (test defaults)
     //
-    ITest test2 = (ITest) m_finder.findAnnotation(MTest2.class, ITest.class);
+    ITestAnnotation test2 = (ITestAnnotation) m_finder.findAnnotation(MTest2.class, ITestAnnotation.class);
     // test default for enabled
     Assert.assertTrue(test2.getEnabled());
     Assert.assertFalse(test2.getAlwaysRun());
@@ -61,7 +61,7 @@ public class MAnnotationSampleTest {
     // Tests on MTest1SampleTest
     //
     Method method = MTest1.class.getMethod("f", new Class[0]);
-    ITest test1 = (ITest) m_finder.findAnnotation(method, ITest.class);
+    ITestAnnotation test1 = (ITestAnnotation) m_finder.findAnnotation(method, ITestAnnotation.class);
     Assert.assertTrue(test1.getEnabled());
     Assert.assertEqualsNoOrder(test1.getGroups(), new String[] { "group1", "group3", "group4", "group2" });
     Assert.assertTrue(test1.getAlwaysRun());
@@ -81,7 +81,7 @@ public class MAnnotationSampleTest {
     // Tests on MTest1SampleTest
     //
     Constructor constructor = MTest1.class.getConstructor(new Class[0]);
-    ITest test1 = (ITest) m_finder.findAnnotation(constructor, ITest.class);
+    ITestAnnotation test1 = (ITestAnnotation) m_finder.findAnnotation(constructor, ITestAnnotation.class);
     Assert.assertNotNull(test1);
     Assert.assertTrue(test1.getEnabled());
     Assert.assertEqualsNoOrder(test1.getGroups(), new String[] { "group5", "group1", "group6", "group2" });
@@ -99,8 +99,8 @@ public class MAnnotationSampleTest {
   public void verifyConfigurationBefore() throws SecurityException, NoSuchMethodException 
   {
     Method method = MTest1.class.getMethod("before", new Class[0]);
-    IConfiguration configuration = 
-      (IConfiguration) m_finder.findAnnotation(method, IConfiguration.class);
+    IConfigurationAnnotation configuration = 
+      (IConfigurationAnnotation) m_finder.findAnnotation(method, IConfigurationAnnotation.class);
     Assert.assertNotNull(configuration);
     Assert.assertTrue(configuration.getBeforeSuite());
     Assert.assertTrue(configuration.getBeforeTestMethod());
@@ -125,8 +125,8 @@ public class MAnnotationSampleTest {
   public void verifyConfigurationAfter() throws SecurityException, NoSuchMethodException 
   {
     Method method = MTest1.class.getMethod("after", new Class[0]);
-    IConfiguration configuration = 
-      (IConfiguration) m_finder.findAnnotation(method, IConfiguration.class);
+    IConfigurationAnnotation configuration = 
+      (IConfigurationAnnotation) m_finder.findAnnotation(method, IConfigurationAnnotation.class);
     Assert.assertNotNull(configuration);
     Assert.assertFalse(configuration.getBeforeSuite());
     Assert.assertFalse(configuration.getBeforeTestMethod());
@@ -151,8 +151,8 @@ public class MAnnotationSampleTest {
   public void verifyConfigurationOthers() throws SecurityException, NoSuchMethodException 
   {
     Method method = MTest1.class.getMethod("otherConfigurations", new Class[0]);
-    IConfiguration configuration = 
-      (IConfiguration) m_finder.findAnnotation(method, IConfiguration.class);
+    IConfigurationAnnotation configuration = 
+      (IConfigurationAnnotation) m_finder.findAnnotation(method, IConfigurationAnnotation.class);
     Assert.assertNotNull(configuration);
     Assert.assertFalse(configuration.getBeforeSuite());
     Assert.assertFalse(configuration.getBeforeTestMethod());
@@ -177,8 +177,8 @@ public class MAnnotationSampleTest {
     throws SecurityException, NoSuchMethodException 
   {
     Method method = MTest1.class.getMethod("otherConfigurations", new Class[0]);
-    IDataProvider dataProvider = 
-      (IDataProvider) m_finder.findAnnotation(method, IDataProvider.class);
+    IDataProviderAnnotation dataProvider = 
+      (IDataProviderAnnotation) m_finder.findAnnotation(method, IDataProviderAnnotation.class);
     Assert.assertNotNull(dataProvider);
     Assert.assertEquals("dp4", dataProvider.getName());
   }  
@@ -187,8 +187,8 @@ public class MAnnotationSampleTest {
     throws SecurityException, NoSuchMethodException 
   {
     Method method = MTest1.class.getMethod("otherConfigurations", new Class[0]);
-    IExpectedExceptions exceptions= 
-      (IExpectedExceptions) m_finder.findAnnotation(method, IExpectedExceptions.class);
+    IExpectedExceptionsAnnotation exceptions= 
+      (IExpectedExceptionsAnnotation) m_finder.findAnnotation(method, IExpectedExceptionsAnnotation.class);
     
     Assert.assertNotNull(exceptions);
     Assert.assertEquals(new Class[] { MTest1.class, MTest2.class }, exceptions.getValue());
@@ -198,8 +198,8 @@ public class MAnnotationSampleTest {
     throws SecurityException, NoSuchMethodException 
   {
     Method method = MTest1.class.getMethod("factory", new Class[0]);
-    IFactory factory= 
-      (IFactory) m_finder.findAnnotation(method, IFactory.class);
+    IFactoryAnnotation factory= 
+      (IFactoryAnnotation) m_finder.findAnnotation(method, IFactoryAnnotation.class);
     
     Assert.assertNotNull(factory);
     Assert.assertEquals(new String[] { "pf1", "pf2" }, factory.getParameters());
@@ -211,8 +211,8 @@ public class MAnnotationSampleTest {
   {
       m_finder = new JDK15AnnotationFinder(new DefaultAnnotationTransformer());
     Method method = MTest1.class.getMethod("parameters", new Class[0]);
-    IParameters parameters = 
-      (IParameters) m_finder.findAnnotation(method, IParameters.class);
+    IParametersAnnotation parameters = 
+      (IParametersAnnotation) m_finder.findAnnotation(method, IParametersAnnotation.class);
     
     Assert.assertNotNull(parameters);
     Assert.assertEquals(new String[] { "pp1", "pp2", "pp3" }, parameters.getValue());

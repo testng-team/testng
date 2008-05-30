@@ -8,7 +8,7 @@ import org.testng.IRetryAnalyzer;
  * Created on Dec 20, 2005
  * @author <a href = "mailto:cedric&#64;beust.com">Cedric Beust</a>
  */
-public interface ITest extends ITestOrConfiguration {
+public interface ITestAnnotation extends ITestOrConfiguration {
   /**
    * Returns the maximum number of milliseconds this test should take.
    * If it hasn't returned after this time, it will be marked as a FAIL.
