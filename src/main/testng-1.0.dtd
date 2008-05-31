@@ -49,10 +49,10 @@ Cedric Beust & Alexandru Popescu
 -->
 <!ATTLIST suite 
     name CDATA #REQUIRED
-    verbose (0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10) "1"
+    verbose CDATA #IMPLIED
     parallel (methods | tests) ""
     thread-count CDATA "5"
-    annotations (javadoc | JDK5) "JDK5"
+    annotations CDATA #IMPLIED
     time-out CDATA #IMPLIED
 >
 
@@ -116,10 +116,10 @@ A test contains parameters and classes.  Additionally, you can define additional
 <!ATTLIST test
     name CDATA #REQUIRED 
     junit (true | false) "false"
-    verbose (0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10) "1"
-    parallel (methods) "methods"
+    verbose  CDATA #IMPLIED
+    parallel  CDATA #IMPLIED
     thread-count CDATA #IMPLIED
-    annotations (javadoc | JDK5) "JDK5"
+    annotations  CDATA #IMPLIED
     time-out CDATA #IMPLIED
     enabled CDATA #IMPLIED
 >
