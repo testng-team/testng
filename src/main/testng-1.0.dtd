@@ -1,24 +1,32 @@
-<!-- ====================================================== -->
-<!-- DTD for TestNG 1.0                                     -->
-<!--                                                        -->
-<!-- A suite is made of tests and parameters.               -->
-<!--                                                        -->
-<!-- A test is made of three parts:                         -->
-<!-- * Parameters, which override the Suite parameters      -->
-<!-- * Groups, made of two parts                            -->
-<!-- * Classes, defining which classes are going to be part -->
-<!--   of this test run                                     -->
-<!--                                                        -->
-<!-- In turn, groups are made of two parts:                 -->
-<!-- * Definitions, which allow you to group groups into    -->
-<!--   bigger groups                                        -->
-<!-- * Runs, which defines the groups that the methods      -->
-<!--   must belong to in order to be run during this test   -->
-<!--                                                        -->
-<!-- Full documentation:  http://testng.org                 -->
-<!--                                                        -->
-<!-- Cedric Beust & Alexandru Popescu                       -->
-<!-- ====================================================== -->
+<!--
+
+Here is a quick overview of the main parts of this DTD.  For more information,
+refer to the <a href="http://testng.org">main web site</a>.
+                                                      
+A <b>suite</b> is made of <b>tests</b> and <b>parameters</b>.
+                                                      
+A <b>test</b> is made of three parts:                        
+
+<ul>
+<li> <b>parameters</b>, which override the suite parameters     
+<li> <b>groups</b>, made of two parts                           
+<li> <b>classes</b>, defining which classes are going to be part
+  of this test run                                    
+</ul>
+                                                      
+In turn, <b>groups</b> are made of two parts:                
+<ul>
+<li> Definitions, which allow you to group groups into   
+  bigger groups                                       
+<li> Runs, which defines the groups that the methods     
+  must belong to in order to be run during this test  
+</ul>
+                                                      
+Cedric Beust & Alexandru Popescu                      
+@title DTD for TestNG                                    
+@root suite
+
+-->
 
 
 <!-- A suite is the top-level element of a testng.xml file                  -->
@@ -26,27 +34,25 @@
 
 <!-- Attributes: -->
 <!--
-  name:         The name of this suite (as it will appear in the reports)
-  verbose:      (0-10) How verbose the output on the console will be.  
+@attr  name        The name of this suite (as it will appear in the reports)
+@attr  verbose     How verbose the output on the console will be.  
                 This setting has no impact on the HTML reports.
-                Default value: 1
-  parallel:     (methods|tests) Whether TestNG should use different threads
+@attr  parallel   Whether TestNG should use different threads
                 to run your tests (might speed up the process)
-                Default value: none (no parallel mode)
-  thread-count: An integer giving the size of the thread pool to use
-                if you set parallel. Default value: 5
-  annotations:  (javadoc|JDK5)  If "javadoc", TestNG will look for
+@attr  thread-count An integer giving the size of the thread pool to use
+                if you set parallel.
+@attr  annotations  If "javadoc", TestNG will look for
                 JavaDoc annotations in your sources, otherwise it will
-                use JDK5 annotations. Default value: JDK5
-  time-out:     the time to wait in milliseconds before aborting the
+                use JDK5 annotations.
+@attr  time-out     the time to wait in milliseconds before aborting the
                 method (if parallel="methods") or the test (parallel="tests")
 -->
 <!ATTLIST suite 
     name CDATA #REQUIRED
-    verbose CDATA #IMPLIED
-    parallel CDATA #IMPLIED
-    thread-count CDATA #IMPLIED
-    annotations CDATA #IMPLIED
+    verbose (0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10) "1"
+    parallel (methods | tests) ""
+    thread-count CDATA "5"
+    annotations (javadoc | JDK5) "JDK5"
     time-out CDATA #IMPLIED
 >
 
@@ -58,18 +64,20 @@
     path CDATA #REQUIRED
 >
 
-<!-- Parameters can be defined at the <suite> or at the <test> level        -->
-<!-- Parameters defined at the <test> level override parameters of the      -->
-<!-- same name in <suite>.                                                  -->
-<!-- Parameters are used to link Java method parameters to their actual     -->
-<!-- value, defined here.                                                   -->
+<!--
+Parameters can be defined at the <suite> or at the <test> level.
+Parameters defined at the <test> level override parameters of the same name in <suite>
+Parameters are used to link Java method parameters to their actual value, defined here.
+-->
 <!ELEMENT parameter ANY>
 <!ATTLIST parameter
     name CDATA #REQUIRED
     value CDATA #REQUIRED >
 
-<!-- Method selectors define user classes used to select which methods to   -->
-<!-- run.  They need to implement org.testng.IMethodSelector                -->
+<!--
+Method selectors define user classes used to select which methods to run.
+They need to implement <tt>org.testng.IMethodSelector</tt> 
+-->
 <!ELEMENT method-selectors (method-selector*) >
 <!ELEMENT method-selector ((selector-class)*|script) >
 <!ELEMENT selector-class ANY>
@@ -82,41 +90,43 @@
     language CDATA #REQUIRED
 >
 
-<!-- A test contains parameters and classes.  Additionally, you can define  -->
-<!-- additional groups ("groups of groups")                                 -->
+<!--
+A test contains parameters and classes.  Additionally, you can define additional groups ("groups of groups")
+-->
+
 <!ELEMENT test (method-selectors?,parameter*,groups?,packages?,classes?) >
 
-<!-- Attributes:                                                            -->
 <!--
-  name:         The name of this test (as it will appear in the reports)
-  junit:        (true|false) Whether to run in JUnit mode. Default value: false.
-  verbose:      (0-10) How verbose the output on the console will be.
+@attr  name         The name of this test (as it will appear in the reports)
+@attr  junit        Whether to run in JUnit mode.
+@attr  verbose      How verbose the output on the console will be.
                 This setting has no impact on the HTML reports.
                 Default value: suite level verbose.
-  parallel:     (methods) Whether TestNG should use different threads
+@attr  parallel     Whether TestNG should use different threads
                 to run your tests (might speed up the process)
-  thread-count: An integer giving teh size of the thread pool to be used if
+@attr  thread-count An integer giving the size of the thread pool to be used if
                 parallel mode is used. Overrides the suite level value.
-  annotations:  (javadoc|JDK5)  If "javadoc", TestNG will look for
+@attr  annotations  If "javadoc", TestNG will look for
                 JavaDoc annotations in your sources, otherwise it will
-                use JDK5 annotations. Default value: JDK5
-  time-out:     the time to wait in milliseconds before aborting
+                use JDK5 annotations.
+@attr  time-out     the time to wait in milliseconds before aborting
                 the method (if parallel="methods") or the test (if parallel="tests")
-  enabled:      flag to enable/disable current test. Default value: true 
+@attr  enabled      flag to enable/disable current test. Default value: true 
 -->
 <!ATTLIST test
     name CDATA #REQUIRED 
-    junit CDATA #IMPLIED
-    verbose CDATA #IMPLIED
-    parallel CDATA #IMPLIED
+    junit (true | false) "false"
+    verbose (0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10) "1"
+    parallel (methods) "methods"
     thread-count CDATA #IMPLIED
-    annotations CDATA #IMPLIED
+    annotations (javadoc | JDK5) "JDK5"
     time-out CDATA #IMPLIED
     enabled CDATA #IMPLIED
 >
 
-<!-- Defines additional groups ("groups of groups") and also which groups   -->
-<!-- to include in this test run                                            -->
+<!--
+Defines additional groups ("groups of groups") and also which groups to include in this test run
+-->
 <!ELEMENT groups (define*,run?) >
 
 <!ELEMENT define (include*)>

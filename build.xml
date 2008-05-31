@@ -199,7 +199,7 @@
   <!-- Distribution                                                         -->
   <!-- ==================================================================== -->
 
-  <target name="dist" depends="maven-plugin,dist-all-zip,eclipse" />
+  <target name="dist" depends="maven-plugin,dist-all-zip,eclipse,dtd" />
 
   <target name="dist-jar" depends="dist-14,dist-15" />
 
@@ -336,6 +336,19 @@
     <delete file="${jdk15.jar}" />
     <copy file="${jdk14.testng.jar}" tofile="${jdk14.jar}" />
     <copy file="${jdk15.testng.jar}" tofile="${jdk15.jar}" />
+  </target>
+
+  <taskdef name="DTDDoc" classname="DTDDoc.DTDDocTask"
+     classpath="lib/DTDDoc.jar"/>
+
+  <target name="dtd">
+    <DTDDoc showHiddenTags="false"
+            showFixmeTags="false"
+            sourceDir="src/main"
+            destDir="dtd"
+            docTitle="TestNG DTD">
+        <include name="testng-1.0.dtd"/>
+    </DTDDoc>
   </target>
 
   <target name="ftp">
