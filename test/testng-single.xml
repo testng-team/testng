@@ -4,11 +4,23 @@
 
   <test name="Single" >
     <classes>
+
+      <class name="test.testng249.VerifyTest"/>
 <!--
-      <class name="test.annotationtransformer.AnnotationTransformerTest"/>
+      <class name="test.testng249.Base">
+        <methods>
+          <include name="b" />
+        </methods>
+      </class>
+      <class name="test.testng249.B" >
+        <methods>
+          <include name="b" />
+        </methods>
+      </class>
 -->
-      <class name="test.tmp.dataprovider.InstanceDataProviderTest" />
+
     </classes>
+    
   </test>
   
 

@@ -170,6 +170,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     m_testClassesFromXml= test.getXmlClasses();
     m_skipFailedInvocationCounts = skipFailedInvocationCounts;
     m_invokedMethodListeners = invokedMethodListeners;
+    setVerbose(test.getVerbose());
     
     m_packageNamesFromXml= test.getXmlPackages();    
     if(null != m_packageNamesFromXml) {
@@ -184,7 +185,6 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
         m_annotationFinder, m_skipFailedInvocationCounts,
         invokedMethodListeners);
 
-    setVerbose(test.getVerbose());
 
     if (suite.getParallel() != null) {
       log(3, "Running the tests in '" + test.getName() + "' with parallel mode:" + suite.getParallel());

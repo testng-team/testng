@@ -1,10 +1,40 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
   
-<suite name="Single" verbose="1" parallel="false"  >
-  <test name="RetryAnalyzer">
-	<classes>
-		<class name="test.retryAnalyzer.RetryAnalyzerTest" />
-	</classes>
+<suite name="Single222" verbose="10" parallel="false"  >
+
+
+  
+  <test name="Regression2">
+    <groups>
+      <run>
+        <exclude name="broken" />
+      </run>
+    </groups>
+    <classes>
+
+      <class name="test.conffailure.ConfigurationFailure" />
+      <class name="test.superclass.MainTest" />
+      <class name="test.superclass.Test3" />
+      <class name="test.failures.FailuresTest" />
+      <class name="test.mannotation.MAnnotationSampleTest" />
+      <class name="test.mannotation.MAnnotation2SampleTest" />
+      <class name="test.thread.ThreadPoolSizeTest" />
+      <class name="test.thread.SequentialTest" />
+      <class name="test.thread.ParallelTestTest" />
+      <class name="test.thread.FactoryTest" />
+      <class name="test.simple.IncludedExcludedTest" />
+      <class name="test.reports.ReportTest" />
+      <class name="test.configuration.BeforeTestOrderingTest" />
+      <class name="test.configuration.SuiteTest" />
+      <class name="test.configuration.VerifySuiteTest" />
+      <class name="test.annotationtransformer.AnnotationTransformerTest" />
+      <class name="test.configuration.MultipleBeforeGroupTest" />
+      <class name="test.configuration.BaseGroupsTest" />
+<!--
+      <class name="test.jar.JarTest" />
+-->
+      <class name="test.xml.XmlVerifyTest" />
+      <class name="test.invokedmethodlistener.InvokedMethodListenerTest" />
+    </classes>
   </test>
 </suite>
-

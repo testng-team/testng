@@ -81,6 +81,7 @@
 -->
       <class name="test.xml.XmlVerifyTest" />
       <class name="test.invokedmethodlistener.InvokedMethodListenerTest" />
+      <class name="test.testng249.VerifyTest"/>
     </classes>
   </test>
   

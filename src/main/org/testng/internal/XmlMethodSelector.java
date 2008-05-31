@@ -274,8 +274,18 @@ public class XmlMethodSelector implements IMethodSelector {
     return vResult;
   }
   
+  private String makeMethodName(String className, String methodName) {
+    return className + "." + methodName;
+  }
+  
   public void setXmlClasses(List<XmlClass> classes) {
     m_classes = classes;
+    for (XmlClass c : classes) {
+      for (String m : c.getIncludedMethods()) {
+        String methodName = makeMethodName(c.getName(), m);
+         m_includedMethods.put(methodName, methodName);
+      }
+    }
   }
   
   /**

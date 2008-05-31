@@ -1,6 +1,7 @@
 ===========================================================================
 5.8.1
 
+Fixed: TESTNG-249: Overridden test methods were shadowing each other if specified with <include>
 Fixed: DataProviders from @Factory-created tests were all invoked from the same instance
 Fixed: enabled was not working on configuration methods
 Added: IAnnotationTransformer2
