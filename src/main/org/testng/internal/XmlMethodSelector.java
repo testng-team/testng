@@ -37,7 +37,7 @@ public class XmlMethodSelector implements IMethodSelector {
   // The BeanShell expression for this test, if any
   private String m_expression = null;
   // List of methods included implicitly
-  private Map<String, String> m_includedMethods = new HashMap<String, String>();
+  private Set<String> m_includedMethods = new HashSet<String>();
   
   public boolean  includeMethod(IMethodSelectorContext context,
       ITestNGMethod tm, boolean isTestMethod) 
@@ -143,7 +143,7 @@ public class XmlMethodSelector implements IMethodSelector {
     //
     // Is this method included implicitly?
     //
-    else if (m_includedMethods.containsKey(MethodHelper.calculateMethodCanonicalName(tm))) {
+    else if (m_includedMethods.contains(MethodHelper.calculateMethodCanonicalName(tm))) {
       result = true;
     }
     
@@ -264,7 +264,7 @@ public class XmlMethodSelector implements IMethodSelector {
         Pattern pattern = Pattern.compile(methodName);
         for (Method m : allMethods) {
           if (pattern.matcher(m.getName()).matches()) {
-            vResult.add(cls.getName() + "." + m.getName());
+            vResult.add(makeMethodName(cls.getName(), m.getName()));
           }
         }
       }
@@ -282,8 +282,7 @@ public class XmlMethodSelector implements IMethodSelector {
     m_classes = classes;
     for (XmlClass c : classes) {
       for (String m : c.getIncludedMethods()) {
-        String methodName = makeMethodName(c.getName(), m);
-         m_includedMethods.put(methodName, methodName);
+        m_includedMethods.add(makeMethodName(c.getName(), m));
       }
     }
   }
@@ -399,7 +398,7 @@ public class XmlMethodSelector implements IMethodSelector {
       for (ITestNGMethod m : methodClosure) {
         String methodName = 
          m.getMethod().getDeclaringClass().getName() + "." + m.getMethodName();
-        m_includedMethods.put(methodName, methodName);
+        m_includedMethods.add(methodName);
         logInclusion("Including", "method ", methodName);
       }
     }
