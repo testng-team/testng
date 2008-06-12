@@ -1864,6 +1864,8 @@ TestNG lets you declare additional parameters in your methods.  When this happen
 <li>
   Any @BeforeMethod can declare a parameter of type <tt>java.lang.reflect.Method</tt>.  This parameter will receive the test method that will be called once this @BeforeMethod finishes.
 <li>
+  Any @BeforeMethod can declare a parameter of type <tt>Object[]</tt>.  This parameter will receive the list of parameters that are about to be fed to the upcoming test method, which could be either injected by TestNG, such as <tt>java.lang.reflect.Method</tt> or come from a <tt>@DataProvider</tt>.
+<li>
   Any @DataProvider can declare a parameter of type <tt>ITestContext</tt>.
 </ul>
 
