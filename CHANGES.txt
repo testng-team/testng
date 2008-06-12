@@ -1,6 +1,7 @@
 ===========================================================================
 5.8.1
 
+Added: @BeforeMethod can now declare Object[] as a parameter, which will be filled by the parameters of the test method
 Fixed: TESTNG-249: Overridden test methods were shadowing each other if specified with <include>
 Fixed: DataProviders from @Factory-created tests were all invoked from the same instance
 Fixed: enabled was not working on configuration methods

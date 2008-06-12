@@ -30,6 +30,7 @@ public interface IInvoker {
                                     ITestNGMethod[] allMethods,
                                     XmlSuite suite, 
                                     Map<String, String> parameters,
+                                    Object[] parameterValues,
                                     Object instance);
   
   /**

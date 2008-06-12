@@ -283,7 +283,8 @@ public class SuiteRunner implements ISuite, Serializable {
       if(beforeSuiteMethods.values().size() > 0) {
         invoker.invokeConfigurations(null,
             beforeSuiteMethods.values().toArray(new ITestNGMethod[beforeSuiteMethods.size()]),
-            m_suite, m_suite.getParameters(),
+            m_suite, m_suite.getParameters(), null, /* no parameter values */
+
             null /* instance */
         );
       }
@@ -314,7 +315,8 @@ public class SuiteRunner implements ISuite, Serializable {
       if (afterSuiteMethods.values().size() > 0) {
         invoker.invokeConfigurations(null,
               afterSuiteMethods.values().toArray(new ITestNGMethod[afterSuiteMethods.size()]),
-              m_suite, m_suite.getAllParameters(),
+              m_suite, m_suite.getAllParameters(), null, /* no parameter values */
+
               null /* instance */);
       }
     }

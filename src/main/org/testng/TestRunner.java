@@ -509,6 +509,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
                                      testConfigurationMethods,
                                      m_xmlTest.getSuite(), 
                                      m_xmlTest.getParameters(),
+                                     null, /* no parameter values */
                                      null /* instance */);
     }
   }
@@ -729,6 +730,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
                                      testConfigurationMethods,
                                      m_xmlTest.getSuite(), 
                                      m_xmlTest.getParameters(),
+                                     null, /* no parameter values */
                                      null /* instance */);
     }
 

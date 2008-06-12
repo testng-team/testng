@@ -168,6 +168,7 @@ public class TestMethodWorker implements IMethodWorker {
                                          testClass.getBeforeClassMethods(),
                                          m_suite,
                                          m_parameters,
+                                         null, /* no parameter values */
                                          instance);
         }
       }
@@ -211,6 +212,7 @@ public class TestMethodWorker implements IMethodWorker {
                                        afterClassMethods,
                                        m_suite,
                                        m_parameters,
+                                       null, /* no parameter values */
                                        inst);
       }
     }

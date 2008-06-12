@@ -82,9 +82,10 @@ public class Invoker implements IInvoker {
                                    ITestNGMethod[] allMethods,
                                    XmlSuite suite,
                                    Map<String, String> params,
+                                   Object[] parameterValues,
                                    Object instance)
   {
-    invokeConfigurations(testClass, null, allMethods, suite, params, instance);
+    invokeConfigurations(testClass, null, allMethods, suite, params, parameterValues, instance);
   }
 
   private void invokeConfigurations(IClass testClass,
@@ -92,6 +93,7 @@ public class Invoker implements IInvoker {
                                    ITestNGMethod[] allMethods,
                                    XmlSuite suite,
                                    Map<String, String> params,
+                                   Object[] parameterValues,
                                    Object instance)
   {
     if(null == allMethods) {
@@ -138,12 +140,13 @@ public class Invoker implements IInvoker {
   
             log(3, "Invoking " + Utils.detailedMethodName(tm, true));
             
-            Object[] parameters= Parameters.createConfigurationParameters(tm.getMethod(),
-                                                                          params,
-                                                                          currentTestMethod,
-                                                                          m_annotationFinder,
-                                                                          suite,
-                                                                          m_testContext);
+            Object[] parameters = Parameters.createConfigurationParameters(tm.getMethod(),
+                params,
+                parameterValues,
+                currentTestMethod,
+                m_annotationFinder,
+                suite,
+                m_testContext);
             testResult.setParameters(parameters);
   
             Object[] newInstances= (null != instance) ? new Object[] { instance } : instances;
@@ -458,7 +461,7 @@ public class Invoker implements IInvoker {
     //
     invokeConfigurations(testClass, tm, 
       filterConfigurationMethods(tm, beforeMethods, true /* beforeMethods */),
-      suite, params,
+      suite, params, parameterValues,
       instances[instanceIndex]);
     
     //
@@ -571,7 +574,7 @@ public class Invoker implements IInvoker {
       //
       invokeConfigurations(testClass, tm, 
           filterConfigurationMethods(tm, afterMethods, false /* beforeMethods */),
-          suite, params,
+          suite, params, parameterValues,
           instances[instanceIndex]);
       
       //
@@ -693,7 +696,9 @@ public class Invoker implements IInvoker {
       if(beforeMethodsArray.length > 0) {
         // don't pass the IClass or the instance as the method may be external
         // the invocation must be similar to @BeforeTest/@BeforeSuite
-        invokeConfigurations(null, beforeMethodsArray, suite, params, null);
+        invokeConfigurations(null, beforeMethodsArray, suite, params, 
+            null, /* no parameter values */
+            null);
       }
       
       //
@@ -749,7 +754,9 @@ public class Invoker implements IInvoker {
       ITestNGMethod[] afterMethodsArray = afterMethods.keySet().toArray(new ITestNGMethod[afterMethods.size()]);
       // don't pass the IClass or the instance as the method may be external
       // the invocation must be similar to @BeforeTest/@BeforeSuite
-      invokeConfigurations(null, afterMethodsArray, suite, params, null);
+      invokeConfigurations(null, afterMethodsArray, suite, params, 
+          null, /* no parameter values */
+          null);
 
       // Remove the groups so they don't get run again
       groupMethods.removeAfterGroups(filteredGroups.keySet());      
@@ -792,7 +799,7 @@ public class Invoker implements IInvoker {
        * one specific set. Should optimize it by only recreating the set needed.
        */
       ParameterBag bag = createParameters(testClass, tm, parameters,
-          allParameters, suite, testContext, null /* fedInstance */);
+          allParameters, null, suite, testContext, null /* fedInstance */);
       Object[] parameterValues = getParametersFromIndex(bag.parameterValues, parametersIndex);
 
       result.add(
@@ -809,6 +816,7 @@ public class Invoker implements IInvoker {
                                         ITestNGMethod testMethod,
                                         Map<String, String> parameters,
                                         Map<String, String> allParameterNames,
+                                        Object[] parameterValues,
                                         XmlSuite suite,
                                         ITestContext testContext,
                                         Object fedInstance)
@@ -823,7 +831,7 @@ public class Invoker implements IInvoker {
     }
     
     ParameterBag bag= handleParameters(testMethod, 
-        instance, allParameterNames, parameters, suite, testContext, fedInstance);
+        instance, allParameterNames, parameters, parameterValues, suite, testContext, fedInstance);
 
     return bag;
   }
@@ -905,7 +913,7 @@ public class Invoker implements IInvoker {
 
               Map<String, String> allParameterNames = new HashMap<String, String>();
               ParameterBag bag = createParameters(testClass, testMethod,
-                  parameters, allParameterNames, suite, testContext, instances[0]);
+                  parameters, allParameterNames, null, suite, testContext, instances[0]);
 
               if(bag.hasErrors()) {
                 failureCount = handleInvocationResults(testMethod, 
@@ -1033,6 +1041,7 @@ public class Invoker implements IInvoker {
       Object instance,
       Map<String, String> allParameterNames,
       Map<String, String> parameters,
+      Object[] parameterValues,
       XmlSuite suite,
       ITestContext testContext,
       Object fedInstance)
@@ -1041,7 +1050,8 @@ public class Invoker implements IInvoker {
       return new ParameterBag(Parameters.handleParameters(testMethod,
           allParameterNames, 
           instance, 
-          new Parameters.MethodParameters(parameters, testMethod.getMethod(), testContext), 
+          new Parameters.MethodParameters(parameters, parameterValues,
+              testMethod.getMethod(), testContext), 
           suite, 
           m_annotationFinder,
           fedInstance), null);

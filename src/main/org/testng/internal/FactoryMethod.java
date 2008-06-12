@@ -61,7 +61,7 @@ public class FactoryMethod extends BaseTestMethod {
       Parameters.handleParameters(this, 
           allParameterNames, 
           m_instance,
-          new Parameters.MethodParameters(m_xmlTest.getParameters(), null, m_testContext), 
+          new Parameters.MethodParameters(m_xmlTest.getParameters(), null, null, m_testContext), 
           m_xmlTest.getSuite(), 
           m_annotationFinder,
           null /* fedInstance */);

@@ -59,15 +59,16 @@ public class Parameters {
    * @return
    */
   public static Object[] createConfigurationParameters(Method m, 
-                                                       Map<String, String> params, 
-                                                       ITestNGMethod currentTestMethod,
-                                                       IAnnotationFinder finder, 
-                                                       XmlSuite xmlSuite,
-                                                       ITestContext ctx) 
+      Map<String, String> params, 
+      Object[] parameterValues,
+      ITestNGMethod currentTestMethod,
+      IAnnotationFinder finder, 
+      XmlSuite xmlSuite,
+      ITestContext ctx) 
   {
     Method currentTestMeth= currentTestMethod != null ? 
         currentTestMethod.getMethod() : null;
-    return createParameters(m, new MethodParameters(params, currentTestMeth, ctx), 
+    return createParameters(m, new MethodParameters(params, parameterValues, currentTestMeth, ctx), 
         finder, xmlSuite, IConfigurationAnnotation.class, "@Configuration");
   }
 
@@ -95,7 +96,7 @@ public class Parameters {
   
       checkParameterTypes(methodName, parameterTypes, methodAnnotation, parameterNames);
   
-      for(int i =0, j = 0; i < parameterTypes.length; i++) {
+      for(int i = 0, j = 0; i < parameterTypes.length; i++) {
         if (Method.class.equals(parameterTypes[i])) {
           vResult.add(params.currentTestMethod);
         }
@@ -103,29 +104,31 @@ public class Parameters {
           vResult.add(params.context);
         }
         else {
-          String p = parameterNames[j];
-          String value = params.xmlParameters.get(p);
-          if(null == value) {
-            // try SysEnv entries
-            value= System.getProperty(p);
-          }
-          if (null == value) {
-            if (optionalValues != null) {
-              value = optionalValues[i];
+          if (j < parameterNames.length) {
+            String p = parameterNames[j];
+            String value = params.xmlParameters.get(p);
+            if(null == value) {
+              // try SysEnv entries
+              value= System.getProperty(p);
             }
             if (null == value) {
-            throw new TestNGException("Parameter '" + p + "' is required by " 
-                + methodAnnotation
-                + " on method " 
-                + methodName
+              if (optionalValues != null) {
+                value = optionalValues[i];
+              }
+              if (null == value) {
+              throw new TestNGException("Parameter '" + p + "' is required by " 
+                  + methodAnnotation
+                  + " on method " 
+                  + methodName
                   + "\nbut has not been marked @Optional or defined "
                   + (xmlSuite.getFileName() != null ? "in "
-                      + xmlSuite.getFileName() : ""));
+                  + xmlSuite.getFileName() : ""));
+              }
             }
+              
+            vResult.add(convertType(parameterTypes[i], value, p));
+            j++;
           }
-          
-          vResult.add(convertType(parameterTypes[i], value, p));
-          j++;
         }
       }
             
@@ -142,8 +145,10 @@ public class Parameters {
     if(parameterNames.length == parameterTypes.length) return;
     
     for(int i= parameterTypes.length - 1; i >= parameterNames.length; i--) {
-      if(!ITestContext.class.equals(parameterTypes[i])
-          && !Method.class.equals(parameterTypes[i])) {
+      Class type = parameterTypes[i];
+      if(!ITestContext.class.equals(type)
+          && !Method.class.equals(type)
+          && !Object[].class.equals(type)) {
         throw new TestNGException( "Method " + methodName + " requires " 
             + parameterTypes.length + " parameters but " 
             + parameterNames.length
@@ -269,9 +274,10 @@ public class Parameters {
     // Try to find an @Parameters annotation
     //
     IParametersAnnotation annotation = (IParametersAnnotation) finder.findAnnotation(m, IParametersAnnotation.class);
+    Class<?>[] types = m.getParameterTypes();
     if(null != annotation) {
       String[] parameterNames = annotation.getValue();
-      extraParameters = createParameters(m.getName(), m.getParameterTypes(), 
+      extraParameters = createParameters(m.getName(), types, 
           finder.findOptionalValues(m), atName, finder, parameterNames, params, xmlSuite);
     }  
     
@@ -282,13 +288,21 @@ public class Parameters {
       IParameterizable a = (IParameterizable) finder.findAnnotation(m, annotationClass);
       if(null != a && a.getParameters().length > 0) {
         String[] parameterNames = a.getParameters();
-        extraParameters = createParameters(m.getName(), m.getParameterTypes(), 
+        extraParameters = createParameters(m.getName(), types, 
             finder.findOptionalValues(m), atName, finder, parameterNames, params, xmlSuite);
       }
       else {
-        extraParameters = createParameters(m.getName(), m.getParameterTypes(), 
+        extraParameters = createParameters(m.getName(), types, 
             finder.findOptionalValues(m), atName, finder, new String[0], params, xmlSuite);
       }
+    }
+    
+    // If the method declared an Object[] parameter and we have parameter values, inject them
+    for (int i = 0; i < types.length; i++) {
+        Class<?> type = types[i];
+        if (Object[].class.equals(type)) {
+            result.add(params.parameterValues);
+        }
     }
     
     //
@@ -371,19 +385,21 @@ public class Parameters {
     private final Map<String, String> xmlParameters;
     private final Method currentTestMethod;
     private final ITestContext context;
+    private Object[] parameterValues;
     
     public MethodParameters(Map<String, String> params) {
-      this(params, null, null);
+      this(params, null, null, null);
     }
     
     public MethodParameters(Map<String, String> params, Method m) {
-      this(params, m, null);
+      this(params, null, m, null);
     }
     
-    public MethodParameters(Map<String, String> params, Method m, ITestContext ctx) {
-      xmlParameters= params;
-      currentTestMethod= m;
-      context= ctx;
+    public MethodParameters(Map<String, String> params, Object[] pv, Method m, ITestContext ctx) {
+      xmlParameters = params;
+      currentTestMethod = m;
+      context = ctx;
+      parameterValues = pv;
     }
   }
 }
