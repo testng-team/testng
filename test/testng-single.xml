@@ -5,7 +5,7 @@
   <test name="Single" >
     <classes>
 
-      <class name="test.testng249.VerifyTest"/>
+      <class name="test.tmp.A"/>
 <!--
       <class name="test.testng249.Base">
         <methods>
