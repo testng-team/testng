@@ -563,7 +563,8 @@ public class Invoker implements IInvoker {
           = MethodHelper.findExpectedExceptions(m_annotationFinder, tm.getMethod());
       List<ITestResult> results = new ArrayList<ITestResult>();
       results.add(testResult);
-      handleInvocationResults(tm, results, null, 0, expectedExceptionClasses, false);
+      handleInvocationResults(tm, results, null, 0, expectedExceptionClasses, false,
+          true /* collect results */);
 
       //
       // Increment the invocation count for this method
@@ -812,7 +813,7 @@ public class Invoker implements IInvoker {
           invokeMethod(instances, instanceIndex, tm, parameterValues, suite, 
               allParameters, testClass, beforeMethods, afterMethods, groupMethods));
       failureCount = handleInvocationResults(tm, result, failedInstances,
-          failureCount, expectedExceptionClasses, true);
+          failureCount, expectedExceptionClasses, true, true /* collect results */);
     }
     while (!failedInstances.isEmpty());
     return failureCount;
@@ -923,7 +924,8 @@ public class Invoker implements IInvoker {
 
               if(bag.hasErrors()) {
                 failureCount = handleInvocationResults(testMethod, 
-                    bag.errorResults, null, failureCount, expectedExceptionClasses, true);
+                    bag.errorResults, null, failureCount, expectedExceptionClasses, true,
+                    true /* collect results */);
                 // there is nothing we can do more
                 continue;
               }
@@ -964,7 +966,8 @@ public class Invoker implements IInvoker {
                     List<Object> failedInstances = new ArrayList<Object>();
 
                     failureCount = handleInvocationResults(testMethod, tmpResults,
-                        failedInstances, failureCount, expectedExceptionClasses, true);
+                        failedInstances, failureCount, expectedExceptionClasses, true,
+                        false /* don't collect results */);
                     if (failedInstances.isEmpty()) {
                       result.addAll(tmpResults);
                     } else {
@@ -1151,7 +1154,9 @@ public class Invoker implements IInvoker {
                                       List<Object> failedInstances,
                                       int failureCount, 
                                       Class<?>[] expectedExceptionClasses,
-                                      boolean triggerListeners) {
+                                      boolean triggerListeners,
+                                      boolean collectResults)
+  {
     //
     // Go through all the results and create a TestResult for each of them
     //
@@ -1213,7 +1218,7 @@ public class Invoker implements IInvoker {
           }
         }
       } 
-      if (!retry) {
+      if (!retry || collectResults) {
         // Collect the results
         if(ITestResult.SUCCESS == status) {
           m_notifier.addPassedTest(testMethod, testResult);
