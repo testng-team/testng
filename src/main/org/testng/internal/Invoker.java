@@ -558,6 +558,12 @@ public class Invoker implements IInvoker {
     finally {
       
       runInvokedMethodListeners(false, invokedMethod, testResult);
+      
+      Class<?>[] expectedExceptionClasses
+          = MethodHelper.findExpectedExceptions(m_annotationFinder, tm.getMethod());
+      List<ITestResult> results = new ArrayList<ITestResult>();
+      results.add(testResult);
+      handleInvocationResults(tm, results, null, 0, expectedExceptionClasses, false);
 
       //
       // Increment the invocation count for this method

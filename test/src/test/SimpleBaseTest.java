@@ -9,4 +9,10 @@ public class SimpleBaseTest {
     result.setVerbose(0);
     return result;
   }
+  
+  protected TestNG create(Class testClass) {
+    TestNG result = create();
+    result.setTestClasses(new Class[] { testClass});
+    return result;
+  }
 }
