@@ -356,7 +356,7 @@
           <ftp action="put"
              server="beust.com"
              remotedir="w/testng/test-output"
-             userid="cedric"
+             userid="${userid}"
              password="${password}">
               <fileset dir="c:\weblogic\dev\sandbox\cbeust\testng\test\test-output">
                 <include name="index.html" />
@@ -369,7 +369,7 @@
     <ftp action="put"
          server="beust.com"
          remotedir="w/testng"
-         userid="cedric"
+         userid="${userid}"
          password="${password}">
       <fileset dir="${root.dir}">
         <include name="${testng.zip}" />
@@ -387,7 +387,7 @@
     <ftp action="put"
          server="beust.com"
          remotedir="w/testng"
-         userid="cedric"
+         userid="${userid}"
          password="${password}">
       <fileset dir="${root.dir}/test">
         <include name="test-output/*" />
