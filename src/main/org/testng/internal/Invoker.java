@@ -299,7 +299,7 @@ public class Invoker implements IInvoker {
     // If beforeTestClass/beforeTestMethod or afterTestClass/afterTestMethod 
     // failed, mark this entire class as failed, but only this class (the other 
     // classes should keep running normally)
-    if(annotation.getBeforeTestClass()
+    if (annotation.getBeforeTestClass()
       || annotation.getAfterTestClass()
       || annotation.getBeforeTestMethod()
       || annotation.getAfterTestMethod()) 
