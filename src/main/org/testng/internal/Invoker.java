@@ -316,6 +316,7 @@ public class Invoker implements IInvoker {
     // beforeTest or afterTest:  mark all the classes in the same
     // <test> stanza as failed for configuration
     else if (annotation.getBeforeTest() || annotation.getAfterTest()) {
+      setClassInvocationFailure(tm.getRealClass(), false);
       XmlClass[] classes= findClassesInSameTest(tm.getRealClass(), suite);
       for(XmlClass xmlClass : classes) {
         setClassInvocationFailure(xmlClass.getSupportClass(), false);
