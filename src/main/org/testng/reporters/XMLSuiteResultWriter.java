@@ -231,7 +231,7 @@ public class XMLSuiteResultWriter {
         xmlBuffer.pop();
       }
 
-      String[] stackTraces = Utils.stackTrace(exception, true);
+      String[] stackTraces = Utils.stackTrace(exception, false);
       if ((config.getStackTraceOutputMethod() & XMLReporterConfig.STACKTRACE_SHORT) == XMLReporterConfig
               .STACKTRACE_SHORT) {
         xmlBuffer.push(XMLReporterConfig.TAG_SHORT_STACKTRACE);
