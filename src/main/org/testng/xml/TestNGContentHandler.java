@@ -254,7 +254,7 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       String timeOut = attributes.getValue("time-out");
       if (null != timeOut) {
-        m_currentSuite.setTimeOut(timeOut);
+        m_currentTest.setTimeOut(Long.parseLong(timeOut));
       }
       String annotations = attributes.getValue("annotations");
       if (null != annotations) {

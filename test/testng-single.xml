@@ -5,7 +5,8 @@
   <test name="SingleTest">
     <classes>
 
-      <class name="test.timeout.TimeOutFromXmlTest"/>
+      <class name="test.timeout.TimeOutFromXmlTest">
+      </class>
 <!--
       <class name="test.timeout.TestTimeOutSampleTest"/>
       <class name="test.testng249.Base">

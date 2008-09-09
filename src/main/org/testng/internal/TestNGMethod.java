@@ -47,7 +47,8 @@ public class TestNGMethod extends BaseTestMethod {
    */
   @Override
   public long getTimeOut() {
-    return m_timeOut;
+    long result = m_timeOut != 0 ? m_timeOut : (m_xmlTest != null ? m_xmlTest.getTimeOut(0) : 0);
+    return result;
   }
 
   /**
@@ -90,9 +91,6 @@ public class TestNGMethod extends BaseTestMethod {
 
       if (null != testAnnotation) {
         m_timeOut = testAnnotation.getTimeOut();
-        if (m_timeOut == 0) {
-            m_timeOut = xmlTest.getTimeOut(0);
-        }
         m_successPercentage = testAnnotation.getSuccessPercentage();
 
         setInvocationCount(testAnnotation.getInvocationCount());

@@ -1,6 +1,16 @@
 package test.timeout;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.testng.Assert;
+import org.testng.TestListenerAdapter;
+import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.xml.XmlClass;
+import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlTest;
 
 import test.BaseTest;
 
@@ -17,7 +27,7 @@ public class TimeOutFromXmlTest extends BaseTest {
         String[] passed = {
           };
         String[] failed = {
-          "sleepsForFiveSeconds"
+          "timeoutTest"
         };
       
 //        dumpResults("Passed", getPassedTests());
@@ -42,7 +52,7 @@ public class TimeOutFromXmlTest extends BaseTest {
       addClass("test.timeout.TestTimeOutSampleTest");
       run();
       String[] passed = {
-          "sleepsForFiveSeconds"
+          "timeoutTest"
         };
         String[] failed = {
         };
@@ -50,4 +60,36 @@ public class TimeOutFromXmlTest extends BaseTest {
         verifyTests("Passed", passed, getPassedTests());
         verifyTests("Failed", failed, getFailedTests());
     }
-}
+
+    @Test
+    public void twoDifferentTests() {
+      XmlSuite result = new XmlSuite();
+      result.setName("Suite");
+      
+      createXmlTest(result, "WithoutTimeOut");
+      createXmlTest(result, "WithTimeOut").setTimeOut(1000);
+
+      TestNG tng = new TestNG();
+      tng.setVerbose(0);
+      tng.setXmlSuites(Arrays.asList(new XmlSuite[] { result }));
+      TestListenerAdapter tla = new TestListenerAdapter();
+      tng.addListener(tla);
+      tng.run();
+      
+//      System.out.println("Passed:" + tla.getPassedTests().size()
+//          + " Failed:" + tla.getFailedTests().size());
+      Assert.assertEquals(tla.getPassedTests().size(), 1);
+      Assert.assertEquals(tla.getFailedTests().size(), 1);
+    }
+
+    private XmlTest createXmlTest(XmlSuite suite, String name) {
+        XmlTest result = new XmlTest(suite);
+        result.setName(name);
+        List<XmlClass> classes = new ArrayList<XmlClass>();
+        XmlClass cls = new XmlClass(TestTimeOutSampleTest.class);
+        cls.setIncludedMethods(Arrays.asList(new String[] { "timeoutTest" }));
+        classes.add(cls);
+        result.setXmlClasses(classes);
+
+        return result;
+    }}

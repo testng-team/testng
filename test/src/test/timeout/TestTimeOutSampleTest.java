@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 public class TestTimeOutSampleTest {
 
     @Test
-    public void sleepsForFiveSeconds() {
+    public void timeoutTest() {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {

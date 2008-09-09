@@ -326,6 +326,9 @@ public class XmlTest implements Serializable, Cloneable {
     if (null != m_annotations) {
       p.setProperty("annotations", m_annotations.toString());
     }
+    if (null != m_timeOut) {
+      p.setProperty("time-out", m_timeOut.toString());
+    }
     
     xsb.push("test", p);
     
