@@ -15,6 +15,7 @@ import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.TestNGMethod;
 import org.testng.internal.Utils;
+import org.testng.xml.XmlTest;
 
 /**
  * Helper methods to find @Test and @Configuration tags.  They minimize
@@ -181,7 +182,7 @@ public class AnnotationHelper {
    * analysed.
    */
   public static ITestNGMethod[] findMethodsWithAnnotation(Class rootClass, Class annotationClass,
-        IAnnotationFinder annotationFinder)
+        IAnnotationFinder annotationFinder, XmlTest xmlTest)
   {
     // Keep a map of the methods we saw so that we ignore a method in a superclass if it's
     // already been seen in a child class
@@ -236,7 +237,8 @@ public class AnnotationHelper {
               
               String key = createMethodKey(m);
               if (null == vResult.get(key)) {
-                ITestNGMethod tm = new TestNGMethod(/* m.getDeclaringClass(), */ m, annotationFinder);
+                ITestNGMethod tm = new TestNGMethod(/* m.getDeclaringClass(), */ m,
+                    annotationFinder, xmlTest);
                 vResult.put(key,tm);
               }
             }

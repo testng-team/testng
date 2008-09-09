@@ -12,6 +12,7 @@ import org.testng.internal.RunInfo;
 import org.testng.internal.TestNGMethod;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.xml.XmlTest;
 
 /**
  * This class represents a test class:
@@ -34,13 +35,15 @@ public class TestClass extends NoOpTestClass implements ITestClass {
   
   private IClass m_iClass = null;
   private RunInfo m_runInfo = null;
+  private XmlTest m_xmlTest;
   
   public TestClass(IClass cls, 
                    String testName,
                    ITestMethodFinder testMethodFinder, 
                    IAnnotationFinder annotationFinder,
-                   RunInfo runInfo) {
-    init(cls, testName, testMethodFinder, annotationFinder, runInfo);
+                   RunInfo runInfo,
+                   XmlTest xmlTest) {
+    init(cls, testName, testMethodFinder, annotationFinder, runInfo, xmlTest);
   }
   
   public TestClass(IClass cls, TestClass tc) {
@@ -48,11 +51,16 @@ public class TestClass extends NoOpTestClass implements ITestClass {
          tc.getTestName(), 
          tc.getTestMethodFinder(), 
          tc.getAnnotationFinder(),
-         tc.getRunInfo());
+         tc.getRunInfo(),
+         tc.getXmlTest());
   }
   
   public String getTestName() {
     return m_testName;
+  }
+  
+  public XmlTest getXmlTest() {
+    return m_xmlTest;
   }
   
   public IAnnotationFinder getAnnotationFinder() {
@@ -63,7 +71,9 @@ public class TestClass extends NoOpTestClass implements ITestClass {
                     String testName,
                     ITestMethodFinder testMethodFinder, 
                     IAnnotationFinder annotationFinder,
-                    RunInfo runInfo) {
+                    RunInfo runInfo,
+                    XmlTest xmlTest) 
+  {
     log(3, "Creating TestClass for " + cls);
     m_iClass = cls;
     m_testClass = cls.getRealClass();
@@ -71,6 +81,7 @@ public class TestClass extends NoOpTestClass implements ITestClass {
     m_runInfo = runInfo;
     m_testMethodFinder = testMethodFinder;
     m_annotationFinder = annotationFinder;
+    m_xmlTest = xmlTest;
     initMethods();
     initTestClassesAndInstances();
   }
@@ -107,7 +118,7 @@ public class TestClass extends NoOpTestClass implements ITestClass {
   }
 
   private void initMethods() {
-    ITestNGMethod[] methods = m_testMethodFinder.getTestMethods(m_testClass);
+    ITestNGMethod[] methods = m_testMethodFinder.getTestMethods(m_testClass, m_xmlTest);
     m_testMethods = createTestMethods(methods);
 
     m_beforeSuiteMethods = ConfigurationMethod
@@ -168,7 +179,7 @@ public class TestClass extends NoOpTestClass implements ITestClass {
       Method m = tm.getMethod();
       if (m.getDeclaringClass().isAssignableFrom(m_testClass)) {
         log(4, "Adding method " + tm + " on TestClass " + m_testClass);
-        vResult.add(new TestNGMethod(/* tm.getRealClass(), */ m, m_annotationFinder));
+        vResult.add(new TestNGMethod(/* tm.getRealClass(), */ m, m_annotationFinder, m_xmlTest));
       }
       else {
         log(4, "Rejecting method " + tm + " for TestClass " + m_testClass);

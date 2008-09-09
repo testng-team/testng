@@ -3,12 +3,12 @@ package org.testng.internal;
 import java.lang.reflect.Method;
 import java.util.Comparator;
 
-import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.xml.XmlTest;
 
 
 /**
@@ -22,6 +22,7 @@ public class TestNGMethod extends BaseTestMethod {
   private int m_invocationCount = 1;
   private int m_successPercentage = 100;
   private long m_timeOut = 0;
+  private XmlTest m_xmlTest;
 
   /**
    * Constructs a <code>TestNGMethod</code>
@@ -29,15 +30,15 @@ public class TestNGMethod extends BaseTestMethod {
    * @param method
    * @param finder
    */
-  public TestNGMethod(Method method, IAnnotationFinder finder) {
-    this(method, finder, true);
+  public TestNGMethod(Method method, IAnnotationFinder finder, XmlTest xmlTest) {
+    this(method, finder, true, xmlTest);
   }
 
-  private TestNGMethod(Method method, IAnnotationFinder finder, boolean initialize) {
+  private TestNGMethod(Method method, IAnnotationFinder finder, boolean initialize, XmlTest xmlTest) {
     super(method, finder);
 
     if(initialize) {
-      init();
+      init(xmlTest);
     }
   }
   
@@ -77,7 +78,8 @@ public class TestNGMethod extends BaseTestMethod {
     System.out.println("[TestNGMethod] " + s);
   }
 
-  private void init() {
+  private void init(XmlTest xmlTest) {
+    m_xmlTest = xmlTest;
     {
       ITestAnnotation testAnnotation = AnnotationHelper.findTest(getAnnotationFinder(), m_method);
       
@@ -88,6 +90,9 @@ public class TestNGMethod extends BaseTestMethod {
 
       if (null != testAnnotation) {
         m_timeOut = testAnnotation.getTimeOut();
+        if (m_timeOut == 0) {
+            m_timeOut = xmlTest.getTimeOut(0);
+        }
         m_successPercentage = testAnnotation.getSuccessPercentage();
 
         setInvocationCount(testAnnotation.getInvocationCount());
@@ -127,12 +132,16 @@ public class TestNGMethod extends BaseTestMethod {
     m_invocationCount= counter;
   }
   
+  public XmlTest getXmlTest() {
+      return m_xmlTest;
+  }
+  
   /**
    * Clones the current <code>TestNGMethod</code> and its @BeforeMethod and @AfterMethod methods.
    * @see org.testng.internal.BaseTestMethod#clone()
    */
   public TestNGMethod clone() {
-    TestNGMethod clone= new TestNGMethod(getMethod(), getAnnotationFinder(), false);
+    TestNGMethod clone= new TestNGMethod(getMethod(), getAnnotationFinder(), false, getXmlTest());
     ITestClass tc= getTestClass();
     NoOpTestClass testClass= new NoOpTestClass(tc);
     testClass.setBeforeTestMethods(clone(tc.getBeforeTestMethods()));

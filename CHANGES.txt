@@ -1,6 +1,7 @@
 ===========================================================================
 5.8.1
 
+Fixed: time-outs were not working in <test> and <suite>
 Fixed: @BeforeTest failing in a base class would not cause subsequent test methods to be skipped
 Fixed: TESTNG-195: @AfterMethod has no way of knowing if the current test failed
 Added: @BeforeMethod can now declare Object[] as a parameter, which will be filled by the parameters of the test method

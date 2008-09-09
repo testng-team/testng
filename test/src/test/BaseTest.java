@@ -61,6 +61,14 @@ public class BaseTest extends BaseDistributedTest {
   protected void setVerbose(int n) {
     getTest().setVerbose(n);
   }
+  
+  protected void setTestTimeOut(long n) {
+      getTest().setTimeOut(n);
+  }
+
+  protected void setSuiteTimeOut(long n) {
+      m_suite.setTimeOut(new Long(n).toString());
+  }
 
   protected void setJUnit(boolean f) {
     getTest().setJUnit(f);

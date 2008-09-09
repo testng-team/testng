@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.testng.ITestContext;
 import org.testng.ITestMethodFinder;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.xml.XmlTest;
 
 /**
  * The default strategy for finding test methods:  look up
@@ -44,9 +44,9 @@ public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
     m_annotationFinder = annotationFinder;
   }
 
-  public ITestNGMethod[] getTestMethods(Class clazz) {
+  public ITestNGMethod[] getTestMethods(Class clazz, XmlTest xmlTest) {
     return AnnotationHelper.findMethodsWithAnnotation(
-        clazz, ITestAnnotation.class, m_annotationFinder);
+        clazz, ITestAnnotation.class, m_annotationFinder, xmlTest);
   }
 
   public ITestNGMethod[] getBeforeClassMethods(Class cls) {

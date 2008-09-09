@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.testng.Assert;
+
 public class BaseDistributedTest {
   private boolean m_verbose = false;
   
@@ -13,8 +15,9 @@ public class BaseDistributedTest {
       expected.put(exp[i], exp[i]);
     }
 
-    assert expected.size() == found.size() : "Expected " + expected.size() + " " + title
-        + " tests but found " + found.size();
+    Assert.assertEquals(found.size(), expected.size(), 
+        "Expected " + expected.size() + " " + title
+        + " tests but found " + found.size());
 
     for(Iterator it = expected.values().iterator(); it.hasNext();) {
       String name = (String) it.next();
@@ -22,8 +25,10 @@ public class BaseDistributedTest {
         dumpMap("Expected", expected);
         dumpMap("Found", found);
       }
-      assert null != found.get(name) : "Expected to find method " + name + " in " + title
-          + " but didn't find it.";
+      
+      Assert.assertNotNull(found.get(name),
+          "Expected to find method " + name + " in " + title
+          + " but didn't find it.");
     }
   }
 

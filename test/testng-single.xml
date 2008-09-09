@@ -1,12 +1,13 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="Single" verbose="1">
+<suite name="SingleSuite" verbose="2" >
 
-  <test name="Single" >
+  <test name="SingleTest">
     <classes>
 
-      <class name="test.inject.InjectBeforeMethodTest"/>
+      <class name="test.timeout.TimeOutFromXmlTest"/>
 <!--
+      <class name="test.timeout.TestTimeOutSampleTest"/>
       <class name="test.testng249.Base">
         <methods>
           <include name="b" />

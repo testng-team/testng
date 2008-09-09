@@ -291,7 +291,10 @@ public class XmlTest implements Serializable, Cloneable {
      
     return result;
   }
-
+  
+  public void setTimeOut(long timeOut) {
+      m_timeOut = new Long(timeOut).toString();
+  }
   
   public String getAnnotations() {
     return null != m_annotations ? m_annotations.toString() : m_suite.getAnnotations();

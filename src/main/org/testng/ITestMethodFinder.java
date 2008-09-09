@@ -1,5 +1,7 @@
 package org.testng;
 
+import org.testng.xml.XmlTest;
+
 
 
 
@@ -18,7 +20,7 @@ public interface ITestMethodFinder {
   /**
    * @return All the applicable test methods.
    */
-  ITestNGMethod[] getTestMethods(Class cls);
+  ITestNGMethod[] getTestMethods(Class cls, XmlTest xmlTest);
   
   /**
    * @return All the methods that should be invoked

@@ -252,6 +252,10 @@ public class TestNGContentHandler extends DefaultHandler {
       if(null != threadCount) {
         m_currentTest.setThreadCount(Integer.parseInt(threadCount));
       }
+      String timeOut = attributes.getValue("time-out");
+      if (null != timeOut) {
+        m_currentSuite.setTimeOut(timeOut);
+      }
       String annotations = attributes.getValue("annotations");
       if (null != annotations) {
         m_currentTest.setAnnotations(annotations);

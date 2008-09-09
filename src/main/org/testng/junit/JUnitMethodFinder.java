@@ -12,6 +12,7 @@ import org.testng.ITestMethodFinder;
 import org.testng.ITestNGMethod;
 import org.testng.internal.TestNGMethod;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.xml.XmlTest;
 
 
 /**
@@ -47,7 +48,7 @@ public class JUnitMethodFinder implements ITestMethodFinder {
     return result;
   }
 
-  public ITestNGMethod[] getTestMethods(Class cls) {
+  public ITestNGMethod[] getTestMethods(Class cls, XmlTest xmlTest) {
     ITestNGMethod[] result = 
       privateFindTestMethods(new INameFilter() {
         public boolean accept(Method method) {
@@ -81,7 +82,8 @@ public class JUnitMethodFinder implements ITestMethodFinder {
     while(!(current == Object.class)) {
       Method[] allMethods = current.getDeclaredMethods();
       for(Method allMethod : allMethods) {
-        ITestNGMethod m = new TestNGMethod(/* allMethods[i].getDeclaringClass(), */ allMethod, m_annotationFinder);
+        ITestNGMethod m = new TestNGMethod(/* allMethods[i].getDeclaringClass(), */ allMethod, 
+            m_annotationFinder, null);
         Method method = m.getMethod();
         String methodName = method.getName();
         if(filter.accept(method) && !acceptedMethodNames.contains(methodName)) {

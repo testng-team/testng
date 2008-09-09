@@ -238,6 +238,7 @@
   <test name="TimeOut">
     <classes>
       <class name="test.timeout.TimeOutTest" />
+      <class name="test.timeout.TimeOutFromXmlTest"/>
     </classes>
   </test>
   
