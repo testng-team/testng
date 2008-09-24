@@ -1518,16 +1518,6 @@ annotations:</p><table border="1" width="100%" id="table5"><th>JDK 5</th><th>JDK
 &nbsp;</tt></td>
 	</tr>
 	<tr>
-		<td><tt><br>
-				@ExpectedExceptions({ NullPointerException.class,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NumberFormatException.class })</tt></td><td><tt><br>
-		/**<br>
-&nbsp;* @testng.expected-exceptions<br>
-&nbsp;* value = &quot;java.lang.NullPointerException java.lang.NumberFormatException&quot;<br>
-&nbsp;*/<br>
-&nbsp;</tt></td>
-	</tr>
-	<tr>
 		<td><tt>@Parameters({ &quot;first-name&quot;, &quot;last-name&quot; })</tt></td><td><tt><br>
 		/**<br>
 &nbsp;* @testng.parameters value = &quot;first-name last-name&quot;<br>
@@ -1912,7 +1902,10 @@ and declare it as a listener, as explained in <a href="#testng-listeners">the se
 
 <p>A test is considered successful if it completed without throwing any 
 exception or if&nbsp; it threw an exception that was expected (see the 
-documentation for the <tt>@ExpectedExceptions</tt> annotation).</p><p>Your test methods will typically be made of calls that can throw an 
+documentation for the <tt>expectedExceptions</tt> attribute found on the <tt>@Test</tt> annotation).
+</p>
+
+<p>Your test methods will typically be made of calls that can throw an 
 exception, or of various assertions (using the Java &quot;assert&quot; keyword).&nbsp; An 
 &quot;assert&quot; failing will trigger an AssertionErrorException, which in turn will 
 mark the method as failed (remember to use -ea on the JVM if you are not seeing 
