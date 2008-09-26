@@ -4,11 +4,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class A {
-  @Test(groups = "database")
+  @Test(groups = { "database", "foo" })
   public void test1() { }
-  
-  @Test
-  public void test2() { }
-
   
 }

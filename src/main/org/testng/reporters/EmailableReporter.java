@@ -176,12 +176,19 @@ public class EmailableReporter implements IReporter {
   }
 
   private String qualifiedName(ITestNGMethod method) {
-    String addon = "";
-    if (method.getGroups().length > 0
-        && !"basic".equalsIgnoreCase(method.getGroups()[0])) {
-      addon = " (" + method.getGroups()[0] + ")";
+    StringBuilder addon = new StringBuilder();
+    String[] groups = method.getGroups();
+    int length = groups.length;
+    if (length > 0 && !"basic".equalsIgnoreCase(groups[0])) {
+      addon.append("(");
+      for (int i = 0; i < length; i++) {
+        if (i > 0) addon.append(", ");
+          addon.append(groups[i]);
+        }
+      addon.append(")");
     }
-    return method.getMethodName() + addon;
+
+    return "<b>" + method.getMethodName() + "</b> " + addon;
   }
 
   private void resultDetail(IResultMap tests, final String style) {

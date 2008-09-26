@@ -5,7 +5,7 @@
   <test name="SingleTest">
     <classes>
 
-      <class name="test.timeout.TimeOutFromXmlTest">
+      <class name="test.tmp.A">
       </class>
 <!--
       <class name="test.timeout.TestTimeOutSampleTest"/>
