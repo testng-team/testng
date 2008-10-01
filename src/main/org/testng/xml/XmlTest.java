@@ -169,7 +169,11 @@ public class XmlTest implements Serializable, Cloneable {
       result = m_suite.getVerbose();
     }
     
-    return result.intValue();
+    if (null != result) {
+      return result.intValue();
+    } else {
+      return 1;
+    }
   }
   /**
    * @return Returns the isJUnit.

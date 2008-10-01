@@ -1,6 +1,7 @@
 ===========================================================================
 5.8.1
 
+Fixed: Potential NPE in XmlTest#getVerbose (Ryan Morgan)
 Fixed: EmailableReporter only displayed the first group for each test method
 Fixed: time-outs were not working in <test> and <suite>
 Fixed: @BeforeTest failing in a base class would not cause subsequent test methods to be skipped
