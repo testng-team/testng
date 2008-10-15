@@ -1,6 +1,8 @@
 ===========================================================================
 5.8.1
 
+Fixed: TESTNG-276: Thread safety problem in Reporter class
+Fixed: TESTNG-277: Make Reporter.getCurrentTestResult() public
 Fixed: Potential NPE in XmlTest#getVerbose (Ryan Morgan)
 Fixed: EmailableReporter only displayed the first group for each test method
 Fixed: time-outs were not working in <test> and <suite>

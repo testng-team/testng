@@ -114,7 +114,7 @@ public class Reporter {
     }
   }
 
-  private static ITestResult  getCurrentTestResult() {
+  public static ITestResult getCurrentTestResult() {
     return m_currentTestResult.get();
   }
 
@@ -122,7 +122,7 @@ public class Reporter {
     System.out.println("[Reporter] " + s);
   }
 
-  public static List<String> getOutput(ITestResult tr) {
+  public static synchronized List<String> getOutput(ITestResult tr) {
     List<String> result = new ArrayList<String>();
     List<Integer> lines = m_methodOutputMap.get(tr);
     if (lines != null) {

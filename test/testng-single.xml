@@ -2,10 +2,10 @@
   
 <suite name="SingleSuite" verbose="2" >
 
-  <test name="SingleTest">
+  <test enabled="true" name="SingleTest">
     <classes>
 
-      <class name="test.tmp.A">
+      <class name="test.xml.TestTagTest">
       </class>
 <!--
       <class name="test.timeout.TestTimeOutSampleTest"/>
