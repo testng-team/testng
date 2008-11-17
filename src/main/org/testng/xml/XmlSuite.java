@@ -401,6 +401,16 @@ public class XmlSuite implements Serializable, Cloneable {
       xsb.addEmptyElement("parameter", paramProps);
     }
 
+    if (null != m_listeners && !m_listeners.isEmpty()) {
+      xsb.push("listeners");
+      for (String listenerName: m_listeners) {
+        Properties listenerProps = new Properties();
+        listenerProps.setProperty("class-name", listenerName);
+        xsb.addEmptyElement("listener", listenerProps);
+      }
+      xsb.pop("listeners");
+    }
+
     for (XmlTest test : getTests()) {
       xsb.getStringBuffer().append(test.toXml("  "));
     }
