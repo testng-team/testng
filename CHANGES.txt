@@ -1,6 +1,7 @@
 ===========================================================================
 5.8.1
 
+Fixed: TESTNG-254: XMLSuite toXML() ignores listeners
 Fixed: TESTNG-276: Thread safety problem in Reporter class
 Fixed: TESTNG-277: Make Reporter.getCurrentTestResult() public
 Fixed: Potential NPE in XmlTest#getVerbose (Ryan Morgan)
