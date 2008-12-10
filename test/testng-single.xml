@@ -1,13 +1,13 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="SingleSuite" verbose="2" >
+<suite name="SingleSuite" verbose="1" parallel="methods">
 
   <test enabled="true" name="SingleTest">
     <classes>
-
-      <class name="test.xml.TestTagTest">
-      </class>
+      <class name="test.testng285.TestNG285Test" />
 <!--
+      <class name="test.testng185.FirstDerived"/>
+      <class name="test.testng185.SecondDerived"/>
       <class name="test.timeout.TestTimeOutSampleTest"/>
       <class name="test.testng249.Base">
         <methods>

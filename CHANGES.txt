@@ -1,6 +1,7 @@
 ===========================================================================
 5.8.1
 
+Fixed: TESTNG-285: @Test(sequential=true) works incorrectly for classes with inheritance
 Fixed: TESTNG-254: XMLSuite toXML() ignores listeners
 Fixed: TESTNG-276: Thread safety problem in Reporter class
 Fixed: TESTNG-277: Make Reporter.getCurrentTestResult() public

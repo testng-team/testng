@@ -85,6 +85,7 @@
       <class name="test.testng249.VerifyTest"/>
       <class name="test.testng195.AfterMethodTest" />
       <class name="test.regression.BeforeTestFailingTest"/>
+      <class name="test.testng285.TestNG285Test" />
     </classes>
   </test>
   
