@@ -500,27 +500,26 @@ public class Invoker implements IInvoker {
 
         // If no timeOut, just invoke the method
         if (MethodHelper.calculateTimeOut(tm) <= 0) {
-          //
-          // If this method is a IHookable, invoke its run() method
-          //
-          if (IHookable.class.isAssignableFrom(thisMethod.getDeclaringClass())) {
-            MethodHelper.invokeHookable(instances[instanceIndex],
-                parameterValues, testClass, thisMethod, testResult);
-            testResult.setStatus(ITestResult.SUCCESS);
-          }
-          //
-          // Not a IHookable, invoke directly
-          //
-          else {
-            try {
-              Reporter.setCurrentTestResult(testResult);
+          try {
+            Reporter.setCurrentTestResult(testResult);
+            //
+            // If this method is a IHookable, invoke its run() method
+            //
+            if (IHookable.class.isAssignableFrom(thisMethod.getDeclaringClass())) {
+              MethodHelper.invokeHookable(instances[instanceIndex],
+                  parameterValues, testClass, thisMethod, testResult);
+            }
+            //
+            // Not a IHookable, invoke directly
+            //
+            else {
               MethodHelper.invokeMethod(thisMethod, instances[instanceIndex],
                   parameterValues);
-              testResult.setStatus(ITestResult.SUCCESS);
             } 
-            finally {
-              Reporter.setCurrentTestResult(null);
-            }                            
+            testResult.setStatus(ITestResult.SUCCESS);
+          }
+          finally {
+            Reporter.setCurrentTestResult(null);
           }
         }
         else {
