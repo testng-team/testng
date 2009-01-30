@@ -1,10 +1,12 @@
 package test.tmp;
 
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class A {
-  @Test(groups = { "database", "foo" })
-  public void test1() { }
-  
+@Test
+public class A extends Base {
+    public void a1() {}
+    
+    public void a2() {}
+
+    public void a3() {}
 }
