@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+  
+<suite name="JarPackagesTestSuite" verbose="0">
+  <test name="JarPackagesTest">
+    <packages>
+      <package name="test.jarpackages.tests" />
+    </packages>
+  </test>
+</suite>
+

@@ -76,10 +76,10 @@
       <class name="test.annotationtransformer.AnnotationTransformerTest" />
       <class name="test.configuration.MultipleBeforeGroupTest" />
       <class name="test.configuration.BaseGroupsTest" />
-      
-<!--
       <class name="test.jar.JarTest" />
--->
+<!-- 
+      <class name="test.jarpackages.JarPackagesTest" />
+ -->
       <class name="test.xml.XmlVerifyTest" />
       <class name="test.invokedmethodlistener.InvokedMethodListenerTest" />
       <class name="test.testng249.VerifyTest"/>

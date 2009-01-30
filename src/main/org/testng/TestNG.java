@@ -320,7 +320,7 @@ public class TestNG {
 
 
     try {
-      URL jarfileUrl = new URL("jar", "", "file:" + jarFile.getAbsolutePath() + "!/");
+      URL jarfileUrl = jarFile.getCanonicalFile().toURI().toURL();
       URLClassLoader jarLoader = new URLClassLoader(new URL[] { jarfileUrl });
       Thread.currentThread().setContextClassLoader(jarLoader);
 
@@ -343,7 +343,7 @@ public class TestNG {
       }
       if (! foundTestngXml) {
         XmlSuite xmlSuite = new XmlSuite();
-        xmlSuite.setVerbose(1);
+        xmlSuite.setVerbose(0);
         xmlSuite.setName("Jar suite");
         XmlTest xmlTest = new XmlTest(xmlSuite);
         List<XmlClass> xmlClasses = new ArrayList<XmlClass>();

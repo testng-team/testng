@@ -4,8 +4,9 @@
 
   <test enabled="true" name="SingleTest">
     <classes>
-      <class name="test.testng285.TestNG285Test" />
+      <class name="test.jarpackages.JarPackagesTest" />
 <!--
+      <class name="test.jar.JarTest" />
       <class name="test.testng185.FirstDerived"/>
       <class name="test.testng185.SecondDerived"/>
       <class name="test.timeout.TestTimeOutSampleTest"/>

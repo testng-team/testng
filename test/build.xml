@@ -44,12 +44,13 @@ TESTNG.REPORT.DIR=${testng.report.dir}
 		<echo message="                                 -- Compiling JDK 1.5 tests --"/>
 
 		<property name="build.compiler" value="modern"/>
-		<javac debug="true"
+    <javac debug="true"
            source="1.5"
            classpathref="compile.cp"
            srcdir="${test.src.dir}"
            destdir="${test.build.dir}"
-		/>
+    />
+      
   </target>
 
   <target name="prepare">
