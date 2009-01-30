@@ -21,7 +21,7 @@ public class ParallelTestTest extends BaseTest {
     verifyExpected(XmlSuite.PARALLEL_NONE, 1);
   }
   
-  @Test(groups = "broken")
+  @Test
   public void verifyParallelTests() {
     verifyExpected(XmlSuite.PARALLEL_TESTS, 2);
   }
@@ -31,6 +31,11 @@ public class ParallelTestTest extends BaseTest {
     verifyExpected(XmlSuite.PARALLEL_METHODS, 4);
   }
   
+  @Test
+  public void verifyParallelClasses() {
+    verifyExpected(XmlSuite.PARALLEL_CLASSES, 2);
+  }
+
   public static final String CLASS1 = "test.thread.Test1Test";
   public static final String CLASS2 = "test.thread.Test2Test";
     

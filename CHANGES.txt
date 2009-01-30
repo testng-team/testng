@@ -1,6 +1,7 @@
 ===========================================================================
 5.8.1
 
+Added: TESTNG-298: parallel="classes", which allows entire classes to be run in the same thread
 Added: @BeforeMethod can now declare Object[] as a parameter, which will be filled by the parameters of the test method
 Added: IAnnotationTransformer2
 Added: @Test(invocationTimeOut), which lets you set a time out for the total time taken by invocationCount

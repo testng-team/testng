@@ -50,7 +50,7 @@ Cedric Beust & Alexandru Popescu
 <!ATTLIST suite 
     name CDATA #REQUIRED
     verbose CDATA #IMPLIED
-    parallel (methods | tests) ""
+    parallel (methods | tests | classes) ""
     thread-count CDATA "5"
     annotations CDATA #IMPLIED
     time-out CDATA #IMPLIED

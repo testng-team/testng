@@ -1,6 +1,17 @@
 package org.testng;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 import org.testng.internal.ClassHelper;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.Constants;
@@ -28,16 +39,6 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * This class takes care of running one Test.
@@ -580,7 +581,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
 
     // All the parallel tests are placed in a separate worker, so they can be
     // invoked in parallel
-    createParallelWorkers(parallelList, xmlTest.getParameters(), cmm, workers);
+    createParallelWorkers(parallelList, xmlTest, cmm, workers);
     
     m_testPlan =
       new TestPlan(sequentialList, parallelList, cmm,
@@ -603,7 +604,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   }
 
   private void createParallelWorkers(List<ITestNGMethod> parallel, 
-      Map<String, String> params, ClassMethodMap cmm, List<TestMethodWorker> workers) {
+      XmlTest xmlTest, ClassMethodMap cmm, List<TestMethodWorker> workers) {
 
     if(parallel.isEmpty()) return;
     
@@ -629,17 +630,53 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       log(3, "===");
     }
 
-    for (IMethodInstance mi : methodInstances) {
-      workers.add(new TestMethodWorker(m_invoker,
-                                       new IMethodInstance[] { mi },
-                                       m_xmlTest.getSuite(),
-                                       params,
-                                       m_allTestMethods,
-                                       m_groupMethods,
-                                       cmm,
-                                       this));
+
+    Map<String, String> params = xmlTest.getParameters();
+    if (XmlSuite.PARALLEL_CLASSES.equals(xmlTest.getParallel())) {
+      Map<Class, Set<IMethodInstance>> list = groupMethodInstancesByClass(methodInstances);
+      for (Set<IMethodInstance> s : list.values()) {
+          workers.add(new TestMethodWorker(m_invoker,
+              s.toArray(new IMethodInstance[s.size()]),
+              m_xmlTest.getSuite(),
+              params,
+              m_allTestMethods,
+              m_groupMethods,
+              cmm,
+              this));          
+      }
+    }
+    else {
+      for (IMethodInstance mi : methodInstances) {
+        workers.add(new TestMethodWorker(m_invoker,
+                                         new IMethodInstance[] { mi },
+                                         m_xmlTest.getSuite(),
+                                         params,
+                                         m_allTestMethods,
+                                         m_groupMethods,
+                                         cmm,
+                                         this));
+        }
     }
 
+  }
+
+  /**
+   * @return a Set of arrays of IMethodInstances. Each element in the array is a method that belongs
+   * to the same class.
+   */
+  private Map<Class, Set<IMethodInstance>> groupMethodInstancesByClass(List<IMethodInstance> instances) {
+      Map<Class, Set<IMethodInstance>> result = new HashMap<Class, Set<IMethodInstance>>();
+      for (IMethodInstance mi : instances) {
+          Class cl = mi.getMethod().getTestClass().getRealClass();
+          Set<IMethodInstance> methods = result.get(cl);
+          if (methods == null) {
+              methods = new HashSet<IMethodInstance>();
+              result.put(cl, methods);
+          }
+          methods.add(mi);
+      }
+
+      return result;
   }
   
   private void createSequentialWorkers(List<List<ITestNGMethod>> sequentialList, 
@@ -697,7 +734,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   //
   private void runWorkers(List<? extends IMethodWorker> workers, String parallelMode) {
     if (XmlSuite.PARALLEL_METHODS.equals(parallelMode) 
-        || "true".equalsIgnoreCase(parallelMode) ) 
+        || "true".equalsIgnoreCase(parallelMode)
+        || XmlSuite.PARALLEL_CLASSES.equals(parallelMode)) 
     {
       //
       // Parallel run
