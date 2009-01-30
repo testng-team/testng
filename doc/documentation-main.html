@@ -1389,7 +1389,7 @@ will make both <tt>test1()</tt> and <tt>test2()</tt> test methods but on top of 
 
 <h4><a name="parallel-running">5.9 - Parallel running and time-outs</a></h4>You can 
 instruct TestNG to run your tests in separate threads by using the <i>parallel</i> 
-attribute on the suite tag.  This attribute can take one of two values:
+attribute on the suite tag.  This attribute can take one of following values:
 
 <pre class="prettyprint">
 &lt;suite name="My suite" parallel="methods" thread-count="5"&gt;
@@ -1397,6 +1397,10 @@ attribute on the suite tag.  This attribute can take one of two values:
 
 <pre class="prettyprint">
 &lt;suite name="My suite" parallel="tests" thread-count="5"&gt;
+</pre>
+
+<pre class="prettyprint">
+&lt;suite name="My suite" parallel="classes" thread-count="5"&gt;
 </pre>
 
 <ul>
@@ -1410,6 +1414,13 @@ respect their order of execution.&nbsp;
 <li>
 <b><tt>parallel="tests"</tt></b>:  TestNG will run all the methods in the same &lt;test&gt; tag in the same thread, but each &lt;test&gt; tag will be in a separate thread.  This allows you to group all your classes that are not thread safe in the same &lt;test&gt; and guarantee they will all run in the same thread while taking advantage of TestNG using as many threads as possible to run your tests.
 </li>
+
+<br>
+
+<li>
+<b><tt>parallel="classes"</tt></b>:  TestNG will run all the methods in the same class in the same thread, but each class will be run in a separate thread.
+</li>
+
 
 </ul>
 
