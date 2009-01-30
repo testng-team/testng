@@ -828,8 +828,8 @@ public class TestNGAntTask extends Task {
       throw new BuildException("No suite or classes or jar is specified.");
     }
 
-    if((null != m_includedGroups) && (m_classFilesets.size() == 0)) {
-      throw new BuildException("No classfileset specified while using groups");
+    if((null != m_includedGroups) && (m_classFilesets.size() == 0 && m_xmlFilesets.size() == 0)) {
+      throw new BuildException("No class filesets or xml file sets specified while using groups");
     }
 
     if (m_target != null) {
