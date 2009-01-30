@@ -129,4 +129,68 @@ public class GraphTest {
         || predecessors.get(3).equals("2");
     }
   }
+
+  // Using an earlier implementation of Graph.findPrecessors, finding
+  // predecessors in certain kinds of graphs where many nodes have the
+  // same predecessors could be very slow, since the old implementation
+  // would explore the same nodes repeatedly.  This situation could
+  // happen when test methods are organized in several groups, with
+  // dependsOnGroups annotations so that each method in one group depends
+  // on all of the methods in another group.  If there were several
+  // such groups depending on each other in a chain, the combinatorics
+  // of the old method became excessive.  This test builds a 72-node graph that
+  // emulates this situation, then call Graph.findPredecessors.  The old
+  // implementation run this in 70+ seconds on my computer, the new implementation
+  // takes a few milliseconds.  In practice, with larger graphs, the former
+  // slowness could get very extreme, taking hours or more to complete
+  // in some real user situations.
+  //
+  @Test(timeOut = 5000) // If this takes more than 5 seconds we've definitely regressed.
+  public void findPredecessorsTiming() {
+    Graph<String> g = new Graph<String>();
+
+    final String rootNode = "myroot";
+    final String independentNode = "independent";
+    g.addNode(rootNode);
+    g.addNode(independentNode);
+
+    final int maxDepth = 7;
+    final int nodesPerDepth = 10; // must be < 100
+    //
+    // Add maxDepth groups of new nodes, where each group contains nodesPerDepth
+    // nodes, and each node in a group a depth N has each node in the group
+    // at depth (N-1) as a predecessor.
+    //
+    for (int depth = 1; depth <= maxDepth; depth++) {
+      for (int i = 0; i < nodesPerDepth; i++) {
+        String newNode = String.valueOf(i + (100 * depth));
+        g.addNode(newNode);
+        if (depth == 1) continue;
+        for (int j = 0; j < nodesPerDepth; j++) {
+          String prevNode = String.valueOf(j + (100 * (depth - 1)));
+          g.addPredecessor(newNode, prevNode);
+        }
+      }
+    }
+
+    // Finally, make all of the nodes in the group at depth maxDepth
+    // be predecessors of rootNode.
+    //
+    for (int i = 0; i < nodesPerDepth; i++) {
+      String node = String.valueOf(i + (100 * maxDepth));
+      g.addPredecessor(rootNode, node);
+    }
+
+    // Now we're done building the graph, which has (maxDepth * nodesPerDepth) + 2
+    // nodes.  rootNode has all of the other nodes except independentNode
+    // as predecessors.
+
+    //
+    // Test findPredecessors
+    //
+    {
+      List<String> predecessors = g.findPredecessors(rootNode);
+      assert predecessors.size() == (maxDepth * nodesPerDepth);
+    }
+  }
 }

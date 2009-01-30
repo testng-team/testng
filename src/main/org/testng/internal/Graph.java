@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -204,39 +205,34 @@ public class Graph<T extends Object> {
    * @return A list of all the predecessors for o
    */
   public List<T> findPredecessors(T o) {
-    List<T> result = new ArrayList<T>();
     // Locate the node
     Node<T> node = findNode(o);
-    
     if (null == node) {
       throw new AssertionError("No such node: " + o);
     }
-    else {
-      List<Node<T>> nodesToWalk = new ArrayList<Node<T>>();
-      
-      // Found the nodes, now find all its predecessors
-      for (Node<T> n : getNodes()) {
-        T obj = n.getObject();
-        if (node.hasPredecessor(obj)) {
-          ppp("FOUND PREDECESSOR " + n);
-          if (! result.contains(obj)) {
-            result.add(0, obj);
-            nodesToWalk.add(n);
-          }
-        }
-      }
-      
-      // Add all the predecessors of the nodes we just found
-      for (Node<T> n : nodesToWalk) {
-        List<T> r = findPredecessors(n.getObject());
-        for (T obj : r) {
-          if (! result.contains(obj)) {
-            result.add(0, obj);
-          }
+
+    // If we found the node, use breadth first search to find all
+    // all of the predecessors of o.  "result" is the growing list
+    // of all predecessors.  "visited" is the set of items we've
+    // already encountered.  "queue" is the queue of items whose
+    // predecessors we haven't yet explored.
+
+    LinkedList<T> result = new LinkedList<T>();
+    Set<T> visited = new HashSet<T>();
+    LinkedList<T> queue = new LinkedList<T>();
+    visited.add(o);
+    queue.addLast(o);
+
+    while (! queue.isEmpty()) {
+      for (T obj : getPredecessors(queue.removeFirst())) {
+        if (! visited.contains(obj)) {
+          visited.add(obj);
+          queue.addLast(obj);
+          result.addFirst(obj);
         }
       }
     }
-    
+
     return result;
   }
   
