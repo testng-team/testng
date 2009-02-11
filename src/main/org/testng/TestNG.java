@@ -988,6 +988,11 @@ public class TestNG {
       setObjectFactory(objectFactory);
     }
 
+    Class runnerFactory = (Class) cmdLineArgs.get(TestNGCommandLineArgs.TESTRUNNER_FACTORY_COMMAND_OPT);
+    if (null != runnerFactory) {
+      setTestRunnerFactoryClass(runnerFactory);
+    }
+
     List<ReporterConfig> reporterConfigs =
             (List<ReporterConfig>) cmdLineArgs.get(TestNGCommandLineArgs.REPORTERS_LIST);
     if (reporterConfigs != null) {

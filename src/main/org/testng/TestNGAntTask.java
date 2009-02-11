@@ -58,6 +58,7 @@ import org.testng.internal.version.VersionInfo;
  * <li>testname (attribute)</li>
  * <li>threadcount (attribute)</li>
  * <li>verbose (attribute)</li>
+ * <li>testrunfactory (attribute)</li>
  * 
  * </ul>
  *
@@ -78,6 +79,7 @@ import org.testng.internal.version.VersionInfo;
  * <li>FSPproperty (attribute)</li>
  * <li>haltonskipped (attribute)</li>
  * <li>skippedProperty (attribute)</li>
+ * <li>testRunnerFactory (attribute)</li>
  * </ul>
  *
  * Debug information:
@@ -104,6 +106,7 @@ public class TestNGAntTask extends Task {
   protected Boolean m_isJUnit;
   private List<String> m_listeners= new ArrayList<String>();
   private String m_objectFactory;
+  protected String m_testRunnerFactory;
   
   protected Environment m_environment= new Environment();
 
@@ -435,7 +438,11 @@ public class TestNGAntTask extends Task {
   public void setObjectFactory(String className) {
     m_objectFactory = className;
   }
-  
+
+  public void setTestRunnerFactory(String testRunnerFactory) {
+    this.m_testRunnerFactory = testRunnerFactory;
+  }
+
   /**
    * @deprecated Use "listeners"
    */
@@ -558,6 +565,12 @@ public class TestNGAntTask extends Task {
       argv.add(TestNGCommandLineArgs.OBJECT_FACTORY_COMMAND_OPT);
       argv.add(m_objectFactory);
     }
+
+    if (m_testRunnerFactory !=null) {
+      argv.add(TestNGCommandLineArgs.TESTRUNNER_FACTORY_COMMAND_OPT);
+      argv.add(m_testRunnerFactory);
+    }
+
     if(m_parallelMode != null) {
       argv.add(TestNGCommandLineArgs.PARALLEL_MODE);
       argv.add(m_parallelMode);
