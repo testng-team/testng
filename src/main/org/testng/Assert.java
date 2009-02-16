@@ -1,9 +1,11 @@
 package org.testng;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -522,15 +524,17 @@ public class Assert {
       else fail("Arrays not equal: " + expected + " and " + actual);
     }
     
-    Collection actualCollection = new HashSet();
+    List actualCollection = new ArrayList();
     for (Object a : actual) {
       actualCollection.add(a);
     }
+    Collections.sort(actualCollection);
     
-    Collection expectedCollection = new HashSet();
+    List expectedCollection = new ArrayList();
     for (Object a : expected) {
       expectedCollection.add(a);
     }
+    Collections.sort(expectedCollection);
     
     assertEquals(actualCollection, expectedCollection, message);
   }

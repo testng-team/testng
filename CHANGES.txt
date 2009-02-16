@@ -8,6 +8,9 @@ Added: IAnnotationTransformer2
 Added: @Test(invocationTimeOut), which lets you set a time out for the total time taken by invocationCount
 Added: IInvokedMethodListener
 Added: -testjar supports jar file with no testng.xml file
+Fixed: TestNG-228: Assert.assertEqualsNoOrder
+Fixed: TestNG-229: Assert.assertEquals does not behave properly when arguments are sets
+Fixed: TESTNG-36: assertEquals(Collection actual, Collection expected, String message) may have bug
 Fixed: TESTNG-296: Malformed jar URLs breaking -testJar
 Fixed: TESTNG-297: TestNG seemingly never stops running while building failed test suite (Gregg Yost)
 Fixed: TESTNG-285: @Test(sequential=true) works incorrectly for classes with inheritance

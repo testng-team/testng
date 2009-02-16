@@ -1,10 +1,10 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="SingleSuite" verbose="1" parallel="methods">
+<suite name="SingleSuite" verbose="10" parallel="methods">
 
   <test enabled="true" name="SingleTest">
     <classes>
-      <class name="test.jarpackages.JarPackagesTest" />
+      <class name="test.asserttests.AssertTest" />
 <!--
       <class name="test.jar.JarTest" />
       <class name="test.testng185.FirstDerived"/>

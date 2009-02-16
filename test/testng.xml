@@ -540,4 +540,11 @@
       <class name="test.methodinterceptors.MethodInterceptorTest" />
     </classes>
   </test>
+  
+  <test name="Asserts">
+    <classes>
+      <class name="test.asserttests.AssertTest" />
+    </classes>
+  </test>
+  
 </suite>
