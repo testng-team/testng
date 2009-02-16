@@ -49,6 +49,7 @@ Cedric Beust & Alexandru Popescu
 -->
 <!ATTLIST suite 
     name CDATA #REQUIRED
+    junit (true | false) "false"
     verbose CDATA #IMPLIED
     parallel (methods | tests | classes) ""
     thread-count CDATA "5"
