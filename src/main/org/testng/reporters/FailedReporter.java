@@ -199,28 +199,19 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     for(Map.Entry<Class, Set<ITestNGMethod>> entry: methodsMap.entrySet()) {
       Class clazz= entry.getKey();
       Set<ITestNGMethod> methodList= entry.getValue();
-      if(hasTestMethod(methodList)) {
-        XmlClass xmlClass= new XmlClass(clazz.getName(), Boolean.FALSE);
-        List<String> methodNames= new ArrayList<String>(methodList.size());
-        for(ITestNGMethod m: methodList) {
-          methodNames.add(m.getMethod().getName());
-        }
-        xmlClass.setIncludedMethods(methodNames);
-        result.add(xmlClass);
+      // @author Borojevic 
+      // Need to check all the methods, not just @Test ones.
+      XmlClass xmlClass= new XmlClass(clazz.getName(), Boolean.FALSE);
+      List<String> methodNames= new ArrayList<String>(methodList.size());
+      for(ITestNGMethod m: methodList) {
+        methodNames.add(m.getMethod().getName());
       }
+      xmlClass.setIncludedMethods(methodNames);
+      result.add(xmlClass);
+      
     }
         
     return result;
-  }
-
-  private boolean hasTestMethod(Collection<ITestNGMethod> methods) {
-    for(ITestNGMethod m: methods) {
-      if(m.isTest()) {
-        return true;
-      }
-    }
-    
-    return false;
   }
   
   /**
