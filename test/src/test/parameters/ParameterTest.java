@@ -31,5 +31,18 @@ public class ParameterTest extends BaseTest {
     verifyTests("Failed", failed, getFailedTests());
   }
 
+  @Test
+  public void beforeMethodWithParameters() {
+    addClass("test.parameters.BeforeSampleTest");
+    setParameter("parameter", "parameter value");
+    run();
+    String[] passed = {
+      "testExample",
+    };
+    String[] failed = {
+    };
+    verifyTests("Passed", passed, getPassedTests());
+    verifyTests("Failed", failed, getFailedTests());
+  }
 
 }

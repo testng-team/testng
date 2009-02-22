@@ -1,5 +1,5 @@
 ===========================================================================
-5.8.1
+5.9
 
 Added: -testrunfactory on the command line and in the ant task (Vitalyi Pamajonkov)
 Added: TESTNG-298: parallel="classes", which allows entire classes to be run in the same thread
@@ -8,6 +8,7 @@ Added: IAnnotationTransformer2
 Added: @Test(invocationTimeOut), which lets you set a time out for the total time taken by invocationCount
 Added: IInvokedMethodListener
 Added: -testjar supports jar file with no testng.xml file
+Fixed: @Parameters was not working correctly on @BeforeMethods with @DataProvider used on @Test methods
 Fixed: testng-failed.xml was sometimes incorrectly generated (Borojevic)
 Fixed: TestNG-228: Assert.assertEqualsNoOrder
 Fixed: TestNG-229: Assert.assertEquals does not behave properly when arguments are sets

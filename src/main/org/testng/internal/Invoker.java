@@ -956,7 +956,7 @@ public class Invoker implements IInvoker {
                                                        testMethod,
                                                        parameterValues,
                                                        suite,
-                                                       allParameterNames,
+                                                       parameters,
                                                        testClass,
                                                        beforeMethods,
                                                        afterMethods,
