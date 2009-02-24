@@ -520,23 +520,36 @@ public class Assert {
     if(actual == expected) return;
     
     if ((actual == null && expected != null) || (actual != null && expected == null)) {
-      if (message != null) fail(message);
-      else fail("Arrays not equal: " + expected + " and " + actual);
+      failAssertNoEqual(actual, expected,
+          "Arrays not equal: " + expected + " and " + actual,
+          message);
+    }
+    
+    if (actual.length != expected.length) {
+      failAssertNoEqual(actual, expected,
+          "Arrays do not have the same size:" + actual.length + " != " + expected.length,
+          message);
     }
     
     List actualCollection = new ArrayList();
     for (Object a : actual) {
       actualCollection.add(a);
     }
-    Collections.sort(actualCollection);
-    
-    List expectedCollection = new ArrayList();
-    for (Object a : expected) {
-      expectedCollection.add(a);
+    for (Object o : expected) {
+      actualCollection.remove(o);
     }
-    Collections.sort(expectedCollection);
-    
-    assertEquals(actualCollection, expectedCollection, message);
+    if (actualCollection.size() != 0) {
+      failAssertNoEqual(actual, expected,
+          "Arrays not equal: " + expected + " and " + actual,
+          message);
+    }
+  }
+  
+  private static void failAssertNoEqual(Object[] actual, Object[] expected,
+      String message, String defaultMessage)
+  {
+    if (message != null) fail(message);
+    else fail(defaultMessage);
   }
   
   /**
