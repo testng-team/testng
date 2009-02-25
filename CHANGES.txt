@@ -8,6 +8,7 @@ Added: IAnnotationTransformer2
 Added: @Test(invocationTimeOut), which lets you set a time out for the total time taken by invocationCount
 Added: IInvokedMethodListener
 Added: -testjar supports jar file with no testng.xml file
+Fixed: TESTNG-192: JUnit XML output includes wrong tests (Borojevic)
 Fixed: @Parameters was not working correctly on @BeforeMethods with @DataProvider used on @Test methods
 Fixed: testng-failed.xml was sometimes incorrectly generated (Borojevic)
 Fixed: TestNG-228: Assert.assertEqualsNoOrder

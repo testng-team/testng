@@ -41,9 +41,6 @@ public class JUnitXMLReporter implements IResultListener {
     ATTR_ESCAPES.put("&quot;", QUOTE);
   }
   
-  private String m_outputFileName= null;
-  private File m_outputFile= null;
-  private ITestContext m_testContext= null;
 
   /**
    * keep lists of all the results
@@ -54,6 +51,8 @@ public class JUnitXMLReporter implements IResultListener {
   private int m_numFailedButIgnored= 0;
   private List<ITestResult> m_allTests= Collections.synchronizedList(new ArrayList<ITestResult>());
   private List<ITestResult> m_configIssues= Collections.synchronizedList(new ArrayList<ITestResult>());
+  private Map<String, String> m_fileNameMap = new HashMap<String, String>();
+  private int m_fileNameIncrementer = 0;
 
   public void onTestStart(ITestResult result) {
   }
@@ -93,9 +92,7 @@ public class JUnitXMLReporter implements IResultListener {
    *
    */
   public void onStart(ITestContext context) {
-    m_outputFileName= context.getOutputDirectory() + File.separator + context.getName() + ".xml";
-    m_outputFile= new File(m_outputFileName);
-    m_testContext= context;
+	  
   }
 
   /**
@@ -104,7 +101,8 @@ public class JUnitXMLReporter implements IResultListener {
    *
    */
   public void onFinish(ITestContext context) {
-    generateReport();
+	generateReport(context);
+    resetAll();
   }
 
   /**
@@ -130,17 +128,17 @@ public class JUnitXMLReporter implements IResultListener {
   /**
    * generate the XML report given what we know from all the test results
    */
-  protected void generateReport() {
-    try {
+  protected void generateReport(ITestContext context) {
+	  
       XMLStringBuffer document= new XMLStringBuffer("");
       document.setXmlDetails("1.0", "UTF-8");
       Properties attrs= new Properties();
-      attrs.setProperty(XMLConstants.ATTR_NAME, encodeAttr(m_testContext.getName())); // ENCODE
+      attrs.setProperty(XMLConstants.ATTR_NAME, encodeAttr(context.getName())); // ENCODE
       attrs.setProperty(XMLConstants.ATTR_TESTS, "" + m_allTests.size());
       attrs.setProperty(XMLConstants.ATTR_FAILURES, "" + m_numFailed);
       attrs.setProperty(XMLConstants.ATTR_ERRORS, "0");
       attrs.setProperty(XMLConstants.ATTR_TIME, ""
-          + ((m_testContext.getEndDate().getTime() - m_testContext.getStartDate().getTime()) / 1000.0));
+          + ((context.getEndDate().getTime() - context.getStartDate().getTime()) / 1000.0));
 
       document.push(XMLConstants.TESTSUITE, attrs);
       document.addEmptyElement(XMLConstants.PROPERTIES);
@@ -153,15 +151,7 @@ public class JUnitXMLReporter implements IResultListener {
       }
 
       document.pop();
-      BufferedWriter fw= new BufferedWriter(new FileWriter(m_outputFile));
-      fw.write(document.toXML());
-      fw.flush();
-      fw.close();
-    }
-    catch(IOException ioe) {
-      ioe.printStackTrace();
-      System.err.println("failed to create JUnitXML because of " + ioe);
-    }
+      Utils.writeUtf8File(context.getOutputDirectory(),generateFileName(context) + ".xml", document.toXML());
   }
 
   private void createElement(XMLStringBuffer doc, ITestResult tr) {
@@ -241,4 +231,40 @@ public class JUnitXMLReporter implements IResultListener {
     
     return result.toString();
   }
+  
+  
+  /**
+	 * Reset all member variables for next test.
+	 * */
+	private void resetAll() {
+		m_allTests = Collections.synchronizedList(new ArrayList<ITestResult>());
+		m_configIssues = Collections
+				.synchronizedList(new ArrayList<ITestResult>());
+		m_numFailed = 0;
+		m_numFailedButIgnored = 0;
+		m_numPassed = 0;
+		m_numSkipped = 0;
+	}
+	
+	/**
+	 * @author Borojevic Created this method to guarantee unique file names for
+	 *         reports.<br>
+	 *         Also, this will guarantee that the old reports are overwritten
+	 *         when tests are run again.
+	 * @param context
+	 *            test context
+	 * @return unique name for the file associated with this test context.
+	 * */
+	private String generateFileName(ITestContext context) {
+		String fileName = null;
+		String keyToSearch = context.getSuite().getName() + context.getName();
+		if (m_fileNameMap.get(keyToSearch) == null) {
+			fileName = context.getName();
+		} else {
+			fileName = context.getName() + m_fileNameIncrementer++;
+		}
+
+		m_fileNameMap.put(keyToSearch, fileName);
+		return fileName;
+	}
 }
