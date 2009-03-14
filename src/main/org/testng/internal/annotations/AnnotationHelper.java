@@ -145,7 +145,7 @@ public class AnnotationHelper {
     result.setFakeConfiguration(true);
     result.setAlwaysRun(bs.getAlwaysRun());
     result.setDependsOnGroups(bs.getDependsOnGroups());
-    result.setDependsOnMethods(bs.getDependsOnGroups());
+    result.setDependsOnMethods(bs.getDependsOnMethods());
     result.setDescription(bs.getDescription());
     result.setEnabled(bs.getEnabled());
     result.setGroups(bs.getGroups());
