@@ -665,6 +665,7 @@ public class TestNG {
 
   private void initializeCommandLineSuites() {
     if(null != m_commandLineTestClasses) {
+      initializeAnnotationFinders();
       m_cmdlineSuites = createCommandLineSuites(m_commandLineTestClasses);
       for (XmlSuite s : m_cmdlineSuites) {
         m_suites.add(s);
@@ -726,7 +727,6 @@ public class TestNG {
    */
   public void run() {
     initializeListeners();
-    initializeAnnotationFinders();
     initializeCommandLineSuites();
     initializeCommandLineSuitesParams();
     initializeCommandLineSuitesGroups();
@@ -757,6 +757,8 @@ public class TestNG {
    	                                    m_javadocAnnotationFinder, m_jdkAnnotationFinder, getTestListeners());
     }
     
+    initializeAnnotationFinders();
+
     if(null != suiteRunners) {
       generateReports(suiteRunners);
     }
@@ -842,6 +844,7 @@ public class TestNG {
   }
 
   protected SuiteRunner createAndRunSuiteRunners(XmlSuite xmlSuite) {
+    initializeAnnotationFinders();
     SuiteRunner result = new SuiteRunner(xmlSuite, 
         m_outputDir, 
         m_testRunnerFactory, 

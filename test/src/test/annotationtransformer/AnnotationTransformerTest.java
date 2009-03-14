@@ -1,14 +1,19 @@
 package test.annotationtransformer;
 
 import org.testng.Assert;
+import org.testng.IAnnotationTransformer;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.IAnnotationTransformer;
+import org.testng.xml.Parser;
+import org.testng.xml.XmlSuite;
 
 import test.SimpleBaseTest;
 
+import java.io.ByteArrayInputStream;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class AnnotationTransformerTest extends SimpleBaseTest {
@@ -128,5 +133,33 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     tng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), 1);
+  }
+
+  @Test
+  public void annotationTransformerInXmlShouldBeRun() throws Exception {
+    String xml = "<suite name=\"SingleSuite\" >" +
+        "  <listeners>" +
+        "    <listener class-name=\"test.annotationtransformer.AnnotationTransformerInTestngXml\" />" +
+        "  </listeners>" +
+        "  <test enabled=\"true\" name=\"SingleTest\">" +
+        "    <classes>" +
+        "      <class name=\"test.annotationtransformer.AnnotationTransformerInTestngXml\" />" +
+        "    </classes>" +
+        "  </test>" +
+        "</suite>"
+        ;
+
+    ByteArrayInputStream is = new ByteArrayInputStream(xml.getBytes());
+    Collection<XmlSuite> suites = new Parser(is).parse();
+
+    TestNG tng = create();
+    tng.setXmlSuites(Arrays.asList(suites.toArray(new XmlSuite[0])));
+    TestListenerAdapter tla = new TestListenerAdapter();
+    tng.addListener(tla);
+    
+    tng.run();
+
+    Assert.assertEquals(tla.getPassedTests().size(), 1);
+    
   }
 }
