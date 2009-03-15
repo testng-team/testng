@@ -160,11 +160,13 @@ public class MethodHelper {
     String className, methodName;
     if (lastDot == -1) {
       lastDot = mainMethodName.lastIndexOf('.');
+      className = mainMethodName.substring(0, lastDot);
       methodName = regExp;
     } else {
       methodName = regExp.substring(lastDot+1);
+      className = regExp.substring(0, lastDot);
     }
-    className = regExp.substring(0, lastDot);
+    
     try {
       Class<?> c = Class.forName(className);
       for (Method m : c.getDeclaredMethods()) {
