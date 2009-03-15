@@ -69,4 +69,7 @@ public interface ITestAnnotation extends ITestOrConfiguration {
 
   public long invocationTimeOut();
   public void setInvocationTimeOut(long timeOut);
+  
+  public boolean ignoreMissingDependencies();
+  public void setIgnoreMissingDependencies(boolean ignore);
 }

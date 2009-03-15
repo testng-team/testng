@@ -112,9 +112,10 @@ public class MethodHelper {
     return result;
   }
 
-  public static ITestNGMethod[] findMethodsNamed(String mainMethod,
+  public static ITestNGMethod[] findMethodsNamed(ITestNGMethod m,
       ITestNGMethod[] methods, String[] regexps) 
   {
+    String mainMethod = calculateMethodCanonicalName(m);
     List<ITestNGMethod> vResult = new ArrayList<ITestNGMethod>();
     String currentRegexp = null;
     for (String fullyQualifiedRegexp : regexps) {
@@ -140,6 +141,7 @@ public class MethodHelper {
       }
       
       if (!foundAtLeastAMethod) {
+        if (m.ignoreMissingDependencies()) continue;
         Method maybeReferringTo = findMethodByName(mainMethod, currentRegexp);
         if (maybeReferringTo != null) {
           throw new TestNGException(mainMethod + "() is not allowed to depend on " + maybeReferringTo);
@@ -494,9 +496,8 @@ public class MethodHelper {
       String[] methodsDependedUpon = m.getMethodsDependedUpon();
       String[] groupsDependedUpon = m.getGroupsDependedUpon();
       if (methodsDependedUpon.length > 0) {
-        String methodName = calculateMethodCanonicalName(m);
         ITestNGMethod[] methodsNamed = 
-          MethodHelper.findMethodsNamed(methodName, methods, methodsDependedUpon);
+          MethodHelper.findMethodsNamed(m, methods, methodsDependedUpon);
         for (ITestNGMethod pred : methodsNamed) {
           predecessors.put(pred, pred);
         }

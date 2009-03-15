@@ -201,4 +201,7 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
    * The time under which all invocationCount methods need to complete by.
    */
   public long getInvocationTimeOut();
+
+  public boolean ignoreMissingDependencies();
+  public void setIgnoreMissingDependencies(boolean ignore);
 }

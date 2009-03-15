@@ -158,4 +158,11 @@ public @interface Test {
    * @return
    */
   public boolean skipFailedInvocations() default false;
+  
+  /**
+   * If set to true, this test will run even if the methods
+   * it depends on are missing or excluded.
+   */
+  public boolean ignoreMissingDependencies() default false;
+  
 }

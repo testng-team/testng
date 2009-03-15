@@ -131,6 +131,7 @@
     <parameter name="foo" value="Cedric" />
     <classes>
       <class name="test.dependent.MissingGroupTest" />
+      <class name="test.dependent.MissingMethodTest" />
       <class name="test.dependent.OrderMethodTest" />
       <class name="test.dependent.DependentTest" />
       <class name="test.dependent.SampleDependentMethods" />

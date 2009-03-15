@@ -46,6 +46,8 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   private boolean m_skipFailedInvocations = true;
   private long m_invocationTimeOut = 0L;
   
+  private boolean m_ignoreMissingDependencies;
+  
   /**
    * Constructs a <code>BaseTestMethod</code> TODO cquezel JavaDoc.
    *
@@ -613,6 +615,14 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   public long getInvocationTimeOut() {
     return m_invocationTimeOut;
+  }
+
+  public boolean ignoreMissingDependencies() {
+    return m_ignoreMissingDependencies;
+  }
+
+  public void setIgnoreMissingDependencies(boolean i) {
+    m_ignoreMissingDependencies = i;
   }
 
 }

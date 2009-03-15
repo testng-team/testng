@@ -4,20 +4,19 @@ import org.testng.annotations.Test;
 
 import test.BaseTest;
 
-public class MissingGroupTest extends BaseTest {
+public class MissingMethodTest extends BaseTest {
   
   @Test
-  public void verifyThatExceptionIsThrownIfMissingGroup() {    
-    addClass("test.dependent.MissingGroupSampleTest");
+  public void verifyThatExceptionIsThrownIfMissingMethod() {    
+    addClass("test.dependent.MissingMethodSampleTest");
     
     run();
     String[] passed = {
-        "shouldNotBeSkipped"
+        "shouldPass"
      };
     String[] failed = {
     };
     String[] skipped = {
-      "shouldBeSkipped"
     };
     verifyTests("Failed", failed, getFailedTests());
     verifyTests("Passed", passed, getPassedTests());

@@ -400,6 +400,14 @@ public class JUnitUtils {
       return false;
     }
 
+    public void setIgnoreMissingDependencies(boolean ignore) {
+      // nop
+    }
+
+    public boolean ignoreMissingDependencies() {
+      return false;
+    }
+    
     public boolean isFirstTimeOnly() {
       return false;
     }

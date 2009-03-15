@@ -25,6 +25,7 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   private Class<?> m_dataProviderClass = null;
   private IRetryAnalyzer m_retryAnalyzer = null;
   private boolean m_skipFailedInvocations = false;
+  private boolean m_ignoreMissingDependencies = false;
   
   /**
    * @return the expectedExceptions
@@ -155,5 +156,13 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
 
   public boolean skipFailedInvocations() {
     return m_skipFailedInvocations;
+  }
+  
+  public void setIgnoreMissingDependencies(boolean ignore) {
+    m_ignoreMissingDependencies = ignore;
+  }
+
+  public boolean ignoreMissingDependencies() {
+    return m_ignoreMissingDependencies;
   }
 }

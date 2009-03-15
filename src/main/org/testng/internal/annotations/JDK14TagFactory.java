@@ -381,6 +381,9 @@ public class JDK14TagFactory {
     result.setSkipFailedInvocations(
         Converter.getBoolean(dt.getNamedParameter("skipFailedInvocations"),
           result.skipFailedInvocations()));
+    result.setIgnoreMissingDependencies(
+        Converter.getBoolean(dt.getNamedParameter("ignoreMissingDependencies"),
+          result.ignoreMissingDependencies()));
     
     return result;
   }

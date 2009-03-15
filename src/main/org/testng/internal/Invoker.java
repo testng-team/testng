@@ -1319,7 +1319,7 @@ public class Invoker implements IInvoker {
     
     // Any missing group?
     if (testMethod.getMissingGroup() != null) {
-      return false;
+      if (!testMethod.ignoreMissingDependencies()) return false;
     }
 
     // If this method depends on groups, collect all the methods that
@@ -1342,9 +1342,7 @@ public class Invoker implements IInvoker {
     // methods have been run successfully
     if(dependsOnMethods(testMethod)) {
       ITestNGMethod[] methods = 
-        MethodHelper.findMethodsNamed(testMethod.getMethod().getName(),
-                                                       allTestMethods,
-                                                       testMethod.getMethodsDependedUpon());
+        MethodHelper.findMethodsNamed(testMethod, allTestMethods, testMethod.getMethodsDependedUpon());
 
       result= result && haveBeenRunSuccessfully(methods);
     }
