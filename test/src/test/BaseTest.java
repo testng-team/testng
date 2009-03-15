@@ -82,6 +82,10 @@ public class BaseTest extends BaseDistributedTest {
   private Map<Long, Map> m_passedTests= new HashMap<Long, Map>();
   private Map<Long, Map> m_failedTests= new HashMap<Long, Map>();
   private Map<Long, Map> m_skippedTests= new HashMap<Long, Map>();
+  private Map<Long, XmlTest> m_testConfigs= new HashMap<Long, XmlTest>();
+  private Map<Long, Map> m_passedConfigs= new HashMap<Long, Map>();
+  private Map<Long, Map> m_failedConfigs= new HashMap<Long, Map>();
+  private Map<Long, Map> m_skippedConfigs= new HashMap<Long, Map>();
   private Map<Long, Map> m_failedButWithinSuccessPercentageTests= new HashMap<Long, Map>();
 
   protected Map<String, List<ITestResult>> getTests(Map<Long, Map> map) {
@@ -117,6 +121,18 @@ public class BaseTest extends BaseDistributedTest {
   public Map<String, List<ITestResult>> getSkippedTests() {
     return getTests(m_skippedTests);
   }
+  
+  public Map<String, List<ITestResult>> getFailedConfigs() {
+    return getTests(m_failedConfigs);
+  }
+
+  public Map<String, List<ITestResult>> getPassedConfigs() {
+    return getTests(m_passedConfigs);
+  }
+
+  public Map<String, List<ITestResult>> getSkippedConfigs() {
+    return getTests(m_skippedConfigs);
+  }
 
   public void setSkippedTests(Map m) {
     setTests(m_skippedTests, m);
@@ -134,11 +150,27 @@ public class BaseTest extends BaseDistributedTest {
     setTests(m_failedButWithinSuccessPercentageTests, m);
   }
 
+  public void setSkippedConfigs(Map m) {
+    setTests(m_skippedConfigs, m);
+  }
+
+  public void setPassedConfigs(Map m) {
+    setTests(m_passedConfigs, m);
+  }
+
+  public void setFailedConfigs(Map m) {
+    setTests(m_failedConfigs, m);
+  }
+
+  
   protected void run() {
     assert null != getTest() : "Test wasn't set, maybe @Configuration methodSetUp() was never called";
     setPassedTests(new HashMap());
     setFailedTests(new HashMap());
     setSkippedTests(new HashMap());
+    setPassedConfigs(new HashMap());
+    setFailedConfigs(new HashMap());
+    setSkippedConfigs(new HashMap());
     setFailedButWithinSuccessPercentageTests(new HashMap());
 
     m_suite.setVerbose(0);
@@ -274,6 +306,18 @@ public class BaseTest extends BaseDistributedTest {
   public void addSkippedTest(ITestResult t) {
     addTest(getSkippedTests(), t);
   }
+  
+  public void addPassedConfig(ITestResult t) {
+    addTest(getPassedConfigs(), t);
+  }
+
+  public void addFailedConfig(ITestResult t) {
+    addTest(getFailedConfigs(), t);
+  }
+
+  public void addSkippedConfig(ITestResult t) {
+    addTest(getSkippedConfigs(), t);
+  }
 
   private void ppp(String s) {
     System.out.println("[BaseTest " + getId() + "] " + s);
@@ -333,7 +377,7 @@ public class BaseTest extends BaseDistributedTest {
 
       testRunner.addTestListener(new TestHTMLReporter());
       testRunner.addTestListener(new JUnitXMLReporter());
-      testRunner.addTestListener(new TestListener(m_baseTest));
+      testRunner.addListener(new TestListener(m_baseTest));
 
       return testRunner;
     }
@@ -367,6 +411,21 @@ class TestListener extends TestListenerAdapter {
   @Override
   public void onTestSkipped(ITestResult tr) {
     m_test.addSkippedTest(tr);
+  }
+  
+  @Override
+  public void onConfigurationSuccess(ITestResult tr) {
+    m_test.addPassedConfig(tr);
+  }
+
+  @Override
+  public void onConfigurationFailure(ITestResult tr) {
+    m_test.addFailedConfig(tr);
+  }
+
+  @Override
+  public void onConfigurationSkip(ITestResult tr) {
+    m_test.addSkippedConfig(tr);
   }
 
 } // TestListener
