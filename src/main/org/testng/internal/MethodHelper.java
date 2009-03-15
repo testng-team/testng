@@ -140,6 +140,10 @@ public class MethodHelper {
       }
       
       if (!foundAtLeastAMethod) {
+        Method maybeReferringTo = findMethodByName(mainMethod, currentRegexp);
+        if (maybeReferringTo != null) {
+          throw new TestNGException(mainMethod + "() is not allowed to depend on " + maybeReferringTo);
+        }
         throw new TestNGException(mainMethod
             + "() is depending on nonexistent method " + currentRegexp);
       }
@@ -148,6 +152,26 @@ public class MethodHelper {
     ITestNGMethod[] result = vResult.toArray(new ITestNGMethod[vResult.size()]);
 
     return result;
+  }
+  
+  private static Method findMethodByName(String mainMethodName, String regExp) {
+    if (regExp == null) return null;
+    int lastDot = regExp.lastIndexOf('.');
+    String className, methodName;
+    if (lastDot == -1) {
+      lastDot = mainMethodName.lastIndexOf('.');
+      methodName = regExp;
+    } else {
+      methodName = regExp.substring(lastDot+1);
+    }
+    className = regExp.substring(0, lastDot);
+    try {
+      Class<?> c = Class.forName(className);
+      for (Method m : c.getDeclaredMethods()) {
+        if (methodName.equals(m.getName())) return m;
+      }
+    } catch (Exception e) {} // ignore
+    return null;
   }
 
   /**
