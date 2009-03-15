@@ -26,9 +26,8 @@ public class SkippedExceptionTest {
     Assert.assertEquals(testSkips.size(), 1);
     Assert.assertEquals(testSkips.get(0).getMethod().getMethodName(), "dummyTest");
     
-    // FIXME: currently there is no way to register IConfigurationListener
-//    Assert.assertEquals(confSkips.size(), 1);
-//    Assert.assertEquals(confSkips.get(0).getMethod().getMethodName(), "configurationLevelSkipException");
+    Assert.assertEquals(confSkips.size(), 1);
+    Assert.assertEquals(confSkips.get(0).getMethod().getMethodName(), "configurationLevelSkipException");
   }  
   
   

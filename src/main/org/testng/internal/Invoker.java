@@ -134,7 +134,7 @@ public class Invoker implements IInvoker {
             boolean alwaysRun= isAlwaysRun(configurationAnnotation);
   
             if(!confInvocationPassed(tm) && !alwaysRun) {
-              handleConfigurationSkip(tm, testResult);
+              handleConfigurationSkip(tm, testResult, configurationAnnotation, suite);
               continue;
             }
   
@@ -191,7 +191,8 @@ public class Invoker implements IInvoker {
   /**
    * Marks the currect <code>TestResult</code> as skipped and invokes the listeners.
    */
-  private void handleConfigurationSkip(ITestNGMethod tm, ITestResult testResult) {
+  private void handleConfigurationSkip(ITestNGMethod tm, ITestResult testResult, IConfigurationAnnotation annotation, XmlSuite suite) {
+    recordConfigurationInvocationFailed(tm, annotation, suite);
     testResult.setStatus(ITestResult.SKIP);
     runConfigurationListeners(testResult);
   }
@@ -246,9 +247,9 @@ public class Invoker implements IInvoker {
     
     if(SkipException.class.isAssignableFrom(cause.getClass())) {
       SkipException skipEx= (SkipException) cause;
-      if(!skipEx.isSkip()) {
+      if(skipEx.isSkip()) {
         testResult.setThrowable(skipEx);
-        handleConfigurationSkip(tm, testResult);
+        handleConfigurationSkip(tm, testResult, annotation, suite);
         return;
       }
     }
