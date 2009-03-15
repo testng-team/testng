@@ -142,7 +142,8 @@ public class MethodHelper {
       
       if (!foundAtLeastAMethod) {
         if (m.ignoreMissingDependencies()) continue;
-        Method maybeReferringTo = findMethodByName(mainMethod, currentRegexp);
+        if (m.isAlwaysRun()) continue;
+        Method maybeReferringTo = findMethodByName(m, currentRegexp);
         if (maybeReferringTo != null) {
           throw new TestNGException(mainMethod + "() is not allowed to depend on " + maybeReferringTo);
         }
@@ -156,13 +157,12 @@ public class MethodHelper {
     return result;
   }
   
-  private static Method findMethodByName(String mainMethodName, String regExp) {
+  private static Method findMethodByName(ITestNGMethod mainMethod, String regExp) {
     if (regExp == null) return null;
     int lastDot = regExp.lastIndexOf('.');
     String className, methodName;
     if (lastDot == -1) {
-      lastDot = mainMethodName.lastIndexOf('.');
-      className = mainMethodName.substring(0, lastDot);
+      className = mainMethod.getMethod().getDeclaringClass().getCanonicalName();
       methodName = regExp;
     } else {
       methodName = regExp.substring(lastDot+1);

@@ -12,7 +12,8 @@ public class MissingMethodTest extends BaseTest {
     
     run();
     String[] passed = {
-        "shouldPass"
+        "explicitlyIgnoreMissingMethod",
+        "alwaysRunDespiteMissingMethod"
      };
     String[] failed = {
     };

@@ -9,9 +9,12 @@ import org.testng.xml.Parser;
 public class MissingMethodSampleTest {
 
   @Test(dependsOnMethods="missingMethod", ignoreMissingDependencies=true)
-  public void shouldPass() {
+  public void explicitlyIgnoreMissingMethod() {
     
   }
+  
+  @Test(dependsOnMethods="missingMethod", alwaysRun=true)
+  public void alwaysRunDespiteMissingMethod() {}
   
   public static void main(String[] args) throws Exception {
     TestNG tng = new TestNG();
