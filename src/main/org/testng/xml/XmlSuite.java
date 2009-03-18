@@ -474,6 +474,7 @@ public class XmlSuite implements Serializable, Cloneable {
     XmlSuite result = new XmlSuite();
 
     result.setName(getName());
+    result.setListeners(getListeners());
     result.setAnnotations(getAnnotations());
     result.setParallel(getParallel());
     result.setThreadCount(getThreadCount());
