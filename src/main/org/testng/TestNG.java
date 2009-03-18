@@ -1095,12 +1095,13 @@ public class TestNG {
     String groups = (String) params.get(TestNGCommandLineArgs.GROUPS_COMMAND_OPT);
     String excludedGroups = (String) params.get(TestNGCommandLineArgs.EXCLUDED_GROUPS_COMMAND_OPT);
     
-    if ((null != groups || null != excludedGroups) && null == testClasses) {
+    if (testJar == null &&
+        (null != groups || null != excludedGroups) && null == testClasses) {
       throw new TestNGException("Groups option should be used with testclass option");
     }
     
     // -slave & -master can't be set together
-    if( params.containsKey(TestNGCommandLineArgs.SLAVE_OPT) && 
+    if (params.containsKey(TestNGCommandLineArgs.SLAVE_OPT) && 
    		 params.containsKey(TestNGCommandLineArgs.MASTER_OPT)) {
    	 throw new TestNGException(TestNGCommandLineArgs.SLAVE_OPT + " can't be combined with " +
    	                           TestNGCommandLineArgs.MASTER_OPT);
