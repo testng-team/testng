@@ -2,15 +2,13 @@
   
 <suite name="SingleSuite" verbose="10" parallel="methods" >
 
-<!-- 
   <listeners>
-    <listener class-name="test.tmp.AnnotationTransformer" />
+    <listener class-name="test.invokedmethodlistener.MyListener" />
   </listeners>
- -->
  
   <test enabled="true" name="SingleTest">
     <classes>
-      <class name="test.annotationtransformer.AnnotationTransformerTest" />
+      <class name="test.tmp.A" />
 <!--
       <class name="test.jar.JarTest" />
       <class name="test.testng185.FirstDerived"/>
