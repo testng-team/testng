@@ -1,6 +1,7 @@
 ===========================================================================
 5.9
 
+Added: New ant task boolean flag: delegateCommandSystemProperties (Justin) 
 Added: -testrunfactory on the command line and in the ant task (Vitalyi Pamajonkov)
 Added: TESTNG-298: parallel="classes", which allows entire classes to be run in the same thread
 Added: @BeforeMethod can now declare Object[] as a parameter, which will be filled by the parameters of the test method

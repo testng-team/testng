@@ -107,7 +107,8 @@ public class TestNGAntTask extends Task {
   private List<String> m_listeners= new ArrayList<String>();
   private String m_objectFactory;
   protected String m_testRunnerFactory;
-  
+  private boolean m_delegateCommandSystemProperties = false;
+
   protected Environment m_environment= new Environment();
 
   /** The suite runner name (defaults to TestNG.class.getName(). */
@@ -184,6 +185,10 @@ public class TestNGAntTask extends Task {
   public void setFSPProperty(String propertyName) {
     m_fspPropertyName= propertyName;
   }
+  
+  public void setDelegateCommandSystemProperties(boolean value){
+    m_delegateCommandSystemProperties = value;
+  }
 
   /**
    * Sets the flag to log the command line. When verbose is set to true
@@ -192,7 +197,7 @@ public class TestNGAntTask extends Task {
    * prefixed with "testng".
    */
   public void setDumpCommand(boolean verbose) {
-    m_dump= verbose;
+    m_dump = verbose;
   }
 
   /**
@@ -484,6 +489,9 @@ public class TestNGAntTask extends Task {
       }
     }
     
+    if (m_delegateCommandSystemProperties) {
+      delegateCommandSystemProperties();
+    }
 
     if(null != m_verbose) {
       argv.add(TestNGCommandLineArgs.LOG);
@@ -655,6 +663,23 @@ public class TestNGAntTask extends Task {
     }
 
     actOnResult(exitValue, wasKilled);
+  }
+
+  private void delegateCommandSystemProperties() {
+    Project proj = getProject();
+    // iterate over ant_cmd_lin_args and pass them through as sysproperty
+    if (proj.getProperty("ENV.ANT_CMD_LINE_ARGS") != null) {
+      String[] cmdVals = proj.getProperty("ENV.ANT_CMD_LINE_ARGS").split(" ");
+      for (String cmdVal : cmdVals)
+        if (cmdVal.startsWith("-D")) {
+          String propKey = cmdVal.replace("-D", "");
+          String propVal = proj.getProperty(propKey);
+          Environment.Variable var = new Environment.Variable();
+          var.setKey(propKey);
+          var.setValue(propVal);
+          addSysproperty(var);
+        }
+    }
   }
 
   private void printDebugInfo(String fileName) {
