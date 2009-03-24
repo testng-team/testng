@@ -35,6 +35,7 @@ Cedric Beust & Alexandru Popescu
 <!-- Attributes: -->
 <!--
 @attr  name        The name of this suite (as it will appear in the reports)
+@attr  junit       Whether to run in JUnit mode.
 @attr  verbose     How verbose the output on the console will be.  
                 This setting has no impact on the HTML reports.
 @attr  parallel   Whether TestNG should use different threads
@@ -46,6 +47,7 @@ Cedric Beust & Alexandru Popescu
                 use JDK5 annotations.
 @attr  time-out     the time to wait in milliseconds before aborting the
                 method (if parallel="methods") or the test (parallel="tests")
+@attr  skipfailedinvocationCounts Whether to skip failed invocations.
 -->
 <!ATTLIST suite 
     name CDATA #REQUIRED
@@ -55,6 +57,7 @@ Cedric Beust & Alexandru Popescu
     thread-count CDATA "5"
     annotations CDATA #IMPLIED
     time-out CDATA #IMPLIED
+    skipfailedinvocationCounts (true | false) "false"
 >
 
 <!-- A list of XML files that contain more suite descriptions -->
