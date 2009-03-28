@@ -10,6 +10,7 @@ Added: IAnnotationTransformer2
 Added: @Test(invocationTimeOut), which lets you set a time out for the total time taken by invocationCount
 Added: IInvokedMethodListener
 Added: -testjar supports jar file with no testng.xml file
+Fixed: Set a generated suite to default to non-parallel (Mark Derricutt)
 Fixed: -testJar command line parsing bug
 Fixed: testng-failed.xml didn't include the listeners
 Fixed: annotation transformers were not run when specified in testng.xml
