@@ -10,6 +10,8 @@ Added: IAnnotationTransformer2
 Added: @Test(invocationTimeOut), which lets you set a time out for the total time taken by invocationCount
 Added: IInvokedMethodListener
 Added: -testjar supports jar file with no testng.xml file
+Fixed: TESTNG-309 Illegal default value for attribute in DTD file
+Fixed: TESTNG-192: JUnit XML output includes wrong tests (Aleksandar Borojevic)
 Fixed: Set a generated suite to default to non-parallel (Mark Derricutt)
 Fixed: -testJar command line parsing bug
 Fixed: testng-failed.xml didn't include the listeners

@@ -37,11 +37,14 @@ import org.testng.xml.XmlClass;
  * Helper methods to parse annotations.
  *
  * @author Cedric Beust, Apr 26, 2004
- * @author <a href = "mailto:the_mindstorm&#64;evolva.ro">Alexandru Popescu</a>
  */
 public final class Utils {
   private static final String LINE_SEP = System.getProperty("line.separator");
-  
+
+  public static final char[] SPECIAL_CHARACTERS =
+      {'*','/','\\','?','%',':',';','<','>','&','~','|'};
+  public static final char CHAR_REPLACEMENT = '_';
+
   /**
    * Hide constructor for utility class.
    */
@@ -170,6 +173,7 @@ public final class Utils {
         outDir.mkdirs();
       }
       
+      fileName = replaceSpecialCharacters(fileName);
       File outputFile = new File(outDir, fileName);
       outputFile.delete();
       outputFile.createNewFile();
@@ -635,5 +639,28 @@ public final class Utils {
       }
     }
     return result;
+  }
+
+  /**
+   * If the file name contains special characters like *,/,\ and so on,
+   * exception will be thrown and report file will not be created.<br>
+   * Special characters are platform specific and they are not same for
+   * example on Windows and Macintosh. * is not allowed on Windows, but it is on Macintosh.<br>
+   * In order to have the same behavior of testng on the all platforms, characters like * will
+   * be replaced on all platforms whether they are causing the problem or not.
+   *
+   * @param fileName file name that could contain special characters.
+   * @return fileName with special characters replaced
+   * @author Borojevic
+   */
+  public static String replaceSpecialCharacters(String fileName) {
+   if (fileName == null || fileName.length() == 0) {
+     return fileName;
+   }
+   for (int i = 0;i < SPECIAL_CHARACTERS.length;i++) {
+     fileName = fileName.replace(SPECIAL_CHARACTERS[i], CHAR_REPLACEMENT);
+   }
+  
+   return fileName;
   }
 }

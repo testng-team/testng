@@ -53,7 +53,7 @@ Cedric Beust & Alexandru Popescu
     name CDATA #REQUIRED
     junit (true | false) "false"
     verbose CDATA #IMPLIED
-    parallel (methods | tests | classes) ""
+    parallel (false | methods | tests | classes) "false"
     thread-count CDATA "5"
     annotations CDATA #IMPLIED
     time-out CDATA #IMPLIED
