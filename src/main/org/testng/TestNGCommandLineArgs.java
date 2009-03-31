@@ -363,14 +363,15 @@ public final class TestNGCommandLineArgs {
       //
       // The XML files
       //
-      else {
+      // Read parameters just once, to get all xml files
+      else if( arguments.get(SUITE_DEF_OPT) == null ){
         List<String> suiteDefs = new ArrayList<String>();
 
+        // Iterates over all declared XML file params
         for (int k = i; k < argv.length; k++) {
           String file = argv[k].trim();
           if (file.toLowerCase().endsWith(".xml")) {
             suiteDefs.add(file);
-            i++;
           }
         }
 
@@ -747,6 +748,6 @@ public final class TestNGCommandLineArgs {
     System.out.println("[" + REPORTER + " Extended configuration for custom report listener]");    
     System.out.println("[suite definition files*]");
     System.out.println("");
-    System.out.println("For details please consult documentation.");
+    System.out.println("For details, please consult the documentation at http://testng.org.");
   }
 }

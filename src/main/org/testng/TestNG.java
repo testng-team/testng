@@ -601,6 +601,9 @@ public class TestNG {
       if (listener instanceof IMethodInterceptor) {
         m_methodInterceptor = (IMethodInterceptor) listener;
       }
+      if (listener instanceof IInvokedMethodListener) {
+        addInvokedMethodListener((IInvokedMethodListener) listener);
+      }
     }
   }
 
@@ -812,6 +815,13 @@ public class TestNG {
         //
         for (String listenerName : xmlSuite.getListeners()) {
           Class<?> listenerClass = ClassHelper.forName(listenerName);
+          
+          // If specified listener does not exist, a TestNGException will be thrown
+          if(listenerClass == null) {
+            throw new TestNGException("Listener " + listenerName
+                + " was not found in project's classpath");
+          }
+          
           Object listener = ClassHelper.newInstance(listenerClass);
           addListener(listener);
         }
