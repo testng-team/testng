@@ -1,4 +1,4 @@
-Welcome to TestNG 5.9
+Welcome to TestNG ${version}
 
 Please note that even though the .zip distribution contains the TestNG sources,
 you will not be able to build the software with them because we decided
