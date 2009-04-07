@@ -17,7 +17,7 @@
    <!-- Compile                                                              -->
    <!-- ==================================================================== -->
    <path id="compile.cp">
-      <pathelement location="${build.jdk15.dir}"/>
+      <pathelement location="${jdk15.testng.jar}"/>
    </path>
 
    <target name="compile"

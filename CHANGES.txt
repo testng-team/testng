@@ -1,3 +1,9 @@
+Current:
+
+Eclipse
+
+Fixed: Quick fixes no longer introduce deprecated annotations (Greg Turnquist)
+
 ===========================================================================
 5.9
 

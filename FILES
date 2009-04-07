@@ -1,9 +1,10 @@
 build.properties
 build.xml
+lib/DTDDoc.jar
 examples/build.xml
 examples/testng.properties
 examples/testng.xml
-examples/src/example1/Test1.java
+examples/src/
 maven-testng-plugin-1.1.jar
 CHANGES.txt
 LICENSE.txt
