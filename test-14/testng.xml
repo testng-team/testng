@@ -230,8 +230,10 @@
   <test name="InvocationCount">
     <classes>
       <class name="test.InvocationAndSuccessPercentageTest" />
+<!-- 
       <class name="test.invocationcount.FailedInvocationCountTest" />
-    </classes>
+ -->
+     </classes>
   </test>
 
   <!-- Test parameters for constructors -->  
