@@ -324,7 +324,11 @@ public class BaseTest extends BaseDistributedTest {
   }
 
   protected Long getId() {
-    return Thread.currentThread().getId();
+//    return 42L;
+//    return (long) getClass().hashCode();
+    long result = Thread.currentThread().getId();
+//    System.out.println("RETURNING ID " + result);
+    return result;
   }
 
   public XmlSuite getSuite() {

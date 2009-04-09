@@ -1,35 +1,27 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="SingleSuite" verbose="10" parallel="methods" >
+<suite name="SingleSuite" verbose="1" parallel="methods" >
 
-  <listeners>
-    <listener class-name="test.invokedmethodlistener.MyListener" />
-  </listeners>
- 
-  <test enabled="true" name="SingleTest">
+<!-- 
+  <test name="RetryAnalyzer">
+    <classes>
+      <class name="test.retryAnalyzer.RetryAnalyzerTest" />
+    </classes>
+  </test>
+ -->  
+  <test name="InvocationCount">
     <classes>
       <class name="test.tmp.A" />
-<!--
-      <class name="test.jar.JarTest" />
-      <class name="test.testng185.FirstDerived"/>
-      <class name="test.testng185.SecondDerived"/>
-      <class name="test.timeout.TestTimeOutSampleTest"/>
-      <class name="test.testng249.Base">
-        <methods>
-          <include name="b" />
-        </methods>
-      </class>
-      <class name="test.testng249.B" >
-        <methods>
-          <include name="b" />
-        </methods>
-      </class>
--->
-
-    </classes>
-    
+     </classes>
   </test>
-  
-
+<!-- 
+  <test name="InvocationCount">
+    <parameter name="parameter" value="parameter value" />
+    <classes>
+      <class name="test.parameters.BeforeSampleTest" />
+     </classes>
+  </test>
+ -->
+ 
 </suite>
 

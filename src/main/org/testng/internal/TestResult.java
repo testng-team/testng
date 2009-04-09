@@ -157,7 +157,7 @@ public class TestResult implements ITestResult {
         + " STATUS:" + m_status
         + " METHOD:" + m_method;
     result += output != null && output.size() > 0 ? output.get(0) : ""
-        + "]";  
+        + "]\n";  
         
       return result;
   }

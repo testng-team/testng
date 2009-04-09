@@ -64,7 +64,7 @@ public class FactoryMethod extends BaseTestMethod {
           new Parameters.MethodParameters(m_xmlTest.getParameters(), null, null, m_testContext), 
           m_xmlTest.getSuite(), 
           m_annotationFinder,
-          null /* fedInstance */);
+          null /* fedInstance */).parameters;
     
     try {
       while (parameterIterator.hasNext()) {

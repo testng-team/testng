@@ -7,6 +7,7 @@ import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.IResultListener;
+import org.testng.internal.PoolService;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -921,6 +922,12 @@ public class TestNG {
         System.err.println("[ERROR]: " + ex.getMessage());
       }
       result.setStatus(HAS_FAILURE);
+    }
+    finally {
+      PoolService poolService = PoolService.getInstance();
+      if (poolService != null) {
+        poolService.shutdown();
+      }
     }
 
     return result;

@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Future;
 
 /**
  * This class is responsible for invoking methods:
@@ -650,7 +651,7 @@ public class Invoker implements IInvoker {
    * This method is also reponsible for invoking @BeforeGroup, @BeforeMethod, @AfterMethod, @AfterGroup
    * if it is the case for the passed in @Test method.
    */
-  private List<ITestResult> invokeTestMethod(Object[] instances,
+  public List<ITestResult> invokeTestMethod(Object[] instances,
                                              final ITestNGMethod tm,
                                              Object[] parameterValues,
                                              XmlSuite suite,
@@ -783,7 +784,7 @@ public class Invoker implements IInvoker {
     return null;
   }
   
-  private int retryFailed(Object[] instances,
+  int retryFailed(Object[] instances,
                            int instanceIndex,
                            final ITestNGMethod tm,
                            XmlSuite suite,
@@ -808,7 +809,8 @@ public class Invoker implements IInvoker {
        */
       ParameterBag bag = createParameters(testClass, tm, parameters,
           allParameters, null, suite, testContext, null /* fedInstance */);
-      Object[] parameterValues = getParametersFromIndex(bag.parameterValues, parametersIndex);
+      Object[] parameterValues =
+          getParametersFromIndex(bag.parameterHolder.parameters, parametersIndex);
 
       result.add(
           invokeMethod(instances, instanceIndex, tm, parameterValues, suite, 
@@ -931,7 +933,7 @@ public class Invoker implements IInvoker {
                 continue;
               }
               
-              Iterator<Object[]> allParameterValues= bag.parameterValues;
+              Iterator<Object[]> allParameterValues= bag.parameterHolder.parameters;
               
               if(testMethod.getThreadPoolSize() > 1) {
                 return invokePooledTestMethods(instances, 
@@ -948,75 +950,116 @@ public class Invoker implements IInvoker {
               else {
                 int parametersIndex = 0;
                 
-                while (allParameterValues.hasNext()) {
-                  Object[] parameterValues= allParameterValues.next();
-                  List<ITestResult> tmpResults = new ArrayList<ITestResult>();
+                  
+                if (true) { // @@
+                  List<TestMethodWithDataProviderMethodWorker> workers
+                      = new ArrayList<TestMethodWithDataProviderMethodWorker>();
 
-                  try {
-                    tmpResults.addAll(invokeTestMethod(instances,
-                                                       testMethod,
-                                                       parameterValues,
-                                                       suite,
-                                                       parameters,
-                                                       testClass,
-                                                       beforeMethods,
-                                                       afterMethods,
-                                                       groupMethods));
-                  }
-                  finally {
-                    List<Object> failedInstances = new ArrayList<Object>();
-
-                    failureCount = handleInvocationResults(testMethod, tmpResults,
-                        failedInstances, failureCount, expectedExceptionClasses, true,
-                        false /* don't collect results */);
-                    if (failedInstances.isEmpty()) {
-                      result.addAll(tmpResults);
-                    } else {
-                      for (int i = 0; i < failedInstances.size(); i++) {
-                        List<ITestResult> retryResults = new ArrayList<ITestResult>();
-
-                        failureCount = 
-                         retryFailed(failedInstances.toArray(),
-                         i, testMethod, suite, testClass, beforeMethods,
-                         afterMethods, groupMethods, retryResults,
-                         failureCount, expectedExceptionClasses,
-                         testContext, parameters, parametersIndex);
-                      result.addAll(retryResults);
-                      }
+                  if (bag.parameterHolder.origin == ParameterHolder.ORIGIN_DATA_PROVIDER) {
+                    while (allParameterValues.hasNext()) {
+                      Object[] parameterValues= allParameterValues.next();
+                      TestMethodWithDataProviderMethodWorker w =
+                        new TestMethodWithDataProviderMethodWorker(this,
+                            testMethod, parametersIndex,
+                            parameterValues, instances, suite, parameters, testClass,
+                            beforeMethods, afterMethods, groupMethods,
+                            expectedExceptionClasses, testContext, m_skipFailedInvocationCounts,
+                            invocationCount, failureCount, m_notifier);
+                      workers.add(w);
                     }
+                    PoolService ps = PoolService.getInstance();
+                    List<ITestResult> r = ps.submitTasksAndWait(testMethod, workers);
+                    result.addAll(r);
+//                    ThreadUtil.execute(workers, 3, 500, true);
                     
-                    //
-                    // If we have a failure, skip all the
-                    // other invocationCounts
-                    //
-                    
-                    // If not specified globally, use the attribute
-                    // on the annotation
-                    //
-                    if (! m_skipFailedInvocationCounts) {
-                      m_skipFailedInvocationCounts = testMethod.skipFailedInvocations();
-                    }
-                    if (failureCount > 0 && m_skipFailedInvocationCounts) {
-                      while (invocationCount-- > 0) {
-                        ITestResult r = 
-                          new TestResult(testMethod.getTestClass(),
-                            instances[0],
-                            testMethod,
-                            null,
-                            start,
-                            System.currentTimeMillis());
-                        r.setStatus(TestResult.SKIP);
-                        result.add(r);
-                        runTestListeners(r);
-                        m_notifier.addSkippedTest(testMethod, r);
-                      }
-                      break;
+                  } else {
+                    while (allParameterValues.hasNext()) {
+                      Object[] parameterValues= allParameterValues.next();
+                      TestMethodWithDataProviderMethodWorker w =
+                        new TestMethodWithDataProviderMethodWorker(this,
+                            testMethod, parametersIndex,
+                            parameterValues, instances, suite, parameters, testClass,
+                            beforeMethods, afterMethods, groupMethods,
+                            expectedExceptionClasses, testContext, m_skipFailedInvocationCounts,
+                            invocationCount, failureCount, m_notifier);
+                      result.addAll(w.call());
+                      invocationCount = w.getInvocationCount();
+                      failureCount = w.getFailureCount();
                     }
                   }
-                  parametersIndex++;
+                } else {
+                  while (allParameterValues.hasNext()) {
+                    Object[] parameterValues= allParameterValues.next();
+
+
+                    List<ITestResult> tmpResults = new ArrayList<ITestResult>();
+
+                    try {
+                      tmpResults.addAll(invokeTestMethod(instances,
+                                                         testMethod,
+                                                         parameterValues,
+                                                         suite,
+                                                         parameters,
+                                                         testClass,
+                                                         beforeMethods,
+                                                         afterMethods,
+                                                         groupMethods));
+                    }
+                    finally {
+                      List<Object> failedInstances = new ArrayList<Object>();
+  
+                      failureCount = handleInvocationResults(testMethod, tmpResults,
+                          failedInstances, failureCount, expectedExceptionClasses, true,
+                          false /* don't collect results */);
+                      if (failedInstances.isEmpty()) {
+                        result.addAll(tmpResults);
+                      } else {
+                        for (int i = 0; i < failedInstances.size(); i++) {
+                          List<ITestResult> retryResults = new ArrayList<ITestResult>();
+  
+                          failureCount = 
+                           retryFailed(failedInstances.toArray(),
+                           i, testMethod, suite, testClass, beforeMethods,
+                           afterMethods, groupMethods, retryResults,
+                           failureCount, expectedExceptionClasses,
+                           testContext, parameters, parametersIndex);
+                        result.addAll(retryResults);
+                        }
+                      }
+                      
+                      //
+                      // If we have a failure, skip all the
+                      // other invocationCounts
+                      //
+                      
+                      // If not specified globally, use the attribute
+                      // on the annotation
+                      //
+                      if (! m_skipFailedInvocationCounts) {
+                        m_skipFailedInvocationCounts = testMethod.skipFailedInvocations();
+                      }
+                      if (failureCount > 0 && m_skipFailedInvocationCounts) {
+                        while (invocationCount-- > 0) {
+                          ITestResult r = 
+                            new TestResult(testMethod.getTestClass(),
+                              instances[0],
+                              testMethod,
+                              null,
+                              start,
+                              System.currentTimeMillis());
+                          r.setStatus(TestResult.SKIP);
+                          result.add(r);
+                          runTestListeners(r);
+                          m_notifier.addSkippedTest(testMethod, r);
+                        }
+                        break;
+                      }
+                    }// end
                 }
-              } // for parameters
-            }
+                parametersIndex++;
+              }
+            } // for parameters
+          }
 
         } // isTestMethodEnabled 
 
@@ -1057,14 +1100,16 @@ public class Invoker implements IInvoker {
       Object fedInstance)
   {
     try {
-      return new ParameterBag(Parameters.handleParameters(testMethod,
-          allParameterNames, 
-          instance, 
-          new Parameters.MethodParameters(parameters, parameterValues,
-              testMethod.getMethod(), testContext), 
-          suite, 
-          m_annotationFinder,
-          fedInstance), null);
+      return new ParameterBag(
+          Parameters.handleParameters(testMethod,
+            allParameterNames, 
+            instance, 
+            new Parameters.MethodParameters(parameters, parameterValues,
+                testMethod.getMethod(), testContext), 
+            suite, 
+            m_annotationFinder,
+            fedInstance), 
+          null);
     }
     catch(Throwable cause) {
       return new ParameterBag(null, 
@@ -1150,7 +1195,7 @@ public class Invoker implements IInvoker {
    * @param expectedExceptionClasses
    * @return
    */
-  private int handleInvocationResults(ITestNGMethod testMethod, 
+  int handleInvocationResults(ITestNGMethod testMethod, 
                                       List<ITestResult> result,
                                       List<Object> failedInstances,
                                       int failureCount, 
@@ -1268,7 +1313,8 @@ public class Invoker implements IInvoker {
       XmlSuite suite, 
       Map<String, String> parameters)
   {
-    // HINT: invoke @BeforeGroups on the original method (reduce thread contention, and also solve thread confinement)
+    // Invoke @BeforeGroups on the original method (reduce thread contention, 
+    // and also solve thread confinement)
     ITestClass testClass= testMethod.getTestClass();
     Object[] instances = testClass.getInstances(true);
     for(Object instance: instances) {
@@ -1500,7 +1546,7 @@ public class Invoker implements IInvoker {
     }
   }
   
-  private void runTestListeners(ITestResult tr) {
+  void runTestListeners(ITestResult tr) {
     runTestListeners(tr, m_notifier.getTestListeners());
   }
   
@@ -1597,11 +1643,11 @@ public class Invoker implements IInvoker {
   }
   
   private static class ParameterBag {
-    final Iterator<Object[]> parameterValues;
+    final ParameterHolder parameterHolder;
     final List<ITestResult> errorResults= new ArrayList<ITestResult>();
     
-    public ParameterBag(Iterator<Object[]> params, TestResult tr) {
-      parameterValues= params;
+    public ParameterBag(ParameterHolder params, TestResult tr) {
+      parameterHolder = params;
       if(tr != null) {
         errorResults.add(tr);
       }
@@ -1611,4 +1657,5 @@ public class Invoker implements IInvoker {
       return !errorResults.isEmpty();
     }
   }
+
 }

@@ -321,15 +321,17 @@ public class Parameters {
    * @return An Iterator over the values for each parameter of this
    * method.
    */
-  public static Iterator<Object[]> handleParameters(ITestNGMethod testMethod, 
-                                                    Map<String, String> allParameterNames,
-                                                    Object instance,
-                                                    MethodParameters methodParams, 
-                                                    XmlSuite xmlSuite, 
-                                                    IAnnotationFinder annotationFinder,
-                                                    Object fedInstance)
+  public static ParameterHolder handleParameters(ITestNGMethod testMethod, 
+      Map<String, String> allParameterNames,
+      Object instance,
+      MethodParameters methodParams, 
+      XmlSuite xmlSuite, 
+      IAnnotationFinder annotationFinder,
+      Object fedInstance)
   {
-    Iterator<Object[]> result = null;
+    ParameterHolder result;
+
+    Iterator<Object[]> parameters = null;
     
     //
     // Do we have a @DataProvider?  If yes, then we have several
@@ -347,13 +349,16 @@ public class Parameters {
         allParameterNames.put(n, n);
       }
 
-      result  = MethodHelper.invokeDataProvider(
+      parameters  = MethodHelper.invokeDataProvider(
           instance, /* a test instance or null if the dataprovider is static*/
           dataProvider, 
           testMethod,
           methodParams.context,
           fedInstance,
           annotationFinder);
+      
+      result = new ParameterHolder(parameters, ParameterHolder.ORIGIN_DATA_PROVIDER);
+
     }
     else {
       //
@@ -370,7 +375,11 @@ public class Parameters {
       // at the right time).
       testMethod.setParameterInvocationCount(allParameterValuesArray.length);
       // Turn it into an Iterable
-      result  = MethodHelper.createArrayIterator(allParameterValuesArray);
+      parameters  = MethodHelper.createArrayIterator(allParameterValuesArray);
+
+      result = new ParameterHolder(parameters,
+          allParameterValuesArray.length == 0 
+              ? ParameterHolder.ORIGIN_DATA_PROVIDER : ParameterHolder.ORIGIN_XML);
     }
     
     return result;
