@@ -308,6 +308,7 @@ public class JDK15TagFactory {
     DataProviderAnnotation result = new DataProviderAnnotation();
     DataProvider c = (DataProvider) a;
     result.setName(c.name());
+    result.setParallel(c.parallel());
     
     return result;
   }

@@ -13,6 +13,15 @@ public class DataProviderAnnotation
   implements IDataProviderAnnotation 
 {
   private String m_name;
+  private boolean m_parallel;
+
+  public boolean isParallel() {
+    return m_parallel;
+  }
+
+  public void setParallel(boolean parallel) {
+    m_parallel = parallel;
+  }
 
   public String getName() {
     return m_name;

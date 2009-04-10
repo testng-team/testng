@@ -32,7 +32,7 @@ public class PoolService<KeyType, FutureType> {
 
     public static PoolService getInstance() {
         if (m_instance == null) {
-            m_instance = new PoolService(3);
+            m_instance = new PoolService(10);
         }
         return m_instance;
     }
@@ -174,7 +174,10 @@ public class PoolService<KeyType, FutureType> {
      * Shut down the service.
      */
     public void shutdown() {
-        m_service.shutdown();
+      System.out.println("Shutting down poolservice " + this + " terminated:" + m_service.isTerminated());
+//      if (m_service.isTerminated()) {
+//        m_service.shutdown();
+//      }
     }
 
 }

@@ -12,4 +12,10 @@ public interface IDataProviderAnnotation extends IAnnotation {
    */
   public String getName();
   public void setName(String name);
+
+  /**
+   * Whether this data provider should be used in parallel.
+   */
+  boolean isParallel();
+  void setParallel(boolean parallel);
 }

@@ -433,6 +433,8 @@ public class JDK14TagFactory {
   private IAnnotation createDataProviderTag(DocletTag dt) {
     DataProviderAnnotation result = new DataProviderAnnotation();
     result.setName(Converter.getString(dt.getNamedParameter("name"), result.getName()));
+    result.setParallel(Converter.getBoolean(dt.getNamedParameter("parallel"),
+        result.isParallel()));
     
     return result;
   }

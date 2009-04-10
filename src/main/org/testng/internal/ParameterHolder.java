@@ -13,13 +13,15 @@ public class ParameterHolder {
   public static final int ORIGIN_XML = 2;
   public static final int ORIGIN_NO_PARAMETERS = 2;
 
-  public ParameterHolder(Iterator<Object[]> parameters, int origin) {
+  public DataProviderHolder dataProviderHolder;
+  public Iterator<Object[]> parameters;
+  public int origin;
+
+  public ParameterHolder(Iterator<Object[]> parameters, int origin, DataProviderHolder dph) {
     super();
     this.parameters = parameters;
     this.origin = origin;
+    this.dataProviderHolder = dph;
   }
 
-  public Iterator<Object[]> parameters;
-  
-  public int origin;
 }

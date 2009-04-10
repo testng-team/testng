@@ -23,4 +23,9 @@ public @interface DataProvider {
    * The name of this DataProvider.
    */
   public String name() default "";
+
+  /**
+   * Whether this data provider should be run in parallel.
+   */
+  boolean parallel() default false;
 }

@@ -205,8 +205,9 @@ public class Parameters {
     return result;
   }
   
-  private static Method findDataProvider(Class clazz, Method m, IAnnotationFinder finder) {
-    Method result = null;
+  private static DataProviderHolder findDataProvider(Class clazz, Method m,
+      IAnnotationFinder finder) {
+    DataProviderHolder result = null;
     String dataProviderName = null;
     Class dataProviderClass = null;
     
@@ -240,7 +241,7 @@ public class Parameters {
   /**
    * Find a method that has a @DataProvider(name=name)
    */
-  private static Method findDataProvider(Class cls, IAnnotationFinder finder,
+  private static DataProviderHolder findDataProvider(Class cls, IAnnotationFinder finder,
       String name, Class dataProviderClass) 
   {
     boolean shouldBeStatic = false;
@@ -256,7 +257,7 @@ public class Parameters {
           throw new TestNGException("DataProvider should be static: " + m); 
         }
         
-        return m;
+        return new DataProviderHolder(dp, m);
       }
     }
     
@@ -337,11 +338,11 @@ public class Parameters {
     // Do we have a @DataProvider?  If yes, then we have several
     // sets of parameters for this method
     //
-    Method dataProvider = findDataProvider(testMethod.getTestClass().getRealClass(),
-                                           testMethod.getMethod(), 
-                                           annotationFinder);
-  
-    if (null != dataProvider) {
+    DataProviderHolder dataProviderHolder =
+        findDataProvider(testMethod.getTestClass().getRealClass(),
+        testMethod.getMethod(), annotationFinder);
+
+    if (null != dataProviderHolder) {
       int parameterCount = testMethod.getMethod().getParameterTypes().length;
   
       for (int i = 0; i < parameterCount; i++) {
@@ -351,13 +352,14 @@ public class Parameters {
 
       parameters  = MethodHelper.invokeDataProvider(
           instance, /* a test instance or null if the dataprovider is static*/
-          dataProvider, 
+          dataProviderHolder.method, 
           testMethod,
           methodParams.context,
           fedInstance,
           annotationFinder);
       
-      result = new ParameterHolder(parameters, ParameterHolder.ORIGIN_DATA_PROVIDER);
+      result = new ParameterHolder(parameters, ParameterHolder.ORIGIN_DATA_PROVIDER,
+          dataProviderHolder);
 
     }
     else {
@@ -379,7 +381,8 @@ public class Parameters {
 
       result = new ParameterHolder(parameters,
           allParameterValuesArray.length == 0 
-              ? ParameterHolder.ORIGIN_DATA_PROVIDER : ParameterHolder.ORIGIN_XML);
+              ? ParameterHolder.ORIGIN_DATA_PROVIDER : ParameterHolder.ORIGIN_XML,
+          dataProviderHolder);
     }
     
     return result;
