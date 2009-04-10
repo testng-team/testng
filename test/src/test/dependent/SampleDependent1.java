@@ -1,6 +1,7 @@
 package test.dependent;
 
-import org.testng.annotations.*;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 
 /**
@@ -13,7 +14,7 @@ public class SampleDependent1 {
 
   @Test(groups = { "fail" })
   public void fail() {
-    assert false;
+    Assert.assertTrue(false);
   }
   
   @Test(dependsOnGroups = { "fail" })

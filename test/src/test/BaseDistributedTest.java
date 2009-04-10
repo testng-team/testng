@@ -15,9 +15,8 @@ public class BaseDistributedTest {
       expected.put(exp[i], exp[i]);
     }
 
-    Assert.assertEquals(found.size(), expected.size(), 
-        "Expected " + expected.size() + " " + title
-        + " tests but found " + found.size());
+    Assert.assertEquals(found.size(), expected.size(),
+        "Verification for " + title + " tests failed:");
 
     for(Iterator it = expected.values().iterator(); it.hasNext();) {
       String name = (String) it.next();

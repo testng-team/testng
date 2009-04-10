@@ -1,6 +1,7 @@
 package test.sample;
 
 
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -65,7 +66,7 @@ public class Sample1 extends BaseSample1 {
 
 	@Test(groups = {"assert"}) 
 	public void verifyLastNameShouldFail() {
-		assert "Beust".equals("") : "Expected name Beust, found blah";
+	  Assert.assertEquals("Beust", "", "Expected name Beust, found blah");
 	}
 
 	private static void ppp(String s) {

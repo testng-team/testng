@@ -21,7 +21,6 @@ public class BeforeSampleTest {
 
    @Test(dataProvider = "dataProvider")
    public static void testExample(String a, String b) {
-     System.out.println("TEST EXAMPLE");
      Assert.assertEquals("abc", a);
      Assert.assertEquals("def", b);
    }

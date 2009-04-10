@@ -1,5 +1,6 @@
 package test.sample;
 
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -28,12 +29,12 @@ public class PartialGroupTest {
   
   @Test
   public void testClassGroupShouldFail() {
-    assert false;
+    Assert.assertTrue(false);
   }
   
   @Test(groups = { "methodGroup" })
   public void testMethodGroupShouldFail() {
-    assert false;
+    Assert.assertTrue(false);
   }
 
   @Test

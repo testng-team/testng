@@ -7,7 +7,7 @@ import java.util.Random;
 
 public class A {
   
-  @DataProvider
+  @DataProvider(parallel = true)
   public Object[][] dp2() {
     return new Object[][] {
         new Object[] { 11 },

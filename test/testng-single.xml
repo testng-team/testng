@@ -1,20 +1,45 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="SingleSuite" verbose="1" parallel="methods" >
+<suite name="SingleSuite" verbose="3" parallel="false" >
+  <parameter name="first-name" value="Cedric" />
 
-<!-- 
-  <test name="RetryAnalyzer">
+  <test name="Regression1" >
+    <groups>
+      <define name="evenodd">
+        <include name="even" />
+        <include name="odd" />
+      </define>      
+      <run>
+        <exclude name="excludeThisGroup" />
+      </run>
+    </groups>
+    
     <classes>
-      <class name="test.retryAnalyzer.RetryAnalyzerTest" />
+      <class name="test.parameters.ParameterSample" />
+      <class name="test.parameters.ParameterTest" />
+      <class name="test.Test1" />
+      <class name="test.Test2" />
+      <class name="test.CtorCalledOnce" />
+      <class name="test.expectedexceptions.ExpectedExceptionsTest" />
+      <class name="test.access.PrivateAccessConfigurationMethods" />
+      <class name="test.expectedexceptions.WrappedExpectedException" />
     </classes>
   </test>
- -->  
+
+  <!-- 
   <test name="InvocationCount">
     <classes>
       <class name="test.tmp.A" />
      </classes>
   </test>
-<!-- 
+
+  <test name="RetryAnalyzer">
+    <classes>
+      <class name="test.retryAnalyzer.RetryAnalyzerTest" />
+    </classes>
+  </test>
+
+
   <test name="InvocationCount">
     <parameter name="parameter" value="parameter value" />
     <classes>
