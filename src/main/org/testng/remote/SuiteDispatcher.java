@@ -119,6 +119,7 @@ public class SuiteDispatcher
 						tmpSuite.setParallel(suite.getParallel());
 						tmpSuite.setParameters(suite.getParameters());
 						tmpSuite.setThreadCount(suite.getThreadCount());
+            tmpSuite.setDataProviderThreadCount(suite.getDataProviderThreadCount());
 						tmpSuite.setVerbose(suite.getVerbose());
 						tmpSuite.setObjectFactory(suite.getObjectFactory());
 						XmlTest tmpTest = new XmlTest(tmpSuite);

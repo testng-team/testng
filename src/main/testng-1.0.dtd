@@ -58,6 +58,7 @@ Cedric Beust & Alexandru Popescu
     annotations CDATA #IMPLIED
     time-out CDATA #IMPLIED
     skipfailedinvocationCounts (true | false) "false"
+    data-provider-thread-count CDATA "10"
 >
 
 <!-- A list of XML files that contain more suite descriptions -->

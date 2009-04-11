@@ -924,7 +924,7 @@ public class TestNG {
       result.setStatus(HAS_FAILURE);
     }
     finally {
-      PoolService poolService = PoolService.getInstance();
+      PoolService poolService = PoolService.getInstance(null);
       if (poolService != null) {
         poolService.shutdown();
       }

@@ -145,6 +145,10 @@ public class TestNGContentHandler extends DefaultHandler {
       if (null != threadCount) {
         m_currentSuite.setThreadCount(Integer.parseInt(threadCount));
       }
+      String dataProviderThreadCount = attributes.getValue("data-provider-thread-count");
+      if (null != dataProviderThreadCount) {
+        m_currentSuite.setDataProviderThreadCount(Integer.parseInt(dataProviderThreadCount));
+      }
       String annotations = attributes.getValue("annotations");
       if (null != annotations) {
         m_currentSuite.setAnnotations(annotations);

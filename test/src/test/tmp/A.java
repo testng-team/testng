@@ -32,7 +32,7 @@ public class A {
     }
   }
 
-  @DataProvider
+  @DataProvider()
   public Object[][] dp() {
     return new Object[][] {
         new Object[] { 1 },

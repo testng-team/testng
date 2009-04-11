@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import org.testng.xml.XmlSuite;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,9 +32,9 @@ public class PoolService<KeyType, FutureType> {
     private Thread m_listenerThread;
     private Map<KeyType, PoolListener<KeyType, FutureType>> m_listeners;
 
-    public static PoolService getInstance() {
-        if (m_instance == null) {
-            m_instance = new PoolService(10);
+    public static PoolService getInstance(XmlSuite suite) {
+        if (m_instance == null && suite != null) {
+            m_instance = new PoolService(suite.getDataProviderThreadCount());
         }
         return m_instance;
     }

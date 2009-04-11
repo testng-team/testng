@@ -969,7 +969,7 @@ public class Invoker implements IInvoker {
                             invocationCount, failureCount, m_notifier);
                       workers.add(w);
                     }
-                    PoolService ps = PoolService.getInstance();
+                    PoolService ps = PoolService.getInstance(suite);
                     List<ITestResult> r = ps.submitTasksAndWait(testMethod, workers);
                     result.addAll(r);
 //                    ThreadUtil.execute(workers, 3, 500, true);

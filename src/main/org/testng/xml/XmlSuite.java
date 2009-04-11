@@ -59,6 +59,9 @@ public class XmlSuite implements Serializable, Cloneable {
   
   /** The thread count. */
   private int m_threadCount = 5;
+
+  /** Thread count for the data provider pool */
+  private int m_dataProviderThreadCount = 10;
   
   /** The suite annotation type. */
   private AnnotationTypeEnum m_annotations;
@@ -92,6 +95,7 @@ public class XmlSuite implements Serializable, Cloneable {
   private IObjectFactory m_objectFactory;
 
   private List<String> m_listeners = new ArrayList<String>();
+
   private static final long serialVersionUID = 4999962288272750226L;
 
   /**
@@ -385,6 +389,7 @@ public class XmlSuite implements Serializable, Cloneable {
       p.setProperty("parallel", parallel);
     }
     p.setProperty("thread-count", String.valueOf(getThreadCount()));
+    p.setProperty("data-provider-thread-count", String.valueOf(getDataProviderThreadCount()));
     p.setProperty("annotations", getAnnotations());
     p.setProperty("junit", m_isJUnit != null ? m_isJUnit.toString() : "false"); // TESTNG-141
     p.setProperty("skipfailedinvocationCounts", 
@@ -478,6 +483,7 @@ public class XmlSuite implements Serializable, Cloneable {
     result.setAnnotations(getAnnotations());
     result.setParallel(getParallel());
     result.setThreadCount(getThreadCount());
+    result.setDataProviderThreadCount(getDataProviderThreadCount());
     result.setParameters(getAllParameters());
     result.setVerbose(getVerbose());
     result.setXmlPackages(getXmlPackages());
@@ -546,5 +552,13 @@ public class XmlSuite implements Serializable, Cloneable {
     
     public List<String> getListeners() {
       return m_listeners;
+    }
+
+    public void setDataProviderThreadCount(int count) {
+      m_dataProviderThreadCount = count;
+    }
+
+    public int getDataProviderThreadCount() {
+      return m_dataProviderThreadCount;
     }
 }
