@@ -43,7 +43,7 @@ public class XmlSuite implements Serializable, Cloneable {
   
   /** The default suite name TODO CQ is this OK as a default name. */
   private static final String DEFAULT_SUITE_NAME = "";
-  
+
   /** The suite name (defaults to DEFAULT_SUITE_NAME) */
   private String m_name = DEFAULT_SUITE_NAME;
   
@@ -61,7 +61,8 @@ public class XmlSuite implements Serializable, Cloneable {
   private int m_threadCount = 5;
 
   /** Thread count for the data provider pool */
-  private int m_dataProviderThreadCount = 10;
+  public static final int DEFAULT_DATA_PROVIDER_THREAD_COUNT = 10;
+  private int m_dataProviderThreadCount = DEFAULT_DATA_PROVIDER_THREAD_COUNT;
   
   /** The suite annotation type. */
   private AnnotationTypeEnum m_annotations;

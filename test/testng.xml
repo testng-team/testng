@@ -1,6 +1,7 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
   
-<suite name="TestNG JDK 1.5" verbose="1" parallel="false" thread-count="2">
+<suite name="TestNG JDK 1.5" verbose="1" parallel="false" thread-count="2"
+    data-provider-thread-count="3">
   
   <test name="Nopackage">
     <groups>
@@ -68,6 +69,7 @@
       <class name="test.thread.SequentialTest" />
       <class name="test.thread.ParallelTestTest" />
       <class name="test.thread.FactoryTest" />
+      <class name="test.thread.DataProviderThreadPoolSizeTest" />
       <class name="test.simple.IncludedExcludedTest" />
       <class name="test.reports.ReportTest" />
       <class name="test.configuration.BeforeTestOrderingTest" />

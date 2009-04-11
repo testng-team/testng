@@ -1,14 +1,13 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="SingleSuite" verbose="1" parallel="false"
-    data-provider-thread-count="3" >
+<suite name="SingleSuite" verbose="2" parallel="false">
 
   <parameter name="first-name" value="Cedric" />
 
 
   <test name="InvocationCount">
     <classes>
-      <class name="test.tmp.A" />
+      <class name="test.thread.DataProviderThreadPoolSizeTest" />
      </classes>
   </test>
 

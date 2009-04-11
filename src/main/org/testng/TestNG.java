@@ -655,6 +655,8 @@ public class TestNG {
 
   private IMethodInterceptor m_methodInterceptor = null;
 
+  private Integer m_dataProviderThreadCount = XmlSuite.DEFAULT_DATA_PROVIDER_THREAD_COUNT;
+
   /**
    * Sets the level of verbosity. This value will override the value specified 
    * in the test suites.
@@ -689,7 +691,11 @@ public class TestNG {
       if(m_useParallelMode) {
         s.setParallel(m_parallelMode);
       }
+      if (m_dataProviderThreadCount != null) {
+        s.setDataProviderThreadCount(m_dataProviderThreadCount);
+      }
     }
+
   }
   
   private void initializeCommandLineSuitesGroups() {
@@ -756,9 +762,9 @@ public class TestNG {
     // Master mode
     //
     else {
-   	 SuiteDispatcher dispatcher = new SuiteDispatcher( m_masterfileName);
+   	 SuiteDispatcher dispatcher = new SuiteDispatcher(m_masterfileName);
    	 suiteRunners = dispatcher.dispatch(m_suites, getOutputDirectory(),
-   	                                    m_javadocAnnotationFinder, m_jdkAnnotationFinder, getTestListeners());
+   	     m_javadocAnnotationFinder, m_jdkAnnotationFinder, getTestListeners());
     }
     
     initializeAnnotationFinders();
@@ -840,7 +846,9 @@ public class TestNG {
           xmlSuite.setVerbose(m_verbose);
         }
         
+        PoolService.initialize(m_dataProviderThreadCount);
         result.add(createAndRunSuiteRunners(xmlSuite));
+        PoolService.getInstance().shutdown();
       }
     }
     else {
@@ -922,12 +930,6 @@ public class TestNG {
         System.err.println("[ERROR]: " + ex.getMessage());
       }
       result.setStatus(HAS_FAILURE);
-    }
-    finally {
-      PoolService poolService = PoolService.getInstance(null);
-      if (poolService != null) {
-        poolService.shutdown();
-      }
     }
 
     return result;
@@ -1311,5 +1313,9 @@ public class TestNG {
 
   public void setMethodInterceptor(IMethodInterceptor methodInterceptor) {
     m_methodInterceptor = methodInterceptor;
+  }
+
+  public void setDataProviderThreadCount(int count) {
+    m_dataProviderThreadCount = count;
   }
 }

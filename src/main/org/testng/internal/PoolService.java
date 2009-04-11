@@ -1,7 +1,5 @@
 package org.testng.internal;
 
-import org.testng.xml.XmlSuite;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,17 +29,14 @@ public class PoolService<KeyType, FutureType> {
     private HashMap<KeyType, List<Future<FutureType>>> m_futureMap;
     private Thread m_listenerThread;
     private Map<KeyType, PoolListener<KeyType, FutureType>> m_listeners;
-
-    public static PoolService getInstance(XmlSuite suite) {
-        if (m_instance == null && suite != null) {
-            m_instance = new PoolService(suite.getDataProviderThreadCount());
-        }
-        return m_instance;
-    }
+    
     /**
+     * One pool is created per XmlSuite object.
+     * 
      * @param threadPoolSize the size of the thread pool
      */
     private PoolService(int threadPoolSize) {
+        m_instance = this;
         m_service = Executors.newFixedThreadPool(threadPoolSize);
         m_futureMap = new HashMap<KeyType, List<Future<FutureType>>>();
         m_listeners = new HashMap<KeyType, PoolListener<KeyType, FutureType>>();
@@ -74,6 +69,18 @@ public class PoolService<KeyType, FutureType> {
                 System.out.println("Listener thread ending");
             }
         };
+    }
+
+    public static void initialize(int threadCount) {
+      m_instance = new PoolService(threadCount);
+    }
+
+    public static PoolService getInstance() {
+      if (m_instance == null) {
+        throw new RuntimeException("The Service Pool was not created, should never happen");
+      }
+
+      return m_instance;
     }
 
     /**
@@ -176,9 +183,10 @@ public class PoolService<KeyType, FutureType> {
      * Shut down the service.
      */
     public void shutdown() {
-      System.out.println("Shutting down poolservice " + this + " terminated:" + m_service.isTerminated());
+      Utils.log(getClass().getName(), 2,
+          "Shutting down poolservice " + this + " terminated:" + m_service.isTerminated());
 //      if (m_service.isTerminated()) {
-//        m_service.shutdown();
+        m_service.shutdown();
 //      }
     }
 
