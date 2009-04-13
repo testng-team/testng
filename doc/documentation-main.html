@@ -526,7 +526,7 @@ on ant and the command line below).</p><p>The current DTD for <tt>testng.xml</tt
 <pre class="prettyprint">
 &lt;!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" &gt;
  
-&lt;suite name="Suite1"    verbose="1" &gt;
+&lt;suite name="Suite1" verbose="1" &gt;
   &lt;test name="Nopackage" &gt;
     &lt;classes&gt;
        &lt;class name="NoPackageTest"  /&gt;
@@ -1171,6 +1171,23 @@ test1
 <br>
 test2
 </blockquote>
+
+Data providers can run in parallel with the attribute <tt>parallel</tt>:
+
+<pre class="prettyprint">
+@DataProvider(parallel = true)
+// ...
+</pre>
+
+Parallel data providers running from an XML file share the same pool of threads, which has a size of 10 by default.  You can modify this value in the <tt>&lt;suite&gt;</tt> tag of your XML file:
+
+
+<pre class="prettyprint">
+&lt;suite name="Suite1" data-provider-thread-count="20" &gt;
+... 
+</pre>
+
+If you want to run a few specific data providers in a different thread pool, you need to run them from a different XML file.
 
 &nbsp;&nbsp;<em><a name="parameters-reports">5.5.3 - Parameters in reports</a></em>
 
