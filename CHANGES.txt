@@ -1,5 +1,6 @@
 Current:
 
+Added: @DataProvider(parallel=true)
 Fixed: TestNG couldn't find Groovy files (Haw-Bin)
 
 Eclipse
