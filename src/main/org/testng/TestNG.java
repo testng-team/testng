@@ -160,6 +160,8 @@ public class TestNG {
   
   private List<IInvokedMethodListener> m_invokedMethodListeners
     = new ArrayList<IInvokedMethodListener>();
+
+  private Integer m_dataProviderThreadCount = null;
   
   /**
    * Default constructor. Setting also usage of default listeners/reporters.
@@ -453,6 +455,9 @@ public class TestNG {
         suites.put(suiteName, xmlSuite);
       }
 
+      if (m_dataProviderThreadCount != null) {
+        xmlSuite.setDataProviderThreadCount(m_dataProviderThreadCount);
+      }
       XmlTest xmlTest = null;
       for (XmlTest xt  : xmlSuite.getTests()) {
         if (xt.getName().equals(testName)) {
@@ -655,8 +660,6 @@ public class TestNG {
 
   private IMethodInterceptor m_methodInterceptor = null;
 
-  private Integer m_dataProviderThreadCount = XmlSuite.DEFAULT_DATA_PROVIDER_THREAD_COUNT;
-
   /**
    * Sets the level of verbosity. This value will override the value specified 
    * in the test suites.
@@ -690,9 +693,6 @@ public class TestNG {
       }
       if(m_useParallelMode) {
         s.setParallel(m_parallelMode);
-      }
-      if (m_dataProviderThreadCount != null) {
-        s.setDataProviderThreadCount(m_dataProviderThreadCount);
       }
     }
 
@@ -846,7 +846,7 @@ public class TestNG {
           xmlSuite.setVerbose(m_verbose);
         }
         
-        PoolService.initialize(m_dataProviderThreadCount);
+        PoolService.initialize(xmlSuite.getDataProviderThreadCount());
         result.add(createAndRunSuiteRunners(xmlSuite));
         PoolService.getInstance().shutdown();
       }

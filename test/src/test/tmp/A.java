@@ -5,8 +5,29 @@ import org.testng.annotations.Test;
 
 import java.util.Random;
 
+@Test
 public class A {
+
+  public void g1() { log("g1"); }
+  public void g2() { log("g2"); }
+  public void g3() { log("g3"); }
+  public void g4() { log("g4"); }
   
+  @DataProvider(parallel = true)
+  public Object[][] dp1() {
+    return new Object[][] {
+        new Object[] { 1 },
+        new Object[] { 2 },
+        new Object[] { 3 },
+        new Object[] { 4 },
+    };
+  }
+
+  @Test(dataProvider = "dp1")
+  public void f1(Integer n) {
+    log("f", n);
+  }
+
   @DataProvider(parallel = true)
   public Object[][] dp2() {
     return new Object[][] {
@@ -19,10 +40,10 @@ public class A {
 
   @Test(dataProvider = "dp2")
   public void f2(Integer n) {
-    sleep("f2", n);
+    log("f2", n);
   }
   
-  private void sleep(String f, Integer n) {
+  private void log(String f, Integer n) {
     System.out.println("Thread:" + Thread.currentThread().getId() + " " + f + "(" + n + ")");
     try {
       Thread.sleep(Math.abs(new Random().nextLong() % 2000));
@@ -32,19 +53,8 @@ public class A {
     }
   }
 
-  @DataProvider()
-  public Object[][] dp() {
-    return new Object[][] {
-        new Object[] { 1 },
-        new Object[] { 2 },
-        new Object[] { 3 },
-        new Object[] { 4 },
-    };
-  }
-
-  @Test(dataProvider = "dp")
-  public void f(Integer n) {
-    sleep("f", n);
+  private void log(String f) {
+    System.out.println("Thread:" + Thread.currentThread().getId() + " " + f + "()");
   }
 
 }

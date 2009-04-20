@@ -1,5 +1,7 @@
 Current:
 
+Fixed: TestNG couldn't find Groovy files (Haw-Bin)
+
 Eclipse
 
 Fixed: Quick fixes no longer introduce deprecated annotations (Greg Turnquist)

@@ -173,7 +173,9 @@ public class PackageUtils {
   
     File[] dirfiles = dir.listFiles(new FileFilter() {
           public boolean accept(File file) {
-            return (recursive && file.isDirectory()) || (file.getName().endsWith(".class"));
+            return (recursive && file.isDirectory())
+              || (file.getName().endsWith(".class"))
+              || (file.getName().endsWith(".groovy"));
           }
         });
   
@@ -188,7 +190,7 @@ public class PackageUtils {
                                 classes);
       }
       else {
-        String className = file.getName().substring(0, file.getName().length() - 6);
+        String className = file.getName().substring(0, file.getName().lastIndexOf("."));
         Utils.log("PackageUtils", 4, "Found class " + className + ", seeing it if it's included or excluded");
         includeOrExcludeClass(packageName, className, included, excluded, classes);
       }
