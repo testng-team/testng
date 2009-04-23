@@ -386,6 +386,15 @@ public class BaseTest extends BaseDistributedTest {
       return testRunner;
     }
   }
+
+  protected void runTest(String cls, String[] passed, String[] failed, String[] skipped) {
+    addClass(cls);
+    run();
+    verifyTests("Passed", passed, getPassedTests());
+    verifyTests("Failed", failed, getFailedTests());
+    verifyTests("Skipped", skipped, getSkippedTests());
+  }
+
 } // BaseTest
 
 ////////////////////////////

@@ -371,6 +371,8 @@ public class JDK14TagFactory {
         result.getDescription()));
     result.setExpectedExceptions(Converter.getClassArray(dt.getNamedParameter("expectedExceptions"),
         result.getExpectedExceptions()));
+    result.setExpectedExceptionsMessageRegExp(Converter.getString(dt.getNamedParameter("expectedExceptionsMessageRegExp"),
+        result.getExpectedExceptionsMessageRegExp()));
     result.setSuiteName(Converter.getString(dt.getNamedParameter("suiteName"),
         result.getSuiteName()));
     result.setTestName(Converter.getString(dt.getNamedParameter("testName"),

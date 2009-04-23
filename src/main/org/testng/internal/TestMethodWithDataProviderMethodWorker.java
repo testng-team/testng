@@ -23,7 +23,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
   private ITestNGMethod[] m_afterMethods;
   private ConfigurationGroupMethods m_groupMethods;
   private Invoker m_invoker;
-  private Class<?>[] m_expectedExceptionClasses;
+  private ExpectedExceptionsHolder m_expectedExceptionHolder;
   private ITestContext m_testContext;
   private int m_parameterIndex;
   private boolean m_skipFailedInvocationCounts;
@@ -38,7 +38,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
       Object[] parameterValues, Object[] instances, XmlSuite suite,
       Map<String, String> parameters, ITestClass testClass,
       ITestNGMethod[] beforeMethods, ITestNGMethod[] afterMethods,
-      ConfigurationGroupMethods groupMethods, Class<?>[] expectedExceptionClasses,
+      ConfigurationGroupMethods groupMethods, ExpectedExceptionsHolder expectedExceptionHolder,
       ITestContext testContext, boolean skipFailedInvocationCounts,
       int invocationCount, int failureCount, ITestResultNotifier notifier) {
     m_invoker = invoker;
@@ -52,7 +52,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
     m_beforeMethods = beforeMethods;
     m_afterMethods = afterMethods;
     m_groupMethods = groupMethods;
-    m_expectedExceptionClasses = expectedExceptionClasses;
+    m_expectedExceptionHolder = expectedExceptionHolder;
     m_skipFailedInvocationCounts = skipFailedInvocationCounts;
     m_testContext = testContext;
     m_invocationCount = invocationCount;
@@ -83,7 +83,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
       List<Object> failedInstances = new ArrayList<Object>();
 
       m_failureCount = m_invoker.handleInvocationResults(m_testMethod, tmpResults,
-          failedInstances, m_failureCount, m_expectedExceptionClasses, true,
+          failedInstances, m_failureCount, m_expectedExceptionHolder, true,
           false /* don't collect results */);
       if (failedInstances.isEmpty()) {
         m_testResults.addAll(tmpResults);
@@ -95,7 +95,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
              m_invoker.retryFailed(failedInstances.toArray(),
                  i, m_testMethod, m_xmlSuite, m_testClass, m_beforeMethods,
                  m_afterMethods, m_groupMethods, retryResults,
-                 m_failureCount, m_expectedExceptionClasses,
+                 m_failureCount, m_expectedExceptionHolder,
                  m_testContext, m_parameters, m_parameterIndex);
           m_testResults.addAll(retryResults);
         }

@@ -197,16 +197,17 @@ public class MethodHelper {
   
   /**
    * Read the expected exceptions, if any (need to handle both the old and new
-   * syntax
+   * syntax)
    */
-  public static Class<?>[] findExpectedExceptions(IAnnotationFinder finder, Method method) {
-    Class<?>[] result = {};
+  public static ExpectedExceptionsHolder findExpectedExceptions(IAnnotationFinder finder,
+      Method method) {
+    ExpectedExceptionsHolder result = null;
     IExpectedExceptionsAnnotation expectedExceptions= 
       (IExpectedExceptionsAnnotation) finder.findAnnotation(method,
         IExpectedExceptionsAnnotation.class);
     // Old syntax
     if (expectedExceptions != null) {
-      result = expectedExceptions.getValue();
+      result = new ExpectedExceptionsHolder(expectedExceptions.getValue(), ".*");
     }
     else {
       // New syntax
@@ -215,7 +216,8 @@ public class MethodHelper {
       if (testAnnotation != null) {
         Class<?>[] ee = testAnnotation.getExpectedExceptions();
         if (testAnnotation != null && ee.length > 0) {
-          result = ee; 
+          result = new ExpectedExceptionsHolder(ee,
+              testAnnotation.getExpectedExceptionsMessageRegExp());
         }
       }
     }

@@ -116,12 +116,18 @@ public @interface Test {
   public String description() default "";
   
   /**
-    * The list of exceptions that a test method is expected to throw.  If no 
-    * exception or a different than one on this list is thrown, this test will be
-    *  marked a failure.
+   * The list of exceptions that a test method is expected to throw.  If no 
+   * exception or a different than one on this list is thrown, this test will be
+   * marked a failure.
    */
   public Class[] expectedExceptions() default {};
-  
+
+  /**
+   * If expectedExceptions was specified, its message must match the regular expression
+   * specified in this attribute. 
+   */
+  public String expectedExceptionsMessageRegExp() default ".*";
+
   /**
    * The name of the suite this test class should be placed in.  This
    * attribute is ignore if @Test is not at the class level.

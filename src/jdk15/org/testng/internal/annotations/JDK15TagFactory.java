@@ -369,6 +369,7 @@ public class JDK15TagFactory {
     result.setAlwaysRun(test.alwaysRun());
     result.setDescription(test.description());
     result.setExpectedExceptions(test.expectedExceptions());
+    result.setExpectedExceptionsMessageRegExp(test.expectedExceptionsMessageRegExp());
     result.setSuiteName(test.suiteName());
     result.setTestName(test.testName());
     result.setSequential(test.sequential());

@@ -8,36 +8,18 @@ public class ExpectedExceptionsTest extends BaseTest {
   
   @Test
   public void expectedExceptionsDeprecatedSyntax() {
-    addClass("test.expectedexceptions.SampleExceptions");
-    run();
-    String[] passed = {
-      "shouldPass",
-    };
-    String[] failed = {
-        "shouldFail1", "shouldFail2"
-    };
-    String[] skipped = {
-    };
-    verifyTests("Passed", passed, getPassedTests());
-    verifyTests("Failed", failed, getFailedTests());
-    verifyTests("Skipped", skipped, getSkippedTests());
+    runTest("test.expectedexceptions.SampleExceptions",
+        new String[] { "shouldPass" },
+        new String[] { "shouldFail1", "shouldFail2" },
+        new String[] {});
   }
 
   @Test
   public void expectedExceptions() {
-    addClass("test.expectedexceptions.SampleExceptions2");
-    run();
-    String[] passed = {
-      "shouldPass",
-    };
-    String[] failed = {
-        "shouldFail1", "shouldFail2"
-    };
-    String[] skipped = {
-    };
-    verifyTests("Passed", passed, getPassedTests());
-    verifyTests("Failed", failed, getFailedTests());
-    verifyTests("Skipped", skipped, getSkippedTests());
+    runTest("test.expectedexceptions.SampleExceptions2",
+        new String[] { "shouldPass", "shouldPass2", "shouldPass3" },
+        new String[] { "shouldFail1", "shouldFail2", "shouldFail3" },
+        new String[] {});
   }
 
 }

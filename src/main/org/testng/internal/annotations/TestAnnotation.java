@@ -19,6 +19,7 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   private String m_dataProvider = "";
   private boolean m_alwaysRun = false;
   private Class<?>[] m_expectedExceptions = {};
+  private String m_expectedExceptionsMessageRegExp = ".*";
   private String m_suiteName = "";
   private String m_testName = "";
   private boolean m_sequential = false;
@@ -39,6 +40,15 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
    */
   public void setExpectedExceptions(Class<?>[] expectedExceptions) {
     m_expectedExceptions = expectedExceptions;
+  }
+
+  public String getExpectedExceptionsMessageRegExp() {
+    return m_expectedExceptionsMessageRegExp;
+  }
+
+  public void setExpectedExceptionsMessageRegExp(
+      String expectedExceptionsMessageRegExp) {
+    m_expectedExceptionsMessageRegExp = expectedExceptionsMessageRegExp;
   }
 
   public void setAlwaysRun(boolean alwaysRun) {

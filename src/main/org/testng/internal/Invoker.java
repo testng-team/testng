@@ -26,6 +26,8 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
+import sun.misc.Regexp;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
+import java.util.regex.Pattern;
 
 /**
  * This class is responsible for invoking methods:
@@ -561,7 +564,7 @@ public class Invoker implements IInvoker {
       
       runInvokedMethodListeners(false, invokedMethod, testResult);
       
-      Class<?>[] expectedExceptionClasses
+      ExpectedExceptionsHolder expectedExceptionClasses
           = MethodHelper.findExpectedExceptions(m_annotationFinder, tm.getMethod());
       List<ITestResult> results = new ArrayList<ITestResult>();
       results.add(testResult);
@@ -794,7 +797,7 @@ public class Invoker implements IInvoker {
                            ConfigurationGroupMethods groupMethods,
                            List<ITestResult> result,
                            int failureCount,
-                           Class<?>[] expectedExceptionClasses,
+                           ExpectedExceptionsHolder expectedExceptionHolder,
                            ITestContext testContext,
                            Map<String, String> parameters,
                            int parametersIndex) {
@@ -816,7 +819,7 @@ public class Invoker implements IInvoker {
           invokeMethod(instances, instanceIndex, tm, parameterValues, suite, 
               allParameters, testClass, beforeMethods, afterMethods, groupMethods));
       failureCount = handleInvocationResults(tm, result, failedInstances,
-          failureCount, expectedExceptionClasses, true, true /* collect results */);
+          failureCount, expectedExceptionHolder, true, true /* collect results */);
     }
     while (!failedInstances.isEmpty());
     return failureCount;
@@ -895,7 +898,7 @@ public class Invoker implements IInvoker {
     
     int failureCount = 0;
 
-    Class<?>[] expectedExceptionClasses = 
+    ExpectedExceptionsHolder expectedExceptionHolder = 
         MethodHelper.findExpectedExceptions(m_annotationFinder, testMethod.getMethod());
     while(invocationCount-- > 0) {
       boolean okToProceed = checkDependencies(testMethod, testClass, allTestMethods);
@@ -927,7 +930,7 @@ public class Invoker implements IInvoker {
 
               if(bag.hasErrors()) {
                 failureCount = handleInvocationResults(testMethod, 
-                    bag.errorResults, null, failureCount, expectedExceptionClasses, true,
+                    bag.errorResults, null, failureCount, expectedExceptionHolder, true,
                     true /* collect results */);
                 // there is nothing we can do more
                 continue;
@@ -965,7 +968,7 @@ public class Invoker implements IInvoker {
                             testMethod, parametersIndex,
                             parameterValues, instances, suite, parameters, testClass,
                             beforeMethods, afterMethods, groupMethods,
-                            expectedExceptionClasses, testContext, m_skipFailedInvocationCounts,
+                            expectedExceptionHolder, testContext, m_skipFailedInvocationCounts,
                             invocationCount, failureCount, m_notifier);
                       workers.add(w);
                     }
@@ -982,7 +985,7 @@ public class Invoker implements IInvoker {
                             testMethod, parametersIndex,
                             parameterValues, instances, suite, parameters, testClass,
                             beforeMethods, afterMethods, groupMethods,
-                            expectedExceptionClasses, testContext, m_skipFailedInvocationCounts,
+                            expectedExceptionHolder, testContext, m_skipFailedInvocationCounts,
                             invocationCount, failureCount, m_notifier);
                       result.addAll(w.call());
                       invocationCount = w.getInvocationCount();
@@ -1011,7 +1014,7 @@ public class Invoker implements IInvoker {
                       List<Object> failedInstances = new ArrayList<Object>();
   
                       failureCount = handleInvocationResults(testMethod, tmpResults,
-                          failedInstances, failureCount, expectedExceptionClasses, true,
+                          failedInstances, failureCount, expectedExceptionHolder, true,
                           false /* don't collect results */);
                       if (failedInstances.isEmpty()) {
                         result.addAll(tmpResults);
@@ -1023,7 +1026,7 @@ public class Invoker implements IInvoker {
                            retryFailed(failedInstances.toArray(),
                            i, testMethod, suite, testClass, beforeMethods,
                            afterMethods, groupMethods, retryResults,
-                           failureCount, expectedExceptionClasses,
+                           failureCount, expectedExceptionHolder,
                            testContext, parameters, parametersIndex);
                         result.addAll(retryResults);
                         }
@@ -1194,14 +1197,14 @@ public class Invoker implements IInvoker {
    * @param testMethod
    * @param result
    * @param failureCount
-   * @param expectedExceptionClasses
+   * @param expectedExceptionsHolder
    * @return
    */
   int handleInvocationResults(ITestNGMethod testMethod, 
                                       List<ITestResult> result,
                                       List<Object> failedInstances,
                                       int failureCount, 
-                                      Class<?>[] expectedExceptionClasses,
+                                      ExpectedExceptionsHolder expectedExceptionsHolder,
                                       boolean triggerListeners,
                                       boolean collectResults)
   {
@@ -1219,9 +1222,18 @@ public class Invoker implements IInvoker {
       if(ite != null) {
 
         //  Invocation caused an exception, see if the method was annotated with @ExpectedException
-        if(isExpectedException(ite, expectedExceptionClasses)) {
-          testResult.setStatus(ITestResult.SUCCESS);
-          status= ITestResult.SUCCESS;
+        if (isExpectedException(ite, expectedExceptionsHolder)) {
+          if (messageRegExpMatches(expectedExceptionsHolder.messageRegExp, ite)) {
+            testResult.setStatus(ITestResult.SUCCESS);
+            status= ITestResult.SUCCESS;
+          }
+          else {
+            testResult.setThrowable(
+                new TestException("The exception was thrown with the wrong message:" +
+                		" expected \"" + expectedExceptionsHolder.messageRegExp + "\"" + 
+                		" but got \"" + ite.getMessage() + "\""));
+            status= ITestResult.FAILURE;
+          }
         }
         else if (SkipException.class.isAssignableFrom(ite.getClass())){
           SkipException skipEx= (SkipException) ite;
@@ -1240,8 +1252,9 @@ public class Invoker implements IInvoker {
       }
 
       // No exception thrown, make sure we weren't expecting one
-      else if(status != ITestResult.SKIP) {
-        if (expectedExceptionClasses.length > 0) {
+      else if(status != ITestResult.SKIP && expectedExceptionsHolder != null) {
+        Class<?>[] classes = expectedExceptionsHolder.expectedClasses;
+        if (classes != null && classes.length > 0) {
           testResult.setThrowable(
               new TestException("Expected an exception in test method " + testMethod));
           status= ITestResult.FAILURE;
@@ -1293,6 +1306,20 @@ public class Invoker implements IInvoker {
     return removeResultsToRetryFromResult(resultsToRetry, result, failureCount);
   }
   
+  /**
+   *   message / regEx  .*      other
+   *   null             true    false
+   *   non-null         true    match
+   */
+  private boolean messageRegExpMatches(String messageRegExp, Throwable ite) {
+    if (".*".equals(messageRegExp)) {
+      return true;
+    } else {
+      if (ite.getMessage() == null) return false;
+      else return Pattern.matches(messageRegExp, ite.getMessage());
+    }
+  }
+
   private int removeResultsToRetryFromResult(List<ITestResult> resultsToRetry,
       List<ITestResult> result, int failureCount) {
     if (resultsToRetry != null) {
@@ -1448,15 +1475,17 @@ public class Invoker implements IInvoker {
    * @return true if the exception that was just thrown is part of the
    * expected exceptions
    */
-  private boolean isExpectedException(Throwable ite, Class<?>[] exceptions) {
-    if(null == exceptions) {
+  private boolean isExpectedException(Throwable ite, ExpectedExceptionsHolder exceptionHolder) {
+    if (exceptionHolder == null) {
       return false;
     }
+    Class<?>[] exceptions = exceptionHolder.expectedClasses;
+    String messageRegExp = exceptionHolder.messageRegExp;
 
     Class<?> realExceptionClass= ite.getClass();
 
     for(int i= 0; i < exceptions.length; i++) {
-      if(exceptions[i].isAssignableFrom(realExceptionClass)) {
+      if (exceptions[i].isAssignableFrom(realExceptionClass)) {
         return true;
       }
     }

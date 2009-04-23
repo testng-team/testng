@@ -49,6 +49,9 @@ public interface ITestAnnotation extends ITestOrConfiguration {
   public Class<?>[] getExpectedExceptions();
   public void setExpectedExceptions(Class<?>[] e);
   
+  public String getExpectedExceptionsMessageRegExp();
+  public void setExpectedExceptionsMessageRegExp(String e);
+
   public String getSuiteName();
   public void setSuiteName(String s);
   

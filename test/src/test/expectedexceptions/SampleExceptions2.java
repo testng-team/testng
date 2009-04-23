@@ -22,11 +22,22 @@ public class SampleExceptions2 {
   @Test(expectedExceptions = NumberFormatException.class)
   public void shouldFail2() {
   }
+
+  @Test(expectedExceptions = NumberFormatException.class,
+      expectedExceptionsMessageRegExp = ".*bomb.*")
+  public void shouldPass2() {
+    throw new NumberFormatException("This should bomb for good");
+  }
+
+  @Test(expectedExceptions = NumberFormatException.class,
+      expectedExceptionsMessageRegExp = ".*bombc.*")
+  public void shouldFail3() {
+    throw new NumberFormatException("This should bomb for good");
+  }
   
-//  @Test
-//  @ExpectedExceptions({ FileNotFoundException.class, IOException.class })
-//  public void shouldPass2() throws Exception {
-//    throw new FileNotFoundException();
-//  }
+  @Test(expectedExceptions = NumberFormatException.class, expectedExceptionsMessageRegExp = ".*")
+  public void shouldPass3() {
+    throw new NumberFormatException(null);
+  }
   
 }
