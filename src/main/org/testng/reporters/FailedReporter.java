@@ -104,19 +104,25 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       
       // Get the transitive closure of all the failed methods and the methods
       // they depend on
-      Collection<ITestResult> tests = failedTests.isEmpty() ? skippedTests : failedTests;
-      for (ITestResult failedTest : tests) {
-        ITestNGMethod current = failedTest.getMethod();
-        if (current.isTest()) {
-          methodsToReRun.put(current, current);
-          ITestNGMethod method = failedTest.getMethod();
-          // Don't count configuration methods
-          if (method.isTest()) {
-            List<ITestNGMethod> methodsDependedUpon = MethodHelper.getMethodsDependedUpon(method, context.getAllTestMethods());
-            
-            for (ITestNGMethod m : methodsDependedUpon) {
-              if (m.isTest()) {
-                methodsToReRun.put(m, m);
+      Collection[] allTests = new Collection[] {
+          failedTests, skippedTests
+      };
+
+      for (Collection<ITestResult> tests : allTests) {
+        for (ITestResult failedTest : tests) {
+          ITestNGMethod current = failedTest.getMethod();
+          if (current.isTest()) {
+            methodsToReRun.put(current, current);
+            ITestNGMethod method = failedTest.getMethod();
+            // Don't count configuration methods
+            if (method.isTest()) {
+              List<ITestNGMethod> methodsDependedUpon =
+                  MethodHelper.getMethodsDependedUpon(method, context.getAllTestMethods());
+              
+              for (ITestNGMethod m : methodsDependedUpon) {
+                if (m.isTest()) {
+                  methodsToReRun.put(m, m);
+                }
               }
             }
           }

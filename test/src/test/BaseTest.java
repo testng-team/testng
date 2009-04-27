@@ -21,6 +21,11 @@ import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,6 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Base class for tests
@@ -366,6 +372,58 @@ public class BaseTest extends BaseDistributedTest {
     }
   }
 
+  /**
+     *
+     * @param fileName The filename to parse
+     * @param regexp The regular expression
+     * @param resultLines An out parameter that will contain all the lines
+     * that matched the regexp
+     * @return A List<Integer> containing the lines of all the matches
+     *
+     * Note that the size() of the returned valuewill always be equal to
+     * result.size() at the end of this function.
+     */
+    public static List<Integer> grep(File fileName, String regexp, List<String> resultLines) {
+      List<Integer> resultLineNumbers = new ArrayList<Integer>();
+      BufferedReader fr = null;
+      try {
+        fr = new BufferedReader(new FileReader(fileName));
+        String line = fr.readLine();
+        int currentLine = 0;
+        Pattern p = Pattern.compile(".*" + regexp + ".*");
+  
+        while(null != line) {
+  //        ppp("COMPARING " + p + " TO @@@" + line + "@@@");
+          if(p.matcher(line).matches()) {
+            resultLines.add(line);
+            resultLineNumbers.add(currentLine);
+          }
+  
+          line = fr.readLine();
+          currentLine++;
+        }
+      }
+      catch(FileNotFoundException e) {
+        e.printStackTrace();
+      }
+      catch(IOException e) {
+        e.printStackTrace();
+      }
+      finally {
+        if(null != fr) {
+          try {
+            fr.close();
+          }
+          catch(IOException ex) {
+            ex.printStackTrace();
+          }
+        }
+      }
+  
+      return resultLineNumbers;
+  
+    }
+
   private static class InternalTestRunnerFactory implements ITestRunnerFactory {
     private final BaseTest m_baseTest;
 
@@ -385,6 +443,27 @@ public class BaseTest extends BaseDistributedTest {
 
       return testRunner;
     }
+  }
+
+  /**
+   *  Deletes all files and subdirectories under dir.
+
+   *  @return true if all deletions were successful.
+   *  If a deletion fails, the method stops attempting to delete and returns false.
+   */
+  public static boolean deleteDir(File dir) {
+    if (dir.isDirectory()) {
+      String[] children = dir.list();
+      for (int i=0; i<children.length; i++) {
+        boolean success = deleteDir(new File(dir, children[i]));
+        if (!success) {
+          return false;
+        }
+      }
+    }
+  
+    // The directory is now empty so delete it
+    return dir.delete();
   }
 
   protected void runTest(String cls, String[] passed, String[] failed, String[] skipped) {
