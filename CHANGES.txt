@@ -1,5 +1,6 @@
 Current:
 
+Fixed: TESTNG-301: Need to include parameters in testNG report for test created by @Factory
 Fixed: testng-failed.xml now includes skipped tests
 Added: @Test(expectedExceptionsMessageRegExp = ".*foo.*"
 Added: @DataProvider(parallel=true)

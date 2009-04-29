@@ -79,4 +79,9 @@ public interface ITestResult extends Serializable {
    */
   public String getHost();
 
+  /**
+   * The instance on which this method was run.
+   */
+  public Object getInstance();
+  
 }

@@ -8,7 +8,7 @@
 
   <test name="InvocationCount">
     <classes>
-      <class name="test.tmp.A" />
+      <class name="test.tmp.B" />
      </classes>
   </test>
 

@@ -1,14 +1,20 @@
 package test.tmp;
 
+import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 public class B extends Base {
-    @Test
-    public void b1() {}
-    
-    @Test
-    public void b2() {}
 
-    @Test
-    public void b3() {}
+  @Factory
+  public static Object[] create() {
+    return new Object[] {
+        new A("abc"),
+        new A("def")
+    };
+  }
+  
+  @Test
+  public void f() {
+    
+  }
 }

@@ -25,6 +25,7 @@ public class TestResult implements ITestResult {
   private String m_name = null;
   private String m_host;
   private Object[] m_parameters = {};
+  private Object m_instance;
 
   /**
    * 
@@ -54,6 +55,7 @@ public class TestResult implements ITestResult {
     //
     // Assign a name if the instance is an instanceof ITest
     //
+    m_instance = instance;
     m_name = m_method.getMethod().getName();
     if (null != instance && (instance instanceof ITest)) {
       m_name += " (" + ((ITest) instance).getTestName() + ")";
@@ -177,5 +179,8 @@ public class TestResult implements ITestResult {
   public void setParameters(Object[] parameters) {
     m_parameters = parameters;
   }
- 
+
+  public Object getInstance() {
+    return m_instance;
+  }
 }

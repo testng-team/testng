@@ -1,24 +1,29 @@
 package test.tmp;
 
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test
 public class A {
   
-  @Test(expectedExceptions = NumberFormatException.class,
-      expectedExceptionsMessageRegExp = ".*bomb.*")
-  public void shouldPass2() {
-    throw new NumberFormatException("This should bomb for good");
+  String msg;
+
+  public A(String ech) {
+    msg = ech;
   }
 
-  @Test(expectedExceptions = NumberFormatException.class,
-      expectedExceptionsMessageRegExp = ".*bombc.*")
-  public void shouldFail2() {
-    throw new NumberFormatException("This should bomb for good");
+  @Test
+  public void testEcho() {
+    System.out.println("echo: " + msg);
+    if ("def".equals(msg)) throw new RuntimeException();
+  }
+
+  
+  public void p(String s) {
+    System.out.println(Thread.currentThread().getId() + " " + s);
   }
   
-  @Test(expectedExceptions = NumberFormatException.class, expectedExceptionsMessageRegExp = ".*")
-  public void shouldPass3() {
-    throw new NumberFormatException(null);
+  public String toString() {
+    return "[A: msg:" + msg + "]";
   }
 }

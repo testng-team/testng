@@ -96,7 +96,7 @@ public class ThreadUtil {
       return this;
     }
   }
-  
+
   /**
    * A special <code>Runnable</code> that uses <code>CountDownLatch</code>-s to
    * sync on start and to ackowledge its finish.

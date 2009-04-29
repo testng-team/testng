@@ -58,14 +58,13 @@ public class TestHTMLReporter extends TestListenerAdapter {
       Collection<ITestResult> tests, String cssClass, Comparator<ITestResult> comparator)
   {
     sb.append("<table width='100%' border='1' class='invocation-").append(cssClass).append("'>\n")
-      .append("<tr><td colspan='3' align='center'><b>").append(title).append("</b></td></tr>\n")    
+      .append("<tr><td colspan='4' align='center'><b>").append(title).append("</b></td></tr>\n")    
       .append("<tr>")
       .append("<td><b>Test method</b></td>\n")
+      .append("<td><b>Instance</b></td>\n")
       .append("<td width=\"10%\"><b>Time (seconds)</b></td>\n")
       .append("<td width=\"30%\"><b>Exception</b></td>\n")
       .append("</tr>\n");
-    
-
     
     if (tests instanceof List) {
       Collections.sort((List<ITestResult>) tests, comparator);
@@ -82,7 +81,10 @@ public class TestHTMLReporter extends TestListenerAdapter {
       ITestNGMethod method = tr.getMethod();
 
       String fqName = Utils.detailedMethodName(method, false);
-      sb.append("<td title='").append(tr.getTestClass().getName()).append(".").append(tr.getName()).append("()'>").append(fqName);
+      sb.append("<td title='").append(tr.getTestClass().getName()).append(".")
+        .append(tr.getName())
+        .append("()'>")
+        .append(fqName);
       
       // Method description
       if (! Utils.isStringEmpty(method.getDescription())) {
@@ -124,7 +126,12 @@ public class TestHTMLReporter extends TestListenerAdapter {
       }
       
       sb.append("</td>\n");
-            
+
+      // Instance
+      Object instance = tr.getInstance();
+      String instanceString = instance != null ? instance.toString() : "&nbsp;";
+      sb.append("<td>").append(instance).append("</td>");
+
       // Time
       long time = (tr.getEndMillis() - tr.getStartMillis()) / 1000;
       String strTime = new Long(time).toString();
