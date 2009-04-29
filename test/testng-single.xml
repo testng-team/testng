@@ -8,7 +8,7 @@
 
   <test name="InvocationCount">
     <classes>
-      <class name="test.tmp.B" />
+      <class name="test.dataprovider.FailingIterableDataProvider" />
      </classes>
   </test>
 

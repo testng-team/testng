@@ -908,90 +908,91 @@ public class Invoker implements IInvoker {
         // Invoke the test method if it's enabled
         //
         if (MethodHelper.isEnabled(testMethod.getMethod(), m_annotationFinder)) {
-            //
-            // If threadPoolSize specified, run this method in its own pool thread.
-            //
-            if (testMethod.getThreadPoolSize() > 1 && testMethod.getInvocationCount() > 1) {
-                return invokePooledTestMethods(testMethod, allTestMethods, suite, 
-                    parameters, groupMethods, testContext);
+          //
+          // If threadPoolSize specified, run this method in its own pool thread.
+          //
+          if (testMethod.getThreadPoolSize() > 1 && testMethod.getInvocationCount() > 1) {
+              return invokePooledTestMethods(testMethod, allTestMethods, suite, 
+                  parameters, groupMethods, testContext);
+          }
+          
+          //
+          // No threads, regular invocation
+          //
+          else {
+            ITestNGMethod[] beforeMethods = filterMethods(testClass, testClass.getBeforeTestMethods());
+            ITestNGMethod[] afterMethods = filterMethods(testClass, testClass.getAfterTestMethods());
+
+
+            Map<String, String> allParameterNames = new HashMap<String, String>();
+            ParameterBag bag = createParameters(testClass, testMethod,
+                parameters, allParameterNames, null, suite, testContext, instances[0]);
+
+            if(bag.hasErrors()) {
+              failureCount = handleInvocationResults(testMethod, 
+                  bag.errorResults, null, failureCount, expectedExceptionHolder, true,
+                  true /* collect results */);
+              // there is nothing we can do more
+              continue;
             }
             
-            //
-            // No threads, regular invocation
-            //
+            Iterator<Object[]> allParameterValues= bag.parameterHolder.parameters;
+            
+            if(testMethod.getThreadPoolSize() > 1) {
+              return invokePooledTestMethods(instances, 
+                    testMethod, 
+                    allTestMethods, 
+                    beforeMethods, 
+                    afterMethods, 
+                    groupMethods, 
+                    suite, 
+                    parameters, 
+                    allParameterNames, 
+                    allParameterValues);
+            }
             else {
-              ITestNGMethod[] beforeMethods = filterMethods(testClass, testClass.getBeforeTestMethods());
-              ITestNGMethod[] afterMethods = filterMethods(testClass, testClass.getAfterTestMethods());
-
-
-              Map<String, String> allParameterNames = new HashMap<String, String>();
-              ParameterBag bag = createParameters(testClass, testMethod,
-                  parameters, allParameterNames, null, suite, testContext, instances[0]);
-
-              if(bag.hasErrors()) {
-                failureCount = handleInvocationResults(testMethod, 
-                    bag.errorResults, null, failureCount, expectedExceptionHolder, true,
-                    true /* collect results */);
-                // there is nothing we can do more
-                continue;
-              }
+              int parametersIndex = 0;
               
-              Iterator<Object[]> allParameterValues= bag.parameterHolder.parameters;
-              
-              if(testMethod.getThreadPoolSize() > 1) {
-                return invokePooledTestMethods(instances, 
-                      testMethod, 
-                      allTestMethods, 
-                      beforeMethods, 
-                      afterMethods, 
-                      groupMethods, 
-                      suite, 
-                      parameters, 
-                      allParameterNames, 
-                      allParameterValues);
-              }
-              else {
-                int parametersIndex = 0;
-                
-                  
-                if (true) { // @@
-                  List<TestMethodWithDataProviderMethodWorker> workers
-                      = new ArrayList<TestMethodWithDataProviderMethodWorker>();
+              try {
+//                if (true) { // @@
+                List<TestMethodWithDataProviderMethodWorker> workers
+                    = new ArrayList<TestMethodWithDataProviderMethodWorker>();
 
 //                  if (false) { // bag.parameterHolder.origin == ParameterHolder.ORIGIN_DATA_PROVIDER) {
-                  if (bag.parameterHolder.origin == ParameterHolder.ORIGIN_DATA_PROVIDER &&
-                      bag.parameterHolder.dataProviderHolder.annotation.isParallel()) {
-                    while (allParameterValues.hasNext()) {
-                      Object[] parameterValues= allParameterValues.next();
-                      TestMethodWithDataProviderMethodWorker w =
-                        new TestMethodWithDataProviderMethodWorker(this,
-                            testMethod, parametersIndex,
-                            parameterValues, instances, suite, parameters, testClass,
-                            beforeMethods, afterMethods, groupMethods,
-                            expectedExceptionHolder, testContext, m_skipFailedInvocationCounts,
-                            invocationCount, failureCount, m_notifier);
-                      workers.add(w);
-                    }
-                    PoolService ps = PoolService.getInstance();
-                    List<ITestResult> r = ps.submitTasksAndWait(testMethod, workers);
-                    result.addAll(r);
-//                    ThreadUtil.execute(workers, 3, 500, true);
-                    
-                  } else {
-                    while (allParameterValues.hasNext()) {
-                      Object[] parameterValues= allParameterValues.next();
-                      TestMethodWithDataProviderMethodWorker w =
-                        new TestMethodWithDataProviderMethodWorker(this,
-                            testMethod, parametersIndex,
-                            parameterValues, instances, suite, parameters, testClass,
-                            beforeMethods, afterMethods, groupMethods,
-                            expectedExceptionHolder, testContext, m_skipFailedInvocationCounts,
-                            invocationCount, failureCount, m_notifier);
-                      result.addAll(w.call());
-                      invocationCount = w.getInvocationCount();
-                      failureCount = w.getFailureCount();
-                    }
+                if (bag.parameterHolder.origin == ParameterHolder.ORIGIN_DATA_PROVIDER &&
+                    bag.parameterHolder.dataProviderHolder.annotation.isParallel()) {
+                  while (allParameterValues.hasNext()) {
+                    Object[] parameterValues= allParameterValues.next();
+                    TestMethodWithDataProviderMethodWorker w =
+                      new TestMethodWithDataProviderMethodWorker(this,
+                          testMethod, parametersIndex,
+                          parameterValues, instances, suite, parameters, testClass,
+                          beforeMethods, afterMethods, groupMethods,
+                          expectedExceptionHolder, testContext, m_skipFailedInvocationCounts,
+                          invocationCount, failureCount, m_notifier);
+                    workers.add(w);
                   }
+                  PoolService ps = PoolService.getInstance();
+                  List<ITestResult> r = ps.submitTasksAndWait(testMethod, workers);
+                  result.addAll(r);
+//                    ThreadUtil.execute(workers, 3, 500, true);
+                  
+//                  } 
+//                  else {
+//                    while (allParameterValues.hasNext()) {
+//                      Object[] parameterValues= allParameterValues.next();
+//                      TestMethodWithDataProviderMethodWorker w =
+//                        new TestMethodWithDataProviderMethodWorker(this,
+//                            testMethod, parametersIndex,
+//                            parameterValues, instances, suite, parameters, testClass,
+//                            beforeMethods, afterMethods, groupMethods,
+//                            expectedExceptionHolder, testContext, m_skipFailedInvocationCounts,
+//                            invocationCount, failureCount, m_notifier);
+//                      result.addAll(w.call());
+//                      invocationCount = w.getInvocationCount();
+//                      failureCount = w.getFailureCount();
+//                    }
+//                  }
                 } else {
                   while (allParameterValues.hasNext()) {
                     Object[] parameterValues= allParameterValues.next();
@@ -1060,12 +1061,25 @@ public class Invoker implements IInvoker {
                         break;
                       }
                     }// end
+                  parametersIndex++;
                 }
-                parametersIndex++;
               }
+            }
+            catch (Throwable cause) {
+              ITestResult r = 
+                  new TestResult(testMethod.getTestClass(),
+                    instances[0],
+                    testMethod,
+                    cause,
+                    start,
+                    System.currentTimeMillis());
+                r.setStatus(TestResult.FAILURE);
+                result.add(r);
+                runTestListeners(r);
+                m_notifier.addFailedTest(testMethod, r);
+              } // catch
             } // for parameters
           }
-
         } // isTestMethodEnabled 
 
       } // okToProceed
