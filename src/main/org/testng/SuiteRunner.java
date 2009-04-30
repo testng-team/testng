@@ -560,4 +560,15 @@ public class SuiteRunner implements ISuite, Serializable {
       m_skipFailedInvocationCounts = skipFailedInvocationCounts;
     }
   }
+
+  private Map<String, Object> m_attributes = new HashMap<String, Object>();
+
+  public Object getAttribute(String name) {
+    return m_attributes.get(name);
+  }
+
+  public void setAttribute(String name, Object value) {
+    m_attributes.put(name, value);
+  }
+
 }

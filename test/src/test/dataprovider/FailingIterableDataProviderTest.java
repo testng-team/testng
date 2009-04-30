@@ -25,7 +25,7 @@ public class FailingIterableDataProviderTest {
     }
     Assert.assertEquals(tla.getFailedTests().size(), 1,
       "Should have 1 failure from a bad data-provider iteration");
-    Assert.assertEquals(tla.getPassedTests().size(), 1,
+    Assert.assertEquals(tla.getPassedTests().size(), 5,
       "Should have 1 passed test from before the bad data-provider iteration");
     }
 }

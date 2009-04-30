@@ -1,20 +1,14 @@
 package test.tmp;
 
+import org.testng.ITestContext;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
-public class B extends Base {
+public class B {
 
-  @Factory
-  public static Object[] create() {
-    return new Object[] {
-        new A("abc"),
-        new A("def")
-    };
-  }
-  
   @Test
-  public void f() {
-    
+  public void testEchoB(ITestContext c) {
+    System.out.println("B Context:" + c.getSuite().getAttribute("test"));
   }
+
 }

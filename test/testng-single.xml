@@ -6,13 +6,22 @@
   <parameter name="first-name" value="Cedric" />
 
 
-  <test name="InvocationCount">
+  <test name="Simple">
     <classes>
-      <class name="test.dataprovider.FailingIterableDataProvider" />
+      <class name="test.dataprovider.FailingIterableDataProviderTest" />
+<!--
+      <class name="test.inject.InjectAfterMethodWithTestResultTest" />
+-->
      </classes>
   </test>
 
+
 <!-- 
+  <test name="Simple2">
+    <classes>
+      <class name="test.tmp.B" />
+     </classes>
+  </test>
   <test name="RetryAnalyzer">
     <classes>
       <class name="test.retryAnalyzer.RetryAnalyzerTest" />

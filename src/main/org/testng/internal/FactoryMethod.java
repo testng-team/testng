@@ -1,5 +1,12 @@
 package org.testng.internal;
 
+import org.testng.ITestContext;
+import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
+import org.testng.TestNGException;
+import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.xml.XmlTest;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -7,13 +14,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.testng.ITestClass;
-import org.testng.ITestContext;
-import org.testng.ITestNGMethod;
-import org.testng.TestNGException;
-import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.xml.XmlTest;
 
 /**
  * This class represents a method annotated with @Factory
@@ -61,7 +61,8 @@ public class FactoryMethod extends BaseTestMethod {
       Parameters.handleParameters(this, 
           allParameterNames, 
           m_instance,
-          new Parameters.MethodParameters(m_xmlTest.getParameters(), null, null, m_testContext), 
+          new Parameters.MethodParameters(m_xmlTest.getParameters(), null, null, m_testContext,
+              null /* testResult */), 
           m_xmlTest.getSuite(), 
           m_annotationFinder,
           null /* fedInstance */).parameters;

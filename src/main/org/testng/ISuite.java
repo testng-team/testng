@@ -91,4 +91,16 @@ public interface ISuite {
    * @return The representation of the current XML suite file.
    */
   public XmlSuite getXmlSuite();
+
+  /**
+   * Return a context attribute
+   * @param name The name of the attribute to return
+   */
+  public Object getAttribute(String name);
+
+  /**
+   * Set a custom attribute in the current context
+   */
+  public void setAttribute(String name, Object value);
+
 }

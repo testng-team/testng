@@ -1,15 +1,8 @@
 package org.testng.internal;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
 import org.testng.TestNGException;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
@@ -20,6 +13,14 @@ import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlSuite;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Methods that bind parameters declared in testng.xml to actual values
@@ -64,11 +65,13 @@ public class Parameters {
       ITestNGMethod currentTestMethod,
       IAnnotationFinder finder, 
       XmlSuite xmlSuite,
-      ITestContext ctx) 
+      ITestContext ctx,
+      ITestResult testResult) 
   {
     Method currentTestMeth= currentTestMethod != null ? 
         currentTestMethod.getMethod() : null;
-    return createParameters(m, new MethodParameters(params, parameterValues, currentTestMeth, ctx), 
+    return createParameters(m,
+        new MethodParameters(params, parameterValues, currentTestMeth, ctx, testResult), 
         finder, xmlSuite, IConfigurationAnnotation.class, "@Configuration");
   }
 
@@ -102,6 +105,9 @@ public class Parameters {
         }
         else if (ITestContext.class.equals(parameterTypes[i])) {
           vResult.add(params.context);
+        }
+        else if (ITestResult.class.equals(parameterTypes[i])) {
+          vResult.add(params.testResult);
         }
         else {
           if (j < parameterNames.length) {
@@ -147,6 +153,7 @@ public class Parameters {
     for(int i= parameterTypes.length - 1; i >= parameterNames.length; i--) {
       Class type = parameterTypes[i];
       if(!ITestContext.class.equals(type)
+          && !ITestResult.class.equals(type)
           && !Method.class.equals(type)
           && !Object[].class.equals(type)) {
         throw new TestNGException( "Method " + methodName + " requires " 
@@ -398,20 +405,23 @@ public class Parameters {
     private final Method currentTestMethod;
     private final ITestContext context;
     private Object[] parameterValues;
+    public ITestResult testResult;
     
     public MethodParameters(Map<String, String> params) {
-      this(params, null, null, null);
+      this(params, null, null, null, null);
     }
     
     public MethodParameters(Map<String, String> params, Method m) {
-      this(params, null, m, null);
+      this(params, null, m, null, null);
     }
     
-    public MethodParameters(Map<String, String> params, Object[] pv, Method m, ITestContext ctx) {
+    public MethodParameters(Map<String, String> params, Object[] pv, Method m, ITestContext ctx,
+        ITestResult tr) {
       xmlParameters = params;
       currentTestMethod = m;
       context = ctx;
       parameterValues = pv;
+      testResult = tr;
     }
   }
 }

@@ -89,7 +89,8 @@ public class Invoker implements IInvoker {
                                    Object[] parameterValues,
                                    Object instance)
   {
-    invokeConfigurations(testClass, null, allMethods, suite, params, parameterValues, instance);
+    invokeConfigurations(testClass, null, allMethods, suite, params, parameterValues, instance,
+        null);
   }
 
   private void invokeConfigurations(IClass testClass,
@@ -98,7 +99,8 @@ public class Invoker implements IInvoker {
                                    XmlSuite suite,
                                    Map<String, String> params,
                                    Object[] parameterValues,
-                                   Object instance)
+                                   Object instance,
+                                   ITestResult testMethodResult)
   {
     if(null == allMethods) {
       log(5, "No @Configuration methods found");
@@ -150,7 +152,8 @@ public class Invoker implements IInvoker {
                 currentTestMethod,
                 m_annotationFinder,
                 suite,
-                m_testContext);
+                m_testContext,
+                testMethodResult);
             testResult.setParameters(parameters);
   
             Object[] newInstances= (null != instance) ? new Object[] { instance } : instances;
@@ -468,7 +471,7 @@ public class Invoker implements IInvoker {
     invokeConfigurations(testClass, tm, 
       filterConfigurationMethods(tm, beforeMethods, true /* beforeMethods */),
       suite, params, parameterValues,
-      instances[instanceIndex]);
+      instances[instanceIndex], null /* no testResult yet */);
     
     //
     // Create the ExtraOutput for this method
@@ -587,7 +590,8 @@ public class Invoker implements IInvoker {
       invokeConfigurations(testClass, tm, 
           filterConfigurationMethods(tm, afterMethods, false /* beforeMethods */),
           suite, params, parameterValues,
-          instances[instanceIndex]);
+          instances[instanceIndex],
+          testResult);
       
       //
       // Invoke afterGroups configurations
@@ -811,7 +815,7 @@ public class Invoker implements IInvoker {
        * one specific set. Should optimize it by only recreating the set needed.
        */
       ParameterBag bag = createParameters(testClass, tm, parameters,
-          allParameters, null, suite, testContext, null /* fedInstance */);
+          allParameters, null, suite, testContext, null /* fedInstance */, null /* testResult */);
       Object[] parameterValues =
           getParametersFromIndex(bag.parameterHolder.parameters, parametersIndex);
 
@@ -832,7 +836,8 @@ public class Invoker implements IInvoker {
                                         Object[] parameterValues,
                                         XmlSuite suite,
                                         ITestContext testContext,
-                                        Object fedInstance)
+                                        Object fedInstance,
+                                        ITestResult testResult)
   {
     Object instance;
     if (fedInstance != null) {
@@ -844,7 +849,8 @@ public class Invoker implements IInvoker {
     }
     
     ParameterBag bag= handleParameters(testMethod, 
-        instance, allParameterNames, parameters, parameterValues, suite, testContext, fedInstance);
+        instance, allParameterNames, parameters, parameterValues, suite, testContext, fedInstance,
+        testResult);
 
     return bag;
   }
@@ -926,7 +932,8 @@ public class Invoker implements IInvoker {
 
             Map<String, String> allParameterNames = new HashMap<String, String>();
             ParameterBag bag = createParameters(testClass, testMethod,
-                parameters, allParameterNames, null, suite, testContext, instances[0]);
+                parameters, allParameterNames, null, suite, testContext, instances[0],
+                null);
 
             if(bag.hasErrors()) {
               failureCount = handleInvocationResults(testMethod, 
@@ -1116,7 +1123,8 @@ public class Invoker implements IInvoker {
       Object[] parameterValues,
       XmlSuite suite,
       ITestContext testContext,
-      Object fedInstance)
+      Object fedInstance,
+      ITestResult testResult)
   {
     try {
       return new ParameterBag(
@@ -1124,7 +1132,7 @@ public class Invoker implements IInvoker {
             allParameterNames, 
             instance, 
             new Parameters.MethodParameters(parameters, parameterValues,
-                testMethod.getMethod(), testContext), 
+                testMethod.getMethod(), testContext, testResult), 
             suite, 
             m_annotationFinder,
             fedInstance), 
