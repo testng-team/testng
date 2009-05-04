@@ -1,6 +1,5 @@
 package org.testng;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 
@@ -14,24 +13,13 @@ import java.util.Date;
  * @author Cedric Beust, Aug 6, 2004
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
-public interface ITestContext extends Serializable {
+public interface ITestContext extends IAttributes {
   
   /**
    * The name of this test.
    */
   public String getName();
 
-  /**
-   * Return a context attribute
-   * @param name The name of the attribute to return
-   */
-  public Object getAttribute(String name);
-
-  /**
-   * Set a custom attribute in the current context
-   */
-  public void setAttribute(String name, Object value);
-  
   /**
    * When this test started running.
    */
