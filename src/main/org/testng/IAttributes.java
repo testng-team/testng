@@ -9,7 +9,7 @@ public interface IAttributes extends Serializable {
   public Object getAttribute(String name);
 
   /**
-   * Set a custom attribute in the current context
+   * Set a custom attribute.
    */
   public void setAttribute(String name, Object value);
 
