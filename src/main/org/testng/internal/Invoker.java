@@ -457,6 +457,8 @@ public class Invoker implements IInvoker {
                                    ITestNGMethod[] beforeMethods,
                                    ITestNGMethod[] afterMethods,
                                    ConfigurationGroupMethods groupMethods) {
+    TestResult testResult = new TestResult();
+
     //
     // Invoke beforeGroups configurations
     //
@@ -471,15 +473,14 @@ public class Invoker implements IInvoker {
     invokeConfigurations(testClass, tm, 
       filterConfigurationMethods(tm, beforeMethods, true /* beforeMethods */),
       suite, params, parameterValues,
-      instances[instanceIndex], null /* no testResult yet */);
+      instances[instanceIndex], testResult);
     
     //
     // Create the ExtraOutput for this method
     //
-    TestResult testResult = null;
     InvokedMethod invokedMethod = null;
     try {
-      testResult= new TestResult(testClass, instances[instanceIndex],
+      testResult.init(testClass, instances[instanceIndex],
                                  tm,
                                  null,
                                  System.currentTimeMillis(),
@@ -599,6 +600,7 @@ public class Invoker implements IInvoker {
       invokeAfterGroupsConfigurations(testClass, tm, groupMethods, suite,
           params, instances[instanceIndex]);
     }
+
     return testResult;
   }
   
@@ -674,9 +676,8 @@ public class Invoker implements IInvoker {
     tm.setId(ThreadUtil.currentThreadInfo());
 
     for(int i= 0; i < instances.length; i++) {
-      results.add(
-          invokeMethod(instances, i, tm, parameterValues, suite, params,
-              testClass, beforeMethods, afterMethods, groupMethods));
+      results.add(invokeMethod(instances, i, tm, parameterValues, suite, params,
+          testClass, beforeMethods, afterMethods, groupMethods));
     }
 
     return results;
@@ -819,9 +820,8 @@ public class Invoker implements IInvoker {
       Object[] parameterValues =
           getParametersFromIndex(bag.parameterHolder.parameters, parametersIndex);
 
-      result.add(
-          invokeMethod(instances, instanceIndex, tm, parameterValues, suite, 
-              allParameters, testClass, beforeMethods, afterMethods, groupMethods));
+      result.add(invokeMethod(instances, instanceIndex, tm, parameterValues, suite, 
+          allParameters, testClass, beforeMethods, afterMethods, groupMethods));
       failureCount = handleInvocationResults(tm, result, failedInstances,
           failureCount, expectedExceptionHolder, true, true /* collect results */);
     }

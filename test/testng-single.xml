@@ -8,7 +8,7 @@
 
   <test name="Simple">
     <classes>
-      <class name="test.dataprovider.FailingIterableDataProviderTest" />
+      <class name="test.inject.InjectAfterMethodWithTestResultSampleTest" />
 <!--
       <class name="test.inject.InjectAfterMethodWithTestResultTest" />
 -->

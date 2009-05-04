@@ -1,6 +1,8 @@
 package org.testng.internal;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.testng.IClass;
 import org.testng.ITest;
@@ -27,6 +29,20 @@ public class TestResult implements ITestResult {
   private Object[] m_parameters = {};
   private Object m_instance;
 
+  public TestResult() {
+    
+  }
+
+  public TestResult(IClass testClass,
+      Object instance,
+      ITestNGMethod method,
+      Throwable throwable,
+      long start,
+      long end)
+  {
+    init(testClass, instance, method, throwable, start, end);
+  }
+
   /**
    * 
    * @param testClass
@@ -36,12 +52,12 @@ public class TestResult implements ITestResult {
    * @param start
    * @param end
    */
-  public TestResult(IClass testClass,
-                    Object instance,
-                    ITestNGMethod method,
-                    Throwable throwable,
-                    long start,
-                    long end)
+  public void init (IClass testClass,
+      Object instance,
+      ITestNGMethod method,
+      Throwable throwable,
+      long start,
+      long end)
   {
     m_testClass = testClass;
     m_throwable = throwable;
@@ -59,9 +75,9 @@ public class TestResult implements ITestResult {
     m_name = m_method.getMethod().getName();
     if (null != instance && (instance instanceof ITest)) {
       m_name += " (" + ((ITest) instance).getTestName() + ")";
-    }
+    }    
   }
-  
+
   private static void ppp(String s) {
     System.out.println("[TestResult] " + s);
   }
@@ -183,4 +199,15 @@ public class TestResult implements ITestResult {
   public Object getInstance() {
     return m_instance;
   }
+
+  private Map<String, Object> m_attributes = new HashMap<String, Object>();
+
+  public Object getAttribute(String name) {
+    return m_attributes.get(name);
+  }
+
+  public void setAttribute(String name, Object value) {
+    m_attributes.put(name, value);
+  }
+
 }

@@ -96,7 +96,7 @@
     <classes>
       <class name="test.inject.InjectTestContextTest"/>
       <class name="test.inject.InjectBeforeMethodTest"/>
-      <class name="test.inject.InjectAfterMethodWithTestResultTest" />
+      <class name="test.inject.InjectTestResultTest" />
     </classes>
   </test>
 	

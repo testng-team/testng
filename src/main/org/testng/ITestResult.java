@@ -83,5 +83,16 @@ public interface ITestResult extends Serializable {
    * The instance on which this method was run.
    */
   public Object getInstance();
-  
+
+  /**
+   * Return a context attribute
+   * @param name The name of the attribute to return
+   */
+  public Object getAttribute(String name);
+
+  /**
+   * Set a custom attribute in the current context
+   */
+  public void setAttribute(String name, Object value);
+
 }
