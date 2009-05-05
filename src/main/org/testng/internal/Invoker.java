@@ -1278,7 +1278,8 @@ public class Invoker implements IInvoker {
         Class<?>[] classes = expectedExceptionsHolder.expectedClasses;
         if (classes != null && classes.length > 0) {
           testResult.setThrowable(
-              new TestException("Expected an exception in test method " + testMethod));
+              new TestException("Method " + testMethod + " should have thrown an exception of "
+                  + expectedExceptionsHolder.expectedClasses[0]));
           status= ITestResult.FAILURE;
         }
       }
@@ -1501,6 +1502,13 @@ public class Invoker implements IInvoker {
     if (exceptionHolder == null) {
       return false;
     }
+
+    // TestException is the wrapper exception that TestNG will be throwing when an exception was
+    // expected but not thrown
+    if (ite.getClass() == TestException.class) {
+      return false;
+    }
+
     Class<?>[] exceptions = exceptionHolder.expectedClasses;
     String messageRegExp = exceptionHolder.messageRegExp;
 

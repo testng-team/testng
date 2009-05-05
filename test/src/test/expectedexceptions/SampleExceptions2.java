@@ -39,5 +39,8 @@ public class SampleExceptions2 {
   public void shouldPass3() {
     throw new NumberFormatException(null);
   }
-  
+
+  @Test(expectedExceptions = RuntimeException.class)
+  public void shouldFail4() {
+  }
 }

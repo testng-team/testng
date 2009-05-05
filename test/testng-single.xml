@@ -8,9 +8,9 @@
 
   <test name="Simple">
     <classes>
-      <class name="test.inject.InjectAfterMethodWithTestResultSampleTest" />
+      <class name="test.expectedexceptions.ExpectedExceptionsTest" />
 <!--
-      <class name="test.inject.InjectAfterMethodWithTestResultTest" />
+      <class name="test.tmp.A" />
 -->
      </classes>
   </test>

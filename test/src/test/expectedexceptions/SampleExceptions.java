@@ -26,7 +26,11 @@ public class SampleExceptions {
   @ExpectedExceptions({ NumberFormatException.class} )
   public void shouldFail2() {
   }
-  
+
+  @Test
+  @ExpectedExceptions(RuntimeException.class)
+  public void shouldFail3() {
+  }
 //  @Test(expectedExceptions = NumberFormatException.class)
 //  public void throwWrongException() {
 //      throw new NullPointerException();

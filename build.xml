@@ -158,7 +158,7 @@
 	<ant inheritall="no" antfile="test-14/build.xml" target="compile" />
 	<ant inheritall="no" antfile="test/build.xml" target="run-jdk14" />
 	<ant inheritall="no" antfile="test-14/v4/build.xml" target="compile" />
-    <ant inheritall="no" antfile="test/v4/build.xml" target="run-jdk14" />
+  <ant inheritall="no" antfile="test/v4/build.xml" target="run-jdk14" />
   </target>
 	
   <target name="test-14" depends="compile-14" description="runs javadoc-based tests with JDK1.4 distro">

@@ -10,7 +10,7 @@ public class ExpectedExceptionsTest extends BaseTest {
   public void expectedExceptionsDeprecatedSyntax() {
     runTest("test.expectedexceptions.SampleExceptions",
         new String[] { "shouldPass" },
-        new String[] { "shouldFail1", "shouldFail2" },
+        new String[] { "shouldFail1", "shouldFail2", "shouldFail3" },
         new String[] {});
   }
 
@@ -18,7 +18,7 @@ public class ExpectedExceptionsTest extends BaseTest {
   public void expectedExceptions() {
     runTest("test.expectedexceptions.SampleExceptions2",
         new String[] { "shouldPass", "shouldPass2", "shouldPass3" },
-        new String[] { "shouldFail1", "shouldFail2", "shouldFail3" },
+        new String[] { "shouldFail1", "shouldFail2", "shouldFail3", "shouldFail4" },
         new String[] {});
   }
 
