@@ -16,9 +16,17 @@ public class A {
 //    throw new RuntimeException("");
 //  }
    
-  @Test(expectedExceptions = RuntimeException.class)
+  @Test(timeOut = 2000)
   public void method3() {
-    System.out.println("In method3");
+    System.out.println("Before loop");
+    for (int j = 0; j < 1000000000; j++) {
+      for (int i = 0; i < 1000000000; i++) {
+        for (int k = 0; k < 1000000000; k++) {
+          
+        }
+      }
+    }
+    System.out.println("After loop");
   }
 
   

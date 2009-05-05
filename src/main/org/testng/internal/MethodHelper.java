@@ -768,10 +768,12 @@ public class MethodHelper {
   
     if(!finished) {
       exec.stopNow();
-      testResult.setThrowable(new ThreadTimeoutException("Method "
-                                                  + tm.getMethod()
-                                                  + " didn't finish within the time-out "
-                                                  + realTimeOut));
+      ThreadTimeoutException exception = new ThreadTimeoutException("Method "
+        + tm.getMethod()
+        + " didn't finish within the time-out "
+        + realTimeOut);
+      exception.setStackTrace(exec.getStackTraces()[0]);
+      testResult.setThrowable(exception);
       testResult.setStatus(ITestResult.FAILURE);
     }
     else {

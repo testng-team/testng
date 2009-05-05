@@ -1,11 +1,12 @@
 Current:
 
+Added: Methods that time out now display the stack trace showing where the time out occurred
 Added: ITestResult#getAttribute and ITestResult#setAttribute
 Added: @BeforeMethod and @AfterMethod methods can now be injected an ITestResult
 Added: ISuite#getAttribute and ISuite#setAttribute to share data within a suite
 Added: @Test(expectedExceptionsMessageRegExp = ".*foo.*")
 Added: @DataProvider(parallel=true)
-Fixed: expectedExceptions=RuntimeException.class was not failing when no exception was thrown
+Fixed: expectedExceptions=RuntimeException.class was not failing when no exception was throw
 Fixed: TESTNG-291: Exceptions thrown by Iterable DataProviders are not caught, no failed test reported (Roberto Tyley)
 Fixed: TESTNG-301: Need to include parameters in testNG report for test created by @Factory
 Fixed: testng-failed.xml now includes skipped tests

@@ -1,14 +1,16 @@
 package org.testng.internal.thread;
 
 
+import org.testng.internal.Utils;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
-
-import org.testng.internal.Utils;
 
 
 /**
@@ -83,17 +85,24 @@ public class ThreadUtil {
 
   public static class ThreadFactoryImpl implements IThreadFactory, ThreadFactory {
     private String m_methodName;
+    private List<Thread> m_threads = new ArrayList<Thread>();
 
     public ThreadFactoryImpl(String name) {
       m_methodName= name;
     }
 
     public Thread newThread(Runnable run) {
-      return new TestNGThread(run, m_methodName);
+      Thread result = new TestNGThread(run, m_methodName);
+      m_threads.add(result);
+      return result;
     }
 
     public Object getThreadFactory() {
       return this;
+    }
+
+    public List<Thread> getThreads() {
+      return m_threads;
     }
   }
 

@@ -1,5 +1,7 @@
 package org.testng.internal.thread;
 
+import java.util.List;
+
 /**
  * Reduced interface to mimic ThreadFactory.
  *
@@ -10,4 +12,6 @@ public interface IThreadFactory {
    Thread newThread(Runnable run);
 
    Object getThreadFactory();
+   
+   List<Thread> getThreads();
 }

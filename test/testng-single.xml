@@ -8,9 +8,9 @@
 
   <test name="Simple">
     <classes>
-      <class name="test.expectedexceptions.ExpectedExceptionsTest" />
-<!--
       <class name="test.tmp.A" />
+<!--
+      <class name="test.expectedexceptions.ExpectedExceptionsTest" />
 -->
      </classes>
   </test>

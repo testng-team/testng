@@ -1,6 +1,7 @@
 package org.testng.internal.thread;
 
 
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:the_mindstorm@evolva.ro>Alexandru Popescu</a>
  */
 public class ExecutorAdapter extends ThreadPoolExecutor implements IExecutor {
+  IThreadFactory m_threadFactory;
    public ExecutorAdapter(int threadCount, IThreadFactory tf) {
       super(threadCount,
             threadCount,
@@ -19,6 +21,7 @@ public class ExecutorAdapter extends ThreadPoolExecutor implements IExecutor {
             TimeUnit.MILLISECONDS,
             new LinkedBlockingQueue<Runnable>(),
             (ThreadFactory) tf.getThreadFactory());
+      m_threadFactory = tf;
    }
 
    public IFutureResult submitRunnable(final Runnable runnable) {
@@ -41,4 +44,14 @@ public class ExecutorAdapter extends ThreadPoolExecutor implements IExecutor {
      
      return result;
    }
+
+  public StackTraceElement[][] getStackTraces() {
+    List<Thread> threads = m_threadFactory.getThreads();
+    int threadCount = threads.size();
+    StackTraceElement[][] result = new StackTraceElement[threadCount][];
+    for (int i = 0; i < result.length; i++) {
+      result[i] = threads.get(i).getStackTrace();
+    }
+    return result;
+  }
 }
