@@ -26,7 +26,7 @@ public class SampleExceptions2 {
   @Test(expectedExceptions = NumberFormatException.class,
       expectedExceptionsMessageRegExp = ".*bomb.*")
   public void shouldPass2() {
-    throw new NumberFormatException("This should bomb for good");
+    throw new NumberFormatException("This should not bomb at all");
   }
 
   @Test(expectedExceptions = NumberFormatException.class,
