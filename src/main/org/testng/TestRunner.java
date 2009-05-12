@@ -1,17 +1,6 @@
 package org.testng;
 
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
-
 import org.testng.internal.ClassHelper;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.Constants;
@@ -39,6 +28,17 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * This class takes care of running one Test.
@@ -1200,5 +1200,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
 
   public void setMethodInterceptor(IMethodInterceptor methodInterceptor) {
     m_methodInterceptor = methodInterceptor;
+  }
+
+  public XmlTest getCurrentXmlTest() {
+    return m_xmlTest;
   }
 } // TestRunner

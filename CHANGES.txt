@@ -1,8 +1,9 @@
 Current:
 
+Added: @Before and @After methods can be injected with the current XmlTest
 Added: Methods that time out now display the stack trace showing where the time out occurred
 Added: ITestResult#getAttribute and ITestResult#setAttribute
-Added: @After methods can now be injected an ITestResult
+Added: @After methods can now be injected with an ITestResult
 Added: @BeforeMethod and @AfterMethod methods can now be injected an ITestResult
 Added: ISuite#getAttribute and ISuite#setAttribute to share data within a suite
 Added: @Test(expectedExceptionsMessageRegExp = ".*foo.*")

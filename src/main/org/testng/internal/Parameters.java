@@ -13,6 +13,7 @@ import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -106,6 +107,9 @@ public class Parameters {
         else if (ITestContext.class.equals(parameterTypes[i])) {
           vResult.add(params.context);
         }
+        else if (XmlTest.class.equals(parameterTypes[i])) {
+          vResult.add(params.context.getCurrentXmlTest());
+        }
         else if (ITestResult.class.equals(parameterTypes[i])) {
           vResult.add(params.testResult);
         }
@@ -154,6 +158,7 @@ public class Parameters {
       Class type = parameterTypes[i];
       if(!ITestContext.class.equals(type)
           && !ITestResult.class.equals(type)
+          && !XmlTest.class.equals(type)
           && !Method.class.equals(type)
           && !Object[].class.equals(type)) {
         throw new TestNGException( "Method " + methodName + " requires " 

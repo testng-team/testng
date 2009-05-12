@@ -8,8 +8,9 @@
 
   <test name="Simple">
     <classes>
-      <class name="test.tmp.A" />
+      <class name="test.inject.InjectTestContextTest" />
 <!--
+      <class name="test.tmp.A" />
       <class name="test.expectedexceptions.ExpectedExceptionsTest" />
 -->
      </classes>

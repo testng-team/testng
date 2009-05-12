@@ -1,5 +1,7 @@
 package org.testng;
 
+import org.testng.xml.XmlTest;
+
 import java.util.Collection;
 import java.util.Date;
 
@@ -108,4 +110,9 @@ public interface ITestContext extends IAttributes {
    * @return
    */
   public IResultMap getFailedConfigurations();
+
+  /**
+   * @return the current XmlTest.
+   */
+  public XmlTest getCurrentXmlTest();
 }
