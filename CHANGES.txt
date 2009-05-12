@@ -16,6 +16,7 @@ Fixed: TestNG couldn't find Groovy files (Haw-Bin)
 
 Eclipse
 
+Fixed: TESTNG-313: Provide extension point to contribute test and report listeners (Erik Putrycz)
 Fixed: Quick fixes no longer introduce deprecated annotations (Greg Turnquist)
 
 ===========================================================================
