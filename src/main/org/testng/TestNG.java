@@ -162,6 +162,10 @@ public class TestNG {
     = new ArrayList<IInvokedMethodListener>();
 
   private Integer m_dataProviderThreadCount = null;
+
+  private String m_jarPath;
+
+  private List<String> m_stringSuites = new ArrayList<String>();
   
   /**
    * Default constructor. Setting also usage of default listeners/reporters.
@@ -315,12 +319,55 @@ public class TestNG {
    * @param jarPath
    */
   public void setTestJar(String jarPath) {
-    if ((null == jarPath) || "".equals(jarPath)) {
-      return;
+    m_jarPath = jarPath;
+  }
+  
+  public void initializeSuitesAndJarFile() {
+    //
+    // Parse the suites that were passed on the command line
+    //
+    for (String suiteXmlPath : m_stringSuites) {
+      if(LOGGER.isDebugEnabled()) {
+        LOGGER.debug("suiteXmlPath: \"" + suiteXmlPath + "\"");
+      }
+      try {
+        Collection<XmlSuite> allSuites = new Parser(suiteXmlPath).parse();
+        for (XmlSuite s : allSuites) {
+          m_suites.add(s);
+        }
+      }
+      catch(FileNotFoundException e) {
+        e.printStackTrace(System.out);
+      }
+      catch(IOException e) {
+        e.printStackTrace(System.out);
+      }
+      catch(ParserConfigurationException e) {
+        e.printStackTrace(System.out);
+      }
+      catch(SAXException e) {
+        e.printStackTrace(System.out);
+      }
     }
 
-    File jarFile = new File(jarPath);
+    //
+    // jar path
+    //
+    // If suites were passed on the command line, they take precedence over the suite file
+    // inside that jar path
+    if (m_jarPath != null && m_stringSuites.size() > 0) {
+      StringBuilder suites = new StringBuilder();
+      for (String s : m_stringSuites) {
+        suites.append(s);
+      }
+      Utils.log("TestNG", 2, "Ignoring the XML file inside " + m_jarPath + " and using "
+          + suites + " instead");
+      return;
+    }
+    if ((null == m_jarPath) || "".equals(m_jarPath)) return;
 
+    // We have a jar file and no XML file was specified: try to find an XML file inside the jar
+    File jarFile = new File(m_jarPath);
 
     try {
       URL jarfileUrl = jarFile.getCanonicalFile().toURI().toURL();
@@ -505,29 +552,7 @@ public class TestNG {
    * </pre>
    */
   public void setTestSuites(List<String> suites) {
-    for (String suiteXmlPath : suites) {
-      if(LOGGER.isDebugEnabled()) {
-        LOGGER.debug("suiteXmlPath: \"" + suiteXmlPath + "\"");
-      }
-      try {
-        Collection<XmlSuite> allSuites = new Parser(suiteXmlPath).parse();
-        for (XmlSuite s : allSuites) {
-          m_suites.add(s);
-        }
-      }
-      catch(FileNotFoundException e) {
-        e.printStackTrace(System.out);
-      }
-      catch(IOException e) {
-        e.printStackTrace(System.out);
-      }
-      catch(ParserConfigurationException e) {
-        e.printStackTrace(System.out);
-      }
-      catch(SAXException e) {
-        e.printStackTrace(System.out);
-      }
-    }
+    m_stringSuites = suites;
   }
 
   /**
@@ -736,6 +761,7 @@ public class TestNG {
    * Run TestNG.
    */
   public void run() {
+    initializeSuitesAndJarFile();
     initializeListeners();
     initializeCommandLineSuites();
     initializeCommandLineSuitesParams();
