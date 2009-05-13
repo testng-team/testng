@@ -1,0 +1,13 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+  
+<suite name="JarTestSuite" verbose="0">
+
+
+  <test name="JarTest">
+    <classes>
+      <class name="test.jar.A" />
+      <class name="test.jar.B" />
+    </classes>
+  </test>
+</suite>
+
