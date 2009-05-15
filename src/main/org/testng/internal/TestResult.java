@@ -74,7 +74,7 @@ public class TestResult implements ITestResult {
     m_instance = instance;
     m_name = m_method.getMethod().getName();
     if (null != instance && (instance instanceof ITest)) {
-      m_name += " (" + ((ITest) instance).getTestName() + ")";
+      m_name += " [\"" + ((ITest) instance).getTestName() + "\"]";
     }    
   }
 

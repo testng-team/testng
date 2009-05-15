@@ -1,61 +1,60 @@
 package test.tmp;
 
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
+import org.testng.IInvokedMethod;
+import org.testng.IInvokedMethodListener;
+import org.testng.ITest;
+import org.testng.ITestResult;
+import org.testng.TestNG;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class A {
-  private List mList;
+public class A implements ITest {
   
-  public boolean putIfAbsent(List l, Object o) {
-    boolean absent = true;
-    synchronized(l) {
-      absent = ! l.contains(o);
-      if (absent) {
-        l.add(o);
-      }
-    }
-    return absent;
-  }
-  
-//  @Test(expectedExceptions = RuntimeException.class)
-//  public void method1() {
-//    System.out.println("In method1");
-//    throw new Error("");
-//  }
-//   
-//  @Test(expectedExceptions = RuntimeException.class)
-//  public void method2() {
-//    System.out.println("In method2");
-//    throw new RuntimeException("");
-//  }
-
-  @BeforeMethod
-  public void init() {
-    mList = new ArrayList();
+  @DataProvider
+  public Object[][] dp() {
+    return new Object[][] {
+        new Object[] { "a" },
+        new Object[] { "b" },
+    };
   }
 
-  @Test(invocationCount = 100, threadPoolSize = 5)
-  public void method3() {
-    Integer n = new Integer(42);
-    Assert.assertEquals(mList.size(), 0);
-    boolean absent = putIfAbsent(mList, n);
-    Assert.assertTrue(absent);
-    Assert.assertEquals(mList.size(), 1);
-    boolean absent2 = putIfAbsent(mList, n);
-    Assert.assertFalse(absent2);
-    Assert.assertEquals(mList.size(), 1);
+  @Test(dataProvider = "dp")
+  public void f(String s) {
   }
 
+  @AfterClass
+  public void afterClass() {
+    p("After class");
+  }
   
   public void p(String s) {
     System.out.println(Thread.currentThread().getId() + " " + s);
   }
   
+  public static void main(String[] args) {
+    TestNG tng = new TestNG();
+    IInvokedMethodListener l = new IInvokedMethodListener() {
+
+      public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
+        System.out.println("Done invoking " + method);
+      }
+
+      public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
+        System.out.println("About to invoke " + method
+            + "\n annotation:" + method.getTestMethod().getMethod().getAnnotations()[0]);
+      }
+      
+    };
+    tng.addListener(l);
+    tng.setTestClasses(new Class[] { A.class });
+    tng.run();
+  }
 //  public String toString() {
 //    return "[A: msg:" + msg + "]";
 //  }
+
+  public String getTestName() {
+    return "Placeholder";
+  }
 }
