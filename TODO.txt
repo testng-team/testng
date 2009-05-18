@@ -1,5 +1,7 @@
                                        TODO for TestNG
 
+* Pass the XmlTest in @Before/@After methods
+* Allow a testng.xml file to be passed when -testjar is used
 * Add onStart to IConfigurationListener (create a new interface, actually)
 * Add timeout to @Before/@After
 * Pass parameters from ant

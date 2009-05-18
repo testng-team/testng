@@ -10,6 +10,7 @@ Added: @BeforeMethod and @AfterMethod methods can now be injected an ITestResult
 Added: ISuite#getAttribute and ISuite#setAttribute to share data within a suite
 Added: @Test(expectedExceptionsMessageRegExp = ".*foo.*")
 Added: @DataProvider(parallel=true)
+Fixed: TESTNG-317: Sequence order mis-calculation: testing using suite in sequence for classes and same method names creates non-sequential order
 Fixed: Test names (classes that implement org.testng.ITest) now appear more prominently in the HTML reports
 Fixed: expectedExceptions=RuntimeException.class was not failing when no exception was throw
 Fixed: TESTNG-291: Exceptions thrown by Iterable DataProviders are not caught, no failed test reported (Roberto Tyley)

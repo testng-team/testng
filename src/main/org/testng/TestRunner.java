@@ -870,7 +870,16 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       }
       // Is there a method that depends on the current method?
       else if (containsString(methodsDependedUpon, thisMethodName)) {
-        sequentialList.add(0, tm);
+        int index = 0;
+        for (int j = 0; j < sequentialList.size(); j++) {
+          ITestNGMethod m = sequentialList.get(j);
+          if (arrayContains(m.getMethodsDependedUpon(), thisMethodName)) {
+            index = j;
+            break;
+          }
+        }
+        // Insert the dependee as close to its dependent as possible (TESTNG-317)
+        sequentialList.add(index, tm);
       }
       else if (currentGroups.length > 0) {
         boolean isSequential= false;
@@ -900,6 +909,13 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     }
     
     sl.addAll(sequentialAttributeList.values());
+  }
+
+  private boolean arrayContains(String[] array, String element) {
+    for (String a : array) {
+      if (element.equals(a)) return true;
+    }
+    return false;
   }
 
   /**
