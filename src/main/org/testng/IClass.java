@@ -14,6 +14,11 @@ public interface IClass extends Serializable {
    * corresponding Java class.
    */
   String getName();
+  
+  /**
+   * If this class implements ITest, returns its test name, otherwise returns null.
+   */
+  String getTestName();
 
   /**
    * @return the Java class corresponding to this IClass.

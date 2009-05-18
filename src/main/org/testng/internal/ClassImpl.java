@@ -1,13 +1,14 @@
 package org.testng.internal;
 
+import org.testng.IClass;
+import org.testng.IObjectFactory;
+import org.testng.ITest;
+import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.xml.XmlTest;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.testng.IClass;
-import org.testng.IObjectFactory;
-import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.xml.XmlTest;
 
 /**
  * Implementation of an IClass.
@@ -25,6 +26,7 @@ public class ClassImpl implements IClass {
   private long[] m_instanceHashCodes;
   private Object m_instance;
   private IObjectFactory m_objectFactory;
+  private String m_testName = null;
 
   public ClassImpl(Class cls, Object instance, Map<Class, IClass> classes,
       XmlTest xmlTest, IAnnotationFinder annotationFinder, IObjectFactory objectFactory) 
@@ -35,12 +37,19 @@ public class ClassImpl implements IClass {
     m_annotationFinder = annotationFinder;
     m_instance = instance;
     m_objectFactory = objectFactory;
+    if (instance instanceof ITest) {
+      m_testName = ((ITest) instance).getTestName();
+    }
   }
   
   private static void ppp(String s) {
     System.out.println("[ClassImpl] " + s);
   }
-  
+
+  public String getTestName() {
+    return m_testName;
+  }
+
   public String getName() {
     return m_class.getName();
   }

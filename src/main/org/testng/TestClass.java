@@ -90,15 +90,17 @@ public class TestClass extends NoOpTestClass implements ITestClass {
     //
     // TestClasses and instances
     //
-   Object[] instances = getInstances(false);
+    Object[] instances = getInstances(false);
     for (Object instance : instances) {
       Class cls = instance.getClass();
+      if (instance instanceof ITest) {
+        m_testName = ((ITest) instance).getTestName();
+      }
       if (null == m_testClasses.get(cls)) {
         m_testClasses.put(cls, cls);
         m_instanceMap.put(cls, instances);
       }
     }
-    
   }
     
   public Object[] getInstances(boolean create) {

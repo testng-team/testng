@@ -19,8 +19,16 @@ public class A implements ITest {
     };
   }
 
-  @Test(dataProvider = "dp")
+  @Test(dataProvider = "dp", description = "Description for f")
   public void f(String s) {
+  }
+
+  @Test(dataProvider = "dp")
+  public void g(String s) {
+  }
+
+  @Test
+  public void h() {
   }
 
   @AfterClass
@@ -55,6 +63,6 @@ public class A implements ITest {
 //  }
 
   public String getTestName() {
-    return "Placeholder";
+    return "Test name";
   }
 }

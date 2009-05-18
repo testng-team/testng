@@ -1,5 +1,6 @@
 Current:
 
+Added: Better display of the test name and method description in the default and Emailable report
 Added: If both -testjar and an XML file are provided on the command line, the latter will be used
 Added: @Before and @After methods can be injected with the current XmlTest
 Added: Methods that time out now display the stack trace showing where the time out occurred

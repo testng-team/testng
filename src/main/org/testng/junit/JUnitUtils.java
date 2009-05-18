@@ -558,6 +558,10 @@ public class JUnitUtils {
     public Class getRealClass() {
       return m_realClass;
     }
+
+    public String getTestName() {
+      return null;
+    }
   }
 
 

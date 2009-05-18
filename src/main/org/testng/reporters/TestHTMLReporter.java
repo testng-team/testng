@@ -83,16 +83,22 @@ public class TestHTMLReporter extends TestListenerAdapter {
       sb.append("<td title='").append(tr.getTestClass().getName()).append(".")
         .append(tr.getName())
         .append("()'>")
-        .append(tr.getName());
+        .append("<b>").append(tr.getName()).append("</b>");
+      
+      // Test name
+      String testName = method.getTestClass().getTestName();
+      if (testName != null) {
+        sb.append("<br>").append("Test class:" + testName);
+      }
       
       // Method description
       if (! Utils.isStringEmpty(method.getDescription())) {
-        sb.append("<br/><b>").append(method.getDescription()).append("</b>");
+        sb.append("<br>").append("Test method:").append(method.getDescription());
       }
       
       Object[] parameters = tr.getParameters();
       if (parameters != null && parameters.length > 0) {
-        sb.append("<br/><b>Parameters:</b> ");
+        sb.append("<br>Parameters: ");
         for (int j = 0; j < parameters.length; j++) {
           if (j > 0) sb.append(", ");
           sb.append(parameters[j] == null ? "null" : parameters[j].toString());

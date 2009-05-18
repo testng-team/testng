@@ -1,5 +1,19 @@
 package org.testng.reporters;
 
+import org.testng.IReporter;
+import org.testng.IResultMap;
+import org.testng.ISuite;
+import org.testng.ISuiteResult;
+import org.testng.ITest;
+import org.testng.ITestClass;
+import org.testng.ITestContext;
+import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
+import org.testng.Reporter;
+import org.testng.log4testng.Logger;
+import org.testng.reporters.util.StackTraceTools;
+import org.testng.xml.XmlSuite;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -13,18 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
-import org.testng.IReporter;
-import org.testng.IResultMap;
-import org.testng.ISuite;
-import org.testng.ISuiteResult;
-import org.testng.ITestContext;
-import org.testng.ITestNGMethod;
-import org.testng.ITestResult;
-import org.testng.Reporter;
-import org.testng.log4testng.Logger;
-import org.testng.reporters.util.StackTraceTools;
-import org.testng.xml.XmlSuite;
 
 /**
  * Reported designed to render self-contained HTML top down view of a testing
@@ -82,12 +84,13 @@ public class EmailableReporter implements IReporter {
       }
       Map<String, ISuiteResult> r = suite.getResults();
       for (ISuiteResult r2 : r.values()) {
-        ITestContext test = r2.getTestContext();
-        resultSummary(test.getFailedConfigurations(), test.getName(), "failed", " (configuration methods)");
-        resultSummary(test.getFailedTests(), test.getName(), "failed", "");
-        resultSummary(test.getSkippedConfigurations(), test.getName(), "skipped", " (configuration methods)");
-        resultSummary(test.getSkippedTests(), test.getName(), "skipped", "");
-        resultSummary(test.getPassedTests(), test.getName(), "passed", "");
+        ITestContext testContext = r2.getTestContext();
+        String testName = testContext.getName();
+        resultSummary(testContext.getFailedConfigurations(), testName, "failed", " (configuration methods)");
+        resultSummary(testContext.getFailedTests(), testName, "failed", "");
+        resultSummary(testContext.getSkippedConfigurations(), testName, "skipped", " (configuration methods)");
+        resultSummary(testContext.getSkippedTests(), testName, "skipped", "");
+        resultSummary(testContext.getPassedTests(), testName, "passed", "");
       }
     }
     m_out.println("</table>");
@@ -99,14 +102,15 @@ public class EmailableReporter implements IReporter {
     for (ISuite suite : suites) {
       Map<String, ISuiteResult> r = suite.getResults();
       for (ISuiteResult r2 : r.values()) {
+        ITestContext testContext = r2.getTestContext();
         if (r.values().size() > 0) {
-          m_out.println("<h1>" + r2.getTestContext().getName() + "</h1>");
+          m_out.println("<h1>" + testContext.getName() + "</h1>");
         }
-        resultDetail(r2.getTestContext().getFailedConfigurations(), "failed");
-        resultDetail(r2.getTestContext().getFailedTests(), "failed");
-        resultDetail(r2.getTestContext().getSkippedConfigurations(), "skipped");
-        resultDetail(r2.getTestContext().getSkippedTests(), "skipped");
-        resultDetail(r2.getTestContext().getPassedTests(), "passed");
+        resultDetail(testContext.getFailedConfigurations(), "failed");
+        resultDetail(testContext.getFailedTests(), "failed");
+        resultDetail(testContext.getSkippedConfigurations(), "skipped");
+        resultDetail(testContext.getSkippedTests(), "skipped");
+        resultDetail(testContext.getPassedTests(), "passed");
       }
     }
   }
@@ -117,36 +121,39 @@ public class EmailableReporter implements IReporter {
   private void resultSummary(IResultMap tests, String testname, String style, String details) {
     if (tests.getAllResults().size() > 0) {
       StringBuffer buff = new StringBuffer();
-      String lastc = "";
+      String lastClassName = "";
+      String lastTestName = "";
       int mq = 0;
       int cq = 0;
       for (ITestNGMethod method : getMethodSet(tests)) {
         m_row += 1;
         m_methodIndex += 1;
-        String cname = method.getTestClass().getName();
+        ITestClass testClass = method.getTestClass();
+        String className = testClass.getName();
         if (mq == 0) {
           titleRow(testname + " &#8212; " + style + details, 4);
         }
-        if (!cname.equalsIgnoreCase(lastc)) {
+        if (!className.equalsIgnoreCase(lastClassName)) {
           if (mq > 0) {
             cq += 1;
             m_out.println("<tr class=\"" + style
                 + (cq % 2 == 0 ? "even" : "odd") + "\">" + "<td rowspan=\""
-                + mq + "\">" + lastc + buff);
+                + mq + "\">" + lastClassName + buff);
           }
           mq = 0;
           buff.setLength(0);
-          lastc = cname;
+          lastClassName = className;
+          lastTestName = testClass.getTestName();
         }
-        Set<ITestResult> result_set = tests.getResults(method);
+        Set<ITestResult> resultSet = tests.getResults(method);
         long end = Long.MIN_VALUE;
         long start = Long.MAX_VALUE;
-        for (ITestResult ans : tests.getResults(method)) {
-          if (ans.getEndMillis() > end) {
-            end = ans.getEndMillis();
+        for (ITestResult testResult : tests.getResults(method)) {
+          if (testResult.getEndMillis() > end) {
+            end = testResult.getEndMillis();
           }
-          if (ans.getStartMillis() < start) {
-            start = ans.getStartMillis();
+          if (testResult.getStartMillis() < start) {
+            start = testResult.getStartMillis();
           }
         }
         mq += 1;
@@ -154,15 +161,21 @@ public class EmailableReporter implements IReporter {
           buff.append("<tr class=\"" + style + (cq % 2 == 0 ? "odd" : "even")
               + "\">");
         }
+        String description = method.getDescription();
         buff.append("<td><a href=\"#m" + m_methodIndex + "\">"
-            + qualifiedName(method) + "</a></td>" + "<td class=\"numi\">"
-            + result_set.size() + "</td><td class=\"numi\">" + (end - start)
+            + qualifiedName(method)
+            + " " + (description != null && description.length() > 0
+                ? "(\"" + description + "\")" 
+                : "")
+            + "</a></td>" + "<td class=\"numi\">"
+            + resultSet.size() + "</td><td class=\"numi\">" + (end - start)
             + "</td></tr>");
       }
       if (mq > 0) {
         cq += 1;
         m_out.println("<tr class=\"" + style + (cq % 2 == 0 ? "even" : "odd")
-            + "\">" + "<td rowspan=\"" + mq + "\">" + lastc + buff);
+            + "\">" + "<td rowspan=\"" + mq + "\">" + lastClassName
+            + "<br>\"" + lastTestName + "\"" + buff);
       }
     }
   }

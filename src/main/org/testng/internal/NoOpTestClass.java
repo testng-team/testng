@@ -164,4 +164,9 @@ public class NoOpTestClass implements ITestClass {
   public void setTestClass(Class< ? > declaringClass) {
     m_testClass = declaringClass;
   }
+
+  public String getTestName() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }
