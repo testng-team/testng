@@ -68,7 +68,7 @@ public final class XMLUtils {
       for (Iterator it = attributes.entrySet().iterator(); it.hasNext(); ) {
         Entry entry = (Entry) it.next();
         String key = entry.getKey().toString();
-        String value = entry.getValue().toString();
+        String value = escape(entry.getValue().toString());
         result.append(" ").append(key).append("=\"").append(value).append("\"");
       }
     }
