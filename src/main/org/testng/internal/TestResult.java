@@ -207,7 +207,6 @@ public class TestResult implements ITestResult {
     m_attributes.put(name, value);
   }
 
-  @Override
   public int compareTo(ITestResult comparison) {
 	  if( getStartMillis() > comparison.getStartMillis() ) {
 		  return 1;
