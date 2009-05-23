@@ -1,13 +1,20 @@
 package org.testng.reporters;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
 import org.testng.IResultMap;
 import org.testng.ISuiteResult;
 import org.testng.ITestResult;
 import org.testng.internal.Utils;
-
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * Utility writing an ISuiteResult to an XMLStringBuffer. Depending on the settings in the <code>config</code> property
@@ -95,7 +102,9 @@ public class XMLSuiteResultWriter {
       }
 
       xmlBuffer.push(XMLReporterConfig.TAG_CLASS, attributes);
-      for (ITestResult testResult : result.getValue()) {
+      List<ITestResult> sortedResults = result.getValue();
+      Collections.sort( sortedResults );
+      for (ITestResult testResult : sortedResults) {
         addTestResult(xmlBuffer, testResult);
       }
       xmlBuffer.pop();

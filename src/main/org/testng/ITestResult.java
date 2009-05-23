@@ -9,7 +9,7 @@ package org.testng;
  * @version $Revision$, $Date$
  * 
  */
-public interface ITestResult extends IAttributes {
+public interface ITestResult extends IAttributes, Comparable<ITestResult> {
   
   //
   // Test status
