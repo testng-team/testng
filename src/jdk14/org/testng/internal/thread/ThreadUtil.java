@@ -1,6 +1,7 @@
 package org.testng.internal.thread;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.testng.internal.Utils;
@@ -111,17 +112,24 @@ public class ThreadUtil {
   public static class ThreadFactoryImpl implements IThreadFactory,
     edu.emory.mathcs.backport.java.util.concurrent.ThreadFactory {
     private String m_methodName;
+    private List m_threads = new ArrayList();
 
     public ThreadFactoryImpl(String name) {
       m_methodName= name;
     }
 
     public Thread newThread(Runnable run) {
-      return new TestNGThread(run, m_methodName);
+      Thread result = new TestNGThread(run, m_methodName);
+      m_threads.add(result);
+      return result;
     }
 
     public Object getThreadFactory() {
       return this;
+    }
+
+    public List<Thread> getThreads() {
+      return m_threads;
     }
   }
 

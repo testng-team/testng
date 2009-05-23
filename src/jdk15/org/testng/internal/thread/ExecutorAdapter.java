@@ -13,8 +13,9 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:the_mindstorm@evolva.ro>Alexandru Popescu</a>
  */
 public class ExecutorAdapter extends ThreadPoolExecutor implements IExecutor {
-  IThreadFactory m_threadFactory;
-   public ExecutorAdapter(int threadCount, IThreadFactory tf) {
+  private IThreadFactory m_threadFactory;
+
+  public ExecutorAdapter(int threadCount, IThreadFactory tf) {
       super(threadCount,
             threadCount,
             0L,
