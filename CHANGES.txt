@@ -1,5 +1,6 @@
 Current:
 
+Added: The output in the testng-results.xml is now sorted by the starting timestamp (Daniel Rudman)
 Added: Better display of the test name and method description in the default and Emailable report
 Added: If both -testjar and an XML file are provided on the command line, the latter will be used
 Added: @Before and @After methods can be injected with the current XmlTest
@@ -10,6 +11,7 @@ Added: @BeforeMethod and @AfterMethod methods can now be injected an ITestResult
 Added: ISuite#getAttribute and ISuite#setAttribute to share data within a suite
 Added: @Test(expectedExceptionsMessageRegExp = ".*foo.*")
 Added: @DataProvider(parallel=true)
+Fixed: XMLUtils was not escaping XML attribute values
 Fixed: TESTNG-317: Sequence order mis-calculation: testing using suite in sequence for classes and same method names creates non-sequential order
 Fixed: Test names (classes that implement org.testng.ITest) now appear more prominently in the HTML reports
 Fixed: expectedExceptions=RuntimeException.class was not failing when no exception was throw
