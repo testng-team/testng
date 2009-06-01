@@ -47,7 +47,7 @@ Cedric Beust & Alexandru Popescu
                 use JDK5 annotations.
 @attr  time-out     The time to wait in milliseconds before aborting the
                 method (if parallel="methods") or the test (parallel="tests")
-@attr  skipfailedinvocationCounts Whether to skip failed invocations.
+@attr  skipfailedinvocationcounts Whether to skip failed invocations.
 @attr  data-provider-thread-count An integer givin the size of the thread pool to use
        for parallel data providers.
 @attr  object-factory A class that implements IObjectFactory that will be used to
@@ -61,7 +61,7 @@ Cedric Beust & Alexandru Popescu
     thread-count CDATA "5"
     annotations CDATA #IMPLIED
     time-out CDATA #IMPLIED
-    skipfailedinvocationCounts (true | false) "false"
+    skipfailedinvocationcounts (true | false) "false"
     data-provider-thread-count CDATA "10"
     object-factory CDATA #IMPLIED
 >
@@ -122,7 +122,7 @@ A test contains parameters and classes.  Additionally, you can define additional
 @attr  time-out     the time to wait in milliseconds before aborting
                 the method (if parallel="methods") or the test (if parallel="tests")
 @attr  enabled      flag to enable/disable current test. Default value: true 
-@attr  skipfailedinvocationCounts Whether to skip failed invocations.
+@attr  skipfailedinvocationcounts Whether to skip failed invocations.
 -->
 <!ATTLIST test
     name CDATA #REQUIRED 
@@ -133,7 +133,7 @@ A test contains parameters and classes.  Additionally, you can define additional
     annotations  CDATA #IMPLIED
     time-out CDATA #IMPLIED
     enabled CDATA #IMPLIED
-    skipfailedinvocationCounts (true | false) "false"
+    skipfailedinvocationcounts (true | false) "false"
 >
 
 <!--
