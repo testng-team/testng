@@ -123,6 +123,10 @@ public class TestNGContentHandler extends DefaultHandler {
       if (null != verbose) {
         m_currentSuite.setVerbose(new Integer(verbose));
       }
+      String jUnit = attributes.getValue("junit");
+      if (null != jUnit) {
+        m_currentSuite.setJUnit( Boolean.valueOf(jUnit).booleanValue());
+      }
       String parallel = attributes.getValue("parallel");
       if (null != parallel) {
         if(XmlSuite.PARALLEL_METHODS.equals(parallel)

@@ -11,6 +11,7 @@ Added: @BeforeMethod and @AfterMethod methods can now be injected an ITestResult
 Added: ISuite#getAttribute and ISuite#setAttribute to share data within a suite
 Added: @Test(expectedExceptionsMessageRegExp = ".*foo.*")
 Added: @DataProvider(parallel=true)
+Fixed: Various oversights in the DTD (Will McQueen)
 Fixed: XMLUtils was not escaping XML attribute values
 Fixed: TESTNG-317: Sequence order mis-calculation: testing using suite in sequence for classes and same method names creates non-sequential order
 Fixed: Test names (classes that implement org.testng.ITest) now appear more prominently in the HTML reports
