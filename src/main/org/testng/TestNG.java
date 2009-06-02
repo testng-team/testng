@@ -1141,7 +1141,7 @@ public class TestNG {
     String excludedGroups = (String) params.get(TestNGCommandLineArgs.EXCLUDED_GROUPS_COMMAND_OPT);
     
     if (testJar == null &&
-        (null != groups || null != excludedGroups) && null == testClasses) {
+        (null != groups || null != excludedGroups) && testClasses == null && testNgXml == null) {
       throw new TestNGException("Groups option should be used with testclass option");
     }
     
