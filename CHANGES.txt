@@ -11,6 +11,7 @@ Added: @BeforeMethod and @AfterMethod methods can now be injected an ITestResult
 Added: ISuite#getAttribute and ISuite#setAttribute to share data within a suite
 Added: @Test(expectedExceptionsMessageRegExp = ".*foo.*")
 Added: @DataProvider(parallel=true)
+Fixed: Dependent methods are now run closer to methods within their class
 Fixed: xmlFileSet in ant was not working correctly (Sean Shou)
 Fixed: Various oversights in the DTD (Will McQueen)
 Fixed: XMLUtils was not escaping XML attribute values

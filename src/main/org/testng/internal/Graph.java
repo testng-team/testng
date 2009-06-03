@@ -4,6 +4,7 @@ import org.testng.TestNGException;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -126,6 +127,12 @@ public class Graph<T extends Object> {
         ppp("SKIPPING INDEPENDENT NODE " + n);
       }
     }
+    
+    //
+    // Sort the nodes alphabetically to make sure that methods of the same class
+    // get run close to each other as much as possible
+    //
+    Collections.sort(nodes2);
     
     //
     // Sort
@@ -251,7 +258,7 @@ public class Graph<T extends Object> {
   /////
   // class Node
   //
-  public static class Node<T> {
+  public static class Node<T> implements Comparable<Node<T>> {
     private T m_object = null;
     private Map<T, T> m_predecessors = new HashMap<T, T>();
     
@@ -334,6 +341,10 @@ public class Graph<T extends Object> {
     
     public boolean hasPredecessor(T m) {
       return m_predecessors.containsKey(m);
+    }
+
+    public int compareTo(Node<T> o) {
+      return getObject().toString().compareTo(o.getObject().toString());
     }
   } 
   

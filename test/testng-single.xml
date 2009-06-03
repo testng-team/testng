@@ -8,7 +8,9 @@
 
   <test name="Simple">
     <classes>
-      <class name="test.tmp.A" />
+      <class name="test.dependsongroup.ZeroTest" />
+      <class name="test.dependsongroup.FirstTest" />
+      <class name="test.dependsongroup.SecondTest" />
 <!--
       <class name="test.jar.JarTest" />
       <class name="test.expectedexceptions.ExpectedExceptionsTest" />

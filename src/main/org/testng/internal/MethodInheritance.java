@@ -59,7 +59,7 @@ public class MethodInheritance {
     Map<Class, List<ITestNGMethod>> map = new HashMap<Class, List<ITestNGMethod>>();
     
     //
-    // First, make sure that none of these methods define a dependencey of its own
+    // First, make sure that none of these methods define a dependency of its own
     //
     for (ITestNGMethod m : methods) {
       String[] mdu = m.getMethodsDependedUpon();
