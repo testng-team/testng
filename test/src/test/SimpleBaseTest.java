@@ -15,4 +15,10 @@ public class SimpleBaseTest {
     result.setTestClasses(new Class[] { testClass});
     return result;
   }
+
+  protected TestNG create(Class[] testClasses) {
+    TestNG result = create();
+    result.setTestClasses(testClasses);
+    return result;
+  }
 }

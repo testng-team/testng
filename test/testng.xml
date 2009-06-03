@@ -151,6 +151,7 @@
       <class name="test.dependent.DepBugSampleTest" />
       <class name="test.dependent.DepBugVerifyTest" />
       <class name="test.dependent.DependsOnProtectedMethodTest" />
+      <class name="test.dependsongroup.DependsOnGroupsTest" />
     </classes>      
   </test>
   
