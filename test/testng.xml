@@ -239,6 +239,7 @@
       <class name="test.factory.TestClassAnnotationTest" />
       
       <class name="test.factory.FactoryWithDataProviderTest" />
+      <class name="test.factory.FactoryOrderMainTest" />
     </classes>
   </test>
 

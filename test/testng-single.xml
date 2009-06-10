@@ -1,14 +1,13 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="SingleSuite" verbose="2" parallel="false" thread-count="2"
+<suite name="SingleSuite" verbose="1" parallel="false" thread-count="2"
     data-provider-thread-count="3">
 
-  <parameter name="first-name" value="Cedric" />
-
+  <parameter name="factory-param" value="FactoryParam" />
 
   <test name="Simple">
     <classes>
-      <class name="test.dependsongroup.DependsOnGroupsTest" />
+      <class name="test.factory.FactoryOrderMainTest" />
 <!--
       <class name="test.jar.JarTest" />
       <class name="test.expectedexceptions.ExpectedExceptionsTest" />

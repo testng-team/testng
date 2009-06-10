@@ -31,18 +31,18 @@ public class MethodInstance implements IMethodInstance {
     public int compare(IMethodInstance o1, IMethodInstance o2) {
       int result= o1.getMethod().getTestClass().getName()
         .compareTo(o2.getMethod().getTestClass().getName());
-      if(result == 0) {
-        // if they have a single instance try to use it while performing the order 
-        Object[] i1= o1.getInstances();
-        Object[] i2= o2.getInstances();
-        if(i1.length == 1 && i1.length == i2.length) {
-            int h1= i1[0].hashCode();
-            int h2= i2[0].hashCode();
-            if(h1 != h2) {
-              return h1 > h2 ? 1 : -1;
-            } 
-        }
-      }
+//      if(result == 0) {
+//        // if they have a single instance try to use it while performing the order 
+//        Object[] i1= o1.getInstances();
+//        Object[] i2= o2.getInstances();
+//        if(i1.length == 1 && i1.length == i2.length) {
+//            int h1= i1[0].hashCode();
+//            int h2= i2[0].hashCode();
+//            if(h1 != h2) {
+//              return h1 > h2 ? 1 : -1;
+//            } 
+//        }
+//      }
 
       return result;
     }
