@@ -499,6 +499,16 @@ public class Invoker implements IInvoker {
       m_notifier.addInvokedMethod(invokedMethod);
       
       Method thisMethod= tm.getMethod();
+      
+      // TESTNG-326, allow IObjectFactory to load from non-standard classloader
+      // If the instance has a different classloader, its class won't match the method's class
+      if (!thisMethod.getDeclaringClass().isAssignableFrom(instances[instanceIndex].getClass())) {
+        try {
+          // so grab a method with a same name and signature in this case
+          thisMethod = instances[instanceIndex].getClass().getMethod(thisMethod.getName(), thisMethod.getParameterTypes());
+        } catch (Exception e) {} // allow normal failure
+        
+      }
 
       if(confInvocationPassed(tm)) {
         log(3, "Invoking " + thisMethod.getDeclaringClass().getName() + "." +
