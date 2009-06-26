@@ -1248,7 +1248,7 @@ public class Invoker implements IInvoker {
       int status= testResult.getStatus();
 
       // Exception thrown?
-      if(ite != null) {
+      if (ite != null) {
 
         //  Invocation caused an exception, see if the method was annotated with @ExpectedException
         if (isExpectedException(ite, expectedExceptionsHolder)) {
@@ -1263,15 +1263,21 @@ public class Invoker implements IInvoker {
                 		" but got \"" + ite.getMessage() + "\""));
             status= ITestResult.FAILURE;
           }
+        } else if (ite != null && expectedExceptionsHolder != null) {
+          testResult.setThrowable(
+              new TestException("Expected exception "
+                 + expectedExceptionsHolder.expectedClasses[0].getName()
+                 + " but got " + ite));
+          status= ITestResult.FAILURE;
         }
         else if (SkipException.class.isAssignableFrom(ite.getClass())){
           SkipException skipEx= (SkipException) ite;
           if(skipEx.isSkip()) {
-            status= ITestResult.SKIP;
+            status = ITestResult.SKIP;
           }
           else {
             handleException(ite, testMethod, testResult, failureCount++);
-            status= ITestResult.FAILURE;
+            status = ITestResult.FAILURE;
           }
         }
         else {

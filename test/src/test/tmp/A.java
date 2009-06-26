@@ -7,6 +7,7 @@ import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.DataProvider;
+import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Test;
 
 public class A implements ITest {
@@ -30,6 +31,32 @@ public class A implements ITest {
   @Test
   public void h() {
   }
+  
+  @Test(expectedExceptions = NumberFormatException.class)
+  public void f() {
+    throw new RuntimeException();
+  }
+
+//  public void assertSoft(boolean success, String message,
+//      StringBuilder messages) {
+//    if (!success) messages.append(message);
+//  }
+//  
+//  public void assertEmpty(StringBuilder sb) {
+//    if (sb.length() > 0) {
+//      throw new AssertionException(sb.toString());
+//    }
+//  }
+//  
+//  @Test
+//  public void f() {
+//    StringBuilder result = new StringBuilder();
+//    assertSoft(selenium.isElementPresent("id=txtfiled"), "Couldn't find txtfiled ", result);
+//    assertSoft(selenium.isElementPresent("id=txtfiled"), "Couldn't find submit ", result);
+//    assertSoft(selenium.isElementPresent("id=txtfiled"), "Couldn't find drpdwn1 ", result);
+//    assertSoft(selenium.isElementPresent("id=txtfiled"), "Couldn't find radiobtn ", result);
+//    assertEmpty(result);
+//  }
 
   @AfterClass
   public void afterClass() {
