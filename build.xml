@@ -199,7 +199,7 @@
   <!-- Distribution                                                         -->
   <!-- ==================================================================== -->
 
-  <target name="dist" depends="maven-plugin,dist-all-zip,eclipse,dtd" />
+  <target name="dist" depends="maven-plugin,dist-all-zip,dist-maven-bundle,eclipse,dtd" />
 
   <target name="dist-jar" depends="dist-14,dist-15" />
 
@@ -323,6 +323,29 @@
     </zip>
   </target>
   
+  <target name="dist-maven-bundle" depends="dist-all-zip">
+    <mkdir dir="${build.maven-bundle.dir}" />
+    <copy file="bundle-pom.xml" tofile="${build.maven-bundle.dir}/pom.xml" overwrite="true">
+      <filterchain>
+        <expandproperties/>
+      </filterchain>
+    </copy>
+    <jar destfile="${build.maven-bundle.dir}/${sources.testng.jar}">
+      <fileset dir="src/main" />
+      <!--DGF Maven allows only one source jar, and some files conflict
+        between the jdk14 and jdk15 source.  So we're only going to
+        include jdk15 sources in the source jar. -->
+      <!--<fileset dir="src/jdk14" />-->
+      <fileset dir="src/jdk15" />
+    </jar>
+    <jar destfile="${testng.maven-bundle}">
+      <fileset file="${build.maven-bundle.dir}/pom.xml" />
+      <fileset file="${jdk14.testng.jar}" />
+      <fileset file="${jdk15.testng.jar}" />
+      <fileset file="${build.maven-bundle.dir}/${sources.testng.jar}" />
+    </jar>
+  </target>
+  
   <target name="dist-prepare" depends="update-readme">
     <delete quiet="true" file="${other.jars.dir}/${jdk14.testng.nobsh.jar}" />
     <mkdir dir="${other.jars.dir}" />
@@ -412,6 +435,7 @@
     <delete failonerror="false">
       <fileset dir="${build.jdk14.dir}" includes="**/*" />
       <fileset dir="${build.jdk15.dir}" includes="**/*" />
+      <fileset dir="${build.maven-bundle.dir}" includes="**/*" />
       <fileset dir="." includes="*.jar,*.zip" />
     </delete>
     <ant antfile="test/build.xml" target="clean" />
