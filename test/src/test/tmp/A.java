@@ -1,17 +1,12 @@
 package test.tmp;
 
-import org.testng.IInvokedMethod;
-import org.testng.IInvokedMethodListener;
 import org.testng.ITest;
-import org.testng.ITestResult;
-import org.testng.TestNG;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.DataProvider;
-import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Test;
 
+@Test(dataProvider = "dp")
 public class A implements ITest {
-  
+
   @DataProvider
   public Object[][] dp() {
     return new Object[][] {
@@ -20,74 +15,11 @@ public class A implements ITest {
     };
   }
 
-  @Test(dataProvider = "dp", description = "Description for f")
-  public void f(String s) {
+  public void f(String a) {
   }
 
-  @Test(dataProvider = "dp")
-  public void g(String s) {
-  }
-
-  @Test
-  public void h() {
-  }
-  
-  @Test(expectedExceptions = NumberFormatException.class)
-  public void f() {
-    throw new RuntimeException();
-  }
-
-//  public void assertSoft(boolean success, String message,
-//      StringBuilder messages) {
-//    if (!success) messages.append(message);
-//  }
-//  
-//  public void assertEmpty(StringBuilder sb) {
-//    if (sb.length() > 0) {
-//      throw new AssertionException(sb.toString());
-//    }
-//  }
-//  
-//  @Test
-//  public void f() {
-//    StringBuilder result = new StringBuilder();
-//    assertSoft(selenium.isElementPresent("id=txtfiled"), "Couldn't find txtfiled ", result);
-//    assertSoft(selenium.isElementPresent("id=txtfiled"), "Couldn't find submit ", result);
-//    assertSoft(selenium.isElementPresent("id=txtfiled"), "Couldn't find drpdwn1 ", result);
-//    assertSoft(selenium.isElementPresent("id=txtfiled"), "Couldn't find radiobtn ", result);
-//    assertEmpty(result);
-//  }
-
-  @AfterClass
-  public void afterClass() {
-    p("After class");
-  }
-  
-  public void p(String s) {
-    System.out.println(Thread.currentThread().getId() + " " + s);
-  }
-  
-  public static void main(String[] args) {
-    TestNG tng = new TestNG();
-    IInvokedMethodListener l = new IInvokedMethodListener() {
-
-      public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-        System.out.println("Done invoking " + method);
-      }
-
-      public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
-        System.out.println("About to invoke " + method
-            + "\n annotation:" + method.getTestMethod().getMethod().getAnnotations()[0]);
-      }
-      
-    };
-    tng.addListener(l);
-    tng.setTestClasses(new Class[] { A.class });
-    tng.run();
-  }
-//  public String toString() {
-//    return "[A: msg:" + msg + "]";
-//  }
+  public void g(String a) {
+  }    
 
   public String getTestName() {
     return "Test name";

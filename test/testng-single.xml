@@ -1,14 +1,22 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="SingleSuite" verbose="2" parallel="false" thread-count="2"
+<suite name="SingleSuite" verbose="10" parallel="false" thread-count="2"
     data-provider-thread-count="3">
 
   <parameter name="factory-param" value="FactoryParam" />
 
   <test name="Simple">
-    <classes>
-      <class name="test.tmp.A" />
+<!-- 
+        <groups>
+            <run>
+                <include name="mytest"/>
+            </run>
+        </groups>
+ -->
+       <classes>
+      <class name="test.dataprovider.ClassTest" />
 <!--
+      <class name="test.tmp.verify.VerifyTest" />
       <class name="test.jar.JarTest" />
       <class name="test.expectedexceptions.ExpectedExceptionsTest" />
 -->

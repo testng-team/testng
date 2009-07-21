@@ -224,6 +224,9 @@ public class Parameters {
     Class dataProviderClass = null;
     
     ITestAnnotation annotation = AnnotationHelper.findTest(finder, m);
+    if (annotation == null) {
+      annotation = AnnotationHelper.findTest(finder, clazz);
+    }
     if (annotation != null) {
       dataProviderName = annotation.getDataProvider();
       dataProviderClass = annotation.getDataProviderClass();
