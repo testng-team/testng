@@ -324,9 +324,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     // and initialize them with the correct ITestClass
     //
     for (ITestClass tc : m_classMap.values()) {
-      fixMethodsWithClass(tc.getBeforeClassMethods(), tc, beforeClassMethods);
-      fixMethodsWithClass(tc.getBeforeTestMethods(), tc, null); // HINT: does not link back to beforeTestMethods
       fixMethodsWithClass(tc.getTestMethods(), tc, testMethods);
+      fixMethodsWithClass(tc.getBeforeClassMethods(), tc, beforeClassMethods);
+      fixMethodsWithClass(tc.getBeforeTestMethods(), tc, null);
       fixMethodsWithClass(tc.getAfterTestMethods(), tc, null);
       fixMethodsWithClass(tc.getAfterClassMethods(), tc, afterClassMethods);
       fixMethodsWithClass(tc.getBeforeSuiteMethods(), tc, beforeSuiteMethods);

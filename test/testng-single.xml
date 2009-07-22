@@ -6,15 +6,13 @@
   <parameter name="factory-param" value="FactoryParam" />
 
   <test name="Simple">
-<!-- 
         <groups>
             <run>
                 <include name="mytest"/>
             </run>
         </groups>
- -->
-       <classes>
-      <class name="test.dataprovider.ClassTest" />
+      <classes>
+      <class name="test.tmp.A" />
 <!--
       <class name="test.tmp.verify.VerifyTest" />
       <class name="test.jar.JarTest" />

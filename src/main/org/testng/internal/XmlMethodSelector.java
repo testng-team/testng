@@ -363,6 +363,8 @@ public class XmlMethodSelector implements IMethodSelector {
   private List<ITestNGMethod> m_testMethods = null;
 
   public void setTestMethods(List<ITestNGMethod> testMethods) {
+    // Caution: this variable is initialized with an empty list first and then modified
+    // externally by the caller (TestRunner#fixMethodWithClass). Ugly.
     m_testMethods = testMethods;
   }
   
