@@ -36,7 +36,7 @@ public class AnnotationTestConverter {
 
   // Files and their test methods
   private static File[] m_fileNames;
-  private static Map<String, String> m_convertedTags= new HashMap<String, String>();
+  private static Map<String, String> m_convertedTags = new HashMap<String, String>();
 
   /*private static File findFileName(ClassDoc cd) {
     for(File fn : m_fileNames) {

@@ -44,8 +44,7 @@ import java.util.Map;
  */
 public class JDK15AnnotationFinder implements IAnnotationFinder {
   private JDK15TagFactory m_tagFactory = new JDK15TagFactory();
-  private Map<Class<?>, Class<?>> m_annotationMap = 
-    new HashMap<Class<?>, Class<?>>();
+  private Map<Class<?>, Class<?>> m_annotationMap = Maps.newHashMap();
   private IAnnotationTransformer m_transformer = null;
   
   @SuppressWarnings({"deprecation"})

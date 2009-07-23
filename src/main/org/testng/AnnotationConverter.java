@@ -1,12 +1,11 @@
 package org.testng;
 
 
-import java.io.File;
-
-import java.util.HashMap;
-import java.util.Map;
-
+import org.testng.collections.Maps;
 import org.testng.internal.AnnotationDirectoryConverter;
+
+import java.io.File;
+import java.util.Map;
 
 /**
  * Converts between javadoc annotations and java 5 annotations.
@@ -98,7 +97,7 @@ public class AnnotationConverter {
    * Extract command line options.
    */
   private static Map<String, Object> extractOptions(String[] args) {
-    Map<String, Object> options= new HashMap<String, Object>();
+    Map<String, Object> options= Maps.newHashMap();
 
     for(int i= 0; i < args.length; i++) {
       if(SRC_DIR_OPT.equals(args[i])) {

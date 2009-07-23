@@ -1,9 +1,9 @@
 package org.testng.internal;
 
 
-import java.io.File;
+import org.testng.collections.Maps;
 
-import java.util.HashMap;
+import java.io.File;
 import java.util.Map;
 
 /**
@@ -49,7 +49,7 @@ public class AnnotationDirectoryConverter {
   }
 
   private Map<File, File> convert(File f) {
-    Map<File, File> result= new HashMap<File, File>();
+    Map<File, File> result = Maps.newHashMap();
     if(f.isDirectory()) {
       File[] files= f.listFiles();
       for(File file : files) {
