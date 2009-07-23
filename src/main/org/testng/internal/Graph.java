@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import org.testng.TestNGException;
+import org.testng.collections.Lists;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -215,7 +216,8 @@ public class Graph<T extends Object> {
     // Locate the node
     Node<T> node = findNode(o);
     if (null == node) {
-      throw new AssertionError("No such node: " + o);
+      // This can happen if an interceptor returned new methods
+      return Lists.newArrayList();
     }
 
     // If we found the node, use breadth first search to find all
