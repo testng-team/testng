@@ -1,0 +1,30 @@
+Maven
+
+If you ran the full dist build, it should have generated a file on your hard drive called "testng-5.10-bundle.jar" ... you should be able to just upload that bundle here:
+
+http://jira.codehaus.org/secure/CreateIssue.jspa?pid=10367&issuetype=5
+
+Here's an example of the one we did for TestNG 5.9
+
+http://jira.codehaus.org/browse/MAVENUPLOAD-2502
+
+Summary: TestNG 5.10
+Bundle URL: Attached
+Attachment: (uploaded bundle)
+Project URL: http://www.testng.org
+Contributor URL: http://code.google.com/p/testng/
+
+Description: TestNG 5.9. I'm a developer of TestNG (DanFabulich)
+
+===
+Eclipse
+
+I ended up doing the launch configuration, and just for information, here are the parameters:
+
+Check "Run an application" in "Program to run", and select org.eclipse.equinox.p2.metadata.generator.EclipseGenerator
+
+The program arguments are (replace the update site directory appropriately):
+
+-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl}    -application org.eclipse.equinox.p2.metadata.generator.EclipseGenerator -updateSite /usr/local/cbeust/java/testng-eclipse-update-site -site file:/usr/local/cbeust/java/testng-eclipse-update-site/site.xml  -metadataRepository file:/usr/local/cbeust/java/testn-eclipse-update-site/  -artifactRepository file:/usr/local/cbeust/java/testn-eclipse-update-site -artifactRepositoryName "Ganymede Artifacts" -compress  -append  -reusePack200Files  -noDefaultIUs  -vmargs -Xmx256m
+
+

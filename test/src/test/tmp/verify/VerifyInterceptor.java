@@ -16,7 +16,10 @@ import java.util.Map;
 public class VerifyInterceptor implements IMethodInterceptor {
 
   /**
-   * This method does two things:
+   * @return the list of methods received in parameters with all methods
+   * annotated with @Verify inserted after each of these test methods.
+   * 
+   * This happens in two steps:
    * - Find all the methods annotated with @Verify in the classes that contain test methods
    * - Insert these verify methods after each method passed in parameter
    * These @Verify methods are stored in a map keyed by the class in order to avoid looking them
@@ -26,15 +29,15 @@ public class VerifyInterceptor implements IMethodInterceptor {
       ITestContext context) {
 
     List<IMethodInstance> result = new ArrayList<IMethodInstance>();
-    Map<Class, List<IMethodInstance>> verifyMethods = Maps.newHashMap();
+    Map<Class<?>, List<IMethodInstance>> verifyMethods = Maps.newHashMap();
     for (IMethodInstance mi : methods) {
       ITestNGMethod tm = mi.getMethod();
-      List<IMethodInstance> v = verifyMethods.get(tm.getRealClass());
-      if (v == null) {
-        v = findVerifyMethods(tm.getRealClass(), tm);
+      List<IMethodInstance> verify = verifyMethods.get(tm.getRealClass());
+      if (verify == null) {
+        verify = findVerifyMethods(tm.getRealClass(), tm);
       }
       result.add(mi);
-      result.addAll(v);
+      result.addAll(verify);
     }
 
     return result;
