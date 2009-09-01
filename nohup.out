@@ -21,3 +21,30 @@ CompilerOracle: exclude org/eclipse/cdt/internal/core/dom/parser/cpp/semantics/C
 CompilerOracle: exclude org/eclipse/cdt/internal/core/pdom/dom/cpp/PDOMCPPLinkage.addBinding
 CompilerOracle: exclude org/eclipse/equinox/internal/p2/touchpoint/eclipse/Util.getAggregatedBundleRepository
 CompilerOracle: exclude org/python/pydev/editor/codecompletion/revisited/PythonPathHelper.isValidSourceFile
+Running Eclipse for profile 'stable'
+eclipse_proxy = -DproxiesEnabled=true       -Dhttp.proxySet=true       -Dhttp.proxyHost=cache.corp.google.com       -Dhttp.proxyPort=3128       -Dhttp.nonProxyHosts=localhost|127.0.0.1|arkonis.mtv.corp.google.com       -Dhttps.proxyHost=cache.corp.google.com       -Dhttps.proxyPort=3128       -Dhttps.nonProxyHosts=localhost|127.0.0.1|arkonis.mtv.corp.google.com       -Dftp.proxyHost=cache.corp.google.com       -Dftp.proxyPort=3128       -Dftp.nonProxyHosts=localhost|127.0.0.1|arkonis.mtv.corp.google.com
+CompilerOracle: exclude org/eclipse/core/internal/dtree/DataTreeNode.forwardDeltaWith
+CompilerOracle: exclude org/eclipse/jdt/internal/compiler/lookup/ParameterizedMethodBinding.<init>
+CompilerOracle: exclude org/eclipse/cdt/internal/core/dom/parser/cpp/semantics/CPPTemplates.instantiateTemplate
+CompilerOracle: exclude org/eclipse/cdt/internal/core/pdom/dom/cpp/PDOMCPPLinkage.addBinding
+CompilerOracle: exclude org/eclipse/equinox/internal/p2/touchpoint/eclipse/Util.getAggregatedBundleRepository
+CompilerOracle: exclude org/python/pydev/editor/codecompletion/revisited/PythonPathHelper.isValidSourceFile
+CompilerOracle: exclude org/eclipse/core/internal/dtree/DataTreeNode.forwardDeltaWith
+CompilerOracle: exclude org/eclipse/jdt/internal/compiler/lookup/ParameterizedMethodBinding.<init>
+CompilerOracle: exclude org/eclipse/cdt/internal/core/dom/parser/cpp/semantics/CPPTemplates.instantiateTemplate
+CompilerOracle: exclude org/eclipse/cdt/internal/core/pdom/dom/cpp/PDOMCPPLinkage.addBinding
+CompilerOracle: exclude org/eclipse/equinox/internal/p2/touchpoint/eclipse/Util.getAggregatedBundleRepository
+CompilerOracle: exclude org/python/pydev/editor/codecompletion/revisited/PythonPathHelper.isValidSourceFile
+CompilerOracle: exclude org/eclipse/core/internal/dtree/DataTreeNode.forwardDeltaWith
+CompilerOracle: exclude org/eclipse/jdt/internal/compiler/lookup/ParameterizedMethodBinding.<init>
+CompilerOracle: exclude org/eclipse/cdt/internal/core/dom/parser/cpp/semantics/CPPTemplates.instantiateTemplate
+CompilerOracle: exclude org/eclipse/cdt/internal/core/pdom/dom/cpp/PDOMCPPLinkage.addBinding
+CompilerOracle: exclude org/eclipse/equinox/internal/p2/touchpoint/eclipse/Util.getAggregatedBundleRepository
+CompilerOracle: exclude org/python/pydev/editor/codecompletion/revisited/PythonPathHelper.isValidSourceFile
+CompilerOracle: exclude org/eclipse/core/internal/dtree/DataTreeNode.forwardDeltaWith
+CompilerOracle: exclude org/eclipse/jdt/internal/compiler/lookup/ParameterizedMethodBinding.<init>
+CompilerOracle: exclude org/eclipse/cdt/internal/core/dom/parser/cpp/semantics/CPPTemplates.instantiateTemplate
+CompilerOracle: exclude org/eclipse/cdt/internal/core/pdom/dom/cpp/PDOMCPPLinkage.addBinding
+CompilerOracle: exclude org/eclipse/equinox/internal/p2/touchpoint/eclipse/Util.getAggregatedBundleRepository
+CompilerOracle: exclude org/python/pydev/editor/codecompletion/revisited/PythonPathHelper.isValidSourceFile
+### Excluding compile: org.eclipse.jdt.internal.compiler.lookup.ParameterizedMethodBinding::<init>

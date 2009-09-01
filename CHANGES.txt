@@ -1,5 +1,10 @@
 Current:
 
+Fixed: @BeforeClass methods were not running in parallel (Aidan Short)
+
+===========================================================================
+5.10
+
 Added: The output in the testng-results.xml is now sorted by the starting timestamp (Daniel Rudman)
 Added: Better display of the test name and method description in the default and Emailable report
 Added: If both -testjar and an XML file are provided on the command line, the latter will be used

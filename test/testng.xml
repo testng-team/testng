@@ -89,6 +89,7 @@
       <class name="test.regression.BeforeTestFailingTest"/>
       <class name="test.testng285.TestNG285Test" />
       <class name="test.failedreporter.FailedReporterTest" />
+      <class name="test.configuration.BeforeClassThreadTest" />
     </classes>
   </test>
   
