@@ -1,5 +1,6 @@
 Current:
 
+Fixed: <classfilesetref> was not working properly in the ant task (Ed Randall)
 Fixed: @BeforeClass methods were not running in parallel (Aidan Short)
 
 ===========================================================================

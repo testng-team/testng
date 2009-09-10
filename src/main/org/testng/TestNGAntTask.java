@@ -316,7 +316,7 @@ public class TestNGAntTask extends Task {
   }
 
   public void setClassfilesetRef(Reference ref) {
-    m_classFilesets.add(appendClassSelector(createFileSet(ref)));
+    m_classFilesets.add(createFileSet(ref));
   }
 
   /**
