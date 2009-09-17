@@ -64,7 +64,7 @@ public interface ITestAnnotation extends ITestOrConfiguration {
   public String getDataProvider();
   public void setDataProvider(String v);
 
-  public Class<?> getDataProviderClass(String v);
+  public Class<?> getDataProviderClass();
   public void setDataProviderClass(Class<?> v);
 
   public IRetryAnalyzer getRetryAnalyzer();
