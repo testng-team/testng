@@ -62,8 +62,11 @@ public interface ITestAnnotation extends ITestOrConfiguration {
   public void setSequential(boolean f);
   
   public String getDataProvider();
-  public Class<?> getDataProviderClass();
-  
+  public void setDataProvider(String v);
+
+  public Class<?> getDataProviderClass(String v);
+  public void setDataProviderClass(Class<?> v);
+
   public IRetryAnalyzer getRetryAnalyzer();
   public void setRetryAnalyzer(Class<?> c);
   

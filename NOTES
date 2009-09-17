@@ -21,6 +21,8 @@ Eclipse
 
 I ended up doing the launch configuration, and just for information, here are the parameters:
 
+Run Configuration / Eclipse application.
+
 Check "Run an application" in "Program to run", and select org.eclipse.equinox.p2.metadata.generator.EclipseGenerator
 
 The program arguments are (replace the update site directory appropriately):
