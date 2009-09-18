@@ -14,7 +14,7 @@
         </groups>
  -->
        <classes>
-      <class name="test.configuration.BeforeClassThreadTest" />
+      <class name="test.factory.FactoryFailureSampleTest" />
 <!--
       <class name="test.tmp.A" />
       <class name="test.jar.JarTest" />
