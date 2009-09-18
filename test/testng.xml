@@ -241,6 +241,7 @@
       
       <class name="test.factory.FactoryWithDataProviderTest" />
       <class name="test.factory.FactoryOrderMainTest" />
+      <class name="test.factory.FactoryFailureTest" />
     </classes>
   </test>
 

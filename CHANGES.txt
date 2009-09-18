@@ -1,6 +1,7 @@
 Current:
 
 Added: ITestAnnotation#setDataProvider
+Fixed: A @Factory throwing an exception did not cause any error
 Fixed: <classfilesetref> was not working properly in the ant task (Ed Randall)
 Fixed: @BeforeClass methods were not running in parallel (Aidan Short)
 

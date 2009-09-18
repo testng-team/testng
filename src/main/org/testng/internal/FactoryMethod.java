@@ -70,21 +70,17 @@ public class FactoryMethod extends BaseTestMethod {
     try {
       while (parameterIterator.hasNext()) {
         Object[] parameters = parameterIterator.next();
-        Object[] testInstances = 
-          (Object[]) getMethod().invoke(m_instance, parameters);
+        Object[] testInstances = (Object[]) getMethod().invoke(m_instance, parameters);
+
         for (Object testInstance : testInstances) {
           result.add(testInstance);
         }
       }
     }
-    catch (IllegalArgumentException e) {
-      e.printStackTrace();
-    }
-    catch (IllegalAccessException e) {
-      e.printStackTrace();
-    }
-    catch (InvocationTargetException e) {
-      e.printStackTrace();
+    catch (Throwable t) {
+      throw new TestNGException("The factory method "
+          + getMethod().getDeclaringClass() + "." + getMethod().getName()
+          + "() threw an exception", t);
     }
     
     return result.toArray(new Object[result.size()]);
