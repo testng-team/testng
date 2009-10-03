@@ -600,6 +600,41 @@ public class MethodHelper {
   throws InvocationTargetException, IllegalAccessException 
   {
     Object result = null;
+    // TESTNG-326, allow IObjectFactory to load from non-standard classloader
+    // If the instance has a different classloader, its class won't match the method's class
+    if (!thisMethod.getDeclaringClass().isAssignableFrom(instance.getClass())) {
+      // for some reason, we can't call this method on this class
+      // is it static?
+      boolean isStatic = Modifier.isStatic(thisMethod.getModifiers());
+      if (!isStatic) {
+        // not static, so grab a method with the same name and signature in this case
+        Class<?> clazz = instance.getClass();
+        try {
+          thisMethod = clazz.getMethod(thisMethod.getName(), thisMethod.getParameterTypes());
+        } catch (Exception e) {
+          // ignore, the method may be private
+          boolean found = false;
+          for (; clazz != null; clazz = clazz.getSuperclass()) {
+            try {
+              thisMethod = clazz.getDeclaredMethod(thisMethod.getName(), thisMethod.getParameterTypes());
+              found = true;
+              break;
+            } catch (Exception e2) {}
+          }
+          if (!found) {
+            //should we assert here?  Or just allow it to fail on invocation?
+            if (thisMethod.getDeclaringClass().getName().equals(instance.getClass().getName())) {
+              throw new RuntimeException("Can't invoke method " + thisMethod + ", probably due to classloader mismatch");
+            }
+            throw new RuntimeException("Can't invoke method " + thisMethod + " on this instance of " + instance.getClass()+ " due to class mismatch");
+          }
+        }
+      }
+      
+      
+      
+    }
+
     boolean isPublic = Modifier.isPublic(thisMethod.getModifiers());
 
     try {
