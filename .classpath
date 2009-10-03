@@ -12,6 +12,5 @@
 	<classpathentry kind="lib" path="3rdparty/qdox-1.6.1.jar"/>
 	<classpathentry kind="lib" path="3rdparty/backport-util-concurrent-2.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="var" path="TOOLS15_LIB"/>
 	<classpathentry kind="output" path="z_build"/>
 </classpath>

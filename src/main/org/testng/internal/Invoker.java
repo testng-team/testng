@@ -952,147 +952,116 @@ public class Invoker implements IInvoker {
             
             Iterator<Object[]> allParameterValues= bag.parameterHolder.parameters;
             
-            if(testMethod.getThreadPoolSize() > 1) {
-              return invokePooledTestMethods(instances, 
-                    testMethod, 
-                    allTestMethods, 
-                    beforeMethods, 
-                    afterMethods, 
-                    groupMethods, 
-                    suite, 
-                    parameters, 
-                    allParameterNames, 
-                    allParameterValues);
-            }
-            else {
-              int parametersIndex = 0;
-              
-              try {
+            int parametersIndex = 0;
+            
+            try {
 //                if (true) { // @@
-                List<TestMethodWithDataProviderMethodWorker> workers
-                    = new ArrayList<TestMethodWithDataProviderMethodWorker>();
+              List<TestMethodWithDataProviderMethodWorker> workers
+                  = new ArrayList<TestMethodWithDataProviderMethodWorker>();
 
 //                  if (false) { // bag.parameterHolder.origin == ParameterHolder.ORIGIN_DATA_PROVIDER) {
-                if (bag.parameterHolder.origin == ParameterHolder.ORIGIN_DATA_PROVIDER &&
-                    bag.parameterHolder.dataProviderHolder.annotation.isParallel()) {
-                  while (allParameterValues.hasNext()) {
-                    Object[] parameterValues= allParameterValues.next();
-                    TestMethodWithDataProviderMethodWorker w =
-                      new TestMethodWithDataProviderMethodWorker(this,
-                          testMethod, parametersIndex,
-                          parameterValues, instances, suite, parameters, testClass,
-                          beforeMethods, afterMethods, groupMethods,
-                          expectedExceptionHolder, testContext, m_skipFailedInvocationCounts,
-                          invocationCount, failureCount, m_notifier);
-                    workers.add(w);
-                  }
-                  PoolService ps = PoolService.getInstance();
-                  List<ITestResult> r = ps.submitTasksAndWait(testMethod, workers);
-                  result.addAll(r);
-//                    ThreadUtil.execute(workers, 3, 500, true);
-                  
-//                  } 
-//                  else {
-//                    while (allParameterValues.hasNext()) {
-//                      Object[] parameterValues= allParameterValues.next();
-//                      TestMethodWithDataProviderMethodWorker w =
-//                        new TestMethodWithDataProviderMethodWorker(this,
-//                            testMethod, parametersIndex,
-//                            parameterValues, instances, suite, parameters, testClass,
-//                            beforeMethods, afterMethods, groupMethods,
-//                            expectedExceptionHolder, testContext, m_skipFailedInvocationCounts,
-//                            invocationCount, failureCount, m_notifier);
-//                      result.addAll(w.call());
-//                      invocationCount = w.getInvocationCount();
-//                      failureCount = w.getFailureCount();
-//                    }
-//                  }
-                } else {
-                  while (allParameterValues.hasNext()) {
-                    Object[] parameterValues= allParameterValues.next();
-
-
-                    List<ITestResult> tmpResults = new ArrayList<ITestResult>();
-
-                    try {
-                      tmpResults.addAll(invokeTestMethod(instances,
-                                                         testMethod,
-                                                         parameterValues,
-                                                         suite,
-                                                         parameters,
-                                                         testClass,
-                                                         beforeMethods,
-                                                         afterMethods,
-                                                         groupMethods));
-                    }
-                    finally {
-                      List<Object> failedInstances = new ArrayList<Object>();
-  
-                      failureCount = handleInvocationResults(testMethod, tmpResults,
-                          failedInstances, failureCount, expectedExceptionHolder, true,
-                          false /* don't collect results */);
-                      if (failedInstances.isEmpty()) {
-                        result.addAll(tmpResults);
-                      } else {
-                        for (int i = 0; i < failedInstances.size(); i++) {
-                          List<ITestResult> retryResults = new ArrayList<ITestResult>();
-  
-                          failureCount = 
-                           retryFailed(failedInstances.toArray(),
-                           i, testMethod, suite, testClass, beforeMethods,
-                           afterMethods, groupMethods, retryResults,
-                           failureCount, expectedExceptionHolder,
-                           testContext, parameters, parametersIndex);
-                        result.addAll(retryResults);
-                        }
-                      }
-                      
-                      //
-                      // If we have a failure, skip all the
-                      // other invocationCounts
-                      //
-                      
-                      // If not specified globally, use the attribute
-                      // on the annotation
-                      //
-                      if (! m_skipFailedInvocationCounts) {
-                        m_skipFailedInvocationCounts = testMethod.skipFailedInvocations();
-                      }
-                      if (failureCount > 0 && m_skipFailedInvocationCounts) {
-                        while (invocationCount-- > 0) {
-                          ITestResult r = 
-                            new TestResult(testMethod.getTestClass(),
-                              instances[0],
-                              testMethod,
-                              null,
-                              start,
-                              System.currentTimeMillis());
-                          r.setStatus(TestResult.SKIP);
-                          result.add(r);
-                          runTestListeners(r);
-                          m_notifier.addSkippedTest(testMethod, r);
-                        }
-                        break;
-                      }
-                    }// end
-                  parametersIndex++;
+              if (bag.parameterHolder.origin == ParameterHolder.ORIGIN_DATA_PROVIDER &&
+                  bag.parameterHolder.dataProviderHolder.annotation.isParallel()) {
+                while (allParameterValues.hasNext()) {
+                  Object[] parameterValues= allParameterValues.next();
+                  TestMethodWithDataProviderMethodWorker w =
+                    new TestMethodWithDataProviderMethodWorker(this,
+                        testMethod, parametersIndex,
+                        parameterValues, instances, suite, parameters, testClass,
+                        beforeMethods, afterMethods, groupMethods,
+                        expectedExceptionHolder, testContext, m_skipFailedInvocationCounts,
+                        invocationCount, failureCount, m_notifier);
+                  workers.add(w);
                 }
+                PoolService ps = PoolService.getInstance();
+                List<ITestResult> r = ps.submitTasksAndWait(testMethod, workers);
+                result.addAll(r);
+
+              } else {
+                while (allParameterValues.hasNext()) {
+                  Object[] parameterValues= allParameterValues.next();
+
+
+                  List<ITestResult> tmpResults = new ArrayList<ITestResult>();
+
+                  try {
+                    tmpResults.addAll(invokeTestMethod(instances,
+                                                       testMethod,
+                                                       parameterValues,
+                                                       suite,
+                                                       parameters,
+                                                       testClass,
+                                                       beforeMethods,
+                                                       afterMethods,
+                                                       groupMethods));
+                  }
+                  finally {
+                    List<Object> failedInstances = new ArrayList<Object>();
+
+                    failureCount = handleInvocationResults(testMethod, tmpResults,
+                        failedInstances, failureCount, expectedExceptionHolder, true,
+                        false /* don't collect results */);
+                    if (failedInstances.isEmpty()) {
+                      result.addAll(tmpResults);
+                    } else {
+                      for (int i = 0; i < failedInstances.size(); i++) {
+                        List<ITestResult> retryResults = new ArrayList<ITestResult>();
+
+                        failureCount = 
+                         retryFailed(failedInstances.toArray(),
+                         i, testMethod, suite, testClass, beforeMethods,
+                         afterMethods, groupMethods, retryResults,
+                         failureCount, expectedExceptionHolder,
+                         testContext, parameters, parametersIndex);
+                      result.addAll(retryResults);
+                      }
+                    }
+                    
+                    //
+                    // If we have a failure, skip all the
+                    // other invocationCounts
+                    //
+                    
+                    // If not specified globally, use the attribute
+                    // on the annotation
+                    //
+                    if (! m_skipFailedInvocationCounts) {
+                      m_skipFailedInvocationCounts = testMethod.skipFailedInvocations();
+                    }
+                    if (failureCount > 0 && m_skipFailedInvocationCounts) {
+                      while (invocationCount-- > 0) {
+                        ITestResult r = 
+                          new TestResult(testMethod.getTestClass(),
+                            instances[0],
+                            testMethod,
+                            null,
+                            start,
+                            System.currentTimeMillis());
+                        r.setStatus(TestResult.SKIP);
+                        result.add(r);
+                        runTestListeners(r);
+                        m_notifier.addSkippedTest(testMethod, r);
+                      }
+                      break;
+                    }
+                  }// end
+                parametersIndex++;
               }
             }
-            catch (Throwable cause) {
-              ITestResult r = 
-                  new TestResult(testMethod.getTestClass(),
-                    instances[0],
-                    testMethod,
-                    cause,
-                    start,
-                    System.currentTimeMillis());
-                r.setStatus(TestResult.FAILURE);
-                result.add(r);
-                runTestListeners(r);
-                m_notifier.addFailedTest(testMethod, r);
-              } // catch
-            } // for parameters
+          }
+          catch (Throwable cause) {
+            ITestResult r = 
+                new TestResult(testMethod.getTestClass(),
+                  instances[0],
+                  testMethod,
+                  cause,
+                  start,
+                  System.currentTimeMillis());
+              r.setStatus(TestResult.FAILURE);
+              result.add(r);
+              runTestListeners(r);
+              m_notifier.addFailedTest(testMethod, r);
+            } // catch
           }
         } // isTestMethodEnabled 
 
@@ -1156,37 +1125,6 @@ public class Invoker implements IInvoker {
               System.currentTimeMillis()));
     }
     
-  }
-  
-  private List<ITestResult> invokePooledTestMethods(Object[] instances,
-      ITestNGMethod testMethod, 
-      ITestNGMethod[] allTestMethods, 
-      ITestNGMethod[] beforeMethods,
-      ITestNGMethod[] afterMethods,
-      ConfigurationGroupMethods groupMethods,
-      XmlSuite suite, 
-      Map<String, String> parameters, 
-      Map<String, String> allParameterNames,
-      Iterator<Object[]> allParameterValues) 
-  {
-    //
-    // Create the workers
-    //
-    List<IMethodWorker> workers= new ArrayList<IMethodWorker>();    
-    
-    while (allParameterValues.hasNext()) {
-      Object[] parameterValues= allParameterValues.next();
-      workers.add(new DataTestMethodWorker(instances, 
-          testMethod.clone(), // we use clones for reporting purposes
-          parameterValues,
-          beforeMethods,
-          afterMethods,
-          groupMethods,
-          suite,
-          allParameterNames));
-    }
-    
-    return runWorkers(testMethod, workers, testMethod.getThreadPoolSize(), groupMethods, suite, parameters);
   }
   
   /**

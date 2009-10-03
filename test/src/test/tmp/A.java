@@ -1,7 +1,6 @@
 package test.tmp;
 
 import org.testng.ITest;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -15,17 +14,19 @@ public class A implements ITest {
     };
   }
 
-  @Test(groups = "mytest", dependsOnMethods = "g")
-  public void f() {
-  }
-
   @Test
+  (threadPoolSize = 2)
   public void g() {
   }
 
-  @AfterMethod
-  public void after() {
-  }
+  //  @Test(groups = "mytest", dependsOnMethods = "g")
+//  public void f() {
+//  }
+//
+//
+//  @AfterMethod
+//  public void after() {
+//  }
 
   public String getTestName() {
     return "Test name";
