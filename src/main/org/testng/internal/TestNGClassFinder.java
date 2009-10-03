@@ -59,7 +59,6 @@ public class TestNGClassFinder extends BaseClassFinder {
                 }
                 try {
                   Object instance = cls.newInstance();
-                  instanceMap.put(cls, java.util.Arrays.asList(instance));
                   if (m.getParameterTypes().length > 0 && m.getParameterTypes()[0].equals(ITestContext.class)) {
                     objectFactory = (IObjectFactory) m.invoke(instance, testContext);
                   } else {

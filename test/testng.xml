@@ -300,6 +300,7 @@
   <test name="Object factory">
     <classes>
       <class name="test.objectfactory.CustomFactoryTest" />
+      <class name="test.objectfactory.CombinedTestAndObjectFactoryTest" />
     </classes>
   </test>
   
