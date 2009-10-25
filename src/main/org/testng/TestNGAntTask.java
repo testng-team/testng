@@ -57,6 +57,7 @@ import org.testng.internal.version.VersionInfo;
  * <li>testjar (attribute)</li>
  * <li>testname (attribute)</li>
  * <li>threadcount (attribute)</li>
+ * <li>dataproviderthreadcount (attribute)</li>
  * <li>verbose (attribute)</li>
  * <li>testrunfactory (attribute)</li>
  * 
@@ -135,6 +136,7 @@ public class TestNGAntTask extends Task {
   protected String m_excludedGroups;
   protected String m_parallelMode;
   protected String m_threadCount;
+  protected String m_dataproviderthreadCount;
   public String m_useDefaultListeners;
   private String m_suiteName="Ant suite";
   private String m_testName="Ant test";
@@ -151,6 +153,10 @@ public class TestNGAntTask extends Task {
 
   public void setThreadCount(String threadCount) {
     m_threadCount= threadCount;
+  }
+  
+  public void setDataProviderThreadCount(String dataproviderthreadCount) {
+    m_dataproviderthreadCount = dataproviderthreadCount;
   }
 
   public void setUseDefaultListeners(String f) {
@@ -589,6 +595,10 @@ public class TestNGAntTask extends Task {
       argv.add(m_threadCount);
     }
 
+    if(m_dataproviderthreadCount != null) {
+      argv.add(TestNGCommandLineArgs.DATA_PROVIDER_THREAD_COUNT);
+      argv.add(m_dataproviderthreadCount);
+    }
     
     if(!"".equals(m_suiteName)) {
     	argv.add(TestNGCommandLineArgs.SUITE_NAME_OPT);

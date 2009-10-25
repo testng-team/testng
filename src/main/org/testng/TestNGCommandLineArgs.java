@@ -71,6 +71,7 @@ public final class TestNGCommandLineArgs {
   public static final String TEST_NAME_OPT = "-testname";
   public static final String TESTRUNNER_FACTORY_COMMAND_OPT = "-testrunfactory";
   public static final String THREAD_COUNT = "-threadcount";
+  public static final String DATA_PROVIDER_THREAD_COUNT = "-dataproviderthreadcount";
   public static final String USE_DEFAULT_LISTENERS = "-usedefaultlisteners";
   public static final String SUITE_DEF_OPT = "testng.suite.definitions";
 
@@ -321,6 +322,12 @@ public final class TestNGCommandLineArgs {
         if ((i + 1) < argv.length) {
           arguments.put(THREAD_COUNT, argv[i + 1]);
           i++;
+        }
+      }
+      else if (DATA_PROVIDER_THREAD_COUNT.equalsIgnoreCase(argv[i])) {
+        if ((i + 1) < argv.length) {
+          arguments.put(DATA_PROVIDER_THREAD_COUNT, argv[i + 1]);
+           i++;
         }
       }
       else if (USE_DEFAULT_LISTENERS.equalsIgnoreCase(argv[i])) {

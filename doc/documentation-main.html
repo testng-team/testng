@@ -627,6 +627,14 @@ You need to specify at least one XML file describing the TestNG suite you are tr
         </tr>
 
         <tr>
+            <td>-dataproviderthreadcount</td>
+	    <td>The default number of threads to use for data
+            providers when running tests in parallel.</td>
+	    <td>This sets the default maximum number of threads to use
+            for data providers when running tests in parallel. It will only take effect if the parallel mode has been selected (for example, with the -parallel option). This can be overridden in the suite definition.</td>
+        </tr>
+
+	<tr>
             <td>-excludegroups</td>
 	    <td>A comma-separated list of groups.</td><td>The list of groups you want to be excluded from this run.</td>
         </tr>

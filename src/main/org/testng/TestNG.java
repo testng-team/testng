@@ -429,8 +429,7 @@ public class TestNG {
     
     m_threadCount = threadCount;
     m_useThreadCount = true;
-  }
-  
+  } 
 
   /**
    * Define whether this run will be run in parallel mode.
@@ -1015,7 +1014,10 @@ public class TestNG {
     if (threadCount != null) {
       setThreadCount(Integer.parseInt(threadCount));
     }
-    
+    String dataProviderThreadCount = (String) cmdLineArgs.get(TestNGCommandLineArgs.DATA_PROVIDER_THREAD_COUNT);
+    if (dataProviderThreadCount != null) {
+      setDataProviderThreadCount(Integer.parseInt(dataProviderThreadCount));
+    }
     String defaultSuiteName = (String) cmdLineArgs.get(TestNGCommandLineArgs.SUITE_NAME_OPT);
     if (defaultSuiteName != null) {
       setDefaultSuiteName(defaultSuiteName);
