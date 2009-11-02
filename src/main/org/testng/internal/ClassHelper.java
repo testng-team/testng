@@ -399,6 +399,11 @@ public final class ClassHelper {
   public static <T> T tryOtherConstructor(Class<T> declaringClass) {
     T result;
     try {
+      // Special case for inner classes
+      if (declaringClass.getModifiers() == 0) {
+        return null;
+      }
+
       Constructor<T> ctor = declaringClass.getConstructor(new Class[] { String.class });
       result = ctor.newInstance(new Object[] { "Default test name" });
     }
