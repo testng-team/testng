@@ -3,9 +3,10 @@ package org.testng;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -614,4 +615,23 @@ public class Assert {
       }
     }
   }
+
+  /**
+   * Asserts that two sets are equal.
+   */
+  static public void assertEquals(Set actual, Set expected) {
+    if (!actual.equals(expected)) {
+      fail("Sets differ: expected " + expected + " but got " + actual);
+    }
+  }
+
+  /**
+   * Asserts that two maps are equal.
+   */
+  static public void assertEquals(Map actual, Map expected) {
+      if (!actual.equals(expected)) {
+        fail("Maps differ: expected " + expected + " but got " + actual);
+      }
+    }
+
 }
