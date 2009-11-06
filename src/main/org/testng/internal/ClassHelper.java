@@ -107,7 +107,7 @@ public final class ClassHelper {
   public static Method findFactoryMethod(Class<?> cls, IAnnotationFinder finder) {
     Method result = null;
 
-    for (Method method : cls.getDeclaredMethods()) {
+    for (Method method : cls.getMethods()) {
       IAnnotation f = finder.findAnnotation(method, IFactoryAnnotation.class);
 
       if (null != f) {

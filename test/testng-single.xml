@@ -1,53 +1,19 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="SingleSuite" verbose="3" parallel="false" thread-count="2"
-    data-provider-thread-count="3">
+<suite name="Single" verbose="1" parallel="false" thread-count="2">
 
-  <parameter name="factory-param" value="FactoryParam" />
-
-  <test name="Simple">
-<!-- 
-    <packages>
-      <package name="test.tmp.p1.*" />
-    </packages>
-         <groups>
-            <run>
-                <include name="b"/>
-            </run>
-        </groups>
- -->
-    <classes>
-      <class name="test.tmp.A" />
-      <class name="test.tmp.B" />
+  <test name="Single">
 <!--
-      <class name="test.tmp.A" />
-      <class name="test.jar.JarTest" />
-      <class name="test.expectedexceptions.ExpectedExceptionsTest" />
+    <groups>
+      <run>
+        <include name="g2" />
+      </run>
+    </groups>
 -->
-     </classes>
-  </test>
-
-
-<!-- 
-  <test name="Simple2">
     <classes>
-      <class name="test.tmp.B" />
-     </classes>
-  </test>
-  <test name="RetryAnalyzer">
-    <classes>
-      <class name="test.retryAnalyzer.RetryAnalyzerTest" />
-    </classes>
+      <class name="test.factory.FactoryInSuperClassTest" />
+    </classes>      
   </test>
 
-
-  <test name="InvocationCount">
-    <parameter name="parameter" value="parameter value" />
-    <classes>
-      <class name="test.parameters.BeforeSampleTest" />
-     </classes>
-  </test>
- -->
- 
 </suite>
 

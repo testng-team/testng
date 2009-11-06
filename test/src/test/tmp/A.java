@@ -1,10 +1,11 @@
 package test.tmp;
 
+import org.testng.ITest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-public class A {
+public class A implements ITest {
   
   @DataProvider
   public Object[][] dp() {
@@ -25,6 +26,10 @@ public class A {
 
   @Test
   public void g2() {
+  }
+
+  public String getTestName() {
+    return "This is test A";
   }
 
 //  @Test(groups = "mytest", dependsOnMethods = "g")

@@ -11,7 +11,8 @@
     </groups>
 -->
     <classes>
-	  <class name="test.tmp.FactoryTest" >
+      <class name="test.tmp.RegisterCommandTest" >
+	  <class name="test.tmp.BeforeGroupTest" >
     </class>
     </classes>      
   </test>

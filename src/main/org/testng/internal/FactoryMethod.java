@@ -36,7 +36,7 @@ public class FactoryMethod extends BaseTestMethod {
                        ITestContext testContext) 
   {
     super(method, annotationFinder);
-    if (! instance.getClass().isAssignableFrom(method.getDeclaringClass())) {
+    if (! method.getDeclaringClass().isAssignableFrom(instance.getClass())) {
       throw new TestNGException("Mismatch between instance/method classes:"
           + instance.getClass() + " " + method.getDeclaringClass());
     }

@@ -1,12 +1,21 @@
 <html>
-   <head>
-       <title>TestNG - Welcome</title>
+  <head>
+    <title>TestNG - Welcome</title>
+      <link rel="stylesheet" href="testng.css" type="text/css" />
+      <link type="text/css" rel="stylesheet" href="http://beust.com/beust.css"  />
+      <script type="text/javascript" src="http://beust.com/prettify.js"></script>
+      <script type="text/javascript" src="http://testng.org/doc/banner.js"></script>
 
-       <link rel="stylesheet" href="testng.css" type="text/css" />
-       <link type="text/css" rel="stylesheet" href="http://beust.com/beust.css"  />
-       <script type="text/javascript" src="http://beust.com/prettify.js"></script>
-       <script type="text/javascript" src="http://testng.org/doc/banner.js"></script>
-     </head>
+      <script type="text/javascript" src="http://beust.com/scripts/shCore.js"></script>
+      <script type="text/javascript" src="http://beust.com/scripts/shBrushJava.js"></script>
+      <script type="text/javascript" src="http://beust.com/scripts/shBrushXml.js"></script>
+      <link type="text/css" rel="stylesheet" href="http://beust.com/styles/shCore.css"/>
+      <link type="text/css" rel="stylesheet" href="http://beust.com/styles/shThemeDefault.css"/>
+      <script type="text/javascript">
+        SyntaxHighlighter.config.clipboardSwf = 'scripts/clipboard.swf';
+        SyntaxHighlighter.all();
+      </script>
+    </head>
 
 <body onload="prettyPrint()">
 
@@ -67,7 +76,7 @@ article</a> describing a very concrete example where the combined use of several
 TestNG's features provides for a very intuitive and maintainable testing design.</p>
 <p>Here is a very simple test:</p>
 
-<pre class="prettyprint">
+<pre class="brush: java">
 package example1;
 
 import org.testng.annotations.*;
@@ -114,7 +123,7 @@ can invoke your test with the command line, an ant task (shown below) or an XML
 file:
 
 
-<pre class="prettyprint">
+<pre class="brush: xml">
 &lt;project default="test"&gt;
 
  &lt;path id="cp"&gt;

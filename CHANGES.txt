@@ -3,6 +3,7 @@ Current:
 Added: dataProviderThreadCount can be set from the command line and from ant (Adrian Grealish)
 Added: ITestAnnotation#setDataProvider
 Added: Assert#assertEquals() methods for Sets and Maps
+Fixed: TESTNG-67: @Configuration/@Factory methods in base class being ignored
 Fixed: Inner test classes were not excluded properly (Carsten Gubernator)
 Fixed: threadPoolSize without invocationCount was causing reporters not to be invoked
 Fixed: A @Factory throwing an exception did not cause any error
