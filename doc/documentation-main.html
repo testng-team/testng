@@ -10,6 +10,8 @@
       <script type="text/javascript" src="http://beust.com/scripts/shCore.js"></script>
       <script type="text/javascript" src="http://beust.com/scripts/shBrushJava.js"></script>
       <script type="text/javascript" src="http://beust.com/scripts/shBrushXml.js"></script>
+      <script type="text/javascript" src="http://beust.com/scripts/shBrushBash.js"></script>
+      <script type="text/javascript" src="http://beust.com/scripts/shBrushPlain.js"></script>
       <link type="text/css" rel="stylesheet" href="http://beust.com/styles/shCore.css"/>
       <link type="text/css" rel="stylesheet" href="http://beust.com/styles/shThemeCedric.css"/>
       <script type="text/javascript">
@@ -609,7 +611,7 @@ This section only explains how to invoke TestNG from the command line.  Please c
 <p>
 Assuming that you have TestNG in your class path, the simplest way to invoke TestNG is as follows:
 
-<pre class="code">
+<pre class="brush: text">
 java org.testng.TestNG testng1.xml [testng2.xml testng3.xml ...]
 </pre>
 
@@ -730,7 +732,7 @@ This documentation can be obtained by invoking TestNG without any arguments.
 
 You can also put the command line switches in a text file, say <tt>c:\command.txt</tt>, and tell TestNG to use that file to retrieve its parameters:
 
-<pre class="code">
+<pre class="brush: text">
   C:> more c:\command.txt
   -d test-output testng.xml
   C:> java org.testng.TestNG @c:\command.txt
@@ -740,7 +742,7 @@ You can also put the command line switches in a text file, say <tt>c:\command.tx
 
 Additionally, TestNG can be passed properties on the command line of the Java Virtual Machine, for example
 
-<pre class="code">
+<pre class="brush: text">
 java -Dtestng.test.classpath="c:/build;c:/java/classes;" org.testng.TestNG testng.xml
 </pre>
 
@@ -768,7 +770,7 @@ Here are the properties that TestNG understands:
 
 <b>Example:</b>
 
-<pre class="code">
+<pre class="brush: text">
 java org.testng.TestNG -groups windows,linux -testclass org.test.MyTest
 </pre>
 
@@ -954,9 +956,13 @@ public void testMethod2() {
 </pre>
 
 <p>This way, I will get a clean test run while keeping track of what tests are 
-broken and need to be fixed later.</p><blockquote>
+broken and need to be fixed later.</p>
+
+<blockquote>
 	<p><i>Note:&nbsp; you can also disable tests on an individual basis by using the 
-&quot;enabled&quot; property available on both @Test and @Before/After annotations.</i></p></blockquote><h4>
+&quot;enabled&quot; property available on both @Test and @Before/After
+	annotations.</i></p>
+</blockquote><h4>
 
 
 <!-------------------------------------
@@ -1056,7 +1062,9 @@ If no parameter named "db" is found in your <tt>testng.xml</tt> file, your test 
 	TestNG will invoke this particular constructor with the parameters 
 	initialized to the values specified in <tt>testng.xml</tt> whenever it needs 
 	to instantiate your test class.&nbsp; This feature can be used to initialize fields 
-	inside your classes to values that will then be used by your test methods.</li></ul><blockquote>
+	inside your classes to values that will then be used by your
+	test methods.</li></ul>
+	<blockquote>
 	<p><i>Notes:
 
 </i>
@@ -1104,11 +1112,11 @@ public void verifyData1(String n1, Integer n2) {
 </pre>
 will print
 
-<blockquote class="code">
+<pre class="brush: text">
 Cedric 36
-<br>
 Anne 37
-</blockquote>
+</pre>
+
 A <tt>@Test</tt> method specifies its Data Provider with the <tt>dataProvider</tt> attribute.&nbsp; 
 This name must correspond to a method on the same class annotated with <tt>@DataProvider(name=&quot;...&quot;)</tt> 
 with a matching name.
@@ -1184,11 +1192,10 @@ public void test2(String s) {
 
 and will therefore display:
 
-<blockquote class="code">
+<pre class="brush: text">
 test1
-<br>
 test2
-</blockquote>
+</pre>
 
 Data providers can run in parallel with the attribute <tt>parallel</tt>:
 
@@ -1485,7 +1492,7 @@ that failed, allowing you to quickly reproduce the failures without having to
 run the entirety of your tests.&nbsp; Therefore, a typical session would look 
 like this:
 
-<pre class="code">
+<pre class="brush: text">
 java -classpath testng.jar;%CLASSPATH% org.testng.TestNG -d test-outputs testng.xml
 java -classpath testng.jar;%CLASSPATH% org.testng.TestNG -d test-outputs test-outputs\testng-failed.xml
 </pre>
@@ -1792,7 +1799,7 @@ The list of methods passed in parameters are all the methods that can be run in 
 
 Once you have defined your interceptor, you pass it to TestNG as a listener.  For example:
 
-<pre class="prettyprint">
+<pre class="brush: text">
 java -classpath "testng-jdk15.jar:test/build" org.testng.TestNG -listener test.methodinterceptors.NullMethodInterceptor \<br>  -testclass test.methodinterceptors.FooTest
 </pre>
 
@@ -1834,7 +1841,7 @@ public List&lt;IMethodInstance&gt; intercept(List&lt;IMethodInstance&gt; methods
 <p>If you have started using javadoc annotations in a project but later wish to convert to JDK annotations, you will need to convert all the old-style annotations into new-style ones.</p>
 <p>TestNG provides a utility to save you time in what could otherwise be quite a labour-intensive operation</p>
 <p>
-<pre class="code">
+<pre class="brush: text">
 java org.testng.AnnotationConverter -srcdir <i>directory</i> [-overwrite|-d <i>destdir</i>] [-quiet]
 </pre>
 will convert source files from one format to the other - run the command with no arguments for a description of what the parameters do.
@@ -2044,24 +2051,25 @@ In this example, I chose to extend <a href="../javadocs/org/testng/TestListenerA
 <p>
 Here is how I invoke TestNG to use this new listener:
 
-<blockquote class="code">
+<pre class="brush: text">
 java -classpath testng.jar;%CLASSPATH% org.testng.TestNG -listener org.testng.reporters.DotTestListener test\testng.xml
-</blockquote>
+</pre>
 
 and the output:
 
-<blockquote class="code">
-........................................<br>
-........................................<br>
-........................................<br>
-........................................<br>
-........................................<br>
-.........................<br>
-===============================================<br>
-TestNG JDK 1.5<br>
-Total tests run: 226, Failures: 0, Skips: 0<br>
-===============================================<br>
-</blockquote>
+<pre class="brush: text">
+........................................
+........................................
+........................................
+........................................
+........................................
+.........................
+===============================================
+TestNG JDK 1.5
+Total tests run: 226, Failures: 0, Skips: 0
+===============================================
+</pre>
+
 Note that when you use <tt>-listener</tt>, TestNG will automatically determine the type of listener you want to use.
 
 <p>
@@ -2111,7 +2119,7 @@ get this to work for now.</em>
 <p>
 If you need to log messages that should appear in the generated HTML reports, you can use the class <tt><a href="../javadocs/org/testng/Reporter.html">org.testng.Reporter</a></tt>:
 
-<blockquote class="code">
+<blockquote class="brush: text">
 <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">Reporter.log</font><font color="#000000">(</font><font color="#2a00ff">&#34;M3 WAS CALLED&#34;</font><font color="#000000">)</font><font color="#000000">;</font>
 
 </blockquote>
@@ -2129,37 +2137,37 @@ TestNG offers an XML reporter capturing TestNG specific information that is not 
 </p>
 <pre class="brush: xml">
 &lt;testng-results&gt;
-    &lt;suite name=&quot;Suite1&quot;&gt;
-        &lt;groups&gt;
-            &lt;group name=&quot;group1&quot;&gt;
-                &lt;method signature=&quot;com.test.TestOne.test2()&quot; name=&quot;test2&quot; class=&quot;com.test.TestOne&quot;/&gt;
-                &lt;method signature=&quot;com.test.TestOne.test1()&quot; name=&quot;test1&quot; class=&quot;com.test.TestOne&quot;/&gt;
-            &lt;/group&gt;
-            &lt;group name=&quot;group2&quot;&gt;
-                &lt;method signature=&quot;com.test.TestOne.test2()&quot; name=&quot;test2&quot; class=&quot;com.test.TestOne&quot;/&gt;
-            &lt;/group&gt;
-        &lt;/groups&gt;
-        &lt;test name=&quot;test1&quot;&gt;
-            &lt;class name=&quot;com.test.TestOne&quot;&gt;
-                &lt;test-method status=&quot;FAIL&quot; signature=&quot;test1()&quot; name=&quot;test1&quot; duration-ms=&quot;0&quot;
-                             started-at=&quot;2007-05-28T12:14:37Z&quot; description=&quot;someDescription2&quot;
-                             finished-at=&quot;2007-05-28T12:14:37Z&quot;&gt;
-                    &lt;exception class=&quot;java.lang.AssertionError&quot;&gt;
-                        &lt;short-stacktrace&gt;java.lang.AssertionError
-                            ... Removed 22 stack frames
-                        &lt;/short-stacktrace&gt;
-                    &lt;/exception&gt;
-                &lt;/test-method&gt;
-                &lt;test-method status=&quot;PASS&quot; signature=&quot;test2()&quot; name=&quot;test2&quot; duration-ms=&quot;0&quot;
-                             started-at=&quot;2007-05-28T12:14:37Z&quot; description=&quot;someDescription1&quot;
-                             finished-at=&quot;2007-05-28T12:14:37Z&quot;&gt;
-                &lt;/test-method&gt;
-                &lt;test-method status=&quot;PASS&quot; signature=&quot;setUp()&quot; name=&quot;setUp&quot; is-config=&quot;true&quot; duration-ms=&quot;15&quot;
-                             started-at=&quot;2007-05-28T12:14:37Z&quot; finished-at=&quot;2007-05-28T12:14:37Z&quot;&gt;
-                &lt;/test-method&gt;
-            &lt;/class&gt;
-        &lt;/test&gt;
-    &lt;/suite&gt;
+  &lt;suite name=&quot;Suite1&quot;&gt;
+    &lt;groups&gt;
+      &lt;group name=&quot;group1&quot;&gt;
+        &lt;method signature=&quot;com.test.TestOne.test2()&quot; name=&quot;test2&quot; class=&quot;com.test.TestOne&quot;/&gt;
+        &lt;method signature=&quot;com.test.TestOne.test1()&quot; name=&quot;test1&quot; class=&quot;com.test.TestOne&quot;/&gt;
+      &lt;/group&gt;
+      &lt;group name=&quot;group2&quot;&gt;
+        &lt;method signature=&quot;com.test.TestOne.test2()&quot; name=&quot;test2&quot; class=&quot;com.test.TestOne&quot;/&gt;
+      &lt;/group&gt;
+    &lt;/groups&gt;
+    &lt;test name=&quot;test1&quot;&gt;
+      &lt;class name=&quot;com.test.TestOne&quot;&gt;
+        &lt;test-method status=&quot;FAIL&quot; signature=&quot;test1()&quot; name=&quot;test1&quot; duration-ms=&quot;0&quot;
+              started-at=&quot;2007-05-28T12:14:37Z&quot; description=&quot;someDescription2&quot;
+              finished-at=&quot;2007-05-28T12:14:37Z&quot;&gt;
+          &lt;exception class=&quot;java.lang.AssertionError&quot;&gt;
+            &lt;short-stacktrace&gt;java.lang.AssertionError
+              ... Removed 22 stack frames
+            &lt;/short-stacktrace&gt;
+          &lt;/exception&gt;
+        &lt;/test-method&gt;
+        &lt;test-method status=&quot;PASS&quot; signature=&quot;test2()&quot; name=&quot;test2&quot; duration-ms=&quot;0&quot;
+              started-at=&quot;2007-05-28T12:14:37Z&quot; description=&quot;someDescription1&quot;
+              finished-at=&quot;2007-05-28T12:14:37Z&quot;&gt;
+        &lt;/test-method&gt;
+        &lt;test-method status=&quot;PASS&quot; signature=&quot;setUp()&quot; name=&quot;setUp&quot; is-config=&quot;true&quot; duration-ms=&quot;15&quot;
+              started-at=&quot;2007-05-28T12:14:37Z&quot; finished-at=&quot;2007-05-28T12:14:37Z&quot;&gt;
+        &lt;/test-method&gt;
+      &lt;/class&gt;
+    &lt;/test&gt;
+  &lt;/suite&gt;
 &lt;/testng-results&gt;
 </pre>
 <p>This reporter is injected along with the other default listeners so you can get this type of output by default. The listener provides some properties that can tweak the reporter to fit your needs. The following table contains a list of these properties with a short explanation:
