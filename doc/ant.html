@@ -6,7 +6,21 @@
         <link type="text/css" rel="stylesheet" href="http://beust.com/beust.css"  />
         <script type="text/javascript" src="http://beust.com/prettify.js"></script>
         <script type="text/javascript" src="banner.js"></script>
-      </head>
+
+        <script type="text/javascript" src="http://beust.com/scripts/shCore.js"></script>
+        <script type="text/javascript" src="http://beust.com/scripts/shBrushJava.js"></script>
+        <script type="text/javascript" src="http://beust.com/scripts/shBrushXml.js"></script>
+        <script type="text/javascript" src="http://beust.com/scripts/shBrushBash.js"></script>
+        <script type="text/javascript" src="http://beust.com/scripts/shBrushPlain.js"></script>
+        <link type="text/css" rel="stylesheet" href="http://beust.com/styles/shCore.css"/>
+        <link type="text/css" rel="stylesheet" href="http://beust.com/styles/shThemeCedric.css"/>
+        <script type="text/javascript">
+          SyntaxHighlighter.config.clipboardSwf = 'scripts/clipboard.swf';
+          SyntaxHighlighter.defaults['gutter'] = false;
+          SyntaxHighlighter.all();
+        </script>
+
+</head>
 
 <body onLoad="prettyPrint()">
 
@@ -17,9 +31,8 @@
 <h2 align="center">TestNG Ant Task</h2>
 <p>You define the TestNG ant task as follows:</p>
 
-<pre class="prettyprint">
-&lt;taskdef resource="testngtasks"
-         classpath="testng.jar"/&gt;
+<pre class="brush: xml">
+&lt;taskdef resource="testngtasks" classpath="testng.jar"/&gt;
 </pre>
 
 This task runs TestNG tests and is always run in a forked JVM.&nbsp; It 
@@ -239,7 +252,7 @@ structure.</p>
 <p>Additional parameters may be passed to the new VM via nested <tt>&lt;jvmarg&gt;</tt> 
 elements. For example: </p>
 
-<pre class="prettyprint">
+<pre class="brush: xml">
 &lt;testng&gt;
    &lt;jvmarg value="-Djava.compiler=NONE" /&gt;
    &lt;!-- ... --&gt;
@@ -252,7 +265,7 @@ required by the class. These properties will be made available to the virtual
 machine during the execution of the test. The attributes for this element are 
 the same as for <em>environment variables</em>:</p>
 
-<pre class="prettyprint">
+<pre class="brush: xml">
 &lt;testng&gt;
    &lt;sysproperty key="basedir" value="${basedir}"/&gt;
    &lt;!-- ... --&gt;
@@ -272,7 +285,7 @@ the class of the custom listener. In order to set the properties of the reporter
 <tt>&lt;reporter&gt;</tt> element can contain several nested <tt>&lt;property&gt;</tt>
 elements which will provide the <tt>name</tt> and <tt>value</tt> attributes as seen below:
 </p>
-<pre class="prettyprint">
+<pre class="brush: xml">
 &lt;testng ...&gt;
    ...
    &lt;reporter classname="com.test.MyReporter"&gt;
@@ -282,7 +295,7 @@ elements which will provide the <tt>name</tt> and <tt>value</tt> attributes as s
    ...
 &lt;/testng&gt;
 </pre>
-<pre class="prettyprint">
+<pre class="brush: java">
 public class MyReporter {
 
   public String getMethodFilter() {...}
@@ -303,7 +316,7 @@ virtual machine via nested <tt>&lt;env&gt;</tt> elements. For a description of t
 <h3>Examples</h3>
 <h4>Suite xml</h4>
 
-<pre class="prettyprint">
+<pre class="brush: text">
 &lt;testng classpathref="run.cp"
         outputDir="${testng.report.dir}"
         sourcedir="${test.src.dir}"
@@ -314,7 +327,7 @@ virtual machine via nested <tt>&lt;env&gt;</tt> elements. For a description of t
 </pre>
 
 <h4>Class FileSet</h4>
-<pre class="prettyprint">
+<pre class="brush: xml">
 &lt;testng classpathref="run.cp"
 		outputDir="${testng.report.dir}"
 		haltOnFailure="true"M verbose="2"&gt;

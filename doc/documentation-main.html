@@ -1504,7 +1504,7 @@ classes in the <tt>testng.classNames</tt> property and set the <tt>testng.junit<
 true:<br>
 <p></p>
 <pre class="brush: xml">
-&lt;test name="Test1"   junit="true"&gt;
+&lt;test name="Test1" junit="true"&gt;
   &lt;classes&gt;
     &lt;!-- ... --&gt;
 </pre>
@@ -1535,6 +1535,7 @@ public class SimpleTest {
   public void setUp() {
     // code that will be invoked when this test is instantiated
  }
+
  /**
   * @testng.test groups = "functest" dependsOnGroups = "group1,group2"
   */
@@ -1800,7 +1801,8 @@ The list of methods passed in parameters are all the methods that can be run in 
 Once you have defined your interceptor, you pass it to TestNG as a listener.  For example:
 
 <pre class="brush: text">
-java -classpath "testng-jdk15.jar:test/build" org.testng.TestNG -listener test.methodinterceptors.NullMethodInterceptor \<br>  -testclass test.methodinterceptors.FooTest
+java -classpath "testng-jdk15.jar:test/build" org.testng.TestNG -listener test.methodinterceptors.NullMethodInterceptor
+   -testclass test.methodinterceptors.FooTest
 </pre>
 
 For the equivalent <tt>ant</tt> syntax, see the <tt>listeners</tt> attribute in the <a href="ant.html">ant documentation</a>.

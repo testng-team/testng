@@ -6,6 +6,20 @@
         <link type="text/css" rel="stylesheet" href="http://beust.com/beust.css"  />
         <script type="text/javascript" src="http://beust.com/prettify.js"></script>
         <script type="text/javascript" src="banner.js"></script>
+
+        <script type="text/javascript" src="http://beust.com/scripts/shCore.js"></script>
+        <script type="text/javascript" src="http://beust.com/scripts/shBrushJava.js"></script>
+        <script type="text/javascript" src="http://beust.com/scripts/shBrushXml.js"></script>
+        <script type="text/javascript" src="http://beust.com/scripts/shBrushBash.js"></script>
+        <script type="text/javascript" src="http://beust.com/scripts/shBrushPlain.js"></script>
+        <link type="text/css" rel="stylesheet" href="http://beust.com/styles/shCore.css"/>
+        <link type="text/css" rel="stylesheet" href="http://beust.com/styles/shThemeCedric.css"/>
+        <script type="text/javascript">
+          SyntaxHighlighter.config.clipboardSwf = 'scripts/clipboard.swf';
+          SyntaxHighlighter.defaults['gutter'] = false;
+          SyntaxHighlighter.all();
+        </script>
+
       </head>
 <body onLoad="prettyPrint()">
 
@@ -37,9 +51,9 @@ which you can invoke as follows:</p><ul>
 	<tt>JUnitConverter</tt> will not print anything on the console.</li></ul><p>Here is a sample use that will convert all the JUnit tests in the <tt>src/</tt> 
 directory to TestNG:</p>
 
-<blockquote class="code">
-	java org.testng.JUnitConverter -overwrite -annotation -srcdir src
-</blockquote>
+<pre class="brush: text">
+java org.testng.JUnitConverter -overwrite -annotation -srcdir src
+</pre>
 Notes:<blockquote>
 	<ul>
 		<li><i><tt>JUnitConverter</tt> uses classes from <tt>tools.jar</tt>, which is located in 
@@ -52,7 +66,7 @@ parameter&quot;), make sure your classpath only contains JDK5 jar files.</i></li
 	</ul>
 </blockquote><p><tt>JUnitConverter</tt> also has an ant task, which you can invoke as follows: </p>
 
-<pre class="prettyprint">
+<pre class="brush: xml">
 &lt;project name="test" default="init"&gt;
   &lt;target name="init"&gt;
     &lt;taskdef resource="testngtasks" /&gt;
@@ -67,7 +81,7 @@ parameter&quot;), make sure your classpath only contains JDK5 jar files.</i></li
 <h3>Asserts</h3>
 Note that the class <tt>org.testng.Assert</tt> uses a different argument ordering than the ones used by JUnit. If you are porting code that uses JUnit's asserts, you might want to us a static import of that class:
 
-<pre class="prettyprint">
+<pre class="brush: java">
 import static org.testng.AssertJUnit.*;
 </pre>
 	
