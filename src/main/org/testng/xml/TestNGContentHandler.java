@@ -249,6 +249,7 @@ public class TestNGContentHandler extends DefaultHandler {
       if (null != parallel) {
         if(XmlSuite.PARALLEL_METHODS.equals(parallel)
             || XmlSuite.PARALLEL_NONE.equals(parallel)
+            || XmlSuite.PARALLEL_CLASSES.equals(parallel)
             || "true".equals(parallel)
             || "false".equals(parallel)) {
           m_currentTest.setParallel(parallel);
