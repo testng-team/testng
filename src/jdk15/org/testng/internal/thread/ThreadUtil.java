@@ -1,6 +1,8 @@
 package org.testng.internal.thread;
 
 
+import org.testng.internal.MapList;
+import org.testng.internal.TestMethodWorker;
 import org.testng.internal.Utils;
 
 import java.util.ArrayList;
@@ -9,8 +11,10 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -49,6 +53,22 @@ public class ThreadUtil {
     catch(InterruptedException e) {
       Thread.currentThread().interrupt();
       log(2, "Error waiting for concurrent executors to finish " + e.getMessage());
+    }
+  }
+
+  public static void execute(MapList<TestMethodWorker> sequentialWorkers) {
+    int nThreads = 3;
+    GroupThreadPoolExecutor executor = new GroupThreadPoolExecutor(nThreads, nThreads,
+        0L, TimeUnit.MILLISECONDS,
+        new LinkedBlockingQueue<Runnable>(),
+        sequentialWorkers);
+    
+    executor.run();
+    try {
+      executor.awaitTermination(10, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
   }
 
@@ -146,4 +166,5 @@ public class ThreadUtil {
       }
     }
   }
+
 }

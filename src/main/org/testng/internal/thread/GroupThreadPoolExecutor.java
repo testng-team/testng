@@ -1,9 +1,10 @@
 package org.testng.internal.thread;
 
+import org.testng.internal.MapList;
+import org.testng.internal.TestMethodWorker;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -12,26 +13,24 @@ import java.util.concurrent.TimeUnit;
  * An Executor that launches tasks per batches.
  */
 public class GroupThreadPoolExecutor extends ThreadPoolExecutor {
-
     private int m_index = 0;
-    Map<Integer, List<Runnable>> m_runnables = new HashMap<Integer, List<Runnable>>();
+    MapList<TestMethodWorker> m_runnables;
     private List<Runnable> m_activeRunnables = new ArrayList<Runnable>();
+    private Integer[] m_indices;
 
     public GroupThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime,
-            TimeUnit unit, BlockingQueue<Runnable> workQueue) {
+            TimeUnit unit, BlockingQueue<Runnable> workQueue, MapList<TestMethodWorker> runnables) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
+        m_runnables = runnables;
+        m_indices = runnables.getIndices();
     }
 
-//    public void setRunnables(List<List<Runnable>> runnables) {
-//        m_runnables = runnables;
-//    }
-
     public void run() {
-        runRunnablesAtIndex(m_index++);
+        runRunnablesAtIndex(m_indices[m_index++]);
     }
     
     private void runRunnablesAtIndex(int index) {
-        List<Runnable> runnables = m_runnables.get(index);
+        List<TestMethodWorker> runnables = m_runnables.get(index);
         ppp("Adding runnables " + runnables);
         for(Runnable r : runnables) {
             m_activeRunnables.add(r);
@@ -43,7 +42,7 @@ public class GroupThreadPoolExecutor extends ThreadPoolExecutor {
     public void afterExecute(Runnable r, Throwable t) {
         ppp("Runnable " + r + " finished");
         m_activeRunnables.remove(r);
-        if (m_activeRunnables.isEmpty() && m_index < m_runnables.size()) {
+        if (m_activeRunnables.isEmpty() && m_index < m_runnables.getSize()) {
             runRunnablesAtIndex(m_index++);
         }
     }
@@ -53,12 +52,12 @@ public class GroupThreadPoolExecutor extends ThreadPoolExecutor {
             + string);
     }
 
-    public void addRunnable(int i, Runnable runnable) {
-        List<Runnable> l = m_runnables.get(i);
-        if (l == null) {
-            l = new ArrayList<Runnable>();
-            m_runnables.put(i, l);
-        }
-        l.add(runnable);
-    }
+//    public void addRunnable(int i, Runnable runnable) {
+//        List<TestMethodWorker> l = m_runnables.get(i);
+//        if (l == null) {
+//            l = new ArrayList<TestMethodWorker>();
+//            m_runnables.put(i, l);
+//        }
+//        l.add(runnable);
+//    }
 }

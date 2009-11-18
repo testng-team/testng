@@ -556,7 +556,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       }
     });
 
-    runWorkers(workers, "" /* JUnit does not support parallel */);
+    runWorkers(workers, "" /* JUnit does not support parallel */, null);
     m_allTestMethods= runMethods.toArray(new ITestNGMethod[runMethods.size()]);
   }
   
@@ -578,8 +578,10 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     List<TestMethodWorker> workers = new ArrayList<TestMethodWorker>();
     
     ClassMethodMap cmm = new ClassMethodMap(m_allTestMethods);
-    
-    createSequentialWorkers(sequentialList, xmlTest.getParameters(), cmm, workers);
+
+//    createSequentialWorkers(sequentialList, xmlTest.getParameters(), cmm, workers);
+    MapList<TestMethodWorker> ml =
+        createSequentialWorkers(sequentialMapList, xmlTest.getParameters(), cmm);
 
     // All the parallel tests are placed in a separate worker, so they can be
     // invoked in parallel
@@ -591,7 +593,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
         m_groupMethods, xmlTest);
 
     try {
-      runWorkers(workers, xmlTest.getParallel());
+      runWorkers(workers, xmlTest.getParallel(), ml);
     }
     finally {
       cmm.clear();
@@ -709,7 +711,32 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       log(3, "===");
     }
   }
-  
+
+  private MapList<TestMethodWorker> createSequentialWorkers(MapList<ITestNGMethod> mapList,
+      Map<String, String> params, ClassMethodMap cmm) { 
+
+    MapList<TestMethodWorker> result = new MapList<TestMethodWorker>();
+    // All the sequential tests are place in one worker, guaranteeing they
+    // will be invoked sequentially
+    for (Integer i : mapList.getIndices()) {
+      result.addObjectAtIndex(new TestMethodWorker(m_invoker,
+                                         methodsToMethodInstances(mapList.get(i)),
+                                         m_xmlTest.getSuite(),
+                                         params,
+                                         m_allTestMethods,
+                                         m_groupMethods,
+                                         cmm,
+                                         this),
+                  i);
+    }
+
+    if (getVerbose() >= 2) {
+      log(3, "WILL BE RUN SEQUENTIALLY:" + result);
+    }
+
+    return result;
+  }
+
   private List<MethodInstance> methodsToMultipleMethodInstances(ITestNGMethod... sl) {
     List<MethodInstance> vResult = new ArrayList<MethodInstance>();
     for (ITestNGMethod m : sl) {
@@ -734,7 +761,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
   //
   // Invoke the workers
   //
-  private void runWorkers(List<? extends IMethodWorker> workers, String parallelMode) {
+  private void runWorkers(List<? extends IMethodWorker> workers, String parallelMode,
+      MapList<TestMethodWorker> sequentialWorkers) {
     if (XmlSuite.PARALLEL_METHODS.equals(parallelMode) 
         || "true".equalsIgnoreCase(parallelMode)
         || XmlSuite.PARALLEL_CLASSES.equals(parallelMode)) 
@@ -752,6 +780,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       }
 
       ThreadUtil.execute(workers, m_xmlTest.getThreadCount(), maxTimeOut, false);
+//      ThreadUtil.execute(sequentialWorkers);
     }
     else {
       //

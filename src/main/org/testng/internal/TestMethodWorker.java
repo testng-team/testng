@@ -87,11 +87,13 @@ public class TestMethodWorker implements IMethodWorker {
     StringBuilder result = new StringBuilder("[Worker on thread:" + Thread.currentThread().getId()
         + " ");
     
+    result.append(" instances[0]:").append(m_testMethods[0].getInstances()[0]).append(" methods:");
+
     for (IMethodInstance m : m_testMethods) {
       result.append(m.getMethod()).append(" ");
     }
-    result.append(" instances[0]:").append(m_testMethods[0].getInstances()[0])
-      .append("]");
+    result.append("]");
+
     return result.toString();
   }
   
