@@ -1,19 +1,59 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="Single" verbose="1" parallel="false" thread-count="2">
+<suite name="SingleSuite" verbose="2" parallel="true" thread-count="2"
+    data-provider-thread-count="3">
 
-  <test name="Single">
-<!--
-    <groups>
-      <run>
-        <include name="g2" />
-      </run>
-    </groups>
--->
+  <parameter name="factory-param" value="FactoryParam" />
+
+<!-- 
+  <listeners>
+    <listener class-name="test.tmp.TestListener" />
+  </listeners>
+ -->
+  <test name="Simple">
+<!-- 
+    <packages>
+      <package name="test.tmp.p1.*" />
+    </packages>
+         <groups>
+            <run>
+                <include name="b"/>
+            </run>
+        </groups>
+ -->
     <classes>
-      <class name="test.factory.FactoryInSuperClassTest" />
-    </classes>      
+      <class name="test.tmp.B" />
+<!--
+      <class name="test.invokedmethodlistener.InvokedMethodListenerTest" />
+      <class name="test.tmp.B" />
+      <class name="test.tmp.A" />
+      <class name="test.jar.JarTest" />
+      <class name="test.expectedexceptions.ExpectedExceptionsTest" />
+-->
+     </classes>
   </test>
 
+
+<!-- 
+  <test name="Simple2">
+    <classes>
+      <class name="test.tmp.B" />
+     </classes>
+  </test>
+  <test name="RetryAnalyzer">
+    <classes>
+      <class name="test.retryAnalyzer.RetryAnalyzerTest" />
+    </classes>
+  </test>
+
+
+  <test name="InvocationCount">
+    <parameter name="parameter" value="parameter value" />
+    <classes>
+      <class name="test.parameters.BeforeSampleTest" />
+     </classes>
+  </test>
+ -->
+ 
 </suite>
 
