@@ -84,10 +84,15 @@ public class TestMethodWorker implements IMethodWorker {
   
   @Override
   public String toString() {
-    return "[Worker on thread:" + Thread.currentThread().getId() + " " 
-    + m_testMethods[0].getMethod()
-    + " " + m_testMethods[0].getInstances()[0]
-    + "]";
+    StringBuilder result = new StringBuilder("[Worker on thread:" + Thread.currentThread().getId()
+        + " ");
+    
+    for (IMethodInstance m : m_testMethods) {
+      result.append(m.getMethod()).append(" ");
+    }
+    result.append(" instances[0]:").append(m_testMethods[0].getInstances()[0])
+      .append("]");
+    return result.toString();
   }
   
   /**

@@ -361,15 +361,15 @@ public class Graph<T extends Object> {
     g.addNode("2.2");
     g.addNode("independent");
     g.addNode("2.1");
-    g.addNode("2");
+    g.addNode("2.3");
     
     // 1 ->  2.1, 2.2, 2.3 --> 3
-    g.addPredecessor("3", "2");
     g.addPredecessor("3", "2.1");
-    g.addPredecessor("3", "2.2");
-    g.addPredecessor("2", "1");
+    g.addPredecessor("3", "2.1");
+    g.addPredecessor("3", "2.3");
     g.addPredecessor("2.1", "1");
     g.addPredecessor("2.2", "1");
+    g.addPredecessor("2.3", "1");
     
     g.topologicalSort();
     
@@ -380,11 +380,11 @@ public class Graph<T extends Object> {
     int i = 0;
     assert "1".equals(l.get(i));
     i++;
-    assert "2".equals(l.get(i)) || "2.1".equals(l.get(i)) || "2.2".equals(l.get(i));
+    assert "2.1".equals(l.get(i)) || "2.1".equals(l.get(i)) || "2.2".equals(l.get(i));
     i++;
-    assert "2".equals(l.get(i)) || "2.1".equals(l.get(i)) || "2.2".equals(l.get(i));
+    assert "2.1".equals(l.get(i)) || "2.1".equals(l.get(i)) || "2.2".equals(l.get(i));
     i++;
-    assert "2".equals(l.get(i)) || "2.1".equals(l.get(i)) || "2.2".equals(l.get(i));
+    assert "2.1".equals(l.get(i)) || "2.1".equals(l.get(i)) || "2.2".equals(l.get(i));
     i++;
     assert "3".equals(l.get(i));
     
@@ -395,7 +395,7 @@ public class Graph<T extends Object> {
     //
     ppp("GRAPH:" + g);
     {
-      List<String> predecessors = g.findPredecessors("2");
+      List<String> predecessors = g.findPredecessors("2.1");
       assert predecessors.size() == 1;
       assert predecessors.get(0).equals("1");
     }

@@ -10,6 +10,7 @@ import org.testng.internal.IMethodWorker;
 import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.InvokedMethod;
 import org.testng.internal.Invoker;
+import org.testng.internal.MapList;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.MethodInstance;
 import org.testng.internal.ResultMap;
@@ -565,8 +566,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     //
     List<List<ITestNGMethod>> sequentialList= new ArrayList<List<ITestNGMethod>>();
     List<ITestNGMethod> parallelList= new ArrayList<ITestNGMethod>();
+    MapList<ITestNGMethod> sequentialMapList = new MapList<ITestNGMethod>();
 
-    computeTestLists(sequentialList, parallelList);
+    computeTestLists(sequentialList, parallelList, sequentialMapList);
     
     log(3, "Found " + (sequentialList.size() + parallelList.size()) + " applicable methods");
     
@@ -812,8 +814,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
    * @param parallelList the list of methods that can be run in parallel
    */
   private void computeTestLists(List<List<ITestNGMethod>> sl,
-                                List<ITestNGMethod> parallelList) 
-  {
+      List<ITestNGMethod> parallelList, MapList<ITestNGMethod> outSequentialList) {
 
     Map<String, String> groupsDependedUpon= new HashMap<String, String>();
     Map<String, String> methodsDependedUpon= new HashMap<String, String>();
@@ -907,7 +908,19 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     if(sequentialList.size() > 0) {
       sl.add(sequentialList);
     }
-    
+
+    String previousGroup = "";
+    int index = 0;
+    for (ITestNGMethod m : sequentialList) {
+      String[] g = m.getGroupsDependedUpon();
+      if (g.length > 0 && !m.getGroupsDependedUpon()[0].equals(previousGroup)) {
+        index++;
+        previousGroup = m.getGroupsDependedUpon()[0];
+      }
+      outSequentialList.addObjectAtIndex(m, index);
+    }
+//    System.out.println("Map list:" + mapList);
+
     sl.addAll(sequentialAttributeList.values());
   }
 

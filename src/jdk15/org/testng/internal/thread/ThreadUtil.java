@@ -27,7 +27,8 @@ public class ThreadUtil {
    * @param timeout <b>CURRENTLY NOT USED</b> (a maximum timeout to wait for tasks finalization)
    * @param triggerAtOnce <tt>true</tt> if the parallel execution of tasks should be trigger at once
    */
-  public static final void execute(List<? extends Runnable> tasks, int threadPoolSize, long timeout, boolean triggerAtOnce) {
+  public static final void execute(List<? extends Runnable> tasks, int threadPoolSize,
+      long timeout, boolean triggerAtOnce) {
     final CountDownLatch startGate= new CountDownLatch(1);
     final CountDownLatch endGate= new CountDownLatch(tasks.size());
 

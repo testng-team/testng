@@ -1,28 +1,52 @@
 package test.tmp;
 
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class B {
   
-  @DataProvider
-  public Object[][] dp() {
-    return new Object[][] {
-        new Object[] { "a" },
-        new Object[] { "b" },
-    };
+  @Test(groups = "1")
+  public void a1() {
+    log("a1");
   }
 
-  @BeforeClass
-  public void beforeClassB() {
+  @Test(groups = "1")
+  public void a2() {
+    log("a2");
+  }
+
+  private void log(String string) {
+    System.out.println(string + "() thread:" + Thread.currentThread().getId());
+  }
+
+  @Test(groups = "2", dependsOnGroups = "1")
+  public void b1() {
+    log("b1");
+  }
+
+  @Test(groups = "2", dependsOnGroups = "1")
+  public void b2() {
+    log("b2");
+  }
+
+  @Test(dependsOnGroups = "2")
+  public void c1() {
+    log("c1");
+  }
+
+  @Test(dependsOnGroups = { "1" })
+  public void d() {
     
   }
 
   @Test
-  public void g() {
+  public void x() {
+    log("x");
   }
 
+  @Test
+  public void y() {
+    log("y");
+  }
   //  @Test(groups = "mytest", dependsOnMethods = "g")
 //  public void f() {
 //  }
