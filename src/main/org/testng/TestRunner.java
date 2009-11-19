@@ -579,7 +579,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     
     ClassMethodMap cmm = new ClassMethodMap(m_allTestMethods);
 
-//    createSequentialWorkers(sequentialList, xmlTest.getParameters(), cmm, workers);
+    createSequentialWorkers(sequentialList, xmlTest.getParameters(), cmm, workers);
     MapList<TestMethodWorker> ml =
         createSequentialWorkers(sequentialMapList, xmlTest.getParameters(), cmm);
 
