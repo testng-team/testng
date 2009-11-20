@@ -51,4 +51,9 @@ public class DynamicGraph<T extends Comparable> {
     }
 //    System.out.println(m_dependedUpon);
   }
+
+  @Override
+  public String toString() {
+    return "[DynamicGraph nodes:" + m_nodes + "\nEdges:\n" + m_dependedUpon + "]";
+  }
 }

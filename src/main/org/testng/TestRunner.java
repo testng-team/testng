@@ -1,9 +1,11 @@
 package org.testng;
 
 
+import org.testng.collections.Maps;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.Constants;
+import org.testng.internal.DynamicGraph;
 import org.testng.internal.IConfigurationListener;
 import org.testng.internal.IInvoker;
 import org.testng.internal.IMethodWorker;
@@ -568,35 +570,69 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     List<ITestNGMethod> parallelList= new ArrayList<ITestNGMethod>();
     MapList<Integer, ITestNGMethod> sequentialMapList = new MapList<Integer, ITestNGMethod>();
 
-    computeTestLists(sequentialList, parallelList, sequentialMapList);
-    
-    log(3, "Found " + (sequentialList.size() + parallelList.size()) + " applicable methods");
-    
-    //
-    // Create the workers
-    //
-    List<TestMethodWorker> workers = new ArrayList<TestMethodWorker>();
-    
-    ClassMethodMap cmm = new ClassMethodMap(m_allTestMethods);
-
-    createSequentialWorkers(sequentialList, xmlTest.getParameters(), cmm, workers);
-    MapList<Integer, TestMethodWorker> ml =
-        createSequentialWorkers(sequentialMapList, xmlTest.getParameters(), cmm);
-
-    // All the parallel tests are placed in a separate worker, so they can be
-    // invoked in parallel
-    createParallelWorkers(parallelList, xmlTest, cmm, workers);
-    
-    m_testPlan =
-      new TestPlan(sequentialList, parallelList, cmm,
-        getBeforeSuiteMethods(), getAfterSuiteMethods(),
-        m_groupMethods, xmlTest);
-
-    try {
-      runWorkers(workers, xmlTest.getParallel(), ml);
+    if (true) {
+      computeTestLists(sequentialList, parallelList, sequentialMapList);
+      
+      log(3, "Found " + (sequentialList.size() + parallelList.size()) + " applicable methods");
+      
+      //
+      // Create the workers
+      //
+      List<TestMethodWorker> workers = new ArrayList<TestMethodWorker>();
+      
+      ClassMethodMap cmm = new ClassMethodMap(m_allTestMethods);
+  
+      createSequentialWorkers(sequentialList, xmlTest.getParameters(), cmm, workers);
+      MapList<Integer, TestMethodWorker> ml =
+          createSequentialWorkers(sequentialMapList, xmlTest.getParameters(), cmm);
+  
+      // All the parallel tests are placed in a separate worker, so they can be
+      // invoked in parallel
+      createParallelWorkers(parallelList, xmlTest, cmm, workers);
+      
+      m_testPlan =
+        new TestPlan(sequentialList, parallelList, cmm,
+          getBeforeSuiteMethods(), getAfterSuiteMethods(),
+          m_groupMethods, xmlTest);
+  
+      try {
+        runWorkers(workers, xmlTest.getParallel(), ml);
+      }
+      finally {
+        cmm.clear();
+      }
     }
-    finally {
-      cmm.clear();
+    else {
+      DynamicGraph<ITestNGMethod> graph = computeAlternateTestList(m_allTestMethods);
+      List<ITestNGMethod> methods = graph.getFreeNodes();
+      while (methods.size() != 0) {
+        
+        
+        List<IMethodInstance> methodInstances = new ArrayList<IMethodInstance>();
+        for (ITestNGMethod tm : methods) {
+          methodInstances.addAll(methodsToMultipleMethodInstances(tm));
+        }
+        
+        //
+        // Finally, sort the parallel methods by classes
+        //
+        methodInstances = m_methodInterceptor.intercept(methodInstances, this);
+        Map<String, String> params = xmlTest.getParameters();
+        ClassMethodMap cmm = new ClassMethodMap(m_allTestMethods);
+        Map<Class, Set<IMethodInstance>> list = groupMethodInstancesByClass(methodInstances);
+        List<IMethodWorker> workers = new ArrayList<IMethodWorker>();
+        for (Set<IMethodInstance> s : list.values()) {
+            workers.add(new TestMethodWorker(m_invoker,
+                s.toArray(new IMethodInstance[s.size()]),
+                m_xmlTest.getSuite(),
+                params,
+                methods.toArray(new ITestNGMethod[methods.size()]),
+                m_groupMethods,
+                cmm,
+                this));          
+        }
+        System.out.println("workers:" + workers);
+      }
     }
   }
   
@@ -829,6 +865,47 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     }
     
     return false;
+  }
+
+  private DynamicGraph<ITestNGMethod> computeAlternateTestList(ITestNGMethod[] methods) {
+    DynamicGraph<ITestNGMethod> result = new DynamicGraph<ITestNGMethod>();
+    Map<String, ITestNGMethod> map = Maps.newHashMap();
+    MapList<String, ITestNGMethod> groups = new MapList<String, ITestNGMethod>();
+
+    for (ITestNGMethod m : methods) {
+      map.put(m.getMethodName(), m);
+      for (String g : m.getGroups()) {
+        groups.put(g, m);
+      }
+    }
+    
+    for (ITestNGMethod m : methods) {
+      result.addNode(m);
+      
+      // Dependent methods
+      {
+        String[] dependentMethods = m.getMethodsDependedUpon();
+        for (String d : dependentMethods) {
+          ITestNGMethod dm = map.get(d);
+          if (dm == null) {
+            throw new TestNGException("Method " + m + " depends on nonexistent method " + d); 
+          }
+          result.addEdge(m, dm);
+        }
+      }
+
+      // Dependent groups
+      {
+        String[] dependentGroups = m.getGroupsDependedUpon();
+        for (String d : dependentGroups) {
+          for (ITestNGMethod ddm : groups.get(d)) {
+            result.addEdge(m, ddm);
+          }
+        }
+      }
+    }
+
+    return result;
   }
 
   /**
