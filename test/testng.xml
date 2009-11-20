@@ -50,6 +50,7 @@
       <class name="test.MethodTest" />
       <class name="test.sample.AfterClassCalledAtEnd"/>
       <class name="test.GraphTest"/>
+      <class name="test.DynamicGraphTest"/>
       <class name="test.configuration.ConfigurationTest"/>
       <class name="test.configuration.GroupsTest"/>
       <class name="test.configuration.ExternalConfigurationClass"/>

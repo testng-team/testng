@@ -41,7 +41,7 @@ public class DynamicGraph<T extends Comparable> {
   }
 
   public void remove(T node) {
-    System.out.println("Removing:" + node + " now:"+ m_dependedUpon);
+//    System.out.println("Removing:" + node + " now:"+ m_dependedUpon);
     m_nodes.remove(node);
     m_dependingOn.remove(node);
     for (T k : m_dependedUpon.getKeys()) {
@@ -49,24 +49,6 @@ public class DynamicGraph<T extends Comparable> {
       boolean f = l.remove(node);
       if (l.size() == 0) m_dependedUpon.remove(k);
     }
-    System.out.println(m_dependedUpon);
-  }
-
-  public static void main(String[] argv) {
-    DynamicGraph mp = new DynamicGraph();
-    mp.addEdge("b1", "a1");
-    mp.addEdge("b1", "a2");
-    mp.addEdge("b2", "a1");
-    mp.addEdge("b2", "a2");
-    mp.addEdge("c1", "b1");
-    mp.addEdge("c1", "b2");
-    mp.addNode("x");
-    mp.addNode("y");
-    System.out.println(mp.getFreeNodes());
-    System.out.println(mp.getFreeNodesAfterRemoving("a1"));
-    System.out.println(mp.getFreeNodesAfterRemoving("a2"));
-    System.out.println(mp.getFreeNodesAfterRemoving("b1"));
-    System.out.println(mp.getFreeNodesAfterRemoving("b2"));
-    System.out.println(mp.getFreeNodesAfterRemoving("x"));
+//    System.out.println(m_dependedUpon);
   }
 }
