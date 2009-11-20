@@ -14,19 +14,20 @@ import java.util.concurrent.TimeUnit;
  */
 public class GroupThreadPoolExecutor extends ThreadPoolExecutor {
     private int m_index = 0;
-    MapList<TestMethodWorker> m_runnables;
+    MapList<Integer, TestMethodWorker> m_runnables;
     private List<Runnable> m_activeRunnables = new ArrayList<Runnable>();
-    private Integer[] m_indices;
+    private List<Integer> m_indices;
 
     public GroupThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime,
-            TimeUnit unit, BlockingQueue<Runnable> workQueue, MapList<TestMethodWorker> runnables) {
+            TimeUnit unit, BlockingQueue<Runnable> workQueue,
+            MapList<Integer, TestMethodWorker> runnables) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
         m_runnables = runnables;
-        m_indices = runnables.getIndices();
+        m_indices = runnables.getKeys();
     }
 
     public void run() {
-        runRunnablesAtIndex(m_indices[m_index++]);
+        runRunnablesAtIndex(m_indices.get(m_index++));
     }
     
     private void runRunnablesAtIndex(int index) {
@@ -48,7 +49,7 @@ public class GroupThreadPoolExecutor extends ThreadPoolExecutor {
     }
 
     private void ppp(String string) {
-        System.out.println("[GroupThreadPoolExecutor] " + Thread.currentThread().getId() + " "
+        System.out.println("   [GroupThreadPoolExecutor] " + Thread.currentThread().getId() + " "
             + string);
     }
 

@@ -56,7 +56,7 @@ public class ThreadUtil {
     }
   }
 
-  public static void execute(MapList<TestMethodWorker> sequentialWorkers) {
+  public static void execute(MapList<Integer, TestMethodWorker> sequentialWorkers) {
     int nThreads = 3;
     GroupThreadPoolExecutor executor = new GroupThreadPoolExecutor(nThreads, nThreads,
         0L, TimeUnit.MILLISECONDS,

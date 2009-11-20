@@ -19,9 +19,9 @@ public class B {
   private void log(String string) {
     System.out.println(string + "() thread:" + Thread.currentThread().getId());
     int sleep = Math.abs(new Random().nextInt() % 4000);
-    System.out.println("   sleeping " + sleep);
+//    System.out.println("   sleeping " + sleep);
     try {
-        Thread.sleep(sleep);
+        Thread.sleep(10000);
     } catch (InterruptedException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
