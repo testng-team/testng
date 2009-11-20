@@ -10,6 +10,7 @@
 	<classpathentry kind="lib" path="3rdparty/ant.jar"/>
 	<classpathentry kind="lib" path="3rdparty/qdox-1.6.1.jar"/>
 	<classpathentry kind="lib" path="3rdparty/backport-util-concurrent-2.2.jar"/>
+  <classpathentry kind="lib" path="/usr/lib/jvm/java-1.5.0-sun-1.5.0.17/lib/tools.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
 	<classpathentry kind="output" path="z_build"/>
 </classpath>
