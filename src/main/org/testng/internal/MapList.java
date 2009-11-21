@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * A container to hold lists indexed by a key.
  */
-public class MapList<K extends Comparable, V> {
+public class MapList<K, V> {
   private Map<K, List<V>> m_objects = Maps.newHashMap();
 
   public void put(K key, V method) {
@@ -28,12 +28,13 @@ public class MapList<K extends Comparable, V> {
   }
 
   public List<K> getKeys() {
-    List<K> result = new ArrayList<K>();
-    for (K k : m_objects.keySet()) {
-      result.add(k);
-    }
-    Collections.sort(result);
-    return result;
+    return new ArrayList(m_objects.keySet());
+//    List<K> result = new ArrayList<K>();
+//    for (K k : m_objects.keySet()) {
+//      result.add(k);
+//    }
+//    Collections.sort(result);
+//    return result;
   }
 
   public boolean containsKey(K k) {
@@ -44,7 +45,7 @@ public class MapList<K extends Comparable, V> {
   public String toString() {
     StringBuilder result = new StringBuilder();
     List<K> indices = getKeys();
-    Collections.sort(indices);
+//    Collections.sort(indices);
     for (K i : indices) {
       result.append("\n  ").append(i).append(":");
       for (Object o : m_objects.get(i)) {

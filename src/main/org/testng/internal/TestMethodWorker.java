@@ -6,6 +6,7 @@ import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.collections.Lists;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.xml.XmlSuite;
 
@@ -84,14 +85,15 @@ public class TestMethodWorker implements IMethodWorker {
   
   @Override
   public String toString() {
-    StringBuilder result = new StringBuilder("[Worker on thread:" + Thread.currentThread().getId()
+    StringBuilder result = new StringBuilder("[Worker thread:" + Thread.currentThread().getId()
         + " ");
-    
-    result.append(" instances[0]:").append(m_testMethods[0].getInstances()[0]).append(" methods:");
 
-    for (IMethodInstance m : m_testMethods) {
-      result.append(m.getMethod()).append(" ");
-    }
+    result.append(m_testMethods[0].getMethod());
+//    result.append(" instances[0]:").append(m_testMethods[0].getInstances()[0]).append(" methods:");
+//
+//    for (IMethodInstance m : m_testMethods) {
+//      result.append(m.getMethod()).append(" ");
+//    }
     result.append("]");
 
     return result.toString();
@@ -245,6 +247,14 @@ public class TestMethodWorker implements IMethodWorker {
 
   public void setAllTestMethods(ITestNGMethod[] allTestMethods) {
     m_allTestMethods = allTestMethods;
+  }
+
+  public List<ITestNGMethod> getMethods() {
+    List<ITestNGMethod> result = Lists.newArrayList();
+    for (IMethodInstance m : m_testMethods) {
+      result.add(m.getMethod());
+    }
+    return result;
   }
 }
 

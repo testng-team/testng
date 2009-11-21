@@ -56,22 +56,6 @@ public class ThreadUtil {
     }
   }
 
-  public static void execute(MapList<Integer, TestMethodWorker> sequentialWorkers) {
-    int nThreads = 3;
-    GroupThreadPoolExecutor executor = new GroupThreadPoolExecutor(nThreads, nThreads,
-        0L, TimeUnit.MILLISECONDS,
-        new LinkedBlockingQueue<Runnable>(),
-        sequentialWorkers);
-    
-    executor.run();
-    try {
-      executor.awaitTermination(10, TimeUnit.SECONDS);
-    } catch (InterruptedException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-  }
-
   /**
    * Returns a readable name of the current executing thread.
    */

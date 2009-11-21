@@ -1,6 +1,7 @@
 package org.testng;
 
 
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.ConfigurationGroupMethods;
@@ -10,6 +11,7 @@ import org.testng.internal.IConfigurationListener;
 import org.testng.internal.IInvoker;
 import org.testng.internal.IMethodWorker;
 import org.testng.internal.ITestResultNotifier;
+import org.testng.internal.IWorkerFactory;
 import org.testng.internal.InvokedMethod;
 import org.testng.internal.Invoker;
 import org.testng.internal.MapList;
@@ -23,6 +25,7 @@ import org.testng.internal.TestNGMethodFinder;
 import org.testng.internal.Utils;
 import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.thread.GroupThreadPoolExecutor;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.junit.IJUnitTestRunner;
 import org.testng.v6.IRunGroupFactory;
@@ -33,6 +36,7 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -41,6 +45,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 /**
@@ -49,7 +55,7 @@ import java.util.regex.Pattern;
  * @author Cedric Beust, Apr 26, 2004
  * @author <a href = "mailto:the_mindstorm&#64;evolva.ro">Alexandru Popescu</a>
  */
-public class TestRunner implements ITestContext, ITestResultNotifier {
+public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFactory {
   /* generated */
   private static final long serialVersionUID = 4247820024988306670L;
   private ISuite m_suite;
@@ -534,7 +540,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       public long getMaxTimeOut() {
         return 0;
       }
-            
+
       public List<ITestResult> getTestResults() {
         return null;
       }
@@ -555,6 +561,10 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
             runMethods.addAll(tr.getTestMethods());
           }
         }
+      }
+
+      public List<ITestNGMethod> getMethods() {
+        throw new TestNGException("JUnit not supported");
       }
     });
 
@@ -589,11 +599,11 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
       // All the parallel tests are placed in a separate worker, so they can be
       // invoked in parallel
       createParallelWorkers(parallelList, xmlTest, cmm, workers);
-      
-      m_testPlan =
-        new TestPlan(sequentialList, parallelList, cmm,
-          getBeforeSuiteMethods(), getAfterSuiteMethods(),
-          m_groupMethods, xmlTest);
+
+//      m_testPlan =
+//        new TestPlan(sequentialList, parallelList, cmm,
+//          getBeforeSuiteMethods(), getAfterSuiteMethods(),
+//          m_groupMethods, xmlTest);
   
       try {
         runWorkers(workers, xmlTest.getParallel(), ml);
@@ -604,38 +614,69 @@ public class TestRunner implements ITestContext, ITestResultNotifier {
     }
     else {
       DynamicGraph<ITestNGMethod> graph = computeAlternateTestList(m_allTestMethods);
-      List<ITestNGMethod> methods = graph.getFreeNodes();
-      while (methods.size() != 0) {
-        
-        
-        List<IMethodInstance> methodInstances = new ArrayList<IMethodInstance>();
-        for (ITestNGMethod tm : methods) {
-          methodInstances.addAll(methodsToMultipleMethodInstances(tm));
-        }
-        
-        //
-        // Finally, sort the parallel methods by classes
-        //
-        methodInstances = m_methodInterceptor.intercept(methodInstances, this);
-        Map<String, String> params = xmlTest.getParameters();
-        ClassMethodMap cmm = new ClassMethodMap(m_allTestMethods);
-        Map<Class, Set<IMethodInstance>> list = groupMethodInstancesByClass(methodInstances);
-        List<IMethodWorker> workers = new ArrayList<IMethodWorker>();
-        for (Set<IMethodInstance> s : list.values()) {
-            workers.add(new TestMethodWorker(m_invoker,
-                s.toArray(new IMethodInstance[s.size()]),
-                m_xmlTest.getSuite(),
-                params,
-                methods.toArray(new ITestNGMethod[methods.size()]),
-                m_groupMethods,
-                cmm,
-                this));          
-        }
-        System.out.println("workers:" + workers);
+      GroupThreadPoolExecutor executor = new GroupThreadPoolExecutor(this, xmlTest,
+          3, 3, 10000, TimeUnit.SECONDS,
+          new LinkedBlockingQueue<Runnable>(), graph);
+      executor.run();
+      try {
+        executor.awaitTermination(10000, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
       }
+//      createWorkers(xmlTest, methods);
     }
   }
+
+  public List<IMethodWorker> createWorkers(XmlTest xmlTest, Set<ITestNGMethod> methods) {
+    List<IMethodWorker> workers = Lists.newArrayList();
+      
+    List<IMethodInstance> methodInstances = new ArrayList<IMethodInstance>();
+    for (ITestNGMethod tm : methods) {
+      methodInstances.addAll(methodsToMultipleMethodInstances(tm));
+    }
+
+    //
+    // Finally, sort the parallel methods by classes
+    //
+    methodInstances = m_methodInterceptor.intercept(methodInstances, this);
+    Map<String, String> params = xmlTest.getParameters();
+    ClassMethodMap cmm = new ClassMethodMap(m_allTestMethods);
+    Map<Class, Set<IMethodInstance>> list = groupMethodInstancesByClass(methodInstances);
+
+    for (Set<IMethodInstance> s : list.values()) {
+      for (IMethodInstance imi : s) {
+        TestMethodWorker worker = new TestMethodWorker(m_invoker,
+            new IMethodInstance[] { imi },
+            m_xmlTest.getSuite(),
+            params,
+            m_allTestMethods,
+            m_groupMethods,
+            cmm,
+            this);
+        workers.add(worker);
+      }
+    }
+//    for (Set<IMethodInstance> s : list.values()) {
+//      workers.add(new TestMethodWorker(m_invoker,
+//        s.toArray(new IMethodInstance[s.size()]),
+//        m_xmlTest.getSuite(),
+//        params,
+//        toMethods(s),
+//        m_groupMethods,
+//        cmm,
+//        this));          
+//    }
+    return workers;
+  }
   
+  private ITestNGMethod[] toMethods(Set<IMethodInstance> s) {
+    List<ITestNGMethod> result = Lists.newArrayList();
+    for (IMethodInstance imi : s) {
+      result.add(imi.getMethod());
+    }
+    return result.toArray(new ITestNGMethod[result.size()]);
+  }
+
   private TestPlan m_testPlan;
   private IRunGroupFactory m_runGroupFactory;
 

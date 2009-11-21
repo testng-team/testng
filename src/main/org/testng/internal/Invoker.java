@@ -29,6 +29,7 @@ import org.testng.xml.XmlTest;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -1641,6 +1642,10 @@ public class Invoker implements IInvoker {
 
     public List<ITestResult> getTestResults() {
       return m_results;
+    }
+
+    public List<ITestNGMethod> getMethods() {
+      return Arrays.asList(m_testMethod);
     }
   }
   

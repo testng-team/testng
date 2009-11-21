@@ -1,10 +1,15 @@
 package org.testng.internal.thread;
 
-import org.testng.internal.MapList;
-import org.testng.internal.TestMethodWorker;
+import org.testng.ITestNGMethod;
+import org.testng.internal.DynamicGraph;
+import org.testng.internal.IMethodWorker;
+import org.testng.internal.IWorkerFactory;
+import org.testng.internal.DynamicGraph.Status;
+import org.testng.xml.XmlTest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -13,52 +18,63 @@ import java.util.concurrent.TimeUnit;
  * An Executor that launches tasks per batches.
  */
 public class GroupThreadPoolExecutor extends ThreadPoolExecutor {
-    private int m_index = 0;
-    MapList<Integer, TestMethodWorker> m_runnables;
-    private List<Runnable> m_activeRunnables = new ArrayList<Runnable>();
-    private List<Integer> m_indices;
+  private DynamicGraph<ITestNGMethod> m_graph;
+  private List<Runnable> m_activeRunnables = new ArrayList<Runnable>();
+  private IWorkerFactory m_factory;
+  private XmlTest m_xmlTest;
 
-    public GroupThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime,
-            TimeUnit unit, BlockingQueue<Runnable> workQueue,
-            MapList<Integer, TestMethodWorker> runnables) {
-        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
-        m_runnables = runnables;
-        m_indices = runnables.getKeys();
-    }
+  public GroupThreadPoolExecutor(IWorkerFactory factory, XmlTest xmlTest, int corePoolSize,
+      int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue,
+      DynamicGraph<ITestNGMethod> graph) {
+    super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
+    m_graph = graph;
+    m_factory = factory;
+    m_xmlTest = xmlTest;
+  }
 
-    public void run() {
-        runRunnablesAtIndex(m_indices.get(m_index++));
-    }
-    
-    private void runRunnablesAtIndex(int index) {
-        List<TestMethodWorker> runnables = m_runnables.get(index);
-        ppp("Adding runnables " + runnables);
-        for(Runnable r : runnables) {
-            m_activeRunnables.add(r);
-            execute(r);
-        }
-    }
+  public void run() {
+    Set<ITestNGMethod> freeNodes = m_graph.getFreeNodes();
+    runNodes(freeNodes);
+  }
 
-    @Override
-    public void afterExecute(Runnable r, Throwable t) {
-        ppp("Runnable " + r + " finished");
-        m_activeRunnables.remove(r);
-        if (m_activeRunnables.isEmpty() && m_index < m_runnables.getSize()) {
-            runRunnablesAtIndex(m_index++);
-        }
+  private void runNodes(Set<ITestNGMethod> nodes) {
+    List<IMethodWorker> runnables = m_factory.createWorkers(m_xmlTest, nodes);
+    for (IMethodWorker r : runnables) {
+      m_activeRunnables.add(r);
+      setStatus(r, Status.RUNNING);
+      ppp("Executing: " + r);
+      execute(r);
     }
+  }
 
-    private void ppp(String string) {
-        System.out.println("   [GroupThreadPoolExecutor] " + Thread.currentThread().getId() + " "
-            + string);
+  private void setStatus(IMethodWorker worker, Status status) {
+    for (ITestNGMethod m : worker.getMethods()) {
+      m_graph.setStatus(m, status);
     }
+  }
 
-//    public void addRunnable(int i, Runnable runnable) {
-//        List<TestMethodWorker> l = m_runnables.get(i);
-//        if (l == null) {
-//            l = new ArrayList<TestMethodWorker>();
-//            m_runnables.put(i, l);
-//        }
-//        l.add(runnable);
+  @Override
+  public void afterExecute(Runnable r, Throwable t) {
+    ppp("Finished:" + r);
+    m_activeRunnables.remove(r);
+    setStatus((IMethodWorker) r, Status.FINISHED);
+    runNodes(m_graph.getFreeNodes());
+//    if (m_activeRunnables.isEmpty() && m_index < m_runnables.getSize()) {
+//      runNodes(m_index++);
 //    }
+  }
+
+  private void ppp(String string) {
+    System.out.println("   [GroupThreadPoolExecutor] " + Thread.currentThread().getId() + " "
+        + string);
+  }
+
+  // public void addRunnable(int i, Runnable runnable) {
+  // List<TestMethodWorker> l = m_runnables.get(i);
+  // if (l == null) {
+  // l = new ArrayList<TestMethodWorker>();
+  // m_runnables.put(i, l);
+  // }
+  // l.add(runnable);
+  // }
 }

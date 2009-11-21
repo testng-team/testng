@@ -1,8 +1,9 @@
 package org.testng.internal;
 
-import java.util.List;
-
+import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+
+import java.util.List;
 
 
 /**
@@ -12,4 +13,6 @@ public interface IMethodWorker extends Runnable {
   long getMaxTimeOut();
   
   List<ITestResult> getTestResults();
+
+  List<ITestNGMethod> getMethods();
 }
