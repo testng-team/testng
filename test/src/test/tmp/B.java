@@ -16,7 +16,7 @@ public class B {
 
   @AfterClass
   public void ac() {
-    log("afterClass");
+    log("************** afterClass");
   }
 
   @BeforeMethod

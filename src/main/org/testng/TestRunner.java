@@ -36,7 +36,6 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -584,7 +583,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     List<ITestNGMethod> parallelList= new ArrayList<ITestNGMethod>();
     MapList<Integer, ITestNGMethod> sequentialMapList = new MapList<Integer, ITestNGMethod>();
 
-    // new stuff
+    // false for new stuff
     if (true) {
       computeTestLists(sequentialList, parallelList, sequentialMapList);
       
@@ -594,16 +593,14 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       // Create the workers
       //
       List<TestMethodWorker> workers = new ArrayList<TestMethodWorker>();
-      
-      ClassMethodMap cmm = new ClassMethodMap(m_allTestMethods);
   
-      createSequentialWorkers(sequentialList, xmlTest.getParameters(), cmm, workers);
+      createSequentialWorkers(sequentialList, xmlTest.getParameters(), m_classMethodMap, workers);
       MapList<Integer, TestMethodWorker> ml =
-          createSequentialWorkers(sequentialMapList, xmlTest.getParameters(), cmm);
+          createSequentialWorkers(sequentialMapList, xmlTest.getParameters(), m_classMethodMap);
   
       // All the parallel tests are placed in a separate worker, so they can be
       // invoked in parallel
-      createParallelWorkers(parallelList, xmlTest, cmm, workers);
+      createParallelWorkers(parallelList, xmlTest, m_classMethodMap, workers);
 
 //      m_testPlan =
 //        new TestPlan(sequentialList, parallelList, cmm,
@@ -614,7 +611,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
         runWorkers(workers, xmlTest.getParallel(), ml);
       }
       finally {
-        cmm.clear();
+        m_classMethodMap.clear();
       }
     }
     else {
@@ -625,7 +622,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       executor.run();
       try {
         executor.awaitTermination(10000, TimeUnit.SECONDS);
-        executor.shutdown();
+        executor.shutdownNow();
       } catch (InterruptedException e) {
         e.printStackTrace();
       }

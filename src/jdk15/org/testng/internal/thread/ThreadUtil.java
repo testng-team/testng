@@ -1,20 +1,15 @@
 package org.testng.internal.thread;
 
 
-import org.testng.internal.MapList;
-import org.testng.internal.TestMethodWorker;
 import org.testng.internal.Utils;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -37,9 +32,10 @@ public class ThreadUtil {
     final CountDownLatch endGate= new CountDownLatch(tasks.size());
 
     ExecutorService pooledExecutor= Executors.newFixedThreadPool(threadPoolSize);
-    for(final Runnable tsk: tasks) {
+    for(final Runnable task: tasks) {
       try {
-        pooledExecutor.execute(new CountDownLatchedRunnable(tsk, endGate, triggerAtOnce ? startGate : null));
+        pooledExecutor.execute(new CountDownLatchedRunnable(task,
+            endGate, triggerAtOnce ? startGate : null));
       }
       catch(RejectedExecutionException reex) {
         ; // this should never happen as we submit all tasks at once

@@ -1,6 +1,7 @@
 package test.tmp;
 
 import org.testng.ITest;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -15,14 +16,17 @@ public class A implements ITest {
     };
   }
 
-  @Test(dataProvider = "dp")
-  public void verifyIPAddress(String ip) {
-    System.out.println("IP:" + ip);
-  }
+//  @Test(dataProvider = "dp")
+//  public void verifyIPAddress(String ip) {
+//    System.out.println("IP:" + ip);
+//  }
 
   @BeforeClass
   public void beforeClassA() {
-    
+  }
+
+  @AfterClass
+  public void afterClassA() {
   }
 
   @Test
