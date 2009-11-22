@@ -24,6 +24,7 @@
     <classes>
       <class name="test.tmp.B" />
 <!--
+      <class name="test.DynamicGraphTest" />
       <class name="test.invokedmethodlistener.InvokedMethodListenerTest" />
       <class name="test.tmp.B" />
       <class name="test.tmp.A" />

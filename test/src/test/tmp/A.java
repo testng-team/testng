@@ -10,9 +10,14 @@ public class A implements ITest {
   @DataProvider
   public Object[][] dp() {
     return new Object[][] {
-        new Object[] { "a" },
-        new Object[] { "b" },
+        new Object[] { "10.10.10" },
+        new Object[] { "10.10" },
     };
+  }
+
+  @Test(dataProvider = "dp")
+  public void verifyIPAddress(String ip) {
+    System.out.println("IP:" + ip);
   }
 
   @BeforeClass
@@ -24,9 +29,6 @@ public class A implements ITest {
   public void g1() {
   }
 
-  @Test
-  public void g2() {
-  }
 
   public String getTestName() {
     return "This is test A";

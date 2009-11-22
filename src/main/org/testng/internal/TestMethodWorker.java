@@ -165,7 +165,12 @@ public class TestMethodWorker implements IMethodWorker {
     
     // the whole invocation must be synchronized as other threads must
     // get a full initialized test object (not the same for @After)
-    Map<ITestClass, Set<Object>> invokedBeforeClassMethods= m_classMethodMap.getInvokedBeforeClassMethods();
+    Map<ITestClass, Set<Object>> invokedBeforeClassMethods =
+        m_classMethodMap.getInvokedBeforeClassMethods();
+//    System.out.println("SYNCHRONIZING ON " + testClass
+//        + " thread:" + Thread.currentThread().getId()
+//        + " invokedMap:" + invokedBeforeClassMethods.hashCode() + " "
+//        + invokedBeforeClassMethods);
     synchronized(testClass) {
       Set<Object> instances= invokedBeforeClassMethods.get(testClass);
       if(null == instances) {

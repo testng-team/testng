@@ -139,6 +139,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     
   };
   private List<IInvokedMethodListener> m_invokedMethodListeners;
+  private ClassMethodMap m_classMethodMap;
 
   public TestRunner(ISuite suite,
                     XmlTest test,
@@ -367,6 +368,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
                                                           m_runInfo,
                                                           m_annotationFinder,
                                                           m_excludedMethods);
+    m_classMethodMap = new ClassMethodMap(m_allTestMethods);
 
     m_afterXmlTestMethods = MethodHelper.collectAndOrderConfigurationMethods(afterXmlTestMethods,
                                                                m_runInfo,
@@ -381,6 +383,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
                                                              m_excludedMethods);
     // shared group methods
     m_groupMethods = new ConfigurationGroupMethods(m_allTestMethods, beforeGroupMethods, afterGroupMethods);
+
+
   }
 
   private void fixMethodsWithClass(ITestNGMethod[] methods,
@@ -580,6 +584,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     List<ITestNGMethod> parallelList= new ArrayList<ITestNGMethod>();
     MapList<Integer, ITestNGMethod> sequentialMapList = new MapList<Integer, ITestNGMethod>();
 
+    // new stuff
     if (true) {
       computeTestLists(sequentialList, parallelList, sequentialMapList);
       
@@ -620,6 +625,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       executor.run();
       try {
         executor.awaitTermination(10000, TimeUnit.SECONDS);
+        executor.shutdown();
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
@@ -640,7 +646,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     //
     methodInstances = m_methodInterceptor.intercept(methodInstances, this);
     Map<String, String> params = xmlTest.getParameters();
-    ClassMethodMap cmm = new ClassMethodMap(m_allTestMethods);
+//    ClassMethodMap cmm = new ClassMethodMap(m_allTestMethods);
     Map<Class, Set<IMethodInstance>> list = groupMethodInstancesByClass(methodInstances);
 
     for (Set<IMethodInstance> s : list.values()) {
@@ -651,7 +657,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
             params,
             m_allTestMethods,
             m_groupMethods,
-            cmm,
+            m_classMethodMap,
             this);
         workers.add(worker);
       }
@@ -669,13 +675,13 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     return workers;
   }
   
-  private ITestNGMethod[] toMethods(Set<IMethodInstance> s) {
-    List<ITestNGMethod> result = Lists.newArrayList();
-    for (IMethodInstance imi : s) {
-      result.add(imi.getMethod());
-    }
-    return result.toArray(new ITestNGMethod[result.size()]);
-  }
+//  private ITestNGMethod[] toMethods(Set<IMethodInstance> s) {
+//    List<ITestNGMethod> result = Lists.newArrayList();
+//    for (IMethodInstance imi : s) {
+//      result.add(imi.getMethod());
+//    }
+//    return result.toArray(new ITestNGMethod[result.size()]);
+//  }
 
   private TestPlan m_testPlan;
   private IRunGroupFactory m_runGroupFactory;
