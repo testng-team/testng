@@ -1,14 +1,19 @@
 package test.tmp;
 
+import org.testng.TestListenerAdapter;
+import org.testng.TestNG;
 import org.testng.annotations.Test;
 
-public class C extends Base {
-    @Test
-    public void c1() {}
-    
-    @Test
-    public void c2() {}
+import test.SimpleBaseTest;
 
-    @Test
-    public void c3() {}
+public class C extends SimpleBaseTest {
+  @Test
+  public void f() {
+    TestNG tng = create(A.class);
+    TestListenerAdapter tla = new TestListenerAdapter();
+    tng.addListener(tla);
+    tng.run();
+    
+    System.out.println("Passed:" + tla.getPassedTests());
+  }
 }

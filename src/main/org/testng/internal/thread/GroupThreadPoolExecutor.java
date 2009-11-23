@@ -18,6 +18,8 @@ import java.util.concurrent.TimeUnit;
  * An Executor that launches tasks per batches.
  */
 public class GroupThreadPoolExecutor extends ThreadPoolExecutor {
+  private static final boolean DEBUG = false;
+
   private DynamicGraph<ITestNGMethod> m_graph;
   private List<Runnable> m_activeRunnables = new ArrayList<Runnable>();
   private IWorkerFactory m_factory;
@@ -58,15 +60,22 @@ public class GroupThreadPoolExecutor extends ThreadPoolExecutor {
     ppp("Finished:" + r);
     m_activeRunnables.remove(r);
     setStatus((IMethodWorker) r, Status.FINISHED);
-    runNodes(m_graph.getFreeNodes());
+    if (m_graph.getNodeCount() == m_graph.getNodeCountWithStatus(Status.FINISHED)) {
+      shutdown();
+    } else {
+      Set<ITestNGMethod> freeNodes = m_graph.getFreeNodes();
+      runNodes(freeNodes);
+    }
 //    if (m_activeRunnables.isEmpty() && m_index < m_runnables.getSize()) {
 //      runNodes(m_index++);
 //    }
   }
 
   private void ppp(String string) {
-    System.out.println("   [GroupThreadPoolExecutor] " + Thread.currentThread().getId() + " "
-        + string);
+    if (DEBUG) {
+      System.out.println("   [GroupThreadPoolExecutor] " + Thread.currentThread().getId() + " "
+          + string);
+    }
   }
 
   // public void addRunnable(int i, Runnable runnable) {

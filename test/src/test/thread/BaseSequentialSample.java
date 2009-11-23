@@ -4,8 +4,8 @@ import java.util.Map;
 
 public class BaseSequentialSample {
 
-  protected void addId(long id) {
-    ppp("ADDING ID " + id);
+  protected void addId(String method, long id) {
+    ppp(method + " ID:" + id);
     getMap().put(id, id);
   }
 

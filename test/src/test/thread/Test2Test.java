@@ -7,13 +7,13 @@ public class Test2Test extends BaseSequentialSample {
   @Test
   public void f21() { 
     ppp("f21");
-    addId(Thread.currentThread().getId());
+    addId("Test2Test.f21()", Thread.currentThread().getId());
   }
   
   @Test
   public void f22() { 
     ppp("f22");
-    addId(Thread.currentThread().getId());
+    addId("Test2Test.f22()", Thread.currentThread().getId());
   }
 
 

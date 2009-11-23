@@ -7,17 +7,17 @@ public class SequentialSampleTest extends BaseSequentialSample {
   
   @Test
   public void f1() {
-    addId(Thread.currentThread().getId());
+    addId("SequentialSampleTest.f1()", Thread.currentThread().getId());
   }
   
   @Test
   public void f2() {
-    addId(Thread.currentThread().getId());
+    addId("SequentialSampleTest.f2()", Thread.currentThread().getId());
   }
   
   @Test
   public void f3() {
-    addId(Thread.currentThread().getId());
+    addId("SequentialSampleTest.f3()", Thread.currentThread().getId());
   }  
 
 }

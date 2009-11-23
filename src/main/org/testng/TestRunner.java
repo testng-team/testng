@@ -583,8 +583,14 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     List<ITestNGMethod> parallelList= new ArrayList<ITestNGMethod>();
     MapList<Integer, ITestNGMethod> sequentialMapList = new MapList<Integer, ITestNGMethod>();
 
+    String parallelMode = xmlTest.getParallel();
+    boolean parallel = XmlSuite.PARALLEL_METHODS.equals(parallelMode) 
+        || "true".equalsIgnoreCase(parallelMode)
+        || XmlSuite.PARALLEL_CLASSES.equals(parallelMode); 
+
     // false for new stuff
     if (true) {
+//    if (!parallel) {
       computeTestLists(sequentialList, parallelList, sequentialMapList);
       
       log(3, "Found " + (sequentialList.size() + parallelList.size()) + " applicable methods");
@@ -626,7 +632,6 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
-//      createWorkers(xmlTest, methods);
     }
   }
 
@@ -917,7 +922,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     MapList<String, ITestNGMethod> groups = new MapList<String, ITestNGMethod>();
 
     for (ITestNGMethod m : methods) {
-      map.put(m.getMethodName(), m);
+      map.put(m.getTestClass().getName() + "." + m.getMethodName(), m);
       for (String g : m.getGroups()) {
         groups.put(g, m);
       }
@@ -929,12 +934,14 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       // Dependent methods
       {
         String[] dependentMethods = m.getMethodsDependedUpon();
-        for (String d : dependentMethods) {
-          ITestNGMethod dm = map.get(d);
-          if (dm == null) {
-            throw new TestNGException("Method " + m + " depends on nonexistent method " + d); 
+        if (dependentMethods != null) {
+          for (String d : dependentMethods) {
+            ITestNGMethod dm = map.get(d);
+            if (dm == null) {
+              throw new TestNGException("Method " + m + " depends on nonexistent method " + d); 
+            }
+            result.addEdge(m, dm);
           }
-          result.addEdge(m, dm);
         }
       }
 
