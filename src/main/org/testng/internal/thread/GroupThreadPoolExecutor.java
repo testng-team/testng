@@ -35,23 +35,39 @@ public class GroupThreadPoolExecutor extends ThreadPoolExecutor {
   }
 
   public void run() {
-    Set<ITestNGMethod> freeNodes = m_graph.getFreeNodes();
-    runNodes(freeNodes);
+    synchronized(m_graph) {
+      Set<ITestNGMethod> freeNodes = m_graph.getFreeNodes();
+      runNodes(freeNodes);
+    }
   }
 
   private void runNodes(Set<ITestNGMethod> nodes) {
     List<IMethodWorker> runnables = m_factory.createWorkers(m_xmlTest, nodes);
     for (IMethodWorker r : runnables) {
+//      if (isTerminating()) {
+//        System.out.println("TERMINATING");        
+//      }
+//      if (isTerminated()) {
+//        System.out.println("TERMINATED");
+//      }
       m_activeRunnables.add(r);
       setStatus(r, Status.RUNNING);
       ppp("Executing: " + r);
-      execute(r);
+      try {
+        execute(r);
+      }
+      catch(Exception ex) {
+        ex.printStackTrace();
+      }
     }
   }
 
   private void setStatus(IMethodWorker worker, Status status) {
-    for (ITestNGMethod m : worker.getMethods()) {
-      m_graph.setStatus(m, status);
+    ppp("Set status:" + worker + " status:" + status);
+    synchronized(m_graph) {
+      for (ITestNGMethod m : worker.getMethods()) {
+        m_graph.setStatus(m, status);
+      }
     }
   }
 
@@ -60,11 +76,14 @@ public class GroupThreadPoolExecutor extends ThreadPoolExecutor {
     ppp("Finished:" + r);
     m_activeRunnables.remove(r);
     setStatus((IMethodWorker) r, Status.FINISHED);
-    if (m_graph.getNodeCount() == m_graph.getNodeCountWithStatus(Status.FINISHED)) {
-      shutdown();
-    } else {
-      Set<ITestNGMethod> freeNodes = m_graph.getFreeNodes();
-      runNodes(freeNodes);
+    synchronized(m_graph) {
+      if (m_graph.getNodeCount() == m_graph.getNodeCountWithStatus(Status.FINISHED)) {
+        ppp("SHUTTING DOWN EXECUTOR " + this);
+        shutdown();
+      } else {
+        Set<ITestNGMethod> freeNodes = m_graph.getFreeNodes();
+        runNodes(freeNodes);
+      }
     }
 //    if (m_activeRunnables.isEmpty() && m_index < m_runnables.getSize()) {
 //      runNodes(m_index++);

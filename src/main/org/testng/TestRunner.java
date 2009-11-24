@@ -25,6 +25,7 @@ import org.testng.internal.TestNGMethodFinder;
 import org.testng.internal.Utils;
 import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.Sets;
 import org.testng.internal.thread.GroupThreadPoolExecutor;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.junit.IJUnitTestRunner;
@@ -621,10 +622,12 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       }
     }
     else {
+      int threadCount = xmlTest.getThreadCount();
       DynamicGraph<ITestNGMethod> graph = computeAlternateTestList(m_allTestMethods);
       GroupThreadPoolExecutor executor = new GroupThreadPoolExecutor(this, xmlTest,
-          3, 3, 10000, TimeUnit.SECONDS,
+          threadCount, threadCount, 0, TimeUnit.MILLISECONDS,
           new LinkedBlockingQueue<Runnable>(), graph);
+      System.out.println("Executor:" + executor + " XmlTest:" + xmlTest);
       executor.run();
       try {
         executor.awaitTermination(10000, TimeUnit.SECONDS);
@@ -635,9 +638,30 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     }
   }
 
+  /**
+   * Create a list of workers to run the methods passed in parameter. Most of the time,
+   * each worker wil run one method (or maybe multiple times if there are several instances
+   * to consider) but in the case where the class is annotated with @Test(sequential=true),
+   * the methods must be run sequentially so they will all be put in the same worker.
+   */
   public List<IMethodWorker> createWorkers(XmlTest xmlTest, Set<ITestNGMethod> methods) {
-    List<IMethodWorker> workers = Lists.newArrayList();
-      
+    List<IMethodWorker> result = Lists.newArrayList();
+
+    // Methods that belong to classes with a sequential=true attribute must
+    // all be run in the same worker
+    Set<Class> sequentialClasses = Sets.newHashSet();
+    for (ITestNGMethod m : methods) {
+      Class<? extends ITestClass> cls = m.getRealClass();
+      org.testng.annotations.ITestAnnotation test = 
+        (org.testng.annotations.ITestAnnotation) m_annotationFinder.
+          findAnnotation(cls,
+              org.testng.annotations.ITestAnnotation.class);
+
+      if (test != null && test.getSequential()) {
+        sequentialClasses.add(cls);
+      }
+    }
+
     List<IMethodInstance> methodInstances = new ArrayList<IMethodInstance>();
     for (ITestNGMethod tm : methods) {
       methodInstances.addAll(methodsToMultipleMethodInstances(tm));
@@ -651,30 +675,40 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
 //    ClassMethodMap cmm = new ClassMethodMap(m_allTestMethods);
     Map<Class, Set<IMethodInstance>> list = groupMethodInstancesByClass(methodInstances);
 
-    for (Set<IMethodInstance> s : list.values()) {
-      for (IMethodInstance imi : s) {
+    for (Class c : list.keySet()) {
+      Set<IMethodInstance> s = list.get(c);
+      // If the current class is marked sequential, we want to run all its method
+      // in one TestMethodWorker to guarantee a sequential order. Otherwise, we
+      // create one worker per method
+      if (sequentialClasses.contains(c)) {
+        // Sequential class: all in one worker
         TestMethodWorker worker = new TestMethodWorker(m_invoker,
-            new IMethodInstance[] { imi },
+            s.toArray(new IMethodInstance[s.size()]),
             m_xmlTest.getSuite(),
             params,
             m_allTestMethods,
             m_groupMethods,
             m_classMethodMap,
             this);
-        workers.add(worker);
+        result.add(worker);
+      }
+      else {
+        // Parallel class: each method in its own worker
+        for (IMethodInstance imi : s) {
+          TestMethodWorker worker = new TestMethodWorker(m_invoker,
+              new IMethodInstance[] { imi },
+              m_xmlTest.getSuite(),
+              params,
+              m_allTestMethods,
+              m_groupMethods,
+              m_classMethodMap,
+              this);
+          result.add(worker);
+        }
       }
     }
-//    for (Set<IMethodInstance> s : list.values()) {
-//      workers.add(new TestMethodWorker(m_invoker,
-//        s.toArray(new IMethodInstance[s.size()]),
-//        m_xmlTest.getSuite(),
-//        params,
-//        toMethods(s),
-//        m_groupMethods,
-//        cmm,
-//        this));          
-//    }
-    return workers;
+
+    return result;
   }
   
 //  private ITestNGMethod[] toMethods(Set<IMethodInstance> s) {
