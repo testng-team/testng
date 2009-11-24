@@ -590,8 +590,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
         || XmlSuite.PARALLEL_CLASSES.equals(parallelMode); 
 
     // false for new stuff
-    if (true) {
-//    if (!parallel) {
+//    if (true) {
+    if (!parallel) {
       computeTestLists(sequentialList, parallelList, sequentialMapList);
       
       log(3, "Found " + (sequentialList.size() + parallelList.size()) + " applicable methods");
@@ -627,7 +627,6 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       GroupThreadPoolExecutor executor = new GroupThreadPoolExecutor(this, xmlTest,
           threadCount, threadCount, 0, TimeUnit.MILLISECONDS,
           new LinkedBlockingQueue<Runnable>(), graph);
-      System.out.println("Executor:" + executor + " XmlTest:" + xmlTest);
       executor.run();
       try {
         executor.awaitTermination(10000, TimeUnit.SECONDS);
@@ -639,16 +638,18 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   }
 
   /**
-   * Create a list of workers to run the methods passed in parameter. Most of the time,
-   * each worker wil run one method (or maybe multiple times if there are several instances
-   * to consider) but in the case where the class is annotated with @Test(sequential=true),
-   * the methods must be run sequentially so they will all be put in the same worker.
+   * Create a list of workers to run the methods passed in parameter.
+   * Each test method is run in its own worker except in the following cases:
+   * - The method belongs to a class that has @Test(sequential=true)
+   * - The parallel attribute is set to "classes"
+   * In both these cases, all the methods belonging to that class will then
+   * be put in the same worker in order to run in the same thread.
    */
   public List<IMethodWorker> createWorkers(XmlTest xmlTest, Set<ITestNGMethod> methods) {
     List<IMethodWorker> result = Lists.newArrayList();
 
-    // Methods that belong to classes with a sequential=true attribute must
-    // all be run in the same worker
+    // Methods that belong to classes with a sequential=true or parallel=classes
+    // attribute must all be run in the same worker
     Set<Class> sequentialClasses = Sets.newHashSet();
     for (ITestNGMethod m : methods) {
       Class<? extends ITestClass> cls = m.getRealClass();
@@ -657,7 +658,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
           findAnnotation(cls,
               org.testng.annotations.ITestAnnotation.class);
 
-      if (test != null && test.getSequential()) {
+      // If either sequential=true or parallel=classes, mark this class sequential
+      if (test != null && test.getSequential() ||
+          XmlSuite.PARALLEL_CLASSES.equals(xmlTest.getParallel())) {
         sequentialClasses.add(cls);
       }
     }
@@ -681,7 +684,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       // in one TestMethodWorker to guarantee a sequential order. Otherwise, we
       // create one worker per method
       if (sequentialClasses.contains(c)) {
-        // Sequential class: all in one worker
+        // Sequential class: all methods in one worker
         TestMethodWorker worker = new TestMethodWorker(m_invoker,
             s.toArray(new IMethodInstance[s.size()]),
             m_xmlTest.getSuite(),
