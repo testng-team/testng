@@ -31,7 +31,7 @@
         </groups>
  -->
     <classes>
-      <class name="test.thread.ParallelTestTest" />
+      <class name="test.thread.MultiThreadedDependentTest" />
 <!--
       <class name="test.tmp.B" />
       <class name="test.testng285.TestNG285Test" />

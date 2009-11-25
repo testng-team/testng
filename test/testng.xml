@@ -71,6 +71,7 @@
       <class name="test.thread.ParallelTestTest" />
       <class name="test.thread.FactoryTest" />
       <class name="test.thread.DataProviderThreadPoolSizeTest" />
+      <class name="test.thread.MultiThreadedDependentTest" />
       <class name="test.simple.IncludedExcludedTest" />
       <class name="test.reports.ReportTest" />
       <class name="test.configuration.BeforeTestOrderingTest" />
