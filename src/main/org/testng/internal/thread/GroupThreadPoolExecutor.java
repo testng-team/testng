@@ -41,15 +41,12 @@ public class GroupThreadPoolExecutor extends ThreadPoolExecutor {
     }
   }
 
+  /**
+   * Create one worker per node and execute them.
+   */
   private void runNodes(Set<ITestNGMethod> nodes) {
     List<IMethodWorker> runnables = m_factory.createWorkers(m_xmlTest, nodes);
     for (IMethodWorker r : runnables) {
-//      if (isTerminating()) {
-//        System.out.println("TERMINATING");        
-//      }
-//      if (isTerminated()) {
-//        System.out.println("TERMINATED");
-//      }
       m_activeRunnables.add(r);
       setStatus(r, Status.RUNNING);
       ppp("Executing: " + r);

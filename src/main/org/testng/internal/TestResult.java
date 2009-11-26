@@ -169,12 +169,23 @@ public class TestResult implements ITestResult {
   public String toString() {
     List<String> output = Reporter.getOutput(this);
     String result = "[TestResult: " + getName() 
-        + " STATUS:" + m_status
+        + " STATUS:" + toString(m_status)
         + " METHOD:" + m_method;
     result += output != null && output.size() > 0 ? output.get(0) : ""
         + "]\n";  
         
       return result;
+  }
+
+  private String toString(int status) {
+    switch(status) {
+      case SUCCESS: return "SUCCESS";
+      case FAILURE: return "FAILURE";
+      case SKIP: return "SKIP";
+      case SUCCESS_PERCENTAGE_FAILURE: return "SUCCESS WITHIN PERCENTAGE";
+      case STARTED: return "STARTED"; 
+      default: throw new RuntimeException();
+    }
   }
 
   public String getHost() {

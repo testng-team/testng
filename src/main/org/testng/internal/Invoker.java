@@ -1074,6 +1074,7 @@ public class Invoker implements IInvoker {
         }
 
         testResult.setStatus(ITestResult.SKIP);
+        result.add(testResult);
         m_notifier.addSkippedTest(testMethod, testResult);
         runTestListeners(testResult);
       }
@@ -1347,7 +1348,8 @@ public class Invoker implements IInvoker {
    * @param testClass
    * @return dependencies have been run successfully
    */
-  private boolean checkDependencies(ITestNGMethod testMethod, ITestClass testClass, ITestNGMethod[] allTestMethods)
+  private boolean checkDependencies(ITestNGMethod testMethod, ITestClass testClass,
+      ITestNGMethod[] allTestMethods)
   {
     boolean result= true;
 

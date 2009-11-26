@@ -1,8 +1,10 @@
 Current:
 
+Added: Dependent methods can now run in their own thread
 Added: dataProviderThreadCount can be set from the command line and from ant (Adrian Grealish)
 Added: ITestAnnotation#setDataProvider
 Added: Assert#assertEquals() methods for Sets and Maps
+Fixed: @DataProvider and dependent methods were not skipping correctly (Francois Reynaud)
 Fixed: TESTNG-347 suite with parallel="tests" and test with parallel="classes" doesn't work correctly (Rob Allen)
 Fixed: TESTNG-67: @Configuration/@Factory methods in base class being ignored
 Fixed: Inner test classes were not excluded properly (Carsten Gubernator)

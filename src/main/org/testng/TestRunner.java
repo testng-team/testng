@@ -975,7 +975,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
           for (String d : dependentMethods) {
             ITestNGMethod dm = map.get(d);
             if (dm == null) {
-              throw new TestNGException("Method " + m + " depends on nonexistent method " + d); 
+              throw new TestNGException("Method \"" + m
+                  + "\" depends on nonexistent method \"" + d + "\""); 
             }
             result.addEdge(m, dm);
           }
@@ -986,7 +987,12 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       {
         String[] dependentGroups = m.getGroupsDependedUpon();
         for (String d : dependentGroups) {
-          for (ITestNGMethod ddm : groups.get(d)) {
+          List<ITestNGMethod> dg = groups.get(d);
+          if (dg == null) {
+            throw new TestNGException("Method \"" + m
+                + "\" depends on nonexistent group \"" + d + "\""); 
+          }
+          for (ITestNGMethod ddm : dg) {
             result.addEdge(m, ddm);
           }
         }
@@ -1308,6 +1314,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   private void logFailedTest(ITestNGMethod method,
                              ITestResult tr,
                              boolean withinSuccessPercentage) {
+    m_passedTests.removeResult(method);
     if (withinSuccessPercentage) {
       m_failedButWithinSuccessPercentageTests.addResult(tr, method);
     }

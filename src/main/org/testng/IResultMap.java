@@ -11,7 +11,9 @@ public interface IResultMap extends Serializable {
   public Set<ITestResult> getResults(ITestNGMethod method);
   
   public Set<ITestResult> getAllResults();
-  
+
+  public void removeResult(ITestNGMethod m);
+
   public Collection<ITestNGMethod> getAllMethods();
   
   public int size();
