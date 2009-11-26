@@ -1,4 +1,4 @@
-Welcome to TestNG 5.9
+Welcome to TestNG 5.1
 
 Please note that even though the .zip distribution contains the TestNG sources,
 you will not be able to build the software with them because we decided
@@ -8,4 +8,5 @@ If you want to build TestNG, please sync to the Subversion depot (the exact info
 can be found at http://testng.org).
 
 -- 
-The TestNG team
+Cedric
+
