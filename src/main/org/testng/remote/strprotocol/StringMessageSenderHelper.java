@@ -60,16 +60,17 @@ public class StringMessageSenderHelper {
                                         false /*autoflush*/);
         }
         catch(UnsupportedEncodingException ueex) {
-          // HINT: this should never happen
-          m_outStream = new PrintWriter(new BufferedWriter(new OutputStreamWriter(m_clientSocket.getOutputStream())),
-                                        false /*autoflush*/);
+          // Should never happen
+          m_outStream = new PrintWriter(new BufferedWriter(
+              new OutputStreamWriter(m_clientSocket.getOutputStream())),
+                  false /*autoflush*/);
         }
 
         try {
           m_inStream = new BufferedReader(new InputStreamReader(m_clientSocket.getInputStream(), "UTF-8")); //$NON-NLS-1$
         }
         catch(UnsupportedEncodingException ueex) {
-          // HINT: this should never happen
+          // Should never happen
           m_inStream = new BufferedReader(new InputStreamReader(m_clientSocket.getInputStream()));
         }
 

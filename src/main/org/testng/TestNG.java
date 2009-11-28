@@ -323,6 +323,10 @@ public class TestNG {
   }
   
   public void initializeSuitesAndJarFile() {
+    // The Eclipse plug-in (RemoteTestNG) might have invoked this method already
+    // so don't initialize suites twice.
+    if (m_suites.size() > 0) return;
+
     //
     // Parse the suites that were passed on the command line
     //

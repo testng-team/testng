@@ -27,6 +27,10 @@ Check "Run an application" in "Program to run", and select org.eclipse.equinox.p
 
 The program arguments are (replace the update site directory appropriately):
 
--os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl}    -application org.eclipse.equinox.p2.metadata.generator.EclipseGenerator -updateSite /usr/local/cbeust/java/testng-eclipse-update-site -site file:/usr/local/cbeust/java/testng-eclipse-update-site/site.xml  -metadataRepository file:/usr/local/cbeust/java/testn-eclipse-update-site/  -artifactRepository file:/usr/local/cbeust/java/testn-eclipse-update-site -artifactRepositoryName "Ganymede Artifacts" -compress  -append  -reusePack200Files  -noDefaultIUs  -vmargs -Xmx256m
+Linux:
+-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl}    -application org.eclipse.equinox.p2.metadata.generator.EclipseGenerator -updateSite /usr/local/cbeust/java/testng-eclipse-update-site -site file:/usr/local/cbeust/java/testng-eclipse-update-site/site.xml  -metadataRepository file:/usr/local/cbeust/java/testng-eclipse-update-site/  -artifactRepository file:/usr/local/cbeust/java/testng-eclipse-update-site -artifactRepositoryName "Ganymede Artifacts" -compress  -append  -reusePack200Files  -noDefaultIUs  -vmargs -Xmx256m
 
+Mac
+-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl}    -application org.eclipse.equinox.p2.metadata.generator.EclipseGenerator -updateSite /Users/cbeust/java/testng-eclipse-update-site -site file:/Users/cbeust/java/testng-eclipse-update-site/site.xml  -metadataRepository file:/Users/cbeust/java/testng-eclipse-update-site/  -artifactRepository file:/Users/cbeust/java/testng-eclipse-update-site -artifactRepositoryName "Ganymede Artifacts" -compress  -append  -reusePack200Files  -noDefaultIUs  -vmargs -Xmx256m
 
+This will generate the site in ~/java/testng-eclipse-update-site

@@ -73,7 +73,7 @@ public class RemoteTestNG extends TestNG {
           super.run();
         }
         else {
-          System.err.println("WARNING: No test suite found.  Nothing to run");
+          System.err.println("No test suite found.  Nothing to run");
         }
       }
       else {
@@ -120,7 +120,7 @@ public class RemoteTestNG extends TestNG {
 
     RemoteTestNG testNG= new RemoteTestNG();
     testNG.configure(commandLineArgs);
-
+    testNG.initializeSuitesAndJarFile();
     testNG.run();
   }
 

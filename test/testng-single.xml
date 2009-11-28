@@ -1,15 +1,16 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="SingleSuite" verbose="2" parallel="methods" thread-count="3"
+<suite name="SingleSuite" verbose="10" parallel="false" thread-count="3"
     data-provider-thread-count="3">
 
   <parameter name="factory-param" value="FactoryParam" />
 
   <test name="Simple1">
     <classes>
-      <class name="test.dataprovider.DependentSampleTest" />
+      <class name="test.thread.MultiThreadedDependentTest" />
     </classes>
 <!--
+      <class name="test.dataprovider.DependentSampleTest" />
       <class name="test.dataprovider.FailedDataProviderTest" />
      <groups>
         <run>

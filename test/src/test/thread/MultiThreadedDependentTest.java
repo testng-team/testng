@@ -70,9 +70,11 @@ public class MultiThreadedDependentTest extends SimpleBaseTest {
     TestNG tng = create(MultiThreadedDependentSampleTest.class);
     tng.setThreadCount(threadCount);
     tng.setParallel("methods");
-    tng.run();
     Map<Long, Long> map = Helper.getMap(MultiThreadedDependentSampleTest.class.getName());
-    Assert.assertEquals(map.size(), threadCount);
-    assertOrder(MultiThreadedDependentSampleTest.m_methods);
+    synchronized(map) {
+      tng.run();
+      Assert.assertEquals(map.size(), threadCount);
+      assertOrder(MultiThreadedDependentSampleTest.m_methods);
+    }
   }
 }
