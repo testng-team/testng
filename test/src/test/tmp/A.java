@@ -6,8 +6,15 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.util.regex.Pattern;
+
 public class A implements ITest {
   
+  public static void main(String[] args) {
+    String s = new A().toString();
+    System.out.println(Pattern.matches(".*@[0-9a-f]+$", new A().toString()));
+  }
+
   @DataProvider
   public Object[][] dp() {
     return new Object[][] {

@@ -31,7 +31,12 @@ public class FactoryTest2 {
     Integer n = new Integer(m_number);
     m_numbers.put(n, n);
   }
-  
+
+  @Override
+  public String toString() {
+    return "[FactoryTest2 " + m_number + "]";
+  }
+
   private static void ppp(String s) {
     System.out.println("[FactoryTest2] " + s);
   }

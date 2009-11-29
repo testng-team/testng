@@ -257,10 +257,10 @@ public class BaseTest {
 
   /** Map<String, List<ITestResult>> */
   private void addTest(Map tests, ITestResult t) {
-    List l = (List) tests.get(t.getName());
+    List l = (List) tests.get(t.getMethod().getMethodName());
     if(null == l) {
       l = new ArrayList();
-      tests.put(t.getName(), l);
+      tests.put(t.getMethod().getMethodName(), l);
     }
     l.add(t);
   }

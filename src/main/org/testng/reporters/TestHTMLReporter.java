@@ -314,8 +314,8 @@ public class TestHTMLReporter extends TestListenerAdapter {
   
   private static class NameComparator implements Comparator<ITestResult> {
     public int compare(ITestResult o1, ITestResult o2) {
-      String c1 = o1.getName();
-      String c2 = o2.getName();
+      String c1 = o1.getMethod().getMethodName();
+      String c2 = o2.getMethod().getMethodName();
       return c1.compareTo(c2);
     }
   

@@ -35,15 +35,15 @@ public class JarTest extends SimpleBaseTest {
   public void jarWithTestngXml() {
     TestListenerAdapter tla = init("withtestngxml.jar");
     Assert.assertEquals(tla.getPassedTests().size(), 1);
-    Assert.assertEquals(tla.getPassedTests().get(0).getName(), "f");
+    Assert.assertEquals(tla.getPassedTests().get(0).getMethod().getMethodName(), "f");
   }
 
   @Test
   public void jarWithoutTestngXml() {
     TestListenerAdapter tla = init("withouttestngxml.jar");
     Assert.assertEquals(tla.getPassedTests().size(), 2);
-    String first = tla.getPassedTests().get(0).getName();
-    String second = tla.getPassedTests().get(1).getName();
+    String first = tla.getPassedTests().get(0).getMethod().getMethodName();
+    String second = tla.getPassedTests().get(1).getMethod().getMethodName();
     Assert.assertTrue("f".equals(first) || "g".equals(first));
     Assert.assertTrue("f".equals(second) || "g".equals(second));
   }
@@ -59,8 +59,8 @@ public class JarTest extends SimpleBaseTest {
     tng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), 2);
-    String first = tla.getPassedTests().get(0).getName();
-    String second = tla.getPassedTests().get(1).getName();
+    String first = tla.getPassedTests().get(0).getMethod().getMethodName();
+    String second = tla.getPassedTests().get(1).getMethod().getMethodName();
     Assert.assertTrue("f".equals(first) || "g".equals(first));
     Assert.assertTrue("f".equals(second) || "g".equals(second));
 

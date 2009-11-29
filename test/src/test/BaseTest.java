@@ -289,10 +289,10 @@ public class BaseTest extends BaseDistributedTest {
   }
 
   private void addTest(Map<String, List<ITestResult>> tests, ITestResult t) {
-    List<ITestResult> l= tests.get(t.getName());
+    List<ITestResult> l= tests.get(t.getMethod().getMethodName());
     if(null == l) {
       l= new ArrayList<ITestResult>();
-      tests.put(t.getName(), l);
+      tests.put(t.getMethod().getMethodName(), l);
     }
     l.add(t);
   }

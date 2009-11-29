@@ -31,8 +31,8 @@ public class CommandLineTest {
     
     List<ITestResult> passed = tla.getPassedTests();
     assertEquals(passed.size(), 2);
-    String test1 = passed.get(0).getName();
-    String test2 = passed.get(1).getName();
+    String test1 = passed.get(0).getMethod().getMethodName();
+    String test2 = passed.get(1).getMethod().getMethodName();
     
     assertTrue(JUnitSample1.EXPECTED1.equals(test1) && JUnitSample1.EXPECTED2.equals(test2) || 
         JUnitSample1.EXPECTED1.equals(test2) && JUnitSample1.EXPECTED2.equals(test1));

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
+
 import edu.emory.mathcs.backport.java.util.concurrent.ConcurrentHashMap;
 
 import org.testng.IResultMap;
@@ -40,6 +42,15 @@ public class ResultMap implements IResultMap {
 
   public Collection<ITestNGMethod> getAllMethods() {
     return m_map.values();
+  }
+
+  public void removeResult(ITestNGMethod m) {
+    for (Entry entry : m_map.entrySet()) {
+      if (entry.getValue().equals(m)) {
+        m_map.remove(entry.getKey());
+        return;
+      }
+    }
   }
 
 }

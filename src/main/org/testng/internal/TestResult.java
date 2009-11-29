@@ -3,6 +3,8 @@ package org.testng.internal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.testng.IClass;
 import org.testng.ITest;
@@ -72,7 +74,20 @@ public class TestResult implements ITestResult {
     // Assign a name if the instance is an instanceof ITest
     //
     m_instance = instance;
-    m_name = m_method.getMethod().getName();
+//    m_name = m_method.getMethod().getName();
+    if (m_instance == null) {
+      m_name = m_method.getMethodName();
+    } else if (m_instance instanceof ITest) {
+      m_name = ((ITest) m_instance).getTestName();
+    } else {
+      String string = m_instance.toString();
+      // Only display toString() if it's been overridden by the user
+      if (!Pattern.matches(".*@[0-9a-f]+$", string)) {
+        m_name = string;
+      } else {
+        m_name = getMethod().getMethodName();
+      }
+    }
   }
 
   private static void ppp(String s) {
