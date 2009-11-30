@@ -5,12 +5,18 @@
 
   <parameter name="factory-param" value="FactoryParam" />
 
-  <test name="Simple1">
+  <test name="Simple2">
     <classes>
       <class name="test.dataprovider.Sample1Test" />
+    </classes>
+  </test>
+
+  <test name="Simple1">
+    <classes>
       <class name="test.factory.FactoryTest" />
     </classes>
 <!--
+      <class name="test.dataprovider.Sample1Test" />
       <class name="test.dataprovider.DependentSampleTest" />
       <class name="test.dataprovider.FailedDataProviderTest" />
      <groups>

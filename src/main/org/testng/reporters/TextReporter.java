@@ -1,5 +1,6 @@
 package org.testng.reporters;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 import org.testng.ITestContext;
@@ -79,7 +80,7 @@ public class TextReporter extends TestListenerAdapter {
     
     for(Object o : getPassedTests()) {
       ITestResult tr = (ITestResult) o;
-      logResult("PASSED", tr.getName(), tr.getMethod().getDescription(), null, tr.getParameters(), tr.getMethod().getMethod().getParameterTypes());
+      logResult("PASSED", tr, null);
     }
 
     for(Object o : getFailedTests()) {
@@ -92,12 +93,12 @@ public class TextReporter extends TestListenerAdapter {
         }
       }
 
-      logResult("FAILED", tr.getName(), tr.getMethod().getDescription(), stackTrace, tr.getParameters(), tr.getMethod().getMethod().getParameterTypes());
+      logResult("FAILED", tr, stackTrace);
     }
 
     for(Object o : getSkippedTests()) {
       ITestResult tr = (ITestResult) o;
-      logResult("SKIPPED", tr.getName(), tr.getMethod().getDescription(), null, tr.getParameters(), tr.getMethod().getMethod().getParameterTypes());
+      logResult("PASSED", tr, null);
     }
 
     ITestNGMethod[] ft = resultsToMethods(getFailedTests());
@@ -119,7 +120,12 @@ public class TextReporter extends TestListenerAdapter {
   private String getName() {
     return m_testName;
   }
-  
+
+  private void logResult(String status, ITestResult tr, String stackTrace) {
+    logResult(status, tr.getName(), tr.getMethod().getDescription(), null,
+        tr.getParameters(), tr.getMethod().getMethod().getParameterTypes());
+  }
+
   private void logResult(String status, String message) {
     StringBuffer buf= new StringBuffer();
     if(!"".equals(status)) {
