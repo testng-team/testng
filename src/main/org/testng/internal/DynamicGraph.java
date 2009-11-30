@@ -48,8 +48,14 @@ public class DynamicGraph<T> {
   public Set<T> getFreeNodes() {
     Set<T> result = Sets.newHashSet();
     for (T m : m_nodes) {
+      // A node is free if...
+      // - it's ready to run
       if (m_statuses.get(m) != Status.READY) continue;
+
+      // - no other nodes depend on it
       if (!m_dependedUpon.containsKey(m)) result.add(m);
+
+      // - or all the nodes that it depends on have already run 
       else if (getUnfinishedNodes(m_dependedUpon.get(m)).size() == 0) result.add(m);
     }
     return result;
