@@ -4,6 +4,7 @@ Added: Dependent methods can now run in their own thread
 Added: dataProviderThreadCount can be set from the command line and from ant (Adrian Grealish)
 Added: ITestAnnotation#setDataProvider
 Added: Assert#assertEquals() methods for Sets and Maps
+Fixed: packages=".*" wasn't working properly (sandopolus)
 Fixed: TestResult#getName now returns the description instead of the method
 Fixed: @DataProvider and dependent methods were not skipping correctly (Francois Reynaud)
 Fixed: TESTNG-347 suite with parallel="tests" and test with parallel="classes" doesn't work correctly (Rob Allen)
@@ -15,6 +16,9 @@ Fixed: <classfilesetref> was not working properly in the ant task (Ed Randall)
 Fixed: @BeforeClass methods were not running in parallel (Aidan Short)
 Fixed: Test class with @ObjectFactory doesn't get instantiated via the factory
 Fixed: Allow IObjectFactory to load from non-standard classloader (for PowerMock support)
+
+Eclipse:
+Added: New "parallel" preference setting (Windows / Preferences / TestNG)
 
 ===========================================================================
 5.10

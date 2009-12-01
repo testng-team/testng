@@ -182,7 +182,7 @@ public class PackageUtils {
     Utils.log("PackageUtils", 4, "Looking for test classes in the directory: " + dir);
     for (File file : dirfiles) {
       if (file.isDirectory()) {
-        findClassesInDirPackage(packageName + "." + file.getName(),
+        findClassesInDirPackage(makeFullClassName(packageName, file.getName()),
                                 included,
                                 excluded,
                                 file.getAbsolutePath(),
@@ -191,10 +191,15 @@ public class PackageUtils {
       }
       else {
         String className = file.getName().substring(0, file.getName().lastIndexOf("."));
-        Utils.log("PackageUtils", 4, "Found class " + className + ", seeing it if it's included or excluded");
+        Utils.log("PackageUtils", 4, "Found class " + className
+            + ", seeing it if it's included or excluded");
         includeOrExcludeClass(packageName, className, included, excluded, classes);
       }
     }
+  }
+
+  private static String makeFullClassName(String pkg, String cls) {
+    return pkg.length() > 0 ? pkg + "." + cls : cls;
   }
 
   private static void includeOrExcludeClass(String packageName, String className,  
@@ -202,7 +207,7 @@ public class PackageUtils {
   {
     if (isIncluded(className, included, excluded)) {
       Utils.log("PackageUtils", 4, "... Including class " + className);
-      classes.add(packageName + '.' + className);
+      classes.add(makeFullClassName(packageName, className));
     }
     else {
       Utils.log("PackageUtils", 4, "... Excluding class " + className);

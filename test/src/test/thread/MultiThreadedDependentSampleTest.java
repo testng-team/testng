@@ -90,6 +90,17 @@ public class MultiThreadedDependentSampleTest {
   public void y() {
     log("y");
   }
+
+  @Test
+  public void z() {
+    log("z");
+  }
+
+  @Test
+  public void t() {
+    log("t");
+  }
+
   //  @Test(groups = "mytest", dependsOnMethods = "g")
 //  public void f() {
 //  }

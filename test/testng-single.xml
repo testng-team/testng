@@ -1,22 +1,25 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="SingleSuite" verbose="2" parallel="false" thread-count="3"
+<suite name="SingleSuite" verbose="4" parallel="false" thread-count="3"
     data-provider-thread-count="3">
 
   <parameter name="factory-param" value="FactoryParam" />
 
   <test name="Simple2">
     <classes>
-      <class name="test.dataprovider.Sample1Test" />
+      <class name="test.thread.MultiThreadedDependentTest" />
     </classes>
   </test>
 
+<!--
   <test name="Simple1">
+    <packages>
+      <package name=".*" />
+    </packages>
     <classes>
       <class name="test.factory.FactoryTest" />
-    </classes>
-<!--
       <class name="test.dataprovider.Sample1Test" />
+    </classes>
       <class name="test.dataprovider.DependentSampleTest" />
       <class name="test.dataprovider.FailedDataProviderTest" />
      <groups>
@@ -26,9 +29,6 @@
           <include name="C"/>
         </run>
     </groups>
-    <packages>
-      <package name="test.tmp.alex" />
-    </packages>
       <class name="test.tmp.B" />
       <class name="test.testng285.TestNG285Test" />
       <class name="test.factory.FactoryTest" />
@@ -37,8 +37,8 @@
       <class name="test.tmp.A" />
       <class name="test.jar.JarTest" />
       <class name="test.expectedexceptions.ExpectedExceptionsTest" />
--->
   </test>
+-->
 
 
 <!-- 
