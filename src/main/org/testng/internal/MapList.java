@@ -47,7 +47,7 @@ public class MapList<K, V> {
     List<K> indices = getKeys();
 //    Collections.sort(indices);
     for (K i : indices) {
-      result.append("\n  ").append(i).append(":");
+      result.append("\n    ").append(i).append(" <-- ");
       for (Object o : m_objects.get(i)) {
         result.append(o).append(" ");
       }

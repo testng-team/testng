@@ -45,6 +45,12 @@ public class MultiThreadedDependentSampleTest {
     log("a2");
   }
 
+  @Test(groups = "1")
+  public void a3() {
+    logThread();
+    log("a3");
+  }
+
   @Test(groups = "2", dependsOnGroups = "1")
   public void b1() {
     logThread();
@@ -67,6 +73,12 @@ public class MultiThreadedDependentSampleTest {
   public void b4() {
     logThread();
     log("b4");
+  }
+  
+  @Test(groups = "2", dependsOnGroups = "1")
+  public void b5() {
+    logThread();
+    log("b5");
   }
 
   @Test(dependsOnGroups = "2")

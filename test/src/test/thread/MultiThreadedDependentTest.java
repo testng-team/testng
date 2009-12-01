@@ -25,7 +25,7 @@ public class MultiThreadedDependentTest extends SimpleBaseTest {
    */
   private void assertOrder(List<String> methods) {
     List<String> expectedMethods = Arrays.asList(new String[] {
-      "a1", "a2", "b1", "b2", "b3", "b4", "c1", "d", "x", "y", "z", "t"
+      "a1", "a2", "a3", "b1", "b2", "b3", "b4", "b5", "c1", "d", "x", "y", "z", "t"
     });
     int size = expectedMethods.size();
     Assert.assertEquals(methods.size(), size);
@@ -35,9 +35,10 @@ public class MultiThreadedDependentTest extends SimpleBaseTest {
     Map<String, Boolean> map = Maps.newHashMap();
     for (String m : methods) {
       map.put(m, Boolean.TRUE);
-      if ("b1".equals(m) || "b2".equals(m) || "b3".equals(m) || "b4".equals(m)) {
+      if ("b1".equals(m) || "b2".equals(m) || "b3".equals(m) || "b4".equals(m) || "b5".equals(m)) {
         Assert.assertTrue(map.get("a1"));
         Assert.assertTrue(map.get("a2"));
+        Assert.assertTrue(map.get("a3"));
       }
       if ("d".equals(m)) {
         Assert.assertTrue(map.get("a1"));

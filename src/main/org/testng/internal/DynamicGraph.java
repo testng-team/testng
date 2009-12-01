@@ -1,11 +1,9 @@
 package org.testng.internal;
 
-import org.testng.collections.Maps;
 import org.testng.internal.annotations.Sets;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -14,21 +12,22 @@ import java.util.Set;
 public class DynamicGraph<T> {
   private static final boolean DEBUG = false;
 
-  private Set<T> m_nodes = Sets.newHashSet();
+  private Set<T> m_nodesReady = Sets.newHashSet();
+  private Set<T> m_nodesRunning = Sets.newHashSet();
+  private Set<T> m_nodesFinished = Sets.newHashSet();
+
   private MapList<T, T> m_dependedUpon = new MapList<T, T>();
   private MapList<T, T> m_dependingOn = new MapList<T, T>();
-  private Map<T, Status> m_statuses = Maps.newHashMap();
 
   public static enum Status {
     READY, RUNNING, FINISHED
-  };
+  }
 
   /**
    * Add a node to the graph.
    */
   public void addNode(T node) {
-    m_nodes.add(node);
-    m_statuses.put(node, Status.READY);
+    m_nodesReady.add(node);
   }
 
   /**
@@ -47,10 +46,8 @@ public class DynamicGraph<T> {
    */
   public Set<T> getFreeNodes() {
     Set<T> result = Sets.newHashSet();
-    for (T m : m_nodes) {
+    for (T m : m_nodesReady) {
       // A node is free if...
-      // - it's ready to run
-      if (m_statuses.get(m) != Status.READY) continue;
 
       // - no other nodes depend on it
       if (!m_dependedUpon.containsKey(m)) result.add(m);
@@ -66,40 +63,10 @@ public class DynamicGraph<T> {
    */
   private Collection<? extends T> getUnfinishedNodes(List<T> nodes) {
     Set<T> result = Sets.newHashSet();
-    if (nodes != null) {
-      for (T n : nodes) {
-        if (m_statuses.get(n) != Status.FINISHED) result.add(n);
-      }
+    for (T node : nodes) {
+      if (m_nodesReady.contains(node) || m_nodesRunning.contains(node)) result.add(node);
     }
     return result;
-  }
-
-  /**
-   * Remove a node from the graph.
-   */
-  public void remove(T node) {
-    m_nodes.remove(node);
-    m_dependingOn.remove(node);
-    for (T k : m_dependedUpon.getKeys()) {
-      List<T> l = m_dependedUpon.get(k);
-      l.remove(node);
-      if (l.size() == 0) m_dependedUpon.remove(k);
-    }
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder result = new StringBuilder("[DynamicGraph ");
-    MapList<Status, T> ml = new MapList<Status, T>();
-    for (T o : m_nodes) {
-      ml.put(m_statuses.get(o), o);
-    }
-    for (Status s : ml.getKeys()) {
-      result.append("\n  ").append(s).append(":").append(ml.get(s));
-    }
-    result.append("\n  Edges:" + m_dependingOn);
-    result.append("]");
-    return result.toString();
   }
 
   /**
@@ -115,29 +82,55 @@ public class DynamicGraph<T> {
    * Set the status for a node.
    */
   public void setStatus(T node, Status status) {
-    m_statuses.put(node, status);
+    removeNode(node);
+    switch(status) {
+      case READY: m_nodesReady.add(node); break;
+      case RUNNING: m_nodesRunning.add(node); break;
+      case FINISHED: m_nodesFinished.add(node); break;
+      default: throw new IllegalArgumentException();
+    }
+  }
+
+  private void removeNode(T node) {
+    if (!m_nodesReady.remove(node)) {
+      if (!m_nodesRunning.remove(node)) {
+        m_nodesFinished.remove(node);
+      }
+    }
   }
 
   /**
    * @return the number of nodes in this graph.
    */
   public int getNodeCount() {
-    return m_nodes.size();
-  }
-
-  public int getNodeCountWithStatus(Status s) {
-    int result = 0;
-    for (T n : m_nodes) {
-      if (m_statuses.get(n) == s) result++;
-    }
+    int result = m_nodesReady.size() + m_nodesRunning.size() + m_nodesFinished.size();
     return result;
   }
 
-  private void ppp(String string) {
+  public int getNodeCountWithStatus(Status status) {
+    switch(status) {
+      case READY: return m_nodesReady.size();
+      case RUNNING: return m_nodesRunning.size();
+      case FINISHED: return m_nodesFinished.size();
+      default: throw new IllegalArgumentException();
+    }
+  }
+
+  private static void ppp(String string) {
     if (DEBUG) {
       System.out.println("   [GroupThreadPoolExecutor] " + Thread.currentThread().getId() + " "
           + string);
     }
   }
 
+  @Override
+  public String toString() {
+    StringBuilder result = new StringBuilder("[DynamicGraph ");
+    result.append("\n  Ready:" + m_nodesReady);
+    result.append("\n  Running:" + m_nodesRunning);
+    result.append("\n  Finished:" + m_nodesFinished);
+    result.append("\n  Edges:" + m_dependingOn);
+    result.append("]");
+    return result.toString();
+  }
 }

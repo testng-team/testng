@@ -74,6 +74,8 @@ public class GroupThreadPoolExecutor extends ThreadPoolExecutor {
     m_activeRunnables.remove(r);
     setStatus((IMethodWorker) r, Status.FINISHED);
     synchronized(m_graph) {
+      ppp("NODE COUNT:" + m_graph.getNodeCount() + " and "
+          + m_graph.getNodeCountWithStatus(Status.FINISHED));
       if (m_graph.getNodeCount() == m_graph.getNodeCountWithStatus(Status.FINISHED)) {
         ppp("SHUTTING DOWN EXECUTOR " + this);
         shutdown();
