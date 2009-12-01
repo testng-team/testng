@@ -10,8 +10,12 @@ import java.util.Set;
 
 public class DynamicGraphTest {
 
+  private static <T> void assertFreeNodesEquals(DynamicGraph<T> graph, T[] expected) {
+    Assert.assertEqualsNoOrder(graph.getFreeNodes().toArray(), expected);
+  }
+
   @Test
-  public void simple() {
+  public void test8() {
     DynamicGraph<String> dg = new DynamicGraph<String>();
     dg.addEdge("b1", "a1");
     dg.addEdge("b1", "a2");
@@ -22,32 +26,42 @@ public class DynamicGraphTest {
     dg.addNode("x");
     dg.addNode("y");
     Set<String> freeNodes = dg.getFreeNodes();
-    Assert.assertEquals(
-        freeNodes,
-        Arrays.asList(new String[] {"a2", "a1", "y", "x"}));
+    assertFreeNodesEquals(dg, new String[] {"a1", "a2", "y", "x"});
 
     dg.setStatus(freeNodes, Status.RUNNING);
-
     dg.setStatus("a1", Status.FINISHED);
-    Assert.assertEquals(
-        dg.getFreeNodes(),
-        Arrays.asList(new String[] { }));
+    assertFreeNodesEquals(dg, new String[] {});
 
     dg.setStatus("a2", Status.FINISHED);
-    Assert.assertEquals(
-        dg.getFreeNodes(),
-        Arrays.asList(new String[] { "b1", "b2" }));
+    assertFreeNodesEquals(dg, new String[] { "b1", "b2"});
 
     dg.setStatus("b2", Status.RUNNING);
     dg.setStatus("b1", Status.FINISHED);
-    Assert.assertEquals(
-        dg.getFreeNodes(),
-        Arrays.asList(new String[] { }));
+    assertFreeNodesEquals(dg, new String[] {});
 
     dg.setStatus("b2", Status.FINISHED);
-    Assert.assertEquals(
-        dg.getFreeNodes(),
-        Arrays.asList(new String[] { "c1" }));
-
+    assertFreeNodesEquals(dg, new String[] { "c1" });
   }
+
+  @Test
+  public void test2() {
+    DynamicGraph<String> dg = new DynamicGraph<String>();
+    dg.addEdge("b1", "a1");
+    dg.addEdge("b1", "a2");
+    dg.addNode("x");
+    Set<String> freeNodes = dg.getFreeNodes();
+    assertFreeNodesEquals(dg, new String[] { "a1", "a2", "x" });
+
+    dg.setStatus(freeNodes, Status.RUNNING);
+    dg.setStatus("a1", Status.FINISHED);
+    assertFreeNodesEquals(dg, new String[] {});
+
+    dg.setStatus("a2", Status.FINISHED);
+    assertFreeNodesEquals(dg, new String[] { "b1" });
+
+    dg.setStatus("b2", Status.RUNNING);
+    dg.setStatus("b1", Status.FINISHED);
+    assertFreeNodesEquals(dg, new String[] {});
+  }
+
 }

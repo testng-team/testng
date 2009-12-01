@@ -1,13 +1,13 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="SingleSuite" verbose="4" parallel="false" thread-count="3"
+<suite name="SingleSuite" verbose="3" parallel="false" thread-count="3"
     data-provider-thread-count="3">
 
   <parameter name="factory-param" value="FactoryParam" />
 
   <test name="Simple2">
     <classes>
-      <class name="test.thread.MultiThreadedDependentTest" />
+      <class name="test.DynamicGraphTest" />
     </classes>
   </test>
 
