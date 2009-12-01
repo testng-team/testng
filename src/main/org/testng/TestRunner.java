@@ -758,6 +758,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
 
 
     Map<String, String> params = xmlTest.getParameters();
+    // This should no longer happen when we are running the new 5.11 implementation but keeping
+    // it until I'm sure the new implementation is working fine.
+    // @deprecated
     if (XmlSuite.PARALLEL_CLASSES.equals(xmlTest.getParallel())) {
       Map<Class, Set<IMethodInstance>> list = groupMethodInstancesByClass(methodInstances);
       for (Set<IMethodInstance> s : list.values()) {
