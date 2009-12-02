@@ -134,7 +134,8 @@ public class Invoker implements IInvoker {
           configurationAnnotation= (IConfigurationAnnotation) AnnotationHelper.findConfiguration(m_annotationFinder, method);
 
           if (MethodHelper.isEnabled(configurationAnnotation)) {
-            boolean isClassConfiguration= isClassConfiguration(configurationAnnotation);
+            boolean isClassConfiguration = isClassConfiguration(configurationAnnotation);
+            boolean isSuiteConfiguration = isSuiteConfiguration(configurationAnnotation); 
             boolean alwaysRun= isAlwaysRun(configurationAnnotation);
   
             if(!confInvocationPassed(tm) && !alwaysRun) {
@@ -157,7 +158,7 @@ public class Invoker implements IInvoker {
             Object[] newInstances= (null != instance) ? new Object[] { instance } : instances;
   
             invokeConfigurationMethod(newInstances, tm,
-              parameters, isClassConfiguration, testResult);
+              parameters, isClassConfiguration, isSuiteConfiguration, testResult);
             
             // TODO: probably we should trigger the event for each instance???
             testResult.setEndMillis(System.currentTimeMillis());
@@ -216,6 +217,25 @@ public class Invoker implements IInvoker {
 
     boolean after= (null != configurationAnnotation)
       ? configurationAnnotation.getAfterTestClass()
+      : false;
+
+    return (before || after);
+  }
+
+  /**
+   * Is the current <code>IConfiguration</code> a suite level method.
+   */
+  private  boolean isSuiteConfiguration(IConfigurationAnnotation configurationAnnotation) {
+    if(null == configurationAnnotation) {
+      return false;
+    }
+    
+    boolean before= (null != configurationAnnotation)
+      ? configurationAnnotation.getBeforeSuite()
+      : false;
+
+    boolean after= (null != configurationAnnotation)
+      ? configurationAnnotation.getAfterSuite()
       : false;
 
     return (before || after);
@@ -400,6 +420,7 @@ public class Invoker implements IInvoker {
                                          ITestNGMethod tm,
                                          Object[] params,
                                          boolean isClass,
+                                         boolean isSuite,
                                          ITestResult testResult)
     throws InvocationTargetException, IllegalAccessException 
   {
@@ -420,6 +441,8 @@ public class Invoker implements IInvoker {
       try {
         Reporter.setCurrentTestResult(testResult);
         MethodHelper.invokeMethod(tm.getMethod(), targetInstance, params);
+        // Only run the method once if it's @BeforeSuite or @AfterSuite
+        if (isSuite) break;
       } 
       finally {
         Reporter.setCurrentTestResult(testResult);

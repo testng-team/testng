@@ -51,12 +51,19 @@
       <class name="test.sample.AfterClassCalledAtEnd"/>
       <class name="test.GraphTest"/>
       <class name="test.DynamicGraphTest"/>
+      <class name="test.configuration.BaseGroupsTest" />
+      <class name="test.configuration.BeforeClassThreadTest" />
+      <class name="test.configuration.BeforeTestOrderingTest" />
       <class name="test.configuration.ConfigurationTest"/>
-      <class name="test.configuration.GroupsTest"/>
       <class name="test.configuration.ExternalConfigurationClass"/>
-      <class name="test.privatemethod.PrivateMethodTest$PrivateMethodInnerTest"/>
-      <class name="test.configuration.ReflectMethodParametrizedConfigurationMethodTest" />
+      <class name="test.configuration.GroupsTest"/>
       <class name="test.configuration.MethodCallOrderTest"/>
+      <class name="test.configuration.MultipleBeforeGroupTest" />
+      <class name="test.configuration.ReflectMethodParametrizedConfigurationMethodTest" />
+      <class name="test.configuration.SuiteFactoryOnceTest" />
+      <class name="test.configuration.SuiteTest" />
+      <class name="test.configuration.VerifySuiteTest" />
+      <class name="test.privatemethod.PrivateMethodTest$PrivateMethodInnerTest"/>
       <class name="test.multiple.TestMultiple"/>
       <class name="test.ClassConfigurations"/>
       <class name="test.alwaysrun.AlwaysRunTest"/>
@@ -74,12 +81,7 @@
       <class name="test.thread.MultiThreadedDependentTest" />
       <class name="test.simple.IncludedExcludedTest" />
       <class name="test.reports.ReportTest" />
-      <class name="test.configuration.BeforeTestOrderingTest" />
-      <class name="test.configuration.SuiteTest" />
-      <class name="test.configuration.VerifySuiteTest" />
       <class name="test.annotationtransformer.AnnotationTransformerTest" />
-      <class name="test.configuration.MultipleBeforeGroupTest" />
-      <class name="test.configuration.BaseGroupsTest" />
       <class name="test.jar.JarTest" />
 <!-- 
       <class name="test.jarpackages.JarPackagesTest" />
@@ -91,7 +93,6 @@
       <class name="test.regression.BeforeTestFailingTest"/>
       <class name="test.testng285.TestNG285Test" />
       <class name="test.failedreporter.FailedReporterTest" />
-      <class name="test.configuration.BeforeClassThreadTest" />
     </classes>
   </test>
   
@@ -102,7 +103,8 @@
       <class name="test.inject.InjectTestResultTest" />
     </classes>
   </test>
-	
+
+	<!--  Keep this in its own <test> tag -->
   <test name="BeforeMethod">
     <classes>
       <class name="test.configuration.BeforeMethodTest" />

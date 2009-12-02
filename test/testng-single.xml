@@ -12,7 +12,7 @@
       </run>
     </groups>
     <classes>
-      <class name="test.thread.MultiThreadedDependentTest" />
+      <class name="test.configuration.SuiteFactoryOnceTest" />
     </classes>
   </test>
 </suite>
