@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="SingleSuite" verbose="2" parallel="false" thread-count="3"
+<suite name="SingleSuite" verbose="2" parallel="methods" thread-count="3"
     data-provider-thread-count="3">
 
   <parameter name="factory-param" value="FactoryParam" />
@@ -12,7 +12,7 @@
       </run>
     </groups>
     <classes>
-      <class name="test.configuration.SuiteFactoryOnceTest" />
+      <class name="test.tmp.C" />
     </classes>
   </test>
 </suite>

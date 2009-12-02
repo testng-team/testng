@@ -133,4 +133,40 @@ public class DynamicGraph<T> {
     result.append("]");
     return result.toString();
   }
+
+  private String getName(T t) {
+    String s = t.toString();
+    int n1 = s.lastIndexOf('.') + 1;
+    int n2 = s.indexOf('(');
+    return s.substring(n1, n2);
+  }
+
+  public String toDot() {
+    StringBuilder result = new StringBuilder("digraph g {\n");
+    Set<T> freeNodes = getFreeNodes();
+    String color;
+    for (T n : m_nodesReady) {
+      color = freeNodes.contains(n) ? "[style=filled color=yellow]" : "";
+      result.append("  " + getName(n) + color + "\n");
+    }
+    for (T n : m_nodesRunning) {
+      color = freeNodes.contains(n) ? "[style=filled color=yellow]" : "[style=filled color=green]"; 
+      result.append("  " + getName(n) + color + "\n");
+    }
+    for (T n : m_nodesFinished) {
+      result.append("  " + getName(n) + "[style=filled color=grey]\n");
+    }
+    result.append("\n");
+
+    for (T k : m_dependingOn.getKeys()) {
+      List<T> nodes = m_dependingOn.get(k);
+      for (T n : nodes) {
+        String dotted = m_nodesFinished.contains(k) ? "style=dotted" : "";
+        result.append("  " + getName(k) + " -> " + getName(n) + " [dir=back " + dotted + "]\n");
+      }
+    }
+    result.append("}\n");
+
+    return result.toString();
+  }
 }
