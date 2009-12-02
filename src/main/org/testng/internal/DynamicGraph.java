@@ -141,20 +141,26 @@ public class DynamicGraph<T> {
     return s.substring(n1, n2);
   }
 
+  /**
+   * @return a .dot file (GraphViz) version of this graph.
+   */
   public String toDot() {
+    String FREE = "[style=filled color=yellow]";
+    String RUNNING = "[style=filled color=green]";
+    String FINISHED = "[style=filled color=grey]";
     StringBuilder result = new StringBuilder("digraph g {\n");
     Set<T> freeNodes = getFreeNodes();
     String color;
     for (T n : m_nodesReady) {
-      color = freeNodes.contains(n) ? "[style=filled color=yellow]" : "";
+      color = freeNodes.contains(n) ? FREE : "";
       result.append("  " + getName(n) + color + "\n");
     }
     for (T n : m_nodesRunning) {
-      color = freeNodes.contains(n) ? "[style=filled color=yellow]" : "[style=filled color=green]"; 
+      color = freeNodes.contains(n) ? FREE : RUNNING; 
       result.append("  " + getName(n) + color + "\n");
     }
     for (T n : m_nodesFinished) {
-      result.append("  " + getName(n) + "[style=filled color=grey]\n");
+      result.append("  " + getName(n) + FINISHED+ "\n");
     }
     result.append("\n");
 
