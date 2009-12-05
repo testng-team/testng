@@ -12,7 +12,7 @@
       </run>
     </groups>
     <classes>
-      <class name="test.tmp.C" />
+      <class name="test.dataprovider.InheritedDataProviderTest" />
     </classes>
   </test>
 </suite>

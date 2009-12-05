@@ -4,6 +4,7 @@ Added: Dependent methods can now run in their own thread
 Added: dataProviderThreadCount can be set from the command line and from ant (Adrian Grealish)
 Added: ITestAnnotation#setDataProvider
 Added: Assert#assertEquals() methods for Sets and Maps
+Fixed: dataProviderClass was not respecting inheritance (like most attributes still)
 Fixed: @BeforeSuite/@AfterSuite would run multiple times when used in a @Factory
 Fixed: packages=".*" wasn't working properly (sandopolus)
 Fixed: TestResult#getName now returns the description instead of the method

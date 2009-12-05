@@ -26,9 +26,9 @@ import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
+import org.testng.internal.Utils;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -364,10 +364,13 @@ public class JDK15TagFactory {
     result.setThreadPoolSize(test.threadPoolSize());
     result.setSuccessPercentage(test.successPercentage());
     result.setDataProvider(test.dataProvider());
-    result.setDataProviderClass(test.dataProviderClass() != Object.class ?
-        test.dataProviderClass() : null);
+//    result.setDataProviderClass(test.dataProviderClass() != Object.class ?
+//        test.dataProviderClass() : null);
+    result.setDataProviderClass(
+        findInheritedClass(test.dataProviderClass(), cls, Test.class, "dataProviderClass"));
     result.setAlwaysRun(test.alwaysRun());
-    result.setDescription(test.description());
+    result.setDescription(
+        findInheritedString(test.description(), cls, Test.class, "description"));
     result.setExpectedExceptions(test.expectedExceptions());
     result.setExpectedExceptionsMessageRegExp(test.expectedExceptionsMessageRegExp());
     result.setSuiteName(test.suiteName());
@@ -392,7 +395,50 @@ public class JDK15TagFactory {
     return vResult.keySet().toArray(new String[vResult.size()]);
   }
 
-  private String[] findInheritedStringArray(Class<?> cls, Class<? extends Annotation> annotationClass, String methodName)
+  /**
+   * Find the given annotation in the hierarchy of the object.
+   */
+  private String findInheritedString(String methodAnnotation, Class<?> cls,
+      Class<? extends Annotation> annotationClass, String methodName)
+  {
+    if (null == cls) return null;
+    if (!Utils.isStringEmpty(methodAnnotation)) return methodAnnotation;
+    
+    while (cls != null && cls != Object.class) {
+      Annotation annotation = cls.getAnnotation(annotationClass);
+      if (annotation != null) {
+        String result = (String) invokeMethod(annotation, methodName);
+        if (result != null) return result;
+      }
+      cls = cls.getSuperclass();
+    }
+    
+    return null;
+  }
+
+  /**
+   * Find the given annotation in the hierarchy of the object.
+   */
+  private Class findInheritedClass(Class methodAnnotation, Class<?> cls,
+      Class<? extends Annotation> annotationClass, String methodName)
+  {
+    if (null == cls) return null;
+    if (methodAnnotation != Object.class) return methodAnnotation;
+    
+    while (cls != null && cls != Object.class) {
+      Annotation annotation = cls.getAnnotation(annotationClass);
+      if (annotation != null) {
+        Class result = (Class) invokeMethod(annotation, methodName);
+        if (result != Object.class) return result;
+      }
+      cls = cls.getSuperclass();
+    }
+    
+    return null;
+  }
+
+  private String[] findInheritedStringArray(Class<?> cls,
+      Class<? extends Annotation> annotationClass, String methodName)
   {
     if (null == cls) return new String[0];
     

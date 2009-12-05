@@ -407,6 +407,7 @@
       <class name="test.dataprovider.InstanceDataProviderTest" />
       <class name="test.dataprovider.FailingIterableDataProviderTest" />
       <class name="test.dataprovider.ClassTest" />
+      <class name="test.dataprovider.InheritedDataProviderTest" />
     </classes>
   </test>
 	

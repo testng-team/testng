@@ -266,7 +266,8 @@ public class Parameters {
     }
 
     for (Method m : ClassHelper.getAvailableMethods(cls)) {
-      IDataProviderAnnotation dp = (IDataProviderAnnotation) finder.findAnnotation(m, IDataProviderAnnotation.class);
+      IDataProviderAnnotation dp = (IDataProviderAnnotation)
+          finder.findAnnotation(m, IDataProviderAnnotation.class);
       if (null != dp && (name.equals(dp.getName()) || name.equals(m.getName()))) {
         if (shouldBeStatic && (m.getModifiers() & Modifier.STATIC) == 0) {
           throw new TestNGException("DataProvider should be static: " + m); 
