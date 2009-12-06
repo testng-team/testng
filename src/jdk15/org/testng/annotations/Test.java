@@ -100,7 +100,7 @@ public @interface Test {
    * If this attribute is specified, the data provider method
    * needs to be static on the specified class.
    */
-  public Class dataProviderClass() default Object.class;
+  public Class<?> dataProviderClass() default Object.class;
   
   /**
    * If set to true, this test method will always be run even if it depends

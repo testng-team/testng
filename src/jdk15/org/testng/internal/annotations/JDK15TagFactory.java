@@ -367,10 +367,11 @@ public class JDK15TagFactory {
 //    result.setDataProviderClass(test.dataProviderClass() != Object.class ?
 //        test.dataProviderClass() : null);
     result.setDataProviderClass(
-        findInheritedClass(test.dataProviderClass(), cls, Test.class, "dataProviderClass"));
+        findInherited(test.dataProviderClass(), cls, Test.class, "dataProviderClass",
+            EXIT_CLASS));
     result.setAlwaysRun(test.alwaysRun());
     result.setDescription(
-        findInheritedString(test.description(), cls, Test.class, "description"));
+        findInherited(test.description(), cls, Test.class, "description", EXIT_STRING));
     result.setExpectedExceptions(test.expectedExceptions());
     result.setExpectedExceptionsMessageRegExp(test.expectedExceptionsMessageRegExp());
     result.setSuiteName(test.suiteName());
@@ -396,40 +397,44 @@ public class JDK15TagFactory {
   }
 
   /**
-   * Find the given annotation in the hierarchy of the object.
+   * This interface is used to calculate the end condition when looking for an
+   * annotation in a hierarchy. We can't use null as a terminator since annotation
+   * don't allow nulls, so each type has a different way of defining its own null.
    */
-  private String findInheritedString(String methodAnnotation, Class<?> cls,
-      Class<? extends Annotation> annotationClass, String methodName)
-  {
-    if (null == cls) return null;
-    if (!Utils.isStringEmpty(methodAnnotation)) return methodAnnotation;
-    
-    while (cls != null && cls != Object.class) {
-      Annotation annotation = cls.getAnnotation(annotationClass);
-      if (annotation != null) {
-        String result = (String) invokeMethod(annotation, methodName);
-        if (result != null) return result;
-      }
-      cls = cls.getSuperclass();
-    }
-    
-    return null;
+  static interface End<T> {
+    boolean isNull(T t);
   }
 
+  private static final End<Class<?>> EXIT_CLASS = new End<Class<?>>() {
+    public boolean isNull(Class<?> c) {
+      return c == Object.class;
+    }
+  };
+
+  private static final End<String> EXIT_STRING = new End<String>() {
+    public boolean isNull(String s) {
+      return Utils.isStringEmpty(s);
+    }
+  };
+
   /**
-   * Find the given annotation in the hierarchy of the object.
+   * Find the value of an annotation, starting with the method, then the class
+   * and then parent classes until we hit the end of the hierarchy or we find
+   * a non-null value for that annotation, as defined by the End interface.
    */
-  private Class findInheritedClass(Class methodAnnotation, Class<?> cls,
-      Class<? extends Annotation> annotationClass, String methodName)
-  {
-    if (null == cls) return null;
-    if (methodAnnotation != Object.class) return methodAnnotation;
-    
+  private <T> T findInherited(T def, Class<?> cls,
+      Class<? extends Annotation> annotationClass, String methodName,
+      End<T> exit) {
+
+    // Look on the method first and return right away if the annotation is there
+    if (!exit.isNull(def)) return def;
+
+    // Not found, look on the class and parent classes
     while (cls != null && cls != Object.class) {
       Annotation annotation = cls.getAnnotation(annotationClass);
       if (annotation != null) {
-        Class result = (Class) invokeMethod(annotation, methodName);
-        if (result != Object.class) return result;
+        T result = (T) invokeMethod(annotation, methodName);
+        if (!exit.isNull(result)) return result;
       }
       cls = cls.getSuperclass();
     }
