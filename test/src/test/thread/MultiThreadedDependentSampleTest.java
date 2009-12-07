@@ -124,6 +124,11 @@ public class MultiThreadedDependentSampleTest {
 
   private void logThread() {
     long id = Thread.currentThread().getId();
+//    Thread.yield();
+//    try {
+//      Thread.sleep(new Random().nextInt() % 1000);
+//    } catch (InterruptedException e) {
+//    }
     Helper.getMap(getClass().getName()).put(id, id);
   }
 

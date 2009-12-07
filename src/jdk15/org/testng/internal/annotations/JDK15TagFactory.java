@@ -368,10 +368,10 @@ public class JDK15TagFactory {
 //        test.dataProviderClass() : null);
     result.setDataProviderClass(
         findInherited(test.dataProviderClass(), cls, Test.class, "dataProviderClass",
-            EXIT_CLASS));
+            DEFAULT_CLASS));
     result.setAlwaysRun(test.alwaysRun());
     result.setDescription(
-        findInherited(test.description(), cls, Test.class, "description", EXIT_STRING));
+        findInherited(test.description(), cls, Test.class, "description", DEFAULT_STRING));
     result.setExpectedExceptions(test.expectedExceptions());
     result.setExpectedExceptionsMessageRegExp(test.expectedExceptionsMessageRegExp());
     result.setSuiteName(test.suiteName());
@@ -397,44 +397,45 @@ public class JDK15TagFactory {
   }
 
   /**
-   * This interface is used to calculate the end condition when looking for an
-   * annotation in a hierarchy. We can't use null as a terminator since annotation
-   * don't allow nulls, so each type has a different way of defining its own null.
+   * This interface is used to calculate the default value for various
+   * annotation return types. This is used when looking for an annotation in a
+   * hierarchy. We can't use null as a default since annotation don't allow
+   * nulls, so each type has a different way of defining its own default.
    */
-  static interface End<T> {
-    boolean isNull(T t);
+  static interface Default<T> {
+    boolean isDefault(T t);
   }
 
-  private static final End<Class<?>> EXIT_CLASS = new End<Class<?>>() {
-    public boolean isNull(Class<?> c) {
+  private static final Default<Class<?>> DEFAULT_CLASS = new Default<Class<?>>() {
+    public boolean isDefault(Class<?> c) {
       return c == Object.class;
     }
   };
 
-  private static final End<String> EXIT_STRING = new End<String>() {
-    public boolean isNull(String s) {
+  private static final Default<String> DEFAULT_STRING = new Default<String>() {
+    public boolean isDefault(String s) {
       return Utils.isStringEmpty(s);
     }
   };
 
   /**
-   * Find the value of an annotation, starting with the method, then the class
-   * and then parent classes until we hit the end of the hierarchy or we find
-   * a non-null value for that annotation, as defined by the End interface.
+   * Find the value of an annotation, starting with the annotation found on the
+   * method, then the class and then parent classes until we either find a
+   * non-default value or we reach the top of the hierarchy (Object).
    */
-  private <T> T findInherited(T def, Class<?> cls,
+  private <T> T findInherited(T methodValue, Class<?> cls,
       Class<? extends Annotation> annotationClass, String methodName,
-      End<T> exit) {
+      Default<T> def) {
 
     // Look on the method first and return right away if the annotation is there
-    if (!exit.isNull(def)) return def;
+    if (!def.isDefault(methodValue)) return methodValue;
 
-    // Not found, look on the class and parent classes
+    // Not found, look on the class and then up the hierarchy
     while (cls != null && cls != Object.class) {
       Annotation annotation = cls.getAnnotation(annotationClass);
       if (annotation != null) {
         T result = (T) invokeMethod(annotation, methodName);
-        if (!exit.isNull(result)) return result;
+        if (!def.isDefault(result)) return result;
       }
       cls = cls.getSuperclass();
     }
@@ -442,6 +443,12 @@ public class JDK15TagFactory {
     return null;
   }
 
+  /**
+   * Find the value of a String[] annotation. The difference with the
+   * findInherited method above is that TestNG aggregates String[] values across
+   * hierarchies. For example, of the method annotation has { "a", "b" } and the
+   * class has { "c" }, the returned value will be { "a", "b", "c" }.
+   */
   private String[] findInheritedStringArray(Class<?> cls,
       Class<? extends Annotation> annotationClass, String methodName)
   {
