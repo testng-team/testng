@@ -1,5 +1,14 @@
 Current:
 
+Fixed: The text reporter was no longer reporting stack traces for verbose >= 2
+
+Eclipse:
+
+Fixed: IIinvokedMethodListeners were not invoked
+
+===========================================================================
+5.11
+
 Added: Dependent methods can now run in their own thread
 Added: dataProviderThreadCount can be set from the command line and from ant (Adrian Grealish)
 Added: ITestAnnotation#setDataProvider

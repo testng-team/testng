@@ -58,6 +58,7 @@ public class A implements ITest {
 
   @Test
   public void g1() {
+    throw new RuntimeException();
   }
 
 

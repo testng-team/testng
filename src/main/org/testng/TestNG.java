@@ -158,7 +158,7 @@ public class TestNG {
 
   private IObjectFactory m_objectFactory;
   
-  private List<IInvokedMethodListener> m_invokedMethodListeners
+  protected List<IInvokedMethodListener> m_invokedMethodListeners
     = new ArrayList<IInvokedMethodListener>();
 
   private Integer m_dataProviderThreadCount = null;

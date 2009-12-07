@@ -159,12 +159,11 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
         null);
   }
 
-  public TestRunner(ISuite suite, XmlTest test, 
-    boolean skipFailedInvocationCounts)
-  {
+  public TestRunner(ISuite suite, XmlTest test, boolean skipFailedInvocationCounts,
+      List<IInvokedMethodListener> listeners) {
     init(suite, test, suite.getOutputDirectory(), 
         suite.getAnnotationFinder(test.getAnnotations()),
-        skipFailedInvocationCounts, null);
+        skipFailedInvocationCounts, listeners);
   }
 
   private void init(ISuite suite,

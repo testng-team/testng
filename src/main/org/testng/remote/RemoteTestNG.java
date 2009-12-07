@@ -1,8 +1,10 @@
 package org.testng.remote;
 
 
+import java.util.List;
 import java.util.Map;
 
+import org.testng.IInvokedMethodListener;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
 import org.testng.ITestRunnerFactory;
@@ -98,10 +100,11 @@ public class RemoteTestNG extends TestNG {
   protected ITestRunnerFactory buildTestRunnerFactory() {
     if(null == m_customTestRunnerFactory) {
       m_customTestRunnerFactory= new ITestRunnerFactory() {
-          public TestRunner newTestRunner(ISuite suite, XmlTest xmlTest) {
+          public TestRunner newTestRunner(ISuite suite, XmlTest xmlTest,
+              List<IInvokedMethodListener> listeners) {
             TestRunner runner =
-              new TestRunner(suite, xmlTest,
-              false /*skipFailedInvocationCounts */);
+              new TestRunner(suite, xmlTest, false /*skipFailedInvocationCounts */,
+              listeners);
             if (m_useDefaultListeners) {
               runner.addListener(new TestHTMLReporter());
               runner.addListener(new JUnitXMLReporter());
@@ -142,18 +145,18 @@ public class RemoteTestNG extends TestNG {
   }
 
   private static class DelegatingTestRunnerFactory implements ITestRunnerFactory {
-    private final ITestRunnerFactory m_delagateFactory;
+    private final ITestRunnerFactory m_delegateFactory;
     private final StringMessageSenderHelper m_messageSender;
 
     DelegatingTestRunnerFactory(ITestRunnerFactory trf, StringMessageSenderHelper smsh) {
-      m_delagateFactory= trf;
+      m_delegateFactory= trf;
       m_messageSender= smsh;
     }
 
-    public TestRunner newTestRunner(ISuite suite, XmlTest test) {
-      TestRunner tr= m_delagateFactory.newTestRunner(suite, test);
+    public TestRunner newTestRunner(ISuite suite, XmlTest test,
+        List<IInvokedMethodListener> listeners) {
+      TestRunner tr = m_delegateFactory.newTestRunner(suite, test, listeners);
       tr.addListener(new RemoteMessageSenderTestListener(suite, test, m_messageSender));
-
       return tr;
     }
   }

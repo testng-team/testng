@@ -122,7 +122,7 @@ public class TextReporter extends TestListenerAdapter {
   }
 
   private void logResult(String status, ITestResult tr, String stackTrace) {
-    logResult(status, tr.getName(), tr.getMethod().getDescription(), null,
+    logResult(status, tr.getName(), tr.getMethod().getDescription(), stackTrace,
         tr.getParameters(), tr.getMethod().getMethod().getParameterTypes());
   }
 

@@ -303,8 +303,8 @@ public class BaseTest {
     /**
      * @see org.testng.ITestRunnerFactory#newTestRunner(org.testng.ISuite, org.testng.xml.XmlTest)
      */
-    public TestRunner newTestRunner(ISuite suite, XmlTest test) {
-      TestRunner testRunner = new TestRunner(suite, test, false);
+    public TestRunner newTestRunner(ISuite suite, XmlTest test, List listeners) {
+      TestRunner testRunner = new TestRunner(suite, test, false, listeners);
 
       testRunner.addTestListener(new TestHTMLReporter());
       testRunner.addTestListener(new JUnitXMLReporter());

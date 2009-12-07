@@ -9,7 +9,6 @@ import org.testng.internal.thread.ThreadUtil;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
 import org.testng.reporters.TextReporter;
-import org.testng.v6.SuitePlan;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
@@ -28,7 +27,6 @@ import java.util.Map;
  * suite. The test start is triggered by {@link #run()} method.
  *
  * @author Cedric Beust, Apr 26, 2004
- * @author <a href = "mailto:the_mindstorm&#64;evolva.ro">Alex Popescu</a>
  */
 public class SuiteRunner implements ISuite, Serializable {
   
@@ -62,7 +60,7 @@ public class SuiteRunner implements ISuite, Serializable {
   transient private Boolean m_skipFailedInvocationCounts = Boolean.FALSE;
 
   private IMethodInterceptor m_methodInterceptor;
-  private List<IInvokedMethodListener> m_invokedMethodListener;
+  private List<IInvokedMethodListener> m_invokedMethodListeners;
   
 //  transient private IAnnotationTransformer m_annotationTransformer = null;
 
@@ -126,7 +124,7 @@ public class SuiteRunner implements ISuite, Serializable {
     if(m_objectFactory == null) {
       m_objectFactory = suite.getObjectFactory();
     }
-    m_invokedMethodListener = invokedMethodListener;
+    m_invokedMethodListeners = invokedMethodListener;
   }
   
   public XmlSuite getXmlSuite() {
@@ -180,8 +178,7 @@ public class SuiteRunner implements ISuite, Serializable {
     if (null == m_tmpRunnerFactory) {
       factory = new DefaultTestRunnerFactory(
           m_testlisteners.toArray(new ITestListener[m_testlisteners.size()]), 
-          m_useDefaultListeners, m_skipFailedInvocationCounts, 
-          m_invokedMethodListener);
+          m_useDefaultListeners, m_skipFailedInvocationCounts);
     }
     else {
       factory = new ProxyTestRunnerFactory(
@@ -247,7 +244,7 @@ public class SuiteRunner implements ISuite, Serializable {
     for (XmlTest test : m_suite.getTests()) {
 
 
-      TestRunner tr = m_runnerFactory.newTestRunner(this, test);
+      TestRunner tr = m_runnerFactory.newTestRunner(this, test, m_invokedMethodListeners);
       
       //
       // Install the method interceptor, if any was passed
@@ -464,23 +461,21 @@ public class SuiteRunner implements ISuite, Serializable {
     private ITestListener[] m_failureGenerators;
     private boolean m_useDefaultListeners;
     private boolean m_skipFailedInvocationCounts;
-    private List<IInvokedMethodListener> m_invokedMethodListener;
     
     public DefaultTestRunnerFactory(ITestListener[] failureListeners,
         boolean useDefaultListeners,
-        boolean skipFailedInvocationCounts,
-        List<IInvokedMethodListener> invokedMethodListener)
+        boolean skipFailedInvocationCounts)
     {
       m_failureGenerators = failureListeners;
       m_useDefaultListeners = useDefaultListeners;
       m_skipFailedInvocationCounts = skipFailedInvocationCounts;
-      m_invokedMethodListener = invokedMethodListener;
     }
 
     /**
      * @see ITestRunnerFactory#newTestRunner(org.testng.ISuite, org.testng.xml.XmlTest)
      */
-    public TestRunner newTestRunner(ISuite suite, XmlTest test) {
+    public TestRunner newTestRunner(ISuite suite, XmlTest test,
+        List<IInvokedMethodListener> listeners) {
       boolean skip = m_skipFailedInvocationCounts;
       if (! skip) {
         skip = test.skipFailedInvocationCounts();
@@ -491,7 +486,7 @@ public class SuiteRunner implements ISuite, Serializable {
                         suite.getOutputDirectory(),
                         suite.getAnnotationFinder(test.getAnnotations()),
                         skip,
-                        m_invokedMethodListener);
+                        listeners);
       
       if (m_useDefaultListeners) {
         testRunner.addListener(new TestHTMLReporter());
@@ -525,8 +520,9 @@ public class SuiteRunner implements ISuite, Serializable {
     /**
      * @see ITestRunnerFactory#newTestRunner(org.testng.ISuite, org.testng.xml.XmlTest)
      */
-    public TestRunner newTestRunner(ISuite suite, XmlTest test) {
-      TestRunner testRunner= m_target.newTestRunner(suite, test);
+    public TestRunner newTestRunner(ISuite suite, XmlTest test,
+        List<IInvokedMethodListener> listeners) {
+      TestRunner testRunner= m_target.newTestRunner(suite, test, listeners);
 
       testRunner.addListener(new TextReporter(testRunner.getName(), TestRunner.getVerbose()));
 

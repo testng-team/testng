@@ -1,10 +1,14 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="SingleSuite" verbose="10" parallel="false" thread-count="3"
+<suite name="SingleSuite" verbose="2" parallel="false" thread-count="3"
     data-provider-thread-count="3">
 
   <parameter name="factory-param" value="FactoryParam" />
 
+  <listeners>
+    <listener class-name="test.invokedmethodlistener.MyListener" />
+  </listeners>
+  
   <test name="Regression2">
     <groups>
       <run>
@@ -12,7 +16,10 @@
       </run>
     </groups>
     <classes>
-      <class name="test.thread.MultiThreadedDependentTest" />
+      <class name="test.tmp.A" />
+<!-- 
+      <class name="test.invokedmethodlistener.Success" />
+ -->
     </classes>
   </test>
 </suite>
