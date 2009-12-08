@@ -1,5 +1,9 @@
 Current:
 
+Eclipse:
+
+Fixed: In the launch dialog, now display an error if trying to pick groups when no project is selected
+Fixed: Was not setting the parallel attribute correctly on the temporary XML file
 
 ===========================================================================
 5.11
@@ -24,7 +28,7 @@ Fixed: @BeforeClass methods were not running in parallel (Aidan Short)
 Fixed: Test class with @ObjectFactory doesn't get instantiated via the factory
 Fixed: Allow IObjectFactory to load from non-standard classloader (for PowerMock support)
 
-Eclipse:
+Eclipse 5.11.0.19:
 Added: New "parallel" preference setting (Windows / Preferences / TestNG)
 Fixed: IIinvokedMethodListeners were not invoked
 
