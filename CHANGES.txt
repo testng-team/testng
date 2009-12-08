@@ -1,10 +1,5 @@
 Current:
 
-Fixed: The text reporter was no longer reporting stack traces for verbose >= 2
-
-Eclipse:
-
-Fixed: IIinvokedMethodListeners were not invoked
 
 ===========================================================================
 5.11
@@ -13,6 +8,7 @@ Added: Dependent methods can now run in their own thread
 Added: dataProviderThreadCount can be set from the command line and from ant (Adrian Grealish)
 Added: ITestAnnotation#setDataProvider
 Added: Assert#assertEquals() methods for Sets and Maps
+Fixed: The text reporter was no longer reporting stack traces for verbose >= 2
 Fixed: dataProviderClass was not respecting inheritance (like most attributes still)
 Fixed: @BeforeSuite/@AfterSuite would run multiple times when used in a @Factory
 Fixed: packages=".*" wasn't working properly (sandopolus)
@@ -30,6 +26,7 @@ Fixed: Allow IObjectFactory to load from non-standard classloader (for PowerMock
 
 Eclipse:
 Added: New "parallel" preference setting (Windows / Preferences / TestNG)
+Fixed: IIinvokedMethodListeners were not invoked
 
 ===========================================================================
 5.10
