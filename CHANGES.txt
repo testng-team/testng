@@ -2,6 +2,8 @@ Current:
 
 Eclipse:
 
+Added: You can now select multiple XML suites to be run in the launch dialog
+Fixed: The custom XML file is now created in the temp directory instead of inside the project
 Fixed: In the launch dialog, now display an error if trying to pick groups when no project is selected
 Fixed: Was not setting the parallel attribute correctly on the temporary XML file
 
