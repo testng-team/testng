@@ -5,6 +5,7 @@ import org.testng.IClass;
 import org.testng.IHookable;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
+import org.testng.IInvokedMethodListener2;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
@@ -457,12 +458,22 @@ public class Invoker implements IInvoker {
     if (m_invokedMethodListeners != null) {
       if (before) {
         for (IInvokedMethodListener l : m_invokedMethodListeners) {
-          l.beforeInvocation(method, testResult);
+          if (l instanceof IInvokedMethodListener2) {
+            IInvokedMethodListener2 l2 = (IInvokedMethodListener2) l;
+            l2.beforeInvocation(method, testResult, m_testContext);
+          } else {
+            l.beforeInvocation(method, testResult);
+          }
         }
       }
       else {
         for (IInvokedMethodListener l : m_invokedMethodListeners) {
-          l.afterInvocation(method, testResult);
+          if (l instanceof IInvokedMethodListener2) {
+            IInvokedMethodListener2 l2 = (IInvokedMethodListener2) l;
+            l2.afterInvocation(method, testResult, m_testContext);
+          } else {
+            l.afterInvocation(method, testResult);
+          }
         }
       }
     }

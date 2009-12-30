@@ -5,19 +5,27 @@
 
   <parameter name="factory-param" value="FactoryParam" />
 
+<!--
   <listeners>
     <listener class-name="test.invokedmethodlistener.MyListener" />
   </listeners>
-  
+-->  
   <test name="Regression2">
+<!--
+    <packages>
+      <package name="test.testng355.org.apache.tapestry5" />
+      <package name="test.testng355.org.apache.tapestry5.dom" />
+    </packages>
     <groups>
       <run>
         <exclude name="broken" />
       </run>
     </groups>
+<!-->
     <classes>
       <class name="test.tmp.A" />
 <!-- 
+      <class name="test.testng355.org.apache.tapestry5.test.AA" />
       <class name="test.invokedmethodlistener.Success" />
  -->
     </classes>

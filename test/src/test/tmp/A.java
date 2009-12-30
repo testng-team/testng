@@ -27,39 +27,40 @@ public class A implements ITest {
 
   @DataProvider
   public Object[][] dp() {
-    return new Object[][] {
-        new Object[] { "10.10.10" },
-        new Object[] { "10.10" },
+    return new Object[][] { 
+      new Object[] { 1 },  
+      new Object[] { 2 },  
+      new Object[] { 3},  
     };
   }
 
-//  @Test(dataProvider = "dp")
-//  public void verifyIPAddress(String ip) {
-//    System.out.println("IP:" + ip);
+  @Test(dataProvider = "dp")
+  public void verifyIPAddress(Integer ip) {
+    if (ip == 2) throw new RuntimeException();
+  }
+
+//  @BeforeSuite
+//  public void bs() {
+//    System.out.println("Before suite");
 //  }
-
-  @BeforeSuite
-  public void bs() {
-    System.out.println("Before suite");
-  }
-
-  @AfterSuite
-  public void as() {
-    System.out.println("After suite");
-  }
-
-  @BeforeClass
-  public void beforeClassA() {
-  }
-
-  @AfterClass
-  public void afterClassA() {
-  }
-
-  @Test
-  public void g1() {
-    throw new RuntimeException();
-  }
+//
+//  @AfterSuite
+//  public void as() {
+//    System.out.println("After suite");
+//  }
+//
+//  @BeforeClass
+//  public void beforeClassA() {
+//  }
+//
+//  @AfterClass
+//  public void afterClassA() {
+//  }
+//
+//  @Test
+//  public void g1() {
+////    throw new RuntimeException();
+//  }
 
 
   public String getTestName() {
