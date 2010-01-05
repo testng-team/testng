@@ -1,14 +1,9 @@
 package test.tmp;
 
 import org.testng.ITest;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import java.util.regex.Pattern;
 
 public class A implements ITest {
   
@@ -34,9 +29,19 @@ public class A implements ITest {
     };
   }
 
+  @BeforeMethod
+  public void bm() {
+    throw new RuntimeException();
+  }
+
   @Test(dataProvider = "dp")
   public void verifyIPAddress(Integer ip) {
     if (ip == 2) throw new RuntimeException();
+  }
+
+  @Test
+  public void f() {
+    
   }
 
 //  @BeforeSuite
