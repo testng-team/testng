@@ -1,5 +1,7 @@
 Current:
 
+Removed: Javadoc annotation support
+
 Added: IInvokedMethodListener2 to have access to ITestContext in listeners (Karthik Krishnan)
 Fixed: The TextReporter reports skipped tests as PASSED (Ankur Agrawal)
 
