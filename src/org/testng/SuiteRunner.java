@@ -439,7 +439,8 @@ public class SuiteRunner implements ISuite, Serializable {
   {
     AnnotationTypeEnum annotationType = AnnotationTypeEnum.valueOf(pAnnotationType);
     if (AnnotationTypeEnum.JDK != annotationType) {
-      throw new TestNGException("Annotation " + pAnnotationType + " no longer supported");
+      throw new TestNGException("Javadoc annotations are no longer supported. Either" +
+      		" update your tests to JDK annotations or use TestNG 5.11.");
     }
     return m_jdkAnnotationFinder;
   }
