@@ -106,16 +106,12 @@ google_ad_channel ="5560744946";
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#junit">5.11 - JUnit tests</a>
 <br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#jdk-14">5.12 - JDK 1.4</a>
-<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#running-testng-programmatically">5.13 - Running TestNG programmatically</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#beanshell">5.14 - BeanShell and advanced group selection</a><br>
 
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#annotationtransformers">5.15 - Annotation transformers</a><br>
 
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#methodinterceptors">5.16 - Method Interceptors</a><br>
-
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#jdk-14-migration">5.17 - Migrating to JDK annotations from javadoc annotations</a><br>
 
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#testng-listeners">5.18 - TestNG Listeners</a><br>
 
@@ -1147,17 +1143,7 @@ The Data Provider method can return one of the following two types:
 <ul>
 <li>An array of array of objects (<tt>Object[][]</tt>) where the first dimension's size is the number of times the test method will be invoked and the second dimension size contains an array of objects that must be compatible with the parameter types of the test method. This is the cast illustrated by the example above.</li><li>An <tt>Iterator&lt;Object[]&gt;</tt>.  The only difference with <tt>Object[][]</tt> is that an <tt>Iterator</tt> lets you create your test data lazily.  TestNG will invoke the iterator and then the test method with the parameters returned by this iterator one by one.  This is particularly useful if you have a lot of parameter sets to pass to the method and you don't want to create all of them upfront.
 </ul>
-Here is an example of this feature for both JDK 1.4 and JDK5 (note that the JDK 1.4 example does not use Generics):
-
-
-<pre class="brush: java">
-/**
- * @testng.data-provider name="test1"
- */
-public Iterator createData() {
-  return new MyIterator(DATA);
-)
-</pre>
+Here is an example of this feature:
 
 <pre class="brush: java">
 @DataProvider(name = "test1")
@@ -1518,87 +1504,9 @@ true:<br>
 	this method will be invoked</li></ul><!-------------------------------------
   JUNIT
  ------------------------------------><h4>
-<a name="jdk-14">5.12 - JDK 1.4</a>
-
-</h4>
-
-TestNG also works with JDK 1.4.&nbsp; In this case, you need to use the JDK 
-1.4 jar file in the distribution (named <i>testng-...-jdk14.jar</i>).&nbsp; The 
-only difference is in the annotations, which use the popular XDoclet JavaDoc 
-annotation syntax:</p>
-
-<pre class="brush: java">
-public class SimpleTest {
- /**
-  * @testng.before-class = "true"
-  */
-  public void setUp() {
-    // code that will be invoked when this test is instantiated
- }
-
- /**
-  * @testng.test groups = "functest" dependsOnGroups = "group1,group2"
-  */
-  public void testItWorks() {
-    // your test code
- }
-}
-</pre>
-
-<p>The rules for the JavaDoc syntax are pretty straightforward and the only 
-difference with JDK 1.5 annotations is that arrays of strings should be 
-specified as a single, comma or space-separated string.&nbsp; Although double quotes 
-around values are optional, I recommend using them anyway so that <a href="#jdk-14-migration">future 
-migration to JDK 1.5</a> will be made easier.</p><p>You will also need to specify the <tt>sourcedir</tt> attribute in the <tt>&lt;testng&gt;</tt> ant 
-task (or <tt>-sourcedir</tt> on the command line) so that TestNG can find the sources of your test files in order to parse 
-the JavaDoc annotations.</p><p>Here is a table comparing how the syntax varies for JDK 1.4 and JDK 5 
-annotations:</p><table border="1" width="100%" id="table5"><th>JDK 5</th><th>JDK 1.4</th><tr>
-		<td><tt>@Test(groups = { &quot;a&quot;, &quot;b&quot; },<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dependsOnMethods = { &quot;m1&quot; })</tt></td><td><tt><br>
-		/**<br>
-&nbsp;* @testng.test groups = &quot;a b&quot; <br>
-&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dependsOnMethods = &quot;m1&quot;<br>
-&nbsp;*/<br>
-&nbsp;</tt></td>
-	</tr>
-	<tr>
-		<td><tt><br>
-		@AfterMethod(alwaysRun = true)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-		</tt></td><td><tt><br>
-		/**<br>
-&nbsp;* @testng.before-method alwaysRun = &quot;true&quot;<br>
-&nbsp;*/<br>
-&nbsp;</tt></td>
-	</tr>
-	<tr>
-		<td><tt>@Parameters({ &quot;first-name&quot;, &quot;last-name&quot; })</tt></td><td><tt><br>
-		/**<br>
-&nbsp;* @testng.parameters value = &quot;first-name last-name&quot;<br>
-&nbsp;*/<br>
-&nbsp;</tt></td>
-	</tr>
-	<tr>
-		<td><tt>@Factory<br>@Parameters({ &quot;first-name&quot;, &quot;last-name&quot;})</tt></td><td><tt><br>
-		/**<br>
-&nbsp;* @testng.factory<br>&nbsp;* @testng.parameters value = &quot;first-name last-name&quot;<br>
-&nbsp;*/<br>
-&nbsp;</tt></td>
-	</tr>
-
-	<tr>
-		<td><tt>@DataProvider(name = "test1")
-		</td>
-		<td><tt>/**<br>&nbsp;*&nbsp;@testng.data-provider name="test1"
-		<br>&nbsp;*/
-		</td>
-	</tr>
 
 
-</table>
-<p>For more examples of examples of TestNG's JDK 1.4 support, please take a look at the 
-<tt>test-14/</tt> directory of the distribution, which contains an entire mirror of the 
-JDK 1.5 tests ported to JavaDoc annotations.</p><!-------------------------------------
+<!-------------------------------------
   RUNNING TESTNG
  ------------------------------------><h4>
 <a name="running-testng-programmatically">5.13 - Running TestNG programmatically</a>
@@ -1828,27 +1736,6 @@ public List&lt;IMethodInstance&gt; intercept(List&lt;IMethodInstance&gt; methods
   return result;
 }
 </pre>
-
-
-
-<!-------------------------------------
-  MIGRATION TO JDK ANNOTATIONS
- ------------------------------------>
-	
-<h4>
-<a name="jdk-14-migration">5.17 - Migrating to JDK annotations from javadoc annotations</a>
-</h4>
-
-
-<p>If you have started using javadoc annotations in a project but later wish to convert to JDK annotations, you will need to convert all the old-style annotations into new-style ones.</p>
-<p>TestNG provides a utility to save you time in what could otherwise be quite a labour-intensive operation</p>
-<p>
-<pre class="brush: text">
-java org.testng.AnnotationConverter -srcdir <i>directory</i> [-overwrite|-d <i>destdir</i>] [-quiet]
-</pre>
-will convert source files from one format to the other - run the command with no arguments for a description of what the parameters do.
-</p>
-<p>Note that the destination files will not be very pretty and should be checked to confirm correctness. It is important to be using a source control system so you can undo the changes if you don't like them! The converter also assumes that you have used the syntactic conventions recommended <a href="#jdk-14">above.</a></p>
 
 
 <!-------------------------------------
