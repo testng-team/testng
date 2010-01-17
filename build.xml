@@ -15,7 +15,7 @@
   <target name="prepare"
           description="Performs all preparations required to build.">
     <tstamp />
-    <mkdir dir="${build.jdk15.dir}" />
+    <mkdir dir="${build.dir}" />
   </target>
 
   <!-- ====================================================================== -->
@@ -49,11 +49,11 @@
   <target name="copy-resources" description="Copies resources.">
     <copy verbose="false"
           file="src/testng-1.0.dtd"
-          todir="${build.jdk15.dir}" />
+          todir="${build.dir}" />
     <copy verbose="false"
           file="src/testngtasks"
-          todir="${build.jdk15.dir}" />
-    <copy todir="${build.jdk15.dir}">
+          todir="${build.dir}" />
+    <copy todir="${build.dir}">
       <fileset dir="./resources">
         <exclude name="**/.*" />
         <exclude name="**/CVS/*" />
@@ -81,7 +81,7 @@
   <target name="compile-15"
           depends="prepare,copy-resources"
           description="Compiles source for 15">
-    <echo message="                                 -- Compiling 1.5 sources --" />
+    <echo message="                                 -- Compiling sources --" />
 
     <path id="compile2.cp">
       <fileset dir="${lib.dir}">
@@ -95,7 +95,7 @@
            target="1.5"
            debug="true"
            optimize="${optimize}"
-           destdir="${build.jdk15.dir}">
+           destdir="${build.dir}">
       <src path="${src.dir}" />
     </javac>
   </target>
@@ -113,12 +113,6 @@
 -->
   </target>
 	
-	<!--
-  <target name="tmp">
-    <ant inheritall="no" antfile="test/v4/build.xml" target="run-jdk14" />
-  </target>
-  -->
-
   <target name="test-ant">
     <echo message="                                 -- Testing ant testng task functionality --" />
   	<ant inheritall="no" antfile="test/ant/build.xml" />
@@ -167,13 +161,13 @@
   <target name="dist-15-bsh">
     <antcall target="clean-unjar" />
     <antcall target="extract-beanshell-jar" />
-    <delete file="${jdk15.testng.jar}" />
-    <jar destfile="${jdk15.testng.jar}">
+    <delete file="${testng.jar}" />
+    <jar destfile="${testng.jar}">
       <manifest>
         <attribute name="Main-Class" value="org.testng.TestNG" />
       	<attribute name="Implementation-Version" value="${testng.version}-${DSTAMP}${TSTAMP}" />
       </manifest>
-      <fileset dir="${build.jdk15.dir}" />
+      <fileset dir="${build.dir}" />
       <fileset dir="${build.3rdparty.dir}" />
       <fileset file="TESTNG-${testng.version}" />
     </jar>
@@ -181,13 +175,15 @@
   
   <target name="dist-15-nobsh">
     <antcall target="clean-unjar" />
-    <jar destfile="${other.jars.dir}/${jdk15.testng.nobsh.jar}" update="true">
+    <jar destfile="${other.jars.dir}/${testng.nobsh.jar}" update="true">
       <manifest>
         <attribute name="Main-Class" value="org.testng.TestNG" />
       	<attribute name="Implementation-Version" value="${testng.version}-${DSTAMP}${TSTAMP}" />
       </manifest>
-      <fileset dir="${build.jdk15.dir}" />
-      <fileset dir="${build.3rdparty.dir}" />
+<!--
+      <fileset dir="${jdk15.dir}" />
+-->
+        <fileset dir="${build.3rdparty.dir}" />
       <fileset file="TESTNG-${testng.version}" />
     </jar>
   </target>
@@ -197,7 +193,7 @@
     <zip zipfile="${testng.zip}">
       <zipfileset prefix="${zip.dir}" dir="${basedir}" includesfile="FILES" />
       <zipfileset prefix="${zip.dir}" dir="${basedir}">
-        <include name="${jdk15.testng.jar}" />
+        <include name="${testng.jar}" />
       </zipfileset>
       <zipfileset dir="${other.jars.dir}" prefix="${zip.dir}/${other.jars.dir}"/>
       <zipfileset dir="javadocs" prefix="${zip.dir}/javadocs" />
@@ -229,13 +225,13 @@
     </jar>
     <jar destfile="${testng.maven-bundle}">
       <fileset file="${build.maven-bundle.dir}/pom.xml" />
-      <fileset file="${jdk15.testng.jar}" />
+      <fileset file="${testng.jar}" />
       <fileset file="${build.maven-bundle.dir}/${sources.testng.jar}" />
     </jar>
   </target>
   
   <target name="dist-prepare" depends="update-readme">
-    <delete file="{other.jars.dir}/${jdk15.testng.nobsh.jar}" />
+    <delete file="{other.jars.dir}/${testng.nobsh.jar}" />
     <mkdir dir="${other.jars.dir}" />
   </target>
 
@@ -247,10 +243,10 @@
       
   <target name="eclipse" description="Used by Cedric to build distributions">
     <property name="jdk15.jar"
-              value="${testng-eclipse.dir}/lib/testng-jdk15.jar" />
+              value="${testng-eclipse.dir}/lib/testng.jar" />
 
     <delete file="${jdk15.jar}" />
-    <copy file="${jdk15.testng.jar}" tofile="${jdk15.jar}" />
+    <copy file="${testng.jar}" tofile="${jdk15.jar}" />
   </target>
 
   <taskdef name="DTDDoc" classname="DTDDoc.DTDDocTask"
@@ -315,7 +311,7 @@
 
   <target name="clean">
     <delete failonerror="false">
-      <fileset dir="${build.jdk15.dir}" includes="**/*" />
+      <fileset dir="${build.dir}" includes="**/*" />
       <fileset dir="${build.maven-bundle.dir}" includes="**/*" />
       <fileset dir="." includes="*.jar,*.zip" />
     </delete>

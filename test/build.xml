@@ -16,7 +16,7 @@
   <!-- Compile                                                              -->
   <!-- ==================================================================== -->
   <path id="compile.cp">
-		<pathelement location="${build.jdk15.dir}"/>
+		<pathelement location="${build.dir}"/>
 		<fileset dir="${lib.dir}">
 			<include name="junit.jar"/>
 			<include name="${beanshell.jar}"/>
@@ -37,7 +37,7 @@ TESTNG.REPORT.DIR=${testng.report.dir}
   </target>
 	
   <target name="compile" depends="prepare">
-		<echo message="                                 -- Compiling JDK 1.5 tests --"/>
+		<echo message="                                 -- Compiling tests --"/>
 
 		<property name="build.compiler" value="modern"/>
     <javac debug="true"
@@ -57,7 +57,7 @@ TESTNG.REPORT.DIR=${testng.report.dir}
   	
   <taskdef name="testng"
              classname="org.testng.TestNGAntTask"
-             classpath="${build.jdk15.dir}"/>
+             classpath="${build.dir}"/>
   </target>
 
   <!-- ==================================================================== -->
@@ -70,8 +70,8 @@ TESTNG.REPORT.DIR=${testng.report.dir}
   </path>
 
   <target name="run" description="Run tests" depends="compile">
-		<echo message="                                 -- Running JDK 1.5 tests --"/>
-		<echo message="                                 -- ${jdk15.testng.jar} --" />
+		<echo message="                                 -- Running tests --"/>
+		<echo message="                                 -- ${testng.jar} --" />
 		<testng classpathref="run.cp"
             outputdir="${testng.report.dir}">
 			<xmlfileset dir="${test15.dir}" includes="testng.xml"/>
