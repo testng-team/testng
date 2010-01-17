@@ -12,7 +12,6 @@ import org.testng.TestRunner;
 import org.testng.annotations.BeforeMethod;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.JDK14AnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
@@ -50,7 +49,6 @@ public class BaseTest extends BaseDistributedTest {
   private ITestRunnerFactory m_testRunnerFactory;
   private IAnnotationTransformer m_defaultAnnotationTransformer= new DefaultAnnotationTransformer();
   private IAnnotationFinder m_jdkAnnotationFinder;
-  private IAnnotationFinder m_javadocAnnotationFinder;
 
   public BaseTest() {
     m_testRunnerFactory= new InternalTestRunnerFactory(this);
@@ -184,7 +182,7 @@ public class BaseTest extends BaseDistributedTest {
     SuiteRunner suite= new SuiteRunner(m_suite,
                                        m_outputDirectory,
                                        m_testRunnerFactory,
-                                       new IAnnotationFinder[] {m_javadocAnnotationFinder, m_jdkAnnotationFinder});
+                                       m_jdkAnnotationFinder);
 
     suite.run();
   }
@@ -271,7 +269,6 @@ public class BaseTest extends BaseDistributedTest {
 //  @Configuration(beforeTestMethod = true, groups = { "init", "initTest"})
   @BeforeMethod(groups= { "init", "initTest" })
   public void methodSetUp() {
-    m_javadocAnnotationFinder= new JDK14AnnotationFinder(m_defaultAnnotationTransformer);
     m_suite= new XmlSuite();
     m_suite.setName("Internal_suite");
     XmlTest xmlTest= new XmlTest(m_suite);

@@ -495,13 +495,6 @@
     </classes>
   </test>
 
-  <test name="AnnotationConverter">
-    <parameter name="source-directory" value="test/src/test/sample" />
-    <classes>
-      <class name="test.converter.AnnotationConverterTest" />
-    </classes>
-  </test>
-  
   <!-- TestNG ant task related tests -->
   <test name="Ant-ClassFileResolution" >
     <classes>

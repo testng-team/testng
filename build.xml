@@ -15,7 +15,6 @@
   <target name="prepare"
           description="Performs all preparations required to build.">
     <tstamp />
-    <mkdir dir="${build.jdk14.dir}" />
     <mkdir dir="${build.jdk15.dir}" />
   </target>
 
@@ -35,7 +34,7 @@
     <condition property="requiredJavaVersion">
     	<or>
    			<equals arg1="${ant.java.version}" arg2="1.5" />
-    		<equals arg1="${ant.java.version}" arg2="1.6" />
+    		  <equals arg1="${ant.java.version}" arg2="1.6" />
     	</or>
     </condition>
     <fail unless="requiredJavaVersion"
@@ -49,24 +48,12 @@
 
   <target name="copy-resources" description="Copies resources.">
     <copy verbose="false"
-          file="src/main/testng-1.0.dtd"
-          todir="${build.jdk15.dir}" />
-    <copy verbose="false"
-          file="src/main/testng-1.0.dtd"
-          todir="${build.jdk14.dir}" />
-    <copy verbose="false"
-          file="src/testngtasks"
+          file="src/testng-1.0.dtd"
           todir="${build.jdk15.dir}" />
     <copy verbose="false"
           file="src/testngtasks"
-          todir="${build.jdk14.dir}" />
+          todir="${build.jdk15.dir}" />
     <copy todir="${build.jdk15.dir}">
-      <fileset dir="./resources">
-        <exclude name="**/.*" />
-        <exclude name="**/CVS/*" />
-      </fileset>
-    </copy>
-    <copy todir="${build.jdk14.dir}">
       <fileset dir="./resources">
         <exclude name="**/.*" />
         <exclude name="**/CVS/*" />
@@ -76,48 +63,20 @@
 
 
   <target name="dev"
-          depends="prepare,validate,copy-resources,build,dist-jar,test-15,test-15-jdk14,test-14,test-ant" />
+          depends="prepare,validate,copy-resources,build,dist-jar,test-15,test-ant" />
 
   <target name="all"
-          depends="prepare,validate,copy-resources,build,dist-jar,test-15,test-15-jdk14,test-14,test-ant,javadocs,dist" />
+          depends="prepare,validate,copy-resources,build,dist-jar,test-15,test-ant,javadocs,dist" />
 
-  <target name="build" depends="compile-14,compile-15,dist-jar" />
+  <target name="build" depends="compile-15,dist-jar" />
 
   <target name="single">
     <ant antfile="test/build.xml" target="run:single"/>
   </target>
 
-  <target name="single-14">
-    <ant antfile="test-14/build.xml" target="run:single"/>
-  </target>
-
   <!-- ==================================================================== -->
   <!-- Compile                                                              -->
   <!-- ==================================================================== -->
-
-  <target name="compile-14"
-          depends="prepare,copy-resources"
-          description="Compiles source for 1.4">
-    <echo message="                                 -- Compiling 1.4 sources --" />
-    <path id="compile.cp">
-      <fileset dir="${lib.dir}">
-        <include name="${beanshell.jar}" />
-        <include name="junit.jar" />
-        <include name="${qdox.jar}" />
-      	<include name="${concurrent.jar}" />
-      </fileset>
-    </path>
-
-    <javac classpathref="compile.cp"
-           target="jsr14"
-           debug="true"
-           optimize="${optimize}"
-           destdir="${build.jdk14.dir}">
-      <src path="${src.dir}/main" />
-      <src path="${src.dir}/jdk14" />
-    </javac>
-
-  </target>
 
   <target name="compile-15"
           depends="prepare,copy-resources"
@@ -127,7 +86,6 @@
     <path id="compile2.cp">
       <fileset dir="${lib.dir}">
         <include name="junit.jar" />
-        <include name="${qdox.jar}" />
         <include name="${beanshell.jar}" />
       </fileset>
     </path>
@@ -138,12 +96,11 @@
            debug="true"
            optimize="${optimize}"
            destdir="${build.jdk15.dir}">
-      <src path="${src.dir}/main" />
-      <src path="${src.dir}/jdk15" />
+      <src path="${src.dir}" />
     </javac>
   </target>
 
-  <target name="compile:all" depends="compile-14,compile-15" />
+  <target name="compile:all" depends="compile-15" />
 
   <target name="examples">
     <ant inheritall="no" antfile="examples/build.xml" />
@@ -156,20 +113,6 @@
 -->
   </target>
 	
-  <target name="test-15-jdk14" depends="compile-15,compile-14" description="runs javadoc-tests with JDK5 distro">
-	<ant inheritall="no" antfile="test-14/build.xml" target="compile" />
-	<ant inheritall="no" antfile="test/build.xml" target="run-jdk14" />
-	<ant inheritall="no" antfile="test-14/v4/build.xml" target="compile" />
-  <ant inheritall="no" antfile="test/v4/build.xml" target="run-jdk14" />
-  </target>
-	
-  <target name="test-14" depends="compile-14" description="runs javadoc-based tests with JDK1.4 distro">
-    <ant inheritall="no" antfile="test-14/build.xml" />
-<!--
-    <ant inheritall="no" antfile="test-14/v4/build.xml" />
--->
-  </target>
-
 	<!--
   <target name="tmp">
     <ant inheritall="no" antfile="test/v4/build.xml" target="run-jdk14" />
@@ -187,13 +130,13 @@
 
   <target name="javadocs">
     <javadoc destdir="javadocs" source="1.5" windowtitle="TestNG">
-      <fileset dir="${src.dir}/main" defaultexcludes="yes">
+      <fileset dir="${src.dir}" defaultexcludes="yes">
         <include name="org/testng/*.java" />
       </fileset>
-      <fileset dir="${src.dir}/main" defaultexcludes="yes">
+      <fileset dir="${src.dir}" defaultexcludes="yes">
         <include name="org/testng/xml/Xml*.java" />
       </fileset>
-      <fileset dir="${src.dir}/jdk15" defaultexcludes="yes">
+      <fileset dir="${src.dir}" defaultexcludes="yes">
         <include name="org/testng/annotations/**" />
       </fileset>
     </javadoc>
@@ -205,41 +148,7 @@
 
   <target name="dist" depends="maven-plugin,dist-all-zip,dist-maven-bundle,eclipse,dtd" />
 
-  <target name="dist-jar" depends="dist-14,dist-15" />
-
-  <target name="dist-14" depends="compile-14,dist-14-bsh" >
-   </target>
-
-  <target name="dist-14-bsh">
-    <antcall target="clean-unjar" />
-    <antcall target="extract-qdox-jar" />
-    <antcall target="extract-beanshell-jar" />
-    <antcall target="extract-concurrent-jar" />
-    <delete quiet="true" file="${jdk14.testng.jar}" />
-    <jar destfile="${jdk14.testng.jar}" update="true">
-      <manifest>
-        <attribute name="Main-Class" value="org.testng.TestNG" />
-      	<attribute name="Implementation-Version" value="${testng.version}-${DSTAMP}${TSTAMP}" />
-      </manifest>
-      <fileset dir="${build.3rdparty.dir}" />
-      <fileset dir="${build.jdk14.dir}" />
-      <fileset file="TESTNG-${testng.version}" />
-    </jar>
-  </target>
-  
-  <target name="dist-14-nobsh">
-    <antcall target="clean-unjar" />
-    <antcall target="extract-concurrent-jar" />
-    <jar destfile="${other.jars.dir}/${jdk14.testng.nobsh.jar}" update="true">
-      <manifest>
-        <attribute name="Main-Class" value="org.testng.TestNG" />
-      	<attribute name="Implementation-Version" value="${testng.version}-${DSTAMP}${TSTAMP}" />
-      </manifest>
-      <fileset dir="${build.3rdparty.dir}" />
-      <fileset dir="${build.jdk14.dir}" />
-      <fileset file="TESTNG-${testng.version}" />
-    </jar>
-  </target>
+  <target name="dist-jar" depends="dist-15" />
 
   <target name="clean-unjar">
     <delete quiet="true" dir="${build.3rdparty.dir}" includeemptydirs="true" />
@@ -252,24 +161,11 @@
            overwrite="true" />
   </target>
 
-  <target name="extract-qdox-jar">
-    <unjar src="3rdparty/${qdox.jar}"
-           dest="${build.3rdparty.dir}"
-           overwrite="true" />
-  </target>
-
-  <target name="extract-concurrent-jar">
-    <unjar src="3rdparty/${concurrent.jar}"
-           dest="${build.3rdparty.dir}"
-           overwrite="true" />
-  </target>
-
   <target name="dist-15" depends="compile-15, dist-15-bsh">
   </target>
     
   <target name="dist-15-bsh">
     <antcall target="clean-unjar" />
-    <antcall target="extract-qdox-jar" />
     <antcall target="extract-beanshell-jar" />
     <delete file="${jdk15.testng.jar}" />
     <jar destfile="${jdk15.testng.jar}">
@@ -285,7 +181,6 @@
   
   <target name="dist-15-nobsh">
     <antcall target="clean-unjar" />
-    <antcall target="extract-qdox-jar" />
     <jar destfile="${other.jars.dir}/${jdk15.testng.nobsh.jar}" update="true">
       <manifest>
         <attribute name="Main-Class" value="org.testng.TestNG" />
@@ -302,7 +197,6 @@
     <zip zipfile="${testng.zip}">
       <zipfileset prefix="${zip.dir}" dir="${basedir}" includesfile="FILES" />
       <zipfileset prefix="${zip.dir}" dir="${basedir}">
-        <include name="${jdk14.testng.jar}" />
         <include name="${jdk15.testng.jar}" />
       </zipfileset>
       <zipfileset dir="${other.jars.dir}" prefix="${zip.dir}/${other.jars.dir}"/>
@@ -316,14 +210,10 @@
       <zipfileset dir="test"
                   prefix="${zip.dir}/test"
                   includes="**/*.properties,**/*.java,build.xml,testng.xml"
-                  excludes="test-output/**,report/**,v4/**" />
-      <zipfileset dir="test-14"
-                  prefix="${zip.dir}/test-14"
-                  includes="**/*.properties,**/*.java,build.xml,testng.xml"
-                  excludes="test-output/**,report/**,v4/**" />
+                  excludes="test-output/**,report/**" />
       <zipfileset dir="3rdparty"
                   prefix="${zip.dir}/3rdparty"
-                  includes="${qdox.jar},${beanshell.jar},${concurrent.jar}" />
+                  includes="${beanshell.jar},${concurrent.jar}" />
     </zip>
   </target>
   
@@ -335,24 +225,16 @@
       </filterchain>
     </copy>
     <jar destfile="${build.maven-bundle.dir}/${sources.testng.jar}">
-      <fileset dir="src/main" />
-      <!--DGF Maven allows only one source jar, and some files conflict
-        between the jdk14 and jdk15 source.  So we're only going to
-        include jdk15 sources in the source jar. -->
-      <!--<fileset dir="src/jdk14" />-->
-      <fileset dir="src/jdk15" />
+      <fileset dir="src" />
     </jar>
     <jar destfile="${testng.maven-bundle}">
       <fileset file="${build.maven-bundle.dir}/pom.xml" />
-      <fileset file="${jdk14.testng.jar}" />
       <fileset file="${jdk15.testng.jar}" />
       <fileset file="${build.maven-bundle.dir}/${sources.testng.jar}" />
     </jar>
   </target>
   
   <target name="dist-prepare" depends="update-readme">
-    <delete quiet="true" file="${other.jars.dir}/${jdk14.testng.nobsh.jar}" />
-    <mkdir dir="${other.jars.dir}" />
     <delete file="{other.jars.dir}/${jdk15.testng.nobsh.jar}" />
     <mkdir dir="${other.jars.dir}" />
   </target>
@@ -364,14 +246,10 @@
   </target>
       
   <target name="eclipse" description="Used by Cedric to build distributions">
-    <property name="jdk14.jar"
-              value="${testng-eclipse.dir}/lib/testng-jdk14.jar" />
     <property name="jdk15.jar"
               value="${testng-eclipse.dir}/lib/testng-jdk15.jar" />
 
-    <delete file="${jdk14.jar}" />
     <delete file="${jdk15.jar}" />
-    <copy file="${jdk14.testng.jar}" tofile="${jdk14.jar}" />
     <copy file="${jdk15.testng.jar}" tofile="${jdk15.jar}" />
   </target>
 
@@ -381,7 +259,7 @@
   <target name="dtd">
     <DTDDoc showHiddenTags="false"
             showFixmeTags="false"
-            sourceDir="src/main"
+            sourceDir="src"
             destDir="dtd"
             docTitle="TestNG DTD">
         <include name="testng-1.0.dtd"/>
@@ -437,15 +315,11 @@
 
   <target name="clean">
     <delete failonerror="false">
-      <fileset dir="${build.jdk14.dir}" includes="**/*" />
       <fileset dir="${build.jdk15.dir}" includes="**/*" />
       <fileset dir="${build.maven-bundle.dir}" includes="**/*" />
       <fileset dir="." includes="*.jar,*.zip" />
     </delete>
     <ant antfile="test/build.xml" target="clean" />
-    <ant antfile="test/v4/build.xml" target="clean" />
-    <ant antfile="test-14/build.xml" target="clean" />
-    <ant antfile="test-14/v4/build.xml" target="clean" />
     <ant dir="examples" target="clean" />
   </target>
 
