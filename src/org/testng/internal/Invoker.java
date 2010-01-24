@@ -609,6 +609,10 @@ public class Invoker implements IInvoker {
 
       // If this method has a data provider and just failed, memorize the number
       // at which it failed.
+      // Note: we're not exactly testing that this method has a data provider, just
+      // that it has parameters, so might have to revisit this if bugs get reported
+      // for the case where this method has parameters that don't come from a data
+      // provider
       if (testResult.getThrowable() != null && parameterValues.length > 0) {
         tm.addFailedInvocationNumber(tm.getCurrentInvocationCount());
       }

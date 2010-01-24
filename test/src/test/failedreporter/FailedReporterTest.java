@@ -31,17 +31,26 @@ public class FailedReporterTest extends BaseTest {
 
   @Test
   public void failedAndSkippedMethodsShouldBeIncluded() throws IOException {
+    testFailedReporter(FailedReporterSampleTest.class, new String[] { "f1", "f2" },
+        "<include name=\"%s\"" + "\"/>");   }
+
+  @Test
+  public void failedMethodWithDataProviderShouldHaveInvocationNumbers() throws IOException {
+    testFailedReporter(FailedReporter2SampleTest.class, new String[] { "f1" },
+        "<include invocationNumbers=\"1\" name=\"%s\"" + "\"/>"); 
+  }
+
+  private void testFailedReporter(Class<?> cls, String[] expectedMethods, String expectedLine) {
     TestNG tng = new TestNG();
     tng.setVerbose(0);
-    tng.setTestClasses(new Class[] { FailedReporterSampleTest.class });
+    tng.setTestClasses(new Class[] { cls });
     tng.setOutputDirectory(mTempDirectory.getAbsolutePath());
     tng.run();
 
-    String[] expected = new String[] { "f1", "f2" };
     File failed = new File(mTempDirectory, "testng-failed.xml");
-    for (String s : expected) {
+    for (String s : expectedMethods) {
       List<String> resultLines = Lists.newArrayList();
-      BaseTest.grep(failed, "<include name=\"" + s + "\"/>", resultLines);
+      grep(failed, expectedLine.format(s), resultLines);
       Assert.assertEquals(1, resultLines.size());
     }
 
