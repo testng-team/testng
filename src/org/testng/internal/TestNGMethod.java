@@ -81,6 +81,8 @@ public class TestNGMethod extends BaseTestMethod {
 
   private void init(XmlTest xmlTest) {
     m_xmlTest = xmlTest;
+    setInvocationNumbers(xmlTest.getInvocationNumbers(
+        m_method.getDeclaringClass().getName() + "." + m_method.getName()));
     {
       ITestAnnotation testAnnotation = AnnotationHelper.findTest(getAnnotationFinder(), m_method);
       
@@ -163,6 +165,7 @@ public class TestNGMethod extends BaseTestMethod {
     clone.m_timeOut = getTimeOut();
     clone.setRetryAnalyzer(getRetryAnalyzer());
     clone.setSkipFailedInvocations(skipFailedInvocations());
+    clone.setInvocationNumbers(getInvocationNumbers());
 
     return clone;
   }

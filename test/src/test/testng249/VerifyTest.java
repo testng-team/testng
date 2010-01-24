@@ -5,14 +5,13 @@ import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 import test.SimpleBaseTest;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class VerifyTest extends SimpleBaseTest {
 
@@ -24,9 +23,9 @@ public class VerifyTest extends SimpleBaseTest {
     XmlTest test = new XmlTest(suite);
     test.setName("Test");
     XmlClass c1 = new XmlClass(B.class);
-    c1.setIncludedMethods(Arrays.asList(new String[] { "b"}));
+    c1.setIncludedMethods(Arrays.asList(new XmlInclude[] { new XmlInclude("b")}));
     XmlClass c2 = new XmlClass(Base.class);
-    c2.setIncludedMethods(Arrays.asList(new String[] { "b"}));
+    c2.setIncludedMethods(Arrays.asList(new XmlInclude[] { new XmlInclude("b")}));
     test.setXmlClasses(Arrays.asList(new XmlClass[] { c1, c2 }));
     
     TestNG tng = new TestNG();

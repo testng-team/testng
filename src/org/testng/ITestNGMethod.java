@@ -3,6 +3,7 @@ package org.testng;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * Describes a TestNG annotated method and the instance on which it will be invoked.
@@ -204,4 +205,20 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
 
   public boolean ignoreMissingDependencies();
   public void setIgnoreMissingDependencies(boolean ignore);
+
+  /**
+   * Which invocation numbers of this method should be used (only applicable
+   * if it uses a data provider). If this value is an empty list, use all the values
+   * returned from the data provider.  These values are read from the XML file in
+   * the <include invocationNumbers="..."> tag.
+   */
+  public List<Integer> getInvocationNumbers();
+  public void setInvocationNumbers(List<Integer> numbers);
+
+  /**
+   * The list of invocation numbers that failed, which is only applicable for
+   * methods that have a data provider.
+   */
+  public void addFailedInvocationNumber(int number);
+  public List<Integer> getFailedInvocationNumbers();
 }

@@ -1,14 +1,15 @@
 package org.testng.xml;
 
 
+import org.testng.TestNGException;
+import org.testng.collections.Lists;
+import org.testng.internal.ClassHelper;
+import org.testng.reporters.XMLStringBuffer;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
-import org.testng.TestNGException;
-import org.testng.internal.ClassHelper;
-import org.testng.reporters.XMLStringBuffer;
 
 /**
  * This class describes the tag <class> in testng.xml.
@@ -16,7 +17,7 @@ import org.testng.reporters.XMLStringBuffer;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class XmlClass implements Serializable, Cloneable {
-  private List<String> m_includedMethods = new ArrayList<String>();
+  private List<XmlInclude> m_includedMethods = Lists.newArrayList();
   private List<String> m_excludedMethods = new ArrayList<String>();
   private String       m_name = null;
   private Class        m_class = null;
@@ -83,14 +84,14 @@ public class XmlClass implements Serializable, Cloneable {
   /**
    * @return Returns the includedMethods.
    */
-  public List<String> getIncludedMethods() {
+  public List<XmlInclude> getIncludedMethods() {
     return m_includedMethods;
   }
 
   /**
    * @param includedMethods The includedMethods to set.
    */
-  public void setIncludedMethods(List<String> includedMethods) {
+  public void setIncludedMethods(List<XmlInclude> includedMethods) {
     m_includedMethods = includedMethods;
   }
 
@@ -126,14 +127,16 @@ public class XmlClass implements Serializable, Cloneable {
     Properties      pro = new Properties();
     pro.setProperty("name", getName());
 
-
     if (!m_includedMethods.isEmpty() || !m_excludedMethods.isEmpty()) {
       xsb.push("class", pro);
       xsb.push("methods");
       
-      for (String m : getIncludedMethods()) {
+      for (XmlInclude m : getIncludedMethods()) {
         Properties p = new Properties();
-        p.setProperty("name", m);
+        p.setProperty("name", m.getName());
+        if (m.getInvocationNumbers().size() > 0) {
+          p.setProperty("invocationNumbers", listToString(m.getInvocationNumbers()).toString());
+        }
         xsb.addEmptyElement("include", p);
       }
       for (String m: getExcludedMethods()) {
@@ -154,6 +157,16 @@ public class XmlClass implements Serializable, Cloneable {
 
   }
   
+  private String listToString(List<Integer> invocationNumbers) {
+    StringBuilder result = new StringBuilder();
+    int i = 0;
+    for (Integer n : invocationNumbers) {
+      if (i++ > 0) result.append(" ");
+      result.append(n);
+    }
+    return result.toString();
+  }
+
   /**
    * Clone an XmlClass by copying all its components.
    * 

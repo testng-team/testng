@@ -607,6 +607,12 @@ public class Invoker implements IInvoker {
       handleInvocationResults(tm, results, null, 0, expectedExceptionClasses, false,
           true /* collect results */);
 
+      // If this method has a data provider and just failed, memorize the number
+      // at which it failed.
+      if (testResult.getThrowable() != null && parameterValues.length > 0) {
+        tm.addFailedInvocationNumber(tm.getCurrentInvocationCount());
+      }
+
       //
       // Increment the invocation count for this method
       //

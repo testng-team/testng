@@ -16,6 +16,7 @@ import org.testng.internal.annotations.JDK15AnnotationFinder;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
 import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
@@ -227,7 +228,7 @@ public class BaseTest extends BaseDistributedTest {
 
   public void addIncludedMethod(String className, String m) {
     XmlClass xmlClass= findClass(className);
-    xmlClass.getIncludedMethods().add(m);
+    xmlClass.getIncludedMethods().add(new XmlInclude(m));
     getTest().getXmlClasses().add(xmlClass);
   }
 

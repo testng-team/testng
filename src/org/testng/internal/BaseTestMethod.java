@@ -1,18 +1,21 @@
 package org.testng.internal;
 
-import java.lang.reflect.Method;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.ITestOrConfiguration;
+import org.testng.collections.Lists;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.thread.IAtomicInteger;
 import org.testng.internal.thread.ThreadUtil;
+
+import java.lang.reflect.Method;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Superclass to represent both &#64;Test and &#64;Configuration methods.
@@ -45,6 +48,9 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   private IRetryAnalyzer m_retryAnalyzer = null;
   private boolean m_skipFailedInvocations = true;
   private long m_invocationTimeOut = 0L;
+
+  private List<Integer> m_invocationNumbers = Lists.newArrayList();
+  private List<Integer> m_failedInvocationNumbers = Lists.newArrayList();
   
   private boolean m_ignoreMissingDependencies;
   
@@ -625,4 +631,19 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     m_ignoreMissingDependencies = i;
   }
 
+  public List<Integer> getInvocationNumbers() {
+    return m_invocationNumbers;
+  }
+
+  public void setInvocationNumbers(List<Integer> numbers) {
+    m_invocationNumbers = numbers;
+  }
+
+  public List<Integer> getFailedInvocationNumbers() {
+    return m_failedInvocationNumbers;
+  }
+
+  public void addFailedInvocationNumber(int number) {
+    m_failedInvocationNumbers.add(number);
+  }
 }

@@ -1,21 +1,22 @@
 package org.testng.xml;
 
+import org.testng.IObjectFactory;
+import org.testng.TestNGException;
+import org.testng.collections.Lists;
+import org.testng.internal.Utils;
+import org.testng.internal.version.VersionInfo;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.helpers.DefaultHandler;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.testng.internal.Utils;
-import org.testng.internal.version.VersionInfo;
-import org.testng.IObjectFactory;
-import org.testng.TestNGException;
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Suite definition parser utility.
@@ -41,7 +42,7 @@ public class TestNGContentHandler extends DefaultHandler {
   private String m_currentMetaGroupName;
   private boolean m_inTest = false;
   private XmlClass m_currentClass = null;
-  private ArrayList<String> m_currentIncludedMethods = null;
+  private ArrayList<XmlInclude> m_currentIncludedMethods = null;
   private ArrayList<String> m_currentExcludedMethods = null;
   private ArrayList<XmlMethodSelector> m_currentSelectors = null;
   private XmlMethodSelector m_currentSelector = null;
@@ -406,7 +407,7 @@ public class TestNGContentHandler extends DefaultHandler {
 
   private void xmlMethod(boolean start, Attributes attributes) {
     if (start) {
-      m_currentIncludedMethods = new ArrayList<String>();
+      m_currentIncludedMethods = new ArrayList<XmlInclude>();
       m_currentExcludedMethods = new ArrayList<String>();
     }
     else {
@@ -506,7 +507,12 @@ public class TestNGContentHandler extends DefaultHandler {
     }
     else if ("include".equals(qName)) {
       if (null != m_currentIncludedMethods) {
-        m_currentIncludedMethods.add(name);
+        String in = attributes.getValue("invocationNumbers");
+        if (!Utils.isStringEmpty(in)) {
+          m_currentIncludedMethods.add(new XmlInclude(name, stringToList(in)));
+        } else {
+          m_currentIncludedMethods.add(new XmlInclude(name));
+        }
       }
       else if (null != m_currentDefines) {
         m_currentMetaGroup.add(name);
@@ -538,6 +544,15 @@ public class TestNGContentHandler extends DefaultHandler {
         m_currentSuiteParameters.put(name, value);
       }
     }
+  }
+
+  private List<Integer> stringToList(String in) {
+    String[] numbers = in.split(" ");
+    List<Integer> result = Lists.newArrayList();
+    for (String n : numbers) {
+      result.add(Integer.parseInt(n));
+    }
+    return result;
   }
 
   @Override

@@ -3,6 +3,7 @@ package org.testng.junit;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -38,11 +39,13 @@ public class JUnitUtils {
     private String m_signature;
     private int m_currentInvocationCount = 0;
     private int m_parameterInvocationCount = 0;
+    private List<Integer> m_invocationNumbers;
 
     private long m_date;
     private String m_id;
     
     private IRetryAnalyzer retryAnalyzer = null;
+    private List<Integer> m_failedInvocationNumbers;
     
     public JUnitTestMethod(Test test, JUnitTestClass testClass) {
       m_testClass= testClass;
@@ -420,6 +423,21 @@ public class JUnitUtils {
       return 0;
     }
 
+    public List<Integer> getInvocationNumbers() {
+      return m_invocationNumbers;
+    }
+
+    public void setInvocationNumbers(List<Integer> count) {
+      m_invocationNumbers = count;
+    }
+
+    public List<Integer> getFailedInvocationNumbers() {
+      return m_failedInvocationNumbers;
+    }
+
+    public void addFailedInvocationNumber(int number) {
+      m_failedInvocationNumbers.add(number);
+    }
   }
   
   /**
@@ -563,6 +581,4 @@ public class JUnitUtils {
       return null;
     }
   }
-
-
 }

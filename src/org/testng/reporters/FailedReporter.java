@@ -1,13 +1,5 @@
 package org.testng.reporters;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -17,9 +9,19 @@ import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.Utils;
+import org.testng.internal.annotations.Sets;
 import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This reporter is responsible for creating testng-failed.xml
@@ -100,7 +102,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     // Note:  we can have skipped tests and no failed tests
     // if a method depends on nonexistent groups
     if (skippedTests.size() > 0 || failedTests.size() > 0) {
-      Map<ITestNGMethod, ITestNGMethod> methodsToReRun = new HashMap<ITestNGMethod, ITestNGMethod>();
+      Set<ITestNGMethod> methodsToReRun = Sets.newHashSet();
       
       // Get the transitive closure of all the failed methods and the methods
       // they depend on
@@ -112,7 +114,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
         for (ITestResult failedTest : tests) {
           ITestNGMethod current = failedTest.getMethod();
           if (current.isTest()) {
-            methodsToReRun.put(current, current);
+            methodsToReRun.add(current);
             ITestNGMethod method = failedTest.getMethod();
             // Don't count configuration methods
             if (method.isTest()) {
@@ -121,7 +123,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
               
               for (ITestNGMethod m : methodsDependedUpon) {
                 if (m.isTest()) {
-                  methodsToReRun.put(m, m);
+                  methodsToReRun.add(m);
                 }
               }
             }
@@ -137,7 +139,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       //
       List<ITestNGMethod> result = new ArrayList<ITestNGMethod>();
       for (ITestNGMethod m : context.getAllTestMethods()) {
-        if (null != methodsToReRun.get(m)) {
+        if (methodsToReRun.contains(m)) {
           result.add(m);
         }
       }
@@ -146,24 +148,15 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       Collection<ITestNGMethod> invoked= suite.getInvokedMethods();
       for(ITestNGMethod tm: invoked) {
         if(!tm.isTest()) {
-          methodsToReRun.put(tm, tm);
+          methodsToReRun.add(tm);
         }
       }
       
-      result.addAll(methodsToReRun.keySet());
+      result.addAll(methodsToReRun);
       createXmlTest(context, result, xmlTest);
     }
   }
-  
-  private void addMethods(Map<ITestNGMethod, ITestNGMethod> map, ITestNGMethod[] methods) {
-    if(null == methods) {
-      return;
-    }
-    for(ITestNGMethod tm: methods) {
-      map.put(tm, tm);
-    }
-  }
-  
+
   /**
    * Generate testng-failed.xml
    */
@@ -208,9 +201,9 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       // @author Borojevic 
       // Need to check all the methods, not just @Test ones.
       XmlClass xmlClass= new XmlClass(clazz.getName(), Boolean.FALSE);
-      List<String> methodNames= new ArrayList<String>(methodList.size());
+      List<XmlInclude> methodNames= new ArrayList<XmlInclude>(methodList.size());
       for(ITestNGMethod m: methodList) {
-        methodNames.add(m.getMethod().getName());
+        methodNames.add(new XmlInclude(m.getMethod().getName(), m.getFailedInvocationNumbers()));
       }
       xmlClass.setIncludedMethods(methodNames);
       result.add(xmlClass);

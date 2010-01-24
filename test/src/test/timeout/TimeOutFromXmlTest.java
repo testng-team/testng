@@ -1,18 +1,19 @@
 package test.timeout;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.testng.Assert;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 import test.BaseTest;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class TimeOutFromXmlTest extends BaseTest {
     
@@ -87,7 +88,8 @@ public class TimeOutFromXmlTest extends BaseTest {
         result.setName(name);
         List<XmlClass> classes = new ArrayList<XmlClass>();
         XmlClass cls = new XmlClass(TestTimeOutSampleTest.class);
-        cls.setIncludedMethods(Arrays.asList(new String[] { "timeoutTest" }));
+        cls.setIncludedMethods(
+            Arrays.asList(new XmlInclude[] { new XmlInclude("timeoutTest") }));
         classes.add(cls);
         result.setXmlClasses(classes);
 

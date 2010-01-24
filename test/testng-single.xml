@@ -21,10 +21,15 @@
         <exclude name="broken" />
       </run>
     </groups>
-<!-->
+-->
     <classes>
-      <class name="test.tmp.A" />
+      <class name="test.failedreporter.FailedReporterTest" />
 <!-- 
+      <class name="test.tmp.A">
+        <methods>
+          <include name="verifyIPAddress" invocationNumbers="0 2" />
+        </methods>
+      </class>
       <class name="test.testng355.org.apache.tapestry5.test.AA" />
       <class name="test.invokedmethodlistener.Success" />
  -->

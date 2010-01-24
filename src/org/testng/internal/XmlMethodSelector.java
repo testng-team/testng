@@ -3,6 +3,14 @@ package org.testng.internal;
 import bsh.EvalError;
 import bsh.Interpreter;
 
+import org.testng.IMethodSelector;
+import org.testng.IMethodSelectorContext;
+import org.testng.ITestNGMethod;
+import org.testng.TestNGException;
+import org.testng.collections.Lists;
+import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,12 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-
-import org.testng.IMethodSelector;
-import org.testng.IMethodSelectorContext;
-import org.testng.ITestNGMethod;
-import org.testng.TestNGException;
-import org.testng.xml.XmlClass;
 
 /**
  * This class is the default method selector used by TestNG to determine
@@ -198,9 +200,11 @@ public class XmlMethodSelector implements IMethodSelector {
             continue;
           }
           
-          List<String> includedMethods = createQualifiedMethodNames(xmlClass, xmlClass.getIncludedMethods());
+          List<String> includedMethods =
+              createQualifiedMethodNames(xmlClass, toStringList(xmlClass.getIncludedMethods()));
           boolean isIncludedInMethods = isIncluded(fullyQualifiedMethodName, includedMethods);
-          List<String> excludedMethods = createQualifiedMethodNames(xmlClass, xmlClass.getExcludedMethods());
+          List<String> excludedMethods = createQualifiedMethodNames(xmlClass,
+              xmlClass.getExcludedMethods());
           boolean isExcludedInMethods = isExcluded(fullyQualifiedMethodName, excludedMethods);
           if (result) {
             // If we're about to include this method by group, make sure
@@ -254,12 +258,22 @@ public class XmlMethodSelector implements IMethodSelector {
     return false;
   }
 
-  private List<String> createQualifiedMethodNames(XmlClass xmlClass, List<String> methods) {
-    List<String> vResult = new ArrayList<String>();
+  private List<String> toStringList(List<XmlInclude> methods) {
+    List<String> result = Lists.newArrayList();
+    for (XmlInclude m : methods) {
+      result.add(m.getName());
+    }
+    return result;
+  }
+
+  private List<String> createQualifiedMethodNames(XmlClass xmlClass,
+      List<String> methods) {
+    List<String> vResult = Lists.newArrayList();
     Class cls = xmlClass.getSupportClass();
 
     while (null != cls) {
-      for (String methodName : methods) {
+      for (String im : methods) {
+        String methodName = im;
         Method[] allMethods = cls.getDeclaredMethods();
         Pattern pattern = Pattern.compile(methodName);
         for (Method m : allMethods) {
@@ -281,8 +295,8 @@ public class XmlMethodSelector implements IMethodSelector {
   public void setXmlClasses(List<XmlClass> classes) {
     m_classes = classes;
     for (XmlClass c : classes) {
-      for (String m : c.getIncludedMethods()) {
-        m_includedMethods.add(makeMethodName(c.getName(), m));
+      for (XmlInclude m : c.getIncludedMethods()) {
+        m_includedMethods.add(makeMethodName(c.getName(), m.getName()));
       }
     }
   }

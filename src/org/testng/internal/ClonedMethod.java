@@ -4,8 +4,10 @@ import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
+import org.testng.collections.Lists;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 public class ClonedMethod implements ITestNGMethod {
   private static final long serialVersionUID = 1L;
@@ -15,6 +17,9 @@ public class ClonedMethod implements ITestNGMethod {
   private String m_id;
   private int m_currentInvocationCount;
   private long m_date;
+
+  private List<Integer> m_invocationNumbers = Lists.newArrayList();
+  private List<Integer> m_failedInvocationNumbers = Lists.newArrayList();
 
   public ClonedMethod(ITestNGMethod method, Method javaMethod) {
     m_method = method;
@@ -244,5 +249,21 @@ public class ClonedMethod implements ITestNGMethod {
     result.append(")");
 
     return result.toString();
+  }
+
+  public List<Integer> getInvocationNumbers() {
+    return m_invocationNumbers;
+  }
+
+  public void setInvocationNumbers(List<Integer> count) {
+    m_invocationNumbers = count;
+  }
+
+  public List<Integer> getFailedInvocationNumbers() {
+    return m_failedInvocationNumbers;
+  }
+
+  public void addFailedInvocationNumber(int number) {
+    m_failedInvocationNumbers.add(number);
   }
 }

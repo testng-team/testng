@@ -1,15 +1,18 @@
 package org.testng.xml;
 
+import org.testng.TestNG;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
+import org.testng.internal.AnnotationTypeEnum;
+import org.testng.reporters.XMLStringBuffer;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import org.testng.TestNG;
-import org.testng.internal.AnnotationTypeEnum;
-import org.testng.reporters.XMLStringBuffer;
+import java.util.Set;
 
 /**
  * This class describes the tag &lt;test&gt;  in testng.xml.
@@ -44,6 +47,7 @@ public class XmlTest implements Serializable, Cloneable {
   
   private String m_timeOut;
   private Boolean m_skipFailedInvocationCounts;
+  private Map<String, List<Integer>> m_failedInvocationNumbers = null; // lazily initialized
 
   /**
    * Constructs a <code>XmlTest</code> and adds it to suite's list of tests. 
@@ -505,5 +509,31 @@ public class XmlTest implements Serializable, Cloneable {
     
     return result;
   }
-  
+
+  /**
+   * Convenience method to cache the ordering numbers for methods.
+   */
+  public List<Integer> getInvocationNumbers(String method) {
+    if (m_failedInvocationNumbers == null) {
+      m_failedInvocationNumbers = Maps.newHashMap();
+      for (XmlClass c : getXmlClasses()) {
+        for (XmlInclude xi : c.getIncludedMethods()) {
+          List<Integer> invocationNumbers = xi.getInvocationNumbers();
+          if (invocationNumbers.size() > 0) {
+            String methodName = c.getName() + "." + xi.getName();
+            m_failedInvocationNumbers.put(methodName, invocationNumbers);
+          }
+        }
+      }
+    }
+
+    List<Integer> result = m_failedInvocationNumbers.get(method);
+    if (result == null) {
+      // Don't use emptyList here since this list might end up receiving values if
+      // the test run fails.
+      return Lists.newArrayList();
+    } else {
+      return result;
+    }
+  }
 }

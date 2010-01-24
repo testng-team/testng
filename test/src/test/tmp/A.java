@@ -23,23 +23,18 @@ public class A implements ITest {
   @DataProvider
   public Object[][] dp() {
     return new Object[][] { 
-      new Object[] { 1 },  
+      new Object[] { 0 },  
+      new Object[] { 1 },
       new Object[] { 2 },  
-      new Object[] { 3},  
     };
-  }
-
-  @BeforeMethod
-  public void bm() {
-    throw new RuntimeException();
   }
 
   @Test(dataProvider = "dp")
   public void verifyIPAddress(Integer ip) {
-    if (ip == 2) throw new RuntimeException();
+    if (ip == 1) throw new RuntimeException();
   }
 
-  @Test
+//  @Test
   public void f() {
     
   }

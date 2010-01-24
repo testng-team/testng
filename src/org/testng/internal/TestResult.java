@@ -245,3 +245,4 @@ public class TestResult implements ITestResult {
 	  }
   }
 }
+

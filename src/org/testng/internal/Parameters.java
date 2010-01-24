@@ -10,8 +10,10 @@ import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParameterizable;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
+import org.testng.collections.Lists;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.Sets;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Methods that bind parameters declared in testng.xml to actual values
@@ -373,10 +376,12 @@ public class Parameters {
           methodParams.context,
           fedInstance,
           annotationFinder);
-      
-      result = new ParameterHolder(parameters, ParameterHolder.ORIGIN_DATA_PROVIDER,
-          dataProviderHolder);
 
+      Iterator<Object[]> filteredParameters = filterParameters(parameters,
+          testMethod.getInvocationNumbers()); 
+
+      result = new ParameterHolder(filteredParameters, ParameterHolder.ORIGIN_DATA_PROVIDER,
+          dataProviderHolder);
     }
     else {
       //
@@ -402,6 +407,26 @@ public class Parameters {
     }
     
     return result;
+  }
+
+  /**
+   * If numbers is empty, return parameters, otherwise, return a subset of parameters
+   * whose ordinal number match these found in numbers.
+   */
+  static private Iterator<Object[]> filterParameters(Iterator<Object[]> parameters,
+      List<Integer> list) {
+    if (list.isEmpty()) {
+      return parameters;
+    } else {
+      List<Object[]> result = Lists.newArrayList();
+      int i = 0;
+      while (parameters.hasNext()) {
+        Object[] next = parameters.next();
+        if (list.contains(i)) result.add(next);
+        i++;
+      }
+      return new ArrayIterator(result.toArray(new Object[list.size()][]));
+    }
   }
 
   private static void ppp(String s) {
