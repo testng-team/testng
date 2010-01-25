@@ -29,8 +29,6 @@ import org.testng.internal.annotations.Sets;
 import org.testng.internal.thread.GroupThreadPoolExecutor;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.junit.IJUnitTestRunner;
-import org.testng.v6.IRunGroupFactory;
-import org.testng.v6.TestPlan;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
@@ -711,21 +709,6 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     }
 
     return result;
-  }
-  
-//  private ITestNGMethod[] toMethods(Set<IMethodInstance> s) {
-//    List<ITestNGMethod> result = Lists.newArrayList();
-//    for (IMethodInstance imi : s) {
-//      result.add(imi.getMethod());
-//    }
-//    return result.toArray(new ITestNGMethod[result.size()]);
-//  }
-
-  private TestPlan m_testPlan;
-  private IRunGroupFactory m_runGroupFactory;
-
-  public TestPlan getTestPlan() {
-    return m_testPlan;
   }
 
   private void createParallelWorkers(List<ITestNGMethod> parallel, 
