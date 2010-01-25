@@ -199,7 +199,7 @@ public final class TestNGCommandLineArgs {
             sep = ",";
           }
           String[] strs = Utils.split(strClass, sep);
-          List<Class<?>> classes = new ArrayList<Class<?>>();
+          List<Class<?>> classes = Lists.newArrayList();
 
           for (String cls : strs) {
             classes.add(fileToClass(cls));
@@ -221,7 +221,7 @@ public final class TestNGCommandLineArgs {
               // Assume it's a class name
               List<Class<?>> l = (List<Class<?>>) arguments.get(TESTCLASS_COMMAND_OPT);
               if (null == l) {
-                l = new ArrayList<Class<?>>();
+                l = Lists.newArrayList();
                 arguments.put(TESTCLASS_COMMAND_OPT, l);
               }
               Class<?> cls = fileToClass(nextArg);
@@ -351,7 +351,7 @@ public final class TestNGCommandLineArgs {
         if ((i + 1) < argv.length) {
           ReporterConfig reporterConfig = ReporterConfig.deserialize(trim(argv[i + 1]));
           if (arguments.get(REPORTERS_LIST) == null) {
-            arguments.put(REPORTERS_LIST, new ArrayList<ReporterConfig>());
+            arguments.put(REPORTERS_LIST, Lists.newArrayList());
           }
           ((List<ReporterConfig>)arguments.get(REPORTERS_LIST)).add(reporterConfig);
           i++;

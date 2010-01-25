@@ -1,11 +1,11 @@
 package org.testng.internal.annotations;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
-
+import org.testng.collections.Lists;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Utils;
+
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Convert a string values into primitive types.
@@ -50,7 +50,7 @@ public class Converter {
 
   public static Class[] getClassArray(String tagValue, Class[] def) {
     Class[] result = def;
-    List vResult = new ArrayList();
+    List vResult = Lists.newArrayList();
     if (tagValue != null) {
       StringTokenizer st = new StringTokenizer(tagValue, " ,");
       while (st.hasMoreElements()) {

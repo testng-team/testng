@@ -9,6 +9,7 @@ import java.util.List;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.SkipException;
+import org.testng.collections.Lists;
 
 
 /**
@@ -250,7 +251,7 @@ public class TestResultMessage implements IStringMessage {
   
   private String[] toString(Object[] objects, Class[] objectClasses) {
     if(null == objects) return new String[0];
-    List<String> result= new ArrayList<String>(objects.length);
+    List<String> result= Lists.newArrayList(objects.length);
     for(Object o: objects) {
       if(null == o) {
         result.add("null");
@@ -271,7 +272,7 @@ public class TestResultMessage implements IStringMessage {
   
   private String[] toString(Class[] classes) {
     if(null == classes) return new String[0];
-    List<String> result= new ArrayList<String>(classes.length);
+    List<String> result= Lists.newArrayList(classes.length);
     for(Class cls: classes) {
       result.add(cls.getName());
     }
@@ -284,7 +285,7 @@ public class TestResultMessage implements IStringMessage {
    * @return
    */
   private String[] extractParamTypes(String[] params) {
-    List<String> result= new ArrayList<String>(params.length);
+    List<String> result= Lists.newArrayList(params.length);
     for(String s: params) {
       result.add(s.substring(0, s.indexOf(':')));
     }
@@ -293,7 +294,7 @@ public class TestResultMessage implements IStringMessage {
   }
 
   private String[] extractParams(String[] params) {
-    List<String> result= new ArrayList<String>(params.length);
+    List<String> result= Lists.newArrayList(params.length);
     for(String s: params) {
       result.add(MessageHelper.replaceNewLineReplacer(s.substring(s.indexOf(':') + 1)));
     }

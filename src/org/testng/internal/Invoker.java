@@ -992,8 +992,7 @@ public class Invoker implements IInvoker {
             
             try {
 //                if (true) { // @@
-              List<TestMethodWithDataProviderMethodWorker> workers
-                  = new ArrayList<TestMethodWithDataProviderMethodWorker>();
+              List<TestMethodWithDataProviderMethodWorker> workers = Lists.newArrayList();
 
 //                  if (false) { // bag.parameterHolder.origin == ParameterHolder.ORIGIN_DATA_PROVIDER) {
               if (bag.parameterHolder.origin == ParameterHolder.ORIGIN_DATA_PROVIDER &&
@@ -1177,7 +1176,7 @@ public class Invoker implements IInvoker {
     //
     // Create the workers
     //
-    List<IMethodWorker> workers= new ArrayList<IMethodWorker>();
+    List<IMethodWorker> workers = Lists.newArrayList();
     
     for (int i = 0; i < testMethod.getInvocationCount(); i++) {
       // we use clones for reporting purposes

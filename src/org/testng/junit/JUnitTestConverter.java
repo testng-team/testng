@@ -115,7 +115,7 @@ public class JUnitTestConverter extends Doclet {
       m_typelines.put(file, new Integer(cd.position().line()));
 
       MethodDoc[] methods = cd.methods();
-      List<MethodDoc> testMethods = new ArrayList<MethodDoc>();
+      List<MethodDoc> testMethods = Lists.newArrayList();
 
       for (MethodDoc md : methods) {
         if (isTest(md) || isSetUp(md) || isTearDown(md)) {

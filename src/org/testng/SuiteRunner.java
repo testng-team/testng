@@ -328,7 +328,7 @@ public class SuiteRunner implements ISuite, Serializable {
 
 
   private void runConcurrently() {
-    List<Runnable> tasks= new ArrayList<Runnable>(m_testRunners.size());
+    List<Runnable> tasks= Lists.newArrayList(m_testRunners.size());
     for(TestRunner tr: m_testRunners) {
       tasks.add(new SuiteWorker(tr));
     }

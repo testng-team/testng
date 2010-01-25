@@ -11,6 +11,7 @@ import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.SuiteRunner;
 import org.testng.TestNGException;
+import org.testng.collections.Lists;
 import org.testng.internal.Invoker;
 import org.testng.internal.PropertiesFile;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -97,7 +98,7 @@ public class SuiteDispatcher
 	                              String outputDir,
 	                              IAnnotationFinder jdkAnnotationFinder, 
 	                              List<ITestListener> testListeners){
-		List<ISuite> result = new ArrayList<ISuite>();
+		List<ISuite> result = Lists.newArrayList();
 		try
 		{
 			//

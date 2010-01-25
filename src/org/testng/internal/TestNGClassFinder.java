@@ -130,7 +130,7 @@ public class TestNGClassFinder extends BaseClassFinder {
               xmlTest,
               annotationFinder,
               m_testContext);
-            List<Class> moreClasses= new ArrayList<Class>();
+            List<Class> moreClasses= Lists.newArrayList();
 
             {
 //            ppp("INVOKING FACTORY " + fm + " " + this.hashCode());

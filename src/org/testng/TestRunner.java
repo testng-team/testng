@@ -67,8 +67,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   transient private IAnnotationFinder m_annotationFinder= null;
 
   /** ITestListeners support. */
-  transient private List<ITestListener> m_testListeners = new ArrayList<ITestListener>();
-  transient private List<IConfigurationListener> m_configurationListeners= new ArrayList<IConfigurationListener>();
+  transient private List<ITestListener> m_testListeners = Lists.newArrayList();
+  transient private List<IConfigurationListener> m_configurationListeners = Lists.newArrayList();
 
   transient private IConfigurationListener m_confListener= new ConfigurationListener();
   transient private boolean m_skipFailedInvocationCounts;
@@ -529,7 +529,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   private void privateRunJUnit(XmlTest xmlTest) {
     final Class<?>[] classes= Utils.xmlClassesToClasses(m_testClassesFromXml);
     final List<ITestNGMethod> runMethods= Lists.newArrayList();
-    List<IMethodWorker> workers= new ArrayList<IMethodWorker>();
+    List<IMethodWorker> workers= Lists.newArrayList();
     // FIXME: directly referincing JUnitTestRunner which uses JUnit classes
     // may result in an class resolution exception under different JVMs
     // The resolution process is not specified in the JVM spec with a specific implementation,
@@ -577,7 +577,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     //
     // Calculate the lists of tests that can be run in sequence and in parallel
     //
-    List<List<ITestNGMethod>> sequentialList= new ArrayList<List<ITestNGMethod>>();
+    List<List<ITestNGMethod>> sequentialList= Lists.newArrayList();
     List<ITestNGMethod> parallelList= Lists.newArrayList();
     MapList<Integer, ITestNGMethod> sequentialMapList = new MapList<Integer, ITestNGMethod>();
 
@@ -596,7 +596,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       //
       // Create the workers
       //
-      List<TestMethodWorker> workers = new ArrayList<TestMethodWorker>();
+      List<TestMethodWorker> workers = Lists.newArrayList();
   
       createSequentialWorkers(sequentialList, xmlTest.getParameters(), m_classMethodMap, workers);
       MapList<Integer, TestMethodWorker> ml =
@@ -662,7 +662,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       }
     }
 
-    List<IMethodInstance> methodInstances = new ArrayList<IMethodInstance>();
+    List<IMethodInstance> methodInstances = Lists.newArrayList();
     for (ITestNGMethod tm : methods) {
       methodInstances.addAll(methodsToMultipleMethodInstances(tm));
     }
@@ -716,7 +716,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
 
     if(parallel.isEmpty()) return;
     
-    List<IMethodInstance> methodInstances = new ArrayList<IMethodInstance>();
+    List<IMethodInstance> methodInstances = Lists.newArrayList();
     for (ITestNGMethod tm : parallel) {
       methodInstances.addAll(methodsToMultipleMethodInstances(tm));
     }
@@ -839,7 +839,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   }
 
   private List<MethodInstance> methodsToMultipleMethodInstances(ITestNGMethod... sl) {
-    List<MethodInstance> vResult = new ArrayList<MethodInstance>();
+    List<MethodInstance> vResult = Lists.newArrayList();
     for (ITestNGMethod m : sl) {
       Object[] instances = m.getTestClass().getInstances(true);
       for (Object instance : instances) {
@@ -1355,7 +1355,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   // Listeners
   /////
 
-  private List<InvokedMethod> m_invokedMethods = new ArrayList<InvokedMethod>();
+  private List<InvokedMethod> m_invokedMethods = Lists.newArrayList();
 
   private void dumpInvokedMethods() {
     System.out.println("\n*********** INVOKED METHODS\n");

@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class Tarjan<T> {
     }
     
     if (m_lowlinks.get(v) == m_indices.get(v)) {
-      m_cycle = new ArrayList<T>();
+      m_cycle = Lists.newArrayList();
       T n;
       do {
         n = m_s.pop();

@@ -98,8 +98,8 @@ public class TestNGAntTask extends Task {
 
   protected CommandlineJava m_javaCommand;
 
-  protected List<FileSet> m_xmlFilesets= new ArrayList<FileSet>();
-  protected List<FileSet> m_classFilesets= new ArrayList<FileSet>();
+  protected List<FileSet> m_xmlFilesets= Lists.newArrayList();
+  protected List<FileSet> m_classFilesets= Lists.newArrayList();
   protected Path m_sourceDirPath;
   protected File m_outputDir;
   protected File m_testjar;
@@ -146,7 +146,7 @@ public class TestNGAntTask extends Task {
   /**
    * The list of report listeners added via &lt;reporter&gt; sub-element of the Ant task
    */
-  private List<ReporterConfig> reporterConfigs = new ArrayList<ReporterConfig>();
+  private List<ReporterConfig> reporterConfigs = Lists.newArrayList();
 
   public void setParallel(String parallel) {
     m_parallelMode= parallel;

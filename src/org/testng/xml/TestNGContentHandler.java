@@ -301,7 +301,7 @@ public class TestNGContentHandler extends DefaultHandler {
    */
   public void xmlClasses(boolean start, Attributes attributes) {
     if (start) {
-      m_currentClasses = new ArrayList<XmlClass>();
+      m_currentClasses = Lists.newArrayList();
     }
     else {
       m_currentTest.setXmlClasses(m_currentClasses);
@@ -339,7 +339,7 @@ public class TestNGContentHandler extends DefaultHandler {
    */
   public void xmlPackages(boolean start, Attributes attributes) {
     if (start) {
-      m_currentPackages = new ArrayList<XmlPackage>();
+      m_currentPackages = Lists.newArrayList();
     }
     else {
       if (null != m_currentPackages) {

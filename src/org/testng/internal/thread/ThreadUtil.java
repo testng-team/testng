@@ -1,6 +1,7 @@
 package org.testng.internal.thread;
 
 
+import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 
 import java.util.ArrayList;
@@ -86,7 +87,7 @@ public class ThreadUtil {
 
   public static class ThreadFactoryImpl implements IThreadFactory, ThreadFactory {
     private String m_methodName;
-    private List<Thread> m_threads = new ArrayList<Thread>();
+    private List<Thread> m_threads = Lists.newArrayList();
 
     public ThreadFactoryImpl(String name) {
       m_methodName= name;

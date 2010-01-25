@@ -74,7 +74,7 @@ public class XmlPackage implements Serializable {
   }
   
   private List<XmlClass> initializeXmlClasses() {
-    List<XmlClass> result= new ArrayList<XmlClass>();
+    List<XmlClass> result= Lists.newArrayList();
     try {
       String[] classes = PackageUtils.findClassesInPackage(m_name, m_include, m_exclude);
       

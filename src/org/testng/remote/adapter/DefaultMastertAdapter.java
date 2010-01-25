@@ -1,17 +1,17 @@
 package org.testng.remote.adapter;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
+import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.internal.remote.SlavePool;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.remote.RemoteSuiteWorker;
 import org.testng.xml.XmlSuite;
+
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Default Master adapter, provides an adapter based on hosts file.
@@ -28,8 +28,7 @@ implements IMasterAdapter
 	private String[] m_hosts;
 
 	final private SlavePool m_slavePool = new SlavePool();
-	final private List<Runnable> m_workers = new ArrayList<Runnable>();
-
+	final private List<Runnable> m_workers = Lists.newArrayList();
 
 	/*
 	 * @see org.testng.remote.adapter.IMasterAdapter#init(java.util.Properties)

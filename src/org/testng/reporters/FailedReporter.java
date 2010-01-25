@@ -181,7 +181,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
    * on the parameter methods
    */
   private List<XmlClass> createXmlClasses(List<ITestNGMethod> methods) {
-    List<XmlClass> result = new ArrayList<XmlClass>();
+    List<XmlClass> result = Lists.newArrayList();
     Map<Class, Set<ITestNGMethod>> methodsMap= Maps.newHashMap();
     
     for (ITestNGMethod m : methods) {
@@ -201,7 +201,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       // @author Borojevic 
       // Need to check all the methods, not just @Test ones.
       XmlClass xmlClass= new XmlClass(clazz.getName(), Boolean.FALSE);
-      List<XmlInclude> methodNames= new ArrayList<XmlInclude>(methodList.size());
+      List<XmlInclude> methodNames= Lists.newArrayList(methodList.size());
       for(ITestNGMethod m: methodList) {
         methodNames.add(new XmlInclude(m.getMethod().getName(), m.getFailedInvocationNumbers()));
       }

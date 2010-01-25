@@ -27,7 +27,7 @@ public class XmlTest implements Serializable, Cloneable {
   private Boolean m_isJUnit;
   private int m_threadCount= -1;
 
-  private List<XmlClass> m_xmlClasses = new ArrayList<XmlClass>();
+  private List<XmlClass> m_xmlClasses = Lists.newArrayList();
   
   private List<String> m_includedGroups = Lists.newArrayList();
   private List<String> m_excludedGroups = Lists.newArrayList();
@@ -41,9 +41,9 @@ public class XmlTest implements Serializable, Cloneable {
   
   // BeanShell expression
   private String m_expression;
-  private List<XmlMethodSelector> m_methodSelectors = new ArrayList<XmlMethodSelector>();
+  private List<XmlMethodSelector> m_methodSelectors = Lists.newArrayList();
   // test level packages
-  private List<XmlPackage> m_xmlPackages = new ArrayList<XmlPackage>();
+  private List<XmlPackage> m_xmlPackages = Lists.newArrayList();
   
   private String m_timeOut;
   private Boolean m_skipFailedInvocationCounts;

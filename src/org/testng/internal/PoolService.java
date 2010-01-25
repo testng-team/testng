@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public class PoolService<KeyType, FutureType> {
       public void run() {
         System.out.println("Listener thread starting, futures:" + m_futureMap.size());
         while (m_futureMap.size() > 0) {
-          List<KeyType> doneFutures = new ArrayList<KeyType>();
+          List<KeyType> doneFutures = Lists.newArrayList();
           for (KeyType key : m_futureMap.keySet()) {
             List<Future<FutureType>> futures = m_futureMap.get(key);
             if (isFinished(futures)) {
@@ -108,7 +109,7 @@ public class PoolService<KeyType, FutureType> {
       }
     }
 
-    List<FutureType> result = new ArrayList<FutureType>();
+    List<FutureType> result = Lists.newArrayList();
     for (Future<FutureType> future : futures) {
       try {
         result.add(future.get());
@@ -128,7 +129,7 @@ public class PoolService<KeyType, FutureType> {
       Future<FutureType> future = m_service.submit(task);
       List<Future<FutureType>> list = m_futureMap.get(key);
       if (list == null) {
-        list = new ArrayList<Future<FutureType>>();
+        list = Lists.newArrayList();
         m_futureMap.put(key, list);
       }
       list.add(future);

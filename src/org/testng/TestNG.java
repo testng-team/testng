@@ -128,9 +128,9 @@ public class TestNG {
   protected ITestRunnerFactory m_testRunnerFactory;
 
   // These listeners can be overridden from the command line
-  protected List<ITestListener> m_testListeners = new ArrayList<ITestListener>();
-  protected List<ISuiteListener> m_suiteListeners = new ArrayList<ISuiteListener>();
-  private List<IReporter> m_reporters = new ArrayList<IReporter>();
+  protected List<ITestListener> m_testListeners = Lists.newArrayList();
+  protected List<ISuiteListener> m_suiteListeners = Lists.newArrayList();
+  private List<IReporter> m_reporters = Lists.newArrayList();
 
   public static final int HAS_FAILURE = 1;
   public static final int HAS_SKIPPED = 2;
@@ -157,8 +157,7 @@ public class TestNG {
 
   private IObjectFactory m_objectFactory;
   
-  protected List<IInvokedMethodListener> m_invokedMethodListeners
-    = new ArrayList<IInvokedMethodListener>();
+  protected List<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
 
   private Integer m_dataProviderThreadCount = null;
 
@@ -399,7 +398,7 @@ public class TestNG {
         xmlSuite.setVerbose(0);
         xmlSuite.setName("Jar suite");
         XmlTest xmlTest = new XmlTest(xmlSuite);
-        List<XmlClass> xmlClasses = new ArrayList<XmlClass>();
+        List<XmlClass> xmlClasses = Lists.newArrayList();
         for (String cls : classes) {
           XmlClass xmlClass = new XmlClass(cls);
           xmlClasses.add(xmlClass);
@@ -821,7 +820,7 @@ public class TestNG {
    * @return
    */
   public List<ISuite> runSuitesLocally() {
-    List<ISuite> result = new ArrayList<ISuite>();
+    List<ISuite> result = Lists.newArrayList();
     
     if (m_verbose > 0) {
       StringBuffer allFiles = new StringBuffer();

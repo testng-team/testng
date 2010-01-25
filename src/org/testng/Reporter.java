@@ -52,7 +52,7 @@ public class Reporter {
     int n = getOutput().size();
     List<Integer> lines = m_methodOutputMap.get(m);
     if (lines == null) {
-      lines = new ArrayList<Integer>();
+      lines = Lists.newArrayList();
       m_methodOutputMap.put(m, lines);
     }
     lines.add(n);

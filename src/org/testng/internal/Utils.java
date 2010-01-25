@@ -72,7 +72,7 @@ public final class Utils {
   }
 
   public static Class<?>[] xmlClassesToClasses(List<XmlClass> classes) {
-    List<Class<?>> result = new ArrayList<Class<?>>();
+    List<Class<?>> result = Lists.newArrayList();
 
     for (XmlClass xmlClass : classes) {
       try {
@@ -93,7 +93,7 @@ public final class Utils {
   }
 
   public static XmlClass[] classesToXmlClasses(Class<?>[] classes) {
-    List<XmlClass> result = new ArrayList<XmlClass>();
+    List<XmlClass> result = Lists.newArrayList();
 
     for (Class<?> cls : classes) {
       result.add(new XmlClass(cls, Boolean.TRUE));

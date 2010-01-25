@@ -1,5 +1,6 @@
 package org.testng;
 
+import org.testng.collections.Lists;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.PropertyUtils;
 import org.testng.internal.Utils;
@@ -23,7 +24,7 @@ public class ReporterConfig {
   /**
    * The properties of the reporter listener
    */
-  private List<Property> m_properties = new ArrayList<Property>();
+  private List<Property> m_properties = Lists.newArrayList();
 
   public void addProperty(Property property) {
     m_properties.add(property);

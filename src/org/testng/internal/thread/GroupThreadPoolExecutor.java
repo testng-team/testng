@@ -27,7 +27,7 @@ public class GroupThreadPoolExecutor extends ThreadPoolExecutor {
   private static final boolean DOT_FILES = false;
 
   private DynamicGraph<ITestNGMethod> m_graph;
-  private List<Runnable> m_activeRunnables = new ArrayList<Runnable>();
+  private List<Runnable> m_activeRunnables = Lists.newArrayList();
   private IWorkerFactory m_factory;
   private XmlTest m_xmlTest;
   private List<String> m_dotFiles = Lists.newArrayList();

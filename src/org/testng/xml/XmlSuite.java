@@ -72,16 +72,16 @@ public class XmlSuite implements Serializable, Cloneable {
   private AnnotationTypeEnum m_defaultAnnotations = VersionInfo.getDefaultAnnotationType();
   
   /** The packages containing test classes. */
-  private List<XmlPackage> m_xmlPackages = new ArrayList<XmlPackage>();
+  private List<XmlPackage> m_xmlPackages = Lists.newArrayList();
   
   /** BeanShell expression. */
   private String m_expression = null;
   
   /** Suite level method selectors. */
-  private List<XmlMethodSelector> m_methodSelectors = new ArrayList<XmlMethodSelector>();
+  private List<XmlMethodSelector> m_methodSelectors = Lists.newArrayList();
   
   /** Tests in suite. */
-  private List<XmlTest> m_tests = new ArrayList<XmlTest>();
+  private List<XmlTest> m_tests = Lists.newArrayList();
   
   /** Suite level parameters. */
   private Map<String, String> m_parameters = Maps.newHashMap();

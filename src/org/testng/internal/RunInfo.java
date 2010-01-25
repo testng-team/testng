@@ -8,6 +8,7 @@ import java.util.List;
 import org.testng.IMethodSelector;
 import org.testng.IMethodSelectorContext;
 import org.testng.ITestNGMethod;
+import org.testng.collections.Lists;
 
 /**
  * This class contains all the information needed to determine
@@ -19,7 +20,7 @@ import org.testng.ITestNGMethod;
  */
 public class RunInfo implements Serializable {
   transient private List<MethodSelectorDescriptor>
-    m_methodSelectors = new ArrayList<MethodSelectorDescriptor>();
+    m_methodSelectors = Lists.newArrayList();
   
   public void addMethodSelector(IMethodSelector selector, int priority) {
     Utils.log("RunInfo", 3, "Adding method selector: " + selector + " priority: " + priority);

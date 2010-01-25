@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import org.testng.ITestResult;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -109,7 +110,7 @@ public class Graph<T extends Object> {
   
   public void topologicalSort() {
     ppp("================ SORTING");
-    m_strictlySortedNodes = new ArrayList<T>();
+    m_strictlySortedNodes = Lists.newArrayList();
     if (null == m_independentNodes) {
       m_independentNodes = Maps.newHashMap();
     }
@@ -118,7 +119,7 @@ public class Graph<T extends Object> {
     // Clone the list of nodes but only keep those that are
     // not independent.
     //
-    List<Node<T>> nodes2 = new ArrayList<Node<T>>();
+    List<Node<T>> nodes2 = Lists.newArrayList();
     for (Node<T> n : getNodes()) {
       if (! isIndependent((T) n.getObject())) {
         ppp("ADDING FOR SORT: " + n.getObject());
