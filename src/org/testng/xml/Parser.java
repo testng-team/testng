@@ -6,6 +6,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.testng.TestNGException;
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.ClassHelper;
 import org.xml.sax.SAXException;
@@ -148,9 +149,9 @@ public class Parser {
         parentFile = mainFile.getParentFile();
     }
 
-    List<String> toBeParsed = new ArrayList<String>();
-    List<String> toBeAdded = new ArrayList<String>();
-    List<String> toBeRemoved = new ArrayList<String>();
+    List<String> toBeParsed = Lists.newArrayList();
+    List<String> toBeAdded = Lists.newArrayList();
+    List<String> toBeRemoved = Lists.newArrayList();
     toBeParsed.add(mainFilePath);
     
     while (toBeParsed.size() > 0) {
@@ -190,12 +191,12 @@ public class Parser {
       for (String s : toBeRemoved) {
         toBeParsed.remove(s);
       }
-      toBeRemoved = new ArrayList<String>();
+      toBeRemoved = Lists.newArrayList();
       
       for (String s : toBeAdded) {
         toBeParsed.add(s);
       }
-      toBeAdded = new ArrayList<String>();
+      toBeAdded = Lists.newArrayList();
       
     }
     

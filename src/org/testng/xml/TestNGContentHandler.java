@@ -38,17 +38,17 @@ public class TestNGContentHandler extends DefaultHandler {
   private List<String> m_currentExcludedGroups = null;
   private Map<String, String> m_currentTestParameters = null;
   private Map<String, String> m_currentSuiteParameters = null;
-  private ArrayList<String> m_currentMetaGroup = null;
+  private List<String> m_currentMetaGroup = null;
   private String m_currentMetaGroupName;
   private boolean m_inTest = false;
   private XmlClass m_currentClass = null;
   private ArrayList<XmlInclude> m_currentIncludedMethods = null;
-  private ArrayList<String> m_currentExcludedMethods = null;
+  private List<String> m_currentExcludedMethods = null;
   private ArrayList<XmlMethodSelector> m_currentSelectors = null;
   private XmlMethodSelector m_currentSelector = null;
   private String m_currentLanguage = null;
   private String m_currentExpression = null;
-  private List<String> m_suiteFiles = new ArrayList<String>();
+  private List<String> m_suiteFiles = Lists.newArrayList();
   private boolean m_enabledTest;
   private List<String> m_listeners;
   
@@ -188,8 +188,8 @@ public class TestNGContentHandler extends DefaultHandler {
   private void xmlDefine(boolean start, Attributes attributes) {
     if (start) {
       String name = attributes.getValue("name");
-      m_currentDefines = new ArrayList<String>();
-      m_currentMetaGroup = new ArrayList<String>();
+      m_currentDefines = Lists.newArrayList();
+      m_currentMetaGroup = Lists.newArrayList();
       m_currentMetaGroupName = name;
     }
     else {
@@ -314,7 +314,7 @@ public class TestNGContentHandler extends DefaultHandler {
    */
   public void xmlListeners(boolean start, Attributes attributes) {
     if (start) {
-      m_listeners = new ArrayList<String>();
+      m_listeners = Lists.newArrayList();
     }
     else {
       if (null != m_listeners) {
@@ -408,7 +408,7 @@ public class TestNGContentHandler extends DefaultHandler {
   private void xmlMethod(boolean start, Attributes attributes) {
     if (start) {
       m_currentIncludedMethods = new ArrayList<XmlInclude>();
-      m_currentExcludedMethods = new ArrayList<String>();
+      m_currentExcludedMethods = Lists.newArrayList();
     }
     else {
       m_currentClass.setIncludedMethods(m_currentIncludedMethods);
@@ -423,7 +423,7 @@ public class TestNGContentHandler extends DefaultHandler {
    */
   public void xmlRun(boolean start, Attributes attributes) {
     if (start) {
-      m_currentRuns = new ArrayList<String>();
+      m_currentRuns = Lists.newArrayList();
     }
     else {
       m_currentTest.setIncludedGroups(m_currentIncludedGroups);
@@ -499,8 +499,8 @@ public class TestNGContentHandler extends DefaultHandler {
       xmlRun(true, attributes);
     }
     else if ("groups".equals(qName)) {
-      m_currentIncludedGroups = new ArrayList<String>();
-      m_currentExcludedGroups = new ArrayList<String>();
+      m_currentIncludedGroups = Lists.newArrayList();
+      m_currentExcludedGroups = Lists.newArrayList();
     }
     else if ("methods".equals(qName)) {
       xmlMethod(true, attributes);

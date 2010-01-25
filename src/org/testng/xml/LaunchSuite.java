@@ -1,18 +1,18 @@
 package org.testng.xml;
 
 
+import org.testng.collections.Lists;
+import org.testng.internal.AnnotationTypeEnum;
+import org.testng.log4testng.Logger;
+import org.testng.reporters.XMLStringBuffer;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import org.testng.internal.AnnotationTypeEnum;
-import org.testng.log4testng.Logger;
-import org.testng.reporters.XMLStringBuffer;
 
 /**
  * Wrapper for real suites and custom configured suites.
@@ -340,7 +340,7 @@ public abstract class LaunchSuite {
     private Collection<String> sanitize(Collection<String> source) {
       if(null == source) return null;
       
-      List<String> result= new ArrayList<String>();
+      List<String> result= Lists.newArrayList();
       for(String name: source) {
         if(!"".equals(name)) {
           result.add(name);

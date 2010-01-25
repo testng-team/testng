@@ -9,6 +9,7 @@ import com.sun.javadoc.SourcePosition;
 import com.sun.tools.javadoc.Main;
 
 import org.testng.JUnitConverter;
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
 import java.io.BufferedReader;
@@ -30,7 +31,7 @@ import java.util.Map;
  */
 public class JUnitTestConverter extends Doclet {
   private static File[] m_fileNames = null;
-  private static List<String> m_classNames = new ArrayList<String>();
+  private static List<String> m_classNames = Lists.newArrayList();
   // Files and their test methods
   private static Map<File, List<MethodDoc>> m_files = Maps.newHashMap();
   private static Map<File, List<String>> m_fileLines = Maps.newHashMap();
@@ -52,7 +53,7 @@ public class JUnitTestConverter extends Doclet {
     m_useAnnotations = useAnnotations;
     m_groups = groups;
 
-    Collection<String> argv = new ArrayList<String>();
+    Collection<String> argv = Lists.newArrayList();
 
     argv.add("-quiet");
     if (null != release && !"".equals(release)) {
@@ -362,7 +363,7 @@ public class JUnitTestConverter extends Doclet {
    * @throws IOException
    */
   private List<String> fileToLines(File file) throws IOException {
-    List<String> result = new ArrayList<String>();
+    List<String> result = Lists.newArrayList();
     BufferedReader br = new BufferedReader(new FileReader(file));
 
     String line = br.readLine();

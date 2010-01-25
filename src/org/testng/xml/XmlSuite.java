@@ -1,6 +1,7 @@
 package org.testng.xml;
 
 import org.testng.IObjectFactory;
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.version.VersionInfo;
@@ -8,7 +9,6 @@ import org.testng.reporters.XMLStringBuffer;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -92,11 +92,11 @@ public class XmlSuite implements Serializable, Cloneable {
   /** Time out for methods/tests */
   private String m_timeOut;
 
-  private List<String> m_suiteFiles = new ArrayList<String>();
+  private List<String> m_suiteFiles = Lists.newArrayList();
 
   private IObjectFactory m_objectFactory;
 
-  private List<String> m_listeners = new ArrayList<String>();
+  private List<String> m_listeners = Lists.newArrayList();
 
   private static final long serialVersionUID = 4999962288272750226L;
 

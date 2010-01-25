@@ -6,6 +6,7 @@ import org.testng.TestNGCommandLineArgs;
 import org.testng.TestRunner;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.ITestAnnotation;
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -115,7 +116,7 @@ public final class Utils {
   }
 
   public static String[] parseMultiLine(String line) {
-    List<String> vResult = new ArrayList<String>();
+    List<String> vResult = Lists.newArrayList();
     if ((null != line) && !"".equals(line.trim())) {
       StringTokenizer st = new StringTokenizer(line, " ");
       while (st.hasMoreTokens()) {
@@ -258,7 +259,7 @@ public final class Utils {
    * class groups
    */
   public static String[] dependentGroupsForThisMethodForTest(Method m, IAnnotationFinder finder) {
-    List<String> vResult = new ArrayList<String>();
+    List<String> vResult = Lists.newArrayList();
     Class<?> cls = m.getDeclaringClass();
 
     // Collect groups on the class
@@ -288,7 +289,7 @@ public final class Utils {
    * class groups
    */
   public static String[] groupsForThisMethodForTest(Method m, IAnnotationFinder finder) {
-    List<String> vResult = new ArrayList<String>();
+    List<String> vResult = Lists.newArrayList();
     Class<?> cls = m.getDeclaringClass();
 
     // Collect groups on the class
@@ -417,7 +418,7 @@ public final class Utils {
     int start = 0;
     int idx = string.indexOf(sep, start);
     int len = sep.length();
-    List<String> strings = new ArrayList<String>();
+    List<String> strings = Lists.newArrayList();
 
     while (idx != -1) {
       strings.add(string.substring(start, idx).trim());

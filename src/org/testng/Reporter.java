@@ -1,5 +1,6 @@
 package org.testng;
 
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
 import java.util.ArrayList;
@@ -123,7 +124,7 @@ public class Reporter {
   }
 
   public static synchronized List<String> getOutput(ITestResult tr) {
-    List<String> result = new ArrayList<String>();
+    List<String> result = Lists.newArrayList();
     List<Integer> lines = m_methodOutputMap.get(tr);
     if (lines != null) {
       for (Integer n : lines) {

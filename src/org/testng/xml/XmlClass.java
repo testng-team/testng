@@ -18,7 +18,7 @@ import java.util.Properties;
  */
 public class XmlClass implements Serializable, Cloneable {
   private List<XmlInclude> m_includedMethods = Lists.newArrayList();
-  private List<String> m_excludedMethods = new ArrayList<String>();
+  private List<String> m_excludedMethods = Lists.newArrayList();
   private String       m_name = null;
   private Class        m_class = null;
   private Boolean      m_declaredClass = null;

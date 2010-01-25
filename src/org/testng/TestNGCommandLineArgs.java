@@ -1,6 +1,7 @@
 package org.testng;
 
 
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.ClassHelper;
@@ -370,7 +371,7 @@ public final class TestNGCommandLineArgs {
       //
       // Read parameters just once, to get all xml files
       else if( arguments.get(SUITE_DEF_OPT) == null ){
-        List<String> suiteDefs = new ArrayList<String>();
+        List<String> suiteDefs = Lists.newArrayList();
 
         // Iterates over all declared XML file params
         for (int k = i; k < argv.length; k++) {
@@ -418,7 +419,7 @@ public final class TestNGCommandLineArgs {
    * @return the new and enriched command line parameters
    */
   private static String[] expandArgv(String[] originalArgv) {
-    List<String> vResult = new ArrayList<String>();
+    List<String> vResult = Lists.newArrayList();
     
     for (String arg : originalArgv) {
 
@@ -463,7 +464,7 @@ public final class TestNGCommandLineArgs {
 //    // TODO There must be an easier way to do this with a regular expression.
 //    
 //    StringTokenizer st = new StringTokenizer(line, SPACE + DOUBLE_QUOTE, true);
-//    List<String> results = new ArrayList<String>();
+//    List<String> results = Lists.newArrayList();
 //    
 //    /* 
 //     * isInDoubleQuote toggles from false to true when we reach a double
@@ -568,7 +569,7 @@ public final class TestNGCommandLineArgs {
    * @return the file content as a string.
    */
   public static List<String> readFile(String fileName) {
-    List<String> result = new ArrayList<String>();
+    List<String> result = Lists.newArrayList();
 
     try {
       BufferedReader bufRead = new BufferedReader(new FileReader(fileName));

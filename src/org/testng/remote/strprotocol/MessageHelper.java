@@ -2,9 +2,9 @@ package org.testng.remote.strprotocol;
 
 
 import org.testng.ITestResult;
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -191,7 +191,7 @@ public class MessageHelper {
       return new String[0];
     }
     
-    List<String> tokens = new ArrayList<String>();
+    List<String> tokens = Lists.newArrayList();
     int start = 0;
     for(int i = 0; i < message.length(); i++) {
       if(separator == message.charAt(i)) {

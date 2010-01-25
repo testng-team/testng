@@ -4,6 +4,7 @@ package org.testng;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.testng.annotations.ITestAnnotation;
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.ClassHelper;
@@ -38,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -164,7 +164,7 @@ public class TestNG {
 
   private String m_jarPath;
 
-  private List<String> m_stringSuites = new ArrayList<String>();
+  private List<String> m_stringSuites = Lists.newArrayList();
   
   /**
    * Default constructor. Setting also usage of default listeners/reporters.
@@ -379,7 +379,7 @@ public class TestNG {
 
       JarFile jf = new JarFile(jarFile);
       Enumeration<JarEntry> entries = jf.entries();
-      List<String> classes = new ArrayList<String>();
+      List<String> classes = Lists.newArrayList();
       boolean foundTestngXml = false;
       while (entries.hasMoreElements()) {
         JarEntry je = entries.nextElement();
@@ -544,7 +544,7 @@ public class TestNG {
    *
    * <pre>
    * TestNG tng = new TestNG();
-   * List<String> suites = new ArrayList<String>();
+   * List<String> suites = Lists.newArrayList();
    * suites.add("c:/tests/testng1.xml");
    * suites.add("c:/tests/testng2.xml");
    * tng.setTestSuites(suites);

@@ -456,7 +456,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     // See if we have any MetaGroups and
     // expand them if they match one of the groups
     // we have just been passed
-    List<String> unfinishedGroups = new ArrayList<String>();
+    List<String> unfinishedGroups = Lists.newArrayList();
 
     if (m_metaGroups.size() > 0) {
       collectGroups(groups, unfinishedGroups, result);
@@ -464,7 +464,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       // Do we need to loop over unfinished groups?
       while (unfinishedGroups.size() > 0) {
         String[] uGroups = (String[]) unfinishedGroups.toArray(new String[unfinishedGroups.size()]);
-        unfinishedGroups = new ArrayList<String>();
+        unfinishedGroups = Lists.newArrayList();
         collectGroups(uGroups, unfinishedGroups, result);
       }
     }

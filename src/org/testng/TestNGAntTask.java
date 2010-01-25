@@ -1,21 +1,6 @@
 package org.testng;
 
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.StringTokenizer;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
@@ -31,8 +16,24 @@ import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
 import org.apache.tools.ant.types.selectors.FilenameSelector;
+import org.testng.collections.Lists;
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.version.VersionInfo;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
 /**
  * TestNG settings:
@@ -105,7 +106,7 @@ public class TestNGAntTask extends Task {
   protected File m_workingDir;
   private Integer m_timeout;
   protected Boolean m_isJUnit;
-  private List<String> m_listeners= new ArrayList<String>();
+  private List<String> m_listeners= Lists.newArrayList();
   private String m_objectFactory;
   protected String m_testRunnerFactory;
   private boolean m_delegateCommandSystemProperties = false;
@@ -481,7 +482,7 @@ public class TestNGAntTask extends Task {
 
     cmd.setClassname(m_mainClass);
 
-    List<String> argv= new ArrayList<String>();
+    List<String> argv= Lists.newArrayList();
 
     if (null != m_isJUnit) {
       if(m_isJUnit.booleanValue()) {
@@ -1001,7 +1002,7 @@ public class TestNGAntTask extends Task {
    * @throws BuildException
    */
   private List<String> fileset(List<FileSet> filesets) throws BuildException {
-    List<String> files= new ArrayList<String>();
+    List<String> files= Lists.newArrayList();
 
     for(Iterator<FileSet> iterator= filesets.iterator(); iterator.hasNext();) {
       FileSet fileset= iterator.next();

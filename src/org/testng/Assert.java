@@ -1,5 +1,7 @@
 package org.testng;
 
+import org.testng.collections.Lists;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -532,7 +534,7 @@ public class Assert {
           message);
     }
     
-    List actualCollection = new ArrayList();
+    List actualCollection = Lists.newArrayList();
     for (Object a : actual) {
       actualCollection.add(a);
     }

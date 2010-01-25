@@ -1,5 +1,8 @@
 package org.testng.internal;
 
+import org.testng.TestNGCommandLineArgs;
+import org.testng.collections.Lists;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -7,14 +10,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
-
-import org.testng.TestNGCommandLineArgs;
 
 /**
  * Utility class that finds all the classes in a given package.
@@ -42,7 +42,7 @@ public class PackageUtils {
       recursive = true;
     }
   
-    List<String> vResult = new ArrayList<String>();
+    List<String> vResult = Lists.newArrayList();
     String packageDirName = packageOnly.replace('.', '/');
     Enumeration<URL> dirs = Thread.currentThread().getContextClassLoader().getResources(packageDirName);
     while (dirs.hasMoreElements()) {

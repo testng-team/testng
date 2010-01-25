@@ -29,8 +29,8 @@ public class XmlTest implements Serializable, Cloneable {
 
   private List<XmlClass> m_xmlClasses = new ArrayList<XmlClass>();
   
-  private List<String> m_includedGroups = new ArrayList<String>();
-  private List<String> m_excludedGroups = new ArrayList<String>();
+  private List<String> m_includedGroups = Lists.newArrayList();
+  private List<String> m_excludedGroups = Lists.newArrayList();
 
   private final Map<String, List<String>> m_metaGroups = Maps.newHashMap();
   private Map<String, String> m_parameters = Maps.newHashMap();

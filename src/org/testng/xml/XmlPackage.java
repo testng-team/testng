@@ -1,5 +1,6 @@
 package org.testng.xml;
 
+import org.testng.collections.Lists;
 import org.testng.internal.PackageUtils;
 import org.testng.internal.Utils;
 import org.testng.reporters.XMLStringBuffer;
@@ -18,8 +19,8 @@ import java.util.Properties;
  */
 public class XmlPackage implements Serializable {
   private String m_name;
-  private List<String> m_include = new ArrayList<String>();
-  private List<String> m_exclude = new ArrayList<String>();
+  private List<String> m_include = Lists.newArrayList();
+  private List<String> m_exclude = Lists.newArrayList();
   private List<XmlClass> m_xmlClasses= null;
   
   /**
