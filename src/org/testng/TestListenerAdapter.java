@@ -1,10 +1,11 @@
 package org.testng;
 
+import org.testng.collections.Lists;
+import org.testng.internal.IResultListener;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import org.testng.internal.IResultListener;
 
 
 /**
@@ -23,15 +24,16 @@ import org.testng.internal.IResultListener;
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public class TestListenerAdapter implements IResultListener {
-  private List<ITestNGMethod> m_allTestMethods = Collections.synchronizedList(new ArrayList<ITestNGMethod>());
-  private List<ITestResult> m_passedTests = Collections.synchronizedList(new ArrayList<ITestResult>());
-  private List<ITestResult> m_failedTests = Collections.synchronizedList(new ArrayList<ITestResult>());
-  private List<ITestResult> m_skippedTests = Collections.synchronizedList(new ArrayList<ITestResult>());
-  private List<ITestResult> m_failedButWSPerTests = Collections.synchronizedList(new ArrayList<ITestResult>());
+  private List<ITestNGMethod> m_allTestMethods =
+      Collections.synchronizedList(Lists.<ITestNGMethod>newArrayList());
+  private List<ITestResult> m_passedTests = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
+  private List<ITestResult> m_failedTests = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
+  private List<ITestResult> m_skippedTests = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
+  private List<ITestResult> m_failedButWSPerTests = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
   private List<ITestContext> m_testContexts= Collections.synchronizedList(new ArrayList<ITestContext>());
-  private List<ITestResult> m_failedConfs= Collections.synchronizedList(new ArrayList<ITestResult>());
-  private List<ITestResult> m_skippedConfs= Collections.synchronizedList(new ArrayList<ITestResult>());
-  private List<ITestResult> m_passedConfs= Collections.synchronizedList(new ArrayList<ITestResult>());
+  private List<ITestResult> m_failedConfs= Collections.synchronizedList(Lists.<ITestResult>newArrayList());
+  private List<ITestResult> m_skippedConfs= Collections.synchronizedList(Lists.<ITestResult>newArrayList());
+  private List<ITestResult> m_passedConfs= Collections.synchronizedList(Lists.<ITestResult>newArrayList());
 
   public void onTestSuccess(ITestResult tr) {
     m_allTestMethods.add(tr.getMethod());

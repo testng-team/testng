@@ -39,7 +39,7 @@ public class TestMethodWorker implements IMethodWorker {
 //  protected Map<ITestClass, Set<Object>> m_invokedBeforeClassMethods = null;
 //  protected Map<ITestClass, Set<Object>> m_invokedAfterClassMethods = null;
   protected ITestNGMethod[] m_allTestMethods;
-  protected List<ITestResult> m_testResults = new ArrayList<ITestResult>();
+  protected List<ITestResult> m_testResults = Lists.newArrayList();
   protected ConfigurationGroupMethods m_groupMethods = null;
   protected ClassMethodMap m_classMethodMap = null;
   private ITestContext m_testContext = null;
@@ -206,7 +206,7 @@ public class TestMethodWorker implements IMethodWorker {
     //
     // Invoke after class methods if this test method is the last one
     //
-    List<Object> invokeInstances= new ArrayList<Object>();
+    List<Object> invokeInstances= Lists.newArrayList();
     ITestNGMethod tm= mi.getMethod();
     if (m_classMethodMap.removeAndCheckIfLast(tm)) {
       Map<ITestClass, Set<Object>> invokedAfterClassMethods= m_classMethodMap.getInvokedAfterClassMethods();

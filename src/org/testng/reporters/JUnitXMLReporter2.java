@@ -1,17 +1,6 @@
 package org.testng.reporters;
 
 
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -21,19 +10,22 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.testng.IResultMap;
 import org.testng.ISuite;
-import org.testng.ISuiteResult;
 import org.testng.ITestContext;
-import org.testng.ITestListener;
-import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.collections.Lists;
 import org.testng.internal.IResultListener;
 import org.testng.internal.Utils;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Text;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * this XML Reporter will produce XML format compatible with the XMLJUnitResultFormatter from ant
@@ -57,8 +49,10 @@ public class JUnitXMLReporter2 implements IResultListener {
   private int m_numFailed= 0;
   private int m_numSkipped= 0;
   private int m_numFailedButIgnored= 0;
-  private List<ITestResult> m_allTests= Collections.synchronizedList(new ArrayList<ITestResult>());
-  private List<ITestResult> m_configIssues= Collections.synchronizedList(new ArrayList<ITestResult>());
+  private List<ITestResult> m_allTests 
+      = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
+  private List<ITestResult> m_configIssues
+      = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
 
   public void onTestStart(ITestResult result) {
   }

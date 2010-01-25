@@ -1,5 +1,6 @@
 package org.testng;
 
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.ConfigurationMethod;
 import org.testng.internal.NoOpTestClass;
@@ -10,7 +11,6 @@ import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -176,7 +176,7 @@ public class TestClass extends NoOpTestClass implements ITestClass {
    * all those that belong to a different class).
    */
   private ITestNGMethod[] createTestMethods(ITestNGMethod[] methods) {
-    List<ITestNGMethod> vResult = new ArrayList<ITestNGMethod>();
+    List<ITestNGMethod> vResult = Lists.newArrayList();
     for (ITestNGMethod tm : methods) {
       Method m = tm.getMethod();
       if (m.getDeclaringClass().isAssignableFrom(m_testClass)) {

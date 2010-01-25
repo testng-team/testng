@@ -103,7 +103,7 @@ public class TestNG {
   
   private static TestNG m_instance;
 
-  protected List<XmlSuite> m_suites = new ArrayList<XmlSuite>();
+  protected List<XmlSuite> m_suites = Lists.newArrayList();
   protected List<XmlSuite> m_cmdlineSuites;
   protected String m_outputDir = DEFAULT_OUTPUTDIR;
   
@@ -443,7 +443,7 @@ public class TestNG {
   }
 
   public void setCommandLineSuite(XmlSuite suite) {
-    m_cmdlineSuites = new ArrayList<XmlSuite>();
+    m_cmdlineSuites = Lists.newArrayList();
     m_cmdlineSuites.add(suite);
     m_suites.add(suite);
   }

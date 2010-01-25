@@ -1,9 +1,9 @@
 package org.testng.internal;
 
 import org.testng.ITestNGMethod;
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -86,7 +86,7 @@ public class MethodInheritance {
           map.put(methodClass, l);
         }
         else {
-          l = new ArrayList<ITestNGMethod>();
+          l = Lists.newArrayList();
           l.add(method);
           map.put(methodClass, l);
         }

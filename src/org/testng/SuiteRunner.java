@@ -390,7 +390,7 @@ public class SuiteRunner implements ISuite, Serializable {
         for (String groupName : groups) {
           Collection<ITestNGMethod> testMethods = result.get(groupName);
           if (null == testMethods) {
-            testMethods = new ArrayList<ITestNGMethod>();
+            testMethods = Lists.newArrayList();
             result.put(groupName, testMethods);
           }
           testMethods.add(m);
@@ -416,7 +416,7 @@ public class SuiteRunner implements ISuite, Serializable {
   }
   
   private Collection<ITestNGMethod> getIncludedOrExcludedMethods(boolean included) {
-    List<ITestNGMethod> result= new ArrayList<ITestNGMethod>();
+    List<ITestNGMethod> result= Lists.newArrayList();
 
     for (TestRunner tr : m_testRunners) {
       Collection<ITestNGMethod> methods = included ? tr.getInvokedMethods() : tr.getExcludedMethods();

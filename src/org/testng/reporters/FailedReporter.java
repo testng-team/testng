@@ -7,6 +7,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.Utils;
@@ -137,7 +138,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       // in the methodToReRun map.  Since the methods are already
       // sorted, we don't need to sort them again.
       //
-      List<ITestNGMethod> result = new ArrayList<ITestNGMethod>();
+      List<ITestNGMethod> result = Lists.newArrayList();
       for (ITestNGMethod m : context.getAllTestMethods()) {
         if (methodsToReRun.contains(m)) {
           result.add(m);

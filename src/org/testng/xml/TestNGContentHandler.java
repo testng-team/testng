@@ -33,7 +33,7 @@ public class TestNGContentHandler extends DefaultHandler {
   private List<XmlClass> m_currentClasses = null;
   private List<XmlPackage> m_currentPackages = null;
   private XmlPackage m_currentPackage = null;
-  private List<XmlSuite> m_suites = new ArrayList<XmlSuite>();
+  private List<XmlSuite> m_suites = Lists.newArrayList();
   private List<String> m_currentIncludedGroups = null;
   private List<String> m_currentExcludedGroups = null;
   private Map<String, String> m_currentTestParameters = null;

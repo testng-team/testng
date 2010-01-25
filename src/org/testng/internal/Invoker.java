@@ -18,6 +18,7 @@ import org.testng.SuiteRunState;
 import org.testng.TestException;
 import org.testng.TestNGException;
 import org.testng.annotations.IConfigurationAnnotation;
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.InvokeMethodRunnable.TestNGRuntimeException;
 import org.testng.internal.annotations.AnnotationHelper;
@@ -32,7 +33,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -603,7 +603,7 @@ public class Invoker implements IInvoker {
       
       ExpectedExceptionsHolder expectedExceptionClasses
           = MethodHelper.findExpectedExceptions(m_annotationFinder, tm.getMethod());
-      List<ITestResult> results = new ArrayList<ITestResult>();
+      List<ITestResult> results = Lists.newArrayList();
       results.add(testResult);
       handleInvocationResults(tm, results, null, 0, expectedExceptionClasses, false,
           true /* collect results */);
@@ -656,7 +656,7 @@ public class Invoker implements IInvoker {
   private ITestNGMethod[] filterConfigurationMethods(ITestNGMethod tm,
       ITestNGMethod[] methods, boolean isBefore)
   {
-    List<ITestNGMethod> result = new ArrayList<ITestNGMethod>();
+    List<ITestNGMethod> result = Lists.newArrayList();
     for (ITestNGMethod m : methods) {
       ConfigurationMethod cm = (ConfigurationMethod) m;
       if (isBefore) {
@@ -713,7 +713,7 @@ public class Invoker implements IInvoker {
                                              ITestNGMethod[] afterMethods,
                                              ConfigurationGroupMethods groupMethods)
   {
-    List<ITestResult> results = new ArrayList<ITestResult>();
+    List<ITestResult> results = Lists.newArrayList();
 
     // Mark this method with the current thread id
     tm.setId(ThreadUtil.currentThreadInfo());
@@ -738,7 +738,7 @@ public class Invoker implements IInvoker {
                                                 Object instance) 
   {
     synchronized(groupMethods) {
-      List<ITestNGMethod> filteredMethods = new ArrayList<ITestNGMethod>();
+      List<ITestNGMethod> filteredMethods = Lists.newArrayList();
       String[] groups = currentTestMethod.getGroups();
       Map<String, List<ITestNGMethod>> beforeGroupMap = groupMethods.getBeforeGroupsMap();
       
@@ -852,7 +852,7 @@ public class Invoker implements IInvoker {
     List<Object> failedInstances;
 
     do {
-      failedInstances = new ArrayList<Object>();
+      failedInstances = Lists.newArrayList();
       Map<String, String> allParameters = Maps.newHashMap();
       /**
        * TODO: This recreates all the parameters every time when we only need
@@ -927,7 +927,7 @@ public class Invoker implements IInvoker {
     assert null != testMethod.getTestClass() 
     : "COULDN'T FIND TESTCLASS FOR " + testMethod.getMethod().getDeclaringClass();
     
-    List<ITestResult> result = new ArrayList<ITestResult>();
+    List<ITestResult> result = Lists.newArrayList();
     
     ITestClass testClass= testMethod.getTestClass();
     long start= System.currentTimeMillis();
@@ -1018,7 +1018,7 @@ public class Invoker implements IInvoker {
                   Object[] parameterValues= allParameterValues.next();
 
 
-                  List<ITestResult> tmpResults = new ArrayList<ITestResult>();
+                  List<ITestResult> tmpResults = Lists.newArrayList();
 
                   try {
                     tmpResults.addAll(invokeTestMethod(instances,
@@ -1032,7 +1032,7 @@ public class Invoker implements IInvoker {
                                                        groupMethods));
                   }
                   finally {
-                    List<Object> failedInstances = new ArrayList<Object>();
+                    List<Object> failedInstances = Lists.newArrayList();
 
                     failureCount = handleInvocationResults(testMethod, tmpResults,
                         failedInstances, failureCount, expectedExceptionHolder, true,
@@ -1041,7 +1041,7 @@ public class Invoker implements IInvoker {
                       result.addAll(tmpResults);
                     } else {
                       for (int i = 0; i < failedInstances.size(); i++) {
-                        List<ITestResult> retryResults = new ArrayList<ITestResult>();
+                        List<ITestResult> retryResults = Lists.newArrayList();
 
                         failureCount = 
                          retryFailed(failedInstances.toArray(),
@@ -1215,7 +1215,7 @@ public class Invoker implements IInvoker {
     //
     // Go through all the results and create a TestResult for each of them
     //
-    List<ITestResult> resultsToRetry = new ArrayList<ITestResult>();
+    List<ITestResult> resultsToRetry = Lists.newArrayList();
 
     for (int i = 0; i < result.size(); i++) {
       ITestResult testResult = result.get(i);
@@ -1376,7 +1376,7 @@ public class Invoker implements IInvoker {
     //
     // Collect all the TestResults
     //
-    List<ITestResult> result = new ArrayList<ITestResult>();
+    List<ITestResult> result = Lists.newArrayList();
     for (IMethodWorker tmw : workers) {
       result.addAll(tmw.getTestResults());
     }
@@ -1516,7 +1516,7 @@ public class Invoker implements IInvoker {
    * @return Only the ITestNGMethods applicable for this testClass
    */
   private ITestNGMethod[] filterMethods(IClass testClass, ITestNGMethod[] methods) {
-    List<ITestNGMethod> vResult= new ArrayList<ITestNGMethod>();
+    List<ITestNGMethod> vResult= Lists.newArrayList();
 
     for(ITestNGMethod tm : methods) {
       if(tm.canRunFromClass(testClass)) {
@@ -1538,7 +1538,7 @@ public class Invoker implements IInvoker {
       return methods;
     }
 
-    List<ITestNGMethod> vResult= new ArrayList<ITestNGMethod>();
+    List<ITestNGMethod> vResult= Lists.newArrayList();
 
     for(ITestNGMethod tm : methods) {
       if(null == testClass) {
@@ -1698,7 +1698,7 @@ public class Invoker implements IInvoker {
   
   private static class ParameterBag {
     final ParameterHolder parameterHolder;
-    final List<ITestResult> errorResults= new ArrayList<ITestResult>();
+    final List<ITestResult> errorResults= Lists.newArrayList();
     
     public ParameterBag(ParameterHolder params, TestResult tr) {
       parameterHolder = params;

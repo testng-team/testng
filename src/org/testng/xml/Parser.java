@@ -207,7 +207,7 @@ public class Parser {
   public List<XmlSuite> parseToList() 
     throws ParserConfigurationException, SAXException, IOException
   {
-    List<XmlSuite> result = new ArrayList<XmlSuite>();
+    List<XmlSuite> result = Lists.newArrayList();
     Collection<XmlSuite> suites = parse();
     for (XmlSuite suite : suites) {
       result.add(suite);

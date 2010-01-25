@@ -1,8 +1,8 @@
 package org.testng;
 
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,7 +27,7 @@ public class ClassMethodMap {
       Class<?> c = getMethodClass(m);
       List<ITestNGMethod> l = m_classMap.get(c);
       if (l == null) {
-        l = new ArrayList<ITestNGMethod>();
+        l = Lists.newArrayList();
         m_classMap.put(c, l);
       }
       l.add(m);

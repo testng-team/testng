@@ -1,10 +1,17 @@
 package org.testng.junit;
 
 
+import org.testng.ITestListener;
+import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
+import org.testng.TestNGException;
+import org.testng.collections.Lists;
+import org.testng.internal.ITestResultNotifier;
+import org.testng.internal.InvokedMethod;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -15,14 +22,6 @@ import junit.framework.Test;
 import junit.framework.TestListener;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
-
-import org.testng.ITestListener;
-import org.testng.ITestNGMethod;
-import org.testng.ITestResult;
-import org.testng.TestNGException;
-import org.testng.TestRunner;
-import org.testng.internal.ITestResultNotifier;
-import org.testng.internal.InvokedMethod;
 
 /**
  * A JUnit TestRunner that records/triggers all information/events necessary to TestNG.
@@ -35,7 +34,7 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
   private ITestResultNotifier m_parentRunner;
 
   private Map<Test, TestRunInfo> m_tests= new WeakHashMap<Test, TestRunInfo>();
-  private List<ITestNGMethod> m_methods= new ArrayList<ITestNGMethod>();
+  private List<ITestNGMethod> m_methods= Lists.newArrayList();
   
   public JUnitTestRunner() {
   }

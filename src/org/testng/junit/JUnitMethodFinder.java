@@ -1,18 +1,18 @@
 package org.testng.junit;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.testng.ITestMethodFinder;
 import org.testng.ITestNGMethod;
+import org.testng.collections.Lists;
 import org.testng.internal.TestNGMethod;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -67,7 +67,7 @@ public class JUnitMethodFinder implements ITestMethodFinder {
   }  
   
   private ITestNGMethod[] privateFindTestMethods(INameFilter filter, Class cls) {
-    List<ITestNGMethod> vResult = new ArrayList<ITestNGMethod>();
+    List<ITestNGMethod> vResult = Lists.newArrayList();
     
     // We do not want to walk up the class hierarchy and accept the
     // same method twice (e.g. setUp) which would lead to double-invocation.

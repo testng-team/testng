@@ -99,7 +99,7 @@ public class Parameters {
   {
     Object[] result = new Object[0];
     if(parameterTypes.length > 0) {
-      List<Object> vResult = new ArrayList<Object>();
+      List<Object> vResult = Lists.newArrayList();
   
       checkParameterTypes(methodName, parameterTypes, methodAnnotation, parameterNames);
   
@@ -287,7 +287,7 @@ public class Parameters {
   private static Object[] createParameters(Method m, MethodParameters params,
       IAnnotationFinder finder, XmlSuite xmlSuite, Class annotationClass, String atName) 
   {
-    List<Object> result = new ArrayList<Object>();
+    List<Object> result = Lists.newArrayList();
     
     Object[] extraParameters = new Object[0];
     //

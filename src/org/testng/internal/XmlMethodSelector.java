@@ -388,7 +388,7 @@ public class XmlMethodSelector implements IMethodSelector {
     Set<String> groupClosure = new HashSet<String>();
     Set<ITestNGMethod> methodClosure = new HashSet<ITestNGMethod>();
     
-    List<ITestNGMethod> includedMethods = new ArrayList<ITestNGMethod>();
+    List<ITestNGMethod> includedMethods = Lists.newArrayList();
     for (ITestNGMethod m : m_testMethods) {
       if (includeMethod(context, m, true)) includedMethods.add(m);
     }

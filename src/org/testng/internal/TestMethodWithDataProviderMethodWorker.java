@@ -4,6 +4,7 @@ import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.collections.Lists;
 import org.testng.xml.XmlSuite;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
   private int m_invocationCount;
   private ITestResultNotifier m_notifier;
 
-  private List<ITestResult> m_testResults = new ArrayList<ITestResult>();
+  private List<ITestResult> m_testResults = Lists.newArrayList();
   private int m_failureCount;
 
   public TestMethodWithDataProviderMethodWorker(Invoker invoker, ITestNGMethod testMethod,
@@ -65,7 +66,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
   }
 
   public List<ITestResult> call() {
-    List<ITestResult> tmpResults = new ArrayList<ITestResult>();
+    List<ITestResult> tmpResults = Lists.newArrayList();
     long start = System.currentTimeMillis();
 
     try {
@@ -80,7 +81,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
            m_groupMethods));
     }
     finally {
-      List<Object> failedInstances = new ArrayList<Object>();
+      List<Object> failedInstances = Lists.newArrayList();
 
       m_failureCount = m_invoker.handleInvocationResults(m_testMethod, tmpResults,
           failedInstances, m_failureCount, m_expectedExceptionHolder, true,
@@ -89,7 +90,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
         m_testResults.addAll(tmpResults);
       } else {
         for (int i = 0; i < failedInstances.size(); i++) {
-          List<ITestResult> retryResults = new ArrayList<ITestResult>();
+          List<ITestResult> retryResults = Lists.newArrayList();
 
           m_failureCount = 
              m_invoker.retryFailed(failedInstances.toArray(),

@@ -3,12 +3,12 @@ package org.testng.reporters;
 import org.testng.IResultMap;
 import org.testng.ISuiteResult;
 import org.testng.ITestResult;
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.Utils;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -117,7 +117,7 @@ public class XMLSuiteResultWriter {
       String className = result.getTestClass().getName();
       List<ITestResult> list = map.get(className);
       if (list == null) {
-        list = new ArrayList<ITestResult>();
+        list = Lists.newArrayList();
         map.put(className, list);
       }
       list.add(result);

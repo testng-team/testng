@@ -7,6 +7,7 @@ import org.testng.IObjectFactory;
 import org.testng.ITestContext;
 import org.testng.TestNGException;
 import org.testng.annotations.IAnnotation;
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -241,7 +242,7 @@ public class TestNGClassFinder extends BaseClassFinder {
     List<Object> list= m_instanceMap.get(clazz);
 
     if(null == list) {
-      list= new ArrayList<Object>();
+      list= Lists.newArrayList();
       m_instanceMap.put(clazz, list);
     }
 

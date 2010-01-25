@@ -1,18 +1,17 @@
 package org.testng.junit;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import junit.framework.Test;
-import junit.framework.TestCase;
-
 import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
+import org.testng.collections.Lists;
+
+import java.lang.reflect.Method;
+import java.util.List;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
 
 /**
  * Help methods for JUnit
@@ -446,7 +445,7 @@ public class JUnitUtils {
    * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
    */
   public static class JUnitTestClass implements ITestClass {
-    private List<ITestNGMethod> m_testMethods= new ArrayList<ITestNGMethod>();
+    private List<ITestNGMethod> m_testMethods= Lists.newArrayList();
     private Class m_realClass;
     private Object[] m_instances;
     private long[] m_instanceHashes;

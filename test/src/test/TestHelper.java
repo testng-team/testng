@@ -1,15 +1,15 @@
 package test;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import org.testng.TestNG;
+import org.testng.collections.Lists;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class TestHelper {
 
@@ -41,7 +41,7 @@ public class TestHelper {
   public static TestNG createTestNG(XmlSuite suite, String outputDir) {
     TestNG result = new TestNG();
     if (suite != null) {
-      List<XmlSuite> suites = new ArrayList<XmlSuite>();
+      List<XmlSuite> suites = Lists.newArrayList();
       suites.add(suite);
       result.setXmlSuites(suites);
     }

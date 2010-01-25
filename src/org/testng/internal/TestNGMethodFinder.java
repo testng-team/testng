@@ -1,18 +1,18 @@
 package org.testng.internal;
 
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import org.testng.ITestMethodFinder;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.ITestAnnotation;
+import org.testng.collections.Lists;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
+
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The default strategy for finding test methods:  look up
@@ -102,7 +102,7 @@ public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
   }
 
   private ITestNGMethod[] findConfiguration(final Class clazz, final int configurationType) {
-    List<ITestNGMethod> vResult = new ArrayList<ITestNGMethod>();
+    List<ITestNGMethod> vResult = Lists.newArrayList();
     
     Set<Method> methods = ClassHelper.getAvailableMethods(clazz);
 
@@ -187,7 +187,7 @@ public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
       }
     }
 
-    List<ITestNGMethod> excludedMethods = new ArrayList<ITestNGMethod>();
+    List<ITestNGMethod> excludedMethods = Lists.newArrayList();
     boolean unique = configurationType == BEFORE_SUITE || configurationType == AFTER_SUITE;
     ITestNGMethod[] tmResult = MethodHelper.collectAndOrderConfigurationMethods(vResult,
                                                                                 m_runInfo,

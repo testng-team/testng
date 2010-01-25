@@ -108,7 +108,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   private ITestNGMethod[] m_afterSuiteMethods = {};
   private ITestNGMethod[] m_beforeXmlTestMethods = {};
   private ITestNGMethod[] m_afterXmlTestMethods = {};
-  private List<ITestNGMethod> m_excludedMethods = new ArrayList<ITestNGMethod>();
+  private List<ITestNGMethod> m_excludedMethods = Lists.newArrayList();
   private ConfigurationGroupMethods m_groupMethods = null;
 
   // Meta groups
@@ -285,13 +285,13 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     //
     // Calculate all the methods we need to invoke
     //
-    List<ITestNGMethod> beforeClassMethods = new ArrayList<ITestNGMethod>();
-    List<ITestNGMethod> testMethods = new ArrayList<ITestNGMethod>();
-    List<ITestNGMethod> afterClassMethods = new ArrayList<ITestNGMethod>();
-    List<ITestNGMethod> beforeSuiteMethods = new ArrayList<ITestNGMethod>();
-    List<ITestNGMethod> afterSuiteMethods = new ArrayList<ITestNGMethod>();
-    List<ITestNGMethod> beforeXmlTestMethods = new ArrayList<ITestNGMethod>();
-    List<ITestNGMethod> afterXmlTestMethods = new ArrayList<ITestNGMethod>();
+    List<ITestNGMethod> beforeClassMethods = Lists.newArrayList();
+    List<ITestNGMethod> testMethods = Lists.newArrayList();
+    List<ITestNGMethod> afterClassMethods = Lists.newArrayList();
+    List<ITestNGMethod> beforeSuiteMethods = Lists.newArrayList();
+    List<ITestNGMethod> afterSuiteMethods = Lists.newArrayList();
+    List<ITestNGMethod> beforeXmlTestMethods = Lists.newArrayList();
+    List<ITestNGMethod> afterXmlTestMethods = Lists.newArrayList();
 
     ITestClassFinder testClassFinder= new TestNGClassFinder(Utils.xmlClassesToClasses(m_testClassesFromXml),
                                              null,
@@ -528,7 +528,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
 
   private void privateRunJUnit(XmlTest xmlTest) {
     final Class<?>[] classes= Utils.xmlClassesToClasses(m_testClassesFromXml);
-    final List<ITestNGMethod> runMethods= new ArrayList<ITestNGMethod>();
+    final List<ITestNGMethod> runMethods= Lists.newArrayList();
     List<IMethodWorker> workers= new ArrayList<IMethodWorker>();
     // FIXME: directly referincing JUnitTestRunner which uses JUnit classes
     // may result in an class resolution exception under different JVMs
@@ -578,7 +578,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     // Calculate the lists of tests that can be run in sequence and in parallel
     //
     List<List<ITestNGMethod>> sequentialList= new ArrayList<List<ITestNGMethod>>();
-    List<ITestNGMethod> parallelList= new ArrayList<ITestNGMethod>();
+    List<ITestNGMethod> parallelList= Lists.newArrayList();
     MapList<Integer, ITestNGMethod> sequentialMapList = new MapList<Integer, ITestNGMethod>();
 
     String parallelMode = xmlTest.getParallel();
@@ -999,7 +999,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     Map<String, String> methodsDependedUpon = Maps.newHashMap();
     
     Map<String, List<ITestNGMethod>> sequentialAttributeList = Maps.newHashMap();
-    List<ITestNGMethod> sequentialList = new ArrayList<ITestNGMethod>();
+    List<ITestNGMethod> sequentialList = Lists.newArrayList();
 
     for (int i= m_allTestMethods.length - 1; i >= 0; i--) {
       ITestNGMethod tm= m_allTestMethods[i];
@@ -1017,7 +1017,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
           String className = tm.getTestClass().getName();
           List<ITestNGMethod> list = sequentialAttributeList.get(className);
           if (list == null) {
-            list = new ArrayList<ITestNGMethod>();
+            list = Lists.newArrayList();
             sequentialAttributeList.put(className, list);
           }
           list.add(0, tm);
@@ -1378,7 +1378,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
    * @return
    */
   public List<ITestNGMethod> getInvokedMethods() {
-    List<ITestNGMethod> result= new ArrayList<ITestNGMethod>();
+    List<ITestNGMethod> result= Lists.newArrayList();
     for (IInvokedMethod im : m_invokedMethods) {
       ITestNGMethod tm= im.getTestMethod();
       tm.setDate(im.getDate());

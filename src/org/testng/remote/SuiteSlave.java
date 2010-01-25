@@ -1,17 +1,18 @@
 package org.testng.remote;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
 import org.testng.ISuite;
 import org.testng.TestNG;
 import org.testng.TestNGException;
+import org.testng.collections.Lists;
 import org.testng.internal.PropertiesFile;
 import org.testng.internal.Utils;
 import org.testng.remote.adapter.DefaultWorkerAdapter;
 import org.testng.remote.adapter.IWorkerApadter;
 import org.testng.xml.XmlSuite;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Run test suits sent by the dispatcher.
@@ -83,7 +84,7 @@ public class SuiteSlave
 				if( s== null)
 					continue;
 				log("Processing " + s.getName());
-				List<XmlSuite> suites = new ArrayList<XmlSuite>();
+				List<XmlSuite> suites = Lists.newArrayList();
 				suites.add(s);
 				m_testng.setXmlSuites(suites);
 				List<ISuite> suiteRunners = m_testng.runSuitesLocally();

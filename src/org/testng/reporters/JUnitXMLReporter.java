@@ -3,11 +3,11 @@ package org.testng.reporters;
 
 import org.testng.ITestContext;
 import org.testng.ITestResult;
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.IResultListener;
 import org.testng.internal.Utils;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -43,8 +43,10 @@ public class JUnitXMLReporter implements IResultListener {
   private int m_numFailed= 0;
   private int m_numSkipped= 0;
   private int m_numFailedButIgnored= 0;
-  private List<ITestResult> m_allTests= Collections.synchronizedList(new ArrayList<ITestResult>());
-  private List<ITestResult> m_configIssues= Collections.synchronizedList(new ArrayList<ITestResult>());
+  private List<ITestResult> m_allTests =
+      Collections.synchronizedList(Lists.<ITestResult>newArrayList());
+  private List<ITestResult> m_configIssues =
+      Collections.synchronizedList(Lists.<ITestResult>newArrayList());
   private Map<String, String> m_fileNameMap = Maps.newHashMap();
   private int m_fileNameIncrementer = 0;
 
@@ -231,9 +233,8 @@ public class JUnitXMLReporter implements IResultListener {
 	 * Reset all member variables for next test.
 	 * */
 	private void resetAll() {
-		m_allTests = Collections.synchronizedList(new ArrayList<ITestResult>());
-		m_configIssues = Collections
-				.synchronizedList(new ArrayList<ITestResult>());
+		m_allTests = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
+		m_configIssues = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
 		m_numFailed = 0;
 		m_numFailedButIgnored = 0;
 		m_numPassed = 0;

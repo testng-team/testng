@@ -2,10 +2,10 @@ package org.testng.internal;
 
 
 import org.testng.ITestNGMethod;
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +88,7 @@ public class ConfigurationGroupMethods implements Serializable {
       for(String g : groups) {
         List<ITestNGMethod> methodsInGroup= result.get(g);
         if(null == methodsInGroup) {
-          methodsInGroup= new ArrayList<ITestNGMethod>();
+          methodsInGroup= Lists.newArrayList();
           result.put(g, methodsInGroup);
         }
         methodsInGroup.add(m);

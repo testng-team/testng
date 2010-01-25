@@ -3,10 +3,10 @@ package org.testng.internal;
 import org.testng.IClass;
 import org.testng.IObjectFactory;
 import org.testng.ITest;
+import org.testng.collections.Lists;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +20,7 @@ public class ClassImpl implements IClass {
   transient private Object m_defaultInstance = null;
   private XmlTest m_xmlTest = null;
   transient private IAnnotationFinder m_annotationFinder = null;
-  transient private List<Object> m_instances = new ArrayList<Object>();
+  transient private List<Object> m_instances = Lists.newArrayList();
   transient private Map<Class, IClass> m_classes = null;
   private int m_instanceCount;
   private long[] m_instanceHashCodes;

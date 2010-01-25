@@ -7,6 +7,7 @@ import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.Reporter;
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlSuite;
@@ -15,12 +16,10 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -180,7 +179,7 @@ public class SuiteHTMLReporter implements IReporter {
 
   private void generateReporterOutput(XmlSuite xmlSuite, ISuite suite) {
     StringBuffer sb = new StringBuffer();
-    List<ITestNGMethod> methodsNotRun = new ArrayList<ITestNGMethod>();
+    List<ITestNGMethod> methodsNotRun = Lists.newArrayList();
     
     //
     // Reporter output
