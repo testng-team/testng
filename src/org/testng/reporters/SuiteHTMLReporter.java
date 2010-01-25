@@ -1,5 +1,16 @@
 package org.testng.reporters;
 
+import org.testng.IReporter;
+import org.testng.ISuite;
+import org.testng.ISuiteResult;
+import org.testng.ITestClass;
+import org.testng.ITestContext;
+import org.testng.ITestNGMethod;
+import org.testng.Reporter;
+import org.testng.collections.Maps;
+import org.testng.internal.Utils;
+import org.testng.xml.XmlSuite;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -12,16 +23,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.testng.IReporter;
-import org.testng.ISuite;
-import org.testng.ISuiteResult;
-import org.testng.ITestClass;
-import org.testng.ITestContext;
-import org.testng.ITestNGMethod;
-import org.testng.Reporter;
-import org.testng.internal.Utils;
-import org.testng.xml.XmlSuite;
 
 /**
  * This class implements an HTML reporter for suites.
@@ -38,7 +39,7 @@ public class SuiteHTMLReporter implements IReporter {
   public static final String METHODS_NOT_RUN = "methods-not-run.html";
   public static final String TESTNG_XML = "testng.xml.html";
   
-  private Map<String, ITestClass> m_classes = new HashMap<String, ITestClass>();
+  private Map<String, ITestClass> m_classes = Maps.newHashMap();
   private String m_outputDirectory;
   
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
@@ -340,7 +341,7 @@ public class SuiteHTMLReporter implements IReporter {
     sb.append("<h3>" + BEFORE + " means before, " + AFTER + " means after</h3><p/>");
     
     long startDate = -1;
-    Map<Long, StringBuffer> tables = new HashMap<Long, StringBuffer>();
+    Map<Long, StringBuffer> tables = Maps.newHashMap();
     sb.append("<br/><em>").append(suite.getName()).append("</em><p/>");
     sb.append("<small><i>(Hover the method name to see the test class name)</i></small><p/>\n");
     Collection<ITestNGMethod> invokedMethods = suite.getInvokedMethods();
@@ -512,7 +513,7 @@ public class SuiteHTMLReporter implements IReporter {
         Collection<ITestNGMethod> methods = groups.get(group);
         sb.append("<tr><td>").append(group).append("</td>");
         StringBuffer methodNames = new StringBuffer();
-        Map<ITestNGMethod, ITestNGMethod> uniqueMethods = new HashMap<ITestNGMethod, ITestNGMethod>();
+        Map<ITestNGMethod, ITestNGMethod> uniqueMethods = Maps.newHashMap();
         for (ITestNGMethod tm : methods) {
           uniqueMethods.put(tm, tm);
         }
@@ -618,9 +619,9 @@ public class SuiteHTMLReporter implements IReporter {
       
       // Order the results so we can show the failures first, then the skip and
       // finally the successes
-      Map<String, ISuiteResult> redResults = new HashMap<String, ISuiteResult>();
-      Map<String, ISuiteResult> yellowResults = new HashMap<String, ISuiteResult>();
-      Map<String, ISuiteResult> greenResults = new HashMap<String, ISuiteResult>();
+      Map<String, ISuiteResult> redResults = Maps.newHashMap();
+      Map<String, ISuiteResult> yellowResults = Maps.newHashMap();
+      Map<String, ISuiteResult> greenResults = Maps.newHashMap();
       
       for (String suiteName : suiteResults.keySet()) {
         ISuiteResult sr = suiteResults.get(suiteName);

@@ -1,7 +1,8 @@
 package org.testng;
 
+import org.testng.collections.Maps;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -35,8 +36,7 @@ public class Reporter {
    */
   private static List<String> m_output = new Vector<String>();
 
-  private static Map<ITestResult, List<Integer>> m_methodOutputMap =
-    new HashMap<ITestResult, List<Integer>>();
+  private static Map<ITestResult, List<Integer>> m_methodOutputMap = Maps.newHashMap();
 
   public static void setCurrentTestResult(ITestResult m) {
     m_currentTestResult.set(m);

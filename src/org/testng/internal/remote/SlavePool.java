@@ -1,11 +1,11 @@
 package org.testng.internal.remote;
 
+import org.testng.collections.Maps;
+import org.testng.remote.ConnectionInfo;
+
 import java.io.IOException;
 import java.net.Socket;
-import java.util.HashMap;
 import java.util.Map;
-
-import org.testng.remote.ConnectionInfo;
 
 
 /**
@@ -15,8 +15,7 @@ import org.testng.remote.ConnectionInfo;
  */
 public class SlavePool {
   private static SocketLinkedBlockingQueue m_hosts = new SocketLinkedBlockingQueue();
-  private static Map<Socket, ConnectionInfo> m_connectionInfos =
-    new HashMap<Socket, ConnectionInfo>();
+  private static Map<Socket, ConnectionInfo> m_connectionInfos = Maps.newHashMap();
   
   public void addSlaves(Socket[] slaves) throws IOException {
     for (Socket s : slaves) {

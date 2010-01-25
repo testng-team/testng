@@ -7,6 +7,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
+import org.testng.collections.Maps;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.Sets;
@@ -17,7 +18,6 @@ import org.testng.xml.XmlTest;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +52,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     failedSuite.setName("Failed suite [" + xmlSuite.getName() + "]");
     m_xmlSuite= failedSuite;
 
-    Map<String, XmlTest> xmlTests= new HashMap<String, XmlTest>();
+    Map<String, XmlTest> xmlTests= Maps.newHashMap();
     for(XmlTest xmlT: xmlSuite.getTests()) {
       xmlTests.put(xmlT.getName(), xmlT);
     }
@@ -181,8 +181,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
    */
   private List<XmlClass> createXmlClasses(List<ITestNGMethod> methods) {
     List<XmlClass> result = new ArrayList<XmlClass>();
-    Map<Class, Set<ITestNGMethod>> methodsMap= new HashMap<Class, Set<ITestNGMethod>>(); 
-    Map<String, List<String>> map = new HashMap<String, List<String>>();
+    Map<Class, Set<ITestNGMethod>> methodsMap= Maps.newHashMap();
     
     for (ITestNGMethod m : methods) {
       Object[] instances= m.getInstances();

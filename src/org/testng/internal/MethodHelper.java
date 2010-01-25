@@ -10,6 +10,7 @@ import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.IExpectedExceptionsAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.ITestOrConfiguration;
+import org.testng.collections.Maps;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.thread.IExecutor;
@@ -268,21 +269,19 @@ public class MethodHelper {
       String[] includedGroups,
       Set<String> outGroups, Set<ITestNGMethod> outMethods)
   {
-    Map<ITestNGMethod, ITestNGMethod> runningMethods =
-      new HashMap<ITestNGMethod, ITestNGMethod>();
+    Map<ITestNGMethod, ITestNGMethod> runningMethods = Maps.newHashMap();
     for (ITestNGMethod m : includedMethods) {
       runningMethods.put(m, m);
     }
     
-    Map<String, String> runningGroups = new HashMap<String, String>();
+    Map<String, String> runningGroups = Maps.newHashMap();
     for (String thisGroup : includedGroups) {
       runningGroups.put(thisGroup, thisGroup);
     }
     
     boolean keepGoing = true;
     
-    Map<ITestNGMethod, ITestNGMethod> newMethods = 
-      new HashMap<ITestNGMethod, ITestNGMethod>();
+    Map<ITestNGMethod, ITestNGMethod> newMethods = Maps.newHashMap();
     while (keepGoing) {
       for (ITestNGMethod m : includedMethods) {
         
@@ -328,7 +327,7 @@ public class MethodHelper {
       keepGoing = newMethods.size() > 0;
       includedMethods = new ArrayList<ITestNGMethod>();
       includedMethods.addAll(newMethods.keySet());
-      newMethods = new HashMap<ITestNGMethod, ITestNGMethod>();
+      newMethods = Maps.newHashMap();
     } // while keepGoing
     
     outMethods.addAll(runningMethods.keySet());
@@ -339,7 +338,7 @@ public class MethodHelper {
    * Extracts the map of groups and their corresponding methods from the <code>classes</code>.
    */
   public static Map<String, List<ITestNGMethod>> findGroupsMethods(Collection<ITestClass> classes, boolean before) {
-    Map<String, List<ITestNGMethod>> result= new HashMap<String, List<ITestNGMethod>>();
+    Map<String, List<ITestNGMethod>> result = Maps.newHashMap();
     for (ITestClass cls : classes) {
       ITestNGMethod[] methods = before ? cls.getBeforeGroupsMethods() : cls.getAfterGroupsMethods();
       for (ITestNGMethod method : methods) {
@@ -367,7 +366,7 @@ public class MethodHelper {
    * Extracts the unique list of <code>ITestNGMethod</code>s.
    */
   public static List<ITestNGMethod> uniqueMethodList(Collection<List<ITestNGMethod>> methods) {
-    Map<ITestNGMethod, ITestNGMethod> uniq= new HashMap<ITestNGMethod, ITestNGMethod>();
+    Map<ITestNGMethod, ITestNGMethod> uniq = Maps.newHashMap();
     
     for (List<ITestNGMethod> l : methods) {
       for (ITestNGMethod m : l) {
@@ -493,7 +492,7 @@ public class MethodHelper {
     for (ITestNGMethod m : methods) {
       result.addNode(m);
 
-      Map<ITestNGMethod, ITestNGMethod> predecessors = new HashMap<ITestNGMethod, ITestNGMethod>();
+      Map<ITestNGMethod, ITestNGMethod> predecessors = Maps.newHashMap();
 
       String[] methodsDependedUpon = m.getMethodsDependedUpon();
       String[] groupsDependedUpon = m.getGroupsDependedUpon();

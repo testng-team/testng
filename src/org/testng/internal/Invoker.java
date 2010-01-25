@@ -18,6 +18,7 @@ import org.testng.SuiteRunState;
 import org.testng.TestException;
 import org.testng.TestNGException;
 import org.testng.annotations.IConfigurationAnnotation;
+import org.testng.collections.Maps;
 import org.testng.internal.InvokeMethodRunnable.TestNGRuntimeException;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -297,7 +298,7 @@ public class Invoker implements IInvoker {
    * @return All the classes that belong to the same <test> tag as @param cls
    */
   private XmlClass[] findClassesInSameTest(Class<?> cls, XmlSuite suite) {
-    Map<String, XmlClass> vResult= new HashMap<String, XmlClass>();
+    Map<String, XmlClass> vResult= Maps.newHashMap();
     String className= cls.getName();
     for(XmlTest test : suite.getTests()) {
       for(XmlClass testClass : test.getXmlClasses()) {
@@ -781,7 +782,7 @@ public class Invoker implements IInvoker {
     
     // See if the currentMethod is the last method in any of the groups
     // it belongs to
-    Map<String, String> filteredGroups = new HashMap<String, String>();
+    Map<String, String> filteredGroups = Maps.newHashMap();
     String[] groups = currentTestMethod.getGroups();
     synchronized(groupMethods) {
       for (String group : groups) {
@@ -793,7 +794,7 @@ public class Invoker implements IInvoker {
       if(filteredGroups.isEmpty()) return;
       
       // The list of afterMethods to run
-      Map<ITestNGMethod, ITestNGMethod> afterMethods = new HashMap<ITestNGMethod, ITestNGMethod>();
+      Map<ITestNGMethod, ITestNGMethod> afterMethods = Maps.newHashMap();
       
       // Now filteredGroups contains all the groups for which we need to run the afterGroups
       // method.  Find all the methods that correspond to these groups and invoke them.
@@ -852,7 +853,7 @@ public class Invoker implements IInvoker {
 
     do {
       failedInstances = new ArrayList<Object>();
-      Map<String, String> allParameters = new HashMap<String, String>();
+      Map<String, String> allParameters = Maps.newHashMap();
       /**
        * TODO: This recreates all the parameters every time when we only need
        * one specific set. Should optimize it by only recreating the set needed.
@@ -972,7 +973,7 @@ public class Invoker implements IInvoker {
             ITestNGMethod[] afterMethods = filterMethods(testClass, testClass.getAfterTestMethods());
 
 
-            Map<String, String> allParameterNames = new HashMap<String, String>();
+            Map<String, String> allParameterNames = Maps.newHashMap();
             ParameterBag bag = createParameters(testClass, testMethod,
                 parameters, allParameterNames, null, suite, testContext, instances[0],
                 null);

@@ -1,20 +1,20 @@
 package org.testng.reporters;
 
+import org.testng.IResultMap;
+import org.testng.ISuiteResult;
+import org.testng.ITestResult;
+import org.testng.collections.Maps;
+import org.testng.internal.Utils;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-
-import org.testng.IResultMap;
-import org.testng.ISuiteResult;
-import org.testng.ITestResult;
-import org.testng.internal.Utils;
 
 /**
  * Utility writing an ISuiteResult to an XMLStringBuffer. Depending on the settings in the <code>config</code> property
@@ -112,7 +112,7 @@ public class XMLSuiteResultWriter {
   }
 
   private Map<String, List<ITestResult>> buildTestClassGroups(Set<ITestResult> testResults) {
-    Map<String, List<ITestResult>> map = new HashMap<String, List<ITestResult>>();
+    Map<String, List<ITestResult>> map = Maps.newHashMap();
     for (ITestResult result : testResults) {
       String className = result.getTestClass().getName();
       List<ITestResult> list = map.get(className);

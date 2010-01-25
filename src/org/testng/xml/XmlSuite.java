@@ -1,16 +1,17 @@
 package org.testng.xml;
 
+import org.testng.IObjectFactory;
+import org.testng.collections.Maps;
+import org.testng.internal.AnnotationTypeEnum;
+import org.testng.internal.version.VersionInfo;
+import org.testng.reporters.XMLStringBuffer;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import org.testng.IObjectFactory;
-import org.testng.internal.AnnotationTypeEnum;
-import org.testng.internal.version.VersionInfo;
-import org.testng.reporters.XMLStringBuffer;
 
 /**
  * This class describes the tag &lt;suite&gt; in testng.xml.
@@ -83,7 +84,7 @@ public class XmlSuite implements Serializable, Cloneable {
   private List<XmlTest> m_tests = new ArrayList<XmlTest>();
   
   /** Suite level parameters. */
-  private Map<String, String> m_parameters = new HashMap<String, String>();
+  private Map<String, String> m_parameters = Maps.newHashMap();
   
   /** Name of the XML file */
   private String m_fileName;
@@ -249,11 +250,10 @@ public class XmlSuite implements Serializable, Cloneable {
   }
 
   /**
-   * Returns the parameters defined in this suite and all its XmlTests.
    * @return The parameters defined in this suite and all its XmlTests.
    */
   public Map<String, String> getAllParameters() {
-    Map<String, String> result = new HashMap<String, String>();
+    Map<String, String> result = Maps.newHashMap();
     for (Map.Entry<String, String> entry : m_parameters.entrySet()) {
       result.put(entry.getKey(), entry.getValue());
     }

@@ -1,6 +1,8 @@
 package org.testng;
 
 
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.IInvoker;
 import org.testng.internal.Utils;
@@ -35,15 +37,15 @@ public class SuiteRunner implements ISuite, Serializable {
   
   private static final String DEFAULT_OUTPUT_DIR = "test-output";
 
-  private Map<String, ISuiteResult> m_suiteResults = new HashMap<String, ISuiteResult>();
-  transient private List<TestRunner> m_testRunners = new ArrayList<TestRunner>();
-  transient private List<ISuiteListener> m_listeners = new ArrayList<ISuiteListener>();
-  transient private TestListenerAdapter m_textReporter= new TestListenerAdapter();
+  private Map<String, ISuiteResult> m_suiteResults = Maps.newHashMap();
+  transient private List<TestRunner> m_testRunners = Lists.newArrayList();
+  transient private List<ISuiteListener> m_listeners = Lists.newArrayList();
+  transient private TestListenerAdapter m_textReporter = new TestListenerAdapter();
 
   private String m_outputDir; // DEFAULT_OUTPUT_DIR;
   private XmlSuite m_suite;
 
-  transient private List<ITestListener> m_testlisteners = new ArrayList<ITestListener>();
+  transient private List<ITestListener> m_testlisteners = Lists.newArrayList();
   transient private ITestRunnerFactory m_tmpRunnerFactory;
 
   transient private ITestRunnerFactory m_runnerFactory;
@@ -379,7 +381,7 @@ public class SuiteRunner implements ISuite, Serializable {
    * @see org.testng.ISuite#getMethodsByGroups()
    */
   public Map<String, Collection<ITestNGMethod>> getMethodsByGroups() {
-    Map<String, Collection<ITestNGMethod>> result= new HashMap<String, Collection<ITestNGMethod>>();
+    Map<String, Collection<ITestNGMethod>> result = Maps.newHashMap();
 
     for (TestRunner tr : m_testRunners) {
       ITestNGMethod[] methods = tr.getAllTestMethods();
@@ -552,7 +554,7 @@ public class SuiteRunner implements ISuite, Serializable {
     }
   }
 
-  private Map<String, Object> m_attributes = new HashMap<String, Object>();
+  private Map<String, Object> m_attributes = Maps.newHashMap();
 
   public Object getAttribute(String name) {
     return m_attributes.get(name);

@@ -1,11 +1,5 @@
 package org.testng.internal.annotations;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.testng.ITestNGMethod;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
@@ -13,9 +7,15 @@ import org.testng.annotations.IExpectedExceptionsAnnotation;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
+import org.testng.collections.Maps;
 import org.testng.internal.TestNGMethod;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlTest;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Map;
 
 /**
  * Helper methods to find @Test and @Configuration tags.  They minimize
@@ -186,10 +186,10 @@ public class AnnotationHelper {
   {
     // Keep a map of the methods we saw so that we ignore a method in a superclass if it's
     // already been seen in a child class
-    Map<String, ITestNGMethod> vResult = new HashMap<String, ITestNGMethod>();
+    Map<String, ITestNGMethod> vResult = Maps.newHashMap();
     
     try {
-      vResult = new HashMap<String, ITestNGMethod>();
+      vResult = Maps.newHashMap();
 //    Class[] classes = rootClass.getTestClasses();
       Class cls = rootClass;
       

@@ -8,6 +8,9 @@ import com.sun.javadoc.RootDoc;
 import com.sun.javadoc.SourcePosition;
 import com.sun.tools.javadoc.Main;
 
+import org.testng.JUnitConverter;
+import org.testng.collections.Maps;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,11 +19,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.testng.JUnitConverter;
 
 /**
  * This class converts a file to TestNG if it's a JUnit test class.
@@ -32,10 +32,10 @@ public class JUnitTestConverter extends Doclet {
   private static File[] m_fileNames = null;
   private static List<String> m_classNames = new ArrayList<String>();
   // Files and their test methods
-  private static Map<File, List<MethodDoc>> m_files = new HashMap<File, List<MethodDoc>>();
-  private static Map<File, List<String>> m_fileLines = new HashMap<File, List<String>>();
-  private static Map<File, String> m_packageNames = new HashMap<File, String>();
-  private static Map<File, Integer> m_typelines = new HashMap<File, Integer>();
+  private static Map<File, List<MethodDoc>> m_files = Maps.newHashMap();
+  private static Map<File, List<String>> m_fileLines = Maps.newHashMap();
+  private static Map<File, String> m_packageNames = Maps.newHashMap();
+  private static Map<File, Integer> m_typelines = Maps.newHashMap();
   private File m_outDir = null;
   private boolean m_useAnnotations;
   private boolean m_done;

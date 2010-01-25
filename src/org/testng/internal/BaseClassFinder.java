@@ -1,12 +1,12 @@
 package org.testng.internal;
 
 import org.testng.IClass;
-import org.testng.ITestClassFinder;
 import org.testng.IObjectFactory;
+import org.testng.ITestClassFinder;
+import org.testng.collections.Maps;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -15,7 +15,7 @@ import java.util.Map;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 abstract public class BaseClassFinder implements ITestClassFinder {
-  private Map<Class, IClass> m_classes = new HashMap<Class, IClass>();
+  private Map<Class, IClass> m_classes = Maps.newHashMap();
 
   public IClass getIClass(Class cls) {
     return m_classes.get(cls);

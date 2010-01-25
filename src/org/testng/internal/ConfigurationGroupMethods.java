@@ -1,14 +1,14 @@
 package org.testng.internal;
 
 
+import org.testng.ITestNGMethod;
+import org.testng.collections.Maps;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.testng.ITestNGMethod;
 
 /**
  * This class wraps access to beforeGroups and afterGroups methods,
@@ -82,7 +82,7 @@ public class ConfigurationGroupMethods implements Serializable {
   }
 
   private synchronized Map<String, List<ITestNGMethod>> initializeAfterGroupsMap() {
-    Map<String, List<ITestNGMethod>> result= new HashMap<String, List<ITestNGMethod>>();
+    Map<String, List<ITestNGMethod>> result= Maps.newHashMap();
     for(ITestNGMethod m : m_allMethods) {
       String[] groups= m.getGroups();
       for(String g : groups) {

@@ -6,16 +6,15 @@ import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.ITestOrConfiguration;
 import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.thread.IAtomicInteger;
 import org.testng.internal.thread.ThreadUtil;
 
 import java.lang.reflect.Method;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Superclass to represent both &#64;Test and &#64;Configuration methods.
@@ -466,7 +465,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    * @return
    */
   protected String[] getStringArray(String[] methodArray, String[] classArray) {
-    Map<String, String> vResult = new HashMap<String, String>();
+    Map<String, String> vResult = Maps.newHashMap();
     if (null != methodArray) {
       for (String m : methodArray) {
         vResult.put(m, m);

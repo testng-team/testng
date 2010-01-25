@@ -86,7 +86,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   private Date m_endDate = null;
 
   /** A map to keep track of Class <-> IClass. */
-  transient private Map<Class<?>, ITestClass> m_classMap= new HashMap<Class<?>, ITestClass>();
+  transient private Map<Class<?>, ITestClass> m_classMap = Maps.newHashMap();
 
   /** Where the reports will be created. */
   private String m_outputDirectory= Constants.getDefaultValueFor(Constants.PROP_OUTPUT_DIR);
@@ -112,7 +112,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   private ConfigurationGroupMethods m_groupMethods = null;
 
   // Meta groups
-  private Map<String, List<String>> m_metaGroups = new HashMap<String, List<String>>();
+  private Map<String, List<String>> m_metaGroups = Maps.newHashMap();
 
   // All the tests that were run along with their result
   private IResultMap m_passedTests = new ResultMap();
@@ -125,7 +125,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   // The host where this test was run, or null if run locally
   private String m_host;
 
-  private Map<String, Object> m_attributes = new HashMap<String, Object>();
+  private Map<String, Object> m_attributes = Maps.newHashMap();
   private IMethodInterceptor m_methodInterceptor = new IMethodInterceptor() {
 
   public List<IMethodInstance> intercept(List<IMethodInstance> methods,
@@ -446,7 +446,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   }
 
   private Map<String, String> createGroups(String[] groups) {
-    Map<String, String> result= new HashMap<String, String>();
+    Map<String, String> result = Maps.newHashMap();
 
     // Groups that were passed on the command line
     for (String group : groups) {
@@ -776,7 +776,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
    * to the same class.
    */
   private Map<Class, Set<IMethodInstance>> groupMethodInstancesByClass(List<IMethodInstance> instances) {
-      Map<Class, Set<IMethodInstance>> result = new HashMap<Class, Set<IMethodInstance>>();
+      Map<Class, Set<IMethodInstance>> result = Maps.newHashMap();
       for (IMethodInstance mi : instances) {
           Class cl = mi.getMethod().getTestClass().getRealClass();
           Set<IMethodInstance> methods = result.get(cl);
@@ -995,10 +995,10 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   private void computeTestLists(List<List<ITestNGMethod>> sl,
       List<ITestNGMethod> parallelList, MapList<Integer, ITestNGMethod> outSequentialList) {
 
-    Map<String, String> groupsDependedUpon= new HashMap<String, String>();
-    Map<String, String> methodsDependedUpon= new HashMap<String, String>();
+    Map<String, String> groupsDependedUpon = Maps.newHashMap();
+    Map<String, String> methodsDependedUpon = Maps.newHashMap();
     
-    Map<String, List<ITestNGMethod>> sequentialAttributeList = new HashMap<String, List<ITestNGMethod>>();
+    Map<String, List<ITestNGMethod>> sequentialAttributeList = Maps.newHashMap();
     List<ITestNGMethod> sequentialList = new ArrayList<ITestNGMethod>();
 
     for (int i= m_allTestMethods.length - 1; i >= 0; i--) {
@@ -1215,8 +1215,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   }
 
   public Collection<ITestNGMethod> getExcludedMethods() {
-    Map<ITestNGMethod, ITestNGMethod> vResult = 
-      new HashMap<ITestNGMethod, ITestNGMethod>();
+    Map<ITestNGMethod, ITestNGMethod> vResult = Maps.newHashMap();
     
     for (ITestNGMethod m : m_excludedMethods) {
       vResult.put(m, m);

@@ -1,14 +1,13 @@
 package org.testng.remote.strprotocol;
 
 
+import org.testng.ITestResult;
+import org.testng.collections.Maps;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.testng.ITestResult;
 
 
 /**
@@ -54,7 +53,7 @@ public class MessageHelper {
       return new GenericMessage(Integer.parseInt(messageParts[0]));
     }
     else {
-      Map props = new HashMap();
+      Map props = Maps.newHashMap();
       
       for(int i = 1; i < messageParts.length; i+=2) {
         props.put(messageParts[i], messageParts[i + 1]);

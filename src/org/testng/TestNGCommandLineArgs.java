@@ -1,21 +1,19 @@
 package org.testng;
 
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
+import org.testng.collections.Maps;
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Utils;
 import org.testng.internal.version.VersionInfo;
 import org.testng.log4testng.Logger;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * TestNG/RemoteTestNG command line arguments parser.
@@ -109,7 +107,7 @@ public final class TestNGCommandLineArgs {
     // TODO CQ In this method, is this OK to simply ignore invalid parameters?
     LOGGER.debug("TestNG version: \"" + (VersionInfo.IS_JDK14 ? "14" : "15") + "\"");
     
-    Map<String, Object> arguments = new HashMap<String, Object>();
+    Map<String, Object> arguments = Maps.newHashMap();
     String[] argv = expandArgv(originalArgv);
 
     for (int i = 0; i < argv.length; i++) {

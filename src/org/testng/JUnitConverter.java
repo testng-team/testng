@@ -1,10 +1,10 @@
 package org.testng;
 
+import org.testng.collections.Maps;
 import org.testng.junit.JUnitDirectoryConverter;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.io.File;
+import java.util.Map;
 
 /**
  * Convert JUnit files into TestNG by annotating them.
@@ -100,7 +100,7 @@ public class JUnitConverter {
     * Extract command line options.
     */
    private static Map extractOptions(String[] args) {
-      Map options = new HashMap();
+      Map options = Maps.newHashMap();
 
       for (int i = 0; i < args.length; i++) {
       if (USE_ANNOTATION_OPT.equals(args[i])) {

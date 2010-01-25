@@ -32,8 +32,8 @@ public class XmlTest implements Serializable, Cloneable {
   private List<String> m_includedGroups = new ArrayList<String>();
   private List<String> m_excludedGroups = new ArrayList<String>();
 
-  private final Map<String, List<String>> m_metaGroups = new HashMap<String, List<String>>();
-  private Map<String, String> m_parameters = new HashMap<String, String>();
+  private final Map<String, List<String>> m_metaGroups = Maps.newHashMap();
+  private Map<String, String> m_parameters = Maps.newHashMap();
   private String m_parallel;
   
   /** */
@@ -252,7 +252,7 @@ public class XmlTest implements Serializable, Cloneable {
    * @return a merge of the the test parameters and its parent suite parameters.
    */
   public Map<String, String> getParameters() {
-    Map<String, String> result = new HashMap<String, String>();
+    Map<String, String> result = Maps.newHashMap();
     Map<String, String> parameters = getSuite().getParameters();
     for (Map.Entry<String, String> parameter : parameters.entrySet()) {
       result.put(parameter.getKey(), parameter.getValue());

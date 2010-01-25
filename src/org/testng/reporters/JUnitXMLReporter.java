@@ -1,24 +1,18 @@
 package org.testng.reporters;
 
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import org.testng.ITestContext;
+import org.testng.ITestResult;
+import org.testng.collections.Maps;
+import org.testng.internal.IResultListener;
+import org.testng.internal.Utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.testng.ITestContext;
-import org.testng.ITestResult;
-import org.testng.internal.IResultListener;
-import org.testng.internal.Utils;
 
 /**
  * A JUnit XML report generator (replacing the original JUnitXMLReporter that was
@@ -32,7 +26,7 @@ public class JUnitXMLReporter implements IResultListener {
   private static final Pattern GREATER= Pattern.compile(">");
   private static final Pattern SINGLE_QUOTE = Pattern.compile("'");
   private static final Pattern QUOTE = Pattern.compile("\"");
-  private static final Map<String, Pattern> ATTR_ESCAPES= new HashMap<String, Pattern>();
+  private static final Map<String, Pattern> ATTR_ESCAPES= Maps.newHashMap();
   
   static {
     ATTR_ESCAPES.put("&lt;", LESS);
@@ -51,7 +45,7 @@ public class JUnitXMLReporter implements IResultListener {
   private int m_numFailedButIgnored= 0;
   private List<ITestResult> m_allTests= Collections.synchronizedList(new ArrayList<ITestResult>());
   private List<ITestResult> m_configIssues= Collections.synchronizedList(new ArrayList<ITestResult>());
-  private Map<String, String> m_fileNameMap = new HashMap<String, String>();
+  private Map<String, String> m_fileNameMap = Maps.newHashMap();
   private int m_fileNameIncrementer = 0;
 
   public void onTestStart(ITestResult result) {

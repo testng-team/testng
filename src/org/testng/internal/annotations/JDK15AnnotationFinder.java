@@ -29,11 +29,11 @@ import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.testng.annotations.TestInstance;
+import org.testng.collections.Maps;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
 
 /**

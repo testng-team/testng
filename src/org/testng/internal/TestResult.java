@@ -5,8 +5,8 @@ import org.testng.ITest;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
+import org.testng.collections.Maps;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -225,7 +225,7 @@ public class TestResult implements ITestResult {
     return m_instance;
   }
 
-  private Map<String, Object> m_attributes = new HashMap<String, Object>();
+  private Map<String, Object> m_attributes = Maps.newHashMap();
 
   public Object getAttribute(String name) {
     return m_attributes.get(name);

@@ -8,6 +8,7 @@ import org.testng.IMethodSelectorContext;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 
@@ -33,8 +34,8 @@ public class XmlMethodSelector implements IMethodSelector {
   private static Interpreter s_interpreter;
   
   // Groups included and excluded for this run
-  private Map<String, String> m_includedGroups= new HashMap<String, String>();
-  private Map<String, String> m_excludedGroups= new HashMap<String, String>();
+  private Map<String, String> m_includedGroups = Maps.newHashMap();
+  private Map<String, String> m_excludedGroups = Maps.newHashMap();
   private List<XmlClass> m_classes = null;
   // The BeanShell expression for this test, if any
   private String m_expression = null;
@@ -75,7 +76,7 @@ public class XmlMethodSelector implements IMethodSelector {
 
     Interpreter interpreter= getInterpreter();
     try {
-      Map<String, String> groups = new HashMap<String, String>();
+      Map<String, String> groups = Maps.newHashMap();
       for (String group : tm.getGroups()) {
         groups.put(group, group);
       }
@@ -230,7 +231,7 @@ public class XmlMethodSelector implements IMethodSelector {
     return sourceClass.isAssignableFrom(targetClass) || targetClass.isAssignableFrom(sourceClass);
   }
   
-  private Map<String, String> m_logged = new HashMap<String, String>();
+  private Map<String, String> m_logged = Maps.newHashMap();
   private void logInclusion(String including, String type, String name) {
     if (! m_logged.containsKey(name)) {
       log(4, including + " " + type + " " + name);

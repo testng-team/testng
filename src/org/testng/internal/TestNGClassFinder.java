@@ -1,21 +1,25 @@
 package org.testng.internal;
 
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.*;
-
 import org.testng.IClass;
 import org.testng.IInstanceInfo;
 import org.testng.IObjectFactory;
 import org.testng.ITestContext;
 import org.testng.TestNGException;
 import org.testng.annotations.IAnnotation;
+import org.testng.collections.Maps;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.xml.XmlTest;
 import org.testng.xml.XmlClass;
+import org.testng.xml.XmlTest;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class creates an ITestClass from a test class.
@@ -24,7 +28,7 @@ import org.testng.xml.XmlClass;
  */
 public class TestNGClassFinder extends BaseClassFinder {
   private ITestContext m_testContext = null;
-  private Map<Class, List<Object>> m_instanceMap= new HashMap<Class, List<Object>>();
+  private Map<Class, List<Object>> m_instanceMap = Maps.newHashMap();
 
   public TestNGClassFinder(Class[] classes,
                            Map<Class, List<Object>> instanceMap,
@@ -35,7 +39,7 @@ public class TestNGClassFinder extends BaseClassFinder {
     m_testContext = testContext;
 
     if(null == instanceMap) {
-      instanceMap= new HashMap<Class, List<Object>>();
+      instanceMap= Maps.newHashMap();
     }
 
     //

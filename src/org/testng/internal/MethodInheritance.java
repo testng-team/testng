@@ -1,13 +1,12 @@
 package org.testng.internal;
 
-import java.lang.reflect.Method;
+import org.testng.ITestNGMethod;
+import org.testng.collections.Maps;
+
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.testng.ITestNGMethod;
 
 public class MethodInheritance {
   /**
@@ -56,7 +55,7 @@ public class MethodInheritance {
    */
   public static void fixMethodInheritance(ITestNGMethod[] methods, boolean baseClassToChild) {
     // Map of classes -> List of methods that belong to this class or same hierarchy
-    Map<Class, List<ITestNGMethod>> map = new HashMap<Class, List<ITestNGMethod>>();
+    Map<Class, List<ITestNGMethod>> map = Maps.newHashMap();
     
     //
     // First, make sure that none of these methods define a dependency of its own

@@ -3,6 +3,7 @@ package org.testng.xml;
 import org.testng.IObjectFactory;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 import org.testng.internal.Utils;
 import org.testng.internal.version.VersionInfo;
 import org.xml.sax.Attributes;
@@ -14,7 +15,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -118,7 +118,7 @@ public class TestNGContentHandler extends DefaultHandler {
       m_currentSuite = new XmlSuite();
       m_currentSuite.setFileName(m_fileName);
       m_currentSuite.setName(name);
-      m_currentSuiteParameters = new HashMap<String, String>();
+      m_currentSuiteParameters = Maps.newHashMap();
       
       String verbose = attributes.getValue("verbose");
       if (null != verbose) {
@@ -228,7 +228,7 @@ public class TestNGContentHandler extends DefaultHandler {
   private void xmlTest(boolean start, Attributes attributes) {
     if (start) {
       m_currentTest = new XmlTest(m_currentSuite);
-      m_currentTestParameters = new HashMap<String, String>();
+      m_currentTestParameters = Maps.newHashMap();
       final String testName= attributes.getValue("name");
       if(null == testName || "".equals(testName.trim())) {
         throw new TestNGException("Test <test> element must define the name attribute");

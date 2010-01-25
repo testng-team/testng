@@ -4,6 +4,7 @@ package org.testng;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.testng.annotations.ITestAnnotation;
+import org.testng.collections.Maps;
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.IResultListener;
@@ -152,7 +153,7 @@ public class TestNG {
   private String m_defaultSuiteName=DEFAULT_COMMAND_LINE_SUITE_NAME;
   private String m_defaultTestName=DEFAULT_COMMAND_LINE_TEST_NAME;
   
-  private Map<String, Integer> m_methodDescriptors = new HashMap<String, Integer>();
+  private Map<String, Integer> m_methodDescriptors = Maps.newHashMap();
 
   private IObjectFactory m_objectFactory;
   
@@ -476,7 +477,7 @@ public class TestNG {
     // the default one
     //
     XmlClass[] xmlClasses = Utils.classesToXmlClasses(classes);
-    Map<String, XmlSuite> suites = new HashMap<String, XmlSuite>();
+    Map<String, XmlSuite> suites = Maps.newHashMap();
     IAnnotationFinder finder = getAnnotationFinder();
     
     for (int i = 0; i < classes.length; i++) {

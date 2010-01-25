@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import org.testng.collections.Maps;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +43,7 @@ public class PoolService<KeyType, FutureType> {
     m_instance = this;
     m_service = Executors.newFixedThreadPool(threadPoolSize);
     m_futureMap = new HashMap<KeyType, List<Future<FutureType>>>();
-    m_listeners = new HashMap<KeyType, PoolListener<KeyType, FutureType>>();
+    m_listeners = Maps.newHashMap();
 
     m_listenerThread = new Thread() {
       public void run() {

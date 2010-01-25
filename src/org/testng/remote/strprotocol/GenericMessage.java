@@ -1,6 +1,7 @@
 package org.testng.remote.strprotocol;
 
-import java.util.HashMap;
+import org.testng.collections.Maps;
+
 import java.util.Iterator;
 import java.util.Map;
 
@@ -18,7 +19,7 @@ public class GenericMessage implements IStringMessage {
   protected final int m_messageType;
   
   public GenericMessage(final int type) {
-    this(type, new HashMap());
+    this(type, Maps.newHashMap());
   }
   
   public GenericMessage(final int type, Map props) {

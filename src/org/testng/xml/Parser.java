@@ -1,5 +1,15 @@
 package org.testng.xml;
 
+import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.testng.TestNGException;
+import org.testng.collections.Maps;
+import org.testng.internal.ClassHelper;
+import org.xml.sax.SAXException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -7,18 +17,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.parsers.FactoryConfigurationError;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.testng.TestNGException;
-import org.testng.internal.ClassHelper;
-import org.xml.sax.SAXException;
 
 /**
  * <code>Parser</code> is a parser for a TestNG XML test suite file.   
@@ -130,7 +130,7 @@ public class Parser {
     // Each suite found is put in this map, keyed by their canonical
     // path to make sure we don't add a same file twice
     // (e.g. "testng.xml" and "./testng.xml")
-    Map<String, XmlSuite> mapResult = new HashMap<String, XmlSuite>();
+    Map<String, XmlSuite> mapResult = Maps.newHashMap();
     
     SAXParserFactory spf= loadSAXParserFactory();
         

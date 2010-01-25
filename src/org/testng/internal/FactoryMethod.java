@@ -2,15 +2,13 @@ package org.testng.internal;
 
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
-import org.testng.ITestResult;
 import org.testng.TestNGException;
+import org.testng.collections.Maps;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +54,7 @@ public class FactoryMethod extends BaseTestMethod {
   public Object[] invoke() {
     List<Object> result = new ArrayList<Object>();
     
-    Map<String, String> allParameterNames = new HashMap<String, String>();
+    Map<String, String> allParameterNames = Maps.newHashMap();
     Iterator<Object[]> parameterIterator =
       Parameters.handleParameters(this, 
           allParameterNames, 

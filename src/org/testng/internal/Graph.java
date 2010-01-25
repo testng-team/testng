@@ -2,11 +2,11 @@ package org.testng.internal;
 
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.Set;
  */
 public class Graph<T extends Object> {
   private static boolean m_verbose = false;
-  private Map<T, Node<T>> m_nodes = new HashMap<T, Node<T>>();
+  private Map<T, Node<T>> m_nodes = Maps.newHashMap();
   private List<T> m_strictlySortedNodes = null;
   
   //  A map of nodes that are not the predecessors of any node
@@ -60,7 +60,7 @@ public class Graph<T extends Object> {
       addNeighbor(tm, predecessor);
       // Remove these two nodes from the independent list
       if (null == m_independentNodes) {
-        m_independentNodes = new HashMap<T, Node<T>>();
+        m_independentNodes = Maps.newHashMap();
         for (T k : m_nodes.keySet()) {
           m_independentNodes.put(k, m_nodes.get(k));
         }
@@ -111,7 +111,7 @@ public class Graph<T extends Object> {
     ppp("================ SORTING");
     m_strictlySortedNodes = new ArrayList<T>();
     if (null == m_independentNodes) {
-      m_independentNodes = new HashMap<T, Node<T>>();
+      m_independentNodes = Maps.newHashMap();
     }
     
     //
@@ -262,7 +262,7 @@ public class Graph<T extends Object> {
   //
   public static class Node<T> implements Comparable<Node<T>> {
     private T m_object = null;
-    private Map<T, T> m_predecessors = new HashMap<T, T>();
+    private Map<T, T> m_predecessors = Maps.newHashMap();
     
     public Node(T tm) {
       m_object = tm;

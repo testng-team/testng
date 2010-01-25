@@ -1,11 +1,6 @@
 package org.testng;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import org.testng.collections.Maps;
 import org.testng.internal.ConfigurationMethod;
 import org.testng.internal.NoOpTestClass;
 import org.testng.internal.RunInfo;
@@ -13,6 +8,11 @@ import org.testng.internal.TestNGMethod;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class represents a test class:
@@ -30,8 +30,8 @@ public class TestClass extends NoOpTestClass implements ITestClass {
   // The Strategy used to locate test methods (TestNG, JUnit, etc...)
   transient private ITestMethodFinder m_testMethodFinder = null;
 
-  transient protected Map<Class, Class> m_testClasses = new HashMap<Class, Class>();
-  transient protected Map<Class, Object[]> m_instanceMap = new HashMap<Class, Object[]>();
+  transient protected Map<Class, Class> m_testClasses = Maps.newHashMap();
+  transient protected Map<Class, Object[]> m_instanceMap = Maps.newHashMap();
   
   private IClass m_iClass = null;
   private RunInfo m_runInfo = null;

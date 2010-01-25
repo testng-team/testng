@@ -4,6 +4,7 @@ import org.testng.ITestNGMethod;
 import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.ITestAnnotation;
+import org.testng.collections.Maps;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.ConfigurationAnnotation;
 import org.testng.internal.annotations.IAfterClass;
@@ -19,7 +20,6 @@ import org.testng.internal.annotations.IBeforeSuite;
 import org.testng.internal.annotations.IBeforeTest;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
 
 public class ConfigurationMethod extends BaseTestMethod {
@@ -327,7 +327,7 @@ public class ConfigurationMethod extends BaseTestMethod {
         (ITestAnnotation) m_annotationFinder.findAnnotation(m_methodClass, ITestAnnotation.class);
       if (classAnnotation != null) {
         String[] groups = classAnnotation.getGroups();
-        Map<String, String> newGroups = new HashMap<String, String>(); 
+        Map<String, String> newGroups = Maps.newHashMap();
         for (String g : getGroups()) {
           newGroups.put(g, g);
         }

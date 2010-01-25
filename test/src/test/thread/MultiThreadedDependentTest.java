@@ -4,7 +4,7 @@ import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
-import org.testng.internal.annotations.Maps;
+import org.testng.collections.Maps;
 
 import test.SimpleBaseTest;
 

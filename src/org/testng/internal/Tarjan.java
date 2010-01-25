@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import org.testng.collections.Maps;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,8 +15,8 @@ import java.util.Stack;
 public class Tarjan<T> {
   int m_index = 0;
   private Stack<T> m_s;
-  Map<T, Integer> m_indices = new HashMap<T, Integer>();
-  Map<T, Integer> m_lowlinks = new HashMap<T, Integer>();
+  Map<T, Integer> m_indices = Maps.newHashMap();
+  Map<T, Integer> m_lowlinks = Maps.newHashMap();
   private List<T> m_cycle;
 
   public Tarjan(Graph<T> graph, T start) {

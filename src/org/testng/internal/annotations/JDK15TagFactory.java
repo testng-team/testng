@@ -26,11 +26,11 @@ import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
+import org.testng.collections.Maps;
 import org.testng.internal.Utils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -385,7 +385,7 @@ public class JDK15TagFactory {
   }
 
   private String[] join(String[] strings, String[] strings2) {
-    Map<String, String> vResult = new HashMap<String, String>();
+    Map<String, String> vResult = Maps.newHashMap();
     for (String s : strings) {
       vResult.put(s, s);
     }
@@ -454,7 +454,7 @@ public class JDK15TagFactory {
   {
     if (null == cls) return new String[0];
     
-    Map<String, String> vResult = new HashMap<String, String>();
+    Map<String, String> vResult = Maps.newHashMap();
     
     while (cls != null && cls != Object.class) {
       Annotation annotation = cls.getAnnotation(annotationClass);

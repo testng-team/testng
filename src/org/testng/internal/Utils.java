@@ -1,11 +1,21 @@
 package org.testng.internal;
 
 
+import org.testng.ITestNGMethod;
+import org.testng.TestNGCommandLineArgs;
+import org.testng.TestRunner;
+import org.testng.annotations.IConfigurationAnnotation;
+import org.testng.annotations.ITestAnnotation;
+import org.testng.collections.Maps;
+import org.testng.internal.annotations.AnnotationHelper;
+import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.log.TextFormatter;
+import org.testng.xml.XmlClass;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -14,7 +24,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -22,16 +31,6 @@ import java.util.StringTokenizer;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.testng.ITestNGMethod;
-import org.testng.TestNGCommandLineArgs;
-import org.testng.TestRunner;
-import org.testng.annotations.IConfigurationAnnotation;
-import org.testng.annotations.ITestAnnotation;
-import org.testng.internal.annotations.AnnotationHelper;
-import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.log.TextFormatter;
-import org.testng.xml.XmlClass;
 
 /**
  * Helper methods to parse annotations.
@@ -86,7 +85,7 @@ public final class Utils {
     }
 
     Class<?>[] xmlClasses = result.toArray(new Class[result.size()]);
-    Map<Class<?>, Class<?>> withNestedClasses = new HashMap<Class<?>, Class<?>>();
+    Map<Class<?>, Class<?>> withNestedClasses = Maps.newHashMap();
     findAllClasses(xmlClasses, withNestedClasses);
 
     return withNestedClasses.values().toArray(new Class[withNestedClasses.size()]);

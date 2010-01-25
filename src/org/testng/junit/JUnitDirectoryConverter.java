@@ -5,14 +5,14 @@
 package org.testng.junit;
 
 
+import org.testng.collections.Maps;
+import org.testng.internal.Utils;
+import org.testng.reporters.XMLStringBuffer;
+import org.testng.xml.Parser;
+
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
-import org.testng.reporters.XMLStringBuffer;
-import org.testng.internal.Utils;
-import org.testng.xml.Parser;
 
 /**
  * Tool class scanning and converting the JUnit sources found in a directory.
@@ -27,7 +27,7 @@ public class JUnitDirectoryConverter {
    private boolean m_useAnnotations;
    private String[] m_groups = null;
 
-   private Map<File, File> m_fileNames = new HashMap<File, File>();
+   private Map<File, File> m_fileNames = Maps.newHashMap();
 
    /**
     * Sole constructor.
@@ -103,7 +103,7 @@ public class JUnitDirectoryConverter {
    }
 
    private Map<File, File> convert(File f) {
-      Map<File, File> result = new HashMap<File, File>();
+      Map<File, File> result = Maps.newHashMap();
       if(f.isDirectory()) {
          File[] files = f.listFiles();
          for(File file : files) {
