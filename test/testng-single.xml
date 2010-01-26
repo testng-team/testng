@@ -23,9 +23,9 @@
     </groups>
 -->
     <classes>
-      <class name="test.failedreporter.FailedReporterTest" />
+      <class name="test.tmp.C"/>
 <!-- 
-      <class name="test.tmp.A">
+      <class name="test.failedreporter.FailedReporterTest" />
         <methods>
           <include name="verifyIPAddress" invocationNumbers="0 2" />
         </methods>
