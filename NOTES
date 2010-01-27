@@ -5,8 +5,10 @@ If you ran the full dist build, it should have generated a file on your hard dri
 http://jira.codehaus.org/secure/CreateIssue.jspa?pid=10367&issuetype=5
 
 Here's an example of the one we did for TestNG 5.9
-
 http://jira.codehaus.org/browse/MAVENUPLOAD-2502
+
+5.11:
+http://jira.codehaus.org/browse/MAVENUPLOAD-2689
 
 Summary: TestNG 5.10
 Bundle URL: Attached
