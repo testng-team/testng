@@ -103,6 +103,7 @@ public class TestNGMethod extends BaseTestMethod {
         setSkipFailedInvocations(testAnnotation.skipFailedInvocations());
         setInvocationTimeOut(testAnnotation.invocationTimeOut());
         setIgnoreMissingDependencies(testAnnotation.ignoreMissingDependencies());
+        setPriority(testAnnotation.getPriority());
       }
 
       // Groups

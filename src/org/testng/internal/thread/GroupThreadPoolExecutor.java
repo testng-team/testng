@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  * An Executor that launches tasks per batches.
  */
 public class GroupThreadPoolExecutor extends ThreadPoolExecutor {
-  private static final boolean DEBUG = false;
+  private static final boolean DEBUG = true;
   private static final boolean DOT_FILES = false;
 
   private DynamicGraph<ITestNGMethod> m_graph;

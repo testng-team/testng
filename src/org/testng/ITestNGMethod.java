@@ -221,4 +221,10 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
    */
   public void addFailedInvocationNumber(int number);
   public List<Integer> getFailedInvocationNumbers();
+
+  /**
+   * The scheduling priority. Lower priorities get scheduled first.
+   */
+  public int getPriority();
+  public void setPriority(int priority);
 }

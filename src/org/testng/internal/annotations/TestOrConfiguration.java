@@ -12,6 +12,7 @@ public class TestOrConfiguration
   private String[] m_dependsOnGroups = {};
   private String[] m_dependsOnMethods = {};
   private String m_description = "";
+  private int m_priority;
   
   public String[] getGroups() {
     return m_groups;
@@ -61,4 +62,11 @@ public class TestOrConfiguration
     m_description = description;
   }
 
+  public int getPriority() {
+    return m_priority;
+  }
+  
+  public void setPriority(int priority) {
+    m_priority = priority;
+  }
 }

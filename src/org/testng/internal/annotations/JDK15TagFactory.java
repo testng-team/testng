@@ -380,6 +380,7 @@ public class JDK15TagFactory {
     result.setRetryAnalyzer(test.retryAnalyzer());
     result.setSkipFailedInvocations(test.skipFailedInvocations());
     result.setIgnoreMissingDependencies(test.ignoreMissingDependencies());
+    result.setPriority(test.priority());
 
     return result;
   }

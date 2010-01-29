@@ -34,11 +34,9 @@ import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -567,6 +565,15 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       public List<ITestNGMethod> getMethods() {
         throw new TestNGException("JUnit not supported");
       }
+
+      public int getPriority() {
+        if (m_allTestMethods.length == 1) return m_allTestMethods[0].getPriority();
+        else return 0;
+      }
+
+      public int compareTo(IMethodWorker other) {
+        return getPriority() - other.getPriority();
+      }
     });
 
     runWorkers(workers, "" /* JUnit does not support parallel */, null);
@@ -708,6 +715,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       }
     }
 
+    Collections.sort(result);
     return result;
   }
 

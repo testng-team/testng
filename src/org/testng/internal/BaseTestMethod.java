@@ -52,7 +52,8 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   private List<Integer> m_failedInvocationNumbers = Lists.newArrayList();
   
   private boolean m_ignoreMissingDependencies;
-  
+  private int m_priority;
+
   /**
    * Constructs a <code>BaseTestMethod</code> TODO cquezel JavaDoc.
    *
@@ -644,5 +645,13 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   public void addFailedInvocationNumber(int number) {
     m_failedInvocationNumbers.add(number);
+  }
+
+  public int getPriority() {
+    return m_priority;
+  }
+  
+  public void setPriority(int priority) {
+    m_priority = priority;
   }
 }

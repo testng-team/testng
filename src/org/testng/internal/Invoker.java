@@ -1640,60 +1640,69 @@ public class Invoker implements IInvoker {
     Utils.log("Invoker " + Thread.currentThread().hashCode(), level, s);
   }
   
-  private class DataTestMethodWorker implements IMethodWorker {
-    final Object[] m_instances;
-    final ITestNGMethod m_testMethod;
-    final ITestNGMethod[] m_beforeMethods;
-    final ITestNGMethod[] m_afterMethods;
-    final ConfigurationGroupMethods m_groupMethods;
-    final Object[] m_parameters;
-    final XmlSuite m_suite;
-    final Map<String, String> m_allParameterNames;
-    
-    List<ITestResult> m_results;
-    
-    public DataTestMethodWorker(Object[] instances, 
-        ITestNGMethod testMethod, 
-        Object[] params,
-        ITestNGMethod[] befores, 
-        ITestNGMethod[] afters, 
-        ConfigurationGroupMethods groupMethods, 
-        XmlSuite suite, 
-        Map<String, String> paramNames) {
-      m_instances= instances;
-      m_testMethod= testMethod;
-      m_parameters= params;
-      m_beforeMethods= befores;
-      m_afterMethods= afters;
-      m_groupMethods= groupMethods;
-      m_suite= suite;
-      m_allParameterNames= paramNames;
-    }
-    
-    public long getMaxTimeOut() {
-      return 0;
-    }
-
-    public void run() {
-      m_results= invokeTestMethod(m_instances,
-          m_testMethod,
-          m_parameters,
-          m_suite,
-          m_allParameterNames,
-          m_testMethod.getTestClass(),
-          m_beforeMethods,
-          m_afterMethods,
-          m_groupMethods);
-    }
-
-    public List<ITestResult> getTestResults() {
-      return m_results;
-    }
-
-    public List<ITestNGMethod> getMethods() {
-      return Arrays.asList(m_testMethod);
-    }
-  }
+//  private class DataTestMethodWorker implements IMethodWorker {
+//    final Object[] m_instances;
+//    final ITestNGMethod m_testMethod;
+//    final ITestNGMethod[] m_beforeMethods;
+//    final ITestNGMethod[] m_afterMethods;
+//    final ConfigurationGroupMethods m_groupMethods;
+//    final Object[] m_parameters;
+//    final XmlSuite m_suite;
+//    final Map<String, String> m_allParameterNames;
+//    
+//    List<ITestResult> m_results;
+//    
+//    public DataTestMethodWorker(Object[] instances, 
+//        ITestNGMethod testMethod, 
+//        Object[] params,
+//        ITestNGMethod[] befores, 
+//        ITestNGMethod[] afters, 
+//        ConfigurationGroupMethods groupMethods, 
+//        XmlSuite suite, 
+//        Map<String, String> paramNames) {
+//      m_instances= instances;
+//      m_testMethod= testMethod;
+//      m_parameters= params;
+//      m_beforeMethods= befores;
+//      m_afterMethods= afters;
+//      m_groupMethods= groupMethods;
+//      m_suite= suite;
+//      m_allParameterNames= paramNames;
+//    }
+//    
+//    public long getMaxTimeOut() {
+//      return 0;
+//    }
+//
+//    public void run() {
+//      m_results= invokeTestMethod(m_instances,
+//          m_testMethod,
+//          m_parameters,
+//          m_suite,
+//          m_allParameterNames,
+//          m_testMethod.getTestClass(),
+//          m_beforeMethods,
+//          m_afterMethods,
+//          m_groupMethods);
+//    }
+//
+//    public List<ITestResult> getTestResults() {
+//      return m_results;
+//    }
+//
+//    public List<ITestNGMethod> getMethods() {
+//      return Arrays.asList(m_testMethod);
+//    }
+//
+//    public int getPriority() {
+//      return 1;
+//    }
+//
+//    public int compareTo(IMethodWorker other) {
+//      return getPriority() - other.getPriority();
+//    }
+//
+//  } // DataTestMethodWorker
   
   private static class ParameterBag {
     final ParameterHolder parameterHolder;

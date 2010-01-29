@@ -86,7 +86,7 @@ public class TestMethodWorker implements IMethodWorker {
   @Override
   public String toString() {
     StringBuilder result = new StringBuilder("[Worker thread:" + Thread.currentThread().getId()
-        + " ");
+        + " priority:" + getPriority() + " ");
 
     result.append(m_testMethods[0].getMethod());
 //    result.append(" instances[0]:").append(m_testMethods[0].getInstances()[0]).append(" methods:");
@@ -261,6 +261,14 @@ public class TestMethodWorker implements IMethodWorker {
     }
     return result;
   }
+
+  public int compareTo(IMethodWorker other) {
+    return getPriority() - other.getPriority();
+  }
+
+  public int getPriority() {
+    return m_testMethods.length == 1 ? m_testMethods[0].getMethod().getPriority() : 0;
+  }
 }
 
 class SingleTestMethodWorker extends TestMethodWorker {
@@ -286,10 +294,8 @@ class SingleTestMethodWorker extends TestMethodWorker {
   }
 
   protected void invokeAfterClassMethods(ITestClass testClass, ITestNGMethod tm) {
-    // HINT: do nothing
   }
 
   protected void invokeBeforeClassMethods(ITestClass testClass) {
-    // HINT: do nothing
   }
 }

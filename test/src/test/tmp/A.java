@@ -29,17 +29,19 @@ public class A implements ITest {
     };
   }
 
-  @Test(dataProvider = "dp")
-  public void verifyIPAddress(Integer ip) {
-    if (ip == 1) throw new RuntimeException();
+  @Test(priority = 1)
+  public void f1() {
   }
 
-//  @Test
-  public void f() {
-    
+  @Test(priority = -1)
+  public void f2() {
   }
 
-//  @BeforeSuite
+  @Test
+  public void f3() {
+  }
+
+  //  @BeforeSuite
 //  public void bs() {
 //    System.out.println("Before suite");
 //  }

@@ -266,4 +266,12 @@ public class ClonedMethod implements ITestNGMethod {
   public void addFailedInvocationNumber(int number) {
     m_failedInvocationNumbers.add(number);
   }
+
+  public int getPriority() {
+    return m_method.getPriority();
+  }
+
+  public void setPriority(int priority) {
+    // ignored
+  }
 }

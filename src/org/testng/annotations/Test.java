@@ -170,5 +170,9 @@ public @interface Test {
    * it depends on are missing or excluded.
    */
   public boolean ignoreMissingDependencies() default false;
-  
+
+  /**
+   * The scheduling priority. Lower priorities will be scheduled first.
+   */
+  int priority() default 0;
 }

@@ -78,4 +78,10 @@ public interface ITestAnnotation extends ITestOrConfiguration {
   
   public boolean ignoreMissingDependencies();
   public void setIgnoreMissingDependencies(boolean ignore);
+
+  /**
+   * The scheduling priority. Lower priorities get scheduled first.
+   */
+  public int getPriority();
+  public void setPriority(int priority);
 }

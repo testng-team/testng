@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="SingleSuite" verbose="2" parallel="false" thread-count="3"
+<suite name="SingleSuite" verbose="2" parallel="true" thread-count="2"
     data-provider-thread-count="3">
 
   <parameter name="factory-param" value="FactoryParam" />
@@ -23,7 +23,7 @@
     </groups>
 -->
     <classes>
-      <class name="test.tmp.C"/>
+      <class name="test.tmp.A"/>
 <!-- 
       <class name="test.failedreporter.FailedReporterTest" />
         <methods>

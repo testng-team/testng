@@ -437,6 +437,15 @@ public class JUnitUtils {
     public void addFailedInvocationNumber(int number) {
       m_failedInvocationNumbers.add(number);
     }
+
+    public int getPriority() {
+      return 0;
+    }
+    
+    public void setPriority(int priority) {
+      // ignored
+    }
+
   }
   
   /**

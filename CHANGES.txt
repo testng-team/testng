@@ -2,6 +2,7 @@ Current:
 
 Removed: Javadoc annotation support
 
+Added: Priorities: @Test(priority = -1)
 Added: New attribute invocationNumbers in <include>
 Added: testng-failed.xml only contains the data provider invocations that failed
 Added: IInvokedMethodListener2 to have access to ITestContext in listeners (Karthik Krishnan)
