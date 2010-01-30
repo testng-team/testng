@@ -22,6 +22,23 @@ import java.util.List;
 
 public class MethodInterceptorTest extends SimpleBaseTest {
   
+  private String XML =
+    XML = "<!DOCTYPE suite SYSTEM \"http://beust.com/testng/testng-1.0.dtd\" >" +
+    "" +
+    "<suite name=\"Single\" verbose=\"0\">" +
+    "" +
+    "<listeners>" +
+    "  <listener class-name=\"test.methodinterceptors.NullMethodInterceptor\" />" +
+    "</listeners>" +
+    "" +
+    "  <test name=\"Single\" >" +
+    "    <classes>" +
+    "      <class name=\"test.methodinterceptors.FooTest\" />" +
+    "     </classes>" +
+    "  </test>" +
+    "" +
+    "</suite>";
+
   @Test
   public void noMethodsShouldRun() {
     TestNG tng = create();
@@ -46,6 +63,7 @@ public class MethodInterceptorTest extends SimpleBaseTest {
     tng.setTestClasses(new Class[] { FooTest.class });
     tng.setMethodInterceptor(new FastTestsFirstInterceptor());
     TestListenerAdapter tla = new TestListenerAdapter();
+    tng.setParallel("methods");
     tng.addListener(tla);
     tng.run();
     
@@ -55,28 +73,13 @@ public class MethodInterceptorTest extends SimpleBaseTest {
   }
   
   @Test
-  public void listenersWorkInTestngXml()
+  public void nullMethodInterceptorWorksInTestngXml()
       throws IOException, ParserConfigurationException, SAXException {
-    String xml = "<!DOCTYPE suite SYSTEM \"http://beust.com/testng/testng-1.0.dtd\" >" +
-    "" +
-    "<suite name=\"Single\" verbose=\"0\">" +
-    "" +
-    "<listeners>" +
-    "  <listener class-name=\"test.methodinterceptors.NullMethodInterceptor\" />" +
-    "</listeners>" +
-    "" +
-    "  <test name=\"Single\" >" +
-    "    <classes>" +
-    "      <class name=\"test.methodinterceptors.FooTest\" />" +
-    "     </classes>" +
-    "  </test>" +
-    "" +
-    "</suite>";
 
     File f = File.createTempFile("testng-tests-", "");
     f.deleteOnExit();
     BufferedWriter bw = new BufferedWriter(new FileWriter(f));
-    bw.write(xml);
+    bw.write(XML);
     bw.close();
     
     FileInputStream fis = null;
