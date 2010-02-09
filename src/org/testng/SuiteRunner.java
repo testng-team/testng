@@ -468,9 +468,6 @@ public class SuiteRunner implements ISuite, Serializable {
       m_skipFailedInvocationCounts = skipFailedInvocationCounts;
     }
 
-    /**
-     * @see ITestRunnerFactory#newTestRunner(org.testng.ISuite, org.testng.xml.XmlTest)
-     */
     public TestRunner newTestRunner(ISuite suite, XmlTest test,
         List<IInvokedMethodListener> listeners) {
       boolean skip = m_skipFailedInvocationCounts;
@@ -514,9 +511,6 @@ public class SuiteRunner implements ISuite, Serializable {
       m_target= target;
     }
 
-    /**
-     * @see ITestRunnerFactory#newTestRunner(org.testng.ISuite, org.testng.xml.XmlTest)
-     */
     public TestRunner newTestRunner(ISuite suite, XmlTest test,
         List<IInvokedMethodListener> listeners) {
       TestRunner testRunner= m_target.newTestRunner(suite, test, listeners);

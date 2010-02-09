@@ -817,7 +817,6 @@ public class TestNG {
   /**
    * This needs to be public for maven2, for now..At least
    * until an alternative mechanism is found.
-   * @return
    */
   public List<ISuite> runSuitesLocally() {
     List<ISuite> result = Lists.newArrayList();
@@ -926,7 +925,6 @@ public class TestNG {
   /**
    * @param argv
    * @param listener
-   * @return
    */
   public static TestNG privateMain(String[] argv, ITestListener listener) {
     Map arguments= checkConditions(TestNGCommandLineArgs.parseCommandLine(argv));

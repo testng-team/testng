@@ -11,7 +11,7 @@ import java.util.List;
  * give all the test results that happened during that run.
  * 
  * @author cbeust
- * @date Feb 17, 2006
+ * Feb 17, 2006
  */
 public interface IReporter extends ITestNGListener {
   /**

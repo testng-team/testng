@@ -59,7 +59,7 @@ public interface IConfigurationAnnotation extends ITestOrConfiguration {
   
   /**
    * If true, this @Configuration method will belong to groups specified in the
-   * @Test annotation on the class (if any).
+   * \@Test annotation on the class (if any).
    */
   public boolean getInheritGroups();
 

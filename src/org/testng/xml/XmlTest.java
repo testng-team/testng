@@ -7,12 +7,9 @@ import org.testng.internal.AnnotationTypeEnum;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 /**
  * This class describes the tag &lt;test&gt;  in testng.xml.

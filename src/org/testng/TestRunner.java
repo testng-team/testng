@@ -1382,9 +1382,6 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     System.out.println("\n***********\n");
   }
 
-  /**
-   * @return
-   */
   public List<ITestNGMethod> getInvokedMethods() {
     List<ITestNGMethod> result= Lists.newArrayList();
     for (IInvokedMethod im : m_invokedMethods) {

@@ -95,19 +95,16 @@ public interface ITestContext extends IAttributes {
   
   /**
    * Retrieves information about the successful configuration method invocations.
-   * @return
    */
   public IResultMap getPassedConfigurations();
   
   /**
    * Retrieves information about the skipped configuration method invocations.
-   * @return
    */
   public IResultMap getSkippedConfigurations();
   
   /**
    * Retrieves information about the failed configuration method invocations.
-   * @return
    */
   public IResultMap getFailedConfigurations();
 

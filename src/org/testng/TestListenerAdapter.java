@@ -129,9 +129,6 @@ public class TestListenerAdapter implements IResultListener {
   public void onTestStart(ITestResult result) {
   }
 
-  /**
-   * @return
-   */
   public List<ITestContext> getTestContexts() {
     return m_testContexts;
   }

@@ -63,12 +63,12 @@
 
 
   <target name="dev"
-          depends="prepare,validate,copy-resources,build,dist,tests,test-ant" />
+          depends="prepare,validate,copy-resources,build,tests,test-ant" />
 
   <target name="all"
           depends="prepare,validate,copy-resources,build,dist,tests,test-ant,javadocs,dist" />
 
-  <target name="build" depends="compile,dist" />
+  <target name="build" depends="compile,dist-bsh" />
 
   <target name="single">
     <ant antfile="test/build.xml" target="run:single"/>
@@ -123,7 +123,8 @@
   <!-- ==================================================================== -->
 
   <target name="javadocs">
-    <javadoc destdir="javadocs" source="1.5" windowtitle="TestNG">
+    <javadoc additionalparam="-quiet" destdir="javadocs" source="1.5" windowtitle="TestNG"
+        classpath="${testng.jar}:${lib.dir}/ant.jar">
       <fileset dir="${src.dir}" defaultexcludes="yes">
         <include name="org/testng/*.java" />
       </fileset>
@@ -175,10 +176,8 @@
         <attribute name="Main-Class" value="org.testng.TestNG" />
       	<attribute name="Implementation-Version" value="${testng.version}-${DSTAMP}${TSTAMP}" />
       </manifest>
-<!--
-      <fileset dir="${jdk15.dir}" />
--->
-        <fileset dir="${build.3rdparty.dir}" />
+      <fileset dir="${build.dir}" />
+      <fileset dir="${build.3rdparty.dir}" />
       <fileset file="TESTNG-${testng.version}" />
     </jar>
   </target>

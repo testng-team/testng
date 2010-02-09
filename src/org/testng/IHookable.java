@@ -23,7 +23,7 @@ package org.testng;
  * </pre>
  * 
  * @author cbeust
- * @date Jan 28, 2006
+ * Jan 28, 2006
  */
 public interface IHookable {
   public void run(IHookCallBack callBack, ITestResult testResult);

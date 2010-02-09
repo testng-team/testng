@@ -13,7 +13,7 @@ package org.testng;
  * 
  * 
  * @author cbeust
- * @date Jan 28, 2006
+ * Jan 28, 2006
  */
 public interface IHookCallBack {
   

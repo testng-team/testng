@@ -7,8 +7,8 @@ import java.lang.annotation.Retention;
  * Configuration information for a TestNG class.
  * 
  * @deprecated Use @BeforeSuite, @AfterSuite, @BeforeTest, @AfterTest,
- * @BeforeGroups, @AfterGroups, @BeforeClass, @AfterClass, @BeforeMethod,
- * @AfterMethod
+ * \@BeforeGroups, @AfterGroups, @BeforeClass, @AfterClass, @BeforeMethod,
+ * \@AfterMethod
  *
  * @author Cedric Beust, Apr 26, 2004
  * 

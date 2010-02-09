@@ -1,21 +1,10 @@
 package org.testng;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
-
 /**
  * The root exception for special skip handling. In case a @Test or @Configuration 
  * throws this exception the method will be considered a skip or a failure according to the
- * return of {@link }.
+ * return of {@link #isSkip()}.
  * Users may provide extensions to this mechanism by extending this class. 
- * The methods to be considered when extending are {@link } and {@link #getMessage()}
- * for customizing the output.
  * 
  * @author <a href='mailto:the[dot]mindstorm[at]gmail[dot]com'>Alex Popescu</a>
  * @since 5.6

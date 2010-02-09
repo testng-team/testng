@@ -6,7 +6,7 @@ package org.testng;
  * in the HTML reports.
  * 
  * @author cbeust
- * @date Jun 6, 2006
+ * Jun 6, 2006
  */
 public interface ITest {
   

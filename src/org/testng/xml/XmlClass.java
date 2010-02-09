@@ -169,8 +169,6 @@ public class XmlClass implements Serializable, Cloneable {
 
   /**
    * Clone an XmlClass by copying all its components.
-   * 
-   * @return
    */
   @Override
   public Object clone() {
