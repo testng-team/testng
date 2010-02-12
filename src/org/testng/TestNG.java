@@ -595,7 +595,11 @@ public class TestNG {
   public void setObjectFactory(Class c) {
     m_objectFactory = (IObjectFactory)ClassHelper.newInstance(c);
   }
-  
+
+  public void setObjectFactory(IObjectFactory factory) {
+    m_objectFactory = factory;
+  }
+
   /**
    * Define which listeners to user for this run.
    * 
