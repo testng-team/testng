@@ -23,9 +23,10 @@
     </groups>
 -->
     <classes>
-      <class name="test.thread.MultiThreadedDependentTest" />
+      <class name="test.factory.FactoryOrderMainTest" />
 <!-- 
-      <class name="test.tmp.A"/>
+      <class name="test.tmp.B"/>
+      <class name="test.priority.PriorityTest" />
       <class name="test.failedreporter.FailedReporterTest" />
         <methods>
           <include name="verifyIPAddress" invocationNumbers="0 2" />
