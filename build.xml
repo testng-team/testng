@@ -63,7 +63,7 @@
 
 
   <target name="dev"
-          depends="prepare,validate,copy-resources,build,tests,test-ant" />
+          depends="prepare,validate,copy-resources,build,tests" />
 
   <target name="all"
           depends="prepare,validate,copy-resources,build,dist,tests,test-ant,javadocs,dist" />
