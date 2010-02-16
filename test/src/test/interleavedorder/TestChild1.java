@@ -18,7 +18,7 @@ public class TestChild1 extends BaseTestClass {
   }
   
   private void ppp(String s) {
-    if (false) {
+    if (true) {
       System.out.println("[TestChild1] " + s);
     }
   }

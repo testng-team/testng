@@ -23,9 +23,14 @@
     </groups>
 -->
     <classes>
-      <class name="test.factory.FactoryOrderMainTest" />
+      <class name="test.methodinterceptors.MethodInterceptorTest" />
 <!-- 
       <class name="test.tmp.B"/>
+      <class name="test.interleavedorder.TestChild1" />
+      <class name="test.interleavedorder.InterleavedInvocationTest" />
+      <class name="test.interleavedorder.TestChild2" />
+      <class name="test.interleavedorder.InterleavedInvocationTest" />
+      <class name="test.factory.FactoryOrderMainTest" />
       <class name="test.priority.PriorityTest" />
       <class name="test.failedreporter.FailedReporterTest" />
         <methods>

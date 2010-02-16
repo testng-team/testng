@@ -4,7 +4,7 @@ import org.testng.annotations.Test;
 
 public class InvocationTimeOutSampleTest {
 
-  @Test(invocationCount = 5, invocationTimeOut = 1300)
+  @Test(invocationCount = 5, invocationTimeOut = 2000)
   public void shouldPass() {
     try {
       Thread.sleep(250);
