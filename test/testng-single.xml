@@ -5,11 +5,12 @@
 
   <parameter name="factory-param" value="FactoryParam" />
 
-<!--
   <listeners>
+<!--
+    <listener class-name="test.methodinterceptors.FastTestsFirstInterceptor" />
     <listener class-name="test.invokedmethodlistener.MyListener" />
-  </listeners>
 -->  
+  </listeners>
   <test name="Regression2">
 <!--
     <packages>
@@ -23,11 +24,16 @@
     </groups>
 -->
     <classes>
-      <class name="test.methodinterceptors.MethodInterceptorTest" />
+      <class name="test.factory.FactoryInterleavingSampleFactory"/>
 <!-- 
-      <class name="test.tmp.B"/>
-      <class name="test.interleavedorder.TestChild1" />
+      <class name="test.dependent.DepBugSampleTest" />
+      <class name="test.dependent.DepBugVerifyTest" />
+      <class name="test.methodinterceptors.FooTest" />
+      <class name="test.methodinterceptors.MethodInterceptorTest" />
+      <class name="test.dependent.DepBugSampleTest" />
+      <class name="test.dependent.DepBugVerifyTest" />
       <class name="test.interleavedorder.InterleavedInvocationTest" />
+      <class name="test.interleavedorder.TestChild1" />
       <class name="test.interleavedorder.TestChild2" />
       <class name="test.interleavedorder.InterleavedInvocationTest" />
       <class name="test.factory.FactoryOrderMainTest" />

@@ -21,6 +21,14 @@ public class InterleavedInvocationTest extends BaseTest {
     LOG = new ArrayList<String>();
   }
 
+  private void verifyInvocation(int number, List<String> log, int index) {
+    Assert.assertEquals(log.get(index), "beforeTestChild" + number + "Class");
+    Assert.assertTrue(("test1".equals(log.get(index + 1)) && "test2".equals(LOG.get(index + 2)))
+        || ("test2".equals(LOG.get(index + 1)) && "test1".equals(LOG.get(index + 2))),
+        "test methods were not invoked correctly");
+    Assert.assertEquals(log.get(index + 3), "afterTestChild" + number + "Class");
+  }
+
   @Test
   public void invocationOrder() {
     TestListenerAdapter tla = new TestListenerAdapter();
@@ -31,20 +39,11 @@ public class InterleavedInvocationTest extends BaseTest {
     testng.setVerbose(0);
     testng.run();
     
-    final String log= LOG.toString();
-    final String clsName= TestChild1.class.getName();
-
-
-    Assert.assertEquals(LOG.size(), 8, "invocations");
-    // @Configuration ordering
-    Assert.assertEquals(LOG.get(0), "beforeTestChild1Class");
-    Assert.assertTrue(("test1".equals(LOG.get(1)) && "test2".equals(LOG.get(2)))
-        || ("test2".equals(LOG.get(1)) && "test1".equals(LOG.get(2))), "test methods were not invoked correctly");
-    Assert.assertEquals(LOG.get(3), "afterTestChild1Class");
-    Assert.assertEquals(LOG.get(4), "beforeTestChild2Class");
-    Assert.assertTrue(("test1".equals(LOG.get(5)) && "test2".equals(LOG.get(6)))
-        || ("test2".equals(LOG.get(5)) && "test1".equals(LOG.get(6))), "test methods were not invoked correctly");
-    Assert.assertEquals(LOG.get(7), "afterTestChild2Class");
+    Assert.assertEquals(LOG.size(), 8, LOG.toString());
+    int number1 = "beforeTestChild1Class".equals(LOG.get(0)) ? 1 : 2;
+    int number2 = number1 == 1 ? 2 : 1;
+    verifyInvocation(number1, LOG, 0);
+    verifyInvocation(number2, LOG, 4);
   }
 
   public static void ppp(String s) {

@@ -57,21 +57,38 @@ public class MethodInterceptorTest extends SimpleBaseTest {
     Assert.assertEquals(tla.getSkippedTests().size(), 0);
   }
 
-  @Test
-  public void fastShouldRunFirst() {
+  private void testFast(boolean useInterceptor) {
     TestNG tng = create();
     tng.setTestClasses(new Class[] { FooTest.class });
-    tng.setMethodInterceptor(new FastTestsFirstInterceptor());
+    if (useInterceptor) {
+      tng.setMethodInterceptor(new FastTestsFirstInterceptor());
+    }
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.setParallel("methods");
+//    tng.setParallel("methods");
     tng.addListener(tla);
     tng.run();
     
-    Assert.assertEquals(tla.getPassedTests().size(), 2);
+    Assert.assertEquals(tla.getPassedTests().size(), 3);
     ITestResult first = tla.getPassedTests().get(0);
-    Assert.assertEquals(first.getMethod().getMethodName(), "fast");
+
+    String method = "zzzfast";
+    if (useInterceptor) {
+      Assert.assertEquals(first.getMethod().getMethodName(), method);
+    } else {
+      Assert.assertNotSame(first.getMethod().getMethodName(), method);
+    }
+  }
+
+  @Test
+  public void fastShouldRunFirst() {
+    testFast(true /* use interceptor */);
   }
   
+  @Test
+  public void fastShouldNotRunFirst() {
+    testFast(false /* don't use interceptor */);
+  }
+
   @Test
   public void nullMethodInterceptorWorksInTestngXml()
       throws IOException, ParserConfigurationException, SAXException {

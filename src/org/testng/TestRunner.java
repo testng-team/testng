@@ -126,14 +126,39 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   private Map<String, Object> m_attributes = Maps.newHashMap();
   private IMethodInterceptor m_methodInterceptor = new IMethodInterceptor() {
 
-  public List<IMethodInstance> intercept(List<IMethodInstance> methods,
-        ITestContext context)
-    {
-      Collections.sort(methods, MethodInstance.SORT_BY_CLASS);
-      return methods;
+    public List<IMethodInstance> intercept(List<IMethodInstance> methods,
+        ITestContext context)  {
+      return groupMethodsByInstance(methods);
+  //    Collections.sort(methods, MethodInstance.SORT_BY_CLASS);
+  //    return methods;
+    }
+  
+    private List<IMethodInstance> groupMethodsByInstance(List<IMethodInstance> methods) {
+      List<Object> instanceList = Lists.newArrayList();
+      Map<Object, List<IMethodInstance>> map = Maps.newHashMap();
+      for (IMethodInstance mi : methods) {
+        Object[] methodInstances = mi.getInstances();
+        for (Object instance : methodInstances) {
+          if (!instanceList.contains(instance)) instanceList.add(instance);
+          List<IMethodInstance> l = map.get(instance);
+          if (l == null) {
+            l = Lists.newArrayList();
+            map.put(instance, l);
+          }
+          l.add(mi);
+        }
+      }
+  
+      List<IMethodInstance> result = Lists.newArrayList();
+      for (Object instance : instanceList) {
+        result.addAll(map.get(instance));
+      }
+  
+      return result;
     }
     
-  };
+  }; // new IMethodInterceptor
+
   private List<IInvokedMethodListener> m_invokedMethodListeners;
   private ClassMethodMap m_classMethodMap;
 
@@ -682,28 +707,16 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
 //    ClassMethodMap cmm = new ClassMethodMap(m_allTestMethods);
     Map<Class, Set<IMethodInstance>> list = groupMethodInstancesByClass(methodInstances);
 
-    for (Class c : list.keySet()) {
-      Set<IMethodInstance> s = list.get(c);
-      // If the current class is marked sequential, we want to run all its method
-      // in one TestMethodWorker to guarantee a sequential order. Otherwise, we
-      // create one worker per method
-      if (sequentialClasses.contains(c)) {
-        // Sequential class: all methods in one worker
-        TestMethodWorker worker = new TestMethodWorker(m_invoker,
-            s.toArray(new IMethodInstance[s.size()]),
-            m_xmlTest.getSuite(),
-            params,
-            m_allTestMethods,
-            m_groupMethods,
-            m_classMethodMap,
-            this);
-        result.add(worker);
-      }
-      else {
-        // Parallel class: each method in its own worker
-        for (IMethodInstance imi : s) {
+    if (false) {
+      for (Class c : list.keySet()) {
+        Set<IMethodInstance> s = list.get(c);
+        // If the current class is marked sequential, we want to run all its method
+        // in one TestMethodWorker to guarantee a sequential order. Otherwise, we
+        // create one worker per method
+        if (sequentialClasses.contains(c)) {
+          // Sequential class: all methods in one worker
           TestMethodWorker worker = new TestMethodWorker(m_invoker,
-              new IMethodInstance[] { imi },
+              s.toArray(new IMethodInstance[s.size()]),
               m_xmlTest.getSuite(),
               params,
               m_allTestMethods,
@@ -712,11 +725,67 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
               this);
           result.add(worker);
         }
+        else {
+          // Parallel class: each method in its own worker
+          for (IMethodInstance imi : s) {
+            TestMethodWorker worker = new TestMethodWorker(m_invoker,
+                new IMethodInstance[] { imi },
+                m_xmlTest.getSuite(),
+                params,
+                m_allTestMethods,
+                m_groupMethods,
+                m_classMethodMap,
+                this);
+            result.add(worker);
+          }
+        }
       }
+    } else {
+      Set<Class<?>> processedClasses = Sets.newHashSet();
+      for (IMethodInstance im : methodInstances) {
+        Class<?> c = im.getMethod().getTestClass().getRealClass();
+        if (sequentialClasses.contains(c)) {
+          if (!processedClasses.contains(c)) {
+            processedClasses.add(c);
+            // Sequential class: all methods in one worker
+            TestMethodWorker worker = new TestMethodWorker(m_invoker,
+                findClasses(methodInstances, c),
+                m_xmlTest.getSuite(),
+                params,
+                m_allTestMethods,
+                m_groupMethods,
+                m_classMethodMap,
+                this);
+            result.add(worker);
+          }
+        }
+        else {
+          // Parallel class: each method in its own worker
+            TestMethodWorker worker = new TestMethodWorker(m_invoker,
+                new IMethodInstance[] { im },
+                m_xmlTest.getSuite(),
+                params,
+                m_allTestMethods,
+                m_groupMethods,
+                m_classMethodMap,
+                this);
+            result.add(worker);
+          }      
+        }
     }
 
     Collections.sort(result);
     return result;
+  }
+
+  private IMethodInstance[] findClasses(List<IMethodInstance> methodInstances, Class<?> c) {
+    List<IMethodInstance> result = Lists.newArrayList();
+    for (IMethodInstance mi : methodInstances) {
+      if (mi.getMethod().getTestClass().getRealClass() == c) {
+        result.add(mi);
+      }
+    }
+    return result.toArray(new IMethodInstance[result.size()]);
   }
 
   private void createParallelWorkers(List<ITestNGMethod> parallel, 
@@ -745,7 +814,6 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       }
       log(3, "===");
     }
-
 
     Map<String, String> params = xmlTest.getParameters();
     // This should no longer happen when we are running the new 5.11 implementation but keeping

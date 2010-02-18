@@ -114,6 +114,7 @@
   <test name="Factory tests">
 		<classes>
 			<class name="test.factory.classconf.XClassOrderWithFactoryTest" />
+      <class name="test.factory.FactoryInterleavingTest"/>
 		</classes>
 	</test>
   
@@ -384,8 +385,6 @@
 
   <test name="Test order invocation">
     <classes>
-      <class name="test.interleavedorder.TestChild1" />
-      <class name="test.interleavedorder.TestChild2" />
       <class name="test.interleavedorder.InterleavedInvocationTest" />
     </classes>
   </test>
@@ -488,14 +487,14 @@
     </classes>
   </test>
     
+<!-- 
   <test name="JUnitConverter">
     <parameter name="source-directory" value="test/src/test/converter" />
     <classes>
-<!-- 
       <class name="test.converter.JUnitConverterTest" />
- -->
      </classes>
   </test>
+ -->
 
   <!-- TestNG ant task related tests -->
   <test name="Ant-ClassFileResolution" >
