@@ -2,6 +2,7 @@ Current:
 
 Removed: Javadoc annotation support
 
+Fixed: @Before methods run from factories were not properly interleaved
 Added: TestNG#setObjectFactory(IObjectFactory)
 Added: Priorities: @Test(priority = -1)
 Added: New attribute invocationNumbers in <include>
