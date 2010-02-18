@@ -1,0 +1,1 @@
+scp `ls -tr *beta.zip|tail -1` cedric@beust.com:w/testng
