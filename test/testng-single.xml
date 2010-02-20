@@ -24,7 +24,7 @@
     </groups>
 -->
     <classes>
-      <class name="test.factory.FactoryInterleavingSampleFactory"/>
+      <class name="test.dataprovider.IteratorParallelTest"/>
 <!-- 
       <class name="test.dependent.DepBugSampleTest" />
       <class name="test.dependent.DepBugVerifyTest" />

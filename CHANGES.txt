@@ -2,18 +2,19 @@ Current:
 
 Removed: Javadoc annotation support
 
-Fixed: @Before methods run from factories were not properly interleaved
 Added: TestNG#setObjectFactory(IObjectFactory)
 Added: Priorities: @Test(priority = -1)
 Added: New attribute invocationNumbers in <include>
 Added: testng-failed.xml only contains the data provider invocations that failed
 Added: IInvokedMethodListener2 to have access to ITestContext in listeners (Karthik Krishnan)
+Fixed: @Before methods run from factories were not properly interleaved
 Fixed: The TextReporter reports skipped tests as PASSED (Ankur Agrawal)
 
 Eclipse:
 
 Added: New file wizard: can now create a class with annotations, including @DataProvider
 Added: You can now select multiple XML suites to be run in the launch dialog
+Fixed: @Test(groups = <constant>) was taking name of the constant instead of its value.
 Fixed: http://jira.codehaus.org/browse/GRECLIPSE-476 NPE with Groovy Tests (Andrew Eisenberg)
 Fixed: The custom XML file is now created in the temp directory instead of inside the project
 Fixed: In the launch dialog, now display an error if trying to pick groups when no project is selected

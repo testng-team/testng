@@ -16,7 +16,7 @@ class MyIterator implements Iterator {
   }
 
   public Object next() {
-//    ppp("RETURNING INDEX " + m_count);
+    ppp("RETURNING INDEX " + m_count);
     return m_data[m_count++];
   }
 
