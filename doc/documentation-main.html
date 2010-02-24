@@ -204,9 +204,9 @@ The rest of this manual will explain the following:
 
 <br><b>@AfterSuite: </b> The annotated method will be run after all tests in this suite have run. 
 
-<br><b>@BeforeTest</b>: The annotated method will be run before the test. 
+<br><b>@BeforeTest</b>: The annotated method will be run before any test method belonging to the classes inside the &lt;test&gt; tag is run.
 
-<br><b>@AfterTest</b>: The annotated method will be run after the test. 
+<br><b>@AfterTest</b>: The annotated method will be run after all the test methods belonging to the classes inside the &lt;test&gt; tag have run.
 
 <br><b>@BeforeGroups</b>:   The list of groups that this configuration method will run before. This method is guaranteed to run shortly before the first test method that belongs to any of these groups is invoked.
 
