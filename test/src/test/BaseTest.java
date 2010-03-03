@@ -1,7 +1,10 @@
 package test;
 
 
-import org.testng.IAnnotationTransformer;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Module;
+
 import org.testng.IInvokedMethodListener;
 import org.testng.ISuite;
 import org.testng.ITestResult;
@@ -10,9 +13,8 @@ import org.testng.SuiteRunner;
 import org.testng.TestListenerAdapter;
 import org.testng.TestRunner;
 import org.testng.annotations.BeforeMethod;
-import org.testng.internal.annotations.DefaultAnnotationTransformer;
+import org.testng.internal.DefaultGuiceModule;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.JDK15AnnotationFinder;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
 import org.testng.xml.XmlClass;
@@ -48,12 +50,12 @@ public class BaseTest extends BaseDistributedTest {
 
   private XmlSuite m_suite= null;
   private ITestRunnerFactory m_testRunnerFactory;
-  private IAnnotationTransformer m_defaultAnnotationTransformer= new DefaultAnnotationTransformer();
-  private IAnnotationFinder m_jdkAnnotationFinder;
+  private Injector m_injector;
 
   public BaseTest() {
     m_testRunnerFactory= new InternalTestRunnerFactory(this);
-    m_jdkAnnotationFinder= new JDK15AnnotationFinder(m_defaultAnnotationTransformer);
+    Module module = new DefaultGuiceModule();
+    m_injector = Guice.createInjector(module);
   }
 
   protected void setDebug() {
@@ -183,7 +185,7 @@ public class BaseTest extends BaseDistributedTest {
     SuiteRunner suite= new SuiteRunner(m_suite,
                                        m_outputDirectory,
                                        m_testRunnerFactory,
-                                       m_jdkAnnotationFinder);
+                                       m_injector.getInstance(IAnnotationFinder.class));
 
     suite.run();
   }

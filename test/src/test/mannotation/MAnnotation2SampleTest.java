@@ -1,21 +1,28 @@
 package test.mannotation;
 
-import java.lang.reflect.Method;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Module;
 
 import org.testng.Assert;
 import org.testng.annotations.Configuration;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Test;
-import org.testng.internal.annotations.DefaultAnnotationTransformer;
+import org.testng.internal.DefaultGuiceModule;
+import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
 
+import java.lang.reflect.Method;
+
 public class MAnnotation2SampleTest {
-  private JDK15AnnotationFinder m_finder;
+  private IAnnotationFinder m_finder;
   
   @Configuration(beforeTestClass = true, enabled = true, groups="current")
   public void init() {
-    m_finder = new JDK15AnnotationFinder(new DefaultAnnotationTransformer());
+    Module module = new DefaultGuiceModule();
+    Injector injector = Guice.createInjector(module);
+    m_finder = injector.getInstance(IAnnotationFinder.class);
   }
 
   @Test

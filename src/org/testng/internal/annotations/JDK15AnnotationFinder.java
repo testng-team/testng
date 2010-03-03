@@ -1,5 +1,7 @@
 package org.testng.internal.annotations;
 
+import com.google.inject.Inject;
+
 import org.testng.IAnnotationTransformer;
 import org.testng.IAnnotationTransformer2;
 import org.testng.annotations.AfterClass;
@@ -45,12 +47,11 @@ import java.util.Map;
 public class JDK15AnnotationFinder implements IAnnotationFinder {
   private JDK15TagFactory m_tagFactory = new JDK15TagFactory();
   private Map<Class<?>, Class<?>> m_annotationMap = Maps.newHashMap();
+  @Inject
   private IAnnotationTransformer m_transformer = null;
   
   @SuppressWarnings({"deprecation"})
-  public JDK15AnnotationFinder(IAnnotationTransformer transformer) {
-    m_transformer = transformer;
-    
+  public JDK15AnnotationFinder() {
     m_annotationMap.put(IConfigurationAnnotation.class, Configuration.class);
     m_annotationMap.put(IDataProviderAnnotation.class, DataProvider.class);
     m_annotationMap.put(IExpectedExceptionsAnnotation.class, ExpectedExceptions.class);

@@ -87,6 +87,7 @@
       <fileset dir="${lib.dir}">
         <include name="junit.jar" />
         <include name="${beanshell.jar}" />
+        <include name="${guice.jar}" />
       </fileset>
     </path>
 
@@ -124,7 +125,7 @@
 
   <target name="javadocs">
     <javadoc additionalparam="-quiet" destdir="javadocs" source="1.5" windowtitle="TestNG"
-        classpath="${testng.jar}:${lib.dir}/ant.jar">
+        classpath="${testng.jar}:${lib.dir}/ant.jar:${guice.jar}">
       <fileset dir="${src.dir}" defaultexcludes="yes">
         <include name="org/testng/*.java" />
       </fileset>
@@ -154,9 +155,13 @@
            overwrite="true" />
   </target>
 
-  <target name="dist-bsh">
-    <antcall target="clean-unjar" />
-    <antcall target="extract-beanshell-jar" />
+  <target name="extract-guice-jar">
+    <unjar src="3rdparty/${guice.jar}"
+           dest="${build.3rdparty.dir}"
+           overwrite="true" />
+  </target>
+
+  <target name="dist-bsh" depends="clean-unjar,extract-beanshell-jar,extract-guice-jar" >
     <delete file="${testng.jar}" />
     <jar destfile="${testng.jar}">
       <manifest>
@@ -169,9 +174,9 @@
     </jar>
   </target>
   
-  <target name="dist-nobsh">
-    <antcall target="clean-unjar" />
-    <jar destfile="${other.jars.dir}/${testng.nobsh.jar}" update="true">
+  <target name="dist-nobsh"  depends="clean-unjar,extract-guice-jar" >
+    <delete file="${other.jars.dir}/${testng.nobsh.jar}" />
+    <jar destfile="${other.jars.dir}/${testng.nobsh.jar}">
       <manifest>
         <attribute name="Main-Class" value="org.testng.TestNG" />
       	<attribute name="Implementation-Version" value="${testng.version}-${DSTAMP}${TSTAMP}" />
@@ -203,7 +208,7 @@
                   excludes="test-output/**,report/**" />
       <zipfileset dir="3rdparty"
                   prefix="${zip.dir}/3rdparty"
-                  includes="${beanshell.jar},${concurrent.jar}" />
+                  includes="${beanshell.jar},${concurrent.jar},${guice.jar}" />
     </zip>
   </target>
   
@@ -304,9 +309,9 @@
   </target>
 
   <target name="clean">
+    <delete dir="${build.dir}" />
+    <delete dir="${build.maven-bundle.dir}" />
     <delete failonerror="false">
-      <fileset dir="${build.dir}" includes="**/*" />
-      <fileset dir="${build.maven-bundle.dir}" includes="**/*" />
       <fileset dir="." includes="*.jar,*.zip" />
     </delete>
     <ant antfile="test/build.xml" target="clean" />

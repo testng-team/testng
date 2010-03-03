@@ -16,11 +16,14 @@
   <!-- Compile                                                              -->
   <!-- ==================================================================== -->
   <path id="compile.cp">
+    <pathelement location="${testng.jar}" />
 		<pathelement location="${build.dir}"/>
 		<fileset dir="${lib.dir}">
 			<include name="junit.jar"/>
+<!--
 			<include name="${beanshell.jar}"/>
-			<include name="${qdox.jar}"/>
+      <include name="${guice.jar}"/>
+-->
 		</fileset>
   </path>
 

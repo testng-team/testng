@@ -24,8 +24,10 @@
     </groups>
 -->
     <classes>
-      <class name="test.regression.MyTestngTest2"/>
+      <class name="test.dataprovider.FailedDataProviderTest" />
 <!-- 
+      <class name="test.tmp.B"/>
+      <class name="test.regression.MyTestngTest2"/>
       <class name="test.regression.BeforeTestFailingTest"/>
       <class name="test.inject.InjectDataProviderTest"/>
       <class name="test.dataprovider.IteratorParallelTest"/>

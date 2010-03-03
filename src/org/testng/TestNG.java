@@ -1,6 +1,10 @@
 package org.testng;
 
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Module;
+
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.testng.annotations.ITestAnnotation;
@@ -10,6 +14,7 @@ import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.IResultListener;
 import org.testng.internal.PoolService;
+import org.testng.internal.TestNGGuiceModule;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -688,6 +693,8 @@ public class TestNG {
 
   private IMethodInterceptor m_methodInterceptor = null;
 
+  private Module m_module;
+
   /**
    * Sets the level of verbosity. This value will override the value specified 
    * in the test suites.
@@ -751,9 +758,9 @@ public class TestNG {
   }
   
   private void initializeAnnotationFinders() {
-    if (!VersionInfo.IS_JDK14) {
-      m_jdkAnnotationFinder= ClassHelper.createJdkAnnotationFinder(getAnnotationTransformer());
-    }
+    m_module = new TestNGGuiceModule(getAnnotationTransformer(), m_objectFactory);
+    Injector injector = Guice.createInjector(m_module);
+    m_jdkAnnotationFinder = injector.getInstance(IAnnotationFinder.class);
   }
   
   /**
