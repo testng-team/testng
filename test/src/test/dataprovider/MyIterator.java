@@ -2,11 +2,11 @@ package test.dataprovider;
 
 import java.util.Iterator;
 
-class MyIterator implements Iterator {
+public class MyIterator implements Iterator<Object[]> {
   private static int m_count = 0;
-  private Object[] m_data;
+  private Object[][] m_data;
   
-  public MyIterator(Object[] data) {
+  public MyIterator(Object[][] data) {
     m_data = data;
     m_count = 0;
   }
@@ -15,7 +15,7 @@ class MyIterator implements Iterator {
     return m_count < m_data.length;
   }
 
-  public Object next() {
+  public Object[] next() {
     ppp("RETURNING INDEX " + m_count);
     return m_data[m_count++];
   }

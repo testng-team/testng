@@ -81,6 +81,24 @@ public class Parameters {
 
   ////////////////////////////////////////////////////////
 
+  public static Object getInjectedParameter(Class<?> c, Method method, ITestContext context,
+      ITestResult testResult) {
+    Object result = null;
+    if (Method.class.equals(c)) {
+      result = method;
+    }
+    else if (ITestContext.class.equals(c)) {
+      result = context;
+    }
+    else if (XmlTest.class.equals(c)) {
+      result = context.getCurrentXmlTest();
+    }
+    else if (ITestResult.class.equals(c)) {
+      result = testResult;
+    }
+    return result;
+  }
+
   /**
    * @param optionalValues TODO
    * @param finder TODO
@@ -91,11 +109,11 @@ public class Parameters {
    * picked from the property file
    */
   private static Object[] createParameters(String methodName,
-                                           Class[] parameterTypes,
-                                           String[] optionalValues,
-                                           String methodAnnotation,
-                                           IAnnotationFinder finder,
-                                           String[] parameterNames, MethodParameters params, XmlSuite xmlSuite)
+      Class[] parameterTypes,
+      String[] optionalValues,
+      String methodAnnotation,
+      IAnnotationFinder finder,
+      String[] parameterNames, MethodParameters params, XmlSuite xmlSuite)
   {
     Object[] result = new Object[0];
     if(parameterTypes.length > 0) {
@@ -104,17 +122,10 @@ public class Parameters {
       checkParameterTypes(methodName, parameterTypes, methodAnnotation, parameterNames);
   
       for(int i = 0, j = 0; i < parameterTypes.length; i++) {
-        if (Method.class.equals(parameterTypes[i])) {
-          vResult.add(params.currentTestMethod);
-        }
-        else if (ITestContext.class.equals(parameterTypes[i])) {
-          vResult.add(params.context);
-        }
-        else if (XmlTest.class.equals(parameterTypes[i])) {
-          vResult.add(params.context.getCurrentXmlTest());
-        }
-        else if (ITestResult.class.equals(parameterTypes[i])) {
-          vResult.add(params.testResult);
+        Object inject = getInjectedParameter(parameterTypes[i], params.currentTestMethod,
+            params.context, params.testResult);
+        if (inject != null) {
+          vResult.add(inject);
         }
         else {
           if (j < parameterNames.length) {

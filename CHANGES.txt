@@ -2,6 +2,7 @@ Current:
 
 Removed: Javadoc annotation support
 
+Added: Injection now works for data providers
 Added: TestNG#setObjectFactory(IObjectFactory)
 Added: Priorities: @Test(priority = -1)
 Added: New attribute invocationNumbers in <include>

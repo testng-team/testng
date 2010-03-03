@@ -24,8 +24,11 @@
     </groups>
 -->
     <classes>
-      <class name="test.dataprovider.IteratorParallelTest"/>
+      <class name="test.regression.MyTestngTest2"/>
 <!-- 
+      <class name="test.regression.BeforeTestFailingTest"/>
+      <class name="test.inject.InjectDataProviderTest"/>
+      <class name="test.dataprovider.IteratorParallelTest"/>
       <class name="test.dependent.DepBugSampleTest" />
       <class name="test.dependent.DepBugVerifyTest" />
       <class name="test.methodinterceptors.FooTest" />

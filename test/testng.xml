@@ -101,6 +101,7 @@
       <class name="test.inject.InjectTestContextTest"/>
       <class name="test.inject.InjectBeforeMethodTest"/>
       <class name="test.inject.InjectTestResultTest" />
+      <class name="test.inject.InjectDataProviderTest"/>
     </classes>
   </test>
 

@@ -14,7 +14,12 @@ import org.testng.xml.XmlTest;
 import java.util.Arrays;
 
 public class A implements ITest {
-  
+
+  @Test
+  public A() {
+    System.out.println("Constructor");
+  }
+
   public static void main(String[] args) {
     XmlSuite s = new XmlSuite();
     s.setName("Synthetic suite");

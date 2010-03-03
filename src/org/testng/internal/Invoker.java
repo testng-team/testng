@@ -376,6 +376,7 @@ public class Invoker implements IInvoker {
       }
       else {
         for(Class<?> clazz: m_classInvocationResults.keySet()) {
+//          if (clazz == cls) {
           if(clazz.isAssignableFrom(cls)) {
             result= false;
             break;
@@ -1014,8 +1015,11 @@ public class Invoker implements IInvoker {
 
               } else {
                 while (allParameterValues.hasNext()) {
-                  Object[] parameterValues= allParameterValues.next();
+                  Object[] rawParameterValues= allParameterValues.next();
 
+                  Object[] parameterValues = injectParameters(rawParameterValues,
+                      testMethod.getMethod(), testContext, null /* test result */);
+//                  Object[] parameterValues = rawParameterValues;
 
                   List<ITestResult> tmpResults = Lists.newArrayList();
 
@@ -1127,6 +1131,21 @@ public class Invoker implements IInvoker {
     return result;
     
   } // invokeTestMethod
+
+  private Object[] injectParameters(Object[] parameterValues, Method method,
+      ITestContext context, ITestResult testResult) {
+    List<Object> vResult = Lists.newArrayList();
+    int i = 0;
+    for (Class<?> cls : method.getParameterTypes()) {
+      Object injected = Parameters.getInjectedParameter(cls, method, context, testResult);
+      if (injected != null) {
+        vResult.add(injected);
+      } else {
+        vResult.add(parameterValues[i++]);
+      }
+    }
+    return vResult.toArray(new Object[vResult.size()]);
+  }
 
   private ParameterBag handleParameters(ITestNGMethod testMethod,
       Object instance,
