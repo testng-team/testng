@@ -74,8 +74,7 @@ public class MultiThreadedDependentTest extends SimpleBaseTest {
     Map<Long, Long> map = Helper.getMap(MultiThreadedDependentSampleTest.class.getName());
     synchronized(map) {
       tng.run();
-      Assert.assertTrue(map.size() > 1);
-//      Assert.assertEquals(map.size(), threadCount);
+      Assert.assertTrue(map.size() > 1, "Map size:" + map.size() + " expected more than 1");
       assertOrder(MultiThreadedDependentSampleTest.m_methods);
     }
   }
