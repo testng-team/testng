@@ -12,6 +12,7 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.ClassHelper;
+import org.testng.internal.IConfiguration;
 import org.testng.internal.IResultListener;
 import org.testng.internal.PoolService;
 import org.testng.internal.TestNGGuiceModule;
@@ -121,8 +122,6 @@ public class TestNG {
    * method instead.
    */
   private AnnotationTypeEnum m_defaultAnnotations = VersionInfo.getDefaultAnnotationType(); 
-  
-  protected IAnnotationFinder m_jdkAnnotationFinder;
   
   protected String[] m_includedGroups;
   protected String[] m_excludedGroups;
@@ -466,14 +465,6 @@ public class TestNG {
     m_commandLineTestClasses = classes;
   }
   
-  /**
-   * TODO CQ m_defaultAnnotations is only a default, how can we commit to a specific 
-   * annotation finder?
-   */
-  private IAnnotationFinder getAnnotationFinder() {
-    return m_jdkAnnotationFinder;
-  }
-  
   private List<XmlSuite> createCommandLineSuites(Class[] classes) {
     //
     // See if any of the classes has an xmlSuite or xmlTest attribute.
@@ -693,7 +684,7 @@ public class TestNG {
 
   private IMethodInterceptor m_methodInterceptor = null;
 
-  private Module m_module;
+  private Injector m_injector;
 
   /**
    * Sets the level of verbosity. This value will override the value specified 
@@ -709,7 +700,7 @@ public class TestNG {
 
   private void initializeCommandLineSuites() {
     if(null != m_commandLineTestClasses) {
-      initializeAnnotationFinders();
+      initializeInjector();
       m_cmdlineSuites = createCommandLineSuites(m_commandLineTestClasses);
       for (XmlSuite s : m_cmdlineSuites) {
         m_suites.add(s);
@@ -757,10 +748,9 @@ public class TestNG {
     }
   }
   
-  private void initializeAnnotationFinders() {
-    m_module = new TestNGGuiceModule(getAnnotationTransformer(), m_objectFactory);
-    Injector injector = Guice.createInjector(m_module);
-    m_jdkAnnotationFinder = injector.getInstance(IAnnotationFinder.class);
+  private void initializeInjector() {
+    Module module = new TestNGGuiceModule(getAnnotationTransformer(), m_objectFactory);
+    m_injector = Guice.createInjector(module);
   }
   
   /**
@@ -795,11 +785,12 @@ public class TestNG {
     //
     else {
    	 SuiteDispatcher dispatcher = new SuiteDispatcher(m_masterfileName);
-   	 suiteRunners = dispatcher.dispatch(m_suites, getOutputDirectory(),
-   	     m_jdkAnnotationFinder, getTestListeners());
+   	 suiteRunners = dispatcher.dispatch(m_injector.getInstance(IConfiguration.class),
+   	     m_suites, getOutputDirectory(),
+   	     getTestListeners());
     }
     
-    initializeAnnotationFinders();
+    initializeInjector();
 
     if(null != suiteRunners) {
       generateReports(suiteRunners);
@@ -894,13 +885,11 @@ public class TestNG {
   }
 
   protected SuiteRunner createAndRunSuiteRunners(XmlSuite xmlSuite) {
-    initializeAnnotationFinders();
-    SuiteRunner result = new SuiteRunner(xmlSuite, 
+    initializeInjector();
+    SuiteRunner result = new SuiteRunner(getConfiguration(), xmlSuite, 
         m_outputDir, 
         m_testRunnerFactory, 
         m_useDefaultListeners, 
-        m_jdkAnnotationFinder,
-        m_objectFactory,
         m_methodInterceptor,
         m_invokedMethodListeners);
     result.setSkipFailedInvocationCounts(m_skipFailedInvocationCounts);
@@ -913,6 +902,14 @@ public class TestNG {
 
     result.run();
     return result;
+  }
+
+  private IAnnotationFinder getAnnotationFinder() {
+    return m_injector.getInstance(IAnnotationFinder.class);
+  }
+
+  private IConfiguration getConfiguration() {
+    return m_injector.getInstance(IConfiguration.class);
   }
 
   /**

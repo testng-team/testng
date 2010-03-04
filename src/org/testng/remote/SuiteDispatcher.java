@@ -1,10 +1,5 @@
 package org.testng.remote;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Properties;
-
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestListener;
@@ -12,14 +7,18 @@ import org.testng.ITestResult;
 import org.testng.SuiteRunner;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
+import org.testng.internal.IConfiguration;
 import org.testng.internal.Invoker;
 import org.testng.internal.PropertiesFile;
-import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.remote.adapter.DefaultMastertAdapter;
 import org.testng.remote.adapter.IMasterAdapter;
 import org.testng.remote.adapter.RemoteResultListener;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Dispatches test suits according to the strategy defined.
@@ -94,10 +93,8 @@ public class SuiteDispatcher
 	 * @param testListeners
 	 * @return suites result
 	 */
-	public List<ISuite> dispatch( List<XmlSuite> suites,
-	                              String outputDir,
-	                              IAnnotationFinder jdkAnnotationFinder, 
-	                              List<ITestListener> testListeners){
+	public List<ISuite> dispatch(IConfiguration configuration,
+	    List<XmlSuite> suites, String outputDir, List<ITestListener> testListeners){
 		List<ISuite> result = Lists.newArrayList();
 		try
 		{
@@ -107,7 +104,7 @@ public class SuiteDispatcher
 
 			for (XmlSuite suite : suites) {
 				suite.setVerbose(m_verbose);
-				SuiteRunner suiteRunner = new SuiteRunner(suite, outputDir, jdkAnnotationFinder);
+				SuiteRunner suiteRunner = new SuiteRunner(configuration, suite, outputDir);
 				RemoteResultListener listener = new RemoteResultListener( suiteRunner);
 				if (m_isStrategyTest) {
 					for (XmlTest test : suite.getTests()) {

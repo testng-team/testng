@@ -14,7 +14,9 @@ import org.testng.TestListenerAdapter;
 import org.testng.TestRunner;
 import org.testng.annotations.BeforeMethod;
 import org.testng.internal.DefaultGuiceModule;
-import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.IConfiguration;
+import org.testng.internal.TestNGGuiceModule;
+import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
 import org.testng.xml.XmlClass;
@@ -54,7 +56,7 @@ public class BaseTest extends BaseDistributedTest {
 
   public BaseTest() {
     m_testRunnerFactory= new InternalTestRunnerFactory(this);
-    Module module = new DefaultGuiceModule();
+    Module module = new TestNGGuiceModule(new DefaultAnnotationTransformer(), null);
     m_injector = Guice.createInjector(module);
   }
 
@@ -182,10 +184,8 @@ public class BaseTest extends BaseDistributedTest {
     setFailedButWithinSuccessPercentageTests(new HashMap());
 
     m_suite.setVerbose(0);
-    SuiteRunner suite= new SuiteRunner(m_suite,
-                                       m_outputDirectory,
-                                       m_testRunnerFactory,
-                                       m_injector.getInstance(IAnnotationFinder.class));
+    SuiteRunner suite = new SuiteRunner(m_injector.getInstance(IConfiguration.class),
+        m_suite, m_outputDirectory, m_testRunnerFactory);
 
     suite.run();
   }

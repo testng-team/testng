@@ -28,7 +28,7 @@ public class MAnnotationSampleTest {
 
   @Configuration(beforeTestClass = true, enabled = true)
   public void init() {
-    Module module = new DefaultGuiceModule();
+    Module module = new DefaultGuiceModule(null);
     Injector injector = Guice.createInjector(module);
     m_finder = injector.getInstance(IAnnotationFinder.class);
   }
@@ -217,7 +217,7 @@ public class MAnnotationSampleTest {
 
   public void verifyParameters() throws SecurityException, NoSuchMethodException 
   {
-    Module module = new DefaultGuiceModule();
+    Module module = new DefaultGuiceModule(null);
     Injector injector = Guice.createInjector(module);
     m_finder = injector.getInstance(IAnnotationFinder.class);
     Method method = MTest1.class.getMethod("parameters", new Class[0]);

@@ -20,7 +20,7 @@ public class MAnnotation2SampleTest {
   
   @Configuration(beforeTestClass = true, enabled = true, groups="current")
   public void init() {
-    Module module = new DefaultGuiceModule();
+    Module module = new DefaultGuiceModule(null);
     Injector injector = Guice.createInjector(module);
     m_finder = injector.getInstance(IAnnotationFinder.class);
   }

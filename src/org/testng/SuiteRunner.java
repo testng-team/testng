@@ -4,6 +4,7 @@ package org.testng;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.AnnotationTypeEnum;
+import org.testng.internal.IConfiguration;
 import org.testng.internal.IInvoker;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -17,9 +18,7 @@ import org.testng.xml.XmlTest;
 import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,8 +53,8 @@ public class SuiteRunner implements ISuite, Serializable {
   // The remote host where this suite was run, or null if run locally
   private String m_host;
 
-  // The suite can run in some cases both JAVADOC and JDK5 annotated tests
-  transient private IAnnotationFinder m_jdkAnnotationFinder;
+  // The configuration
+  private IConfiguration m_configuration;
   
   transient private IObjectFactory m_objectFactory;
   transient private Boolean m_skipFailedInvocationCounts = Boolean.FALSE;
@@ -65,56 +64,54 @@ public class SuiteRunner implements ISuite, Serializable {
   
 //  transient private IAnnotationTransformer m_annotationTransformer = null;
 
-  public SuiteRunner(XmlSuite suite, String outputDir, IAnnotationFinder finder) 
+  public SuiteRunner(IConfiguration configuration, XmlSuite suite,
+      String outputDir) 
   {
-    this(suite, outputDir, null, false, finder);
+    this(configuration, suite, outputDir, null);
   }
 
-  public SuiteRunner(XmlSuite suite, String outputDir, 
-      ITestRunnerFactory runnerFactory, IAnnotationFinder finder) 
+  public SuiteRunner(IConfiguration configuration, XmlSuite suite, String outputDir, 
+      ITestRunnerFactory runnerFactory) 
   {
-    this(suite, outputDir, runnerFactory, false, finder);
+    this(configuration, suite, outputDir, runnerFactory, false);
   }
   
-  public SuiteRunner(XmlSuite suite, 
-                     String outputDir, 
-                     ITestRunnerFactory runnerFactory, 
-                     boolean useDefaultListeners,
-                     IAnnotationFinder finder)
+  public SuiteRunner(IConfiguration configuration,
+      XmlSuite suite, 
+      String outputDir, 
+      ITestRunnerFactory runnerFactory, 
+      boolean useDefaultListeners)
   {
-    this(suite, outputDir, runnerFactory, useDefaultListeners, finder, null, null,
-        null);
+    this(configuration, suite, outputDir, runnerFactory, useDefaultListeners, null, null);
   }
   
-  public SuiteRunner(XmlSuite suite, 
-                     String outputDir, 
-                     ITestRunnerFactory runnerFactory, 
-                     boolean useDefaultListeners,
-                     IAnnotationFinder finder,
-                     IObjectFactory factory,
-                     IMethodInterceptor methodInterceptor,
-                     List<IInvokedMethodListener> invokedMethodListener)
+  public SuiteRunner(IConfiguration configuration,
+      XmlSuite suite, 
+      String outputDir, 
+      ITestRunnerFactory runnerFactory, 
+      boolean useDefaultListeners,
+      IMethodInterceptor methodInterceptor,
+      List<IInvokedMethodListener> invokedMethodListener)
   {
-    init(suite, outputDir, runnerFactory, useDefaultListeners, finder, factory,
+    init(configuration, suite, outputDir, runnerFactory, useDefaultListeners,
       methodInterceptor, invokedMethodListener);
   }
   
-  private void init(XmlSuite suite, 
-                    String outputDir, 
-                    ITestRunnerFactory runnerFactory, 
-                    boolean useDefaultListeners,
-                    IAnnotationFinder finder, 
-                    IObjectFactory factory,
-                    IMethodInterceptor methodInterceptor,
-                    List<IInvokedMethodListener> invokedMethodListener)
+  private void init(IConfiguration configuration,
+    XmlSuite suite, 
+    String outputDir, 
+    ITestRunnerFactory runnerFactory, 
+    boolean useDefaultListeners,
+    IMethodInterceptor methodInterceptor,
+    List<IInvokedMethodListener> invokedMethodListener)
   {
+    m_configuration = configuration;
     m_suite = suite;
     m_useDefaultListeners = useDefaultListeners;
     m_tmpRunnerFactory= runnerFactory;
     m_methodInterceptor = methodInterceptor;
-    m_jdkAnnotationFinder = finder;
     setOutputDir(outputDir);
-    m_objectFactory = factory;
+    m_objectFactory = m_configuration.getObjectFactory();
     if(m_objectFactory == null) {
       m_objectFactory = suite.getObjectFactory();
     }
@@ -437,14 +434,13 @@ public class SuiteRunner implements ISuite, Serializable {
    * @param pAnnotationType the annotation type 
    * @return the annotation finder for the given annotation type. 
    */
-  public IAnnotationFinder getAnnotationFinder(String pAnnotationType) 
-  {
+  public IAnnotationFinder getAnnotationFinder(String pAnnotationType) {
     AnnotationTypeEnum annotationType = AnnotationTypeEnum.valueOf(pAnnotationType);
     if (AnnotationTypeEnum.JDK != annotationType) {
       throw new TestNGException("Javadoc annotations are no longer supported. Either" +
-      		" update your tests to JDK annotations or use TestNG 5.11.");
+      " update your tests to JDK annotations or use TestNG 5.11.");
     }
-    return m_jdkAnnotationFinder;
+    return m_configuration.getAnnotationFinder();
   }
 
   public static void ppp(String s) {

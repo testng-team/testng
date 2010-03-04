@@ -4,6 +4,7 @@ import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.internal.Nullable;
 
 import org.testng.IAnnotationTransformer;
 import org.testng.IObjectFactory;
@@ -22,6 +23,7 @@ public class TestNGGuiceModule implements Module {
 
   public void configure(Binder binder) {
     binder.bind(IAnnotationFinder.class).to(JDK15AnnotationFinder.class).in(Singleton.class);
+    binder.bind(IConfiguration.class).to(Configuration.class).in(Singleton.class);
   }
 
   @Provides

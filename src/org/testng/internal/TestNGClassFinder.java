@@ -57,7 +57,8 @@ public class TestNGClassFinder extends BaseClassFinder {
         try {
           if (null != cls) {
             for (Method m : cls.getMethods()) {
-              IAnnotation a = annotationFinder.findAnnotation(m, org.testng.annotations.IObjectFactoryAnnotation.class);
+              IAnnotation a = annotationFinder.findAnnotation(m,
+                  org.testng.annotations.IObjectFactoryAnnotation.class);
               if (null != a) {
                 if (!IObjectFactory.class.isAssignableFrom(m.getReturnType())) {
                   throw new TestNGException("Return type of " + m + " is not IObjectFactory");

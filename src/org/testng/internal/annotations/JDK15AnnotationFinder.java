@@ -1,6 +1,7 @@
 package org.testng.internal.annotations;
 
 import com.google.inject.Inject;
+import com.google.inject.internal.Nullable;
 
 import org.testng.IAnnotationTransformer;
 import org.testng.IAnnotationTransformer2;

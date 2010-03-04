@@ -6,7 +6,8 @@ import org.testng.annotations.Test;
 import test.BaseTest;
 
 public class CombinedTestAndObjectFactoryTest extends BaseTest {
-  @Test void combinedTestAndObjectFactory() {
+  @Test
+  void combinedTestAndObjectFactory() {
     addClass(CombinedTestAndObjectFactorySample.class.getName());
     run();
     verifyTests("Should have passed", new String[]{"isConfigured"}, getPassedTests());
