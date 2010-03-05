@@ -159,7 +159,6 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     
   }; // new IMethodInterceptor
 
-  private List<IInvokedMethodListener> m_invokedMethodListeners;
   private ClassMethodMap m_classMethodMap;
 
   public TestRunner(ISuite suite,
@@ -200,7 +199,6 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     m_host = suite.getHost();
     m_testClassesFromXml= test.getXmlClasses();
     m_skipFailedInvocationCounts = skipFailedInvocationCounts;
-    m_invokedMethodListeners = invokedMethodListeners;
     setVerbose(test.getVerbose());
     
     m_packageNamesFromXml= test.getXmlPackages();    
@@ -211,11 +209,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     }
 
     m_annotationFinder= annotationFinder;
-    m_invoker = 
-      new Invoker(this, this, m_suite.getSuiteState(), 
-        m_annotationFinder, m_skipFailedInvocationCounts,
-        invokedMethodListeners);
-
+    m_invoker = new Invoker(this, this, m_suite.getSuiteState(), m_annotationFinder,
+        m_skipFailedInvocationCounts, invokedMethodListeners);
 
     if (suite.getParallel() != null) {
       log(3, "Running the tests in '" + test.getName() + "' with parallel mode:" + suite.getParallel());
