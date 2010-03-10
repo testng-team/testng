@@ -6,6 +6,7 @@ import org.testng.xml.XmlSuite;
 
 import java.io.File;
 import java.util.*;
+import java.text.SimpleDateFormat;
 
 /**
  * The main entry for the XML generation operation
@@ -112,9 +113,36 @@ public class XMLReporter implements IReporter {
   private Properties getSuiteAttributes(ISuite suite) {
     Properties props = new Properties();
     props.setProperty(XMLReporterConfig.ATTR_NAME, suite.getName());
+
+    Map<String, ISuiteResult> results = suite.getResults();
+    Date minStartDate = new Date();
+    Date maxEndDate = null;
+    // TODO: We could probably optimize this in order not to traverse this twice   
+    for (Map.Entry<String, ISuiteResult> result : results.entrySet()) {
+      Date startDate = result.getValue().getTestContext().getStartDate();
+      Date endDate = result.getValue().getTestContext().getEndDate();
+      if (minStartDate.after(startDate)) {
+        minStartDate = startDate;
+      }
+      if (maxEndDate == null || maxEndDate.before(endDate)) {
+        maxEndDate = endDate;
+      }
+    }
+
+    addDurationAttributes(config, props, minStartDate, maxEndDate);
     return props;
   }
 
+  public static void addDurationAttributes(XMLReporterConfig config, Properties attributes, Date minStartDate, Date maxEndDate) {
+    SimpleDateFormat format = new SimpleDateFormat(config.getTimestampFormat());
+    String startTime = format.format(minStartDate);
+    String endTime = format.format(maxEndDate);
+    long duration = maxEndDate.getTime() - minStartDate.getTime();
+
+    attributes.setProperty(XMLReporterConfig.ATTR_STARTED_AT, startTime);
+    attributes.setProperty(XMLReporterConfig.ATTR_FINISHED_AT, endTime);
+    attributes.setProperty(XMLReporterConfig.ATTR_DURATION_MS, Long.toString(duration));
+  }
 
   private Set<ITestNGMethod> getUniqueMethodSet(Collection<ITestNGMethod> methods) {
     Set<ITestNGMethod> result = new LinkedHashSet<ITestNGMethod>();

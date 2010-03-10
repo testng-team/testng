@@ -84,6 +84,7 @@ public class XMLSuiteResultWriter {
   private Properties getSuiteResultAttributes(ISuiteResult suiteResult) {
     Properties attributes = new Properties();
     attributes.setProperty(XMLReporterConfig.ATTR_NAME, suiteResult.getTestContext().getName());
+    XMLReporter.addDurationAttributes(config, attributes, suiteResult.getTestContext().getStartDate(), suiteResult.getTestContext().getEndDate());
     return attributes;
   }
 
