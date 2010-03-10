@@ -2,6 +2,7 @@ Current:
 
 Removed: Javadoc annotation support
 
+Added: testng-results.xml now includes test duration in the <suite> tag (Cosmin Marginean)
 Added: Injection now works for data providers
 Added: TestNG#setObjectFactory(IObjectFactory)
 Added: Priorities: @Test(priority = -1)

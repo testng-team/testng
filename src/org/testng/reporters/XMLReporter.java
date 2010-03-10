@@ -114,6 +114,7 @@ public class XMLReporter implements IReporter {
     Properties props = new Properties();
     props.setProperty(XMLReporterConfig.ATTR_NAME, suite.getName());
 
+    // Calculate the duration
     Map<String, ISuiteResult> results = suite.getResults();
     Date minStartDate = new Date();
     Date maxEndDate = null;
@@ -133,7 +134,11 @@ public class XMLReporter implements IReporter {
     return props;
   }
 
-  public static void addDurationAttributes(XMLReporterConfig config, Properties attributes, Date minStartDate, Date maxEndDate) {
+  /**
+   * Add started-at, finished-at and duration-ms attributes to the <suite> tag
+   */
+  public static void addDurationAttributes(XMLReporterConfig config, Properties attributes,
+      Date minStartDate, Date maxEndDate) {
     SimpleDateFormat format = new SimpleDateFormat(config.getTimestampFormat());
     String startTime = format.format(minStartDate);
     String endTime = format.format(maxEndDate);
