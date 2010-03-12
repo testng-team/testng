@@ -24,12 +24,9 @@ import org.testng.xml.XmlTest;
 
 /**
  * Utility class for different class manipulations.
- *
- * @author <a href = "mailto:the_mindstorm&#64;evolva.ro">Alex Popescu</a>
  */
 public final class ClassHelper {
   private static final String JUNIT_TESTRUNNER= "org.testng.junit.JUnitTestRunner";
-  private static final String JDK5_ANNOTATIONFINDER_CLASS = "org.testng.internal.annotations.JDK15AnnotationFinder";
 
   /** Hide constructor. */
   private ClassHelper() {
@@ -43,14 +40,15 @@ public final class ClassHelper {
       return instance;
     }
     catch(IllegalAccessException iae) {
-      throw new TestNGException("Class " + clazz.getName() + " does not have a no-args constructor", iae);
+      throw new TestNGException("Class " + clazz.getName()
+          + " does not have a no-args constructor", iae);
     }
     catch(InstantiationException ie) {
       throw new TestNGException("Cannot instantiate class " + clazz.getName(), ie);
     }
     catch(ExceptionInInitializerError eiierr) {
-      throw new TestNGException("An exception occurred in static initialization of class " + clazz.getName(),
-          eiierr);
+      throw new TestNGException("An exception occurred in static initialization of class "
+          + clazz.getName(), eiierr);
     }
     catch(SecurityException se) {
       throw new TestNGException(se);
@@ -176,19 +174,8 @@ public final class ClassHelper {
     }
   }
   
-  public static IAnnotationFinder createJdkAnnotationFinder(IAnnotationTransformer annoTransformer) {
-    try {
-      Class<?> clazz= forName(JDK5_ANNOTATIONFINDER_CLASS);
-      Constructor<?> ctor= clazz.getConstructor(new Class[] {IAnnotationTransformer.class});
-      return (IAnnotationFinder) ctor.newInstance(new Object[] {annoTransformer});
-    }
-    catch(Exception ex) {
-      throw new TestNGException("Cannot create/initialize the JDK5 annotation finder " + JDK5_ANNOTATIONFINDER_CLASS, 
-          ex); 
-    }
-  }
-  
-  private static Set<Method> extractMethods(final Class<?> childClass, final Class<?> clazz, final Set<Method> collected) {
+  private static Set<Method> extractMethods(Class<?> childClass, Class<?> clazz, 
+      Set<Method> collected) {
     Set<Method> methods = new HashSet<Method>();
 
     Method[] declaredMethods = clazz.getDeclaredMethods();
@@ -339,7 +326,8 @@ public final class ClassHelper {
     }
     catch (Throwable cause) {
       // Something else went wrong when running the constructor
-      throw new TestNGException("An error occured while instantiating class " + declaringClass.getName() + ": " + cause.getMessage(), cause);
+      throw new TestNGException("An error occurred while instantiating class "
+          + declaringClass.getName() + ": " + cause.getMessage(), cause);
     }
   
     return result;
@@ -376,7 +364,8 @@ public final class ClassHelper {
 
     for (int i = 0; i < constructors.length; i++) {
       Constructor<?> result = constructors[i];
-      IParametersAnnotation annotation = (IParametersAnnotation) finder.findAnnotation(result, IParametersAnnotation.class);
+      IParametersAnnotation annotation = (IParametersAnnotation)
+          finder.findAnnotation(result, IParametersAnnotation.class);
 
       if (null != annotation) {
         String[] parameters = annotation.getValue();
