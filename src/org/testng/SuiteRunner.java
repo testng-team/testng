@@ -4,6 +4,7 @@ package org.testng;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.AnnotationTypeEnum;
+import org.testng.internal.Attributes;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IInvoker;
 import org.testng.internal.Utils;
@@ -544,14 +545,21 @@ public class SuiteRunner implements ISuite, Serializable {
     }
   }
 
-  private Map<String, Object> m_attributes = Maps.newHashMap();
+  private IAttributes m_attributes = new Attributes();
 
   public Object getAttribute(String name) {
-    return m_attributes.get(name);
+    return m_attributes.getAttribute(name);
   }
 
   public void setAttribute(String name, Object value) {
-    m_attributes.put(name, value);
+    m_attributes.setAttribute(name, value);
   }
 
+  public String[] getAttributeNames() {
+    return m_attributes.getAttributeNames();
+  }
+
+  public Object removeAttribute(String name) {
+    return m_attributes.removeAttribute(name);
+  }
 }

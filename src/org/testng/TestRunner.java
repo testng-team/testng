@@ -3,6 +3,7 @@ package org.testng;
 
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.internal.Attributes;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.Constants;
@@ -49,7 +50,6 @@ import java.util.regex.Pattern;
  * This class takes care of running one Test.
  *
  * @author Cedric Beust, Apr 26, 2004
- * @author <a href = "mailto:the_mindstorm&#64;evolva.ro">Alexandru Popescu</a>
  */
 public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFactory {
   /* generated */
@@ -123,7 +123,6 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   // The host where this test was run, or null if run locally
   private String m_host;
 
-  private Map<String, Object> m_attributes = Maps.newHashMap();
   private IMethodInterceptor m_methodInterceptor = new IMethodInterceptor() {
 
     public List<IMethodInstance> intercept(List<IMethodInstance> methods,
@@ -240,14 +239,6 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
 
   public ITestNGMethod[] getAfterTestConfigurationMethods() {
     return m_afterXmlTestMethods;
-  }
-
-  public Object getAttribute(String name) {
-    return m_attributes.get(name);
-  }
-
-  public void setAttribute(String name, Object value) {
-    m_attributes.put(name, value);
   }
 
   private void init() {
@@ -1481,4 +1472,23 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   public XmlTest getCurrentXmlTest() {
     return m_xmlTest;
   }
+
+  private IAttributes m_attributes = new Attributes();
+
+  public Object getAttribute(String name) {
+    return m_attributes.getAttribute(name);
+  }
+
+  public void setAttribute(String name, Object value) {
+    m_attributes.setAttribute(name, value);
+  }
+
+  public String[] getAttributeNames() {
+    return m_attributes.getAttributeNames();
+  }
+
+  public Object removeAttribute(String name) {
+    return m_attributes.removeAttribute(name);
+  }
+
 } // TestRunner

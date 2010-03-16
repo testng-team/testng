@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import org.testng.IAttributes;
 import org.testng.IClass;
 import org.testng.ITest;
 import org.testng.ITestNGMethod;
@@ -225,14 +226,22 @@ public class TestResult implements ITestResult {
     return m_instance;
   }
 
-  private Map<String, Object> m_attributes = Maps.newHashMap();
+  private IAttributes m_attributes = new Attributes();
 
   public Object getAttribute(String name) {
-    return m_attributes.get(name);
+    return m_attributes.getAttribute(name);
   }
 
   public void setAttribute(String name, Object value) {
-    m_attributes.put(name, value);
+    m_attributes.setAttribute(name, value);
+  }
+
+  public String[] getAttributeNames() {
+    return m_attributes.getAttributeNames();
+  }
+
+  public Object removeAttribute(String name) {
+    return m_attributes.removeAttribute(name);
   }
 
   public int compareTo(ITestResult comparison) {
