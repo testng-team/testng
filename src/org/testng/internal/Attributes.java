@@ -4,6 +4,7 @@ import org.testng.IAttributes;
 import org.testng.collections.Maps;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Simple implementation of IAttributes.
@@ -17,8 +18,8 @@ public class Attributes implements IAttributes {
     return m_attributes.get(name);
   }
 
-  public String[] getAttributeNames() {
-    return m_attributes.keySet().toArray(new String[m_attributes.size()]);
+  public Set<String> getAttributeNames() {
+    return m_attributes.keySet();
   }
 
   public void setAttribute(String name, Object value) {

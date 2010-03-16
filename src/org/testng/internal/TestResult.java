@@ -10,6 +10,7 @@ import org.testng.collections.Maps;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -236,7 +237,7 @@ public class TestResult implements ITestResult {
     m_attributes.setAttribute(name, value);
   }
 
-  public String[] getAttributeNames() {
+  public Set<String> getAttributeNames() {
     return m_attributes.getAttributeNames();
   }
 

@@ -1483,7 +1483,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     m_attributes.setAttribute(name, value);
   }
 
-  public String[] getAttributeNames() {
+  public Set<String> getAttributeNames() {
     return m_attributes.getAttributeNames();
   }
 

@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * <CODE>SuiteRunner</CODE> is responsible for running all the tests included in one
@@ -555,7 +556,7 @@ public class SuiteRunner implements ISuite, Serializable {
     m_attributes.setAttribute(name, value);
   }
 
-  public String[] getAttributeNames() {
+  public Set<String> getAttributeNames() {
     return m_attributes.getAttributeNames();
   }
 

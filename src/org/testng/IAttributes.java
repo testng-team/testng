@@ -1,6 +1,7 @@
 package org.testng;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * A trait that is used by all interfaces that lets the user add or remove their
@@ -20,7 +21,7 @@ public interface IAttributes extends Serializable {
   /**
    * @return all the attributes names.
    */
-  public String[] getAttributeNames();
+  public Set<String> getAttributeNames();
 
   /**
    * Remove the attribute
