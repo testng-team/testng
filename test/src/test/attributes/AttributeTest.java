@@ -24,7 +24,6 @@ public class AttributeTest {
     Object v = ctx.removeAttribute("test");
     Assert.assertNotNull(v);
     ctx.setAttribute("test2", "2");
-    System.out.println(ctx);
   }
 
   @Test(dependsOnMethods = "f1")
