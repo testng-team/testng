@@ -149,7 +149,7 @@ Defines additional groups ("groups of groups") and also which groups to include 
 <!ELEMENT include ANY>
 <!ATTLIST include
     name CDATA #REQUIRED
-    invocationNumbers CDATA #IMPLIED>
+    invocation-numbers CDATA #IMPLIED>
 
 <!-- Defines which groups to exclude from the current group of groups       -->
 <!ELEMENT exclude ANY>

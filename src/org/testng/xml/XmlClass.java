@@ -135,7 +135,7 @@ public class XmlClass implements Serializable, Cloneable {
         Properties p = new Properties();
         p.setProperty("name", m.getName());
         if (m.getInvocationNumbers().size() > 0) {
-          p.setProperty("invocationNumbers", listToString(m.getInvocationNumbers()).toString());
+          p.setProperty("invocation-numbers", listToString(m.getInvocationNumbers()).toString());
         }
         xsb.addEmptyElement("include", p);
       }

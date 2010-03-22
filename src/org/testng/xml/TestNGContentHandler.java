@@ -507,7 +507,7 @@ public class TestNGContentHandler extends DefaultHandler {
     }
     else if ("include".equals(qName)) {
       if (null != m_currentIncludedMethods) {
-        String in = attributes.getValue("invocationNumbers");
+        String in = attributes.getValue("invocation-numbers");
         if (!Utils.isStringEmpty(in)) {
           m_currentIncludedMethods.add(new XmlInclude(name, stringToList(in)));
         } else {
