@@ -46,7 +46,7 @@ public @interface AfterMethod {
    *  <br>
    * For after methods (afterSuite, afterClass, ...): 
    *  If set to true, this configuration method will be run
-   *  even if one or more methods invoked previously failed or
+   *  even if one or more test methods invoked previously failed or
    *  was skipped.
    */
   public boolean alwaysRun() default false;
