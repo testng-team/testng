@@ -901,6 +901,11 @@ public class TestNG {
     result.setTestListeners(m_testListeners);
 
     result.run();
+
+    for (IReporter r : result.getReporters()) {
+      addListener(r);
+    }
+
     return result;
   }
 

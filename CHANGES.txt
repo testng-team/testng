@@ -2,12 +2,13 @@ Current:
 
 Removed: Javadoc annotation support
 
+Added: @Listeners
 Added: IAttributes#getAttributeNames and IAttributes#removeAttribute
 Added: testng-results.xml now includes test duration in the <suite> tag (Cosmin Marginean)
 Added: Injection now works for data providers
 Added: TestNG#setObjectFactory(IObjectFactory)
 Added: Priorities: @Test(priority = -1)
-Added: New attribute invocationNumbers in <include>
+Added: New attribute invocation-numbers in <include>
 Added: testng-failed.xml only contains the data provider invocations that failed
 Added: IInvokedMethodListener2 to have access to ITestContext in listeners (Karthik Krishnan)
 Fixed: @Before methods run from factories were not properly interleaved

@@ -405,7 +405,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     }
   }
 
-  public Collection<ITestClass> getIClass() {
+  public Collection<ITestClass> getTestClasses() {
     return m_classMap.values();
   }
 

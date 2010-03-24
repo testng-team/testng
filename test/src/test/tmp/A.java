@@ -1,6 +1,7 @@
 package test.tmp;
 
-import org.testng.ITest;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
@@ -9,9 +10,12 @@ import org.testng.annotations.Test;
 @Test
 public class A {
 
+  public A() {
+    log("A");
+  }
 
   private void log(String s) {
-    System.out.println("[A]" + s);
+    System.out.println(hashCode() + " [A]" + s);
   }
 
   @DataProvider
@@ -20,12 +24,6 @@ public class A {
       new Object[] { 42 },   
     };
   }
-//  @Override
-//  public boolean equals(Object other) {
-//    if (other == null) return false;
-//    if (other == this) return true;
-//    return ((A) other).m_n == m_n;
-//  }
 
 //  @BeforeClass
 //  public void bc() {
@@ -37,12 +35,24 @@ public class A {
 //    log("afterClass");
 //  }
 
-  public void f1(Integer n) {
-    log("f1 " + n);
+  @BeforeMethod
+  public void bm() {
+    log("BeforeMethod");
+//    throw new RuntimeException();
   }
 
-  public void f2(Integer n) {
-    log("f1 " + n);
+  @AfterMethod
+  public void am() {
+    log("AfterMethod");
+  }
+
+  @Test(dataProvider = "dp")
+  public void f1(Integer n) {
+    log("f1");
+  }
+
+  public void f2() {
+    log("f2");
   }
 
   //  @Test

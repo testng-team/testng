@@ -1,10 +1,11 @@
 package org.testng;
 
-
+import org.testng.annotations.Listeners;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.Attributes;
+import org.testng.internal.ClassHelper;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IInvoker;
 import org.testng.internal.Utils;
@@ -46,7 +47,7 @@ public class SuiteRunner implements ISuite, Serializable {
   private String m_outputDir; // DEFAULT_OUTPUT_DIR;
   private XmlSuite m_suite;
 
-  transient private List<ITestListener> m_testlisteners = Lists.newArrayList();
+  transient private List<ITestListener> m_testListeners = Lists.newArrayList();
   transient private ITestRunnerFactory m_tmpRunnerFactory;
 
   transient private ITestRunnerFactory m_runnerFactory;
@@ -133,7 +134,7 @@ public class SuiteRunner implements ISuite, Serializable {
   }
 
   public void setTestListeners(List<ITestListener> testlisteners) {
-    m_testlisteners = testlisteners;
+    m_testListeners = testlisteners;
   }
 
   public void setReportResults(boolean reportResults) {
@@ -162,20 +163,20 @@ public class SuiteRunner implements ISuite, Serializable {
   }
 
   private void lazyInit() {
-    m_runnerFactory = buildRunnerFactory(m_testlisteners);
+    m_runnerFactory = buildRunnerFactory(m_testListeners);
   }
 
-  protected ITestRunnerFactory buildRunnerFactory(List testListeners) {
+  protected ITestRunnerFactory buildRunnerFactory(List<ITestListener> testListeners) {
     ITestRunnerFactory factory = null;
     
     if (null == m_tmpRunnerFactory) {
       factory = new DefaultTestRunnerFactory(
-          m_testlisteners.toArray(new ITestListener[m_testlisteners.size()]), 
+          m_testListeners.toArray(new ITestListener[m_testListeners.size()]), 
           m_useDefaultListeners, m_skipFailedInvocationCounts);
     }
     else {
       factory = new ProxyTestRunnerFactory(
-          m_testlisteners.toArray(new ITestListener[m_testlisteners.size()]), 
+          m_testListeners.toArray(new ITestListener[m_testListeners.size()]), 
           m_tmpRunnerFactory);
     }
     
@@ -238,7 +239,7 @@ public class SuiteRunner implements ISuite, Serializable {
 
 
       TestRunner tr = m_runnerFactory.newTestRunner(this, test, m_invokedMethodListeners);
-      
+
       //
       // Install the method interceptor, if any was passed
       //
@@ -261,6 +262,32 @@ public class SuiteRunner implements ISuite, Serializable {
 
       for (ITestNGMethod m : tr.getAfterSuiteMethods()) {
         afterSuiteMethods.put(m.getMethod(), m);
+      }
+
+      //
+      // Install listeners found on the classes
+      //
+      for (IClass cls : tr.getTestClasses()) {
+        Listeners l = (Listeners) cls.getRealClass().getAnnotation(Listeners.class);
+        if (l != null) {
+          Class<? extends ITestNGListener>[] classes = l.value();
+          for (Class<? extends ITestNGListener> c : classes) {
+            Object listener = ClassHelper.newInstance(c);
+            if (listener instanceof IMethodInterceptor) {
+              tr.setMethodInterceptor((IMethodInterceptor) listener);
+            } else if (listener instanceof ISuiteListener) {
+              addListener((ISuiteListener) listener);
+            } else if (listener instanceof IInvokedMethodListener) {
+              if (m_invokedMethodListeners == null) m_invokedMethodListeners = Lists.newArrayList();
+              m_invokedMethodListeners.add((IInvokedMethodListener) listener);
+            } else if (listener instanceof ITestListener) {
+              if (m_testListeners == null) m_testListeners = Lists.newArrayList();
+              m_testListeners.add((ITestListener) listener);
+            } else if (listener instanceof IReporter) {
+              addReporter((IReporter) listener);
+            }
+          }
+        }
       }
     }
 
@@ -310,6 +337,16 @@ public class SuiteRunner implements ISuite, Serializable {
               null /* instance */);
       }
     }
+  }
+
+  private List<IReporter> m_reporters = Lists.newArrayList();
+
+  private void addReporter(IReporter listener) {
+    m_reporters.add(listener);
+  }
+
+  public List<IReporter> getReporters() {
+    return m_reporters;
   }
 
   private void runSequentially() {

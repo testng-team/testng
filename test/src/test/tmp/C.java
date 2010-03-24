@@ -1,20 +1,22 @@
 package test.tmp;
 
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class C extends B {
-  @BeforeClass
-  public void beforeC() {
-    System.out.println("Before C");
+  @Test(threadPoolSize = 10, dataProvider = "data") 
+  public void testMethod(Integer val) {
+    System.out.print(Thread.currentThread().getId() + " ");
   }
 
-  @Test
-  public void f() {}
+  @DataProvider(name = "data", parallel = true) 
+  public Object[][] data() { 
+    final ArrayList<Integer[]> resa = new ArrayList<Integer[]>(); 
+    for(int i = 0; i < 1000; i ++) { 
+      resa.add(new Integer[]{i}); 
+    } 
+    return resa.toArray(new Object[1][resa.size()]); 
+  }
 }
