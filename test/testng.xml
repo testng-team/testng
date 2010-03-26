@@ -94,6 +94,7 @@
       <class name="test.testng285.TestNG285Test" />
       <class name="test.failedreporter.FailedReporterTest" />
       <class name="test.attributes.AttributeTest"/>
+      <class name="test.verify.VerifyTest"/>
     </classes>
   </test>
   
