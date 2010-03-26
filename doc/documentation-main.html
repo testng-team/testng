@@ -322,6 +322,22 @@ The name of this DataProvider.
 <td colspan="3">&nbsp;</td>
 </tr>
 
+<tr>
+<td colspan="2"><b><tt>@Listeners</tt></b></td><td><b>Defines listeners on a test class.</b></td></tr>
+<tr>
+  <td></td>
+  <td>
+    <tt>value</tt>
+  </td>
+  <td>
+    An array of classes that extend <tt>org.testng.ITestNGListener</tt>.
+  </td>
+</tr>
+
+<tr>
+<td colspan="3">&nbsp;</td>
+</tr>
+
 <td colspan="2"><b><tt>@Parameters</tt></b></td><td><b>Describes how to pass parameters to a @Test method.</b></td></tr><tr>
 <td>
 </td>
@@ -332,7 +348,6 @@ The name of this DataProvider.
 The list of variables used to fill the parameters of this method.
 </td>
 </tr>
-
 
 <tr>
 <td colspan="3">&nbsp;</td>
@@ -1746,7 +1761,7 @@ public List&lt;IMethodInstance&gt; intercept(List&lt;IMethodInstance&gt; methods
 <a name="testng-listeners">5.18 - TestNG Listeners</a>
 </h4>
 
-There are several interfaces that allow you to modify TestNG's behavior.  These interfaces are broadly called "TestNG Listeners".  Here is a list of the supported listeners:
+There are several interfaces that allow you to modify TestNG's behavior.  These interfaces are broadly called "TestNG Listeners".  Here are a few listeners:
 
 <ul>
   <li><tt>IAnnotationTransformer</tt> (<a href="#annotationtransformers">doc</a>, <a href="../javadocs/org/testng/IAnnotationTransformer.html">javadoc</a>)
@@ -1762,6 +1777,7 @@ When you implement one of these interfaces, you can let TestNG know about it wit
   <li><a href="#running-testng">Using -listener on the command line.</a>
   <li><a href="ant.html">Using &lt;listeners&gt; with ant.</a>
   <li>Using &lt;listeners&gt; in your <tt>testng.xml</tt> file.
+  <li>Using the <tt>@Listeners</tt> annotation on any of your test classes.
 </ul>
 
 Here is how you can define listeners in your <tt>testng.xml</tt> file:
@@ -1777,6 +1793,24 @@ Here is how you can define listeners in your <tt>testng.xml</tt> file:
 ...
 
 </pre>
+
+Or if you prefer to define these listeners in Java:
+
+<pre class="brush: java">
+@Listeners({ com.example.MyListener.class, com.example.MyMethodInterceptor.class })
+public class MyTest {
+  // ...
+}
+</pre>
+
+The <tt>@Listeners</tt> annotation can contain any class that extends
+<tt>org.testng.ITestNGListener</tt> <b>except</b>
+<tt>IAnnotationTransformer</tt> and <tt>IAnnotationTransformer2</tt>.  The reason
+is that these listeners need to be known very early in the process so that TestNG
+can use them to rewrite your annotations, therefore you need to specify these listeners
+in your <tt>testng.xml</tt> file.
+
+
 
 
 <!-------------------------------------
