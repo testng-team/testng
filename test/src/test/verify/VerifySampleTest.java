@@ -1,7 +1,5 @@
 package test.verify;
 
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
@@ -9,7 +7,7 @@ import org.testng.annotations.Test;
  * Illustrate the implementation of a @Verify/@Verifier test.
  * 
  * One method should be annotated with @Verifier and then each test method
- * annotationed with @Verify will be followed with a call to the @Verifier
+ * annotated with @Verify will be followed with a call to the @Verifier
  * method.
  */
 @Listeners(VerifyMethodInterceptor.class)
