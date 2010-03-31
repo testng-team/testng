@@ -1,5 +1,10 @@
 Current:
 
+Added: Passing command line properties via the ant task (Todd Wells)
+
+===========================================================================
+5.12
+
 Removed: Javadoc annotation support
 
 Added: @Listeners
