@@ -677,20 +677,21 @@ public class TestNGAntTask extends Task {
   }
 
   private void delegateCommandSystemProperties() {
-    Project proj = getProject();
-    // iterate over ant_cmd_lin_args and pass them through as sysproperty
-    if (proj.getProperty("ENV.ANT_CMD_LINE_ARGS") != null) {
-      String[] cmdVals = proj.getProperty("ENV.ANT_CMD_LINE_ARGS").split(" ");
-      for (String cmdVal : cmdVals)
-        if (cmdVal.startsWith("-D")) {
-          String propKey = cmdVal.replace("-D", "");
-          String propVal = proj.getProperty(propKey);
-          Environment.Variable var = new Environment.Variable();
-          var.setKey(propKey);
-          var.setValue(propVal);
-          addSysproperty(var);
-        }
-    }
+  	// Iterate over command-line args and pass them through as sysproperty
+  	// exclude any built-in properties that start with "ant."
+  	for (Object propKey : getProject().getUserProperties().keySet()) {
+  		String propName = (String) propKey;
+  		String propVal = getProject().getUserProperty(propName);
+  		if (propName.startsWith("ant.")) {
+  			log("Excluding ant property: " + propName + ": " + propVal, Project.MSG_DEBUG);
+  		}	else {
+  			log("Including user property: " + propName + ": " + propVal, Project.MSG_DEBUG);
+  			Environment.Variable var = new Environment.Variable();
+  			var.setKey(propName);
+  			var.setValue(propVal);
+  			addSysproperty(var);
+  		}
+  	}
   }
 
   private void printDebugInfo(String fileName) {
