@@ -99,8 +99,9 @@ public class XMLReporterConfig {
   private String outputDirectory;
 
   /**
-   * Indicates whether the <code>groups</code> attribute should be generated for a <code>test-method</code> element.
-   * Defaults to false due to the fact that this might be considered reduntant because of the group generation in the
+   * Indicates whether the <code>groups</code> attribute should be generated for
+   * a <code>test-method</code> element. Defaults to false due to the fact that
+   * this might be considered redundant because of the group generation in the
    * suite file.
    */
   private boolean generateGroupsAttribute = false;
