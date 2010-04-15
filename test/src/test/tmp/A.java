@@ -35,56 +35,17 @@ public class A {
 //    log("afterClass");
 //  }
 
-//  @Test(dataProvider = "dp")
-  public void f1(Integer n) {
-    log("f1");
+  @Test(priority = 1)
+  public void ctest1() {
   }
 
-  @Test(expectedExceptions = IllegalArgumentException.class,
-      expectedExceptionsMessageRegExp = "incorrect argument")
-  public void f2() {
-    throw new IllegalArgumentException("val1 is incorrect");
+  @Test(priority = 2)
+  public void btest2() {
   }
 
-  //  @Test
-//  public void f2() {
-//    log("f2");
-//  }
-//  @Test(priority = 1)
-//  public void f1() {
-//  }
-//
-//  @Test(priority = -1)
-//  public void f2() {
-//  }
-//
-//  @Test
-//  public void f3() {
-//  }
-
-  //  @BeforeSuite
-//  public void bs() {
-//    System.out.println("Before suite");
-//  }
-//
-//  @AfterSuite
-//  public void as() {
-//    System.out.println("After suite");
-//  }
-//
-//  @BeforeClass
-//  public void beforeClassA() {
-//  }
-//
-//  @AfterClass
-//  public void afterClassA() {
-//  }
-//
-//  @Test
-//  public void g1() {
-////    throw new RuntimeException();
-//  }
-
+  @Test(priority = 3)
+  public void atest3() {
+  }
 
   public String getTestName() {
     return "This is test A";

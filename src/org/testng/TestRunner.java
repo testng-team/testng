@@ -630,6 +630,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
 //          m_groupMethods, xmlTest);
   
       try {
+        // Sort by priorities
+        Collections.sort(workers);
         runWorkers(workers, xmlTest.getParallel(), ml);
       }
       finally {
@@ -760,6 +762,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
         }
     }
 
+    // Sort by priorities
     Collections.sort(result);
     return result;
   }
