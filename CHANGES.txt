@@ -1,6 +1,7 @@
 Current:
 
 Added: Passing command line properties via the ant task (Todd Wells)
+Fixed: @Listeners wasn't working properly with ITestListener
 
 ===========================================================================
 5.12

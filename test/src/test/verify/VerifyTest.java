@@ -27,4 +27,15 @@ public class VerifyTest extends SimpleBaseTest {
   public void verifyWithoutAnnotation() {
     runTest(VerifyNoListenersSampleTest.class, 3);
   }
+
+  @Test
+  public void verifyTestListener() {
+    TestNG tng = create(Verify2SampleTest.class);
+    TestListenerAdapter tla = new TestListenerAdapter();
+    tng.addListener(tla);
+
+    Assert.assertEquals(VerifyTestListener.m_count, 0);
+    tng.run();
+    Assert.assertEquals(VerifyTestListener.m_count, 1);
+  }
 }

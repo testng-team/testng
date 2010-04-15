@@ -6,13 +6,13 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
-@Parameters({"n"})
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+
 @Test
 public class A {
-
-  public A() {
-    log("A");
-  }
 
   private void log(String s) {
     System.out.println(hashCode() + " [A]" + s);
@@ -35,24 +35,15 @@ public class A {
 //    log("afterClass");
 //  }
 
-  @BeforeMethod
-  public void bm() {
-    log("BeforeMethod");
-//    throw new RuntimeException();
-  }
-
-  @AfterMethod
-  public void am() {
-    log("AfterMethod");
-  }
-
-  @Test(dataProvider = "dp")
+//  @Test(dataProvider = "dp")
   public void f1(Integer n) {
     log("f1");
   }
 
+  @Test(expectedExceptions = IllegalArgumentException.class,
+      expectedExceptionsMessageRegExp = "incorrect argument")
   public void f2() {
-    log("f2");
+    throw new IllegalArgumentException("val1 is incorrect");
   }
 
   //  @Test

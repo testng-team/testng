@@ -281,8 +281,10 @@ public class SuiteRunner implements ISuite, Serializable {
               if (m_invokedMethodListeners == null) m_invokedMethodListeners = Lists.newArrayList();
               m_invokedMethodListeners.add((IInvokedMethodListener) listener);
             } else if (listener instanceof ITestListener) {
-              if (m_testListeners == null) m_testListeners = Lists.newArrayList();
-              m_testListeners.add((ITestListener) listener);
+              // At this point, the field m_testListeners has already been used in the creation
+              // of the TestRunner factory, so there is no point in adding the listener
+              // to it. Instead, just add the listener to the TestRunner directly.
+              tr.addTestListener((ITestListener) listener);
             } else if (listener instanceof IReporter) {
               addReporter((IReporter) listener);
             }
@@ -301,7 +303,6 @@ public class SuiteRunner implements ISuite, Serializable {
         invoker.invokeConfigurations(null,
             beforeSuiteMethods.values().toArray(new ITestNGMethod[beforeSuiteMethods.size()]),
             m_suite, m_suite.getParameters(), null, /* no parameter values */
-
             null /* instance */
         );
       }
