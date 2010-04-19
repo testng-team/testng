@@ -1,18 +1,10 @@
 package org.testng.internal;
 
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import org.testng.IAnnotationTransformer;
 import org.testng.IClass;
 import org.testng.IMethodSelector;
 import org.testng.IObjectFactory;
+import org.testng.ITestNGListener;
 import org.testng.TestNGException;
 import org.testng.TestRunner;
 import org.testng.annotations.IAnnotation;
@@ -21,6 +13,14 @@ import org.testng.annotations.IParametersAnnotation;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.junit.IJUnitTestRunner;
 import org.testng.xml.XmlTest;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Utility class for different class manipulations.
@@ -32,7 +32,7 @@ public final class ClassHelper {
   private ClassHelper() {
     // Hide Constructor
   }
-  
+
   public static <T> T newInstance(Class<T> clazz) {
     try {
       T instance = clazz.newInstance();

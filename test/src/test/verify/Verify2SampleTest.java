@@ -1,6 +1,7 @@
 package test.verify;
 
-import org.testng.annotations.BeforeClass;
+import org.testng.ITestNGListener;
+import org.testng.ITestNGListenerFactory;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
@@ -12,7 +13,7 @@ import org.testng.annotations.Test;
  * method.
  */
 @Listeners(VerifyTestListener.class)
-public class Verify2SampleTest {
+public class Verify2SampleTest implements ITestNGListenerFactory {
 
   @Verify
   @Test
@@ -36,5 +37,10 @@ public class Verify2SampleTest {
     if (false) {
       System.out.println(string);
     }
+  }
+
+  public ITestNGListener createListener(Class<? extends ITestNGListener> listenerClass) {
+    System.out.println("Creating a listener of type " + listenerClass);
+    return null;
   }
 }

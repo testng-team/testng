@@ -19,6 +19,7 @@ import org.testng.internal.TestNGGuiceModule;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.Sets;
 import org.testng.internal.version.VersionInfo;
 import org.testng.log4testng.Logger;
 import org.testng.remote.SuiteDispatcher;
@@ -48,6 +49,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -134,7 +136,7 @@ public class TestNG {
   // These listeners can be overridden from the command line
   protected List<ITestListener> m_testListeners = Lists.newArrayList();
   protected List<ISuiteListener> m_suiteListeners = Lists.newArrayList();
-  private List<IReporter> m_reporters = Lists.newArrayList();
+  private Set<IReporter> m_reporters = Sets.newHashSet();
 
   public static final int HAS_FAILURE = 1;
   public static final int HAS_SKIPPED = 2;
@@ -663,7 +665,7 @@ public class TestNG {
     m_invokedMethodListeners.add(listener);
   }
   
-  public List<IReporter> getReporters() {
+  public Set<IReporter> getReporters() {
     return m_reporters;
   }
   
@@ -736,15 +738,20 @@ public class TestNG {
       }
     }
   }
-  
+  private void addReporter(Class<? extends IReporter> r) {
+    if (! m_reporters.contains(r)) {
+      m_reporters.add(ClassHelper.newInstance(r));
+    }
+  }
+
   private void initializeListeners() {
     m_testListeners.add(new ExitCodeListener(this));
     
-    if(m_useDefaultListeners) {
-      m_reporters.add(new SuiteHTMLReporter());
-      m_reporters.add(new FailedReporter());
-      m_reporters.add(new XMLReporter());
-      m_reporters.add(new EmailableReporter());
+    if (m_useDefaultListeners) {
+      addReporter(SuiteHTMLReporter.class);
+      addReporter(FailedReporter.class);
+      addReporter(XMLReporter.class);
+      addReporter(EmailableReporter.class);
     }
   }
   

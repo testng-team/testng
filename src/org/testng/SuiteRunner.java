@@ -10,6 +10,7 @@ import org.testng.internal.IInvoker;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IListeners;
+import org.testng.internal.annotations.Sets;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
@@ -20,6 +21,7 @@ import org.testng.xml.XmlTest;
 import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -265,32 +267,65 @@ public class SuiteRunner implements ISuite, Serializable {
       }
 
       //
-      // Install listeners found on the classes
+      // Find all the listener factories and collect all the listeners requested in a
+      // @Listeners annotation.
       //
+      List<Class<? extends ITestNGListener>> listenerClasses = Lists.newArrayList();
+      Class<? extends ITestNGListenerFactory> listenerFactoryClass = null;
+
       for (IClass cls : tr.getTestClasses()) {
         IAnnotationFinder finder = m_configuration.getAnnotationFinder();
-        IListeners l = (IListeners) finder.findAnnotation(cls.getRealClass(), IListeners.class);
-//        Listeners l = (Listeners) cls.getRealClass().getAnnotation(Listeners.class);
-        if (l != null) {
-          Class<? extends ITestNGListener>[] classes = l.getValue();
-          for (Class<? extends ITestNGListener> c : classes) {
-            Object listener = ClassHelper.newInstance(c);
-            if (listener instanceof IMethodInterceptor) {
-              tr.setMethodInterceptor((IMethodInterceptor) listener);
-            } else if (listener instanceof ISuiteListener) {
-              addListener((ISuiteListener) listener);
-            } else if (listener instanceof IInvokedMethodListener) {
-              if (m_invokedMethodListeners == null) m_invokedMethodListeners = Lists.newArrayList();
-              m_invokedMethodListeners.add((IInvokedMethodListener) listener);
-            } else if (listener instanceof ITestListener) {
-              // At this point, the field m_testListeners has already been used in the creation
-              // of the TestRunner factory, so there is no point in adding the listener
-              // to it. Instead, just add the listener to the TestRunner directly.
-              tr.addTestListener((ITestListener) listener);
-            } else if (listener instanceof IReporter) {
-              addReporter((IReporter) listener);
-            }
+        Class<? extends ITestNGListenerFactory> realClass = cls.getRealClass();
+        IListeners l = (IListeners) finder.findAnnotation(realClass, IListeners.class);
+        if (ITestNGListenerFactory.class.isAssignableFrom(realClass)) {
+          if (listenerFactoryClass == null) {
+            listenerFactoryClass = realClass;
           }
+          else {
+            throw new TestNGException("Found more than one class implementing" +
+            		"ITestNGListenerFactory:" + realClass + " and " + listenerFactoryClass);
+          }
+        }
+        if (l != null) {
+          listenerClasses.addAll(Arrays.asList(l.getValue()));
+        }
+      }
+
+      //
+      // Now we have all the listeners collected from @Listeners and at most one
+      // listener factory collected from a class implementing ITestNGListenerFactory.
+      // Instantiate all the requested listeners.
+      //
+      ITestNGListenerFactory listenerFactory = null;
+   
+      // If we found a test listener factory, instantiate it.
+      try {
+        listenerFactory = listenerFactoryClass != null ? listenerFactoryClass.newInstance() : null;
+      }
+      catch(Exception ex) {
+        throw new TestNGException("Couldn't instantiate the ITestNGListenerFactory: "
+            + ex.getMessage());
+      }
+
+      // Instantiate all the listeners
+      for (Class<? extends ITestNGListener> c : listenerClasses) {
+        Object listener = listenerFactory != null ? listenerFactory.createListener(c) : null;
+        if (listener == null) listener = ClassHelper.newInstance(c);
+
+        if (listener instanceof IMethodInterceptor) {
+          tr.setMethodInterceptor((IMethodInterceptor) listener);
+        } else if (listener instanceof ISuiteListener) {
+          addListener((ISuiteListener) listener);
+        } else if (listener instanceof IInvokedMethodListener) {
+          if (m_invokedMethodListeners == null) m_invokedMethodListeners = Lists.newArrayList();
+          m_invokedMethodListeners.add((IInvokedMethodListener) listener);
+        } else if (listener instanceof ITestListener) {
+          // At this point, the field m_testListeners has already been used in the creation
+          // of the TestRunner factory, so there is no point in adding the listener
+          // to it. Instead, just add the listener to the TestRunner directly.
+          tr.addTestListener((ITestListener) listener);
+        } else if (listener instanceof IReporter) {
+          addReporter((IReporter) listener);
         }
       }
     }
