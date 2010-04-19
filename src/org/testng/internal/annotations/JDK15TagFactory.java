@@ -24,6 +24,7 @@ import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IObjectFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.testng.collections.Maps;
@@ -69,6 +70,9 @@ public class JDK15TagFactory {
       }
       else if (annotationClass == ITestAnnotation.class) {      
         result = createTestTag(cls, a, transformer);
+      }
+      else if (annotationClass == IListeners.class) {
+        result = createListenersTag(cls, a, transformer);
       }
       else if (annotationClass == IBeforeSuite.class || annotationClass == IAfterSuite.class || 
           annotationClass == IBeforeTest.class || annotationClass == IAfterTest.class ||
@@ -343,7 +347,18 @@ public class JDK15TagFactory {
     
     return result;
   }
-  
+
+  @SuppressWarnings({"deprecation"})
+  private IAnnotation createListenersTag(Class<?> cls, Annotation a, 
+      IAnnotationTransformer transformer) 
+  {
+    ListenersAnnotation result = new ListenersAnnotation();
+    Listeners l = (Listeners) a;
+    result.setValue(l.value());
+
+    return result;
+  }
+
   @SuppressWarnings({"deprecation"})
   private IAnnotation createTestTag(Class<?> cls, Annotation a, 
       IAnnotationTransformer transformer) 

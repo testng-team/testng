@@ -1,7 +1,6 @@
 package org.testng.internal.annotations;
 
 import com.google.inject.Inject;
-import com.google.inject.internal.Nullable;
 
 import org.testng.IAnnotationTransformer;
 import org.testng.IAnnotationTransformer2;
@@ -27,6 +26,7 @@ import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IObjectFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
@@ -70,6 +70,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     m_annotationMap.put(IAfterGroups.class, AfterGroups.class);
     m_annotationMap.put(IBeforeMethod.class, BeforeMethod.class);
     m_annotationMap.put(IAfterMethod.class, AfterMethod.class);
+    m_annotationMap.put(IListeners.class, Listeners.class);
   }
 
   private Annotation findAnnotationInSuperClasses(Class cls, Class a) {
@@ -131,6 +132,9 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   
   public IAnnotation findAnnotation(Class cls, Class annotationClass) {
     Class a = m_annotationMap.get(annotationClass);
+    if (a == null) {
+      throw new AssertionError("Class " + annotationClass + " doesn't have an IAnnotation");
+    }
     IAnnotation result =
       findAnnotation(cls, findAnnotationInSuperClasses(cls, a), annotationClass,
           cls, null, null);

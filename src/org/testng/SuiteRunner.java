@@ -1,6 +1,5 @@
 package org.testng;
 
-import org.testng.annotations.Listeners;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.AnnotationTypeEnum;
@@ -10,6 +9,7 @@ import org.testng.internal.IConfiguration;
 import org.testng.internal.IInvoker;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.IListeners;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
@@ -268,9 +268,11 @@ public class SuiteRunner implements ISuite, Serializable {
       // Install listeners found on the classes
       //
       for (IClass cls : tr.getTestClasses()) {
-        Listeners l = (Listeners) cls.getRealClass().getAnnotation(Listeners.class);
+        IAnnotationFinder finder = m_configuration.getAnnotationFinder();
+        IListeners l = (IListeners) finder.findAnnotation(cls.getRealClass(), IListeners.class);
+//        Listeners l = (Listeners) cls.getRealClass().getAnnotation(Listeners.class);
         if (l != null) {
-          Class<? extends ITestNGListener>[] classes = l.value();
+          Class<? extends ITestNGListener>[] classes = l.getValue();
           for (Class<? extends ITestNGListener> c : classes) {
             Object listener = ClassHelper.newInstance(c);
             if (listener instanceof IMethodInterceptor) {

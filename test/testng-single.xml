@@ -25,7 +25,7 @@
     </groups>
 -->
     <classes>
-      <class name="test.priority.Priority2SampleTest"/>
+      <class name="test.verify.VerifyTest"/>
 <!-- 
       <class name="test.priority.PriorityTest"/>
       <class name="test.objectfactory.CombinedTestAndObjectFactoryTest" />

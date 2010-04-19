@@ -31,10 +31,15 @@ public class VerifyTest extends SimpleBaseTest {
   @Test
   public void verifyTestListener() {
     TestNG tng = create(Verify2SampleTest.class);
-    TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener(tla);
+    VerifyTestListener.m_count = 0;
+    tng.run();
+    Assert.assertEquals(VerifyTestListener.m_count, 1);
+  }
 
-    Assert.assertEquals(VerifyTestListener.m_count, 0);
+  @Test
+  public void verifyBaseClassTestListener() {
+    TestNG tng = create(Verify3SampleTest.class);
+    VerifyTestListener.m_count = 0;
     tng.run();
     Assert.assertEquals(VerifyTestListener.m_count, 1);
   }
