@@ -1,25 +1,25 @@
+=====
 Maven
+=====
 
-If you ran the full dist build, it should have generated a file on your hard drive called "testng-5.10-bundle.jar" ... you should be able to just upload that bundle here:
+If you ran the full dist build, it should have generated a file on your hard drive called
+"testng-5.12-bundle.jar".
 
-http://jira.codehaus.org/secure/CreateIssue.jspa?pid=10367&issuetype=5
+Testing:
 
-Here's an example of the one we did for TestNG 5.9
-http://jira.codehaus.org/browse/MAVENUPLOAD-2502
+-> Update <version>5.12</version> in bundle-pom.xml to the correct version
+  mvn install:install-file -DpomFile=bundle-pom.xml -Dfile=testng-5.12.jar
+  cd /tmp
+  svn co http://svn.apache.org/repos/asf/maven/surefire/trunk/surefire-integration-tests/src/test/resources/testng-simple/
+  cd testng-simple
+-> Update <testNgVersion> in pom.xml to the correct version
+-> Remove <classifier> in pom.xml if it's still there
+  mvn -DtestNgVersion=5.12 -Dsurefire.version=2.5 clean test
+-> Send bundle to Brett Porter <brett.porter@gmail.com>
 
-5.11:
-http://jira.codehaus.org/browse/MAVENUPLOAD-2689
-
-Summary: TestNG 5.10
-Bundle URL: Attached
-Attachment: (uploaded bundle)
-Project URL: http://www.testng.org
-Contributor URL: http://code.google.com/p/testng/
-
-Description: TestNG 5.9. I'm a developer of TestNG (DanFabulich)
-
-===
+=======
 Eclipse
+=======
 
 I ended up doing the launch configuration, and just for information, here are the parameters:
 
