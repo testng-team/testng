@@ -92,4 +92,5 @@ public interface ISuite extends IAttributes {
    */
   public XmlSuite getXmlSuite();
 
+  public void addListener(ITestNGListener listener);
 }

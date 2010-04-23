@@ -1,5 +1,6 @@
 Current:
 
+Added: ITestNGListenerFactory
 Added: Passing command line properties via the ant task (Todd Wells)
 Fixed: @Listeners now works on base classes as well
 Fixed: Test priorities were not working properly in non-parallel mode

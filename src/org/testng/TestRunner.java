@@ -26,6 +26,7 @@ import org.testng.internal.TestNGMethodFinder;
 import org.testng.internal.Utils;
 import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.IListeners;
 import org.testng.internal.annotations.Sets;
 import org.testng.internal.thread.GroupThreadPoolExecutor;
 import org.testng.internal.thread.ThreadUtil;
@@ -35,6 +36,7 @@ import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -159,6 +161,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   }; // new IMethodInterceptor
 
   private ClassMethodMap m_classMethodMap;
+  private TestNGClassFinder m_testClassFinder;
 
   public TestRunner(ISuite suite,
                     XmlTest test,
@@ -251,7 +254,78 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       initMethods();
     }
 
+    initListeners();
     addConfigurationListener(m_confListener);
+  }
+
+  private void initListeners() {
+    //
+    // Find all the listener factories and collect all the listeners requested in a
+    // @Listeners annotation.
+    //
+    List<Class<? extends ITestNGListener>> listenerClasses = Lists.newArrayList();
+    Class<? extends ITestNGListenerFactory> listenerFactoryClass = null;
+
+    for (IClass cls : getTestClasses()) {
+      IAnnotationFinder finder = m_annotationFinder;
+      Class<? extends ITestNGListenerFactory> realClass = cls.getRealClass();
+      IListeners l = (IListeners) finder.findAnnotation(realClass, IListeners.class);
+      if (ITestNGListenerFactory.class.isAssignableFrom(realClass)) {
+        if (listenerFactoryClass == null) {
+          listenerFactoryClass = realClass;
+        }
+        else {
+          throw new TestNGException("Found more than one class implementing" +
+              "ITestNGListenerFactory:" + realClass + " and " + listenerFactoryClass);
+        }
+      }
+      if (l != null) {
+        listenerClasses.addAll(Arrays.asList(l.getValue()));
+      }
+    }
+
+    //
+    // Now we have all the listeners collected from @Listeners and at most one
+    // listener factory collected from a class implementing ITestNGListenerFactory.
+    // Instantiate all the requested listeners.
+    //
+    ITestNGListenerFactory listenerFactory = null;
+ 
+    // If we found a test listener factory, instantiate it.
+    try {
+      if (m_testClassFinder != null) {
+        IClass ic = m_testClassFinder.getIClass(listenerFactoryClass);
+        if (ic != null) {
+          listenerFactory = (ITestNGListenerFactory) ic.getInstances(false)[0];
+        }
+      }
+      if (listenerFactory == null) {
+        listenerFactory = listenerFactoryClass != null ? listenerFactoryClass.newInstance() : null;
+      }
+    }
+    catch(Exception ex) {
+      throw new TestNGException("Couldn't instantiate the ITestNGListenerFactory: "
+          + ex);
+    }
+
+    // Instantiate all the listeners
+    for (Class<? extends ITestNGListener> c : listenerClasses) {
+      Object listener = listenerFactory != null ? listenerFactory.createListener(c) : null;
+      if (listener == null) listener = ClassHelper.newInstance(c);
+
+      if (listener instanceof IMethodInterceptor) {
+        setMethodInterceptor((IMethodInterceptor) listener);
+      } else if (listener instanceof ISuiteListener) {
+        addListener((ISuiteListener) listener);
+      } else if (listener instanceof IInvokedMethodListener) {
+        m_suite.addListener((ITestNGListener) listener);
+      } else if (listener instanceof ITestListener) {
+        // At this point, the field m_testListeners has already been used in the creation
+        addTestListener((ITestListener) listener);
+      } else if (listener instanceof IReporter) {
+        m_suite.addListener((ITestNGListener) listener);
+      }
+    }
   }
 
   /**
@@ -302,7 +376,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     List<ITestNGMethod> beforeXmlTestMethods = Lists.newArrayList();
     List<ITestNGMethod> afterXmlTestMethods = Lists.newArrayList();
 
-    ITestClassFinder testClassFinder= new TestNGClassFinder(Utils.xmlClassesToClasses(m_testClassesFromXml),
+    m_testClassFinder= new TestNGClassFinder(Utils.xmlClassesToClasses(m_testClassesFromXml),
                                              null,
                                              m_xmlTest,
                                              m_annotationFinder,
@@ -315,7 +389,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     //
     // Initialize TestClasses
     //
-    IClass[] classes = testClassFinder.findTestClasses();
+    IClass[] classes = m_testClassFinder.findTestClasses();
     
     for (IClass ic : classes) {
 

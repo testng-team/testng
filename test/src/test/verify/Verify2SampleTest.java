@@ -15,6 +15,8 @@ import org.testng.annotations.Test;
 @Listeners(VerifyTestListener.class)
 public class Verify2SampleTest implements ITestNGListenerFactory {
 
+  public Verify2SampleTest() {}
+
   @Verify
   @Test
   public void f1() {
@@ -35,12 +37,12 @@ public class Verify2SampleTest implements ITestNGListenerFactory {
 
   private void log(String string) {
     if (false) {
-      System.out.println(string);
+      System.out.println(hashCode() + " " + string);
     }
   }
 
   public ITestNGListener createListener(Class<? extends ITestNGListener> listenerClass) {
-    System.out.println("Creating a listener of type " + listenerClass);
+    log("Creating a listener of type " + listenerClass);
     return null;
   }
 }

@@ -39,7 +39,7 @@ public class A {
   public void ctest1() {
   }
 
-  @Test(priority = 2)
+  @Test(priority = 2, groups = "group1")
   public void btest2() {
   }
 
