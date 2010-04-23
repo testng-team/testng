@@ -84,10 +84,15 @@ TESTNG.REPORT.DIR=${testng.report.dir}
   <target name="run:single" description="Run 1 property file named with the ant property test" depends="compile">
       <echo message="                                 -- testng-tests-run1 --"/>
 
-      <testng outputdir="${testng.report.dir}"
-              classpathref="run.cp">
-          <xmlfileset dir="${test15.dir}" includes="testng-single.xml"/>
-      </testng>
+    <testng outputdir="${testng.report.dir}"
+        classpathref="run.cp"
+        useDefaultListeners="false"
+        outputDir="${testng.report.dir}">
+      <reporter classname="org.testng.reporters.XMLReporter">
+        <property name="generateGroupsAttribute" value="true" />
+      </reporter>
+      <xmlfileset dir="${test15.dir}" includes="testng-single.xml"/>
+    </testng>
 
       <echo>Report created in ${testng.report.dir}</echo>
   </target>
@@ -102,9 +107,9 @@ TESTNG.REPORT.DIR=${testng.report.dir}
 		<echo message="                                 -- testng-tests-run --"/>
 		<echo message="using: ${testng.conf}.xml"/>
 
-		<testng classpathref="run.cp"
-            outputDir="${testng.report.dir}">
-			<xmlfileset dir="${test15.dir}" includes="${testng.conf}.xml"/>
+    <testng classpathref="run.cp"
+		        outputDir="${testng.report.dir}">
+		    <xmlfileset dir="${test15.dir}" includes="${testng.conf}.xml"/>
 		</testng>
 
 		<antcall target="clean.tmp"/>
