@@ -222,13 +222,35 @@
     <jar destfile="${build.maven-bundle.dir}/${sources.testng.jar}">
       <fileset dir="src" />
     </jar>
+
+    <exec executable="gpg">
+      <arg value="--yes" />
+      <arg value="-ab" />
+      <arg value="${testng.jar}" />
+    </exec>
+
+    <exec executable="gpg">
+      <arg value="--yes" />
+      <arg value="-ab" />
+      <arg value="${build.maven-bundle.dir}/pom.xml" />
+    </exec>
+
+    <exec executable="gpg">
+      <arg value="--yes" />
+      <arg value="-ab" />
+      <arg value="${build.maven-bundle.dir}/${sources.testng.jar}" />
+    </exec>
+
     <jar destfile="${testng.maven-bundle}">
       <fileset file="${build.maven-bundle.dir}/pom.xml" />
-      <fileset file="${testng.jar}" />
       <fileset file="${build.maven-bundle.dir}/${sources.testng.jar}" />
+      <fileset file="${build.maven-bundle.dir}/*asc" />
+      <fileset file="${testng.jar}" />
+      <fileset file="${testng.jar}.asc" />
     </jar>
   </target>
-  
+
+
   <target name="dist-prepare" depends="update-readme">
     <delete file="{other.jars.dir}/${testng.nobsh.jar}" />
     <mkdir dir="${other.jars.dir}" />

@@ -8,17 +8,13 @@ If you ran the full dist build, it should have generated a file on your hard dri
 Testing:
 
 -> Update <version>5.12</version> in bundle-pom.xml to the correct version
-  mvn install:install-file -DpomFile=bundle-pom.xml -Dfile=testng-5.12.jar
+  mvn install:install-file -DpomFile=bundle-pom.xml -Dfile=testng-5.12.1.jar
   cd /tmp
   svn co http://svn.apache.org/repos/asf/maven/surefire/trunk/surefire-integration-tests/src/test/resources/testng-simple/
   cd testng-simple
 -> Update <testNgVersion> in pom.xml to the correct version
 -> Remove <classifier> in pom.xml if it's still there
-  mvn -DtestNgVersion=5.12 -Dsurefire.version=2.5 clean test
-  gpg testng-5.12.jar
-  gpg build/maven-bundle/testng-5.12-sources.jar
-  jar uf testng-5.12-bundle.jar testng-5.12.jar.asc
-  (cd build/maven-bundle; jar uf ../../testng-5.12-bundle.jar testng-5.12-sources.jar.asc)
+  mvn -DtestNgVersion=5.12.1 -Dsurefire.version=2.5 clean test
 -> Send bundle to Brett Porter <brett.porter@gmail.com>
 
 =======
