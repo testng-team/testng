@@ -12,7 +12,7 @@
     <groupId>org.testng</groupId>
     <artifactId>testng</artifactId>
     <name>TestNG</name>
-    <version>5.12</version>
+    <version>5.12.1</version>
     <description>TestNG is a testing framework inspired from JUnit and NUnit but introducing some new functionalities that make it more powerful and easier to use.</description>
     <url>http://testng.org</url>
     
@@ -48,7 +48,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-          <groupId>com.google.code.guice</groupId>
+          <groupId>com.google.inject</groupId>
            <artifactId>guice</artifactId>
            <version>2.0</version>
            <scope>provided</scope>
