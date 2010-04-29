@@ -440,17 +440,22 @@ public class Invoker implements IInvoker {
 
       runInvokedMethodListeners(true /* before */, im, testResult);
       m_notifier.addInvokedMethod(im);
-
+      boolean confMethodFailed = true;
       try {
         Reporter.setCurrentTestResult(testResult);
         MethodHelper.invokeMethod(tm.getMethod(), targetInstance, params);
+        //using this to avoid catching exception
+        confMethodFailed = false;
         // Only run the method once if it's @BeforeSuite or @AfterSuite
         if (isSuite) break;
-      } 
+      }
       finally {
+        if (confMethodFailed) {
+           testResult.setStatus(ITestResult.FAILURE);;
+        }
         Reporter.setCurrentTestResult(testResult);
         runInvokedMethodListeners(false /* after */, im, testResult);
-      }      
+      }    
     }
   }
 

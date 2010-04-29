@@ -2,9 +2,16 @@ Current:
 
 Added: ITestNGListenerFactory
 Added: Passing command line properties via the ant task (Todd Wells)
+Fixed: Exceptions thrown by IInvokedMethodListeners were not caught (Nalin Makar)
 Fixed: @Listeners now works on base classes as well
 Fixed: Test priorities were not working properly in non-parallel mode
 Fixed: @Listeners wasn't working properly with ITestListener
+
+===========================================================================
+
+5.12.1
+
+Maven update
 
 ===========================================================================
 5.12
