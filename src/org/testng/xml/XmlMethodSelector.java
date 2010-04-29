@@ -74,20 +74,16 @@ public class XmlMethodSelector {
 
     xsb.push("method-selector");
     
-    ppp("CLASSNAME:" + m_className);
-    
     if (null != m_className) {
       Properties clsProp = new Properties();
       clsProp.setProperty("name", getClassName());
       if(getPriority() != -1) {
-        ppp("SETTING PRIORITY:" + getPriority());
         clsProp.setProperty("priority", String.valueOf(getPriority()));
       }
       xsb.addEmptyElement("selector-class", clsProp);
     }
     else if (getLanguage() != null) {
       Properties scriptProp = new Properties();
-      ppp("LANGUAGE:" + getLanguage());
       scriptProp.setProperty("language", getLanguage());
       xsb.push("script", scriptProp);
       xsb.addCDATA(getExpression());
