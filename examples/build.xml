@@ -17,7 +17,7 @@
    <!-- Compile                                                              -->
    <!-- ==================================================================== -->
    <path id="compile.cp">
-      <pathelement location="${jdk15.testng.jar}"/>
+      <pathelement location="${testng.jar}"/>
    </path>
 
    <target name="compile"
@@ -45,7 +45,7 @@
    <!-- ==================================================================== -->
 
    <path id="run.cp">
-      <pathelement location="${jdk15.testng.jar}" />
+      <pathelement location="${testng.jar}" />
       <path refid="compile.cp"/>
       <pathelement location="${example.dir}/build/classes"/>
    </path>
