@@ -2,6 +2,7 @@ Current:
 
 Added: ITestNGListenerFactory
 Added: Passing command line properties via the ant task (Todd Wells)
+Fixed: TestNG#setTestClasses was not resetting m_suites
 Fixed: Exceptions thrown by IInvokedMethodListeners were not caught (Nalin Makar)
 Fixed: @Listeners now works on base classes as well
 Fixed: Test priorities were not working properly in non-parallel mode

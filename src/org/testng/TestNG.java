@@ -464,6 +464,7 @@ public class TestNG {
    * @param classes An array of classes that contain TestNG annotations.
    */
   public void setTestClasses(Class[] classes) {
+	m_suites.clear();
     m_commandLineTestClasses = classes;
   }
   
