@@ -1,6 +1,20 @@
 package org.testng;
 
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+import java.util.StringTokenizer;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
@@ -14,26 +28,12 @@ import org.apache.tools.ant.types.CommandlineJava;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.PropertySet;
 import org.apache.tools.ant.types.Reference;
 import org.apache.tools.ant.types.selectors.FilenameSelector;
 import org.testng.collections.Lists;
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.version.VersionInfo;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.StringTokenizer;
 
 /**
  * TestNG settings:
@@ -72,6 +72,7 @@ import java.util.StringTokenizer;
  * <li>workingDir (attribute)</li>
  * <li>env (inner)</li>
  * <li>sysproperty (inner)</li>
+ * <li>propertyset (inner)</li>
  * <li>jvmarg (inner)</li>
  * <li>timeout (attribute)</li>
  * <li>haltonfailure (attribute)</li>
@@ -1073,4 +1074,27 @@ public class TestNGAntTask extends Task {
   public void setSkipFailedInvocationCounts(boolean skip) {
     m_skipFailedInvocationCounts = Boolean.valueOf(skip);
   }
+
+  /**
+   * Add the referenced property set as system properties for the TestNG JVM.
+   *
+   * @param sysPropertySet A PropertySet of system properties.
+   */
+  public void addConfiguredPropertySet(PropertySet sysPropertySet) {
+    Properties properties = sysPropertySet.getProperties();
+    log(properties.keySet().size() + " properties found in nested propertyset", Project.MSG_VERBOSE);
+    for (Object propKeyObj : properties.keySet()) {
+      String propKey = (String) propKeyObj;
+      Environment.Variable sysProp = new Environment.Variable();
+      sysProp.setKey(propKey);
+      if (properties.get(propKey) instanceof String) {
+        String propVal = (String) properties.get(propKey);
+        sysProp.setValue(propVal);
+        getJavaCommand().addSysproperty(sysProp);
+        log("Added system property " + propKey + " with value " + propVal, Project.MSG_VERBOSE);
+      } else {
+        log("Ignoring non-String property " + propKey, Project.MSG_WARN);
+      }
+    }
+	}
 }

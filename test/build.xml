@@ -97,6 +97,23 @@ TESTNG.REPORT.DIR=${testng.report.dir}
       <echo>Report created in ${testng.report.dir}</echo>
   </target>
 
+  <target name="run:antprop" description="Run a test to see if ant system propertes are passed correctly" depends="compile">
+      <echo message="                                 -- testng-tests-run-antprop --"/>
+      <property name="syspropset1" value="value 1"/>
+      <property name="syspropset2" value="value 2"/>
+      <propertyset id="propset1">
+          <propertyref name="syspropset1"/>
+          <propertyref name="syspropset2"/>
+      </propertyset>
+
+      <testng outputdir="${testng.report.dir}"
+              classpathref="run.cp">
+          <xmlfileset dir="${test15.dir}" includes="testng-single3.xml"/>
+          <propertyset refid="propset1"/>
+          <sysproperty key="sysprop1" value="value 3"/>
+      </testng>
+  </target>
+
   <!-- ==================================================================== -->
   <!-- Run specific configuration                                           -->
   <!-- ==================================================================== -->

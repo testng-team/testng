@@ -1,5 +1,6 @@
 Current:
 
+Added: New ant task tag:  propertyset (Todd Wells)
 Added: ITestNGListenerFactory
 Added: Passing command line properties via the ant task (Todd Wells)
 Fixed: TestNG#setTestClasses was not resetting m_suites
