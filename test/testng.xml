@@ -95,6 +95,7 @@
       <class name="test.failedreporter.FailedReporterTest" />
       <class name="test.attributes.AttributeTest"/>
       <class name="test.verify.VerifyTest"/>
+      <class name="test.abstractconfmethod.C" />
     </classes>
   </test>
   
@@ -564,5 +565,5 @@
       <class name="test.asserttests.AssertTest" />
     </classes>
   </test>
-  
+
 </suite>

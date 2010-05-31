@@ -3,6 +3,7 @@ Current:
 Added: New ant task tag:  propertyset (Todd Wells)
 Added: ITestNGListenerFactory
 Added: Passing command line properties via the ant task (Todd Wells)
+Fixed: Configuration methosd couldn't depend on an abstract method (Nalin Makar) 
 Fixed: TestNG#setTestClasses was not resetting m_suites
 Fixed: Exceptions thrown by IInvokedMethodListeners were not caught (Nalin Makar)
 Fixed: @Listeners now works on base classes as well

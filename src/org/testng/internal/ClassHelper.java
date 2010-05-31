@@ -193,16 +193,11 @@ public final class ClassHelper {
 
     for (Method method : declaredMethods) {
       int methodModifiers = method.getModifiers();
-      if (Modifier.isPublic(methodModifiers)
-        || Modifier.isProtected(methodModifiers)) {
-        if (!isOverridden(method, collected)) {
-          methods.add(method);
-        }
-      }
-      else if (isSamePackage && !Modifier.isPrivate(methodModifiers)) {
-        if (!isOverridden(method, collected)) {
-          methods.add(method);
-        }
+      if ((Modifier.isPublic(methodModifiers) || Modifier.isProtected(methodModifiers)) 
+        || (isSamePackage && !Modifier.isPrivate(methodModifiers))
+        && !isOverridden(method, collected) 
+        && !Modifier.isAbstract(methodModifiers)) {
+        methods.add(method);
       }
     }
 
