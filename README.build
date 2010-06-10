@@ -1,0 +1,7 @@
+You need to install ivy in order to build.
+
+You can either download it from the ivy site or more simply,
+copy ivy-2.1.0.jar included in the root directory to ~/.ant/lib.
+
+After this, "ant" will build the distribution and run the tests.
+
