@@ -17,18 +17,18 @@
   <!-- ==================================================================== -->
   <path id="compile.cp">
     <pathelement location="${testng.jar}" />
-		<pathelement location="${build.dir}"/>
-		<fileset dir="${lib.dir}">
-			<include name="junit.jar"/>
+    <pathelement location="${build.dir}"/>
+    <fileset dir="${lib.dir}">
+      <include name="junit.jar"/>
 <!--
-			<include name="${beanshell.jar}"/>
+      <include name="${beanshell.jar}"/>
       <include name="${guice.jar}"/>
 -->
-		</fileset>
+    </fileset>
   </path>
 
   <target name="env:info">
-		<echo>
+    <echo>
 BASEDIR          =${basedir}
 TEST15.DIR       =${test15.dir}
 TEST.SRC.DIR     =${test.src.dir}
@@ -36,13 +36,13 @@ TEST.BUILD.DIR   =${test.build.dir}
 REPORT.DIR       =${report.dir}
 JUNIT.REPORT.DIR =${junit.report.dir}
 TESTNG.REPORT.DIR=${testng.report.dir}
-		</echo>
+    </echo>
   </target>
-	
+  
   <target name="compile" depends="prepare">
-		<echo message="                                 -- Compiling tests --"/>
+    <echo message="                                 -- Compiling tests --"/>
 
-		<property name="build.compiler" value="modern"/>
+    <property name="build.compiler" value="modern"/>
     <javac debug="true"
            source="1.5"
            classpathref="compile.cp"
@@ -53,11 +53,11 @@ TESTNG.REPORT.DIR=${testng.report.dir}
   </target>
 
   <target name="prepare">
-		<tstamp/>
-		<mkdir dir="${test.build.dir}"/>
-		<mkdir dir="${junit.report.dir}"/>
-		<mkdir dir="${testng.report.dir}"/>
-  	
+    <tstamp/>
+    <mkdir dir="${test.build.dir}"/>
+    <mkdir dir="${junit.report.dir}"/>
+    <mkdir dir="${testng.report.dir}"/>
+    
   <taskdef name="testng"
              classname="org.testng.TestNGAntTask"
              classpath="${build.dir}"/>
@@ -68,17 +68,17 @@ TESTNG.REPORT.DIR=${testng.report.dir}
   <!-- ==================================================================== -->
 
   <path id="run.cp">
-		<path refid="compile.cp"/>
-		<pathelement location="${test.build.dir}"/>
+    <path refid="compile.cp"/>
+    <pathelement location="${test.build.dir}"/>
   </path>
 
   <target name="run" description="Run tests" depends="compile">
-		<echo message="                                 -- Running tests --"/>
-		<echo message="                                 -- ${testng.jar} --" />
-		<testng classpathref="run.cp"
+    <echo message="                                 -- Running tests --"/>
+    <echo message="                                 -- ${testng.jar} --" />
+    <testng classpathref="run.cp"
             outputdir="${testng.report.dir}">
-			<xmlfileset dir="${test15.dir}" includes="testng.xml"/>
-		</testng>
+      <xmlfileset dir="${test15.dir}" includes="testng.xml"/>
+    </testng>
   </target>
 
   <target name="run:single" description="Run 1 property file named with the ant property test" depends="compile">
@@ -121,15 +121,15 @@ TESTNG.REPORT.DIR=${testng.report.dir}
           if="testng.conf"
           depends="clean:reports,compile"
           description="Run specified tests">
-		<echo message="                                 -- testng-tests-run --"/>
-		<echo message="using: ${testng.conf}.xml"/>
+    <echo message="                                 -- testng-tests-run --"/>
+    <echo message="using: ${testng.conf}.xml"/>
 
     <testng classpathref="run.cp"
-		        outputDir="${testng.report.dir}">
-		    <xmlfileset dir="${test15.dir}" includes="${testng.conf}.xml"/>
-		</testng>
+            outputDir="${testng.report.dir}">
+        <xmlfileset dir="${test15.dir}" includes="${testng.conf}.xml"/>
+    </testng>
 
-		<antcall target="clean.tmp"/>
+    <antcall target="clean.tmp"/>
   </target>
 
 
@@ -138,14 +138,14 @@ TESTNG.REPORT.DIR=${testng.report.dir}
   <!-- ==================================================================== -->
 
   <target name="reports">
-		<junitreport todir="${junit.report.dir}">
-			<fileset dir="${testng.report.dir}">
-				<include name="*.xml"/>
-				<exclude name="testng-failed.xml"/>
-				<exclude name="testng-results.xml" />
-			</fileset>
-			<report format="noframes" todir="${junit.report.dir}"/>
-		</junitreport>
+    <junitreport todir="${junit.report.dir}">
+      <fileset dir="${testng.report.dir}">
+        <include name="*.xml"/>
+        <exclude name="testng-failed.xml"/>
+        <exclude name="testng-results.xml" />
+      </fileset>
+      <report format="noframes" todir="${junit.report.dir}"/>
+    </junitreport>
   </target>
 
 
@@ -159,8 +159,8 @@ TESTNG.REPORT.DIR=${testng.report.dir}
   </target>
 
   <target name="clean" depends="clean.tmp,clean:reports">
-		<echo message="                                 -- test clean --"/>
+    <echo message="                                 -- test clean --"/>
 
-  	<delete dir="${test.build.dir}"/>
+    <delete dir="${test.build.dir}"/>
   </target>
 </project>
