@@ -757,7 +757,7 @@ public class TestNGAntTask extends Task {
           getProject().setNewProperty(m_failurePropertyName, "true");
         }
 
-        log(msg, Project.MSG_DEBUG);
+        log(msg, Project.MSG_INFO);
       }
     }
 

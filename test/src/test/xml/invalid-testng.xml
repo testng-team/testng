@@ -1,0 +1,13 @@
+<suite name="Unit Tests" verbose="1">
+  <groups>
+    <run>
+      <include name="cur"/>
+    </run>
+  </groups>
+
+  <test name="General Tests">
+    <packages>
+      <package name="adamb.mhive"/>
+    </packages>
+  </test>
+</suite>

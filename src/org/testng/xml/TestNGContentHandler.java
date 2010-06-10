@@ -421,11 +421,14 @@ public class TestNGContentHandler extends DefaultHandler {
   /**
    * Parse <run>
    */
-  public void xmlRun(boolean start, Attributes attributes) {
+  public void xmlRun(boolean start, Attributes attributes) throws SAXException {
     if (start) {
       m_currentRuns = Lists.newArrayList();
     }
     else {
+      if (null == m_currentTest) {
+        throw new SAXException("Check the testng XML against schema. Expected <test> tag not found");
+      }
       m_currentTest.setIncludedGroups(m_currentIncludedGroups);
       m_currentTest.setExcludedGroups(m_currentExcludedGroups);
     }
