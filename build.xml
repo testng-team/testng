@@ -322,7 +322,7 @@
     <delete dir="${build.dir}" />
     <delete dir="${build.maven-bundle.dir}" />
     <delete failonerror="false">
-      <fileset dir="." includes="*.jar,*.zip" />
+      <fileset dir="." includes="testng*.jar,*.zip" />
     </delete>
     <ant antfile="test/build.xml" target="clean" />
     <ant dir="examples" target="clean" />
