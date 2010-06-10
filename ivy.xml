@@ -1,13 +1,5 @@
 <ivy-module version="2.0">
-  <info organisation="Cedric Beust" module="testng" />
-
-  <configurations>
-    <conf name="release" description="Build the release" />
-  </configurations>
-
-  <publications>
-    <artifact name="testng-release" type="jar" conf="release" ext="jar" />
-  </publications>
+  <info organisation="org.testng" module="testng" revision="5.12.2beta"/>
 
   <dependencies>
     <dependency org="ant" name="ant" rev="1.6.5" />

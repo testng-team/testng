@@ -68,7 +68,7 @@
   <target name="all"
           depends="prepare,validate,copy-resources,build,dist,tests,test-ant,javadocs,dist" />
 
-  <target name="build" depends="prepare,compile,dist-bsh" />
+  <target name="build" depends="prepare,compile,dist-bsh-guice" />
 
   <target name="single">
     <ant antfile="test/build.xml" target="run:single"/>
@@ -121,7 +121,7 @@
 
   <target name="javadocs">
     <javadoc additionalparam="-quiet" destdir="javadocs" source="1.5" windowtitle="TestNG"
-        classpath="${testng.jar}:${lib.dir}/ant.jar:${guice.jar}">
+        classpath="${testng.jar}:${lib.dir}/ant.jar:${guice.jar}" verbose="false">
       <fileset dir="${src.dir}" defaultexcludes="yes">
         <include name="org/testng/*.java" />
       </fileset>
@@ -138,47 +138,52 @@
   <!-- Distribution                                                         -->
   <!-- ==================================================================== -->
 
-  <target name="dist" depends="build,maven-plugin,dist-all-zip,dist-maven-bundle,eclipse" />
+  <target name="dist" depends="build,maven-plugin,all-jar-flavors,dist-all-zip,dist-maven-bundle,eclipse" />
 
-  <target name="clean-unjar">
-    <delete quiet="true" dir="${build.unjar.dir}" includeemptydirs="true" />
-    <mkdir dir="${build.unjar.dir}" />
-  </target>
+  <target name="all-jar-flavors" depends="dist-bsh-guice,dist-nobsh-guice,dist-bsh-noguice,dist-nobsh-noguice" />
 
-  <target name="extract-beanshell-jar">
-    <unjar src="${lib.dir}/${beanshell.jar}"
-           dest="${build.unjar.dir}"
-           overwrite="true" />
-  </target>
-
-  <target name="extract-guice-jar">
-    <unjar src="${lib.dir}/${guice.jar}"
-           dest="${build.unjar.dir}"
-           overwrite="true" />
-  </target>
-
-  <target name="dist-bsh" depends="clean-unjar,extract-beanshell-jar,extract-guice-jar" >
-    <delete file="${testng.jar}" />
-    <jar destfile="${testng.jar}">
-      <manifest>
-        <attribute name="Main-Class" value="org.testng.TestNG" />
-      	<attribute name="Implementation-Version" value="${testng.version}-${DSTAMP}${TSTAMP}" />
-      </manifest>
-      <fileset dir="${build.dir}" />
-      <fileset dir="${build.unjar.dir}" />
-      <fileset file="TESTNG-${testng.version}" />
+  <target name="dist-bsh-guice">
+    <antcall target="create-jar">
+      <param name="jar.file" value="${testng.jar}" />
+    </antcall>
+    <jar jarfile="${testng.jar}" update="true">
+      <zipfileset src="${lib.dir}/${guice.jar}" />
+      <zipfileset src="${lib.dir}/${beanshell.jar}" />
     </jar>
   </target>
   
-  <target name="dist-nobsh"  depends="clean-unjar,extract-guice-jar" >
-    <delete file="${other.jars.dir}/${testng.nobsh.jar}" />
-    <jar destfile="${other.jars.dir}/${testng.nobsh.jar}">
+  <target name="dist-nobsh-guice">
+    <antcall target="create-jar">
+      <param name="jar.file" value="${other.jars.dir}/${testng.nobsh.guice.jar}" />
+    </antcall>
+    <jar jarfile="${other.jars.dir}/${testng.nobsh.guice.jar}" update="true">
+      <zipfileset src="${lib.dir}/${guice.jar}" />
+    </jar>
+  </target>
+
+  <target name="dist-bsh-noguice">
+    <antcall target="create-jar">
+      <param name="jar.file" value="${other.jars.dir}/${testng.bsh.noguice.jar}" />
+    </antcall>
+    <jar jarfile="${other.jars.dir}/${testng.bsh.noguice.jar}" update="true">
+      <zipfileset src="${lib.dir}/${beanshell.jar}" />
+    </jar>
+  </target>
+
+	<target name="dist-nobsh-noguice">
+    <antcall target="create-jar">
+      <param name="jar.file" value="${other.jars.dir}/${testng.nobsh.noguice.jar}" />
+    </antcall>
+  </target>
+
+  <target name="create-jar" description="Create a jar file with the Testng classes and nothing else" >
+    <delete file="${jar.file}" />
+    <jar destfile="${jar.file}" >
       <manifest>
         <attribute name="Main-Class" value="org.testng.TestNG" />
       	<attribute name="Implementation-Version" value="${testng.version}-${DSTAMP}${TSTAMP}" />
       </manifest>
       <fileset dir="${build.dir}" />
-      <fileset dir="${build.unjar.dir}" />
       <fileset file="TESTNG-${testng.version}" />
     </jar>
   </target>
@@ -245,7 +250,6 @@
       <fileset file="${testng.jar}.asc" />
     </jar>
   </target>
-
 
   <target name="dist-prepare" depends="update-readme">
     <delete file="{other.jars.dir}/${testng.nobsh.jar}" />
@@ -336,10 +340,18 @@
   <!-- Ivy                                                                  -->
   <!-- ==================================================================== -->
   <target name="retrieve-dependencies" description="Retrieve dependencies with ivy">
-    <ivy:retrieve />
-<!--
-    <ivy:publish resolver="testng-release" />
--->
+    <ivy:retrieve log="quiet" />
   </target>
-  
+
+  <target name="publish">
+    <ivy:resolve />
+    <mkdir dir="dist/jars" />
+    <copy file="${testng.jar}" todir="dist/jars" />
+    <ivy:publish organisation="org.testng" resolver="local" overwrite="true"/>
+  </target>
+
+  <target name="pom">
+    <ivy:makepom ivyfile="ivy.xml" pomfile="ivy-pom.xml" />
+  </target>
+	    
 </project>
