@@ -271,7 +271,7 @@
   </target>
 
   <taskdef name="DTDDoc" classname="DTDDoc.DTDDocTask"
-     classpath="lib/DTDDoc.jar"/>
+     classpath="3rdparty/DTDDoc.jar"/>
 
   <target name="dtd">
     <DTDDoc showHiddenTags="false"
