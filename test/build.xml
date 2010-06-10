@@ -19,7 +19,7 @@
     <pathelement location="${testng.jar}" />
     <pathelement location="${build.dir}"/>
     <fileset dir="${lib.dir}">
-      <include name="junit.jar"/>
+      <include name="${junit.jar}"/>
 <!--
       <include name="${beanshell.jar}"/>
       <include name="${guice.jar}"/>

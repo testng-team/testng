@@ -14,7 +14,7 @@
     <property name="topbuild.dir" location="build" />
     <property name="build.dir" location="${topbuild.dir}/${jdk}" />
     <property name="classes.dir" location="${build.dir}/classes" />      
-    <property name="dependencies.dir" location="3rdparty" />
+    <property name="dependencies.dir" location="lib" />
     <property name="topjavadocs.dir" location="javadocs" />
     <property name="javadocs.dir" location="${topjavadocs.dir}/${jdk}" />
     

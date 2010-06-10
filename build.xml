@@ -1,4 +1,4 @@
-<project name="testng" default="dev" basedir=".">
+<project name="testng" default="dev" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
   
   <!-- ====================================================================== -->
   <!-- TestNG build file                                                      -->
@@ -12,7 +12,7 @@
   <!-- ====================================================================== -->
   <!-- PREPARE                                                                -->
   <!-- ====================================================================== -->
-  <target name="prepare"
+  <target name="prepare" depends="retrieve-dependencies"
           description="Performs all preparations required to build.">
     <tstamp />
     <mkdir dir="${build.dir}" />
@@ -68,7 +68,7 @@
   <target name="all"
           depends="prepare,validate,copy-resources,build,dist,tests,test-ant,javadocs,dist" />
 
-  <target name="build" depends="compile,dist-bsh" />
+  <target name="build" depends="prepare,compile,dist-bsh" />
 
   <target name="single">
     <ant antfile="test/build.xml" target="run:single"/>
@@ -84,11 +84,7 @@
     <echo message="                                 -- Compiling sources --" />
 
     <path id="compile2.cp">
-      <fileset dir="${lib.dir}">
-        <include name="junit.jar" />
-        <include name="${beanshell.jar}" />
-        <include name="${guice.jar}" />
-      </fileset>
+      <fileset dir="${lib.dir}" includes="*.jar" />
     </path>
 
     <javac classpathref="compile2.cp"
@@ -142,22 +138,22 @@
   <!-- Distribution                                                         -->
   <!-- ==================================================================== -->
 
-  <target name="dist" depends="maven-plugin,dist-all-zip,dist-maven-bundle,eclipse,dtd" />
+  <target name="dist" depends="build,maven-plugin,dist-all-zip,dist-maven-bundle,eclipse" />
 
   <target name="clean-unjar">
-    <delete quiet="true" dir="${build.3rdparty.dir}" includeemptydirs="true" />
-    <mkdir dir="${build.3rdparty.dir}" />
+    <delete quiet="true" dir="${build.unjar.dir}" includeemptydirs="true" />
+    <mkdir dir="${build.unjar.dir}" />
   </target>
 
   <target name="extract-beanshell-jar">
-    <unjar src="3rdparty/${beanshell.jar}"
-           dest="${build.3rdparty.dir}"
+    <unjar src="${lib.dir}/${beanshell.jar}"
+           dest="${build.unjar.dir}"
            overwrite="true" />
   </target>
 
   <target name="extract-guice-jar">
-    <unjar src="3rdparty/${guice.jar}"
-           dest="${build.3rdparty.dir}"
+    <unjar src="${lib.dir}/${guice.jar}"
+           dest="${build.unjar.dir}"
            overwrite="true" />
   </target>
 
@@ -169,7 +165,7 @@
       	<attribute name="Implementation-Version" value="${testng.version}-${DSTAMP}${TSTAMP}" />
       </manifest>
       <fileset dir="${build.dir}" />
-      <fileset dir="${build.3rdparty.dir}" />
+      <fileset dir="${build.unjar.dir}" />
       <fileset file="TESTNG-${testng.version}" />
     </jar>
   </target>
@@ -182,7 +178,7 @@
       	<attribute name="Implementation-Version" value="${testng.version}-${DSTAMP}${TSTAMP}" />
       </manifest>
       <fileset dir="${build.dir}" />
-      <fileset dir="${build.3rdparty.dir}" />
+      <fileset dir="${build.unjar.dir}" />
       <fileset file="TESTNG-${testng.version}" />
     </jar>
   </target>
@@ -206,8 +202,8 @@
                   prefix="${zip.dir}/test"
                   includes="**/*.properties,**/*.java,build.xml,testng.xml"
                   excludes="test-output/**,report/**" />
-      <zipfileset dir="3rdparty"
-                  prefix="${zip.dir}/3rdparty"
+      <zipfileset dir="${lib.dir}"
+                  prefix="${zip.dir}/${lib.dir}"
                   includes="${beanshell.jar},${concurrent.jar},${guice.jar}" />
     </zip>
   </target>
@@ -268,19 +264,6 @@
 
     <delete file="${jdk15.jar}" />
     <copy file="${testng.jar}" tofile="${jdk15.jar}" />
-  </target>
-
-  <taskdef name="DTDDoc" classname="DTDDoc.DTDDocTask"
-     classpath="3rdparty/DTDDoc.jar"/>
-
-  <target name="dtd">
-    <DTDDoc showHiddenTags="false"
-            showFixmeTags="false"
-            sourceDir="src"
-            destDir="dtd"
-            docTitle="TestNG DTD">
-        <include name="testng-1.0.dtd"/>
-    </DTDDoc>
   </target>
 
   <target name="ftp">
@@ -347,6 +330,16 @@
   <target name="maven-plugin">
     <jar destfile="maven-testng-plugin-${testng-maven.version}.jar"
          basedir="./maven/" />
+  </target>
+
+  <!-- ==================================================================== -->
+  <!-- Ivy                                                                  -->
+  <!-- ==================================================================== -->
+  <target name="retrieve-dependencies" description="Retrieve dependencies with ivy">
+    <ivy:retrieve />
+<!--
+    <ivy:publish resolver="testng-release" />
+-->
   </target>
   
 </project>

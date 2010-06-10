@@ -1,0 +1,19 @@
+<ivy-module version="2.0">
+  <info organisation="Cedric Beust" module="testng" />
+
+  <configurations>
+    <conf name="release" description="Build the release" />
+  </configurations>
+
+  <publications>
+    <artifact name="testng-release" type="jar" conf="release" ext="jar" />
+  </publications>
+
+  <dependencies>
+    <dependency org="ant" name="ant" rev="1.6.5" />
+    <dependency org="junit" name="junit" rev="3.8.1" />
+    <dependency org="org.beanshell" name="bsh" rev="2.0b4" />
+    <dependency org="com.google.inject" name="guice" rev="2.0" />
+  </dependencies>
+</ivy-module>
+
