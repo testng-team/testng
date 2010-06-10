@@ -16,6 +16,7 @@
           description="Performs all preparations required to build.">
     <tstamp />
     <mkdir dir="${build.dir}" />
+    <mkdir dir="${other.jars.dir}" />
   </target>
 
   <!-- ====================================================================== -->
