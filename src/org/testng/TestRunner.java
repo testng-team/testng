@@ -678,9 +678,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
         || "true".equalsIgnoreCase(parallelMode)
         || XmlSuite.PARALLEL_CLASSES.equals(parallelMode); 
 
-    // false for new stuff
-//    if (true) {
     if (!parallel) {
+      // sequential
       computeTestLists(sequentialList, parallelList, sequentialMapList);
       
       log(3, "Found " + (sequentialList.size() + parallelList.size()) + " applicable methods");
@@ -713,6 +712,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       }
     }
     else {
+      // parallel
       int threadCount = xmlTest.getThreadCount();
       DynamicGraph<ITestNGMethod> graph = computeAlternateTestList(m_allTestMethods);
       GroupThreadPoolExecutor executor = new GroupThreadPoolExecutor(this, xmlTest,
@@ -776,27 +776,16 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
         if (!processedClasses.contains(c)) {
           processedClasses.add(c);
           // Sequential class: all methods in one worker
-          TestMethodWorker worker = new TestMethodWorker(m_invoker,
-              findClasses(methodInstances, c),
-              m_xmlTest.getSuite(),
-              params,
-              m_allTestMethods,
-              m_groupMethods,
-              m_classMethodMap,
-              this);
+          TestMethodWorker worker = createTestMethodWorker(methodInstances, params, c);
           result.add(worker);
         }
       }
       else {
         // Parallel class: each method in its own worker
-          TestMethodWorker worker = new TestMethodWorker(m_invoker,
-              new IMethodInstance[] { im },
-              m_xmlTest.getSuite(),
+          TestMethodWorker worker = createTestMethodWorker(
+              Arrays.asList(im),
               params,
-              m_allTestMethods,
-              m_groupMethods,
-              m_classMethodMap,
-              this);
+              c);
           result.add(worker);
       }
     }
@@ -804,6 +793,19 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     // Sort by priorities
     Collections.sort(result);
     return result;
+  }
+
+  private TestMethodWorker createTestMethodWorker(
+      List<IMethodInstance> methodInstances, Map<String, String> params,
+      Class<?> c) {
+    return new TestMethodWorker(m_invoker,
+        findClasses(methodInstances, c),
+        m_xmlTest.getSuite(),
+        params,
+        m_allTestMethods,
+        m_groupMethods,
+        m_classMethodMap,
+        this);
   }
 
   private IMethodInstance[] findClasses(List<IMethodInstance> methodInstances, Class<?> c) {
