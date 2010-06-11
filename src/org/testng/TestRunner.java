@@ -769,16 +769,15 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
 //    ClassMethodMap cmm = new ClassMethodMap(m_allTestMethods);
     Map<Class, Set<IMethodInstance>> list = groupMethodInstancesByClass(methodInstances);
 
-    if (false) {
-      for (Class c : list.keySet()) {
-        Set<IMethodInstance> s = list.get(c);
-        // If the current class is marked sequential, we want to run all its method
-        // in one TestMethodWorker to guarantee a sequential order. Otherwise, we
-        // create one worker per method
-        if (sequentialClasses.contains(c)) {
+    Set<Class<?>> processedClasses = Sets.newHashSet();
+    for (IMethodInstance im : methodInstances) {
+      Class<?> c = im.getMethod().getTestClass().getRealClass();
+      if (sequentialClasses.contains(c)) {
+        if (!processedClasses.contains(c)) {
+          processedClasses.add(c);
           // Sequential class: all methods in one worker
           TestMethodWorker worker = new TestMethodWorker(m_invoker,
-              s.toArray(new IMethodInstance[s.size()]),
+              findClasses(methodInstances, c),
               m_xmlTest.getSuite(),
               params,
               m_allTestMethods,
@@ -787,53 +786,19 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
               this);
           result.add(worker);
         }
-        else {
-          // Parallel class: each method in its own worker
-          for (IMethodInstance imi : s) {
-            TestMethodWorker worker = new TestMethodWorker(m_invoker,
-                new IMethodInstance[] { imi },
-                m_xmlTest.getSuite(),
-                params,
-                m_allTestMethods,
-                m_groupMethods,
-                m_classMethodMap,
-                this);
-            result.add(worker);
-          }
-        }
       }
-    } else {
-      Set<Class<?>> processedClasses = Sets.newHashSet();
-      for (IMethodInstance im : methodInstances) {
-        Class<?> c = im.getMethod().getTestClass().getRealClass();
-        if (sequentialClasses.contains(c)) {
-          if (!processedClasses.contains(c)) {
-            processedClasses.add(c);
-            // Sequential class: all methods in one worker
-            TestMethodWorker worker = new TestMethodWorker(m_invoker,
-                findClasses(methodInstances, c),
-                m_xmlTest.getSuite(),
-                params,
-                m_allTestMethods,
-                m_groupMethods,
-                m_classMethodMap,
-                this);
-            result.add(worker);
-          }
-        }
-        else {
-          // Parallel class: each method in its own worker
-            TestMethodWorker worker = new TestMethodWorker(m_invoker,
-                new IMethodInstance[] { im },
-                m_xmlTest.getSuite(),
-                params,
-                m_allTestMethods,
-                m_groupMethods,
-                m_classMethodMap,
-                this);
-            result.add(worker);
-          }      
-        }
+      else {
+        // Parallel class: each method in its own worker
+          TestMethodWorker worker = new TestMethodWorker(m_invoker,
+              new IMethodInstance[] { im },
+              m_xmlTest.getSuite(),
+              params,
+              m_allTestMethods,
+              m_groupMethods,
+              m_classMethodMap,
+              this);
+          result.add(worker);
+      }
     }
 
     // Sort by priorities
