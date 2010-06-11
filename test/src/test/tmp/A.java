@@ -1,21 +1,21 @@
 package test.tmp;
 
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
-import org.testng.annotations.Parameters;
+import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-
-@Test
+@Test(sequential = true)
 public class A {
+  private int m_n;
+
+  public A() {}
+
+  public A(int n) {
+    m_n = n;
+  }
 
   private void log(String s) {
-    System.out.println(hashCode() + " [A]" + s);
+    System.out.println(" [A(" + m_n + ") thread:" + Thread.currentThread().getId() + "] " + s);
   }
 
   @DataProvider
@@ -35,15 +35,22 @@ public class A {
 //    log("afterClass");
 //  }
 
-  @Test(priority = 1)
+  @Factory
+  public Object[] create() {
+    return new Object[] { new A(1), new A(2) };
+  }
+
+  @Test
   public void ctest1() {
+    log("ctest1");
   }
 
-  @Test(priority = 2, groups = "group1")
+  @Test
   public void btest2() {
+    log("btest2");
   }
 
-  @Test(priority = 3)
+//  @Test(priority = 3)
   public void atest3() {
   }
 

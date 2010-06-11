@@ -3,9 +3,11 @@ package org.testng.xml;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.inject.internal.Lists;
+
 public class XmlInclude {
   private String m_name;
-  private List<Integer> m_invocationNumbers;
+  private List<Integer> m_invocationNumbers = Lists.newArrayList();
 
   public XmlInclude(String n) {
     this(n, Collections.<Integer>emptyList());
