@@ -275,6 +275,28 @@ the same as for <em>environment variables</em>:</p>
 <p>will run the test and make the <code>basedir</code> property 
 available to the test.</p>
 
+<h4>propertyset</h4>
+<p>You may also use a nested <tt>&lt;propertyset&gt;</tt> element to specify a set of system properties that are defined 
+outside of the TestNG ant task. This allows for more flexible definitions of system properties, for instance selecting
+all properties with a specific prefix or matching a regex. See the 
+<a href="http://ant.apache.org/manual/Types/propertyset.html">PropertySet page</a> in the 
+<a href="http://ant.apache.org/manual/">Ant manual</a> for full details. Here's a simple example:</p>
+<pre class="brush: xml">
+      &lt;property name="myprop1" value="value 1"/&gt;
+      &lt;property name="myprop2" value="value 2"/>
+	
+      &lt;propertyset id="propset1"&gt;
+          &lt;propertyref name="myprop1"/&gt;
+          &lt;propertyref name="myprop2"/&gt;
+      &lt;/propertyset&gt;
+
+      &lt;testng outputdir="${testng.report.dir}" classpathref="run.cp"&gt;
+          &lt;xmlfileset dir="${test15.dir}" includes="testng-single3.xml"/&gt;
+          &lt;propertyset refid="propset1"/&gt;
+      &lt;/testng&gt;
+</pre>
+<p>In this case, the system properties named "myprop1" and "myprop2" are passed along to the TestNG process.</p>
+
 <h4>reporter</h4>
 <p>An inner <tt>&lt;reporter&gt;</tt> element is an alternative way to inject a
 custom report listener allowing the user to set custom properties in order to fine-tune
