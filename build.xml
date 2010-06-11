@@ -33,10 +33,10 @@
   <target name="validate" description="Validates the build environment.">
     <!-- java greater than 1.5 required to build -->
     <condition property="requiredJavaVersion">
-    	<or>
-   			<equals arg1="${ant.java.version}" arg2="1.5" />
-    		  <equals arg1="${ant.java.version}" arg2="1.6" />
-    	</or>
+      <or>
+        <equals arg1="${ant.java.version}" arg2="1.5" />
+        <equals arg1="${ant.java.version}" arg2="1.6" />
+      </or>
     </condition>
     <fail unless="requiredJavaVersion"
           message="Java version 1.5 required." />
@@ -105,15 +105,12 @@
   </target>
 
   <target name="tests" depends="compile" description="runs all JDK5 tests with JDK5 distro">
-  	<ant inheritall="no" antfile="test/build.xml" />
-<!--
-  	<ant inheritall="no" antfile="test/v4/build.xml" />
--->
+    <ant inheritall="no" antfile="test/build.xml" />
   </target>
-	
+  
   <target name="test-ant">
     <echo message="                                 -- Testing ant testng task functionality --" />
-  	<ant inheritall="no" antfile="test/ant/build.xml" />
+    <ant inheritall="no" antfile="test/ant/build.xml" />
   </target>
 
   <!-- ==================================================================== -->
@@ -171,7 +168,7 @@
     </jar>
   </target>
 
-	<target name="dist-nobsh-noguice">
+  <target name="dist-nobsh-noguice">
     <antcall target="create-jar">
       <param name="jar.file" value="${other.jars.dir}/${testng.nobsh.noguice.jar}" />
     </antcall>
@@ -182,7 +179,7 @@
     <jar destfile="${jar.file}" >
       <manifest>
         <attribute name="Main-Class" value="org.testng.TestNG" />
-      	<attribute name="Implementation-Version" value="${testng.version}-${DSTAMP}${TSTAMP}" />
+        <attribute name="Implementation-Version" value="${testng.version}-${DSTAMP}${TSTAMP}" />
       </manifest>
       <fileset dir="${build.dir}" />
       <fileset file="TESTNG-${testng.version}" />
@@ -190,7 +187,7 @@
   </target>
 
   <target name="dist-all-zip" depends="dist-prepare,javadocs">
-  	<property name="zip.dir" value="testng-${testng.version}" />
+    <property name="zip.dir" value="testng-${testng.version}" />
     <zip zipfile="${testng.zip}">
       <zipfileset prefix="${zip.dir}" dir="${basedir}" includesfile="FILES" />
       <zipfileset prefix="${zip.dir}" dir="${basedir}">
@@ -202,8 +199,8 @@
       <zipfileset dir="spring" prefix="${zip.dir}/spring" />
       <zipfileset dir="doc" prefix="${zip.dir}/doc" />
       <zipfileset dir="resources"
-    	   		  prefix="${zip.dir}/resources" 
-    			  includes="**/*.css"/>
+               prefix="${zip.dir}/resources" 
+            includes="**/*.css"/>
       <zipfileset dir="test"
                   prefix="${zip.dir}/test"
                   includes="**/*.properties,**/*.java,build.xml,testng.xml"
@@ -354,5 +351,5 @@
   <target name="pom">
     <ivy:makepom ivyfile="ivy.xml" pomfile="ivy-pom.xml" />
   </target>
-	    
+      
 </project>
