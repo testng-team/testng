@@ -2,7 +2,7 @@ Current:
 
 Added: New ant task tag:  propertyset (Todd Wells)
 Added: ITestNGListenerFactory
-Added: Passing command line properties via the ant task (Todd Wells)
+Added: Passing command line properties via the ant task and doc update (Todd Wells)
 Fixed: Trivial fixes: TESTNG-241 (log message at Info), Issue2 (throw SAXException and not NPE for invalid testng xml) 
 Fixed: Configuration methods couldn't depend on an abstract method (Nalin Makar) 
 Fixed: TestNG#setTestClasses was not resetting m_suites
