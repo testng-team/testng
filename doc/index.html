@@ -18,6 +18,7 @@
         SyntaxHighlighter.defaults['gutter'] = false;
         SyntaxHighlighter.all();
       </script>
+
     </head>
 
 <body onload="prettyPrint()">
@@ -85,7 +86,8 @@ article</a> describing a very concrete example where the combined use of several
 TestNG's features provides for a very intuitive and maintainable testing design.</p>
 <p>Here is a very simple test:</p>
 
-<pre class="brush: java">
+<h3 class="sourcetitle">SimpleTest.java</h3>
+<pre class="brush: java" >
 package example1;
 
 import org.testng.annotations.*;
@@ -131,8 +133,8 @@ Once you have compiled your test class into the <tt>build</tt> directory, you
 can invoke your test with the command line, an ant task (shown below) or an XML
 file:
 
-
-<pre class="brush: xml">
+<h3 class="sourcetitle">build.xml</h3>
+<pre class="brush:java">
 &lt;project default="test"&gt;
 
  &lt;path id="cp"&gt;

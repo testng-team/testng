@@ -547,6 +547,7 @@ on ant and the command line below).</p><p>The current DTD for <tt>testng.xml</tt
 <a href="http://testng.org/dtd">HTML version</a>).</p><p>Here is an example <tt>testng.xml</tt> file:</p>
 
 
+<h3 class="sourcetitle">testng.xml</h3>
 <pre class="brush: xml">
 &lt;!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" &gt;
  
@@ -568,6 +569,7 @@ on ant and the command line below).</p><p>The current DTD for <tt>testng.xml</tt
 
 <p>You can specify package names instead of class names:</p>
 
+<h3 class="sourcetitle">testng.xml</h3>
 <pre class="brush: xml; highlight: [5,6,7]">
 &lt;!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" &gt;
 
@@ -584,6 +586,7 @@ on ant and the command line below).</p><p>The current DTD for <tt>testng.xml</tt
 <p>In this example, TestNG will look at all the classes in the package 
 	<tt>test.sample</tt> and will retain only classes that have TestNG annotations.</p><p>You can also specify groups and methods to be included and excluded:</p>
 
+<h3 class="sourcetitle">testng.xml</h3>
 <pre class="brush: xml">
 &lt;test name="Regression1"&gt;
   &lt;groups&gt;
@@ -810,6 +813,7 @@ example, you could structure your test by saying that your entire test class
 belongs to the &quot;functest&quot; group, and additionally that a couple of methods 
 belong to the group &quot;checkintest&quot;:</p>
 
+<h3 class="sourcetitle">Test1.java</h3>
 <pre class="brush: java">
 public class Test1 {
   @Test(groups = { "functest", "checkintest" })
@@ -828,6 +832,7 @@ public class Test1 {
 
 <p>Invoking TestNG with </p>
 
+<h3 class="sourcetitle">testng.xml</h3>
 <pre class="brush: xml">
 &lt;test name="Test1"&gt;
   &lt;groups&gt;
@@ -846,6 +851,7 @@ public class Test1 {
 that some of your test methods should not be run on Linux, your test would look 
 like:</p>
 
+<h3 class="sourcetitle">Test1.java</h3>
 <pre class="brush: java">
 @Test
 public class Test1 {
@@ -866,6 +872,7 @@ public class Test1 {
 <p>
 You could use the following testng.xml to launch only the Windows methods:
 </p>
+<h3 class="sourcetitle">testng.xml</h3>
 <pre class="brush: xml; highlight: [4,9]">
 &lt;test name="Test1"&gt;
   &lt;groups&gt;
@@ -885,7 +892,9 @@ You could use the following testng.xml to launch only the Windows methods:
 </blockquote>
 
 <h4><a name="method-groups">Method groups</a></h4>You can also exclude or include individual methods:
+<p>
 
+<h3 class="sourcetitle">testng.xml</h3>
 <pre class="brush: xml">
 &lt;test name="Test1"&gt;
   &lt;classes&gt;
@@ -910,7 +919,7 @@ and &quot;functest&quot;.&nbsp; &quot;functest&quot; itself will contain the gro
 &quot;linux&quot; while &quot;checkintest will only contain &quot;windows&quot;.&nbsp; Here is how you 
 would define this in your property file:</p>
 
-
+<h3 class="sourcetitle">testng.xml</h3>
 <pre class="brush: xml">
 &lt;test name="Regression1"&gt;
   &lt;groups&gt;
@@ -944,6 +953,7 @@ deactivate these tests but keep in mind they will need to be reactivated.</p><p>
 make these test methods belong to it.&nbsp; For example, in the above example, I 
 know that testMethod2() is now broken so I want to disable it:</p>
 
+<h3 class="sourcetitle">Java</h3>
 <pre class="brush: java">
 @Test(groups = {"checkintest", "broken"} )
 public void testMethod2() {
@@ -951,6 +961,7 @@ public void testMethod2() {
 </pre>
 <p>All I need to do now is to exclude this group from the run:
 
+<h3 class="sourcetitle">testng.xml</h3>
 <pre class="brush: xml; highlight: 5">
 &lt;test name="Simple example"&gt;
   &lt;groups&gt;
@@ -983,6 +994,7 @@ broken and need to be fixed later.</p>
 <a name="partial-groups">5.4 - Partial groups</a></h4><p>You can define 
 groups at the class level and then add groups at the method level:</p>
 
+<h3 class="sourcetitle">All.java</h3>
 <pre class="brush: java">
 @Test(groups = { "checkin-test" })
 public class All {
@@ -1020,6 +1032,7 @@ programmatically.</p><p>
 If you are using simple values for your parameters, you can specify them in your 
 <tt>testng.xml</tt>:</p>
 
+<h3 class="sourcetitle">Java</h3>
 <pre class="brush: java">
 @Parameters({ "first-name" })
 @Test
@@ -1033,6 +1046,7 @@ In this code, we specify that the parameter <tt>firstName</tt> of your Java meth
 should receive the value of the XML parameter called <tt>first-name</tt><i>.</i>&nbsp; 
 This XML parameter is defined in <tt>testng.xml</tt>:<p>
 
+<h3 class="sourcetitle">testng.xml</h3>
 <pre class="brush: xml">
 &lt;suite name="My suite"&gt;
   &lt;parameter name="first-name"  value="Cedric"/&gt;
@@ -1101,8 +1115,9 @@ cases:</p><ul>
 	<li>You are not using a <tt>testng.xml</tt>.</li><li>You need to pass complex parameters, or parameters that need to be created 
 from Java (complex objects, objects read from a property file or a database, etc...).</li></ul><p>In this case, you can use a Data Provider to supply the values you need to 
 test.&nbsp; A Data Provider is a method on your class that returns an array of 
-array of objects.&nbsp; This method is annotated with @DataProvider:
+array of objects.&nbsp; This method is annotated with <tt>@DataProvider</tt>:
 
+<h3 class="sourcetitle">Java</h3>
 <pre class="brush: java">
 //This method will provide data to any test method that declares that its Data Provider
 //is named "test1"
@@ -1135,6 +1150,7 @@ with a matching name.
 <p>
 By default, the data provider will be looked for in the current test class or one of its base classes.  If you want to put your data provider in a different class, it needs to be a static method and you specify the class where it can be found in the <tt>dataProviderClass</tt> attribute:
 
+<h3 class="sourcetitle">StaticProvider.java</h3>
 <pre class="brush: java">
 public static class StaticProvider {
   @DataProvider(name = "create")
@@ -1307,6 +1323,7 @@ dependencies.</p>
 want to create a test method that will access a page on a Web site several 
 times, and you want to invoke it with different values:</p>
 
+<h3 class="sourcetitle">TestWebServer.java</h3>
 <pre class="brush: java">
 public class TestWebServer {
   @Test(parameters = { "number-of-times" })
@@ -1318,8 +1335,7 @@ public class TestWebServer {
 }
 </pre>
 
-<tt>testng.xml:</tt></p>
-
+<h3 class="sourcetitle">testng.xml</h3>
 <pre class="brush: java">
 &lt;test name="T1"&gt;
 &nbsp;&nbsp;&lt;parameter name="number-of-times" value="10"/&gt;
@@ -1340,6 +1356,7 @@ public class TestWebServer {
 <p>This can become quickly impossible to manage, so instead, you should use a 
 factory:</p>
 
+<h3 class="sourcetitle">WebTestFactory.java</h3>
 <pre class="brush: java">
 public class WebTestFactory {
   @Factory
@@ -1354,6 +1371,7 @@ public class WebTestFactory {
 
 and the new test class is now:</p>
 
+<h3 class="sourcetitle">WebTest.java</h3>
 <pre class="brush: java">
 public class WebTest {
   private int m_numberOfTimes;
@@ -1396,7 +1414,9 @@ case they will be ignored by TestNG).</p>
 <h4><a name="class-level">5.8 - Class level annotations</a></h4>
 
 The <tt>@Test</tt> annotation can be put on a class instead of a test method:
+<p>
 
+<h3 class="sourcetitle">Test1.java</h3>
 <pre class="brush: java">
 @Test
 public class Test1 {
@@ -1410,6 +1430,7 @@ public class Test1 {
 The effect of a class level <tt>@Test</tt> annotation is to make all the public methods of this class to become test methods even if they are not annotated.  You can still repeat the <tt>@Test</tt> annotation on a method if you want to add certain attributes.
 <p>
 For example:
+<h3 class="sourcetitle">Test1.java</h3>
 <pre class="brush: java">
 @Test
 public class Test1 {
@@ -1500,10 +1521,15 @@ java -classpath testng.jar;%CLASSPATH% org.testng.TestNG -d test-outputs test-ou
 
 <p>Note that <tt>testng-failed.xml</tt> will contain all the necessary dependent 
 methods so that you are guaranteed to run the methods that failed without any 
-SKIP failures.</p><h4><a name="junit">5.11 - JUnit tests</a></h4>TestNG can run JUnit tests.&nbsp; All you need to do is specify your JUnit test 
+SKIP failures.</p>
+
+<h4><a name="junit">5.11 - JUnit tests</a></h4>
+
+TestNG can run JUnit tests.&nbsp; All you need to do is specify your JUnit test 
 classes in the <tt>testng.classNames</tt> property and set the <tt>testng.junit</tt> property to 
 true:<br>
 <p></p>
+<h3 class="sourcetitle">testng.xml</h3>
 <pre class="brush: xml">
 &lt;test name="Test1" junit="true"&gt;
   &lt;classes&gt;
@@ -1529,6 +1555,7 @@ true:<br>
 
 <p>You can invoke TestNG from your own programs very easily:</p>
 
+<h3 class="sourcetitle">Java</h3>
 <pre class="brush: java">
 TestListenerAdapter tla = new TestListenerAdapter();
 TestNG testng = new TestNG();
@@ -1589,6 +1616,7 @@ tng.run();
 
 	<p>If the <tt>&lt;include&gt;</tt> and <tt>&lt;exclude&gt;</tt> tags in <tt>testng.xml</tt> are not enough for your needs, you can use a <a href="http://beanshell.org">BeanShell</a> expression to decide whether a certain test method should be included in a test run or not. You specify this expression just under the <tt>&lt;test&gt;</tt> tag:</p>
 
+<h3 class="sourcetitle">testng.xml</h3>
 <pre class="brush: xml">
 &lt;test name="BeanShell test"&gt;
    &lt;method-selectors&gt;
@@ -1658,11 +1686,15 @@ public interface IAnnotationTransformer {
 
 Like all the other TestNG listeners, you can specify this class either on the command line or with ant:
 
+<p>
+
 <pre class="brush: java">
   java org.testng.TestNG -listener MyTransformer testng.xml
 </pre>
 
 or programmatically:
+
+<p>
 
 <pre class="brush: java">
   TestNG tng = new TestNG();
@@ -1723,6 +1755,9 @@ The list of methods passed in parameters are all the methods that can be run in 
 
 Once you have defined your interceptor, you pass it to TestNG as a listener.  For example:
 
+<p>
+
+<h3 class="sourcetitle">Shell</h3>
 <pre class="brush: text">
 java -classpath "testng-jdk15.jar:test/build" org.testng.TestNG -listener test.methodinterceptors.NullMethodInterceptor
    -testclass test.methodinterceptors.FooTest
@@ -1974,12 +2009,16 @@ In this example, I chose to extend <a href="../javadocs/org/testng/TestListenerA
 <p>
 Here is how I invoke TestNG to use this new listener:
 
+<h3 class="sourcetitle">Shell</h3>
 <pre class="brush: text">
 java -classpath testng.jar;%CLASSPATH% org.testng.TestNG -listener org.testng.reporters.DotTestListener test\testng.xml
 </pre>
 
 and the output:
 
+<p>
+
+<h3 class="sourcetitle">Shell</h3>
 <pre class="brush: text">
 ........................................
 ........................................
@@ -2004,7 +2043,7 @@ Note that when you use <tt>-listener</tt>, TestNG will automatically determine t
 The <a href="../javadocs/org/testng/IReporter.html"><tt>org.testng.IReporter</tt></a> interface only has one method:
 
 <pre class="brush: java">
-public void generateReport(List&lt;<a href="../javadocs/org/testng/ISuite.html">ISuite</a>&gt; suites, String outputDirectory)
+public void generateReport(List&lt;ISuite</a>&gt; suites, String outputDirectory)
 </pre>
 
 This method will be invoked by TestNG when all the suites have been run and you can inspect its parameters to access all the information on the run that was just completed.
@@ -2020,6 +2059,7 @@ TestNG contains a listener that takes the TestNG results
 and outputs an XML file that can then be fed to JUnitReport.  <a href="http://testng.org/test-report/junit-noframes.html">
 Here</a> is an example, and the ant task to create this report:
 
+<h3 class="sourcetitle">build.xml</h3>
 <pre class="brush: xml">
 &lt;target name="reports"&gt;
   &lt;junitreport todir="test-report"&gt;
@@ -2058,6 +2098,7 @@ If you need to log messages that should appear in the generated HTML reports, yo
 <p>
 TestNG offers an XML reporter capturing TestNG specific information that is not available in JUnit reports. This is particulary useful when the user's test environment needs to consume XML results with TestNG-specific data that the JUnit format can't provide.  Below is a sample of the output of such a reporter:
 </p>
+
 <pre class="brush: xml">
 &lt;testng-results&gt;
   &lt;suite name=&quot;Suite1&quot;&gt;
