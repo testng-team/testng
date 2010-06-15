@@ -31,8 +31,6 @@ import org.testng.xml.XmlTest;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -410,6 +408,8 @@ public class Invoker implements IInvoker {
 
   /**
    * Effectively invokes a configuration method on all passed in instances.
+   * TODO: Should change this method to be more like invokeMethod() so that we can
+   * handle calls to {@code IInvokedMethodListener} better.
    * 
    * @param instances the instances to invoke the configuration method on
    * @param tm the configuration method
@@ -440,19 +440,22 @@ public class Invoker implements IInvoker {
 
       runInvokedMethodListeners(true /* before */, im, testResult);
       m_notifier.addInvokedMethod(im);
-      boolean confMethodFailed = true;
       try {
         Reporter.setCurrentTestResult(testResult);
         MethodHelper.invokeMethod(tm.getMethod(), targetInstance, params);
-        //using this to avoid catching exception
-        confMethodFailed = false;
         // Only run the method once if it's @BeforeSuite or @AfterSuite
         if (isSuite) break;
       }
-      finally {
-        if (confMethodFailed) {
-           testResult.setStatus(ITestResult.FAILURE);;
-        }
+      catch (InvocationTargetException ex) {
+         testResult.setStatus(ITestResult.FAILURE);;
+         testResult.setThrowable(ex.getCause() == null ? ex : ex.getCause());
+         throw ex;
+      }
+      catch (IllegalAccessException ex) {
+         testResult.setStatus(ITestResult.FAILURE);;
+         testResult.setThrowable(ex.getCause() == null ? ex : ex.getCause());
+         throw ex;
+      } finally {
         Reporter.setCurrentTestResult(testResult);
         runInvokedMethodListeners(false /* after */, im, testResult);
       }    
@@ -590,6 +593,7 @@ public class Invoker implements IInvoker {
     }
     catch(InvocationTargetException ite) {
       testResult.setThrowable(ite.getCause());
+      testResult.setStatus(ITestResult.FAILURE);
     }
     catch(ThreadExecutionException tee) { // wrapper for TestNGRuntimeException
       Throwable cause= tee.getCause();
@@ -599,12 +603,13 @@ public class Invoker implements IInvoker {
       else {
         testResult.setThrowable(cause);
       }
+      testResult.setStatus(ITestResult.FAILURE);
     }
     catch(Throwable thr) { // covers the non-wrapper exceptions
       testResult.setThrowable(thr);
+      testResult.setStatus(ITestResult.FAILURE);
     }
     finally {
-      
       runInvokedMethodListeners(false, invokedMethod, testResult);
       
       ExpectedExceptionsHolder expectedExceptionClasses
@@ -1467,6 +1472,10 @@ public class Invoker implements IInvoker {
     // Make sure the method has been run successfully
     for(int j= 0; j < methods.length; j++) {
       Set<ITestResult> results= m_notifier.getPassedTests(methods[j]);
+      Set<ITestResult> failedresults= m_notifier.getFailedTests(methods[j]);
+      
+      // If failed results were returned, then these tests didn't pass
+      if (failedresults != null && failedresults.size() > 0) return false;
       
       // If no results were returned, then these tests didn't pass
       if (results == null || results.size() == 0) return false;

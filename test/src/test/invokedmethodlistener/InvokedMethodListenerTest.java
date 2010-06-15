@@ -1,6 +1,7 @@
 package test.invokedmethodlistener;
 
 import org.testng.Assert;
+import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
@@ -8,10 +9,10 @@ import test.SimpleBaseTest;
 
 public class InvokedMethodListenerTest extends SimpleBaseTest {
   
-  private void run(Class[] classes) {
+  private void run(Class[] classes, MyListener l) {
     TestNG tng = create();
     tng.setTestClasses(classes);
-    MyListener l = new MyListener();
+    
     tng.addInvokedMethodListener(l);
     tng.run();
     
@@ -21,11 +22,20 @@ public class InvokedMethodListenerTest extends SimpleBaseTest {
   
   @Test
   public void withSuccess() {
-    run(new Class[] { Success.class });
+    MyListener l = new MyListener();
+    run(new Class[] { Success.class }, l);
   }
   
   @Test
   public void withFailure() {
-    run(new Class[] { Failure.class });
+    MyListener l = new MyListener();
+    run(new Class[] { Failure.class }, l);
+    Assert.assertEquals(l.getSuiteStatus(), ITestResult.FAILURE);
+    Assert.assertTrue(null != l.getSuiteThrowable());
+    Assert.assertTrue(l.getSuiteThrowable().getClass() == RuntimeException.class);
+    
+    Assert.assertEquals(l.getMethodStatus(), ITestResult.FAILURE);
+    Assert.assertTrue(null != l.getMethodThrowable());
+    Assert.assertTrue(l.getMethodThrowable().getClass() == IllegalArgumentException.class);
   }
 }

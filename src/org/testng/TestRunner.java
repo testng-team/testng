@@ -1366,6 +1366,10 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   public Set<ITestResult> getPassedTests(ITestNGMethod tm) {
     return m_passedTests.getResults(tm);
   }
+  
+  public Set<ITestResult> getFailedTests(ITestNGMethod tm) {
+    return m_failedTests.getResults(tm);
+  }
 
   public void addSkippedTest(ITestNGMethod tm, ITestResult tr) {
     m_skippedTests.addResult(tr, tm);
@@ -1404,7 +1408,11 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   private void logFailedTest(ITestNGMethod method,
                              ITestResult tr,
                              boolean withinSuccessPercentage) {
-    m_passedTests.removeResult(method);
+    /*
+     * We should not remove a passed method from m_passedTests so that we can
+     * account for the passed instances of this test method.
+     */
+    //m_passedTests.removeResult(method);
     if (withinSuccessPercentage) {
       m_failedButWithinSuccessPercentageTests.addResult(tr, method);
     }

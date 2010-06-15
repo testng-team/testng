@@ -41,10 +41,12 @@ public class Base {
 
   @AfterSuite
   public void afterSuite() {
-    if (m_fail) throw new RuntimeException("FAILING");
+    if (m_fail) throw new RuntimeException("After Suite FAILING");
   }
 
   @Test
-  public void a() {}
+  public void a() {
+     if (m_fail) throw new IllegalArgumentException("Test Method FAILING");
+  }
   
 }
