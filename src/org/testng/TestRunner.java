@@ -1,6 +1,18 @@
 package org.testng;
 
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
+
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.Attributes;
@@ -35,18 +47,6 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 /**
  * This class takes care of running one Test.
@@ -766,8 +766,6 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     //
     methodInstances = m_methodInterceptor.intercept(methodInstances, this);
     Map<String, String> params = xmlTest.getParameters();
-//    ClassMethodMap cmm = new ClassMethodMap(m_allTestMethods);
-    Map<Class, Set<IMethodInstance>> list = groupMethodInstancesByClass(methodInstances);
 
     Set<Class<?>> processedClasses = Sets.newHashSet();
     for (IMethodInstance im : methodInstances) {
@@ -775,23 +773,56 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       if (sequentialClasses.contains(c)) {
         if (!processedClasses.contains(c)) {
           processedClasses.add(c);
-          // Sequential class: all methods in one worker
-          TestMethodWorker worker = createTestMethodWorker(methodInstances, params, c);
-          result.add(worker);
+          if (System.getProperty("experimental") != null) {
+            List<IMethodInstance>[] instances = createInstances(methodInstances);
+            for (List<IMethodInstance> inst : instances) {
+              TestMethodWorker worker = createTestMethodWorker(inst, params, c);
+              result.add(worker);
+            }
+          }
+          else {
+            // Sequential class: all methods in one worker
+            TestMethodWorker worker = createTestMethodWorker(methodInstances, params, c);
+            result.add(worker);
+          }
         }
       }
       else {
         // Parallel class: each method in its own worker
-          TestMethodWorker worker = createTestMethodWorker(
-              Arrays.asList(im),
-              params,
-              c);
+          TestMethodWorker worker = createTestMethodWorker(Arrays.asList(im), params, c);
           result.add(worker);
       }
     }
 
     // Sort by priorities
     Collections.sort(result);
+    return result;
+  }
+
+  private List<IMethodInstance>[] createInstances(List<IMethodInstance> methodInstances) {
+    Map<Object, List<IMethodInstance>> map = Maps.newHashMap();
+//    MapList<IMethodInstance[], Object> map = new MapList<IMethodInstance[], Object>();
+    for (IMethodInstance imi : methodInstances) {
+      for (Object o : imi.getInstances()) {
+        System.out.println(o);
+        List<IMethodInstance> l = map.get(o);
+        if (l == null) {
+          l = Lists.newArrayList();
+          map.put(o, l);
+        }
+        l.add(imi);
+      }
+//      for (Object instance : imi.getInstances()) {
+//        map.put(imi, instance);
+//      }
+    }
+//    return map.getKeys();
+    System.out.println(map);
+    List[] result = new List[map.size()];
+    int i = 0;
+    for (List<IMethodInstance> imi : map.values()) {
+      result[i++] = imi;
+    }
     return result;
   }
 

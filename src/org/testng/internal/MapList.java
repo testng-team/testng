@@ -1,12 +1,11 @@
 package org.testng.internal;
 
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 
 /**
  * A container to hold lists indexed by a key.
