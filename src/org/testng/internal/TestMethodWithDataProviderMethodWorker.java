@@ -73,6 +73,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
       tmpResults.addAll(m_invoker.invokeTestMethod(m_instances,
            m_testMethod,
            m_parameterValues,
+           m_parameterIndex,
            m_xmlSuite,
            m_parameters,
            m_testClass,

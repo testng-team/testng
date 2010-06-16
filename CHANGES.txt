@@ -3,6 +3,7 @@ Current:
 Added: New ant task tag:  propertyset (Todd Wells)
 Added: ITestNGListenerFactory
 Added: Passing command line properties via the ant task and doc update (Todd Wells)
+Fixed: TESTNG-387 TestNG not reruning test method with the right data set from Data Provider (François Reynaud)
 Fixed: Show correct number of pass/failed numbers for tests using @DataProvider
 Fixed: Return correct method status and exception (if any) in InvokedMethodListener.afterInvocation() 
 Fixed: Trivial fixes: TESTNG-241 (log message at Info), Issue2 (throw SAXException and not NPE for invalid testng xml) 

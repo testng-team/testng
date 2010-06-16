@@ -489,10 +489,12 @@ public class Invoker implements IInvoker {
     }
   }
 
+  // pass both paramValues and paramIndex to be thread safe in case parallel=true + dataprovider.
   private ITestResult invokeMethod(Object[] instances,
                                    int instanceIndex,
                                    final ITestNGMethod tm,
                                    Object[] parameterValues,
+                                   int parametersIndex,
                                    XmlSuite suite,
                                    Map<String, String> params,
                                    ITestClass testClass,
@@ -626,7 +628,7 @@ public class Invoker implements IInvoker {
       // for the case where this method has parameters that don't come from a data
       // provider
       if (testResult.getThrowable() != null && parameterValues.length > 0) {
-        tm.addFailedInvocationNumber(tm.getCurrentInvocationCount());
+        tm.addFailedInvocationNumber(parametersIndex);
       }
 
       //
@@ -717,6 +719,7 @@ public class Invoker implements IInvoker {
   public List<ITestResult> invokeTestMethod(Object[] instances,
                                              final ITestNGMethod tm,
                                              Object[] parameterValues,
+                                             int parametersIndex,
                                              XmlSuite suite,
                                              Map<String, String> params,
                                              ITestClass testClass,
@@ -730,7 +733,7 @@ public class Invoker implements IInvoker {
     tm.setId(ThreadUtil.currentThreadInfo());
 
     for(int i= 0; i < instances.length; i++) {
-      results.add(invokeMethod(instances, i, tm, parameterValues, suite, params,
+      results.add(invokeMethod(instances, i, tm, parameterValues, parametersIndex, suite, params,
           testClass, beforeMethods, afterMethods, groupMethods));
     }
 
@@ -874,7 +877,7 @@ public class Invoker implements IInvoker {
       Object[] parameterValues =
           getParametersFromIndex(bag.parameterHolder.parameters, parametersIndex);
 
-      result.add(invokeMethod(instances, instanceIndex, tm, parameterValues, suite, 
+      result.add(invokeMethod(instances, instanceIndex, tm, parameterValues,parametersIndex, suite, 
           allParameters, testClass, beforeMethods, afterMethods, groupMethods));
       failureCount = handleInvocationResults(tm, result, failedInstances,
           failureCount, expectedExceptionHolder, true, true /* collect results */);
@@ -1018,6 +1021,8 @@ public class Invoker implements IInvoker {
                         expectedExceptionHolder, testContext, m_skipFailedInvocationCounts,
                         invocationCount, failureCount, m_notifier);
                   workers.add(w);
+                  // testng387: increment the param index in the bag.
+                  parametersIndex++;
                 }
                 PoolService ps = PoolService.getInstance();
                 List<ITestResult> r = ps.submitTasksAndWait(testMethod, workers);
@@ -1037,6 +1042,7 @@ public class Invoker implements IInvoker {
                     tmpResults.addAll(invokeTestMethod(instances,
                                                        testMethod,
                                                        parameterValues,
+                                                       parametersIndex,
                                                        suite,
                                                        parameters,
                                                        testClass,
