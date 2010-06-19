@@ -18,10 +18,6 @@ import org.testng.TestNGException;
 public class ObjectFactoryImpl implements IObjectFactory {
   
   public Object newInstance(Constructor constructor, Object... params) {
-    Class[] paramClasses = new Class[params.length];
-    for(int i = 0; i < params.length; i++) {
-      paramClasses[i] = params[i].getClass();
-    }
     try {
       return constructor.newInstance(params);
     }
