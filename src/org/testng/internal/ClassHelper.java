@@ -1,10 +1,8 @@
 package org.testng.internal;
 
-
 import org.testng.IClass;
 import org.testng.IMethodSelector;
 import org.testng.IObjectFactory;
-import org.testng.ITestNGListener;
 import org.testng.TestNGException;
 import org.testng.TestRunner;
 import org.testng.annotations.IAnnotation;
@@ -323,6 +321,12 @@ public final class ClassHelper {
       // Something else went wrong when running the constructor
       throw new TestNGException("An error occurred while instantiating class "
           + declaringClass.getName() + ": " + cause.getMessage(), cause);
+    }
+    
+    if (null == result) {
+      //result should not be null
+      throw new TestNGException("An error occurred while instantiating class "
+          + declaringClass.getName() + ". Check to make sure it can be accessed/instantiated.");
     }
   
     return result;

@@ -97,6 +97,7 @@
       <class name="test.attributes.AttributeTest"/>
       <class name="test.verify.VerifyTest"/>
       <class name="test.abstractconfmethod.C" />
+      <class name="test.issue78.NonPublicClassTest"/>
     </classes>
   </test>
   
