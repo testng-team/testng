@@ -7,13 +7,11 @@ import org.testng.annotations.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DataProviderThreadPoolSizeSampleTest {
-  static Map<Long, Long> m_threadIds;
-  
+public class DataProviderThreadPoolSizeSampleTest extends BaseThreadTest {
   @BeforeClass(alwaysRun = true)
   public void setUp() {
-    ppp("INIT THREAD IDS");
-    m_threadIds = new HashMap<Long, Long>();    
+    log(getClass().getName(), "Init log ids");
+    initThreadLog();
   }
   
   @DataProvider(parallel = true)
@@ -39,21 +37,31 @@ public class DataProviderThreadPoolSizeSampleTest {
         new Object[] { i++ },
         new Object[] { i++ },
         new Object[] { i++ },
+        new Object[] { i++ },
+        new Object[] { i++ },
+        new Object[] { i++ },
+        new Object[] { i++ },
+        new Object[] { i++ },
+        new Object[] { i++ },
+        new Object[] { i++ },
+        new Object[] { i++ },
+        new Object[] { i++ },
+        new Object[] { i++ },
     };
   }
 
   @Test(dataProvider = "sequentialDataProvider", groups = "sequential")
   public void fSequential(Integer p) {
     long n = Thread.currentThread().getId();
-    ppp("fSequential THREAD: " + n + " " +hashCode());
-    m_threadIds.put(n,n);
+    log(getClass().getName(), "Sequential");
+    logThread(n);
   }
 
   @Test(dataProvider = "parallelDataProvider", groups = "parallel")
   public void fParallel(Integer p) {
     long n = Thread.currentThread().getId();
-    ppp("fParallel THREAD: " + n + " " +hashCode());
-    m_threadIds.put(n,n);
+    log(getClass().getName(), "Parallel");
+    logThread(n);
   }
   
 //  @Test(dependsOnMethods = {"f1"})
@@ -62,10 +70,4 @@ public class DataProviderThreadPoolSizeSampleTest {
 //    Assert.assertEquals(m_threadIds.size(), expected,  
 //        "Should have run on " + expected + " threads but ran on " + m_threadIds.size());
 //  }
-  
-  private static void ppp(String s) {
-    if (false) {
-      System.out.println("[ThreadPoolSizeTest] " + s);
-    }
-  }
 }

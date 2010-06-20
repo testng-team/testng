@@ -1,38 +1,28 @@
 package test.thread;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class ThreadPoolSizeTest {
-  private static Map<Long, Long> m_threadIds;
-  
+public class ThreadPoolSizeTest extends BaseThreadTest {
   @BeforeClass
   public void setUp() {
-    ppp("INIT THREAD IDS");
-    m_threadIds = new HashMap<Long, Long>();    
+    log(getClass().getName(), "Init log ids");
+    initThreadLog();
   }
 
-  @Test(invocationCount = 10, threadPoolSize = 3)
+  @Test(invocationCount = 20, threadPoolSize = 3)
   public void f1() {
     long n = Thread.currentThread().getId();
-    ppp("THREAD: " + n + " " +hashCode());
-    m_threadIds.put(n,n);
+    log(getClass().getName(), "threadPoolSize:20");
+    logThread(n);
   }
   
   @Test(dependsOnMethods = {"f1"})
   public void verify() {
     int expected = 3;
-    Assert.assertEquals(m_threadIds.size(), expected,  
-        "Should have run on " + expected + " threads but ran on " + m_threadIds.size());
+    Assert.assertEquals(getThreadCount(), expected,  
+        "Should have run on " + expected + " threads but ran on " + getThreadCount());
   }
   
-  private static void ppp(String s) {
-    if (false) {
-      System.out.println("[ThreadPoolSizeTest] " + s);
-    }
-  }
 }

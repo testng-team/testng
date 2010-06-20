@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="SingleSuite" verbose="1" parallel="methods" thread-count="4"
+<suite name="SingleSuite" verbose="1" parallel="false" thread-count="4"
     data-provider-thread-count="3">
 
   <parameter name="n" value="42" />
@@ -25,7 +25,7 @@
     </groups>
 -->
     <classes>
-      <class name="test.parameters.OptionalParameterTest"/>
+      <class name="test.thread.DataProviderThreadPoolSizeTest"/>
 <!-- 
       <class name="test.priority.PriorityTest"/>
       <class name="test.objectfactory.CombinedTestAndObjectFactoryTest" />
