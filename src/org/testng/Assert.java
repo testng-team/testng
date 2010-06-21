@@ -2,7 +2,7 @@ package org.testng;
 
 import org.testng.collections.Lists;
 
-import java.util.ArrayList;
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -107,13 +107,50 @@ public class Assert {
     if((expected == null) && (actual == null)) {
       return;
     }
-    if((expected != null) && expected.equals(actual)) {
-      return;
+    if(expected != null) {
+      if (expected.getClass().isArray()) {
+        assertArrayEquals(actual, expected, message);
+        return;
+      } else if (expected.equals(actual)) {
+        return;
+      }
     }
     failNotEquals(actual, expected, message);
   }
   
   /**
+   * Asserts that two objects are equal. It they are not, an AssertionError,
+   * with given message, is thrown.
+   * @param actual the actual value
+   * @param expected the expected value (should be an non-null array value)
+   * @param message the assertion error message
+   */
+  private static void assertArrayEquals(Object actual, Object expected, String message) {
+    //is called only when expected is an array
+    if (actual.getClass().isArray()) {
+      int expectedLength = Array.getLength(expected);
+      if (expectedLength == Array.getLength(actual)) {
+         for (int i = 0 ; i < expectedLength ; i++) {
+            Object _actual = Array.get(actual, i);
+            Object _expected = Array.get(expected, i);
+            try {
+               assertEquals(_actual, _expected);
+            } catch (AssertionError ae) {
+               failNotEquals(actual, expected, message == null ? "" : message 
+                        + " (values as index " + i + " are not the same)");
+            }
+         }
+         //array values matched
+         return;
+      } else {
+         failNotEquals(Array.getLength(actual), expectedLength, message == null ? "" : message 
+                  + " (Array lengths are not the same)");
+      }
+    }
+    failNotEquals(actual, expected, message);
+  }
+
+/**
    * Asserts that two objects are equal. If they are not,
    * an AssertionError is thrown.
    * @param actual the actual value 
@@ -358,7 +395,7 @@ public class Assert {
   }
   
   /**
-   * Asserts that an object is null. If it is,
+   * Asserts that an object is null. If it is not,
    * an AssertionError, with the given message, is thrown.
    * @param object the assertion object
    */
@@ -367,7 +404,7 @@ public class Assert {
   }
   
   /**
-   * Asserts that an object is null.  If it is not,
+   * Asserts that an object is null. If it is not,
    * an AssertionFailedError, with the given message, is thrown.
    * @param object the assertion object 
    * @param message the assertion error message 
