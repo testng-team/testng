@@ -1,11 +1,11 @@
 package test.asserttests;
 
-import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import com.google.inject.internal.Sets;
 
 public class AssertTest {
 
@@ -59,8 +59,8 @@ public class AssertTest {
   
   @Test
   public void setsSuccess() {
-    Set<Integer> set1 = new HashSet<Integer>();
-    Set<Integer> set2 = new TreeSet<Integer>();
+    Set<Integer> set1 = Sets.newHashSet();
+    Set<Integer> set2 = Sets.newHashSet();
     
     set1.add(1);
     set2.add(1);
