@@ -88,108 +88,27 @@
   <li class="last"><a class="summary" href="#maven1">Maven 1 Plugin</a></li>
 </ul>
 
-<!--
-TestNG has plug-ins for both Maven 1 and Maven 2.
--->
-
 <!--  begin maven2  -->
 <h3 id="maven2">Maven 2</h3>
 
-<p>Maven2 should support TestNG out of the box without the need to download any additional plugins <em>(other than TestNG itself)</em>.
+<p>Maven 2 supports TestNG out of the box without the need to download any additional plugins <em>(other than TestNG itself)</em>. It is recommended that you use version 2.4 or above of the Surefire plugin (this is the case in all recent versions of Maven).</p>
 
-<h4>Snapshot Build Updates</h4>
 <p>
-The latest current good version of the Surefire plugin that you want is <b>2.4</b>.  You can find the full instructions on the <a href="http://maven.apache.org/plugins/maven-surefire-plugin/">Surefire web site</a> (here are the <a href="http://maven.apache.org/plugins/maven-surefire-plugin/examples/testng.html">TestNG-specific instructions</a>).
-
-<!--
-
-</p>
-<p>
-  To get the apache ibiblio snapshot repository added to your Maven project you will need to add a section like
-  the following to your <code>pom.xml</code>:
+You can find the full instructions on the <a href="http://maven.apache.org/plugins/maven-surefire-plugin/">Maven Surefire Plugin web site</a>. There are also <a href="http://maven.apache.org/plugins/maven-surefire-plugin/examples/testng.html">TestNG-specific instructions</a>.
 </p>
 
-<pre class="prettyprint">
-&lt;pluginRepositories&gt;
-   &lt;pluginRepository&gt;
-      &lt;id&gt;apache.snapshots&lt;/id&gt;
-      &lt;url&gt;http://people.apache.org/repo/m2-snapshot-repository/&lt;/url&gt;
-   &lt;/pluginRepository&gt;
-&lt;/pluginRepositories&gt;
+<h4>Upgrading to TestNG 5.12.1 and above</h4>
+
+With the 5.12.1 release, the JDK 1.4 variant of the TestNG JAR is no longer supported, and so the <tt>jdk15</tt> classifier has also been dropped. The dependency in your project should now look like the following:
+
+<pre class="brush: xml">
+ &lt;dependency&gt;
+   &lt;groupId&gt;org.testng&lt;/groupId&gt;
+   &lt;artifactId&gt;testng&lt;/artifactId&gt;
+   &lt;version&gt;5.12.1&lt;/version&gt;
+   &lt;scope&gt;test&lt;/scope&gt;
+ &lt;/dependency&gt;
 </pre>
-
-
-
-<h4>Surefire Documentation</h4>
-The TestNG Surefire documentation can be found on <a href="http://maven.apache.org/plugins/maven-surefire-plugin/testng.html">Apache's web site</a>.
-
-<h4>Reference</h4>
-<p>Though this section will include a lot more TestNG specific
-features, the overall test plugin properties should be mostly covered on Maven's site.</p>
-
-<h4>Overview</h4>
-<p>Most of the configuration aspects with Maven will be centered around your pom.xml's <a href="http://maven.apache.org/maven-model/maven.html">build section</a>.  In here you define things like build output directories,
-location of test source code, as well as configure plugin
-parameters, like those you will need to get TestNG setup the
-way that you prefer. Following is a sample portion of this
-section in a pom.xml file.</p>
-
-<pre class="prettyprint">
-&lt;dependencies&gt;
-&lt;dependency&gt;
-  &lt;groupId&gt;org.testng&lt;/groupId&gt;
-  &lt;artifactId&gt;testng&lt;/artifactId&gt;
-  &lt;version&gt;5.5&lt;/version&gt;
-  &lt;scope&gt;test&lt;/scope&gt;
-  &lt;classifier&gt;jdk15&lt;/classifier&gt;
-&lt;/dependency&gt;
-&lt;dependencies&gt;
-
-&lt;build&gt;
-..
-  &lt;plugins&gt;
-    &lt;plugin&gt;
-      &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
-      &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;
-      &lt;version&gt;2.4-SNAPSHOT&lt;/version&gt;
-      &lt;configuration&gt;
-        &lt;groups&gt;functest,util&lt;/groups&gt;
-      &lt;/configuration&gt;
-    &lt;/plugin&gt;
-  &lt;/plugins&gt;
-&lt;/build&gt;
-</pre>
-
-<p>
-The most notable section is the <tt>configuration</tt> element. Within the boundaries of this element you can define all of
-the configurable TestNG properties.
-</p>
-
--->
-
-<h4>Configuration</h4><h5>Goals</h5><table border="1" id="table2">
-    <tr>
-        <th>Goal</th><th>Description</th></tr><tr>
-        <td><tt>test</tt></td><td>Compiles and runs your tests</td></tr><tr>
-        <td><tt>site</tt></td><td>Creates your Maven generated site, which will include the TestNG report output.</td></tr></table><h4>Properties</h4><table border="1" id="table3">
-    <tr>
-        <th>Property</th><th>Optional?</th><th>Description</th></tr><tr>
-        <td><tt>includes</tt></td><td>No</td><td>Comma delimited list of regexp patterns to include source files with. Ie **/Test*.java</td></tr><tr>
-        <td><tt>groups</tt></td><td>Yes</td><td>Comma delimited list of groups to be included in test. If left blank will run all tests by default.</td></tr><tr>
-        <td><tt>excludedGroups</tt></td><td>Yes</td><td>Comma delimited list of groups that should <em>not</em> be included in test run.</td></tr><tr>
-        <td><tt>suiteXmlFiles</tt></td><td>Yes</td><td>Comma delimited list of file paths pointing to testng.xml suite files. <tt>(src/test-data/testng-core.xml,src/test-data/testng-functional.xml)</tt>
-        <p><em>Warning: When defining suiteXmlFiles most of the other parameters are ignored.</em></p></td></tr><tr>
-        <td><tt>threadCount</tt></td><td>Yes</td><td>Number of threads to run for tests</td></tr><tr>
-        <td><tt>parallel</tt></td><td>Yes</td><td>When using threads, whether or not to run them in parallel. Use <em>tests</em> to have each test run in its own thread or
-        <em>methods</em> to have the methods invoked from different threads.</td></tr>
-  </table>
-
-<h3>Java 1.4</h3>
-<p>
-In order to use javadoc style annotations you currently <em>must</em> run Maven with a java 1.4 jvm in order for them to be seen. If 
-you try running your javadoc annotated tests in a 1.5 jvm they will most likely not be found. It is hoped in a future release this problem
-will be eliminated.
-</p>
 
 <h4>Sample Report</h4>
 <p>
