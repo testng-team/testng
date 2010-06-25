@@ -1,20 +1,28 @@
 package test.tmp;
 
-import org.testng.TestListenerAdapter;
-import org.testng.TestNG;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Listeners;
+import org.testng.annotations.Test;
 
 import test.SimpleBaseTest;
 
+@Listeners(BListener.class)
 public class B extends SimpleBaseTest {
-  public static void main(String[] arg) {
-    TestNG tng = new TestNG();
-    tng.setTestClasses(new Class[] { C.class });
-    tng.setParallel("method");
-    TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener(tla);
-    tng.run();
-    
-    System.out.println("\n# tests:" + tla.getPassedTests().size());
+
+  @BeforeMethod
+  public void bm() {
+    System.out.println("Before");
+  }
+
+  @Test
+  public void f() {
+    System.out.println("f()");
+  }
+
+  @AfterMethod
+  public void am() {
+    System.out.println("After");
   }
 }
 

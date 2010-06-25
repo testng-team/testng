@@ -50,7 +50,6 @@ public class GroupsTest {
           cls 
       });
       m_testNg.run();
-      
       Assert.assertEquals(list, expected);
   }
 }

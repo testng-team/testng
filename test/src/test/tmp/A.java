@@ -35,19 +35,20 @@ public class A {
 //    log("afterClass");
 //  }
 
-  @Factory
-  public Object[] create() {
-    return new Object[] { new A(1), new A(2) };
+  @Test
+  public void atest1() {
+    try {
+      Thread.sleep(5000);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    log("atest1");
   }
 
-  @Test
-  public void ctest1() {
-    log("ctest1");
-  }
-
-  @Test
-  public void btest2() {
-    log("btest2");
+  @Test(dependsOnMethods = "atest1")
+  public void atest2() {
+    log("atest2");
   }
 
 //  @Test(priority = 3)
