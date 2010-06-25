@@ -393,7 +393,7 @@ public class XmlSuite implements Serializable, Cloneable {
     p.setProperty("data-provider-thread-count", String.valueOf(getDataProviderThreadCount()));
     p.setProperty("annotations", getAnnotations());
     p.setProperty("junit", m_isJUnit != null ? m_isJUnit.toString() : "false"); // TESTNG-141
-    p.setProperty("skipfailedinvocationCounts", 
+    p.setProperty("skipfailedinvocationcounts", 
         m_skipFailedInvocationCounts != null
           ? m_skipFailedInvocationCounts.toString() : "false");
     if(null != m_objectFactory)
