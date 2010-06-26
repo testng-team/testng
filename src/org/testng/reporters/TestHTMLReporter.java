@@ -61,9 +61,9 @@ public class TestHTMLReporter extends TestListenerAdapter {
       .append("<tr><td colspan='4' align='center'><b>").append(title).append("</b></td></tr>\n")    
       .append("<tr>")
       .append("<td><b>Test method</b></td>\n")
-      .append("<td><b>Instance</b></td>\n")
-      .append("<td width=\"10%\"><b>Time (seconds)</b></td>\n")
       .append("<td width=\"30%\"><b>Exception</b></td>\n")
+      .append("<td width=\"10%\"><b>Time (seconds)</b></td>\n")
+      .append("<td><b>Instance</b></td>\n")
       .append("</tr>\n");
     
     if (tests instanceof List) {
@@ -132,15 +132,6 @@ public class TestHTMLReporter extends TestListenerAdapter {
       
       sb.append("</td>\n");
 
-      // Instance
-      Object instance = tr.getInstance();
-      String instanceString = instance != null ? instance.toString() : "&nbsp;";
-      sb.append("<td>").append(instance).append("</td>");
-
-      // Time
-      long time = (tr.getEndMillis() - tr.getStartMillis()) / 1000;
-      String strTime = new Long(time).toString();
-      sb.append("<td>").append(strTime).append("</td>\n");
       
       // Exception
       tw = tr.getThrowable();
@@ -166,7 +157,18 @@ public class TestHTMLReporter extends TestListenerAdapter {
         ;
       }
       
-      sb.append("</td>\n").append("</tr>\n");
+      sb.append("</td>\n");
+
+      // Time
+      long time = (tr.getEndMillis() - tr.getStartMillis()) / 1000;
+      String strTime = new Long(time).toString();
+      sb.append("<td>").append(strTime).append("</td>\n");
+
+      // Instance
+      Object instance = tr.getInstance();
+      sb.append("<td>").append(instance).append("</td>");
+
+      sb.append("</tr>\n");
     }
     
     sb.append("</table><p>\n");
