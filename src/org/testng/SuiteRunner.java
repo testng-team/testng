@@ -348,7 +348,7 @@ public class SuiteRunner implements ISuite, Serializable {
     }
     
     ThreadUtil.execute(tasks, m_suite.getThreadCount(),
-        m_suite.getTimeOut(XmlSuite.DEFAULT_TIMEOUT_MS), false);
+        m_suite.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS), false);
   }
 
   private class SuiteWorker implements Runnable {
