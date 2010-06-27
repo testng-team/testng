@@ -631,10 +631,10 @@ public class Invoker implements IInvoker {
         tm.addFailedInvocationNumber(parametersIndex);
       }
 
-      //@@
       if (testResult.getStatus() == ITestResult.SUCCESS) {
         runTestListeners(testResult);
       }
+
       //
       // Increment the invocation count for this method
       //
@@ -1344,8 +1344,6 @@ public class Invoker implements IInvoker {
         else {
           assert false : "UNKNOWN STATUS:" + status;
         }
-//@@
-//        if (triggerListeners) {
         if (triggerListeners && status != ITestResult.SUCCESS) {
           runTestListeners(testResult);
         }

@@ -715,15 +715,17 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       // parallel
       int threadCount = xmlTest.getThreadCount();
       DynamicGraph<ITestNGMethod> graph = computeAlternateTestList(m_allTestMethods);
-      GroupThreadPoolExecutor executor = new GroupThreadPoolExecutor(this, xmlTest,
-          threadCount, threadCount, 0, TimeUnit.MILLISECONDS,
-          new LinkedBlockingQueue<Runnable>(), graph);
-      executor.run();
-      try {
-        executor.awaitTermination(10000, TimeUnit.SECONDS);
-        executor.shutdownNow();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
+      if (graph.getNodeCount() > 0) {
+        GroupThreadPoolExecutor executor = new GroupThreadPoolExecutor(this, xmlTest,
+            threadCount, threadCount, 0, TimeUnit.MILLISECONDS,
+            new LinkedBlockingQueue<Runnable>(), graph);
+        executor.run();
+        try {
+          executor.awaitTermination(10000, TimeUnit.SECONDS);
+          executor.shutdownNow();
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
       }
     }
   }
