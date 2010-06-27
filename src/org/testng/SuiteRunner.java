@@ -339,7 +339,7 @@ public class SuiteRunner implements ISuite, Serializable {
    * Since this kind of parallelism happens at the suite level, we need a special code path
    * to execute it.  All the other parallelism strategies are implemented at the test level
    * in TestRunner#createParallelWorkers (but since this method deals with just one <test>
-   * tag, it can't implement <suite parallel="tests">).
+   * tag, it can't implement <suite parallel="tests">, which is why we're doing it here).
    */
   private void runInParallelTestMode() {
     List<Runnable> tasks= Lists.newArrayList(m_testRunners.size());
