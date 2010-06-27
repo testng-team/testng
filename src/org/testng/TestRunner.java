@@ -721,7 +721,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
             new LinkedBlockingQueue<Runnable>(), graph);
         executor.run();
         try {
-          executor.awaitTermination(10000, TimeUnit.SECONDS);
+          long timeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
+          executor.awaitTermination(timeOut, TimeUnit.SECONDS);
           executor.shutdownNow();
         } catch (InterruptedException e) {
           e.printStackTrace();
@@ -1010,10 +1011,11 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       //
       // Parallel run
       //
-      // Default timeout for individual methods:  10 seconds
-      long maxTimeOut = m_xmlTest.getTimeOut(10 * 1000);
+      // Default timeout for individual methods:  same as the test global-time-out, but
+      // overridden if a method defines its own.
+      long maxTimeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
       for (IMethodWorker tmw : workers) {
-        long mt= tmw.getMaxTimeOut();
+        long mt = tmw.getMaxTimeOut();
         if (mt > maxTimeOut) {
           maxTimeOut= mt;
         }

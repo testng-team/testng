@@ -20,6 +20,8 @@ import java.util.Properties;
  * @author <a href = 'mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class XmlSuite implements Serializable, Cloneable {
+  public static int DEFAULT_TIMEOUT_MS = 60000;   // 60 seconds
+
   // Possible value for the attribute annotations of <suite>
   // It would be nice to factor out these names as they are
   // also defined in the TestNG class.

@@ -1,7 +1,7 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="SingleSuite" verbose="2" parallel="false" thread-count="4"
-    data-provider-thread-count="3">
+<suite name="SingleSuite" verbose="2" parallel="methods" thread-count="4"
+    data-provider-thread-count="3"  time-out="6000">
 
   <parameter name="n" value="42" />
 
@@ -24,38 +24,15 @@
       </run>
     </groups>
 -->
-    <parameter name="count" value="10" />
+    <parameter name="count" value="10"/>
     <classes>
-      <class name="test.listeners.ListenerTest" />
+      <class name="test.tmp.A" />
 <!-- 
-      <class name="test.sample.Sample1"/>
-      <class name="test.dataprovider.FailingDataProvider" />
-      <class name="test.priority.PriorityTest"/>
-      <class name="test.objectfactory.CombinedTestAndObjectFactoryTest" />
-      <class name="test.dataprovider.FailedDataProviderTest" />
-      <class name="test.regression.MyTestngTest2"/>
-      <class name="test.regression.BeforeTestFailingTest"/>
-      <class name="test.inject.InjectDataProviderTest"/>
-      <class name="test.dataprovider.IteratorParallelTest"/>
-      <class name="test.dependent.DepBugSampleTest" />
-      <class name="test.dependent.DepBugVerifyTest" />
-      <class name="test.methodinterceptors.FooTest" />
-      <class name="test.methodinterceptors.MethodInterceptorTest" />
-      <class name="test.dependent.DepBugSampleTest" />
-      <class name="test.dependent.DepBugVerifyTest" />
-      <class name="test.interleavedorder.InterleavedInvocationTest" />
-      <class name="test.interleavedorder.TestChild1" />
-      <class name="test.interleavedorder.TestChild2" />
-      <class name="test.interleavedorder.InterleavedInvocationTest" />
-      <class name="test.factory.FactoryOrderMainTest" />
-      <class name="test.priority.PriorityTest" />
       <class name="test.failedreporter.FailedReporterTest" />
         <methods>
           <include name="verifyIPAddress" invocationNumbers="0 2" />
         </methods>
       </class>
-      <class name="test.testng355.org.apache.tapestry5.test.AA" />
-      <class name="test.invokedmethodlistener.Success" />
  -->
     </classes>
   </test>

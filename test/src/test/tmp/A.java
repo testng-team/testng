@@ -35,9 +35,14 @@ public class A {
 //    log("afterClass");
 //  }
 
-  @Test(expectedExceptions = RuntimeException.class)
+  @Test
   public void atest1() {
-    throw new RuntimeException();
+    try {
+      Thread.sleep(5*1000);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
 //  @Test(dependsOnMethods = "atest1")
