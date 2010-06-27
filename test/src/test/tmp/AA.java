@@ -4,18 +4,18 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
-//@Test(sequential = true)
-public class A {
+@Test(sequential = true)
+public class AA {
   private int m_n;
 
-  public A() {}
+  public AA() {}
 
-  public A(int n) {
+  public AA(int n) {
     m_n = n;
   }
 
   private void log(String s) {
-    System.out.println(" [A(" + m_n + ") thread:" + Thread.currentThread().getId() + "] " + s);
+    System.out.println(" [AA(" + m_n + ") thread:" + Thread.currentThread().getId() + "] " + s);
   }
 
   @DataProvider
@@ -35,14 +35,19 @@ public class A {
 //    log("afterClass");
 //  }
 
-  @Test(expectedExceptions = RuntimeException.class)
-  public void atest1() {
-    throw new RuntimeException();
+  @Factory
+  public Object[] create() {
+    return new Object[] { new A(), new AA() };
   }
 
-//  @Test(dependsOnMethods = "atest1")
-  public void atest2() {
-    log("atest2");
+  @Test
+  public void aatest1() {
+    log("aatest1");
+  }
+
+  @Test(dependsOnMethods = "aatest1")
+  public void aatest2() {
+    log("aatest2");
   }
 
 //  @Test(priority = 3)

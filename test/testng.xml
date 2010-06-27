@@ -98,6 +98,7 @@
       <class name="test.verify.VerifyTest"/>
       <class name="test.abstractconfmethod.C" />
       <class name="test.issue78.NonPublicClassTest"/>
+      <class name="test.listeners.ListenerTest"/>
     </classes>
   </test>
   

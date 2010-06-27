@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 
-public class C extends B {
+public class C {
   @Test(threadPoolSize = 10, dataProvider = "data") 
   public void testMethod(Integer val) {
     System.out.print(Thread.currentThread().getId() + " ");

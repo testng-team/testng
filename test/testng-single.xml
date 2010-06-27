@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="SingleSuite" verbose="1" parallel="false" thread-count="4"
+<suite name="SingleSuite" verbose="2" parallel="false" thread-count="4"
     data-provider-thread-count="3">
 
   <parameter name="n" value="42" />
@@ -12,7 +12,7 @@
 -->  
   </listeners>
 
-  <test name="Regression2">
+  <test name="Regression2" >
 <!--
     <packages>
       <package name="test.testng355.org.apache.tapestry5" />
@@ -24,9 +24,12 @@
       </run>
     </groups>
 -->
+    <parameter name="count" value="10" />
     <classes>
-      <class name="test.thread.DataProviderThreadPoolSizeTest"/>
+      <class name="test.listeners.ListenerTest" />
 <!-- 
+      <class name="test.sample.Sample1"/>
+      <class name="test.dataprovider.FailingDataProvider" />
       <class name="test.priority.PriorityTest"/>
       <class name="test.objectfactory.CombinedTestAndObjectFactoryTest" />
       <class name="test.dataprovider.FailedDataProviderTest" />
