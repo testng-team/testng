@@ -631,6 +631,10 @@ public class Invoker implements IInvoker {
         tm.addFailedInvocationNumber(parametersIndex);
       }
 
+      //@@
+      if (testResult.getStatus() == ITestResult.SUCCESS) {
+        runTestListeners(testResult);
+      }
       //
       // Increment the invocation count for this method
       //
@@ -1005,7 +1009,6 @@ public class Invoker implements IInvoker {
             int parametersIndex = 0;
             
             try {
-//                if (true) { // @@
               List<TestMethodWithDataProviderMethodWorker> workers = Lists.newArrayList();
 
 //                  if (false) { // bag.parameterHolder.origin == ParameterHolder.ORIGIN_DATA_PROVIDER) {
@@ -1341,8 +1344,9 @@ public class Invoker implements IInvoker {
         else {
           assert false : "UNKNOWN STATUS:" + status;
         }
-
-        if (triggerListeners) {
+//@@
+//        if (triggerListeners) {
+        if (triggerListeners && status != ITestResult.SUCCESS) {
           runTestListeners(testResult);
         }
       }

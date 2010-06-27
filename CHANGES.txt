@@ -3,6 +3,7 @@ Current:
 Added: New ant task tag:  propertyset (Todd Wells)
 Added: ITestNGListenerFactory
 Added: Passing command line properties via the ant task and doc update (Todd Wells)
+Fixed: onTestSuccess() was called after @AfterMethod instead of after the test method (test: test.listener.ListenerTest)
 Fixed: XML test results contained skipfailedinvocationCounts instead of skipfailedinvocationcounts
 Fixed: Issue4 assertEquals for primitive arrays, Issue34 assertNull javadoc updated
 Fixed: Issue78 NPE with non-public class. Now throws TestNG exception
