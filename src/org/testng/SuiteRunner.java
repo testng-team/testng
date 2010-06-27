@@ -288,7 +288,7 @@ public class SuiteRunner implements ISuite, Serializable {
         runSequentially();
       } 
       else {
-        runConcurrently();
+        runInParallelTestMode();
       }
       
 //      SuitePlan sp = new SuitePlan();
@@ -334,14 +334,21 @@ public class SuiteRunner implements ISuite, Serializable {
     m_suiteResults.put(tr.getName(), sr);
   }
 
-
-  private void runConcurrently() {
+  /**
+   * Implement <suite parallel="tests">.
+   * Since this kind of parallelism happens at the suite level, we need a special code path
+   * to execute it.  All the other parallelism strategies are implemented at the test level
+   * in TestRunner#createParallelWorkers (but since this method deals with just one <test>
+   * tag, it can't implement <suite parallel="tests">).
+   */
+  private void runInParallelTestMode() {
     List<Runnable> tasks= Lists.newArrayList(m_testRunners.size());
     for(TestRunner tr: m_testRunners) {
       tasks.add(new SuiteWorker(tr));
     }
     
-    ThreadUtil.execute(tasks, m_suite.getThreadCount(), m_suite.getTimeOut(m_suite.getTests().size() * 1000L), false);
+    ThreadUtil.execute(tasks, m_suite.getThreadCount(),
+        m_suite.getTimeOut(m_suite.getTests().size() * 1000L), false);
   }
 
   private class SuiteWorker implements Runnable {
