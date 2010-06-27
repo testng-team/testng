@@ -722,7 +722,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
         executor.run();
         try {
           long timeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
-          executor.awaitTermination(timeOut, TimeUnit.SECONDS);
+          Utils.log("TestRunner", 2, "Starting executor for test " + m_xmlTest.getName()
+              + " with time out:" + timeOut + " milliseconds.");
+          executor.awaitTermination(timeOut, TimeUnit.MILLISECONDS);
           executor.shutdownNow();
         } catch (InterruptedException e) {
           e.printStackTrace();

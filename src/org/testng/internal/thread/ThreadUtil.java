@@ -9,8 +9,11 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -24,7 +27,7 @@ public class ThreadUtil {
    * emulates a load test.
    * @param tasks the list of tasks to be run
    * @param threadPoolSize the size of the parallel threads to be used to execute the tasks
-   * @param timeout <b>CURRENTLY NOT USED</b> (a maximum timeout to wait for tasks finalization)
+   * @param timeout a maximum timeout to wait for tasks finalization
    * @param triggerAtOnce <tt>true</tt> if the parallel execution of tasks should be trigger at once
    */
   public static final void execute(List<? extends Runnable> tasks, int threadPoolSize,
@@ -32,7 +35,12 @@ public class ThreadUtil {
     final CountDownLatch startGate= new CountDownLatch(1);
     final CountDownLatch endGate= new CountDownLatch(tasks.size());
 
-    ExecutorService pooledExecutor= Executors.newFixedThreadPool(threadPoolSize);
+    Utils.log("TestRunner", 2, "Starting executor with time out:" + timeout + " milliseconds.");
+    ExecutorService pooledExecutor = // Executors.newFixedThreadPool(threadPoolSize);
+        new ThreadPoolExecutor(threadPoolSize, threadPoolSize,
+        timeout, TimeUnit.MILLISECONDS,
+        new LinkedBlockingQueue<Runnable>());
+
     for(final Runnable task: tasks) {
       try {
         pooledExecutor.execute(new CountDownLatchedRunnable(task,

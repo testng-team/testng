@@ -1,1 +1,4 @@
 scp `ls -tr *beta.zip|tail -1` cedric@beust.com:w/testng
+scp `ls -tr *beta.zip|tail -1` beust.com@s98219.gridserver.com:w/testng
+
+

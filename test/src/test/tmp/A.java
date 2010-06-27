@@ -38,7 +38,7 @@ public class A {
   @Test
   public void atest1() {
     try {
-      Thread.sleep(5*1000);
+      Thread.sleep(12*1000);
     } catch (InterruptedException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
