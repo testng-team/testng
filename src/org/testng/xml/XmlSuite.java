@@ -8,10 +8,10 @@ import org.testng.internal.version.VersionInfo;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * This class describes the tag &lt;suite&gt; in testng.xml.
@@ -91,6 +91,12 @@ public class XmlSuite implements Serializable, Cloneable {
 
   /** Time out for methods/tests */
   private String m_timeOut;
+
+  /** List of child XML suite specified using <suite-file> tags */
+  private List<XmlSuite> m_childSuites = Lists.newArrayList();
+
+  /** Parent XML Suite if this suite was specified in another suite using <suite-file> tag */
+  private XmlSuite m_parentSuite;
 
   private List<String> m_suiteFiles = Lists.newArrayList();
 
@@ -246,6 +252,14 @@ public class XmlSuite implements Serializable, Cloneable {
    * @return The parameters defined in this suite only.
    */
   public Map<String, String> getParameters() {
+    if (m_parentSuite != null) {
+      Set<String> keySet = m_parentSuite.getParameters().keySet();
+      for (String name : keySet) {
+        if (!m_parameters.containsKey(name)) {
+           m_parameters.put(name, m_parentSuite.getParameter(name));
+        }
+      }
+    }
     return m_parameters;
   }
 
@@ -552,6 +566,14 @@ public class XmlSuite implements Serializable, Cloneable {
     }
     
     public List<String> getListeners() {
+      if (m_parentSuite != null) {
+        List<String> listeners = m_parentSuite.getListeners();
+        for (String listener : listeners) {
+          if (!m_listeners.contains(listener)) {
+             m_listeners.add(listener);
+          }
+        }
+      }
       return m_listeners;
     }
 
@@ -561,5 +583,17 @@ public class XmlSuite implements Serializable, Cloneable {
 
     public int getDataProviderThreadCount() {
       return m_dataProviderThreadCount;
+    }
+    
+    public void setParentSuite(XmlSuite parentSuite) {
+      m_parentSuite = parentSuite;
+    }
+     
+    public XmlSuite getParentSuite() {
+      return m_parentSuite;
+    }
+
+    public List<XmlSuite> getChildSuites() {
+      return m_childSuites;
     }
 }

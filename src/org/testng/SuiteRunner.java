@@ -194,31 +194,6 @@ public class SuiteRunner implements ISuite, Serializable {
     }
     finally {
       invokeListeners(false /* start */);
-
-      //
-      // Display the final statistics
-      //
-      if (m_suite.getVerbose() > 0) {
-        int total = m_textReporter.getAllTestMethods().length;
-        List<ITestResult> skipped = m_textReporter.getSkippedTests();
-        List<ITestResult> failed = m_textReporter.getFailedTests();
-        int confFailures= m_textReporter.getConfigurationFailures().size();
-        int confSkips= m_textReporter.getConfigurationSkips().size();
-        StringBuffer bufLog= new StringBuffer(getName());
-        bufLog.append("\nTotal tests run: ")
-            .append(total)
-            .append(", Failures: ").append(failed.size())
-            .append(", Skips: ").append(skipped.size());;
-        if(confFailures > 0 || confSkips > 0) {
-          bufLog.append("\nConfiguration Failures: ").append(confFailures)
-              .append(", Skips: ").append(confSkips)
-              ;
-        }
-            
-         System.out.println("\n===============================================\n"
-                           + bufLog.toString()
-                           + "\n===============================================\n");
-      }
     }
   }
 

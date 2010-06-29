@@ -43,8 +43,8 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
   }
 
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
-    for(int i= 0; i < xmlSuites.size(); i++) {
-      generateFailureSuite(xmlSuites.get(i), suites.get(i), outputDirectory);
+    for(int i= 0; i < suites.size(); i++) {
+      generateFailureSuite(suites.get(i).getXmlSuite(), suites.get(i), outputDirectory);
     }
   }
 

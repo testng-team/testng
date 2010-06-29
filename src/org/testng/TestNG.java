@@ -831,65 +831,132 @@ public class TestNG {
   public List<ISuite> runSuitesLocally() {
     List<ISuite> result = Lists.newArrayList();
     
-    if (m_verbose > 0) {
-      StringBuffer allFiles = new StringBuffer();
-      for (XmlSuite s : m_suites) {
-        allFiles.append("  ").append(s.getFileName() != null ? s.getFileName() : getDefaultSuiteName()).append('\n');
-      }
-      Utils.log("Parser", 0, "Running:\n" + allFiles.toString());
-    }
-
     if (m_suites.size() > 0) {
       for (XmlSuite xmlSuite : m_suites) {
-        xmlSuite.setDefaultAnnotations(m_defaultAnnotations.toString());
-        
-        if (null != m_isJUnit) {
-          xmlSuite.setJUnit(m_isJUnit);
-        }
-        
-        //
-        // Install the listeners
-        //
-        for (String listenerName : xmlSuite.getListeners()) {
-          Class<?> listenerClass = ClassHelper.forName(listenerName);
-          
-          // If specified listener does not exist, a TestNGException will be thrown
-          if(listenerClass == null) {
-            throw new TestNGException("Listener " + listenerName
-                + " was not found in project's classpath");
-          }
-          
-          Object listener = ClassHelper.newInstance(listenerClass);
-          addListener(listener);
-        }
-        
-        // If the skip flag was invoked on the command line, it
-        // takes precedence
-        if (null != m_skipFailedInvocationCounts) {
-          xmlSuite.setSkipFailedInvocationCounts(m_skipFailedInvocationCounts);
-        }
-        else {
-          m_skipFailedInvocationCounts = xmlSuite.skipFailedInvocationCounts();
-        }
-        
-        if (xmlSuite.getVerbose() == null) {
-          xmlSuite.setVerbose(m_verbose);
-        }
-        
-        PoolService.initialize(xmlSuite.getDataProviderThreadCount());
-        result.add(createAndRunSuiteRunners(xmlSuite));
-        PoolService.getInstance().shutdown();
+        runSuite(result, xmlSuite);
       }
     }
     else {
       setStatus(HAS_NO_TEST);
-      System.err.println("[ERROR]: No test suite found.  Nothing to run");
+      System.err.println("[ERROR]: No test suite found. Nothing to run");
     }
     
     //
     // Generate the suites report
     //
     return result;
+  }
+
+  /**
+   * Runs a suite and its children suites
+   * @param result populates this list with execution results
+   * @param xmlSuite XML suites to run
+   */
+  private void runSuite(List<ISuite> result /*OUT*/, XmlSuite xmlSuite)
+  {
+    if (m_verbose > 0) {
+      StringBuffer allFiles = new StringBuffer();
+      allFiles.append("  ").append(xmlSuite.getFileName() != null ? xmlSuite.getFileName() : getDefaultSuiteName()).append('\n');
+      Utils.log("TestNG", 0, "Running:\n" + allFiles.toString());
+    }
+     
+    xmlSuite.setDefaultAnnotations(m_defaultAnnotations.toString());
+    
+    if (null != m_isJUnit) {
+      xmlSuite.setJUnit(m_isJUnit);
+    }
+     
+    //
+    // Install the listeners
+    //
+    for (String listenerName : xmlSuite.getListeners()) {
+      Class<?> listenerClass = ClassHelper.forName(listenerName);
+      
+      // If specified listener does not exist, a TestNGException will be thrown
+      if(listenerClass == null) {
+        throw new TestNGException("Listener " + listenerName
+            + " was not found in project's classpath");
+      }
+      
+      Object listener = ClassHelper.newInstance(listenerClass);
+      addListener(listener);
+    }
+     
+    // If the skip flag was invoked on the command line, it
+    // takes precedence
+    if (null != m_skipFailedInvocationCounts) {
+      xmlSuite.setSkipFailedInvocationCounts(m_skipFailedInvocationCounts);
+    }
+    else {
+      m_skipFailedInvocationCounts = xmlSuite.skipFailedInvocationCounts();
+    }
+    
+    if (xmlSuite.getVerbose() == null) {
+      xmlSuite.setVerbose(m_verbose);
+    }
+    
+    PoolService.initialize(xmlSuite.getDataProviderThreadCount());
+    result.add(createAndRunSuiteRunners(xmlSuite));
+    PoolService.getInstance().shutdown();
+    
+    for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
+      runSuite(result, childSuite);
+    }
+    
+    //
+    // Display the final statistics
+    //
+    if (xmlSuite.getVerbose() > 0) {
+      Map<XmlSuite, ISuite> xmlToISuiteMap = Maps.newHashMap();
+      for (ISuite iSuite : result) {
+        xmlToISuiteMap.put(iSuite.getXmlSuite(), iSuite);
+      }
+
+      SuiteResultCounts counts = new SuiteResultCounts();
+      counts.calculateResultCounts(xmlSuite, xmlToISuiteMap);
+      
+      StringBuffer bufLog = new StringBuffer(xmlSuite.getName());
+      bufLog.append("\nTotal tests run: ")
+          .append(counts.total)
+          .append(", Failures: ").append(counts.failed)
+          .append(", Skips: ").append(counts.skipped);;
+      if(counts.confFailures > 0 || counts.confSkips > 0) {
+        bufLog.append("\nConfiguration Failures: ").append(counts.confFailures)
+            .append(", Skips: ").append(counts.confSkips);
+      }
+           
+      System.out.println("\n===============================================\n"
+                       + bufLog.toString()
+                       + "\n===============================================\n");
+    }
+  }
+  
+  private class SuiteResultCounts {
+    
+    int total = 0;
+    int skipped = 0;
+    int failed = 0;
+    int confFailures = 0;
+    int confSkips = 0;
+   
+    public void calculateResultCounts(XmlSuite xmlSuite, Map<XmlSuite, ISuite> xmlToISuiteMap)
+    {
+      Collection<ISuiteResult> tempSuiteResult = xmlToISuiteMap.get(xmlSuite).getResults().values();
+      for (ISuiteResult isr : tempSuiteResult) {
+        ITestContext ctx = isr.getTestContext();
+        int _skipped = ctx.getSkippedTests().size();
+        int _failed = ctx.getFailedTests().size() + ctx.getFailedButWithinSuccessPercentageTests().size();
+        skipped += _skipped;
+        failed += _failed;
+        confFailures += ctx.getFailedConfigurations().size();
+        confSkips += ctx.getSkippedConfigurations().size();
+        total += ctx.getPassedTests().size() + _failed + _skipped;
+      }
+      
+      for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
+        calculateResultCounts(childSuite, xmlToISuiteMap);
+      }
+    }
   }
 
   protected SuiteRunner createAndRunSuiteRunners(XmlSuite xmlSuite) {

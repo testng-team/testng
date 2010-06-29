@@ -27,7 +27,7 @@ public class XMLReporter implements IReporter {
     rootBuffer.push(XMLReporterConfig.TAG_TESTNG_RESULTS);
     writeReporterOutput(rootBuffer);
     for (int i = 0; i < suites.size(); i++) {
-      writeSuite(xmlSuites.get(i), suites.get(i));
+      writeSuite(suites.get(i).getXmlSuite(), suites.get(i));
     }
     rootBuffer.pop();
     Utils.writeUtf8File(config.getOutputDirectory(), "testng-results.xml", rootBuffer.toXML());
@@ -117,7 +117,7 @@ public class XMLReporter implements IReporter {
     // Calculate the duration
     Map<String, ISuiteResult> results = suite.getResults();
     Date minStartDate = new Date();
-    Date maxEndDate = null;
+    Date maxEndDate = new Date();
     // TODO: We could probably optimize this in order not to traverse this twice   
     for (Map.Entry<String, ISuiteResult> result : results.entrySet()) {
       Date startDate = result.getValue().getTestContext().getStartDate();

@@ -128,10 +128,11 @@ public class Parser {
    */
   public Collection<XmlSuite> parse() throws ParserConfigurationException, SAXException, IOException 
   {
-    // Each suite found is put in this map, keyed by their canonical
+    // Each suite found is put in this list, using their canonical
     // path to make sure we don't add a same file twice
     // (e.g. "testng.xml" and "./testng.xml")
-    Map<String, XmlSuite> mapResult = Maps.newHashMap();
+    List<String> processedSuites = Lists.newArrayList();
+    XmlSuite resultSuite = null;
     
     SAXParserFactory spf= loadSAXParserFactory();
         
@@ -154,6 +155,10 @@ public class Parser {
     List<String> toBeRemoved = Lists.newArrayList();
     toBeParsed.add(mainFilePath);
     
+    /*
+     * Keeps a track of parent XmlSuite for each child suite
+     */
+    Map<String, XmlSuite> childToParentMap = Maps.newHashMap();
     while (toBeParsed.size() > 0) {
       
       for (String currentFile : toBeParsed) {
@@ -166,8 +171,20 @@ public class Parser {
         }
         XmlSuite result = ch.getSuite();
         XmlSuite currentXmlSuite = result;
-        mapResult.put(currentFile, currentXmlSuite);
+        processedSuites.add(currentFile);
         toBeRemoved.add(currentFile);
+        
+        if (childToParentMap.containsKey(currentFile)) {
+           XmlSuite parentSuite = childToParentMap.get(currentFile);
+           //Set parent
+           currentXmlSuite.setParentSuite(parentSuite);
+           //append children
+           parentSuite.getChildSuites().add(currentXmlSuite);
+        }
+        
+        if (null == resultSuite) {
+           resultSuite = currentXmlSuite;
+        }
         
         List<String> suiteFiles = currentXmlSuite.getSuiteFiles();
         if (suiteFiles.size() > 0) {
@@ -178,8 +195,9 @@ public class Parser {
             } else {
               canonicalPath = new File(path).getCanonicalPath();
             }
-            if (! mapResult.containsKey(canonicalPath)) {
+            if (!processedSuites.contains(canonicalPath)) {
               toBeAdded.add(canonicalPath);
+              childToParentMap.put(canonicalPath, currentXmlSuite);
             }
           }
         }
@@ -200,7 +218,10 @@ public class Parser {
       
     }
     
-    return mapResult.values();
+    //returning a list of single suite to keep changes minimum
+    List<XmlSuite> resultList = Lists.newArrayList();
+    resultList.add(resultSuite);
+    return resultList;
 
   }
   
