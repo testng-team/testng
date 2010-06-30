@@ -340,11 +340,12 @@ public class SuiteHTMLReporter implements IReporter {
     sb.append("<h3>" + BEFORE + " means before, " + AFTER + " means after</h3><p/>");
     
     long startDate = -1;
-    Map<Long, StringBuffer> tables = Maps.newHashMap();
     sb.append("<br/><em>").append(suite.getName()).append("</em><p/>");
     sb.append("<small><i>(Hover the method name to see the test class name)</i></small><p/>\n");
+    Utils.writeFile(getOutputDirectory(xmlSuite), outputFileName, sb.toString());
+    sb = null; //not needed anymore
+
     Collection<ITestNGMethod> invokedMethods = suite.getInvokedMethods();
-    
     if (alphabetical) {
       @SuppressWarnings({"unchecked"})
       Comparator<? super ITestNGMethod>  alphabeticalComparator = new Comparator(){
@@ -357,12 +358,12 @@ public class SuiteHTMLReporter implements IReporter {
       Collections.sort((List) invokedMethods, alphabeticalComparator);
     }
     
+    SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
+    StringBuffer table = new StringBuffer();
+    boolean addedHeader = false;
     for (ITestNGMethod tm : invokedMethods) {
-      Long id = new Long(0);      
-      StringBuffer table = tables.get(id);
-      if (null == table) {
-        table = new StringBuffer();
-        tables.put(id, table);
+      table.setLength(0);
+      if (!addedHeader) {
         table.append("<table border=\"1\">\n")
           .append("<tr>")
           .append("<th>Time</th>")
@@ -376,6 +377,7 @@ public class SuiteHTMLReporter implements IReporter {
           .append("<th>Thread</th>")
           .append("<th>Instances</th>")
           .append("</tr>\n");
+        addedHeader = true;
       }
       String methodName = tm.toString();
       boolean bc = tm.isBeforeClassConfiguration();
@@ -406,7 +408,6 @@ public class SuiteHTMLReporter implements IReporter {
       }
       
       if (startDate == -1) startDate = tm.getDate();
-      SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
       String date = format.format(tm.getDate());
       table.append("<tr bgcolor=\"" + createColor(tm) + "\">")
         .append("  <td>").append(date).append("</td> ")
@@ -421,19 +422,9 @@ public class SuiteHTMLReporter implements IReporter {
         .append("  <td>").append(instances).append("</td> ")
         .append("</tr>\n")
         ;
+      Utils.appendToFile(getOutputDirectory(xmlSuite), outputFileName, table.toString());
     }
-    
-    /// Close all the tables
-    for (StringBuffer table : tables.values()) {
-      table.append("</table>\n");
-      sb.append(table.toString());
-    }
-    Utils.writeFile(getOutputDirectory(xmlSuite), outputFileName, sb.toString());    
-    
-  }
-  
-  private static String toHex(int n) {
-    return Integer.toHexString(0x10 | n).substring(1).toUpperCase();
+    Utils.appendToFile(getOutputDirectory(xmlSuite), outputFileName, "</table>\n");
   }
 
   /**

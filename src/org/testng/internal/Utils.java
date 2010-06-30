@@ -1,6 +1,5 @@
 package org.testng.internal;
 
-
 import org.testng.ITestNGMethod;
 import org.testng.TestNGCommandLineArgs;
 import org.testng.TestRunner;
@@ -24,7 +23,6 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -142,7 +140,7 @@ public final class Utils {
   public static void writeUtf8File(String outputDir, String fileName, String sb) {
     final String outDirPath= outputDir != null ? outputDir : "";
     final File outDir= new File(outDirPath);
-    writeFile(outDir, fileName, sb, "UTF-8");    
+    writeFile(outDir, fileName, sb, "UTF-8", false /* don't append */); 
   }
   
   /**
@@ -156,7 +154,20 @@ public final class Utils {
   public static void writeFile(String outputDir, String fileName, String sb) {
     final String outDirPath= outputDir != null ? outputDir : "";
     final File outDir= new File(outDirPath);
-    writeFile(outDir, fileName, sb, null);
+    writeFile(outDir, fileName, sb, null, false /* don't append */);
+  }
+  
+  /**
+   * Appends contents of the string to the specified file. If output directory/file don't
+   * exist, they are created.
+   * @param outputDir output directory. If <tt>null</tt>, then current directory is used
+   * @param fileName file name
+   * @param sb string to be appended to file
+   */
+  public static void appendToFile(String outputDir, String fileName, String sb) {
+     String outDirPath= outputDir != null ? outputDir : "";
+     File outDir= new File(outDirPath);
+     writeFile(outDir, fileName, sb, null, true /* append */);
   }
   
   /**
@@ -167,7 +178,7 @@ public final class Utils {
    * @param fileName the filename
    * @param sb the file content
    */
-  private static void writeFile(File outDir, String fileName, String sb, String encoding) {
+  private static void writeFile(File outDir, String fileName, String sb, String encoding, boolean append) {
     try {
       if (!outDir.exists()) {
         outDir.mkdirs();
@@ -175,10 +186,11 @@ public final class Utils {
       
       fileName = replaceSpecialCharacters(fileName);
       File outputFile = new File(outDir, fileName);
-      outputFile.delete();
-      outputFile.createNewFile();
-      
-      writeFile(outputFile, sb, encoding);
+      if (!append) {
+        outputFile.delete();
+        outputFile.createNewFile();
+      }
+      writeFile(outputFile, sb, encoding, append);
     }
     catch (IOException e) {
       if (TestRunner.getVerbose() > 1) {
@@ -190,16 +202,16 @@ public final class Utils {
     }
   }
 
-  private static void writeFile(File outputFile, String sb, String encoding) {
+  private static void writeFile(File outputFile, String sb, String encoding, boolean append) {
     BufferedWriter fw = null;
     try {
       if (! outputFile.exists()) outputFile.createNewFile();
       OutputStreamWriter osw= null;
-      if(null != encoding) {
-        osw= new OutputStreamWriter(new FileOutputStream(outputFile, false), encoding);
+      if (null != encoding) {
+        osw = new OutputStreamWriter(new FileOutputStream(outputFile, append), encoding);
       }
       else {
-        osw= new OutputStreamWriter(new FileOutputStream(outputFile, false));
+        osw = new OutputStreamWriter(new FileOutputStream(outputFile, append));
       }
       fw = new BufferedWriter(osw);
       fw.write(sb);
