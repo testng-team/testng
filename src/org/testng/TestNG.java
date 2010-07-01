@@ -341,7 +341,13 @@ public class TestNG {
       try {
         Collection<XmlSuite> allSuites = new Parser(suiteXmlPath).parse();
         for (XmlSuite s : allSuites) {
-          m_suites.add(s);
+          // If test names were specified, only run these test names
+          if (m_testNames != null) {
+            m_suites.add(extractTestNames(s, m_testNames));
+          }
+          else {
+            m_suites.add(s);
+          }
         }
       }
       catch(FileNotFoundException e) {
@@ -424,6 +430,32 @@ public class TestNG {
     }
     catch(IOException ex) {
       ex.printStackTrace();
+    }
+  }
+
+  /**
+   * If the XmlSuite contains at least one test named as testNames, return
+   * an XmlSuite that's made only of these tests, otherwise, return the
+   * original suite.
+   */
+  private static XmlSuite extractTestNames(XmlSuite s, List<String> testNames) {
+    List<XmlTest> tests = Lists.newArrayList();
+    for (XmlTest xt : s.getTests()) {
+      for (String tn : testNames) {
+        if (xt.getName().equals(tn)) {
+          tests.add(xt);
+        }
+      }
+    }
+
+    if (tests.size() == 0) {
+      return s;
+    }
+    else {
+      XmlSuite result = (XmlSuite) s.clone();
+      result.getTests().clear();
+      result.getTests().addAll(tests);
+      return result;
     }
   }
 
@@ -688,6 +720,9 @@ public class TestNG {
   private IMethodInterceptor m_methodInterceptor = null;
 
   private Injector m_injector;
+
+  /** The list of test names to run from the given suite */
+  private List<String> m_testNames;
 
   /**
    * Sets the level of verbosity. This value will override the value specified 
@@ -1064,6 +1099,10 @@ public class TestNG {
       setTestClasses(classes);
     }
 
+    List<String> testNames = (List<String>) cmdLineArgs.get(TestNGCommandLineArgs.TEST_NAMES_COMMAND_OPT);
+    if (testNames != null) {
+      setTestNames(testNames);
+    }
     List<String> testNgXml = (List<String>) cmdLineArgs.get(TestNGCommandLineArgs.SUITE_DEF_OPT);
     if (null != testNgXml) {
       setTestSuites(testNgXml);
@@ -1129,6 +1168,10 @@ public class TestNG {
         addReporter(reporterConfig);
       }
     }
+  }
+
+  private void setTestNames(List<String> testNames) {
+    m_testNames = testNames;
   }
 
   private void setSkipFailedInvocationCounts(Boolean skip) {

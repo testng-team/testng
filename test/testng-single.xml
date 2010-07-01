@@ -18,17 +18,19 @@
       <package name="test.testng355.org.apache.tapestry5" />
       <package name="test.testng355.org.apache.tapestry5.dom" />
     </packages>
+-->
     <groups>
       <run>
         <exclude name="broken" />
       </run>
     </groups>
--->
     <parameter name="count" value="10"/>
     <classes>
+      <class name="test.thread.MultiThreadedDependentTest" />
+<!-- 
+      <class name="test.thread.FactoryTest" />
       <class name="test.tmp.A" />
       <class name="test.tmp.B" />
-<!-- 
       <class name="test.failedreporter.FailedReporterTest" />
         <methods>
           <include name="verifyIPAddress" invocationNumbers="0 2" />

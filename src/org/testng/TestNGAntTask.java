@@ -33,6 +33,7 @@ import org.apache.tools.ant.types.Reference;
 import org.apache.tools.ant.types.selectors.FilenameSelector;
 import org.testng.collections.Lists;
 import org.testng.internal.AnnotationTypeEnum;
+import org.testng.internal.Utils;
 import org.testng.internal.version.VersionInfo;
 
 /**
@@ -148,6 +149,8 @@ public class TestNGAntTask extends Task {
    * The list of report listeners added via &lt;reporter&gt; sub-element of the Ant task
    */
   private List<ReporterConfig> reporterConfigs = Lists.newArrayList();
+
+  private String m_testNames = "";
 
   public void setParallel(String parallel) {
     m_parallelMode= parallel;
@@ -338,6 +341,10 @@ public class TestNGAntTask extends Task {
     else {
       m_sourceDirPath.append(srcDir);
     }
+  }
+
+  public void setTestNames(String testNames) {
+    m_testNames = testNames;
   }
 
   /**
@@ -610,6 +617,11 @@ public class TestNGAntTask extends Task {
     if(!"".equals(m_testName)) {
     	argv.add(TestNGCommandLineArgs.TEST_NAME_OPT);
     	argv.add(m_testName);
+    }
+
+    if (! Utils.isStringEmpty(m_testNames)) {
+      argv.add(TestNGCommandLineArgs.TEST_NAMES_COMMAND_OPT);
+      argv.add(m_testNames);
     }
 
     if (!reporterConfigs.isEmpty()) {
