@@ -1,5 +1,6 @@
 Current:
 
+Added: -testnames (command line) and testnames (ant)
 Added: New ant task tag:  propertyset (Todd Wells)
 Added: ITestNGListenerFactory
 Added: Passing command line properties via the ant task and doc update (Todd Wells)

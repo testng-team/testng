@@ -1,6 +1,13 @@
 package org.testng;
 
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.AnnotationTypeEnum;
@@ -8,13 +15,6 @@ import org.testng.internal.ClassHelper;
 import org.testng.internal.Utils;
 import org.testng.internal.version.VersionInfo;
 import org.testng.log4testng.Logger;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * TestNG/RemoteTestNG command line arguments parser.
@@ -66,6 +66,8 @@ public final class TestNGCommandLineArgs {
   public static final String SUITE_NAME_OPT = "-suitename";
   /** The list of test classes option. */
   public static final String TESTCLASS_COMMAND_OPT = "-testclass";
+  /** List of test names */
+  public static final String TEST_NAMES_COMMAND_OPT = "-testnames";
   public static final String TESTJAR_COMMAND_OPT = "-testjar";
   public static final String TEST_NAME_OPT = "-testname";
   public static final String TESTRUNNER_FACTORY_COMMAND_OPT = "-testrunfactory";
@@ -238,6 +240,26 @@ public final class TestNGCommandLineArgs {
         }
         else {
           TestNG.exitWithError("-testclass must be followed by a classname");
+        }
+      }
+      else if (TEST_NAMES_COMMAND_OPT.equalsIgnoreCase(argv[i])) {
+        if ((i + 1) < argv.length) {
+          String nextArg = argv[i + 1].trim();
+          if (! nextArg.startsWith("-")) {
+            List<String> l = (List<String>) arguments.get(TEST_NAMES_COMMAND_OPT);
+            if (null == l) {
+              l = Lists.newArrayList();
+              arguments.put(TEST_NAMES_COMMAND_OPT, l);
+            }
+            l.addAll(Arrays.asList(nextArg.split(",")));
+            i++;
+          }
+          else {
+            break;
+          }
+        }
+        else {
+          TestNG.exitWithError(TEST_NAMES_COMMAND_OPT + " must be followed by a one or more test names");
         }
       }
       else if (TESTJAR_COMMAND_OPT.equalsIgnoreCase(argv[i])) {
@@ -710,6 +732,8 @@ public final class TestNGCommandLineArgs {
     System.out.println("\t\tdefault output directory to : " + TestNG.DEFAULT_OUTPUTDIR);
     System.out.println("[" + TESTCLASS_COMMAND_OPT 
         + " list of .class files or list of class names]");
+    System.out.println("[" + TEST_NAMES_COMMAND_OPT 
+        + " one or more test names that will be found in the XML file]");
     System.out.println("[" + SRC_COMMAND_OPT + " a source directory]");
     
     if (VersionInfo.IS_JDK14) {

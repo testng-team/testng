@@ -149,6 +149,8 @@ public class TestNGAntTask extends Task {
    */
   private List<ReporterConfig> reporterConfigs = Lists.newArrayList();
 
+  private String m_testNames = "";
+
   public void setParallel(String parallel) {
     m_parallelMode= parallel;
   }
@@ -338,6 +340,10 @@ public class TestNGAntTask extends Task {
     else {
       m_sourceDirPath.append(srcDir);
     }
+  }
+
+  public void setTestNames(String testNames) {
+    m_testNames = testNames;
   }
 
   /**
@@ -610,6 +616,11 @@ public class TestNGAntTask extends Task {
     if(!"".equals(m_testName)) {
     	argv.add(TestNGCommandLineArgs.TEST_NAME_OPT);
     	argv.add(m_testName);
+    }
+
+    if (!"".equals(m_testNames)) {
+      argv.add(TestNGCommandLineArgs.TEST_NAMES_COMMAND_OPT);
+      argv.add(m_testNames);
     }
 
     if (!reporterConfigs.isEmpty()) {
