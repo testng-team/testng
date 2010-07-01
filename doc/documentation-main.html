@@ -724,6 +724,12 @@ You need to specify at least one XML file describing the TestNG suite you are tr
         </tr>
 
         <tr>
+            <td>-testnames</td>
+	    <td>A comma separated list of test names.</td>
+	    <td>Only tests defined in a &lt;test&gt; tag matching one of these names will be run.</td>
+        </tr>
+
+        <tr>
             <td>-testrunfactory</td>
 	    <td>A Java classes that can be found on your classpath.</td>
 	    <td>Lets you specify your own test runners.  The class needs to implement <a href="../javadocs/org/testng/ITestRunnerFactory.html"> <tt>org.testng.ITestRunnerFactory</tt></a>.</td>
