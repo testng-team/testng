@@ -140,7 +140,7 @@ public final class Utils {
   public static void writeUtf8File(String outputDir, String fileName, String sb) {
     final String outDirPath= outputDir != null ? outputDir : "";
     final File outDir= new File(outDirPath);
-    writeFile(outDir, fileName, sb, "UTF-8", false);    
+    writeFile(outDir, fileName, sb, "UTF-8", false /* don't append */); 
   }
   
   /**
@@ -154,7 +154,7 @@ public final class Utils {
   public static void writeFile(String outputDir, String fileName, String sb) {
     final String outDirPath= outputDir != null ? outputDir : "";
     final File outDir= new File(outDirPath);
-    writeFile(outDir, fileName, sb, null, false);
+    writeFile(outDir, fileName, sb, null, false /* don't append */);
   }
   
   /**
@@ -165,9 +165,9 @@ public final class Utils {
    * @param sb string to be appended to file
    */
   public static void appendToFile(String outputDir, String fileName, String sb) {
-     final String outDirPath= outputDir != null ? outputDir : "";
-     final File outDir= new File(outDirPath);
-     writeFile(outDir, fileName, sb, null, true);
+     String outDirPath= outputDir != null ? outputDir : "";
+     File outDir= new File(outDirPath);
+     writeFile(outDir, fileName, sb, null, true /* append */);
   }
   
   /**
