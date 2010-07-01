@@ -83,7 +83,10 @@ public class SuiteRunner implements ISuite, Serializable {
       ITestRunnerFactory runnerFactory, 
       boolean useDefaultListeners)
   {
-    this(configuration, suite, outputDir, runnerFactory, useDefaultListeners, null, null);
+    this(configuration, suite, outputDir, runnerFactory, useDefaultListeners,
+        null /* method interceptor */,
+        null /* invoked method listeners */,
+        null /* test listeners */);
   }
   
   public SuiteRunner(IConfiguration configuration,
@@ -92,10 +95,11 @@ public class SuiteRunner implements ISuite, Serializable {
       ITestRunnerFactory runnerFactory, 
       boolean useDefaultListeners,
       IMethodInterceptor methodInterceptor,
-      List<IInvokedMethodListener> invokedMethodListener)
+      List<IInvokedMethodListener> invokedMethodListeners,
+      List<ITestListener> testListeners)
   {
     init(configuration, suite, outputDir, runnerFactory, useDefaultListeners,
-      methodInterceptor, invokedMethodListener);
+      methodInterceptor, invokedMethodListeners, testListeners);
   }
   
   private void init(IConfiguration configuration,
@@ -104,7 +108,8 @@ public class SuiteRunner implements ISuite, Serializable {
     ITestRunnerFactory runnerFactory, 
     boolean useDefaultListeners,
     IMethodInterceptor methodInterceptor,
-    List<IInvokedMethodListener> invokedMethodListener)
+    List<IInvokedMethodListener> invokedMethodListener,
+    List<ITestListener> testListeners)
   {
     m_configuration = configuration;
     m_suite = suite;
@@ -117,6 +122,26 @@ public class SuiteRunner implements ISuite, Serializable {
       m_objectFactory = suite.getObjectFactory();
     }
     m_invokedMethodListeners = invokedMethodListener;
+    m_skipFailedInvocationCounts = suite.skipFailedInvocationCounts();
+    if (null != testListeners) {
+      m_testListeners.addAll(testListeners);
+    }
+    m_runnerFactory = buildRunnerFactory();
+    for (XmlTest test : m_suite.getTests()) {
+      TestRunner tr = m_runnerFactory.newTestRunner(this, test, m_invokedMethodListeners);
+
+      //
+      // Install the method interceptor, if any was passed
+      //
+      if (m_methodInterceptor != null) {
+        tr.setMethodInterceptor(m_methodInterceptor);
+      }
+
+      // Reuse the same text reporter so we can accumulate all the results
+      // (this is used to display the final suite report at the end)
+      tr.addListener(m_textReporter);
+      m_testRunners.add(tr);
+    }
   }
   
   public XmlSuite getXmlSuite() {
@@ -129,10 +154,6 @@ public class SuiteRunner implements ISuite, Serializable {
 
   public void setObjectFactory(IObjectFactory objectFactory) {
     m_objectFactory = objectFactory;
-  }
-
-  public void setTestListeners(List<ITestListener> testlisteners) {
-    m_testListeners = testlisteners;
   }
 
   public void setReportResults(boolean reportResults) {
@@ -160,11 +181,7 @@ public class SuiteRunner implements ISuite, Serializable {
         : null;
   }
 
-  private void lazyInit() {
-    m_runnerFactory = buildRunnerFactory(m_testListeners);
-  }
-
-  protected ITestRunnerFactory buildRunnerFactory(List<ITestListener> testListeners) {
+  private ITestRunnerFactory buildRunnerFactory() {
     ITestRunnerFactory factory = null;
     
     if (null == m_tmpRunnerFactory) {
@@ -186,14 +203,12 @@ public class SuiteRunner implements ISuite, Serializable {
   }
 
   public void run() {
-    lazyInit();
-
     invokeListeners(true /* start */);
     try {
       privateRun();
     }
     finally {
-      invokeListeners(false /* start */);
+      invokeListeners(false /* stop */);
     }
   }
 
@@ -205,26 +220,8 @@ public class SuiteRunner implements ISuite, Serializable {
 
     IInvoker invoker = null;
     
-    //
-    // First, we create all the test runners so we can discover all the ITestClasses
-    //
-    for (XmlTest test : m_suite.getTests()) {
-
-
-      TestRunner tr = m_runnerFactory.newTestRunner(this, test, m_invokedMethodListeners);
-
-      //
-      // Install the method interceptor, if any was passed
-      //
-      if (m_methodInterceptor != null) {
-        tr.setMethodInterceptor(m_methodInterceptor);
-      }
-
-      // Reuse the same text reporter so we can accumulate all the results
-      // (this is used to display the final suite report at the end)
-      tr.addListener(m_textReporter);
-      m_testRunners.add(tr);
-
+    // Get the invoker and find all the suite level methods
+    for (TestRunner tr: m_testRunners) {
       // TODO: Code smell.  Invoker should belong to SuiteRunner, not TestRunner
       // -- cbeust
       invoker = tr.getInvoker();
@@ -236,7 +233,6 @@ public class SuiteRunner implements ISuite, Serializable {
       for (ITestNGMethod m : tr.getAfterSuiteMethods()) {
         afterSuiteMethods.put(m.getMethod(), m);
       }
-
     }
 
     //
