@@ -33,6 +33,7 @@ import org.apache.tools.ant.types.Reference;
 import org.apache.tools.ant.types.selectors.FilenameSelector;
 import org.testng.collections.Lists;
 import org.testng.internal.AnnotationTypeEnum;
+import org.testng.internal.Utils;
 import org.testng.internal.version.VersionInfo;
 
 /**
@@ -618,7 +619,7 @@ public class TestNGAntTask extends Task {
     	argv.add(m_testName);
     }
 
-    if (!"".equals(m_testNames)) {
+    if (! Utils.isStringEmpty(m_testNames)) {
       argv.add(TestNGCommandLineArgs.TEST_NAMES_COMMAND_OPT);
       argv.add(m_testNames);
     }
