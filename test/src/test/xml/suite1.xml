@@ -1,0 +1,16 @@
+<suite name="Suite 1">
+
+  <test name="Suite 1 Tests">
+    <classes>
+      <class name="test.xml.XmlVerifyTest">
+         <methods>
+            <include name="simple"/>
+         </methods>
+      </class>
+    </classes>
+  </test>
+  <suite-files>
+   <suite-file path="./suite1-1.xml" />
+   <suite-file path="./suite1-2.xml" />
+  </suite-files>
+</suite>

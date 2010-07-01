@@ -1,0 +1,8 @@
+<suite name="Suite 1-2">
+
+  <test name="Suite 1-2 Tests">
+    <classes>
+      <class name="test.asserttests.AssertTest"/>
+    </classes>
+  </test>
+</suite>

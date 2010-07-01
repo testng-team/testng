@@ -780,7 +780,7 @@ public class TestNG {
     }
   }
 
-  private void initializeListeners() {
+  private void initializeDefaultListeners() {
     m_testListeners.add(new ExitCodeListener(this));
     
     if (m_useDefaultListeners) {
@@ -801,7 +801,7 @@ public class TestNG {
    */
   public void run() {
     initializeSuitesAndJarFile();
-    initializeListeners();
+    initializeDefaultListeners();
     initializeCommandLineSuites();
     initializeCommandLineSuitesParams();
     initializeCommandLineSuitesGroups();
@@ -864,11 +864,21 @@ public class TestNG {
    * until an alternative mechanism is found.
    */
   public List<ISuite> runSuitesLocally() {
-    List<ISuite> result = Lists.newArrayList();
-    
+    Map<XmlSuite, ISuite> suiteRunnerMap = Maps.newHashMap();
     if (m_suites.size() > 0) {
+      /*
+       * first initialize the suite runners to ensure there are no configuration issues.
+       * Create a map with XmlSuite as key and corresponding SuiteRunner as value
+       */
       for (XmlSuite xmlSuite : m_suites) {
-        runSuite(result, xmlSuite);
+        createSuiteRunners(suiteRunnerMap, xmlSuite);
+      }
+      
+      /*
+       * Run suites
+       */
+      for (XmlSuite xmlSuite : m_suites) {
+        runSuite(suiteRunnerMap, xmlSuite);
       }
     }
     else {
@@ -879,15 +889,78 @@ public class TestNG {
     //
     // Generate the suites report
     //
+    return Lists.newArrayList(suiteRunnerMap.values());
+  }
+
+  private void createSuiteRunners(Map<XmlSuite, ISuite> suiteRunnerMap /* OUT */, XmlSuite xmlSuite) {
+    xmlSuite.setDefaultAnnotations(m_defaultAnnotations.toString());
+
+    if (null != m_isJUnit) {
+      xmlSuite.setJUnit(m_isJUnit);
+    }
+
+    //
+    // Install the listeners
+    //
+    for (String listenerName : xmlSuite.getListeners()) {
+      Class<?> listenerClass = ClassHelper.forName(listenerName);
+
+      // If specified listener does not exist, a TestNGException will be thrown
+      if(listenerClass == null) {
+        throw new TestNGException("Listener " + listenerName
+            + " was not found in project's classpath");
+      }
+
+      Object listener = ClassHelper.newInstance(listenerClass);
+      addListener(listener);
+    }
+
+    // If the skip flag was invoked on the command line, it
+    // takes precedence
+    if (null != m_skipFailedInvocationCounts) {
+      xmlSuite.setSkipFailedInvocationCounts(m_skipFailedInvocationCounts);
+    }
+
+    if (xmlSuite.getVerbose() == null) {
+      xmlSuite.setVerbose(m_verbose);
+    }
+
+    suiteRunnerMap.put(xmlSuite, createSuiteRunner(xmlSuite));
+
+    for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
+      createSuiteRunners(suiteRunnerMap, childSuite);
+    }
+  }
+
+  /**
+   * Creates a suite runner and configures it's initial state 
+   * @param xmlSuite
+   * @return returns the newly created suite runner
+   */
+  protected SuiteRunner createSuiteRunner(XmlSuite xmlSuite) {
+    initializeInjector();
+    SuiteRunner result = new SuiteRunner(getConfiguration(), xmlSuite, 
+        m_outputDir, 
+        m_testRunnerFactory, 
+        m_useDefaultListeners, 
+        m_methodInterceptor,
+        m_invokedMethodListeners,
+        m_testListeners);
+
+    for (ISuiteListener isl : m_suiteListeners) {
+      result.addListener(isl);
+    }
+
     return result;
   }
 
   /**
    * Runs a suite and its children suites
    * @param result populates this list with execution results
+   * @param suiteRunnerMap map of suiteRunners that are updated with test results
    * @param xmlSuite XML suites to run
    */
-  private void runSuite(List<ISuite> result /*OUT*/, XmlSuite xmlSuite)
+  private void runSuite(Map<XmlSuite, ISuite> suiteRunnerMap /* OUT */, XmlSuite xmlSuite)
   {
     if (m_verbose > 0) {
       StringBuffer allFiles = new StringBuffer();
@@ -895,60 +968,24 @@ public class TestNG {
       Utils.log("TestNG", 0, "Running:\n" + allFiles.toString());
     }
      
-    xmlSuite.setDefaultAnnotations(m_defaultAnnotations.toString());
-    
-    if (null != m_isJUnit) {
-      xmlSuite.setJUnit(m_isJUnit);
-    }
-     
-    //
-    // Install the listeners
-    //
-    for (String listenerName : xmlSuite.getListeners()) {
-      Class<?> listenerClass = ClassHelper.forName(listenerName);
-      
-      // If specified listener does not exist, a TestNGException will be thrown
-      if(listenerClass == null) {
-        throw new TestNGException("Listener " + listenerName
-            + " was not found in project's classpath");
-      }
-      
-      Object listener = ClassHelper.newInstance(listenerClass);
-      addListener(listener);
-    }
-     
-    // If the skip flag was invoked on the command line, it
-    // takes precedence
-    if (null != m_skipFailedInvocationCounts) {
-      xmlSuite.setSkipFailedInvocationCounts(m_skipFailedInvocationCounts);
-    }
-    else {
-      m_skipFailedInvocationCounts = xmlSuite.skipFailedInvocationCounts();
-    }
-    
-    if (xmlSuite.getVerbose() == null) {
-      xmlSuite.setVerbose(m_verbose);
-    }
-    
     PoolService.initialize(xmlSuite.getDataProviderThreadCount());
-    result.add(createAndRunSuiteRunners(xmlSuite));
+    SuiteRunner suiteRunner = (SuiteRunner)suiteRunnerMap.get(xmlSuite);
+    suiteRunner.run();
+    for (IReporter r : suiteRunner.getReporters()) {
+      addListener(r);
+    }
     PoolService.getInstance().shutdown();
     
     for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
-      runSuite(result, childSuite);
+      runSuite(suiteRunnerMap, childSuite);
     }
     
     //
     // Display the final statistics
     //
     if (xmlSuite.getVerbose() > 0) {
-      Map<XmlSuite, ISuite> xmlToISuiteMap = Maps.newHashMap();
-      for (ISuite iSuite : result) {
-        xmlToISuiteMap.put(iSuite.getXmlSuite(), iSuite);
-      }
-
       SuiteResultCounts counts = new SuiteResultCounts();
-      counts.calculateResultCounts(xmlSuite, xmlToISuiteMap);
+      counts.calculateResultCounts(xmlSuite, suiteRunnerMap);
       
       StringBuffer bufLog = new StringBuffer(xmlSuite.getName());
       bufLog.append("\nTotal tests run: ")
@@ -992,31 +1029,6 @@ public class TestNG {
         calculateResultCounts(childSuite, xmlToISuiteMap);
       }
     }
-  }
-
-  protected SuiteRunner createAndRunSuiteRunners(XmlSuite xmlSuite) {
-    initializeInjector();
-    SuiteRunner result = new SuiteRunner(getConfiguration(), xmlSuite, 
-        m_outputDir, 
-        m_testRunnerFactory, 
-        m_useDefaultListeners, 
-        m_methodInterceptor,
-        m_invokedMethodListeners);
-    result.setSkipFailedInvocationCounts(m_skipFailedInvocationCounts);
-
-    for (ISuiteListener isl : m_suiteListeners) {
-      result.addListener(isl);
-    }
-    
-    result.setTestListeners(m_testListeners);
-
-    result.run();
-
-    for (IReporter r : result.getReporters()) {
-      addListener(r);
-    }
-
-    return result;
   }
 
   private IAnnotationFinder getAnnotationFinder() {
@@ -1174,7 +1186,7 @@ public class TestNG {
     m_testNames = testNames;
   }
 
-  private void setSkipFailedInvocationCounts(Boolean skip) {
+  public void setSkipFailedInvocationCounts(Boolean skip) {
     m_skipFailedInvocationCounts = skip;
   }
 
@@ -1320,14 +1332,6 @@ public class TestNG {
   
   public IAnnotationTransformer getAnnotationTransformer() {
     return m_annotationTransformer;
-  }
-  
-  public boolean getSkipFailedInvocationCounts() {
-    return m_skipFailedInvocationCounts;
-  }
-  
-  public void setSkipFailedInvocationCounts(boolean skip) {
-    m_skipFailedInvocationCounts = skip;
   }
   
   public void setAnnotationTransformer(IAnnotationTransformer t) {

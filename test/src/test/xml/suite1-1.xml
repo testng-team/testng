@@ -1,0 +1,8 @@
+<suite name="Suite 1-1">
+
+  <test name="Suite 1-1 Tests">
+    <classes>
+      <class name="foo.bar.NonExistentClass"/>
+    </classes>
+  </test>
+</suite>
