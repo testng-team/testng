@@ -969,7 +969,7 @@ public class TestNG {
     }
      
     PoolService.initialize(xmlSuite.getDataProviderThreadCount());
-    SuiteRunner suiteRunner = (SuiteRunner)suiteRunnerMap.get(xmlSuite);
+    SuiteRunner suiteRunner = (SuiteRunner) suiteRunnerMap.get(xmlSuite);
     suiteRunner.run();
     for (IReporter r : suiteRunner.getReporters()) {
       addListener(r);

@@ -83,7 +83,10 @@ public class SuiteRunner implements ISuite, Serializable {
       ITestRunnerFactory runnerFactory, 
       boolean useDefaultListeners)
   {
-    this(configuration, suite, outputDir, runnerFactory, useDefaultListeners, null, null, null);
+    this(configuration, suite, outputDir, runnerFactory, useDefaultListeners,
+        null /* method interceptor */,
+        null /* invoked method listeners */,
+        null /* test listeners */);
   }
   
   public SuiteRunner(IConfiguration configuration,
@@ -92,11 +95,11 @@ public class SuiteRunner implements ISuite, Serializable {
       ITestRunnerFactory runnerFactory, 
       boolean useDefaultListeners,
       IMethodInterceptor methodInterceptor,
-      List<IInvokedMethodListener> invokedMethodListener,
+      List<IInvokedMethodListener> invokedMethodListeners,
       List<ITestListener> testListeners)
   {
     init(configuration, suite, outputDir, runnerFactory, useDefaultListeners,
-      methodInterceptor, invokedMethodListener, testListeners);
+      methodInterceptor, invokedMethodListeners, testListeners);
   }
   
   private void init(IConfiguration configuration,
@@ -205,7 +208,7 @@ public class SuiteRunner implements ISuite, Serializable {
       privateRun();
     }
     finally {
-      invokeListeners(false /* start */);
+      invokeListeners(false /* stop */);
     }
   }
 
