@@ -1,17 +1,5 @@
 package org.testng.internal;
 
-import org.testng.ITestNGMethod;
-import org.testng.TestNGCommandLineArgs;
-import org.testng.TestRunner;
-import org.testng.annotations.IConfigurationAnnotation;
-import org.testng.annotations.ITestAnnotation;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.internal.annotations.AnnotationHelper;
-import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.log.TextFormatter;
-import org.testng.xml.XmlClass;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -26,10 +14,24 @@ import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.testng.ITestNGMethod;
+import org.testng.TestNGCommandLineArgs;
+import org.testng.TestRunner;
+import org.testng.annotations.IConfigurationAnnotation;
+import org.testng.annotations.ITestAnnotation;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
+import org.testng.internal.annotations.AnnotationHelper;
+import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.Sets;
+import org.testng.log.TextFormatter;
+import org.testng.xml.XmlClass;
 
 /**
  * Helper methods to parse annotations.
@@ -69,27 +71,6 @@ public final class Utils {
     return result;
   }
 
-  public static Class<?>[] xmlClassesToClasses(List<XmlClass> classes) {
-    List<Class<?>> result = Lists.newArrayList();
-
-    for (XmlClass xmlClass : classes) {
-      try {
-        result.add(xmlClass.getSupportClass());
-      } catch (NoClassDefFoundError e) {
-        log("[Utils]", 1, "Unable to open class " + xmlClass.getName() + " - unable to resolve class reference " + e.getMessage());
-        if (xmlClass.getDeclaredClass() == Boolean.TRUE) {
-          throw e;
-        }
-      }
-    }
-
-    Class<?>[] xmlClasses = result.toArray(new Class[result.size()]);
-    Map<Class<?>, Class<?>> withNestedClasses = Maps.newHashMap();
-    findAllClasses(xmlClasses, withNestedClasses);
-
-    return withNestedClasses.values().toArray(new Class[withNestedClasses.size()]);
-  }
-
   public static XmlClass[] classesToXmlClasses(Class<?>[] classes) {
     List<XmlClass> result = Lists.newArrayList();
 
@@ -105,13 +86,13 @@ public final class Utils {
    * @param classes
    * @return
    */
-  private static void findAllClasses(Class<?>[] classes, Map<Class<?>, Class<?>> result) {
-    for (Class<?> cls : classes) {
-      if (!result.containsKey(cls)) {
-        result.put(cls, cls);
-      }
-    }
-  }
+//  private static void findAllClasses(Class<?>[] classes, Map<Class<?>, Class<?>> result) {
+//    for (Class<?> cls : classes) {
+//      if (!result.containsKey(cls)) {
+//        result.put(cls, cls);
+//      }
+//    }
+//  }
 
   public static String[] parseMultiLine(String line) {
     List<String> vResult = Lists.newArrayList();

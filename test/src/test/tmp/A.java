@@ -37,12 +37,14 @@ public class A {
 
   @Test
   public void atest1() {
+    System.out.println("A.atest1");
     Reporter.log("line 1");
     Reporter.log("line 2");
   }
 
-  @Test(dependsOnMethods = "atest1")
+  @Test
   public void atest2() {
+    System.out.println("A.atest2");
     Reporter.clear();
     Reporter.log("atest2");
   }

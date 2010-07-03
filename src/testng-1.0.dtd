@@ -123,6 +123,8 @@ A test contains parameters and classes.  Additionally, you can define additional
                 the method (if parallel="methods") or the test (if parallel="tests")
 @attr  enabled      flag to enable/disable current test. Default value: true 
 @attr  skipfailedinvocationcounts Whether to skip failed invocations.
+@attr preserve-order If true, the classes in this tag will be run in the same order as
+found in the XML file.
 -->
 <!ATTLIST test
     name CDATA #REQUIRED 
@@ -134,6 +136,7 @@ A test contains parameters and classes.  Additionally, you can define additional
     time-out CDATA #IMPLIED
     enabled CDATA #IMPLIED
     skipfailedinvocationcounts (true | false) "false"
+    preserve-order (true | false) "false"
 >
 
 <!--

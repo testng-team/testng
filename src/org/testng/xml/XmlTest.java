@@ -48,6 +48,8 @@ public class XmlTest implements Serializable, Cloneable {
   private Boolean m_skipFailedInvocationCounts;
   private Map<String, List<Integer>> m_failedInvocationNumbers = null; // lazily initialized
 
+  private boolean m_preserveOrder;
+
   /**
    * Constructs a <code>XmlTest</code> and adds it to suite's list of tests. 
    *
@@ -534,5 +536,13 @@ public class XmlTest implements Serializable, Cloneable {
     } else {
       return result;
     }
+  }
+
+  public void setPreserveOrder(boolean preserveOrder) {
+    m_preserveOrder = preserveOrder;
+  }
+
+  public boolean getPreserveOrder() {
+    return m_preserveOrder;
   }
 }

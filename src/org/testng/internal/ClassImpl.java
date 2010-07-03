@@ -1,14 +1,15 @@
 package org.testng.internal;
 
+import java.util.List;
+import java.util.Map;
+
 import org.testng.IClass;
 import org.testng.IObjectFactory;
 import org.testng.ITest;
 import org.testng.collections.Lists;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Implementation of an IClass.
@@ -27,12 +28,13 @@ public class ClassImpl implements IClass {
   private Object m_instance;
   private IObjectFactory m_objectFactory;
   private String m_testName = null;
+  private XmlClass m_xmlClass;
 
-  public ClassImpl(Class cls, Object instance, Map<Class, IClass> classes,
-      XmlTest xmlTest, IAnnotationFinder annotationFinder, IObjectFactory objectFactory) 
-  {
+  public ClassImpl(Class cls, XmlClass xmlClass, Object instance, Map<Class, IClass> classes,
+      XmlTest xmlTest, IAnnotationFinder annotationFinder, IObjectFactory objectFactory) {
     m_class = cls;
     m_classes = classes;
+    m_xmlClass = xmlClass;
     m_xmlTest = xmlTest;
     m_annotationFinder = annotationFinder;
     m_instance = instance;
@@ -41,7 +43,7 @@ public class ClassImpl implements IClass {
       m_testName = ((ITest) instance).getTestName();
     }
   }
-  
+
   private static void ppp(String s) {
     System.out.println("[ClassImpl] " + s);
   }
@@ -61,32 +63,38 @@ public class ClassImpl implements IClass {
   public int getInstanceCount() {
     return m_instanceCount;
   }
-  
+
   public long[] getInstanceHashCodes() {
     return m_instanceHashCodes;
   }
-  
+
+  public XmlTest getXmlTest() {
+    return m_xmlTest;
+  }
+
+  public XmlClass getXmlClass() {
+    return m_xmlClass;
+  }
+
   private Object getDefaultInstance() {
     if (m_defaultInstance == null) {
-      m_defaultInstance = 
-        m_instance != null ? m_instance : 
-          ClassHelper.createInstance(m_class, m_classes, m_xmlTest, m_annotationFinder, m_objectFactory);
+      m_defaultInstance = m_instance != null ? m_instance : ClassHelper
+          .createInstance(m_class, m_classes, m_xmlTest, m_annotationFinder,
+              m_objectFactory);
     }
-    
+
     return m_defaultInstance;
   }
-  
+
   public Object[] getInstances(boolean create) {
     Object[] result = {};
-    
+
     if (m_xmlTest.isJUnit()) {
       if (create) {
-        result = new Object[] { 
-          ClassHelper.createInstance(m_class, m_classes, m_xmlTest, m_annotationFinder, m_objectFactory) 
-        };
+        result = new Object[] { ClassHelper.createInstance(m_class, m_classes,
+            m_xmlTest, m_annotationFinder, m_objectFactory) };
       }
-    }
-    else {
+    } else {
       result = new Object[] { getDefaultInstance() };
     }
     if (m_instances.size() > 0) {
@@ -100,7 +108,7 @@ public class ClassImpl implements IClass {
     }
     return result;
   }
-    
+
   @Override
   public String toString() {
     return "[ClassImpl " + m_class.getName() + "]";

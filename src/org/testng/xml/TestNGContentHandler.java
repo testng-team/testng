@@ -31,6 +31,7 @@ public class TestNGContentHandler extends DefaultHandler {
   private List<String> m_currentRuns = null;
   private List<String> m_currentGroups = null;
   private List<XmlClass> m_currentClasses = null;
+  private int m_currentClassIndex = 0;
   private List<XmlPackage> m_currentPackages = null;
   private XmlPackage m_currentPackage = null;
   private List<XmlSuite> m_suites = Lists.newArrayList();
@@ -246,6 +247,10 @@ public class TestNGContentHandler extends DefaultHandler {
       if (skip != null) {
         m_currentTest.setSkipFailedInvocationCounts(Boolean.valueOf(skip).booleanValue());
       }
+      String preserveOrder = attributes.getValue("preserve-order");
+      if (preserveOrder != null) {
+        m_currentTest.setPreserveOrder(Boolean.valueOf(preserveOrder).booleanValue());
+      }
       String parallel = attributes.getValue("parallel");
       if (null != parallel) {
         if(XmlSuite.PARALLEL_METHODS.equals(parallel)
@@ -302,6 +307,7 @@ public class TestNGContentHandler extends DefaultHandler {
   public void xmlClasses(boolean start, Attributes attributes) {
     if (start) {
       m_currentClasses = Lists.newArrayList();
+      m_currentClassIndex = 0;
     }
     else {
       m_currentTest.setXmlClasses(m_currentClasses);
@@ -484,7 +490,7 @@ public class TestNGContentHandler extends DefaultHandler {
       // will complain, but in the meantime, dodge the NPE so SAX
       // can finish parsing the file.
       if (null != m_currentClasses) {
-        m_currentClass = new XmlClass(name, Boolean.TRUE);
+        m_currentClass = new XmlClass(name, Boolean.TRUE, m_currentClassIndex++);
         m_currentClasses.add(m_currentClass);
       }
     }

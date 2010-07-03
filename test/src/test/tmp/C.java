@@ -6,9 +6,9 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 
 public class C {
-  @Test(threadPoolSize = 10, dataProvider = "data") 
-  public void testMethod(Integer val) {
-    System.out.print(Thread.currentThread().getId() + " ");
+  @Test 
+  public void testMethod() {
+    System.out.print("C.testMethod " + Thread.currentThread().getId() + " ");
   }
 
   @DataProvider(name = "data", parallel = true) 

@@ -1,13 +1,14 @@
 package org.testng.internal;
 
+import java.util.Map;
+
 import org.testng.IClass;
 import org.testng.IObjectFactory;
 import org.testng.ITestClassFinder;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
-
-import java.util.Map;
 
 /**
  * This class
@@ -36,14 +37,15 @@ abstract public class BaseClassFinder implements ITestClassFinder {
    * @return An IClass for the given class, or null if we have
    * already treated this class.
    */
-  protected IClass findOrCreateIClass(Class cls, Object instance,
+  protected IClass findOrCreateIClass(Class cls, XmlClass xmlClass, Object instance,
       XmlTest xmlTest,
       IAnnotationFinder annotationFinder,
       IObjectFactory objectFactory)
   {
     IClass result = m_classes.get(cls);
     if (null == result) {
-      result = new ClassImpl(cls, instance, m_classes, xmlTest, annotationFinder, objectFactory);
+      result = new ClassImpl(cls, xmlClass, instance, m_classes, xmlTest, annotationFinder,
+          objectFactory);
       m_classes.put(cls, result);
     }
 
