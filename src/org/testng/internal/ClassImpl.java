@@ -65,7 +65,11 @@ public class ClassImpl implements IClass {
   public long[] getInstanceHashCodes() {
     return m_instanceHashCodes;
   }
-  
+
+  public XmlTest getTest() {
+    return m_xmlTest;
+  }
+
   private Object getDefaultInstance() {
     if (m_defaultInstance == null) {
       m_defaultInstance = 

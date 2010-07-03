@@ -2,6 +2,8 @@ package org.testng;
 
 import java.io.Serializable;
 
+import org.testng.xml.XmlTest;
+
 /**
  * <code>IClass</code> represents a test class and a collection of its instances.
  * 
@@ -14,7 +16,12 @@ public interface IClass extends Serializable {
    * corresponding Java class.
    */
   String getName();
-  
+
+  /**
+   * @return the &lt;test&gt; tag this class was found in.
+   */
+  XmlTest getTest();
+
   /**
    * If this class implements ITest, returns its test name, otherwise returns null.
    */

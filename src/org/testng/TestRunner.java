@@ -379,6 +379,10 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     List<ITestNGMethod> beforeXmlTestMethods = Lists.newArrayList();
     List<ITestNGMethod> afterXmlTestMethods = Lists.newArrayList();
 
+    Map<String, XmlClass> classMap = Maps.newHashMap();
+    for (XmlClass tc : m_testClassesFromXml) {
+      classMap.put(tc.getName(), tc);
+    }
     m_testClassFinder= new TestNGClassFinder(Utils.xmlClassesToClasses(m_testClassesFromXml),
                                              null,
                                              m_xmlTest,
@@ -402,7 +406,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
                                    testMethodFinder,
                                    m_annotationFinder,
                                    m_runInfo,
-                                   m_xmlTest);
+                                   m_xmlTest,
+                                   classMap.get(ic.getRealClass().getName()));
       m_classMap.put(ic.getRealClass(), tc);
     }
     

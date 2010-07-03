@@ -7,6 +7,7 @@ import java.util.Map;
 import org.testng.IClass;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
+import org.testng.xml.XmlTest;
 
 /**
  * This class/interface
@@ -30,6 +31,8 @@ public class NoOpTestClass implements ITestClass {
   private Object[] m_instances;
   private long[] m_instanceHashes;
 
+  private XmlTest m_xmlTest;
+
   protected NoOpTestClass() {
   }
 
@@ -47,6 +50,7 @@ public class NoOpTestClass implements ITestClass {
     m_afterTestMethods= testClass.getAfterTestMethods();
     m_instances= testClass.getInstances(true);
     m_instanceHashes= testClass.getInstanceHashCodes();
+    m_xmlTest = testClass.getTest();
   }
 
   public void setBeforeTestMethods(ITestNGMethod[] beforeTestMethods) {
@@ -164,5 +168,9 @@ public class NoOpTestClass implements ITestClass {
   public String getTestName() {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  public XmlTest getTest() {
+    return m_xmlTest;
   }
 }

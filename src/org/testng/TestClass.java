@@ -1,5 +1,9 @@
 package org.testng;
 
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
+
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.ConfigurationMethod;
@@ -8,11 +12,8 @@ import org.testng.internal.RunInfo;
 import org.testng.internal.TestNGMethod;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
-
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class represents a test class:
@@ -35,15 +36,18 @@ public class TestClass extends NoOpTestClass implements ITestClass {
   
   private IClass m_iClass = null;
   private RunInfo m_runInfo = null;
+  private String m_testName;
   private XmlTest m_xmlTest;
+  private XmlClass m_xmlClass;
   
   public TestClass(IClass cls, 
                    String testName,
                    ITestMethodFinder testMethodFinder, 
                    IAnnotationFinder annotationFinder,
                    RunInfo runInfo,
-                   XmlTest xmlTest) {
-    init(cls, testName, testMethodFinder, annotationFinder, runInfo, xmlTest);
+                   XmlTest xmlTest,
+                   XmlClass xmlClass) {
+    init(cls, testName, testMethodFinder, annotationFinder, runInfo, xmlTest, xmlClass);
   }
   
   public TestClass(IClass cls, TestClass tc) {
@@ -52,17 +56,25 @@ public class TestClass extends NoOpTestClass implements ITestClass {
          tc.getTestMethodFinder(), 
          tc.getAnnotationFinder(),
          tc.getRunInfo(),
-         tc.getXmlTest());
+         tc.getXmlTest(),
+         tc.getXmlClass());
   }
   
+  /**
+   * @return the name of this test if the class implements org.testng.ITest, null otherwise.
+   */
   public String getTestName() {
-    return m_xmlTest.getName();
+    return m_testName;
   }
   
   public XmlTest getXmlTest() {
     return m_xmlTest;
   }
-  
+
+  public XmlClass getXmlClass() {
+    return m_xmlClass;
+  }
+
   public IAnnotationFinder getAnnotationFinder() {
     return m_annotationFinder;
   }
@@ -72,12 +84,15 @@ public class TestClass extends NoOpTestClass implements ITestClass {
                     ITestMethodFinder testMethodFinder, 
                     IAnnotationFinder annotationFinder,
                     RunInfo runInfo,
-                    XmlTest xmlTest) 
+                    XmlTest xmlTest,
+                    XmlClass xmlClass) 
   {
     log(3, "Creating TestClass for " + cls);
     m_iClass = cls;
     m_testClass = cls.getRealClass();
+    m_testName = testName;
     m_xmlTest = xmlTest;
+    m_xmlClass = xmlClass;
     m_runInfo = runInfo;
     m_testMethodFinder = testMethodFinder;
     m_annotationFinder = annotationFinder;
@@ -92,9 +107,9 @@ public class TestClass extends NoOpTestClass implements ITestClass {
     Object[] instances = getInstances(false);
     for (Object instance : instances) {
       Class cls = instance.getClass();
-//      if (instance instanceof ITest) {
-//        m_testName = ((ITest) instance).getTestName();
-//      }
+      if (instance instanceof ITest) {
+        m_testName = ((ITest) instance).getTestName();
+      }
       if (null == m_testClasses.get(cls)) {
         m_testClasses.put(cls, cls);
         m_instanceMap.put(cls, instances);
