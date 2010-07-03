@@ -14,9 +14,6 @@ import org.testng.ITestNGMethod;
 public class NoOpTestClass implements ITestClass {
   protected Class m_testClass= null;
 
-  // Information about this test run
-  protected String m_testName= null;
-
   // Test methods
   protected ITestNGMethod[] m_beforeClassMethods= null;
   protected ITestNGMethod[] m_beforeTestMethods= null;
@@ -38,7 +35,6 @@ public class NoOpTestClass implements ITestClass {
 
   public NoOpTestClass(ITestClass testClass) {
     m_testClass= testClass.getRealClass();
-    m_testName= testClass.getName();
     m_beforeSuiteMethods= testClass.getBeforeSuiteMethods();
     m_beforeTestConfMethods= testClass.getBeforeTestConfigurationMethods();
     m_beforeGroupsMethods= testClass.getBeforeGroupsMethods();

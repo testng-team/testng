@@ -134,6 +134,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   //    return methods;
     }
   
+    /**
+     * The default method interceptor which sorts methods by instances (i.e. by class).
+     */
     private List<IMethodInstance> groupMethodsByInstance(List<IMethodInstance> methods) {
       List<Object> instanceList = Lists.newArrayList();
       Map<Object, List<IMethodInstance>> map = Maps.newHashMap();

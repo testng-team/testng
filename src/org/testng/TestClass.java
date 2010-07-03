@@ -56,7 +56,7 @@ public class TestClass extends NoOpTestClass implements ITestClass {
   }
   
   public String getTestName() {
-    return m_testName;
+    return m_xmlTest.getName();
   }
   
   public XmlTest getXmlTest() {
@@ -77,11 +77,10 @@ public class TestClass extends NoOpTestClass implements ITestClass {
     log(3, "Creating TestClass for " + cls);
     m_iClass = cls;
     m_testClass = cls.getRealClass();
-    m_testName = testName;
+    m_xmlTest = xmlTest;
     m_runInfo = runInfo;
     m_testMethodFinder = testMethodFinder;
     m_annotationFinder = annotationFinder;
-    m_xmlTest = xmlTest;
     initMethods();
     initTestClassesAndInstances();
   }
@@ -93,9 +92,9 @@ public class TestClass extends NoOpTestClass implements ITestClass {
     Object[] instances = getInstances(false);
     for (Object instance : instances) {
       Class cls = instance.getClass();
-      if (instance instanceof ITest) {
-        m_testName = ((ITest) instance).getTestName();
-      }
+//      if (instance instanceof ITest) {
+//        m_testName = ((ITest) instance).getTestName();
+//      }
       if (null == m_testClasses.get(cls)) {
         m_testClasses.put(cls, cls);
         m_instanceMap.put(cls, instances);
