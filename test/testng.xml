@@ -99,6 +99,7 @@
       <class name="test.abstractconfmethod.C" />
       <class name="test.issue78.NonPublicClassTest"/>
       <class name="test.listeners.ListenerTest"/>
+      <class name="test.preserveorder.PreserveOrderTest" />
     </classes>
   </test>
   

@@ -1,5 +1,6 @@
 Current:
 
+Added: <test preserve-order="true">
 Added: -testnames (command line) and testnames (ant)
 Added: New ant task tag:  propertyset (Todd Wells)
 Added: ITestNGListenerFactory
