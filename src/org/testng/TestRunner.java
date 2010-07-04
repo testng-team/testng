@@ -126,9 +126,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   // The host where this test was run, or null if run locally
   private String m_host;
 
-  private IMethodInterceptor m_methodInterceptor =
-//    new PreserveOrderMethodInterceptor();
-    new InstanceOrderingMethodInterceptor();
+  // Defined dynamically depending on <test preserve-order="true/false">
+  private IMethodInterceptor m_methodInterceptor;
 
   private ClassMethodMap m_classMethodMap;
   private TestNGClassFinder m_testClassFinder;
@@ -172,7 +171,10 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     m_testClassesFromXml= test.getXmlClasses();
     m_skipFailedInvocationCounts = skipFailedInvocationCounts;
     setVerbose(test.getVerbose());
-    
+
+    m_methodInterceptor = test.getPreserveOrder() ? new PreserveOrderMethodInterceptor()
+        : new InstanceOrderingMethodInterceptor();
+
     m_packageNamesFromXml= test.getXmlPackages();    
     if(null != m_packageNamesFromXml) {
       for(XmlPackage xp: m_packageNamesFromXml) {

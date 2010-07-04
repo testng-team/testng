@@ -247,6 +247,10 @@ public class TestNGContentHandler extends DefaultHandler {
       if (skip != null) {
         m_currentTest.setSkipFailedInvocationCounts(Boolean.valueOf(skip).booleanValue());
       }
+      String preserveOrder = attributes.getValue("preserve-order");
+      if (preserveOrder != null) {
+        m_currentTest.setPreserveOrder(Boolean.valueOf(preserveOrder).booleanValue());
+      }
       String parallel = attributes.getValue("parallel");
       if (null != parallel) {
         if(XmlSuite.PARALLEL_METHODS.equals(parallel)
