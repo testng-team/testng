@@ -42,7 +42,7 @@ public class A {
     Reporter.log("line 2");
   }
 
-  @Test(dependsOnMethods = "atest1")
+  @Test
   public void atest2() {
     System.out.println("A.atest2");
     Reporter.clear();

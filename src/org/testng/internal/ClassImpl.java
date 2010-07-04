@@ -31,8 +31,7 @@ public class ClassImpl implements IClass {
   private XmlClass m_xmlClass;
 
   public ClassImpl(Class cls, XmlClass xmlClass, Object instance, Map<Class, IClass> classes,
-      XmlTest xmlTest, IAnnotationFinder annotationFinder,
-      IObjectFactory objectFactory) {
+      XmlTest xmlTest, IAnnotationFinder annotationFinder, IObjectFactory objectFactory) {
     m_class = cls;
     m_classes = classes;
     m_xmlClass = xmlClass;

@@ -126,7 +126,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   // The host where this test was run, or null if run locally
   private String m_host;
 
-  private IMethodInterceptor m_methodInterceptor = new InstanceOrderingMethodInterceptor();
+  private IMethodInterceptor m_methodInterceptor =
+//    new PreserveOrderMethodInterceptor();
+    new InstanceOrderingMethodInterceptor();
 
   private ClassMethodMap m_classMethodMap;
   private TestNGClassFinder m_testClassFinder;
