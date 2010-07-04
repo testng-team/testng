@@ -12,6 +12,7 @@ import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
+import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
 /**
@@ -590,7 +591,11 @@ public class JUnitUtils {
       return null;
     }
 
-    public XmlTest getTest() {
+    public XmlTest getXmlTest() {
+      return null;
+    }
+
+    public XmlClass getXmlClass() {
       return null;
     }
   }

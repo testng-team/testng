@@ -1,6 +1,14 @@
 package org.testng.internal;
 
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.testng.IClass;
 import org.testng.IInstanceInfo;
 import org.testng.IObjectFactory;
@@ -14,14 +22,6 @@ import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 /**
  * This class creates an ITestClass from a test class.
  *
@@ -31,7 +31,7 @@ public class TestNGClassFinder extends BaseClassFinder {
   private ITestContext m_testContext = null;
   private Map<Class, List<Object>> m_instanceMap = Maps.newHashMap();
 
-  public TestNGClassFinder(Class[] classes,
+  public TestNGClassFinder(ClassInfoMap cim,
                            Map<Class, List<Object>> instanceMap,
                            XmlTest xmlTest,
                            IAnnotationFinder annotationFinder,
@@ -46,7 +46,7 @@ public class TestNGClassFinder extends BaseClassFinder {
     //
     // Find all the new classes and their corresponding instances
     //
-    Class[] allClasses= classes;
+    Set<Class<?>> allClasses= cim.getClasses();
 
     IObjectFactory objectFactory = testContext.getSuite().getObjectFactory();
     //very first pass is to find ObjectFactory, can't create anything else until then
@@ -113,8 +113,8 @@ public class TestNGClassFinder extends BaseClassFinder {
           continue;
         }
 
-        IClass ic= findOrCreateIClass(cls, thisInstance, xmlTest, annotationFinder,
-                                      objectFactory);
+        IClass ic= findOrCreateIClass(cls, cim.getXmlClass(cls), thisInstance,
+            xmlTest, annotationFinder, objectFactory);
         if(null != ic) {
           Object[] theseInstances = ic.getInstances(false);
           if (theseInstances.length == 0) {
@@ -131,7 +131,7 @@ public class TestNGClassFinder extends BaseClassFinder {
               xmlTest,
               annotationFinder,
               m_testContext);
-            List<Class> moreClasses= Lists.newArrayList();
+            ClassInfoMap moreClasses = new ClassInfoMap();
 
             {
 //            ppp("INVOKING FACTORY " + fm + " " + this.hashCode());
@@ -147,24 +147,23 @@ public class TestNGClassFinder extends BaseClassFinder {
                   for(Object o : instances) {
                     IInstanceInfo ii = (IInstanceInfo) o;
                     addInstance(ii.getInstanceClass(), ii.getInstance());
-                    moreClasses.add(ii.getInstanceClass());
+                    moreClasses.addClass(ii.getInstanceClass());
                   }
                 }
                 else {
                   for(Object o : instances) {
                     addInstance(o.getClass(), o);
                     if(!classExists(o.getClass())) {
-                      moreClasses.add(o.getClass());
+                      moreClasses.addClass(o.getClass());
                     }
                   }
                 }
               }
             }
 
-            if(moreClasses.size() > 0) {
+            if(moreClasses.getSize() > 0) {
               TestNGClassFinder finder=
-                new TestNGClassFinder(moreClasses.toArray(
-                    new Class[moreClasses.size()]),
+                new TestNGClassFinder(moreClasses,
                     m_instanceMap,
                     xmlTest,
                     annotationFinder,

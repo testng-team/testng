@@ -26,6 +26,17 @@ public class MethodInstance implements IMethodInstance {
     return "[MethodInstance m:" + m_method + " i:" + m_instances[0];
   }
 
+
+  public static final Comparator<IMethodInstance> SORT_BY_INDEX 
+    = new Comparator<IMethodInstance>() {
+    public int compare(IMethodInstance o1, IMethodInstance o2) {
+      int result = o1.getMethod().getTestClass().getXmlClass().getIndex()
+        - o2.getMethod().getTestClass().getXmlClass().getIndex();
+
+      return result;
+    }
+  };
+
   public static final Comparator<IMethodInstance> SORT_BY_CLASS 
     = new Comparator<IMethodInstance>() {
     public int compare(IMethodInstance o1, IMethodInstance o2) {

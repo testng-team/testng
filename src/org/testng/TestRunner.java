@@ -17,6 +17,7 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.Attributes;
 import org.testng.internal.ClassHelper;
+import org.testng.internal.ClassInfoMap;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.Constants;
 import org.testng.internal.DynamicGraph;
@@ -125,43 +126,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   // The host where this test was run, or null if run locally
   private String m_host;
 
-  private IMethodInterceptor m_methodInterceptor = new IMethodInterceptor() {
-
-    public List<IMethodInstance> intercept(List<IMethodInstance> methods,
-        ITestContext context)  {
-      return groupMethodsByInstance(methods);
-  //    Collections.sort(methods, MethodInstance.SORT_BY_CLASS);
-  //    return methods;
-    }
-  
-    /**
-     * The default method interceptor which sorts methods by instances (i.e. by class).
-     */
-    private List<IMethodInstance> groupMethodsByInstance(List<IMethodInstance> methods) {
-      List<Object> instanceList = Lists.newArrayList();
-      Map<Object, List<IMethodInstance>> map = Maps.newHashMap();
-      for (IMethodInstance mi : methods) {
-        Object[] methodInstances = mi.getInstances();
-        for (Object instance : methodInstances) {
-          if (!instanceList.contains(instance)) instanceList.add(instance);
-          List<IMethodInstance> l = map.get(instance);
-          if (l == null) {
-            l = Lists.newArrayList();
-            map.put(instance, l);
-          }
-          l.add(mi);
-        }
-      }
-  
-      List<IMethodInstance> result = Lists.newArrayList();
-      for (Object instance : instanceList) {
-        result.addAll(map.get(instance));
-      }
-  
-      return result;
-    }
-    
-  }; // new IMethodInterceptor
+  private IMethodInterceptor m_methodInterceptor = new InstanceOrderingMethodInterceptor();
 
   private ClassMethodMap m_classMethodMap;
   private TestNGClassFinder m_testClassFinder;
@@ -379,11 +344,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     List<ITestNGMethod> beforeXmlTestMethods = Lists.newArrayList();
     List<ITestNGMethod> afterXmlTestMethods = Lists.newArrayList();
 
-    Map<String, XmlClass> classMap = Maps.newHashMap();
-    for (XmlClass tc : m_testClassesFromXml) {
-      classMap.put(tc.getName(), tc);
-    }
-    m_testClassFinder= new TestNGClassFinder(Utils.xmlClassesToClasses(m_testClassesFromXml),
+    ClassInfoMap classMap = new ClassInfoMap(m_testClassesFromXml);
+    m_testClassFinder= new TestNGClassFinder(classMap,
                                              null,
                                              m_xmlTest,
                                              m_annotationFinder,
@@ -407,7 +369,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
                                    m_annotationFinder,
                                    m_runInfo,
                                    m_xmlTest,
-                                   classMap.get(ic.getRealClass().getName()));
+                                   classMap.getXmlClass(ic.getRealClass()));
       m_classMap.put(ic.getRealClass(), tc);
     }
     
@@ -618,7 +580,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   }
 
   private void privateRunJUnit(XmlTest xmlTest) {
-    final Class<?>[] classes= Utils.xmlClassesToClasses(m_testClassesFromXml);
+    ClassInfoMap cim = new ClassInfoMap(m_testClassesFromXml);
+    final Set<Class<?>> classes = cim.getClasses();
     final List<ITestNGMethod> runMethods= Lists.newArrayList();
     List<IMethodWorker> workers= Lists.newArrayList();
     // FIXME: directly referincing JUnitTestRunner which uses JUnit classes

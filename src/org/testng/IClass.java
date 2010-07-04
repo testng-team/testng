@@ -2,6 +2,7 @@ package org.testng;
 
 import java.io.Serializable;
 
+import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
 /**
@@ -20,7 +21,12 @@ public interface IClass extends Serializable {
   /**
    * @return the &lt;test&gt; tag this class was found in.
    */
-  XmlTest getTest();
+  XmlTest getXmlTest();
+
+  /**
+   * @return the *lt;class&gt; tag this class was found in.
+   */
+  XmlClass getXmlClass();
 
   /**
    * If this class implements ITest, returns its test name, otherwise returns null.

@@ -1,12 +1,9 @@
 package org.testng.internal;
 
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.testng.IClass;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
+import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
 /**
@@ -33,6 +30,8 @@ public class NoOpTestClass implements ITestClass {
 
   private XmlTest m_xmlTest;
 
+  private XmlClass m_xmlClass;
+
   protected NoOpTestClass() {
   }
 
@@ -50,7 +49,8 @@ public class NoOpTestClass implements ITestClass {
     m_afterTestMethods= testClass.getAfterTestMethods();
     m_instances= testClass.getInstances(true);
     m_instanceHashes= testClass.getInstanceHashCodes();
-    m_xmlTest = testClass.getTest();
+    m_xmlTest = testClass.getXmlTest();
+    m_xmlClass = testClass.getXmlClass();
   }
 
   public void setBeforeTestMethods(ITestNGMethod[] beforeTestMethods) {
@@ -170,7 +170,11 @@ public class NoOpTestClass implements ITestClass {
     return null;
   }
 
-  public XmlTest getTest() {
+  public XmlTest getXmlTest() {
     return m_xmlTest;
+  }
+
+  public XmlClass getXmlClass() {
+    return m_xmlClass;
   }
 }
