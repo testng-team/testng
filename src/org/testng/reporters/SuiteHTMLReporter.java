@@ -1,5 +1,17 @@
 package org.testng.reporters;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+
+import org.testng.IInvokedMethod;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -11,17 +23,6 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlSuite;
-
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class implements an HTML reporter for suites.
@@ -345,14 +346,14 @@ public class SuiteHTMLReporter implements IReporter {
     Utils.writeFile(getOutputDirectory(xmlSuite), outputFileName, sb.toString());
     sb = null; //not needed anymore
 
-    Collection<ITestNGMethod> invokedMethods = suite.getInvokedMethods();
+    Collection<IInvokedMethod> invokedMethods = suite.getAllInvokedMethods();
     if (alphabetical) {
       @SuppressWarnings({"unchecked"})
       Comparator<? super ITestNGMethod>  alphabeticalComparator = new Comparator(){
         public int compare(Object o1, Object o2) {
-          ITestNGMethod m1 = (ITestNGMethod) o1;
-          ITestNGMethod m2 = (ITestNGMethod) o2;
-          return m1.getMethodName().compareTo(m2.getMethodName());
+          IInvokedMethod m1 = (IInvokedMethod) o1;
+          IInvokedMethod m2 = (IInvokedMethod) o2;
+          return m1.getTestMethod().getMethodName().compareTo(m2.getTestMethod().getMethodName());
         }
       };
       Collections.sort((List) invokedMethods, alphabeticalComparator);
@@ -361,7 +362,8 @@ public class SuiteHTMLReporter implements IReporter {
     SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
     StringBuffer table = new StringBuffer();
     boolean addedHeader = false;
-    for (ITestNGMethod tm : invokedMethods) {
+    for (IInvokedMethod iim : invokedMethods) {
+      ITestNGMethod tm = iim.getTestMethod();
       table.setLength(0);
       if (!addedHeader) {
         table.append("<table border=\"1\">\n")
@@ -407,11 +409,11 @@ public class SuiteHTMLReporter implements IReporter {
         instances.append(o).append(" ");
       }
       
-      if (startDate == -1) startDate = tm.getDate();
-      String date = format.format(tm.getDate());
+      if (startDate == -1) startDate = iim.getDate();
+      String date = format.format(iim.getDate());
       table.append("<tr bgcolor=\"" + createColor(tm) + "\">")
         .append("  <td>").append(date).append("</td> ")
-        .append("  <td>").append(tm.getDate() - startDate).append("</td> ")
+        .append("  <td>").append(iim.getDate() - startDate).append("</td> ")
         .append(td(configurationSuiteMethod))
         .append(td(configurationTestMethod))
         .append(td(configurationClassMethod))

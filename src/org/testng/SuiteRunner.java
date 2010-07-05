@@ -30,7 +30,7 @@ import java.util.Set;
  *
  * @author Cedric Beust, Apr 26, 2004
  */
-public class SuiteRunner implements ISuite, Serializable {
+public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener {
   
   /* generated */
   private static final long serialVersionUID = 5284208932089503131L;
@@ -62,7 +62,10 @@ public class SuiteRunner implements ISuite, Serializable {
 
   private IMethodInterceptor m_methodInterceptor;
   private List<IInvokedMethodListener> m_invokedMethodListeners;
-  
+
+  /** The list of all the methods invoked during this run */
+  private List<IInvokedMethod> m_invokedMethods = Lists.newArrayList();
+
 //  transient private IAnnotationTransformer m_annotationTransformer = null;
 
   public SuiteRunner(IConfiguration configuration, XmlSuite suite,
@@ -122,6 +125,12 @@ public class SuiteRunner implements ISuite, Serializable {
       m_objectFactory = suite.getObjectFactory();
     }
     m_invokedMethodListeners = invokedMethodListener;
+    // Add our own IInvokedMethodListener
+    if (m_invokedMethodListeners == null) {
+      m_invokedMethodListeners = Lists.newArrayList();
+    }
+    m_invokedMethodListeners.add(this);
+
     m_skipFailedInvocationCounts = suite.skipFailedInvocationCounts();
     if (null != testListeners) {
       m_testListeners.addAll(testListeners);
@@ -559,5 +568,26 @@ public class SuiteRunner implements ISuite, Serializable {
 
   public Object removeAttribute(String name) {
     return m_attributes.removeAttribute(name);
+  }
+
+  /////
+  // implements IInvokedMethodListener
+  //
+
+  @Override
+  public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
+    m_invokedMethods.add(method);
+  }
+
+  @Override
+  public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
+  }
+
+  //
+  // implements IInvokedMethodListener
+  /////
+
+  public List<IInvokedMethod> getAllInvokedMethods() {
+    return m_invokedMethods;
   }
 }

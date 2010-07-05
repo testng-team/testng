@@ -26,9 +26,11 @@
     </groups>
     <parameter name="count" value="10"/>
     <classes>
-      <class name="test.preserveorder.PreserveOrderTest" />
+      <class name="test.invokedmethodlistener.InvokedMethodListenerTest" />
 <!-- 
       <class name="test.tmp.A" />
+      <class name="test.thread.MultiThreadedDependentTest" />
+      <class name="test.thread.FactoryTest" />
       <class name="test.tmp.B" />
       <class name="test.thread.MultiThreadedDependentTest" />
       <class name="test.thread.FactoryTest" />

@@ -1,6 +1,10 @@
 package test.invokedmethodlistener;
 
+import java.util.List;
+
 import org.testng.Assert;
+import org.testng.IInvokedMethod;
+import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -37,5 +41,26 @@ public class InvokedMethodListenerTest extends SimpleBaseTest {
     Assert.assertEquals(l.getMethodStatus(), ITestResult.FAILURE);
     Assert.assertTrue(null != l.getMethodThrowable());
     Assert.assertTrue(l.getMethodThrowable().getClass() == IllegalArgumentException.class);
+  }
+
+  /**
+   * Fix for:
+   * http://code.google.com/p/testng/issues/detail?id=7
+   * http://code.google.com/p/testng/issues/detail?id=86
+   */
+  @Test
+  public void sameMethodInvokedMultipleTimesShouldHaveDifferentTimeStamps() {
+    TestNG tng = create(Sample.class);
+    tng.addListener(new InvokedMethodListener());
+    tng.run();
+    List<IInvokedMethod> m = InvokedMethodListener.m_methods;
+//    for (IInvokedMethod mm : m) {
+//      System.out.println(mm.getTestMethod().getMethodName() + " " + mm.getDate());
+//    }
+    IInvokedMethod after1 = m.get(1);
+    Assert.assertTrue(after1.getTestMethod().isAfterMethodConfiguration());
+    IInvokedMethod after2 = m.get(3);
+    Assert.assertTrue(after2.getTestMethod().isAfterMethodConfiguration());
+    Assert.assertTrue(after1.getDate() != after2.getDate());
   }
 }

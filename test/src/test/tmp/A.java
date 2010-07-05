@@ -1,6 +1,5 @@
 package test.tmp;
 
-import org.testng.Reporter;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -37,16 +36,17 @@ public class A {
 
   @Test
   public void atest1() {
-    System.out.println("A.atest1");
-    Reporter.log("line 1");
-    Reporter.log("line 2");
+    try {
+      Thread.sleep(12*1000);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
-  @Test
+//  @Test(dependsOnMethods = "atest1")
   public void atest2() {
-    System.out.println("A.atest2");
-    Reporter.clear();
-    Reporter.log("atest2");
+    log("atest2");
   }
 
 //  @Test(priority = 3)
