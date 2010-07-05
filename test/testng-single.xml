@@ -1,7 +1,7 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="SingleSuite" verbose="2" parallel="tests" thread-count="4"
-    data-provider-thread-count="3" time-out="8000">
+<suite name="SingleSuite" verbose="1" parallel="false" thread-count="4"
+    data-provider-thread-count="3">
 
   <parameter name="n" value="42" />
 
@@ -12,7 +12,7 @@
 -->  
   </listeners>
 
-  <test name="Regression2">
+  <test name="Regression2" preserve-order="true">
 <!--
     <packages>
       <package name="test.testng355.org.apache.tapestry5" />
@@ -26,10 +26,14 @@
     </groups>
     <parameter name="count" value="10"/>
     <classes>
-      <class name="test.thread.MultiThreadedDependentTest" />
+      <class name="test.invokedmethodlistener.InvokedMethodListenerTest" />
 <!-- 
-      <class name="test.thread.FactoryTest" />
       <class name="test.tmp.A" />
+      <class name="test.thread.MultiThreadedDependentTest" />
+      <class name="test.thread.FactoryTest" />
+      <class name="test.tmp.B" />
+      <class name="test.thread.MultiThreadedDependentTest" />
+      <class name="test.thread.FactoryTest" />
       <class name="test.tmp.B" />
       <class name="test.failedreporter.FailedReporterTest" />
         <methods>
@@ -39,5 +43,6 @@
  -->
     </classes>
   </test>
+
 </suite>
 

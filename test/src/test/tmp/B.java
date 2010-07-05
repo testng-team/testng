@@ -10,12 +10,7 @@ public class B extends SimpleBaseTest {
 
   @Test
   public void btest1() {
-    try {
-      Thread.sleep(12*1000);
-    } catch (InterruptedException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+    System.out.println("B.btest1");
   }
 }
 

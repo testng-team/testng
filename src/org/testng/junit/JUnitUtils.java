@@ -1,17 +1,19 @@
 package org.testng.junit;
 
+import java.lang.reflect.Method;
+import java.util.List;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+
 import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
-
-import java.lang.reflect.Method;
-import java.util.List;
-
-import junit.framework.Test;
-import junit.framework.TestCase;
+import org.testng.xml.XmlClass;
+import org.testng.xml.XmlTest;
 
 /**
  * Help methods for JUnit
@@ -586,6 +588,14 @@ public class JUnitUtils {
     }
 
     public String getTestName() {
+      return null;
+    }
+
+    public XmlTest getXmlTest() {
+      return null;
+    }
+
+    public XmlClass getXmlClass() {
       return null;
     }
   }

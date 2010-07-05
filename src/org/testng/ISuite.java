@@ -2,6 +2,7 @@ package org.testng;
 
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -56,8 +57,14 @@ public interface ISuite extends IAttributes {
   /**
    * Retrieves the list of all the methods that were invoked during this run.
    * @return a collection of ITestNGMethods belonging to all tests included in the suite.
+   * @deprecated Use getAllInvokedMthods().
    */
   public Collection<ITestNGMethod> getInvokedMethods();
+
+  /**
+   * @return a list of all the methods that were invoked in this suite.
+   */
+  public List<IInvokedMethod> getAllInvokedMethods();
 
   /**
    * @return All the methods that were not included in this test run.

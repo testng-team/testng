@@ -47,6 +47,14 @@ public class Reporter {
     return m_output;
   }
 
+  /**
+   * Erase the content of all the output generated so far.
+   */
+  public static void clear() {
+    m_methodOutputMap.clear();
+    m_output.clear();
+  }
+
   private static synchronized void log(String s, ITestResult m) {
     // synchronization needed to ensure the line number and m_output are updated atomically
     int n = getOutput().size();

@@ -1,11 +1,15 @@
 Current:
 
+Added: <test preserve-order="true">
 Added: -testnames (command line) and testnames (ant)
 Added: New ant task tag:  propertyset (Todd Wells)
 Added: ITestNGListenerFactory
 Added: Passing command line properties via the ant task and doc update (Todd Wells)
 Added: Hierarchical XmlSuites (Nalin Makar) 
+Added: Reporter#clear()
 Fixed: Initialize all Suite/Test runners at beginning to catch configuration issues right at start (Nalin Makar)
+Fixed: Incorrect dates reported for configuration methods (http://code.google.com/p/testng/issues/detail?id=7 and 86)
+Fixed: Initialize all Suite/Test runners at beginning to catch configuration issues right at start
 Fixed: Issue24 OOM errors in SuiteHTMLReporter (Nalin Makar)
 Fixed: Time outs specified in XML were not honored for <suite parallel="tests">
 Fixed: <suite> and <test> time outs were hardcoded, they now honor their time-out attribute

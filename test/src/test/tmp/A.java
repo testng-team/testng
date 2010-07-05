@@ -1,7 +1,6 @@
 package test.tmp;
 
 import org.testng.annotations.DataProvider;
-import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 //@Test(sequential = true)

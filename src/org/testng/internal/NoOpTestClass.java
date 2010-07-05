@@ -1,21 +1,16 @@
 package org.testng.internal;
 
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.testng.IClass;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
+import org.testng.xml.XmlClass;
+import org.testng.xml.XmlTest;
 
 /**
  * This class/interface
  */
 public class NoOpTestClass implements ITestClass {
   protected Class m_testClass= null;
-
-  // Information about this test run
-  protected String m_testName= null;
 
   // Test methods
   protected ITestNGMethod[] m_beforeClassMethods= null;
@@ -33,12 +28,15 @@ public class NoOpTestClass implements ITestClass {
   private Object[] m_instances;
   private long[] m_instanceHashes;
 
+  private XmlTest m_xmlTest;
+
+  private XmlClass m_xmlClass;
+
   protected NoOpTestClass() {
   }
 
   public NoOpTestClass(ITestClass testClass) {
     m_testClass= testClass.getRealClass();
-    m_testName= testClass.getName();
     m_beforeSuiteMethods= testClass.getBeforeSuiteMethods();
     m_beforeTestConfMethods= testClass.getBeforeTestConfigurationMethods();
     m_beforeGroupsMethods= testClass.getBeforeGroupsMethods();
@@ -51,6 +49,8 @@ public class NoOpTestClass implements ITestClass {
     m_afterTestMethods= testClass.getAfterTestMethods();
     m_instances= testClass.getInstances(true);
     m_instanceHashes= testClass.getInstanceHashCodes();
+    m_xmlTest = testClass.getXmlTest();
+    m_xmlClass = testClass.getXmlClass();
   }
 
   public void setBeforeTestMethods(ITestNGMethod[] beforeTestMethods) {
@@ -168,5 +168,13 @@ public class NoOpTestClass implements ITestClass {
   public String getTestName() {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  public XmlTest getXmlTest() {
+    return m_xmlTest;
+  }
+
+  public XmlClass getXmlClass() {
+    return m_xmlClass;
   }
 }

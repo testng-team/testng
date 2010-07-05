@@ -119,6 +119,8 @@ google_ad_channel ="5560744946";
 
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#invokedmethodlistener">5.20 - Invoked method listeners</a></br>
 
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#preserve-order">5.21 - Specifying the ordering of classes</a></br>
+
 
 &nbsp; <a class="summary" href="#test-results">6 - Test results</a>
 <br>
@@ -919,6 +921,8 @@ anything, but I don't recommend using this technique too much since it makes
 your testing framework likely to break if you start refactoring your Java code 
 (the regular expressions used in the tags might not match your methods any 
 more).
+
+
 <h4><a name="groups-of-groups">5.2 - Groups of groups</a></h4><p>Groups can also include other groups.&nbsp;These groups are called &quot;MetaGroups&quot;.&nbsp; 
 For example, you might want to define a group &quot;all&quot; that includes &quot;checkintest&quot; 
 and &quot;functest&quot;.&nbsp; &quot;functest&quot; itself will contain the groups &quot;windows&quot; and 
@@ -1908,6 +1912,39 @@ and declare it as a listener, as explained in <a href="#testng-listeners">the se
 <p>
 
 
+<!-------------------------------------
+  TEST ORDERING
+  ------------------------------------>
+
+<h4>
+<a name="preserve-order">5.21 - Specifying the ordering of classes</a></h4>
+</h4>
+
+<p>
+
+You can specify the order in which your tests are run in several ways.  The most flexible one is to use a method interceptor, as explained in <a href="methodinterceptors">this section</a>.  You can also use your XML file to specify that your classes should be run in a certain order.
+
+<p>
+
+By default, the classes specified in your XML file will be run in a non-deterministic order, but if you specify <tt>preserve-order="true"</tt> in the <tt>&lt;test&gt;</tt> tag, then TestNG will run these classes in the same order you listed them:
+
+<h3 class="sourcetitle">testng.xml</h3>
+<pre class="brush: xml; highlight: [4]">
+&lt;!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" &gt;
+ 
+&lt;suite name="Suite" &gt;
+  &lt;test name="Test" preserve-order="true"&gt;
+    &lt;classes&gt;
+       &lt;class name="test.tmp.A" /&gt;
+       &lt;class name="test.tmp.B" /&gt;
+    &lt;/classes&gt;
+  &lt;/test&gt;
+&lt;/suite&gt;
+</pre>
+
+Because the attribute <tt>preserve-order</tt> was specifid on your <tt>&lt;test&gt;</tt> tag, TestNG will first run all the test methods on the class <tt>test.tmp.A</tt> first, and then on <tt>test.tmp.B</tt>.
+
+</pre>
 
 
 
