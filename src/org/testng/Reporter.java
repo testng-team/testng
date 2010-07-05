@@ -52,6 +52,7 @@ public class Reporter {
    */
   public static void clear() {
     m_methodOutputMap.clear();
+    m_output.clear();
   }
 
   private static synchronized void log(String s, ITestResult m) {
