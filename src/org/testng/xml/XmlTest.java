@@ -48,7 +48,7 @@ public class XmlTest implements Serializable, Cloneable {
   private Boolean m_skipFailedInvocationCounts;
   private Map<String, List<Integer>> m_failedInvocationNumbers = null; // lazily initialized
 
-  private boolean m_preserveOrder;
+  private Boolean m_preserveOrder;
 
   /**
    * Constructs a <code>XmlTest</code> and adds it to suite's list of tests. 
@@ -337,6 +337,9 @@ public class XmlTest implements Serializable, Cloneable {
     }
     if (null != m_timeOut) {
       p.setProperty("time-out", m_timeOut.toString());
+    }
+    if (m_preserveOrder != null) {
+      p.setProperty("preserve-order", m_preserveOrder.toString());
     }
     
     xsb.push("test", p);
