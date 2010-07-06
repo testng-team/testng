@@ -58,17 +58,6 @@ public class MethodInheritance {
     Map<Class, List<ITestNGMethod>> map = Maps.newHashMap();
     
     //
-    // First, make sure that none of these methods define a dependency of its own
-    //
-    for (ITestNGMethod m : methods) {
-      String[] mdu = m.getMethodsDependedUpon();
-      String[] groups = m.getGroupsDependedUpon();
-      if ((mdu != null && mdu.length > 0) || (groups != null && groups.length > 0)) {
-        return;
-      }
-    }
-    
-    //
     // Put the list of methods in their hierarchy buckets
     //
     for (ITestNGMethod method : methods) {
@@ -106,7 +95,7 @@ public class MethodInheritance {
           for (int i = 1; i < l.size(); i++) {
             ITestNGMethod m1 = l.get(i - 1);
             ITestNGMethod m2 = l.get(i);
-            if (! equalsEffectiveClass(m1, m2)) {
+            if (!equalsEffectiveClass(m1, m2) && !dependencyExists(m1, m2, methods)) {
               Utils.log("MethodInheritance", 4, m2 + " DEPENDS ON " + m1);
               m2.addMethodDependedUpon(MethodHelper.calculateMethodCanonicalName(m1));
             }
@@ -116,7 +105,7 @@ public class MethodInheritance {
           for (int i = 0; i < l.size() - 1; i++) {
             ITestNGMethod m1 = l.get(i);
             ITestNGMethod m2 = l.get(i + 1);
-            if (! equalsEffectiveClass(m1, m2)) {
+            if (!equalsEffectiveClass(m1, m2) && !dependencyExists(m1, m2, methods)) {
               m2.addMethodDependedUpon(MethodHelper.calculateMethodCanonicalName(m1));
               Utils.log("MethodInheritance", 4, m2 + " DEPENDS ON " + m1);
             }
@@ -126,6 +115,34 @@ public class MethodInheritance {
     }
   }
   
+  private static boolean dependencyExists(ITestNGMethod m1, ITestNGMethod m2, ITestNGMethod[] methods) {
+    return true == internalDependencyExists(m1, m2, methods) 
+       ? true : internalDependencyExists(m2, m1, methods);
+  }
+  
+  private static boolean internalDependencyExists(ITestNGMethod m1, ITestNGMethod m2, ITestNGMethod[] methods) {
+    ITestNGMethod[] methodsNamed = 
+      MethodHelper.findMethodsNamed(m1, methods, m1.getMethodsDependedUpon());
+
+    for (ITestNGMethod method : methodsNamed) {
+      if (method.equals(m2)) {
+        return true;
+      }
+    }
+
+    for (String group : m1.getGroupsDependedUpon()) {
+      ITestNGMethod[] methodsThatBelongToGroup = 
+        MethodHelper.findMethodsThatBelongToGroup(m1, methods, group);
+      for (ITestNGMethod method : methodsThatBelongToGroup) {
+         if (method.equals(m2)) {
+           return true;
+         }
+       }
+    }
+
+    return false;
+  }
+
   private static boolean equalsEffectiveClass(ITestNGMethod m1, ITestNGMethod m2) {
     try {
       Class c1 = m1.getRealClass();
