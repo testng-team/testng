@@ -1,5 +1,12 @@
 package org.testng.internal;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
+
 import org.testng.IClass;
 import org.testng.IMethodSelector;
 import org.testng.IObjectFactory;
@@ -12,13 +19,7 @@ import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.junit.IJUnitTestRunner;
 import org.testng.xml.XmlTest;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import com.google.inject.internal.Sets;
 
 /**
  * Utility class for different class manipulations.
@@ -131,10 +132,6 @@ public final class ClassHelper {
     return result;
   }
 
-//  private static void ppp(String s) {
-//    System.out.println("[ClassHelper] " + s);
-//  }
-
   /**
    * Extract all callable methods of a class and all its super (keeping in mind
    * the Java access rules).
@@ -143,18 +140,17 @@ public final class ClassHelper {
    * @return
    */
   public static Set<Method> getAvailableMethods(Class<?> clazz) {
-    Set<Method> methods = new HashSet<Method>(Arrays.asList(clazz.getDeclaredMethods()));
+    Set<Method> methods = Sets.newHashSet();
+    methods.addAll(Arrays.asList(clazz.getDeclaredMethods()));
 
-    Class<?> parent= clazz.getSuperclass();
-
-    while (null != parent) {
+    Class<?> parent = clazz.getSuperclass();
+    while (Object.class != parent) {
       methods.addAll(extractMethods(clazz, parent, methods));
-      parent= parent.getSuperclass();
+      parent = parent.getSuperclass();
     }
 
     return methods;
   }
-
 
   /**
    * @param runner
@@ -174,7 +170,7 @@ public final class ClassHelper {
   
   private static Set<Method> extractMethods(Class<?> childClass, Class<?> clazz, 
       Set<Method> collected) {
-    Set<Method> methods = new HashSet<Method>();
+    Set<Method> methods = Sets.newHashSet();
 
     Method[] declaredMethods = clazz.getDeclaredMethods();
 
