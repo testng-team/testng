@@ -203,8 +203,10 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       // Need to check all the methods, not just @Test ones.
       XmlClass xmlClass= new XmlClass(clazz.getName(), Boolean.FALSE, index++);
       List<XmlInclude> methodNames= Lists.newArrayList(methodList.size());
+      int ind = 0;
       for(ITestNGMethod m: methodList) {
-        methodNames.add(new XmlInclude(m.getMethod().getName(), m.getFailedInvocationNumbers()));
+        methodNames.add(new XmlInclude(m.getMethod().getName(), m.getFailedInvocationNumbers(),
+            ind++));
       }
       xmlClass.setIncludedMethods(methodNames);
       result.add(xmlClass);

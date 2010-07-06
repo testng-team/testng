@@ -45,8 +45,9 @@ public class SimpleBaseTest {
   }
 
   protected void addMethods(XmlClass cls, String... methods) {
+    int index = 0;
     for (String m : methods) {
-      XmlInclude include = new XmlInclude(m);
+      XmlInclude include = new XmlInclude(m, index++);
       cls.getIncludedMethods().add(include);
     }
   }

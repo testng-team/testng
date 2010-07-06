@@ -60,6 +60,10 @@ public class PreserveOrderTest extends SimpleBaseTest {
     String[][] methods = new String[][] {
         new String[] { "a1", "a2", "a3" },
         new String[] { "a1", "a3", "a2" },
+        new String[] { "a2", "a1", "a3" },
+        new String[] { "a2", "a3", "a1" },
+        new String[] { "a3", "a2", "a1" },
+        new String[] { "a3", "a1", "a2" },
     };
 
     for (String[] m : methods) {
@@ -75,7 +79,7 @@ public class PreserveOrderTest extends SimpleBaseTest {
       tng.run();
 
       List<String> log = BaseLogTest.getLog();
-      System.out.println(log);
+//      System.out.println(log);
       for (int i = 0; i < log.size(); i++) {
         if (!log.get(i).endsWith(m[i])) {
           throw new AssertionError("Expected " + Arrays.asList(m) + " but got " + log);
