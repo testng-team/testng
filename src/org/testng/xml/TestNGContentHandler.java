@@ -32,6 +32,7 @@ public class TestNGContentHandler extends DefaultHandler {
   private List<String> m_currentGroups = null;
   private List<XmlClass> m_currentClasses = null;
   private int m_currentClassIndex = 0;
+  private int m_currentIncludeIndex = 0;
   private List<XmlPackage> m_currentPackages = null;
   private XmlPackage m_currentPackage = null;
   private List<XmlSuite> m_suites = Lists.newArrayList();
@@ -415,6 +416,7 @@ public class TestNGContentHandler extends DefaultHandler {
     if (start) {
       m_currentIncludedMethods = new ArrayList<XmlInclude>();
       m_currentExcludedMethods = Lists.newArrayList();
+      m_currentIncludeIndex = 0;
     }
     else {
       m_currentClass.setIncludedMethods(m_currentIncludedMethods);
@@ -518,9 +520,10 @@ public class TestNGContentHandler extends DefaultHandler {
       if (null != m_currentIncludedMethods) {
         String in = attributes.getValue("invocation-numbers");
         if (!Utils.isStringEmpty(in)) {
-          m_currentIncludedMethods.add(new XmlInclude(name, stringToList(in)));
+          m_currentIncludedMethods.add(new XmlInclude(name, stringToList(in),
+              m_currentIncludeIndex++));
         } else {
-          m_currentIncludedMethods.add(new XmlInclude(name));
+          m_currentIncludedMethods.add(new XmlInclude(name, m_currentIncludeIndex++));
         }
       }
       else if (null != m_currentDefines) {

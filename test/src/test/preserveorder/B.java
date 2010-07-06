@@ -7,7 +7,17 @@ import test.BaseLogTest;
 public class B extends BaseLogTest {
 
   @Test
-  public void b() {
-    log("B");
+  public void b1() {
+    log("B.b1");
+  }
+
+  @Test
+  public void b2() {
+    log("B.b2");
+  }
+
+  @Test
+  public void b3() {
+    log("B.b3");
   }
 }
