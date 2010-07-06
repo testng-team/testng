@@ -23,7 +23,6 @@ import org.testng.internal.thread.ThreadUtil;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -75,11 +74,10 @@ public class MethodHelper {
         runInfo, 
         finder, 
         unique);
-    List<ITestNGMethod> vResult = sortMethods(forTests, includedMethods, finder);
 
-    ITestNGMethod[] result = vResult.toArray(new ITestNGMethod[vResult.size()]);
-
-    return result;
+    return includedMethods.size() > 1 ?  
+      sortMethods(forTests, includedMethods, finder).toArray(new ITestNGMethod[]{})
+      : includedMethods.toArray(new ITestNGMethod[]{});
   }
 
 
@@ -480,7 +478,7 @@ public class MethodHelper {
     return false;
   }
 
-  static public Graph<ITestNGMethod> topologicalSort(ITestNGMethod[] methods,
+  private static Graph<ITestNGMethod> topologicalSort(ITestNGMethod[] methods,
       List<ITestNGMethod> sequentialList, List<ITestNGMethod> parallelList) {
     Graph<ITestNGMethod> result = new Graph<ITestNGMethod>();
 
@@ -492,7 +490,7 @@ public class MethodHelper {
     for (ITestNGMethod m : methods) {
       result.addNode(m);
 
-      Map<ITestNGMethod, ITestNGMethod> predecessors = Maps.newHashMap();
+      List<ITestNGMethod> predecessors = Lists.newArrayList();
 
       String[] methodsDependedUpon = m.getMethodsDependedUpon();
       String[] groupsDependedUpon = m.getGroupsDependedUpon();
@@ -500,7 +498,7 @@ public class MethodHelper {
         ITestNGMethod[] methodsNamed = 
           MethodHelper.findMethodsNamed(m, methods, methodsDependedUpon);
         for (ITestNGMethod pred : methodsNamed) {
-          predecessors.put(pred, pred);
+          predecessors.add(pred);
         }
       }
       if (groupsDependedUpon.length > 0) {
@@ -508,13 +506,12 @@ public class MethodHelper {
           ITestNGMethod[] methodsThatBelongToGroup = 
             MethodHelper.findMethodsThatBelongToGroup(m, methods, group);
           for (ITestNGMethod pred : methodsThatBelongToGroup) {
-            predecessors.put(pred, pred);
+            predecessors.add(pred);
           }
         }
       }
 
-      for (ITestNGMethod predecessor : predecessors.values()) {
-        // ppp("METHOD:" + m + " ADDED PREDECESSOR:" + predecessor);
+      for (ITestNGMethod predecessor : predecessors) {
         result.addPredecessor(m, predecessor);
       }
     }
@@ -790,8 +787,6 @@ public class MethodHelper {
   public static void invokeWithTimeout(ITestNGMethod tm, Object instance, Object[] parameterValues, 
       ITestResult testResult) 
   throws InterruptedException, ThreadExecutionException {
-//    ICountDown done= ThreadUtil.createCountDown(1);
-//    IThreadFactory factory= ThreadUtil.createFactory();
     IExecutor exec= ThreadUtil.createExecutor(1, tm.getMethod().getName());
   
     InvokeMethodRunnable imr = new InvokeMethodRunnable(tm, instance, parameterValues);
