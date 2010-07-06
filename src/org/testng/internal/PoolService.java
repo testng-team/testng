@@ -156,7 +156,7 @@ public class PoolService<KeyType, FutureType> {
    * Shut down the service.
    */
   public void shutdown() {
-    Utils.log(getClass().getName(), 2, "Shutting down poolservice " + this + " terminated:"
+    Utils.log(getClass().getName(), 3, "Shutting down poolservice " + this + " terminated:"
         + m_service.isTerminated());
     //      if (m_service.isTerminated()) {
     m_service.shutdown();
