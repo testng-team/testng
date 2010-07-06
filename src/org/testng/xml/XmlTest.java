@@ -545,7 +545,7 @@ public class XmlTest implements Serializable, Cloneable {
     m_preserveOrder = preserveOrder;
   }
 
-  public boolean getPreserveOrder() {
-    return m_preserveOrder;
+  public Boolean getPreserveOrder() {
+    return m_preserveOrder != null ? m_preserveOrder : false;
   }
 }

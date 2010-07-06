@@ -33,9 +33,10 @@ public class SimpleBaseTest {
 
   protected XmlTest createXmlTest(XmlSuite suite, String name, String[] classes) {
     XmlTest result = new XmlTest(suite);
+    int index = 0;
     result.setName(name);
     for (String c : classes) {
-      XmlClass xc = new XmlClass(c);
+      XmlClass xc = new XmlClass(c, true /* declared class */, index++);
       result.getXmlClasses().add(xc);
     }
 
