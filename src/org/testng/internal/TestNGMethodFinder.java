@@ -29,8 +29,8 @@ public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
   private static final int AFTER_TEST = 4;
   private static final int BEFORE_CLASS = 5;
   private static final int AFTER_CLASS = 6;
-  private static final int BEFORE_TESTMETHOD = 7;
-  private static final int AFTER_TESTMETHOD = 8;
+  private static final int BEFORE_TEST_METHOD = 7;
+  private static final int AFTER_TEST_METHOD = 8;
   private static final int BEFORE_GROUPS = 9;
   private static final int AFTER_GROUPS = 10;
     
@@ -58,11 +58,11 @@ public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
   }
 
   public ITestNGMethod[] getBeforeTestMethods(Class cls) {
-    return findConfiguration(cls, BEFORE_TESTMETHOD);
+    return findConfiguration(cls, BEFORE_TEST_METHOD);
   }
 
   public ITestNGMethod[] getAfterTestMethods(Class cls) {
-    return findConfiguration(cls, AFTER_TESTMETHOD);
+    return findConfiguration(cls, AFTER_TEST_METHOD);
   }
 
   public ITestNGMethod[] getBeforeSuiteMethods(Class cls) {
@@ -138,11 +138,11 @@ public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
           create = configuration.getAfterTestClass();
           isAfterClass = true;
           break;
-        case BEFORE_TESTMETHOD:
+        case BEFORE_TEST_METHOD:
           create = configuration.getBeforeTestMethod();
           isBeforeTestMethod = true;
           break;
-        case AFTER_TESTMETHOD:
+        case AFTER_TEST_METHOD:
           create = configuration.getAfterTestMethod();
           isAfterTestMethod = true;
           break;

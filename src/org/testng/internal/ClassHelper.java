@@ -1,12 +1,5 @@
 package org.testng.internal;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
-
 import org.testng.IClass;
 import org.testng.IMethodSelector;
 import org.testng.IObjectFactory;
@@ -18,6 +11,13 @@ import org.testng.annotations.IParametersAnnotation;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.junit.IJUnitTestRunner;
 import org.testng.xml.XmlTest;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
 
 import com.google.inject.internal.Sets;
 
