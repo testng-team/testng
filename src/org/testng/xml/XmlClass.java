@@ -135,13 +135,9 @@ public class XmlClass implements Serializable, Cloneable {
       xsb.push("methods");
       
       for (XmlInclude m : getIncludedMethods()) {
-        Properties p = new Properties();
-        p.setProperty("name", m.getName());
-        if (m.getInvocationNumbers().size() > 0) {
-          p.setProperty("invocation-numbers", listToString(m.getInvocationNumbers()).toString());
-        }
-        xsb.addEmptyElement("include", p);
+        xsb.getStringBuffer().append(m.toXml(indent + "    "));
       }
+
       for (String m: getExcludedMethods()) {
         Properties p= new Properties();
         p.setProperty("name", m);
@@ -154,13 +150,12 @@ public class XmlClass implements Serializable, Cloneable {
     else {
       xsb.addEmptyElement("class", pro);
     }
-    
 
     return xsb.toXML();
 
   }
   
-  private String listToString(List<Integer> invocationNumbers) {
+  public static String listToString(List<Integer> invocationNumbers) {
     StringBuilder result = new StringBuilder();
     int i = 0;
     for (Integer n : invocationNumbers) {
