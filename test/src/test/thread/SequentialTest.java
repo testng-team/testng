@@ -27,24 +27,25 @@ public class SequentialTest extends BaseTest {
   }    
 
   public void verifySequential(int threadCount) {
+    runTest(threadCount, "test.thread.SequentialSampleTest",
+        "test.thread.SequentialSample2Test", "test.thread.SequentialSample3Test");
+  }
+  
+  private void runTest(int threadCount, String... classes) {
     Helper.reset();
-    
-    String class1 = "test.thread.SequentialSampleTest";
-    String class2 = "test.thread.SequentialSample2Test";
-    String class3 = "test.thread.SequentialSample3Test";
-    
-    addClass(class1);
-    addClass(class2);
-    addClass(class3);
+
+    for (String c : classes) {
+      addClass(c);
+    }
     setParallel(XmlSuite.PARALLEL_METHODS);
     setThreadCount(threadCount);
 
     run();
     
     Map<Long, Long>[] maps = new Map[] {
-        Helper.getMap(class1),
-        Helper.getMap(class2),
-        Helper.getMap(class3),
+        Helper.getMap(classes[0]),
+        Helper.getMap(classes[1]),
+        Helper.getMap(classes[2]),
     };
 
     for(Map m : maps) {
