@@ -417,6 +417,12 @@
       <class name="test.dataprovider.InheritedDataProviderTest" />
     </classes>
   </test>
+
+  <test name="DP">
+    <classes>
+      <class name="test.dataprovider.ParallelDataProviderTest" />
+    </classes>
+  </test>
 	
   <test name="UniqueSuite">
     <classes>

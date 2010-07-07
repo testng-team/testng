@@ -974,7 +974,7 @@ public class TestNG {
     for (IReporter r : suiteRunner.getReporters()) {
       addListener(r);
     }
-    PoolService.getInstance().shutdown();
+//    PoolService.getInstance().shutdown();
     
     for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
       runSuite(suiteRunnerMap, childSuite);

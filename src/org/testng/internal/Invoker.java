@@ -1015,7 +1015,9 @@ public class Invoker implements IInvoker {
               if (bag.parameterHolder.origin == ParameterHolder.ORIGIN_DATA_PROVIDER &&
                   bag.parameterHolder.dataProviderHolder.annotation.isParallel()) {
                 while (allParameterValues.hasNext()) {
-                  Object[] parameterValues= allParameterValues.next();
+                  Object[] rawParameterValues = allParameterValues.next();
+                  Object[] parameterValues = injectParameters(rawParameterValues,
+                      testMethod.getMethod(), testContext, null /* test result */);
                   TestMethodWithDataProviderMethodWorker w =
                     new TestMethodWithDataProviderMethodWorker(this,
                         testMethod, parametersIndex,
