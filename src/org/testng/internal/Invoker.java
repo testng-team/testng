@@ -1015,9 +1015,8 @@ public class Invoker implements IInvoker {
               if (bag.parameterHolder.origin == ParameterHolder.ORIGIN_DATA_PROVIDER &&
                   bag.parameterHolder.dataProviderHolder.annotation.isParallel()) {
                 while (allParameterValues.hasNext()) {
-                  Object[] rawParameterValues = allParameterValues.next();
-                  Object[] parameterValues = injectParameters(rawParameterValues,
-                      testMethod.getMethod(), testContext, null /* test result */);
+                  Object[] parameterValues = getInjectedParameters(testMethod,
+                      testContext, allParameterValues);
                   TestMethodWithDataProviderMethodWorker w =
                     new TestMethodWithDataProviderMethodWorker(this,
                         testMethod, parametersIndex,
@@ -1035,11 +1034,8 @@ public class Invoker implements IInvoker {
 
               } else {
                 while (allParameterValues.hasNext()) {
-                  Object[] rawParameterValues= allParameterValues.next();
-
-                  Object[] parameterValues = injectParameters(rawParameterValues,
-                      testMethod.getMethod(), testContext, null /* test result */);
-//                  Object[] parameterValues = rawParameterValues;
+                  Object[] parameterValues = getInjectedParameters(testMethod,
+                      testContext, allParameterValues);
 
                   List<ITestResult> tmpResults = Lists.newArrayList();
 
@@ -1152,6 +1148,14 @@ public class Invoker implements IInvoker {
     return result;
     
   } // invokeTestMethod
+
+  private Object[] getInjectedParameters(ITestNGMethod testMethod,
+      ITestContext testContext, Iterator<Object[]> allParameterValues) {
+    Object[] rawParameterValues = allParameterValues.next();
+    Object[] parameterValues = injectParameters(rawParameterValues,
+        testMethod.getMethod(), testContext, null /* test result */);
+    return parameterValues;
+  }
 
   private Object[] injectParameters(Object[] parameterValues, Method method,
       ITestContext context, ITestResult testResult) {
