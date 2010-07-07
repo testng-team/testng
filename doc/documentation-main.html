@@ -499,10 +499,10 @@ The class where to look for the data provider.  If not specified, the data provi
 <td>
 </td>
 <td>
-<tt>sequential</tt>
+<tt>singleThreaded</tt>
 </td>
 <td>
-             If set to true, all the methods on this test class are guaranteed to run sequentially, even if the tests are currently being run with parallel="methods". This attribute can only be used at the class level and it will be ignored if used at the method level. 
+             If set to true, all the methods on this test class are guaranteed to run in the same thread, even if the tests are currently being run with parallel="methods". This attribute can only be used at the class level and it will be ignored if used at the method level. Note: this attribute used to be called <tt>sequential</tt> (now deprecated).
 
 </td>
 </tr>

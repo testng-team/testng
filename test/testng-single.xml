@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="SingleSuite" verbose="2" parallel="false" thread-count="4"
+<suite name="SingleSuite" verbose="1" parallel="false" thread-count="4"
     data-provider-thread-count="3">
 
   <parameter name="n" value="42" />
@@ -26,11 +26,11 @@
     </groups>
     <parameter name="count" value="10"/>
     <classes>
-      <class name="test.tmp.TestFactory" />
+      <class name="test.thread.SequentialTest" />
 <!-- 
+      <class name="test.tmp.TestFactory" />
       <class name="test.tmp.A" />
       <class name="test.thread.MultiThreadedDependentTest" />
-      <class name="test.thread.FactoryTest" />
       <class name="test.tmp.B" />
       <class name="test.thread.MultiThreadedDependentTest" />
       <class name="test.thread.FactoryTest" />

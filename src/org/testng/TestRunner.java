@@ -730,7 +730,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
               org.testng.annotations.ITestAnnotation.class);
 
       // If either sequential=true or parallel=classes, mark this class sequential
-      if (test != null && test.getSequential() ||
+      if (test != null && (test.getSequential() || test.getSingleThreaded()) ||
           XmlSuite.PARALLEL_CLASSES.equals(xmlTest.getParallel())) {
         sequentialClasses.add(cls);
       }
@@ -1131,7 +1131,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
         (org.testng.annotations.ITestAnnotation) m_annotationFinder.
           findAnnotation(cls, org.testng.annotations.ITestAnnotation.class);
       if (test != null) {
-        if (test.getSequential()) {
+        if (test.getSequential() || test.getSingleThreaded()) {
           String className = tm.getTestClass().getName();
           List<ITestNGMethod> list = sequentialAttributeList.get(className);
           if (list == null) {

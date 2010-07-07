@@ -61,6 +61,9 @@ public interface ITestAnnotation extends ITestOrConfiguration {
   public boolean getSequential();
   public void setSequential(boolean f);
   
+  public boolean getSingleThreaded();
+  public void setSingleThreaded(boolean f);
+
   public String getDataProvider();
   public void setDataProvider(String v);
 

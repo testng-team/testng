@@ -139,7 +139,12 @@ public @interface Test {
    * attribute is ignore if @Test is not at the class level.
    */
   public String testName() default "";
-  
+
+  /**
+   * @deprecated Use singleThreaded
+   */
+  public boolean sequential() default false;
+
   /**
    * If set to true, all the methods on this test class are guaranteed to run
    * sequentially, even if the tests are currently being run with parallel="true".
@@ -147,7 +152,7 @@ public @interface Test {
    * This attribute can only be used at the class level and will be ignored
    * if used at the method level. 
    */
-  public boolean sequential() default false;
+  public boolean singleThreaded() default false;
 
   /**
    * The name of the class that should be called to test if the test

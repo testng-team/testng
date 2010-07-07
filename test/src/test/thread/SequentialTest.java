@@ -26,11 +26,35 @@ public class SequentialTest extends BaseTest {
     verifySequential(3);
   }    
 
-  public void verifySequential(int threadCount) {
-    runTest(threadCount, "test.thread.SequentialSampleTest",
-        "test.thread.SequentialSample2Test", "test.thread.SequentialSample3Test");
+  @Test
+  public void verifySingleThreaded1() {
+    verifySingleThreaded(1);
+  }    
+
+  @Test
+  public void verifySingleThreaded2() {
+    verifySingleThreaded(2);
   }
   
+  @Test
+  public void verifySingleThreaded3() {
+    verifySingleThreaded(3);
+  }
+
+  public void verifySequential(int threadCount) {
+    runTest(threadCount,
+        SequentialSampleTest.class.getName(),
+        SequentialSample2Test.class.getName(),
+        SequentialSample3Test.class.getName());
+  }
+  
+  public void verifySingleThreaded(int threadCount) {
+    runTest(threadCount, 
+        SingleThreadedSampleTest.class.getName(),
+        SingleThreadedSample2Test.class.getName(),
+        SingleThreadedSample3Test.class.getName());
+  }
+
   private void runTest(int threadCount, String... classes) {
     Helper.reset();
 

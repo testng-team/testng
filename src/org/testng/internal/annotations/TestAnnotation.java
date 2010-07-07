@@ -22,6 +22,7 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   private String m_expectedExceptionsMessageRegExp = ".*";
   private String m_suiteName = "";
   private String m_testName = "";
+  private boolean m_singleThreaded = false;
   private boolean m_sequential = false;
   private Class<?> m_dataProviderClass = null;
   private IRetryAnalyzer m_retryAnalyzer = null;
@@ -132,6 +133,14 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
     m_testName = xmlTest;
   }
   
+  public boolean getSingleThreaded() {
+    return m_singleThreaded;
+  }
+  
+  public void setSingleThreaded(boolean singleThreaded) {
+    m_singleThreaded = singleThreaded;
+  }
+
   public boolean getSequential() {
     return m_sequential;
   }
