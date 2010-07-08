@@ -90,26 +90,21 @@ public class MethodInheritance {
         // Sort them
         sortMethodsByInheritance(l, baseClassToChild);
         
-        // Set methodDependedUpon accordingly
-        if (baseClassToChild) {
-          for (int i = 1; i < l.size(); i++) {
-            ITestNGMethod m1 = l.get(i - 1);
-            ITestNGMethod m2 = l.get(i);
+        /*
+         *  Set methodDependedUpon accordingly
+         *  E.g. Base class can have multiple @BeforeClass methods. Need to ensure
+         *  that @BeforeClass methods in derived class depend on all @BeforeClass methods
+         *  of base class. Vice versa for @AfterXXX methods  
+         */
+        for (int i = 0; i < l.size() - 1; i++) {
+          ITestNGMethod m1 = l.get(i);
+          for (int j = i + 1; j < l.size(); j++) {
+            ITestNGMethod m2 = l.get(j);
             if (!equalsEffectiveClass(m1, m2) && !dependencyExists(m1, m2, methods)) {
               Utils.log("MethodInheritance", 4, m2 + " DEPENDS ON " + m1);
               m2.addMethodDependedUpon(MethodHelper.calculateMethodCanonicalName(m1));
             }
           }
-        }
-        else {
-          for (int i = 0; i < l.size() - 1; i++) {
-            ITestNGMethod m1 = l.get(i);
-            ITestNGMethod m2 = l.get(i + 1);
-            if (!equalsEffectiveClass(m1, m2) && !dependencyExists(m1, m2, methods)) {
-              m2.addMethodDependedUpon(MethodHelper.calculateMethodCanonicalName(m1));
-              Utils.log("MethodInheritance", 4, m2 + " DEPENDS ON " + m1);
-            }
-          }          
         }
       }
     }
@@ -148,9 +143,7 @@ public class MethodInheritance {
       Class c1 = m1.getRealClass();
       Class c2 = m2.getRealClass();
       
-      boolean isEqual = c1 == null ? c2 == null : c1.equals(c2);
-      
-      return isEqual; // && m1.getMethod().equals(m2.getMethod());
+      return c1 == null ? c2 == null : c1.equals(c2);
     }
     catch(Exception ex) {
       return false;
@@ -167,12 +160,8 @@ public class MethodInheritance {
       boolean baseClassToChild)
   {
     Collections.sort(methods);
-    if (! baseClassToChild) {
+    if (!baseClassToChild) {
       Collections.reverse(methods);
     }
-  }
-  
-  private static void ppp(String s) {
-    System.out.println("[MethodInheritance] " + s);
   }
 }
