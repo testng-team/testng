@@ -109,6 +109,7 @@
       <class name="test.inject.InjectBeforeMethodTest"/>
       <class name="test.inject.InjectTestResultTest" />
       <class name="test.inject.InjectDataProviderTest"/>
+      <class name="test.inject.NoInjectionTest" />
     </classes>
   </test>
 

@@ -1889,6 +1889,28 @@ TestNG lets you declare additional parameters in your methods.  When this happen
   latter parameter will receive the test method that is about to be invoked.
 </ul>
 
+You can turn off injection with the <tt>@NoInjection</tt> annotation:
+
+<pre class="brush: java; highlight: [9]">
+public class NoInjectionTest {
+
+  @DataProvider(name = "provider")
+  public Object[][] provide() throws Exception {
+      return new Object[][] { { CC.class.getMethod("f") } };
+  }
+
+  @Test(dataProvider = "provider")
+  public void withoutInjection(@NoInjection Method m) {
+      Assert.assertEquals(m.getName(), "f");
+  }
+
+  @Test(dataProvider = "provider")
+  public void withInjection(Method m) {
+      Assert.assertEquals(m.getName(), "withInjection");
+  }
+}
+</pre>
+
 
 <!-------------------------------------
   INVOKED METHOD LISTENERS

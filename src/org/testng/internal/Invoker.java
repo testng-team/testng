@@ -1,6 +1,16 @@
 package org.testng.internal;
 
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 import org.testng.IClass;
 import org.testng.IHookable;
 import org.testng.IInvokedMethod;
@@ -18,6 +28,7 @@ import org.testng.SuiteRunState;
 import org.testng.TestException;
 import org.testng.TestNGException;
 import org.testng.annotations.IConfigurationAnnotation;
+import org.testng.annotations.NoInjection;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.InvokeMethodRunnable.TestNGRuntimeException;
@@ -28,15 +39,6 @@ import org.testng.internal.thread.ThreadUtil;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * This class is responsible for invoking methods:
@@ -1162,8 +1164,16 @@ public class Invoker implements IInvoker {
     List<Object> vResult = Lists.newArrayList();
     int i = 0;
     for (Class<?> cls : method.getParameterTypes()) {
+      Annotation[] annotations = method.getParameterAnnotations()[i];
+      boolean noInjection = false;
+      for (Annotation a : annotations) {
+        if (a instanceof NoInjection) {
+          noInjection = true;
+          break;
+        }
+      }
       Object injected = Parameters.getInjectedParameter(cls, method, context, testResult);
-      if (injected != null) {
+      if (injected != null && ! noInjection) {
         vResult.add(injected);
       } else {
         vResult.add(parameterValues[i++]);
