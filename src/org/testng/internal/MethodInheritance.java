@@ -50,10 +50,12 @@ public class MethodInheritance {
    * respect inheritance (before methods are invoked in the order Base first
    * and after methods are invoked in the order Child first)
    * 
-   * @param methods
-   * @param baseClassToChild
+   * @param methods the list of methods
+   * @param before true if we are handling a before method (meaning, the methods
+   * need to be sorted base class first and subclass last). false otherwise (subclass
+   * methods first, base classes last).
    */
-  public static void fixMethodInheritance(ITestNGMethod[] methods, boolean baseClassToChild) {
+  public static void fixMethodInheritance(ITestNGMethod[] methods, boolean before) {
     // Map of classes -> List of methods that belong to this class or same hierarchy
     Map<Class, List<ITestNGMethod>> map = Maps.newHashMap();
     
@@ -88,7 +90,7 @@ public class MethodInheritance {
     for (List<ITestNGMethod> l : map.values()) {
       if (l.size() > 1) {
         // Sort them
-        sortMethodsByInheritance(l, baseClassToChild);
+        sortMethodsByInheritance(l, before);
         
         /*
          *  Set methodDependedUpon accordingly
@@ -160,7 +162,7 @@ public class MethodInheritance {
       boolean baseClassToChild)
   {
     Collections.sort(methods);
-    if (!baseClassToChild) {
+    if (! baseClassToChild) {
       Collections.reverse(methods);
     }
   }
