@@ -2,11 +2,9 @@
 
   <property file="build.properties"/>
 
-  <property name="test15.dir" value="${test.dir}"/>
-  <property name="test.src.dir" value="${test15.dir}"/>
-  <property name="test.build.dir" value="${test15.dir}/build"/>
+  <property name="test.build.dir" value="${test.dir}/build"/>
 
-  <property name="report.dir" value="${test15.dir}/test-output"/>
+  <property name="report.dir" value="${test.dir}/test-output"/>
   <property name="junit.report.dir" value="${report.dir}/test-tmp"/>
   <property name="testng.report.dir" value="${report.dir}"/>
 
@@ -30,8 +28,7 @@
   <target name="env:info">
     <echo>
 BASEDIR          =${basedir}
-TEST15.DIR       =${test15.dir}
-TEST.SRC.DIR     =${test.src.dir}
+TEST.DIR         =${test.dir}
 TEST.BUILD.DIR   =${test.build.dir}
 REPORT.DIR       =${report.dir}
 JUNIT.REPORT.DIR =${junit.report.dir}
@@ -46,7 +43,7 @@ TESTNG.REPORT.DIR=${testng.report.dir}
     <javac debug="true"
            source="1.5"
            classpathref="compile.cp"
-           srcdir="${test.src.dir}"
+           srcdir="${test.dir}"
            destdir="${test.build.dir}"
     />
       
@@ -77,7 +74,7 @@ TESTNG.REPORT.DIR=${testng.report.dir}
     <echo message="                                 -- ${testng.jar} --" />
     <testng classpathref="run.cp"
             outputdir="${testng.report.dir}">
-      <xmlfileset dir="${test15.dir}" includes="testng.xml"/>
+      <xmlfileset dir="${test.resources.dir}" includes="testng.xml"/>
       <jvmarg value="-Dtest.resources.dir=${test.resources.dir}" />
     </testng>
   </target>
@@ -92,7 +89,7 @@ TESTNG.REPORT.DIR=${testng.report.dir}
       <reporter classname="org.testng.reporters.XMLReporter">
         <property name="generateGroupsAttribute" value="true" />
       </reporter>
-      <xmlfileset dir="${test15.dir}" includes="testng-single.xml"/>
+      <xmlfileset dir="${test.resources.dir}" includes="testng-single.xml"/>
     </testng>
 
       <echo>Report created in ${testng.report.dir}</echo>
@@ -109,7 +106,7 @@ TESTNG.REPORT.DIR=${testng.report.dir}
 
       <testng outputdir="${testng.report.dir}"
               classpathref="run.cp">
-          <xmlfileset dir="${test15.dir}" includes="testng-single3.xml"/>
+          <xmlfileset dir="${test.resources.dir}" includes="testng-single3.xml"/>
           <propertyset refid="propset1"/>
           <sysproperty key="sysprop1" value="value 3"/>
       </testng>
@@ -127,7 +124,7 @@ TESTNG.REPORT.DIR=${testng.report.dir}
 
     <testng classpathref="run.cp"
             outputDir="${testng.report.dir}">
-        <xmlfileset dir="${test15.dir}" includes="${testng.conf}.xml"/>
+        <xmlfileset dir="${test.resources.dir}" includes="${testng.conf}.xml"/>
     </testng>
 
     <antcall target="clean.tmp"/>
