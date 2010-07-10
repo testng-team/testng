@@ -15,7 +15,7 @@ public class JarTest extends SimpleBaseTest {
     File currentDir = new File(".");
     String path = currentDir.getAbsolutePath();
     char s = File.separatorChar;
-    path = path + s + "test" + s + "src" + s + "test" + s + "jar" + s;
+    path = path + s + "src" + s + "test" + s + "java" + s + "test" + s + "jar" + s;
 
     return path + jarFile;
   }

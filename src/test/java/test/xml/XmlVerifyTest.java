@@ -24,7 +24,7 @@ public class XmlVerifyTest extends SimpleBaseTest {
     File currentDir = new File(".");
     String path = currentDir.getAbsolutePath();
     char s = File.separatorChar;
-    path = path + s + "test" + s + "src" + s + "test" + s + "xml" + s;
+    path = path + s + "src" + s + "test" + s + "java" + s + "test" + s + "xml" + s;
     return path + file;
   }
 
