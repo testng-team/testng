@@ -49,10 +49,10 @@
 
   <target name="copy-resources" description="Copies resources.">
     <copy verbose="false"
-          file="src/testng-1.0.dtd"
+          file="${src.dir}/testng-1.0.dtd"
           todir="${build.dir}" />
     <copy verbose="false"
-          file="src/testngtasks"
+          file="${src.dir}/testngtasks"
           todir="${build.dir}" />
     <copy todir="${build.dir}">
       <fileset dir="./resources">
@@ -219,7 +219,7 @@
       </filterchain>
     </copy>
     <jar destfile="${build.maven-bundle.dir}/${sources.testng.jar}">
-      <fileset dir="src" />
+      <fileset dir="${src.dir}" />
     </jar>
 
     <exec executable="gpg">
