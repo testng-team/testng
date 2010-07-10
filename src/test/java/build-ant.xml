@@ -1,4 +1,4 @@
-<project name="testng" default="all" basedir="../..">
+<project name="testng" default="all" basedir="../../..">
 
   <property file="build.properties"/>
   <property name="this.directory" value="${test.dir}" />
@@ -64,7 +64,7 @@
     	listeners = "org.testng.reporters.FailedReporter, org.testng.reporters.DotTestListener"
     	haltonfailure="true"
     	>
-        <xmlfileset file="${this.directory}/testng-ant.xml"/>
+        <xmlfileset file="${test.resources.dir}/testng-ant.xml"/>
     </testng>
   	<available file="${test-output}/Suitename from xml/TestName.xml" 
   		type="file" property="test3.exists"/>
