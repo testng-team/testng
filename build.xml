@@ -119,7 +119,7 @@
 
   <target name="javadocs">
     <javadoc additionalparam="-quiet" destdir="javadocs" source="1.5" windowtitle="TestNG"
-        classpath="${testng.jar}:${lib.dir}/ant.jar:${guice.jar}" verbose="false">
+        classpath="${testng.jar}:${lib.dir}/${ant.jar}" verbose="false">
       <fileset dir="${src.dir}" defaultexcludes="yes">
         <include name="org/testng/*.java" />
       </fileset>
