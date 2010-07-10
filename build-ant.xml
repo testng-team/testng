@@ -1,4 +1,4 @@
-<project name="testng" default="all" basedir="../../..">
+<project name="testng" default="all" basedir=".">
 
   <property file="build.properties"/>
   <property name="this.directory" value="${test.dir}" />
