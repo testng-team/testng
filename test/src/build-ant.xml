@@ -1,17 +1,18 @@
 <project name="testng" default="all" basedir="../..">
 
   <property file="build.properties"/>
-  <property name="this.directory" value="test/ant" />
+  <property name="this.directory" value="${test.dir}" />
   <property name="test-output" value="${this.directory}/test-output" />
 
   <taskdef name="testng" classname="org.testng.TestNGAntTask" classpath="${testng.jar}" />
 
   <target name="all">
+    <echo>This dir: ${this.directory}</echo>
     <delete failonerror="false" dir="${this.directory}/build" />
   	<mkdir dir="${this.directory}/build" />
   	
   	<javac classpath="${testng.jar}"
-  		  destdir="${this.directory}/build" srcdir="${this.directory}" includes="*.java" />
+  		  destdir="${this.directory}/build" srcdir="${this.directory}" includes="test/ant/*.java" />
 
 <!--
     <testng classpath="build;../../testng-5.2beta-jdk15.jar"
@@ -31,8 +32,8 @@
     	haltonfailure="true"
     	>
         <classfileset dir="${this.directory}/build">
-        	<include name="NoPackageTest.class" />
-        	<include name="MultipleThreadTest.class" />
+        	<include name="test/ant/NoPackageTest.class" />
+        	<include name="test/ant/MultipleThreadTest.class" />
         </classfileset>
     </testng>
   	
@@ -49,7 +50,7 @@
     	testname="Test Ant Test"
     	>
         <classfileset dir="${this.directory}/build">
-        	<include name="DontOverrideSuiteNameTest.class" />
+        	<include name="test/ant/DontOverrideSuiteNameTest.class" />
          </classfileset>
     </testng>
   	
@@ -63,7 +64,7 @@
     	listeners = "org.testng.reporters.FailedReporter, org.testng.reporters.DotTestListener"
     	haltonfailure="true"
     	>
-        <xmlfileset file="${this.directory}/testng.xml"/>
+        <xmlfileset file="${this.directory}/testng-ant.xml"/>
     </testng>
   	<available file="${test-output}/Suitename from xml/TestName.xml" 
   		type="file" property="test3.exists"/>
