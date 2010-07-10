@@ -201,7 +201,7 @@
       <zipfileset dir="resources"
                prefix="${zip.dir}/resources" 
             includes="**/*.css"/>
-      <zipfileset dir="test"
+      <zipfileset dir="${test.dir}"
                   prefix="${zip.dir}/test"
                   includes="**/*.properties,**/*.java,build.xml,testng.xml"
                   excludes="test-output/**,report/**" />
@@ -321,7 +321,7 @@
     <delete failonerror="false">
       <fileset dir="." includes="testng*.jar,*.zip" />
     </delete>
-    <ant antfile="${test.dir}/build.xml" target="clean" />
+    <ant antfile="build-tests.xml" target="clean" />
     <ant dir="examples" target="clean" />
   </target>
 
