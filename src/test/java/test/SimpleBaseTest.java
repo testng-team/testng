@@ -1,5 +1,8 @@
 package test;
 
+import java.io.File;
+
+import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
@@ -50,5 +53,12 @@ public class SimpleBaseTest {
       XmlInclude include = new XmlInclude(m, index++);
       cls.getIncludedMethods().add(include);
     }
+  }
+
+  protected String getPathToResource(String fileName) {
+    String result = System.getProperty("test.resources.dir");
+    Assert.assertNotNull(result);
+
+    return result + File.separatorChar + fileName;
   }
 }

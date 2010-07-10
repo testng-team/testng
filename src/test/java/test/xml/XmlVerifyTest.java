@@ -20,13 +20,16 @@ import test.SimpleBaseTest;
 
 public class XmlVerifyTest extends SimpleBaseTest {
    
-  private String getFinalPath(String file) {
-    File currentDir = new File(".");
-    String path = currentDir.getAbsolutePath();
-    char s = File.separatorChar;
-    path = path + s + "src" + s + "test" + s + "java" + s + "test" + s + "xml" + s;
-    return path + file;
-  }
+//  private String getFinalPath(String file) {
+//    File currentDir = new File(".");
+//    String path = currentDir.getAbsolutePath();
+//    char s = File.separatorChar;
+//    String testDir = System.getProperty("test.dir");
+//    System.out.println("[XmlVerifyTest] test.dir:" + testDir);
+//    Assert.assertNotNull(testDir);
+//    path = path + s + testDir + s;
+//    return path + file;
+//  }
 
   @Test
   public void simple() {
@@ -53,7 +56,7 @@ public class XmlVerifyTest extends SimpleBaseTest {
         System.setOut(new PrintStream(os));
         System.setErr(new PrintStream(os));
         TestNG tng = create();
-        String testngXmlPath = getFinalPath("invalid-testng.xml");
+        String testngXmlPath = getPathToResource("invalid-testng.xml");
         tng.setTestSuites(Arrays.asList(testngXmlPath));
         tng.run();
      } finally {
@@ -73,7 +76,7 @@ public class XmlVerifyTest extends SimpleBaseTest {
      TestListenerAdapter tla = new TestListenerAdapter();
      try {
         TestNG tng = create();
-        String testngXmlPath = getFinalPath("suite1.xml");
+        String testngXmlPath = getPathToResource("suite1.xml");
         tng.setTestSuites(Arrays.asList(testngXmlPath));
         tng.addListener(tla);
         tng.run();

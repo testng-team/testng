@@ -11,18 +11,9 @@ import java.io.File;
 import java.util.Arrays;
 
 public class JarTest extends SimpleBaseTest {
-  private String getFinalPath(String jarFile) {
-    File currentDir = new File(".");
-    String path = currentDir.getAbsolutePath();
-    char s = File.separatorChar;
-    path = path + s + "src" + s + "test" + s + "java" + s + "test" + s + "jar" + s;
-
-    return path + jarFile;
-  }
-  
   private TestListenerAdapter init(String jarFile) {
     TestNG tng = create();
-    String finalPath = getFinalPath(jarFile);
+    String finalPath = getPathToResource(jarFile);
     tng.setTestJar(finalPath);
     TestListenerAdapter result = new TestListenerAdapter();
     tng.addListener(result);
@@ -51,9 +42,9 @@ public class JarTest extends SimpleBaseTest {
   @Test
   public void jarWithTestngXmlOverriddenOnCommandLine() {
     TestNG tng = create();
-    String finalPath = getFinalPath("withtestngxml.jar");
+    String finalPath = getPathToResource("withtestngxml.jar");
     tng.setTestJar(finalPath);
-    tng.setTestSuites(Arrays.asList(getFinalPath("testng-override.xml")));
+    tng.setTestSuites(Arrays.asList(getPathToResource("testng-override.xml")));
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
     tng.run();

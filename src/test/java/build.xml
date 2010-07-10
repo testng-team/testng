@@ -78,6 +78,7 @@ TESTNG.REPORT.DIR=${testng.report.dir}
     <testng classpathref="run.cp"
             outputdir="${testng.report.dir}">
       <xmlfileset dir="${test15.dir}" includes="testng.xml"/>
+      <jvmarg value="-Dtest.resources.dir=${test.resources.dir}" />
     </testng>
   </target>
 
