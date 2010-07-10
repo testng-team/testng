@@ -2,8 +2,6 @@
 
   <property file="build.properties"/>
 
-  <property name="test.build.dir" value="${test.dir}/build"/>
-
   <property name="report.dir" value="${test.dir}/test-output"/>
   <property name="junit.report.dir" value="${report.dir}/test-tmp"/>
   <property name="testng.report.dir" value="${report.dir}"/>
