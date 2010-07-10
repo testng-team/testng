@@ -201,10 +201,6 @@
       <zipfileset dir="resources"
                prefix="${zip.dir}/resources" 
             includes="**/*.css"/>
-      <zipfileset dir="${test.dir}"
-                  prefix="${zip.dir}/test"
-                  includes="**/*.properties,**/*.java,build.xml,testng.xml"
-                  excludes="test-output/**,report/**" />
       <zipfileset dir="${lib.dir}"
                   prefix="${zip.dir}/${lib.dir}"
                   includes="${beanshell.jar},${concurrent.jar},${guice.jar}" />

@@ -2,7 +2,7 @@
 
   <property file="build.properties"/>
 
-  <property name="report.dir" value="${test.dir}/test-output"/>
+  <property name="report.dir" value="${test.output.dir}"/>
   <property name="junit.report.dir" value="${report.dir}/test-tmp"/>
   <property name="testng.report.dir" value="${report.dir}"/>
 
@@ -146,7 +146,7 @@ TESTNG.REPORT.DIR=${testng.report.dir}
 
 
   <target name="clean.tmp">
-      <delete dir="${basedir}/test-output-tests"/>
+      <delete dir="${test.output.dir}"/>
   </target>
 
   <target name="clean:reports">
