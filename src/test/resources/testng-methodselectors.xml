@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Sample Suite">
+  <test verbose="1" name="Sample">
+    <classes>
+      <class name="test.methodselectors.SampleTest" />
+    </classes>
+  </test>
+</suite>

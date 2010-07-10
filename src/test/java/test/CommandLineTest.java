@@ -56,7 +56,7 @@ public class CommandLineTest {
     }
   
   /**
-   * Test the ability to override the defauilt command line Suite name
+   * Test the ability to override the default command line Suite name
    */
   @Test(groups = { "current" } )
   public void suiteNameOverride() {
@@ -79,7 +79,7 @@ public class CommandLineTest {
   }
   
   /**
-   * Test the ability to override the defauilt command line test name
+   * Test the ability to override the default command line test name
    */
   @Test(groups = { "current" } )
   public void testNameOverride() {

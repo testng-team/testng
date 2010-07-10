@@ -47,6 +47,8 @@ public final class TestNGCommandLineArgs {
   public static final String GROUPS_COMMAND_OPT = "-groups";
   public static final String JUNIT_DEF_OPT = "-junit";
   public static final String LISTENER_COMMAND_OPT = "-listener";
+  /** Value is a Map<String classname, Integer priority> */
+  public static final String METHOD_SELECTOR_OPT = "-methodselectors";
   public static final String MASTER_OPT = "-master";
   public static final String OBJECT_FACTORY_COMMAND_OPT = "-objectfactory";
   /**
@@ -212,6 +214,30 @@ public final class TestNGCommandLineArgs {
         else {
           LOGGER.error("WARNING: missing ITestListener class/file list argument after "
               + LISTENER_COMMAND_OPT);
+        }
+      }
+      else if (METHOD_SELECTOR_OPT.equalsIgnoreCase(argv[i])) {
+        if ((i + 1) < argv.length) {
+            String strClass = argv[++i];
+            Map<String,Integer> methodSelectors = Maps.newHashMap();
+            String[] strs = Utils.split(strClass, ",");
+            for (String cls : strs) {
+                String[] sel = Utils.split(cls, ":");
+                try {
+                    if (sel.length == 2) {
+                        methodSelectors.put(sel[0], Integer.valueOf(sel[1]));
+                    } else {
+                        LOGGER.error("WARNING: method selector " + cls + " has the wrong number of values");
+                    }
+                }catch (NumberFormatException nfe) {
+                    LOGGER.error("WARNING: MethodSelector priority was not an integer for " + cls);
+                }
+            }
+            arguments.put(METHOD_SELECTOR_OPT, methodSelectors);
+        }
+        else {
+            LOGGER.error("WARNING: missing IMethodSelector class/file list argument after "
+                    + METHOD_SELECTOR_OPT);
         }
       }
       else if (TESTCLASS_COMMAND_OPT.equalsIgnoreCase(argv[i])) {
@@ -766,6 +792,11 @@ public final class TestNGCommandLineArgs {
         + " and/or "
         + ISuiteListener.class.getName()
         + "]");
+    System.out.println("[" + METHOD_SELECTOR_OPT
+            + " list of .class files or list of class names implementing "
+            + IMethodSelector.class.getName()
+            + " with a priority value "
+            + "]");
     System.out.println("[" + PARALLEL_MODE
             + " methods|tests]");
     System.out.println("\t\trun tests in parallel using the specified mode");

@@ -548,14 +548,6 @@ public class TestNG {
         xmlTest.setName(testName);
       }
 
-      List<XmlMethodSelector> selectors = xmlTest.getMethodSelectors();
-      for (String name : m_methodDescriptors.keySet()) {
-        XmlMethodSelector xms = new XmlMethodSelector();
-        xms.setName(name);
-        xms.setPriority(m_methodDescriptors.get(name));
-        selectors.add(xms);
-      }
-      
       xmlTest.getXmlClasses().add(xmlClasses[i]);
     }
     
@@ -925,6 +917,15 @@ public class TestNG {
       xmlSuite.setVerbose(m_verbose);
     }
 
+    for (XmlTest t : xmlSuite.getTests()) {
+      for (Map.Entry<String, Integer> ms : m_methodDescriptors.entrySet()) {
+        XmlMethodSelector xms = new XmlMethodSelector();
+        xms.setName(ms.getKey());
+        xms.setPriority(ms.getValue());
+        t.getMethodSelectors().add(xms);
+      }
+    }
+
     suiteRunnerMap.put(xmlSuite, createSuiteRunner(xmlSuite));
 
     for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
@@ -1163,6 +1164,13 @@ public class TestNG {
       setListenerClasses(listenerClasses);
     }
     
+    Map<String,Integer> methodSelectors = (Map<String, Integer>) cmdLineArgs.get(TestNGCommandLineArgs.METHOD_SELECTOR_OPT);
+    if (null != methodSelectors) {
+      for (Map.Entry<String, Integer> e : methodSelectors.entrySet()) {
+        addMethodSelector(e.getKey(), e.getValue());
+      }
+    }
+
     Class objectFactory = (Class) cmdLineArgs.get(TestNGCommandLineArgs.OBJECT_FACTORY_COMMAND_OPT);
     if(null != objectFactory) {
       setObjectFactory(objectFactory);

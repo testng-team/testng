@@ -26,8 +26,9 @@
     </groups>
     <parameter name="count" value="10"/>
     <classes>
-      <class name="test.inject.NoInjectionTest" />
+      <class name="test.methodselectors.CommandLineTest" />
 <!-- 
+       <class name="test.inject.NoInjectionTest" />
       <class name="test.tmp.TestFactory" />
       <class name="test.tmp.A" />
       <class name="test.thread.MultiThreadedDependentTest" />

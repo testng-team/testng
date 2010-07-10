@@ -19,6 +19,6 @@ public class NoTestSelector implements IMethodSelector {
   }
 
   private static void ppp(String s) {
-    System.out.println("[NoTestSelector] " + s);
+//    System.out.println("[NoTestSelector] " + s);
   }
 }

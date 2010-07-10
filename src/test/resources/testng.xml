@@ -389,6 +389,7 @@
     <classes>
       <class name="test.methodselectors.MethodSelectorTest" />
       <class name="test.methodselectors.BeanShellTest" />
+      <class name="test.methodselectors.CommandLineTest" />
     </classes>
   </test>
 
