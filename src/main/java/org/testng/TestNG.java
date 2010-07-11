@@ -1159,9 +1159,20 @@ public class TestNG {
       setDefaultTestName(defaultTestName);
     }
 
-    List<Class> listenerClasses = (List<Class>) cmdLineArgs.get(TestNGCommandLineArgs.LISTENER_COMMAND_OPT);
-    if (null != listenerClasses) {
-      setListenerClasses(listenerClasses);
+    String strClass = (String) cmdLineArgs.get(TestNGCommandLineArgs.LISTENER_COMMAND_OPT);
+    if (null != strClass) {
+      String sep = ";";
+      if (strClass.indexOf(",") >= 0) {
+        sep = ",";
+      }
+      String[] strs = Utils.split(strClass, sep);
+      List<Class> classes = Lists.newArrayList();
+
+      for (String cls : strs) {
+        classes.add(ClassHelper.fileToClass(cls));
+      }
+
+      setListenerClasses(classes);
     }
     
     Map<String,Integer> methodSelectors = (Map<String, Integer>) cmdLineArgs.get(TestNGCommandLineArgs.METHOD_SELECTOR_OPT);
@@ -1171,14 +1182,14 @@ public class TestNG {
       }
     }
 
-    Class objectFactory = (Class) cmdLineArgs.get(TestNGCommandLineArgs.OBJECT_FACTORY_COMMAND_OPT);
+    String objectFactory = (String) cmdLineArgs.get(TestNGCommandLineArgs.OBJECT_FACTORY_COMMAND_OPT);
     if(null != objectFactory) {
-      setObjectFactory(objectFactory);
+      setObjectFactory(ClassHelper.fileToClass(objectFactory));
     }
 
-    Class runnerFactory = (Class) cmdLineArgs.get(TestNGCommandLineArgs.TESTRUNNER_FACTORY_COMMAND_OPT);
+    String runnerFactory = (String) cmdLineArgs.get(TestNGCommandLineArgs.TESTRUNNER_FACTORY_COMMAND_OPT);
     if (null != runnerFactory) {
-      setTestRunnerFactoryClass(runnerFactory);
+      setTestRunnerFactoryClass(ClassHelper.fileToClass(runnerFactory));
     }
 
     List<ReporterConfig> reporterConfigs =
@@ -1480,4 +1491,5 @@ public class TestNG {
   public void setDataProviderThreadCount(int count) {
     m_dataProviderThreadCount = count;
   }
+
 }

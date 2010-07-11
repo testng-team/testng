@@ -404,4 +404,120 @@ public final class ClassHelper {
   
     return result;
   }
+
+  /** 
+   * When given a file name to form a class name, the file name is parsed and divided 
+   * into segments. For example, "c:/java/classes/com/foo/A.class" would be divided
+   * into 6 segments {"C:" "java", "classes", "com", "foo", "A"}. The first segment 
+   * actually making up the class name is [3]. This value is saved in m_lastGoodRootIndex
+   * so that when we parse the next file name, we will try 3 right away. If 3 fails we
+   * will take the long approach. This is just a optimization cache value.
+   */  
+  private static int m_lastGoodRootIndex = -1;
+
+  /**
+   * Returns the Class object corresponding to the given name. The name may be
+   * of the following form:
+   * <ul>
+   * <li>A class name: "org.testng.TestNG"</li>
+   * <li>A class file name: "/testng/src/org/testng/TestNG.class"</li>
+   * <li>A class source name: "d:\testng\src\org\testng\TestNG.java"</li>
+   * </ul>
+   * 
+   * @param file
+   *          the class name.
+   * @return the class corresponding to the name specified.
+   */
+  public static Class<?> fileToClass(String file) {
+    Class<?> result = null;
+    
+    if(!file.endsWith(".class") && !file.endsWith(".java")) {
+      // Doesn't end in .java or .class, assume it's a class name
+      result = ClassHelper.forName(file);
+
+      if (null == result) {
+        throw new TestNGException("Cannot load class from file: " + file);
+      }
+
+      return result;
+    }
+    
+    int classIndex = file.lastIndexOf(".class");
+    if (-1 == classIndex) {
+      classIndex = file.lastIndexOf(".java");
+//
+//      if(-1 == classIndex) {
+//        result = ClassHelper.forName(file);
+//  
+//        if (null == result) {
+//          throw new TestNGException("Cannot load class from file: " + file);
+//        }
+//  
+//        return result;
+//      }
+//
+    }
+
+    // Transforms the file name into a class name.
+    
+    // Remove the ".class" or ".java" extension.
+    String shortFileName = file.substring(0, classIndex);
+    
+    // Split file name into segments. For example "c:/java/classes/com/foo/A"
+    // becomes {"c:", "java", "classes", "com", "foo", "A"}
+    String[] segments = shortFileName.split("[/\\\\]", -1);
+
+    //
+    // Check if the last good root index works for this one. For example, if the previous
+    // name was "c:/java/classes/com/foo/A.class" then m_lastGoodRootIndex is 3 and we
+    // try to make a class name ignoring the first m_lastGoodRootIndex segments (3). This 
+    // will succeed rapidly if the path is the same as the one from the previous name.   
+    //    
+    if (-1 != m_lastGoodRootIndex) {
+      
+      // TODO use a SringBuffer here
+      String className = segments[m_lastGoodRootIndex];
+      for (int i = m_lastGoodRootIndex + 1; i < segments.length; i++) {
+        className += "." + segments[i];
+      }
+
+      result = ClassHelper.forName(className);
+
+      if (null != result) {
+        return result;
+      }
+    }
+
+    //
+    // We haven't found a good root yet, start by resolving the class from the end segment 
+    // and work our way up.  For example, if we start with "c:/java/classes/com/foo/A"
+    // we'll start by resolving "A", then "foo.A", then "com.foo.A" until something 
+    // resolves.  When it does, we remember the path we are at as "lastGoodRoodIndex".
+    //
+    
+    // TODO CQ use a StringBuffer here 
+    String className = null;
+    for (int i = segments.length - 1; i >= 0; i--) {
+      if (null == className) {
+        className = segments[i];
+      }
+      else {
+        className = segments[i] + "." + className;
+      }
+
+      result = ClassHelper.forName(className);
+
+      if (null != result) {
+        m_lastGoodRootIndex = i;
+        break;
+      }
+    }
+
+    if (null == result) {
+      throw new TestNGException("Cannot load class from file: " + file);
+    }
+
+    return result;
+  }
+
 }
