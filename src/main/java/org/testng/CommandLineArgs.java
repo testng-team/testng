@@ -2,86 +2,99 @@ package org.testng;
 
 import com.beust.jcommander.Parameter;
 
+import org.testng.collections.Lists;
+
+import java.util.List;
+
 public class CommandLineArgs {
 
-  @Parameter(name = "-port", description = "The port")
-  private Integer m_port;
+  @Parameter(description = "The XML suite files to run")
+  public List<String> suiteFiles = Lists.newArrayList();
 
-  @Parameter(name = "-host", description = "The host")
-  private String m_host;
+  @Parameter(names = { "-log", "-verbose" }, description = "Level of verbosity")
+  public Integer verbose;
 
-  @Parameter(name = "-master", description ="Master mode")
-  private Boolean m_master;
+  @Parameter(names = "-groups", description = "Comma-separated list of group names to be run")
+  public String groups;
 
-  @Parameter(name = "-slave", description ="Slave mode")
-  private Boolean m_slave;
-
-  @Parameter(name = "-groups", description = "Comma-separated list of group names to be run")
-  private String m_groups;
-
-  @Parameter(name = "-excludedgroups", description ="Comma-separated list of group names to be run")
-  private String m_excludedGroups;
+  @Parameter(names = "-excludedgroups", description ="Comma-separated list of group names to be " +
+  		"run")
+  public String excludedGroups;
   
-  @Parameter(name = "-d", description ="Output directory")
-  private String m_outputDirectory;
+  @Parameter(names = "-d", description ="Output directory")
+  public String outputDirectory;
   
-  @Parameter(name = "-junit", description ="JUnit mode")
-  private Boolean m_junit;
+  @Parameter(names = "-junit", description ="JUnit mode")
+  public Boolean junit = Boolean.FALSE;
 
-  @Parameter(name = "-listener", description = "List of .class files or list of class names" +
+  @Parameter(names = "-listener", description = "List of .class files or list of class names" +
       " implementing ITestListener or ISuiteListener")
-  private String m_listener;
+  public String listener;
 
-  @Parameter(name = "-methodselectors", description = "List of .class files or list of class " +
+  @Parameter(names = "-methodselectors", description = "List of .class files or list of class " +
   		"names implementing IMethodSelector")
-  private String m_methodSelectors;
+  public String methodSelectors;
 
-  @Parameter(name = "-objectfactory", description = "List of .class files or list of class names " +
-      "implementing ITestRunnerFactory")
-  private String m_objectFactory;
+  @Parameter(names = "-objectfactory", description = "List of .class files or list of class " +
+  		"names implementing ITestRunnerFactory")
+  public String objectFactory;
 
-  @Parameter(name = "-parallel", description = "Parallel mode (methods, tests or classes)")
-  private String m_parallelMode;
+  @Parameter(names = "-parallel", description = "Parallel mode (methods, tests or classes)")
+  public String parallelMode;
 
-  @Parameter(name = "-threadcount", description = "Number of threads to use when running tests " +
+  @Parameter(names = "-threadcount", description = "Number of threads to use when running tests " +
       "in parallel")
-  private Integer m_threadCount;
+  public Integer threadCount;
 
-  @Parameter(name = "-dataproviderthreadcount", description = "Number of threads to use when " +
-      "running tests in parallel")
-  private Integer m_dataProviderThreadCount;
+  @Parameter(names = "-dataproviderthreadcount", description = "Number of threads to use when " +
+      "running data providers")
+  public Integer dataProviderThreadCount;
 
-  @Parameter(name = "-suitename", description = "Default name of test suite, if not specified " +
+  @Parameter(names = "-suitename", description = "Default name of test suite, if not specified " +
       "in suite definition file or source code")
-  private String m_suiteName;
+  public String suiteName;
 
-  @Parameter(name = "-testname", description = "Default name of test, if not specified in suite" +
+  @Parameter(names = "-testname", description = "Default name of test, if not specified in suite" +
       "definition file or source code")
-  private String m_testName;
+  public String testName;
 
-  @Parameter(name = "-reporter", description = "Extended configuration for custom report listener")
-  private String m_reporter;
+  @Parameter(names = "-reporter", description = "Extended configuration for custom report listener")
+  public String reporter;
 
   /**
    * Used as map key for the complete list of report listeners provided with the above argument
    */
-  @Parameter(name = "-reporterslist")
-  private String m_reportersList;
+  @Parameter(names = "-reporterslist")
+  public String reportersList;
 
-  @Parameter(name = "-skipfailedinvocationcounts")
-  private Boolean m_skipFailedInvocationCounts;
+  @Parameter(names = "-usedefaultlisteners", description = "Whether to use the default listeners")
+  public Boolean useDefaultListeners = Boolean.TRUE;
 
-  @Parameter(name = "-testclass", description = "The list of test classes")
-  private String m_testClass;
+  @Parameter(names = "-skipfailedinvocationcounts")
+  public Boolean skipFailedInvocationCounts;
 
-  @Parameter(name = "-testnames", description = "The list of test names to run")
-  private String m_testNames;
+  @Parameter(names = "-testclass", description = "The list of test classes")
+  public String testClass;
 
-  @Parameter(name = "-testjar", description = "")
-  private String m_testJar;
+  @Parameter(names = "-testnames", description = "The list of test names to run")
+  public String testNames;
 
-  @Parameter(name = "-testRunFactory", description = "")
-  private String m_testRunFactory;
+  @Parameter(names = "-testjar", description = "")
+  public String testJar;
 
-  public static final String DATA_PROVIDER_THREAD_COUNT = "-dataproviderthreadcount";
+  @Parameter(names = "-testRunFactory", description = "")
+  public String testRunFactory;
+
+  @Parameter(names = "-port", description = "The port")
+  public Integer port;
+
+  @Parameter(names = "-host", description = "The host")
+  public String host;
+
+  @Parameter(names = "-master", description ="Host where the master is")
+  public String master;
+
+  @Parameter(names = "-slave", description ="Host where the slave is")
+  public String slave;
+
 }

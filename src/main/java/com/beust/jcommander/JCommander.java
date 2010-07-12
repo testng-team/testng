@@ -2,6 +2,7 @@ package com.beust.jcommander;
 
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.internal.Utils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -15,6 +16,11 @@ public class JCommander {
   private Map<String, ParameterDescription> m_descriptions;
   private Object m_object;
 
+  /** This field will contain whatever command line parameter is not an option.
+   * It is expected to be a List<String>.
+   */
+  private Field m_mainParameterField;
+
   public JCommander(Object object) {
     m_object = object;
   }
@@ -24,6 +30,9 @@ public class JCommander {
     parse(args);
   }
 
+  /**
+   * Parse the command line parameters.
+   */
   public void parse(String[] args) {
     createDescriptions();
     parseValues(expandArgs(args));
@@ -108,15 +117,24 @@ public class JCommander {
       Annotation annotation = f.getAnnotation(Parameter.class);
       if (annotation != null) {
         Parameter p = (Parameter) annotation;
-        p("Adding description for " + p.name());
-        ParameterDescription pd = new ParameterDescription(m_object, p, f);
-        m_descriptions.put(p.name(), pd);
+        if (p.names().length == 0) {
+          p("Found main parameter:" + f);
+          m_mainParameterField = f;
+        } else {
+          for (String name : p.names()) {
+            p("Adding description for " + name);
+            ParameterDescription pd = new ParameterDescription(m_object, p, f);
+            m_descriptions.put(name, pd);
+          }
+        }
       }
     }
   }
 
   private void p(String string) {
-    System.out.println("[JCommander] " + string);
+    if (false) {
+      System.out.println("[JCommander] " + string);
+    }
   }
 
   private void parseValues(String[] args) {
@@ -129,22 +147,48 @@ public class JCommander {
           if (fieldType == boolean.class || fieldType == Boolean.class) {
             pd.addValue(Boolean.TRUE);
           } else if (i + 1 < args.length) {
-            pd.addValue(args[i + 1]);
+            pd.addValue(trim(args[i + 1]));
+            i++;
           } else {
             throw new ParameterException("Parameter expected after " + args[i]);
           }
-          i++;
         } else {
           throw new ParameterException("Unknown option: " + a);
         }
       }
+      else {
+        if (! Utils.isStringEmpty(args[i])) getMainParameter().add(args[i]);
+      }
+    }
+  }
+
+  private List<String> getMainParameter() {
+    if (m_mainParameterField == null) {
+      throw new ParameterException(
+          "Non option parameters were found but no main parameter was defined");
+    }
+
+    try {
+      List<String> result = (List<String>) m_mainParameterField.get(m_object);
+      if (result == null) {
+        result = Lists.newArrayList();
+        m_mainParameterField.set(m_object, result);
+      }
+      return result;
+    }
+    catch(IllegalAccessException ex) {
+      throw new ParameterException("Couldn't access main parameter: " + ex.getMessage());
     }
   }
 
   public void usage() {
     System.out.println("Usage:");
     for (ParameterDescription pd : m_descriptions.values()) {
-      System.out.println("\t" + pd.getName() + "\t" + pd.getDescription());
+      StringBuilder sb = new StringBuilder();
+      for (String n : pd.getNames()) {
+        sb.append(n).append(" ");
+      }
+      System.out.println("\t" + sb.toString() + "\t" + pd.getDescription());
     }
   }
 }

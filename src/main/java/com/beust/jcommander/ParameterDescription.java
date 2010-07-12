@@ -19,8 +19,8 @@ public class ParameterDescription {
     m_field = field;
   }
 
-  public String getName() {
-    return m_parameterAnnotation.name();
+  public String[] getNames() {
+    return m_parameterAnnotation.names();
   }
 
   public String getDescription() {
@@ -38,7 +38,7 @@ public class ParameterDescription {
 
   public void addValue(Object value) {
     if (m_added && ! isMultiOption()) {
-      throw new ParameterException("Can only specify option " + getName() + " once.");
+      throw new ParameterException("Can only specify option " + getNames()[0] + " once.");
     }
 
     m_added = true;
@@ -52,6 +52,8 @@ public class ParameterDescription {
         m_field.set(m_object, Long.parseLong(value.toString()));
       } else if (fieldType.equals(float.class) || fieldType.equals(Float.class)) {
         m_field.set(m_object, Float.parseFloat(value.toString()));
+      } else if (fieldType.equals(Boolean.class) || fieldType.equals(boolean.class)) {
+        m_field.set(m_object, value);
       } else if (isMultiOption()) {
         List l = (List) m_field.get(m_object);
         if (l == null) {

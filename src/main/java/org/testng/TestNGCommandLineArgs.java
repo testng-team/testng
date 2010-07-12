@@ -194,52 +194,35 @@ public final class TestNGCommandLineArgs {
       }
       else if (METHOD_SELECTOR_OPT.equalsIgnoreCase(argv[i])) {
         if ((i + 1) < argv.length) {
-            String strClass = argv[++i];
-            Map<String,Integer> methodSelectors = Maps.newHashMap();
-            String[] strs = Utils.split(strClass, ",");
-            for (String cls : strs) {
-                String[] sel = Utils.split(cls, ":");
-                try {
-                    if (sel.length == 2) {
-                        methodSelectors.put(sel[0], Integer.valueOf(sel[1]));
-                    } else {
-                        LOGGER.error("WARNING: method selector " + cls + " has the wrong number of values");
-                    }
-                }catch (NumberFormatException nfe) {
-                    LOGGER.error("WARNING: MethodSelector priority was not an integer for " + cls);
-                }
-            }
-            arguments.put(METHOD_SELECTOR_OPT, methodSelectors);
-        }
-        else {
-            LOGGER.error("WARNING: missing IMethodSelector class/file list argument after "
-                    + METHOD_SELECTOR_OPT);
+          String strClass = argv[++i].trim();
+          arguments.put(METHOD_SELECTOR_OPT, strClass);
         }
       }
       else if (TESTCLASS_COMMAND_OPT.equalsIgnoreCase(argv[i])) {
         if ((i + 1) < argv.length) {
-          while ((i + 1) < argv.length) {
+//          while ((i + 1) < argv.length) {
             String nextArg = argv[i + 1].trim();
-            if (!nextArg.toLowerCase().endsWith(".xml") && !nextArg.startsWith("-")) {
-
-              // Assume it's a class name
-              List<Class<?>> l = (List<Class<?>>) arguments.get(TESTCLASS_COMMAND_OPT);
-              if (null == l) {
-                l = Lists.newArrayList();
-                arguments.put(TESTCLASS_COMMAND_OPT, l);
-              }
-              // @TODO(cbeust): move this out of parameter parsing
-              Class<?> cls = ClassHelper.fileToClass(nextArg);
-              if (null != cls) {
-                l.add(cls);
-              }
-
-              i++;
-            } // if
-            else {
-              break;
-            }
-          }
+            arguments.put(TESTCLASS_COMMAND_OPT, nextArg);
+//            if (!nextArg.toLowerCase().endsWith(".xml") && !nextArg.startsWith("-")) {
+//
+//              // Assume it's a class name
+//              List<Class<?>> l = (List<Class<?>>) arguments.get(TESTCLASS_COMMAND_OPT);
+//              if (null == l) {
+//                l = Lists.newArrayList();
+//                arguments.put(TESTCLASS_COMMAND_OPT, l);
+//              }
+//              // @TODO(cbeust): move this out of parameter parsing
+//              Class<?> cls = ClassHelper.fileToClass(nextArg);
+//              if (null != cls) {
+//                l.add(cls);
+//              }
+//
+//              i++;
+//            } // if
+//            else {
+//              break;
+//            }
+//          }
         }
         else {
           TestNG.exitWithError("-testclass must be followed by a classname");
@@ -248,18 +231,7 @@ public final class TestNGCommandLineArgs {
       else if (TEST_NAMES_COMMAND_OPT.equalsIgnoreCase(argv[i])) {
         if ((i + 1) < argv.length) {
           String nextArg = argv[i + 1].trim();
-          if (! nextArg.startsWith("-")) {
-            List<String> l = (List<String>) arguments.get(TEST_NAMES_COMMAND_OPT);
-            if (null == l) {
-              l = Lists.newArrayList();
-              arguments.put(TEST_NAMES_COMMAND_OPT, l);
-            }
-            l.addAll(Arrays.asList(nextArg.split(",")));
-            i++;
-          }
-          else {
-            break;
-          }
+          arguments.put(TEST_NAMES_COMMAND_OPT, nextArg);
         }
         else {
           TestNG.exitWithError(TEST_NAMES_COMMAND_OPT + " must be followed by a one or more test names");
@@ -374,11 +346,7 @@ public final class TestNGCommandLineArgs {
       }
       else if (REPORTER.equalsIgnoreCase(argv[i])) {
         if ((i + 1) < argv.length) {
-          ReporterConfig reporterConfig = ReporterConfig.deserialize(trim(argv[i + 1]));
-          if (arguments.get(REPORTERS_LIST) == null) {
-            arguments.put(REPORTERS_LIST, Lists.newArrayList());
-          }
-          ((List<ReporterConfig>)arguments.get(REPORTERS_LIST)).add(reporterConfig);
+          arguments.put(REPORTERS_LIST, argv[i + 1].trim());
           i++;
         }
       }

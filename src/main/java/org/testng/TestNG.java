@@ -1,6 +1,8 @@
 package org.testng;
 
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
@@ -496,7 +498,7 @@ public class TestNG {
    * @param classes An array of classes that contain TestNG annotations.
    */
   public void setTestClasses(Class[] classes) {
-	m_suites.clear();
+    m_suites.clear();
     m_commandLineTestClasses = classes;
   }
   
@@ -1063,14 +1065,23 @@ public class TestNG {
    * @param listener
    */
   public static TestNG privateMain(String[] argv, ITestListener listener) {
-    Map arguments= checkConditions(TestNGCommandLineArgs.parseCommandLine(argv));
-    
     TestNG result = new TestNG();
+
     if (null != listener) {
       result.addListener(listener);
     }
 
-    result.configure(arguments);
+    if (false) {
+      // Old style parsing
+      Map arguments = checkConditions(TestNGCommandLineArgs.parseCommandLine(argv));
+      result.configure(arguments);
+    } else {
+      // New style parsing
+      CommandLineArgs cla = new CommandLineArgs();
+      new JCommander(cla).parse(argv);
+      validateCommandLineParameters(cla);
+      result.configure(cla);
+    }
     try {
       result.run();
     }
@@ -1085,6 +1096,98 @@ public class TestNG {
     }
 
     return result;
+  }
+
+  /**
+   * Configure the TestNG instance based on the command line parameters.
+   */
+  private void configure(CommandLineArgs cla) {
+    if (cla.verbose != null) setVerbose(cla.verbose);
+    setOutputDirectory(cla.outputDirectory);
+
+    String testClasses = cla.testClass;
+    if (null != testClasses) {
+      String[] strClasses = testClasses.split(",");
+      List<Class> classes = Lists.newArrayList();
+      for (String c : strClasses) {
+        classes.add(ClassHelper.fileToClass(c));
+      }
+
+      setTestClasses(classes.toArray(new Class[classes.size()]));
+    }
+
+    setOutputDirectory(cla.outputDirectory);
+
+    if (cla.testNames != null) {
+      setTestNames(Arrays.asList(cla.testNames.split(",")));
+    }
+
+//    List<String> testNgXml = (List<String>) cmdLineArgs.get(TestNGCommandLineArgs.SUITE_DEF_OPT);
+//    if (null != testNgXml) {
+//      setTestSuites(testNgXml);
+//    }
+
+    if (cla.useDefaultListeners != null) {
+      setUseDefaultListeners(cla.useDefaultListeners);
+    }
+
+    setGroups(cla.groups);
+    setExcludedGroups(cla.excludedGroups);
+    setTestJar(cla.testJar);
+    setJUnit(cla.junit);
+    setMaster(cla.master);
+    setSlave(cla.slave);
+    setSkipFailedInvocationCounts(cla.skipFailedInvocationCounts);
+    if (cla.parallelMode != null) setParallel(cla.parallelMode);
+    if (cla.threadCount != null) setThreadCount(cla.threadCount);
+    if (cla.dataProviderThreadCount != null) {
+      setDataProviderThreadCount(cla.dataProviderThreadCount);
+    }
+    if (cla.suiteName != null) setDefaultSuiteName(cla.suiteName);
+    if (cla.testName != null) setDefaultTestName(cla.testName);
+    if (cla.listener != null) {
+      String sep = ";";
+      if (cla.listener.indexOf(",") >= 0) {
+        sep = ",";
+      }
+      String[] strs = Utils.split(cla.listener, sep);
+      List<Class> classes = Lists.newArrayList();
+
+      for (String cls : strs) {
+        classes.add(ClassHelper.fileToClass(cls));
+      }
+
+      setListenerClasses(classes);
+    }
+
+    if (null != cla.methodSelectors) {
+      String[] strs = Utils.split(cla.methodSelectors, ",");
+      for (String cls : strs) {
+        String[] sel = Utils.split(cls, ":");
+        try {
+          if (sel.length == 2) {
+            addMethodSelector(sel[0], Integer.valueOf(sel[1]));
+          } else {
+            LOGGER.error("WARNING: method selector " + cls + " has the wrong number of values");
+          }
+        }
+        catch (NumberFormatException nfe) {
+          LOGGER.error("WARNING: MethodSelector priority was not an integer for " + cls);
+        }
+      }
+    }
+    
+    if (cla.objectFactory != null) setObjectFactory(ClassHelper.fileToClass(cla.objectFactory));
+    if (cla.testRunFactory != null) setTestRunnerFactoryClass(
+        ClassHelper.fileToClass(cla.testRunFactory));
+
+    if (cla.reportersList != null) {
+      ReporterConfig reporterConfig = ReporterConfig.deserialize(cla.reportersList);
+      addReporter(reporterConfig);
+    }
+
+    if (cla.suiteFiles != null) setTestSuites(cla.suiteFiles);
+
   }
 
   /**
@@ -1106,15 +1209,20 @@ public class TestNG {
     setSourcePath((String) cmdLineArgs.get(TestNGCommandLineArgs.SRC_COMMAND_OPT));
     setAnnotations(((AnnotationTypeEnum) cmdLineArgs.get(TestNGCommandLineArgs.ANNOTATIONS_COMMAND_OPT)));
 
-    List<Class> testClasses = (List<Class>) cmdLineArgs.get(TestNGCommandLineArgs.TESTCLASS_COMMAND_OPT);
+    String testClasses = (String) cmdLineArgs.get(TestNGCommandLineArgs.TESTCLASS_COMMAND_OPT);
     if (null != testClasses) {
-      Class[] classes = (Class[]) testClasses.toArray(new Class[testClasses.size()]);
-      setTestClasses(classes);
+      String[] strClasses = testClasses.split(",");
+      List<Class> classes = Lists.newArrayList();
+      for (String c : strClasses) {
+        classes.add(ClassHelper.fileToClass(c));
+      }
+
+      setTestClasses(classes.toArray(new Class[classes.size()]));
     }
 
-    List<String> testNames = (List<String>) cmdLineArgs.get(TestNGCommandLineArgs.TEST_NAMES_COMMAND_OPT);
+    String testNames = (String) cmdLineArgs.get(TestNGCommandLineArgs.TEST_NAMES_COMMAND_OPT);
     if (testNames != null) {
-      setTestNames(testNames);
+      setTestNames(Arrays.asList(testNames.split(",")));
     }
     List<String> testNgXml = (List<String>) cmdLineArgs.get(TestNGCommandLineArgs.SUITE_DEF_OPT);
     if (null != testNgXml) {
@@ -1175,10 +1283,21 @@ public class TestNG {
       setListenerClasses(classes);
     }
     
-    Map<String,Integer> methodSelectors = (Map<String, Integer>) cmdLineArgs.get(TestNGCommandLineArgs.METHOD_SELECTOR_OPT);
-    if (null != methodSelectors) {
-      for (Map.Entry<String, Integer> e : methodSelectors.entrySet()) {
-        addMethodSelector(e.getKey(), e.getValue());
+    String ms = (String) cmdLineArgs.get(TestNGCommandLineArgs.METHOD_SELECTOR_OPT);
+    if (null != ms) {
+      String[] strs = Utils.split(ms, ",");
+      for (String cls : strs) {
+        String[] sel = Utils.split(cls, ":");
+        try {
+          if (sel.length == 2) {
+            addMethodSelector(sel[0], Integer.valueOf(sel[1]));
+          } else {
+            LOGGER.error("WARNING: method selector " + cls + " has the wrong number of values");
+          }
+        }
+        catch (NumberFormatException nfe) {
+          LOGGER.error("WARNING: MethodSelector priority was not an integer for " + cls);
+        }
       }
     }
 
@@ -1192,12 +1311,19 @@ public class TestNG {
       setTestRunnerFactoryClass(ClassHelper.fileToClass(runnerFactory));
     }
 
-    List<ReporterConfig> reporterConfigs =
-            (List<ReporterConfig>) cmdLineArgs.get(TestNGCommandLineArgs.REPORTERS_LIST);
+    String reporterConfigs = (String) cmdLineArgs.get(TestNGCommandLineArgs.REPORTERS_LIST);
     if (reporterConfigs != null) {
-      for (ReporterConfig reporterConfig : reporterConfigs) {
-        addReporter(reporterConfig);
-      }
+      ReporterConfig reporterConfig = ReporterConfig.deserialize(reporterConfigs);
+      addReporter(reporterConfig);
+//      if (arguments.get(REPORTERS_LIST) == null) {
+//        arguments.put(REPORTERS_LIST, Lists.newArrayList());
+//      }
+//      ((List<ReporterConfig>)arguments.get(REPORTERS_LIST)).add(reporterConfig);
+//      i++;
+//
+//      for (ReporterConfig reporterConfig : reporterConfigs) {
+//        addReporter(reporterConfig);
+//      }
     }
   }
 
@@ -1273,7 +1399,7 @@ public class TestNG {
   @SuppressWarnings({"unchecked"})
   protected static Map checkConditions(Map params) {
     // TODO CQ document why sometimes we throw exceptions and sometimes we exit. 
-    List<String> testClasses = (List<String>) params.get(TestNGCommandLineArgs.TESTCLASS_COMMAND_OPT);
+    String testClasses = (String) params.get(TestNGCommandLineArgs.TESTCLASS_COMMAND_OPT);
     List<String> testNgXml = (List<String>) params.get(TestNGCommandLineArgs.SUITE_DEF_OPT);
     Object testJar = params.get(TestNGCommandLineArgs.TESTJAR_COMMAND_OPT);
     Object slave = params.get(TestNGCommandLineArgs.SLAVE_OPT);
@@ -1308,6 +1434,33 @@ public class TestNG {
     }
     
     return params;
+  }
+
+  /**
+   * Double check that the command line parameters are valid.
+   */
+  protected static void validateCommandLineParameters(CommandLineArgs args) {
+    String testClasses = args.testClass;
+    List<String> testNgXml = args.suiteFiles;
+    String testJar = args.testJar;
+    String slave = args.slave;
+
+    if (testClasses == null && testNgXml == null && slave == null && testJar == null) {
+      throw new ParameterException("You need to specify at least one testng.xml or one class");
+    }
+
+    String groups = args.groups;
+    String excludedGroups = args.excludedGroups;
+    
+    if (testJar == null &&
+        (null != groups || null != excludedGroups) && testClasses == null && testNgXml == null) {
+      throw new ParameterException("Groups option should be used with testclass option");
+    }
+
+    if (args.slave != null && args.master != null) {
+     throw new ParameterException(TestNGCommandLineArgs.SLAVE_OPT + " can't be combined with " +
+                               TestNGCommandLineArgs.MASTER_OPT);
+    }
   }
 
   /**

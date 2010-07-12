@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Target({ FIELD })
 public @interface Parameter {
 
-  String name() default "";
+  String[] names() default {};
 
   String description() default "";
 }
