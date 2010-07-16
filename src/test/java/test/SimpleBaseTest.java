@@ -58,10 +58,11 @@ public class SimpleBaseTest {
   protected String getPathToResource(String fileName) {
     String result = System.getProperty("test.resources.dir");
     if (result == null) {
-      result = ".";
-//      throw new RuntimeException("System property test.resources.dir was not defined.");
+      System.out.println("Warning: System property test.resources.dir was not defined.");
+      return fileName;
     }
-
-    return result + File.separatorChar + fileName;
+    else {
+      return result + File.separatorChar + fileName;
+    }
   }
 }
