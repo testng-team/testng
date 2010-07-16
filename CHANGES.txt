@@ -1,5 +1,6 @@
 Current:
 
+Added: -configfailurepolicy (Todd Quessenberry)
 Added: -methodselectors (Todd Quessenberry)
 Added: @NoInjection
 Added: <test preserve-order="true">

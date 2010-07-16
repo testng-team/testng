@@ -40,6 +40,10 @@ public class XmlSuite implements Serializable, Cloneable {
   public static final String PARALLEL_CLASSES = "classes";
   public static final String PARALLEL_NONE = "none";
   
+  /** Configuration failure policy options */
+  public static final String SKIP = "skip";
+  public static final String CONTINUE = "continue";
+  
   private String m_test;
   
   /** The default suite name TODO CQ is this OK as a default name. */
@@ -52,6 +56,9 @@ public class XmlSuite implements Serializable, Cloneable {
   private Integer m_verbose = null;
   
   private String m_parallel = null;
+  
+  /** Whether to SKIP or CONTINUE to re-attempt failed configuration methods. */
+  private String m_configFailurePolicy = SKIP;
   
   /** JUnit compatibility flag. */
   private Boolean m_isJUnit = Boolean.FALSE;
@@ -143,6 +150,23 @@ public class XmlSuite implements Serializable, Cloneable {
   public void setParallel(String parallel) {
     m_parallel = parallel;
   }
+  
+  /**
+   * Sets the configuration failure policy.
+   * @param configFailurePolicy the config failure policy
+   */
+  public void setConfigFailurePolicy(String configFailurePolicy) {
+    m_configFailurePolicy = configFailurePolicy;
+  }
+
+  /**
+   * Returns the configuration failure policy.
+   * @return the configuration failure policy
+   */
+  public String getConfigFailurePolicy() {
+    return m_configFailurePolicy;
+  }
+
 
   /**
    * Returns the verbose.
@@ -403,6 +427,7 @@ public class XmlSuite implements Serializable, Cloneable {
     if(null != parallel && !"".equals(parallel)) {
       p.setProperty("parallel", parallel);
     }
+    p.setProperty("configfailurepolicy", getConfigFailurePolicy());
     p.setProperty("thread-count", String.valueOf(getThreadCount()));
     p.setProperty("data-provider-thread-count", String.valueOf(getDataProviderThreadCount()));
     p.setProperty("annotations", getAnnotations());
@@ -497,6 +522,7 @@ public class XmlSuite implements Serializable, Cloneable {
     result.setListeners(getListeners());
     result.setAnnotations(getAnnotations());
     result.setParallel(getParallel());
+    result.setConfigFailurePolicy(getConfigFailurePolicy());
     result.setThreadCount(getThreadCount());
     result.setDataProviderThreadCount(getDataProviderThreadCount());
     result.setParameters(getAllParameters());

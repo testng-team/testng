@@ -156,6 +156,7 @@ public class TestNG {
   private boolean m_useThreadCount;
   private String m_parallelMode;
   private boolean m_useParallelMode;
+  private String m_configFailurePolicy;
   private Class[] m_commandLineTestClasses;
   
   private String m_defaultSuiteName=DEFAULT_COMMAND_LINE_SUITE_NAME;
@@ -754,6 +755,9 @@ public class TestNG {
       if(m_useParallelMode) {
         s.setParallel(m_parallelMode);
       }
+      if(m_configFailurePolicy != null) {
+        s.setConfigFailurePolicy(m_configFailurePolicy.toString());
+      }
     }
 
   }
@@ -919,6 +923,10 @@ public class TestNG {
 
     if (xmlSuite.getVerbose() == null) {
       xmlSuite.setVerbose(m_verbose);
+    }
+    
+    if (null != m_configFailurePolicy) {
+      xmlSuite.setConfigFailurePolicy(m_configFailurePolicy);
     }
 
     for (XmlTest t : xmlSuite.getTests()) {
@@ -1141,6 +1149,7 @@ public class TestNG {
     setSlave(cla.slave);
     setSkipFailedInvocationCounts(cla.skipFailedInvocationCounts);
     if (cla.parallelMode != null) setParallel(cla.parallelMode);
+    if (cla.configFailurePolicy != null) setConfigFailurePolicy(cla.configFailurePolicy);
     if (cla.threadCount != null) setThreadCount(cla.threadCount);
     if (cla.dataProviderThreadCount != null) {
       setDataProviderThreadCount(cla.dataProviderThreadCount);
@@ -1326,6 +1335,11 @@ public class TestNG {
 //      for (ReporterConfig reporterConfig : reporterConfigs) {
 //        addReporter(reporterConfig);
 //      }
+    }
+    
+    String failurePolicy = (String)cmdLineArgs.get(TestNGCommandLineArgs.CONFIG_FAILURE_POLICY);
+    if (failurePolicy != null) {
+      setConfigFailurePolicy(failurePolicy);
     }
   }
 
@@ -1538,6 +1552,24 @@ public class TestNG {
    */
   public void setDefaultTestName(String defaultTestName) {
     m_defaultTestName = defaultTestName;
+  }
+  
+  /**
+   * Sets the policy for whether or not to ever invoke a configuration method again after
+   * it has failed once. Possible values are defined in {@link XmlSuite}.  The default
+   * value is {@link XmlSuite#SKIP}.
+   * @param failurePolicy the configuration failure policy
+   */
+  public void setConfigFailurePolicy(String failurePolicy) {
+    m_configFailurePolicy = failurePolicy;
+  }
+
+  /**
+   * Returns the configuration failure policy.
+   * @return config failure policy
+   */
+  public String getConfigFailurePolicy() {
+    return m_configFailurePolicy;
   }
   
   // DEPRECATED: to be removed after a major version change

@@ -54,6 +54,8 @@ Cedric Beust & Alexandru Popescu
                 This setting has no impact on the HTML reports.
 @attr  parallel   Whether TestNG should use different threads
                 to run your tests (might speed up the process)
+@attr  configfailurepolicy  Whether to continue attempting Before/After
+                Class/Methods after they've failed once or just skip remaining.
 @attr  thread-count An integer giving the size of the thread pool to use
                 if you set parallel.
 @attr  annotations  If "javadoc", TestNG will look for
@@ -72,6 +74,7 @@ Cedric Beust & Alexandru Popescu
     junit (true | false) "false"
     verbose CDATA #IMPLIED
     parallel (false | methods | tests | classes) "false"
+    configfailurepolicy (skip | continue) "skip"
     thread-count CDATA "5"
     annotations CDATA #IMPLIED
     time-out CDATA #IMPLIED
