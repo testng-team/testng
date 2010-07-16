@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.testng.Assert;
 import org.testng.TestNG;
+import org.testng.internal.Utils;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
@@ -58,7 +59,8 @@ public class SimpleBaseTest {
   protected String getPathToResource(String fileName) {
     String result = System.getProperty("test.resources.dir");
     if (result == null) {
-      System.out.println("Warning: System property test.resources.dir was not defined.");
+      Utils.log("SimpleBaseTest", 2,  "Warning: System property test.resources.dir was not" +
+      		"defined.");
       return "target/test-classes/" + fileName;
     }
     else {
