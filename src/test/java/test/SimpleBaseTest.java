@@ -59,7 +59,7 @@ public class SimpleBaseTest {
     String result = System.getProperty("test.resources.dir");
     if (result == null) {
       System.out.println("Warning: System property test.resources.dir was not defined.");
-      return fileName;
+      return "target/test-classes/" + fileName;
     }
     else {
       return result + File.separatorChar + fileName;
