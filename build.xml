@@ -79,14 +79,14 @@
   <!-- Compile                                                              -->
   <!-- ==================================================================== -->
 
+  <path id="compile2.cp">
+    <fileset dir="${lib.dir}" includes="*.jar" />
+  </path>
+
   <target name="compile"
           depends="prepare,copy-resources"
           description="Compiles sources">
     <echo message="                                 -- Compiling sources --" />
-
-    <path id="compile2.cp">
-      <fileset dir="${lib.dir}" includes="*.jar" />
-    </path>
 
     <javac classpathref="compile2.cp"
            verbose="false"
@@ -119,7 +119,7 @@
 
   <target name="javadocs">
     <javadoc additionalparam="-quiet" destdir="javadocs" source="1.5" windowtitle="TestNG"
-        classpath="${testng.jar}:${lib.dir}/${ant.jar}" verbose="false">
+      classpath="${testng.jar}" classpathref="compile2.cp" verbose="false">
       <fileset dir="${src.dir}" defaultexcludes="yes">
         <include name="org/testng/*.java" />
       </fileset>
