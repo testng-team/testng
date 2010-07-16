@@ -60,10 +60,10 @@ public class Invoker implements IInvoker {
   private boolean m_continueOnFailedConfiguration;
   
   /** Group failures must be synched as the Invoker is accessed concurrently */
-  private Map<String, Boolean> m_beforegroupsFailures= new Hashtable<String, Boolean>();
+  private Map<String, Boolean> m_beforegroupsFailures = new Hashtable<String, Boolean>();
   
   /** Class failures must be synched as the Invoker is accessed concurrently */
-  private Map<Class<?>, Boolean> m_classInvocationResults= new Hashtable<Class<?>, Boolean>();
+  private Map<Class<?>, Boolean> m_classInvocationResults = new Hashtable<Class<?>, Boolean>();
   
   /** Test methods whose configuration methods have failed. */
   private Map<ITestNGMethod, Boolean> m_methodInvocationResults = new Hashtable<ITestNGMethod, Boolean>();
