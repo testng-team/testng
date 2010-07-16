@@ -1,5 +1,7 @@
 package test.tmp;
 
+import org.testng.Assert;
+import org.testng.Reporter;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -33,6 +35,18 @@ public class A {
 //  public void ac() {
 //    log("afterClass");
 //  }
+
+  @Test
+  public void testSomething()
+  {
+      Assert.fail("This test failed.");
+  }
+
+  @Test(dependsOnMethods={"testSomething"})
+  public void testSkipped()
+  {
+      Reporter.log("This test was skipped.");
+  }
 
   @Test
   public void atest1() {

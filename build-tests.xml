@@ -60,7 +60,7 @@ TESTNG.REPORT.DIR=${testng.report.dir}
     <pathelement location="${test.build.dir}"/>
   </path>
 
-  <target name="run" description="Run tests" depends="compile">
+  <target name="run" description="Run tests" depends="compile,copy-resources">
     <echo message="                                 -- Running tests --"/>
     <echo message="                                 -- ${testng.jar} --" />
     <testng classpathref="run.cp"
@@ -68,6 +68,21 @@ TESTNG.REPORT.DIR=${testng.report.dir}
       <xmlfileset dir="${test.resources.dir}" includes="testng.xml"/>
       <jvmarg value="-Dtest.resources.dir=${test.resources.dir}" />
     </testng>
+  </target>
+
+  <target name="copy-resources" description="Copies resources.">
+    <copy verbose="false"
+          file="${src.resources.dir}/testng.css"
+          todir="${test.build.dir}" />
+    <copy verbose="false"
+          file="${src.dir}/testngtasks"
+          todir="${build.dir}" />
+    <copy todir="${build.dir}">
+      <fileset dir="./resources">
+        <exclude name="**/.*" />
+        <exclude name="**/CVS/*" />
+      </fileset>
+    </copy>
   </target>
 
   <target name="run:single" description="Run 1 property file named with the ant property test" depends="compile">

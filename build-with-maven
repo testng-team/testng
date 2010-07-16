@@ -1,0 +1,10 @@
+# Two different POMs are needed to build TestNG with Maven because it's not
+# allowed to have circular dependencies.
+# - pom.xml defines the project version "n-SNAPSHOT", builds, jars and deploys (but doesn't
+# run the tests).
+# - pom-test.xml declares a test dependency on "n-SNAPSHOT", which it will find
+# in the local repository (~/.m2/repository). All it does then is run the tests.
+
+mvn resources:resources compiler:compile resources:testResources compiler:testCompile jar:jar install:install
+mvn -f pom-test.xml test
+
