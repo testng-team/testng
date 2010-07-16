@@ -57,7 +57,10 @@ public class SimpleBaseTest {
 
   protected String getPathToResource(String fileName) {
     String result = System.getProperty("test.resources.dir");
-    Assert.assertNotNull(result);
+    if (result == null) {
+      result = ".";
+//      throw new RuntimeException("System property test.resources.dir was not defined.");
+    }
 
     return result + File.separatorChar + fileName;
   }
