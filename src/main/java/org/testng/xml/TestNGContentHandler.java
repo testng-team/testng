@@ -29,7 +29,6 @@ public class TestNGContentHandler extends DefaultHandler {
   private XmlTest m_currentTest = null;
   private List<String> m_currentDefines = null;
   private List<String> m_currentRuns = null;
-  private List<String> m_currentGroups = null;
   private List<XmlClass> m_currentClasses = null;
   private int m_currentClassIndex = 0;
   private int m_currentIncludeIndex = 0;
@@ -142,6 +141,12 @@ public class TestNGContentHandler extends DefaultHandler {
         }
         else {
           Utils.log("Parser", 1, "[WARN] Unknown value of attribute 'parallel' at suite level: '" + parallel + "'.");
+        }
+      }
+      String configFailurePolicy = attributes.getValue("configfailurepolicy");
+      if (null != configFailurePolicy) {
+        if (XmlSuite.SKIP.equals(configFailurePolicy) || XmlSuite.CONTINUE.equals(configFailurePolicy)) {
+          m_currentSuite.setConfigFailurePolicy(configFailurePolicy);
         }
       }
       String skip = attributes.getValue("skipfailedinvocationcounts");

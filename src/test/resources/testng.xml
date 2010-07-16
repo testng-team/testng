@@ -577,5 +577,11 @@
       <class name="test.asserttests.AssertTest" />
     </classes>
   </test>
+  
+  <test name="ConfigFailurePolicy">
+    <classes>
+      <class name="test.configurationfailurepolicy.FailurePolicyTest" />
+    </classes>
+  </test>
 
 </suite>

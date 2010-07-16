@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="TestNG" verbose="0">
+    <test name="Config Failure Policy">
+        <classes>
+            <class name="test.configurationfailurepolicy.ClassWithFailedBeforeMethodAndMultipleTests" />
+        </classes>
+    </test>
+</suite>

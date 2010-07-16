@@ -77,6 +77,7 @@ public final class TestNGCommandLineArgs {
   public static final String DATA_PROVIDER_THREAD_COUNT = "-dataproviderthreadcount";
   public static final String USE_DEFAULT_LISTENERS = "-usedefaultlisteners";
   public static final String SUITE_DEF_OPT = "testng.suite.definitions";
+  public static final String CONFIG_FAILURE_POLICY = "-configfailurepolicy";
 
   /**
    * Hide the constructor for utility class.
@@ -352,6 +353,12 @@ public final class TestNGCommandLineArgs {
       }
       else if (SKIP_FAILED_INVOCATION_COUNT_OPT.equalsIgnoreCase(argv[i])) {
         arguments.put(SKIP_FAILED_INVOCATION_COUNT_OPT, Boolean.TRUE);
+      }
+      else if (CONFIG_FAILURE_POLICY.equalsIgnoreCase(argv[i])) {
+        if ((i + 1) < argv.length) {
+          arguments.put(CONFIG_FAILURE_POLICY, trim(argv[i + 1]));
+          i++;
+        }
       }
       //
       // Unknown option
@@ -641,6 +648,8 @@ public final class TestNGCommandLineArgs {
     System.out.println("[" + PARALLEL_MODE
             + " methods|tests]");
     System.out.println("\t\trun tests in parallel using the specified mode");
+    System.out.println("[" + CONFIG_FAILURE_POLICY + "skip|continue]");
+    System.out.println("\t\twhether to ever invoke a config method again after is has failed once");
     System.out.println("[" + THREAD_COUNT
             + " number of threads to use when running tests in parallel]");
     System.out.println("[" + SUITE_NAME_OPT + " name]");

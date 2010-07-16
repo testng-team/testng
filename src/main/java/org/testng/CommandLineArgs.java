@@ -41,6 +41,9 @@ public class CommandLineArgs {
 
   @Parameter(names = "-parallel", description = "Parallel mode (methods, tests or classes)")
   public String parallelMode;
+  
+  @Parameter(names = "-configfailurepolicy", description = "Configuration failure policy (skip or continue)")
+  public String configFailurePolicy;
 
   @Parameter(names = "-threadcount", description = "Number of threads to use when running tests " +
       "in parallel")

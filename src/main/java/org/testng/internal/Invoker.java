@@ -57,6 +57,24 @@ public class Invoker implements IInvoker {
   private SuiteRunState m_suiteState;
   private boolean m_skipFailedInvocationCounts;
   private List<IInvokedMethodListener> m_invokedMethodListeners;
+  private boolean m_continueOnFailedConfiguration;
+  
+  /** Group failures must be synched as the Invoker is accessed concurrently */
+  private Map<String, Boolean> m_beforegroupsFailures= new Hashtable<String, Boolean>();
+  
+  /** Class failures must be synched as the Invoker is accessed concurrently */
+  private Map<Class<?>, Boolean> m_classInvocationResults= new Hashtable<Class<?>, Boolean>();
+  
+  /** Test methods whose configuration methods have failed. */
+  private Map<ITestNGMethod, Boolean> m_methodInvocationResults = new Hashtable<ITestNGMethod, Boolean>();
+   
+  private void setClassInvocationFailure(Class<?> clazz, boolean flag) {
+    m_classInvocationResults.put(clazz, flag);
+  }
+  
+  private void setMethodInvocationFailure(ITestNGMethod method, boolean flag) {
+      m_methodInvocationResults.put(method, flag);
+  }
 
   public Invoker(ITestContext testContext,
                  ITestResultNotifier notifier,
@@ -70,6 +88,7 @@ public class Invoker implements IInvoker {
     m_annotationFinder= annotationFinder;
     m_skipFailedInvocationCounts = skipFailedInvocationCounts;
     m_invokedMethodListeners = invokedMethodListeners;
+    m_continueOnFailedConfiguration = XmlSuite.CONTINUE.equals(testContext.getSuite().getXmlSuite().getConfigFailurePolicy());
   }
 
   /**
@@ -140,8 +159,8 @@ public class Invoker implements IInvoker {
             boolean isSuiteConfiguration = isSuiteConfiguration(configurationAnnotation); 
             boolean alwaysRun= isAlwaysRun(configurationAnnotation);
   
-            if(!confInvocationPassed(tm) && !alwaysRun) {
-              handleConfigurationSkip(tm, testResult, configurationAnnotation, suite);
+            if (!confInvocationPassed(tm, currentTestMethod, testClass) && !alwaysRun) {
+              handleConfigurationSkip(tm, testResult, configurationAnnotation, currentTestMethod, suite);
               continue;
             }
   
@@ -183,24 +202,28 @@ public class Invoker implements IInvoker {
         }
       }
       catch(InvocationTargetException ex) {
-        handleConfigurationFailure(ex, tm, testResult, configurationAnnotation, suite);
+        handleConfigurationFailure(ex, tm, testResult, configurationAnnotation, currentTestMethod, suite);
       }
       catch(TestNGException ex) {
         // Don't wrap TestNGExceptions, it could be a missing parameter on a
         // @Configuration method
-        handleConfigurationFailure(ex, tm, testResult, configurationAnnotation, suite);
+        handleConfigurationFailure(ex, tm, testResult, configurationAnnotation, currentTestMethod, suite);
       }
       catch(Throwable ex) { // covers the non-wrapper exceptions
-        handleConfigurationFailure(ex, tm, testResult, configurationAnnotation, suite);
+        handleConfigurationFailure(ex, tm, testResult, configurationAnnotation, currentTestMethod, suite);
       }
     } // for methods
   }
   
   /**
-   * Marks the currect <code>TestResult</code> as skipped and invokes the listeners.
+   * Marks the current <code>TestResult</code> as skipped and invokes the listeners.
    */
-  private void handleConfigurationSkip(ITestNGMethod tm, ITestResult testResult, IConfigurationAnnotation annotation, XmlSuite suite) {
-    recordConfigurationInvocationFailed(tm, annotation, suite);
+  private void handleConfigurationSkip(ITestNGMethod tm, 
+                                       ITestResult testResult, 
+                                       IConfigurationAnnotation annotation, 
+                                       ITestNGMethod currentTestMethod, 
+                                       XmlSuite suite) {
+    recordConfigurationInvocationFailed(tm, testResult.getTestClass(), annotation, currentTestMethod, suite);
     testResult.setStatus(ITestResult.SKIP);
     runConfigurationListeners(testResult);
   }
@@ -268,6 +291,7 @@ public class Invoker implements IInvoker {
                                           ITestNGMethod tm,
                                           ITestResult testResult,
                                           IConfigurationAnnotation annotation,
+                                          ITestNGMethod currentTestMethod,
                                           XmlSuite suite) 
   {
     Throwable cause= ite.getCause() != null ? ite.getCause() : ite;
@@ -276,7 +300,7 @@ public class Invoker implements IInvoker {
       SkipException skipEx= (SkipException) cause;
       if(skipEx.isSkip()) {
         testResult.setThrowable(skipEx);
-        handleConfigurationSkip(tm, testResult, annotation, suite);
+        handleConfigurationSkip(tm, testResult, annotation, currentTestMethod, suite);
         return;
       }
     }
@@ -290,7 +314,7 @@ public class Invoker implements IInvoker {
     // what kind of @Configuration method we're dealing with
     //
     if (null != annotation) {
-      recordConfigurationInvocationFailed(tm, annotation, suite);
+      recordConfigurationInvocationFailed(tm, testResult.getTestClass(), annotation, currentTestMethod, suite);
     }
   }
 
@@ -323,16 +347,33 @@ public class Invoker implements IInvoker {
    * Record internally the failure of a Configuration, so that we can determine
    * later if @Test should be skipped.
    */
-  private void recordConfigurationInvocationFailed(ITestNGMethod tm, IConfigurationAnnotation annotation, XmlSuite suite) {
-    // If beforeTestClass/beforeTestMethod or afterTestClass/afterTestMethod 
-    // failed, mark this entire class as failed, but only this class (the other 
-    // classes should keep running normally)
-    if (annotation.getBeforeTestClass()
-      || annotation.getAfterTestClass()
-      || annotation.getBeforeTestMethod()
-      || annotation.getAfterTestMethod()) 
-    {
-      setClassInvocationFailure(tm.getRealClass(), false);
+  private void recordConfigurationInvocationFailed(ITestNGMethod tm, 
+                                                   IClass testClass, 
+                                                   IConfigurationAnnotation annotation, 
+                                                   ITestNGMethod currentTestMethod, 
+                                                   XmlSuite suite) {
+    // If beforeTestClass or afterTestClass failed, mark either the config method's
+    // entire class as failed, or the class under tests as failed, depending on
+    // the configuration failure policy
+    if (annotation.getBeforeTestClass() || annotation.getAfterTestClass()) {
+      // tm is the configuration method, and currentTestMethod is null for BeforeClass
+      // methods, so we need testClass
+      if (m_continueOnFailedConfiguration) {
+        setClassInvocationFailure(testClass.getRealClass(), false);
+      } else {
+        setClassInvocationFailure(tm.getRealClass(), false);
+      }
+    }
+    
+    // If before/afterTestMethod failed, mark either the config method's entire
+    // class as failed, or just the current test method as failed, depending on
+    // the configuration failure policy
+    else if (annotation.getBeforeTestMethod() || annotation.getAfterTestMethod()) {
+      if (m_continueOnFailedConfiguration) {
+        setMethodInvocationFailure(currentTestMethod, false);
+      } else {
+        setClassInvocationFailure(tm.getRealClass(), false);
+      }
     }
 
     // If beforeSuite or afterSuite failed, mark *all* the classes as failed
@@ -362,11 +403,14 @@ public class Invoker implements IInvoker {
    * @return true if this class has successfully run all its @Configuration
    * method or false if at least one of these methods failed.
    */
-  private boolean confInvocationPassed(ITestNGMethod method) {
+  private boolean confInvocationPassed(ITestNGMethod method, ITestNGMethod currentTestMethod, IClass testClass) {
     boolean result= true;
 
-    Class<?> cls= method.getMethod().getDeclaringClass();
-    
+    // If continuing on config failure, check invocation results for the class
+    // under test, otherwise use the method's declaring class
+    Class<?> cls = m_continueOnFailedConfiguration ? 
+            testClass.getRealClass() : method.getMethod().getDeclaringClass();
+
     if(m_suiteState.isFailed()) {
       result= false;
     }
@@ -374,7 +418,13 @@ public class Invoker implements IInvoker {
       if(m_classInvocationResults.containsKey(cls)) {
         result= m_classInvocationResults.get(cls);
       }
-      else {
+      // if method is BeforeClass, currentTestMethod will be null
+      else if (m_continueOnFailedConfiguration && 
+              currentTestMethod != null && 
+              m_methodInvocationResults.containsKey(currentTestMethod)) {
+          result = m_methodInvocationResults.get(currentTestMethod);
+      }
+      else if (!m_continueOnFailedConfiguration) {
         for(Class<?> clazz: m_classInvocationResults.keySet()) {
 //          if (clazz == cls) {
           if(clazz.isAssignableFrom(cls)) {
@@ -396,16 +446,6 @@ public class Invoker implements IInvoker {
       }
     }
     return result;
-  }
-
-  /** Group failures must be synched as the Invoker is accessed concurrently */
-  private Map<String, Boolean> m_beforegroupsFailures= new Hashtable<String, Boolean>();
-  
-  /** Class failures must be synched as the Invoker is accessed concurrently */
-  private Map<Class<?>, Boolean> m_classInvocationResults= new Hashtable<Class<?>, Boolean>();
-
-  private void setClassInvocationFailure(Class<?> clazz, boolean flag) {
-    m_classInvocationResults.put(clazz, flag);
   }
 
   /**
@@ -549,7 +589,7 @@ public class Invoker implements IInvoker {
       
       Method thisMethod= tm.getMethod();
       
-      if(confInvocationPassed(tm)) {
+      if(confInvocationPassed(tm, tm, testClass)) {
         log(3, "Invoking " + thisMethod.getDeclaringClass().getName() + "." +
             thisMethod.getName());
 
@@ -1555,8 +1595,6 @@ public class Invoker implements IInvoker {
     }
 
     Class<?>[] exceptions = exceptionHolder.expectedClasses;
-    String messageRegExp = exceptionHolder.messageRegExp;
-
     Class<?> realExceptionClass= ite.getClass();
 
     for(int i= 0; i < exceptions.length; i++) {
