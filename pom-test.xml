@@ -29,6 +29,12 @@
         <url>http://testng.googlecode.com/svn/trunk</url>
     </scm>
     
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>3</version>
+  </parent>
+
     <dependencies>
         <dependency>
             <groupId>ant</groupId>
