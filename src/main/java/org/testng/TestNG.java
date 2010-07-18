@@ -1681,4 +1681,10 @@ public class TestNG {
     m_dataProviderThreadCount = count;
   }
 
+  /** Add a class loader to the searchable loaders. */
+  public void addClassLoader(final ClassLoader loader) {
+    if (loader != null) {
+      ClassHelper.addClassLoader(loader);
+    }
+  }
 }

@@ -26,7 +26,7 @@
     </groups>
     <parameter name="count" value="10"/>
     <classes>
-      <class name="test.tmp.A" />
+      <class name="test.CommandLineTest" />
 <!-- 
       <class name="test.methodselectors.CommandLineTest">
        <class name="test.inject.NoInjectionTest" />
