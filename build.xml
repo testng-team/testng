@@ -198,7 +198,7 @@
       <zipfileset dir="src" prefix="${zip.dir}/src" />
       <zipfileset dir="spring" prefix="${zip.dir}/spring" />
       <zipfileset dir="doc" prefix="${zip.dir}/doc" />
-      <zipfileset dir="resources"
+      <zipfileset dir="${src.resources.dir}"
                prefix="${zip.dir}/resources" 
             includes="**/*.css"/>
       <zipfileset dir="${lib.dir}"

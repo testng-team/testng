@@ -78,7 +78,7 @@ TESTNG.REPORT.DIR=${testng.report.dir}
           file="${src.dir}/testngtasks"
           todir="${build.dir}" />
     <copy todir="${build.dir}">
-      <fileset dir="./resources">
+      <fileset dir="${src.resources.dir}">
         <exclude name="**/.*" />
         <exclude name="**/CVS/*" />
       </fileset>
