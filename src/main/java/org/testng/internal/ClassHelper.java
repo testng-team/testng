@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import com.google.inject.internal.Sets;
+
 import org.testng.IClass;
 import org.testng.IMethodSelector;
 import org.testng.IObjectFactory;
@@ -16,16 +18,24 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.google.inject.internal.Sets;
+import java.util.Vector;
 
 /**
  * Utility class for different class manipulations.
  */
 public final class ClassHelper {
   private static final String JUNIT_TESTRUNNER= "org.testng.junit.JUnitTestRunner";
+
+  /** The additional class loaders to find classes in. */
+  private static final List<ClassLoader> m_classLoaders = new Vector<ClassLoader>();
+
+  /** Add a class loader to the searchable loaders. */
+  public static void addClassLoader(final ClassLoader loader) {
+    m_classLoaders.add(loader);
+  }
 
   /** Hide constructor. */
   private ClassHelper() {
@@ -65,16 +75,32 @@ public final class ClassHelper {
    * @return the class or null if the class is not found.
    */
   public static Class<?> forName(final String className) {
-    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-    if (classLoader != null) {
+    Vector<ClassLoader> allClassLoaders = new Vector<ClassLoader>();
+    ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+    if (contextClassLoader != null) {
+      allClassLoaders.add(contextClassLoader);
+    }
+    if (m_classLoaders != null) {
+      allClassLoaders.addAll(m_classLoaders);
+    }
+
+    int count = 0;
+    for (ClassLoader classLoader : allClassLoaders) {
+      ++count;
+      if (null == classLoader) {
+        continue;
+      }
       try {
         return classLoader.loadClass(className);
       }
       catch(Exception ex) {
-        logInstantiationError(className, ex);
+        // With additional class loaders, it is legitimate to ignore ClassNotFoundException
+        if(null == m_classLoaders || m_classLoaders.size() == 0) {
+          logInstantiationError(className, ex);
+        }
       }
     }
-    
+
     try {
       return Class.forName(className);
     }
