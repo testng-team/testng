@@ -71,7 +71,7 @@ public class CommandLineArgs {
   public String reportersList;
 
   @Parameter(names = "-usedefaultlisteners", description = "Whether to use the default listeners")
-  public Boolean useDefaultListeners = Boolean.TRUE;
+  public String useDefaultListeners = "true";
 
   @Parameter(names = "-skipfailedinvocationcounts")
   public Boolean skipFailedInvocationCounts;

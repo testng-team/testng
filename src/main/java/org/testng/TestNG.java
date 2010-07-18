@@ -1137,8 +1137,10 @@ public class TestNG {
 //      setTestSuites(testNgXml);
 //    }
 
+    // Note: can't use a Boolean field here because we are allowing a boolean
+    // parameter with an arity of 1 ("-usedefaultlisteners false")
     if (cla.useDefaultListeners != null) {
-      setUseDefaultListeners(cla.useDefaultListeners);
+      setUseDefaultListeners("true".equalsIgnoreCase(cla.useDefaultListeners));
     }
 
     setGroups(cla.groups);
