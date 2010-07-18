@@ -100,7 +100,14 @@ public class CommandLineTest {
     	assertEquals(context.getName(),testName);
     }
   }
-  
+
+  @Test
+  public void testUseDefaultListenersArgument() {
+    TestNG.privateMain(new String[] {
+        "-log", "0", "-usedefaultlisteners", "false", "-testclass", "test.sample.JUnitSample1"
+    }, null);
+  }
+
   private static void ppp(String s) {
     System.out.println("[CommandLineTest] " + s);
   }
