@@ -859,15 +859,17 @@ public class TestNG {
       add("-slave");
       add("-port");
     }};
-    System.out.println("Usage: java " + TestNG.class.getName() + " [options] <XML suite files>");
-    System.out.println("    Options:");
-    for (ParameterDescription p : m_jCommander.getParameters()) {
-      if (! hidden.contains(p.getParameter().names()[0])) {
-        StringBuilder sb = new StringBuilder();
-        for (String n : p.getParameter().names()) {
-          sb.append(n).append(" ");
+    if (m_jCommander != null) {
+      System.out.println("Usage: java " + TestNG.class.getName() + " [options] <XML suite files>");
+      System.out.println("    Options:");
+      for (ParameterDescription p : m_jCommander.getParameters()) {
+        if (! hidden.contains(p.getParameter().names()[0])) {
+          StringBuilder sb = new StringBuilder();
+          for (String n : p.getParameter().names()) {
+            sb.append(n).append(" ");
+          }
+          System.out.println("\t" + sb.toString() + "\n\t\t" + p.getDescription());
         }
-        System.out.println("\t" + sb.toString() + "\n\t\t" + p.getDescription());
       }
     }
   }
