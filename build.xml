@@ -147,6 +147,7 @@
     <jar jarfile="${testng.jar}" update="true">
       <zipfileset src="${lib.dir}/${guice.jar}" />
       <zipfileset src="${lib.dir}/${beanshell.jar}" />
+      <zipfileset src="${lib.dir}/${jcommander.jar}" />
     </jar>
   </target>
   
@@ -156,6 +157,7 @@
     </antcall>
     <jar jarfile="${other.jars.dir}/${testng.nobsh.guice.jar}" update="true">
       <zipfileset src="${lib.dir}/${guice.jar}" />
+      <zipfileset src="${lib.dir}/${jcommander.jar}" />
     </jar>
   </target>
 
@@ -165,6 +167,7 @@
     </antcall>
     <jar jarfile="${other.jars.dir}/${testng.bsh.noguice.jar}" update="true">
       <zipfileset src="${lib.dir}/${beanshell.jar}" />
+      <zipfileset src="${lib.dir}/${jcommander.jar}" />
     </jar>
   </target>
 
@@ -201,9 +204,11 @@
       <zipfileset dir="${src.resources.dir}"
                prefix="${zip.dir}/resources" 
             includes="**/*.css"/>
+<!--
       <zipfileset dir="${lib.dir}"
                   prefix="${zip.dir}/${lib.dir}"
-                  includes="${beanshell.jar},${concurrent.jar},${guice.jar}" />
+                  includes="${beanshell.jar},${concurrent.jar},${guice.jar},${jcommander.jar}" />
+-->
     </zip>
   </target>
   
