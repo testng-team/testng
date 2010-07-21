@@ -91,12 +91,15 @@ TESTNG.REPORT.DIR=${testng.report.dir}
     <testng outputdir="${testng.report.dir}"
         classpathref="run.cp"
         useDefaultListeners="false"
+        methods="test.sample.Sample2.method1,test.sample.Sample2.method3"
         outputDir="${testng.report.dir}">
       <reporter classname="org.testng.reporters.XMLReporter">
         <property name="generateGroupsAttribute" value="true" />
       </reporter>
+<!-- 
       <xmlfileset dir="${test.resources.dir}" includes="testng-single.xml"/>
-    </testng>
+ -->
+     </testng>
 
       <echo>Report created in ${testng.report.dir}</echo>
   </target>

@@ -72,7 +72,7 @@
   <target name="build" depends="prepare,compile,dist-bsh-guice" />
 
   <target name="single">
-    <ant antfile="${test.dir}/build.xml" target="run:single"/>
+    <ant antfile="build-test.xml" target="run:single"/>
   </target>
 
   <!-- ==================================================================== -->

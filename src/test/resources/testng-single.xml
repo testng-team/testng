@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="SingleSuite" verbose="10" parallel="false" thread-count="4"
+<suite name="SingleSuite" verbose="1" parallel="false" thread-count="4"
     data-provider-thread-count="3">
 
   <parameter name="n" value="42" />
@@ -26,7 +26,7 @@
     </groups>
     <parameter name="count" value="10"/>
     <classes>
-      <class name="test.CommandLineTest" />
+      <class name="test.sample.Sample2" />
 <!-- 
       <class name="test.methodselectors.CommandLineTest">
        <class name="test.inject.NoInjectionTest" />
