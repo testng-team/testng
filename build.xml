@@ -148,6 +148,7 @@
       <zipfileset src="${lib.dir}/${guice.jar}" />
       <zipfileset src="${lib.dir}/${beanshell.jar}" />
       <zipfileset src="${lib.dir}/${jcommander.jar}" />
+      <zipfileset src="${lib.dir}/${junit.jar}" />
     </jar>
   </target>
   
@@ -158,6 +159,7 @@
     <jar jarfile="${other.jars.dir}/${testng.nobsh.guice.jar}" update="true">
       <zipfileset src="${lib.dir}/${guice.jar}" />
       <zipfileset src="${lib.dir}/${jcommander.jar}" />
+      <zipfileset src="${lib.dir}/${junit.jar}" />
     </jar>
   </target>
 
@@ -168,6 +170,7 @@
     <jar jarfile="${other.jars.dir}/${testng.bsh.noguice.jar}" update="true">
       <zipfileset src="${lib.dir}/${beanshell.jar}" />
       <zipfileset src="${lib.dir}/${jcommander.jar}" />
+      <zipfileset src="${lib.dir}/${junit.jar}" />
     </jar>
   </target>
 
@@ -175,6 +178,10 @@
     <antcall target="create-jar">
       <param name="jar.file" value="${other.jars.dir}/${testng.nobsh.noguice.jar}" />
     </antcall>
+    <jar jarfile="${other.jars.dir}/${testng.bsh.noguice.jar}" update="true">
+      <zipfileset src="${lib.dir}/${jcommander.jar}" />
+      <zipfileset src="${lib.dir}/${junit.jar}" />
+    </jar>
   </target>
 
   <target name="create-jar" description="Create a jar file with the Testng classes and nothing else" >
