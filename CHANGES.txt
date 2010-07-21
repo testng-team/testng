@@ -1,5 +1,6 @@
 Current:
 
+Added: -methods
 Added: -configfailurepolicy (Todd Quessenberry)
 Added: -methodselectors (Todd Quessenberry)
 Added: @NoInjection

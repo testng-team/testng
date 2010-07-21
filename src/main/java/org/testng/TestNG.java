@@ -397,7 +397,8 @@ public class TestNG {
       URLClassLoader jarLoader = new URLClassLoader(new URL[] { jarfileUrl });
       Thread.currentThread().setContextClassLoader(jarLoader);
 
-//      System.out.println("Trying to open jar file:" + jarFile);
+      Utils.log("TestNG", 2, "Trying to open jar file:" + jarFile);
+
       JarFile jf = new JarFile(jarFile);
 //      System.out.println("   result: " + jf);
       Enumeration<JarEntry> entries = jf.entries();
