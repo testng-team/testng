@@ -108,6 +108,25 @@ public class CommandLineTest {
     }, null);
   }
 
+  @Test
+  public void testMethodParameter() {
+    String[] argv = {
+      "-log", "0",
+      "-d", OutputDirectoryPatch.getOutputDirectory(),
+      "-methods", "test.sample.Sample2.method1,test.sample.Sample2.method3", 
+    };
+    TestListenerAdapter tla = new TestListenerAdapter();
+    TestNG.privateMain(argv, tla);
+
+    List<ITestResult> passed = tla.getPassedTests();
+    Assert.assertEquals(passed.size(), 2);
+    Assert.assertTrue((passed.get(0).getName().equals("method1") &&
+        passed.get(1).getName().equals("method3"))
+        ||
+        (passed.get(1).getName().equals("method1") &&
+        passed.get(0).getName().equals("method3")));
+  }
+
   private static void ppp(String s) {
     System.out.println("[CommandLineTest] " + s);
   }
