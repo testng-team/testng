@@ -1,7 +1,7 @@
 rel=$1
 
 cd $HOME/t
-rm *zip
+rm -f *zip
 rm -rf $rel
 wget http://testng.org/$rel.zip
 unzip $rel.zip
