@@ -117,7 +117,7 @@ public class TestNGAntTask extends Task {
   protected Environment m_environment= new Environment();
 
   /** The suite runner name (defaults to TestNG.class.getName(). */
-  protected String m_mainClass= TestNG.class.getName();
+  protected String m_mainClass = TestNG.class.getName();
   
   /** The default annotations (should be renamed to m_defaultAnnotations) */
   protected String m_target;
@@ -146,6 +146,7 @@ public class TestNGAntTask extends Task {
   private String m_suiteName="Ant suite";
   private String m_testName="Ant test";
   private Boolean m_skipFailedInvocationCounts;
+  private String m_methods;
 
   /**
    * The list of report listeners added via &lt;reporter&gt; sub-element of the Ant task
@@ -483,6 +484,10 @@ public class TestNGAntTask extends Task {
     m_configFailurePolicy = failurePolicy;
   }
 
+  public void setMethods(String methods) {
+    m_methods = methods;
+  }
+
   /**
    * Launches TestNG in a new JVM.
    *
@@ -633,6 +638,11 @@ public class TestNGAntTask extends Task {
     if (! Utils.isStringEmpty(m_testNames)) {
       argv.add(TestNGCommandLineArgs.TEST_NAMES_COMMAND_OPT);
       argv.add(m_testNames);
+    }
+
+    if (! Utils.isStringEmpty(m_methods)) {
+      argv.add("-methods");
+      argv.add(m_methods);
     }
 
     if (!reporterConfigs.isEmpty()) {
@@ -896,10 +906,11 @@ public class TestNGAntTask extends Task {
   }
 
   protected void validateOptions() throws BuildException {
-    if((m_xmlFilesets.size() == 0)
-      && (m_classFilesets.size() == 0)
+    if (m_xmlFilesets.size() == 0
+      && m_classFilesets.size() == 0
+      && Utils.isStringEmpty(m_methods)
       && ((null == m_testjar) || !m_testjar.isFile())) {
-      throw new BuildException("No suite or classes or jar is specified.");
+      throw new BuildException("No suites, classes, methods or jar file was specified.");
     }
 
     if((null != m_includedGroups) && (m_classFilesets.size() == 0 && m_xmlFilesets.size() == 0)) {

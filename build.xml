@@ -69,7 +69,7 @@
   <target name="build" depends="prepare,compile,dist-bsh-guice" />
 
   <target name="single">
-    <ant antfile="${test.dir}/build.xml" target="run:single"/>
+    <ant antfile="build-test.xml" target="run:single"/>
   </target>
 
   <!-- ==================================================================== -->
@@ -144,6 +144,8 @@
     <jar jarfile="${testng.jar}" update="true">
       <zipfileset src="${lib.dir}/${guice.jar}" />
       <zipfileset src="${lib.dir}/${beanshell.jar}" />
+      <zipfileset src="${lib.dir}/${jcommander.jar}" />
+      <zipfileset src="${lib.dir}/${junit.jar}" />
     </jar>
   </target>
   
@@ -153,6 +155,8 @@
     </antcall>
     <jar jarfile="${other.jars.dir}/${testng.nobsh.guice.jar}" update="true">
       <zipfileset src="${lib.dir}/${guice.jar}" />
+      <zipfileset src="${lib.dir}/${jcommander.jar}" />
+      <zipfileset src="${lib.dir}/${junit.jar}" />
     </jar>
   </target>
 
@@ -162,6 +166,8 @@
     </antcall>
     <jar jarfile="${other.jars.dir}/${testng.bsh.noguice.jar}" update="true">
       <zipfileset src="${lib.dir}/${beanshell.jar}" />
+      <zipfileset src="${lib.dir}/${jcommander.jar}" />
+      <zipfileset src="${lib.dir}/${junit.jar}" />
     </jar>
   </target>
 
@@ -169,6 +175,10 @@
     <antcall target="create-jar">
       <param name="jar.file" value="${other.jars.dir}/${testng.nobsh.noguice.jar}" />
     </antcall>
+    <jar jarfile="${other.jars.dir}/${testng.bsh.noguice.jar}" update="true">
+      <zipfileset src="${lib.dir}/${jcommander.jar}" />
+      <zipfileset src="${lib.dir}/${junit.jar}" />
+    </jar>
   </target>
 
   <target name="create-jar" description="Create a jar file with the Testng classes and nothing else" >
@@ -185,11 +195,12 @@
 
   <target name="dist-all-zip" depends="dist-prepare,javadocs">
     <property name="zip.dir" value="testng-${testng.version}" />
+    <echo>Adding ${testng.fullname}</echo>
     <zip zipfile="${testng.zip}">
-      <zipfileset prefix="${zip.dir}" dir="${basedir}" includesfile="FILES" />
-      <zipfileset prefix="${zip.dir}" dir="${basedir}">
-        <include name="${testng.jar}" />
+      <zipfileset prefix="${zip.dir}" dir="${target}">
+        <include name="${testng.fullname}.jar" />
       </zipfileset>
+      <zipfileset prefix="${zip.dir}" dir="${basedir}" includesfile="FILES" />
       <zipfileset dir="${other.jars.dir}" prefix="${zip.dir}/${other.jars.dir}"/>
       <zipfileset dir="javadocs" prefix="${zip.dir}/javadocs" />
       <zipfileset dir="src" prefix="${zip.dir}/src" />
@@ -198,9 +209,11 @@
       <zipfileset dir="${src.resources.dir}"
                prefix="${zip.dir}/resources" 
             includes="**/*.css"/>
+<!--
       <zipfileset dir="${lib.dir}"
                   prefix="${zip.dir}/${lib.dir}"
-                  includes="${beanshell.jar},${concurrent.jar},${guice.jar}" />
+                  includes="${beanshell.jar},${concurrent.jar},${guice.jar},${jcommander.jar}" />
+-->
     </zip>
   </target>
   

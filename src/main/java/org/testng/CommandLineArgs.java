@@ -1,9 +1,11 @@
 package org.testng;
 
 import com.beust.jcommander.Parameter;
+import com.beust.jcommander.converters.CommaSeparatedConverter;
 
 import org.testng.collections.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CommandLineArgs {
@@ -94,10 +96,13 @@ public class CommandLineArgs {
   @Parameter(names = "-host", description = "The host")
   public String host;
 
-  @Parameter(names = "-master", description ="Host where the master is")
+  @Parameter(names = "-master", description = "Host where the master is")
   public String master;
 
-  @Parameter(names = "-slave", description ="Host where the slave is")
+  @Parameter(names = "-slave", description = "Host where the slave is")
   public String slave;
 
+  @Parameter(names = "-methods", description = "Comma separated of test methods",
+      converter = CommaSeparatedConverter.class)
+  public List<String> commandLineMethods = new ArrayList<String>();
 }

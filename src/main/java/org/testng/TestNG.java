@@ -2,6 +2,7 @@ package org.testng;
 
 
 import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterDescription;
 import com.beust.jcommander.ParameterException;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -32,6 +33,7 @@ import org.testng.reporters.SuiteHTMLReporter;
 import org.testng.reporters.XMLReporter;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -48,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -113,6 +116,9 @@ public class TestNG {
   
   private static TestNG m_instance;
 
+  private static JCommander m_jCommander;
+
+  private List<String> m_commandLineMethods;
   protected List<XmlSuite> m_suites = Lists.newArrayList();
   protected List<XmlSuite> m_cmdlineSuites;
   protected String m_outputDir = DEFAULT_OUTPUTDIR;
@@ -391,7 +397,8 @@ public class TestNG {
       URLClassLoader jarLoader = new URLClassLoader(new URL[] { jarfileUrl });
       Thread.currentThread().setContextClassLoader(jarLoader);
 
-//      System.out.println("Trying to open jar file:" + jarFile);
+      Utils.log("TestNG", 2, "Trying to open jar file:" + jarFile);
+
       JarFile jf = new JarFile(jarFile);
 //      System.out.println("   result: " + jf);
       Enumeration<JarEntry> entries = jf.entries();
@@ -489,7 +496,6 @@ public class TestNG {
     m_cmdlineSuites.add(suite);
     m_suites.add(suite);
   }
-  
 
   /**
    * Set the test classes to be run by this TestNG object.  This method
@@ -504,8 +510,46 @@ public class TestNG {
     m_suites.clear();
     m_commandLineTestClasses = classes;
   }
-  
-  private List<XmlSuite> createCommandLineSuites(Class[] classes) {
+
+  private String[] splitMethod(String m) {
+    int index = m.lastIndexOf(".");
+    if (index < 0) {
+      throw new TestNGException("Bad format for command line method:" + m);
+    }
+
+    return new String[] { m.substring(0, index), m.substring(index + 1) };
+  }
+
+  private List<XmlSuite> createCommandLineSuitesForMethods(List<String> commandLineMethods) {
+    //
+    // Create the <classes> tag
+    //
+    Set<Class> classes = Sets.newHashSet();
+    for (String m : commandLineMethods) {
+      classes.add(ClassHelper.forName(splitMethod(m)[0]));
+    }
+
+    List<XmlSuite> result = createCommandLineSuitesForClasses(classes.toArray(new Class[0]));
+
+    //
+    // Add the method tags
+    //
+    List<XmlClass> xmlClasses = result.get(0).getTests().get(0).getXmlClasses();
+    for (XmlClass xc : xmlClasses) {
+      for (String m : commandLineMethods) {
+        String[] split = splitMethod(m);
+        String className = split[0];
+        if (xc.getName().equals(className)) {
+          XmlInclude includedMethod = new XmlInclude(split[1]);
+          xc.getIncludedMethods().add(includedMethod);
+        }
+      }
+    }
+
+    return result;
+  }
+
+  private List<XmlSuite> createCommandLineSuitesForClasses(Class[] classes) {
     //
     // See if any of the classes has an xmlSuite or xmlTest attribute.
     // If it does, create the appropriate XmlSuite, otherwise, create
@@ -721,6 +765,7 @@ public class TestNG {
   /** The list of test names to run from the given suite */
   private List<String> m_testNames;
 
+
   /**
    * Sets the level of verbosity. This value will override the value specified 
    * in the test suites.
@@ -734,15 +779,21 @@ public class TestNG {
   }
 
   private void initializeCommandLineSuites() {
-    if(null != m_commandLineTestClasses) {
+    if (m_commandLineTestClasses != null || m_commandLineMethods != null) {
       initializeInjector();
-      m_cmdlineSuites = createCommandLineSuites(m_commandLineTestClasses);
+      if (null != m_commandLineMethods) {
+        m_cmdlineSuites = createCommandLineSuitesForMethods(m_commandLineMethods);
+      }
+      else {
+        m_cmdlineSuites = createCommandLineSuitesForClasses(m_commandLineTestClasses);
+      }
+
       for (XmlSuite s : m_cmdlineSuites) {
         m_suites.add(s);
       }
     }
   }
-  
+
   private void initializeCommandLineSuitesParams() {
     if(null == m_cmdlineSuites) {
       return;
@@ -843,10 +894,34 @@ public class TestNG {
       setStatus(HAS_NO_TEST);
       if (TestRunner.getVerbose() > 1) {
         System.err.println("[TestNG] No tests found. Nothing was run");
+        usage();
       }
     }
   }
-  
+
+  private static void usage() {
+    Set<String> hidden = new HashSet<String>() {{
+      add("-host");
+      add("-master");
+      add("-slave");
+      add("-port");
+    }};
+    if (m_jCommander != null) {
+      m_jCommander.usage();
+//      System.out.println("Usage: java " + TestNG.class.getName() + " [options] <XML suite files>");
+//      System.out.println("    Options:");
+//      for (ParameterDescription p : m_jCommander.getParameters()) {
+//        if (! hidden.contains(p.getParameter().names()[0])) {
+//          StringBuilder sb = new StringBuilder();
+//          for (String n : p.getParameter().names()) {
+//            sb.append(n).append(" ");
+//          }
+//          System.out.println("\t" + sb.toString() + "\n\t\t" + p.getDescription());
+//        }
+//      }
+    }
+  }
+
   private void generateReports(List<ISuite> suiteRunners) {
     for (IReporter reporter : m_reporters) {
       try {
@@ -884,6 +959,7 @@ public class TestNG {
     else {
       setStatus(HAS_NO_TEST);
       System.err.println("[ERROR]: No test suite found. Nothing to run");
+      usage();
     }
     
     //
@@ -1087,10 +1163,16 @@ public class TestNG {
       result.configure(arguments);
     } else {
       // New style parsing
-      CommandLineArgs cla = new CommandLineArgs();
-      new JCommander(cla).parse(argv);
-      validateCommandLineParameters(cla);
-      result.configure(cla);
+      try {
+        CommandLineArgs cla = new CommandLineArgs();
+        m_jCommander = new JCommander(cla);
+        m_jCommander.parse(argv);
+        validateCommandLineParameters(cla);
+        result.configure(cla);
+      }
+      catch(ParameterException ex) {
+        exitWithError(ex.getMessage());
+      }
     }
     try {
       result.run();
@@ -1181,11 +1263,12 @@ public class TestNG {
           if (sel.length == 2) {
             addMethodSelector(sel[0], Integer.valueOf(sel[1]));
           } else {
-            LOGGER.error("WARNING: method selector " + cls + " has the wrong number of values");
+            LOGGER.error("ERROR: method selector value was not in the format" +
+            		" org.example.Selector:4");
           }
         }
         catch (NumberFormatException nfe) {
-          LOGGER.error("WARNING: MethodSelector priority was not an integer for " + cls);
+          LOGGER.error("ERROR: method selector value was not in the format org.example.Selector:4");
         }
       }
     }
@@ -1197,6 +1280,10 @@ public class TestNG {
     if (cla.reportersList != null) {
       ReporterConfig reporterConfig = ReporterConfig.deserialize(cla.reportersList);
       addReporter(reporterConfig);
+    }
+
+    if (cla.commandLineMethods.size() > 0) {
+      m_commandLineMethods = cla.commandLineMethods;
     }
 
     if (cla.suiteFiles != null) setTestSuites(cla.suiteFiles);
@@ -1463,7 +1550,7 @@ public class TestNG {
     String testJar = args.testJar;
     String slave = args.slave;
 
-    if (testClasses == null && testNgXml == null && slave == null && testJar == null) {
+    if (testClasses == null && slave == null && testJar == null && testNgXml == null) {
       throw new ParameterException("You need to specify at least one testng.xml or one class");
     }
 
@@ -1471,7 +1558,8 @@ public class TestNG {
     String excludedGroups = args.excludedGroups;
     
     if (testJar == null &&
-        (null != groups || null != excludedGroups) && testClasses == null && testNgXml == null) {
+        (null != groups || null != excludedGroups) && testClasses == null
+        && (testNgXml == null || testNgXml.isEmpty())) {
       throw new ParameterException("Groups option should be used with testclass option");
     }
 
@@ -1500,14 +1588,6 @@ public class TestNG {
    */
   public boolean hasSkip() {
     return (getStatus() & HAS_SKIPPED) == HAS_SKIPPED;
-  }
-  
-  /**
-   * Prints the usage message to System.out. This message describes all the command line
-   * options.
-   */
-  public static void usage() {
-    TestNGCommandLineArgs.usage();
   }
   
   static void exitWithError(String msg) {
