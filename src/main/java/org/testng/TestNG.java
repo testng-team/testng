@@ -907,17 +907,18 @@ public class TestNG {
       add("-port");
     }};
     if (m_jCommander != null) {
-      System.out.println("Usage: java " + TestNG.class.getName() + " [options] <XML suite files>");
-      System.out.println("    Options:");
-      for (ParameterDescription p : m_jCommander.getParameters()) {
-        if (! hidden.contains(p.getParameter().names()[0])) {
-          StringBuilder sb = new StringBuilder();
-          for (String n : p.getParameter().names()) {
-            sb.append(n).append(" ");
-          }
-          System.out.println("\t" + sb.toString() + "\n\t\t" + p.getDescription());
-        }
-      }
+      m_jCommander.usage();
+//      System.out.println("Usage: java " + TestNG.class.getName() + " [options] <XML suite files>");
+//      System.out.println("    Options:");
+//      for (ParameterDescription p : m_jCommander.getParameters()) {
+//        if (! hidden.contains(p.getParameter().names()[0])) {
+//          StringBuilder sb = new StringBuilder();
+//          for (String n : p.getParameter().names()) {
+//            sb.append(n).append(" ");
+//          }
+//          System.out.println("\t" + sb.toString() + "\n\t\t" + p.getDescription());
+//        }
+//      }
     }
   }
 
@@ -1162,11 +1163,16 @@ public class TestNG {
       result.configure(arguments);
     } else {
       // New style parsing
-      CommandLineArgs cla = new CommandLineArgs();
-      m_jCommander = new JCommander(cla);
-      m_jCommander.parse(argv);
-      validateCommandLineParameters(cla);
-      result.configure(cla);
+      try {
+        CommandLineArgs cla = new CommandLineArgs();
+        m_jCommander = new JCommander(cla);
+        m_jCommander.parse(argv);
+        validateCommandLineParameters(cla);
+        result.configure(cla);
+      }
+      catch(ParameterException ex) {
+        exitWithError(ex.getMessage());
+      }
     }
     try {
       result.run();
@@ -1257,11 +1263,12 @@ public class TestNG {
           if (sel.length == 2) {
             addMethodSelector(sel[0], Integer.valueOf(sel[1]));
           } else {
-            LOGGER.error("WARNING: method selector " + cls + " has the wrong number of values");
+            LOGGER.error("ERROR: method selector value was not in the format" +
+            		" org.example.Selector:4");
           }
         }
         catch (NumberFormatException nfe) {
-          LOGGER.error("WARNING: MethodSelector priority was not an integer for " + cls);
+          LOGGER.error("ERROR: method selector value was not in the format org.example.Selector:4");
         }
       }
     }
@@ -1543,7 +1550,7 @@ public class TestNG {
     String testJar = args.testJar;
     String slave = args.slave;
 
-    if (testClasses == null && testNgXml == null && slave == null && testJar == null) {
+    if (testClasses == null && slave == null && testJar == null && testNgXml == null) {
       throw new ParameterException("You need to specify at least one testng.xml or one class");
     }
 
@@ -1551,7 +1558,8 @@ public class TestNG {
     String excludedGroups = args.excludedGroups;
     
     if (testJar == null &&
-        (null != groups || null != excludedGroups) && testClasses == null && testNgXml == null) {
+        (null != groups || null != excludedGroups) && testClasses == null
+        && (testNgXml == null || testNgXml.isEmpty())) {
       throw new ParameterException("Groups option should be used with testclass option");
     }
 
