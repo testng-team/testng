@@ -4,7 +4,6 @@ import org.testng.IReporter;
 import org.testng.IResultMap;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
-import org.testng.ITest;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
@@ -122,7 +121,6 @@ public class EmailableReporter implements IReporter {
     if (tests.getAllResults().size() > 0) {
       StringBuffer buff = new StringBuffer();
       String lastClassName = "";
-      String lastTestName = "";
       int mq = 0;
       int cq = 0;
       for (ITestNGMethod method : getMethodSet(tests)) {
@@ -143,7 +141,6 @@ public class EmailableReporter implements IReporter {
           mq = 0;
           buff.setLength(0);
           lastClassName = className;
-          lastTestName = testClass.getTestName();
         }
         Set<ITestResult> resultSet = tests.getResults(method);
         long end = Long.MIN_VALUE;
@@ -162,20 +159,21 @@ public class EmailableReporter implements IReporter {
               + "\">");
         }
         String description = method.getDescription();
+        String testInstanceName = resultSet.toArray(new ITestResult[]{})[0].getTestName();
         buff.append("<td><a href=\"#m" + m_methodIndex + "\">"
             + qualifiedName(method)
             + " " + (description != null && description.length() > 0
                 ? "(\"" + description + "\")" 
                 : "")
-            + "</a></td>" + "<td class=\"numi\">"
+            + "</a>" + (null == testInstanceName ? "" : "<br>(" + testInstanceName + ")") 
+            + "</td>" + "<td class=\"numi\">"
             + resultSet.size() + "</td><td class=\"numi\">" + (end - start)
             + "</td></tr>");
       }
       if (mq > 0) {
         cq += 1;
         m_out.println("<tr class=\"" + style + (cq % 2 == 0 ? "even" : "odd")
-            + "\">" + "<td rowspan=\"" + mq + "\">" + lastClassName
-            + "<br>\"" + lastTestName + "\"" + buff);
+            + "\">" + "<td rowspan=\"" + mq + "\">" + lastClassName + buff);
       }
     }
   }

@@ -30,9 +30,6 @@ public class TestClass extends NoOpTestClass implements ITestClass {
   transient private IAnnotationFinder m_annotationFinder = null;
   // The Strategy used to locate test methods (TestNG, JUnit, etc...)
   transient private ITestMethodFinder m_testMethodFinder = null;
-
-  transient protected Map<Class, Class> m_testClasses = Maps.newHashMap();
-  transient protected Map<Class, Object[]> m_instanceMap = Maps.newHashMap();
   
   private IClass m_iClass = null;
   private RunInfo m_runInfo = null;
@@ -41,23 +38,12 @@ public class TestClass extends NoOpTestClass implements ITestClass {
   private XmlClass m_xmlClass;
   
   public TestClass(IClass cls, 
-                   String testName,
                    ITestMethodFinder testMethodFinder, 
                    IAnnotationFinder annotationFinder,
                    RunInfo runInfo,
                    XmlTest xmlTest,
                    XmlClass xmlClass) {
-    init(cls, testName, testMethodFinder, annotationFinder, runInfo, xmlTest, xmlClass);
-  }
-  
-  public TestClass(IClass cls, TestClass tc) {
-    init(cls, 
-         tc.getTestName(), 
-         tc.getTestMethodFinder(), 
-         tc.getAnnotationFinder(),
-         tc.getRunInfo(),
-         tc.getXmlTest(),
-         tc.getXmlClass());
+    init(cls, testMethodFinder, annotationFinder, runInfo, xmlTest, xmlClass);
   }
   
   /**
@@ -80,7 +66,6 @@ public class TestClass extends NoOpTestClass implements ITestClass {
   }
   
   private void init(IClass cls, 
-                    String testName,
                     ITestMethodFinder testMethodFinder, 
                     IAnnotationFinder annotationFinder,
                     RunInfo runInfo,
@@ -90,7 +75,6 @@ public class TestClass extends NoOpTestClass implements ITestClass {
     log(3, "Creating TestClass for " + cls);
     m_iClass = cls;
     m_testClass = cls.getRealClass();
-    m_testName = testName;
     m_xmlTest = xmlTest;
     m_xmlClass = xmlClass;
     m_runInfo = runInfo;
@@ -106,13 +90,9 @@ public class TestClass extends NoOpTestClass implements ITestClass {
     //
     Object[] instances = getInstances(false);
     for (Object instance : instances) {
-      Class cls = instance.getClass();
       if (instance instanceof ITest) {
         m_testName = ((ITest) instance).getTestName();
-      }
-      if (null == m_testClasses.get(cls)) {
-        m_testClasses.put(cls, cls);
-        m_instanceMap.put(cls, instances);
+        break;
       }
     }
   }

@@ -30,6 +30,7 @@ public class XMLReporterConfig {
   public static final String ATTR_METHOD_SIG = "signature";
   public static final String ATTR_GROUPS = "groups";
   public static final String ATTR_CLASS = "class";
+  public static final String ATTR_TEST_INSTANCE_NAME = "test-instance-name";
   public static final String ATTR_INDEX = "index";
   public static final String ATTR_IS_NULL = "is-null";
   public static final String ATTR_PACKAGE = "package";
