@@ -34,7 +34,7 @@ public class PreserveOrderTest extends SimpleBaseTest {
         fullTestNames[i] = "test.preserveorder." + t[i];
       }
       XmlTest xt = createXmlTest(s, "Test", fullTestNames);
-      xt.setPreserveOrder(true);
+      xt.setPreserveOrder("true");
 //      System.out.println(s.toXml());
       tng.setXmlSuites(Arrays.asList(s));
       tng.run();
@@ -73,7 +73,7 @@ public class PreserveOrderTest extends SimpleBaseTest {
       String testName = "test.preserveorder.AAA";
       XmlTest xt = createXmlTest(s, "Test", testName);
       addMethods(xt.getXmlClasses().get(0), m);
-      xt.setPreserveOrder(true);
+      xt.setPreserveOrder("true");
   //      System.out.println(s.toXml());
       tng.setXmlSuites(Arrays.asList(s));
       tng.run();

@@ -172,7 +172,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     m_skipFailedInvocationCounts = skipFailedInvocationCounts;
     setVerbose(test.getVerbose());
 
-    m_methodInterceptor = test.getPreserveOrder() ? new PreserveOrderMethodInterceptor()
+    boolean preserveOrder = "true".equalsIgnoreCase(test.getPreserveOrder());
+    m_methodInterceptor = preserveOrder ? new PreserveOrderMethodInterceptor()
         : new InstanceOrderingMethodInterceptor();
 
     m_packageNamesFromXml= test.getXmlPackages();    
