@@ -1549,11 +1549,15 @@ public class TestNG {
     List<String> testNgXml = args.suiteFiles;
     String testJar = args.testJar;
     String slave = args.slave;
+    List<String> methods = args.commandLineMethods;
 
-    if (testClasses == null && slave == null && testJar == null && testNgXml == null) {
-      throw new ParameterException("You need to specify at least one testng.xml or one class");
+    if (testClasses == null && slave == null && testJar == null 
+        && (testNgXml == null || testNgXml.isEmpty()) 
+        && (methods == null || methods.isEmpty())) {
+      throw new ParameterException("You need to specify at least one testng.xml, one class"
+          + " or one method");
     }
-
+        
     String groups = args.groups;
     String excludedGroups = args.excludedGroups;
     
