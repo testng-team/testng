@@ -255,7 +255,7 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       String preserveOrder = attributes.getValue("preserve-order");
       if (preserveOrder != null) {
-        m_currentTest.setPreserveOrder(Boolean.valueOf(preserveOrder).booleanValue());
+        m_currentTest.setPreserveOrder(preserveOrder);
       }
       String parallel = attributes.getValue("parallel");
       if (null != parallel) {

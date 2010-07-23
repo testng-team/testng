@@ -608,9 +608,40 @@ on ant and the command line below).</p><p>The current DTD for <tt>testng.xml</tt
 &lt;/test&gt;
 </pre>
 
-<p>You can also define new groups inside <tt>testng.xml</tt> and specify additional details in attributes, such as whether to run the tests in parallel, how many threads to use, whether you are running JUnit tests, etc...&nbsp; Please see the DTD for a complete list of the features, or read on.</p><!-------------------------------------
+<p>You can also define new groups inside <tt>testng.xml</tt> and specify additional details in attributes, such as whether to run the tests in parallel, how many threads to use, whether you are running JUnit tests, etc...&nbsp;
+<p>
+
+By default, TestNG will run the tests found in your <tt>testng.xml</tt> file in a random order. If you want the classes and methods listed in this file to be run in the exact same order you specified them, use the <tt>preserve-order</tt> attribute:
+
+<h3 class="sourcetitle">testng.xml</h3>
+<pre class="brush: xml">
+&lt;test name="Regression1" preserve-order="true"&gt;
+  &lt;classes&gt;
+
+    &lt;class name="test.Test1"&gt;
+      &lt;methods&gt;
+        &lt;include name="m1" /&gt;
+        &lt;include name="m2" /&gt;
+      &lt;/methods&gt;
+    &lt;/class&gt;
+
+    &lt;class name="test.Test2" /&gt;
+
+  &lt;/classes&gt;
+&lt;/test&gt;
+</pre>
+
+In the example above, the test classes will be run in the order <tt>Test1#m1, Test1#m2</tt> and then all the test methods found in <tt>Test2</tt>.
+
+<p>
+
+Please see the DTD for a complete list of the features, or read on.</p>
+
+<!-------------------------------------
   RUNNING TESTNG
-  ------------------------------------><h3><a name="running-testng">4 - Running TestNG</a></h3>TestNG can be invoked in different ways:
+  ------------------------------------>
+
+<h3><a name="running-testng">4 - Running TestNG</a></h3>TestNG can be invoked in different ways:
 
 <ul>
 <li>Command line
