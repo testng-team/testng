@@ -546,7 +546,9 @@ invocationCount. <br>Note:  this attribute is ignored if invocationCount is not 
 on ant and the command line below).</p><p>The current DTD for <tt>testng.xml</tt> can be found on the main Web site:&nbsp;
 <a href="http://testng.org/testng-1.0.dtd">http://testng.org/testng-1.0.dtd</a> 
 (for your convenience, you might prefer to browse the
-<a href="http://testng.org/dtd">HTML version</a>).</p><p>Here is an example <tt>testng.xml</tt> file:</p>
+<a href="http://testng.org/dtd">HTML version</a>).</p>
+
+Here is an example <tt>testng.xml</tt> file:
 
 
 <h3 class="sourcetitle">testng.xml</h3>
@@ -569,7 +571,7 @@ on ant and the command line below).</p><p>The current DTD for <tt>testng.xml</tt
 &lt;/suite&gt;
 </pre>
 
-<p>You can specify package names instead of class names:</p>
+You can specify package names instead of class names:
 
 <h3 class="sourcetitle">testng.xml</h3>
 <pre class="brush: xml; highlight: [5,6,7]">
@@ -586,7 +588,9 @@ on ant and the command line below).</p><p>The current DTD for <tt>testng.xml</tt
 
 
 <p>In this example, TestNG will look at all the classes in the package 
-	<tt>test.sample</tt> and will retain only classes that have TestNG annotations.</p><p>You can also specify groups and methods to be included and excluded:</p>
+	<tt>test.sample</tt> and will retain only classes that have TestNG annotations.</p>
+
+You can also specify groups and methods to be included and excluded:
 
 <h3 class="sourcetitle">testng.xml</h3>
 <pre class="brush: xml">
@@ -854,11 +858,14 @@ sets of tests back to back.</p><p>For example, it is quite common to have at lea
 &nbsp;</li>
   <li>Functional tests.&nbsp; These tests should cover all the functionalities 
 	of your software and be run at least once a day, although ideally you would 
-	want to run them continuously.</li></ul><p>Typically, check-in tests are a subset of functional tests.&nbsp; TestNG 
+	want to run them continuously.</li></ul>
+
+
+	Typically, check-in tests are a subset of functional tests.&nbsp; TestNG 
 allows you to specify this in a very intuitive way with test groups.&nbsp; For 
 example, you could structure your test by saying that your entire test class 
 belongs to the &quot;functest&quot; group, and additionally that a couple of methods 
-belong to the group &quot;checkintest&quot;:</p>
+belong to the group &quot;checkintest&quot;:
 
 <h3 class="sourcetitle">Test1.java</h3>
 <pre class="brush: java">
@@ -877,7 +884,8 @@ public class Test1 {
 }
 </pre>
 
-<p>Invoking TestNG with </p>
+Invoking TestNG with
+	<br>
 
 <h3 class="sourcetitle">testng.xml</h3>
 <pre class="brush: xml">
@@ -894,9 +902,12 @@ public class Test1 {
 </pre>
 
 <p>will run all the test methods in that classes, while invoking it with <tt>checkintest</tt> will only run 
-<tt>testMethod1()</tt> and <tt>testMethod2()</tt>.</p><p>Here is another example, using regular expressions this time.&nbsp; Assume 
+<tt>testMethod1()</tt> and <tt>testMethod2()</tt>.</p>
+
+
+Here is another example, using regular expressions this time.&nbsp; Assume 
 that some of your test methods should not be run on Linux, your test would look 
-like:</p>
+like:
 
 <h3 class="sourcetitle">Test1.java</h3>
 <pre class="brush: java">
@@ -916,9 +927,9 @@ public class Test1 {
 }
 </pre>
 
-<p>
+
 You could use the following testng.xml to launch only the Windows methods:
-</p>
+
 <h3 class="sourcetitle">testng.xml</h3>
 <pre class="brush: xml; highlight: [4,9]">
 &lt;test name="Test1"&gt;
@@ -938,8 +949,9 @@ You could use the following testng.xml to launch only the Windows methods:
 <em>Note:  TestNG uses <a href="http://en.wikipedia.org/wiki/Regular_expression">regular expressions</a>, and not <a href="http://en.wikipedia.org/wiki/Wildmat">wildmats</a>.  Be aware of the difference (for example, "anything" is matched by ".*" -- dot star -- and not "*").</em>
 </blockquote>
 
-<h4><a name="method-groups">Method groups</a></h4>You can also exclude or include individual methods:
-<p>
+<h4><a name="method-groups">Method groups</a></h4>
+
+You can also exclude or include individual methods:
 
 <h3 class="sourcetitle">testng.xml</h3>
 <pre class="brush: xml">
@@ -962,11 +974,14 @@ your testing framework likely to break if you start refactoring your Java code
 more).
 
 
-<h4><a name="groups-of-groups">5.2 - Groups of groups</a></h4><p>Groups can also include other groups.&nbsp;These groups are called &quot;MetaGroups&quot;.&nbsp; 
+<h4><a name="groups-of-groups">5.2 - Groups of groups</a></h4>
+
+Groups can also include other groups.&nbsp;These groups are called &quot;MetaGroups&quot;.&nbsp; 
 For example, you might want to define a group &quot;all&quot; that includes &quot;checkintest&quot; 
 and &quot;functest&quot;.&nbsp; &quot;functest&quot; itself will contain the groups &quot;windows&quot; and 
 &quot;linux&quot; while &quot;checkintest will only contain &quot;windows&quot;.&nbsp; Here is how you 
-would define this in your property file:</p>
+would define this in your property file:
+
 
 <h3 class="sourcetitle">testng.xml</h3>
 <pre class="brush: xml">
@@ -995,12 +1010,18 @@ would define this in your property file:</p>
 
 </p><!-------------------------------------
   EXCLUSION
-  ------------------------------------><h4><a name="exclusions">5.3 - Exclusion groups</a></h4><p>TestNG allows you to include groups as well as exclude them.</p><p>For example, it is quite usual to have tests that temporarily break because 
+  ------------------------------------><h4><a name="exclusions">5.3 - Exclusion groups</a>
+
+</h4><p>TestNG allows you to include groups as well as exclude them.</p>
+
+
+For example, it is quite usual to have tests that temporarily break because 
 of a recent change, and you don't have time to fix the breakage yet.&nbsp; 4
 However, you do want to have clean runs of your functional tests, so you need to 
 deactivate these tests but keep in mind they will need to be reactivated.</p><p>A simple way to solve this problem is to create a group called &quot;broken&quot; and 
 make these test methods belong to it.&nbsp; For example, in the above example, I 
-know that testMethod2() is now broken so I want to disable it:</p>
+know that testMethod2() is now broken so I want to disable it:
+
 
 <h3 class="sourcetitle">Java</h3>
 <pre class="brush: java">
@@ -1008,7 +1029,8 @@ know that testMethod2() is now broken so I want to disable it:</p>
 public void testMethod2() {
 }
 </pre>
-<p>All I need to do now is to exclude this group from the run:
+
+All I need to do now is to exclude this group from the run:
 
 <h3 class="sourcetitle">testng.xml</h3>
 <pre class="brush: xml; highlight: 5">
@@ -1040,8 +1062,9 @@ broken and need to be fixed later.</p>
   PARTIAL GROUPS
   ------------------------------------>
 
-<a name="partial-groups">5.4 - Partial groups</a></h4><p>You can define 
-groups at the class level and then add groups at the method level:</p>
+<a name="partial-groups">5.4 - Partial groups</a></h4>
+
+You can define  groups at the class level and then add groups at the method level:
 
 <h3 class="sourcetitle">All.java</h3>
 <pre class="brush: java">
@@ -1075,11 +1098,12 @@ There are two ways to set these parameters:&nbsp; with <tt>testng.xml</tt> or
 programmatically.</p><p>
 
 
-&nbsp;&nbsp;<em><a name="parameters-testng-xml">5.5.1 - Parameters from <tt>testng.xml</tt></a></em></p><p>
+&nbsp;&nbsp;<em><a name="parameters-testng-xml">5.5.1 - Parameters from <tt>testng.xml</tt></a></em></p>
 
 
 If you are using simple values for your parameters, you can specify them in your 
-<tt>testng.xml</tt>:</p>
+<tt>testng.xml</tt>:
+
 
 <h3 class="sourcetitle">Java</h3>
 <pre class="brush: java">
@@ -1368,9 +1392,9 @@ dependencies.</p>
 <a name="factories">5.7 - Factories</a>
 </h4>
 
-<p>Factories allow you to create tests dynamically. For example, imagine you 
+Factories allow you to create tests dynamically. For example, imagine you 
 want to create a test method that will access a page on a Web site several 
-times, and you want to invoke it with different values:</p>
+times, and you want to invoke it with different values:
 
 <h3 class="sourcetitle">TestWebServer.java</h3>
 <pre class="brush: java">
@@ -1402,8 +1426,7 @@ public class TestWebServer {
 &lt;/test&gt;
 </pre>
 
-<p>This can become quickly impossible to manage, so instead, you should use a 
-factory:</p>
+This can become quickly impossible to manage, so instead, you should use a factory:
 
 <h3 class="sourcetitle">WebTestFactory.java</h3>
 <pre class="brush: java">
@@ -1418,7 +1441,7 @@ public class WebTestFactory {
 }
 </pre>
 
-and the new test class is now:</p>
+and the new test class is now:
 
 <h3 class="sourcetitle">WebTest.java</h3>
 <pre class="brush: java">
@@ -1463,7 +1486,6 @@ case they will be ignored by TestNG).</p>
 <h4><a name="class-level">5.8 - Class level annotations</a></h4>
 
 The <tt>@Test</tt> annotation can be put on a class instead of a test method:
-<p>
 
 <h3 class="sourcetitle">Test1.java</h3>
 <pre class="brush: java">
@@ -1478,7 +1500,9 @@ public class Test1 {
 </pre>
 The effect of a class level <tt>@Test</tt> annotation is to make all the public methods of this class to become test methods even if they are not annotated.  You can still repeat the <tt>@Test</tt> annotation on a method if you want to add certain attributes.
 <p>
+
 For example:
+
 <h3 class="sourcetitle">Test1.java</h3>
 <pre class="brush: java">
 @Test
@@ -1576,7 +1600,8 @@ SKIP failures.</p>
 
 TestNG can run JUnit tests.&nbsp; All you need to do is specify your JUnit test 
 classes in the <tt>testng.classNames</tt> property and set the <tt>testng.junit</tt> property to 
-true:<br>
+true:
+
 <p></p>
 <h3 class="sourcetitle">testng.xml</h3>
 <pre class="brush: xml">
@@ -1602,7 +1627,7 @@ true:<br>
 <a name="running-testng-programmatically">5.13 - Running TestNG programmatically</a>
 </h4>
 
-<p>You can invoke TestNG from your own programs very easily:</p>
+You can invoke TestNG from your own programs very easily:
 
 <h3 class="sourcetitle">Java</h3>
 <pre class="brush: java">
