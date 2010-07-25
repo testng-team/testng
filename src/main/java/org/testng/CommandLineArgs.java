@@ -19,8 +19,8 @@ public class CommandLineArgs {
   @Parameter(names = "-groups", description = "Comma-separated list of group names to be run")
   public String groups;
 
-  @Parameter(names = "-excludedgroups", description ="Comma-separated list of group names to be " +
-  		"run")
+  @Parameter(names = "-excludedgroups", description ="Comma-separated list of group names to "
+      + " exclude")
   public String excludedGroups;
   
   @Parameter(names = "-d", description ="Output directory")
@@ -69,13 +69,13 @@ public class CommandLineArgs {
   /**
    * Used as map key for the complete list of report listeners provided with the above argument
    */
-  @Parameter(names = "-reporterslist")
+  @Parameter(names = "-reporterslist", hidden = true)
   public String reportersList;
 
   @Parameter(names = "-usedefaultlisteners", description = "Whether to use the default listeners")
   public String useDefaultListeners = "true";
 
-  @Parameter(names = "-skipfailedinvocationcounts")
+  @Parameter(names = "-skipfailedinvocationcounts", hidden = true)
   public Boolean skipFailedInvocationCounts;
 
   @Parameter(names = "-testclass", description = "The list of test classes")
@@ -84,10 +84,10 @@ public class CommandLineArgs {
   @Parameter(names = "-testnames", description = "The list of test names to run")
   public String testNames;
 
-  @Parameter(names = "-testjar", description = "")
+  @Parameter(names = "-testjar", description = "A jar file containing the tests")
   public String testJar;
 
-  @Parameter(names = "-testRunFactory", description = "")
+  @Parameter(names = "-testRunFactory", description = "The factory used to create tests")
   public String testRunFactory;
 
   @Parameter(names = "-port", description = "The port")
