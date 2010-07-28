@@ -4,12 +4,12 @@ import org.testng.IReporter;
 import org.testng.IResultMap;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
-import org.testng.ITest;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
+import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 import org.testng.reporters.util.StackTraceTools;
 import org.testng.xml.XmlSuite;
@@ -232,9 +232,8 @@ public class EmailableReporter implements IReporter {
             }
             m_out.print("<tr" + (rq % 2 == 0 ? " class=\"stripe\"" : "") + ">");
             for (Object p : parameters) {
-              m_out
-                  .println("<td style=\"padding-left:.5em;padding-right:2em\">"
-                      + (p != null ? p.toString() : "null") + "</td>");
+              m_out.println("<td style=\"padding-left:.5em;padding-right:2em\">"
+                  + (p != null ? Utils.escapeHtml(p.toString()) : "null") + "</td>");
             }
             m_out.println("</tr>");
           }
@@ -289,7 +288,7 @@ public class EmailableReporter implements IReporter {
   }
   
   private void generateExceptionReport(Throwable exception,ITestNGMethod method,String title) {
-    m_out.println("<p>" + escape(title) + "</p>");
+    m_out.println("<p>" + Utils.escapeHtml(title) + "</p>");
     StackTraceElement[] s1= exception.getStackTrace();
     Throwable t2= exception.getCause();
     if(t2 == exception) {
@@ -297,7 +296,7 @@ public class EmailableReporter implements IReporter {
     }
     int maxlines= Math.min(100,StackTraceTools.getTestRoot(s1, method));
     for(int x= 0; x <= maxlines; x++) {
-      m_out.println((x>0 ? "<br/>at " : "") + escape(s1[x].toString()));
+      m_out.println((x>0 ? "<br/>at " : "") + Utils.escapeHtml(s1[x].toString()));
     }
     if(maxlines < s1.length) {
       m_out.println("<br/>" + (s1.length-maxlines) + " lines not shown");
@@ -307,11 +306,6 @@ public class EmailableReporter implements IReporter {
     }
   }
 
-  private static String escape(String string) {
-    if(null == string) return string;
-    return string.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-  }
-  
   /**
    * @param tests
    * @return

@@ -1,5 +1,16 @@
 package org.testng.internal;
 
+import org.testng.ITestNGMethod;
+import org.testng.TestNGCommandLineArgs;
+import org.testng.TestRunner;
+import org.testng.annotations.IConfigurationAnnotation;
+import org.testng.annotations.ITestAnnotation;
+import org.testng.collections.Lists;
+import org.testng.internal.annotations.AnnotationHelper;
+import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.log.TextFormatter;
+import org.testng.xml.XmlClass;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,27 +22,15 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.testng.ITestNGMethod;
-import org.testng.TestNGCommandLineArgs;
-import org.testng.TestRunner;
-import org.testng.annotations.IConfigurationAnnotation;
-import org.testng.annotations.ITestAnnotation;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.internal.annotations.AnnotationHelper;
-import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.Sets;
-import org.testng.log.TextFormatter;
-import org.testng.xml.XmlClass;
+import java.util.regex.Pattern;
 
 /**
  * Helper methods to parse annotations.
@@ -506,7 +505,7 @@ public final class Utils {
     }
     
     if (tohtml) {
-      shortStackTrace = shortStackTrace.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+      shortStackTrace = escapeHtml(shortStackTrace);
       fullStackTrace = fullStackTrace.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
     }
     
@@ -514,7 +513,51 @@ public final class Utils {
         shortStackTrace, fullStackTrace
     };
   }
+
+  private static String replaceAmpersand(String str, Pattern pattern) {
+    int start = 0;
+    int idx = str.indexOf('&', start);
+    if(idx == -1) return str;
+    StringBuffer result= new StringBuffer();
+    while(idx != -1) {
+      result.append(str.substring(start, idx));
+      if(pattern.matcher(str.substring(idx)).matches()) {
+        // do nothing it is an entity;
+        result.append("&");
+      }
+      else {
+        result.append("&amp;");
+      }
+      start= idx + 1;
+      idx= str.indexOf('&', start);
+    }
+    result.append(str.substring(start));
+
+    return result.toString();
+  }
   
+  private static final Map<Character, String> ESCAPES = new HashMap<Character, String>() {{
+    put('<', "&lt;");
+    put('>', "&gt;");
+    put('\'', "&apos;");
+    put('"', "&quot;");
+  }};
+
+  public static String escapeHtml(String s) {
+    if (s == null) return null;
+
+    StringBuilder result = new StringBuilder();
+
+    for (int i = 0; i < s.length(); i++) {
+      char c = s.charAt(i);
+      String nc = ESCAPES.get(c);
+      if (nc != null) result.append(nc);
+      else result.append(c);
+    }
+
+    return result.toString();
+  }
+
   private static String filterTrace(String trace) {
     StringReader   stringReader = new StringReader(trace);
     BufferedReader bufferedReader = new BufferedReader(stringReader);
