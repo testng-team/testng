@@ -12,7 +12,7 @@ echo "To run the tests: mvn -f pom-test.xml test"
 echo "To deploy to the snapshot repository: mvn deploy"
 echo "To deploy to the release directory: mvn release:clean release:prepare release:perform"
 echo "Nexus UI:  https://oss.sonatype.org/index.html"
-echo "Wiki: https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
+echo "Wiki: https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide"
 
 # deploy without tagging: mvn deploy -DperformRelease
 
