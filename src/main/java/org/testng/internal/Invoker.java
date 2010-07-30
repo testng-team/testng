@@ -1,16 +1,6 @@
 package org.testng.internal;
 
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
-
 import org.testng.IClass;
 import org.testng.IHookable;
 import org.testng.IInvokedMethod;
@@ -40,6 +30,17 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 /**
  * This class is responsible for invoking methods:
  * - test methods
@@ -60,20 +61,30 @@ public class Invoker implements IInvoker {
   private boolean m_continueOnFailedConfiguration;
   
   /** Group failures must be synched as the Invoker is accessed concurrently */
-  private Map<String, Boolean> m_beforegroupsFailures = new Hashtable<String, Boolean>();
+  private Map<String, Boolean> m_beforegroupsFailures = Maps.newHashtable();
   
   /** Class failures must be synched as the Invoker is accessed concurrently */
-  private Map<Class<?>, Boolean> m_classInvocationResults = new Hashtable<Class<?>, Boolean>();
+  private Map<Class<?>, Set> m_classInvocationResults = Maps.newHashtable();
   
   /** Test methods whose configuration methods have failed. */
-  private Map<ITestNGMethod, Boolean> m_methodInvocationResults = new Hashtable<ITestNGMethod, Boolean>();
+  private Map<ITestNGMethod, Set> m_methodInvocationResults = new Hashtable<ITestNGMethod, Set>();
    
-  private void setClassInvocationFailure(Class<?> clazz, boolean flag) {
-    m_classInvocationResults.put(clazz, flag);
+  private void setClassInvocationFailure(Class<?> clazz, Object instance) {
+    Set instances = m_classInvocationResults.get( clazz );
+    if (instances == null) {
+      instances = new HashSet();
+      m_classInvocationResults.put(clazz, instances);
+    }
+    instances.add(instance);
   }
   
-  private void setMethodInvocationFailure(ITestNGMethod method, boolean flag) {
-      m_methodInvocationResults.put(method, flag);
+  private void setMethodInvocationFailure(ITestNGMethod method, Object instance) {
+    Set instances = m_methodInvocationResults.get(method);
+    if (instances == null) {
+      instances = new HashSet();
+      m_methodInvocationResults.put(method, instances);
+    }
+    instances.add(instance);
   }
 
   public Invoker(ITestContext testContext,
@@ -101,6 +112,7 @@ public class Invoker implements IInvoker {
    * the configuration methods will be run on all the instances retrieved
    * from the ITestClass.
    */
+  @Override
   public void invokeConfigurations(IClass testClass,
                                    ITestNGMethod[] allMethods,
                                    XmlSuite suite,
@@ -152,15 +164,15 @@ public class Invoker implements IInvoker {
         // - the test is enabled and
         // - the Configuration method belongs to the same class or a parent
         if(MethodHelper.isEnabled(objectClass, m_annotationFinder)) {
-          configurationAnnotation= (IConfigurationAnnotation) AnnotationHelper.findConfiguration(m_annotationFinder, method);
+          configurationAnnotation = AnnotationHelper.findConfiguration(m_annotationFinder, method);
 
           if (MethodHelper.isEnabled(configurationAnnotation)) {
             boolean isClassConfiguration = isClassConfiguration(configurationAnnotation);
             boolean isSuiteConfiguration = isSuiteConfiguration(configurationAnnotation); 
             boolean alwaysRun= isAlwaysRun(configurationAnnotation);
   
-            if (!confInvocationPassed(tm, currentTestMethod, testClass) && !alwaysRun) {
-              handleConfigurationSkip(tm, testResult, configurationAnnotation, currentTestMethod, suite);
+            if (!confInvocationPassed(tm, currentTestMethod, testClass, instance) && !alwaysRun) {
+              handleConfigurationSkip(tm, testResult, configurationAnnotation, currentTestMethod, instance, suite);
               continue;
             }
   
@@ -202,15 +214,15 @@ public class Invoker implements IInvoker {
         }
       }
       catch(InvocationTargetException ex) {
-        handleConfigurationFailure(ex, tm, testResult, configurationAnnotation, currentTestMethod, suite);
+        handleConfigurationFailure(ex, tm, testResult, configurationAnnotation, currentTestMethod, instance, suite);
       }
       catch(TestNGException ex) {
         // Don't wrap TestNGExceptions, it could be a missing parameter on a
         // @Configuration method
-        handleConfigurationFailure(ex, tm, testResult, configurationAnnotation, currentTestMethod, suite);
+        handleConfigurationFailure(ex, tm, testResult, configurationAnnotation, currentTestMethod, instance, suite);
       }
       catch(Throwable ex) { // covers the non-wrapper exceptions
-        handleConfigurationFailure(ex, tm, testResult, configurationAnnotation, currentTestMethod, suite);
+        handleConfigurationFailure(ex, tm, testResult, configurationAnnotation, currentTestMethod, instance, suite);
       }
     } // for methods
   }
@@ -222,8 +234,9 @@ public class Invoker implements IInvoker {
                                        ITestResult testResult, 
                                        IConfigurationAnnotation annotation, 
                                        ITestNGMethod currentTestMethod, 
+                                       Object instance,
                                        XmlSuite suite) {
-    recordConfigurationInvocationFailed(tm, testResult.getTestClass(), annotation, currentTestMethod, suite);
+    recordConfigurationInvocationFailed(tm, testResult.getTestClass(), annotation, currentTestMethod, instance, suite);
     testResult.setStatus(ITestResult.SKIP);
     runConfigurationListeners(testResult);
   }
@@ -292,6 +305,7 @@ public class Invoker implements IInvoker {
                                           ITestResult testResult,
                                           IConfigurationAnnotation annotation,
                                           ITestNGMethod currentTestMethod,
+                                          Object instance,
                                           XmlSuite suite) 
   {
     Throwable cause= ite.getCause() != null ? ite.getCause() : ite;
@@ -300,7 +314,7 @@ public class Invoker implements IInvoker {
       SkipException skipEx= (SkipException) cause;
       if(skipEx.isSkip()) {
         testResult.setThrowable(skipEx);
-        handleConfigurationSkip(tm, testResult, annotation, currentTestMethod, suite);
+        handleConfigurationSkip(tm, testResult, annotation, currentTestMethod, instance, suite);
         return;
       }
     }
@@ -314,7 +328,7 @@ public class Invoker implements IInvoker {
     // what kind of @Configuration method we're dealing with
     //
     if (null != annotation) {
-      recordConfigurationInvocationFailed(tm, testResult.getTestClass(), annotation, currentTestMethod, suite);
+      recordConfigurationInvocationFailed(tm, testResult.getTestClass(), annotation, currentTestMethod, instance, suite);
     }
   }
 
@@ -351,6 +365,7 @@ public class Invoker implements IInvoker {
                                                    IClass testClass, 
                                                    IConfigurationAnnotation annotation, 
                                                    ITestNGMethod currentTestMethod, 
+                                                   Object instance,
                                                    XmlSuite suite) {
     // If beforeTestClass or afterTestClass failed, mark either the config method's
     // entire class as failed, or the class under tests as failed, depending on
@@ -359,9 +374,9 @@ public class Invoker implements IInvoker {
       // tm is the configuration method, and currentTestMethod is null for BeforeClass
       // methods, so we need testClass
       if (m_continueOnFailedConfiguration) {
-        setClassInvocationFailure(testClass.getRealClass(), false);
+        setClassInvocationFailure(testClass.getRealClass(), instance);
       } else {
-        setClassInvocationFailure(tm.getRealClass(), false);
+        setClassInvocationFailure(tm.getRealClass(), instance);
       }
     }
     
@@ -370,9 +385,9 @@ public class Invoker implements IInvoker {
     // the configuration failure policy
     else if (annotation.getBeforeTestMethod() || annotation.getAfterTestMethod()) {
       if (m_continueOnFailedConfiguration) {
-        setMethodInvocationFailure(currentTestMethod, false);
+        setMethodInvocationFailure(currentTestMethod, instance);
       } else {
-        setClassInvocationFailure(tm.getRealClass(), false);
+        setClassInvocationFailure(tm.getRealClass(), instance);
       }
     }
 
@@ -385,10 +400,10 @@ public class Invoker implements IInvoker {
     // beforeTest or afterTest:  mark all the classes in the same
     // <test> stanza as failed for configuration
     else if (annotation.getBeforeTest() || annotation.getAfterTest()) {
-      setClassInvocationFailure(tm.getRealClass(), false);
+      setClassInvocationFailure(tm.getRealClass(), instance);
       XmlClass[] classes= findClassesInSameTest(tm.getRealClass(), suite);
       for(XmlClass xmlClass : classes) {
-        setClassInvocationFailure(xmlClass.getSupportClass(), false);
+        setClassInvocationFailure(xmlClass.getSupportClass(), instance);
       }
     }
     String[] beforeGroups= annotation.getBeforeGroups();
@@ -403,7 +418,7 @@ public class Invoker implements IInvoker {
    * @return true if this class has successfully run all its @Configuration
    * method or false if at least one of these methods failed.
    */
-  private boolean confInvocationPassed(ITestNGMethod method, ITestNGMethod currentTestMethod, IClass testClass) {
+  private boolean confInvocationPassed(ITestNGMethod method, ITestNGMethod currentTestMethod, IClass testClass, Object instance) {
     boolean result= true;
 
     // If continuing on config failure, check invocation results for the class
@@ -415,16 +430,17 @@ public class Invoker implements IInvoker {
       result= false;
     }
     else {
-      if(m_classInvocationResults.containsKey(cls)) {
-        result= m_classInvocationResults.get(cls);
+      if (m_classInvocationResults.containsKey(cls)) {
+        if (! m_continueOnFailedConfiguration) result = !m_classInvocationResults.containsKey(cls);
+        else result = !m_classInvocationResults.get(cls).contains(instance);
       }
       // if method is BeforeClass, currentTestMethod will be null
       else if (m_continueOnFailedConfiguration && 
               currentTestMethod != null && 
               m_methodInvocationResults.containsKey(currentTestMethod)) {
-          result = m_methodInvocationResults.get(currentTestMethod);
+        result = !m_methodInvocationResults.get(currentTestMethod).contains(instance);
       }
-      else if (!m_continueOnFailedConfiguration) {
+      else if (! m_continueOnFailedConfiguration) {
         for(Class<?> clazz: m_classInvocationResults.keySet()) {
 //          if (clazz == cls) {
           if(clazz.isAssignableFrom(cls)) {
@@ -589,7 +605,7 @@ public class Invoker implements IInvoker {
       
       Method thisMethod= tm.getMethod();
       
-      if(confInvocationPassed(tm, tm, testClass)) {
+      if(confInvocationPassed(tm, tm, testClass, instances[instanceIndex])) {
         log(3, "Invoking " + thisMethod.getDeclaringClass().getName() + "." +
             thisMethod.getName());
 
@@ -974,6 +990,7 @@ public class Invoker implements IInvoker {
    * {@link #invokeTestMethod(Object[], ITestNGMethod, Object[], XmlSuite, Map, ITestClass, ITestNGMethod[], ITestNGMethod[], ConfigurationGroupMethods)}
    * and this would simplify the implementation (see how DataTestMethodWorker is used)
    */
+  @Override
   public List<ITestResult> invokeTestMethods(ITestNGMethod testMethod,
                                              ITestNGMethod[] allTestMethods,
                                              int testMethodIndex,
