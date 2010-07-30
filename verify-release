@@ -1,4 +1,5 @@
 rel=$1
+rel=testng-5.13beta
 
 cd $HOME/t
 rm -f *zip
