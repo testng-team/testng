@@ -117,11 +117,12 @@ public class XMLReporter implements IReporter {
     // Calculate the duration
     Map<String, ISuiteResult> results = suite.getResults();
     Date minStartDate = new Date();
-    Date maxEndDate = new Date();
-    // TODO: We could probably optimize this in order not to traverse this twice   
+    Date maxEndDate = null;
+    // TODO: We could probably optimize this in order not to traverse this twice
     for (Map.Entry<String, ISuiteResult> result : results.entrySet()) {
-      Date startDate = result.getValue().getTestContext().getStartDate();
-      Date endDate = result.getValue().getTestContext().getEndDate();
+      ITestContext testContext = result.getValue().getTestContext();
+      Date startDate = testContext.getStartDate();
+      Date endDate = testContext.getEndDate();
       if (minStartDate.after(startDate)) {
         minStartDate = startDate;
       }

@@ -18,7 +18,7 @@ import java.util.Properties;
  * @author <a href = 'mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class XmlTest implements Serializable, Cloneable {
-  public static int DEFAULT_TIMEOUT_MS = 30000; // 30000;   // 30 seconds
+  public static int DEFAULT_TIMEOUT_MS = 1000 * 60 * 10; // 10 minutes
 
   private final XmlSuite m_suite;
   private String m_name = TestNG.DEFAULT_COMMAND_LINE_SUITE_NAME;
