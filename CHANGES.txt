@@ -38,6 +38,10 @@ Fixed: @Listeners now works on base classes as well
 Fixed: Test priorities were not working properly in non-parallel mode
 Fixed: @Listeners wasn't working properly with ITestListener
 
+Eclipse
+
+Fixed: New wizard was creating classes called "NewTest"
+
 Doc
 Updated Maven documentation (Brett Porter)
 

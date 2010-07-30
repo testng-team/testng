@@ -11,7 +11,7 @@ import org.testng.annotations.Test;
 
 public class Sample2 {
   
-  @Test
+  @Test(groups = "g1")
   public void method1() {
 //    System.out.println("@@@@@@@@@@@@@@@@@@@ METHOD1");
   }
