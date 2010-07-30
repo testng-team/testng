@@ -2,8 +2,6 @@ package test.sample;
 
 import org.testng.annotations.Test;
 
-import java.util.Calendar;
-
 /**
  * This class
  *
@@ -15,6 +13,12 @@ public class Sample2 {
   
   @Test
   public void method1() {
+    try {
+      Thread.sleep(5000);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
 //    System.out.println("@@@@@@@@@@@@@@@@@@@ METHOD1");
   }
 

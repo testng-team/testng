@@ -1,12 +1,23 @@
 package org.testng.reporters;
 
-import org.testng.*;
+import org.testng.IReporter;
+import org.testng.ISuite;
+import org.testng.ISuiteResult;
+import org.testng.ITestContext;
+import org.testng.ITestNGMethod;
+import org.testng.Reporter;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlSuite;
 
 import java.io.File;
-import java.util.*;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * The main entry for the XML generation operation
@@ -15,9 +26,10 @@ import java.text.SimpleDateFormat;
  */
 public class XMLReporter implements IReporter {
 
-  private XMLReporterConfig config = new XMLReporterConfig();
+  private final XMLReporterConfig config = new XMLReporterConfig();
   private XMLStringBuffer rootBuffer;
 
+  @Override
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
     if (Utils.isStringEmpty(config.getOutputDirectory())) {
       config.setOutputDirectory(outputDirectory);
