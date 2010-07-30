@@ -40,7 +40,8 @@ Fixed: @Listeners wasn't working properly with ITestListener
 
 Eclipse
 
-Fixed: New wizard was creating classes called "NewTest"
+Fixed: TESTNG-395 New wizard was creating classes called "NewTest"
+Fixed: TESTNG-397 Class level @Test was preventing groups from showing up in the launch configuration
 
 Doc
 Updated Maven documentation (Brett Porter)
