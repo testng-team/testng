@@ -22,8 +22,9 @@
   </licenses>
 
   <scm>
-    <url>http://github.com/cbeust/testng</url>
-    <connection>scm:git:http://github.com/testng.git</connection>
+    <connection>scm:git:git@github.com:cbeust/testng.git</connection>
+    <developerConnection>scm:git:git@github.com:cbeust/testng.git</developerConnection>
+    <url>git@github.com:cbeust/testng.git</url>
   </scm>
     
   <developers>
