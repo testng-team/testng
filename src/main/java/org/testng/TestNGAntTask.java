@@ -450,7 +450,7 @@ public class TestNGAntTask extends Task {
     
     if (null != m_skipFailedInvocationCounts) {
       if(m_skipFailedInvocationCounts.booleanValue()) {
-        argv.add(CommandLineArgs.SKIL_FAILED_INVOCATION_COUNTS);
+        argv.add(CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS);
       }
     }
     

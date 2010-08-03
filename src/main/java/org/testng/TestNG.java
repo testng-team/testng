@@ -254,8 +254,8 @@ public class TestNG {
 //  @Deprecated
 //  public void setTarget(String target) {
 //    // Target is used only in JDK 1.5 and may get null in JDK 1.4
-//    LOGGER.warn("The usage of " + TestNGCommandLineArgs.TARGET_COMMAND_OPT + " option is deprecated." +
-//            " Please use " + TestNGCommandLineArgs.ANNOTATIONS_COMMAND_OPT + " instead.");
+//    LOGGER.warn("The usage of " + CommandLineArgs.TARGET_COMMAND + " option is deprecated." +
+//            " Please use " + CommandLineArgs.ANNOTATIONS_COMMAND + " instead.");
 //    if (null == target) {
 //      return;
 //    }
@@ -1216,7 +1216,7 @@ public class TestNG {
       setTestNames(Arrays.asList(cla.testNames.split(",")));
     }
 
-//    List<String> testNgXml = (List<String>) cmdLineArgs.get(TestNGCommandLineArgs.SUITE_DEF_OPT);
+//    List<String> testNgXml = (List<String>) cmdLineArgs.get(CommandLineArgs.SUITE_DEF);
 //    if (null != testNgXml) {
 //      setTestSuites(testNgXml);
 //    }
@@ -1293,146 +1293,103 @@ public class TestNG {
   }
 
   /**
-   * Configure the TestNG instance by reading the settings provided in the map.
-   * 
-   * @param cmdLineArgs map of settings
-   * @see TestNGCommandLineArgs for setting keys
+   * Thsi method is invoked by Maven's Surefire to configure the runner,
+   * do not remove unless you know for sure that Surefire has been updated
+   * to use the new configure(CommandLineArgs) method.
    */
   @SuppressWarnings({"unchecked"})
-//  public void configure(Map cmdLineArgs) {
-//    {
-//      Integer verbose = (Integer) cmdLineArgs.get(TestNGCommandLineArgs.LOG);
-//      if (null != verbose) {
-//        setVerbose(verbose.intValue());
-//      }
-//    }
-//    
-//    setOutputDirectory((String) cmdLineArgs.get(TestNGCommandLineArgs.OUTDIR_COMMAND_OPT));
-//    setSourcePath((String) cmdLineArgs.get(TestNGCommandLineArgs.SRC_COMMAND_OPT));
-//    setAnnotations(((AnnotationTypeEnum) cmdLineArgs.get(TestNGCommandLineArgs.ANNOTATIONS_COMMAND_OPT)));
-//
-//    String testClasses = (String) cmdLineArgs.get(TestNGCommandLineArgs.TESTCLASS_COMMAND_OPT);
-//    if (null != testClasses) {
-//      String[] strClasses = testClasses.split(",");
-//      List<Class> classes = Lists.newArrayList();
-//      for (String c : strClasses) {
-//        classes.add(ClassHelper.fileToClass(c));
-//      }
-//
-//      setTestClasses(classes.toArray(new Class[classes.size()]));
-//    }
-//
-//    String testNames = (String) cmdLineArgs.get(TestNGCommandLineArgs.TEST_NAMES_COMMAND_OPT);
-//    if (testNames != null) {
-//      setTestNames(Arrays.asList(testNames.split(",")));
-//    }
-//    List<String> testNgXml = (List<String>) cmdLineArgs.get(TestNGCommandLineArgs.SUITE_DEF_OPT);
-//    if (null != testNgXml) {
-//      setTestSuites(testNgXml);
-//    }
-//    
-//    String useDefaultListeners = (String) cmdLineArgs.get(TestNGCommandLineArgs.USE_DEFAULT_LISTENERS);
-//    if (null != useDefaultListeners) {
-//      setUseDefaultListeners("true".equalsIgnoreCase(useDefaultListeners));
-//    }
-//    
-//    setGroups((String) cmdLineArgs.get(TestNGCommandLineArgs.GROUPS_COMMAND_OPT));
-//    setExcludedGroups((String) cmdLineArgs.get(TestNGCommandLineArgs.EXCLUDED_GROUPS_COMMAND_OPT));      
-//    setTestJar((String) cmdLineArgs.get(TestNGCommandLineArgs.TESTJAR_COMMAND_OPT));
-//    setJUnit((Boolean) cmdLineArgs.get(TestNGCommandLineArgs.JUNIT_DEF_OPT));
-//    setMaster( (String)cmdLineArgs.get(TestNGCommandLineArgs.MASTER_OPT));
-//    setSlave( (String)cmdLineArgs.get(TestNGCommandLineArgs.SLAVE_OPT));
-//    setSkipFailedInvocationCounts(
-//      (Boolean) cmdLineArgs.get(
-//        TestNGCommandLineArgs.SKIP_FAILED_INVOCATION_COUNT_OPT));
-//    
-//    String parallelMode = (String) cmdLineArgs.get(TestNGCommandLineArgs.PARALLEL_MODE);
-//    if (parallelMode != null) {
-//      setParallel(parallelMode);
-//    }
-//    
-//    String threadCount = (String) cmdLineArgs.get(TestNGCommandLineArgs.THREAD_COUNT);
-//    if (threadCount != null) {
-//      setThreadCount(Integer.parseInt(threadCount));
-//    }
-//    String dataProviderThreadCount = (String) cmdLineArgs.get(TestNGCommandLineArgs.DATA_PROVIDER_THREAD_COUNT);
-//    if (dataProviderThreadCount != null) {
-//      setDataProviderThreadCount(Integer.parseInt(dataProviderThreadCount));
-//    }
-//    String defaultSuiteName = (String) cmdLineArgs.get(TestNGCommandLineArgs.SUITE_NAME_OPT);
-//    if (defaultSuiteName != null) {
-//      setDefaultSuiteName(defaultSuiteName);
-//    }
-//
-//    String defaultTestName = (String) cmdLineArgs.get(TestNGCommandLineArgs.TEST_NAME_OPT);
-//    if (defaultTestName != null) {
-//      setDefaultTestName(defaultTestName);
-//    }
-//
-//    String strClass = (String) cmdLineArgs.get(TestNGCommandLineArgs.LISTENER_COMMAND_OPT);
-//    if (null != strClass) {
-//      String sep = ";";
-//      if (strClass.indexOf(",") >= 0) {
-//        sep = ",";
-//      }
-//      String[] strs = Utils.split(strClass, sep);
-//      List<Class> classes = Lists.newArrayList();
-//
-//      for (String cls : strs) {
-//        classes.add(ClassHelper.fileToClass(cls));
-//      }
-//
-//      setListenerClasses(classes);
-//    }
-//    
-//    String ms = (String) cmdLineArgs.get(TestNGCommandLineArgs.METHOD_SELECTOR_OPT);
-//    if (null != ms) {
-//      String[] strs = Utils.split(ms, ",");
-//      for (String cls : strs) {
-//        String[] sel = Utils.split(cls, ":");
-//        try {
-//          if (sel.length == 2) {
-//            addMethodSelector(sel[0], Integer.valueOf(sel[1]));
-//          } else {
-//            LOGGER.error("WARNING: method selector " + cls + " has the wrong number of values");
-//          }
-//        }
-//        catch (NumberFormatException nfe) {
-//          LOGGER.error("WARNING: MethodSelector priority was not an integer for " + cls);
-//        }
-//      }
-//    }
-//
-//    String objectFactory = (String) cmdLineArgs.get(TestNGCommandLineArgs.OBJECT_FACTORY_COMMAND_OPT);
-//    if(null != objectFactory) {
-//      setObjectFactory(ClassHelper.fileToClass(objectFactory));
-//    }
-//
-//    String runnerFactory = (String) cmdLineArgs.get(TestNGCommandLineArgs.TESTRUNNER_FACTORY_COMMAND_OPT);
-//    if (null != runnerFactory) {
-//      setTestRunnerFactoryClass(ClassHelper.fileToClass(runnerFactory));
-//    }
-//
-//    String reporterConfigs = (String) cmdLineArgs.get(TestNGCommandLineArgs.REPORTERS_LIST);
-//    if (reporterConfigs != null) {
-//      ReporterConfig reporterConfig = ReporterConfig.deserialize(reporterConfigs);
-//      addReporter(reporterConfig);
-////      if (arguments.get(REPORTERS_LIST) == null) {
-////        arguments.put(REPORTERS_LIST, Lists.newArrayList());
-////      }
-////      ((List<ReporterConfig>)arguments.get(REPORTERS_LIST)).add(reporterConfig);
-////      i++;
-////
-////      for (ReporterConfig reporterConfig : reporterConfigs) {
-////        addReporter(reporterConfig);
-////      }
-//    }
-//    
-//    String failurePolicy = (String)cmdLineArgs.get(TestNGCommandLineArgs.CONFIG_FAILURE_POLICY);
-//    if (failurePolicy != null) {
-//      setConfigFailurePolicy(failurePolicy);
-//    }
-//  }
+  public void configure(Map cmdLineArgs) {
+    CommandLineArgs result = new CommandLineArgs();
+
+    Integer verbose = (Integer) cmdLineArgs.get(CommandLineArgs.LOG);
+    if (null != verbose) {
+      result.verbose = verbose;
+    }
+    result.outputDirectory = (String) cmdLineArgs.get(CommandLineArgs.OUTPUT_DIRECTORY);
+
+    String testClasses = (String) cmdLineArgs.get(CommandLineArgs.TEST_CLASS);
+    if (null != testClasses) {
+      result.testClass = testClasses;
+    }
+
+    String testNames = (String) cmdLineArgs.get(CommandLineArgs.TEST_NAMES);
+    if (testNames != null) {
+      result.testNames = testNames;
+    }
+
+    List<String> testNgXml = (List<String>) cmdLineArgs.get(CommandLineArgs.SUITE_DEF);
+    if (null != testNgXml) {
+      setTestSuites(testNgXml);
+    }
+    
+    String useDefaultListeners = (String) cmdLineArgs.get(CommandLineArgs.USE_DEFAULT_LISTENERS);
+    if (null != useDefaultListeners) {
+      result.useDefaultListeners = useDefaultListeners;
+    }
+
+    result.groups = (String) cmdLineArgs.get(CommandLineArgs.GROUPS);
+    result.excludedGroups = (String) cmdLineArgs.get(CommandLineArgs.EXCLUDED_GROUPS);
+    result.testJar = (String) cmdLineArgs.get(CommandLineArgs.TEST_JAR);
+    result.junit = (Boolean) cmdLineArgs.get(CommandLineArgs.JUNIT);
+    result.master = (String) cmdLineArgs.get(CommandLineArgs.MASTER);
+    result.slave = (String) cmdLineArgs.get(CommandLineArgs.SLAVE);
+    result.skipFailedInvocationCounts = (Boolean) cmdLineArgs.get(
+        CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS);
+    String parallelMode = (String) cmdLineArgs.get(CommandLineArgs.PARALLEL);
+    if (parallelMode != null) {
+      result.parallelMode = parallelMode;
+    }
+    
+    // TODO: verify that Surefire is passing an Integer here
+    Integer threadCount = (Integer) cmdLineArgs.get(CommandLineArgs.THREAD_COUNT);
+    if (threadCount != null) {
+      result.threadCount = threadCount;
+    }
+    // TODO: verify that Surefire is passing an Integer here
+    Integer dptc = (Integer) cmdLineArgs.get(CommandLineArgs.DATA_PROVIDER_THREAD_COUNT);
+    if (dptc != null) {
+      result.dataProviderThreadCount = dptc;
+    }
+    String defaultSuiteName = (String) cmdLineArgs.get(CommandLineArgs.SUITE_NAME);
+    if (defaultSuiteName != null) {
+      result.suiteName = defaultSuiteName;
+    }
+
+    String defaultTestName = (String) cmdLineArgs.get(CommandLineArgs.TEST_NAME);
+    if (defaultTestName != null) {
+      result.testName = defaultTestName;
+    }
+
+    String strClass = (String) cmdLineArgs.get(CommandLineArgs.LISTENER);
+    if (null != strClass) {
+      result.listener = strClass;
+    }
+    
+    String ms = (String) cmdLineArgs.get(CommandLineArgs.METHOD_SELECTORS);
+    if (null != ms) {
+      result.methodSelectors = ms;
+    }
+
+    String objectFactory = (String) cmdLineArgs.get(CommandLineArgs.OBJECT_FACTORY);
+    if(null != objectFactory) {
+      result.objectFactory = objectFactory;
+    }
+
+    String runnerFactory = (String) cmdLineArgs.get(CommandLineArgs.TEST_RUNNER_FACTORY);
+    if (null != runnerFactory) {
+      result.testRunnerFactory = runnerFactory;
+    }
+
+    String reporterConfigs = (String) cmdLineArgs.get(CommandLineArgs.REPORTERS_LIST);
+    if (reporterConfigs != null) {
+      result.reportersList = reporterConfigs;
+    }
+    
+    String failurePolicy = (String)cmdLineArgs.get(CommandLineArgs.CONFIG_FAILURE_POLICY);
+    if (failurePolicy != null) {
+      result.configFailurePolicy = failurePolicy;
+    }
+  }
 
   private void setTestNames(List<String> testNames) {
     m_testNames = testNames;
@@ -1506,10 +1463,10 @@ public class TestNG {
 //  @SuppressWarnings({"unchecked"})
 //  protected static Map checkConditions(Map params) {
 //    // TODO CQ document why sometimes we throw exceptions and sometimes we exit. 
-//    String testClasses = (String) params.get(TestNGCommandLineArgs.TESTCLASS_COMMAND_OPT);
-//    List<String> testNgXml = (List<String>) params.get(TestNGCommandLineArgs.SUITE_DEF_OPT);
-//    Object testJar = params.get(TestNGCommandLineArgs.TESTJAR_COMMAND_OPT);
-//    Object slave = params.get(TestNGCommandLineArgs.SLAVE_OPT);
+//    String testClasses = (String) params.get(CommandLineArgs.TESTCLASS_COMMAND);
+//    List<String> testNgXml = (List<String>) params.get(CommandLineArgs.SUITE_DEF);
+//    Object testJar = params.get(CommandLineArgs.TESTJAR_COMMAND);
+//    Object slave = params.get(CommandLineArgs.SLAVE);
 //
 //    if (testClasses == null && testNgXml == null && slave == null && testJar == null) {
 //      System.err.println("You need to specify at least one testng.xml or one class");
@@ -1518,15 +1475,15 @@ public class TestNG {
 //    }
 //
 //    if (VersionInfo.IS_JDK14) {
-//      String srcPath = (String) params.get(TestNGCommandLineArgs.SRC_COMMAND_OPT);
+//      String srcPath = (String) params.get(CommandLineArgs.SRC_COMMAND);
 //
 //      if ((null == srcPath) || "".equals(srcPath)) {
 //        throw new TestNGException("No sourcedir was specified");
 //      }
 //    }
 //    
-//    String groups = (String) params.get(TestNGCommandLineArgs.GROUPS_COMMAND_OPT);
-//    String excludedGroups = (String) params.get(TestNGCommandLineArgs.EXCLUDED_GROUPS_COMMAND_OPT);
+//    String groups = (String) params.get(CommandLineArgs.GROUPS_COMMAND);
+//    String excludedGroups = (String) params.get(CommandLineArgs.EXCLUDED_GROUPS_COMMAND);
 //    
 //    if (testJar == null &&
 //        (null != groups || null != excludedGroups) && testClasses == null && testNgXml == null) {
@@ -1534,10 +1491,10 @@ public class TestNG {
 //    }
 //    
 //    // -slave & -master can't be set together
-//    if (params.containsKey(TestNGCommandLineArgs.SLAVE_OPT) && 
-//   		 params.containsKey(TestNGCommandLineArgs.MASTER_OPT)) {
-//   	 throw new TestNGException(TestNGCommandLineArgs.SLAVE_OPT + " can't be combined with " +
-//   	                           TestNGCommandLineArgs.MASTER_OPT);
+//    if (params.containsKey(CommandLineArgs.SLAVE) && 
+//   		 params.containsKey(CommandLineArgs.MASTER)) {
+//   	 throw new TestNGException(CommandLineArgs.SLAVE + " can't be combined with " +
+//   	                           CommandLineArgs.MASTER);
 //    }
 //    
 //    return params;

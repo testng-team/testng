@@ -93,8 +93,8 @@ public class CommandLineArgs {
   @Parameter(names = USE_DEFAULT_LISTENERS, description = "Whether to use the default listeners")
   public String useDefaultListeners = "true";
 
-  public static final String SKIL_FAILED_INVOCATION_COUNTS = "-skipfailedinvocationcounts";
-  @Parameter(names = SKIL_FAILED_INVOCATION_COUNTS, hidden = true)
+  public static final String SKIP_FAILED_INVOCATION_COUNTS = "-skipfailedinvocationcounts";
+  @Parameter(names = SKIP_FAILED_INVOCATION_COUNTS, hidden = true)
   public Boolean skipFailedInvocationCounts;
 
   public static final String TEST_CLASS = "-testclass";
