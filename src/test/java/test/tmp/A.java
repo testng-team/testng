@@ -1,12 +1,13 @@
 package test.tmp;
 
 import org.testng.Assert;
+import org.testng.ITest;
 import org.testng.Reporter;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 //@Test(sequential = true)
-public class A {
+public class A implements ITest {
   private int m_n;
 
   public A() {}
@@ -50,12 +51,12 @@ public class A {
 
   @Test
   public void atest1() {
-    try {
-      Thread.sleep(12*1000);
-    } catch (InterruptedException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+//    try {
+//      Thread.sleep(12*1000);
+//    } catch (InterruptedException e) {
+//      // TODO Auto-generated catch block
+//      e.printStackTrace();
+//    }
   }
 
 //  @Test(dependsOnMethods = "atest1")
@@ -67,6 +68,7 @@ public class A {
   public void atest3() {
   }
 
+  @Override
   public String getTestName() {
     return "This is test A";
   }
