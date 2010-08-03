@@ -49,9 +49,6 @@
 
   <target name="copy-resources" description="Copies resources.">
     <copy verbose="false"
-          file="${src.resources.dir}/testng-1.0.dtd"
-          todir="${build.dir}" />
-    <copy verbose="false"
           file="${src.dir}/testngtasks"
           todir="${build.dir}" />
     <copy todir="${build.dir}">

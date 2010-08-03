@@ -70,14 +70,9 @@ public class TestResult implements ITestResult {
     m_endMillis = end;
     m_method = method;
     
-    //
-    // Assign a name if the instance is an instanceof ITest
-    //
     m_instance = instance;
     if (m_instance == null) {
       m_name = m_method.getMethodName();
-    } else if (m_instance instanceof ITest) {
-      m_name = ((ITest) m_instance).getTestName();
     } else {
       String string = m_instance.toString();
       // Only display toString() if it's been overridden by the user
@@ -100,6 +95,17 @@ public class TestResult implements ITestResult {
 
   public void setEndMillis(long millis) {
     m_endMillis = millis;
+  }
+  
+  /**
+   * If this result's related instance implements ITest, returns its test name, 
+   * otherwise returns null.
+   */
+  public String getTestName() {
+    if (m_instance instanceof ITest) {
+      return ((ITest) m_instance).getTestName();
+    }
+    return null;
   }
 
   public String getName() {

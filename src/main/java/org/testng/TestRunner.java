@@ -369,7 +369,6 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
 
       // Create TestClass
       ITestClass tc = new TestClass(ic,
-                                   m_testName,
                                    testMethodFinder,
                                    m_annotationFinder,
                                    m_runInfo,

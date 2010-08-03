@@ -72,9 +72,6 @@ TESTNG.REPORT.DIR=${testng.report.dir}
 
   <target name="copy-resources" description="Copies resources.">
     <copy verbose="false"
-          file="${src.resources.dir}/testng.css"
-          todir="${test.build.dir}" />
-    <copy verbose="false"
           file="${src.dir}/testngtasks"
           todir="${build.dir}" />
     <copy todir="${build.dir}">

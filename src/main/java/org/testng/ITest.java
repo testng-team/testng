@@ -10,6 +10,10 @@ package org.testng;
  */
 public interface ITest {
   
+  /**
+   * The name of test instance(s).
+   * @return name associated with a particular instance of a test.
+   */
   public String getTestName();
 
 }
