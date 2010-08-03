@@ -92,12 +92,12 @@ public class PackageUtils {
   }
 
   private static String[] getTestClasspath() {
-    if(null != s_testClassPaths) {
+    if (null != s_testClassPaths) {
       return s_testClassPaths;
     }
     
-    String testClasspath= System.getProperty(CommandLineArgs.TEST_CLASSPATH);
-    if(null == testClasspath) {
+    String testClasspath = System.getProperty(CommandLineArgs.TEST_CLASSPATH);
+    if (null == testClasspath) {
       return null;
     }
     
