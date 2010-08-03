@@ -1,8 +1,8 @@
 package test.tmp;
 
-import org.testng.Assert;
 import org.testng.ITest;
 import org.testng.Reporter;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -27,20 +27,14 @@ public class A implements ITest {
     };
   }
 
-//  @BeforeClass
-//  public void bc() {
-//    log("beforeClass");
-//  }
-//
-//  @AfterClass
-//  public void ac() {
-//    log("afterClass");
-//  }
+  @BeforeClass
+  public void beforeClass() {
+    throw new RuntimeException();
+  }
 
   @Test
   public void testSomething()
   {
-      Assert.fail("This test failed.");
   }
 
   @Test(dependsOnMethods={"testSomething"})
@@ -77,9 +71,11 @@ public class A implements ITest {
 //  public void f() {
 //  }
 //
-//
-//  @AfterMethod
-//  public void after() {
+//  @AfterClass
+//  public void ac() {
+//    log("afterClass");
 //  }
+
+
 
 }

@@ -22,8 +22,10 @@ import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.Utils;
 import org.testng.internal.version.VersionInfo;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -414,17 +416,6 @@ public class TestNGAntTask extends Task {
   }
 
   /**
-   * @param target 
-   * @deprecated use setAnnotations
-   */
-  @Deprecated
-  public void setTarget(String target) {
-    m_target= target;
-    log("The usage of " + TestNGCommandLineArgs.TARGET_COMMAND_OPT + " option is deprecated. Please use " 
-        + TestNGCommandLineArgs.ANNOTATIONS_COMMAND_OPT + " instead", Project.MSG_WARN);
-  }
-
-  /**
    * Sets the test output directory
    * @param dir the name of directory
    */
@@ -498,7 +489,7 @@ public class TestNGAntTask extends Task {
   public void execute() throws BuildException {
     validateOptions();
 
-    CommandlineJava cmd= getJavaCommand();
+    CommandlineJava cmd = getJavaCommand();
 
     cmd.setClassname(m_mainClass);
 
@@ -889,7 +880,7 @@ public class TestNGAntTask extends Task {
    */
   protected CommandlineJava getJavaCommand() {
     if(null == m_javaCommand) {
-      m_javaCommand= new CommandlineJava();
+      m_javaCommand = new CommandlineJava();
     }
 
     return m_javaCommand;
@@ -1100,9 +1091,21 @@ public class TestNGAntTask extends Task {
 
   private void dumpCommand(String fileName) {
     ppp("TESTNG PASSED @" + fileName + " WHICH CONTAINS:");
-    List<String> lines= TestNGCommandLineArgs.readFile(fileName);
-    for(String line : lines) {
-      ppp(line);
+    readAndPrintFile(fileName);
+  }
+
+  private void readAndPrintFile(String fileName) {
+    File file = new File(fileName);
+    try {
+      BufferedReader br = new BufferedReader(new FileReader(file));
+      String line = br.readLine();
+      while (line != null) {
+        System.out.println("  " + line);
+        line = br.readLine();
+      }
+    }
+    catch(IOException ex) {
+      ex.printStackTrace();
     }
   }
 

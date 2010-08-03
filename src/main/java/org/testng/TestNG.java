@@ -2,7 +2,6 @@ package org.testng;
 
 
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterDescription;
 import com.beust.jcommander.ParameterException;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -714,7 +713,7 @@ public class TestNG {
   }
 
   public void addListener(IInvokedMethodListener listener) {
-    m_invokedMethodListeners.add((IInvokedMethodListener) listener);
+    m_invokedMethodListeners.add(listener);
   }
 
   public void addListener(ISuiteListener listener) {
@@ -1193,7 +1192,7 @@ public class TestNG {
   /**
    * Configure the TestNG instance based on the command line parameters.
    */
-  private void configure(CommandLineArgs cla) {
+  protected void configure(CommandLineArgs cla) {
     if (cla.verbose != null) setVerbose(cla.verbose);
     setOutputDirectory(cla.outputDirectory);
 
@@ -1702,32 +1701,39 @@ public class TestNG {
       m_mainRunner = runner;
     }
     
+    @Override
     public void onTestFailure(ITestResult result) {
       setHasRunTests();
       m_mainRunner.setStatus(HAS_FAILURE);
     }
 
+    @Override
     public void onTestSkipped(ITestResult result) {
       setHasRunTests();
       m_mainRunner.setStatus(HAS_SKIPPED);
     }
 
+    @Override
     public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
       setHasRunTests();
       m_mainRunner.setStatus(HAS_FSP);
     }
 
+    @Override
     public void onTestSuccess(ITestResult result) {
       setHasRunTests();
     }
 
+    @Override
     public void onStart(ITestContext context) {
       setHasRunTests();
     }
 
+    @Override
     public void onFinish(ITestContext context) {
     }
 
+    @Override
     public void onTestStart(ITestResult result) {
       setHasRunTests();
     }
@@ -1739,6 +1745,7 @@ public class TestNG {
     /**
      * @see org.testng.internal.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
      */
+    @Override
     public void onConfigurationFailure(ITestResult itr) {
       m_mainRunner.setStatus(HAS_FAILURE);
     }
@@ -1746,6 +1753,7 @@ public class TestNG {
     /**
      * @see org.testng.internal.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
      */
+    @Override
     public void onConfigurationSkip(ITestResult itr) {
       m_mainRunner.setStatus(HAS_SKIPPED);
     }
@@ -1753,6 +1761,7 @@ public class TestNG {
     /**
      * @see org.testng.internal.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
      */
+    @Override
     public void onConfigurationSuccess(ITestResult itr) {
     }
   }
