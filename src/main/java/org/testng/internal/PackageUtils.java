@@ -1,6 +1,6 @@
 package org.testng.internal;
 
-import org.testng.CommandLineArgs;
+import org.testng.TestNG;
 import org.testng.collections.Lists;
 
 import java.io.File;
@@ -96,7 +96,7 @@ public class PackageUtils {
       return s_testClassPaths;
     }
     
-    String testClasspath = System.getProperty(CommandLineArgs.TEST_CLASSPATH);
+    String testClasspath = System.getProperty(TestNG.TEST_CLASSPATH);
     if (null == testClasspath) {
       return null;
     }

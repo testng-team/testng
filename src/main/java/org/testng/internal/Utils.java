@@ -1,7 +1,7 @@
 package org.testng.internal;
 
 import org.testng.ITestNGMethod;
-import org.testng.TestNGCommandLineArgs;
+import org.testng.TestNG;
 import org.testng.TestRunner;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.ITestAnnotation;
@@ -30,7 +30,6 @@ import java.util.StringTokenizer;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 /**
  * Helper methods to parse annotations.
@@ -273,7 +272,7 @@ public final class Utils {
       }
     }
 
-    return (String[]) vResult.toArray(new String[vResult.size()]);
+    return vResult.toArray(new String[vResult.size()]);
   }
 
   /**
@@ -303,7 +302,7 @@ public final class Utils {
       }
     }
 
-    return (String[]) vResult.toArray(new String[vResult.size()]);
+    return vResult.toArray(new String[vResult.size()]);
   }
 
   /**
@@ -496,8 +495,7 @@ public final class Utils {
     String fullStackTrace = sw.getBuffer().toString();
     String shortStackTrace;
     
-    if (Boolean.getBoolean(TestNGCommandLineArgs.SHOW_TESTNG_STACK_FRAMES)
-        || TestRunner.getVerbose() == -1) {
+    if (Boolean.getBoolean(TestNG.SHOW_TESTNG_STACK_FRAMES) || TestRunner.getVerbose() == -1) {
       shortStackTrace = fullStackTrace;
     }
     else {
@@ -514,27 +512,27 @@ public final class Utils {
     };
   }
 
-  private static String replaceAmpersand(String str, Pattern pattern) {
-    int start = 0;
-    int idx = str.indexOf('&', start);
-    if(idx == -1) return str;
-    StringBuffer result= new StringBuffer();
-    while(idx != -1) {
-      result.append(str.substring(start, idx));
-      if(pattern.matcher(str.substring(idx)).matches()) {
-        // do nothing it is an entity;
-        result.append("&");
-      }
-      else {
-        result.append("&amp;");
-      }
-      start= idx + 1;
-      idx= str.indexOf('&', start);
-    }
-    result.append(str.substring(start));
-
-    return result.toString();
-  }
+//  private static String replaceAmpersand(String str, Pattern pattern) {
+//    int start = 0;
+//    int idx = str.indexOf('&', start);
+//    if(idx == -1) return str;
+//    StringBuffer result= new StringBuffer();
+//    while(idx != -1) {
+//      result.append(str.substring(start, idx));
+//      if(pattern.matcher(str.substring(idx)).matches()) {
+//        // do nothing it is an entity;
+//        result.append("&");
+//      }
+//      else {
+//        result.append("&amp;");
+//      }
+//      start= idx + 1;
+//      idx= str.indexOf('&', start);
+//    }
+//    result.append(str.substring(start));
+//
+//    return result.toString();
+//  }
   
   private static final Map<Character, String> ESCAPES = new HashMap<Character, String>() {{
     put('<', "&lt;");

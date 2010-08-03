@@ -2,10 +2,9 @@ package test.ant;
 
 import static org.testng.AssertJUnit.assertEquals;
 
-import java.io.File;
-
-import org.testng.TestNGCommandLineArgs;
 import org.testng.annotations.Test;
+
+import java.io.File;
 
 
 /**

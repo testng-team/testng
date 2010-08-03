@@ -109,9 +109,9 @@ public class CommandLineArgs {
   @Parameter(names = TEST_JAR, description = "A jar file containing the tests")
   public String testJar;
 
-  public static final String TEST_RUN_FACTORY = "-testRunFactory";
-  @Parameter(names = TEST_RUN_FACTORY, description = "The factory used to create tests")
-  public String testRunFactory;
+  public static final String TEST_RUNNER_FACTORY = "-testRunFactory";
+  @Parameter(names = TEST_RUNNER_FACTORY, description = "The factory used to create tests")
+  public String testRunnerFactory;
 
   public static final String PORT = "-port";
   @Parameter(names = PORT, description = "The port")
