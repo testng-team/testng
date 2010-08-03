@@ -1317,10 +1317,10 @@ public class TestNG {
       result.testNames = testNames;
     }
 
-    List<String> testNgXml = (List<String>) cmdLineArgs.get(CommandLineArgs.SUITE_DEF);
-    if (null != testNgXml) {
-      setTestSuites(testNgXml);
-    }
+//    List<String> testNgXml = (List<String>) cmdLineArgs.get(CommandLineArgs.SUITE_DEF);
+//    if (null != testNgXml) {
+//      setTestSuites(testNgXml);
+//    }
     
     String useDefaultListeners = (String) cmdLineArgs.get(CommandLineArgs.USE_DEFAULT_LISTENERS);
     if (null != useDefaultListeners) {
