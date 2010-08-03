@@ -1156,23 +1156,22 @@ public class TestNG {
       result.addListener(listener);
     }
 
-    if (false) {
-      // Old style parsing
-      Map arguments = checkConditions(TestNGCommandLineArgs.parseCommandLine(argv));
-      result.configure(arguments);
-    } else {
-      // New style parsing
-      try {
-        CommandLineArgs cla = new CommandLineArgs();
-        m_jCommander = new JCommander(cla);
-        m_jCommander.parse(argv);
-        validateCommandLineParameters(cla);
-        result.configure(cla);
-      }
-      catch(ParameterException ex) {
-        exitWithError(ex.getMessage());
-      }
+    //
+    // Parse the arguments
+    //
+    try {
+      CommandLineArgs cla = new CommandLineArgs();
+      m_jCommander = new JCommander(cla, argv);
+      validateCommandLineParameters(cla);
+      result.configure(cla);
     }
+    catch(ParameterException ex) {
+      exitWithError(ex.getMessage());
+    }
+
+    //
+    // Run
+    //
     try {
       result.run();
     }
