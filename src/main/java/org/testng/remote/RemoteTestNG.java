@@ -52,6 +52,7 @@ public class RemoteTestNG extends TestNG {
   public void configure(CommandLineArgs args) {
     super.configure(args);
     setConnectionParameters(args.host, args.port);
+    System.out.println("Setting connection parameters:" + m_host + ":" + m_port);
   }
 
   @Override
@@ -125,15 +126,10 @@ public class RemoteTestNG extends TestNG {
     CommandLineArgs cla = new CommandLineArgs();
     new JCommander(cla, args);
     validateCommandLineParameters(cla);
-    RemoteTestNG testNG= new RemoteTestNG();
+    RemoteTestNG testNG = new RemoteTestNG();
     testNG.configure(cla);
+    testNG.initializeSuitesAndJarFile();
     testNG.run();
-//    Map commandLineArgs= TestNGCommandLineArgs.parseCommandLine(args);
-//
-//    RemoteTestNG testNG= new RemoteTestNG();
-//    testNG.configure(commandLineArgs);
-//    testNG.initializeSuitesAndJarFile();
-//    testNG.run();
   }
 
   /** A ISuiteListener wiring the results using the internal string-based protocol. */
