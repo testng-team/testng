@@ -507,6 +507,7 @@ public class TestNGAntTask extends Task {
     }
 
     if(m_classFilesets.size() > 0) {
+      argv.add(CommandLineArgs.TEST_CLASS);
       StringBuffer testClasses = new StringBuffer();
       for (String file : fileset(m_classFilesets)) {
         testClasses.append(file);
