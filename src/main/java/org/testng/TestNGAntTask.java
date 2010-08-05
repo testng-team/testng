@@ -1,20 +1,6 @@
 package org.testng;
 
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.StringTokenizer;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
@@ -35,6 +21,20 @@ import org.testng.collections.Lists;
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.Utils;
 import org.testng.internal.version.VersionInfo;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
 /**
  * TestNG settings:
@@ -469,6 +469,7 @@ public class TestNGAntTask extends Task {
   /**
    * @deprecated Use "listeners"
    */
+  @Deprecated
   public void setListener(String listener) {
     m_listeners.add(listener);
   }
@@ -580,9 +581,13 @@ public class TestNGAntTask extends Task {
 
     if(m_classFilesets.size() > 0) {
       argv.add(TestNGCommandLineArgs.TESTCLASS_COMMAND_OPT);
+      StringBuffer testClasses= new StringBuffer();
       for(String file : fileset(m_classFilesets)) {
-        argv.add(file);
+        testClasses.append(file);
+        testClasses.append(',');
       }
+      testClasses.setLength(testClasses.length() - 1);
+      argv.add(testClasses.toString());
     }
 
     if(m_listeners != null && m_listeners.size() > 0) {
