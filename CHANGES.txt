@@ -1,4 +1,12 @@
-Current:
+Current
+
+Fixed: The ant task was no longer supporting ',' for testclass
+
+===========================================================================
+
+
+5.13.1
+2010/08/05
 
 Added: -methods
 Added: -configfailurepolicy (Todd Quessenberry)
