@@ -507,9 +507,8 @@ public class TestNGAntTask extends Task {
     }
 
     if(m_classFilesets.size() > 0) {
-      argv.add(TestNGCommandLineArgs.TESTCLASS_COMMAND_OPT);
-      StringBuffer testClasses= new StringBuffer();
-      for(String file : fileset(m_classFilesets)) {
+      StringBuffer testClasses = new StringBuffer();
+      for (String file : fileset(m_classFilesets)) {
         testClasses.append(file);
         testClasses.append(',');
       }
