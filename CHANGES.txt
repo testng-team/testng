@@ -1,5 +1,6 @@
 Current
 
+Fixed: RetryAnalyzer wasn't working properly with factories
 Fixed: The ant task was no longer supporting ',' for testclass
 
 ===========================================================================

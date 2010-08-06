@@ -28,6 +28,7 @@ public abstract class RetryAnalyzerCount implements IRetryAnalyzer {
    * Retries the test if count is not 0. 
    * @param result The result of the test.
    */
+  @Override
   public boolean retry(ITestResult result) {
     boolean retry = false;
 

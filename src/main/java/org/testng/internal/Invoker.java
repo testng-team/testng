@@ -1389,14 +1389,14 @@ public class Invoker implements IInvoker {
       if (testResult.getStatus() == ITestResult.FAILURE) {
         IRetryAnalyzer retryAnalyzer = testMethod.getRetryAnalyzer();
 
-        if (retryAnalyzer != null) {
+        if (retryAnalyzer != null && failedInstances != null) {
           retry = retryAnalyzer.retry(testResult);
         }
 
         if (retry) {
           resultsToRetry.add(testResult);
           if (failedInstances != null) {
-            failedInstances.add(testResult.getMethod().getInstances()[i]);
+            failedInstances.add(testResult.getInstance());
           }
         }
       } 
