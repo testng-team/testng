@@ -2,11 +2,14 @@ package test.tmp;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 import test.SimpleBaseTest;
+import test.listeners.ResultListener;
 
 //@Test(sequential = true)
+@Listeners(ResultListener.class)
 public class A extends SimpleBaseTest {
   private int m_n;
 

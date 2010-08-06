@@ -689,10 +689,6 @@ public class Invoker implements IInvoker {
         tm.addFailedInvocationNumber(parametersIndex);
       }
 
-      if (testResult.getStatus() == ITestResult.SUCCESS) {
-        runTestListeners(testResult);
-      }
-
       //
       // Increment the invocation count for this method
       //
@@ -701,6 +697,11 @@ public class Invoker implements IInvoker {
       if (testResult != null) {
         testResult.setEndMillis(System.currentTimeMillis());
       }
+
+      if (testResult.getStatus() == ITestResult.SUCCESS) {
+        runTestListeners(testResult);
+      }
+
       //
       // Invoke afterMethods only if
       // - lastTimeOnly is not set

@@ -100,6 +100,7 @@
       <class name="test.issue78.NonPublicClassTest"/>
       <class name="test.listeners.ListenerTest"/>
       <class name="test.preserveorder.PreserveOrderTest" />
+      <class name="test.listeners.ResultEndMillisTest" />
     </classes>
   </test>
   
