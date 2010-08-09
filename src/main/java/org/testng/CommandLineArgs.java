@@ -118,15 +118,15 @@ public class CommandLineArgs {
   public Integer port;
 
   public static final String HOST = "-host";
-  @Parameter(names = HOST, description = "The host")
+  @Parameter(names = HOST, description = "The host", hidden = true)
   public String host;
 
   public static final String MASTER = "-master";
-  @Parameter(names = MASTER, description = "Host where the master is")
+  @Parameter(names = MASTER, description = "Host where the master is", hidden = true)
   public String master;
 
   public static final String SLAVE = "-slave";
-  @Parameter(names = SLAVE, description = "Host where the slave is")
+  @Parameter(names = SLAVE, description = "Host where the slave is", hidden = true)
   public String slave;
 
   public static final String METHODS = "-methods";

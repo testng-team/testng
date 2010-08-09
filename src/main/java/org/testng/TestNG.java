@@ -49,7 +49,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -903,26 +902,7 @@ public class TestNG {
   }
 
   private static void usage() {
-    Set<String> hidden = new HashSet<String>() {{
-      add("-host");
-      add("-master");
-      add("-slave");
-      add("-port");
-    }};
-    if (m_jCommander != null) {
-      m_jCommander.usage();
-//      System.out.println("Usage: java " + TestNG.class.getName() + " [options] <XML suite files>");
-//      System.out.println("    Options:");
-//      for (ParameterDescription p : m_jCommander.getParameters()) {
-//        if (! hidden.contains(p.getParameter().names()[0])) {
-//          StringBuilder sb = new StringBuilder();
-//          for (String n : p.getParameter().names()) {
-//            sb.append(n).append(" ");
-//          }
-//          System.out.println("\t" + sb.toString() + "\n\t\t" + p.getDescription());
-//        }
-//      }
-    }
+    m_jCommander.usage();
   }
 
   private void generateReports(List<ISuite> suiteRunners) {
