@@ -5,16 +5,29 @@ suite:
   thread-count: 4
   data-provider-thread-count: 3
 
+  listeners:
+    - name: test.invokedmethodlistener.MyListener
+
+  method-selectors:
+    - selector-class: org.testng.internal.XmlMethodSelector
+      priority: 1
+    - script: groups.containsKey("test1")
+      language: beanshell
+
+  packages:
+    - name: test.testng355.org.apache.tapestry5
+    - name: test.testng355.org.apache.tapestry5.dom
+
   parameters:
     - name: n
       value: 42
     - name: p
       value: 10
 
-  listeners:
-    - name: test.invokedmethodlistener.MyListener
-
   tests:
-    name: Test1
-    classes:
-      - name: test.tmp.A
+    - name: Test1
+      classes:
+        - name: test.tmp.A
+    - name: Test2
+      classes:
+        - name: test.tmp.B
