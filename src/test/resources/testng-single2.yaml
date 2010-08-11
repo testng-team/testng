@@ -22,9 +22,3 @@
     - name: Test2
       xmlClasses:
         - test.tmp.B
-        
-  methodSelectors:
-    - className: org.testng.internal.XmlMethodSelector
-      priority: 1
-    - expression: groups.containsKey("test1")
-      language: beanshell
