@@ -7,7 +7,6 @@ import org.testng.internal.ClassHelper;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -24,6 +23,10 @@ public class XmlClass implements Serializable, Cloneable {
   private Boolean      m_declaredClass = null;
   /** The index of this class in the <test> tag */
   private int m_index;
+
+  public XmlClass() {
+    init("", null, Boolean.TRUE, 0);
+  }
 
   public XmlClass(String name) {
     init(name, null, Boolean.TRUE, 0);

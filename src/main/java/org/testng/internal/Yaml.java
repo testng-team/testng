@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import org.testng.IObjectFactory;
 import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -47,16 +48,22 @@ public class Yaml {
 
   public static XmlSuite parse(String filePath) throws FileNotFoundException {
     Constructor constructor = new Constructor(XmlSuite.class);
-    TypeDescription suiteDescription = new TypeDescription(XmlSuite.class);
-    suiteDescription.putListPropertyType("packages", XmlPackage.class);
-    suiteDescription.putListPropertyType("listeners", String.class);
-    suiteDescription.putListPropertyType("tests", XmlTest.class);
-    suiteDescription.putListPropertyType("method-selectors", XmlMethodSelector.class);
-    constructor.addTypeDescription(suiteDescription);
+    {
+      TypeDescription suiteDescription = new TypeDescription(XmlSuite.class);
+      suiteDescription.putListPropertyType("packages", XmlPackage.class);
+      suiteDescription.putListPropertyType("listeners", String.class);
+      suiteDescription.putListPropertyType("tests", XmlTest.class);
+      suiteDescription.putListPropertyType("method-selectors", XmlMethodSelector.class);
+      constructor.addTypeDescription(suiteDescription);
+    }
 
-    TypeDescription testDescription = new TypeDescription(XmlTest.class);
-    suiteDescription.putListPropertyType("xmlClasses", XmlClass.class);
-    constructor.addTypeDescription(testDescription);
+    {
+      TypeDescription testDescription = new TypeDescription(XmlTest.class);
+      testDescription.putListPropertyType("classes", XmlClass.class);
+      testDescription.putMapPropertyType("metaGroups", String.class, List.class);
+      constructor.addTypeDescription(testDescription);
+    }
+
     Loader loader = new Loader(constructor);
 
     org.yaml.snakeyaml.Yaml y = new org.yaml.snakeyaml.Yaml(loader);
@@ -146,8 +153,7 @@ public class Yaml {
       {
         List<Map<String, String>> packages = (List<Map<String, String>>) suite.get("packages");
         for (Map<String, String> p : packages) {
-          XmlPackage xp = new XmlPackage();
-          xp.setName(p.get("name"));
+          XmlPackage xp = new XmlPackage(p.get("name"));
           result.getXmlPackages().add(xp);
         }
       }
@@ -211,4 +217,133 @@ public class Yaml {
       return result;
     }
 
+  private static void maybeAdd(StringBuilder sb, String key, Object value) {
+    maybeAdd(sb, "", key, value);
+  }
+
+  private static void maybeAdd(StringBuilder sb, String sp, String key, Object value) {
+    if (value != null) sb.append(sp).append(key).append(": ").append(value.toString());
+  }
+
+  public static StringBuilder toYaml(XmlSuite suite) {
+    StringBuilder result = new StringBuilder();
+
+    maybeAdd(result, "name", suite.getName());
+    maybeAdd(result, "junit", suite.isJUnit());
+    maybeAdd(result, "verbose", suite.getVerbose());
+    maybeAdd(result, "threadCount", suite.getThreadCount());
+    maybeAdd(result, "timeOut", suite.getTimeOut());
+    maybeAdd(result, "skipFailedInvocationCounts", suite.skipFailedInvocationCounts());
+
+    toYaml(result, "parameters", suite.getParameters());
+    toYaml(result, suite.getPackages());
+    toYaml(result, "listeners", suite.getListeners());
+    if (suite.getTests().size() > 0) {
+      result.append("  tests:\n");
+      for (XmlTest t : suite.getTests()) {
+        toYaml(result, "    ", t);
+      }
+    }
+//    (test|method-selectors|suite-files)* >
+    return result;
+  }
+
+  private static void toYaml(StringBuilder result, String sp, XmlTest t) {
+    String sp2 = sp + "  ";
+    result.append(sp).append("- name:").append(t.getName()).append("\n");
+    maybeAdd(result, sp2, "junit", t.isJUnit());
+    maybeAdd(result, sp2, "verbose", t.getVerbose());
+    maybeAdd(result, sp2, "parallel", t.getParallel());
+    maybeAdd(result, sp2, "timeOut", t.getTimeOut());
+    maybeAdd(result, sp2, "skipFailedInvocationCounts", t.skipFailedInvocationCounts());
+    maybeAdd(result, sp2, "preserveOrder", t.getPreserveOrder());
+
+    if (t.getXmlClasses().size() > 0) {
+      result.append(sp2).append("  classes:\n");
+      for (XmlClass xc : t.getXmlClasses())  {
+        toYaml(result, sp2 + "  ", xc);
+      }
+    }
+
+    if (t.getXmlPackages().size() > 0) {
+      result.append(sp2).append("  xmlPackages:\n");
+      for (XmlPackage xp : t.getXmlPackages())  {
+        toYaml(result, sp2 + "  ", xp);
+      }
+    }
+
+    if (t.getMetaGroups().size() > 0) {
+      for (String group : t.getMetaGroups().keySet()) {
+        result.append(sp2).append("  groups:");
+      }
+      for (XmlPackage xp : t.getXmlPackages())  {
+        toYaml(result, sp2 + "  ", xp);
+      }
+    }
+
+    //    <!ELEMENT test (method-selectors?,parameter*,groups?,) >
+
+  }
+
+  private static void toYaml(StringBuilder result, String sp2, XmlClass xc) {
+    result.append(sp2).append("- ").append(xc.getName());
+    if (xc.getIncludedMethods().size() > 0) {
+      result.append(sp2 + "  includedMethods:\n");
+      for (XmlInclude xi : xc.getIncludedMethods()) {
+        toYaml(result, sp2 + "    ", xi);
+      }
+    }
+
+    if (xc.getExcludedMethods().size() > 0) {
+      result.append(sp2 + "  includedMethods:\n");
+      toYaml(result, sp2+ "    ", xc.getExcludedMethods());
+    }
+  }
+
+  private static void toYaml(StringBuilder result, String sp2, XmlInclude xi) {
+    result.append(sp2 + "- " + xi.getName());
+  }
+
+  private static void toYaml(StringBuilder result, String key, List<String> listeners) {
+    if (listeners.size() > 0) {
+      result.append("  ").append(key).append(":\n");
+      for (String l : listeners) {
+        result.append("    - ").append(l);
+      }
+    }
+  }
+
+  private static final String SP = "  ";
+
+  private static void toYaml(StringBuilder sb, List<XmlPackage> packages) {
+    sb.append("packages:\n");
+    for (XmlPackage p : packages) {
+      toYaml(sb, "  ", p);
+    }
+  }
+
+  private static void toYaml(StringBuilder sb, String sp, XmlPackage p) {
+    sb.append(sp).append("name: ").append(p.getName());
+
+    generateIncludeExclude(sb, sp, "includes", p.getInclude());
+    generateIncludeExclude(sb, sp, "excludes", p.getExclude());
+
+  }
+
+  private static void generateIncludeExclude(StringBuilder sb, String sp,
+      String key, List<String> includes) {
+    if (includes.size() > 0) {
+      sb.append(sp).append("  ").append(key).append("\n");
+      for (String inc : includes) {
+        sb.append(sp).append("    ").append(inc);
+      }
+    }
+  }
+
+  private static void toYaml(StringBuilder sb, String key, Map<String, String> parameters) {
+    sb.append(key).append("\n");
+    for (Map.Entry<String, String> p : parameters.entrySet()) {
+      sb.append(SP).append(p.getKey()).append(": ").append(p.getValue());
+    }
+  }
 }

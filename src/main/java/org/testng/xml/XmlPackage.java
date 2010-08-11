@@ -7,7 +7,6 @@ import org.testng.reporters.XMLStringBuffer;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -22,7 +21,15 @@ public class XmlPackage implements Serializable {
   private List<String> m_include = Lists.newArrayList();
   private List<String> m_exclude = Lists.newArrayList();
   private List<XmlClass> m_xmlClasses= null;
-  
+
+  public XmlPackage() {
+  }
+
+  // For YAML
+  public XmlPackage(String name) {
+    m_name = name;
+  }
+
   /**
    * @return the exclude
    */

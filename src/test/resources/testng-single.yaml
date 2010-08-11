@@ -6,6 +6,8 @@
 
   packages:
     - name: test.testng355.org.apache.tapestry5
+      include: [Foo, Foo2]
+      exclude: [Bar]
     - name: test.testng355.org.apache.tapestry5.dom
 
   listeners:
@@ -14,15 +16,21 @@
   parameters: { n: 42, p: 10 }
 
   tests:
+    - name: Test3
+      metaGroups: { a: [ b, d ] } 
+      packages: [ com.example1, com.example2 ]
+        
     - name: Test1
-      xmlClasses:
-        - test.tmp.A
+      classes:
+        - name: test.tmp.A
+          includedMethods: [test1, test2]
+          excludedMethods: [test3]
         - test.tmp.B
 
     - name: Test2
-      xmlClasses:
+      classes:
         - test.tmp.B
-        
+
   methodSelectors:
     - className: org.testng.internal.XmlMethodSelector
       priority: 1
