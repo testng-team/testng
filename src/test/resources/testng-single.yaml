@@ -1,0 +1,20 @@
+suite:
+  name: SingleSuite
+  verbose: 2
+  parallel: false
+  thread-count: 4
+  data-provider-thread-count: 3
+
+  parameters:
+    - name: n
+      value: 42
+    - name: p
+      value: 10
+
+  listeners:
+    - name: test.invokedmethodlistener.MyListener
+
+  tests:
+    name: Test1
+    classes:
+      - name: test.tmp.A
