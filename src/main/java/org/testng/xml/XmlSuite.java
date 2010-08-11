@@ -465,7 +465,7 @@ public class XmlSuite implements Serializable, Cloneable {
       xsb.push("packages");
 
       for (XmlPackage pack : getXmlPackages()) {
-        xsb.getStringBuffer().append(pack.toXml("  "));
+        xsb.getStringBuffer().append(pack.toXml("    "));
       }
 
       xsb.pop("packages");
