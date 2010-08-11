@@ -336,7 +336,17 @@ public class TestNG {
   public void setTestJar(String jarPath) {
     m_jarPath = jarPath;
   }
-  
+
+  private Collection<XmlSuite> parseXmlFile(String filePath)
+      throws FileNotFoundException, ParserConfigurationException, SAXException, IOException {
+    return new Parser(filePath).parse();
+  }
+
+  private Collection<XmlSuite> parseYamlFile(String suitePath)
+      throws FileNotFoundException {
+    return Arrays.asList(org.testng.internal.Yaml.parse(suitePath));
+  }
+
   public void initializeSuitesAndJarFile() {
     // The Eclipse plug-in (RemoteTestNG) might have invoked this method already
     // so don't initialize suites twice.
@@ -345,12 +355,22 @@ public class TestNG {
     //
     // Parse the suites that were passed on the command line
     //
-    for (String suiteXmlPath : m_stringSuites) {
+    for (String suitePath : m_stringSuites) {
       if(LOGGER.isDebugEnabled()) {
-        LOGGER.debug("suiteXmlPath: \"" + suiteXmlPath + "\"");
+        LOGGER.debug("suiteXmlPath: \"" + suitePath + "\"");
       }
       try {
-        Collection<XmlSuite> allSuites = new Parser(suiteXmlPath).parse();
+        Collection<XmlSuite> allSuites;
+        if (suitePath.endsWith("xml")) {
+          allSuites = parseXmlFile(suitePath);
+        }
+        else if (suitePath.endsWith("yaml")) {
+          allSuites = parseYamlFile(suitePath);
+        }
+        else {
+          throw new TestNGException("Unknown file type:" + suitePath);
+        }
+
         for (XmlSuite s : allSuites) {
           // If test names were specified, only run these test names
           if (m_testNames != null) {
@@ -1115,6 +1135,7 @@ public class TestNG {
    * The TestNG entry point for command line execution. 
    *
    * @param argv the TestNG command line parameters.
+   * @throws FileNotFoundException 
    */
   public static void main(String[] argv) {
     TestNG testng = privateMain(argv, null);
