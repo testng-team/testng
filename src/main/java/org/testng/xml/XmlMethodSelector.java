@@ -1,9 +1,9 @@
 package org.testng.xml;
 
-import java.util.Properties;
-
 import org.testng.TestNGException;
 import org.testng.reporters.XMLStringBuffer;
+
+import java.util.Properties;
 
 /**
  * This class describes the tag <method-selector>  in testng.xml.
@@ -24,7 +24,12 @@ public class XmlMethodSelector {
   public String getClassName() {
     return m_className;
   }
-  
+
+  // For YAML
+  public void setClassName(String name) {
+    setName(name);
+  }
+
   public void setName(String name) {
     m_className = name;
   }

@@ -20,7 +20,7 @@ import java.util.Properties;
 public class XmlTest implements Serializable, Cloneable {
   public static int DEFAULT_TIMEOUT_MS = Integer.MAX_VALUE;
 
-  private final XmlSuite m_suite;
+  private XmlSuite m_suite;
   private String m_name = TestNG.DEFAULT_COMMAND_LINE_SUITE_NAME;
   private Integer m_verbose;
   private Boolean m_isJUnit;
@@ -60,6 +60,10 @@ public class XmlTest implements Serializable, Cloneable {
     m_suite.getTests().add(this);
   }
 
+  // For YAML
+  public XmlTest() {
+  }
+
   public void setXmlPackages(List<XmlPackage> packages) {
     m_xmlPackages = packages;
   }
@@ -67,7 +71,7 @@ public class XmlTest implements Serializable, Cloneable {
   public List<XmlPackage> getXmlPackages() {
     return m_xmlPackages;
   }
-  
+
   public List<XmlMethodSelector> getMethodSelectors() {
     return m_methodSelectors;
   }
@@ -548,5 +552,9 @@ public class XmlTest implements Serializable, Cloneable {
 
   public String getPreserveOrder() {
     return m_preserveOrder;
+  }
+
+  public void setSuite(XmlSuite result) {
+    m_suite = result;
   }
 }

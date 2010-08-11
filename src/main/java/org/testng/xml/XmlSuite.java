@@ -216,6 +216,11 @@ public class XmlSuite implements Serializable, Cloneable {
     return m_tests;
   }
 
+  // For YAML
+  public void setTests(List<XmlTest> tests) {
+    m_tests = tests;
+  }
+
   /**
    * Returns the method selectors.
    *
@@ -408,6 +413,17 @@ public class XmlSuite implements Serializable, Cloneable {
    */
   public List<XmlPackage> getXmlPackages() {
     return m_xmlPackages;
+  }
+
+
+  // For YAML
+  public List<XmlPackage> getPackages() {
+    return getXmlPackages();
+  }
+
+  // For YAML
+  public void setPackages(List<XmlPackage> packages) {
+    setXmlPackages(packages);
   }
 
   /**

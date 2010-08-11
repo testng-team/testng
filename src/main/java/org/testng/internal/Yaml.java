@@ -5,6 +5,9 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+import org.yaml.snakeyaml.Loader;
+import org.yaml.snakeyaml.TypeDescription;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,10 +46,32 @@ public class Yaml {
   }
 
   public static XmlSuite parse(String filePath) throws FileNotFoundException {
-    org.yaml.snakeyaml.Yaml y = new org.yaml.snakeyaml.Yaml();
-    Map o = (Map) y.load(new FileInputStream(new File(filePath)));
+    Constructor constructor = new Constructor(XmlSuite.class);
+    TypeDescription suiteDescription = new TypeDescription(XmlSuite.class);
+    suiteDescription.putListPropertyType("packages", XmlPackage.class);
+    suiteDescription.putListPropertyType("listeners", String.class);
+    suiteDescription.putListPropertyType("tests", XmlTest.class);
+    suiteDescription.putListPropertyType("method-selectors", XmlMethodSelector.class);
+    constructor.addTypeDescription(suiteDescription);
 
-    return parse(o);
+    TypeDescription testDescription = new TypeDescription(XmlTest.class);
+    suiteDescription.putListPropertyType("xmlClasses", XmlClass.class);
+    constructor.addTypeDescription(testDescription);
+    Loader loader = new Loader(constructor);
+
+    org.yaml.snakeyaml.Yaml y = new org.yaml.snakeyaml.Yaml(loader);
+    XmlSuite result = (XmlSuite) y.load(new FileInputStream(new File(filePath)));
+    System.out.println(result.toXml());
+
+    // Adjust XmlTest parents
+    for (XmlTest t : result.getTests()) {
+      t.setSuite(result);
+    }
+    return result;
+
+//    Map o = (Map) y.load(new FileInputStream(new File(filePath)));
+//
+//    return parse(o);
   }
 
   private static void setField(Object xml, Map<?, ?> map, String key, String methodName,
