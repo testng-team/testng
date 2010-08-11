@@ -1,11 +1,15 @@
 package org.testng.internal;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.testng.IObjectFactory;
+import org.testng.xml.Parser;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+import org.xml.sax.SAXException;
 import org.yaml.snakeyaml.Loader;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -13,7 +17,9 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -162,7 +168,7 @@ public class Yaml {
       // <parameters>
       //
 
-      addToMap(suite, "parameters", result.getParameters());
+      addToMap(suite, "parameters:", result.getParameters());
 
 
       //
@@ -222,7 +228,8 @@ public class Yaml {
   }
 
   private static void maybeAdd(StringBuilder sb, String sp, String key, Object value) {
-    if (value != null) sb.append(sp).append(key).append(": ").append(value.toString());
+    if (value != null) sb.append(sp).append(key).append(": ").append(value.toString())
+        .append("\n");
   }
 
   public static StringBuilder toYaml(XmlSuite suite) {
@@ -235,8 +242,11 @@ public class Yaml {
     maybeAdd(result, "timeOut", suite.getTimeOut());
     maybeAdd(result, "skipFailedInvocationCounts", suite.skipFailedInvocationCounts());
 
-    toYaml(result, "parameters", suite.getParameters());
-    toYaml(result, suite.getPackages());
+    toYaml(result, "parameters:", suite.getParameters());
+    if (suite.getPackages().size() > 0) {
+      result.append("packages:\n");
+      toYaml(result, suite.getPackages());
+    }
     toYaml(result, "listeners", suite.getListeners());
     if (suite.getTests().size() > 0) {
       result.append("  tests:\n");
@@ -250,7 +260,7 @@ public class Yaml {
 
   private static void toYaml(StringBuilder result, String sp, XmlTest t) {
     String sp2 = sp + "  ";
-    result.append(sp).append("- name:").append(t.getName()).append("\n");
+    result.append(sp).append("- name: ").append(t.getName()).append("\n");
     maybeAdd(result, sp2, "junit", t.isJUnit());
     maybeAdd(result, sp2, "verbose", t.getVerbose());
     maybeAdd(result, sp2, "parallel", t.getParallel());
@@ -259,34 +269,32 @@ public class Yaml {
     maybeAdd(result, sp2, "preserveOrder", t.getPreserveOrder());
 
     if (t.getXmlClasses().size() > 0) {
-      result.append(sp2).append("  classes:\n");
+      result.append(sp2).append("classes:\n");
       for (XmlClass xc : t.getXmlClasses())  {
         toYaml(result, sp2 + "  ", xc);
       }
     }
 
     if (t.getXmlPackages().size() > 0) {
-      result.append(sp2).append("  xmlPackages:\n");
+      result.append(sp2).append("xmlPackages:\n");
       for (XmlPackage xp : t.getXmlPackages())  {
         toYaml(result, sp2 + "  ", xp);
       }
     }
 
     if (t.getMetaGroups().size() > 0) {
+      result.append(sp2).append("groups:\n");
       for (String group : t.getMetaGroups().keySet()) {
-        result.append(sp2).append("  groups:");
-      }
-      for (XmlPackage xp : t.getXmlPackages())  {
-        toYaml(result, sp2 + "  ", xp);
+        result.append(sp2 + "  -").append(group).append("\n");
       }
     }
 
-    //    <!ELEMENT test (method-selectors?,parameter*,groups?,) >
+    //    <!ELEMENT test (method-selectors?,) >
 
   }
 
   private static void toYaml(StringBuilder result, String sp2, XmlClass xc) {
-    result.append(sp2).append("- ").append(xc.getName());
+    result.append(sp2).append("- name: ").append(xc.getName()).append("\n");
     if (xc.getIncludedMethods().size() > 0) {
       result.append(sp2 + "  includedMethods:\n");
       for (XmlInclude xi : xc.getIncludedMethods()) {
@@ -295,39 +303,34 @@ public class Yaml {
     }
 
     if (xc.getExcludedMethods().size() > 0) {
-      result.append(sp2 + "  includedMethods:\n");
-      toYaml(result, sp2+ "    ", xc.getExcludedMethods());
+      result.append(sp2 + "  excludedMethods:\n");
+      toYaml(result, sp2 + "    ", xc.getExcludedMethods());
     }
   }
 
   private static void toYaml(StringBuilder result, String sp2, XmlInclude xi) {
-    result.append(sp2 + "- " + xi.getName());
+    result.append(sp2 + "- " + xi.getName()).append("\n");
   }
 
-  private static void toYaml(StringBuilder result, String key, List<String> listeners) {
-    if (listeners.size() > 0) {
-      result.append("  ").append(key).append(":\n");
-      for (String l : listeners) {
-        result.append("    - ").append(l);
-      }
+  private static void toYaml(StringBuilder result, String sp, List<String> strings) {
+    for (String l : strings) {
+      result.append(sp).append("- ").append(l).append("\n");
     }
   }
 
   private static final String SP = "  ";
 
   private static void toYaml(StringBuilder sb, List<XmlPackage> packages) {
-    sb.append("packages:\n");
     for (XmlPackage p : packages) {
       toYaml(sb, "  ", p);
     }
   }
 
   private static void toYaml(StringBuilder sb, String sp, XmlPackage p) {
-    sb.append(sp).append("name: ").append(p.getName());
+    sb.append(sp).append("name: ").append(p.getName()).append("\n");
 
     generateIncludeExclude(sb, sp, "includes", p.getInclude());
     generateIncludeExclude(sb, sp, "excludes", p.getExclude());
-
   }
 
   private static void generateIncludeExclude(StringBuilder sb, String sp,
@@ -343,7 +346,14 @@ public class Yaml {
   private static void toYaml(StringBuilder sb, String key, Map<String, String> parameters) {
     sb.append(key).append("\n");
     for (Map.Entry<String, String> p : parameters.entrySet()) {
-      sb.append(SP).append(p.getKey()).append(": ").append(p.getValue());
+      sb.append(SP).append(p.getKey()).append(": ").append(p.getValue()).append("\n");
     }
+  }
+
+  public static void main(String[] args)
+      throws FileNotFoundException, ParserConfigurationException, SAXException, IOException {
+    Collection<XmlSuite> s =
+        new Parser("/Users/cbeust/java/testng/src/test/resources/testng.xml").parse();
+    System.out.println(Yaml.toYaml(s.iterator().next()));
   }
 }

@@ -389,6 +389,11 @@ public class XmlSuite implements Serializable, Cloneable {
     m_isJUnit = isJUnit;
   }
 
+  // For YAML
+  public void setJunit(Boolean j) {
+    setJUnit(j);
+  }
+
   public Boolean skipFailedInvocationCounts() {
     return m_skipFailedInvocationCounts;
   }
