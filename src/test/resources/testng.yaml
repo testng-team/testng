@@ -1,594 +1,512 @@
-suite:
-  name: TestNG
-  verbose: 1
-  parallel: false
-  thread-count: 2
-  data-provider-thread-count: 3
-
+name: TestNG
+junit: false
+verbose: 1
+threadCount: 2
+skipFailedInvocationCounts: false
+parameters:
+  short: 47
+  parameter: out
+  char: c
+  byte: 43
+  first-name: Cedric
+  int: 42
+  string: Cedric
+  factory-param: FactoryParam
+  boolean: true
+  long: 46
+  double: 44.0
+  float: 45.0
   tests:
     - name: Nopackage
-      - groups: nopackage
-  
-  <test name="Nopackage">
-    <groups>
-      <run>
-        <include name="nopackage"/>
-      </run>
-    </groups>
-    <classes>
-      <class name="NoPackageTest" />
-    </classes>
-  </test>
-   
-  <parameter name="first-name" value="Cedric" />
-  
-  <test name="Regression1" >
-    <groups>
-      <define name="evenodd">
-        <include name="even" />
-        <include name="odd" />
-      </define>      
-      <run>
-        <exclude name="excludeThisGroup" />
-      </run>
-    </groups>
-    
-    <classes>
-      <class name="test.parameters.ParameterSample" />
-      <class name="test.parameters.ParameterTest" />
-      <class name="test.Test1" />
-      <class name="test.Test2" />
-      <class name="test.CtorCalledOnce" />
-      <class name="test.expectedexceptions.ExpectedExceptionsTest" />
-      <class name="test.access.PrivateAccessConfigurationMethods" />
-      <class name="test.expectedexceptions.WrappedExpectedException" />
-      <class name="test.parameters.OptionalParameterTest"/>
-    </classes>
-  </test>
-  
-  <test name="Regression2">
-    <groups>
-      <run>
-        <exclude name="broken" />
-      </run>
-    </groups>
-    <classes>
-      <class name="test.Test1" />
-      <class name="test.MethodTest" />
-      <class name="test.sample.AfterClassCalledAtEnd"/>
-      <class name="test.GraphTest"/>
-      <class name="test.DynamicGraphTest"/>
-      <class name="test.configuration.BaseGroupsTest" />
-      <class name="test.configuration.BeforeClassThreadTest" />
-      <class name="test.configuration.BeforeTestOrderingTest" />
-      <class name="test.configuration.ConfigurationTest"/>
-      <class name="test.configuration.ExternalConfigurationClass"/>
-      <class name="test.configuration.GroupsTest"/>
-      <class name="test.configuration.MethodCallOrderTest"/>
-      <class name="test.configuration.MultipleBeforeGroupTest" />
-      <class name="test.configuration.ReflectMethodParametrizedConfigurationMethodTest" />
-      <class name="test.configuration.SuiteFactoryOnceTest" />
-      <class name="test.configuration.SuiteTest" />
-      <class name="test.configuration.VerifySuiteTest" />
-      <class name="test.privatemethod.PrivateMethodTest$PrivateMethodInnerTest"/>
-      <class name="test.multiple.TestMultiple"/>
-      <class name="test.ClassConfigurations"/>
-      <class name="test.alwaysrun.AlwaysRunTest"/>
-      <class name="test.conffailure.ConfigurationFailure" />
-      <class name="test.superclass.MainTest" />
-      <class name="test.superclass.Test3" />
-      <class name="test.failures.FailuresTest" />
-      <class name="test.mannotation.MAnnotationSampleTest" />
-      <class name="test.mannotation.MAnnotation2SampleTest" />
-      <class name="test.thread.ThreadPoolSizeTest" />
-      <class name="test.thread.SequentialTest" />
-      <class name="test.thread.ParallelTestTest" />
-      <class name="test.thread.FactoryTest" />
-      <class name="test.thread.DataProviderThreadPoolSizeTest" />
-      <class name="test.thread.MultiThreadedDependentTest" />
-      <class name="test.simple.IncludedExcludedTest" />
-      <class name="test.reports.ReportTest" />
-      <class name="test.annotationtransformer.AnnotationTransformerTest" />
-      <class name="test.jar.JarTest" />
-<!-- 
-      <class name="test.jarpackages.JarPackagesTest" />
- -->
-      <class name="test.xml.XmlVerifyTest" />
-      <class name="test.invokedmethodlistener.InvokedMethodListenerTest" />
-      <class name="test.testng249.VerifyTest"/>
-      <class name="test.testng195.AfterMethodTest" />
-      <class name="test.regression.BeforeTestFailingTest"/>
-      <class name="test.testng285.TestNG285Test" />
-      <class name="test.failedreporter.FailedReporterTest" />
-      <class name="test.attributes.AttributeTest"/>
-      <class name="test.verify.VerifyTest"/>
-      <class name="test.abstractconfmethod.C" />
-      <class name="test.issue78.NonPublicClassTest"/>
-      <class name="test.listeners.ListenerTest"/>
-      <class name="test.preserveorder.PreserveOrderTest" />
-      <class name="test.listeners.ResultEndMillisTest" />
-    </classes>
-  </test>
-  
-  <test name="Injection">
-    <classes>
-      <class name="test.inject.InjectTestContextTest"/>
-      <class name="test.inject.InjectBeforeMethodTest"/>
-      <class name="test.inject.InjectTestResultTest" />
-      <class name="test.inject.InjectDataProviderTest"/>
-      <class name="test.inject.NoInjectionTest" />
-    </classes>
-  </test>
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: NoPackageTest
+    - name: Regression1
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.parameters.ParameterSample
+        - name: test.parameters.ParameterTest
+        - name: test.Test1
+        - name: test.Test2
+        - name: test.CtorCalledOnce
+        - name: test.expectedexceptions.ExpectedExceptionsTest
+        - name: test.access.PrivateAccessConfigurationMethods
+        - name: test.expectedexceptions.WrappedExpectedException
+        - name: test.parameters.OptionalParameterTest
+      groups:
+        -evenodd
+    - name: Regression2
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.Test1
+        - name: test.MethodTest
+        - name: test.sample.AfterClassCalledAtEnd
+        - name: test.GraphTest
+        - name: test.DynamicGraphTest
+        - name: test.configuration.BaseGroupsTest
+        - name: test.configuration.BeforeClassThreadTest
+        - name: test.configuration.BeforeTestOrderingTest
+        - name: test.configuration.ConfigurationTest
+        - name: test.configuration.ExternalConfigurationClass
+        - name: test.configuration.GroupsTest
+        - name: test.configuration.MethodCallOrderTest
+        - name: test.configuration.MultipleBeforeGroupTest
+        - name: test.configuration.ReflectMethodParametrizedConfigurationMethodTest
+        - name: test.configuration.SuiteFactoryOnceTest
+        - name: test.configuration.SuiteTest
+        - name: test.configuration.VerifySuiteTest
+        - name: test.privatemethod.PrivateMethodTest$PrivateMethodInnerTest
+        - name: test.multiple.TestMultiple
+        - name: test.ClassConfigurations
+        - name: test.alwaysrun.AlwaysRunTest
+        - name: test.conffailure.ConfigurationFailure
+        - name: test.superclass.MainTest
+        - name: test.superclass.Test3
+        - name: test.failures.FailuresTest
+        - name: test.mannotation.MAnnotationSampleTest
+        - name: test.mannotation.MAnnotation2SampleTest
+        - name: test.thread.ThreadPoolSizeTest
+        - name: test.thread.SequentialTest
+        - name: test.thread.ParallelTestTest
+        - name: test.thread.FactoryTest
+        - name: test.thread.DataProviderThreadPoolSizeTest
+        - name: test.thread.MultiThreadedDependentTest
+        - name: test.simple.IncludedExcludedTest
+        - name: test.reports.ReportTest
+        - name: test.annotationtransformer.AnnotationTransformerTest
+        - name: test.jar.JarTest
+        - name: test.xml.XmlVerifyTest
+        - name: test.invokedmethodlistener.InvokedMethodListenerTest
+        - name: test.testng249.VerifyTest
+        - name: test.testng195.AfterMethodTest
+        - name: test.regression.BeforeTestFailingTest
+        - name: test.testng285.TestNG285Test
+        - name: test.failedreporter.FailedReporterTest
+        - name: test.attributes.AttributeTest
+        - name: test.verify.VerifyTest
+        - name: test.abstractconfmethod.C
+        - name: test.issue78.NonPublicClassTest
+        - name: test.listeners.ListenerTest
+        - name: test.preserveorder.PreserveOrderTest
+        - name: test.listeners.ResultEndMillisTest
+    - name: Injection
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.inject.InjectTestContextTest
+        - name: test.inject.InjectBeforeMethodTest
+        - name: test.inject.InjectTestResultTest
+        - name: test.inject.InjectDataProviderTest
+        - name: test.inject.NoInjectionTest
+    - name: BeforeMethod
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.configuration.BeforeMethodTest
+    - name: Factory tests
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.factory.classconf.XClassOrderWithFactoryTest
+        - name: test.factory.FactoryInterleavingTest
+    - name: Basic
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.sample.Basic2
+        - name: test.sample.Basic1
+        - name: test.Misc
+    - name: Exclusion
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.Test2
+    - name: Dependents
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.dependent.MissingGroupTest
+        - name: test.dependent.MissingMethodTest
+        - name: test.dependent.OrderMethodTest
+        - name: test.dependent.DependentTest
+        - name: test.dependent.SampleDependentMethods
+        - name: test.dependent.SampleDependentMethods2
+        - name: test.dependent.SampleDependentMethods3
+        - name: test.dependent.SampleDependentConfigurationMethods
+        - name: test.dependent.ClassDependsOnGroups
+        - name: test.dependent.DependentAlwaysRunTest
+        - name: test.dependent.MultiGroupTest
+        - name: test.dependent.ImplicitGroupInclusionTest
+        - name: test.dependent.ClassWide1Test
+        - name: test.dependent.ClassWide2Test
+        - name: test.dependent.DepBugSampleTest
+        - name: test.dependent.DepBugVerifyTest
+        - name: test.dependent.DependsOnProtectedMethodTest
+        - name: test.dependsongroup.DependsOnGroupsTest
+    - name: Inheritance
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.SampleInheritance
+        - name: test.inheritance.ClassScopeTest
+    - name: Test outer scope
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.sample.Scope
+    - name: Test inner scope
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.sample.Scope
+    - name: AfterClassCalledAtEnd
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.sample.AfterClassCalledAtEnd
+    - name: Triangle
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.triangle.Child1
+        - name: test.triangle.Child2
+    - name: CheckTrianglePost
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.triangle.CheckCount
+    - name: Test class groups 1
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.classgroup.Second
+        - name: test.classgroup.First
+    - name: Test class groups 2
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.classgroup.First
+        - name: test.classgroup.Second
+    - name: Factory
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.factory.FactoryTest
+        - name: test.factory.VerifyFactoryTest
+        - name: test.factory.FactoryInSeparateClass
+        - name: test.factory.Factory2Test
+        - name: test.factory.FactoryWithInstanceInfoTest
+        - name: test.factory.VerifyFactoryWithInstanceInfoTest
+        - name: test.factory.TestClassAnnotationTest
+        - name: test.factory.FactoryWithDataProviderTest
+        - name: test.factory.FactoryOrderMainTest
+        - name: test.factory.FactoryFailureTest
+        - name: test.factory.FactoryInSuperClassTest
+    - name: TimeOut
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.timeout.TimeOutTest
+        - name: test.timeout.TimeOutFromXmlTest
+    - name: InvocationCount
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.InvocationAndSuccessPercentageTest
+        - name: test.invocationcount.FailedInvocationCountTest
+        - name: test.invocationcount.FirstAndLastTimeTest
+    - name: Method1
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.methods.SampleMethod1
+          includedMethods:
+            - shouldRun1
+            - shouldRun2
+        - name: test.methods.VerifyMethod1
+    - name: Method2
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.methods.SampleMethod1
+          excludedMethods:
+            - shouldNotRun1
+            - shouldNotRun2
+        - name: test.methods.VerifyMethod1
+    - name: Method3
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.methods.SampleMethod1
+          excludedMethods:
+            - .*Not.*
+        - name: test.methods.VerifyMethod1
+    - name: Object factory
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.objectfactory.CustomFactoryTest
+        - name: test.objectfactory.CombinedTestAndObjectFactoryTest
+    - name: Parameters for constructors
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.ParameterConstructorTest
+    - name: Excluded methods
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.Exclude
+          excludedMethods:
+            - excluded1
+            - excluded2
+    - name: Parameters in init 1
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.configuration.ConfigurationWithParameters
+    - name: Parameters in init 2
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.configuration.ConfigurationWithParameters
+    - name: Individual method
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.IndividualMethodsTest
+          includedMethods:
+            - testMethod
+    - name: Method inheritance
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.inheritance.DChild_2
+        - name: test.inheritance.VerifyTest
+    - name: Method selectors
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.methodselectors.MethodSelectorTest
+        - name: test.methodselectors.BeanShellTest
+        - name: test.methodselectors.CommandLineTest
+    - name: Test order invocation
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.interleavedorder.InterleavedInvocationTest
+    - name: DataProvider
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.dataprovider.Sample1Test
+        - name: test.dataprovider.IterableTest
+        - name: test.dataprovider.ConfigurationAndDataProvidersTest
+        - name: test.dataprovider.BooleanTest
+        - name: test.dataprovider.MethodTest
+        - name: test.dataprovider.StaticDataProviderSampleTest
+        - name: test.dataprovider.UnnamedDataProviderTest
+        - name: test.dataprovider.TestContextTest
+        - name: test.dataprovider.FailingDataProviderTest
+        - name: test.dataprovider.DataProviderAsTest
+        - name: test.dataprovider.TestInstanceFactory
+        - name: test.dataprovider.FailedDataProviderTest
+        - name: test.dataprovider.InstanceDataProviderTest
+        - name: test.dataprovider.FailingIterableDataProviderTest
+        - name: test.dataprovider.ClassTest
+        - name: test.dataprovider.InheritedDataProviderTest
+    - name: DP
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.dataprovider.ParallelDataProviderTest
+    - name: UniqueSuite
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.uniquesuite.TestBefore1
+        - name: test.uniquesuite.TestBefore2
+        - name: test.uniquesuite.TestAfter
+    - name: InheritGroups
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.configuration.ConfigurationInheritGroupsSampleTest
+    - name: Nested
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      xmlPackages:
+        name: test.nested.*
+    - name: Hookable
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.hook.HookSuccessTest
+        - name: test.hook.HookFailureTest
+    - name: BeforeGroups-AfterGroups-1
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.configuration.ConfigurationGroups1SampleTest
+        - name: test.configuration.ConfigurationGroups2SampleTest
+        - name: test.configuration.ConfigurationGroups3SampleTest
+        - name: test.configuration.ConfigurationGroups4SampleTest
+        - name: test.configuration.ConfigurationGroups5SampleTest
+        - name: test.configuration.ConfigurationGroups6SampleTest
+        - name: test.configuration.ConfigurationGroups7SampleTest
+    - name: BeforeGroups-AfterGroups-2
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.configuration.ConfigurationGroups8SampleTest
+    - name: JUnit
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.JUnitTest1
+        - name: test.CommandLineTest
+    - name: Ant-ClassFileResolution
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.ant.TestCommandLineArgs
+    - name: Class Run
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.regression.groupsordering.A
+        - name: test.regression.groupsordering.B
+    - name: Groups Run
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.regression.groupsordering.A
+        - name: test.regression.groupsordering.B
+    - name: External group invocation
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.groupinvocation.GroupConfiguration
+        - name: test.groupinvocation.DummyTest
+    - name: SkipExceptions
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.skipex.SkippedExceptionTest
+    - name: MethodInterceptor
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.methodinterceptors.MethodInterceptorTest
+    - name: Asserts
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.asserttests.AssertTest
+    - name: ConfigFailurePolicy
+      junit: false
+      verbose: 1
+      parallel: false
+      skipFailedInvocationCounts: false
+      classes:
+        - name: test.configurationfailurepolicy.FailurePolicyTest
 
-	<!--  Keep this in its own <test> tag -->
-  <test name="BeforeMethod">
-    <classes>
-      <class name="test.configuration.BeforeMethodTest" />
-    </classes>      
-  </test>
-
-  <test name="Factory tests">
-		<classes>
-			<class name="test.factory.classconf.XClassOrderWithFactoryTest" />
-      <class name="test.factory.FactoryInterleavingTest"/>
-		</classes>
-	</test>
-  
-  <test name="Basic" >
-    <classes>
-      <class name="test.sample.Basic2" />
-      <class name="test.sample.Basic1" />
-      <class name="test.Misc" />
-    </classes>
-  </test>
-  
-  <test name="Exclusion">
-    <groups>
-      <run>
-        <exclude name="excludeThisGroup" />
-      </run>
-    </groups>
-    <classes>
-      <class name="test.Test2" />
-    </classes>
-  </test>
-  
-  <test name="Dependents">
-    <parameter name="foo" value="Cedric" />
-    <classes>
-      <class name="test.dependent.MissingGroupTest" />
-      <class name="test.dependent.MissingMethodTest" />
-      <class name="test.dependent.OrderMethodTest" />
-      <class name="test.dependent.DependentTest" />
-      <class name="test.dependent.SampleDependentMethods" />
-      <class name="test.dependent.SampleDependentMethods2" />
-      <class name="test.dependent.SampleDependentMethods3" />
-      <class name="test.dependent.SampleDependentConfigurationMethods" />
-      <class name="test.dependent.ClassDependsOnGroups"/>
-      <class name="test.dependent.DependentAlwaysRunTest" />
-      <class name="test.dependent.MultiGroupTest" />
-      <class name="test.dependent.ImplicitGroupInclusionTest" />
-      <class name="test.dependent.ClassWide1Test" />
-      <class name="test.dependent.ClassWide2Test" />
-      <class name="test.dependent.DepBugSampleTest" />
-      <class name="test.dependent.DepBugVerifyTest" />
-      <class name="test.dependent.DependsOnProtectedMethodTest" />
-      <class name="test.dependsongroup.DependsOnGroupsTest" />
-    </classes>      
-  </test>
-  
-  <test name="Inheritance">
-    <classes>
-      <class name="test.SampleInheritance" />
-      <class name="test.inheritance.ClassScopeTest" />
-    </classes>
-  </test>
-  
-  <!-- Test scopes -->  
-  
-  <parameter name="parameter" value="out" />
-
-  <test name="Test outer scope">
-    <groups>
-      <run>
-        <include name="outer-group" />
-      </run>
-    </groups>
-    <classes>
-      <class name="test.sample.Scope" />
-    </classes>
-  </test>
-  
-  <test name="Test inner scope">
-    <parameter name="parameter" value="in" />
-    <groups>
-      <run>
-        <include name="inner-group" />
-      </run>
-    </groups>
-    <classes>
-      <class name="test.sample.Scope" />
-    </classes>
-  </test>
-    
-  <test name="AfterClassCalledAtEnd">
-    <classes>
-      <class name="test.sample.AfterClassCalledAtEnd"/>
-    </classes>
-  </test>
-
-  <test name="Triangle">
-    <classes>
-      <class name="test.triangle.Child1" />
-      <class name="test.triangle.Child2" />
-    </classes>
-  </test>  
-
-  <!-- note that CheckTriangePost must be run sequentially after Triangle-->
-  <test name="CheckTrianglePost">
-    <parameter name="expected-calls" value="2" />
-    <classes>
-      <class name="test.triangle.CheckCount"/>
-    </classes>
-  </test>
-  
-  <!-- Test that we can declare groups and dependents on classes -->
-  
-  <test name="Test class groups 1" >
-    <classes>
-      <class name="test.classgroup.Second" />
-      <class name="test.classgroup.First" />
-    </classes>
-  </test>
-
-    <test name="Test class groups 2" >
-    <classes>
-      <class name="test.classgroup.First" />
-      <class name="test.classgroup.Second" />
-    </classes>
-  </test>
-  
-  <parameter name="factory-param" value="FactoryParam" />
-  <test name="Factory">
-    <classes>
-      <class name="test.factory.FactoryTest" />
-      <class name="test.factory.VerifyFactoryTest" />
-      <class name="test.factory.FactoryInSeparateClass" />
-      <class name="test.factory.Factory2Test" />
-	  
-      <class name="test.factory.FactoryWithInstanceInfoTest" />
-      <class name="test.factory.VerifyFactoryWithInstanceInfoTest" />
-      <class name="test.factory.TestClassAnnotationTest" />
-      
-      <class name="test.factory.FactoryWithDataProviderTest" />
-      <class name="test.factory.FactoryOrderMainTest" />
-      <class name="test.factory.FactoryFailureTest" />
-
-      <class name="test.factory.FactoryInSuperClassTest" />
-    </classes>
-  </test>
-
-  <test name="TimeOut">
-    <classes>
-      <class name="test.timeout.TimeOutTest" />
-      <class name="test.timeout.TimeOutFromXmlTest"/>
-    </classes>
-  </test>
-  
-  <test name="InvocationCount">
-    <parameter name="count" value="10" />
-    <classes>
-      <class name="test.InvocationAndSuccessPercentageTest" />
-      <class name="test.invocationcount.FailedInvocationCountTest" />
-      <class name="test.invocationcount.FirstAndLastTimeTest" />
-    </classes>
-  </test>
-
-  <!-- Tests for included and excluded methods -->
-  <test name="Method1">
-    <classes>
-        <class name="test.methods.SampleMethod1">
-          <methods>
-            <include name="shouldRun1" />
-            <include name="shouldRun2" />
-          </methods>
-        </class>
-          <class name="test.methods.VerifyMethod1" />
-    </classes>
-  </test>
-  
-  <test name="Method2">
-    <classes>
-        <class name="test.methods.SampleMethod1">
-          <methods>
-            <exclude name="shouldNotRun1" />
-            <exclude name="shouldNotRun2" />
-          </methods>
-        </class>
-        <class name="test.methods.VerifyMethod1" />
-    </classes>
-  </test>
-  
-  <test name="Method3">
-    <classes>
-        <class name="test.methods.SampleMethod1">
-          <methods>
-            <exclude name=".*Not.*" />
-          </methods>
-        </class>
-        <class name="test.methods.VerifyMethod1" />
-    </classes>
-  </test>
-
-  <test name="Object factory">
-    <classes>
-      <class name="test.objectfactory.CustomFactoryTest" />
-      <class name="test.objectfactory.CombinedTestAndObjectFactoryTest" />
-    </classes>
-  </test>
-  
-  <!-- Test parameters for constructors -->  
-  <parameter name="string" value="Cedric" />
-  <parameter name="int" value="42" />
-  <parameter name="boolean" value="true" />
-  <parameter name="byte" value="43" />
-  <parameter name="char" value="c" />
-  <parameter name="double" value="44.0" />
-  <parameter name="float" value="45.0" />
-  <parameter name="long" value="46" />
-  <parameter name="short" value="47" />
-
-  <test name="Parameters for constructors">
-    <classes>
-      <class name="test.ParameterConstructorTest" />
-    </classes>
-  </test>
-  
-  <test name="Excluded methods" >
-    <groups>
-      <run>
-        <include name="group1" />
-        <include name="group2" />
-      </run>        
-    </groups>
-    <classes>
-      <class name="test.Exclude">
-		<methods>
-          <exclude name="excluded1" />
-          <exclude name="excluded2" />
-		</methods>
-      </class>
-    </classes>
-  </test>  
-  
-  <test name="Parameters in init 1">
-    <parameter name="param" value="value1"/>
-    <classes>
-      <class name="test.configuration.ConfigurationWithParameters"/>
-    </classes>
-  </test>
-
-  <test name="Parameters in init 2">
-  <parameter name="param" value="value2"/>
-    <classes>
-      <class name="test.configuration.ConfigurationWithParameters"/>
-    </classes>
-  </test>
-  
-  <test name="Individual method">
-    <classes>
-      <class name="test.IndividualMethodsTest">
-        <methods>
-          <include name="testMethod"/>
-        </methods>
-      </class>
-    </classes>
-  </test>
-
-  <test name="Method inheritance">
-    <classes>
-      <class name="test.inheritance.DChild_2" />
-      <class name="test.inheritance.VerifyTest" />	  
-    </classes>
-  </test>
-
-  <test name="Method selectors">
-    <classes>
-      <class name="test.methodselectors.MethodSelectorTest" />
-      <class name="test.methodselectors.BeanShellTest" />
-      <class name="test.methodselectors.CommandLineTest" />
-    </classes>
-  </test>
-
-  <test name="Test order invocation">
-    <classes>
-      <class name="test.interleavedorder.InterleavedInvocationTest" />
-    </classes>
-  </test>
-
-  <test name="DataProvider">
-    <classes>
-      <class name="test.dataprovider.Sample1Test" />
-      <class name="test.dataprovider.IterableTest" />
-      <class name="test.dataprovider.ConfigurationAndDataProvidersTest" />
-      <class name="test.dataprovider.BooleanTest" />
-      <class name="test.dataprovider.MethodTest"/>
-      <class name="test.dataprovider.StaticDataProviderSampleTest" />
-      <class name="test.dataprovider.UnnamedDataProviderTest" />
-      <class name="test.dataprovider.TestContextTest" />
-      <class name="test.dataprovider.FailingDataProviderTest" />
-      <class name="test.dataprovider.DataProviderAsTest" />
-      <class name="test.dataprovider.TestInstanceFactory" />
-      <class name="test.dataprovider.FailedDataProviderTest" />
-      <class name="test.dataprovider.InstanceDataProviderTest" />
-      <class name="test.dataprovider.FailingIterableDataProviderTest" />
-      <class name="test.dataprovider.ClassTest" />
-      <class name="test.dataprovider.InheritedDataProviderTest" />
-    </classes>
-  </test>
-
-  <test name="DP">
-    <classes>
-      <class name="test.dataprovider.ParallelDataProviderTest" />
-    </classes>
-  </test>
-	
-  <test name="UniqueSuite">
-    <classes>
-      <class name="test.uniquesuite.TestBefore1" />
-      <class name="test.uniquesuite.TestBefore2" />
-      <class name="test.uniquesuite.TestAfter" />
-    </classes>
-  </test>
-
-  <test name="InheritGroups">
-    <groups>
-      <run>
-        <include name="group1" />
-      </run>
-    </groups>
-    <classes>
-      <class name="test.configuration.ConfigurationInheritGroupsSampleTest" />
-    </classes>
-  </test>
-
-<!--
-  <test name="Distributed">
-    <classes>
-      <class name="test.distributed.DistributedTest" />
-    </classes>
-  </test>  
--->
-
-  <test name="Nested" >
-    <groups>
-      <run>
-        <include name="unittest" />
-      </run>        
-    </groups>
-
-	<packages>
-		<package name="test.nested.*"/>
-	</packages>
-  </test>
-
-  <test name="Hookable" >
-    <classes>
-      <class name="test.hook.HookSuccessTest" />
-      <class name="test.hook.HookFailureTest" />
-    </classes>
-  </test>
-  
-  <test name="BeforeGroups-AfterGroups-1" >
-    <classes>
-	    <class name="test.configuration.ConfigurationGroups1SampleTest" />
-	    <class name="test.configuration.ConfigurationGroups2SampleTest" />
-	    <class name="test.configuration.ConfigurationGroups3SampleTest" />
-	    <class name="test.configuration.ConfigurationGroups4SampleTest" />
-	    <class name="test.configuration.ConfigurationGroups5SampleTest" />
-	    <class name="test.configuration.ConfigurationGroups6SampleTest" />
-	    <class name="test.configuration.ConfigurationGroups7SampleTest" />
-    </classes>
-  </test>
-  
-  <test name="BeforeGroups-AfterGroups-2" >
-    <groups>
-      <run>
-        <include name="A" />
-        <include name="B" />
-      </run>
-    </groups>
-    <classes>
-	    <class name="test.configuration.ConfigurationGroups8SampleTest" />
-    </classes>
-  </test>
-  
-  <test name="JUnit">
-    <classes>
-      <class name="test.JUnitTest1" />
-      <class name="test.CommandLineTest"/>
-    </classes>
-  </test>
-    
-<!-- 
-  <test name="JUnitConverter">
-    <parameter name="source-directory" value="test/src/test/converter" />
-    <classes>
-      <class name="test.converter.JUnitConverterTest" />
-     </classes>
-  </test>
- -->
-
-  <!-- TestNG ant task related tests -->
-  <test name="Ant-ClassFileResolution" >
-    <classes>
-        <class name="test.ant.TestCommandLineArgs" />
-    </classes>
-  </test>
- 
-  <!-- Group ordering 1 --> 
-  <test name="Class Run">
-    <classes>
-      <class name="test.regression.groupsordering.A" />
-      <class name="test.regression.groupsordering.B" />
-    </classes>
-  </test>
-	
-  <!-- Group ordering 2 --> 
-  <test name="Groups Run">
-    <groups>
-      <run>
-        <include name="a" />
-      </run>
-    </groups>
-    <classes>
-      <class name="test.regression.groupsordering.A" />
-      <class name="test.regression.groupsordering.B" />
-    </classes>
-  </test>
-  
-  <test name="External group invocation">
-		<groups>
-			<run>
-				<include name="a" />
-			</run>
-		</groups>
-		<classes>
-			<class name="test.groupinvocation.GroupConfiguration" />
-			<class name="test.groupinvocation.DummyTest" />
-		</classes>
-  </test>
-	
-	<test name="SkipExceptions">
-		<classes>
-			<class name="test.skipex.SkippedExceptionTest" />
-		</classes>
-	</test>
-
-<!--
-  <test name="RetryAnalyzer">
-    <classes>
-      <class name="test.retryAnalyzer.RetryAnalyzerTest" />
-    </classes>
-  </test>
--->
-
-  <test name="MethodInterceptor">
-    <classes>
-      <class name="test.methodinterceptors.MethodInterceptorTest" />
-    </classes>
-  </test>
-  
-  <test name="Asserts">
-    <classes>
-      <class name="test.asserttests.AssertTest" />
-    </classes>
-  </test>
-  
-  <test name="ConfigFailurePolicy">
-    <classes>
-      <class name="test.configurationfailurepolicy.FailurePolicyTest" />
-    </classes>
-  </test>
-
-</suite>
