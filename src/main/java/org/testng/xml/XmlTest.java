@@ -31,7 +31,7 @@ public class XmlTest implements Serializable, Cloneable {
   private List<String> m_includedGroups = Lists.newArrayList();
   private List<String> m_excludedGroups = Lists.newArrayList();
 
-  private final Map<String, List<String>> m_metaGroups = Maps.newHashMap();
+  private Map<String, List<String>> m_metaGroups = Maps.newHashMap();
   private Map<String, String> m_parameters = Maps.newHashMap();
   private String m_parallel;
   
@@ -70,6 +70,16 @@ public class XmlTest implements Serializable, Cloneable {
   
   public List<XmlPackage> getXmlPackages() {
     return m_xmlPackages;
+  }
+
+  // For YAML
+  public List<XmlPackage> getPackages() {
+    return getPackages();
+  }
+
+  // For YAML
+  public void setPackages(List<XmlPackage> p) {
+    setXmlPackages(p);
   }
 
   public List<XmlMethodSelector> getMethodSelectors() {
@@ -111,7 +121,17 @@ public class XmlTest implements Serializable, Cloneable {
   public List<XmlClass> getXmlClasses() {
     return m_xmlClasses;
   }
-  
+
+  // For YAML
+  public List<XmlClass> getClasses() {
+    return getXmlClasses();
+  }
+
+  // For YAML
+  public void setClasses(List<XmlClass> c) {
+    setXmlClasses(c);
+  }
+
   /**
    * Sets the XML Classes.
    * @param classes The classes to set.
@@ -222,6 +242,11 @@ public class XmlTest implements Serializable, Cloneable {
   
   public void addMetaGroup(String name, List<String> metaGroup) {
     m_metaGroups.put(name, metaGroup);
+  }
+
+  // For YAML
+  public void setMetaGroups(Map<String, List<String>> metaGroups) {
+    m_metaGroups = metaGroups;
   }
 
   /**
@@ -414,12 +439,12 @@ public class XmlTest implements Serializable, Cloneable {
     }
     
     
-    // HINT: don't call getXmlPackages() cause you will retrieve the suite packages too
+    // Don't call getXmlPackages() cause you will retrieve the suite packages too
     if (null != m_xmlPackages && !m_xmlPackages.isEmpty()) {
       xsb.push("packages");
       
       for (XmlPackage pack: m_xmlPackages) {
-        xsb.getStringBuffer().append(pack.toXml("  "));
+        xsb.getStringBuffer().append(pack.toXml("      "));
       }
       
       xsb.pop("packages");
