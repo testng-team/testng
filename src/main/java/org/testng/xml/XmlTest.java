@@ -298,7 +298,14 @@ public class XmlTest implements Serializable, Cloneable {
     }
     return result;
   }
-    
+
+  /**
+   * @return the parameters defined on this <test> tag only
+   */
+  public Map<String, String> getTestParameters() {
+    return m_parameters;
+  }
+
   public void setParallel(String parallel) {
     m_parallel = parallel;
   }

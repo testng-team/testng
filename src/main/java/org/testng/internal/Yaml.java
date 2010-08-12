@@ -74,7 +74,8 @@ public class Yaml {
 
     org.yaml.snakeyaml.Yaml y = new org.yaml.snakeyaml.Yaml(loader);
     XmlSuite result = (XmlSuite) y.load(new FileInputStream(new File(filePath)));
-//    System.out.println(result.toXml());
+    // DEBUG
+//    System.out.println("[Yaml] " + result.toXml());
 
     // Adjust XmlTest parents
     for (XmlTest t : result.getTests()) {
@@ -242,7 +243,7 @@ public class Yaml {
     maybeAdd(result, "timeOut", suite.getTimeOut());
     maybeAdd(result, "skipFailedInvocationCounts", suite.skipFailedInvocationCounts());
 
-    toYaml(result, "parameters:", suite.getParameters());
+    toYaml(result, "parameters", "", suite.getParameters());
     if (suite.getPackages().size() > 0) {
       result.append("packages:\n");
       toYaml(result, suite.getPackages());
@@ -267,6 +268,20 @@ public class Yaml {
     maybeAdd(result, sp2, "timeOut", t.getTimeOut());
     maybeAdd(result, sp2, "skipFailedInvocationCounts", t.skipFailedInvocationCounts());
     maybeAdd(result, sp2, "preserveOrder", t.getPreserveOrder());
+
+    toYaml(result, "parameters", sp2, t.getTestParameters());
+
+    if (t.getIncludedGroups().size() > 0) {
+      result.append(sp2).append("includedGroups: [ ")
+          .append(Utils.join(t.getIncludedGroups(), ","))
+          .append(" ]\n");
+    }
+
+    if (t.getExcludedGroups().size() > 0) {
+      result.append(sp2).append("excludedGroups: [ ")
+          .append(Utils.join(t.getExcludedGroups(), ","))
+          .append(" ]\n");
+    }
 
     if (t.getXmlClasses().size() > 0) {
       result.append(sp2).append("classes:\n");
@@ -349,10 +364,24 @@ public class Yaml {
     }
   }
 
-  private static void toYaml(StringBuilder sb, String key, Map<String, String> parameters) {
-    sb.append(key).append("\n");
-    for (Map.Entry<String, String> p : parameters.entrySet()) {
-      sb.append(SP).append(p.getKey()).append(": ").append(p.getValue()).append("\n");
+  private static void mapToYaml(Map<String, String> map, StringBuilder out) {
+    if (map.size() > 0) {
+      out.append("{ ");
+      boolean first = true;
+      for (Map.Entry<String, String> e : map.entrySet()) {
+        if (! first) out.append(", ");
+        first = false;
+        out.append(e.getKey() + ": " + e.getValue());
+      }
+      out.append(" }\n");
+    }
+  }
+
+  private static void toYaml(StringBuilder sb, String key, String sp,
+      Map<String, String> parameters) {
+    if (parameters.size() > 0) {
+      sb.append(sp).append(key).append(": ");
+      mapToYaml(parameters, sb);
     }
   }
 
