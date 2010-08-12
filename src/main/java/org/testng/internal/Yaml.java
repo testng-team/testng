@@ -143,11 +143,11 @@ public class Yaml {
     String sp2 = sp + "  ";
     result.append(sp).append("- name: ").append(t.getName()).append("\n");
 
-    maybeAdd(result, "junit", sp2, t.isJUnit(), XmlSuite.DEFAULT_JUNIT);
-    maybeAdd(result, "verbose", sp2, t.getVerbose(), XmlSuite.DEFAULT_VERBOSE);
-    maybeAdd(result, "timeOut", sp2, t.getTimeOut(), null);
-    maybeAdd(result, "parallel", sp2, t.getParallel(), XmlSuite.DEFAULT_PARALLEL);
-    maybeAdd(result, "skipFailedInvocationCounts", t.skipFailedInvocationCounts(),
+    maybeAdd(result, sp2, "junit", t.isJUnit(), XmlSuite.DEFAULT_JUNIT);
+    maybeAdd(result, sp2, "verbose", t.getVerbose(), XmlSuite.DEFAULT_VERBOSE);
+    maybeAdd(result, sp2, "timeOut", t.getTimeOut(), null);
+    maybeAdd(result, sp2, "parallel", t.getParallel(), XmlSuite.DEFAULT_PARALLEL);
+    maybeAdd(result, sp2, "skipFailedInvocationCounts", t.skipFailedInvocationCounts(),
         XmlSuite.DEFAULT_SKIP_FAILED_INVOCATION_COUNTS);
 
     maybeAdd(result, "preserveOrder", sp2, t.getPreserveOrder(), XmlTest.DEFAULT_PRESERVE_ORDER);
@@ -274,8 +274,7 @@ public class Yaml {
 
   public static void main(String[] args)
       throws FileNotFoundException, ParserConfigurationException, SAXException, IOException {
-    Collection<XmlSuite> s =
-        new Parser("/Users/cbeust/java/testng/src/test/resources/testng.xml").parse();
+    Collection<XmlSuite> s = new Parser(args[0]).parse();
     System.out.println(Yaml.toYaml(s.iterator().next()));
   }
 }
