@@ -69,6 +69,16 @@ public final class Utils {
     return result;
   }
 
+  public static String join(List<String> s, String sep) {
+    StringBuilder result = new StringBuilder();
+    for (int i = 0; i < s.size(); i++) {
+      if (i > 0) result.append(sep).append(" ");
+      result.append(s.get(i));
+    }
+
+    return result.toString();
+  }
+
   public static XmlClass[] classesToXmlClasses(Class<?>[] classes) {
     List<XmlClass> result = Lists.newArrayList();
 
