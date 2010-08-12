@@ -53,20 +53,25 @@ public class XmlSuite implements Serializable, Cloneable {
   private String m_name = DEFAULT_SUITE_NAME;
   
   /** The suite verbose flag. (0 to 10)*/
+  public static Integer DEFAULT_VERBOSE = 1;
   private Integer m_verbose = null;
-  
+
+  public static String DEFAULT_PARALLEL = "false";
   private String m_parallel = null;
   
   /** Whether to SKIP or CONTINUE to re-attempt failed configuration methods. */
   private String m_configFailurePolicy = SKIP;
   
   /** JUnit compatibility flag. */
-  private Boolean m_isJUnit = Boolean.FALSE;
-  
-  private Boolean m_skipFailedInvocationCounts = Boolean.FALSE;
+  public static Boolean DEFAULT_JUNIT = Boolean.FALSE;
+  private Boolean m_isJUnit = DEFAULT_JUNIT;
+
+  public static boolean DEFAULT_SKIP_FAILED_INVOCATION_COUNTS = Boolean.FALSE;
+  private Boolean m_skipFailedInvocationCounts = DEFAULT_SKIP_FAILED_INVOCATION_COUNTS;
   
   /** The thread count. */
-  private int m_threadCount = 5;
+  public static Integer DEFAULT_THREAD_COUNT = 5;
+  private int m_threadCount = DEFAULT_THREAD_COUNT;
 
   /** Thread count for the data provider pool */
   public static final int DEFAULT_DATA_PROVIDER_THREAD_COUNT = 10;
@@ -452,7 +457,9 @@ public class XmlSuite implements Serializable, Cloneable {
     p.setProperty("thread-count", String.valueOf(getThreadCount()));
     p.setProperty("data-provider-thread-count", String.valueOf(getDataProviderThreadCount()));
     p.setProperty("annotations", getAnnotations());
-    p.setProperty("junit", m_isJUnit != null ? m_isJUnit.toString() : "false"); // TESTNG-141
+    if (! DEFAULT_JUNIT.equals(m_isJUnit)) {
+      p.setProperty("junit", m_isJUnit != null ? m_isJUnit.toString() : "false"); // TESTNG-141
+    }
     p.setProperty("skipfailedinvocationcounts", 
         m_skipFailedInvocationCounts != null
           ? m_skipFailedInvocationCounts.toString() : "false");
