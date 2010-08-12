@@ -223,7 +223,12 @@ public class XmlTest implements Serializable, Cloneable {
   public void setJUnit(boolean isJUnit) {
     m_isJUnit = isJUnit;
   }
-  
+
+  // For YAML
+  public void setJunit(boolean isJUnit) {
+    setJUnit(isJUnit);
+  }
+
   public void setSkipFailedInvocationCounts(boolean skip) {
     m_skipFailedInvocationCounts = skip;
   }

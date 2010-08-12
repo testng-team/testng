@@ -249,9 +249,9 @@ public class Yaml {
     }
     toYaml(result, "listeners", suite.getListeners());
     if (suite.getTests().size() > 0) {
-      result.append("  tests:\n");
+      result.append("tests:\n");
       for (XmlTest t : suite.getTests()) {
-        toYaml(result, "    ", t);
+        toYaml(result, "  ", t);
       }
     }
 //    (test|method-selectors|suite-files)* >
@@ -282,11 +282,17 @@ public class Yaml {
       }
     }
 
-    if (t.getMetaGroups().size() > 0) {
-      result.append(sp2).append("groups:\n");
-      for (String group : t.getMetaGroups().keySet()) {
-        result.append(sp2 + "  -").append(group).append("\n");
+    Map<String, List<String>> mg = t.getMetaGroups();
+    if (mg.size() > 0) {
+      result.append(sp2).append("metaGroups: { ");
+      boolean first = true;
+      for (String group : mg.keySet()) {
+        if (! first) result.append(", ");
+        result.append(group).append(": [ ")
+            .append(Utils.join(mg.get(group), ",")).append(" ] ");
+        first = false;
       }
+      result.append(" }\n");
     }
 
     //    <!ELEMENT test (method-selectors?,) >
