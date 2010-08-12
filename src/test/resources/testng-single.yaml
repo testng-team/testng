@@ -17,6 +17,8 @@ parameters: { n: 42, p: 10 }
 
 tests:
   - name: Test3
+    includedGroups: [A, B]
+    excludedGroups: [C, D]
     metaGroups: { a: [ b, d] }
     packages: [ com.example1, com.example2 ]
     parameters: { n: 43, z: foo }

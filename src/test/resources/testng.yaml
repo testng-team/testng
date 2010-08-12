@@ -3,25 +3,14 @@ junit: false
 verbose: 1
 threadCount: 2
 skipFailedInvocationCounts: false
-parameters:
-  short: 47
-  parameter: out
-  char: c
-  byte: 43
-  first-name: Cedric
-  int: 42
-  string: Cedric
-  factory-param: FactoryParam
-  boolean: true
-  long: 46
-  double: 44.0
-  float: 45.0
+parameters: { short: 47, parameter: out, char: c, byte: 43, first-name: Cedric, int: 42, string: Cedric, factory-param: FactoryParam, boolean: true, long: 46, double: 44.0, float: 45.0 }
 tests:
   - name: Nopackage
     junit: false
     verbose: 1
     parallel: false
     skipFailedInvocationCounts: false
+    includedGroups: [ nopackage ]
     classes:
       - name: NoPackageTest
   - name: Regression1
@@ -29,6 +18,7 @@ tests:
     verbose: 1
     parallel: false
     skipFailedInvocationCounts: false
+    excludedGroups: [ excludeThisGroup ]
     classes:
       - name: test.parameters.ParameterSample
       - name: test.parameters.ParameterTest
@@ -45,6 +35,7 @@ tests:
     verbose: 1
     parallel: false
     skipFailedInvocationCounts: false
+    excludedGroups: [ broken ]
     classes:
       - name: test.Test1
       - name: test.MethodTest
@@ -137,6 +128,7 @@ tests:
     verbose: 1
     parallel: false
     skipFailedInvocationCounts: false
+    excludedGroups: [ excludeThisGroup ]
     classes:
       - name: test.Test2
   - name: Dependents
@@ -144,6 +136,7 @@ tests:
     verbose: 1
     parallel: false
     skipFailedInvocationCounts: false
+    parameters: { foo: Cedric }
     classes:
       - name: test.dependent.MissingGroupTest
       - name: test.dependent.MissingMethodTest
@@ -176,6 +169,7 @@ tests:
     verbose: 1
     parallel: false
     skipFailedInvocationCounts: false
+    includedGroups: [ outer-group ]
     classes:
       - name: test.sample.Scope
   - name: Test inner scope
@@ -183,6 +177,8 @@ tests:
     verbose: 1
     parallel: false
     skipFailedInvocationCounts: false
+    parameters: { parameter: in }
+    includedGroups: [ inner-group ]
     classes:
       - name: test.sample.Scope
   - name: AfterClassCalledAtEnd
@@ -205,6 +201,7 @@ tests:
     verbose: 1
     parallel: false
     skipFailedInvocationCounts: false
+    parameters: { expected-calls: 2 }
     classes:
       - name: test.triangle.CheckCount
   - name: Test class groups 1
@@ -253,6 +250,7 @@ tests:
     verbose: 1
     parallel: false
     skipFailedInvocationCounts: false
+    parameters: { count: 10 }
     classes:
       - name: test.InvocationAndSuccessPercentageTest
       - name: test.invocationcount.FailedInvocationCountTest
@@ -309,6 +307,7 @@ tests:
     verbose: 1
     parallel: false
     skipFailedInvocationCounts: false
+    includedGroups: [ group1, group2 ]
     classes:
       - name: test.Exclude
         excludedMethods:
@@ -319,6 +318,7 @@ tests:
     verbose: 1
     parallel: false
     skipFailedInvocationCounts: false
+    parameters: { param: value1 }
     classes:
       - name: test.configuration.ConfigurationWithParameters
   - name: Parameters in init 2
@@ -326,6 +326,7 @@ tests:
     verbose: 1
     parallel: false
     skipFailedInvocationCounts: false
+    parameters: { param: value2 }
     classes:
       - name: test.configuration.ConfigurationWithParameters
   - name: Individual method
@@ -404,6 +405,7 @@ tests:
     verbose: 1
     parallel: false
     skipFailedInvocationCounts: false
+    includedGroups: [ group1 ]
     classes:
       - name: test.configuration.ConfigurationInheritGroupsSampleTest
   - name: Nested
@@ -411,6 +413,7 @@ tests:
     verbose: 1
     parallel: false
     skipFailedInvocationCounts: false
+    includedGroups: [ unittest ]
     xmlPackages:
       - name: test.nested.*
   - name: Hookable
@@ -439,6 +442,7 @@ tests:
     verbose: 1
     parallel: false
     skipFailedInvocationCounts: false
+    includedGroups: [ A, B ]
     classes:
       - name: test.configuration.ConfigurationGroups8SampleTest
   - name: JUnit
@@ -469,6 +473,7 @@ tests:
     verbose: 1
     parallel: false
     skipFailedInvocationCounts: false
+    includedGroups: [ a ]
     classes:
       - name: test.regression.groupsordering.A
       - name: test.regression.groupsordering.B
@@ -477,6 +482,7 @@ tests:
     verbose: 1
     parallel: false
     skipFailedInvocationCounts: false
+    includedGroups: [ a ]
     classes:
       - name: test.groupinvocation.GroupConfiguration
       - name: test.groupinvocation.DummyTest
