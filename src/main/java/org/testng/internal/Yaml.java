@@ -166,11 +166,17 @@ public class Yaml {
           .append(" ]\n");
     }
 
-    if (t.getXmlClasses().size() > 0) {
-      result.append(sp2).append("classes:\n");
-      for (XmlClass xc : t.getXmlClasses())  {
-        toYaml(result, sp2 + "  ", xc);
+    Map<String, List<String>> mg = t.getMetaGroups();
+    if (mg.size() > 0) {
+      result.append(sp2).append("metaGroups: { ");
+      boolean first = true;
+      for (String group : mg.keySet()) {
+        if (! first) result.append(", ");
+        result.append(group).append(": [ ")
+        .append(Utils.join(mg.get(group), ",")).append(" ] ");
+        first = false;
       }
+      result.append(" }\n");
     }
 
     if (t.getXmlPackages().size() > 0) {
@@ -179,35 +185,34 @@ public class Yaml {
         toYaml(result, sp2 + "  - ", xp);
       }
     }
-
-    Map<String, List<String>> mg = t.getMetaGroups();
-    if (mg.size() > 0) {
-      result.append(sp2).append("metaGroups: { ");
-      boolean first = true;
-      for (String group : mg.keySet()) {
-        if (! first) result.append(", ");
-        result.append(group).append(": [ ")
-            .append(Utils.join(mg.get(group), ",")).append(" ] ");
-        first = false;
+    
+    if (t.getXmlClasses().size() > 0) {
+      result.append(sp2).append("classes:\n");
+      for (XmlClass xc : t.getXmlClasses())  {
+        toYaml(result, sp2 + "  ", xc);
       }
-      result.append(" }\n");
     }
+
 
     result.append("\n");
   }
 
   private static void toYaml(StringBuilder result, String sp2, XmlClass xc) {
-    result.append(sp2).append("- name: ").append(xc.getName()).append("\n");
-    if (xc.getIncludedMethods().size() > 0) {
+    List<XmlInclude> im = xc.getIncludedMethods();
+    List<String> em = xc.getExcludedMethods();
+    String name = im.size() > 0 || em.size() > 0 ? "name: " : "";
+
+    result.append(sp2).append("- " + name).append(xc.getName()).append("\n");
+    if (im.size() > 0) {
       result.append(sp2 + "  includedMethods:\n");
-      for (XmlInclude xi : xc.getIncludedMethods()) {
+      for (XmlInclude xi : im) {
         toYaml(result, sp2 + "    ", xi);
       }
     }
 
-    if (xc.getExcludedMethods().size() > 0) {
+    if (em.size() > 0) {
       result.append(sp2 + "  excludedMethods:\n");
-      toYaml(result, sp2 + "    ", xc.getExcludedMethods());
+      toYaml(result, sp2 + "    ", em);
     }
   }
 
