@@ -412,7 +412,7 @@ tests:
     parallel: false
     skipFailedInvocationCounts: false
     xmlPackages:
-      name: test.nested.*
+      - name: test.nested.*
   - name: Hookable
     junit: false
     verbose: 1
