@@ -74,7 +74,7 @@ public class Yaml {
 
     org.yaml.snakeyaml.Yaml y = new org.yaml.snakeyaml.Yaml(loader);
     XmlSuite result = (XmlSuite) y.load(new FileInputStream(new File(filePath)));
-    System.out.println(result.toXml());
+//    System.out.println(result.toXml());
 
     // Adjust XmlTest parents
     for (XmlTest t : result.getTests()) {
@@ -278,7 +278,7 @@ public class Yaml {
     if (t.getXmlPackages().size() > 0) {
       result.append(sp2).append("xmlPackages:\n");
       for (XmlPackage xp : t.getXmlPackages())  {
-        toYaml(result, sp2 + "  ", xp);
+        toYaml(result, sp2 + "  - ", xp);
       }
     }
 
