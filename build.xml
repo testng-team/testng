@@ -146,6 +146,7 @@
       <zipfileset src="${lib.dir}/${beanshell.jar}" />
       <zipfileset src="${lib.dir}/${jcommander.jar}" />
       <zipfileset src="${lib.dir}/${junit.jar}" />
+      <zipfileset src="${lib.dir}/${yaml.jar}" />
     </jar>
   </target>
   

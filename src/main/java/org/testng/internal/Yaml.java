@@ -2,7 +2,6 @@ package org.testng.internal;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.testng.IObjectFactory;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
@@ -102,146 +101,27 @@ public class Yaml {
     }
   }
 
-  private static XmlSuite parse(Map o) {
-      XmlSuite result = new XmlSuite();
-  
-      //
-      // <suite>
-      //
-      Map<Object, Object> suite = (Map<Object, Object>) o.get("suite");
-      setField(result, suite, "name", "setName", String.class);
-      setField(result, suite, "verbose", "setVerbose", Integer.class);
-      result.setParallel(((Boolean) suite.get("parallel")).toString());
-      result.setThreadCount((Integer) suite.get("thread-count"));
-      result.setDataProviderThreadCount((Integer) suite.get("data-provider-thread-count"));
-      result.setJUnit((Boolean) suite.get("junit"));
-      setField(result, suite, "configfailurepolicy", "setConfigFailurePolicy", String.class);
-      result.setThreadCount((Integer) suite.get("thread-count"));
-      result.setTimeOut((String) suite.get("time-out"));
-      setField(result, suite, "skipfailedinvocationcounts", "setSkipFailedInvocationCounts",
-          Boolean.class);
-      result.setObjectFactory((IObjectFactory) suite.get("object-factory"));
-
-
-      //
-      // <method-selectors>
-      //
-      {
-        List<Map<String, Object>> selectors =
-            (List<Map<String, Object>>) suite.get("method-selectors");
-        if (selectors != null) {
-          for (Map<String, Object> s : selectors) {
-            String cls = (String) s.get("selector-class");
-            if (cls != null) {
-              org.testng.xml.XmlMethodSelector ms = new org.testng.xml.XmlMethodSelector();
-              ms.setPriority((Integer) s.get("priority"));
-              ms.setName(cls);
-              result.getMethodSelectors().add(ms);
-            }
-            String script = (String) s.get("script");
-            if (script != null) {
-              org.testng.xml.XmlMethodSelector ms = new org.testng.xml.XmlMethodSelector();
-              ms.setExpression(script);
-              ms.setLanguage((String) s.get("language"));
-              result.getMethodSelectors().add(ms);
-            }
-          }
-        }
-      }
-
-      //
-      // <listeners>
-      //
-      addToList(suite, "listeners", result.getListeners());
-
-      //
-      // <packages>
-      //
-      {
-        List<Map<String, String>> packages = (List<Map<String, String>>) suite.get("packages");
-        for (Map<String, String> p : packages) {
-          XmlPackage xp = new XmlPackage(p.get("name"));
-          result.getXmlPackages().add(xp);
-        }
-      }
-
-      //
-      // <parameters>
-      //
-
-      addToMap(suite, "parameters:", result.getParameters());
-
-
-      //
-      // <test>
-      //
-      {
-        List<Map<String, Object>> tests = (List<Map<String, Object>>) suite.get("tests");
-        for (Map<String, Object> test : tests) {
-          XmlTest xmlTest = new XmlTest(result);
-          xmlTest.setName(test.get("name").toString());
-          setField(xmlTest, test, "junit", "setJUnit", Boolean.class);
-          setField(xmlTest, test, "verbose", "setVerbose", Integer.class);
-          xmlTest.setParallel((String) test.get("parallel"));
-          setField(xmlTest, test, "thread-count", "setThreadCount", Integer.class);
-          setField(xmlTest, test, "time-out", "setTimeOut", Long.class);
-          setField(xmlTest, test, "skipfailedinvocationcounts", "setSkipFailedInvocationCounts",
-              Boolean.class);
-          setField(xmlTest, test, "preserve-order", "setPreserveOrder", Boolean.class);
-
-          //
-          // <classes>
-          //
-          List<Map<String, String>> classes = (List<Map<String, String>>) test.get("classes");
-          for (Map<String, String> c : classes) {
-            XmlClass xmlClass = new XmlClass(c.get("name"));
-            xmlTest.getXmlClasses().add(xmlClass);
-          }
-
-          //
-          // <parameter>
-          //
-
-          //
-          // <groups>
-          //
-
-          //
-          // <packages>
-          //
-        }
-      }
-
-      //
-      // <method-selectors>
-      //
-
-      //
-      // <suite-files>
-      //
-
-      System.out.println(result.toXml());
-      return result;
-    }
-
-  private static void maybeAdd(StringBuilder sb, String key, Object value) {
-    maybeAdd(sb, "", key, value);
+  private static void maybeAdd(StringBuilder sb, String key, Object value, Object def) {
+    maybeAdd(sb, "", key, value, def);
   }
 
-  private static void maybeAdd(StringBuilder sb, String sp, String key, Object value) {
-    if (value != null) sb.append(sp).append(key).append(": ").append(value.toString())
-        .append("\n");
+  private static void maybeAdd(StringBuilder sb, String sp, String key, Object value, Object def) {
+    if (value != null && ! value.equals(def)) {
+      sb.append(sp).append(key).append(": ").append(value.toString()).append("\n");
+    }
   }
 
   public static StringBuilder toYaml(XmlSuite suite) {
     StringBuilder result = new StringBuilder();
 
-    maybeAdd(result, "name", suite.getName());
-    maybeAdd(result, "junit", suite.isJUnit());
-    maybeAdd(result, "verbose", suite.getVerbose());
-    maybeAdd(result, "threadCount", suite.getThreadCount());
-    maybeAdd(result, "timeOut", suite.getTimeOut());
-    maybeAdd(result, "skipFailedInvocationCounts", suite.skipFailedInvocationCounts());
+    maybeAdd(result, "name", suite.getName(), null);
+    maybeAdd(result, "junit", suite.isJUnit(), XmlSuite.DEFAULT_JUNIT);
+    maybeAdd(result, "verbose", suite.getVerbose(), XmlSuite.DEFAULT_VERBOSE);
+    maybeAdd(result, "threadCount", suite.getThreadCount(), XmlSuite.DEFAULT_THREAD_COUNT);
+    maybeAdd(result, "timeOut", suite.getTimeOut(), null);
+    maybeAdd(result, "parallel", suite.getParallel(), XmlSuite.DEFAULT_PARALLEL);
+    maybeAdd(result, "skipFailedInvocationCounts", suite.skipFailedInvocationCounts(),
+        XmlSuite.DEFAULT_SKIP_FAILED_INVOCATION_COUNTS);
 
     toYaml(result, "parameters", "", suite.getParameters());
     if (suite.getPackages().size() > 0) {
@@ -262,12 +142,15 @@ public class Yaml {
   private static void toYaml(StringBuilder result, String sp, XmlTest t) {
     String sp2 = sp + "  ";
     result.append(sp).append("- name: ").append(t.getName()).append("\n");
-    maybeAdd(result, sp2, "junit", t.isJUnit());
-    maybeAdd(result, sp2, "verbose", t.getVerbose());
-    maybeAdd(result, sp2, "parallel", t.getParallel());
-    maybeAdd(result, sp2, "timeOut", t.getTimeOut());
-    maybeAdd(result, sp2, "skipFailedInvocationCounts", t.skipFailedInvocationCounts());
-    maybeAdd(result, sp2, "preserveOrder", t.getPreserveOrder());
+
+    maybeAdd(result, "junit", sp2, t.isJUnit(), XmlSuite.DEFAULT_JUNIT);
+    maybeAdd(result, "verbose", sp2, t.getVerbose(), XmlSuite.DEFAULT_VERBOSE);
+    maybeAdd(result, "timeOut", sp2, t.getTimeOut(), null);
+    maybeAdd(result, "parallel", sp2, t.getParallel(), XmlSuite.DEFAULT_PARALLEL);
+    maybeAdd(result, "skipFailedInvocationCounts", t.skipFailedInvocationCounts(),
+        XmlSuite.DEFAULT_SKIP_FAILED_INVOCATION_COUNTS);
+
+    maybeAdd(result, "preserveOrder", sp2, t.getPreserveOrder(), XmlTest.DEFAULT_PRESERVE_ORDER);
 
     toYaml(result, "parameters", sp2, t.getTestParameters());
 
@@ -310,8 +193,7 @@ public class Yaml {
       result.append(" }\n");
     }
 
-    //    <!ELEMENT test (method-selectors?,) >
-
+    result.append("\n");
   }
 
   private static void toYaml(StringBuilder result, String sp2, XmlClass xc) {

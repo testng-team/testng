@@ -48,7 +48,8 @@ public class XmlTest implements Serializable, Cloneable {
   private Boolean m_skipFailedInvocationCounts = XmlSuite.DEFAULT_SKIP_FAILED_INVOCATION_COUNTS;
   private Map<String, List<Integer>> m_failedInvocationNumbers = null; // lazily initialized
 
-  private String m_preserveOrder;
+  public static String DEFAULT_PRESERVE_ORDER = "false";
+  private String m_preserveOrder = DEFAULT_PRESERVE_ORDER;
 
   /**
    * Constructs a <code>XmlTest</code> and adds it to suite's list of tests. 
