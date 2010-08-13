@@ -18,6 +18,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,7 @@ public class Yaml {
     }
   }
 
-  public static XmlSuite parse(String filePath) throws FileNotFoundException {
+  public static Collection<XmlSuite> parse(String filePath) throws FileNotFoundException {
     Constructor constructor = new Constructor(XmlSuite.class);
     {
       TypeDescription suiteDescription = new TypeDescription(XmlSuite.class);
@@ -73,6 +74,8 @@ public class Yaml {
 
     org.yaml.snakeyaml.Yaml y = new org.yaml.snakeyaml.Yaml(loader);
     XmlSuite result = (XmlSuite) y.load(new FileInputStream(new File(filePath)));
+
+    result.setFileName(filePath);
     // DEBUG
 //    System.out.println("[Yaml] " + result.toXml());
 
@@ -80,7 +83,7 @@ public class Yaml {
     for (XmlTest t : result.getTests()) {
       t.setSuite(result);
     }
-    return result;
+    return Arrays.asList(result);
 
 //    Map o = (Map) y.load(new FileInputStream(new File(filePath)));
 //
@@ -118,17 +121,21 @@ public class Yaml {
     maybeAdd(result, "junit", suite.isJUnit(), XmlSuite.DEFAULT_JUNIT);
     maybeAdd(result, "verbose", suite.getVerbose(), XmlSuite.DEFAULT_VERBOSE);
     maybeAdd(result, "threadCount", suite.getThreadCount(), XmlSuite.DEFAULT_THREAD_COUNT);
+    maybeAdd(result, "dataProviderhreadCount", suite.getDataProviderThreadCount(),
+        XmlSuite.DEFAULT_DATA_PROVIDER_THREAD_COUNT);
     maybeAdd(result, "timeOut", suite.getTimeOut(), null);
     maybeAdd(result, "parallel", suite.getParallel(), XmlSuite.DEFAULT_PARALLEL);
     maybeAdd(result, "skipFailedInvocationCounts", suite.skipFailedInvocationCounts(),
         XmlSuite.DEFAULT_SKIP_FAILED_INVOCATION_COUNTS);
 
     toYaml(result, "parameters", "", suite.getParameters());
-    if (suite.getPackages().size() > 0) {
-      result.append("packages:\n");
-      toYaml(result, suite.getPackages());
+    toYaml(result, suite.getPackages());
+
+    if (suite.getListeners().size() > 0) {
+      result.append("listeners:\n");
+      toYaml(result, "  ", suite.getListeners());
     }
-    toYaml(result, "listeners", suite.getListeners());
+
     if (suite.getTests().size() > 0) {
       result.append("tests:\n");
       for (XmlTest t : suite.getTests()) {
@@ -229,8 +236,11 @@ public class Yaml {
   private static final String SP = "  ";
 
   private static void toYaml(StringBuilder sb, List<XmlPackage> packages) {
-    for (XmlPackage p : packages) {
-      toYaml(sb, "  ", p);
+    if (packages.size() > 0) {
+      sb.append("packages:\n");
+      for (XmlPackage p : packages) {
+        toYaml(sb, "  ", p);
+      }
     }
   }
 
@@ -274,7 +284,13 @@ public class Yaml {
 
   public static void main(String[] args)
       throws FileNotFoundException, ParserConfigurationException, SAXException, IOException {
-    Collection<XmlSuite> s = new Parser(args[0]).parse();
-    System.out.println(Yaml.toYaml(s.iterator().next()));
+    Collection<XmlSuite> s;
+    if (args[0].endsWith("xml")) {
+      s = new Parser(args[0]).parse();
+      System.out.println(Yaml.toYaml(s.iterator().next()));
+    } else {
+      s = parse(args[0]);
+      System.out.println(s.iterator().next().toXml());
+    }
   }
 }

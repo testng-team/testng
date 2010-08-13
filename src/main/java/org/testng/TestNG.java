@@ -342,9 +342,8 @@ public class TestNG {
     return new Parser(filePath).parse();
   }
 
-  private Collection<XmlSuite> parseYamlFile(String suitePath)
-      throws FileNotFoundException {
-    return Arrays.asList(org.testng.internal.Yaml.parse(suitePath));
+  private Collection<XmlSuite> parseYamlFile(String suitePath) throws FileNotFoundException {
+    return org.testng.internal.Yaml.parse(suitePath);
   }
 
   public void initializeSuitesAndJarFile() {
