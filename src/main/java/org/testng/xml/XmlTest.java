@@ -20,10 +20,10 @@ import java.util.Properties;
 public class XmlTest implements Serializable, Cloneable {
   public static int DEFAULT_TIMEOUT_MS = Integer.MAX_VALUE;
 
-  private final XmlSuite m_suite;
+  private XmlSuite m_suite;
   private String m_name = TestNG.DEFAULT_COMMAND_LINE_SUITE_NAME;
-  private Integer m_verbose;
-  private Boolean m_isJUnit;
+  private Integer m_verbose = XmlSuite.DEFAULT_VERBOSE;
+  private Boolean m_isJUnit = null;
   private int m_threadCount= -1;
 
   private List<XmlClass> m_xmlClasses = Lists.newArrayList();
@@ -45,7 +45,7 @@ public class XmlTest implements Serializable, Cloneable {
   private List<XmlPackage> m_xmlPackages = Lists.newArrayList();
   
   private String m_timeOut;
-  private Boolean m_skipFailedInvocationCounts;
+  private Boolean m_skipFailedInvocationCounts = XmlSuite.DEFAULT_SKIP_FAILED_INVOCATION_COUNTS;
   private Map<String, List<Integer>> m_failedInvocationNumbers = null; // lazily initialized
 
   private String m_preserveOrder;
@@ -548,5 +548,145 @@ public class XmlTest implements Serializable, Cloneable {
 
   public String getPreserveOrder() {
     return m_preserveOrder;
+  }
+
+  public void setSuite(XmlSuite result) {
+    m_suite = result;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result
+        + ((m_excludedGroups == null) ? 0 : m_excludedGroups.hashCode());
+    result = prime * result
+        + ((m_expression == null) ? 0 : m_expression.hashCode());
+    result = prime
+        * result
+        + ((m_failedInvocationNumbers == null) ? 0 : m_failedInvocationNumbers
+            .hashCode());
+    result = prime * result
+        + ((m_includedGroups == null) ? 0 : m_includedGroups.hashCode());
+    result = prime * result + ((m_isJUnit == null) ? 0 : m_isJUnit.hashCode());
+    result = prime * result
+        + ((m_metaGroups == null) ? 0 : m_metaGroups.hashCode());
+    result = prime * result
+        + ((m_methodSelectors == null) ? 0 : m_methodSelectors.hashCode());
+    result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
+    result = prime * result
+        + ((m_parallel == null) ? 0 : m_parallel.hashCode());
+    result = prime * result
+        + ((m_parameters == null) ? 0 : m_parameters.hashCode());
+    result = prime * result
+        + ((m_preserveOrder == null) ? 0 : m_preserveOrder.hashCode());
+    result = prime
+        * result
+        + ((m_skipFailedInvocationCounts == null) ? 0
+            : m_skipFailedInvocationCounts.hashCode());
+    result = prime * result + m_threadCount;
+    result = prime * result + ((m_timeOut == null) ? 0 : m_timeOut.hashCode());
+    result = prime * result + ((m_verbose == null) ? 0 : m_verbose.hashCode());
+    result = prime * result
+        + ((m_xmlClasses == null) ? 0 : m_xmlClasses.hashCode());
+    result = prime * result
+        + ((m_xmlPackages == null) ? 0 : m_xmlPackages.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    XmlTest other = (XmlTest) obj;
+    if (m_excludedGroups == null) {
+      if (other.m_excludedGroups != null)
+        return false;
+    } else if (!m_excludedGroups.equals(other.m_excludedGroups))
+      return false;
+    if (m_expression == null) {
+      if (other.m_expression != null)
+        return false;
+    } else if (!m_expression.equals(other.m_expression))
+      return false;
+    if (m_failedInvocationNumbers == null) {
+      if (other.m_failedInvocationNumbers != null)
+        return false;
+    } else if (!m_failedInvocationNumbers
+        .equals(other.m_failedInvocationNumbers))
+      return false;
+    if (m_includedGroups == null) {
+      if (other.m_includedGroups != null)
+        return false;
+    } else if (!m_includedGroups.equals(other.m_includedGroups))
+      return false;
+    if (m_isJUnit == null) {
+      if (other.m_isJUnit != null && ! other.m_isJUnit.equals(XmlSuite.DEFAULT_JUNIT))
+        return false;
+    } else if (!m_isJUnit.equals(other.m_isJUnit))
+      return false;
+    if (m_metaGroups == null) {
+      if (other.m_metaGroups != null)
+        return false;
+    } else if (!m_metaGroups.equals(other.m_metaGroups))
+      return false;
+    if (m_methodSelectors == null) {
+      if (other.m_methodSelectors != null)
+        return false;
+    } else if (!m_methodSelectors.equals(other.m_methodSelectors))
+      return false;
+    if (m_name == null) {
+      if (other.m_name != null)
+        return false;
+    } else if (!m_name.equals(other.m_name))
+      return false;
+    if (m_parallel == null) {
+      if (other.m_parallel != null)
+        return false;
+    } else if (!m_parallel.equals(other.m_parallel))
+      return false;
+    if (m_parameters == null) {
+      if (other.m_parameters != null)
+        return false;
+    } else if (!m_parameters.equals(other.m_parameters))
+      return false;
+    if (m_preserveOrder == null) {
+      if (other.m_preserveOrder != null)
+        return false;
+    } else if (!m_preserveOrder.equals(other.m_preserveOrder))
+      return false;
+    if (m_skipFailedInvocationCounts == null) {
+      if (other.m_skipFailedInvocationCounts != null)
+        return false;
+    } else if (!m_skipFailedInvocationCounts
+        .equals(other.m_skipFailedInvocationCounts))
+      return false;
+    if (m_threadCount != other.m_threadCount)
+      return false;
+    if (m_timeOut == null) {
+      if (other.m_timeOut != null)
+        return false;
+    } else if (!m_timeOut.equals(other.m_timeOut))
+      return false;
+    if (m_verbose == null) {
+      if (other.m_verbose != null)
+        return false;
+    } else if (!m_verbose.equals(other.m_verbose))
+      return false;
+    if (m_xmlClasses == null) {
+      if (other.m_xmlClasses != null)
+        return false;
+    } else if (!m_xmlClasses.equals(other.m_xmlClasses))
+      return false;
+    if (m_xmlPackages == null) {
+      if (other.m_xmlPackages != null)
+        return false;
+    } else if (!m_xmlPackages.equals(other.m_xmlPackages))
+      return false;
+    return true;
   }
 }
