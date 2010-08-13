@@ -10,7 +10,7 @@
     <listener class-name="test.invokedmethodlistener.MyListener" />
   </listeners>
 
-  <test name="Regression2">
+  <test name="Regression2" verbose="2">
 <!--
     <packages>
       <package name="test.testng355.org.apache.tapestry5" />
@@ -24,17 +24,15 @@
     </groups>
     <parameter name="count" value="10"/>
     <classes>
-      <class name="test.methodselectors.CommandLineTest">
-<!-- 
-      <class name="test.yaml.YamlTest">
-      <class name="test.xml.XmlVerifyTest">
-        <methods>
-          <include name="commandLineNegativePriorityAllGroups" />
-        </methods>
       <class name="test.listeners.ResultEndMillisTest">
+<!-- 
+        <methods>
+          <include name="withFactory" />
+        </methods>
  -->
        </class>
 <!-- 
+      <class name="test.methodselectors.CommandLineTest">
        <class name="test.inject.NoInjectionTest" />
       <class name="test.tmp.TestFactory" />
       <class name="test.thread.MultiThreadedDependentTest" />
