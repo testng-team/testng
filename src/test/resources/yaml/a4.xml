@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+  
+<suite name="SingleSuite" verbose="2">
+
+	<suite-files>
+	  <suite-file path="a4-a.yaml" />
+	  <suite-file path="a4-b.yaml" />
+	</suite-files>
+
+</suite>
