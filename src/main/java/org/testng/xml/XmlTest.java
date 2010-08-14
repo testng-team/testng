@@ -641,94 +641,94 @@ public class XmlTest implements Serializable, Cloneable {
     if (this == obj)
       return true;
     if (obj == null)
-      return false;
+      return XmlSuite.f();
     if (getClass() != obj.getClass())
-      return false;
+      return XmlSuite.f();
     XmlTest other = (XmlTest) obj;
     if (m_excludedGroups == null) {
       if (other.m_excludedGroups != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_excludedGroups.equals(other.m_excludedGroups))
-      return false;
+      return XmlSuite.f();
     if (m_expression == null) {
       if (other.m_expression != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_expression.equals(other.m_expression))
-      return false;
+      return XmlSuite.f();
     if (m_failedInvocationNumbers == null) {
       if (other.m_failedInvocationNumbers != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_failedInvocationNumbers
         .equals(other.m_failedInvocationNumbers))
-      return false;
+      return XmlSuite.f();
     if (m_includedGroups == null) {
       if (other.m_includedGroups != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_includedGroups.equals(other.m_includedGroups))
-      return false;
+      return XmlSuite.f();
     if (m_isJUnit == null) {
       if (other.m_isJUnit != null && ! other.m_isJUnit.equals(XmlSuite.DEFAULT_JUNIT))
-        return false;
+        return XmlSuite.f();
     } else if (!m_isJUnit.equals(other.m_isJUnit))
-      return false;
+      return XmlSuite.f();
     if (m_metaGroups == null) {
       if (other.m_metaGroups != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_metaGroups.equals(other.m_metaGroups))
-      return false;
+      return XmlSuite.f();
     if (m_methodSelectors == null) {
       if (other.m_methodSelectors != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_methodSelectors.equals(other.m_methodSelectors))
-      return false;
+      return XmlSuite.f();
     if (m_name == null) {
       if (other.m_name != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_name.equals(other.m_name))
-      return false;
+      return XmlSuite.f();
     if (m_parallel == null) {
       if (other.m_parallel != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_parallel.equals(other.m_parallel))
-      return false;
+      return XmlSuite.f();
     if (m_parameters == null) {
       if (other.m_parameters != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_parameters.equals(other.m_parameters))
-      return false;
+      return XmlSuite.f();
     if (m_preserveOrder == null) {
       if (other.m_preserveOrder != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_preserveOrder.equals(other.m_preserveOrder))
-      return false;
+      return XmlSuite.f();
     if (m_skipFailedInvocationCounts == null) {
       if (other.m_skipFailedInvocationCounts != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_skipFailedInvocationCounts
         .equals(other.m_skipFailedInvocationCounts))
-      return false;
+      return XmlSuite.f();
     if (m_threadCount != other.m_threadCount)
-      return false;
+      return XmlSuite.f();
     if (m_timeOut == null) {
       if (other.m_timeOut != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_timeOut.equals(other.m_timeOut))
-      return false;
+      return XmlSuite.f();
     if (m_verbose == null) {
       if (other.m_verbose != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_verbose.equals(other.m_verbose))
-      return false;
+      return XmlSuite.f();
     if (m_xmlClasses == null) {
       if (other.m_xmlClasses != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_xmlClasses.equals(other.m_xmlClasses))
-      return false;
+      return XmlSuite.f();
     if (m_xmlPackages == null) {
       if (other.m_xmlPackages != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_xmlPackages.equals(other.m_xmlPackages))
-      return false;
+      return XmlSuite.f();
     return true;
   }
 }

@@ -10,13 +10,14 @@
     <listener class-name="test.invokedmethodlistener.MyListener" />
   </listeners>
 
-  <test name="Regression2" verbose="2">
-<!--
-    <packages>
-      <package name="test.testng355.org.apache.tapestry5" />
-      <package name="test.testng355.org.apache.tapestry5.dom" />
-    </packages>
+<!-- 
+  <packages>
+    <package name="test.testng355.org.apache.tapestry5" />
+    <package name="test.testng355.org.apache.tapestry5.dom" />
+  </packages>
 -->
+
+  <test name="Regression2" verbose="2">
     <groups>
       <run>
         <exclude name="broken" />

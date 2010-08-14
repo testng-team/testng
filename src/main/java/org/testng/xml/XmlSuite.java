@@ -699,7 +699,7 @@ public class XmlSuite implements Serializable, Cloneable {
     return result;
   }
 
-  private boolean f() {
+  static boolean f() {
     return false;
   }
 

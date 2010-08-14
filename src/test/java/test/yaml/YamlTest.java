@@ -21,9 +21,9 @@ public class YamlTest extends SimpleBaseTest {
   @DataProvider
   public Object[][] dp() {
     return new Object[][] {
-//      new Object[] { "a1" },
+      new Object[] { "a1" },
       new Object[] { "a3" },
-//      new Object[] { "a4" },
+      new Object[] { "a4" },
     };
   }
 
