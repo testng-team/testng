@@ -17,8 +17,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +52,8 @@ public class Yaml {
     }
   }
 
-  public static Collection<XmlSuite> parse(String filePath) throws FileNotFoundException {
+  public static XmlSuite parse(String filePath, InputStream is)
+      throws FileNotFoundException {
     Constructor constructor = new Constructor(XmlSuite.class);
     {
       TypeDescription suiteDescription = new TypeDescription(XmlSuite.class);
@@ -73,7 +74,8 @@ public class Yaml {
     Loader loader = new Loader(constructor);
 
     org.yaml.snakeyaml.Yaml y = new org.yaml.snakeyaml.Yaml(loader);
-    XmlSuite result = (XmlSuite) y.load(new FileInputStream(new File(filePath)));
+    if (is == null) is = new FileInputStream(new File(filePath));
+    XmlSuite result = (XmlSuite) y.load(is);
 
     result.setFileName(filePath);
     // DEBUG
@@ -84,11 +86,7 @@ public class Yaml {
       t.setSuite(result);
     }
 
-    return Arrays.asList(result);
-
-//    Map o = (Map) y.load(new FileInputStream(new File(filePath)));
-//
-//    return parse(o);
+    return result;
   }
 
   private static void setField(Object xml, Map<?, ?> map, String key, String methodName,
@@ -293,14 +291,7 @@ public class Yaml {
 
   public static void main(String[] args)
       throws FileNotFoundException, ParserConfigurationException, SAXException, IOException {
-    Collection<XmlSuite> s;
-    if (args[0].endsWith("xml")) {
-      s = new Parser(args[0]).parse();
-      System.out.println(Yaml.toYaml(s.iterator().next()));
-    } else {
-      s = parse(args[0]);
-      System.out.println(s.iterator().next().toXml());
-    }
-    System.out.println(Yaml.toYaml(s.iterator().next()));
+    Collection<XmlSuite> s = new Parser(args[0]).parse();
+    System.out.println(s.iterator().next().toXml());
   }
 }

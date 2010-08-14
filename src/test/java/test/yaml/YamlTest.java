@@ -4,7 +4,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.internal.Yaml;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
 import org.xml.sax.SAXException;
@@ -34,7 +33,7 @@ public class YamlTest extends SimpleBaseTest {
       throws ParserConfigurationException, SAXException, IOException {
     String name = "a3";
     Collection<XmlSuite> s1 =
-        Yaml.parse(getPathToResource("yaml" + File.separator + name + ".yaml"));
+        new Parser(getPathToResource("yaml" + File.separator + name + ".yaml")).parse();
     Collection<XmlSuite> s2 =
         new Parser(getPathToResource("yaml" + File.separator + name + ".xml")).parse();
 

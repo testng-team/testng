@@ -337,15 +337,6 @@ public class TestNG {
     m_jarPath = jarPath;
   }
 
-  private Collection<XmlSuite> parseXmlFile(String filePath)
-      throws FileNotFoundException, ParserConfigurationException, SAXException, IOException {
-    return new Parser(filePath).parse();
-  }
-
-  private Collection<XmlSuite> parseYamlFile(String suitePath) throws FileNotFoundException {
-    return org.testng.internal.Yaml.parse(suitePath);
-  }
-
   public void initializeSuitesAndJarFile() {
     // The Eclipse plug-in (RemoteTestNG) might have invoked this method already
     // so don't initialize suites twice.
@@ -359,16 +350,8 @@ public class TestNG {
         LOGGER.debug("suiteXmlPath: \"" + suitePath + "\"");
       }
       try {
-        Collection<XmlSuite> allSuites;
-        if (suitePath.endsWith("xml")) {
-          allSuites = parseXmlFile(suitePath);
-        }
-        else if (suitePath.endsWith("yaml")) {
-          allSuites = parseYamlFile(suitePath);
-        }
-        else {
-          throw new TestNGException("Unknown file type:" + suitePath);
-        }
+        Parser parser = new Parser(suitePath);
+        Collection<XmlSuite> allSuites = parser.parse();
 
         for (XmlSuite s : allSuites) {
           // If test names were specified, only run these test names

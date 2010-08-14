@@ -564,245 +564,264 @@ public class XmlSuite implements Serializable, Cloneable {
     return result;
   }
 
-    /**
-     * Sets the timeout.
-     *
-     * @param timeOut the timeout.
-     */
-    public void setTimeOut(String timeOut) {
-        m_timeOut = timeOut;
-    }
+  /**
+   * Sets the timeout.
+   *
+   * @param timeOut the timeout.
+   */
+  public void setTimeOut(String timeOut) {
+      m_timeOut = timeOut;
+  }
 
-    /**
-     * Returns the timeout.
-     * @return the timeout.
-     */
-    public String getTimeOut() {
-        return m_timeOut;
-    }
-    
-    /**
-     * Returns the timeout as a long value specifying the default value to be used if
-     * no timeout was specified.
-     *
-     * @param def the the default value to be used if no timeout was specified.
-     * @return the timeout as a long value specifying the default value to be used if
-     * no timeout was specified.
-     */
-    public long getTimeOut(long def) {
-        long result = def;
-        if (m_timeOut != null) {
-            result = new Long(m_timeOut).longValue();
-        }
-        
-        return result;
-    }
+  /**
+   * Returns the timeout.
+   * @return the timeout.
+   */
+  public String getTimeOut() {
+      return m_timeOut;
+  }
+  
+  /**
+   * Returns the timeout as a long value specifying the default value to be used if
+   * no timeout was specified.
+   *
+   * @param def the the default value to be used if no timeout was specified.
+   * @return the timeout as a long value specifying the default value to be used if
+   * no timeout was specified.
+   */
+  public long getTimeOut(long def) {
+      long result = def;
+      if (m_timeOut != null) {
+          result = new Long(m_timeOut).longValue();
+      }
+      
+      return result;
+  }
 
-    /**
-     * Sets the suite files.
-     *
-     * @param files the suite files.
-     */
-    public void setSuiteFiles(List<String> files) {
-      m_suiteFiles = files;
-    }
-    
-    /**
-     * Returns the suite files.
-     * @return the suite files.
-     */
-    public List<String> getSuiteFiles() {
-      return m_suiteFiles;
-    }
+  /**
+   * Sets the suite files.
+   *
+   * @param files the suite files.
+   */
+  public void setSuiteFiles(List<String> files) {
+    m_suiteFiles = files;
+  }
+  
+  /**
+   * Returns the suite files.
+   * @return the suite files.
+   */
+  public List<String> getSuiteFiles() {
+    return m_suiteFiles;
+  }
 
-    public void setListeners(List<String> listeners) {
-      m_listeners = listeners;
-    }
-    
-    public List<String> getListeners() {
-      if (m_parentSuite != null) {
-        List<String> listeners = m_parentSuite.getListeners();
-        for (String listener : listeners) {
-          if (!m_listeners.contains(listener)) {
-             m_listeners.add(listener);
-          }
+  public void setListeners(List<String> listeners) {
+    m_listeners = listeners;
+  }
+  
+  public List<String> getListeners() {
+    if (m_parentSuite != null) {
+      List<String> listeners = m_parentSuite.getListeners();
+      for (String listener : listeners) {
+        if (!m_listeners.contains(listener)) {
+           m_listeners.add(listener);
         }
       }
-      return m_listeners;
     }
+    return m_listeners;
+  }
 
-    public void setDataProviderThreadCount(int count) {
-      m_dataProviderThreadCount = count;
-    }
+  public void setDataProviderThreadCount(int count) {
+    m_dataProviderThreadCount = count;
+  }
 
-    public int getDataProviderThreadCount() {
-      return m_dataProviderThreadCount;
-    }
-    
-    public void setParentSuite(XmlSuite parentSuite) {
-      m_parentSuite = parentSuite;
-    }
-     
-    public XmlSuite getParentSuite() {
-      return m_parentSuite;
-    }
+  public int getDataProviderThreadCount() {
+    return m_dataProviderThreadCount;
+  }
+  
+  public void setParentSuite(XmlSuite parentSuite) {
+    m_parentSuite = parentSuite;
+  }
+   
+  public XmlSuite getParentSuite() {
+    return m_parentSuite;
+  }
 
-    public List<XmlSuite> getChildSuites() {
-      return m_childSuites;
-    }
+  public List<XmlSuite> getChildSuites() {
+    return m_childSuites;
+  }
 
-    @Override
-    public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result
-          + ((m_childSuites == null) ? 0 : m_childSuites.hashCode());
-      result = prime
-          * result
-          + ((m_configFailurePolicy == null) ? 0 : m_configFailurePolicy
-              .hashCode());
-      result = prime * result + m_dataProviderThreadCount;
-      result = prime * result
-          + ((m_expression == null) ? 0 : m_expression.hashCode());
-      result = prime * result
-          + ((m_fileName == null) ? 0 : m_fileName.hashCode());
-      result = prime * result
-          + ((m_isJUnit == null) ? 0 : m_isJUnit.hashCode());
-      result = prime * result
-          + ((m_listeners == null) ? 0 : m_listeners.hashCode());
-      result = prime * result
-          + ((m_methodSelectors == null) ? 0 : m_methodSelectors.hashCode());
-      result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
-      result = prime * result
-          + ((m_objectFactory == null) ? 0 : m_objectFactory.hashCode());
-      result = prime * result
-          + ((m_parallel == null) ? 0 : m_parallel.hashCode());
-      result = prime * result
-          + ((m_parameters == null) ? 0 : m_parameters.hashCode());
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result
+        + ((m_childSuites == null) ? 0 : m_childSuites.hashCode());
+    result = prime
+        * result
+        + ((m_configFailurePolicy == null) ? 0 : m_configFailurePolicy
+            .hashCode());
+    result = prime * result + m_dataProviderThreadCount;
+    result = prime * result
+        + ((m_expression == null) ? 0 : m_expression.hashCode());
+    result = prime * result
+        + ((m_fileName == null) ? 0 : m_fileName.hashCode());
+    result = prime * result
+        + ((m_isJUnit == null) ? 0 : m_isJUnit.hashCode());
+    result = prime * result
+        + ((m_listeners == null) ? 0 : m_listeners.hashCode());
+    result = prime * result
+        + ((m_methodSelectors == null) ? 0 : m_methodSelectors.hashCode());
+    result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
+    result = prime * result
+        + ((m_objectFactory == null) ? 0 : m_objectFactory.hashCode());
+    result = prime * result
+        + ((m_parallel == null) ? 0 : m_parallel.hashCode());
+    result = prime * result
+        + ((m_parameters == null) ? 0 : m_parameters.hashCode());
 //      result = prime * result
 //          + ((m_parentSuite == null) ? 0 : m_parentSuite.hashCode());
-      result = prime
-          * result
-          + ((m_skipFailedInvocationCounts == null) ? 0
-              : m_skipFailedInvocationCounts.hashCode());
-      result = prime * result
-          + ((m_suiteFiles == null) ? 0 : m_suiteFiles.hashCode());
-      result = prime * result + ((m_test == null) ? 0 : m_test.hashCode());
-      result = prime * result + ((m_tests == null) ? 0 : m_tests.hashCode());
-      result = prime * result + m_threadCount;
-      result = prime * result
-          + ((m_timeOut == null) ? 0 : m_timeOut.hashCode());
-      result = prime * result
-          + ((m_verbose == null) ? 0 : m_verbose.hashCode());
-      result = prime * result
-          + ((m_xmlPackages == null) ? 0 : m_xmlPackages.hashCode());
-      return result;
-    }
+    result = prime
+        * result
+        + ((m_skipFailedInvocationCounts == null) ? 0
+            : m_skipFailedInvocationCounts.hashCode());
+    result = prime * result
+        + ((m_suiteFiles == null) ? 0 : m_suiteFiles.hashCode());
+    result = prime * result + ((m_test == null) ? 0 : m_test.hashCode());
+    result = prime * result + ((m_tests == null) ? 0 : m_tests.hashCode());
+    result = prime * result + m_threadCount;
+    result = prime * result
+        + ((m_timeOut == null) ? 0 : m_timeOut.hashCode());
+    result = prime * result
+        + ((m_verbose == null) ? 0 : m_verbose.hashCode());
+    result = prime * result
+        + ((m_xmlPackages == null) ? 0 : m_xmlPackages.hashCode());
+    return result;
+  }
 
-    @Override
-    public boolean equals(Object obj) {
-      if (this == obj)
-        return true;
-      if (obj == null)
+  private boolean f() {
+    return false;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    XmlSuite other = (XmlSuite) obj;
+    if (m_childSuites == null) {
+      if (other.m_childSuites != null)
         return false;
-      if (getClass() != obj.getClass())
+    } else if (!m_childSuites.equals(other.m_childSuites))
+      return false;
+    if (m_configFailurePolicy == null) {
+      if (other.m_configFailurePolicy != null)
         return false;
-      XmlSuite other = (XmlSuite) obj;
-      if (m_childSuites == null) {
-        if (other.m_childSuites != null)
-          return false;
-      } else if (!m_childSuites.equals(other.m_childSuites))
+    } else if (!m_configFailurePolicy.equals(other.m_configFailurePolicy))
+      return false;
+    if (m_dataProviderThreadCount != other.m_dataProviderThreadCount)
+      return false;
+    if (m_expression == null) {
+      if (other.m_expression != null)
         return false;
-      if (m_configFailurePolicy == null) {
-        if (other.m_configFailurePolicy != null)
-          return false;
-      } else if (!m_configFailurePolicy.equals(other.m_configFailurePolicy))
+    } else if (!m_expression.equals(other.m_expression))
+      return false;
+    if (m_isJUnit == null) {
+      if (other.m_isJUnit != null)
         return false;
-      if (m_dataProviderThreadCount != other.m_dataProviderThreadCount)
+    } else if (!m_isJUnit.equals(other.m_isJUnit))
+      return false;
+    if (m_listeners == null) {
+      if (other.m_listeners != null)
         return false;
-      if (m_expression == null) {
-        if (other.m_expression != null)
-          return false;
-      } else if (!m_expression.equals(other.m_expression))
+    } else if (!m_listeners.equals(other.m_listeners))
+      return false;
+    if (m_methodSelectors == null) {
+      if (other.m_methodSelectors != null)
         return false;
-      if (m_isJUnit == null) {
-        if (other.m_isJUnit != null)
-          return false;
-      } else if (!m_isJUnit.equals(other.m_isJUnit))
+    } else if (!m_methodSelectors.equals(other.m_methodSelectors))
+      return false;
+    if (m_name == null) {
+      if (other.m_name != null)
         return false;
-      if (m_listeners == null) {
-        if (other.m_listeners != null)
-          return false;
-      } else if (!m_listeners.equals(other.m_listeners))
+    } else if (!m_name.equals(other.m_name))
+      return false;
+    if (m_objectFactory == null) {
+      if (other.m_objectFactory != null)
         return false;
-      if (m_methodSelectors == null) {
-        if (other.m_methodSelectors != null)
-          return false;
-      } else if (!m_methodSelectors.equals(other.m_methodSelectors))
+    } else if (!m_objectFactory.equals(other.m_objectFactory))
+      return false;
+    if (! eq(m_parallel, other.m_parallel, XmlSuite.DEFAULT_PARALLEL)) {
+      return false;
+    }
+    if (m_parameters == null) {
+      if (other.m_parameters != null)
         return false;
-      if (m_name == null) {
-        if (other.m_name != null)
-          return false;
-      } else if (!m_name.equals(other.m_name))
-        return false;
-      if (m_objectFactory == null) {
-        if (other.m_objectFactory != null)
-          return false;
-      } else if (!m_objectFactory.equals(other.m_objectFactory))
-        return false;
-      if (m_parallel == null) {
-        if (other.m_parallel != null)
-          return false;
-      } else if (!m_parallel.equals(other.m_parallel))
-        return false;
-      if (m_parameters == null) {
-        if (other.m_parameters != null)
-          return false;
-      } else if (!m_parameters.equals(other.m_parameters))
-        return false;
+    } else if (!m_parameters.equals(other.m_parameters))
+      return false;
 //      if (m_parentSuite == null) {
 //        if (other.m_parentSuite != null)
 //          return false;
 //      } else if (!m_parentSuite.equals(other.m_parentSuite))
 //        return false;
-      if (m_skipFailedInvocationCounts == null) {
-        if (other.m_skipFailedInvocationCounts != null)
-          return false;
-      } else if (!m_skipFailedInvocationCounts
-          .equals(other.m_skipFailedInvocationCounts))
+    if (m_skipFailedInvocationCounts == null) {
+      if (other.m_skipFailedInvocationCounts != null)
         return false;
-      if (m_suiteFiles == null) {
-        if (other.m_suiteFiles != null)
-          return false;
-      } else if (!m_suiteFiles.equals(other.m_suiteFiles))
+    } else if (!m_skipFailedInvocationCounts
+        .equals(other.m_skipFailedInvocationCounts))
+      return false;
+    if (m_suiteFiles == null) {
+      if (other.m_suiteFiles != null)
         return false;
-      if (m_test == null) {
-        if (other.m_test != null)
-          return false;
-      } else if (!m_test.equals(other.m_test))
+    } else if (!m_suiteFiles.equals(other.m_suiteFiles))
+      return false;
+    if (m_test == null) {
+      if (other.m_test != null)
         return false;
-      if (m_tests == null) {
-        if (other.m_tests != null)
-          return false;
-      } else if (!m_tests.equals(other.m_tests))
+    } else if (!m_test.equals(other.m_test))
+      return false;
+    if (m_tests == null) {
+      if (other.m_tests != null)
         return false;
-      if (m_threadCount != other.m_threadCount)
+    } else if (!m_tests.equals(other.m_tests))
+      return false;
+    if (m_threadCount != other.m_threadCount)
+      return false;
+    if (m_timeOut == null) {
+      if (other.m_timeOut != null)
         return false;
-      if (m_timeOut == null) {
-        if (other.m_timeOut != null)
-          return false;
-      } else if (!m_timeOut.equals(other.m_timeOut))
+    } else if (!m_timeOut.equals(other.m_timeOut))
+      return false;
+    if (m_verbose == null) {
+      if (other.m_verbose != null)
         return false;
-      if (m_verbose == null) {
-        if (other.m_verbose != null)
-          return false;
-      } else if (!m_verbose.equals(other.m_verbose))
+    } else if (!m_verbose.equals(other.m_verbose))
+      return false;
+    if (m_xmlPackages == null) {
+      if (other.m_xmlPackages != null)
         return false;
-      if (m_xmlPackages == null) {
-        if (other.m_xmlPackages != null)
-          return false;
-      } else if (!m_xmlPackages.equals(other.m_xmlPackages))
-        return false;
-      return true;
+    } else if (!m_xmlPackages.equals(other.m_xmlPackages))
+      return false;
+    return true;
+  }
+
+
+  /**
+   * The DTD sometimes forces certain attributes to receive a default value. Such
+   * a value is considered equal to another one if that other one is null.
+   */
+  private boolean eq(String o1, String o2, String def) {
+    boolean result = false;
+    if (o1 == null && o2 == null) result = true;
+    else if (o1 != null) {
+      result = o1.equals(o2) || (def.equals(o1) && o2 == null);
     }
+    else if (o2 != null) {
+      result = o2.equals(o1) || (def.equals(o2) && o1 == null);
+    }
+    return result;
+  }
 }
