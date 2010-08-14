@@ -171,7 +171,7 @@ public class XmlTest implements Serializable, Cloneable {
    */
   public int getVerbose() {
     Integer result = m_verbose;
-    if (null == result) {
+    if (null == result || XmlSuite.DEFAULT_VERBOSE.equals(m_verbose)) {
       result = m_suite.getVerbose();
     }
     

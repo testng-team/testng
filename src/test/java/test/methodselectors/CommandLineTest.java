@@ -15,27 +15,44 @@ import java.util.List;
 
 public class CommandLineTest extends SimpleBaseTest {
 
-  private String[] argv;
+  private String[] ARG_WITHOUT_CLASSES =
+    new String[]{
+      "-log", "0",
+      "-d", OutputDirectoryPatch.getOutputDirectory(),
+      "-methodselectors", "",
+      ""
+  };
+
+  private String[] ARG_WITH_GROUPS =
+    new String[]{
+      "-log", "0",
+      "-d", OutputDirectoryPatch.getOutputDirectory(),
+      "-testclass", "test.methodselectors.SampleTest",
+      "-methodselectors", "",
+      "-groups", ""
+  };
+
+  private String[] ARG_WITHOUT_GROUPS =
+    new String[]{
+      "-log", "0",
+      "-d", OutputDirectoryPatch.getOutputDirectory(),
+      "-testclass", "test.methodselectors.SampleTest",
+      "-methodselectors", "",
+  };
+
   private TestListenerAdapter tla;
   
   @BeforeMethod
   public void setup() {
     ppp("setup()");
-    argv = new String[]{
-        "-log", "0",
-        "-d", OutputDirectoryPatch.getOutputDirectory(),
-        "-testclass", "test.methodselectors.SampleTest",
-        "-methodselectors", "",
-        "-groups", ""
-    };
     tla = new TestListenerAdapter();
   }
   
   @Test
   public void commandLineNegativePriorityAllGroups() {
     ppp("commandLineNegativePriorityAllGroups()");
-    argv[7] = "test.methodselectors.AllTestsMethodSelector:-1";
-    TestNG.privateMain(argv, tla);
+    ARG_WITHOUT_GROUPS[7] = "test.methodselectors.AllTestsMethodSelector:-1";
+    TestNG.privateMain(ARG_WITHOUT_GROUPS, tla);
     String[] passed = {
         "test1", "test2", "test3"
     };
@@ -48,8 +65,8 @@ public class CommandLineTest extends SimpleBaseTest {
   @Test
   public void commandLineNegativePriorityGroup2() {
     ppp("commandLineNegativePriorityGroup2()");
-    argv[7] = "test.methodselectors.Test2MethodSelector:-1";
-    TestNG.privateMain(argv, tla);
+    ARG_WITHOUT_GROUPS[7] = "test.methodselectors.Test2MethodSelector:-1";
+    TestNG.privateMain(ARG_WITHOUT_GROUPS, tla);
     String[] passed = {
         "test2"
     };
@@ -62,9 +79,9 @@ public class CommandLineTest extends SimpleBaseTest {
   @Test
   public void commandLineLessThanPriorityTest1Test() {
     ppp("commandLineLessThanPriorityTest1Test()");
-    argv[7] = "test.methodselectors.Test2MethodSelector:5";
-    argv[9] = "test1";
-    TestNG.privateMain(argv, tla);
+    ARG_WITH_GROUPS[7] = "test.methodselectors.Test2MethodSelector:5";
+    ARG_WITH_GROUPS[9] = "test1";
+    TestNG.privateMain(ARG_WITH_GROUPS, tla);
     String[] passed = {
         "test1", "test2"
     };
@@ -77,9 +94,9 @@ public class CommandLineTest extends SimpleBaseTest {
   @Test
   public void commandLineGreaterThanPriorityTest1Test2() {
     ppp("commandLineGreaterThanPriorityTest1Test2()");
-    argv[7] = "test.methodselectors.Test2MethodSelector:15";
-    argv[9] = "test1";
-    TestNG.privateMain(argv, tla);
+    ARG_WITH_GROUPS[7] = "test.methodselectors.Test2MethodSelector:15";
+    ARG_WITH_GROUPS[9] = "test1";
+    TestNG.privateMain(ARG_WITH_GROUPS, tla);
     String[] passed = {
         "test2"
     };
@@ -91,9 +108,9 @@ public class CommandLineTest extends SimpleBaseTest {
   @Test
   public void commandLineLessThanPriorityAllTests() {
     ppp("commandLineLessThanPriorityAllTests()");
-    argv[7] = "test.methodselectors.AllTestsMethodSelector:5";
-    argv[9] = "test1";
-    TestNG.privateMain(argv, tla);
+    ARG_WITH_GROUPS[7] = "test.methodselectors.AllTestsMethodSelector:5";
+    ARG_WITH_GROUPS[9] = "test1";
+    TestNG.privateMain(ARG_WITH_GROUPS, tla);
     String[] passed = {
         "test1", "test2", "test3"
     };
@@ -106,9 +123,9 @@ public class CommandLineTest extends SimpleBaseTest {
   @Test
   public void commandLineMultipleSelectors() {
     ppp("commandLineMultipleSelectors()");
-    argv[7] = "test.methodselectors.NoTestSelector:7,test.methodselectors.Test2MethodSelector:5";
-    argv[9] = "test1";
-    TestNG.privateMain(argv, tla);
+    ARG_WITH_GROUPS[7] = "test.methodselectors.NoTestSelector:7,test.methodselectors.Test2MethodSelector:5";
+    ARG_WITH_GROUPS[9] = "test1";
+    TestNG.privateMain(ARG_WITH_GROUPS, tla);
     String[] passed = {
         "test1", "test2"
     };
@@ -121,8 +138,8 @@ public class CommandLineTest extends SimpleBaseTest {
   @Test
   public void commandLineNoTest1Selector() {
     ppp("commandLineNoTest1Selector()");
-    argv[7] = "test.methodselectors.NoTest1MethodSelector:5";
-    TestNG.privateMain(argv, tla);
+    ARG_WITHOUT_GROUPS[7] = "test.methodselectors.NoTest1MethodSelector:5";
+    TestNG.privateMain(ARG_WITHOUT_GROUPS, tla);
     String[] passed = {
         "test2", "test3"
     };
@@ -135,10 +152,9 @@ public class CommandLineTest extends SimpleBaseTest {
   @Test
   public void commandLineTestWithXmlFile() {
     ppp("commandLineTestWithXmlFile()");
-    argv[4] = argv[5] = "";
-    argv[7] = "test.methodselectors.NoTest1MethodSelector:5";
-    argv[8] = getPathToResource("testng-methodselectors.xml");
-    TestNG.privateMain(argv, tla);
+    ARG_WITHOUT_CLASSES[5] = "test.methodselectors.NoTest1MethodSelector:5";
+    ARG_WITHOUT_CLASSES[6] = getPathToResource("testng-methodselectors.xml");
+    TestNG.privateMain(ARG_WITHOUT_CLASSES, tla);
     String[] passed = {
         "test2", "test3"
     };
