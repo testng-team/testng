@@ -186,7 +186,7 @@ public class XmlTest implements Serializable, Cloneable {
    */
   public boolean isJUnit() {
     Boolean result = m_isJUnit;
-    if (null == result) {
+    if (null == result || XmlSuite.DEFAULT_JUNIT.equals(result)) {
       result = m_suite.isJUnit();
     }
     
@@ -271,7 +271,7 @@ public class XmlTest implements Serializable, Cloneable {
   
   public String getParallel() {
     String result = null;
-    if (null != m_parallel) {
+    if (null != m_parallel || XmlSuite.DEFAULT_PARALLEL.equals(m_parallel)) {
       result = m_parallel;
     }
     else {

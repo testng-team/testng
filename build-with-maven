@@ -7,6 +7,9 @@
 
 mvn resources:resources compiler:compile resources:testResources compiler:testCompile jar:jar source:jar javadoc:jar install:install gpg:sign
 
+mvn -f pom-test.xml test
+
+
 echo
 echo "To run the tests: mvn -f pom-test.xml test"
 echo "To deploy to the snapshot repository: mvn deploy"
