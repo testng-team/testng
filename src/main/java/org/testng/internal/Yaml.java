@@ -137,6 +137,11 @@ public class Yaml {
       toYaml(result, "  ", suite.getListeners());
     }
 
+    if (suite.getPackages().size() > 0) {
+      result.append("packages:\n");
+      toYaml(result, suite.getPackages());
+    }
+    toYaml(result, "listeners", suite.getListeners());
     if (suite.getTests().size() > 0) {
       result.append("tests:\n");
       for (XmlTest t : suite.getTests()) {
@@ -243,6 +248,9 @@ public class Yaml {
         toYaml(sb, "  ", p);
       }
     }
+    for (XmlPackage p : packages) {
+      toYaml(sb, "  ", p);
+    }
   }
 
   private static void toYaml(StringBuilder sb, String sp, XmlPackage p) {
@@ -293,5 +301,6 @@ public class Yaml {
       s = parse(args[0]);
       System.out.println(s.iterator().next().toXml());
     }
+    System.out.println(Yaml.toYaml(s.iterator().next()));
   }
 }
