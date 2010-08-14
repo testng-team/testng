@@ -15,6 +15,12 @@ listeners:
 
 parameters: { n: 42, p: 10, s: "a b c", t: "a,b" }
 
+methodSelectors:
+  - className: org.testng.internal.XmlMethodSelector
+    priority: 1
+  - expression: groups.containsKey("test1")
+    language: beanshell
+    
 tests:
   - name: Test3
     includedGroups: [A, B]
@@ -39,33 +45,4 @@ tests:
     classes:
       - test.tmp.B
 
-methodSelectors:
-  - className: org.testng.internal.XmlMethodSelector
-    priority: 1
-  - expression: groups.containsKey("test1")
-    language: beanshell
-=======
-  name: SingleSuite
-  verbose: 2
-  parallel: false
-  threadCount: 4
-  dataProviderThreadCount: 3
 
-  packages:
-    - name: test.testng355.org.apache.tapestry5
-    - name: test.testng355.org.apache.tapestry5.dom
-
-  listeners:
-    - test.invokedmethodlistener.MyListener
-
-  parameters: { n: 42, p: 10 }
-
-  tests:
-    - name: Test1
-      xmlClasses:
-        - test.tmp.A
-        - test.tmp.B
-
-    - name: Test2
-      xmlClasses:
-        - test.tmp.B

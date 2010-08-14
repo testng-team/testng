@@ -68,6 +68,7 @@ public class Yaml {
       TypeDescription testDescription = new TypeDescription(XmlTest.class);
       testDescription.putListPropertyType("classes", XmlClass.class);
       testDescription.putMapPropertyType("metaGroups", String.class, List.class);
+      testDescription.putListPropertyType("method-selectors", XmlMethodSelector.class);
       constructor.addTypeDescription(testDescription);
     }
 

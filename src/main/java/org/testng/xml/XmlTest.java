@@ -650,11 +650,11 @@ public class XmlTest implements Serializable, Cloneable {
         return XmlSuite.f();
     } else if (!m_excludedGroups.equals(other.m_excludedGroups))
       return XmlSuite.f();
-    if (m_expression == null) {
-      if (other.m_expression != null)
-        return XmlSuite.f();
-    } else if (!m_expression.equals(other.m_expression))
-      return XmlSuite.f();
+//    if (m_expression == null) {
+//      if (other.m_expression != null)
+//        return XmlSuite.f();
+//    } else if (!m_expression.equals(other.m_expression))
+//      return XmlSuite.f();
     if (m_failedInvocationNumbers == null) {
       if (other.m_failedInvocationNumbers != null)
         return XmlSuite.f();

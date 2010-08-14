@@ -71,8 +71,8 @@ public class XmlInclude {
     if (getClass() != obj.getClass())
       return XmlSuite.f();
     XmlInclude other = (XmlInclude) obj;
-    if (m_index != other.m_index)
-      return XmlSuite.f();
+//    if (m_index != other.m_index)
+//      return XmlSuite.f();
     if (m_invocationNumbers == null) {
       if (other.m_invocationNumbers != null)
         return XmlSuite.f();

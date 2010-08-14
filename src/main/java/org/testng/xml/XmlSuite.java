@@ -485,10 +485,6 @@ public class XmlSuite implements Serializable, Cloneable {
       xsb.pop("listeners");
     }
 
-    for (XmlTest test : getTests()) {
-      xsb.getStringBuffer().append(test.toXml("  "));
-    }
-
     if (null != getXmlPackages() && !getXmlPackages().isEmpty()) {
       xsb.push("packages");
 
@@ -506,6 +502,10 @@ public class XmlSuite implements Serializable, Cloneable {
       }
 
       xsb.pop("method-selectors");
+    }
+
+    for (XmlTest test : getTests()) {
+      xsb.getStringBuffer().append(test.toXml("  "));
     }
 
     xsb.pop("suite");
@@ -724,11 +724,11 @@ public class XmlSuite implements Serializable, Cloneable {
       return f();
     if (m_dataProviderThreadCount != other.m_dataProviderThreadCount)
       return f();
-    if (m_expression == null) {
-      if (other.m_expression != null)
-        return f();
-    } else if (!m_expression.equals(other.m_expression))
-      return f();
+//    if (m_expression == null) {
+//      if (other.m_expression != null)
+//        return f();
+//    } else if (!m_expression.equals(other.m_expression))
+//      return f();
     if (m_isJUnit == null) {
       if (other.m_isJUnit != null)
         return f();

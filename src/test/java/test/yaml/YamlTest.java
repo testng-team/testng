@@ -22,6 +22,7 @@ public class YamlTest extends SimpleBaseTest {
   public Object[][] dp() {
     return new Object[][] {
       new Object[] { "a1" },
+      new Object[] { "a2" },
       new Object[] { "a3" },
       new Object[] { "a4" },
     };
