@@ -23,15 +23,13 @@ public class YamlTest extends SimpleBaseTest {
     return new Object[][] {
 //      new Object[] { "a1" },
       new Object[] { "a3" },
+//      new Object[] { "a4" },
     };
   }
 
-//  @Test(dataProvider = "dp")
-//  public void compareFiles(String name)
-  @Test
-  public void compareFiles()
+  @Test(dataProvider = "dp")
+  public void compareFiles(String name)
       throws ParserConfigurationException, SAXException, IOException {
-    String name = "a3";
     Collection<XmlSuite> s1 =
         new Parser(getPathToResource("yaml" + File.separator + name + ".yaml")).parse();
     Collection<XmlSuite> s2 =

@@ -43,8 +43,6 @@ public class Parser {
   
   private InputStream m_inputStream;
 
-  private IFileParser m_fileParser;
-
   /**
    * Constructs a <code>Parser</code> to use the inputStream as the source of
    * the xml test suite to parse. 
@@ -72,7 +70,6 @@ public class Parser {
   private void init(String fileName, InputStream is, IFileParser fp) {
     m_fileName = fileName != null ? fileName : DEFAULT_FILENAME;
     m_inputStream = is;
-    m_fileParser = fp != null ? fp : getParser(fileName);
   }
 
   /**
@@ -99,7 +96,7 @@ public class Parser {
 //    }
 //    return in;
 //  }
-  
+
   private IFileParser getParser(String fileName) {
     IFileParser result = DEFAULT_FILE_PARSER;
 
@@ -121,7 +118,8 @@ public class Parser {
    * @throws IOException if an I/O error occurs while parsing the test suite file or
    * if the default testng.xml file is not found.
    */
-  public Collection<XmlSuite> parse() throws ParserConfigurationException, SAXException, IOException 
+  public Collection<XmlSuite> parse()
+    throws ParserConfigurationException, SAXException, IOException 
   {
     // Each suite found is put in this list, using their canonical
     // path to make sure we don't add a same file twice
@@ -154,7 +152,8 @@ public class Parser {
             ? m_inputStream
             : new FileInputStream(currentFile);
 
-        XmlSuite result = m_fileParser.parse(currentFile, inputStream);
+        XmlSuite result = getParser(currentFile).parse(currentFile, inputStream);
+//        System.out.println("Parsed " + currentFile + ":\n" + result.toXml());
         XmlSuite currentXmlSuite = result;
         processedSuites.add(currentFile);
         toBeRemoved.add(currentFile);

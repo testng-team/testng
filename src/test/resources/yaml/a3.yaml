@@ -1,4 +1,4 @@
 name: SingleSuite
 verbose: 2
 
-suiteFiles: [ a3-a.yaml, a3-b.yaml ]
+suiteFiles: [ a3-a.xml, a3-b.xml ]

@@ -708,103 +708,103 @@ public class XmlSuite implements Serializable, Cloneable {
     if (this == obj)
       return true;
     if (obj == null)
-      return false;
+      return f();
     if (getClass() != obj.getClass())
-      return false;
+      return f();
     XmlSuite other = (XmlSuite) obj;
     if (m_childSuites == null) {
       if (other.m_childSuites != null)
-        return false;
+        return f();
     } else if (!m_childSuites.equals(other.m_childSuites))
-      return false;
+      return f();
     if (m_configFailurePolicy == null) {
       if (other.m_configFailurePolicy != null)
-        return false;
+        return f();
     } else if (!m_configFailurePolicy.equals(other.m_configFailurePolicy))
-      return false;
+      return f();
     if (m_dataProviderThreadCount != other.m_dataProviderThreadCount)
-      return false;
+      return f();
     if (m_expression == null) {
       if (other.m_expression != null)
-        return false;
+        return f();
     } else if (!m_expression.equals(other.m_expression))
-      return false;
+      return f();
     if (m_isJUnit == null) {
       if (other.m_isJUnit != null)
-        return false;
+        return f();
     } else if (!m_isJUnit.equals(other.m_isJUnit))
-      return false;
+      return f();
     if (m_listeners == null) {
       if (other.m_listeners != null)
-        return false;
+        return f();
     } else if (!m_listeners.equals(other.m_listeners))
-      return false;
+      return f();
     if (m_methodSelectors == null) {
       if (other.m_methodSelectors != null)
-        return false;
+        return f();
     } else if (!m_methodSelectors.equals(other.m_methodSelectors))
-      return false;
+      return f();
     if (m_name == null) {
       if (other.m_name != null)
-        return false;
+        return f();
     } else if (!m_name.equals(other.m_name))
-      return false;
+      return f();
     if (m_objectFactory == null) {
       if (other.m_objectFactory != null)
-        return false;
+        return f();
     } else if (!m_objectFactory.equals(other.m_objectFactory))
-      return false;
+      return f();
     if (! eq(m_parallel, other.m_parallel, XmlSuite.DEFAULT_PARALLEL)) {
-      return false;
+      return f();
     }
     if (m_parameters == null) {
       if (other.m_parameters != null)
-        return false;
+        return f();
     } else if (!m_parameters.equals(other.m_parameters))
-      return false;
+      return f();
 //      if (m_parentSuite == null) {
 //        if (other.m_parentSuite != null)
-//          return false;
+//          return f();
 //      } else if (!m_parentSuite.equals(other.m_parentSuite))
-//        return false;
+//        return f();
     if (m_skipFailedInvocationCounts == null) {
       if (other.m_skipFailedInvocationCounts != null)
-        return false;
+        return f();
     } else if (!m_skipFailedInvocationCounts
         .equals(other.m_skipFailedInvocationCounts))
-      return false;
+      return f();
     if (m_suiteFiles == null) {
       if (other.m_suiteFiles != null)
-        return false;
+        return f();
     } else if (!m_suiteFiles.equals(other.m_suiteFiles))
-      return false;
+      return f();
     if (m_test == null) {
       if (other.m_test != null)
-        return false;
+        return f();
     } else if (!m_test.equals(other.m_test))
-      return false;
+      return f();
     if (m_tests == null) {
       if (other.m_tests != null)
-        return false;
+        return f();
     } else if (!m_tests.equals(other.m_tests))
-      return false;
+      return f();
     if (m_threadCount != other.m_threadCount)
-      return false;
+      return f();
     if (m_timeOut == null) {
       if (other.m_timeOut != null)
-        return false;
+        return f();
     } else if (!m_timeOut.equals(other.m_timeOut))
-      return false;
+      return f();
     if (m_verbose == null) {
       if (other.m_verbose != null)
-        return false;
+        return f();
     } else if (!m_verbose.equals(other.m_verbose))
-      return false;
+      return f();
     if (m_xmlPackages == null) {
       if (other.m_xmlPackages != null)
-        return false;
+        return f();
     } else if (!m_xmlPackages.equals(other.m_xmlPackages))
-      return false;
+      return f();
     return true;
   }
 
