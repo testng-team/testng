@@ -83,6 +83,7 @@ public class Yaml {
     for (XmlTest t : result.getTests()) {
       t.setSuite(result);
     }
+
     return Arrays.asList(result);
 
 //    Map o = (Map) y.load(new FileInputStream(new File(filePath)));

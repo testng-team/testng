@@ -7,4 +7,3 @@ tests:
       - test.yaml.YamlTest
 #      - name: test.CommandLineTest
 #        includedMethods: [ junitParsing ]
-      

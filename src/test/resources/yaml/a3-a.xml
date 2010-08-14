@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite thread-count="5" configfailurepolicy="skip" name="a3-a" skipfailedinvocationcounts="false" annotations="JDK" data-provider-thread-count="10">
+  <test verbose="1" name="Test-a3-a" junit="false" preserve-order="false">
+    <classes>
+      <class name="test.listeners.ResultEndMillisTest"/>
+    </classes>
+  </test>
+</suite>
+
