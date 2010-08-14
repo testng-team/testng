@@ -28,6 +28,7 @@
     <classes>
       <class name="test.methodselectors.CommandLineTest">
 <!-- 
+      <class name="test.xml.XmlVerifyTest">
         <methods>
           <include name="commandLineNegativePriorityAllGroups" />
         </methods>

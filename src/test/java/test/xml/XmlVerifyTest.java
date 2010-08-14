@@ -1,12 +1,5 @@
 package test.xml;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.Arrays;
-
 import org.testng.Assert;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -17,6 +10,12 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 import test.SimpleBaseTest;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.Arrays;
 
 public class XmlVerifyTest extends SimpleBaseTest {
    
@@ -43,7 +42,8 @@ public class XmlVerifyTest extends SimpleBaseTest {
     suite.toXml();
   }
   
-  @Test(description="Checks to make sure that NPE is not thrown when <test> tag is missing")
+  @Test(description="Checks to make sure that NPE is not thrown when <test> tag is missing",
+      expectedExceptions = TestNGException.class)
   public void handleInvalidXml() {
      OutputStream os = new ByteArrayOutputStream();
      PrintStream out = System.out;
