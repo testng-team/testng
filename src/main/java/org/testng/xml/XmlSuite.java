@@ -504,6 +504,17 @@ public class XmlSuite implements Serializable, Cloneable {
       xsb.pop("method-selectors");
     }
 
+    List<String> suiteFiles = getSuiteFiles();
+    if (suiteFiles.size() > 0) {
+      xsb.push("suite-files");
+      for (String sf : suiteFiles) {
+        Properties prop = new Properties();
+        prop.setProperty("path", sf);
+        xsb.addEmptyElement("suite-file", prop);
+      }
+      xsb.pop("suite-files");
+    }
+
     for (XmlTest test : getTests()) {
       xsb.getStringBuffer().append(test.toXml("  "));
     }
