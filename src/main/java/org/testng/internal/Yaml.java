@@ -121,7 +121,7 @@ public class Yaml {
     maybeAdd(result, "junit", suite.isJUnit(), XmlSuite.DEFAULT_JUNIT);
     maybeAdd(result, "verbose", suite.getVerbose(), XmlSuite.DEFAULT_VERBOSE);
     maybeAdd(result, "threadCount", suite.getThreadCount(), XmlSuite.DEFAULT_THREAD_COUNT);
-    maybeAdd(result, "dataProviderhreadCount", suite.getDataProviderThreadCount(),
+    maybeAdd(result, "dataProviderThreadCount", suite.getDataProviderThreadCount(),
         XmlSuite.DEFAULT_DATA_PROVIDER_THREAD_COUNT);
     maybeAdd(result, "timeOut", suite.getTimeOut(), null);
     maybeAdd(result, "parallel", suite.getParallel(), XmlSuite.DEFAULT_PARALLEL);
@@ -147,7 +147,12 @@ public class Yaml {
         toYaml(result, "  ", t);
       }
     }
-//    (test|method-selectors|suite-files)* >
+
+    if (suite.getChildSuites().size() > 0) {
+      result.append("suite-files:\n");
+      toYaml(result, "  ", suite.getSuiteFiles());
+    }
+
     return result;
   }
 
