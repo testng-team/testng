@@ -27,7 +27,7 @@ import java.util.Set;
  */
 public class Converter {
 
-  @Parameter(description = "The files to convert", required = true)
+  @Parameter(description = "file1 [file2 file3...]", required = true)
   private List<String> m_files;
 
   @Parameter(names = "-d", description = "The directory where the file(s) will be created")
@@ -82,6 +82,7 @@ public class Converter {
       }
     }
     catch(ParameterException ex) {
+      System.out.println("Error: " + ex.getMessage());
       jc.usage();
     }
   }
