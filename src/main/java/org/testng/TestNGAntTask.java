@@ -1,20 +1,6 @@
 package org.testng;
 
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.StringTokenizer;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
@@ -32,9 +18,23 @@ import org.apache.tools.ant.types.PropertySet;
 import org.apache.tools.ant.types.Reference;
 import org.apache.tools.ant.types.selectors.FilenameSelector;
 import org.testng.collections.Lists;
-import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.Utils;
-import org.testng.internal.version.VersionInfo;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
 /**
  * TestNG settings:
@@ -103,7 +103,6 @@ public class TestNGAntTask extends Task {
 
   protected List<FileSet> m_xmlFilesets= Lists.newArrayList();
   protected List<FileSet> m_classFilesets= Lists.newArrayList();
-  protected Path m_sourceDirPath;
   protected File m_outputDir;
   protected File m_testjar;
   protected File m_workingDir;
@@ -119,9 +118,6 @@ public class TestNGAntTask extends Task {
   /** The suite runner name (defaults to TestNG.class.getName(). */
   protected String m_mainClass = TestNG.class.getName();
   
-  /** The default annotations (should be renamed to m_defaultAnnotations) */
-  protected String m_target;
-
   /** True if the temporary file created by the Ant Task for command line parameters
    * to TestNG should be preserved after execution. */
   protected boolean m_dump;
@@ -333,43 +329,8 @@ public class TestNGAntTask extends Task {
     m_classFilesets.add(createFileSet(ref));
   }
 
-  /**
-   * Sets the Path like for source directories.
-   * @param srcDir path for source directories
-   */
-  public void setSourcedir(Path srcDir) {
-    if(m_sourceDirPath == null) {
-      m_sourceDirPath= srcDir;
-    }
-    else {
-      m_sourceDirPath.append(srcDir);
-    }
-  }
-
   public void setTestNames(String testNames) {
     m_testNames = testNames;
-  }
-
-  /**
-   * Creates a nested src Path like.
-   *
-   * @return a new Path
-   */
-  public Path createSourceDir() {
-    if(m_sourceDirPath == null) {
-      m_sourceDirPath= new Path(getProject());
-    }
-
-    return m_sourceDirPath.createPath();
-  }
-
-  /**
-   * Sets a reference to a Path-like structure for source directories.
-   *
-   * @param r reference to a Path representing the source directories
-   */
-  public void setSourceDirRef(Reference r) {
-    createSourceDir().setRefid(r);
   }
 
   /**
@@ -399,29 +360,6 @@ public class TestNGAntTask extends Task {
   // TestNG settings
   public void setJUnit(boolean value) {
     m_isJUnit= Boolean.valueOf(value);
-  }
-
-  /**
-   * Sets the default annotation type for suites that have not explicitly set the 
-   * annotation property. The target is used only in JDK5+.
-   * @param defaultAnnotations the default annotation type. This is one of the two constants 
-   * (TestNG.JAVADOC_ANNOTATION_TYPE or TestNG.JDK_ANNOTATION_TYPE).
-   *
-   * @since 5.2
-   */
-  public void setAnnotations(String defaultAnnotations) {
-    m_target = defaultAnnotations;
-  }
-
-  /**
-   * @param target 
-   * @deprecated use setAnnotations
-   */
-  @Deprecated
-  public void setTarget(String target) {
-    m_target= target;
-    log("The usage of " + TestNGCommandLineArgs.TARGET_COMMAND_OPT + " option is deprecated. Please use " 
-        + TestNGCommandLineArgs.ANNOTATIONS_COMMAND_OPT + " instead", Project.MSG_WARN);
   }
 
   /**
@@ -469,6 +407,7 @@ public class TestNGAntTask extends Task {
   /**
    * @deprecated Use "listeners"
    */
+  @Deprecated
   public void setListener(String listener) {
     m_listeners.add(listener);
   }
@@ -497,7 +436,7 @@ public class TestNGAntTask extends Task {
   public void execute() throws BuildException {
     validateOptions();
 
-    CommandlineJava cmd= getJavaCommand();
+    CommandlineJava cmd = getJavaCommand();
 
     cmd.setClassname(m_mainClass);
 
@@ -505,13 +444,13 @@ public class TestNGAntTask extends Task {
 
     if (null != m_isJUnit) {
       if(m_isJUnit.booleanValue()) {
-        argv.add(TestNGCommandLineArgs.JUNIT_DEF_OPT);
+        argv.add(CommandLineArgs.JUNIT);
       }
     }
     
     if (null != m_skipFailedInvocationCounts) {
       if(m_skipFailedInvocationCounts.booleanValue()) {
-        argv.add(TestNGCommandLineArgs.SKIP_FAILED_INVOCATION_COUNT_OPT);
+        argv.add(CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS);
       }
     }
     
@@ -520,7 +459,7 @@ public class TestNGAntTask extends Task {
     }
 
     if(null != m_verbose) {
-      argv.add(TestNGCommandLineArgs.LOG);
+      argv.add(CommandLineArgs.LOG);
       argv.add(m_verbose.toString());
     }
 
@@ -535,7 +474,7 @@ public class TestNGAntTask extends Task {
       {
         useDefaultListeners = "true";
       }
-      argv.add(TestNGCommandLineArgs.USE_DEFAULT_LISTENERS);
+      argv.add(CommandLineArgs.USE_DEFAULT_LISTENERS);
       argv.add(useDefaultListeners);
     }
 
@@ -544,7 +483,7 @@ public class TestNGAntTask extends Task {
         m_outputDir.mkdirs();
       }
       if(m_outputDir.isDirectory()) {
-        argv.add(TestNGCommandLineArgs.OUTDIR_COMMAND_OPT);
+        argv.add(CommandLineArgs.OUTPUT_DIRECTORY);
         argv.add(m_outputDir.getAbsolutePath());
       }
       else {
@@ -552,41 +491,34 @@ public class TestNGAntTask extends Task {
       }
     }
 
-    if(null != m_target) {
-      argv.add(TestNGCommandLineArgs.ANNOTATIONS_COMMAND_OPT);
-      argv.add(m_target);
-    }
-
     if((null != m_testjar) && m_testjar.isFile()) {
-      argv.add(TestNGCommandLineArgs.TESTJAR_COMMAND_OPT);
+      argv.add(CommandLineArgs.TEST_JAR);
       argv.add(m_testjar.getAbsolutePath());
     }
 
-    if(null != m_sourceDirPath) {
-      String srcPath= createPathString(m_sourceDirPath, ";");
-      argv.add(TestNGCommandLineArgs.SRC_COMMAND_OPT);
-      argv.add(srcPath);
-    }
-
     if((null != m_includedGroups) && !"".equals(m_includedGroups)) {
-      argv.add(TestNGCommandLineArgs.GROUPS_COMMAND_OPT);
+      argv.add(CommandLineArgs.GROUPS);
       argv.add(m_includedGroups);
     }
 
     if((null != m_excludedGroups) && !"".equals(m_excludedGroups)) {
-      argv.add(TestNGCommandLineArgs.EXCLUDED_GROUPS_COMMAND_OPT);
+      argv.add(CommandLineArgs.EXCLUDED_GROUPS);
       argv.add(m_excludedGroups);
     }
 
     if(m_classFilesets.size() > 0) {
-      argv.add(TestNGCommandLineArgs.TESTCLASS_COMMAND_OPT);
-      for(String file : fileset(m_classFilesets)) {
-        argv.add(file);
+      argv.add(CommandLineArgs.TEST_CLASS);
+      StringBuffer testClasses = new StringBuffer();
+      for (String file : fileset(m_classFilesets)) {
+        testClasses.append(file);
+        testClasses.append(',');
       }
+      testClasses.setLength(testClasses.length() - 1);
+      argv.add(testClasses.toString());
     }
 
     if(m_listeners != null && m_listeners.size() > 0) {
-      argv.add(TestNGCommandLineArgs.LISTENER_COMMAND_OPT);
+      argv.add(CommandLineArgs.LISTENER);
       StringBuffer listeners= new StringBuffer();
       for(int i= 0; i < m_listeners.size(); i++) {
         listeners.append(m_listeners.get(i));
@@ -596,47 +528,47 @@ public class TestNGAntTask extends Task {
     }
 
     if(m_objectFactory != null) {
-      argv.add(TestNGCommandLineArgs.OBJECT_FACTORY_COMMAND_OPT);
+      argv.add(CommandLineArgs.OBJECT_FACTORY);
       argv.add(m_objectFactory);
     }
 
-    if (m_testRunnerFactory !=null) {
-      argv.add(TestNGCommandLineArgs.TESTRUNNER_FACTORY_COMMAND_OPT);
+    if (m_testRunnerFactory != null) {
+      argv.add(CommandLineArgs.TEST_RUNNER_FACTORY);
       argv.add(m_testRunnerFactory);
     }
 
     if(m_parallelMode != null) {
-      argv.add(TestNGCommandLineArgs.PARALLEL_MODE);
+      argv.add(CommandLineArgs.PARALLEL);
       argv.add(m_parallelMode);
     }
     
     if (m_configFailurePolicy != null) {
-      argv.add(TestNGCommandLineArgs.CONFIG_FAILURE_POLICY);
+      argv.add(CommandLineArgs.CONFIG_FAILURE_POLICY);
       argv.add(m_configFailurePolicy);
     }
 
     if(m_threadCount != null) {
-      argv.add(TestNGCommandLineArgs.THREAD_COUNT);
+      argv.add(CommandLineArgs.THREAD_COUNT);
       argv.add(m_threadCount);
     }
 
     if(m_dataproviderthreadCount != null) {
-      argv.add(TestNGCommandLineArgs.DATA_PROVIDER_THREAD_COUNT);
+      argv.add(CommandLineArgs.DATA_PROVIDER_THREAD_COUNT);
       argv.add(m_dataproviderthreadCount);
     }
     
     if(!"".equals(m_suiteName)) {
-    	argv.add(TestNGCommandLineArgs.SUITE_NAME_OPT);
+    	argv.add(CommandLineArgs.SUITE_NAME);
     	argv.add(m_suiteName);
     }
 
     if(!"".equals(m_testName)) {
-    	argv.add(TestNGCommandLineArgs.TEST_NAME_OPT);
+    	argv.add(CommandLineArgs.TEST_NAME);
     	argv.add(m_testName);
     }
 
     if (! Utils.isStringEmpty(m_testNames)) {
-      argv.add(TestNGCommandLineArgs.TEST_NAMES_COMMAND_OPT);
+      argv.add(CommandLineArgs.TEST_NAMES);
       argv.add(m_testNames);
     }
 
@@ -647,7 +579,7 @@ public class TestNGAntTask extends Task {
 
     if (!reporterConfigs.isEmpty()) {
       for (ReporterConfig reporterConfig : reporterConfigs) {
-        argv.add(TestNGCommandLineArgs.REPORTER);
+        argv.add(CommandLineArgs.REPORTER);
         argv.add(reporterConfig.serialize());
       }
     }
@@ -884,7 +816,7 @@ public class TestNGAntTask extends Task {
    */
   protected CommandlineJava getJavaCommand() {
     if(null == m_javaCommand) {
-      m_javaCommand= new CommandlineJava();
+      m_javaCommand = new CommandlineJava();
     }
 
     return m_javaCommand;
@@ -915,21 +847,6 @@ public class TestNGAntTask extends Task {
 
     if((null != m_includedGroups) && (m_classFilesets.size() == 0 && m_xmlFilesets.size() == 0)) {
       throw new BuildException("No class filesets or xml file sets specified while using groups");
-    }
-
-    if (m_target != null) {
-      try {
-        m_target = AnnotationTypeEnum.valueOf(m_target).getName();
-      } 
-      catch (RuntimeException pEx) {
-        throw new BuildException("Illegal default annotations: " + m_target, pEx);
-      }
-    }
-    
-    if (VersionInfo.IS_JDK14) {
-      if (null == m_sourceDirPath) {
-        throw new BuildException("No sourceDir is specified.");
-      }
     }
 
     if(m_onHaltTarget != null) {
@@ -1095,9 +1012,21 @@ public class TestNGAntTask extends Task {
 
   private void dumpCommand(String fileName) {
     ppp("TESTNG PASSED @" + fileName + " WHICH CONTAINS:");
-    List<String> lines= TestNGCommandLineArgs.readFile(fileName);
-    for(String line : lines) {
-      ppp(line);
+    readAndPrintFile(fileName);
+  }
+
+  private void readAndPrintFile(String fileName) {
+    File file = new File(fileName);
+    try {
+      BufferedReader br = new BufferedReader(new FileReader(file));
+      String line = br.readLine();
+      while (line != null) {
+        System.out.println("  " + line);
+        line = br.readLine();
+      }
+    }
+    catch(IOException ex) {
+      ex.printStackTrace();
     }
   }
 

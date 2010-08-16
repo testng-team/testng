@@ -1,10 +1,11 @@
 package test.retryAnalyzer;
 
 import org.testng.Assert;
-import org.testng.util.RetryAnalyzerCount;
 import org.testng.ITestResult;
+import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.util.RetryAnalyzerCount;
 
 /**
  * retryAnalyzer parameter unit tests.
@@ -77,6 +78,18 @@ public final class RetryAnalyzerTest extends RetryAnalyzerCount {
     }
   }
 
+  @Test
+  public void withFactory() {
+    TestNG tng = new TestNG();
+    tng.setVerbose(0);
+    tng.setTestClasses(new Class[] { MyFactory.class});
+    FactoryTest.m_count = 0;
+    tng.run();
+
+    Assert.assertEquals(FactoryTest.m_count, 4);
+  }
+
+  @Override
   public boolean retryMethod(ITestResult result) {
     return true;
   }

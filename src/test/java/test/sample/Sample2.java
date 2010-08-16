@@ -1,6 +1,6 @@
 package test.sample;
 
-import org.testng.annotations.*;
+import org.testng.annotations.Test;
 
 /**
  * This class
@@ -11,7 +11,7 @@ import org.testng.annotations.*;
 
 public class Sample2 {
   
-  @Test
+  @Test(groups = "g1")
   public void method1() {
 //    System.out.println("@@@@@@@@@@@@@@@@@@@ METHOD1");
   }

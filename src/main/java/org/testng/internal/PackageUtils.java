@@ -1,6 +1,6 @@
 package org.testng.internal;
 
-import org.testng.TestNGCommandLineArgs;
+import org.testng.TestNG;
 import org.testng.collections.Lists;
 
 import java.io.File;
@@ -92,12 +92,12 @@ public class PackageUtils {
   }
 
   private static String[] getTestClasspath() {
-    if(null != s_testClassPaths) {
+    if (null != s_testClassPaths) {
       return s_testClassPaths;
     }
     
-    String testClasspath= System.getProperty(TestNGCommandLineArgs.TEST_CLASSPATH);
-    if(null == testClasspath) {
+    String testClasspath = System.getProperty(TestNG.TEST_CLASSPATH);
+    if (null == testClasspath) {
       return null;
     }
     
@@ -172,6 +172,7 @@ public class PackageUtils {
     }
   
     File[] dirfiles = dir.listFiles(new FileFilter() {
+          @Override
           public boolean accept(File file) {
             return (recursive && file.isDirectory())
               || (file.getName().endsWith(".class"))

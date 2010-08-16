@@ -793,9 +793,9 @@ public class MethodHelper {
     IFutureResult future= exec.submitRunnable(imr);
     exec.shutdown();
     long realTimeOut = calculateTimeOut(tm);
-    boolean finished= exec.awaitTermination(realTimeOut);
+    boolean finished = exec.awaitTermination(realTimeOut);
   
-    if(!finished) {
+    if (! finished) {
       exec.stopNow();
       ThreadTimeoutException exception = new ThreadTimeoutException("Method "
         + tm.getMethod()

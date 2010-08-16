@@ -1,15 +1,15 @@
 package org.testng.remote;
 
 
-import java.util.List;
-import java.util.Map;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 
+import org.testng.CommandLineArgs;
 import org.testng.IInvokedMethodListener;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
 import org.testng.ITestRunnerFactory;
 import org.testng.TestNG;
-import org.testng.TestNGCommandLineArgs;
 import org.testng.TestRunner;
 import org.testng.remote.strprotocol.GenericMessage;
 import org.testng.remote.strprotocol.MessageHelper;
@@ -18,8 +18,9 @@ import org.testng.remote.strprotocol.StringMessageSenderHelper;
 import org.testng.remote.strprotocol.SuiteMessage;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
-import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+
+import java.util.List;
 
 /**
  * Extension of TestNG registering a remote TestListener.
@@ -47,12 +48,14 @@ public class RemoteTestNG extends TestNG {
     m_port= port;
   }
 
-  public void configure(Map cmdLineArgs) {
-    super.configure(cmdLineArgs);
-    setConnectionParameters((String) cmdLineArgs.get(TestNGCommandLineArgs.HOST_COMMAND_OPT),
-                            Integer.parseInt((String) cmdLineArgs.get(TestNGCommandLineArgs.PORT_COMMAND_OPT)));
+  @Override
+  public void configure(CommandLineArgs args) {
+    super.configure(args);
+    setConnectionParameters(args.host, args.port);
+    System.out.println("Setting connection parameters:" + m_host + ":" + m_port);
   }
 
+  @Override
   public void run() {
     final StringMessageSenderHelper msh= new StringMessageSenderHelper(m_host, m_port);
     try {
@@ -62,7 +65,7 @@ public class RemoteTestNG extends TestNG {
           int testCount= 0;
 
           for(int i= 0; i < m_suites.size(); i++) {
-            testCount+= ((XmlSuite) m_suites.get(i)).getTests().size();
+            testCount+= (m_suites.get(i)).getTests().size();
           }
 
           GenericMessage gm= new GenericMessage(MessageHelper.GENERIC_SUITE_COUNT);
@@ -100,6 +103,7 @@ public class RemoteTestNG extends TestNG {
   protected ITestRunnerFactory buildTestRunnerFactory() {
     if(null == m_customTestRunnerFactory) {
       m_customTestRunnerFactory= new ITestRunnerFactory() {
+          @Override
           public TestRunner newTestRunner(ISuite suite, XmlTest xmlTest,
               List<IInvokedMethodListener> listeners) {
             TestRunner runner =
@@ -118,11 +122,12 @@ public class RemoteTestNG extends TestNG {
     return m_customTestRunnerFactory;
   }
 
-  public static void main(String[] args) {
-    Map commandLineArgs= TestNGCommandLineArgs.parseCommandLine(args);
-
-    RemoteTestNG testNG= new RemoteTestNG();
-    testNG.configure(commandLineArgs);
+  public static void main(String[] args) throws ParameterException {
+    CommandLineArgs cla = new CommandLineArgs();
+    new JCommander(cla, args);
+    validateCommandLineParameters(cla);
+    RemoteTestNG testNG = new RemoteTestNG();
+    testNG.configure(cla);
     testNG.initializeSuitesAndJarFile();
     testNG.run();
   }
@@ -135,10 +140,12 @@ public class RemoteTestNG extends TestNG {
       m_messageSender= smsh;
     }
 
+    @Override
     public void onFinish(ISuite suite) {
       m_messageSender.sendMessage(new SuiteMessage(suite, false /*start*/));
     }
 
+    @Override
     public void onStart(ISuite suite) {
       m_messageSender.sendMessage(new SuiteMessage(suite, true /*start*/));
     }
@@ -153,6 +160,7 @@ public class RemoteTestNG extends TestNG {
       m_messageSender= smsh;
     }
 
+    @Override
     public TestRunner newTestRunner(ISuite suite, XmlTest test,
         List<IInvokedMethodListener> listeners) {
       TestRunner tr = m_delegateFactory.newTestRunner(suite, test, listeners);

@@ -62,12 +62,12 @@
         <dependency>
             <groupId>com.beust</groupId>
             <artifactId>jcommander</artifactId>
-            <version>1.1-SNAPSHOT</version>
+            <version>1.5</version>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>5.13-SNAPSHOT</version>
+            <version>5.13.2-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
 

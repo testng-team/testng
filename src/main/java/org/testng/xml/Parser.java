@@ -1,14 +1,9 @@
 package org.testng.xml;
 
-import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
-import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.ClassHelper;
 import org.xml.sax.SAXException;
 
 import java.io.File;
@@ -16,7 +11,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -37,16 +31,16 @@ public class Parser {
   
   /** The default file name for the TestNG test suite if none is specified (testng.xml). */
   public static final String DEFAULT_FILENAME = "testng.xml";
+
+  private static final IFileParser DEFAULT_FILE_PARSER = new XmlParser();
   
   /** The file name of the xml suite being parsed. This may be null if the Parser
    * has not been initialized with a file name. TODO CQ This member is never used. */
-  private final String m_fileName;
+  private String m_fileName;
   
-  /** */
-  private final InputStream m_inputStream;
+  private InputStream m_inputStream;
 
-  /** Look in Jar for the file instead? TODO CQ this member is never used. */
-  private boolean m_lookInJar = false;
+  private IFileParser m_fileParser;
 
   /**
    * Constructs a <code>Parser</code> to use the inputStream as the source of
@@ -55,28 +49,8 @@ public class Parser {
    * unknown.
    * @param inputStream the xml test suite input stream. 
    */
-  private Parser(String filename, InputStream inputStream) {
-    m_fileName = filename;
-    m_inputStream = inputStream;
-  }
-  
-  /**
-   * create a parser that works on a given file.
-   * @param fileName the filename of the xml suite to parse.
-   * @throws FileNotFoundException if the fileName is not found.
-   */
-  public Parser(String fileName) throws FileNotFoundException {
-    this(fileName, new FileInputStream(new File(fileName)));
-  }
-  
-  /**
-   * Constructs a <code>Parser</code> to use the inputStream as the source of
-   * the xml test suite to parse. 
-   *
-   * @param inputStream the xml test suite input stream. 
-   */
-  public Parser(InputStream inputStream) {
-    this(null, inputStream);
+  public Parser(String fileName) {
+    init(fileName, null, null);
   }
   
   /**
@@ -85,7 +59,17 @@ public class Parser {
    * found in the classpath.
    */
   public Parser() throws FileNotFoundException {
-    this(DEFAULT_FILENAME, getDefault());
+    init(null, null, null);
+  }
+
+  public Parser(InputStream is) {
+    init(null, is, null);
+  }
+
+  private void init(String fileName, InputStream is, IFileParser fp) {
+    m_fileName = fileName != null ? fileName : DEFAULT_FILENAME;
+    m_inputStream = is;
+    m_fileParser = fp != null ? fp : DEFAULT_FILE_PARSER;
   }
 
   /**
@@ -95,24 +79,23 @@ public class Parser {
    * @throws FileNotFoundException if the DEFAULT_FILENAME resource is not
    * found in the classpath.
    */
-  private static InputStream getDefault() throws FileNotFoundException {
-    // Try to look for the DEFAULT_FILENAME from the jar
-    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-    InputStream in;
-    // TODO CQ is this OK? should we fall back to the default classloader if the
-    // context classloader fails.
-    if (classLoader != null) {
-      in = classLoader.getResourceAsStream(DEFAULT_FILENAME);
-    }
-    else {
-      in = Parser.class.getResourceAsStream(DEFAULT_FILENAME);
-    }
-    if (in == null) {
-      throw new FileNotFoundException("Default property file of " + DEFAULT_FILENAME
-          + " was not found");
-    }
-    return in;
-  }
+//  private static InputStream getInputStream(String fileName) throws FileNotFoundException {
+//    // Try to look for the DEFAULT_FILENAME from the jar
+//    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+//    InputStream in;
+//    // TODO CQ is this OK? should we fall back to the default classloader if the
+//    // context classloader fails.
+//    if (classLoader != null) {
+//      in = classLoader.getResourceAsStream(fileName);
+//    }
+//    else {
+//      in = Parser.class.getResourceAsStream(fileName);
+//    }
+//    if (in == null) {
+//      throw new FileNotFoundException(fileName);
+//    }
+//    return in;
+//  }
   
   /**
    * Parses the TestNG test suite and returns the corresponding XmlSuite,
@@ -134,13 +117,6 @@ public class Parser {
     List<String> processedSuites = Lists.newArrayList();
     XmlSuite resultSuite = null;
     
-    SAXParserFactory spf= loadSAXParserFactory();
-        
-    if(supportsValidation(spf)) {
-      spf.setValidating(true);
-    }
-    SAXParser saxParser = spf.newSAXParser();
-
     File parentFile = null;
     String mainFilePath = null;
 
@@ -162,14 +138,11 @@ public class Parser {
     while (toBeParsed.size() > 0) {
       
       for (String currentFile : toBeParsed) {
-        TestNGContentHandler ch = new TestNGContentHandler(currentFile);
-        InputStream inputStream = currentFile != null ?
-            new FileInputStream(currentFile) : m_inputStream;
-        saxParser.parse(inputStream, ch);
-        if (currentFile != null) {
-          inputStream.close();
-        }
-        XmlSuite result = ch.getSuite();
+        InputStream inputStream = m_inputStream != null
+            ? m_inputStream
+            : new FileInputStream(currentFile);
+
+        XmlSuite result = m_fileParser.parse(currentFile, inputStream);
         XmlSuite currentXmlSuite = result;
         processedSuites.add(currentFile);
         toBeRemoved.add(currentFile);
@@ -238,90 +211,6 @@ public class Parser {
   }
 
   
-  /**
-   * Tries to load a <code>SAXParserFactory</code> by trying in order the following:
-   * <tt>com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl</tt> (SUN JDK5)
-   * <tt>org.apache.crimson.jaxp.SAXParserFactoryImpl</tt> (SUN JDK1.4) and 
-   * last <code>SAXParserFactory.newInstance()</code>.
-   * 
-   * @return a <code>SAXParserFactory</code> implementation
-   * @throws TestNGException thrown if no <code>SAXParserFactory</code> can be loaded
-   */
-  private SAXParserFactory loadSAXParserFactory() {
-    SAXParserFactory spf = null;
-    
-    StringBuffer errorLog= new StringBuffer();
-    try {
-      Class factoryClass= ClassHelper.forName("com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
-      spf = (SAXParserFactory) factoryClass.newInstance();
-    }
-    catch(Exception ex) {
-      errorLog.append("JDK5 SAXParserFactory cannot be loaded: " + ex.getMessage());
-    }
 
-    if(null == spf) {
-      // If running with JDK 1.4
-      try {
-        Class factoryClass = ClassHelper.forName("org.apache.crimson.jaxp.SAXParserFactoryImpl");
-        spf = (SAXParserFactory) factoryClass.newInstance();
-      }
-      catch(Exception ex) {
-        errorLog.append("\n").append("JDK1.4 SAXParserFactory cannot be loaded: " + ex.getMessage());
-      }
-    }
-    
-    Throwable cause= null;
-    if(null == spf) {
-      try {
-        spf= SAXParserFactory.newInstance();
-      }
-      catch(FactoryConfigurationError fcerr) {
-        cause= fcerr;
-      }
-    }
-    
-    if(null == spf) {      
-      throw new TestNGException("Cannot initialize a SAXParserFactory\n" + errorLog.toString(), cause);
-    }
-    
-    return spf;
-  }
-  
-
-  /**
-   * Tests if the current <code>SAXParserFactory</code> supports DTD validation.
-   * @param spf
-   * @return
-   */
-  private boolean supportsValidation(SAXParserFactory spf) {
-    try {
-      return spf.getFeature("http://xml.org/sax/features/validation");
-    }
-    catch(Exception ex) { ; }
-    
-    return false;
-  }
-  
-//  private static void ppp(String s) {
-//    System.out.println("[Parser] " + s);
-//  }
-  
-//  /**
-//   *
-//   * @param argv ignored
-//   * @throws FileNotFoundException if the 
-//   * @throws ParserConfigurationException
-//   * @throws SAXException
-//   * @throws IOException
-//   * @since 1.0
-//   */
-//  public static void main(String[] argv) 
-//    throws FileNotFoundException, ParserConfigurationException, SAXException, IOException 
-//  {
-//    XmlSuite l = 
-//      new Parser("c:/eclipse-workspace/testng/test/testng.xml").parse();
-//    
-//    System.out.println(l);
-//  }
 }
 

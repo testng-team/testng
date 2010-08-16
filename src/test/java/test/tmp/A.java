@@ -1,12 +1,16 @@
 package test.tmp;
 
-import org.testng.Assert;
-import org.testng.Reporter;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
+import test.SimpleBaseTest;
+import test.listeners.ResultListener;
+
 //@Test(sequential = true)
-public class A {
+@Listeners(ResultListener.class)
+public class A extends SimpleBaseTest {
   private int m_n;
 
   public A() {}
@@ -26,32 +30,20 @@ public class A {
     };
   }
 
-//  @BeforeClass
-//  public void bc() {
-//    log("beforeClass");
-//  }
-//
+  @BeforeClass
+  public void beforeClass() {
+//    throw new RuntimeException();
+  }
+
 //  @AfterClass
-//  public void ac() {
-//    log("afterClass");
+//  public void afterClass(ITestResult tr) {
+//    System.out.println("Result:" + tr.getEndMillis());
 //  }
-
-  @Test
-  public void testSomething()
-  {
-      Assert.fail("This test failed.");
-  }
-
-  @Test(dependsOnMethods={"testSomething"})
-  public void testSkipped()
-  {
-      Reporter.log("This test was skipped.");
-  }
 
   @Test
   public void atest1() {
     try {
-      Thread.sleep(12*1000);
+      Thread.sleep(1*1000);
     } catch (InterruptedException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -67,6 +59,7 @@ public class A {
   public void atest3() {
   }
 
+//  @Override
   public String getTestName() {
     return "This is test A";
   }
@@ -75,9 +68,14 @@ public class A {
 //  public void f() {
 //  }
 //
-//
-//  @AfterMethod
-//  public void after() {
+//  @AfterClass
+//  public void ac() {
+//    log("afterClass");
 //  }
+
+  public static void main(String[] args) {
+//    TestNG tng = create();
+  }
+
 
 }

@@ -31,6 +31,8 @@ public class FailurePolicyTest {
       new Object[] { new Class[] { ExtendsClassWithFailedBeforeClassMethod.class }, 1, 2, 2 },
       new Object[] { new Class[] { ClassWithFailedBeforeClassMethod.class, ExtendsClassWithFailedBeforeClassMethod.class }, 2, 3, 3 },
       new Object[] { new Class[] { ClassWithSkippingBeforeMethod.class }, 0, 1, 1 },
+      new Object[] { new Class[] { FactoryClassWithFailedBeforeMethod.class }, 2, 0, 2 },
+      new Object[] { new Class[] { FactoryClassWithFailedBeforeClassMethod.class }, 2, 2, 2 },
     };
     return data;
   }

@@ -187,4 +187,59 @@ public class XmlClass implements Serializable, Cloneable {
     return m_index;
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((m_class == null) ? 0 : m_class.hashCode());
+    result = prime * result
+        + ((m_declaredClass == null) ? 0 : m_declaredClass.hashCode());
+    result = prime * result
+        + ((m_excludedMethods == null) ? 0 : m_excludedMethods.hashCode());
+    result = prime * result
+        + ((m_includedMethods == null) ? 0 : m_includedMethods.hashCode());
+    result = prime * result + m_index;
+    result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    XmlClass other = (XmlClass) obj;
+    if (m_class == null) {
+      if (other.m_class != null)
+        return false;
+    } else if (!m_class.equals(other.m_class))
+      return false;
+    if (m_declaredClass == null) {
+      if (other.m_declaredClass != null)
+        return false;
+    } else if (!m_declaredClass.equals(other.m_declaredClass))
+      return false;
+    if (m_excludedMethods == null) {
+      if (other.m_excludedMethods != null)
+        return false;
+    } else if (!m_excludedMethods.equals(other.m_excludedMethods))
+      return false;
+    if (m_includedMethods == null) {
+      if (other.m_includedMethods != null)
+        return false;
+    } else if (!m_includedMethods.equals(other.m_includedMethods))
+      return false;
+    if (m_index != other.m_index)
+      return false;
+    if (m_name == null) {
+      if (other.m_name != null)
+        return false;
+    } else if (!m_name.equals(other.m_name))
+      return false;
+    return true;
+  }
+
 }

@@ -2,7 +2,6 @@ package org.testng;
 
 
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterDescription;
 import com.beust.jcommander.ParameterException;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -50,7 +49,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -113,7 +111,11 @@ public class TestNG {
   
   /** The JavaDoc annotation type ID ("javadoc"). */
   public static final String JAVADOC_ANNOTATION_TYPE = AnnotationTypeEnum.JAVADOC.getName();
-  
+
+  /** System properties */
+  public static final String SHOW_TESTNG_STACK_FRAMES = "testng.show.stack.frames";
+  public static final String TEST_CLASSPATH = "testng.test.classpath";
+ 
   private static TestNG m_instance;
 
   private static JCommander m_jCommander;
@@ -248,16 +250,16 @@ public class TestNG {
    * 
    * @deprecated use the setDefaultAnnotationType replacement method.
    */
-  @Deprecated
-  public void setTarget(String target) {
-    // Target is used only in JDK 1.5 and may get null in JDK 1.4
-    LOGGER.warn("The usage of " + TestNGCommandLineArgs.TARGET_COMMAND_OPT + " option is deprecated." +
-            " Please use " + TestNGCommandLineArgs.ANNOTATIONS_COMMAND_OPT + " instead.");
-    if (null == target) {
-      return;
-    }
-    setAnnotations(target);
-  }
+//  @Deprecated
+//  public void setTarget(String target) {
+//    // Target is used only in JDK 1.5 and may get null in JDK 1.4
+//    LOGGER.warn("The usage of " + CommandLineArgs.TARGET_COMMAND + " option is deprecated." +
+//            " Please use " + CommandLineArgs.ANNOTATIONS_COMMAND + " instead.");
+//    if (null == target) {
+//      return;
+//    }
+//    setAnnotations(target);
+//  }
 
   /**
    * Sets the default annotation type for suites that have not explicitly set the 
@@ -714,7 +716,7 @@ public class TestNG {
   }
 
   public void addListener(IInvokedMethodListener listener) {
-    m_invokedMethodListeners.add((IInvokedMethodListener) listener);
+    m_invokedMethodListeners.add(listener);
   }
 
   public void addListener(ISuiteListener listener) {
@@ -900,26 +902,7 @@ public class TestNG {
   }
 
   private static void usage() {
-    Set<String> hidden = new HashSet<String>() {{
-      add("-host");
-      add("-master");
-      add("-slave");
-      add("-port");
-    }};
-    if (m_jCommander != null) {
-      m_jCommander.usage();
-//      System.out.println("Usage: java " + TestNG.class.getName() + " [options] <XML suite files>");
-//      System.out.println("    Options:");
-//      for (ParameterDescription p : m_jCommander.getParameters()) {
-//        if (! hidden.contains(p.getParameter().names()[0])) {
-//          StringBuilder sb = new StringBuilder();
-//          for (String n : p.getParameter().names()) {
-//            sb.append(n).append(" ");
-//          }
-//          System.out.println("\t" + sb.toString() + "\n\t\t" + p.getDescription());
-//        }
-//      }
-    }
+    m_jCommander.usage();
   }
 
   private void generateReports(List<ISuite> suiteRunners) {
@@ -1157,23 +1140,22 @@ public class TestNG {
       result.addListener(listener);
     }
 
-    if (false) {
-      // Old style parsing
-      Map arguments = checkConditions(TestNGCommandLineArgs.parseCommandLine(argv));
-      result.configure(arguments);
-    } else {
-      // New style parsing
-      try {
-        CommandLineArgs cla = new CommandLineArgs();
-        m_jCommander = new JCommander(cla);
-        m_jCommander.parse(argv);
-        validateCommandLineParameters(cla);
-        result.configure(cla);
-      }
-      catch(ParameterException ex) {
-        exitWithError(ex.getMessage());
-      }
+    //
+    // Parse the arguments
+    //
+    try {
+      CommandLineArgs cla = new CommandLineArgs();
+      m_jCommander = new JCommander(cla, argv);
+      validateCommandLineParameters(cla);
+      result.configure(cla);
     }
+    catch(ParameterException ex) {
+      exitWithError(ex.getMessage());
+    }
+
+    //
+    // Run
+    //
     try {
       result.run();
     }
@@ -1193,7 +1175,7 @@ public class TestNG {
   /**
    * Configure the TestNG instance based on the command line parameters.
    */
-  private void configure(CommandLineArgs cla) {
+  protected void configure(CommandLineArgs cla) {
     if (cla.verbose != null) setVerbose(cla.verbose);
     setOutputDirectory(cla.outputDirectory);
 
@@ -1214,7 +1196,7 @@ public class TestNG {
       setTestNames(Arrays.asList(cla.testNames.split(",")));
     }
 
-//    List<String> testNgXml = (List<String>) cmdLineArgs.get(TestNGCommandLineArgs.SUITE_DEF_OPT);
+//    List<String> testNgXml = (List<String>) cmdLineArgs.get(CommandLineArgs.SUITE_DEF);
 //    if (null != testNgXml) {
 //      setTestSuites(testNgXml);
 //    }
@@ -1274,8 +1256,8 @@ public class TestNG {
     }
     
     if (cla.objectFactory != null) setObjectFactory(ClassHelper.fileToClass(cla.objectFactory));
-    if (cla.testRunFactory != null) setTestRunnerFactoryClass(
-        ClassHelper.fileToClass(cla.testRunFactory));
+    if (cla.testRunnerFactory != null) setTestRunnerFactoryClass(
+        ClassHelper.fileToClass(cla.testRunnerFactory));
 
     if (cla.reportersList != null) {
       ReporterConfig reporterConfig = ReporterConfig.deserialize(cla.reportersList);
@@ -1291,144 +1273,101 @@ public class TestNG {
   }
 
   /**
-   * Configure the TestNG instance by reading the settings provided in the map.
-   * 
-   * @param cmdLineArgs map of settings
-   * @see TestNGCommandLineArgs for setting keys
+   * Thsi method is invoked by Maven's Surefire to configure the runner,
+   * do not remove unless you know for sure that Surefire has been updated
+   * to use the new configure(CommandLineArgs) method.
    */
   @SuppressWarnings({"unchecked"})
   public void configure(Map cmdLineArgs) {
-    {
-      Integer verbose = (Integer) cmdLineArgs.get(TestNGCommandLineArgs.LOG);
-      if (null != verbose) {
-        setVerbose(verbose.intValue());
-      }
-    }
-    
-    setOutputDirectory((String) cmdLineArgs.get(TestNGCommandLineArgs.OUTDIR_COMMAND_OPT));
-    setSourcePath((String) cmdLineArgs.get(TestNGCommandLineArgs.SRC_COMMAND_OPT));
-    setAnnotations(((AnnotationTypeEnum) cmdLineArgs.get(TestNGCommandLineArgs.ANNOTATIONS_COMMAND_OPT)));
+    CommandLineArgs result = new CommandLineArgs();
 
-    String testClasses = (String) cmdLineArgs.get(TestNGCommandLineArgs.TESTCLASS_COMMAND_OPT);
+    Integer verbose = (Integer) cmdLineArgs.get(CommandLineArgs.LOG);
+    if (null != verbose) {
+      result.verbose = verbose;
+    }
+    result.outputDirectory = (String) cmdLineArgs.get(CommandLineArgs.OUTPUT_DIRECTORY);
+
+    String testClasses = (String) cmdLineArgs.get(CommandLineArgs.TEST_CLASS);
     if (null != testClasses) {
-      String[] strClasses = testClasses.split(",");
-      List<Class> classes = Lists.newArrayList();
-      for (String c : strClasses) {
-        classes.add(ClassHelper.fileToClass(c));
-      }
-
-      setTestClasses(classes.toArray(new Class[classes.size()]));
+      result.testClass = testClasses;
     }
 
-    String testNames = (String) cmdLineArgs.get(TestNGCommandLineArgs.TEST_NAMES_COMMAND_OPT);
+    String testNames = (String) cmdLineArgs.get(CommandLineArgs.TEST_NAMES);
     if (testNames != null) {
-      setTestNames(Arrays.asList(testNames.split(",")));
+      result.testNames = testNames;
     }
-    List<String> testNgXml = (List<String>) cmdLineArgs.get(TestNGCommandLineArgs.SUITE_DEF_OPT);
-    if (null != testNgXml) {
-      setTestSuites(testNgXml);
-    }
+
+//    List<String> testNgXml = (List<String>) cmdLineArgs.get(CommandLineArgs.SUITE_DEF);
+//    if (null != testNgXml) {
+//      setTestSuites(testNgXml);
+//    }
     
-    String useDefaultListeners = (String) cmdLineArgs.get(TestNGCommandLineArgs.USE_DEFAULT_LISTENERS);
+    String useDefaultListeners = (String) cmdLineArgs.get(CommandLineArgs.USE_DEFAULT_LISTENERS);
     if (null != useDefaultListeners) {
-      setUseDefaultListeners("true".equalsIgnoreCase(useDefaultListeners));
+      result.useDefaultListeners = useDefaultListeners;
     }
-    
-    setGroups((String) cmdLineArgs.get(TestNGCommandLineArgs.GROUPS_COMMAND_OPT));
-    setExcludedGroups((String) cmdLineArgs.get(TestNGCommandLineArgs.EXCLUDED_GROUPS_COMMAND_OPT));      
-    setTestJar((String) cmdLineArgs.get(TestNGCommandLineArgs.TESTJAR_COMMAND_OPT));
-    setJUnit((Boolean) cmdLineArgs.get(TestNGCommandLineArgs.JUNIT_DEF_OPT));
-    setMaster( (String)cmdLineArgs.get(TestNGCommandLineArgs.MASTER_OPT));
-    setSlave( (String)cmdLineArgs.get(TestNGCommandLineArgs.SLAVE_OPT));
-    setSkipFailedInvocationCounts(
-      (Boolean) cmdLineArgs.get(
-        TestNGCommandLineArgs.SKIP_FAILED_INVOCATION_COUNT_OPT));
-    
-    String parallelMode = (String) cmdLineArgs.get(TestNGCommandLineArgs.PARALLEL_MODE);
+
+    result.groups = (String) cmdLineArgs.get(CommandLineArgs.GROUPS);
+    result.excludedGroups = (String) cmdLineArgs.get(CommandLineArgs.EXCLUDED_GROUPS);
+    result.testJar = (String) cmdLineArgs.get(CommandLineArgs.TEST_JAR);
+    result.junit = (Boolean) cmdLineArgs.get(CommandLineArgs.JUNIT);
+    result.master = (String) cmdLineArgs.get(CommandLineArgs.MASTER);
+    result.slave = (String) cmdLineArgs.get(CommandLineArgs.SLAVE);
+    result.skipFailedInvocationCounts = (Boolean) cmdLineArgs.get(
+        CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS);
+    String parallelMode = (String) cmdLineArgs.get(CommandLineArgs.PARALLEL);
     if (parallelMode != null) {
-      setParallel(parallelMode);
+      result.parallelMode = parallelMode;
     }
     
-    String threadCount = (String) cmdLineArgs.get(TestNGCommandLineArgs.THREAD_COUNT);
+    // TODO: verify that Surefire is passing an Integer here
+    Integer threadCount = (Integer) cmdLineArgs.get(CommandLineArgs.THREAD_COUNT);
     if (threadCount != null) {
-      setThreadCount(Integer.parseInt(threadCount));
+      result.threadCount = threadCount;
     }
-    String dataProviderThreadCount = (String) cmdLineArgs.get(TestNGCommandLineArgs.DATA_PROVIDER_THREAD_COUNT);
-    if (dataProviderThreadCount != null) {
-      setDataProviderThreadCount(Integer.parseInt(dataProviderThreadCount));
+    // TODO: verify that Surefire is passing an Integer here
+    Integer dptc = (Integer) cmdLineArgs.get(CommandLineArgs.DATA_PROVIDER_THREAD_COUNT);
+    if (dptc != null) {
+      result.dataProviderThreadCount = dptc;
     }
-    String defaultSuiteName = (String) cmdLineArgs.get(TestNGCommandLineArgs.SUITE_NAME_OPT);
+    String defaultSuiteName = (String) cmdLineArgs.get(CommandLineArgs.SUITE_NAME);
     if (defaultSuiteName != null) {
-      setDefaultSuiteName(defaultSuiteName);
+      result.suiteName = defaultSuiteName;
     }
 
-    String defaultTestName = (String) cmdLineArgs.get(TestNGCommandLineArgs.TEST_NAME_OPT);
+    String defaultTestName = (String) cmdLineArgs.get(CommandLineArgs.TEST_NAME);
     if (defaultTestName != null) {
-      setDefaultTestName(defaultTestName);
+      result.testName = defaultTestName;
     }
 
-    String strClass = (String) cmdLineArgs.get(TestNGCommandLineArgs.LISTENER_COMMAND_OPT);
+    String strClass = (String) cmdLineArgs.get(CommandLineArgs.LISTENER);
     if (null != strClass) {
-      String sep = ";";
-      if (strClass.indexOf(",") >= 0) {
-        sep = ",";
-      }
-      String[] strs = Utils.split(strClass, sep);
-      List<Class> classes = Lists.newArrayList();
-
-      for (String cls : strs) {
-        classes.add(ClassHelper.fileToClass(cls));
-      }
-
-      setListenerClasses(classes);
+      result.listener = strClass;
     }
     
-    String ms = (String) cmdLineArgs.get(TestNGCommandLineArgs.METHOD_SELECTOR_OPT);
+    String ms = (String) cmdLineArgs.get(CommandLineArgs.METHOD_SELECTORS);
     if (null != ms) {
-      String[] strs = Utils.split(ms, ",");
-      for (String cls : strs) {
-        String[] sel = Utils.split(cls, ":");
-        try {
-          if (sel.length == 2) {
-            addMethodSelector(sel[0], Integer.valueOf(sel[1]));
-          } else {
-            LOGGER.error("WARNING: method selector " + cls + " has the wrong number of values");
-          }
-        }
-        catch (NumberFormatException nfe) {
-          LOGGER.error("WARNING: MethodSelector priority was not an integer for " + cls);
-        }
-      }
+      result.methodSelectors = ms;
     }
 
-    String objectFactory = (String) cmdLineArgs.get(TestNGCommandLineArgs.OBJECT_FACTORY_COMMAND_OPT);
+    String objectFactory = (String) cmdLineArgs.get(CommandLineArgs.OBJECT_FACTORY);
     if(null != objectFactory) {
-      setObjectFactory(ClassHelper.fileToClass(objectFactory));
+      result.objectFactory = objectFactory;
     }
 
-    String runnerFactory = (String) cmdLineArgs.get(TestNGCommandLineArgs.TESTRUNNER_FACTORY_COMMAND_OPT);
+    String runnerFactory = (String) cmdLineArgs.get(CommandLineArgs.TEST_RUNNER_FACTORY);
     if (null != runnerFactory) {
-      setTestRunnerFactoryClass(ClassHelper.fileToClass(runnerFactory));
+      result.testRunnerFactory = runnerFactory;
     }
 
-    String reporterConfigs = (String) cmdLineArgs.get(TestNGCommandLineArgs.REPORTERS_LIST);
+    String reporterConfigs = (String) cmdLineArgs.get(CommandLineArgs.REPORTERS_LIST);
     if (reporterConfigs != null) {
-      ReporterConfig reporterConfig = ReporterConfig.deserialize(reporterConfigs);
-      addReporter(reporterConfig);
-//      if (arguments.get(REPORTERS_LIST) == null) {
-//        arguments.put(REPORTERS_LIST, Lists.newArrayList());
-//      }
-//      ((List<ReporterConfig>)arguments.get(REPORTERS_LIST)).add(reporterConfig);
-//      i++;
-//
-//      for (ReporterConfig reporterConfig : reporterConfigs) {
-//        addReporter(reporterConfig);
-//      }
+      result.reportersList = reporterConfigs;
     }
     
-    String failurePolicy = (String)cmdLineArgs.get(TestNGCommandLineArgs.CONFIG_FAILURE_POLICY);
+    String failurePolicy = (String)cmdLineArgs.get(CommandLineArgs.CONFIG_FAILURE_POLICY);
     if (failurePolicy != null) {
-      setConfigFailurePolicy(failurePolicy);
+      result.configFailurePolicy = failurePolicy;
     }
   }
 
@@ -1501,45 +1440,45 @@ public class TestNG {
    * 
    * @param params the parsed command line parameters.
    */
-  @SuppressWarnings({"unchecked"})
-  protected static Map checkConditions(Map params) {
-    // TODO CQ document why sometimes we throw exceptions and sometimes we exit. 
-    String testClasses = (String) params.get(TestNGCommandLineArgs.TESTCLASS_COMMAND_OPT);
-    List<String> testNgXml = (List<String>) params.get(TestNGCommandLineArgs.SUITE_DEF_OPT);
-    Object testJar = params.get(TestNGCommandLineArgs.TESTJAR_COMMAND_OPT);
-    Object slave = params.get(TestNGCommandLineArgs.SLAVE_OPT);
-
-    if (testClasses == null && testNgXml == null && slave == null && testJar == null) {
-      System.err.println("You need to specify at least one testng.xml or one class");
-      usage();
-      System.exit(-1);
-    }
-
-    if (VersionInfo.IS_JDK14) {
-      String srcPath = (String) params.get(TestNGCommandLineArgs.SRC_COMMAND_OPT);
-
-      if ((null == srcPath) || "".equals(srcPath)) {
-        throw new TestNGException("No sourcedir was specified");
-      }
-    }
-    
-    String groups = (String) params.get(TestNGCommandLineArgs.GROUPS_COMMAND_OPT);
-    String excludedGroups = (String) params.get(TestNGCommandLineArgs.EXCLUDED_GROUPS_COMMAND_OPT);
-    
-    if (testJar == null &&
-        (null != groups || null != excludedGroups) && testClasses == null && testNgXml == null) {
-      throw new TestNGException("Groups option should be used with testclass option");
-    }
-    
-    // -slave & -master can't be set together
-    if (params.containsKey(TestNGCommandLineArgs.SLAVE_OPT) && 
-   		 params.containsKey(TestNGCommandLineArgs.MASTER_OPT)) {
-   	 throw new TestNGException(TestNGCommandLineArgs.SLAVE_OPT + " can't be combined with " +
-   	                           TestNGCommandLineArgs.MASTER_OPT);
-    }
-    
-    return params;
-  }
+//  @SuppressWarnings({"unchecked"})
+//  protected static Map checkConditions(Map params) {
+//    // TODO CQ document why sometimes we throw exceptions and sometimes we exit. 
+//    String testClasses = (String) params.get(CommandLineArgs.TESTCLASS_COMMAND);
+//    List<String> testNgXml = (List<String>) params.get(CommandLineArgs.SUITE_DEF);
+//    Object testJar = params.get(CommandLineArgs.TESTJAR_COMMAND);
+//    Object slave = params.get(CommandLineArgs.SLAVE);
+//
+//    if (testClasses == null && testNgXml == null && slave == null && testJar == null) {
+//      System.err.println("You need to specify at least one testng.xml or one class");
+//      usage();
+//      System.exit(-1);
+//    }
+//
+//    if (VersionInfo.IS_JDK14) {
+//      String srcPath = (String) params.get(CommandLineArgs.SRC_COMMAND);
+//
+//      if ((null == srcPath) || "".equals(srcPath)) {
+//        throw new TestNGException("No sourcedir was specified");
+//      }
+//    }
+//    
+//    String groups = (String) params.get(CommandLineArgs.GROUPS_COMMAND);
+//    String excludedGroups = (String) params.get(CommandLineArgs.EXCLUDED_GROUPS_COMMAND);
+//    
+//    if (testJar == null &&
+//        (null != groups || null != excludedGroups) && testClasses == null && testNgXml == null) {
+//      throw new TestNGException("Groups option should be used with testclass option");
+//    }
+//    
+//    // -slave & -master can't be set together
+//    if (params.containsKey(CommandLineArgs.SLAVE) && 
+//   		 params.containsKey(CommandLineArgs.MASTER)) {
+//   	 throw new TestNGException(CommandLineArgs.SLAVE + " can't be combined with " +
+//   	                           CommandLineArgs.MASTER);
+//    }
+//    
+//    return params;
+//  }
 
   /**
    * Double check that the command line parameters are valid.
@@ -1568,8 +1507,8 @@ public class TestNG {
     }
 
     if (args.slave != null && args.master != null) {
-     throw new ParameterException(TestNGCommandLineArgs.SLAVE_OPT + " can't be combined with " +
-                               TestNGCommandLineArgs.MASTER_OPT);
+     throw new ParameterException(CommandLineArgs.SLAVE + " can't be combined with "
+         + CommandLineArgs.MASTER);
     }
   }
 
@@ -1702,32 +1641,39 @@ public class TestNG {
       m_mainRunner = runner;
     }
     
+    @Override
     public void onTestFailure(ITestResult result) {
       setHasRunTests();
       m_mainRunner.setStatus(HAS_FAILURE);
     }
 
+    @Override
     public void onTestSkipped(ITestResult result) {
       setHasRunTests();
       m_mainRunner.setStatus(HAS_SKIPPED);
     }
 
+    @Override
     public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
       setHasRunTests();
       m_mainRunner.setStatus(HAS_FSP);
     }
 
+    @Override
     public void onTestSuccess(ITestResult result) {
       setHasRunTests();
     }
 
+    @Override
     public void onStart(ITestContext context) {
       setHasRunTests();
     }
 
+    @Override
     public void onFinish(ITestContext context) {
     }
 
+    @Override
     public void onTestStart(ITestResult result) {
       setHasRunTests();
     }
@@ -1739,6 +1685,7 @@ public class TestNG {
     /**
      * @see org.testng.internal.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
      */
+    @Override
     public void onConfigurationFailure(ITestResult itr) {
       m_mainRunner.setStatus(HAS_FAILURE);
     }
@@ -1746,6 +1693,7 @@ public class TestNG {
     /**
      * @see org.testng.internal.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
      */
+    @Override
     public void onConfigurationSkip(ITestResult itr) {
       m_mainRunner.setStatus(HAS_SKIPPED);
     }
@@ -1753,6 +1701,7 @@ public class TestNG {
     /**
      * @see org.testng.internal.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
      */
+    @Override
     public void onConfigurationSuccess(ITestResult itr) {
     }
   }

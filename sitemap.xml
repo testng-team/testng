@@ -1,0 +1,64 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.google.com/schemas/sitemap/0.90">
+  <url>
+    <loc>http://testng.org/doc/index.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>http://testng.org/doc/download.html</loc>
+    <changefreq>daily</changefreq>
+  </url>
+
+  <url>
+    <loc>http://testng.org/doc/migrating.html</loc>
+    <changefreq>daily</changefreq>
+  </url>
+
+
+  <url>
+    <loc>http://testng.org/javadocs/index.html</loc>
+    <changefreq>daily</changefreq>
+  </url>
+
+
+  <url>
+    <loc>http://testng.org/doc/book.html</loc>
+    <changefreq>daily</changefreq>
+  </url>
+
+
+  <url>
+    <loc>http://testng.org/doc/eclipse.html</loc>
+    <changefreq>daily</changefreq>
+  </url>
+
+
+  <url>
+    <loc>http://testng.org/doc/idea.html</loc>
+    <changefreq>daily</changefreq>
+  </url>
+
+
+  <url>
+    <loc>http://testng.org/doc/maven.html</loc>
+    <changefreq>daily</changefreq>
+  </url>
+
+
+  <url>
+    <loc>http://testng.org/doc/ant.html</loc>
+    <changefreq>daily</changefreq>
+  </url>
+
+
+  <url>
+    <loc>http://testng.org/doc/misc.html</loc>
+    <changefreq>daily</changefreq>
+  </url>
+
+</urlset>
+
+

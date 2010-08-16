@@ -7,10 +7,15 @@
 
 mvn resources:resources compiler:compile resources:testResources compiler:testCompile jar:jar source:jar javadoc:jar install:install gpg:sign
 
+mvn -f pom-test.xml test
+
+
 echo
 echo "To run the tests: mvn -f pom-test.xml test"
 echo "To deploy to the snapshot repository: mvn deploy"
-echo "To deploy to the release directory: mvn release:clean release:prepar"
+echo "To deploy to the release directory: mvn release:clean release:prepare release:perform"
+echo "Nexus UI:  https://oss.sonatype.org/index.html"
+echo "Wiki: https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide"
 
 # deploy without tagging: mvn deploy -DperformRelease
 
