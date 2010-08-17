@@ -1,9 +1,9 @@
 package org.testng;
 
+import org.testng.internal.MethodInstance;
+
 import java.util.Collections;
 import java.util.List;
-
-import org.testng.internal.MethodInstance;
 
 /**
  * A method interceptor that preserves the order in which test classes were found in

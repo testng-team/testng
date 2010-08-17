@@ -10,7 +10,7 @@
     <listener class-name="test.invokedmethodlistener.MyListener" />
   </listeners>
 
-  <test name="Regression2">
+  <test name="Regression2" preserve-order="true">
 <!--
     <packages>
       <package name="test.testng355.org.apache.tapestry5" />
@@ -28,9 +28,12 @@
 <!-- 
       <class name="test.yaml.YamlTest">
       <class name="test.xml.XmlVerifyTest">
+      <class name="test.preserveorder.PreserveOrderTest">
         <methods>
-          <include name="commandLineNegativePriorityAllGroups" />
+          <include name="orderShouldBePreservedWithDependencies" />
         </methods>
+<!-- 
+      <class name="test.xml.XmlVerifyTest">
       <class name="test.listeners.ResultEndMillisTest">
  -->
        </class>

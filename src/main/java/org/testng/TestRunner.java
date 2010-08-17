@@ -1,18 +1,6 @@
 package org.testng;
 
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
-
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.Attributes;
@@ -48,6 +36,20 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 /**
  * This class takes care of running one Test.
@@ -289,7 +291,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       if (listener instanceof IMethodInterceptor) {
         setMethodInterceptor((IMethodInterceptor) listener);
       } else if (listener instanceof ISuiteListener) {
-        addListener((ISuiteListener) listener);
+        addListener(listener);
       } else if (listener instanceof IInvokedMethodListener) {
         m_suite.addListener((ITestNGListener) listener);
       } else if (listener instanceof ITestListener) {
@@ -499,7 +501,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   }
 
   private Map<String, String> createGroups(List<String> groups) {
-    return createGroups((String[]) groups.toArray(new String[groups.size()]));
+    return createGroups(groups.toArray(new String[groups.size()]));
   }
 
   private Map<String, String> createGroups(String[] groups) {
@@ -520,7 +522,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
 
       // Do we need to loop over unfinished groups?
       while (unfinishedGroups.size() > 0) {
-        String[] uGroups = (String[]) unfinishedGroups.toArray(new String[unfinishedGroups.size()]);
+        String[] uGroups = unfinishedGroups.toArray(new String[unfinishedGroups.size()]);
         unfinishedGroups = Lists.newArrayList();
         collectGroups(uGroups, unfinishedGroups, result);
       }
@@ -596,10 +598,12 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       /**
        * @see org.testng.internal.IMethodWorker#getMaxTimeOut()
        */
+      @Override
       public long getMaxTimeOut() {
         return 0;
       }
 
+      @Override
       public List<ITestResult> getTestResults() {
         return null;
       }
@@ -607,6 +611,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       /**
        * @see java.lang.Runnable#run()
        */
+      @Override
       public void run() {    
         for(Class<?> tc: classes) {
           IJUnitTestRunner tr= ClassHelper.createTestRunner(TestRunner.this);
@@ -622,15 +627,18 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
         }
       }
 
+      @Override
       public List<ITestNGMethod> getMethods() {
         throw new TestNGException("JUnit not supported");
       }
 
+      @Override
       public int getPriority() {
         if (m_allTestMethods.length == 1) return m_allTestMethods[0].getPriority();
         else return 0;
       }
 
+      @Override
       public int compareTo(IMethodWorker other) {
         return getPriority() - other.getPriority();
       }
@@ -658,7 +666,17 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       computeTestLists(sequentialList, parallelList, sequentialMapList);
       
       log(3, "Found " + (sequentialList.size() + parallelList.size()) + " applicable methods");
-      
+
+      //
+      // If the user specified preserve-order = true, we can't change the ordering
+      // of the methods on the sequential list, since they are not free, however
+      // we can still reorder the classes to reflect that order.
+      //
+      if ("true".equalsIgnoreCase(xmlTest.getPreserveOrder())) {
+        // Note: modifying sequentialList
+        sequentialList = preserveClassOrder(xmlTest, sequentialList);
+      }
+
       //
       // Create the workers
       //
@@ -709,6 +727,49 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   }
 
   /**
+   * Reorder the methods to preserve the class order without changing the method ordering.
+   */
+  private List<List<ITestNGMethod>> preserveClassOrder(XmlTest test,
+      List<List<ITestNGMethod>> lists) {
+
+    List<List<ITestNGMethod>> result = Lists.newArrayList();
+
+    Map<String, List<ITestNGMethod>> classes = Maps.newHashMap();
+    List<XmlClass> sortedClasses = Lists.newArrayList();
+
+    for (XmlClass c : test.getXmlClasses()) {
+      classes.put(c.getName(), new ArrayList<ITestNGMethod>());
+      sortedClasses.add(c);
+    }
+
+    // Sort the classes based on their order of appearance in the XML
+    Collections.sort(sortedClasses, new Comparator<XmlClass>() {
+      @Override
+      public int compare(XmlClass arg0, XmlClass arg1) {
+        return arg0.getIndex() - arg1.getIndex();
+      }
+    });
+
+    // Put each method in their class bucket
+    for (List<ITestNGMethod> ll : lists) {
+      List<ITestNGMethod> tmpResult = Lists.newArrayList();
+      for (ITestNGMethod m : ll) {
+        List<ITestNGMethod> l = classes.get(m.getMethod().getDeclaringClass().getName());
+        l.add(m);
+      }
+      // Recreate the list based on the class ordering
+      for (XmlClass xc : sortedClasses) {
+        List<ITestNGMethod> methods = classes.get(xc.getName());
+        tmpResult.addAll(methods);
+      }
+      result.add(tmpResult);
+    }
+
+//    System.out.println(result);
+    return result;
+  }
+
+  /**
    * Create a list of workers to run the methods passed in parameter.
    * Each test method is run in its own worker except in the following cases:
    * - The method belongs to a class that has @Test(sequential=true)
@@ -716,6 +777,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
    * In both these cases, all the methods belonging to that class will then
    * be put in the same worker in order to run in the same thread.
    */
+  @Override
   public List<IMethodWorker> createWorkers(XmlTest xmlTest, Set<ITestNGMethod> methods) {
     List<IMethodWorker> result = Lists.newArrayList();
 
@@ -1264,6 +1326,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   /////
   // ITestContext
   //
+  @Override
   public String getName() {
     return m_testName;
   }
@@ -1271,6 +1334,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   /**
    * @return Returns the startDate.
    */
+  @Override
   public Date getStartDate() {
     return m_startDate;
   }
@@ -1278,40 +1342,48 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   /**
    * @return Returns the endDate.
    */
+  @Override
   public Date getEndDate() {
     return m_endDate;
   }
 
+  @Override
   public IResultMap getPassedTests() {
     return m_passedTests;
   }
 
+  @Override
   public IResultMap getSkippedTests() {
     return m_skippedTests;
   }
 
+  @Override
   public IResultMap getFailedTests() {
     return m_failedTests;
   }
 
+  @Override
   public IResultMap getFailedButWithinSuccessPercentageTests() {
     return m_failedButWithinSuccessPercentageTests;
   }
 
+  @Override
   public String[] getIncludedGroups() {
     Map<String, String> ig= m_xmlMethodSelector.getIncludedGroups();
-    String[] result= (String[]) ig.values().toArray((new String[ig.size()]));
+    String[] result= ig.values().toArray((new String[ig.size()]));
 
     return result;
   }
 
+  @Override
   public String[] getExcludedGroups() {
     Map<String, String> eg= m_xmlMethodSelector.getExcludedGroups();
-    String[] result= (String[]) eg.values().toArray((new String[eg.size()]));
+    String[] result= eg.values().toArray((new String[eg.size()]));
 
     return result;
   }
 
+  @Override
   public String getOutputDirectory() {
     return m_outputDirectory;
   }
@@ -1319,19 +1391,23 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   /**
    * @return Returns the suite.
    */
+  @Override
   public ISuite getSuite() {
     return m_suite;
   }
 
+  @Override
   public ITestNGMethod[] getAllTestMethods() {
     return m_allTestMethods;
   }
 
   
+  @Override
   public String getHost() {
     return m_host;
   }
 
+  @Override
   public Collection<ITestNGMethod> getExcludedMethods() {
     Map<ITestNGMethod, ITestNGMethod> vResult = Maps.newHashMap();
     
@@ -1345,6 +1421,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   /**
    * @see org.testng.ITestContext#getFailedConfigurations()
    */
+  @Override
   public IResultMap getFailedConfigurations() {
     return m_failedConfigurations;
   }
@@ -1352,6 +1429,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   /**
    * @see org.testng.ITestContext#getPassedConfigurations()
    */
+  @Override
   public IResultMap getPassedConfigurations() {
     return m_passedConfigurations;
   }
@@ -1359,6 +1437,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   /**
    * @see org.testng.ITestContext#getSkippedConfigurations()
    */
+  @Override
   public IResultMap getSkippedConfigurations() {
     return m_skippedConfigurations;
   }
@@ -1371,45 +1450,55 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   // ITestResultNotifier
   //
 
+  @Override
   public void addPassedTest(ITestNGMethod tm, ITestResult tr) {
     m_passedTests.addResult(tr, tm);
   }
 
+  @Override
   public Set<ITestResult> getPassedTests(ITestNGMethod tm) {
     return m_passedTests.getResults(tm);
   }
   
+  @Override
   public Set<ITestResult> getFailedTests(ITestNGMethod tm) {
     return m_failedTests.getResults(tm);
   }
 
+  @Override
   public void addSkippedTest(ITestNGMethod tm, ITestResult tr) {
     m_skippedTests.addResult(tr, tm);
   }
 
+  @Override
   public void addInvokedMethod(InvokedMethod im) {
     synchronized(m_invokedMethods) {
       m_invokedMethods.add(im);
     }
   }
 
+  @Override
   public void addFailedTest(ITestNGMethod testMethod, ITestResult result) {
     logFailedTest(testMethod, result, false /* withinSuccessPercentage */);
   }
 
+  @Override
   public void addFailedButWithinSuccessPercentageTest(ITestNGMethod testMethod,
                                                       ITestResult result) {
     logFailedTest(testMethod, result, true /* withinSuccessPercentage */);
   }
 
+  @Override
   public XmlTest getTest() {
     return m_xmlTest;
   }
 
+  @Override
   public List<ITestListener> getTestListeners() {
     return m_testListeners;
   }
 
+  @Override
   public List<IConfigurationListener> getConfigurationListeners() {
     return m_configurationListeners;
   }
@@ -1516,14 +1605,17 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   private IResultMap m_failedConfigurations= new ResultMap();
   
   private class ConfigurationListener implements IConfigurationListener {
+    @Override
     public void onConfigurationFailure(ITestResult itr) {
       m_failedConfigurations.addResult(itr, itr.getMethod());
     }
 
+    @Override
     public void onConfigurationSkip(ITestResult itr) {
       m_skippedConfigurations.addResult(itr, itr.getMethod());
     }
 
+    @Override
     public void onConfigurationSuccess(ITestResult itr) {
       m_passedConfigurations.addResult(itr, itr.getMethod());
     }
@@ -1533,24 +1625,29 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     m_methodInterceptor = methodInterceptor;
   }
 
+  @Override
   public XmlTest getCurrentXmlTest() {
     return m_xmlTest;
   }
 
   private IAttributes m_attributes = new Attributes();
 
+  @Override
   public Object getAttribute(String name) {
     return m_attributes.getAttribute(name);
   }
 
+  @Override
   public void setAttribute(String name, Object value) {
     m_attributes.setAttribute(name, value);
   }
 
+  @Override
   public Set<String> getAttributeNames() {
     return m_attributes.getAttributeNames();
   }
 
+  @Override
   public Object removeAttribute(String name) {
     return m_attributes.removeAttribute(name);
   }
