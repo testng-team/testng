@@ -1,5 +1,6 @@
 Current
 
+Fixed: TESTNG-404 threaded tests fail due to use of non-threadsafe collections (Marcus Better)
 Fixed: preserve-order was not preserving class order with dependent methods
 Fixed: RetryAnalyzer wasn't working properly with factories
 Fixed: The ant task was no longer supporting ',' for testclass
