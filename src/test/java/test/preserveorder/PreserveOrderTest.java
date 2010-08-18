@@ -1,7 +1,6 @@
 package test.preserveorder;
 
 import org.testng.Assert;
-import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -103,13 +102,7 @@ public class PreserveOrderTest extends SimpleBaseTest {
     tng.addListener(tla);
     tng.run();
 
-    List<ITestResult> tests = tla.getPassedTests();
-    int i = 0;
-    Assert.assertEquals(tests.get(i++).getName(), "c4TestOne");
-    Assert.assertEquals(tests.get(i++).getName(), "c4TestTwo");
-    Assert.assertEquals(tests.get(i++).getName(), "c4TestThree");
-    Assert.assertEquals(tests.get(i++).getName(), "c3TestOne");
-    Assert.assertEquals(tests.get(i++).getName(), "c3TestTwo");
-    Assert.assertEquals(tests.get(i++).getName(), "c3TestThree");
+    verifyPassedTests(tla, "c4TestOne", "c4TestTwo", "c4TestThree",
+        "c3TestOne", "c3TestTwo", "c3TestThree");
   }
 }
