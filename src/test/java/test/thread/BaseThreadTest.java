@@ -1,10 +1,10 @@
 package test.thread;
 
-import java.util.Set;
+import org.testng.internal.annotations.Sets;
 
 import test.SimpleBaseTest;
 
-import com.google.inject.internal.Sets;
+import java.util.Set;
 
 public class BaseThreadTest extends SimpleBaseTest {
   static private Set<Long> m_threadIds;

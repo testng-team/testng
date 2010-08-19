@@ -1,12 +1,11 @@
 package org.testng.xml;
 
+import org.testng.collections.Lists;
+import org.testng.reporters.XMLStringBuffer;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-
-import org.testng.reporters.XMLStringBuffer;
-
-import com.google.inject.internal.Lists;
 
 public class XmlInclude {
   private String m_name;

@@ -1273,7 +1273,7 @@ public class TestNG {
   }
 
   /**
-   * Thsi method is invoked by Maven's Surefire to configure the runner,
+   * This method is invoked by Maven's Surefire to configure the runner,
    * do not remove unless you know for sure that Surefire has been updated
    * to use the new configure(CommandLineArgs) method.
    */
