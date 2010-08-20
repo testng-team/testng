@@ -752,18 +752,19 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
 
     // Put each method in their class bucket
     for (List<ITestNGMethod> ll : lists) {
-      List<ITestNGMethod> tmpResult = Lists.newArrayList();
       for (ITestNGMethod m : ll) {
         List<ITestNGMethod> l = classes.get(m.getMethod().getDeclaringClass().getName());
         l.add(m);
       }
+    }
       // Recreate the list based on the class ordering
+    List<ITestNGMethod> tmpResult = Lists.newArrayList();
       for (XmlClass xc : sortedClasses) {
         List<ITestNGMethod> methods = classes.get(xc.getName());
         tmpResult.addAll(methods);
       }
       result.add(tmpResult);
-    }
+//    }
 
 //    System.out.println(result);
     return result;
@@ -986,7 +987,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
                                        this));
     }
     if (getVerbose() >= 2) {
-      log(3, "WILL BE RUN SEQUENTIALLY:");
+      log(3, "Will be run sequentially:");
       for (List<ITestNGMethod> l : sequentialList) {
         for (ITestNGMethod tm : l) {
           log(3, "  " + tm);
@@ -1011,7 +1012,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     }
 
     if (getVerbose() >= 2) {
-      log(3, "WILL BE RUN SEQUENTIALLY:" + result);
+      log(3, "Will be run sequentially:" + result);
     }
 
     return result;

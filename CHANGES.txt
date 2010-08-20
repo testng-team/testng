@@ -5,6 +5,11 @@ Fixed: preserve-order was not preserving class order with dependent methods
 Fixed: RetryAnalyzer wasn't working properly with factories
 Fixed: The ant task was no longer supporting ',' for testclass
 
+Eclipse:
+
+Fixed: The plug-in wasn't running Groovy tests correctly (Andrew Eisenberg)
+Fixed: TESTNG-402 [Eclipse Plug-In] NPE occured when I run twice a custom "Run configuration" on a group
+
 ===========================================================================
 
 

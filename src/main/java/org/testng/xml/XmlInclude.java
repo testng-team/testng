@@ -1,7 +1,6 @@
 package org.testng.xml;
 
-import com.google.inject.internal.Lists;
-
+import org.testng.collections.Lists;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.util.Collections;
