@@ -3,7 +3,9 @@ package test.preserveorder;
 import org.testng.Assert;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.collections.Lists;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -104,5 +106,52 @@ public class PreserveOrderTest extends SimpleBaseTest {
 
     verifyPassedTests(tla, "c4TestOne", "c4TestTwo", "c4TestThree",
         "c3TestOne", "c3TestTwo", "c3TestThree");
+  }
+
+  @Test(dataProvider = "dp")
+  public void preserveOrderAnna(String[] classes, String[] expectedMethods) {
+    TestNG tng = create();
+    XmlSuite s = createXmlSuite("PreserveOrder");
+    XmlTest t = new XmlTest(s);
+
+    for (String c : classes) {
+      t.getXmlClasses().add(new XmlClass("test.preserveorder." + c));
+    }
+    t.setPreserveOrder("true");
+
+    tng.setXmlSuites(Arrays.asList(s));
+    TestListenerAdapter tla = new TestListenerAdapter();
+    tng.addListener(tla);
+    tng.run();
+
+    verifyPassedTests(tla, expectedMethods);
+  }
+
+  @DataProvider
+  public Object[][] dp() {
+    String[][] classes = new String[][] {
+        { "PrgTest", "SibTest", "EdnTest" },
+        { "PrgTest", "EdnTest", "SibTest" },
+        { "SibTest", "PrgTest", "EdnTest" },
+        { "SibTest", "EdnTest", "PrgTest" },
+        { "EdnTest", "PrgTest", "SibTest" },
+        { "EdnTest", "SibTest", "PrgTest" },
+    };
+    String[][] expectedMethods = new String[][] {
+        { "prg1", "prg2", "sib1", "sib2", "edn1", "edn2" },
+        { "prg1", "prg2", "edn1", "edn2", "sib1", "sib2" },
+        { "sib1", "sib2", "prg1", "prg2", "edn1", "edn2" },
+        { "sib1", "sib2", "edn1", "edn2", "prg1", "prg2" },
+        { "edn1", "edn2", "prg1", "prg2", "sib1", "sib2" },
+        { "edn1", "edn2", "sib1", "sib2", "prg1", "prg2" },
+    };
+
+    List<Object[]> result = Lists.newArrayList();
+    for (int i = 0; i < classes.length; i++) {
+      Object[] o = new Object[] { classes[i], expectedMethods[i] };
+      result.add(o);
+    }
+
+    return result.toArray(new Object[result.size()][]);
   }
 }

@@ -26,31 +26,28 @@
     </groups>
     <parameter name="count" value="10"/>
     <classes>
-      <class name="test.preserveorder.PreserveOrderTest">
-        <methods>
+      <class name="test.preserveorder.PreserveOrderTest"/>
+<!-- 
+      <class name="test.preserveorder.SibTest"/>
+      <class name="test.preserveorder.EdnTest"/>
+ -->
+     </classes>
+  </test>
+<!-- 
+ <methods>
           <include name="orderShouldBePreservedWithDependencies" />
         </methods>
-<!-- 
       <class name="test.xml.XmlVerifyTest">
       <class name="test.listeners.ResultEndMillisTest">
- -->
        </class>
+ -->
 <!-- 
        <class name="test.inject.NoInjectionTest" />
-      <class name="test.tmp.TestFactory" />
-      <class name="test.thread.MultiThreadedDependentTest" />
       <class name="test.tmp.B" />
-      <class name="test.thread.MultiThreadedDependentTest" />
-      <class name="test.thread.FactoryTest" />
-      <class name="test.tmp.B" />
-      <class name="test.failedreporter.FailedReporterTest" />
-        <methods>
-          <include name="verifyIPAddress" invocationNumbers="0 2" />
-        </methods>
       </class>
- -->
     </classes>
   </test>
+ -->
 
 </suite>
 

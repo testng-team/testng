@@ -437,46 +437,47 @@ public class XmlTest implements Serializable, Cloneable {
   
   @Override
   public String toString() {
-    StringBuffer result = new StringBuffer("[Test: \"" + m_name + "\"")
-      .append(" verbose:" + m_verbose);
-    
-    result.append("[parameters:");
-    for (String k : m_parameters.keySet()) {
-      String v = m_parameters.get(k);
-      result.append(k + "=>" + v);
-    }
-    
-    result.append("]");
-    result.append("[metagroups:");
-    for (String g : m_metaGroups.keySet()) {
-      List<String> mg = m_metaGroups.get(g);
-      result.append(g).append("=");
-      for (String n : mg) {
-        result.append(n).append(",");
-      }
-    }
-    result.append("] ");
-    
-    result.append("[included: ");
-    for (String g : m_includedGroups) {
-      result.append(g).append(" ");
-    }
-    result.append("]");
-    
-    result.append("[excluded: ");
-    for (String g : m_excludedGroups) {
-      result.append(g).append("");
-    }
-    result.append("] ");
-    
-    result.append(" classes:");
-    for (XmlClass cl : m_xmlClasses) {
-      result.append(cl).append(" ");
-    }
-    
-    result.append("] ");
-    
-    return result.toString();
+    return toXml("");
+//    StringBuffer result = new StringBuffer("[Test: \"" + m_name + "\"")
+//      .append(" verbose:" + m_verbose);
+//    
+//    result.append("[parameters:");
+//    for (String k : m_parameters.keySet()) {
+//      String v = m_parameters.get(k);
+//      result.append(k + "=>" + v);
+//    }
+//    
+//    result.append("]");
+//    result.append("[metagroups:");
+//    for (String g : m_metaGroups.keySet()) {
+//      List<String> mg = m_metaGroups.get(g);
+//      result.append(g).append("=");
+//      for (String n : mg) {
+//        result.append(n).append(",");
+//      }
+//    }
+//    result.append("] ");
+//    
+//    result.append("[included: ");
+//    for (String g : m_includedGroups) {
+//      result.append(g).append(" ");
+//    }
+//    result.append("]");
+//    
+//    result.append("[excluded: ");
+//    for (String g : m_excludedGroups) {
+//      result.append(g).append("");
+//    }
+//    result.append("] ");
+//    
+//    result.append(" classes:");
+//    for (XmlClass cl : m_xmlClasses) {
+//      result.append(cl).append(" ");
+//    }
+//    
+//    result.append("] ");
+//    
+//    return result.toString();
   }
   
   static void ppp(String s) {
