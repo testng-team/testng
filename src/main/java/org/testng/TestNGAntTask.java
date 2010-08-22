@@ -512,15 +512,18 @@ public class TestNGAntTask extends Task {
       argv.add(m_excludedGroups);
     }
 
-    if(m_classFilesets.size() > 0) {
-      argv.add(CommandLineArgs.TEST_CLASS);
-      StringBuffer testClasses = new StringBuffer();
-      for (String file : fileset(m_classFilesets)) {
-        testClasses.append(file);
-        testClasses.append(',');
+    if (m_classFilesets.size() > 0) {
+      List<String> files = fileset(m_classFilesets);
+      if (files.size() > 0) {
+        argv.add(CommandLineArgs.TEST_CLASS);
+        StringBuffer testClasses = new StringBuffer();
+        for (String file : files) {
+          testClasses.append(file);
+          testClasses.append(',');
+        }
+        testClasses.setLength(testClasses.length() - 1);
+        argv.add(testClasses.toString());
       }
-      testClasses.setLength(testClasses.length() - 1);
-      argv.add(testClasses.toString());
     }
 
     if(m_listeners != null && m_listeners.size() > 0) {
