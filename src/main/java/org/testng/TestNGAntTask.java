@@ -388,6 +388,8 @@ public class TestNGAntTask extends Task {
 
   private Integer m_verbose= null;
 
+  private Integer m_suiteThreadPoolSize;
+
   public void setVerbose(Integer verbose) {
     m_verbose= verbose;
   }
@@ -401,7 +403,11 @@ public class TestNGAntTask extends Task {
   }
 
   public void setTestRunnerFactory(String testRunnerFactory) {
-    this.m_testRunnerFactory = testRunnerFactory;
+    m_testRunnerFactory = testRunnerFactory;
+  }
+
+  public void setSuiteThreadPoolSize(Integer n) {
+    m_suiteThreadPoolSize = n;
   }
 
   /**
@@ -582,6 +588,11 @@ public class TestNGAntTask extends Task {
         argv.add(CommandLineArgs.REPORTER);
         argv.add(reporterConfig.serialize());
       }
+    }
+
+    if (m_suiteThreadPoolSize != null) {
+      argv.add(CommandLineArgs.SUITE_THREAD_POOL_SIZE);
+      argv.add(m_suiteThreadPoolSize.toString());
     }
 
     if(m_xmlFilesets.size() > 0) {
