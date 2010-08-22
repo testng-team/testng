@@ -9,17 +9,18 @@ import java.util.Set;
 public class BaseThreadTest extends SimpleBaseTest {
   static private Set<Long> m_threadIds;
 
-  protected void initThreadLog() {
+  static void initThreadLog() {
     m_threadIds = Sets.newHashSet();
   }
 
   protected void logThread(long threadId) {
     synchronized(m_threadIds) {
+      log("BaseThreadTest", "Logging thread:" + threadId);
       m_threadIds.add(threadId);
     }
   }
 
-  public static int getThreadCount() {
+  static int getThreadCount() {
     synchronized(m_threadIds) {
       return m_threadIds.size();
     }

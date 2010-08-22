@@ -1,0 +1,8 @@
+<suite name="Suite Parallel 1">
+
+  <test name="Test1">
+    <classes>
+      <class name="test.thread.Sample2"/>
+    </classes>
+  </test>
+</suite>

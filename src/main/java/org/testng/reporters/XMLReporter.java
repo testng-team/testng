@@ -139,10 +139,12 @@ public class XMLReporter implements IReporter {
         minStartDate = startDate;
       }
       if (maxEndDate == null || maxEndDate.before(endDate)) {
-        maxEndDate = endDate;
+        maxEndDate = endDate != null ? endDate : startDate;
       }
     }
 
+    // The suite could be completely empty
+    if (maxEndDate == null) maxEndDate = minStartDate;
     addDurationAttributes(config, props, minStartDate, maxEndDate);
     return props;
   }

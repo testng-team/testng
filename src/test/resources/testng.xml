@@ -80,13 +80,11 @@
       <class name="test.thread.FactoryTest" />
       <class name="test.thread.DataProviderThreadPoolSizeTest" />
       <class name="test.thread.MultiThreadedDependentTest" />
+      <class name="test.thread.ParallelSuiteTest"/>
       <class name="test.simple.IncludedExcludedTest" />
       <class name="test.reports.ReportTest" />
       <class name="test.annotationtransformer.AnnotationTransformerTest" />
       <class name="test.jar.JarTest" />
-<!-- 
-      <class name="test.jarpackages.JarPackagesTest" />
- -->
       <class name="test.xml.XmlVerifyTest" />
       <class name="test.invokedmethodlistener.InvokedMethodListenerTest" />
       <class name="test.testng249.VerifyTest"/>
