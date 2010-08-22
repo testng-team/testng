@@ -97,7 +97,7 @@
             <cats.config.file>catsProps</cats.config.file>
           </properties>
           <suiteXmlFiles>
-            <suiteXmlFile>src/test/resources/testng-single.xml</suiteXmlFile>
+            <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
           </suiteXmlFiles>
         </configuration>
       </plugin>
