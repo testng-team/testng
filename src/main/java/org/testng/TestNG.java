@@ -941,6 +941,7 @@ public class TestNG {
         suiteRunnerWorkers.add(srw);
       }
 
+//      ThreadUtil.execute(suiteRunnerWorkers, 1, Integer.MAX_VALUE, true /* start now */);
       for (Runnable r : suiteRunnerWorkers) {
         r.run();
       }
