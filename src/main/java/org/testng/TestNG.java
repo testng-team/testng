@@ -21,6 +21,7 @@ import org.testng.internal.Utils;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.Sets;
+import org.testng.internal.thread.ThreadUtil;
 import org.testng.internal.version.VersionInfo;
 import org.testng.log4testng.Logger;
 import org.testng.remote.SuiteDispatcher;
@@ -766,6 +767,8 @@ public class TestNG {
   /** The list of test names to run from the given suite */
   private List<String> m_testNames;
 
+  private Integer m_suiteThreadPoolSize = CommandLineArgs.SUITE_THREAD_POOL_SIZE_DEFAULT;
+
 
   /**
    * Sets the level of verbosity. This value will override the value specified 
@@ -941,10 +944,8 @@ public class TestNG {
         suiteRunnerWorkers.add(srw);
       }
 
-//      ThreadUtil.execute(suiteRunnerWorkers, 1, Integer.MAX_VALUE, true /* start now */);
-      for (Runnable r : suiteRunnerWorkers) {
-        r.run();
-      }
+      ThreadUtil.execute(suiteRunnerWorkers, m_suiteThreadPoolSize, Integer.MAX_VALUE,
+          true /* start now */);
     }
     else {
       setStatus(HAS_NO_TEST);
@@ -1204,6 +1205,15 @@ public class TestNG {
 
     if (cla.suiteFiles != null) setTestSuites(cla.suiteFiles);
 
+    setSuiteThreadPoolSize(cla.suiteThreadPoolSize);
+  }
+
+  public void setSuiteThreadPoolSize(Integer suiteThreadPoolSize) {
+    m_suiteThreadPoolSize = suiteThreadPoolSize;
+  }
+
+  public Integer getSuiteThreadPoolSize() {
+    return m_suiteThreadPoolSize;
   }
 
   /**
