@@ -1,5 +1,6 @@
 Current
 
+Fixed: ant task error if <classfileset> is used with no classes (welex91)
 Fixed: TESTNG-404 threaded tests fail due to use of non-threadsafe collections (Marcus Better)
 Fixed: preserve-order was not preserving class order with dependent methods
 Fixed: RetryAnalyzer wasn't working properly with factories
