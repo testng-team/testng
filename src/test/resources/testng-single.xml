@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="SingleSuite" verbose="2" parallel="false" thread-count="4"
+<suite name="SingleSuite" verbose="3" parallel="false" thread-count="4"
     data-provider-thread-count="3">
 
   <parameter name="n" value="42" />
@@ -22,12 +22,16 @@
     <groups>
       <run>
         <exclude name="broken" />
-      </run>
+<!-- 
+        <include name="successPercentageThatFailsOnly" />
+ -->
+       </run>
     </groups>
     <parameter name="count" value="10"/>
     <classes>
-      <class name="test.thread.ParallelSuiteTest"/>
+      <class name="test.listeners.ListenerTest" />
 <!-- 
+      <class name="test.sample.InvocationCountTest" />
       <class name="test.preserveorder.SibTest"/>
       <class name="test.preserveorder.EdnTest"/>
  -->

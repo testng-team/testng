@@ -698,9 +698,9 @@ public class Invoker implements IInvoker {
         testResult.setEndMillis(System.currentTimeMillis());
       }
 
-      if (testResult.getStatus() == ITestResult.SUCCESS) {
+//      if (testResult.getStatus() == ITestResult.SUCCESS) {
         runTestListeners(testResult);
-      }
+//      }
 
       //
       // Invoke afterMethods only if
@@ -1061,6 +1061,15 @@ public class Invoker implements IInvoker {
                   bag.errorResults, null, failureCount, expectedExceptionHolder, true,
                   true /* collect results */);
               // there is nothing we can do more
+              ITestResult testResult =
+                new TestResult(testMethod.getTestClass(),
+                  instances[0],
+                  testMethod,
+                  null,
+                  start,
+                  System.currentTimeMillis());
+              testResult.setStatus(TestResult.SKIP);
+              runTestListeners(testResult);
               continue;
             }
             
@@ -1418,9 +1427,9 @@ public class Invoker implements IInvoker {
         else {
           assert false : "UNKNOWN STATUS:" + status;
         }
-        if (triggerListeners && status != ITestResult.SUCCESS) {
-          runTestListeners(testResult);
-        }
+//        if (triggerListeners && status != ITestResult.SUCCESS) {
+//          runTestListeners(testResult);
+//        }
       }
     } // for results
     
