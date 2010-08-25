@@ -27,10 +27,11 @@
  -->
        </run>
     </groups>
-    <parameter name="count" value="10"/>
+    <parameter name="string" value="s"/>
     <classes>
-      <class name="test.listeners.ListenerTest" />
+      <class name="test.inject.InjectBeforeMethodTest" />
 <!-- 
+      <class name="test.inject.InjectTestContextTest" />
       <class name="test.sample.InvocationCountTest" />
       <class name="test.preserveorder.SibTest"/>
       <class name="test.preserveorder.EdnTest"/>

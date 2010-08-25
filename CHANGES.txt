@@ -1,8 +1,10 @@
 Current
 
+Fixed: Injection was sometimes not working properly when used with @Parameters
+Fixed: TESTNG-400: afterMethod was called after onTestFailure()
 Fixed: "excludedgroups" was not working on the ant task because of a typo
 Fixed: ant task error if <classfileset> is used with no classes (welex91)
-Fixed: TESTNG-404 threaded tests fail due to use of non-threadsafe collections (Marcus Better)
+Fixed: TESTNG-404: threaded tests fail due to use of non-threadsafe collections (Marcus Better)
 Fixed: preserve-order was not preserving class order with dependent methods
 Fixed: RetryAnalyzer wasn't working properly with factories
 Fixed: The ant task was no longer supporting ',' for testclass
@@ -10,7 +12,7 @@ Fixed: The ant task was no longer supporting ',' for testclass
 Eclipse:
 
 Fixed: The plug-in wasn't running Groovy tests correctly (Andrew Eisenberg)
-Fixed: TESTNG-402 [Eclipse Plug-In] NPE occured when I run twice a custom "Run configuration" on a group
+Fixed: TESTNG-402 [Eclipse Plug-In] NPE occurred when I run twice a custom "Run configuration" on a group
 
 ===========================================================================
 

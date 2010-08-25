@@ -13,14 +13,13 @@ import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.Sets;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -156,7 +155,7 @@ public class Parameters {
         }
       }
             
-      result = (Object[]) vResult.toArray(new Object[vResult.size()]);
+      result = vResult.toArray(new Object[vResult.size()]);
     }
   
     return result;
@@ -166,21 +165,47 @@ public class Parameters {
   private static void checkParameterTypes(String methodName, 
       Class[] parameterTypes, String methodAnnotation, String[] parameterNames) 
   {
-    if(parameterNames.length == parameterTypes.length) return;
-    
-    for(int i= parameterTypes.length - 1; i >= parameterNames.length; i--) {
-      Class type = parameterTypes[i];
-      if(!ITestContext.class.equals(type)
-          && !ITestResult.class.equals(type)
-          && !XmlTest.class.equals(type)
-          && !Method.class.equals(type)
-          && !Object[].class.equals(type)) {
+
+    if (true) {
+      int totalLength = parameterTypes.length;
+      Set<Class> injectedTypes = new HashSet<Class>() {{
+        add(ITestContext.class);
+        add(ITestResult.class);
+        add(XmlTest.class);
+        add(Method.class);
+        add(Object[].class);
+      }};
+      for (int i = 0; i < parameterTypes.length; i++) {
+        if (injectedTypes.contains(parameterTypes[i])) totalLength--;
+      }
+  
+      if (parameterNames.length != totalLength) {
         throw new TestNGException( "Method " + methodName + " requires " 
             + parameterTypes.length + " parameters but " 
             + parameterNames.length
             + " were supplied in the "
             + methodAnnotation
-            + " annotation.");        
+            + " annotation.");
+      }
+    }
+    else {
+        
+      if(parameterNames.length == parameterTypes.length) return;
+      
+      for(int i= parameterTypes.length - 1; i >= parameterNames.length; i--) {
+        Class type = parameterTypes[i];
+        if(!ITestContext.class.equals(type)
+            && !ITestResult.class.equals(type)
+            && !XmlTest.class.equals(type)
+            && !Method.class.equals(type)
+            && !Object[].class.equals(type)) {
+          throw new TestNGException( "Method " + methodName + " requires " 
+              + parameterTypes.length + " parameters but " 
+              + parameterNames.length
+              + " were supplied in the "
+              + methodAnnotation
+              + " annotation.");        
+        }
       }
     }
   }
