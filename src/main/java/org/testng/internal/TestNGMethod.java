@@ -1,14 +1,15 @@
 package org.testng.internal;
 
-import java.lang.reflect.Method;
-import java.util.Comparator;
-
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
+
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.Comparator;
 
 
 /**
@@ -17,7 +18,7 @@ import org.testng.xml.XmlTest;
  * @author Cedric Beust, May 3, 2004
  * @author <a href = "mailto:the_mindstorm&#64;evolva.ro">Alexandru Popescu</a>
  */
-public class TestNGMethod extends BaseTestMethod {
+public class TestNGMethod extends BaseTestMethod implements Serializable {
   private int m_threadPoolSize = 0;
   private int m_invocationCount = 1;
   private int m_successPercentage = 100;
@@ -116,6 +117,7 @@ public class TestNGMethod extends BaseTestMethod {
   /**
    * {@inheritDoc}
    */
+  @Override
   public int getThreadPoolSize() {
     return m_threadPoolSize;
   }
@@ -123,6 +125,7 @@ public class TestNGMethod extends BaseTestMethod {
   /**
    * Sets the number of threads on which this method should be invoked.
    */
+  @Override
   public void setThreadPoolSize(int threadPoolSize) {
     m_threadPoolSize = threadPoolSize;
   }
@@ -130,6 +133,7 @@ public class TestNGMethod extends BaseTestMethod {
   /**
    * Sets the number of invocations for this method.
    */
+  @Override
   public void setInvocationCount(int counter) {
     m_invocationCount= counter;
   }
@@ -142,6 +146,7 @@ public class TestNGMethod extends BaseTestMethod {
    * Clones the current <code>TestNGMethod</code> and its @BeforeMethod and @AfterMethod methods.
    * @see org.testng.internal.BaseTestMethod#clone()
    */
+  @Override
   public TestNGMethod clone() {
     TestNGMethod clone= new TestNGMethod(getMethod(), getAnnotationFinder(), false, getXmlTest());
     ITestClass tc= getTestClass();
@@ -184,6 +189,7 @@ public class TestNGMethod extends BaseTestMethod {
   public static final Comparator<ITestNGMethod> SORT_BY_CLASS =
     new Comparator<ITestNGMethod>() {
     
+    @Override
     public int compare(ITestNGMethod o1, ITestNGMethod o2) {
       String c1 = o1.getTestClass().getName();
       String c2 = o2.getTestClass().getName();

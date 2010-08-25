@@ -129,10 +129,10 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   private String m_host;
 
   // Defined dynamically depending on <test preserve-order="true/false">
-  private IMethodInterceptor m_methodInterceptor;
+  private transient IMethodInterceptor m_methodInterceptor;
 
-  private ClassMethodMap m_classMethodMap;
-  private TestNGClassFinder m_testClassFinder;
+  private transient ClassMethodMap m_classMethodMap;
+  private transient TestNGClassFinder m_testClassFinder;
 
   public TestRunner(ISuite suite,
                     XmlTest test,

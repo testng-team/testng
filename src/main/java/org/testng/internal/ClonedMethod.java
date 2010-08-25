@@ -13,7 +13,7 @@ public class ClonedMethod implements ITestNGMethod {
   private static final long serialVersionUID = 1L;
 
   private ITestNGMethod m_method;
-  private Method m_javaMethod;
+  transient private Method m_javaMethod;
   private String m_id;
   private int m_currentInvocationCount;
   private long m_date;
@@ -26,198 +26,249 @@ public class ClonedMethod implements ITestNGMethod {
     m_javaMethod = javaMethod;
   }
 
+  @Override
   public void addMethodDependedUpon(String methodName) {
     // nop
   }
 
+  @Override
   public boolean canRunFromClass(IClass testClass) {
     return m_method.canRunFromClass(testClass);
   }
 
+  @Override
   public String[] getAfterGroups() {
     return m_method.getAfterGroups();
   }
 
+  @Override
   public String[] getBeforeGroups() {
     return m_method.getBeforeGroups();
   }
 
+  @Override
   public int getCurrentInvocationCount() {
     return m_currentInvocationCount;
   }
 
+  @Override
   public long getDate() {
     return m_method.getDate();
   }
 
+  @Override
   public String getDescription() {
     return "";
   }
 
+  @Override
   public String[] getGroups() {
     return m_method.getGroups();
   }
 
+  @Override
   public String[] getGroupsDependedUpon() {
     return new String[0];
   }
 
+  @Override
   public String getId() {
     return m_id;
   }
 
+  @Override
   public long[] getInstanceHashCodes() {
     return m_method.getInstanceHashCodes();
   }
 
+  @Override
   public Object[] getInstances() {
     return m_method.getInstances();
   }
 
+  @Override
   public int getInvocationCount() {
     return 1;
   }
 
+  @Override
   public long getInvocationTimeOut() {
     return m_method.getInvocationTimeOut();
   }
 
+  @Override
   public Method getMethod() {
     return m_javaMethod;
   }
 
+  @Override
   public String getMethodName() {
     return m_javaMethod.getName();
   }
 
+  @Override
   public String[] getMethodsDependedUpon() {
     return new String[0];
   }
 
+  @Override
   public String getMissingGroup() {
     return null;
   }
 
+  @Override
   public int getParameterInvocationCount() {
     return 1;
   }
 
+  @Override
   public Class getRealClass() {
     return m_javaMethod.getClass();
   }
 
+  @Override
   public IRetryAnalyzer getRetryAnalyzer() {
     return m_method.getRetryAnalyzer();
   }
 
+  @Override
   public int getSuccessPercentage() {
     return 100;
   }
 
+  @Override
   public ITestClass getTestClass() {
     return m_method.getTestClass();
   }
 
+  @Override
   public int getThreadPoolSize() {
     return m_method.getThreadPoolSize();
   }
 
+  @Override
   public long getTimeOut() {
     return m_method.getTimeOut();
   }
 
+  @Override
   public boolean ignoreMissingDependencies() {
     return false;
   }
 
+  @Override
   public void incrementCurrentInvocationCount() {
     m_currentInvocationCount++;
   }
 
+  @Override
   public boolean isAfterClassConfiguration() {
     return false;
   }
 
+  @Override
   public boolean isAfterGroupsConfiguration() {
     return false;
   }
 
+  @Override
   public boolean isAfterMethodConfiguration() {
     return false;
   }
 
+  @Override
   public boolean isAfterSuiteConfiguration() {
     return false;
   }
 
+  @Override
   public boolean isAfterTestConfiguration() {
     return false;
   }
 
+  @Override
   public boolean isAlwaysRun() {
     return false;
   }
 
+  @Override
   public boolean isBeforeClassConfiguration() {
     return false;
   }
 
+  @Override
   public boolean isBeforeGroupsConfiguration() {
     return false;
   }
 
+  @Override
   public boolean isBeforeMethodConfiguration() {
     return false;
   }
 
+  @Override
   public boolean isBeforeSuiteConfiguration() {
     return false;
   }
 
+  @Override
   public boolean isBeforeTestConfiguration() {
     return false;
   }
 
+  @Override
   public boolean isTest() {
     return true;
   }
 
+  @Override
   public void setDate(long date) {
     m_date = date;
   }
 
+  @Override
   public void setId(String id) {
     m_id = id;
   }
 
+  @Override
   public void setIgnoreMissingDependencies(boolean ignore) {
   }
 
+  @Override
   public void setInvocationCount(int count) {
   }
 
+  @Override
   public void setMissingGroup(String group) {
   }
 
+  @Override
   public void setParameterInvocationCount(int n) {
   }
 
+  @Override
   public void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer) {
   }
 
+  @Override
   public void setSkipFailedInvocations(boolean skip) {
   }
 
+  @Override
   public void setTestClass(ITestClass cls) {
   }
 
+  @Override
   public void setThreadPoolSize(int threadPoolSize) {
   }
 
+  @Override
   public boolean skipFailedInvocations() {
     return false;
   }
 
+  @Override
   public int compareTo(Object o) {
     int result = -2;
     Class<?> thisClass = getRealClass();
@@ -232,6 +283,7 @@ public class ClonedMethod implements ITestNGMethod {
     return result;
   }
 
+  @Override
   public ClonedMethod clone() {
     return new ClonedMethod(m_method, m_javaMethod);
   }
@@ -251,26 +303,32 @@ public class ClonedMethod implements ITestNGMethod {
     return result.toString();
   }
 
+  @Override
   public List<Integer> getInvocationNumbers() {
     return m_invocationNumbers;
   }
 
+  @Override
   public void setInvocationNumbers(List<Integer> count) {
     m_invocationNumbers = count;
   }
 
+  @Override
   public List<Integer> getFailedInvocationNumbers() {
     return m_failedInvocationNumbers;
   }
 
+  @Override
   public void addFailedInvocationNumber(int number) {
     m_failedInvocationNumbers.add(number);
   }
 
+  @Override
   public int getPriority() {
     return m_method.getPriority();
   }
 
+  @Override
   public void setPriority(int priority) {
     // ignored
   }
