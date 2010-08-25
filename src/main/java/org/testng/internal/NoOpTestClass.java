@@ -6,9 +6,6 @@ import org.testng.ITestNGMethod;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
-/**
- * This class/interface
- */
 public class NoOpTestClass implements ITestClass {
   protected Class m_testClass= null;
 
@@ -25,7 +22,7 @@ public class NoOpTestClass implements ITestClass {
   protected ITestNGMethod[] m_beforeGroupsMethods= null;
   protected ITestNGMethod[] m_afterGroupsMethods= null;
 
-  private Object[] m_instances;
+  private transient Object[] m_instances;
   private long[] m_instanceHashes;
 
   private XmlTest m_xmlTest;
@@ -64,6 +61,7 @@ public class NoOpTestClass implements ITestClass {
   /**
    * @return Returns the afterClassMethods.
    */
+  @Override
   public ITestNGMethod[] getAfterClassMethods() {
     return m_afterClassMethods;
   }
@@ -71,6 +69,7 @@ public class NoOpTestClass implements ITestClass {
   /**
    * @return Returns the afterTestMethods.
    */
+  @Override
   public ITestNGMethod[] getAfterTestMethods() {
     return m_afterTestMethods;
   }
@@ -78,6 +77,7 @@ public class NoOpTestClass implements ITestClass {
   /**
    * @return Returns the beforeClassMethods.
    */
+  @Override
   public ITestNGMethod[] getBeforeClassMethods() {
     return m_beforeClassMethods;
   }
@@ -85,6 +85,7 @@ public class NoOpTestClass implements ITestClass {
   /**
    * @return Returns the beforeTestMethods.
    */
+  @Override
   public ITestNGMethod[] getBeforeTestMethods() {
     return m_beforeTestMethods;
   }
@@ -92,22 +93,27 @@ public class NoOpTestClass implements ITestClass {
   /**
    * @return Returns the testMethods.
    */
+  @Override
   public ITestNGMethod[] getTestMethods() {
     return m_testMethods;
   }
 
+  @Override
   public ITestNGMethod[] getBeforeSuiteMethods() {
     return m_beforeSuiteMethods;
   }
 
+  @Override
   public ITestNGMethod[] getAfterSuiteMethods() {
     return m_afterSuiteMethods;
   }
 
+  @Override
   public ITestNGMethod[] getBeforeTestConfigurationMethods() {
     return m_beforeTestConfMethods;
   }
 
+  @Override
   public ITestNGMethod[] getAfterTestConfigurationMethods() {
     return m_afterTestConfMethods;
   }
@@ -115,6 +121,7 @@ public class NoOpTestClass implements ITestClass {
   /**
    * @return all @Configuration methods that should be invoked before certain groups
    */
+  @Override
   public ITestNGMethod[] getBeforeGroupsMethods() {
     return m_beforeGroupsMethods;
   }
@@ -122,6 +129,7 @@ public class NoOpTestClass implements ITestClass {
   /**
    * @return all @Configuration methods that should be invoked after certain groups
    */
+  @Override
   public ITestNGMethod[] getAfterGroupsMethods() {
     return m_afterGroupsMethods;
   }
@@ -129,6 +137,7 @@ public class NoOpTestClass implements ITestClass {
   /**
    * @see org.testng.ITestClass#getInstanceCount()
    */
+  @Override
   public int getInstanceCount() {
     return m_instances.length;
   }
@@ -136,6 +145,7 @@ public class NoOpTestClass implements ITestClass {
   /**
    * @see org.testng.ITestClass#getInstanceHashCodes()
    */
+  @Override
   public long[] getInstanceHashCodes() {
     return m_instanceHashes;
   }
@@ -143,14 +153,17 @@ public class NoOpTestClass implements ITestClass {
   /**
    * @see org.testng.ITestClass#getInstances(boolean)
    */
+  @Override
   public Object[] getInstances(boolean reuse) {
     return m_instances;
   }
 
+  @Override
   public String getName() {
     return m_testClass.getName();
   }
 
+  @Override
   public Class getRealClass() {
     return m_testClass;
   }
@@ -158,6 +171,7 @@ public class NoOpTestClass implements ITestClass {
   /**
    * @see org.testng.IClass#addInstance(java.lang.Object)
    */
+  @Override
   public void addInstance(Object instance) {
   }
 
@@ -165,15 +179,18 @@ public class NoOpTestClass implements ITestClass {
     m_testClass = declaringClass;
   }
 
+  @Override
   public String getTestName() {
     // TODO Auto-generated method stub
     return null;
   }
 
+  @Override
   public XmlTest getXmlTest() {
     return m_xmlTest;
   }
 
+  @Override
   public XmlClass getXmlClass() {
     return m_xmlClass;
   }

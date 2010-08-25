@@ -55,7 +55,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   private String m_host;
 
   // The configuration
-  private IConfiguration m_configuration;
+  transient private IConfiguration m_configuration;
   
   transient private IObjectFactory m_objectFactory;
   transient private Boolean m_skipFailedInvocationCounts = Boolean.FALSE;
@@ -153,10 +153,12 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     }
   }
   
+  @Override
   public XmlSuite getXmlSuite() {
     return m_suite;
   }
 
+  @Override
   public String getName() {
     return m_suite.getName();
   }
@@ -207,10 +209,12 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     return factory;
   }
   
+  @Override
   public String getParallel() {
     return m_suite.getParallel();
   }
 
+  @Override
   public void run() {
     invokeListeners(true /* start */);
     try {
@@ -338,6 +342,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
         m_testRunner = tr;
       }
 
+      @Override
       public void run() {
         Utils.log("[SuiteWorker]", 4, "Running XML Test '" 
                   +  m_testRunner.getTest().getName() + "' in Parallel");
@@ -355,6 +360,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     m_listeners.add(reporter);
   }
 
+  @Override
   public void addListener(ITestNGListener listener) {
     if (listener instanceof IInvokedMethodListener) {
       m_invokedMethodListeners.add((IInvokedMethodListener) listener);
@@ -365,10 +371,12 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     }
   }
 
+  @Override
   public String getOutputDirectory() {
     return m_outputDir + File.separatorChar + getName();
   }
 
+  @Override
   public Map<String, ISuiteResult> getResults() {
     return m_suiteResults;
   }
@@ -378,6 +386,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
    *
    * @see org.testng.ISuite#getParameter(java.lang.String)
    */
+  @Override
   public String getParameter(String parameterName) {
     return m_suite.getParameter(parameterName);
   }
@@ -385,6 +394,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   /**
    * @see org.testng.ISuite#getMethodsByGroups()
    */
+  @Override
   public Map<String, Collection<ITestNGMethod>> getMethodsByGroups() {
     Map<String, Collection<ITestNGMethod>> result = Maps.newHashMap();
 
@@ -409,6 +419,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   /**
    * @see org.testng.ISuite#getInvokedMethods()
    */
+  @Override
   public Collection<ITestNGMethod> getInvokedMethods() {
     return getIncludedOrExcludedMethods(true /* included */);
   }
@@ -416,6 +427,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   /**
    * @see org.testng.ISuite#getExcludedMethods()
    */
+  @Override
   public Collection<ITestNGMethod> getExcludedMethods() {
     return getIncludedOrExcludedMethods(false/* included */);
   }
@@ -433,6 +445,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     return result;
   }
 
+  @Override
   public IObjectFactory getObjectFactory() {
     return m_objectFactory;
   }
@@ -442,6 +455,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
    * @param pAnnotationType the annotation type 
    * @return the annotation finder for the given annotation type. 
    */
+  @Override
   public IAnnotationFinder getAnnotationFinder(String pAnnotationType) {
     AnnotationTypeEnum annotationType = AnnotationTypeEnum.valueOf(pAnnotationType);
     if (AnnotationTypeEnum.JDK != annotationType) {
@@ -472,6 +486,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       m_skipFailedInvocationCounts = skipFailedInvocationCounts;
     }
 
+    @Override
     public TestRunner newTestRunner(ISuite suite, XmlTest test,
         List<IInvokedMethodListener> listeners) {
       boolean skip = m_skipFailedInvocationCounts;
@@ -515,6 +530,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       m_target= target;
     }
 
+    @Override
     public TestRunner newTestRunner(ISuite suite, XmlTest test,
         List<IInvokedMethodListener> listeners) {
       TestRunner testRunner= m_target.newTestRunner(suite, test, listeners);
@@ -533,6 +549,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     m_host = host;
   }
   
+  @Override
   public String getHost() {
     return m_host;
   }
@@ -542,6 +559,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   /**
    * @see org.testng.ISuite#getSuiteState()
    */
+  @Override
   public SuiteRunState getSuiteState() {
     return m_suiteState;
   }
@@ -554,18 +572,22 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
   private IAttributes m_attributes = new Attributes();
 
+  @Override
   public Object getAttribute(String name) {
     return m_attributes.getAttribute(name);
   }
 
+  @Override
   public void setAttribute(String name, Object value) {
     m_attributes.setAttribute(name, value);
   }
 
+  @Override
   public Set<String> getAttributeNames() {
     return m_attributes.getAttributeNames();
   }
 
+  @Override
   public Object removeAttribute(String name) {
     return m_attributes.removeAttribute(name);
   }
@@ -590,6 +612,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   // implements IInvokedMethodListener
   /////
 
+  @Override
   public List<IInvokedMethod> getAllInvokedMethods() {
     return m_invokedMethods;
   }

@@ -20,12 +20,17 @@
     <groups>
       <run>
         <exclude name="broken" />
-      </run>
-    </groups>
-    <parameter name="count" value="10"/>
-    <classes>
-      <class name="test.thread.ParallelSuiteTest"/>
 <!-- 
+        <include name="successPercentageThatFailsOnly" />
+ -->
+       </run>
+    </groups>
+    <parameter name="string" value="s"/>
+    <classes>
+      <class name="test.SerializationTest" />
+<!-- 
+      <class name="test.inject.InjectTestContextTest" />
+      <class name="test.sample.InvocationCountTest" />
       <class name="test.preserveorder.SibTest"/>
       <class name="test.preserveorder.EdnTest"/>
  -->
