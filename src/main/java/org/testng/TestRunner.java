@@ -233,6 +233,43 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     addConfigurationListener(m_confListener);
   }
 
+  class ListenerHolder {
+    List<Class<? extends ITestNGListener>> listenerClasses;
+    Class<? extends ITestNGListenerFactory> listenerFactoryClass;
+  }
+
+  /**
+   * @return all the @Listeners annotations found in the current class and its
+   * superclasses.
+   */
+  private ListenerHolder findAllListeners(Class<?> cls) {
+    ListenerHolder result = new ListenerHolder();
+    result.listenerClasses = Lists.newArrayList();
+
+    do {
+      IListeners l = (IListeners) m_annotationFinder.findAnnotation(cls, IListeners.class);
+      if (l != null) {
+        Class<? extends ITestNGListener>[] classes = l.getValue();
+        for (Class<? extends ITestNGListener> c : classes) {
+          result.listenerClasses.add(c);
+
+          if (ITestNGListenerFactory.class.isAssignableFrom(c)) {
+            if (result.listenerFactoryClass == null) {
+              result.listenerFactoryClass = (Class<? extends ITestNGListenerFactory>) c;
+            }
+            else {
+              throw new TestNGException("Found more than one class implementing" +
+                  "ITestNGListenerFactory:" + c + " and " + result.listenerFactoryClass);
+            }
+          }
+        }
+      }
+      cls = cls.getSuperclass();
+    } while (cls != Object.class);
+
+    return result;
+  }
+
   private void initListeners() {
     //
     // Find all the listener factories and collect all the listeners requested in a
@@ -242,21 +279,10 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     Class<? extends ITestNGListenerFactory> listenerFactoryClass = null;
 
     for (IClass cls : getTestClasses()) {
-      IAnnotationFinder finder = m_annotationFinder;
       Class<? extends ITestNGListenerFactory> realClass = cls.getRealClass();
-      IListeners l = (IListeners) finder.findAnnotation(realClass, IListeners.class);
-      if (ITestNGListenerFactory.class.isAssignableFrom(realClass)) {
-        if (listenerFactoryClass == null) {
-          listenerFactoryClass = realClass;
-        }
-        else {
-          throw new TestNGException("Found more than one class implementing" +
-              "ITestNGListenerFactory:" + realClass + " and " + listenerFactoryClass);
-        }
-      }
-      if (l != null) {
-        listenerClasses.addAll(Arrays.asList(l.getValue()));
-      }
+      ListenerHolder listenerHolder = findAllListeners(realClass);
+      if (listenerFactoryClass == null) listenerFactoryClass = listenerHolder.listenerFactoryClass;
+      listenerClasses.addAll(listenerHolder.listenerClasses);
     }
 
     //
