@@ -1,8 +1,6 @@
 package test.verify;
 
 import org.testng.Assert;
-import org.testng.ITestNGListener;
-import org.testng.ITestNGListenerFactory;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
