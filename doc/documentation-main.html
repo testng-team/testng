@@ -99,7 +99,11 @@ google_ad_channel ="5560744946";
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#class-level">5.8 - Class level Annotations</a>
 <br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#parallel-running">5.9 - Parallel running and time-outs</a> 
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#parallel-running">5.9 - Parallelism and time-outs</a> 
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#parallel-running">5.9.1 - Parallel suites</a> 
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#parallel-running">5.9.2 - Parallel tests, classes and methods</a> 
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#rerunning">5.10 - Rerunning failed tests</a>
 <br>
@@ -1527,9 +1531,22 @@ will make both <tt>test1()</tt> and <tt>test2()</tt> test methods but on top of 
   PARALLEL RUNNING
   ------------------------------------>
 
-<h4><a name="parallel-running">5.9 - Parallel running and time-outs</a></h4>You can 
-instruct TestNG to run your tests in separate threads by using the <i>parallel</i> 
-attribute on the suite tag.  This attribute can take one of following values:
+<h4><a name="parallel-running">5.9 - Parallelism and time-outs</a></h4>
+
+You can  instruct TestNG to run your tests in separate threads in various ways.
+
+<h5><a name="parallel-tests">5.9.1 - Parallel suites</a></h5>
+
+This is useful if you are running several suite files (e.g. "<tt>java org.testng.TestNG testng1.xml testng2.xml"</tt>) and you want each of these suites to be run in a separate thread. You can use the following command line flag to specify the size of a thread pool:
+
+<pre class="brush: plain">
+java org.testng.TestNG -suitethreadpoolsize 3 testng1.xml testng2.xml testng3.xml
+</pre>
+
+The corresponding ant task name is <tt>suitethreadpoolsize</tt>.
+
+<h5><a name="parallel-tests">5.9.2 - Parallel tests, classes and methods</a></h5>
+The <i>parallel</i> attribute on the &lt;suite&gt; tag can take one of following values:
 
 <pre class="brush: xml">
 &lt;suite name="My suite" parallel="methods" thread-count="5"&gt;

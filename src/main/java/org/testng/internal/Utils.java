@@ -505,7 +505,7 @@ public final class Utils {
     String fullStackTrace = sw.getBuffer().toString();
     String shortStackTrace;
     
-    if (Boolean.getBoolean(TestNG.SHOW_TESTNG_STACK_FRAMES) || TestRunner.getVerbose() == -1) {
+    if (Boolean.getBoolean(TestNG.SHOW_TESTNG_STACK_FRAMES) || TestRunner.getVerbose() >= 2) {
       shortStackTrace = fullStackTrace;
     }
     else {

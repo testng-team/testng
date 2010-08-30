@@ -21,13 +21,17 @@
       <run>
         <exclude name="broken" />
 <!-- 
-        <include name="successPercentageThatFailsOnly" />
+        <include name="verifyBaseClassTestListener" />
  -->
        </run>
     </groups>
     <parameter name="string" value="s"/>
     <classes>
-      <class name="test.SerializationTest" />
+      <class name="test.verify.VerifyTest">
+        <methods>
+          <include name="verifyBaseClassTestListener" />
+        </methods>
+      </class>
 <!-- 
       <class name="test.inject.InjectTestContextTest" />
       <class name="test.sample.InvocationCountTest" />
@@ -37,9 +41,6 @@
      </classes>
   </test>
 <!-- 
- <methods>
-          <include name="orderShouldBePreservedWithDependencies" />
-        </methods>
       <class name="test.xml.XmlVerifyTest">
       <class name="test.listeners.ResultEndMillisTest">
        </class>

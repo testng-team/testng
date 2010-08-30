@@ -1,5 +1,6 @@
 package test.listeners;
 
+import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -8,8 +9,6 @@ import org.testng.collections.Lists;
 import test.SimpleBaseTest;
 
 import java.util.Arrays;
-
-import junit.framework.Assert;
 
 public class ListenerTest extends SimpleBaseTest {
 
@@ -23,13 +22,21 @@ public class ListenerTest extends SimpleBaseTest {
   public void listenerShouldBeCalledBeforeConfiguration() {
     TestNG tng = create(OrderedListenerSampleTest.class);
     tng.run();
-    Assert.assertEquals(Arrays.asList(1, 2, 3, 4), SimpleListener.m_list);
+    Assert.assertEquals(SimpleListener.m_list, Arrays.asList(1, 2, 3, 4));
   }
 
   @Test(description = "TESTNG-400: onTestFailure should be called before @AfterMethod")
   public void failureBeforeAfterMethod() {
     TestNG tng = create(FailingSampleTest.class);
     tng.run();
-    Assert.assertEquals(Arrays.asList(4, 5, 6), SimpleListener.m_list);
+    Assert.assertEquals( SimpleListener.m_list, Arrays.asList(4, 5, 6));
+  }
+
+  @Test(description = "Inherited @Listeners annotations should aggregate")
+  public void aggregateListeners() {
+    TestNG tng = create(AggregateSampleTest.class);
+    AggregateSampleTest.m_count = 0;
+    tng.run();
+    Assert.assertEquals(AggregateSampleTest.m_count, 2);
   }
 }

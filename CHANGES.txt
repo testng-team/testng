@@ -1,5 +1,13 @@
 Current
 
+Fixed: typo -testRunFactory
+
+===========================================================================
+
+5.14
+1020/08/28
+
+Fixed: @Listeners now aggregate through base classes
 Fixed: ISuite was no longer serializable
 Fixed: Injection was sometimes not working properly when used with @Parameters
 Fixed: TESTNG-400: afterMethod was called after onTestFailure()
@@ -16,7 +24,6 @@ Fixed: The plug-in wasn't running Groovy tests correctly (Andrew Eisenberg)
 Fixed: TESTNG-402 [Eclipse Plug-In] NPE occurred when I run twice a custom "Run configuration" on a group
 
 ===========================================================================
-
 
 5.13.1
 2010/08/05
