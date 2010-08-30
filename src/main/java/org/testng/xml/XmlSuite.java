@@ -666,8 +666,8 @@ public class XmlSuite implements Serializable, Cloneable {
     public int hashCode() {
       final int prime = 31;
       int result = 1;
-      result = prime * result
-          + ((m_childSuites == null) ? 0 : m_childSuites.hashCode());
+//      result = prime * result
+//          + ((m_childSuites == null) ? 0 : m_childSuites.hashCode());
       result = prime
           * result
           + ((m_configFailurePolicy == null) ? 0 : m_configFailurePolicy
@@ -681,6 +681,7 @@ public class XmlSuite implements Serializable, Cloneable {
           + ((m_isJUnit == null) ? 0 : m_isJUnit.hashCode());
       result = prime * result
           + ((m_listeners == null) ? 0 : m_listeners.hashCode());
+
       result = prime * result
           + ((m_methodSelectors == null) ? 0 : m_methodSelectors.hashCode());
       result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
@@ -719,11 +720,11 @@ public class XmlSuite implements Serializable, Cloneable {
       if (getClass() != obj.getClass())
         return false;
       XmlSuite other = (XmlSuite) obj;
-      if (m_childSuites == null) {
-        if (other.m_childSuites != null)
-          return false;
-      } else if (!m_childSuites.equals(other.m_childSuites))
-        return false;
+//      if (m_childSuites == null) {
+//        if (other.m_childSuites != null)
+//          return false;
+//      } else if (!m_childSuites.equals(other.m_childSuites))
+//        return false;
       if (m_configFailurePolicy == null) {
         if (other.m_configFailurePolicy != null)
           return false;

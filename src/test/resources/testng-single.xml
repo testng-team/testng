@@ -12,7 +12,7 @@
 -->  
   </listeners>
 
-  <test name="Regression2">
+  <test name="Regression2" preserve-order="true">
 <!--
     <packages>
       <package name="test.testng355.org.apache.tapestry5" />
@@ -22,35 +22,38 @@
     <groups>
       <run>
         <exclude name="broken" />
-      </run>
-    </groups>
-    <parameter name="count" value="10"/>
-    <classes>
-      <class name="test.failedreporter.FailedReporterTest">
 <!-- 
-      <class name="test.xml.XmlVerifyTest">
-        <methods>
-          <include name="commandLineNegativePriorityAllGroups" />
-        </methods>
-      <class name="test.listeners.ResultEndMillisTest">
+        <include name="verifyBaseClassTestListener" />
  -->
-       </class>
-<!-- 
-       <class name="test.inject.NoInjectionTest" />
-      <class name="test.tmp.TestFactory" />
-      <class name="test.thread.MultiThreadedDependentTest" />
-      <class name="test.tmp.B" />
-      <class name="test.thread.MultiThreadedDependentTest" />
-      <class name="test.thread.FactoryTest" />
-      <class name="test.tmp.B" />
-      <class name="test.failedreporter.FailedReporterTest" />
+       </run>
+    </groups>
+    <parameter name="string" value="s"/>
+    <classes>
+      <class name="test.verify.VerifyTest">
         <methods>
-          <include name="verifyIPAddress" invocationNumbers="0 2" />
+          <include name="verifyBaseClassTestListener" />
         </methods>
       </class>
+<!-- 
+      <class name="test.inject.InjectTestContextTest" />
+      <class name="test.sample.InvocationCountTest" />
+      <class name="test.preserveorder.SibTest"/>
+      <class name="test.preserveorder.EdnTest"/>
  -->
+     </classes>
+  </test>
+<!-- 
+      <class name="test.xml.XmlVerifyTest">
+      <class name="test.listeners.ResultEndMillisTest">
+       </class>
+ -->
+<!-- 
+       <class name="test.inject.NoInjectionTest" />
+      <class name="test.tmp.B" />
+      </class>
     </classes>
   </test>
+ -->
 
 </suite>
 

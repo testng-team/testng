@@ -1,11 +1,10 @@
 package test.asserttests;
 
-import java.util.Set;
-
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.testng.internal.annotations.Sets;
 
-import com.google.inject.internal.Sets;
+import java.util.Set;
 
 public class AssertTest {
 

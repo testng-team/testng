@@ -133,4 +133,10 @@ public class CommandLineArgs {
   @Parameter(names = METHODS, description = "Comma separated of test methods",
       converter = CommaSeparatedConverter.class)
   public List<String> commandLineMethods = new ArrayList<String>();
+
+  public static final String SUITE_THREAD_POOL_SIZE = "-suitethreadpoolsize";
+  public static final Integer SUITE_THREAD_POOL_SIZE_DEFAULT = 1;
+  @Parameter(names = SUITE_THREAD_POOL_SIZE, description = "Size of the thread pool to use"
+  		+ " to run suites")
+  public Integer suiteThreadPoolSize = SUITE_THREAD_POOL_SIZE_DEFAULT;
 }

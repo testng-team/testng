@@ -16,12 +16,12 @@ import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IResultListener;
-import org.testng.internal.PoolService;
 import org.testng.internal.TestNGGuiceModule;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.Sets;
+import org.testng.internal.thread.ThreadUtil;
 import org.testng.internal.version.VersionInfo;
 import org.testng.log4testng.Logger;
 import org.testng.remote.SuiteDispatcher;
@@ -767,6 +767,8 @@ public class TestNG {
   /** The list of test names to run from the given suite */
   private List<String> m_testNames;
 
+  private Integer m_suiteThreadPoolSize = CommandLineArgs.SUITE_THREAD_POOL_SIZE_DEFAULT;
+
 
   /**
    * Sets the level of verbosity. This value will override the value specified 
@@ -935,9 +937,15 @@ public class TestNG {
       /*
        * Run suites
        */
-      for (XmlSuite xmlSuite : m_suites) {
-        runSuite(suiteRunnerMap, xmlSuite);
+      List<Runnable> suiteRunnerWorkers = Lists.newArrayList();
+      for (ISuite runner : suiteRunnerMap.values()) {
+        SuiteRunnerWorker srw = new SuiteRunnerWorker((SuiteRunner) runner, m_verbose,
+            getDefaultSuiteName());
+        suiteRunnerWorkers.add(srw);
       }
+
+      ThreadUtil.execute(suiteRunnerWorkers, m_suiteThreadPoolSize, Integer.MAX_VALUE,
+          true /* start now */);
     }
     else {
       setStatus(HAS_NO_TEST);
@@ -1023,84 +1031,11 @@ public class TestNG {
       result.addListener(isl);
     }
 
-    return result;
-  }
-
-  /**
-   * Runs a suite and its children suites
-   * @param result populates this list with execution results
-   * @param suiteRunnerMap map of suiteRunners that are updated with test results
-   * @param xmlSuite XML suites to run
-   */
-  private void runSuite(Map<XmlSuite, ISuite> suiteRunnerMap /* OUT */, XmlSuite xmlSuite)
-  {
-    if (m_verbose > 0) {
-      StringBuffer allFiles = new StringBuffer();
-      allFiles.append("  ").append(xmlSuite.getFileName() != null ? xmlSuite.getFileName() : getDefaultSuiteName()).append('\n');
-      Utils.log("TestNG", 0, "Running:\n" + allFiles.toString());
-    }
-     
-    PoolService.initialize(xmlSuite.getDataProviderThreadCount());
-    SuiteRunner suiteRunner = (SuiteRunner) suiteRunnerMap.get(xmlSuite);
-    suiteRunner.run();
-    for (IReporter r : suiteRunner.getReporters()) {
+    for (IReporter r : result.getReporters()) {
       addListener(r);
     }
-//    PoolService.getInstance().shutdown();
-    
-    for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
-      runSuite(suiteRunnerMap, childSuite);
-    }
-    
-    //
-    // Display the final statistics
-    //
-    if (xmlSuite.getVerbose() > 0) {
-      SuiteResultCounts counts = new SuiteResultCounts();
-      counts.calculateResultCounts(xmlSuite, suiteRunnerMap);
-      
-      StringBuffer bufLog = new StringBuffer(xmlSuite.getName());
-      bufLog.append("\nTotal tests run: ")
-          .append(counts.total)
-          .append(", Failures: ").append(counts.failed)
-          .append(", Skips: ").append(counts.skipped);;
-      if(counts.confFailures > 0 || counts.confSkips > 0) {
-        bufLog.append("\nConfiguration Failures: ").append(counts.confFailures)
-            .append(", Skips: ").append(counts.confSkips);
-      }
-           
-      System.out.println("\n===============================================\n"
-                       + bufLog.toString()
-                       + "\n===============================================\n");
-    }
-  }
-  
-  private class SuiteResultCounts {
-    
-    int total = 0;
-    int skipped = 0;
-    int failed = 0;
-    int confFailures = 0;
-    int confSkips = 0;
-   
-    public void calculateResultCounts(XmlSuite xmlSuite, Map<XmlSuite, ISuite> xmlToISuiteMap)
-    {
-      Collection<ISuiteResult> tempSuiteResult = xmlToISuiteMap.get(xmlSuite).getResults().values();
-      for (ISuiteResult isr : tempSuiteResult) {
-        ITestContext ctx = isr.getTestContext();
-        int _skipped = ctx.getSkippedTests().size();
-        int _failed = ctx.getFailedTests().size() + ctx.getFailedButWithinSuccessPercentageTests().size();
-        skipped += _skipped;
-        failed += _failed;
-        confFailures += ctx.getFailedConfigurations().size();
-        confSkips += ctx.getSkippedConfigurations().size();
-        total += ctx.getPassedTests().size() + _failed + _skipped;
-      }
-      
-      for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
-        calculateResultCounts(childSuite, xmlToISuiteMap);
-      }
-    }
+
+    return result;
   }
 
   private IAnnotationFinder getAnnotationFinder() {
@@ -1270,10 +1205,19 @@ public class TestNG {
 
     if (cla.suiteFiles != null) setTestSuites(cla.suiteFiles);
 
+    setSuiteThreadPoolSize(cla.suiteThreadPoolSize);
+  }
+
+  public void setSuiteThreadPoolSize(Integer suiteThreadPoolSize) {
+    m_suiteThreadPoolSize = suiteThreadPoolSize;
+  }
+
+  public Integer getSuiteThreadPoolSize() {
+    return m_suiteThreadPoolSize;
   }
 
   /**
-   * Thsi method is invoked by Maven's Surefire to configure the runner,
+   * This method is invoked by Maven's Surefire to configure the runner,
    * do not remove unless you know for sure that Surefire has been updated
    * to use the new configure(CommandLineArgs) method.
    */

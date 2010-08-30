@@ -1,14 +1,16 @@
 package org.testng.xml;
 
+import org.testng.collections.Lists;
+import org.testng.reporters.XMLStringBuffer;
+
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import org.testng.reporters.XMLStringBuffer;
+public class XmlInclude implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-import com.google.inject.internal.Lists;
-
-public class XmlInclude {
   private String m_name;
   private List<Integer> m_invocationNumbers = Lists.newArrayList();
   private int m_index;

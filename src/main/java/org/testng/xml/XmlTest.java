@@ -437,6 +437,7 @@ public class XmlTest implements Serializable, Cloneable {
   
   @Override
   public String toString() {
+//    return toXml("");
     StringBuffer result = new StringBuffer("[Test: \"" + m_name + "\"")
       .append(" verbose:" + m_verbose);
     

@@ -74,15 +74,24 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   }
 
   private Annotation findAnnotationInSuperClasses(Class cls, Class a) {
-    while (cls != null) {
-      Annotation result = cls.getAnnotation(a);
-      if (result != null) return result;
-      else cls = cls.getSuperclass();
+    // Hack for @Listeners: we don't look in superclasses for this annotation
+    // because inheritance of this annotation causes aggregation instead of
+    // overriding
+    if (a.equals(org.testng.annotations.Listeners.class)) {
+      return cls.getAnnotation(a);
+    }
+    else {
+      while (cls != null) {
+        Annotation result = cls.getAnnotation(a);
+        if (result != null) return result;
+        else cls = cls.getSuperclass();
+      }
     }
     
     return null;
   }
 
+  @Override
   public IAnnotation findAnnotation(Method m, Class annotationClass) {
     Class a = m_annotationMap.get(annotationClass);
     assert a != null : "Annotation class not found:" + annotationClass;
@@ -130,6 +139,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     }
   }
   
+  @Override
   public IAnnotation findAnnotation(Class cls, Class annotationClass) {
     Class a = m_annotationMap.get(annotationClass);
     if (a == null) {
@@ -142,6 +152,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     return result;
   }
   
+  @Override
   public IAnnotation findAnnotation(Constructor m, Class annotationClass) {
     Class a = m_annotationMap.get(annotationClass);
     IAnnotation result =
@@ -231,10 +242,12 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     System.out.println("[JDK15AnnotationFinder] " + string);
   }
   
+  @Override
   public void addSourceDirs(String[] dirs) {
     // no-op for JDK 15
   }
 
+  @Override
   public boolean hasTestInstance(Method method, int i) {
     boolean result = false;
     Annotation[][] annotations = method.getParameterAnnotations();
@@ -246,10 +259,12 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     return result;
   }
   
+  @Override
   public String[] findOptionalValues(Method method) {
     return optionalValues(method.getParameterAnnotations());
   }
   
+  @Override
   public String[] findOptionalValues(Constructor method) {
     return optionalValues(method.getParameterAnnotations());
   }

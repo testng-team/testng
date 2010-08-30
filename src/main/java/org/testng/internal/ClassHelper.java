@@ -1,7 +1,5 @@
 package org.testng.internal;
 
-import com.google.inject.internal.Sets;
-
 import org.testng.IClass;
 import org.testng.IMethodSelector;
 import org.testng.IObjectFactory;
@@ -11,6 +9,7 @@ import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.Sets;
 import org.testng.junit.IJUnitTestRunner;
 import org.testng.xml.XmlTest;
 

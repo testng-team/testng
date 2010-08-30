@@ -6,10 +6,8 @@ import org.testng.ITest;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
-import org.testng.collections.Maps;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 
@@ -28,8 +26,8 @@ public class TestResult implements ITestResult {
   private long m_endMillis = 0;
   private String m_name = null;
   private String m_host;
-  private Object[] m_parameters = {};
-  private Object m_instance;
+  transient private Object[] m_parameters = {};
+  transient private Object m_instance;
 
   public TestResult() {
     
@@ -93,6 +91,7 @@ public class TestResult implements ITestResult {
     System.out.println("[TestResult] " + s);
   }
 
+  @Override
   public void setEndMillis(long millis) {
     m_endMillis = millis;
   }
@@ -101,6 +100,7 @@ public class TestResult implements ITestResult {
    * If this result's related instance implements ITest, returns its test name, 
    * otherwise returns null.
    */
+  @Override
   public String getTestName() {
     if (m_instance instanceof ITest) {
       return ((ITest) m_instance).getTestName();
@@ -108,6 +108,7 @@ public class TestResult implements ITestResult {
     return null;
   }
 
+  @Override
   public String getName() {
     return m_name;
   }
@@ -115,6 +116,7 @@ public class TestResult implements ITestResult {
   /**
    * @return Returns the method.
    */
+  @Override
   public ITestNGMethod getMethod() {
     return m_method;
   }
@@ -129,6 +131,7 @@ public class TestResult implements ITestResult {
   /**
    * @return Returns the status.
    */
+  @Override
   public int getStatus() {
     return m_status;
   }
@@ -136,10 +139,12 @@ public class TestResult implements ITestResult {
   /**
    * @param status The status to set.
    */
+  @Override
   public void setStatus(int status) {
     m_status = status;
   }
 
+  @Override
   public boolean isSuccess() {
     return ITestResult.SUCCESS == m_status;
   }
@@ -147,6 +152,7 @@ public class TestResult implements ITestResult {
   /**
    * @return Returns the testClass.
    */
+  @Override
   public IClass getTestClass() {
     return m_testClass;
   }
@@ -161,6 +167,7 @@ public class TestResult implements ITestResult {
   /**
    * @return Returns the throwable.
    */
+  @Override
   public Throwable getThrowable() {
     return m_throwable;
   }
@@ -168,6 +175,7 @@ public class TestResult implements ITestResult {
   /**
    * @param throwable The throwable to set.
    */
+  @Override
   public void setThrowable(Throwable throwable) {
     m_throwable = throwable;
   }
@@ -175,6 +183,7 @@ public class TestResult implements ITestResult {
   /**
    * @return Returns the endMillis.
    */
+  @Override
   public long getEndMillis() {
     return m_endMillis;
   }
@@ -182,6 +191,7 @@ public class TestResult implements ITestResult {
   /**
    * @return Returns the startMillis.
    */
+  @Override
   public long getStartMillis() {
     return m_startMillis;
   }
@@ -213,6 +223,7 @@ public class TestResult implements ITestResult {
     }
   }
 
+  @Override
   public String getHost() {
     return m_host;
   }
@@ -221,36 +232,44 @@ public class TestResult implements ITestResult {
     m_host = host;
   }
   
+  @Override
   public Object[] getParameters() {
     return m_parameters;
   }
 
+  @Override
   public void setParameters(Object[] parameters) {
     m_parameters = parameters;
   }
 
+  @Override
   public Object getInstance() {
     return m_instance;
   }
 
   private IAttributes m_attributes = new Attributes();
 
+  @Override
   public Object getAttribute(String name) {
     return m_attributes.getAttribute(name);
   }
 
+  @Override
   public void setAttribute(String name, Object value) {
     m_attributes.setAttribute(name, value);
   }
 
+  @Override
   public Set<String> getAttributeNames() {
     return m_attributes.getAttributeNames();
   }
 
+  @Override
   public Object removeAttribute(String name) {
     return m_attributes.removeAttribute(name);
   }
 
+  @Override
   public int compareTo(ITestResult comparison) {
 	  if( getStartMillis() > comparison.getStartMillis() ) {
 		  return 1;

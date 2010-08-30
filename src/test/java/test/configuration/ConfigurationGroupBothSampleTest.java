@@ -1,15 +1,16 @@
 package test.configuration;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.testng.annotations.AfterGroups;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class ConfigurationGroupBothSampleTest {
-  static List<Integer> m_list = new ArrayList<Integer>();
+  static List<Integer> m_list = Collections.synchronizedList(new ArrayList<Integer>());
 
   private synchronized static void addToList(Integer n) {
     m_list.add(n);

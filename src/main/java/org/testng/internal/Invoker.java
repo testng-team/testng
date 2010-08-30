@@ -698,9 +698,9 @@ public class Invoker implements IInvoker {
         testResult.setEndMillis(System.currentTimeMillis());
       }
 
-      if (testResult.getStatus() == ITestResult.SUCCESS) {
+//      if (testResult.getStatus() == ITestResult.SUCCESS) {
         runTestListeners(testResult);
-      }
+//      }
 
       //
       // Invoke afterMethods only if
@@ -1060,7 +1060,7 @@ public class Invoker implements IInvoker {
               failureCount = handleInvocationResults(testMethod, 
                   bag.errorResults, null, failureCount, expectedExceptionHolder, true,
                   true /* collect results */);
-              // there is nothing we can do more
+              registerSkippedTestResult(testMethod, instances[0], start);
               continue;
             }
             
@@ -1146,17 +1146,7 @@ public class Invoker implements IInvoker {
                     }
                     if (failureCount > 0 && m_skipFailedInvocationCounts) {
                       while (invocationCount-- > 0) {
-                        ITestResult r = 
-                          new TestResult(testMethod.getTestClass(),
-                            instances[0],
-                            testMethod,
-                            null,
-                            start,
-                            System.currentTimeMillis());
-                        r.setStatus(TestResult.SKIP);
-                        result.add(r);
-                        runTestListeners(r);
-                        m_notifier.addSkippedTest(testMethod, r);
+                        result.add(registerSkippedTestResult(testMethod, instances[0], start));
                       }
                       break;
                     }
@@ -1200,7 +1190,6 @@ public class Invoker implements IInvoker {
 
         testResult.setStatus(ITestResult.SKIP);
         result.add(testResult);
-        m_notifier.addSkippedTest(testMethod, testResult);
         runTestListeners(testResult);
       }
     }
@@ -1208,6 +1197,21 @@ public class Invoker implements IInvoker {
     return result;
     
   } // invokeTestMethod
+
+  private ITestResult registerSkippedTestResult(ITestNGMethod testMethod, Object instance,
+      long start) {
+    ITestResult result = 
+      new TestResult(testMethod.getTestClass(),
+        instance,
+        testMethod,
+        null,
+        start,
+        System.currentTimeMillis());
+    result.setStatus(TestResult.SKIP);
+    runTestListeners(result);
+
+    return result;
+  }
 
   private Object[] getInjectedParameters(ITestNGMethod testMethod,
       ITestContext testContext, Iterator<Object[]> allParameterValues) {
@@ -1418,9 +1422,9 @@ public class Invoker implements IInvoker {
         else {
           assert false : "UNKNOWN STATUS:" + status;
         }
-        if (triggerListeners && status != ITestResult.SUCCESS) {
-          runTestListeners(testResult);
-        }
+//        if (triggerListeners && status != ITestResult.SUCCESS) {
+//          runTestListeners(testResult);
+//        }
       }
     } // for results
     

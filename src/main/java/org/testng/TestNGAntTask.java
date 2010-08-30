@@ -388,6 +388,8 @@ public class TestNGAntTask extends Task {
 
   private Integer m_verbose= null;
 
+  private Integer m_suiteThreadPoolSize;
+
   public void setVerbose(Integer verbose) {
     m_verbose= verbose;
   }
@@ -401,7 +403,11 @@ public class TestNGAntTask extends Task {
   }
 
   public void setTestRunnerFactory(String testRunnerFactory) {
-    this.m_testRunnerFactory = testRunnerFactory;
+    m_testRunnerFactory = testRunnerFactory;
+  }
+
+  public void setSuiteThreadPoolSize(Integer n) {
+    m_suiteThreadPoolSize = n;
   }
 
   /**
@@ -506,15 +512,18 @@ public class TestNGAntTask extends Task {
       argv.add(m_excludedGroups);
     }
 
-    if(m_classFilesets.size() > 0) {
-      argv.add(CommandLineArgs.TEST_CLASS);
-      StringBuffer testClasses = new StringBuffer();
-      for (String file : fileset(m_classFilesets)) {
-        testClasses.append(file);
-        testClasses.append(',');
+    if (m_classFilesets.size() > 0) {
+      List<String> files = fileset(m_classFilesets);
+      if (files.size() > 0) {
+        argv.add(CommandLineArgs.TEST_CLASS);
+        StringBuffer testClasses = new StringBuffer();
+        for (String file : files) {
+          testClasses.append(file);
+          testClasses.append(',');
+        }
+        testClasses.setLength(testClasses.length() - 1);
+        argv.add(testClasses.toString());
       }
-      testClasses.setLength(testClasses.length() - 1);
-      argv.add(testClasses.toString());
     }
 
     if(m_listeners != null && m_listeners.size() > 0) {
@@ -582,6 +591,11 @@ public class TestNGAntTask extends Task {
         argv.add(CommandLineArgs.REPORTER);
         argv.add(reporterConfig.serialize());
       }
+    }
+
+    if (m_suiteThreadPoolSize != null) {
+      argv.add(CommandLineArgs.SUITE_THREAD_POOL_SIZE);
+      argv.add(m_suiteThreadPoolSize.toString());
     }
 
     if(m_xmlFilesets.size() > 0) {

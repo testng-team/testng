@@ -19,6 +19,6 @@ public class FailingDataProviderTest {
     testng.addListener(tla);
     testng.setVerbose(0);
     testng.run();
-    Assert.assertEquals(tla.getFailedTests().size(), 1, "Test method should be marked as failed");
+    Assert.assertEquals(tla.getSkippedTests().size(), 1, "Test method should be marked as skipped");
   }
 }

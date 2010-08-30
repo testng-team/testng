@@ -1,8 +1,5 @@
 package org.testng.internal;
 
-import java.util.List;
-import java.util.Map;
-
 import org.testng.IClass;
 import org.testng.IObjectFactory;
 import org.testng.ITest;
@@ -10,6 +7,9 @@ import org.testng.collections.Lists;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation of an IClass.
@@ -25,7 +25,7 @@ public class ClassImpl implements IClass {
   transient private Map<Class, IClass> m_classes = null;
   private int m_instanceCount;
   private long[] m_instanceHashCodes;
-  private Object m_instance;
+  private transient Object m_instance;
   private IObjectFactory m_objectFactory;
   private String m_testName = null;
   private XmlClass m_xmlClass;
@@ -48,30 +48,37 @@ public class ClassImpl implements IClass {
     System.out.println("[ClassImpl] " + s);
   }
 
+  @Override
   public String getTestName() {
     return m_testName;
   }
 
+  @Override
   public String getName() {
     return m_class.getName();
   }
 
+  @Override
   public Class getRealClass() {
     return m_class;
   }
 
+  @Override
   public int getInstanceCount() {
     return m_instanceCount;
   }
 
+  @Override
   public long[] getInstanceHashCodes() {
     return m_instanceHashCodes;
   }
 
+  @Override
   public XmlTest getXmlTest() {
     return m_xmlTest;
   }
 
+  @Override
   public XmlClass getXmlClass() {
     return m_xmlClass;
   }
@@ -86,6 +93,7 @@ public class ClassImpl implements IClass {
     return m_defaultInstance;
   }
 
+  @Override
   public Object[] getInstances(boolean create) {
     Object[] result = {};
 
@@ -114,6 +122,7 @@ public class ClassImpl implements IClass {
     return "[ClassImpl " + m_class.getName() + "]";
   }
 
+  @Override
   public void addInstance(Object instance) {
     m_instances.add(instance);
   }
