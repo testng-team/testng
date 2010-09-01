@@ -18,7 +18,7 @@ import org.testng.xml.XmlSuite;
  * @author	Guy Korland
  * @date 	April 20, 2007
  */
-public class DefaultWorkerAdapter implements IWorkerApadter
+public class DefaultWorkerAdapter implements IWorkerAdapter
 {
 	public static final String SLAVE_PORT = "slave.port";
 	

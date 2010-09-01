@@ -15,11 +15,11 @@ import org.testng.SuiteRunner;
 import org.testng.reporters.TestHTMLReporter;
 
 /**
- * This listener is called by the {@link IWorkerApadter} implementation when a remote test result is ready.
+ * This listener is called by the {@link IWorkerAdapter} implementation when a remote test result is ready.
  * 
  * @author Guy Korland
  * @date April 9, 2007
- * @see IWorkerApadter
+ * @see IWorkerAdapter
  */
 public class RemoteResultListener
 {
@@ -38,7 +38,7 @@ public class RemoteResultListener
 	}
 
 	/**
-	 * Should called by the {@link IWorkerApadter} implementation when a remote suite result is ready. 
+	 * Should called by the {@link IWorkerAdapter} implementation when a remote suite result is ready. 
 	 * @param remoteSuiteRunner remote result.
 	 */
 	public void onResult( ISuite remoteSuiteRunner)
