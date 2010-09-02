@@ -35,7 +35,7 @@ public class JUnitUtils {
     private final Class m_methodClass;
     private final Object[] m_instances;
     private final long[] m_instanceHashes;
-    private Method m_method;
+    private transient Method m_method;
     private String m_methodName= "N/A";
     private String m_signature;
     private int m_currentInvocationCount = 0;
