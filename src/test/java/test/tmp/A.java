@@ -1,7 +1,6 @@
 package test.tmp;
 
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import test.SimpleBaseTest;
@@ -18,20 +17,25 @@ public class A extends SimpleBaseTest {
     };
   }
 
-  @BeforeMethod
-  public void bm() {
-    System.out.println("Before method");
+  @BeforeClass(groups = "pre", dependsOnMethods = "bc2")
+  public void bc1() {
+    System.out.println("Before class 1");
   }
 
-  @AfterMethod
-  public void am() {
-    System.out.println("After method");
+  @BeforeClass(groups = "pre") // , dependsOnMethods = "bc1")
+  public void bc2() {
+    System.out.println("Before class 2");
   }
+
+//  @AfterMethod
+//  public void am() {
+//    System.out.println("After method");
+//  }
 
   @Test
   public void a1() {
     System.out.println("a1 throwing");
-    throw new RuntimeException();
+//    throw new RuntimeException();
 //    System.out.println("a1 " + Thread.currentThread().getId());
   }
 

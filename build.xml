@@ -49,7 +49,7 @@
 
   <target name="copy-resources" description="Copies resources.">
     <copy verbose="false"
-          file="${src.dir}/testngtasks"
+          file="${src.resources.dir}/testngtasks"
           todir="${build.dir}" />
     <copy todir="${build.dir}">
       <fileset dir="${src.resources.dir}">

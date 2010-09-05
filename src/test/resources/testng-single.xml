@@ -29,12 +29,12 @@
     </groups>
     <parameter name="string" value="s"/>
     <classes>
-      <class name="test.verify.VerifyTest">
+      <class name="test.tmp.A">
+      </class>
+<!-- 
         <methods>
           <include name="verifyBaseClassTestListener" />
         </methods>
-      </class>
-<!-- 
       <class name="test.inject.InjectTestContextTest" />
       <class name="test.sample.InvocationCountTest" />
       <class name="test.preserveorder.SibTest"/>
