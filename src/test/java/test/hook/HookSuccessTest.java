@@ -13,12 +13,12 @@ import org.testng.annotations.Test;
  * 
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  * @since Aug 01, 2006
- * @version $Revision$, $Date$
  */
 public class HookSuccessTest implements IHookable {
   private boolean m_hook = false;
   private boolean m_testWasRun = false;
 
+  @Override
   public void run(IHookCallBack callBack, ITestResult testResult) {
     m_hook = true;
     callBack.runTestMethod(testResult);

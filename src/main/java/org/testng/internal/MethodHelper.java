@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import org.testng.IConfigureCallBack;
 import org.testng.IHookCallBack;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
@@ -728,6 +729,32 @@ public class MethodHelper {
     return result != null ? calculateMethodCanonicalName(result) : null;
   }
 
+  public static void invokeConfigurable(final Object instance,
+      final Object[] parameters, ITestClass testClass, final Method thisMethod,
+      ITestResult testResult) throws NoSuchMethodException,
+      IllegalAccessException, InvocationTargetException, Throwable
+  {
+    Method runMethod = testClass.getRealClass().getMethod("run",
+        new Class[] { IConfigureCallBack.class, ITestResult.class });
+    final Throwable[] error = new Throwable[1];
+
+    IConfigureCallBack callback = new IConfigureCallBack() {
+      @Override
+      public void runConfigurationMethod(ITestResult tr) {
+        try {
+          invokeMethod(thisMethod, instance, parameters);
+        } catch (Throwable t) {
+          error[0] = t;
+          tr.setThrowable(t); // make Throwable available to IConfigurable
+        }
+      }
+    };
+    runMethod.invoke(instance, new Object[] { callback, testResult });
+    if (error[0] != null) {
+      throw error[0];
+    }
+  }
+
   /**
    * Invokes the <code>run</code> method of the <code>IHookable</code>.
    * 
@@ -753,6 +780,7 @@ public class MethodHelper {
     final Throwable[] error = new Throwable[1];
     
     IHookCallBack callback = new IHookCallBack() {
+      @Override
       public void runTestMethod(ITestResult tr) {
         try {
           invokeMethod(thisMethod, instance, parameters);
@@ -768,7 +796,7 @@ public class MethodHelper {
       throw error[0];
     }
   }
-  
+
   public static long calculateTimeOut(ITestNGMethod tm) {
     long result = tm.getTimeOut() > 0 ? tm.getTimeOut() : tm.getInvocationTimeOut();
     return result;
@@ -831,14 +859,17 @@ class ArrayIterator implements Iterator {
     m_count = 0;
   }
 
+  @Override
   public boolean hasNext() {
     return m_count < m_objects.length;
   }
 
+  @Override
   public Object next() {
     return m_objects[m_count++];
   }
 
+  @Override
   public void remove() {
     // TODO Auto-generated method stub
 

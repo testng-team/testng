@@ -29,7 +29,7 @@
     </groups>
     <parameter name="string" value="s"/>
     <classes>
-      <class name="test.tmp.A">
+      <class name="test.hook.ConfigurableSuccessTest">
       </class>
 <!-- 
         <methods>

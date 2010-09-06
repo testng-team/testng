@@ -2,6 +2,7 @@ package org.testng.internal;
 
 
 import org.testng.IClass;
+import org.testng.IConfigurable;
 import org.testng.IHookable;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
@@ -500,24 +501,50 @@ public class Invoker implements IInvoker {
       m_notifier.addInvokedMethod(im);
       try {
         Reporter.setCurrentTestResult(testResult);
-        MethodHelper.invokeMethod(tm.getMethod(), targetInstance, params);
+        Method method = tm.getMethod();
+        if (IConfigurable.class.isAssignableFrom(method.getDeclaringClass())) {
+          //
+          // If this method is a IConfigurable, invoke its run() method
+          //
+          MethodHelper.invokeConfigurable(targetInstance,
+              params, tm.getTestClass(), method, testResult);
+        }
+        else {
+          //
+          // Not a IHookable, invoke directly
+          //
+          MethodHelper.invokeMethod(method, targetInstance, params);
+        }
         // Only run the method once if it's @BeforeSuite or @AfterSuite
         if (isSuite) break;
       }
       catch (InvocationTargetException ex) {
-         testResult.setStatus(ITestResult.FAILURE);;
-         testResult.setThrowable(ex.getCause() == null ? ex : ex.getCause());
-         throw ex;
+       throwConfigurationFailure(testResult, ex);
+       throw ex;
       }
       catch (IllegalAccessException ex) {
-         testResult.setStatus(ITestResult.FAILURE);;
-         testResult.setThrowable(ex.getCause() == null ? ex : ex.getCause());
-         throw ex;
-      } finally {
+        throwConfigurationFailure(testResult, ex);
+        throw ex;
+      }
+      catch (NoSuchMethodException ex) {
+        throwConfigurationFailure(testResult, ex);
+        throw new TestNGException(ex);
+      }
+      catch (Throwable ex) {
+        throwConfigurationFailure(testResult, ex);
+        throw new TestNGException(ex);
+      }
+      finally {
         Reporter.setCurrentTestResult(testResult);
         runInvokedMethodListeners(false /* after */, im, testResult);
       }    
     }
+  }
+
+  private void throwConfigurationFailure(ITestResult testResult, Throwable ex)
+  {
+    testResult.setStatus(ITestResult.FAILURE);;
+    testResult.setThrowable(ex.getCause() == null ? ex : ex.getCause());
   }
 
   private void runInvokedMethodListeners(boolean before, IInvokedMethod method, 
