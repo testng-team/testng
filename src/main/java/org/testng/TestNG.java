@@ -883,7 +883,7 @@ public class TestNG {
     //
     else {
    	 SuiteDispatcher dispatcher = new SuiteDispatcher(m_masterfileName);
-   	 suiteRunners = dispatcher.dispatch(m_injector.getInstance(IConfiguration.class),
+   	 suiteRunners = dispatcher.dispatch(getConfiguration(),
    	     m_suites, getOutputDirectory(),
    	     getTestListeners());
     }
@@ -1042,7 +1042,7 @@ public class TestNG {
     return m_injector.getInstance(IAnnotationFinder.class);
   }
 
-  private IConfiguration getConfiguration() {
+  protected IConfiguration getConfiguration() {
     return m_injector.getInstance(IConfiguration.class);
   }
 

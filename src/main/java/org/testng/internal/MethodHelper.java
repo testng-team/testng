@@ -758,7 +758,7 @@ public class MethodHelper {
   /**
    * Invokes the <code>run</code> method of the <code>IHookable</code>.
    * 
-   * @param instance the instance to invoke the method in
+   * @param testInstance the instance to invoke the method in
    * @param parameters the parameters to be passed to <code>IHookCallBack</code>
    * @param testClass the test class
    * @param thisMethod the method to be invoked through the <code>IHookCallBack</code>
@@ -768,8 +768,9 @@ public class MethodHelper {
    * @throws InvocationTargetException
    * @throws Throwable thrown if the reflective call to <tt>thisMethod</code> results in an exception
    */
-  public static void invokeHookable(final Object instance, 
-                                    final Object[] parameters, 
+  public static void invokeHookable(final Object testInstance, 
+                                    final Object[] parameters,
+                                    Object hookableInstance,
                                     ITestClass testClass, 
                                     final Method thisMethod, 
                                     TestResult testResult) 
@@ -783,7 +784,7 @@ public class MethodHelper {
       @Override
       public void runTestMethod(ITestResult tr) {
         try {
-          invokeMethod(thisMethod, instance, parameters);
+          invokeMethod(thisMethod, testInstance, parameters);
          }
          catch(Throwable t) {
            error[0] = t;
@@ -791,7 +792,7 @@ public class MethodHelper {
          }
        }
     };
-    runMethod.invoke(instance, new Object[]{callback, testResult});
+    runMethod.invoke(testInstance, new Object[]{callback, testResult});
     if (error[0] != null) {
       throw error[0];
     }

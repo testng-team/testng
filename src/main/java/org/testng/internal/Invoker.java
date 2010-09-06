@@ -69,6 +69,7 @@ public class Invoker implements IInvoker {
   
   /** Test methods whose configuration methods have failed. */
   private Map<ITestNGMethod, Set> m_methodInvocationResults = new Hashtable<ITestNGMethod, Set>();
+  private IConfiguration m_configuration;
    
   private void setClassInvocationFailure(Class<?> clazz, Object instance) {
     Set instances = m_classInvocationResults.get( clazz );
@@ -88,16 +89,17 @@ public class Invoker implements IInvoker {
     instances.add(instance);
   }
 
-  public Invoker(ITestContext testContext,
+  public Invoker(IConfiguration configuration,
+                 ITestContext testContext,
                  ITestResultNotifier notifier,
                  SuiteRunState state,
-                 IAnnotationFinder annotationFinder,
                  boolean skipFailedInvocationCounts,
                  List<IInvokedMethodListener> invokedMethodListeners) {
+    m_configuration = configuration;
     m_testContext= testContext;
     m_suiteState= state;
     m_notifier= notifier;
-    m_annotationFinder= annotationFinder;
+    m_annotationFinder= configuration.getAnnotationFinder();
     m_skipFailedInvocationCounts = skipFailedInvocationCounts;
     m_invokedMethodListeners = invokedMethodListeners;
     m_continueOnFailedConfiguration = XmlSuite.CONTINUE.equals(testContext.getSuite().getXmlSuite().getConfigFailurePolicy());
@@ -591,8 +593,9 @@ public class Invoker implements IInvoker {
     //
     // Invoke beforeGroups configurations
     //
+    Object instance = instances[instanceIndex];
     invokeBeforeGroupsConfigurations(testClass, tm, groupMethods, suite, params,
-        instances[instanceIndex]);
+        instance);
 
     //
     // Invoke beforeMethods only if
@@ -602,14 +605,14 @@ public class Invoker implements IInvoker {
     invokeConfigurations(testClass, tm, 
       filterConfigurationMethods(tm, beforeMethods, true /* beforeMethods */),
       suite, params, parameterValues,
-      instances[instanceIndex], testResult);
+      instance, testResult);
     
     //
     // Create the ExtraOutput for this method
     //
     InvokedMethod invokedMethod = null;
     try {
-      testResult.init(testClass, instances[instanceIndex],
+      testResult.init(testClass, instance,
                                  tm,
                                  null,
                                  System.currentTimeMillis(),
@@ -619,7 +622,7 @@ public class Invoker implements IInvoker {
       testResult.setStatus(ITestResult.STARTED);
       runTestListeners(testResult);
 
-      invokedMethod= new InvokedMethod(instances[instanceIndex],
+      invokedMethod= new InvokedMethod(instance,
           tm,
           parameterValues,
           true,
@@ -632,7 +635,7 @@ public class Invoker implements IInvoker {
       
       Method thisMethod= tm.getMethod();
       
-      if(confInvocationPassed(tm, tm, testClass, instances[instanceIndex])) {
+      if(confInvocationPassed(tm, tm, testClass, instance)) {
         log(3, "Invoking " + thisMethod.getDeclaringClass().getName() + "." +
             thisMethod.getName());
 
@@ -644,14 +647,15 @@ public class Invoker implements IInvoker {
             // If this method is a IHookable, invoke its run() method
             //
             if (IHookable.class.isAssignableFrom(thisMethod.getDeclaringClass())) {
-              MethodHelper.invokeHookable(instances[instanceIndex],
-                  parameterValues, testClass, thisMethod, testResult);
+              Object hookableInstance = instance;
+              MethodHelper.invokeHookable(instance,
+                  parameterValues, hookableInstance, testClass, thisMethod, testResult);
             }
             //
             // Not a IHookable, invoke directly
             //
             else {
-              MethodHelper.invokeMethod(thisMethod, instances[instanceIndex],
+              MethodHelper.invokeMethod(thisMethod, instance,
                   parameterValues);
             } 
             testResult.setStatus(ITestResult.SUCCESS);
@@ -666,7 +670,7 @@ public class Invoker implements IInvoker {
           //
           try {
             Reporter.setCurrentTestResult(testResult);
-            MethodHelper.invokeWithTimeout(tm, instances[instanceIndex],
+            MethodHelper.invokeWithTimeout(tm, instance,
                 parameterValues, testResult);
           }
           finally {
@@ -737,14 +741,14 @@ public class Invoker implements IInvoker {
       invokeConfigurations(testClass, tm, 
           filterConfigurationMethods(tm, afterMethods, false /* beforeMethods */),
           suite, params, parameterValues,
-          instances[instanceIndex],
+          instance,
           testResult);
       
       //
       // Invoke afterGroups configurations
       //
       invokeAfterGroupsConfigurations(testClass, tm, groupMethods, suite,
-          params, instances[instanceIndex]);
+          params, instance);
     }
 
     return testResult;

@@ -196,7 +196,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     ITestRunnerFactory factory = null;
     
     if (null == m_tmpRunnerFactory) {
-      factory = new DefaultTestRunnerFactory(
+      factory = new DefaultTestRunnerFactory(m_configuration,
           m_testListeners.toArray(new ITestListener[m_testListeners.size()]), 
           m_useDefaultListeners, m_skipFailedInvocationCounts);
     }
@@ -476,11 +476,14 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     private ITestListener[] m_failureGenerators;
     private boolean m_useDefaultListeners;
     private boolean m_skipFailedInvocationCounts;
+    private IConfiguration m_configuration;
     
-    public DefaultTestRunnerFactory(ITestListener[] failureListeners,
+    public DefaultTestRunnerFactory(IConfiguration configuration,
+        ITestListener[] failureListeners,
         boolean useDefaultListeners,
         boolean skipFailedInvocationCounts)
     {
+      m_configuration = configuration;
       m_failureGenerators = failureListeners;
       m_useDefaultListeners = useDefaultListeners;
       m_skipFailedInvocationCounts = skipFailedInvocationCounts;
@@ -494,7 +497,8 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
         skip = test.skipFailedInvocationCounts();
       }
       TestRunner testRunner = 
-        new TestRunner(suite,
+        new TestRunner(m_configuration,
+            suite,
                         test,
                         suite.getOutputDirectory(),
                         suite.getAnnotationFinder(test.getAnnotations()),

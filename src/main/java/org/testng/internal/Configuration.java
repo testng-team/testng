@@ -23,4 +23,5 @@ public class Configuration implements IConfiguration {
   public IObjectFactory getObjectFactory() {
     return m_objectFactory;
   }
+
 }
