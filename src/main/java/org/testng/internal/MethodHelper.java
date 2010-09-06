@@ -773,7 +773,7 @@ public class MethodHelper {
                                     ITestClass testClass, 
                                     final Method thisMethod, 
                                     TestResult testResult) 
-  throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, Throwable 
+  throws Throwable 
   {
     Method runMethod = testClass.getRealClass().getMethod("run", 
         new Class[] { IHookCallBack.class, ITestResult.class });
