@@ -1,6 +1,8 @@
 Current
 
 Fixed: typo -testRunFactory
+Fixed: NPE while printing results for an empty suite (Nalin Makar)
+Fixed: Invoke IInvokedMethodListener.afterInvocation after fixing results for tests expecting exceptions (Nalin Makar)
 
 ===========================================================================
 

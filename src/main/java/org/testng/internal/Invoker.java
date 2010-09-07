@@ -710,14 +710,16 @@ public class Invoker implements IInvoker {
       testResult.setStatus(ITestResult.FAILURE);
     }
     finally {
-      runInvokedMethodListeners(false, invokedMethod, testResult);
-      
       ExpectedExceptionsHolder expectedExceptionClasses
           = MethodHelper.findExpectedExceptions(m_annotationFinder, tm.getMethod());
       List<ITestResult> results = Lists.newArrayList();
       results.add(testResult);
       handleInvocationResults(tm, results, null, 0, expectedExceptionClasses, false,
           true /* collect results */);
+      
+      //Run invokedMethodListeners after fixing the test results based on
+      //expectedExceptions, if any
+      runInvokedMethodListeners(false, invokedMethod, testResult);
 
       // If this method has a data provider and just failed, memorize the number
       // at which it failed.

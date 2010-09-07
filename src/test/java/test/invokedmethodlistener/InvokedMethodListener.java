@@ -13,7 +13,6 @@ public class InvokedMethodListener implements IInvokedMethodListener {
 
   @Override
   public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
-    if (m_methods == null) m_methods = Lists.newArrayList();
     m_methods.add(method);
   }
   
