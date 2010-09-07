@@ -19,6 +19,8 @@ public class ConfigurableSuccessTest extends BaseConfigurable {
 
   @Test
   public void hookWasRun() {
+    // Note: this value will depend on what other classes are in the same <test> and
+    // <suite>, so not a very accurate test
     Assert.assertEquals(m_hookCount, 4);
     Assert.assertTrue(m_bs);
     Assert.assertTrue(m_bt);
