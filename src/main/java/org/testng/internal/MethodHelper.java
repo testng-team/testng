@@ -730,11 +730,12 @@ public class MethodHelper {
   }
 
   public static void invokeConfigurable(final Object instance,
-      final Object[] parameters, ITestClass testClass, final Method thisMethod,
-      ITestResult testResult) throws NoSuchMethodException,
-      IllegalAccessException, InvocationTargetException, Throwable
+      final Object[] parameters, Object configurableInstance,
+      final Method thisMethod, ITestResult testResult)
+      throws NoSuchMethodException, IllegalAccessException,
+      InvocationTargetException, Throwable
   {
-    Method runMethod = testClass.getRealClass().getMethod("run",
+    Method runMethod = configurableInstance.getClass().getMethod("run",
         new Class[] { IConfigureCallBack.class, ITestResult.class });
     final Throwable[] error = new Throwable[1];
 
@@ -760,7 +761,6 @@ public class MethodHelper {
    * 
    * @param testInstance the instance to invoke the method in
    * @param parameters the parameters to be passed to <code>IHookCallBack</code>
-   * @param testClass the test class
    * @param thisMethod the method to be invoked through the <code>IHookCallBack</code>
    * @param testResult the current <code>ITestResult</code> passed to <code>IHookable.run</code>
    * @throws NoSuchMethodException
@@ -771,12 +771,11 @@ public class MethodHelper {
   public static void invokeHookable(final Object testInstance, 
                                     final Object[] parameters,
                                     Object hookableInstance,
-                                    ITestClass testClass, 
                                     final Method thisMethod, 
                                     TestResult testResult) 
   throws Throwable 
   {
-    Method runMethod = testClass.getRealClass().getMethod("run", 
+    Method runMethod = hookableInstance.getClass().getMethod("run", 
         new Class[] { IHookCallBack.class, ITestResult.class });
     final Throwable[] error = new Throwable[1];
     

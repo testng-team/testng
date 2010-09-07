@@ -25,6 +25,6 @@ package org.testng;
  * @author cbeust
  * Sep 07, 2010
  */
-public interface IConfigurable {
+public interface IConfigurable extends ITestNGListener {
   public void run(IConfigureCallBack callBack, ITestResult testResult);
 }

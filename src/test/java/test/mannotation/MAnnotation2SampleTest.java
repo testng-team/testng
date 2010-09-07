@@ -11,7 +11,6 @@ import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Test;
 import org.testng.internal.DefaultGuiceModule;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.JDK15AnnotationFinder;
 
 import java.lang.reflect.Method;
 

@@ -504,12 +504,19 @@ public class Invoker implements IInvoker {
       try {
         Reporter.setCurrentTestResult(testResult);
         Method method = tm.getMethod();
-        if (IConfigurable.class.isAssignableFrom(method.getDeclaringClass())) {
+
+        //
+        // If this method is a IHookable, invoke its run() method
+        //
+        IConfigurable configurableInstance =
+          IConfigurable.class.isAssignableFrom(tm.getMethod().getDeclaringClass()) ?
+          (IConfigurable) targetInstance : m_configuration.getConfigurable();
+        if (configurableInstance != null) {
           //
           // If this method is a IConfigurable, invoke its run() method
           //
-          MethodHelper.invokeConfigurable(targetInstance,
-              params, tm.getTestClass(), method, testResult);
+          MethodHelper.invokeConfigurable(targetInstance, params, configurableInstance, method,
+              testResult);
         }
         else {
           //
@@ -646,10 +653,12 @@ public class Invoker implements IInvoker {
             //
             // If this method is a IHookable, invoke its run() method
             //
-            if (IHookable.class.isAssignableFrom(thisMethod.getDeclaringClass())) {
-              Object hookableInstance = instance;
+            IHookable hookableInstance =
+              IHookable.class.isAssignableFrom(thisMethod.getDeclaringClass()) ?
+              (IHookable) instance : m_configuration.getHookable();
+            if (hookableInstance != null) {
               MethodHelper.invokeHookable(instance,
-                  parameterValues, hookableInstance, testClass, thisMethod, testResult);
+                  parameterValues, hookableInstance, thisMethod, testResult);
             }
             //
             // Not a IHookable, invoke directly
