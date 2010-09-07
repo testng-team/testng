@@ -13,7 +13,6 @@ import org.testng.SuiteRunner;
 import org.testng.TestListenerAdapter;
 import org.testng.TestRunner;
 import org.testng.annotations.BeforeMethod;
-import org.testng.internal.DefaultGuiceModule;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.TestNGGuiceModule;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
@@ -184,10 +183,14 @@ public class BaseTest extends BaseDistributedTest {
     setFailedButWithinSuccessPercentageTests(new HashMap());
 
     m_suite.setVerbose(0);
-    SuiteRunner suite = new SuiteRunner(m_injector.getInstance(IConfiguration.class),
+    SuiteRunner suite = new SuiteRunner(getConfiguration(),
         m_suite, m_outputDirectory, m_testRunnerFactory);
 
     suite.run();
+  }
+
+  private IConfiguration getConfiguration() {
+    return m_injector.getInstance(IConfiguration.class);
   }
 
   protected void addMethodSelector(String className, int priority) {
@@ -435,9 +438,11 @@ public class BaseTest extends BaseDistributedTest {
     /**
      * @see org.testng.ITestRunnerFactory#newTestRunner(org.testng.ISuite, org.testng.xml.XmlTest)
      */
+    @Override
     public TestRunner newTestRunner(ISuite suite, XmlTest test,
         List<IInvokedMethodListener> listeners) {
-      TestRunner testRunner= new TestRunner(suite, test, false, listeners);
+      TestRunner testRunner= new TestRunner(m_baseTest.getConfiguration(), suite, test, false,
+          listeners);
 
       testRunner.addTestListener(new TestHTMLReporter());
       testRunner.addTestListener(new JUnitXMLReporter());

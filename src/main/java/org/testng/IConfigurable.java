@@ -2,7 +2,7 @@ package org.testng;
 
 /**
  * If a test class implements this interface, its run() method
- * will be invoked instead of each @Test method found.  The invocation of
+ * will be invoked instead of each configuration method found.  The invocation of
  * the test method will then be performed upon invocation of the callBack()
  * method of the IHookCallBack parameter.
  * 
@@ -23,8 +23,8 @@ package org.testng;
  * </pre>
  * 
  * @author cbeust
- * Jan 28, 2006
+ * Sep 07, 2010
  */
-public interface IHookable extends ITestNGListener {
-  public void run(IHookCallBack callBack, ITestResult testResult);
+public interface IConfigurable extends ITestNGListener {
+  public void run(IConfigureCallBack callBack, ITestResult testResult);
 }

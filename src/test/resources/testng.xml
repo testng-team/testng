@@ -469,6 +469,8 @@
     <classes>
       <class name="test.hook.HookSuccessTest" />
       <class name="test.hook.HookFailureTest" />
+      <class name="test.hook.ConfigurableSuccessTest" />
+      <class name="test.hook.ConfigurableFailureTest" />
     </classes>
   </test>
   

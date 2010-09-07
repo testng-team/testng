@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import org.testng.IConfigureCallBack;
 import org.testng.IHookCallBack;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
@@ -728,12 +729,38 @@ public class MethodHelper {
     return result != null ? calculateMethodCanonicalName(result) : null;
   }
 
+  public static void invokeConfigurable(final Object instance,
+      final Object[] parameters, Object configurableInstance,
+      final Method thisMethod, ITestResult testResult)
+      throws NoSuchMethodException, IllegalAccessException,
+      InvocationTargetException, Throwable
+  {
+    Method runMethod = configurableInstance.getClass().getMethod("run",
+        new Class[] { IConfigureCallBack.class, ITestResult.class });
+    final Throwable[] error = new Throwable[1];
+
+    IConfigureCallBack callback = new IConfigureCallBack() {
+      @Override
+      public void runConfigurationMethod(ITestResult tr) {
+        try {
+          invokeMethod(thisMethod, instance, parameters);
+        } catch (Throwable t) {
+          error[0] = t;
+          tr.setThrowable(t); // make Throwable available to IConfigurable
+        }
+      }
+    };
+    runMethod.invoke(instance, new Object[] { callback, testResult });
+    if (error[0] != null) {
+      throw error[0];
+    }
+  }
+
   /**
    * Invokes the <code>run</code> method of the <code>IHookable</code>.
    * 
-   * @param instance the instance to invoke the method in
+   * @param testInstance the instance to invoke the method in
    * @param parameters the parameters to be passed to <code>IHookCallBack</code>
-   * @param testClass the test class
    * @param thisMethod the method to be invoked through the <code>IHookCallBack</code>
    * @param testResult the current <code>ITestResult</code> passed to <code>IHookable.run</code>
    * @throws NoSuchMethodException
@@ -741,21 +768,22 @@ public class MethodHelper {
    * @throws InvocationTargetException
    * @throws Throwable thrown if the reflective call to <tt>thisMethod</code> results in an exception
    */
-  public static void invokeHookable(final Object instance, 
-                                    final Object[] parameters, 
-                                    ITestClass testClass, 
+  public static void invokeHookable(final Object testInstance, 
+                                    final Object[] parameters,
+                                    Object hookableInstance,
                                     final Method thisMethod, 
                                     TestResult testResult) 
-  throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, Throwable 
+  throws Throwable 
   {
-    Method runMethod = testClass.getRealClass().getMethod("run", 
+    Method runMethod = hookableInstance.getClass().getMethod("run", 
         new Class[] { IHookCallBack.class, ITestResult.class });
     final Throwable[] error = new Throwable[1];
     
     IHookCallBack callback = new IHookCallBack() {
+      @Override
       public void runTestMethod(ITestResult tr) {
         try {
-          invokeMethod(thisMethod, instance, parameters);
+          invokeMethod(thisMethod, testInstance, parameters);
          }
          catch(Throwable t) {
            error[0] = t;
@@ -763,12 +791,12 @@ public class MethodHelper {
          }
        }
     };
-    runMethod.invoke(instance, new Object[]{callback, testResult});
+    runMethod.invoke(testInstance, new Object[]{callback, testResult});
     if (error[0] != null) {
       throw error[0];
     }
   }
-  
+
   public static long calculateTimeOut(ITestNGMethod tm) {
     long result = tm.getTimeOut() > 0 ? tm.getTimeOut() : tm.getInvocationTimeOut();
     return result;
@@ -831,14 +859,17 @@ class ArrayIterator implements Iterator {
     m_count = 0;
   }
 
+  @Override
   public boolean hasNext() {
     return m_count < m_objects.length;
   }
 
+  @Override
   public Object next() {
     return m_objects[m_count++];
   }
 
+  @Override
   public void remove() {
     // TODO Auto-generated method stub
 

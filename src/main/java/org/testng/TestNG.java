@@ -5,7 +5,6 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.Module;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -181,6 +180,9 @@ public class TestNG {
   private String m_jarPath;
 
   private List<String> m_stringSuites = Lists.newArrayList();
+
+  private IHookable m_hookable;
+  private IConfigurable m_configurable;
   
   /**
    * Default constructor. Setting also usage of default listeners/reporters.
@@ -714,6 +716,12 @@ public class TestNG {
       if (listener instanceof IInvokedMethodListener) {
         addInvokedMethodListener((IInvokedMethodListener) listener);
       }
+      if (listener instanceof IHookable) {
+        m_hookable = (IHookable) listener;
+      }
+      if (listener instanceof IConfigurable) {
+        m_configurable = (IConfigurable) listener;
+      }
     }
   }
 
@@ -849,7 +857,9 @@ public class TestNG {
   }
   
   private void initializeInjector() {
-    Module module = new TestNGGuiceModule(getAnnotationTransformer(), m_objectFactory);
+    TestNGGuiceModule module = new TestNGGuiceModule(getAnnotationTransformer(), m_objectFactory);
+    module.setHookable(m_hookable);
+    module.setConfigurable(m_configurable);
     m_injector = Guice.createInjector(module);
   }
   
@@ -885,7 +895,7 @@ public class TestNG {
     //
     else {
    	 SuiteDispatcher dispatcher = new SuiteDispatcher(m_masterfileName);
-   	 suiteRunners = dispatcher.dispatch(m_injector.getInstance(IConfiguration.class),
+   	 suiteRunners = dispatcher.dispatch(getConfiguration(),
    	     m_suites, getOutputDirectory(),
    	     getTestListeners());
     }
@@ -1044,7 +1054,7 @@ public class TestNG {
     return m_injector.getInstance(IAnnotationFinder.class);
   }
 
-  private IConfiguration getConfiguration() {
+  protected IConfiguration getConfiguration() {
     return m_injector.getInstance(IConfiguration.class);
   }
 

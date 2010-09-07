@@ -1,13 +1,11 @@
 package test.tmp;
 
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
-import test.SimpleBaseTest;
-
 //@Test(sequential = true)
-//@Listeners(AListener.class)
-public class A extends SimpleBaseTest {
+@Listeners(C2.class)
+public class A extends C2 {
 
 //  @Factory
   public Object[] f() {
@@ -17,15 +15,15 @@ public class A extends SimpleBaseTest {
     };
   }
 
-  @BeforeClass(groups = "pre", dependsOnMethods = "bc2")
-  public void bc1() {
-    System.out.println("Before class 1");
-  }
-
-  @BeforeClass(groups = "pre") // , dependsOnMethods = "bc1")
-  public void bc2() {
-    System.out.println("Before class 2");
-  }
+//  @BeforeClass(groups = "pre", dependsOnMethods = "bc2")
+//  public void bc1() {
+//    System.out.println("Before class 1");
+//  }
+//
+//  @BeforeClass(groups = "pre") // , dependsOnMethods = "bc1")
+//  public void bc2() {
+//    System.out.println("Before class 2");
+//  }
 
 //  @AfterMethod
 //  public void am() {

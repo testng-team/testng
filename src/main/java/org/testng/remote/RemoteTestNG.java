@@ -107,8 +107,9 @@ public class RemoteTestNG extends TestNG {
           public TestRunner newTestRunner(ISuite suite, XmlTest xmlTest,
               List<IInvokedMethodListener> listeners) {
             TestRunner runner =
-              new TestRunner(suite, xmlTest, false /*skipFailedInvocationCounts */,
-              listeners);
+              new TestRunner(getConfiguration(), suite, xmlTest,
+                  false /*skipFailedInvocationCounts */,
+                  listeners);
             if (m_useDefaultListeners) {
               runner.addListener(new TestHTMLReporter());
               runner.addListener(new JUnitXMLReporter());

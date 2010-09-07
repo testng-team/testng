@@ -9,6 +9,7 @@ import org.testng.internal.ClassInfoMap;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.Constants;
 import org.testng.internal.DynamicGraph;
+import org.testng.internal.IConfiguration;
 import org.testng.internal.IConfigurationListener;
 import org.testng.internal.IInvoker;
 import org.testng.internal.IMethodWorker;
@@ -133,39 +134,44 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
 
   private transient ClassMethodMap m_classMethodMap;
   private transient TestNGClassFinder m_testClassFinder;
+  private transient IConfiguration m_configuration;
 
-  public TestRunner(ISuite suite,
+  public TestRunner(IConfiguration configuration,
+                    ISuite suite,
                     XmlTest test,
                     String outputDirectory,
                     IAnnotationFinder finder,
                     boolean skipFailedInvocationCounts,
                     List<IInvokedMethodListener> invokedMethodListeners) 
   {
-    init(suite, test, outputDirectory, finder, skipFailedInvocationCounts,
+    init(configuration, suite, test, outputDirectory, finder, skipFailedInvocationCounts,
         invokedMethodListeners);
   }
 
-  public TestRunner(ISuite suite, XmlTest test, 
+  public TestRunner(IConfiguration configuration, ISuite suite, XmlTest test, 
     IAnnotationFinder finder, boolean skipFailedInvocationCounts) 
   {
-    init(suite, test, suite.getOutputDirectory(), finder, skipFailedInvocationCounts,
+    init(configuration, suite, test, suite.getOutputDirectory(), finder, skipFailedInvocationCounts,
         null);
   }
 
-  public TestRunner(ISuite suite, XmlTest test, boolean skipFailedInvocationCounts,
+  public TestRunner(IConfiguration configuration, ISuite suite, XmlTest test,
+      boolean skipFailedInvocationCounts,
       List<IInvokedMethodListener> listeners) {
-    init(suite, test, suite.getOutputDirectory(), 
+    init(configuration, suite, test, suite.getOutputDirectory(), 
         suite.getAnnotationFinder(test.getAnnotations()),
         skipFailedInvocationCounts, listeners);
   }
 
-  private void init(ISuite suite,
+  private void init(IConfiguration configuration,
+                    ISuite suite,
                     XmlTest test,
                     String outputDirectory,
                     IAnnotationFinder annotationFinder,
                     boolean skipFailedInvocationCounts,
                     List<IInvokedMethodListener> invokedMethodListeners)
   {
+    m_configuration = configuration;
     m_xmlTest= test;
     m_suite = suite;
     m_testName = test.getName();
@@ -186,7 +192,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     }
 
     m_annotationFinder= annotationFinder;
-    m_invoker = new Invoker(this, this, m_suite.getSuiteState(), m_annotationFinder,
+    m_invoker = new Invoker(m_configuration, this, this, m_suite.getSuiteState(),
         m_skipFailedInvocationCounts, invokedMethodListeners);
 
     if (suite.getParallel() != null) {

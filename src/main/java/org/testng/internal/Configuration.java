@@ -2,6 +2,8 @@ package org.testng.internal;
 
 import com.google.inject.Inject;
 
+import org.testng.IConfigurable;
+import org.testng.IHookable;
 import org.testng.IObjectFactory;
 import org.testng.internal.annotations.IAnnotationFinder;
 
@@ -14,6 +16,14 @@ public class Configuration implements IConfiguration {
   @Inject
   IObjectFactory m_objectFactory;
 
+  @Nullable
+  @Inject
+  IHookable m_hookable;
+
+  @Nullable
+  @Inject
+  IConfigurable m_configurable;
+
   @Override
   public IAnnotationFinder getAnnotationFinder() {
     return m_annotationFinder;
@@ -22,5 +32,15 @@ public class Configuration implements IConfiguration {
   @Override
   public IObjectFactory getObjectFactory() {
     return m_objectFactory;
+  }
+
+  @Override
+  public IHookable getHookable() {
+    return m_hookable;
+  }
+
+  @Override
+  public IConfigurable getConfigurable() {
+    return m_configurable;
   }
 }

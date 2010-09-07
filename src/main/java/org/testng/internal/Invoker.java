@@ -2,6 +2,7 @@ package org.testng.internal;
 
 
 import org.testng.IClass;
+import org.testng.IConfigurable;
 import org.testng.IHookable;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
@@ -68,6 +69,7 @@ public class Invoker implements IInvoker {
   
   /** Test methods whose configuration methods have failed. */
   private Map<ITestNGMethod, Set> m_methodInvocationResults = new Hashtable<ITestNGMethod, Set>();
+  private IConfiguration m_configuration;
    
   private void setClassInvocationFailure(Class<?> clazz, Object instance) {
     Set instances = m_classInvocationResults.get( clazz );
@@ -87,16 +89,17 @@ public class Invoker implements IInvoker {
     instances.add(instance);
   }
 
-  public Invoker(ITestContext testContext,
+  public Invoker(IConfiguration configuration,
+                 ITestContext testContext,
                  ITestResultNotifier notifier,
                  SuiteRunState state,
-                 IAnnotationFinder annotationFinder,
                  boolean skipFailedInvocationCounts,
                  List<IInvokedMethodListener> invokedMethodListeners) {
+    m_configuration = configuration;
     m_testContext= testContext;
     m_suiteState= state;
     m_notifier= notifier;
-    m_annotationFinder= annotationFinder;
+    m_annotationFinder= configuration.getAnnotationFinder();
     m_skipFailedInvocationCounts = skipFailedInvocationCounts;
     m_invokedMethodListeners = invokedMethodListeners;
     m_continueOnFailedConfiguration = XmlSuite.CONTINUE.equals(testContext.getSuite().getXmlSuite().getConfigFailurePolicy());
@@ -500,24 +503,57 @@ public class Invoker implements IInvoker {
       m_notifier.addInvokedMethod(im);
       try {
         Reporter.setCurrentTestResult(testResult);
-        MethodHelper.invokeMethod(tm.getMethod(), targetInstance, params);
+        Method method = tm.getMethod();
+
+        //
+        // If this method is a IHookable, invoke its run() method
+        //
+        IConfigurable configurableInstance =
+          IConfigurable.class.isAssignableFrom(tm.getMethod().getDeclaringClass()) ?
+          (IConfigurable) targetInstance : m_configuration.getConfigurable();
+        if (configurableInstance != null) {
+          //
+          // If this method is a IConfigurable, invoke its run() method
+          //
+          MethodHelper.invokeConfigurable(targetInstance, params, configurableInstance, method,
+              testResult);
+        }
+        else {
+          //
+          // Not a IHookable, invoke directly
+          //
+          MethodHelper.invokeMethod(method, targetInstance, params);
+        }
         // Only run the method once if it's @BeforeSuite or @AfterSuite
         if (isSuite) break;
       }
       catch (InvocationTargetException ex) {
-         testResult.setStatus(ITestResult.FAILURE);;
-         testResult.setThrowable(ex.getCause() == null ? ex : ex.getCause());
-         throw ex;
+       throwConfigurationFailure(testResult, ex);
+       throw ex;
       }
       catch (IllegalAccessException ex) {
-         testResult.setStatus(ITestResult.FAILURE);;
-         testResult.setThrowable(ex.getCause() == null ? ex : ex.getCause());
-         throw ex;
-      } finally {
+        throwConfigurationFailure(testResult, ex);
+        throw ex;
+      }
+      catch (NoSuchMethodException ex) {
+        throwConfigurationFailure(testResult, ex);
+        throw new TestNGException(ex);
+      }
+      catch (Throwable ex) {
+        throwConfigurationFailure(testResult, ex);
+        throw new TestNGException(ex);
+      }
+      finally {
         Reporter.setCurrentTestResult(testResult);
         runInvokedMethodListeners(false /* after */, im, testResult);
       }    
     }
+  }
+
+  private void throwConfigurationFailure(ITestResult testResult, Throwable ex)
+  {
+    testResult.setStatus(ITestResult.FAILURE);;
+    testResult.setThrowable(ex.getCause() == null ? ex : ex.getCause());
   }
 
   private void runInvokedMethodListeners(boolean before, IInvokedMethod method, 
@@ -564,8 +600,9 @@ public class Invoker implements IInvoker {
     //
     // Invoke beforeGroups configurations
     //
+    Object instance = instances[instanceIndex];
     invokeBeforeGroupsConfigurations(testClass, tm, groupMethods, suite, params,
-        instances[instanceIndex]);
+        instance);
 
     //
     // Invoke beforeMethods only if
@@ -575,14 +612,14 @@ public class Invoker implements IInvoker {
     invokeConfigurations(testClass, tm, 
       filterConfigurationMethods(tm, beforeMethods, true /* beforeMethods */),
       suite, params, parameterValues,
-      instances[instanceIndex], testResult);
+      instance, testResult);
     
     //
     // Create the ExtraOutput for this method
     //
     InvokedMethod invokedMethod = null;
     try {
-      testResult.init(testClass, instances[instanceIndex],
+      testResult.init(testClass, instance,
                                  tm,
                                  null,
                                  System.currentTimeMillis(),
@@ -592,7 +629,7 @@ public class Invoker implements IInvoker {
       testResult.setStatus(ITestResult.STARTED);
       runTestListeners(testResult);
 
-      invokedMethod= new InvokedMethod(instances[instanceIndex],
+      invokedMethod= new InvokedMethod(instance,
           tm,
           parameterValues,
           true,
@@ -605,7 +642,7 @@ public class Invoker implements IInvoker {
       
       Method thisMethod= tm.getMethod();
       
-      if(confInvocationPassed(tm, tm, testClass, instances[instanceIndex])) {
+      if(confInvocationPassed(tm, tm, testClass, instance)) {
         log(3, "Invoking " + thisMethod.getDeclaringClass().getName() + "." +
             thisMethod.getName());
 
@@ -616,15 +653,18 @@ public class Invoker implements IInvoker {
             //
             // If this method is a IHookable, invoke its run() method
             //
-            if (IHookable.class.isAssignableFrom(thisMethod.getDeclaringClass())) {
-              MethodHelper.invokeHookable(instances[instanceIndex],
-                  parameterValues, testClass, thisMethod, testResult);
+            IHookable hookableInstance =
+              IHookable.class.isAssignableFrom(thisMethod.getDeclaringClass()) ?
+              (IHookable) instance : m_configuration.getHookable();
+            if (hookableInstance != null) {
+              MethodHelper.invokeHookable(instance,
+                  parameterValues, hookableInstance, thisMethod, testResult);
             }
             //
             // Not a IHookable, invoke directly
             //
             else {
-              MethodHelper.invokeMethod(thisMethod, instances[instanceIndex],
+              MethodHelper.invokeMethod(thisMethod, instance,
                   parameterValues);
             } 
             testResult.setStatus(ITestResult.SUCCESS);
@@ -639,7 +679,7 @@ public class Invoker implements IInvoker {
           //
           try {
             Reporter.setCurrentTestResult(testResult);
-            MethodHelper.invokeWithTimeout(tm, instances[instanceIndex],
+            MethodHelper.invokeWithTimeout(tm, instance,
                 parameterValues, testResult);
           }
           finally {
@@ -710,14 +750,14 @@ public class Invoker implements IInvoker {
       invokeConfigurations(testClass, tm, 
           filterConfigurationMethods(tm, afterMethods, false /* beforeMethods */),
           suite, params, parameterValues,
-          instances[instanceIndex],
+          instance,
           testResult);
       
       //
       // Invoke afterGroups configurations
       //
       invokeAfterGroupsConfigurations(testClass, tm, groupMethods, suite,
-          params, instances[instanceIndex]);
+          params, instance);
     }
 
     return testResult;
