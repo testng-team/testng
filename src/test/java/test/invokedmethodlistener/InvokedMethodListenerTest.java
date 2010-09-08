@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.testng.Assert;
 import org.testng.IInvokedMethod;
-import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -62,5 +61,16 @@ public class InvokedMethodListenerTest extends SimpleBaseTest {
     IInvokedMethod after2 = m.get(3);
     Assert.assertTrue(after2.getTestMethod().isAfterMethodConfiguration());
     Assert.assertTrue(after1.getDate() != after2.getDate());
+  }
+  
+  @Test(description = "Test methods with expected exceptions should show up as pass" +
+  		" in IInvokedMethodListener's afterInvocaiton method")
+  public void testMethodsWithExpectedExceptionsShouldShowUpAsPass() {
+    TestNG tng = create(Sample2.class);
+    Sample2.Sample2InvokedMethodListener l = new Sample2().new Sample2InvokedMethodListener();
+    tng.addListener(l);
+    tng.run();
+
+    Assert.assertTrue(l.isSuccess);
   }
 }

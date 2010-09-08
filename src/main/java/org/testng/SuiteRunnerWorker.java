@@ -52,10 +52,10 @@ public class SuiteRunnerWorker implements Runnable {
     if (xmlSuite.getVerbose() > 0) {
 //      SuiteResultCounts counts = new SuiteResultCounts();
 //      counts.calculateResultCounts(xmlSuite, suiteRunnerMap);
+      m_verboseOutput =
+        new StringBuilder("\n===============================================\n")
+          .append(xmlSuite.getName());
       for (ISuiteResult isr : m_suiteRunner.getResults().values()) {
-        m_verboseOutput =
-            new StringBuilder("\n===============================================\n")
-            .append(xmlSuite.getName());
         passed += isr.getTestContext().getPassedTests().size();
         failed += isr.getTestContext().getFailedTests().size();
         skipped += isr.getTestContext().getSkippedTests().size();

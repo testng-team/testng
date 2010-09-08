@@ -19,8 +19,6 @@ public class ConfigurableFailureTest extends BaseConfigurable {
 
   @Test
   public void hookWasNotRun() {
-    Assert.assertFalse(m_bs);
-    Assert.assertFalse(m_bt);
     Assert.assertFalse(m_bc);
     Assert.assertFalse(m_bm);
   }

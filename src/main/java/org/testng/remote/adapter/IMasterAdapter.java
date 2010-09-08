@@ -11,7 +11,7 @@ import org.testng.xml.XmlSuite;
  * 
  * @author Guy Korland
  * @date April 9, 2007
- * @see IWorkerApadter
+ * @see IWorkerAdapter
  */
 public interface IMasterAdapter
 {

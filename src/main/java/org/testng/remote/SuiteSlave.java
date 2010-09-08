@@ -7,7 +7,7 @@ import org.testng.collections.Lists;
 import org.testng.internal.PropertiesFile;
 import org.testng.internal.Utils;
 import org.testng.remote.adapter.DefaultWorkerAdapter;
-import org.testng.remote.adapter.IWorkerApadter;
+import org.testng.remote.adapter.IWorkerAdapter;
 import org.testng.xml.XmlSuite;
 
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class SuiteSlave
 
 
 	final private int m_verbose;
-	final private IWorkerApadter m_slaveAdpter;
+	final private IWorkerAdapter m_slaveAdpter;
 	final private TestNG m_testng;
 
 	/**
@@ -60,7 +60,7 @@ public class SuiteSlave
 			else
 			{
 				Class clazz = Class.forName(adapter);
-				m_slaveAdpter = (IWorkerApadter)clazz.newInstance();
+				m_slaveAdpter = (IWorkerAdapter)clazz.newInstance();
 			}
 			m_slaveAdpter.init(properties);
 		}

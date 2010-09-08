@@ -1,11 +1,16 @@
 Current
 
+Added: IConfigurable
+Fixed: TESTNG-384. Use CharSequence instead of String for assert messages (Tom‡s Pollak)
+Fixed: TESTNG-186. Rename IWorkerApadter to IWorkerAdapter (Tom‡s Pollak)
 Fixed: typo -testRunFactory
+Fixed: NPE while printing results for an empty suite (Nalin Makar)
+Fixed: Invoke IInvokedMethodListener.afterInvocation after fixing results for tests expecting exceptions (Nalin Makar)
 
 ===========================================================================
 
 5.14
-1020/08/28
+2010/08/28
 
 Added: test suites can now be run in parallel with -suitethreadpoolsize
 Fixed: @Listeners now aggregate through base classes

@@ -27,7 +27,7 @@
     </groups>
     <parameter name="string" value="s"/>
     <classes>
-      <class name="test.tmp.A"/>
+      <class name="test.SerializationTest"/>
 <!-- 
       <class name="test.tmp.C2"/>
       </class>

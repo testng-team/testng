@@ -7,7 +7,7 @@
   <artifactId>testng</artifactId>
   <packaging>jar</packaging>
   <name>TestNG</name>
-  <version>5.15-SNAPSHOT</version>
+  <version>5.14.1-SNAPSHOT</version>
   <description>TestNG is a testing framework.</description>
   <url>http://testng.org</url>
     

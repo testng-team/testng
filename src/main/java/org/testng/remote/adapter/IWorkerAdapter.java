@@ -14,7 +14,7 @@ import org.testng.xml.XmlSuite;
  * @date April 9, 2007
  * @see IMasterAdapter
  */
-public interface IWorkerApadter
+public interface IWorkerAdapter
 {
 	/**
 	 * Initializes the worker adapter.  
