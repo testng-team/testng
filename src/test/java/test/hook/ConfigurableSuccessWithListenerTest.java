@@ -3,13 +3,26 @@ package test.hook;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 @Listeners(ConfigurableListener.class)
 public class ConfigurableSuccessWithListenerTest {
-  protected  boolean m_bm = false;
-  protected  boolean m_bc = false;
+  static boolean m_bm = false;
+  static boolean m_bc = false;
+  static boolean m_bt;
+  static boolean m_bs;
+
+  @BeforeSuite
+  public void bs() {
+    m_bs = true;
+  }
+
+  @BeforeMethod
+  public void bt() {
+    m_bt = true;
+  }
 
   @BeforeMethod
   public void bm() {

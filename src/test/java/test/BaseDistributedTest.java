@@ -1,10 +1,10 @@
 package test;
 
+import org.testng.Assert;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import org.testng.Assert;
 
 public class BaseDistributedTest {
   private boolean m_verbose = false;

@@ -1,11 +1,9 @@
 package test.hook;
 
-import org.testng.Assert;
 import org.testng.IHookCallBack;
 import org.testng.IHookable;
 import org.testng.ITestResult;
 import org.testng.Reporter;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -15,8 +13,8 @@ import org.testng.annotations.Test;
  * @since Aug 01, 2006
  */
 public class HookSuccessTest implements IHookable {
-  private boolean m_hook = false;
-  private boolean m_testWasRun = false;
+  public static boolean m_hook = false;
+  public static boolean m_testWasRun = false;
 
   @Override
   public void run(IHookCallBack callBack, ITestResult testResult) {
@@ -30,11 +28,11 @@ public class HookSuccessTest implements IHookable {
     Reporter.log("output from hook test.verify");
   }
 
-  @AfterMethod
-  public void tearDown() {
-    Assert.assertTrue(m_hook);
-    Assert.assertTrue(m_testWasRun);
-  }
+//  @AfterMethod
+//  public void tearDown() {
+//    Assert.assertTrue(m_hook);
+//    Assert.assertTrue(m_testWasRun);
+//  }
 
   private void ppp(String string) {
     System.out.println("[HookTest] " + string);

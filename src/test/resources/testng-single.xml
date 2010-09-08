@@ -16,7 +16,7 @@
 <!--
     <packages>
       <package name="test.testng355.org.apache.tapestry5" />
-      <package name="test.testng355.org.apache.tapestry5.dom" />
+      <package name="test.hook" />
     </packages>
 -->
     <groups>
@@ -29,7 +29,7 @@
     </groups>
     <parameter name="string" value="s"/>
     <classes>
-      <class name="test.hook.HookSuccessWithListenerTest"/>
+      <class name="test.hook.HookableTest"/>
 <!-- 
       <class name="test.tmp.C2"/>
       </class>
