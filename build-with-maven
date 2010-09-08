@@ -5,7 +5,10 @@
 # - pom-test.xml declares a test dependency on "n-SNAPSHOT", which it will find
 # in the local repository (~/.m2/repository). All it does then is run the tests.
 
-mvn resources:resources compiler:compile resources:testResources compiler:testCompile jar:jar source:jar javadoc:jar install:install gpg:sign
+
+mvn clean install -Dgpg.skip=true
+#or if you want to sign the jar, uncomment this:
+#mvn clean install
 
 mvn -f pom-test.xml test
 
