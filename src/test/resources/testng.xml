@@ -471,6 +471,8 @@
       <class name="test.hook.HookFailureTest" />
       <class name="test.hook.ConfigurableSuccessTest" />
       <class name="test.hook.ConfigurableFailureTest" />
+      <class name="test.hook.HookSuccessWithListenerTest"/>
+      <class name="test.hook.ConfigurableSuccessWithListenerTest"/>
     </classes>
   </test>
   

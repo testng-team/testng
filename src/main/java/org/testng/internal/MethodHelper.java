@@ -750,7 +750,7 @@ public class MethodHelper {
         }
       }
     };
-    runMethod.invoke(instance, new Object[] { callback, testResult });
+    runMethod.invoke(configurableInstance, new Object[] { callback, testResult });
     if (error[0] != null) {
       throw error[0];
     }
@@ -791,7 +791,7 @@ public class MethodHelper {
          }
        }
     };
-    runMethod.invoke(testInstance, new Object[]{callback, testResult});
+    runMethod.invoke(hookableInstance, new Object[]{callback, testResult});
     if (error[0] != null) {
       throw error[0];
     }

@@ -40,7 +40,17 @@ public class Configuration implements IConfiguration {
   }
 
   @Override
+  public void setHookable(IHookable h) {
+    m_hookable = h;
+  }
+
+  @Override
   public IConfigurable getConfigurable() {
     return m_configurable;
+  }
+
+  @Override
+  public void setConfigurable(IConfigurable c) {
+    m_configurable = c;
   }
 }

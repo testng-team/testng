@@ -331,6 +331,12 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
         addTestListener((ITestListener) listener);
       } else if (listener instanceof IReporter) {
         m_suite.addListener((ITestNGListener) listener);
+      } else if (listener instanceof IConfigurable) {
+        m_configuration.setConfigurable((IConfigurable) listener);
+      } else if (listener instanceof IHookable) {
+        m_configuration.setHookable((IHookable) listener);
+      } else {
+        throw new TestNGException("Unknown listener type: " + listener);
       }
     }
   }
