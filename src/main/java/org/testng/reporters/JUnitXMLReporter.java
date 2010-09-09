@@ -2,16 +2,19 @@ package org.testng.reporters;
 
 
 import org.testng.ITestContext;
+import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.IResultListener;
 import org.testng.internal.Utils;
+import org.testng.internal.annotations.Sets;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -50,17 +53,20 @@ public class JUnitXMLReporter implements IResultListener {
   private Map<String, String> m_fileNameMap = Maps.newHashMap();
   private int m_fileNameIncrementer = 0;
 
+  @Override
   public void onTestStart(ITestResult result) {
   }
 
   /**
    * Invoked each time a test succeeds.
    */
+  @Override
   public void onTestSuccess(ITestResult tr) {
     m_allTests.add(tr);
     m_numPassed++;
   }
 
+  @Override
   public void onTestFailedButWithinSuccessPercentage(ITestResult tr) {
     m_allTests.add(tr);
     m_numFailedButIgnored++;
@@ -69,6 +75,7 @@ public class JUnitXMLReporter implements IResultListener {
   /**
    * Invoked each time a test fails.
    */
+  @Override
   public void onTestFailure(ITestResult tr) {
     m_allTests.add(tr);
     m_numFailed++;
@@ -77,6 +84,7 @@ public class JUnitXMLReporter implements IResultListener {
   /**
    * Invoked each time a test is skipped.
    */
+  @Override
   public void onTestSkipped(ITestResult tr) {
     m_allTests.add(tr);
     m_numSkipped++;
@@ -87,6 +95,7 @@ public class JUnitXMLReporter implements IResultListener {
    * any configuration method is called.
    *
    */
+  @Override
   public void onStart(ITestContext context) {
 	  
   }
@@ -96,6 +105,7 @@ public class JUnitXMLReporter implements IResultListener {
    * Configuration methods have been called.
    *
    */
+  @Override
   public void onFinish(ITestContext context) {
 	generateReport(context);
     resetAll();
@@ -104,6 +114,7 @@ public class JUnitXMLReporter implements IResultListener {
   /**
    * @see org.testng.internal.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
    */
+  @Override
   public void onConfigurationFailure(ITestResult itr) {
     m_configIssues.add(itr);
   }
@@ -111,6 +122,7 @@ public class JUnitXMLReporter implements IResultListener {
   /**
    * @see org.testng.internal.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
    */
+  @Override
   public void onConfigurationSkip(ITestResult itr) {
     m_configIssues.add(itr);
   }
@@ -118,6 +130,7 @@ public class JUnitXMLReporter implements IResultListener {
   /**
    * @see org.testng.internal.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
    */
+  @Override
   public void onConfigurationSuccess(ITestResult itr) {
   }
 
@@ -135,6 +148,12 @@ public class JUnitXMLReporter implements IResultListener {
       attrs.setProperty(XMLConstants.ATTR_ERRORS, "0");
       attrs.setProperty(XMLConstants.ATTR_TIME, ""
           + ((context.getEndDate().getTime() - context.getStartDate().getTime()) / 1000.0));
+      Set<String> packages = getPackages(context);
+      if (packages.size() > 0) {
+        // JUnit can only have one package here since all the methods have to belong
+        // to the same class
+        attrs.setProperty(XMLConstants.ATTR_PACKAGE, packages.iterator().next());
+      }
 
       document.push(XMLConstants.TESTSUITE, attrs);
       document.addEmptyElement(XMLConstants.PROPERTIES);
@@ -148,6 +167,15 @@ public class JUnitXMLReporter implements IResultListener {
 
       document.pop();
       Utils.writeUtf8File(context.getOutputDirectory(),generateFileName(context) + ".xml", document.toXML());
+  }
+
+  private Set<String> getPackages(ITestContext context) {
+    Set<String> result = Sets.newHashSet();
+    for (ITestNGMethod m : context.getAllTestMethods()) {
+      Package pkg = m.getMethod().getDeclaringClass().getPackage();
+      if (pkg != null) result.add(pkg.getName());
+    }
+    return result;
   }
 
   private void createElement(XMLStringBuffer doc, ITestResult tr) {

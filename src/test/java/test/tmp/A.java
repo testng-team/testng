@@ -1,11 +1,10 @@
 package test.tmp;
 
-import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 //@Test(sequential = true)
-@Listeners(C2.class)
-public class A extends C2 {
+//@Listeners(C2.class)
+public class A {
 
 //  @Factory
   public Object[] f() {

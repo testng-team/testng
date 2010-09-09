@@ -200,6 +200,10 @@ public class BaseTest extends BaseDistributedTest {
     getTest().getMethodSelectors().add(methodSelector);
   }
 
+  protected XmlClass addClass(Class<?> cls) {
+    return addClass(cls.getName());
+  }
+
   protected XmlClass addClass(String className) {
     XmlClass result= new XmlClass(className);
     getTest().getXmlClasses().add(result);

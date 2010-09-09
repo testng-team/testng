@@ -467,10 +467,7 @@
 
   <test name="Hookable" >
     <classes>
-      <class name="test.hook.HookSuccessTest" />
-      <class name="test.hook.HookFailureTest" />
-      <class name="test.hook.ConfigurableSuccessTest" />
-      <class name="test.hook.ConfigurableFailureTest" />
+      <class name="test.hook.HookableTest"/>
     </classes>
   </test>
   

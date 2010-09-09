@@ -749,8 +749,13 @@ public class MethodHelper {
           tr.setThrowable(t); // make Throwable available to IConfigurable
         }
       }
+
+      @Override
+      public Object[] getParameters() {
+        return parameters;
+      }
     };
-    runMethod.invoke(instance, new Object[] { callback, testResult });
+    runMethod.invoke(configurableInstance, new Object[] { callback, testResult });
     if (error[0] != null) {
       throw error[0];
     }
@@ -790,8 +795,13 @@ public class MethodHelper {
            tr.setThrowable( t ); // make Throwable available to IHookable
          }
        }
+
+      @Override
+      public Object[] getParameters() {
+        return parameters;
+      }
     };
-    runMethod.invoke(testInstance, new Object[]{callback, testResult});
+    runMethod.invoke(hookableInstance, new Object[]{callback, testResult});
     if (error[0] != null) {
       throw error[0];
     }

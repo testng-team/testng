@@ -11,6 +11,8 @@ public interface IConfiguration {
   IObjectFactory getObjectFactory();
 
   IHookable getHookable();
+  void setHookable(IHookable h);
 
   IConfigurable getConfigurable();
+  void setConfigurable(IConfigurable c);
 }
