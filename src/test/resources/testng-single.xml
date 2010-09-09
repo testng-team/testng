@@ -29,8 +29,12 @@
     </groups>
     <parameter name="string" value="s"/>
     <classes>
-      <class name="test.hook.HookableTest"/>
+      <class name="test.hook.HookableTest" />
 <!-- 
+	      <methods>
+	        <include name="configurableSuccess" />
+	      </methods>
+	    </class>
       <class name="test.tmp.C2"/>
       </class>
         <methods>
