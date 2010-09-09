@@ -7,6 +7,8 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
+import java.lang.reflect.Method;
+
 @Listeners(ConfigurableListener.class)
 public class ConfigurableSuccessWithListenerTest {
   static boolean m_bm = false;
@@ -25,7 +27,7 @@ public class ConfigurableSuccessWithListenerTest {
   }
 
   @BeforeMethod
-  public void bm() {
+  public void bm(Method m) {
     m_bm = true;
   }
 

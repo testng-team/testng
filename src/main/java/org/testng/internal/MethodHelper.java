@@ -749,6 +749,11 @@ public class MethodHelper {
           tr.setThrowable(t); // make Throwable available to IConfigurable
         }
       }
+
+      @Override
+      public Object[] getParameters() {
+        return parameters;
+      }
     };
     runMethod.invoke(configurableInstance, new Object[] { callback, testResult });
     if (error[0] != null) {

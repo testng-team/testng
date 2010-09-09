@@ -4,6 +4,9 @@ import org.testng.IConfigurable;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeTest;
+
+import java.lang.reflect.Method;
 
 abstract public class BaseConfigurable implements IConfigurable {
   static int m_hookCount = 0;
@@ -11,19 +14,20 @@ abstract public class BaseConfigurable implements IConfigurable {
   static boolean m_bt = false;
   static boolean m_bm = false;
   static boolean m_bc = false;
+  static String m_methodName = null;
 
   @BeforeSuite
   public void bs() {
     m_bs = true;
   }
 
-  @BeforeMethod
+  @BeforeTest
   public void bt() {
     m_bt = true;
   }
 
   @BeforeMethod
-  public void bm() {
+  public void bm(Method m) {
     m_bm = true;
   }
 
