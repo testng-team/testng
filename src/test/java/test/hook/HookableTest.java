@@ -18,6 +18,7 @@ public class HookableTest extends BaseTest {
   public void bm() {
     HookSuccessTest.m_hook = false;
     HookSuccessTest.m_testWasRun = false;
+    HookSuccessTest.m_parameter = null;
     HookFailureTest.m_hook = false;
     HookFailureTest.m_testWasRun = false;
     HookListener.m_hook = false;
@@ -41,6 +42,7 @@ public class HookableTest extends BaseTest {
     verifyTests("Passed", new String[] { "verify" }, getPassedTests());
     Assert.assertTrue(HookSuccessTest.m_hook);
     Assert.assertTrue(HookSuccessTest.m_testWasRun);
+    Assert.assertEquals(HookSuccessTest.m_parameter, "foo");
   }
 
   @Test

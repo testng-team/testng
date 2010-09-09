@@ -21,4 +21,9 @@ public interface IHookCallBack {
    * Invoke the test method currently being hijacked.
    */
   public void runTestMethod(ITestResult testResult);
+
+  /**
+   * @return the parameters that will be used to invoke the test method.
+   */
+  public Object[] getParameters();
 }

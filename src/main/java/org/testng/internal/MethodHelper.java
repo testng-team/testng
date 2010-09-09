@@ -795,6 +795,11 @@ public class MethodHelper {
            tr.setThrowable( t ); // make Throwable available to IHookable
          }
        }
+
+      @Override
+      public Object[] getParameters() {
+        return parameters;
+      }
     };
     runMethod.invoke(hookableInstance, new Object[]{callback, testResult});
     if (error[0] != null) {
