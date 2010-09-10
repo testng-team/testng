@@ -573,7 +573,14 @@
   
   <test name="Asserts">
     <classes>
+      <class name="org.testng.AssertTest" />
       <class name="test.asserttests.AssertTest" />
+    </classes>
+  </test>
+  
+  <test name="Utils">
+    <classes>
+      <class name="org.testng.internal.UtilsTest" />
     </classes>
   </test>
   
