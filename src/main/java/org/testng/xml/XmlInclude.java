@@ -45,8 +45,9 @@ public class XmlInclude implements Serializable {
     XMLStringBuffer xsb = new XMLStringBuffer(indent);
     Properties p = new Properties();
     p.setProperty("name", getName());
-    if (getInvocationNumbers().size() > 0) {
-      p.setProperty("invocation-numbers", XmlClass.listToString(getInvocationNumbers()).toString());
+    List<Integer> invocationNumbers = getInvocationNumbers();
+    if (invocationNumbers != null && invocationNumbers.size() > 0) {
+      p.setProperty("invocation-numbers", XmlClass.listToString(invocationNumbers).toString());
     }
     xsb.addEmptyElement("include", p);
 

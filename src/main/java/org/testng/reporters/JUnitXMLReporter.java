@@ -10,7 +10,11 @@ import org.testng.internal.IResultListener;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.Sets;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -142,21 +146,32 @@ public class JUnitXMLReporter implements IResultListener {
       XMLStringBuffer document= new XMLStringBuffer("");
       document.setXmlDetails("1.0", "UTF-8");
       Properties attrs= new Properties();
-      attrs.setProperty(XMLConstants.ATTR_NAME, encodeAttr(context.getName())); // ENCODE
-      attrs.setProperty(XMLConstants.ATTR_TESTS, "" + m_allTests.size());
-      attrs.setProperty(XMLConstants.ATTR_FAILURES, "" + m_numFailed);
       attrs.setProperty(XMLConstants.ATTR_ERRORS, "0");
-      attrs.setProperty(XMLConstants.ATTR_TIME, ""
-          + ((context.getEndDate().getTime() - context.getStartDate().getTime()) / 1000.0));
+      attrs.setProperty(XMLConstants.ATTR_FAILURES, "" + m_numFailed);
+      try {
+        attrs.setProperty(XMLConstants.ATTR_HOSTNAME, InetAddress.getLocalHost().getHostName());
+      } catch (UnknownHostException e) {
+        // ignore
+      }
       Set<String> packages = getPackages(context);
       if (packages.size() > 0) {
         // JUnit can only have one package here since all the methods have to belong
         // to the same class
-        attrs.setProperty(XMLConstants.ATTR_PACKAGE, packages.iterator().next());
+        String className =
+            context.getAllTestMethods()[0].getMethod().getDeclaringClass().getName();
+        attrs.setProperty(XMLConstants.ATTR_NAME, className);
+//        attrs.setProperty(XMLConstants.ATTR_PACKAGE, packages.iterator().next());
       }
+      
+      attrs.setProperty(XMLConstants.ATTR_TESTS, "" + m_allTests.size());
+      attrs.setProperty(XMLConstants.ATTR_TIME, ""
+          + ((context.getEndDate().getTime() - context.getStartDate().getTime()) / 1000.0));
+
+      Date timeStamp = Calendar.getInstance().getTime();
+      attrs.setProperty(XMLConstants.ATTR_TIMESTAMP, timeStamp.toGMTString());
 
       document.push(XMLConstants.TESTSUITE, attrs);
-      document.addEmptyElement(XMLConstants.PROPERTIES);
+//      document.addEmptyElement(XMLConstants.PROPERTIES);
 
       for(ITestResult tr : m_configIssues) {
         createElement(document, tr);
