@@ -27,6 +27,7 @@ import org.testng.remote.SuiteDispatcher;
 import org.testng.remote.SuiteSlave;
 import org.testng.reporters.EmailableReporter;
 import org.testng.reporters.FailedReporter;
+import org.testng.reporters.JUnitReportReporter;
 import org.testng.reporters.SuiteHTMLReporter;
 import org.testng.reporters.XMLReporter;
 import org.testng.xml.Parser;
@@ -851,6 +852,7 @@ public class TestNG {
       addReporter(FailedReporter.class);
       addReporter(XMLReporter.class);
       addReporter(EmailableReporter.class);
+      addReporter(JUnitReportReporter.class);
     }
   }
   
