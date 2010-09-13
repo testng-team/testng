@@ -322,21 +322,25 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
 
       if (listener instanceof IMethodInterceptor) {
         setMethodInterceptor((IMethodInterceptor) listener);
-      } else if (listener instanceof ISuiteListener) {
+      }
+      if (listener instanceof ISuiteListener) {
         addListener(listener);
-      } else if (listener instanceof IInvokedMethodListener) {
+      }
+      if (listener instanceof IInvokedMethodListener) {
         m_suite.addListener((ITestNGListener) listener);
-      } else if (listener instanceof ITestListener) {
+      }
+      if (listener instanceof ITestListener) {
         // At this point, the field m_testListeners has already been used in the creation
         addTestListener((ITestListener) listener);
-      } else if (listener instanceof IReporter) {
+      }
+      if (listener instanceof IReporter) {
         m_suite.addListener((ITestNGListener) listener);
-      } else if (listener instanceof IConfigurable) {
+      }
+      if (listener instanceof IConfigurable) {
         m_configuration.setConfigurable((IConfigurable) listener);
-      } else if (listener instanceof IHookable) {
+      }
+      if (listener instanceof IHookable) {
         m_configuration.setHookable((IHookable) listener);
-      } else {
-        throw new TestNGException("Unknown listener type: " + listener);
       }
     }
   }

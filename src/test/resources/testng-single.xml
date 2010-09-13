@@ -30,6 +30,7 @@
     <parameter name="string" value="s"/>
     <classes>
       <class name="test.hook.HookableTest" />
+      <class name="test.inject.InjectTestContextTest" />
 <!-- 
 	      <methods>
 	        <include name="configurableSuccess" />
@@ -40,7 +41,6 @@
         <methods>
           <include name="verifyBaseClassTestListener" />
         </methods>
-      <class name="test.inject.InjectTestContextTest" />
       <class name="test.sample.InvocationCountTest" />
       <class name="test.preserveorder.SibTest"/>
       <class name="test.preserveorder.EdnTest"/>

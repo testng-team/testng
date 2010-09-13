@@ -7,6 +7,12 @@ Fixed: typo -testRunFactory
 Fixed: NPE while printing results for an empty suite (Nalin Makar)
 Fixed: Invoke IInvokedMethodListener.afterInvocation after fixing results for tests expecting exceptions (Nalin Makar)
 
+Eclipse:
+Added: New method shortcuts: "Alt+Shift+X N", "Alt+Shift+D N" (Sven Johansson)
+
+Documentation:
+Added: Section on Selenium (Felipe Knorr Kuhn)
+
 ===========================================================================
 
 5.14
