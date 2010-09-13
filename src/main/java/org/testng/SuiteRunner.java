@@ -1,5 +1,7 @@
 package org.testng;
 
+import com.beust.jbus.IBus;
+
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.AnnotationTypeEnum;
@@ -9,6 +11,7 @@ import org.testng.internal.IInvoker;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.thread.ThreadUtil;
+import org.testng.phase.PhaseSuiteEvent;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
 import org.testng.reporters.TextReporter;
@@ -253,6 +256,8 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     // if the suite we are currently running only contains
     // a <file-suite> tag and no real tests)
     //
+    m_configuration.getBus()
+        .post(new PhaseSuiteEvent(m_suite.getName(), true /* before */, m_suite));
     if (invoker != null) {
       if(beforeSuiteMethods.values().size() > 0) {
         invoker.invokeConfigurations(null,
@@ -285,6 +290,8 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       //
       // Invoke afterSuite methods
       //
+      m_configuration.getBus()
+          .post(new PhaseSuiteEvent(m_suite.getName(), false /* after */, m_suite));
       if (afterSuiteMethods.values().size() > 0) {
         invoker.invokeConfigurations(null,
               afterSuiteMethods.values().toArray(new ITestNGMethod[afterSuiteMethods.size()]),
@@ -504,7 +511,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
                         suite.getAnnotationFinder(test.getAnnotations()),
                         skip,
                         listeners);
-      
+
       if (m_useDefaultListeners) {
         testRunner.addListener(new TestHTMLReporter());
         testRunner.addListener(new JUnitXMLReporter());
@@ -620,4 +627,5 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   public List<IInvokedMethod> getAllInvokedMethods() {
     return m_invokedMethods;
   }
+
 }

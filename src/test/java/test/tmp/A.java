@@ -1,12 +1,28 @@
 package test.tmp;
 
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 //@Test(sequential = true)
 //@Listeners(C2.class)
 public class A {
 
-//  @Factory
+//  @BeforeSuite
+  public void bs() {
+    System.out.println("bs");
+  }
+
+  @BeforeClass
+  public void bc() {
+    System.out.println("before");
+  }
+
+  @Test
+  public void a3() {
+    System.out.println("a3");
+  }
+
+  //  @Factory
   public Object[] f() {
     return new Object[] {
         new A(),

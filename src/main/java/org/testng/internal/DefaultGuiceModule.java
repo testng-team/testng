@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import com.beust.jbus.IBus;
+import com.beust.jbus.JBus;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Provides;
@@ -33,6 +35,7 @@ public class DefaultGuiceModule implements Module {
     binder.bind(IAnnotationTransformer.class).to(DefaultAnnotationTransformer.class)
         .in(Singleton.class);
     binder.bind(IConfiguration.class).to(Configuration.class).in(Singleton.class);
+    binder.bind(IBus.class).to(JBus.class).in(Singleton.class);
   }
 
   @Provides

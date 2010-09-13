@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import com.beust.jbus.IBus;
+
 import org.testng.IConfigurable;
 import org.testng.IHookable;
 import org.testng.IObjectFactory;
@@ -15,4 +17,6 @@ public interface IConfiguration {
 
   IConfigurable getConfigurable();
   void setConfigurable(IConfigurable c);
+
+  IBus getBus();
 }

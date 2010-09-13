@@ -1,12 +1,11 @@
 package org.testng;
 
 
+import com.beust.jbus.Subscriber;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
@@ -23,6 +22,7 @@ import org.testng.internal.annotations.Sets;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.internal.version.VersionInfo;
 import org.testng.log4testng.Logger;
+import org.testng.phase.PhaseEvent;
 import org.testng.remote.SuiteDispatcher;
 import org.testng.remote.SuiteSlave;
 import org.testng.reporters.EmailableReporter;
@@ -37,6 +37,8 @@ import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -184,7 +186,7 @@ public class TestNG {
 
   private IHookable m_hookable;
   private IConfigurable m_configurable;
-  
+
   /**
    * Default constructor. Setting also usage of default listeners/reporters.
    */
@@ -204,8 +206,12 @@ public class TestNG {
 
   private void init(boolean useDefaultListeners) {
     m_instance = this;
-    
     m_useDefaultListeners = useDefaultListeners;
+  }
+
+  @Subscriber
+  public void onPhaseEvent(PhaseEvent pe) {
+//    System.out.println("New phase event:" + pe);
   }
 
   public int getStatus() {
@@ -861,6 +867,7 @@ public class TestNG {
     module.setHookable(m_hookable);
     module.setConfigurable(m_configurable);
     m_injector = Guice.createInjector(module);
+    getConfiguration().getBus().register(this);
   }
   
   /**

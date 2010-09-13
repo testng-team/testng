@@ -1,6 +1,8 @@
 package org.testng;
 
 
+import com.beust.jbus.IBus;
+
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.Attributes;
@@ -33,6 +35,7 @@ import org.testng.internal.annotations.Sets;
 import org.testng.internal.thread.GroupThreadPoolExecutor;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.junit.IJUnitTestRunner;
+import org.testng.phase.PhaseTestEvent;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
@@ -617,6 +620,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     
     // invoke @BeforeTest
     ITestNGMethod[] testConfigurationMethods= getBeforeTestConfigurationMethods();
+    m_configuration.getBus().
+        post(new PhaseTestEvent(m_xmlTest.getName(), true /* before */, m_xmlTest));
+
     if(null != testConfigurationMethods && testConfigurationMethods.length > 0) {
       m_invoker.invokeConfigurations(null,
                                      testConfigurationMethods,
@@ -921,7 +927,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
         m_allTestMethods,
         m_groupMethods,
         m_classMethodMap,
-        this);
+        this,
+        m_configuration);
   }
 
   private IMethodInstance[] findClasses(List<IMethodInstance> methodInstances, Class<?> c) {
@@ -975,7 +982,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
               m_allTestMethods,
               m_groupMethods,
               cmm,
-              this));          
+              this,
+              m_configuration));
       }
     }
     else {
@@ -987,7 +995,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
                                          m_allTestMethods,
                                          m_groupMethods,
                                          cmm,
-                                         this));
+                                         this,
+                                         m_configuration));
         }
     }
 
@@ -1026,7 +1035,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
                                        m_allTestMethods,
                                        m_groupMethods,
                                        cmm,
-                                       this));
+                                       this,
+                                       m_configuration));
     }
     if (getVerbose() >= 2) {
       log(3, "Will be run sequentially:");
@@ -1050,7 +1060,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
     for (Integer i : mapList.getKeys()) {
       result.put(i,
           new TestMethodWorker(m_invoker, methodsToMethodInstances(mapList.get(i)),
-          m_xmlTest.getSuite(), params, m_allTestMethods, m_groupMethods, cmm, this));
+          m_xmlTest.getSuite(), params, m_allTestMethods, m_groupMethods, cmm, this,
+          m_configuration));
     }
 
     if (getVerbose() >= 2) {
@@ -1118,6 +1129,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   
   private void afterRun() {
     // invoke @AfterTest
+    m_configuration.getBus().
+        post(new PhaseTestEvent(m_xmlTest.getName(), false /* after */, m_xmlTest));
     ITestNGMethod[] testConfigurationMethods= getAfterTestConfigurationMethods();
     if(null != testConfigurationMethods && testConfigurationMethods.length > 0) {
       m_invoker.invokeConfigurations(null,

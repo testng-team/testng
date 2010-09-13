@@ -1348,7 +1348,8 @@ public class Invoker implements IInvoker {
           suite, 
           parameters,
           allTestMethods,
-          testContext));
+          testContext,
+          m_configuration));
     }
 
     return runWorkers(testMethod, workers, testMethod.getThreadPoolSize(), groupMethods, suite, parameters);

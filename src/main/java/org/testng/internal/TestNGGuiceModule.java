@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import com.beust.jbus.IBus;
+import com.beust.jbus.JBus;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Provides;
@@ -37,6 +39,7 @@ public class TestNGGuiceModule implements Module {
   public void configure(Binder binder) {
     binder.bind(IAnnotationFinder.class).to(JDK15AnnotationFinder.class).in(Singleton.class);
     binder.bind(IConfiguration.class).to(Configuration.class).in(Singleton.class);
+    binder.bind(IBus.class).to(JBus.class).in(Singleton.class);
   }
 
   @Provides

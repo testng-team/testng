@@ -8,6 +8,8 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
 import org.testng.internal.thread.ThreadUtil;
+import org.testng.phase.PhaseClassEvent;
+import org.testng.phase.PhaseSuiteEvent;
 import org.testng.xml.XmlSuite;
 
 import java.util.ArrayList;
@@ -43,6 +45,7 @@ public class TestMethodWorker implements IMethodWorker {
   protected ConfigurationGroupMethods m_groupMethods = null;
   protected ClassMethodMap m_classMethodMap = null;
   private ITestContext m_testContext = null;
+  protected IConfiguration m_configuration;
   
   public TestMethodWorker(IInvoker invoker, 
                           IMethodInstance[] testMethods,
@@ -51,7 +54,8 @@ public class TestMethodWorker implements IMethodWorker {
                           ITestNGMethod[] allTestMethods,
                           ConfigurationGroupMethods groupMethods,
                           ClassMethodMap classMethodMap,
-                          ITestContext testContext)
+                          ITestContext testContext,
+                          IConfiguration configuration)
   {
     m_invoker = invoker;
     m_testMethods = testMethods;
@@ -63,6 +67,7 @@ public class TestMethodWorker implements IMethodWorker {
     m_groupMethods = groupMethods;
     m_classMethodMap = classMethodMap;
     m_testContext = testContext;
+    m_configuration = configuration;
   }
   
   /**
@@ -153,7 +158,7 @@ public class TestMethodWorker implements IMethodWorker {
   // Invoke the before class methods if not done already
   //
   protected void invokeBeforeClassMethods(ITestClass testClass, IMethodInstance mi) {
-    // if no BeforeClass than return immediately
+    // if no BeforeClass then return immediately
     // used for parallel case when BeforeClass were already invoked
     if( (null == m_classMethodMap) || (null == m_classMethodMap.getInvokedBeforeClassMethods())) {
       return;
@@ -178,7 +183,9 @@ public class TestMethodWorker implements IMethodWorker {
         invokedBeforeClassMethods.put(testClass, instances);
       }
       for(Object instance: mi.getInstances()) {
-        if (! instances.contains(instance)) {  
+        if (! instances.contains(instance)) {
+          m_configuration.getBus()
+              .post(new PhaseClassEvent(testClass.getName(), true /* before */, testClass));
           instances.add(instance);
           m_invoker.invokeConfigurations(testClass,
                                          testClass.getBeforeClassMethods(),
@@ -192,7 +199,15 @@ public class TestMethodWorker implements IMethodWorker {
   }
   
   protected void invokeAfterClassMethods(ITestClass testClass, IMethodInstance mi) {
-    // if no BeforeClass than return immediately
+    ITestNGMethod tm= mi.getMethod();
+    boolean lastMethodInClass = m_classMethodMap != null &&
+        m_classMethodMap.removeAndCheckIfLast(tm, mi.getInstances()[0]);
+    if (lastMethodInClass) {
+      m_configuration.getBus()
+          .post(new PhaseClassEvent(testClass.getName(), false /* after */, testClass));
+    }
+    
+    // if no BeforeClass then return immediately
     // used for parallel case when BeforeClass were already invoked
     if( (null == m_classMethodMap) || (null == m_classMethodMap.getInvokedAfterClassMethods()) ) {
       return;
@@ -207,8 +222,9 @@ public class TestMethodWorker implements IMethodWorker {
     // Invoke after class methods if this test method is the last one
     //
     List<Object> invokeInstances= Lists.newArrayList();
-    ITestNGMethod tm= mi.getMethod();
-    if (m_classMethodMap.removeAndCheckIfLast(tm, mi.getInstances()[0])) {
+//    if (m_classMethodMap.removeAndCheckIfLast(tm, mi.getInstances()[0]))
+    if (lastMethodInClass) {
+
       Map<ITestClass, Set<Object>> invokedAfterClassMethods= m_classMethodMap.getInvokedAfterClassMethods();
       synchronized(invokedAfterClassMethods) {
         Set<Object> instances = invokedAfterClassMethods.get(testClass);
@@ -269,6 +285,7 @@ public class TestMethodWorker implements IMethodWorker {
   public int getPriority() {
     return m_testMethods.length == 1 ? m_testMethods[0].getMethod().getPriority() : 0;
   }
+
 }
 
 class SingleTestMethodWorker extends TestMethodWorker {
@@ -281,7 +298,8 @@ class SingleTestMethodWorker extends TestMethodWorker {
                                 XmlSuite suite,
                                 Map<String, String> parameters,
                                 ITestNGMethod[] allTestMethods,
-                                ITestContext testContext)
+                                ITestContext testContext,
+                                IConfiguration configuration)
   {
     super(invoker,
           new MethodInstance[] {testMethod},
@@ -290,7 +308,8 @@ class SingleTestMethodWorker extends TestMethodWorker {
           allTestMethods,
           EMPTY_GROUP_METHODS,
           null,
-          testContext);
+          testContext,
+          configuration);
   }
 
   protected void invokeAfterClassMethods(ITestClass testClass, ITestNGMethod tm) {
