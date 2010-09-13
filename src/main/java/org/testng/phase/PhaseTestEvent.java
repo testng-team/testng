@@ -17,6 +17,6 @@ public class PhaseTestEvent extends PhaseEvent {
 
   @Override
   public String toString() {
-    return "[PhaseTestEvent " + getName() + (isBefore() ? " before " : " after ") + "]";
+    return "  [PhaseTestEvent " + getName() + (isBefore() ? " before " : " after ") + "]";
   }
 }

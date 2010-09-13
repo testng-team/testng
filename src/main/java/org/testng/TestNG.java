@@ -211,7 +211,7 @@ public class TestNG {
 
   @Subscriber
   public void onPhaseEvent(PhaseEvent pe) {
-//    System.out.println("New phase event:" + pe);
+    System.out.println("New phase event:" + pe);
   }
 
   public int getStatus() {

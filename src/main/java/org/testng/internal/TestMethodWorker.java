@@ -9,10 +9,9 @@ import org.testng.ITestResult;
 import org.testng.collections.Lists;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.phase.PhaseClassEvent;
-import org.testng.phase.PhaseSuiteEvent;
+import org.testng.phase.PhaseMethodEvent;
 import org.testng.xml.XmlSuite;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -123,9 +122,13 @@ public class TestMethodWorker implements IMethodWorker {
       // Invoke test method
       //
       try {
+        m_configuration.getBus()
+            .post(new PhaseMethodEvent(testClass.getName(), true /* before */, tm));
         invokeTestMethods(tm, m_testMethods[indexMethod].getInstances(), m_testContext);
       }
       finally {
+        m_configuration.getBus()
+            .post(new PhaseMethodEvent(testClass.getName(), false /* after */, tm));
         invokeAfterClassMethods(testClass, m_testMethods[indexMethod]);
       }
     }
@@ -162,11 +165,9 @@ public class TestMethodWorker implements IMethodWorker {
       // the whole invocation must be synchronized as other threads must
       // get a full initialized test object (not the same for @After)
       Set<Object> instances = null;
-      Map<ITestClass, Set<Object>> invokedBeforeClassMethods = null;
 
       if (m_classMethodMap != null) {
-        invokedBeforeClassMethods = m_classMethodMap.getInvokedBeforeClassMethods();
-        instances = invokedBeforeClassMethods.get(testClass);
+        instances = m_classMethodMap.getInvokedBeforeClassMethods().get(testClass);
         if (instances == null) {
           m_configuration.getBus()
               .post(new PhaseClassEvent(testClass.getName(), true /* before */, testClass));
@@ -190,7 +191,7 @@ public class TestMethodWorker implements IMethodWorker {
   //        + invokedBeforeClassMethods);
       if (null == instances) {
         instances= new HashSet<Object>();
-        invokedBeforeClassMethods.put(testClass, instances);
+        m_classMethodMap.getInvokedBeforeClassMethods().put(testClass, instances);
       }
       for(Object instance: mi.getInstances()) {
         if (! instances.contains(instance)) {
