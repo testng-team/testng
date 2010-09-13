@@ -9,6 +9,7 @@ import test.SimpleBaseTest;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class ParallelSuiteTest extends SimpleBaseTest {
 
@@ -37,5 +38,26 @@ public class ParallelSuiteTest extends SimpleBaseTest {
     tng.run();
 
     Assert.assertEquals(BaseThreadTest.getThreadCount(), expected);
+  }
+
+  @Test(description = "If suiteThreadPoolSize and randomizeSuites are not specified" +
+  		" suites should run in order specified in XML")
+  public void suitesShouldRunInOrder() {
+    TestListenerAdapter tla = new TestListenerAdapter();
+    TestNG tng = create();
+    tng.setTestSuites(Arrays.asList(getPathToResource("suite-parallel-0.xml")));
+    tng.addListener(tla);
+    BaseThreadTest.initThreadLog();
+    tng.run();
+
+    Map<String, Long> suitesMap = BaseThreadTest.getSuitesMap();
+    Assert.assertEquals(BaseThreadTest.getThreadCount(), 1);
+    Assert.assertEquals(suitesMap.keySet().size(), 3);
+
+    final String SUITE_NAME_PREFIX = "Suite Parallel ";
+    for (int i = 0 ; i < 2 ; i++) {
+      Assert.assertTrue(suitesMap.get(SUITE_NAME_PREFIX + i) 
+                   < suitesMap.get(SUITE_NAME_PREFIX + (i + 1)));
+    }
   }
 }
