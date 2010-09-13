@@ -1,20 +1,16 @@
 package org.testng.internal.thread;
 
-
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
 
 /**
  * A helper class to interface TestNG concurrency usage.
@@ -44,7 +40,7 @@ public class ThreadUtil {
     for(final Runnable task: tasks) {
       try {
         pooledExecutor.execute(new CountDownLatchedRunnable(task,
-            endGate, triggerAtOnce ? startGate : null));
+            endGate, triggerAtOnce ? null : startGate));
       }
       catch(RejectedExecutionException reex) {
         ; // this should never happen as we submit all tasks at once
@@ -118,16 +114,12 @@ public class ThreadUtil {
 
   /**
    * A special <code>Runnable</code> that uses <code>CountDownLatch</code>-s to
-   * sync on start and to ackowledge its finish.
+   * sync on start and to acknowledge its finish.
    */
   private static class CountDownLatchedRunnable implements Runnable {
     private final Runnable m_task;
     private final CountDownLatch m_startGate;
     private final CountDownLatch m_endGate;
-
-    public CountDownLatchedRunnable(Runnable task, CountDownLatch endGate) {
-      this(task, endGate, null);
-    }
 
     public CountDownLatchedRunnable(Runnable task, CountDownLatch endGate, CountDownLatch startGate) {
       m_task= task;
