@@ -32,14 +32,14 @@ public class SuiteRunnerWorker implements Runnable {
           ? xmlSuite.getFileName() : m_defaultSuiteName).append('\n');
       Utils.log("TestNG", 0, "Running:\n" + allFiles.toString());
     }
-     
+
     PoolService.initialize(xmlSuite.getDataProviderThreadCount());
 //    for (XmlSuite s : suiteRunnerMap.keySet()) {
 //      System.out.println(s.equals(xmlSuite) + " " + s.hashCode() + " " + xmlSuite.hashCode());
 //    }
     m_suiteRunner.run();
 //    PoolService.getInstance().shutdown();
-    
+
     //
     // Display the final statistics
     //
@@ -89,13 +89,13 @@ public class SuiteRunnerWorker implements Runnable {
 }
 
 //class SuiteResultCounts {
-//  
+//
 //  int total = 0;
 //  int skipped = 0;
 //  int failed = 0;
 //  int confFailures = 0;
 //  int confSkips = 0;
-// 
+//
 //  public void calculateResultCounts(XmlSuite xmlSuite, Map<XmlSuite, ISuite> xmlToISuiteMap)
 //  {
 //    Collection<ISuiteResult> tempSuiteResult = xmlToISuiteMap.get(xmlSuite).getResults().values();
@@ -109,7 +109,7 @@ public class SuiteRunnerWorker implements Runnable {
 //      confSkips += ctx.getSkippedConfigurations().size();
 //      total += ctx.getPassedTests().size() + _failed + _skipped;
 //    }
-//    
+//
 //    for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
 //      calculateResultCounts(childSuite, xmlToISuiteMap);
 //    }

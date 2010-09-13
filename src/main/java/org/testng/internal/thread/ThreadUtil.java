@@ -124,11 +124,11 @@ public class ThreadUtil {
     private final Runnable m_task;
     private final CountDownLatch m_startGate;
     private final CountDownLatch m_endGate;
-    
+
     public CountDownLatchedRunnable(Runnable task, CountDownLatch endGate) {
       this(task, endGate, null);
     }
-    
+
     public CountDownLatchedRunnable(Runnable task, CountDownLatch endGate, CountDownLatch startGate) {
       m_task= task;
       m_startGate= startGate;
@@ -146,7 +146,7 @@ public class ThreadUtil {
           return;
         }
       }
-      
+
       try {
         m_task.run();
       }
