@@ -158,34 +158,42 @@ public class TestMethodWorker implements IMethodWorker {
   // Invoke the before class methods if not done already
   //
   protected void invokeBeforeClassMethods(ITestClass testClass, IMethodInstance mi) {
-    // if no BeforeClass then return immediately
-    // used for parallel case when BeforeClass were already invoked
-    if( (null == m_classMethodMap) || (null == m_classMethodMap.getInvokedBeforeClassMethods())) {
-      return;
-    }
-    ITestNGMethod[] classMethods= testClass.getBeforeClassMethods();
-    if(null == classMethods || classMethods.length == 0) {
-      return;
-    }
-    
-    // the whole invocation must be synchronized as other threads must
-    // get a full initialized test object (not the same for @After)
-    Map<ITestClass, Set<Object>> invokedBeforeClassMethods =
-        m_classMethodMap.getInvokedBeforeClassMethods();
-//    System.out.println("SYNCHRONIZING ON " + testClass
-//        + " thread:" + Thread.currentThread().getId()
-//        + " invokedMap:" + invokedBeforeClassMethods.hashCode() + " "
-//        + invokedBeforeClassMethods);
     synchronized(testClass) {
-      Set<Object> instances= invokedBeforeClassMethods.get(testClass);
-      if(null == instances) {
+      // the whole invocation must be synchronized as other threads must
+      // get a full initialized test object (not the same for @After)
+      Set<Object> instances = null;
+      Map<ITestClass, Set<Object>> invokedBeforeClassMethods = null;
+
+      if (m_classMethodMap != null) {
+        invokedBeforeClassMethods = m_classMethodMap.getInvokedBeforeClassMethods();
+        instances = invokedBeforeClassMethods.get(testClass);
+        if (instances == null) {
+          m_configuration.getBus()
+              .post(new PhaseClassEvent(testClass.getName(), true /* before */, testClass));
+        }
+      }
+  
+      // If no BeforeClass then return immediately
+      // used for parallel case when BeforeClass were already invoked
+      if( (null == m_classMethodMap) || (null == m_classMethodMap.getInvokedBeforeClassMethods())) {
+        return;
+      }
+  
+      ITestNGMethod[] classMethods= testClass.getBeforeClassMethods();
+      if(null == classMethods || classMethods.length == 0) {
+        return;
+      }
+      
+  //    System.out.println("SYNCHRONIZING ON " + testClass
+  //        + " thread:" + Thread.currentThread().getId()
+  //        + " invokedMap:" + invokedBeforeClassMethods.hashCode() + " "
+  //        + invokedBeforeClassMethods);
+      if (null == instances) {
         instances= new HashSet<Object>();
         invokedBeforeClassMethods.put(testClass, instances);
       }
       for(Object instance: mi.getInstances()) {
         if (! instances.contains(instance)) {
-          m_configuration.getBus()
-              .post(new PhaseClassEvent(testClass.getName(), true /* before */, testClass));
           instances.add(instance);
           m_invoker.invokeConfigurations(testClass,
                                          testClass.getBeforeClassMethods(),

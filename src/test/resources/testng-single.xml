@@ -30,6 +30,7 @@
     <parameter name="string" value="s"/>
     <classes>
       <class name="test.tmp.A" />
+      <class name="test.tmp.B" />
 <!-- 
       <class name="test.inject.InjectTestContextTest" />
 	      <methods>
@@ -41,7 +42,6 @@
         <methods>
           <include name="verifyBaseClassTestListener" />
         </methods>
-      <class name="test.sample.InvocationCountTest" />
       <class name="test.preserveorder.SibTest"/>
       <class name="test.preserveorder.EdnTest"/>
  -->
