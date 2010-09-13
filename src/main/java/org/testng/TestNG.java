@@ -20,7 +20,6 @@ import org.testng.internal.Utils;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.Sets;
-import org.testng.internal.thread.ThreadUtil;
 import org.testng.internal.version.VersionInfo;
 import org.testng.log4testng.Logger;
 import org.testng.remote.SuiteDispatcher;
@@ -53,6 +52,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -778,6 +783,7 @@ public class TestNG {
 
   private Integer m_suiteThreadPoolSize = CommandLineArgs.SUITE_THREAD_POOL_SIZE_DEFAULT;
 
+  private boolean m_randomizeSuites = Boolean.valueOf(CommandLineArgs.RANDOMIZE_SUITES);
 
   /**
    * Sets the level of verbosity. This value will override the value specified
@@ -949,15 +955,47 @@ public class TestNG {
       /*
        * Run suites
        */
-      List<Runnable> suiteRunnerWorkers = Lists.newArrayList();
-      for (ISuite runner : suiteRunnerMap.values()) {
-        SuiteRunnerWorker srw = new SuiteRunnerWorker((SuiteRunner) runner, m_verbose,
-            getDefaultSuiteName());
-        suiteRunnerWorkers.add(srw);
-      }
+      if (m_suiteThreadPoolSize == 1 && !m_randomizeSuites) {
+        /*
+         * Only of we want suites to run in order specified in XML and the suite thread pool
+         * size is 1, we run this block
+         */
+        for (XmlSuite xmlSuite : m_suites) {
+          SuiteRunnerWorker srw = new SuiteRunnerWorker(xmlSuite, suiteRunnerMap,
+                   m_verbose, getDefaultSuiteName());
+          srw.run();
+        }
+      } else {
+        /*
+         * Create an executor service here and share it between all SuiteRunnerWorkers
+         */
+        ExecutorService pooledExecutor =
+          new ThreadPoolExecutor(m_suiteThreadPoolSize, m_suiteThreadPoolSize,
+          Integer.MAX_VALUE, TimeUnit.MILLISECONDS,
+          new LinkedBlockingQueue<Runnable>());
 
-      ThreadUtil.execute(suiteRunnerWorkers, m_suiteThreadPoolSize, Integer.MAX_VALUE,
-          true /* start now */);
+        final CountDownLatch endGate = new CountDownLatch(m_suites.size());
+        for (XmlSuite xmlSuite : m_suites) {
+          SuiteRunnerWorker srw = new SuiteRunnerWorker(xmlSuite, suiteRunnerMap,
+                 pooledExecutor, m_verbose, getDefaultSuiteName(), endGate);
+          try {
+            pooledExecutor.execute(srw);
+          }
+          catch(RejectedExecutionException reex) {
+            LOGGER.error("Executor rejected execution of " + xmlSuite.getName() +
+                     " suite. Message: " + reex.getMessage());
+          }
+        }
+
+        try {
+          endGate.await(); //wait for all the suites to finish execution
+          pooledExecutor.shutdown();
+        }
+        catch(InterruptedException e) {
+          Thread.currentThread().interrupt();
+          LOGGER.error("Error waiting for concurrent executors to finish " + e.getMessage());
+        }
+      }
     }
     else {
       setStatus(HAS_NO_TEST);
@@ -1218,6 +1256,7 @@ public class TestNG {
     if (cla.suiteFiles != null) setTestSuites(cla.suiteFiles);
 
     setSuiteThreadPoolSize(cla.suiteThreadPoolSize);
+    setRandomizeSuites(Boolean.valueOf(cla.randomizeSuites));
   }
 
   public void setSuiteThreadPoolSize(Integer suiteThreadPoolSize) {
@@ -1227,6 +1266,10 @@ public class TestNG {
   public Integer getSuiteThreadPoolSize() {
     return m_suiteThreadPoolSize;
   }
+
+   public void setRandomizeSuites(boolean randomizeSuites) {
+     m_randomizeSuites = randomizeSuites;
+   }
 
   /**
    * This method is invoked by Maven's Surefire to configure the runner,
