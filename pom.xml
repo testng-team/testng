@@ -82,6 +82,11 @@
           <artifactId>jcommander</artifactId>
           <version>1.5</version>
         </dependency>
+        <dependency>
+          <groupId>com.beust</groupId>
+          <artifactId>jbus</artifactId>
+          <version>0-4</version>
+        </dependency>
       </dependencies>
       
     </profile>
@@ -123,6 +128,11 @@
       <groupId>com.beust</groupId>
       <artifactId>jcommander</artifactId>
       <version>1.7</version>
+    </dependency>
+    <dependency>
+      <groupId>com.beust</groupId>
+      <artifactId>jbus</artifactId>
+      <version>0-4</version>
     </dependency>
 
   </dependencies>    
