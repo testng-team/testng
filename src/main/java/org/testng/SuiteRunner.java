@@ -1,7 +1,5 @@
 package org.testng;
 
-import com.beust.jbus.IBus;
-
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.AnnotationTypeEnum;
@@ -10,6 +8,7 @@ import org.testng.internal.IConfiguration;
 import org.testng.internal.IInvoker;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.Sets;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.phase.PhaseSuiteEvent;
 import org.testng.reporters.JUnitXMLReporter;
@@ -148,6 +147,9 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       if (m_methodInterceptor != null) {
         tr.setMethodInterceptor(m_methodInterceptor);
       }
+
+      // Bubble up the phase listeners
+      m_phaseListeners.addAll(tr.getPhaseListeners());
 
       // Reuse the same text reporter so we can accumulate all the results
       // (this is used to display the final suite report at the end)
@@ -583,6 +585,8 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
   private IAttributes m_attributes = new Attributes();
 
+  private Set<IPhaseListener> m_phaseListeners = Sets.newHashSet();
+
   @Override
   public Object getAttribute(String name) {
     return m_attributes.getAttribute(name);
@@ -626,6 +630,10 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   @Override
   public List<IInvokedMethod> getAllInvokedMethods() {
     return m_invokedMethods;
+  }
+
+  public Set<IPhaseListener> getPhaseListeners() {
+    return m_phaseListeners;
   }
 
 }

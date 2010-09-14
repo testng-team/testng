@@ -1,8 +1,6 @@
 package org.testng;
 
 
-import com.beust.jbus.IBus;
-
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.Attributes;
@@ -138,6 +136,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
   private transient ClassMethodMap m_classMethodMap;
   private transient TestNGClassFinder m_testClassFinder;
   private transient IConfiguration m_configuration;
+  private Set<IPhaseListener> m_phaseListeners = Sets.newHashSet();
 
   public TestRunner(IConfiguration configuration,
                     ISuite suite,
@@ -323,6 +322,10 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       Object listener = listenerFactory != null ? listenerFactory.createListener(c) : null;
       if (listener == null) listener = ClassHelper.newInstance(c);
 
+      if (! (listener instanceof ITestNGListener)) {
+        throw new TestNGException("Listener " + listener + " must be implement ITestNGListener");
+      }
+
       if (listener instanceof IMethodInterceptor) {
         setMethodInterceptor((IMethodInterceptor) listener);
       }
@@ -345,7 +348,14 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IWorkerFac
       if (listener instanceof IHookable) {
         m_configuration.setHookable((IHookable) listener);
       }
+      if (listener instanceof IPhaseListener) {
+        m_phaseListeners.add((IPhaseListener) listener);
+      }
     }
+  }
+
+  public Set<IPhaseListener> getPhaseListeners() {
+    return m_phaseListeners;
   }
 
   /**

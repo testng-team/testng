@@ -1,10 +1,11 @@
 package test.tmp;
 
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 //@Test(sequential = true)
-//@Listeners(C2.class)
+@Listeners(MyPhaseListener.class)
 public class A {
 
 //  @BeforeSuite
@@ -12,12 +13,12 @@ public class A {
     System.out.println("bs");
   }
 
-  @BeforeClass
+//  @BeforeClass
   public void bc() {
     System.out.println("before");
   }
 
-  @Test
+  @Test(groups="a")
   public void a3() {
     System.out.println("a3");
   }
