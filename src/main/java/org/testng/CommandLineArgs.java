@@ -26,11 +26,11 @@ public class CommandLineArgs {
   @Parameter(names = EXCLUDED_GROUPS, description ="Comma-separated list of group names to "
       + " exclude")
   public String excludedGroups;
-  
+
   public static final String OUTPUT_DIRECTORY = "-d";
   @Parameter(names = OUTPUT_DIRECTORY, description ="Output directory")
   public String outputDirectory;
-  
+
   public static final String JUNIT = "-junit";
   @Parameter(names = JUNIT, description ="JUnit mode")
   public Boolean junit = Boolean.FALSE;
@@ -42,18 +42,18 @@ public class CommandLineArgs {
 
   public static final String METHOD_SELECTORS = "-methodselectors";
   @Parameter(names = METHOD_SELECTORS, description = "List of .class files or list of class " +
-  		"names implementing IMethodSelector")
+        "names implementing IMethodSelector")
   public String methodSelectors;
 
   public static final String OBJECT_FACTORY = "-objectfactory";
   @Parameter(names = OBJECT_FACTORY, description = "List of .class files or list of class " +
-  		"names implementing ITestRunnerFactory")
+        "names implementing ITestRunnerFactory")
   public String objectFactory;
 
   public static final String PARALLEL= "-parallel";
   @Parameter(names = PARALLEL, description = "Parallel mode (methods, tests or classes)")
   public String parallelMode;
-  
+
   public static final String CONFIG_FAILURE_POLICY = "-configfailurepolicy";
   @Parameter(names = CONFIG_FAILURE_POLICY , description = "Configuration failure policy (skip or continue)")
   public String configFailurePolicy;
@@ -138,6 +138,11 @@ public class CommandLineArgs {
   public static final String SUITE_THREAD_POOL_SIZE = "-suitethreadpoolsize";
   public static final Integer SUITE_THREAD_POOL_SIZE_DEFAULT = 1;
   @Parameter(names = SUITE_THREAD_POOL_SIZE, description = "Size of the thread pool to use"
-  		+ " to run suites")
+        + " to run suites")
   public Integer suiteThreadPoolSize = SUITE_THREAD_POOL_SIZE_DEFAULT;
+
+  public static final String RANDOMIZE_SUITES = "-randomizesuites";
+  @Parameter(names = RANDOMIZE_SUITES, hidden = true,
+           description = "Whether to run suites in same order as specified in XML or not")
+  public String randomizeSuites = "false";
 }

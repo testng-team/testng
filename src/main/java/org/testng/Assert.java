@@ -510,7 +510,7 @@ public class Assert {
   static public void assertEquals(Collection actual, Collection expected, String message) {
     if(actual == expected) return;
     
-    if ((actual == null && expected != null) || (actual != null && expected == null)) {
+    if (actual == null || expected == null) {
       if (message != null) fail(message);
       else fail("Arrays not equal: " + expected + " and " + actual);
     }
