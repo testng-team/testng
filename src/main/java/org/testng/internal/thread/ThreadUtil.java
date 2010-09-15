@@ -97,16 +97,19 @@ public class ThreadUtil {
       m_methodName= name;
     }
 
+    @Override
     public Thread newThread(Runnable run) {
       Thread result = new TestNGThread(run, m_methodName);
       m_threads.add(result);
       return result;
     }
 
+    @Override
     public Object getThreadFactory() {
       return this;
     }
 
+    @Override
     public List<Thread> getThreads() {
       return m_threads;
     }
@@ -127,6 +130,7 @@ public class ThreadUtil {
       m_endGate= endGate;
     }
 
+    @Override
     public void run() {
       if(null != m_startGate) {
         try {

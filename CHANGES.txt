@@ -1,5 +1,6 @@
 Current
 
+Added: -randomizesuites (Nalin Makar)
 Added: IConfigurable
 Fixed: TESTNG-384. Use CharSequence instead of String for assert messages (Tom‡s Pollak)
 Fixed: TESTNG-186. Rename IWorkerApadter to IWorkerAdapter (Tom‡s Pollak)
