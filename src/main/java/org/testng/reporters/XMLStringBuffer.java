@@ -226,7 +226,11 @@ public class XMLStringBuffer {
     XMLUtils.appendAttributes(m_buffer, attributes);
     m_buffer.append("/>").append(EOL);
   }
-  
+
+  public void addComment(String comment) {
+    m_buffer.append(m_currentIndent).append("<!-- " + comment + " -->\n");
+  }
+
   private static void ppp(String s) {
     System.out.println("[XMLStringBuffer] " + s);
   }
