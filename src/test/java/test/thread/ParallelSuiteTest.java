@@ -26,6 +26,20 @@ public class ParallelSuiteTest extends SimpleBaseTest {
         getPathToResource("suite-parallel-0.xml")));
   }
 
+  @Test(description = "Number of threads (2) is less than number of suites (3)")
+  public void suitesShouldRunInParallel3() {
+    final int SUITE_THREAD_POOL_SIZE = 2;
+    TestListenerAdapter tla = new TestListenerAdapter();
+    TestNG tng = create();
+    tng.setSuiteThreadPoolSize(SUITE_THREAD_POOL_SIZE);
+    tng.setTestSuites(Arrays.asList(getPathToResource("suite-parallel-0.xml")));
+    tng.addListener(tla);
+
+    BaseThreadTest.initThreadLog();
+    tng.run(); //Shouldn't not deadlock
+    Assert.assertEquals(BaseThreadTest.getThreadCount(), SUITE_THREAD_POOL_SIZE);
+  }
+  
   private void runTest(int expected, List<String> paths) {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG tng = create();
@@ -59,5 +73,16 @@ public class ParallelSuiteTest extends SimpleBaseTest {
       Assert.assertTrue(suitesMap.get(SUITE_NAME_PREFIX + i) 
                    < suitesMap.get(SUITE_NAME_PREFIX + (i + 1)));
     }
+  }
+
+  @Test(enabled = false, description = "Number of threads (1) is less than number of levels of suites (2)")
+  public void suitesShouldRun() {
+    TestListenerAdapter tla = new TestListenerAdapter();
+    TestNG tng = create();
+    tng.setTestSuites(Arrays.asList(getPathToResource("suite-parallel-0.xml")));
+    tng.setRandomizeSuites(true);
+    tng.addListener(tla);
+    BaseThreadTest.initThreadLog();
+    tng.run();
   }
 }
