@@ -6,7 +6,7 @@ import org.testng.annotations.Test;
 
 /**
  * Unit tests for {@link Utils}.
- * 
+ *
  * @author Tomas Pollak
  */
 public class UtilsTest {

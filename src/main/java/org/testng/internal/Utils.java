@@ -43,7 +43,7 @@ public final class Utils {
       {'*','/','\\','?','%',':',';','<','>','&','~','|'};
   public static final char CHAR_REPLACEMENT = '_';
   public static final char UNICODE_REPLACEMENT = 0xFFFD;
-  
+ 
   /**
    * Hide constructor for utility class.
    */
@@ -120,7 +120,7 @@ public final class Utils {
   public static void writeUtf8File(String outputDir, String fileName, String sb) {
     final String outDirPath= outputDir != null ? outputDir : "";
     final File outDir= new File(outDirPath);
-    writeFile(outDir, fileName, escapeUnicode(sb), "UTF-8", false /* don't append */); 
+    writeFile(outDir, fileName, escapeUnicode(sb), "UTF-8", false /* don't append */);
   }
   
   /**

@@ -583,7 +583,7 @@
       <class name="org.testng.internal.UtilsTest" />
     </classes>
   </test>
-  
+ 
   <test name="ConfigFailurePolicy">
     <classes>
       <class name="test.configurationfailurepolicy.FailurePolicyTest" />
