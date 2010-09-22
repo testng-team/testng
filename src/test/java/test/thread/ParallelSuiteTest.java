@@ -91,7 +91,6 @@ public class ParallelSuiteTest extends SimpleBaseTest {
 
     Map<String, Long> suitesMap = BaseThreadTest.getSuitesMap();
     Assert.assertEquals(BaseThreadTest.getThreadCount(), 1);
-    System.out.println(suitesMap);
     Assert.assertEquals(suitesMap.keySet().size(), 3);
 
     final String SUITE_NAME_PREFIX = "Suite Parallel ";
