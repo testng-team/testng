@@ -1,50 +1,40 @@
 package org.testng;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.RejectedExecutionException;
 
+import org.testng.collections.Lists;
 import org.testng.internal.PoolService;
 import org.testng.internal.Utils;
+import org.testng.internal.thread.graph.IWorker;
 import org.testng.xml.XmlSuite;
 
-public class SuiteRunnerWorker implements Runnable {
+/**
+ * An {@code IWorker} that is used to encapsulate and run Suite Runners
+ * 
+ * @author cebust, nullin
+ */
+public class SuiteRunnerWorker implements IWorker<ISuite> {
 
   private SuiteRunner m_suiteRunner;
   private Integer m_verbose;
   private String m_defaultSuiteName;
   private Map<XmlSuite, ISuite> m_suiteRunnerMap;
-  private ExecutorService m_pooledExecutor;
-  private CountDownLatch m_endGate;
 
-  public SuiteRunnerWorker(XmlSuite xmlSuite,
+  public SuiteRunnerWorker(ISuite suiteRunner,
          Map<XmlSuite, ISuite> suiteRunnerMap,
          int verbose,
          String defaultSuiteName)
   {
     m_suiteRunnerMap = suiteRunnerMap;
-    m_suiteRunner = (SuiteRunner) m_suiteRunnerMap.get(xmlSuite);
+    m_suiteRunner = (SuiteRunner) suiteRunner;
     m_verbose = verbose;
     m_defaultSuiteName = defaultSuiteName;
   }
 
-  public SuiteRunnerWorker(XmlSuite xmlSuite,
-         Map<XmlSuite, ISuite> suiteRunnerMap,
-         ExecutorService pooledExecutor,
-         int verbose,
-         String defaultSuiteName,
-         CountDownLatch endGate)
-  {
-    this(xmlSuite, suiteRunnerMap, verbose, defaultSuiteName);
-    m_pooledExecutor = pooledExecutor;
-    m_endGate = endGate;
-  }
-
   /**
-   * Runs a suite and its children suites
-   * @param result populates this list with execution results
+   * Runs a suite
    * @param suiteRunnerMap map of suiteRunners that are updated with test results
    * @param xmlSuite XML suites to run
    */
@@ -67,24 +57,6 @@ public class SuiteRunnerWorker implements Runnable {
     //    }
 
     // PoolService.getInstance().shutdown();
-
-    if (!xmlSuite.getChildSuites().isEmpty()) {
-      if (null == m_pooledExecutor) {
-        //running suites sequentially
-        for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
-          SuiteRunnerWorker srw = new SuiteRunnerWorker(childSuite, suiteRunnerMap,
-                    m_verbose, m_defaultSuiteName);
-          srw.run();
-        }
-      } else {
-        //run suites in parallel
-        runChildrenInParallel(suiteRunnerMap, xmlSuite);
-      }
-    }
-
-    if (null != m_endGate) {
-      m_endGate.countDown(); //indicate that this suite and all it's children are done executing
-    }
 
     //
     // Display the final statistics
@@ -109,40 +81,34 @@ public class SuiteRunnerWorker implements Runnable {
     }
   }
 
-  /**
-   * @param suiteRunnerMap
-   * @param xmlSuite
-   * @param endGate
-   */
-  private void runChildrenInParallel(Map<XmlSuite, ISuite> suiteRunnerMap,
-           XmlSuite xmlSuite)
-  {
-    CountDownLatch endGate = new CountDownLatch(xmlSuite.getChildSuites().size());
-    for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
-      //runSuite(suiteRunnerMap, childSuite);
-      SuiteRunnerWorker srw = new SuiteRunnerWorker(childSuite, suiteRunnerMap,
-             m_pooledExecutor, m_verbose, m_defaultSuiteName, endGate);
-      try {
-        m_pooledExecutor.execute(srw);
-      }
-      catch(RejectedExecutionException reex) {
-        Utils.log("TestNG", 0, "Executor rejected execution of " + xmlSuite.getName() +
-            " suite. Message: " + reex.getMessage());
-      }
-    }
-
-    try {
-      endGate.await(); //wait for all child suites to finish execution
-    }
-    catch(InterruptedException e) {
-      Thread.currentThread().interrupt();
-      Utils.log("TestNG", 0, "Error waiting for concurrent executors to finish " + e.getMessage());
-    }
-  }
-
   @Override
   public void run() {
     runSuite(m_suiteRunnerMap, m_suiteRunner.getXmlSuite());
+  }
+
+  @Override
+  public int compareTo(IWorker<ISuite> arg0)
+  {
+    /*
+     * Dummy Implementation
+     * 
+     * Used by IWorkers to prioritize execution in parallel. Not required by 
+     * this Worker in current implementation
+     */
+    return 0;
+  }
+
+  @Override
+  public List<ISuite> getTasks()
+  {
+    List<ISuite> suiteRunnerList = Lists.newArrayList();
+    suiteRunnerList.add(m_suiteRunner);
+    return suiteRunnerList;
+  }
+  
+  @Override
+  public String toString() {
+    return "SuiteRunnerWorker(" + m_suiteRunner.getName() + ")";
   }
 
 }
