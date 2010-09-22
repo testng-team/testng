@@ -1562,8 +1562,7 @@ The <i>parallel</i> attribute on the &lt;suite&gt; tag can take one of following
 
 <ul>
 <li>
-<b><tt>parallel="methods"</tt></b>:  TestNG will run all your test methods in separate threads, except for methods that depend on each other, which will be run in the same thread in order to 
-respect their order of execution.&nbsp;
+<b><tt>parallel="methods"</tt></b>:  TestNG will run all your test methods in separate threads. Dependent methods will also run in separate threads but they will respect the order that you specified.
 </li>
 
 <br>

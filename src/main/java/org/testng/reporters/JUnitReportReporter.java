@@ -48,19 +48,26 @@ public class JUnitReportReporter implements IReporter {
 
       List<Properties> testCases = Lists.newArrayList();
       int failures = 0;
+      int testCount = 0;
+      int totalTime = 0;
 
       for (ITestResult tr: entry.getValue()) {
         if (tr.getStatus() != ITestResult.SUCCESS) failures++;
         Properties p2 = new Properties();
         p2.setProperty("classname", tr.getMethod().getMethod().getDeclaringClass().getName());
         p2.setProperty("name", tr.getMethod().getMethodName());
-        p2.setProperty("time", "" + (tr.getEndMillis() - tr.getStartMillis()));
+        long time = tr.getEndMillis() - tr.getStartMillis();
+        p2.setProperty("time", "" + time);
+        totalTime += time;
+        testCount++;
         testCases.add(p2);
       }
 
       p1.setProperty("failures", "" + failures);
       p1.setProperty("errors", "" + 0);
       p1.setProperty("name", cls.getName());
+      p1.setProperty("tests", "" + testCount);
+      p1.setProperty("time", "" + totalTime);
       try {
         p1.setProperty(XMLConstants.ATTR_HOSTNAME, InetAddress.getLocalHost().getHostName());
       } catch (UnknownHostException e) {
