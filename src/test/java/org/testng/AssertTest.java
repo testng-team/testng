@@ -49,6 +49,34 @@ public class AssertTest {
   }
 
   @Test
+  public void SetAssertEquals() {
+    Set expected = Sets.newHashSet();
+    Set actual = Sets.newHashSet();
+
+    expected.add(1);
+    expected.add("a");
+    actual.add("a");
+    actual.add(1);
+
+    Assert.assertEquals(actual, expected);
+  }
+
+  @Test
+  public void MapAssertEquals() {
+    Map expected = Maps.newHashMap();
+    Map actual = Maps.newHashMap();
+
+    expected.put(null, "a");
+    expected.put("a", "a");
+    expected.put("b", "c");
+    actual.put("b", "c");
+    actual.put(null, "a");
+    actual.put("a", "a");
+
+    Assert.assertEquals(actual, expected);
+  }
+
+  @Test
   public void oneNullMapAssertEquals() {
     Map expected = Maps.newHashMap();
     Map actual = null;
