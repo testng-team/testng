@@ -1,11 +1,19 @@
 Current
 
+Added: -randomizesuites (Nalin Makar)
 Added: IConfigurable
-Fixed: TESTNG-384. Use CharSequence instead of String for assert messages (Tom‡s Pollak)
-Fixed: TESTNG-186. Rename IWorkerApadter to IWorkerAdapter (Tom‡s Pollak)
+Fixed: TESTNG-384: Use CharSequence instead of String for assert messages (Tom‡s Pollak)
+Fixed: TESTNG-186: Rename IWorkerApadter to IWorkerAdapter (Tom‡s Pollak)
 Fixed: typo -testRunFactory
 Fixed: NPE while printing results for an empty suite (Nalin Makar)
 Fixed: Invoke IInvokedMethodListener.afterInvocation after fixing results for tests expecting exceptions (Nalin Makar)
+
+Eclipse:
+Added: New method shortcuts: "Alt+Shift+X N", "Alt+Shift+D N" (Sven Johansson)
+Fixed: TESTNG-418: Only last suite-file in testng.xml run by Eclipse plugin
+
+Documentation:
+Added: Section on Selenium (Felipe Knorr Kuhn)
 
 ===========================================================================
 
