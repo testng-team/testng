@@ -11,6 +11,7 @@ import org.testng.ISuiteListener;
 import org.testng.ITestRunnerFactory;
 import org.testng.TestNG;
 import org.testng.TestRunner;
+import org.testng.collections.Lists;
 import org.testng.remote.strprotocol.GenericMessage;
 import org.testng.remote.strprotocol.MessageHelper;
 import org.testng.remote.strprotocol.RemoteMessageSenderTestListener;
@@ -18,6 +19,7 @@ import org.testng.remote.strprotocol.StringMessageSenderHelper;
 import org.testng.remote.strprotocol.SuiteMessage;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
+import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 import java.util.List;
@@ -55,21 +57,30 @@ public class RemoteTestNG extends TestNG {
     System.out.println("Setting connection parameters:" + m_host + ":" + m_port);
   }
 
+  private void calculateAllSuites(List<XmlSuite> suites, List<XmlSuite> outSuites) {
+    for (XmlSuite s : suites) {
+      outSuites.add(s);
+      calculateAllSuites(s.getChildSuites(), outSuites);
+    }
+  }
+
   @Override
   public void run() {
     final StringMessageSenderHelper msh= new StringMessageSenderHelper(m_host, m_port);
     try {
       if(msh.connect()) {
-        if(m_suites.size() > 0) {
+        List<XmlSuite> suites = Lists.newArrayList();
+        calculateAllSuites(m_suites, suites);
+        if(suites.size() > 0) {
 
           int testCount= 0;
 
-          for(int i= 0; i < m_suites.size(); i++) {
-            testCount+= (m_suites.get(i)).getTests().size();
+          for(int i= 0; i < suites.size(); i++) {
+            testCount+= (suites.get(i)).getTests().size();
           }
 
           GenericMessage gm= new GenericMessage(MessageHelper.GENERIC_SUITE_COUNT);
-          gm.addProperty("suiteCount", m_suites.size()).addProperty("testCount", testCount);
+          gm.addProperty("suiteCount", suites.size()).addProperty("testCount", testCount);
           msh.sendMessage(gm);
 
           addListener(new RemoteSuiteListener(msh));
