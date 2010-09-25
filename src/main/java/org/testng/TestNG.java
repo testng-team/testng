@@ -1063,7 +1063,7 @@ public class TestNG {
   }
 
   /**
-   * Creates a suite runner and configures it's initial state
+   * Creates a suite runner and configures its initial state
    * @param xmlSuite
    * @return returns the newly created suite runner
    */
