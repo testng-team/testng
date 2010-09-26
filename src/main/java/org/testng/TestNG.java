@@ -13,6 +13,7 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.ClassHelper;
+import org.testng.internal.DynamicGraph;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IResultListener;
 import org.testng.internal.TestNGGuiceModule;
@@ -20,6 +21,9 @@ import org.testng.internal.Utils;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.Sets;
+import org.testng.internal.thread.graph.GraphThreadPoolExecutor;
+import org.testng.internal.thread.graph.IThreadWorkerFactory;
+import org.testng.internal.thread.graph.SuiteWorkerFactory;
 import org.testng.internal.version.VersionInfo;
 import org.testng.log4testng.Logger;
 import org.testng.remote.SuiteDispatcher;
@@ -52,11 +56,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -963,40 +963,38 @@ public class TestNG {
          * size is 1, we run this block
          */
         for (XmlSuite xmlSuite : m_suites) {
-          SuiteRunnerWorker srw = new SuiteRunnerWorker(xmlSuite, suiteRunnerMap,
-                   m_verbose, getDefaultSuiteName());
-          srw.run();
+          runSuitesSequentially(xmlSuite, suiteRunnerMap, m_verbose, getDefaultSuiteName());
         }
       } else {
-         /*
-          * Create an executor service here and share it between all SuiteRunnerWorkers
-          */
-         ExecutorService pooledExecutor =
-            new ThreadPoolExecutor(m_suiteThreadPoolSize, m_suiteThreadPoolSize,
-            Integer.MAX_VALUE, TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<Runnable>());
+        /*
+         * Generate a dynamic graph that stores the suite hierarchy. This is then
+         * used to run related suites in specific order. Parent suites are run only
+         * once all the child suites have completed execution
+         */
+        DynamicGraph<ISuite> suiteGraph = new DynamicGraph<ISuite>();
+        for (XmlSuite xmlSuite : m_suites) {
+          populateSuiteGraph(suiteGraph, suiteRunnerMap, xmlSuite);
+        }
 
-         final CountDownLatch endGate = new CountDownLatch(m_suites.size());
-         for (XmlSuite xmlSuite : m_suites) {
-           SuiteRunnerWorker srw = new SuiteRunnerWorker(xmlSuite, suiteRunnerMap,
-                   pooledExecutor, m_verbose, getDefaultSuiteName(), endGate);
-           try {
-             pooledExecutor.execute(srw);
-           }
-           catch(RejectedExecutionException reex) {
-             LOGGER.error("Executor rejected execution of " + xmlSuite.getName() +
-                      " suite. Message: " + reex.getMessage());
-           }
-         }
+        IThreadWorkerFactory<ISuite> factory = new SuiteWorkerFactory(suiteRunnerMap,
+          m_verbose, getDefaultSuiteName());
+        GraphThreadPoolExecutor<ISuite> pooledExecutor =
+          new GraphThreadPoolExecutor<ISuite>(suiteGraph, factory, m_suiteThreadPoolSize,
+          m_suiteThreadPoolSize, Integer.MAX_VALUE, TimeUnit.MILLISECONDS,
+          new LinkedBlockingQueue<Runnable>());
 
-         try {
-           endGate.await(); //wait for all the suites to finish execution
-           pooledExecutor.shutdown();
-         }
-         catch(InterruptedException e) {
-           Thread.currentThread().interrupt();
-           LOGGER.error("Error waiting for concurrent executors to finish " + e.getMessage());
-         }
+        Utils.log("TestNG", 2, "Starting executor for all suites");
+        //run all suites in parallel
+        pooledExecutor.run();
+        try {
+          //TODO: Setting timeout to Long.MAX_VALUE. Is it correct/ok?
+          pooledExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+          pooledExecutor.shutdownNow();
+        }
+        catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+          LOGGER.error("Error waiting for concurrent executors to finish " + e.getMessage());
+        }
       }
     }
     else {
@@ -1011,6 +1009,56 @@ public class TestNG {
     return Lists.newArrayList(suiteRunnerMap.values());
   }
 
+  /**
+   * Recursively runs suites. Runs the children suites before running the parent
+   * suite. This is done so that the results for parent suite can reflect the
+   * combined results of the children suites.
+   *
+   * @param xmlSuite XML Suite to be executed
+   * @param suiteRunnerMap Maps {@code XmlSuite}s to respective {@code ISuite}
+   * @param verbose verbose level
+   * @param defaultSuiteName default suite name
+   */
+  private void runSuitesSequentially(XmlSuite xmlSuite,
+      Map<XmlSuite, ISuite> suiteRunnerMap, int verbose, String defaultSuiteName) {
+    for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
+      runSuitesSequentially(childSuite, suiteRunnerMap, verbose, defaultSuiteName);
+    }
+    SuiteRunnerWorker srw = new SuiteRunnerWorker(suiteRunnerMap.get(xmlSuite), suiteRunnerMap,
+      verbose, defaultSuiteName);
+    srw.run();
+  }
+
+  /**
+   * Populates the dynamic graph with the reverse hierarchy of suites. Edges are
+   * added pointing from child suite runners to parent suite runners, hence making
+   * parent suite runners dependent on all the child suite runners
+   *
+   * @param suiteGraph dynamic graph representing the reverse hierarchy of SuiteRunners
+   * @param suiteRunnerMap Map with XMLSuite as key and its respective SuiteRunner as value
+   * @param xmlSuite XML Suite
+   */
+  private void populateSuiteGraph(DynamicGraph<ISuite> suiteGraph /* OUT */, 
+      Map<XmlSuite, ISuite> suiteRunnerMap, XmlSuite xmlSuite) {
+    ISuite parentSuiteRunner = suiteRunnerMap.get(xmlSuite);
+    if (xmlSuite.getChildSuites().isEmpty()) {
+      suiteGraph.addNode(parentSuiteRunner);
+    }
+    else {
+      for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
+        suiteGraph.addEdge(parentSuiteRunner, suiteRunnerMap.get(childSuite));
+        populateSuiteGraph(suiteGraph, suiteRunnerMap, childSuite);
+      }
+    }
+  }
+
+  /**
+   * Creates the {@code SuiteRunner}s and populates the suite runner map with 
+   * this information
+   * @param suiteRunnerMap Map with XMLSuite as key and it's respective 
+   *   SuiteRunner as value. This is updated as part of this method call
+   * @param xmlSuite Xml Suite (and it's children) for which {@code SuiteRunner}s are created
+   */
   private void createSuiteRunners(Map<XmlSuite, ISuite> suiteRunnerMap /* OUT */, XmlSuite xmlSuite) {
     xmlSuite.setDefaultAnnotations(m_defaultAnnotations.toString());
 

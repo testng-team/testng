@@ -1,0 +1,12 @@
+<suite name="Suite Parallel 2-2">
+
+  <suite-files>
+    <suite-file path="./suite-parallel-2-2-1.xml" />
+  </suite-files>
+
+  <test name="Test2-2">
+    <classes>
+      <class name="test.thread.Sample2"/>
+    </classes>
+  </test>
+</suite>
