@@ -1,19 +1,19 @@
 package org.testng;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.testng.collections.Lists;
 import org.testng.internal.PoolService;
 import org.testng.internal.Utils;
 import org.testng.internal.thread.graph.IWorker;
 import org.testng.xml.XmlSuite;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 /**
  * An {@code IWorker} that is used to encapsulate and run Suite Runners
- * 
- * @author cebust, nullin
+ *
+ * @author cbeust, nullin
  */
 public class SuiteRunnerWorker implements IWorker<ISuite> {
 
@@ -87,11 +87,10 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
   }
 
   @Override
-  public int compareTo(IWorker<ISuite> arg0)
-  {
+  public int compareTo(IWorker<ISuite> arg0) {
     /*
      * Dummy Implementation
-     * 
+     *
      * Used by IWorkers to prioritize execution in parallel. Not required by 
      * this Worker in current implementation
      */
@@ -99,8 +98,7 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
   }
 
   @Override
-  public List<ISuite> getTasks()
-  {
+  public List<ISuite> getTasks() {
     List<ISuite> suiteRunnerList = Lists.newArrayList();
     suiteRunnerList.add(m_suiteRunner);
     return suiteRunnerList;

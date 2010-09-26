@@ -3,7 +3,7 @@ package org.testng.internal.thread.graph;
 import java.util.List;
 
 /**
- * A runnable object that is used by {@code GraphThreadPoolExecutor} to execute 
+ * A runnable object that is used by {@code GraphThreadPoolExecutor} to execute
  * tasks
  */
 public interface IWorker<T> extends Runnable, Comparable<IWorker<T>> {

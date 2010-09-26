@@ -1,17 +1,17 @@
 package org.testng.internal.thread.graph;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.testng.ISuite;
 import org.testng.SuiteRunnerWorker;
 import org.testng.collections.Lists;
 import org.testng.xml.XmlSuite;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * An {@code IThreadWorkerFactory} for {@code SuiteRunner}s
- * 
+ *
  * @author nullin
  *
  */

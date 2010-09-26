@@ -965,7 +965,7 @@ public class TestNG {
         }
       } else {
         /*
-         * Generate a dynamic graph that stores the suite hierarchy. This is then 
+         * Generate a dynamic graph that stores the suite hierarchy. This is then
          * used to run related suites in specific order. Parent suites are run only
          * once all the child suites have completed execution
          */
@@ -974,10 +974,10 @@ public class TestNG {
           populateSuiteGraph(suiteGraph, suiteRunnerMap, xmlSuite);
         }
 
-        IThreadWorkerFactory<ISuite> factory = new SuiteWorkerFactory(suiteRunnerMap, 
+        IThreadWorkerFactory<ISuite> factory = new SuiteWorkerFactory(suiteRunnerMap,
           m_verbose, getDefaultSuiteName());
         GraphThreadPoolExecutor<ISuite> pooledExecutor =
-          new GraphThreadPoolExecutor<ISuite>(suiteGraph, factory, m_suiteThreadPoolSize, 
+          new GraphThreadPoolExecutor<ISuite>(suiteGraph, factory, m_suiteThreadPoolSize,
           m_suiteThreadPoolSize, Integer.MAX_VALUE, TimeUnit.MILLISECONDS,
           new LinkedBlockingQueue<Runnable>());
 
@@ -1011,13 +1011,13 @@ public class TestNG {
    * Recursively runs suites. Runs the children suites before running the parent
    * suite. This is done so that the results for parent suite can reflect the
    * combined results of the children suites.
-   * 
+   *
    * @param xmlSuite XML Suite to be executed
    * @param suiteRunnerMap Maps {@code XmlSuite}s to respective {@code ISuite}
    * @param verbose verbose level
    * @param defaultSuiteName default suite name
    */
-  private void runSuitesSequentially(XmlSuite xmlSuite, 
+  private void runSuitesSequentially(XmlSuite xmlSuite,
       Map<XmlSuite, ISuite> suiteRunnerMap, int verbose, String defaultSuiteName) {
     for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
       runSuitesSequentially(childSuite, suiteRunnerMap, verbose, defaultSuiteName);
@@ -1031,10 +1031,10 @@ public class TestNG {
    * Populates the dynamic graph with the reverse hierarchy of suites. Edges are
    * added pointing from child suite runners to parent suite runners, hence making
    * parent suite runners dependent on all the child suite runners
-   *  
+   *
    * @param suiteGraph dynamic graph representing the reverse hierarchy of SuiteRunners
-   * @param suiteRunnerMap Map with XMLSuite as key and it's respective SuiteRunner as value
-   * @param xmlSuite XML Suite 
+   * @param suiteRunnerMap Map with XMLSuite as key and its respective SuiteRunner as value
+   * @param xmlSuite XML Suite
    */
   private void populateSuiteGraph(DynamicGraph<ISuite> suiteGraph /* OUT */, 
       Map<XmlSuite, ISuite> suiteRunnerMap, XmlSuite xmlSuite) {
