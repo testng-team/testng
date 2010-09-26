@@ -323,10 +323,13 @@
 
   <target name="clean">
     <delete dir="${build.dir}" />
+    <delete dir="${target}" />
     <delete dir="${build.maven-bundle.dir}" />
     <delete failonerror="false">
       <fileset dir="." includes="testng*.jar,*.zip" />
     </delete>
+    <delete dir="test-output" failonerror="false" />
+    <delete dir="test-output-tests" failonerror="false" />
     <ant antfile="build-tests.xml" target="clean" />
     <ant dir="examples" target="clean" />
   </target>
