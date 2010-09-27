@@ -1,7 +1,7 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
 <suite name="SingleSuite" verbose="2" parallel="false" thread-count="4"
-    data-provider-thread-count="3">
+    data-provider-thread-count="3" time-out="1000">
 
   <parameter name="n" value="42" />
 
@@ -29,9 +29,10 @@
     </groups>
     <parameter name="string" value="s"/>
     <classes>
-      <class name="test.tmp.A" />
+      <class name="test.timeout.TimeOutFromXmlTest" />
 <!-- 
-      <class name="test.inject.InjectTestContextTest" />
+      <class name="test.timeout.TestTimeOutSampleTest" />
+      <class name="test.tmp.A" />
 	      <methods>
 	        <include name="configurableSuccess" />
 	      </methods>

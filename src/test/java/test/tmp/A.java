@@ -31,14 +31,15 @@ public class A {
 //    System.out.println("After method");
 //  }
 
-  @BeforeClass(timeOut = 1000)
+//  @BeforeClass(timeOut = 1000)
   public void bc() throws InterruptedException {
     System.out.println("bc");
     Thread.sleep(2000);
   }
 
-  @Test
-  public void a1() {
+  @Test(timeOut = 1000)
+  public void a1() throws InterruptedException {
+    Thread.sleep(2000);
 //    throw new SkipException("skipped");
   }
 
