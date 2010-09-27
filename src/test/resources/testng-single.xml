@@ -29,9 +29,9 @@
     </groups>
     <parameter name="string" value="s"/>
     <classes>
-      <class name="test.hook.HookableTest" />
-      <class name="test.inject.InjectTestContextTest" />
+      <class name="test.tmp.A" />
 <!-- 
+      <class name="test.inject.InjectTestContextTest" />
 	      <methods>
 	        <include name="configurableSuccess" />
 	      </methods>

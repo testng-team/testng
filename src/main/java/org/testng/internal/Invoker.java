@@ -1503,7 +1503,7 @@ public class Invoker implements IInvoker {
    * this method invokes the @BeforeGroups and @AfterGroups corresponding to the current @Test method.
    */
   private List<ITestResult> runWorkers(ITestNGMethod testMethod, 
-      List<IWorker<ITestNGMethod>> workers, 
+      List<IWorker<ITestNGMethod>> workers,
       int threadPoolSize, 
       ConfigurationGroupMethods groupMethods, 
       XmlSuite suite, 

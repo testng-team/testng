@@ -82,7 +82,7 @@ public class AssertTest {
     Map actual = null;
     try {
       Assert.assertEquals(actual, expected);
-      Assert.fail("AssertEquals didnt fail");
+      Assert.fail("AssertEquals didn't fail");
     }
     catch (AssertionError error) {
       //do nothing
@@ -95,7 +95,7 @@ public class AssertTest {
     Set actual = Sets.newHashSet();
     try {
       Assert.assertEquals(actual, expected);
-      Assert.fail("AssertEquals didnt fail");
+      Assert.fail("AssertEquals didn't fail");
     }
     catch (AssertionError error) {
       //do nothing

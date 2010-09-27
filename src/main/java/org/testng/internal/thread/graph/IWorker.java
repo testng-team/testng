@@ -9,20 +9,17 @@ import java.util.List;
 public interface IWorker<T> extends Runnable, Comparable<IWorker<T>> {
 
   /**
-   * Gets the tasks that this worker is working on
-   * @return list of tasks
+   * @return list of tasks this worker is working on.
    */
   List<T> getTasks();
 
   /**
-   * Gets the maximum time allowed for the worker to complete the task
-   * @return timeout
+   * @return the maximum time allowed for the worker to complete the task. 
    */
   long getTimeOut();
 
   /**
-   * Gets the priority of this task 
-   * @return priority
+   * @return the priority of this task.
    */
   int getPriority();
 }

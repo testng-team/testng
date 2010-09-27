@@ -29,11 +29,9 @@ public class A {
 //    System.out.println("After method");
 //  }
 
-  @Test
+  @Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = ".*foo.*")
   public void a1() {
-    System.out.println("a1 throwing");
-//    throw new RuntimeException();
-//    System.out.println("a1 " + Thread.currentThread().getId());
+    throw new RuntimeException("a b c foo d e f");
   }
 
 //  @Test

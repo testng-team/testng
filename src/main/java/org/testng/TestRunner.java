@@ -1,20 +1,5 @@
 package org.testng;
 
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
-
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.Attributes;
@@ -51,6 +36,20 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 /**
  * This class takes care of running one Test.
@@ -630,9 +629,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
   private void privateRunJUnit(XmlTest xmlTest) {
     ClassInfoMap cim = new ClassInfoMap(m_testClassesFromXml);
     final Set<Class<?>> classes = cim.getClasses();
-    final List<ITestNGMethod> runMethods= Lists.newArrayList();
-    List<IWorker<ITestNGMethod>> workers= Lists.newArrayList();
-    // FIXME: directly referincing JUnitTestRunner which uses JUnit classes
+    final List<ITestNGMethod> runMethods = Lists.newArrayList();
+    List<IWorker<ITestNGMethod>> workers = Lists.newArrayList();
+    // FIXME: directly referencing JUnitTestRunner which uses JUnit classes
     // may result in an class resolution exception under different JVMs
     // The resolution process is not specified in the JVM spec with a specific implementation,
     // so it can be eager => failure
