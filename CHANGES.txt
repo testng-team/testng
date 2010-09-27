@@ -2,11 +2,8 @@ Current
 
 Added: -randomizesuites (Nalin Makar)
 Added: IConfigurable
-Fixed: TESTNG-384: Use CharSequence instead of String for assert messages (Tom‡s Pollak)
 Fixed: TESTNG-186: Rename IWorkerApadter to IWorkerAdapter (Tom‡s Pollak)
-Fixed: TESTNG-415. Assert.assertEquals() for sets and maps fails with 'null' as arguments
-Fixed: TESTNG-384. Use CharSequence instead of String for assert messages (Tom‡s Pollak)
-Fixed: TESTNG-186. Rename IWorkerApadter to IWorkerAdapter (Tom‡s Pollak)
+Fixed: TESTNG-415: Assert.assertEquals() for sets and maps fails with 'null' as arguments
 Fixed: typo -testRunFactory
 Fixed: NPE while printing results for an empty suite (Nalin Makar)
 Fixed: Invoke IInvokedMethodListener.afterInvocation after fixing results for tests expecting exceptions (Nalin Makar)
