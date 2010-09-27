@@ -512,7 +512,7 @@ public class Assert {
     
     if (actual == null || expected == null) {
       if (message != null) fail(message);
-      else fail("Collections not equal: " + expected + " and " + actual);
+      else fail("Collections not equal: expected: " + expected + " and actual: " + actual);
     }
     
     assertEquals(actual.size(), expected.size(), message + ": lists don't have the same size");
@@ -662,7 +662,7 @@ public class Assert {
     if(actual == expected) return;
 
     if (actual == null || expected == null) {
-      fail("Sets not equal: " + expected + " and " + actual);
+      fail("Sets not equal: expected: " + expected + " and actual: " + actual);
     }
 
     if (!actual.equals(expected)) {
@@ -677,7 +677,7 @@ public class Assert {
     if(actual == expected) return;
 
     if (actual == null || expected == null) {
-      fail("Maps not equal: " + expected + " and " + actual);
+      fail("Maps not equal: expected: " + expected + " and actual: " + actual);
     }
 
     if (!actual.equals(expected)) {
