@@ -13,4 +13,16 @@ public interface IWorker<T> extends Runnable, Comparable<IWorker<T>> {
    * @return list of tasks
    */
   List<T> getTasks();
+
+  /**
+   * Gets the maximum time allowed for the worker to complete the task
+   * @return timeout
+   */
+  long getTimeOut();
+
+  /**
+   * Gets the priority of this task 
+   * @return priority
+   */
+  int getPriority();
 }

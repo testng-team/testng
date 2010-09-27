@@ -25,8 +25,10 @@ import org.testng.collections.Maps;
 import org.testng.internal.InvokeMethodRunnable.TestNGRuntimeException;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.Sets;
 import org.testng.internal.thread.ThreadExecutionException;
 import org.testng.internal.thread.ThreadUtil;
+import org.testng.internal.thread.graph.IWorker;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -34,8 +36,6 @@ import org.testng.xml.XmlTest;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -65,25 +65,25 @@ public class Invoker implements IInvoker {
   private Map<String, Boolean> m_beforegroupsFailures = Maps.newHashtable();
   
   /** Class failures must be synched as the Invoker is accessed concurrently */
-  private Map<Class<?>, Set> m_classInvocationResults = Maps.newHashtable();
+  private Map<Class<?>, Set<Object>> m_classInvocationResults = Maps.newHashtable();
   
   /** Test methods whose configuration methods have failed. */
-  private Map<ITestNGMethod, Set> m_methodInvocationResults = new Hashtable<ITestNGMethod, Set>();
+  private Map<ITestNGMethod, Set<Object>> m_methodInvocationResults = Maps.newHashtable();
   private IConfiguration m_configuration;
    
   private void setClassInvocationFailure(Class<?> clazz, Object instance) {
-    Set instances = m_classInvocationResults.get( clazz );
+    Set<Object> instances = m_classInvocationResults.get( clazz );
     if (instances == null) {
-      instances = new HashSet();
+      instances = Sets.newHashSet();
       m_classInvocationResults.put(clazz, instances);
     }
     instances.add(instance);
   }
   
   private void setMethodInvocationFailure(ITestNGMethod method, Object instance) {
-    Set instances = m_methodInvocationResults.get(method);
+    Set<Object> instances = m_methodInvocationResults.get(method);
     if (instances == null) {
-      instances = new HashSet();
+      instances = Sets.newHashSet();
       m_methodInvocationResults.put(method, instances);
     }
     instances.add(instance);
@@ -1334,7 +1334,7 @@ public class Invoker implements IInvoker {
     //
     // Create the workers
     //
-    List<IMethodWorker> workers = Lists.newArrayList();
+    List<IWorker<ITestNGMethod>> workers = Lists.newArrayList();
     
     for (int i = 0; i < testMethod.getInvocationCount(); i++) {
       // we use clones for reporting purposes
@@ -1503,7 +1503,7 @@ public class Invoker implements IInvoker {
    * this method invokes the @BeforeGroups and @AfterGroups corresponding to the current @Test method.
    */
   private List<ITestResult> runWorkers(ITestNGMethod testMethod, 
-      List<IMethodWorker> workers, 
+      List<IWorker<ITestNGMethod>> workers, 
       int threadPoolSize, 
       ConfigurationGroupMethods groupMethods, 
       XmlSuite suite, 
@@ -1520,8 +1520,8 @@ public class Invoker implements IInvoker {
     
     long maxTimeOut= -1; // 10 seconds
 
-    for(IMethodWorker tmw : workers) {
-      long mt= tmw.getMaxTimeOut();
+    for(IWorker<ITestNGMethod> tmw : workers) {
+      long mt= tmw.getTimeOut();
       if(mt > maxTimeOut) {
         maxTimeOut= mt;
       }
@@ -1533,8 +1533,10 @@ public class Invoker implements IInvoker {
     // Collect all the TestResults
     //
     List<ITestResult> result = Lists.newArrayList();
-    for (IMethodWorker tmw : workers) {
-      result.addAll(tmw.getTestResults());
+    for (IWorker<ITestNGMethod> tmw : workers) {
+      if (tmw instanceof TestMethodWorker) {
+        result.addAll(((TestMethodWorker)tmw).getTestResults());
+      }
     }
     
     for(Object instance: instances) {

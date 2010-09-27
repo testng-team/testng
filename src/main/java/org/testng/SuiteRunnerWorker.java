@@ -109,6 +109,19 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
     return "SuiteRunnerWorker(" + m_suiteRunner.getName() + ")";
   }
 
+  @Override
+  public long getTimeOut()
+  {
+    return m_suiteRunner.getXmlSuite().getTimeOut(Long.MAX_VALUE);
+  }
+
+  @Override
+  public int getPriority()
+  {
+    // this class doesnt support priorities yet
+    return 0;
+  }
+
 }
 
 /**
