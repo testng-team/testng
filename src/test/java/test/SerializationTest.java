@@ -9,7 +9,7 @@ import java.io.ObjectOutputStream;
 
 public class SerializationTest {
 
-  @Test
+  @Test(groups = "broken")
   public void iSuiteShouldBeSerializable(ITestContext context) throws IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     ObjectOutputStream oos = new ObjectOutputStream(out);
