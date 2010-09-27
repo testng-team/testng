@@ -69,4 +69,10 @@ public @interface AfterMethod {
    */
   public boolean lastTimeOnly() default false;
 
+  /**
+   * The maximum number of milliseconds this method should take.
+   * If it hasn't returned after this time, this method will fail and
+   * it will cause test methods depending on it to be skipped.
+   */
+  public long timeOut() default 0;
 }

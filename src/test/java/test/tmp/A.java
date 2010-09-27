@@ -1,5 +1,7 @@
 package test.tmp;
 
+import org.testng.SkipException;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 //@Test(sequential = true)
@@ -29,13 +31,21 @@ public class A {
 //    System.out.println("After method");
 //  }
 
-  @Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = ".*foo.*")
-  public void a1() {
-    throw new RuntimeException("a b c foo d e f");
+  @BeforeClass(timeOut = 1000)
+  public void bc() throws InterruptedException {
+    System.out.println("bc");
+    Thread.sleep(2000);
   }
 
-//  @Test
+  @Test
+  public void a1() {
+//    throw new SkipException("skipped");
+  }
+
+  @Test
   public void a2() {
-    System.out.println("a2 " + Thread.currentThread().getId());
+//    throw new RuntimeException();
+//    System.out.println("a2 " + Thread.currentThread().getId());
   }
 }
+

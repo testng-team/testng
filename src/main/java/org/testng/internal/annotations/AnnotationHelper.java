@@ -151,6 +151,7 @@ public class AnnotationHelper {
     result.setGroups(bs.getGroups());
     result.setInheritGroups(bs.getInheritGroups());
     result.setParameters(bs.getParameters());
+    result.setTimeOut(bs.getTimeOut());
   }
 
   private static Class[] ALL_ANNOTATIONS = new Class[] { 

@@ -10,14 +10,6 @@ import org.testng.IRetryAnalyzer;
  */
 public interface ITestAnnotation extends ITestOrConfiguration {
   /**
-   * Returns the maximum number of milliseconds this test should take.
-   * If it hasn't returned after this time, it will be marked as a FAIL.
-   * @return the maximum number of milliseconds this test should take.
-   */
-  public long getTimeOut();
-  public void setTimeOut(long l);
-  
-  /**
    * Returns the number of times this method should be invoked.
    * @return the number of times this method should be invoked.
    */

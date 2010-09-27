@@ -22,8 +22,6 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
   private int m_threadPoolSize = 0;
   private int m_invocationCount = 1;
   private int m_successPercentage = 100;
-  private long m_timeOut = 0;
-  private XmlTest m_xmlTest;
 
   /**
    * Constructs a <code>TestNGMethod</code>
@@ -43,15 +41,6 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
     }
   }
   
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public long getTimeOut() {
-    long result = m_timeOut != 0 ? m_timeOut : (m_xmlTest != null ? m_xmlTest.getTimeOut(0) : 0);
-    return result;
-  }
-
   /**
    * {@inheritDoc}
    */
@@ -81,7 +70,7 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
   }
 
   private void init(XmlTest xmlTest) {
-    m_xmlTest = xmlTest;
+    setXmlTest(xmlTest);
     setInvocationNumbers(xmlTest.getInvocationNumbers(
         m_method.getDeclaringClass().getName() + "." + m_method.getName()));
     {
@@ -93,7 +82,7 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
       }
 
       if (null != testAnnotation) {
-        m_timeOut = testAnnotation.getTimeOut();
+        setTimeOut(testAnnotation.getTimeOut());
         m_successPercentage = testAnnotation.getSuccessPercentage();
 
         setInvocationCount(testAnnotation.getInvocationCount());
@@ -137,11 +126,7 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
   public void setInvocationCount(int counter) {
     m_invocationCount= counter;
   }
-  
-  public XmlTest getXmlTest() {
-      return m_xmlTest;
-  }
-  
+
   /**
    * Clones the current <code>TestNGMethod</code> and its @BeforeMethod and @AfterMethod methods.
    * @see org.testng.internal.BaseTestMethod#clone()
@@ -168,7 +153,7 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
     clone.setParameterInvocationCount(getParameterInvocationCount());
     clone.setInvocationCount(getInvocationCount());
     clone.m_successPercentage = getSuccessPercentage();
-    clone.m_timeOut = getTimeOut();
+    clone.setTimeOut(getTimeOut());
     clone.setRetryAnalyzer(getRetryAnalyzer());
     clone.setSkipFailedInvocations(skipFailedInvocations());
     clone.setInvocationNumbers(getInvocationNumbers());

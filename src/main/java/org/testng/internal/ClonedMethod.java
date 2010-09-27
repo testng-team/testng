@@ -152,6 +152,11 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
+  public void setTimeOut(long timeOut) {
+    m_method.setTimeOut(timeOut);
+  }
+
+  @Override
   public boolean ignoreMissingDependencies() {
     return false;
   }

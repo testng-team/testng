@@ -13,7 +13,8 @@ public class TestOrConfiguration
   private String[] m_dependsOnMethods = {};
   private String m_description = "";
   private int m_priority;
-  
+  private long m_timeOut = 0;
+
   public String[] getGroups() {
     return m_groups;
   }
@@ -68,5 +69,13 @@ public class TestOrConfiguration
   
   public void setPriority(int priority) {
     m_priority = priority;
+  }
+
+  public void setTimeOut(long timeOut) {
+    m_timeOut = timeOut;
+  }
+  
+  public long getTimeOut() {
+    return m_timeOut;
   }
 }

@@ -8,6 +8,14 @@ package org.testng.annotations;
  */
 public interface ITestOrConfiguration extends IParameterizable {
   /**
+   * Returns the maximum number of milliseconds this test should take.
+   * If it hasn't returned after this time, it will be marked as a FAIL.
+   * @return the maximum number of milliseconds this test should take.
+   */
+  public long getTimeOut();
+  public void setTimeOut(long l);
+  
+  /**
    * The list of groups this class/method belongs to. 
    */
   public String[] getGroups();

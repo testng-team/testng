@@ -836,7 +836,7 @@ public class MethodHelper {
     if (! finished) {
       exec.stopNow();
       ThreadTimeoutException exception = new ThreadTimeoutException("Method "
-        + tm.getMethod()
+        + tm.getClass().getName() + "." + tm.getMethodName() + "()"
         + " didn't finish within the time-out "
         + realTimeOut);
       exception.setStackTrace(exec.getStackTraces()[0]);

@@ -10,6 +10,7 @@ import org.testng.collections.Maps;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.thread.IAtomicInteger;
 import org.testng.internal.thread.ThreadUtil;
+import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Method;
 import java.util.Comparator;
@@ -50,9 +51,15 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   private List<Integer> m_invocationNumbers = Lists.newArrayList();
   private List<Integer> m_failedInvocationNumbers = Lists.newArrayList();
+  /**
+   * {@inheritDoc}
+   */
+  private long m_timeOut = 0;
   
   private boolean m_ignoreMissingDependencies;
   private int m_priority;
+
+  private XmlTest m_xmlTest;
 
   /**
    * Constructs a <code>BaseTestMethod</code> TODO cquezel JavaDoc.
@@ -261,9 +268,14 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    * {@inheritDoc}
    */
   public long getTimeOut() {
-    return 0L;
+    long result = m_timeOut != 0 ? m_timeOut : (m_xmlTest != null ? m_xmlTest.getTimeOut(0) : 0);
+    return result;
   }
-  
+
+  public void setTimeOut(long timeOut) {
+    m_timeOut = timeOut;
+  }
+
   /**
    * {@inheritDoc}  
    * @return the number of times this method needs to be invoked.
@@ -653,5 +665,13 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   
   public void setPriority(int priority) {
     m_priority = priority;
+  }
+
+  public XmlTest getXmlTest() {
+    return m_xmlTest;
+  }
+
+  public void setXmlTest(XmlTest xmlTest) {
+    m_xmlTest = xmlTest;
   }
 }

@@ -8,6 +8,8 @@ import java.util.List;
 /**
  * Describes a TestNG annotated method and the instance on which it will be invoked.
  *
+ * This interface is not meant to be implemented by users.
+ *
  * @author Cedric Beust, May 3, 2004
  */
 public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
@@ -143,6 +145,7 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
    * @return The timeout in milliseconds.
    */
   long getTimeOut();
+  void setTimeOut(long timeOut);
 
   /**
    * @return the number of times this method needs to be invoked.

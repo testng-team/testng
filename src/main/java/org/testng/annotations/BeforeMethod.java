@@ -68,4 +68,11 @@ public @interface BeforeMethod {
    * BeforeMethod will only be invoked once (before the first test invocation).
    */
   public boolean firstTimeOnly() default false;
+
+  /**
+   * The maximum number of milliseconds this method should take.
+   * If it hasn't returned after this time, this method will fail and
+   * it will cause test methods depending on it to be skipped.
+   */
+  public long timeOut() default 0;
 }

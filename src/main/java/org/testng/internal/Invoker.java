@@ -520,9 +520,19 @@ public class Invoker implements IInvoker {
         }
         else {
           //
-          // Not a IHookable, invoke directly
+          // Not a IConfigurable, invoke directly
           //
-          MethodHelper.invokeMethod(method, targetInstance, params);
+          if (MethodHelper.calculateTimeOut(tm) <= 0) {
+            MethodHelper.invokeMethod(method, targetInstance, params);
+          }
+          else {
+            MethodHelper.invokeWithTimeout(tm, targetInstance, params, testResult);
+            if (!testResult.isSuccess()) {
+              // A time out happened
+              throwConfigurationFailure(testResult, testResult.getThrowable());
+              throw testResult.getThrowable();
+            }
+          }
         }
         // Only run the method once if it's @BeforeSuite or @AfterSuite
         if (isSuite) break;
@@ -679,8 +689,7 @@ public class Invoker implements IInvoker {
           //
           try {
             Reporter.setCurrentTestResult(testResult);
-            MethodHelper.invokeWithTimeout(tm, instance,
-                parameterValues, testResult);
+            MethodHelper.invokeWithTimeout(tm, instance, parameterValues, testResult);
           }
           finally {
             Reporter.setCurrentTestResult(null);

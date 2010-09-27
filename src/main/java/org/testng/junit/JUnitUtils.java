@@ -273,6 +273,10 @@ public class JUnitUtils {
       return 0L;
     }
 
+    public void setTimeOut(long timeOut) {
+      // ignore
+    }
+
     /**
      * @see org.testng.ITestNGMethod#isAfterClassConfiguration()
      */

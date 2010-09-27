@@ -11,7 +11,6 @@ import org.testng.annotations.ITestAnnotation;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class TestAnnotation extends TestOrConfiguration implements ITestAnnotation {
-  private long m_timeOut = 0;
   private long m_invocationTimeOut = 0;
   private int m_invocationCount = 1;
   private int m_threadPoolSize = 0;
@@ -74,14 +73,6 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
 
   public void setSuccessPercentage(int successPercentage) {
     m_successPercentage = successPercentage;
-  }
-
-  public void setTimeOut(long timeOut) {
-    m_timeOut = timeOut;
-  }
-  
-  public long getTimeOut() {
-    return m_timeOut;
   }
 
   public int getInvocationCount() {
