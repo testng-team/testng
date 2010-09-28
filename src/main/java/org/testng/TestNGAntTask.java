@@ -63,6 +63,7 @@ import java.util.StringTokenizer;
  * <li>verbose (attribute)</li>
  * <li>testrunfactory (attribute)</li>
  * <li>configFailurepolicy (attribute)</li>
+ * <li>randomizeSuites (attribute)</li>
  * 
  * </ul>
  *
@@ -138,6 +139,7 @@ public class TestNGAntTask extends Task {
   protected String m_threadCount;
   protected String m_dataproviderthreadCount;
   protected String m_configFailurePolicy;
+  protected Boolean m_randomizeSuites;
   public String m_useDefaultListeners;
   private String m_suiteName="Ant suite";
   private String m_testName="Ant test";
@@ -429,6 +431,10 @@ public class TestNGAntTask extends Task {
     m_configFailurePolicy = failurePolicy;
   }
 
+  public void setRandomizeSuites(Boolean randomizeSuites) {
+    m_randomizeSuites = randomizeSuites;
+  }
+
   public void setMethods(String methods) {
     m_methods = methods;
   }
@@ -554,6 +560,11 @@ public class TestNGAntTask extends Task {
     if (m_configFailurePolicy != null) {
       argv.add(CommandLineArgs.CONFIG_FAILURE_POLICY);
       argv.add(m_configFailurePolicy);
+    }
+    
+    if (m_randomizeSuites != null) {
+      argv.add(CommandLineArgs.RANDOMIZE_SUITES);
+      argv.add(Boolean.toString(m_randomizeSuites));
     }
 
     if(m_threadCount != null) {
