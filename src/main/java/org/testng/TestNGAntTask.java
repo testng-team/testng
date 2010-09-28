@@ -562,9 +562,8 @@ public class TestNGAntTask extends Task {
       argv.add(m_configFailurePolicy);
     }
     
-    if (m_randomizeSuites != null) {
+    if (m_randomizeSuites != null && m_randomizeSuites) {
       argv.add(CommandLineArgs.RANDOMIZE_SUITES);
-      argv.add(Boolean.toString(m_randomizeSuites));
     }
 
     if(m_threadCount != null) {
