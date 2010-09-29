@@ -29,8 +29,8 @@
     </groups>
     <parameter name="string" value="s"/>
     <classes>
-      <class name="test.timeout.TimeOutFromXmlTest" />
 <!-- 
+      <class name="test.tmp.B" />
       <class name="test.timeout.TestTimeOutSampleTest" />
       <class name="test.tmp.A" />
 	      <methods>

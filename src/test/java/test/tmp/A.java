@@ -1,7 +1,6 @@
 package test.tmp;
 
 import org.testng.SkipException;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 //@Test(sequential = true)
@@ -34,18 +33,18 @@ public class A {
 //  @BeforeClass(timeOut = 1000)
   public void bc() throws InterruptedException {
     System.out.println("bc");
-    Thread.sleep(2000);
+//    Thread.sleep(2000);
   }
 
-  @Test(timeOut = 1000)
+//  @Test(timeOut = 1000)
   public void a1() throws InterruptedException {
-    Thread.sleep(2000);
+//    Thread.sleep(2000);
 //    throw new SkipException("skipped");
   }
 
   @Test
   public void a2() {
-//    throw new RuntimeException();
+    throw new RuntimeException("We have a problem");
 //    System.out.println("a2 " + Thread.currentThread().getId());
   }
 }
