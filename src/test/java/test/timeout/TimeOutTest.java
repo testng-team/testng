@@ -23,7 +23,7 @@ public class TimeOutTest extends BaseTest {
   private Long m_id;
   
   public TimeOutTest() {
-    m_id = new Long(System.currentTimeMillis());     
+    m_id = Long.valueOf(System.currentTimeMillis());     
   }
   
   @Test

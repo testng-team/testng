@@ -133,8 +133,7 @@ public class PackageUtils {
     if(null == classpathFragments) {
       return true;
     }
-    
-    String protocol = url.getProtocol();
+
     String fileName= null;
     try {
       fileName= URLDecoder.decode(url.getFile(), "UTF-8");

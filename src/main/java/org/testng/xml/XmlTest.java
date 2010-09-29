@@ -134,7 +134,7 @@ public class XmlTest implements Serializable, Cloneable {
    * @param v
    */
   public void setVerbose(int v) {
-    m_verbose = new Integer( v);
+    m_verbose = Integer.valueOf(v);
   }
 
   public int getThreadCount() {
@@ -303,7 +303,7 @@ public class XmlTest implements Serializable, Cloneable {
   }
   
   public void setTimeOut(long timeOut) {
-      m_timeOut = new Long(timeOut).toString();
+      m_timeOut = Long.toString(timeOut);
   }
   
   public String getAnnotations() {

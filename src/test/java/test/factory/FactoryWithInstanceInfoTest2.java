@@ -28,7 +28,7 @@ public class FactoryWithInstanceInfoTest2 {
   
   @Test(groups = { "first" })
   public void testInt() {
-    Integer n = new Integer(m_number);
+    Integer n = Integer.valueOf(m_number);
     m_numbers.put(n, n);
   }
   

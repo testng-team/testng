@@ -6,7 +6,6 @@ import java.util.Random;
 import java.util.Set;
 
 import org.testng.Assert;
-import org.testng.Reporter;
 import org.testng.annotations.Test;
 
 public class AssertEqualsTest {
@@ -42,17 +41,17 @@ public class AssertEqualsTest {
     Set set1 = new LinkedHashSet();
     Set set2 = new HashSet();
 
-    set1.add(new Integer(5));
-    set2.add(new Integer(5));
+    set1.add(Integer.valueOf(5));
+    set2.add(Integer.valueOf(5));
 
-    set1.add(new Integer(6));
-    set2.add(new Integer(6));
+    set1.add(Integer.valueOf(6));
+    set2.add(Integer.valueOf(6));
 
-    set1.add(new Integer(1));
-    set2.add(new Integer(1));
+    set1.add(Integer.valueOf(1));
+    set2.add(Integer.valueOf(1));
 
-    set1.add(new Integer(9));
-    set2.add(new Integer(9));
+    set1.add(Integer.valueOf(9));
+    set2.add(Integer.valueOf(9));
 
     System.out.println("set1 is:" + set1.toString());
     System.out.println("set2 is:" + set2.toString());

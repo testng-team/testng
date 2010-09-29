@@ -1041,8 +1041,9 @@ public class TestNGAntTask extends Task {
 
   private void readAndPrintFile(String fileName) {
     File file = new File(fileName);
+    BufferedReader br = null;
     try {
-      BufferedReader br = new BufferedReader(new FileReader(file));
+      br = new BufferedReader(new FileReader(file));
       String line = br.readLine();
       while (line != null) {
         System.out.println("  " + line);
@@ -1051,6 +1052,14 @@ public class TestNGAntTask extends Task {
     }
     catch(IOException ex) {
       ex.printStackTrace();
+    } finally {
+      if (br != null) {
+        try {
+          br.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
     }
   }
 

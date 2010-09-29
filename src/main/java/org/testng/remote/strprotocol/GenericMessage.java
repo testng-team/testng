@@ -34,7 +34,7 @@ public class GenericMessage implements IStringMessage {
   }
   
   public GenericMessage addProperty(final String propName, final int propValue) {
-    return addProperty(propName, new Integer(propValue));
+    return addProperty(propName, Integer.valueOf(propValue));
   }
   
   public String getProperty(final String propName) {
