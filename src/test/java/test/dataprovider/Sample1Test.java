@@ -9,9 +9,9 @@ public class Sample1Test {
   private boolean m_ok2 = false;
 
   private static final String FN2 = "Anne Marie";
-  private static final Integer LN2 = new Integer(37);
+  private static final Integer LN2 = Integer.valueOf(37);
   private static final String FN1 = "Cedric";
-  private static final Integer LN1 = new Integer(36);
+  private static final Integer LN1 = Integer.valueOf(36);
 
   @DataProvider(name = "test1")
   public Object[][] createData() {

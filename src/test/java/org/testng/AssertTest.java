@@ -49,7 +49,7 @@ public class AssertTest {
   }
 
   @Test
-  public void SetAssertEquals() {
+  public void setAssertEquals() {
     Set expected = Sets.newHashSet();
     Set actual = Sets.newHashSet();
 
@@ -62,7 +62,7 @@ public class AssertTest {
   }
 
   @Test
-  public void MapAssertEquals() {
+  public void mapAssertEquals() {
     Map expected = Maps.newHashMap();
     Map actual = Maps.newHashMap();
 

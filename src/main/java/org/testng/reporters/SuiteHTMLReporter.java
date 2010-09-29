@@ -19,7 +19,6 @@ import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.Reporter;
-import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlSuite;
@@ -77,8 +76,7 @@ public class SuiteHTMLReporter implements IReporter {
   }
   
   private void generateXmlFile(XmlSuite xmlSuite, ISuite suite) {
-    String content = 
-      new String(xmlSuite.toXml().replaceAll("<", "&lt;").replaceAll(">", "&gt;"))
+    String content = xmlSuite.toXml().replaceAll("<", "&lt;").replaceAll(">", "&gt;")
           .replaceAll(" ", "&nbsp;").replaceAll("\n", "<br/>");
     
     StringBuffer sb = new StringBuffer("<html>");
@@ -180,7 +178,6 @@ public class SuiteHTMLReporter implements IReporter {
 
   private void generateReporterOutput(XmlSuite xmlSuite, ISuite suite) {
     StringBuffer sb = new StringBuffer();
-    List<ITestNGMethod> methodsNotRun = Lists.newArrayList();
     
     //
     // Reporter output

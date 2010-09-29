@@ -678,16 +678,16 @@ public final class Utils {
   }
 
   public static String arrayToString(String[] strings) {
-    String result = "";
+    StringBuffer result = new StringBuffer("");
     if ((strings != null) && (strings.length > 0)) {
       for (int i = 0; i < strings.length; i++) {
-        result += strings[i];
+        result.append(strings[i]);
         if (i < strings.length - 1) {
-          result += ", ";
+          result.append(", ");
         }
       }
     }
-    return result;
+    return result.toString();
   }
 
   /**

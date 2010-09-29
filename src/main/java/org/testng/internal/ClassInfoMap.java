@@ -21,7 +21,7 @@ public class ClassInfoMap {
       catch (NoClassDefFoundError e) {
         Utils.log("[ClassInfoMap]", 1, "Unable to open class " + xmlClass.getName()
             + " - unable to resolve class reference " + e.getMessage());
-        if (xmlClass.getDeclaredClass() == Boolean.TRUE) {
+        if (xmlClass.getDeclaredClass()) {
           throw e;
         }
       }

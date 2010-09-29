@@ -226,28 +226,28 @@ public class Parameters {
       result = value;
     } 
     else if(type == int.class || type == Integer.class) {
-      result = new Integer(Integer.parseInt(value));
+      result = Integer.valueOf(Integer.parseInt(value));
     }
     else if(type == boolean.class || type == Boolean.class) {
       result = Boolean.valueOf(value);          
     }
     else if(type == byte.class || type == Byte.class) {
-      result = new Byte(Byte.parseByte(value));                    
+      result = Byte.valueOf(Byte.parseByte(value));                    
     }
     else if(type == char.class || type == Character.class) {
-      result = new Character(value.charAt(0));                              
+      result = Character.valueOf(value.charAt(0));                              
     }
     else if(type == double.class || type == Double.class) {
-      result = new Double(Double.parseDouble(value));
+      result = Double.valueOf(Double.parseDouble(value));
     }
     else if(type == float.class || type == Float.class) {
-      result = new Float(Float.parseFloat(value));          
+      result = Float.valueOf(Float.parseFloat(value));          
     }
     else if(type == long.class || type == Long.class) {
-      result = new Long(Long.parseLong(value));
+      result = Long.valueOf(Long.parseLong(value));
     }
     else if(type == short.class || type == Short.class) {
-      result = new Short(Short.parseShort(value));
+      result = Short.valueOf(Short.parseShort(value));
     }
     else {
       assert false : "Unsupported type parameter : " + type;

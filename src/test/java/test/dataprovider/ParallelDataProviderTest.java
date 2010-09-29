@@ -17,10 +17,10 @@ public class ParallelDataProviderTest {
   @DataProvider(name = "test1", parallel = true)
   public Object[][] createData1() {
    return new Object[][] {
-     { "Cedric", new Integer(36) },
-     { "Anne", new Integer(37) },
-     { "A", new Integer(36) },
-     { "B", new Integer(37) }
+     { "Cedric", Integer.valueOf(36) },
+     { "Anne", Integer.valueOf(37) },
+     { "A", Integer.valueOf(36) },
+     { "B", Integer.valueOf(37) }
    };
   }
   // This test method declares that its data should be supplied by the Data

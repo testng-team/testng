@@ -38,10 +38,10 @@ public class JUnitConverterTask extends Task {
   }
   
   private void validate() throws BuildException {
-    if (this.m_outputDirectory == null || this.m_outputDirectory.equals("")) {
+    if (this.m_outputDirectory == null || this.m_outputDirectory.getName().equals("")) {
       throw new BuildException("OutputDir must have a value");
     }
-    if (this.m_sourceDirectory == null || this.m_sourceDirectory.equals("")) {
+    if (this.m_sourceDirectory == null || this.m_sourceDirectory.getName().equals("")) {
       throw new BuildException("SourceDir must have a value");
     }
   }

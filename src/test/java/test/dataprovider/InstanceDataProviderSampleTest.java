@@ -11,7 +11,7 @@ public class InstanceDataProviderSampleTest {
   public Object[][] dp() {
     p("DATA PROVIDER");
     return new Object[][] {
-        new Object[] { new Integer(hashCode()) },
+        new Object[] { Integer.valueOf(hashCode()) },
     };
   }
   
@@ -23,7 +23,7 @@ public class InstanceDataProviderSampleTest {
   @Test(dataProvider = "dp")
   public void f(Integer n) {
     p("  PARAM:" + n);
-    Assert.assertEquals(n, new Integer(hashCode()));
+    Assert.assertEquals(n, Integer.valueOf(hashCode()));
   }
   
   @AfterClass
