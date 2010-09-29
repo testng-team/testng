@@ -105,7 +105,7 @@ public class JUnitReportReporter implements IReporter {
           xsb.push("testcase", testTag.properties);
 
           Properties p = new Properties();
-          p.setProperty("message", testTag.message);
+          if (testTag.message != null) p.setProperty("message", testTag.message);
           p.setProperty("type", testTag.type);
           xsb.push("error", p);
           xsb.addCDATA(testTag.stackTrace);
