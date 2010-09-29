@@ -1,0 +1,24 @@
+name: SingleSuite
+verbose: 2
+threadCount: 4
+parameters: { n: 42 }
+dataProviderThreadCount: 3
+parallel: false
+
+listeners:
+  - test.methodinterceptors.FastTestsFirstInterceptor
+  - test.invokedmethodlistener.MyListener
+
+packages:
+  - name: test.testng355.org.apache.tapestry5
+    include: [Foo, Foo2]
+    exclude: [Bar]
+  - name: test.testng355.org.apache.tapestry5.dom
+
+tests:
+  - name: Regression2
+    verbose: 2
+    parameters: { count: 10 }
+    excludedGroups: [ broken ]
+    classes:
+      - test.listeners.ResultEndMillisTest

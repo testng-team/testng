@@ -353,12 +353,14 @@ public class TestNG {
     //
     // Parse the suites that were passed on the command line
     //
-    for (String suiteXmlPath : m_stringSuites) {
+    for (String suitePath : m_stringSuites) {
       if(LOGGER.isDebugEnabled()) {
-        LOGGER.debug("suiteXmlPath: \"" + suiteXmlPath + "\"");
+        LOGGER.debug("suiteXmlPath: \"" + suitePath + "\"");
       }
       try {
-        Collection<XmlSuite> allSuites = new Parser(suiteXmlPath).parse();
+        Parser parser = new Parser(suitePath);
+        Collection<XmlSuite> allSuites = parser.parse();
+
         for (XmlSuite s : allSuites) {
           // If test names were specified, only run these test names
           if (m_testNames != null) {
@@ -1148,6 +1150,7 @@ public class TestNG {
    * The TestNG entry point for command line execution.
    *
    * @param argv the TestNG command line parameters.
+   * @throws FileNotFoundException 
    */
   public static void main(String[] argv) {
     TestNG testng = privateMain(argv, null);

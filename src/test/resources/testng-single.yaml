@@ -1,0 +1,9 @@
+name: SingleSuite
+verbose: 2
+
+tests:
+  - name: Test1
+    classes:
+      - test.yaml.YamlTest
+#      - name: test.CommandLineTest
+#        includedMethods: [ junitParsing ]

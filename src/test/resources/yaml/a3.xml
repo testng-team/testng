@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+  
+<suite name="a3" verbose="2">
+
+	<suite-files>
+	  <suite-file path="a3-a.xml" />
+	  <suite-file path="a3-b.xml" />
+	</suite-files>
+
+</suite>

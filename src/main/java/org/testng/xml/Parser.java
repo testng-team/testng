@@ -4,6 +4,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.internal.YamlParser;
 import org.xml.sax.SAXException;
 
 import java.io.File;
@@ -32,15 +33,15 @@ public class Parser {
   /** The default file name for the TestNG test suite if none is specified (testng.xml). */
   public static final String DEFAULT_FILENAME = "testng.xml";
 
-  private static final IFileParser DEFAULT_FILE_PARSER = new XmlParser();
+  private static final IFileParser XML_PARSER = new XmlParser();
+  private static final IFileParser YAML_PARSER = new YamlParser();
+  private static final IFileParser DEFAULT_FILE_PARSER = XML_PARSER;
   
   /** The file name of the xml suite being parsed. This may be null if the Parser
    * has not been initialized with a file name. TODO CQ This member is never used. */
   private String m_fileName;
   
   private InputStream m_inputStream;
-
-  private IFileParser m_fileParser;
 
   /**
    * Constructs a <code>Parser</code> to use the inputStream as the source of
@@ -69,7 +70,6 @@ public class Parser {
   private void init(String fileName, InputStream is, IFileParser fp) {
     m_fileName = fileName != null ? fileName : DEFAULT_FILENAME;
     m_inputStream = is;
-    m_fileParser = fp != null ? fp : DEFAULT_FILE_PARSER;
   }
 
   /**
@@ -96,7 +96,16 @@ public class Parser {
 //    }
 //    return in;
 //  }
-  
+
+  private IFileParser getParser(String fileName) {
+    IFileParser result = DEFAULT_FILE_PARSER;
+
+    if (fileName.endsWith(".xml")) result = XML_PARSER;
+    else if (fileName.endsWith(".yaml")) result = YAML_PARSER;
+
+    return result;
+  }
+
   /**
    * Parses the TestNG test suite and returns the corresponding XmlSuite,
    * and possibly, other XmlSuite that are pointed to by <suite-files>
@@ -109,7 +118,8 @@ public class Parser {
    * @throws IOException if an I/O error occurs while parsing the test suite file or
    * if the default testng.xml file is not found.
    */
-  public Collection<XmlSuite> parse() throws ParserConfigurationException, SAXException, IOException 
+  public Collection<XmlSuite> parse()
+    throws ParserConfigurationException, SAXException, IOException 
   {
     // Each suite found is put in this list, using their canonical
     // path to make sure we don't add a same file twice
@@ -142,7 +152,8 @@ public class Parser {
             ? m_inputStream
             : new FileInputStream(currentFile);
 
-        XmlSuite result = m_fileParser.parse(currentFile, inputStream);
+        XmlSuite result = getParser(currentFile).parse(currentFile, inputStream);
+//        System.out.println("Parsed " + currentFile + ":\n" + result.toXml());
         XmlSuite currentXmlSuite = result;
         processedSuites.add(currentFile);
         toBeRemoved.add(currentFile);

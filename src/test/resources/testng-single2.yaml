@@ -1,0 +1,48 @@
+name: SingleSuite
+verbose: 2
+parallel: false
+threadCount: 4
+dataProviderThreadCount: 3
+
+packages:
+  - name: test.testng355.org.apache.tapestry5
+    include: [Foo, Foo2]
+    exclude: [Bar]
+  - name: test.testng355.org.apache.tapestry5.dom
+
+listeners:
+  - test.invokedmethodlistener.MyListener
+
+parameters: { n: 42, p: 10, s: "a b c", t: "a,b" }
+
+methodSelectors:
+  - className: org.testng.internal.XmlMethodSelector
+    priority: 1
+  - expression: groups.containsKey("test1")
+    language: beanshell
+    
+tests:
+  - name: Test3
+    includedGroups: [A, B]
+    excludedGroups: [C, D]
+    metaGroups: { a: [ b, d] }
+    packages: [ com.example1, com.example2 ]
+    parameters: { n: 43, z: foo }
+    methodSelectors:
+      - className: org.testng.internal.XmlMethodSelector
+        priority: 1
+      - expression: groups.containsKey("test1")
+        language: beanshell
+
+  - name: Test1
+    classes:
+      - name: test.tmp.A
+        includedMethods: [test1, test2]
+        excludedMethods: [test3]
+      - test.tmp.B
+
+  - name: Test2
+    classes:
+      - test.tmp.B
+
+

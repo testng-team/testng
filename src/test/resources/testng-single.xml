@@ -6,10 +6,8 @@
   <parameter name="n" value="42" />
 
   <listeners>
-<!--
     <listener class-name="test.methodinterceptors.FastTestsFirstInterceptor" />
     <listener class-name="test.invokedmethodlistener.MyListener" />
--->  
   </listeners>
 
   <test name="Regression2" preserve-order="true">

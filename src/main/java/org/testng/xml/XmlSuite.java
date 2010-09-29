@@ -575,92 +575,92 @@ public class XmlSuite implements Serializable, Cloneable {
     return result;
   }
 
-    /**
-     * Sets the timeout.
-     *
-     * @param timeOut the timeout.
-     */
-    public void setTimeOut(String timeOut) {
-        m_timeOut = timeOut;
-    }
+  /**
+   * Sets the timeout.
+   *
+   * @param timeOut the timeout.
+   */
+  public void setTimeOut(String timeOut) {
+      m_timeOut = timeOut;
+  }
 
-    /**
-     * Returns the timeout.
-     * @return the timeout.
-     */
-    public String getTimeOut() {
-        return m_timeOut;
-    }
-    
-    /**
-     * Returns the timeout as a long value specifying the default value to be used if
-     * no timeout was specified.
-     *
-     * @param def the the default value to be used if no timeout was specified.
-     * @return the timeout as a long value specifying the default value to be used if
-     * no timeout was specified.
-     */
-    public long getTimeOut(long def) {
-        long result = def;
-        if (m_timeOut != null) {
-            result = new Long(m_timeOut).longValue();
-        }
-        
-        return result;
-    }
+  /**
+   * Returns the timeout.
+   * @return the timeout.
+   */
+  public String getTimeOut() {
+      return m_timeOut;
+  }
+  
+  /**
+   * Returns the timeout as a long value specifying the default value to be used if
+   * no timeout was specified.
+   *
+   * @param def the the default value to be used if no timeout was specified.
+   * @return the timeout as a long value specifying the default value to be used if
+   * no timeout was specified.
+   */
+  public long getTimeOut(long def) {
+      long result = def;
+      if (m_timeOut != null) {
+          result = new Long(m_timeOut).longValue();
+      }
+      
+      return result;
+  }
 
-    /**
-     * Sets the suite files.
-     *
-     * @param files the suite files.
-     */
-    public void setSuiteFiles(List<String> files) {
-      m_suiteFiles = files;
-    }
-    
-    /**
-     * Returns the suite files.
-     * @return the suite files.
-     */
-    public List<String> getSuiteFiles() {
-      return m_suiteFiles;
-    }
+  /**
+   * Sets the suite files.
+   *
+   * @param files the suite files.
+   */
+  public void setSuiteFiles(List<String> files) {
+    m_suiteFiles = files;
+  }
+  
+  /**
+   * Returns the suite files.
+   * @return the suite files.
+   */
+  public List<String> getSuiteFiles() {
+    return m_suiteFiles;
+  }
 
-    public void setListeners(List<String> listeners) {
-      m_listeners = listeners;
-    }
-    
-    public List<String> getListeners() {
-      if (m_parentSuite != null) {
-        List<String> listeners = m_parentSuite.getListeners();
-        for (String listener : listeners) {
-          if (!m_listeners.contains(listener)) {
-             m_listeners.add(listener);
-          }
+  public void setListeners(List<String> listeners) {
+    m_listeners = listeners;
+  }
+  
+  public List<String> getListeners() {
+    if (m_parentSuite != null) {
+      List<String> listeners = m_parentSuite.getListeners();
+      for (String listener : listeners) {
+        if (!m_listeners.contains(listener)) {
+           m_listeners.add(listener);
         }
       }
-      return m_listeners;
     }
+    return m_listeners;
+  }
 
-    public void setDataProviderThreadCount(int count) {
-      m_dataProviderThreadCount = count;
-    }
+  public void setDataProviderThreadCount(int count) {
+    m_dataProviderThreadCount = count;
+  }
 
-    public int getDataProviderThreadCount() {
-      return m_dataProviderThreadCount;
-    }
-    
-    public void setParentSuite(XmlSuite parentSuite) {
-      m_parentSuite = parentSuite;
-    }
-     
-    public XmlSuite getParentSuite() {
-      return m_parentSuite;
-    }
+  public int getDataProviderThreadCount() {
+    return m_dataProviderThreadCount;
+  }
+  
+  public void setParentSuite(XmlSuite parentSuite) {
+    m_parentSuite = parentSuite;
+  }
+   
+  public XmlSuite getParentSuite() {
+    return m_parentSuite;
+  }
 
-    public List<XmlSuite> getChildSuites() {
-      return m_childSuites;
-    }
+  public List<XmlSuite> getChildSuites() {
+    return m_childSuites;
+  }
 
     @Override
     public int hashCode() {
@@ -693,23 +693,27 @@ public class XmlSuite implements Serializable, Cloneable {
           + ((m_parameters == null) ? 0 : m_parameters.hashCode());
 //      result = prime * result
 //          + ((m_parentSuite == null) ? 0 : m_parentSuite.hashCode());
-      result = prime
-          * result
-          + ((m_skipFailedInvocationCounts == null) ? 0
-              : m_skipFailedInvocationCounts.hashCode());
-      result = prime * result
-          + ((m_suiteFiles == null) ? 0 : m_suiteFiles.hashCode());
-      result = prime * result + ((m_test == null) ? 0 : m_test.hashCode());
-      result = prime * result + ((m_tests == null) ? 0 : m_tests.hashCode());
-      result = prime * result + m_threadCount;
-      result = prime * result
-          + ((m_timeOut == null) ? 0 : m_timeOut.hashCode());
-      result = prime * result
-          + ((m_verbose == null) ? 0 : m_verbose.hashCode());
-      result = prime * result
-          + ((m_xmlPackages == null) ? 0 : m_xmlPackages.hashCode());
-      return result;
-    }
+    result = prime
+        * result
+        + ((m_skipFailedInvocationCounts == null) ? 0
+            : m_skipFailedInvocationCounts.hashCode());
+    result = prime * result
+        + ((m_suiteFiles == null) ? 0 : m_suiteFiles.hashCode());
+    result = prime * result + ((m_test == null) ? 0 : m_test.hashCode());
+    result = prime * result + ((m_tests == null) ? 0 : m_tests.hashCode());
+    result = prime * result + m_threadCount;
+    result = prime * result
+        + ((m_timeOut == null) ? 0 : m_timeOut.hashCode());
+    result = prime * result
+        + ((m_verbose == null) ? 0 : m_verbose.hashCode());
+    result = prime * result
+        + ((m_xmlPackages == null) ? 0 : m_xmlPackages.hashCode());
+    return result;
+  }
+
+  static boolean f() {
+    return false;
+  }
 
     @Override
     public boolean equals(Object obj) {
@@ -774,47 +778,64 @@ public class XmlSuite implements Serializable, Cloneable {
         return false;
 //      if (m_parentSuite == null) {
 //        if (other.m_parentSuite != null)
-//          return false;
+//          return f();
 //      } else if (!m_parentSuite.equals(other.m_parentSuite))
-//        return false;
-      if (m_skipFailedInvocationCounts == null) {
-        if (other.m_skipFailedInvocationCounts != null)
-          return false;
-      } else if (!m_skipFailedInvocationCounts
-          .equals(other.m_skipFailedInvocationCounts))
-        return false;
-      if (m_suiteFiles == null) {
-        if (other.m_suiteFiles != null)
-          return false;
-      } else if (!m_suiteFiles.equals(other.m_suiteFiles))
-        return false;
-      if (m_test == null) {
-        if (other.m_test != null)
-          return false;
-      } else if (!m_test.equals(other.m_test))
-        return false;
-      if (m_tests == null) {
-        if (other.m_tests != null)
-          return false;
-      } else if (!m_tests.equals(other.m_tests))
-        return false;
-      if (m_threadCount != other.m_threadCount)
-        return false;
-      if (m_timeOut == null) {
-        if (other.m_timeOut != null)
-          return false;
-      } else if (!m_timeOut.equals(other.m_timeOut))
-        return false;
-      if (m_verbose == null) {
-        if (other.m_verbose != null)
-          return false;
-      } else if (!m_verbose.equals(other.m_verbose))
-        return false;
-      if (m_xmlPackages == null) {
-        if (other.m_xmlPackages != null)
-          return false;
-      } else if (!m_xmlPackages.equals(other.m_xmlPackages))
-        return false;
-      return true;
+//        return f();
+    if (m_skipFailedInvocationCounts == null) {
+      if (other.m_skipFailedInvocationCounts != null)
+        return f();
+    } else if (!m_skipFailedInvocationCounts
+        .equals(other.m_skipFailedInvocationCounts))
+      return f();
+    if (m_suiteFiles == null) {
+      if (other.m_suiteFiles != null)
+        return f();
+    } else if (!m_suiteFiles.equals(other.m_suiteFiles))
+      return f();
+    if (m_test == null) {
+      if (other.m_test != null)
+        return f();
+    } else if (!m_test.equals(other.m_test))
+      return f();
+    if (m_tests == null) {
+      if (other.m_tests != null)
+        return f();
+    } else if (!m_tests.equals(other.m_tests))
+      return f();
+    if (m_threadCount != other.m_threadCount)
+      return f();
+    if (m_timeOut == null) {
+      if (other.m_timeOut != null)
+        return f();
+    } else if (!m_timeOut.equals(other.m_timeOut))
+      return f();
+    if (m_verbose == null) {
+      if (other.m_verbose != null)
+        return f();
+    } else if (!m_verbose.equals(other.m_verbose))
+      return f();
+    if (m_xmlPackages == null) {
+      if (other.m_xmlPackages != null)
+        return f();
+    } else if (!m_xmlPackages.equals(other.m_xmlPackages))
+      return f();
+    return true;
+  }
+
+
+  /**
+   * The DTD sometimes forces certain attributes to receive a default value. Such
+   * a value is considered equal to another one if that other one is null.
+   */
+  private boolean eq(String o1, String o2, String def) {
+    boolean result = false;
+    if (o1 == null && o2 == null) result = true;
+    else if (o1 != null) {
+      result = o1.equals(o2) || (def.equals(o1) && o2 == null);
     }
+    else if (o2 != null) {
+      result = o2.equals(o1) || (def.equals(o2) && o1 == null);
+    }
+    return result;
+  }
 }

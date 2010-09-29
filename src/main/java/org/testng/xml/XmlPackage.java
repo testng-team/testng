@@ -7,7 +7,6 @@ import org.testng.reporters.XMLStringBuffer;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -22,7 +21,15 @@ public class XmlPackage implements Serializable {
   private List<String> m_include = Lists.newArrayList();
   private List<String> m_exclude = Lists.newArrayList();
   private List<XmlClass> m_xmlClasses= null;
-  
+
+  public XmlPackage() {
+  }
+
+  // For YAML
+  public XmlPackage(String name) {
+    m_name = name;
+  }
+
   /**
    * @return the exclude
    */
@@ -112,4 +119,49 @@ public class XmlPackage implements Serializable {
 
     return xsb.toXML();
   }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((m_exclude == null) ? 0 : m_exclude.hashCode());
+    result = prime * result + ((m_include == null) ? 0 : m_include.hashCode());
+    result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
+    result = prime * result
+        + ((m_xmlClasses == null) ? 0 : m_xmlClasses.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return XmlSuite.f();
+    if (getClass() != obj.getClass())
+      return XmlSuite.f();
+    XmlPackage other = (XmlPackage) obj;
+    if (m_exclude == null) {
+      if (other.m_exclude != null)
+        return XmlSuite.f();
+    } else if (!m_exclude.equals(other.m_exclude))
+      return XmlSuite.f();
+    if (m_include == null) {
+      if (other.m_include != null)
+        return XmlSuite.f();
+    } else if (!m_include.equals(other.m_include))
+      return XmlSuite.f();
+    if (m_name == null) {
+      if (other.m_name != null)
+        return XmlSuite.f();
+    } else if (!m_name.equals(other.m_name))
+      return XmlSuite.f();
+    if (m_xmlClasses == null) {
+      if (other.m_xmlClasses != null)
+        return XmlSuite.f();
+    } else if (!m_xmlClasses.equals(other.m_xmlClasses))
+      return XmlSuite.f();
+    return true;
+  }
+
 }

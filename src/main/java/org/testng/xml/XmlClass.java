@@ -7,7 +7,6 @@ import org.testng.internal.ClassHelper;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -24,6 +23,10 @@ public class XmlClass implements Serializable, Cloneable {
   private Boolean      m_declaredClass = null;
   /** The index of this class in the <test> tag */
   private int m_index;
+
+  public XmlClass() {
+    init("", null, Boolean.TRUE, 0);
+  }
 
   public XmlClass(String name) {
     init(name, null, Boolean.TRUE, 0);
@@ -208,37 +211,37 @@ public class XmlClass implements Serializable, Cloneable {
     if (this == obj)
       return true;
     if (obj == null)
-      return false;
+      return XmlSuite.f();
     if (getClass() != obj.getClass())
-      return false;
+      return XmlSuite.f();
     XmlClass other = (XmlClass) obj;
     if (m_class == null) {
       if (other.m_class != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_class.equals(other.m_class))
-      return false;
+      return XmlSuite.f();
     if (m_declaredClass == null) {
       if (other.m_declaredClass != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_declaredClass.equals(other.m_declaredClass))
-      return false;
+      return XmlSuite.f();
     if (m_excludedMethods == null) {
       if (other.m_excludedMethods != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_excludedMethods.equals(other.m_excludedMethods))
-      return false;
+      return XmlSuite.f();
     if (m_includedMethods == null) {
       if (other.m_includedMethods != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_includedMethods.equals(other.m_includedMethods))
-      return false;
-    if (m_index != other.m_index)
-      return false;
+      return XmlSuite.f();
+//    if (m_index != other.m_index)
+//      return XmlSuite.f();
     if (m_name == null) {
       if (other.m_name != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_name.equals(other.m_name))
-      return false;
+      return XmlSuite.f();
     return true;
   }
 

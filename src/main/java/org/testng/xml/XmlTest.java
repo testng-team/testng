@@ -31,7 +31,7 @@ public class XmlTest implements Serializable, Cloneable {
   private List<String> m_includedGroups = Lists.newArrayList();
   private List<String> m_excludedGroups = Lists.newArrayList();
 
-  private final Map<String, List<String>> m_metaGroups = Maps.newHashMap();
+  private Map<String, List<String>> m_metaGroups = Maps.newHashMap();
   private Map<String, String> m_parameters = Maps.newHashMap();
   private String m_parallel;
   
@@ -48,7 +48,8 @@ public class XmlTest implements Serializable, Cloneable {
   private Boolean m_skipFailedInvocationCounts = XmlSuite.DEFAULT_SKIP_FAILED_INVOCATION_COUNTS;
   private Map<String, List<Integer>> m_failedInvocationNumbers = null; // lazily initialized
 
-  private String m_preserveOrder;
+  public static String DEFAULT_PRESERVE_ORDER = "false";
+  private String m_preserveOrder = DEFAULT_PRESERVE_ORDER;
 
   /**
    * Constructs a <code>XmlTest</code> and adds it to suite's list of tests. 
@@ -60,6 +61,10 @@ public class XmlTest implements Serializable, Cloneable {
     m_suite.getTests().add(this);
   }
 
+  // For YAML
+  public XmlTest() {
+  }
+
   public void setXmlPackages(List<XmlPackage> packages) {
     m_xmlPackages = packages;
   }
@@ -67,7 +72,17 @@ public class XmlTest implements Serializable, Cloneable {
   public List<XmlPackage> getXmlPackages() {
     return m_xmlPackages;
   }
-  
+
+  // For YAML
+  public List<XmlPackage> getPackages() {
+    return getPackages();
+  }
+
+  // For YAML
+  public void setPackages(List<XmlPackage> p) {
+    setXmlPackages(p);
+  }
+
   public List<XmlMethodSelector> getMethodSelectors() {
     return m_methodSelectors;
   }
@@ -107,7 +122,17 @@ public class XmlTest implements Serializable, Cloneable {
   public List<XmlClass> getXmlClasses() {
     return m_xmlClasses;
   }
-  
+
+  // For YAML
+  public List<XmlClass> getClasses() {
+    return getXmlClasses();
+  }
+
+  // For YAML
+  public void setClasses(List<XmlClass> c) {
+    setXmlClasses(c);
+  }
+
   /**
    * Sets the XML Classes.
    * @param classes The classes to set.
@@ -199,7 +224,12 @@ public class XmlTest implements Serializable, Cloneable {
   public void setJUnit(boolean isJUnit) {
     m_isJUnit = isJUnit;
   }
-  
+
+  // For YAML
+  public void setJunit(boolean isJUnit) {
+    setJUnit(isJUnit);
+  }
+
   public void setSkipFailedInvocationCounts(boolean skip) {
     m_skipFailedInvocationCounts = skip;
   }
@@ -218,6 +248,11 @@ public class XmlTest implements Serializable, Cloneable {
   
   public void addMetaGroup(String name, List<String> metaGroup) {
     m_metaGroups.put(name, metaGroup);
+  }
+
+  // For YAML
+  public void setMetaGroups(Map<String, List<String>> metaGroups) {
+    m_metaGroups = metaGroups;
   }
 
   /**
@@ -264,7 +299,14 @@ public class XmlTest implements Serializable, Cloneable {
     }
     return result;
   }
-    
+
+  /**
+   * @return the parameters defined on this <test> tag only
+   */
+  public Map<String, String> getTestParameters() {
+    return m_parameters;
+  }
+
   public void setParallel(String parallel) {
     m_parallel = parallel;
   }
@@ -410,12 +452,12 @@ public class XmlTest implements Serializable, Cloneable {
     }
     
     
-    // HINT: don't call getXmlPackages() cause you will retrieve the suite packages too
+    // Don't call getXmlPackages() cause you will retrieve the suite packages too
     if (null != m_xmlPackages && !m_xmlPackages.isEmpty()) {
       xsb.push("packages");
       
       for (XmlPackage pack: m_xmlPackages) {
-        xsb.getStringBuffer().append(pack.toXml("  "));
+        xsb.getStringBuffer().append(pack.toXml("      "));
       }
       
       xsb.pop("packages");
@@ -600,94 +642,94 @@ public class XmlTest implements Serializable, Cloneable {
     if (this == obj)
       return true;
     if (obj == null)
-      return false;
+      return XmlSuite.f();
     if (getClass() != obj.getClass())
-      return false;
+      return XmlSuite.f();
     XmlTest other = (XmlTest) obj;
     if (m_excludedGroups == null) {
       if (other.m_excludedGroups != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_excludedGroups.equals(other.m_excludedGroups))
-      return false;
-    if (m_expression == null) {
-      if (other.m_expression != null)
-        return false;
-    } else if (!m_expression.equals(other.m_expression))
-      return false;
+      return XmlSuite.f();
+//    if (m_expression == null) {
+//      if (other.m_expression != null)
+//        return XmlSuite.f();
+//    } else if (!m_expression.equals(other.m_expression))
+//      return XmlSuite.f();
     if (m_failedInvocationNumbers == null) {
       if (other.m_failedInvocationNumbers != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_failedInvocationNumbers
         .equals(other.m_failedInvocationNumbers))
-      return false;
+      return XmlSuite.f();
     if (m_includedGroups == null) {
       if (other.m_includedGroups != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_includedGroups.equals(other.m_includedGroups))
-      return false;
+      return XmlSuite.f();
     if (m_isJUnit == null) {
       if (other.m_isJUnit != null && ! other.m_isJUnit.equals(XmlSuite.DEFAULT_JUNIT))
-        return false;
+        return XmlSuite.f();
     } else if (!m_isJUnit.equals(other.m_isJUnit))
-      return false;
+      return XmlSuite.f();
     if (m_metaGroups == null) {
       if (other.m_metaGroups != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_metaGroups.equals(other.m_metaGroups))
-      return false;
+      return XmlSuite.f();
     if (m_methodSelectors == null) {
       if (other.m_methodSelectors != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_methodSelectors.equals(other.m_methodSelectors))
-      return false;
+      return XmlSuite.f();
     if (m_name == null) {
       if (other.m_name != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_name.equals(other.m_name))
-      return false;
+      return XmlSuite.f();
     if (m_parallel == null) {
       if (other.m_parallel != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_parallel.equals(other.m_parallel))
-      return false;
+      return XmlSuite.f();
     if (m_parameters == null) {
       if (other.m_parameters != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_parameters.equals(other.m_parameters))
-      return false;
+      return XmlSuite.f();
     if (m_preserveOrder == null) {
       if (other.m_preserveOrder != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_preserveOrder.equals(other.m_preserveOrder))
-      return false;
+      return XmlSuite.f();
     if (m_skipFailedInvocationCounts == null) {
       if (other.m_skipFailedInvocationCounts != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_skipFailedInvocationCounts
         .equals(other.m_skipFailedInvocationCounts))
-      return false;
+      return XmlSuite.f();
     if (m_threadCount != other.m_threadCount)
-      return false;
+      return XmlSuite.f();
     if (m_timeOut == null) {
       if (other.m_timeOut != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_timeOut.equals(other.m_timeOut))
-      return false;
+      return XmlSuite.f();
     if (m_verbose == null) {
       if (other.m_verbose != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_verbose.equals(other.m_verbose))
-      return false;
+      return XmlSuite.f();
     if (m_xmlClasses == null) {
       if (other.m_xmlClasses != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_xmlClasses.equals(other.m_xmlClasses))
-      return false;
+      return XmlSuite.f();
     if (m_xmlPackages == null) {
       if (other.m_xmlPackages != null)
-        return false;
+        return XmlSuite.f();
     } else if (!m_xmlPackages.equals(other.m_xmlPackages))
-      return false;
+      return XmlSuite.f();
     return true;
   }
 }
