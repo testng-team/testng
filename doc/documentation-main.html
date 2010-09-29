@@ -123,6 +123,7 @@ google_ad_channel ="5560744946";
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#invokedmethodlistener">5.20 - Invoked method listeners</a></br>
 
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#preserve-order">5.21 - Specifying the ordering of classes</a></br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#ihookable">5.22 - Overriding test methods</a></br>
 
 
 &nbsp; <a class="summary" href="#test-results">6 - Test results</a>
@@ -1893,10 +1894,13 @@ There are several interfaces that allow you to modify TestNG's behavior.  These 
 
 <ul>
   <li><tt>IAnnotationTransformer</tt> (<a href="#annotationtransformers">doc</a>, <a href="../javadocs/org/testng/IAnnotationTransformer.html">javadoc</a>)
-  <li><tt>IReporter</tt> (<a href="#logging-reporters">doc</a>, <a href="../javadocs/org/testng/IReporter.html">javadoc</a>)
-  <li><tt>ITestListener</tt> (<a href="#logging-listeners">doc</a>, <a href="../javadocs/org/testng/ITestListener.html">javadoc</a>)
+  <li><tt>IAnnotationTransformer2</tt> (<a href="#annotationtransformers">doc</a>, <a href="../javadocs/org/testng/IAnnotationTransformer2.html">javadoc</a>)
+  <li><tt>IHookable</tt> (<a href="#ihookable">doc</a>, <a href="../javadocs/org/testng/IHookable.html">javadoc</a>)
+  <li><tt>IInvokedMethodListener</tt> (doc, <a href="../javadocs/org/testng/IInvokedMethodListener.html">javadoc</a>)
   <li><tt>IMethodInterceptor</tt> (<a href="#methodinterceptors">doc</a>, <a href="../javadocs/org/testng/IMethodInterceptor.html">javadoc</a>)
-  <li><tt>IInvokedMethodListener</tt> (<a href="#invokedmethodlistener">doc</a>, <a href="../javadocs/org/testng/IInvokedMethodListener.html">javadoc</a>)
+  <li><tt>IReporter</tt> (<a href="#logging-reporters">doc</a>, <a href="../javadocs/org/testng/IReporter.html">javadoc</a>)
+  <li><tt>ISuiteListener</tt> (doc, <a href="../javadocs/org/testng/ISuiteListener.html">javadoc</a>)
+  <li><tt>ITestListener</tt> (<a href="#logging-listeners">doc</a>, <a href="../javadocs/org/testng/ITestListener.html">javadoc</a>)
 </ul>
 
 When you implement one of these interfaces, you can let TestNG know about it with either of the following ways:
@@ -2051,7 +2055,32 @@ Because the attribute <tt>preserve-order</tt> was specifid on your <tt>&lt;test&
 
 </pre>
 
+<!-------------------------------------
+  IHOOKABLE AND ICONFIGURABLE
+  ------------------------------------>
 
+<h4>
+<a name="ihookable">5.22 - Overriding test methods</a></h4>
+</h4>
+
+TestNG allows you to override and possibly skip the invocation of test methods. One example of where this is useful is if you need to your test methods with a specific security manager. You achieve this by providing a listener that implements <a href="../javadocs/org/testng/IHookable.html"><tt>IHookable</tt></a>.
+<p>
+Here is an example with JAAS:
+
+<pre class="brush: java">
+public class MyHook implements IHookable {
+  public void run(final IHookCallBack icb, ITestResult testResult) {
+    // Preferably initialized in a @Configuration method
+    mySubject = authenticateWithJAAs();
+   
+    Subject.doAs(mySubject, new PrivilegedExceptionAction() {
+      public Object run() {
+        icb.callback(testResult);
+      }
+    };
+  }
+}
+</pre>
 
 <!------------------------------------
   TEST SUCCESS
