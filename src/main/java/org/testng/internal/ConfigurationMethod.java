@@ -340,7 +340,9 @@ public class ConfigurationMethod extends BaseTestMethod {
       }
     }
 
-    setTimeOut(annotation.getTimeOut());
+    if (annotation != null) {
+      setTimeOut(annotation.getTimeOut());
+    }
   }
   
   private static void ppp(String s) {

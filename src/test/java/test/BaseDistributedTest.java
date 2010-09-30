@@ -31,13 +31,11 @@ public class BaseDistributedTest {
     }
   }
 
-  protected void dumpMap(String title, Map m) {
+  protected void dumpMap(String title, Map<?, ?> m) {
     if (m_verbose) {
       System.out.println("==== " + title);
-      for(Iterator it = m.keySet().iterator(); it.hasNext();) {
-        Object key = it.next();
-        Object value = m.get(key);
-        ppp(key + "  => " + value);
+      for (Map.Entry<?, ?> entry : m.entrySet()) {
+        ppp(entry.getKey() + "  => " + entry.getValue());
       }
     }
   }

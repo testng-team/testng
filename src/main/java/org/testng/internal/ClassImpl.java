@@ -17,6 +17,7 @@ import java.util.Map;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class ClassImpl implements IClass {
+  private static final long serialVersionUID = 1118178273317520344L;
   transient private Class m_class = null;
   transient private Object m_defaultInstance = null;
   private XmlTest m_xmlTest = null;

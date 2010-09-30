@@ -31,7 +31,8 @@ public class SampleTest {
 
     @Test public void testPut()
     {
-      HashMap hashTable = new HashMap(capacity, loadFactor);
+      //FIXME: This test does nothing
+      //HashMap hashTable = new HashMap(capacity, loadFactor);
       // ...
     }
 }

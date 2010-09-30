@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 /**
  * This class/interface 
  */
-public class SkippedTestWithExpectedException {
+public class SkippedTestWithExpectedExceptionTest {
   @BeforeClass
   public void setup() {
     throw new RuntimeException("test-exception");

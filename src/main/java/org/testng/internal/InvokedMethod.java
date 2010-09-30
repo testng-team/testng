@@ -6,6 +6,7 @@ import org.testng.IInvokedMethod;
 import org.testng.ITestNGMethod;
 
 public class InvokedMethod implements Serializable, IInvokedMethod {
+  private static final long serialVersionUID = 2126127194102819222L;
   transient private Object m_instance;
   private ITestNGMethod m_testMethod;
   private Object[] m_parameters;

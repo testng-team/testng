@@ -350,8 +350,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
   private void initMetaGroups(XmlTest xmlTest) {
     Map<String, List<String>> metaGroups = xmlTest.getMetaGroups();
 
-    for (String name : metaGroups.keySet()) {
-      addMetaGroup(name, metaGroups.get(name));
+    for (Map.Entry<String, List<String>> entry : metaGroups.entrySet()) {
+      addMetaGroup(entry.getKey(), entry.getValue());
     }
   }
 

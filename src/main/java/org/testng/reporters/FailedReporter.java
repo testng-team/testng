@@ -17,7 +17,6 @@ import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -58,11 +57,11 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       xmlTests.put(xmlT.getName(), xmlT);
     }
     
-    Map<String, ISuiteResult> results= suite.getResults();
+    Map<String, ISuiteResult> results = suite.getResults();
     
-    for(String name: results.keySet()) {
-      ISuiteResult suiteResult= results.get(name);
-      ITestContext testContext= suiteResult.getTestContext();
+    for(Map.Entry<String, ISuiteResult> entry : results.entrySet()) {
+      ISuiteResult suiteResult = entry.getValue();
+      ITestContext testContext = suiteResult.getTestContext();
 
       generateXmlTest(suite, 
                       xmlTests.get(testContext.getName()), 

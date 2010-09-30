@@ -21,8 +21,11 @@ import java.util.Map;
  * Superclass to represent both &#64;Test and &#64;Configuration methods.
  */
 public abstract class BaseTestMethod implements ITestNGMethod {
-  /** The test class on which the test method was found. Note that this is not 
-   * necessarily the declaring class. */
+  private static final long serialVersionUID = -2666032602580652173L;
+  /** 
+   * The test class on which the test method was found. Note that this is not 
+   * necessarily the declaring class. 
+   */
   protected ITestClass m_testClass;
   
   protected final transient Class<?> m_methodClass;
@@ -341,18 +344,20 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    */
   @Override
   public boolean equals(Object obj) {
-    // TODO CQ document why this try block exists.
-    try {
-      BaseTestMethod other = (BaseTestMethod) obj;
-      
-      boolean isEqual = m_testClass == null ? other.m_testClass == null
-          : m_testClass.getRealClass().equals(other.m_testClass.getRealClass());
-      
-      return isEqual && m_method.equals(other.m_method);
-    }
-    catch(Exception ex) {
+    if (this == obj)
+      return true;
+    if (obj == null)
       return false;
-    }
+    if (getClass() != obj.getClass())
+      return false;
+    
+    BaseTestMethod other = (BaseTestMethod) obj;
+    
+    boolean isEqual = m_testClass == null ? other.m_testClass == null
+        : other.m_testClass != null && 
+          m_testClass.getRealClass().equals(other.m_testClass.getRealClass());
+    
+    return isEqual && m_method.equals(other.m_method);
   }
   
   /**
