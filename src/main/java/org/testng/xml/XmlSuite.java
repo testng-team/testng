@@ -272,20 +272,20 @@ public class XmlSuite implements Serializable, Cloneable {
   public String getBeanShellExpression() {
     return m_expression;
   }
-  
-  /**
-   * Sets parameters.
-   * @param parameters the parameters.
-   */
-  public void setParameters(Map<String, String> parameters) {
-    m_parameters = parameters;
-  }
 
   /**
-   * Returns the parameters defined in this suite only.
-   * @return The parameters defined in this suite only.
+   * Updates the list of parameters that apply to this XML suite. This method
+   * should be invoked any time there is a change in the state of this suite that
+   * would affect the parameter list.<br>
+   * NOTE: Currently being invoked after a parent suite is added or if parameters
+   * for this suite are updated.
    */
-  public Map<String, String> getParameters() {
+  private void updateParameters() {
+    /*
+     * Whatever parameters are set by user or via XML, should be updated
+     * using parameters from parent suite, if it exists. Parameters from this
+     * suite override the same named parameters from parent suite.
+     */
     if (m_parentSuite != null) {
       Set<String> keySet = m_parentSuite.getParameters().keySet();
       for (String name : keySet) {
@@ -294,6 +294,25 @@ public class XmlSuite implements Serializable, Cloneable {
         }
       }
     }
+  }
+
+  /**
+   * Sets parameters.
+   * @param parameters the parameters.
+   */
+  public void setParameters(Map<String, String> parameters) {
+    m_parameters = parameters;
+    updateParameters();
+  }
+
+  /**
+   * Gets the parameters that apply to tests in this suite.<br>
+   * Set of parameters for a suite is appended with parameters from parent suite.
+   * Also, parameters from this suite override the same named parameters from
+   * parent suite.
+   * @return
+   */
+  public Map<String, String> getParameters() {
     return m_parameters;
   }
 
@@ -652,6 +671,7 @@ public class XmlSuite implements Serializable, Cloneable {
     
     public void setParentSuite(XmlSuite parentSuite) {
       m_parentSuite = parentSuite;
+      updateParameters();
     }
      
     public XmlSuite getParentSuite() {

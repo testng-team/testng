@@ -1,0 +1,11 @@
+<suite name="InheritedParametersSuite Child1">
+
+  <parameter name="parameter2" value="c1p2"/>
+  <parameter name="parameter4" value="c1p4"/>
+  <test name="InheritedParametersTest Child1">
+      <classes>
+          <class name="test.parameters.InheritFromSuiteChild1" />
+      </classes>
+  </test>
+
+</suite>
