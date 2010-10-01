@@ -56,7 +56,8 @@ public class TestHelper {
   
   public static File createRandomDirectory() {
     String dir = System.getProperty("java.io.tmpdir");
-    String name = "testng-tmp-" + new Random(System.currentTimeMillis()).nextInt();
+    Random r = new Random(System.currentTimeMillis());
+    String name = "testng-tmp-" + r.nextInt();
     File result = new File(dir + File.separatorChar + name);
     result.deleteOnExit();
     result.mkdirs();

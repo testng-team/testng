@@ -1,0 +1,9 @@
+<suite name="Parameter Inheritance Tests">
+
+  <parameter name="parameter1" value="p1"/>
+  <parameter name="parameter2" value="p2"/>
+  <suite-files>
+    <suite-file path="./child1-suite.xml"/>
+    <suite-file path="./child2-suite.xml"/>
+  </suite-files>
+</suite>

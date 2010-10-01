@@ -46,10 +46,10 @@ public class RemoteResultListener
 		m_runner.setHost(remoteSuiteRunner.getHost());
 		Map<String, ISuiteResult> tmpResults = remoteSuiteRunner.getResults();
 		Map<String, ISuiteResult> suiteResults = m_runner.getResults();
-		for (String tests : tmpResults.keySet()) 
+		for (Map.Entry<String, ISuiteResult> entry : tmpResults.entrySet()) 
 		{
-			ISuiteResult suiteResult = tmpResults.get(tests);
-			suiteResults.put(tests, suiteResult);
+			ISuiteResult suiteResult = entry.getValue();
+			suiteResults.put(entry.getKey(), suiteResult);
 			ITestContext tc = suiteResult.getTestContext();
 			TestHTMLReporter.generateLog(tc, remoteSuiteRunner.getHost(),
 			                             m_runner.getOutputDirectory(),

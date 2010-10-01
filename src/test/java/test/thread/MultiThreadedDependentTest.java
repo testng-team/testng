@@ -50,8 +50,8 @@ public class MultiThreadedDependentTest extends SimpleBaseTest {
       }
     }
     Assert.assertEquals(map.size(), size);
-    for (String m : map.keySet()) {
-      Assert.assertTrue(map.get(m));
+    for (Boolean val : map.values()) {
+      Assert.assertTrue(val);
     }
   }
 

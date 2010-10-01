@@ -60,7 +60,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   transient private IObjectFactory m_objectFactory;
   transient private Boolean m_skipFailedInvocationCounts = Boolean.FALSE;
 
-  private IMethodInterceptor m_methodInterceptor;
+  transient private IMethodInterceptor m_methodInterceptor;
   private List<IInvokedMethodListener> m_invokedMethodListeners;
 
   /** The list of all the methods invoked during this run */

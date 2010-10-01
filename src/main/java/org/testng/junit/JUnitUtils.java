@@ -31,6 +31,7 @@ public class JUnitUtils {
    * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
    */
   public static class JUnitTestMethod implements ITestNGMethod {
+    private static final long serialVersionUID = -415785273985919220L;
     private final ITestClass m_testClass;
     private final Class m_methodClass;
     private final Object[] m_instances;
@@ -45,7 +46,7 @@ public class JUnitUtils {
     private long m_date;
     private String m_id;
     
-    private IRetryAnalyzer retryAnalyzer = null;
+    transient private IRetryAnalyzer retryAnalyzer = null;
     private List<Integer> m_failedInvocationNumbers;
     
     public JUnitTestMethod(Test test, JUnitTestClass testClass) {

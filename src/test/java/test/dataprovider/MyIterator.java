@@ -8,7 +8,6 @@ public class MyIterator implements Iterator<Object[]> {
   
   public MyIterator(Object[][] data) {
     m_data = data;
-    m_count = 0;
   }
 
   public boolean hasNext() {

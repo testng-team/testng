@@ -269,13 +269,6 @@ public class BaseTest extends BaseDistributedTest {
     getTest().addParameter(key, value);
   }
 
-  private void setTest(XmlTest test) {
-    XmlTest t= m_tests.get(getId());
-    if(null == t) {
-      m_tests.put(getId(), t);
-    }
-  }
-
 //  @Configuration(beforeTestMethod = true, groups = { "init", "initTest"})
   @BeforeMethod(groups= { "init", "initTest" })
   public void methodSetUp() {
@@ -371,9 +364,9 @@ public class BaseTest extends BaseDistributedTest {
 
   protected void dumpResults(String name, Map<String, List<ITestResult>> tests) {
     ppp("============= " + name);
-    for(String n : tests.keySet()) {
-      ppp("TEST:" + n);
-      List<ITestResult> l= tests.get(n);
+    for(Map.Entry<String, List<ITestResult>> entry : tests.entrySet()) {
+      ppp("TEST:" + entry.getKey());
+      List<ITestResult> l= entry.getValue();
       for(ITestResult tr : l) {
         ppp("   " + tr);
       }

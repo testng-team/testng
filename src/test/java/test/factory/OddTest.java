@@ -12,7 +12,7 @@ public class OddTest {
   
   @Test
   public void verify() {
-    Assert.assertTrue(m_n % 2 == 1);
+    Assert.assertTrue(m_n % 2 != 0);
   }
   
   private static void ppp(String s) {

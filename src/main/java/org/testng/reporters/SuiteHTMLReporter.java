@@ -118,8 +118,7 @@ public class SuiteHTMLReporter implements IReporter {
       int skippedTests= 0;
       
       Map<String, ISuiteResult> results = suite.getResults();
-      for (String suiteName : results.keySet()) {
-        ISuiteResult result = results.get(suiteName);
+      for (ISuiteResult result : results.values()) {
         ITestContext context = result.getTestContext();
         failedTests += context.getFailedTests().size();
         totalFailedTests += context.getFailedTests().size();
@@ -612,8 +611,9 @@ public class SuiteHTMLReporter implements IReporter {
       Map<String, ISuiteResult> yellowResults = Maps.newHashMap();
       Map<String, ISuiteResult> greenResults = Maps.newHashMap();
       
-      for (String suiteName : suiteResults.keySet()) {
-        ISuiteResult sr = suiteResults.get(suiteName);
+      for (Map.Entry<String, ISuiteResult> entry : suiteResults.entrySet()) {
+        String suiteName = entry.getKey();
+        ISuiteResult sr = entry.getValue();
         ITestContext tc = sr.getTestContext();
         int failed = tc.getFailedTests().size(); 
         int skipped = tc.getSkippedTests().size();
@@ -704,17 +704,11 @@ public class SuiteHTMLReporter implements IReporter {
   private void generateSuites(XmlSuite xmlSuite, ISuite suite) {
     Map<String, ISuiteResult> suiteResults = suite.getResults();
 
-    // TODO CQ why not iterate over entry set if were going to use the key to get the value?
-    for (String propertyFileName : suiteResults.keySet()) {
-      
-      ISuiteResult sr = suiteResults.get(propertyFileName);
+    for (ISuiteResult sr : suiteResults.values()) {
       ITestContext testContext = sr.getTestContext();
-      
       StringBuffer sb = new StringBuffer();
       
-      // TODO CQ why not iterate over entry set if were going to use the key to get the value?
-      for (String name : suiteResults.keySet()) {
-        ISuiteResult suiteResult = suiteResults.get(name);
+      for (ISuiteResult suiteResult : suiteResults.values()) {
         sb.append(suiteResult.toString());
       }
       Utils.writeFile(getOutputDirectory(xmlSuite), testContext.getName() + ".properties", sb.toString());

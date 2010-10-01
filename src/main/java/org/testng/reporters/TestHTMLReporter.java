@@ -1,5 +1,6 @@
 package org.testng.reporters;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -320,7 +321,8 @@ public class TestHTMLReporter extends TestListenerAdapter {
     System.out.println("[TestHTMLReporter] " + s);
   }
   
-  private static class NameComparator implements Comparator<ITestResult> {
+  private static class NameComparator implements Comparator<ITestResult>, Serializable {
+    private static final long serialVersionUID = 381775815838366907L;
     public int compare(ITestResult o1, ITestResult o2) {
       String c1 = o1.getMethod().getMethodName();
       String c2 = o2.getMethod().getMethodName();
@@ -329,7 +331,9 @@ public class TestHTMLReporter extends TestListenerAdapter {
   
   }
   
-  private static class ConfigurationComparator implements Comparator<ITestResult> {
+  private static class ConfigurationComparator implements Comparator<ITestResult>, Serializable {
+    private static final long serialVersionUID = 5558550850685483455L;
+
     public int compare(ITestResult o1, ITestResult o2) {
       ITestNGMethod tm1= o1.getMethod();
       ITestNGMethod tm2= o2.getMethod();
