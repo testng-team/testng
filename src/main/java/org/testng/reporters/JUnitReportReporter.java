@@ -31,6 +31,7 @@ public class JUnitReportReporter implements IReporter {
 
     String outputDirectory = defaultOutputDirectory + File.separator + "junitreports";
     Map<Class<?>, Set<ITestResult>> results = Maps.newHashMap();
+    Map<Class<?>, Set<ITestResult>> failedConfigurations = Maps.newHashMap();
     for (ISuite suite : suites) {
       Map<String, ISuiteResult> suiteResults = suite.getResults();
       for (ISuiteResult sr : suiteResults.values()) {
@@ -38,6 +39,7 @@ public class JUnitReportReporter implements IReporter {
         addResults(tc.getPassedTests().getAllResults(), results);
         addResults(tc.getFailedTests().getAllResults(), results);
         addResults(tc.getSkippedTests().getAllResults(), results);
+        addResults(tc.getFailedConfigurations().getAllResults(), failedConfigurations);
       }
     }
 
@@ -63,7 +65,7 @@ public class JUnitReportReporter implements IReporter {
         p2.setProperty("name", tr.getMethod().getMethodName());
         long time = tr.getEndMillis() - tr.getStartMillis();
         p2.setProperty("time", "" + time);
-        Throwable t = tr.getThrowable();
+        Throwable t = getThrowable(tr, failedConfigurations);
         if (t != null) {
           t.fillInStackTrace();
           StringWriter sw = new StringWriter();
@@ -123,6 +125,25 @@ public class JUnitReportReporter implements IReporter {
 //    System.out.println(xsb.toXML());
 //    System.out.println("");
 
+  }
+
+  private Throwable getThrowable(ITestResult tr,
+      Map<Class<?>, Set<ITestResult>> failedConfigurations) {
+    Throwable result = tr.getThrowable();
+    if (result == null && tr.getStatus() == ITestResult.SKIP) {
+      // Attempt to grab the stack trace from the configuration failure
+      for (Set<ITestResult> failures : failedConfigurations.values()) {
+        for (ITestResult failure : failures) {
+          // Naive implementation for now, eventually, we need to try to find
+          // out if it's this failure that caused the skip since (maybe by
+          // seeing if the class of the configuration method is assignable to
+          // the class of the test method, although that's not 100% fool proof
+          if (failure.getThrowable() != null) return failure.getThrowable();
+        }
+      }
+    }
+
+    return result;
   }
 
   class TestTag {
