@@ -682,35 +682,35 @@ public class XmlSuite implements Serializable, Cloneable {
       return m_childSuites;
     }
 
-    @Override
-    public int hashCode() {
-      final int prime = 31;
-      int result = 1;
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
 //      result = prime * result
 //          + ((m_childSuites == null) ? 0 : m_childSuites.hashCode());
-      result = prime
-          * result
-          + ((m_configFailurePolicy == null) ? 0 : m_configFailurePolicy
-              .hashCode());
-      result = prime * result + m_dataProviderThreadCount;
-      result = prime * result
-          + ((m_expression == null) ? 0 : m_expression.hashCode());
-      result = prime * result
-          + ((m_fileName == null) ? 0 : m_fileName.hashCode());
-      result = prime * result
-          + ((m_isJUnit == null) ? 0 : m_isJUnit.hashCode());
-      result = prime * result
-          + ((m_listeners == null) ? 0 : m_listeners.hashCode());
+    result = prime
+        * result
+        + ((m_configFailurePolicy == null) ? 0 : m_configFailurePolicy
+            .hashCode());
+    result = prime * result + m_dataProviderThreadCount;
+    result = prime * result
+        + ((m_expression == null) ? 0 : m_expression.hashCode());
+    result = prime * result
+        + ((m_fileName == null) ? 0 : m_fileName.hashCode());
+    result = prime * result
+        + ((m_isJUnit == null) ? 0 : m_isJUnit.hashCode());
+    result = prime * result
+        + ((m_listeners == null) ? 0 : m_listeners.hashCode());
 
-      result = prime * result
-          + ((m_methodSelectors == null) ? 0 : m_methodSelectors.hashCode());
-      result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
-      result = prime * result
-          + ((m_objectFactory == null) ? 0 : m_objectFactory.hashCode());
-      result = prime * result
-          + ((m_parallel == null) ? 0 : m_parallel.hashCode());
-      result = prime * result
-          + ((m_parameters == null) ? 0 : m_parameters.hashCode());
+    result = prime * result
+        + ((m_methodSelectors == null) ? 0 : m_methodSelectors.hashCode());
+    result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
+    result = prime * result
+        + ((m_objectFactory == null) ? 0 : m_objectFactory.hashCode());
+    result = prime * result
+        + ((m_parallel == null) ? 0 : m_parallel.hashCode());
+    result = prime * result
+        + ((m_parameters == null) ? 0 : m_parameters.hashCode());
 //      result = prime * result
 //          + ((m_parentSuite == null) ? 0 : m_parentSuite.hashCode());
       result = prime
@@ -731,67 +731,67 @@ public class XmlSuite implements Serializable, Cloneable {
       return result;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-      if (this == obj)
-        return true;
-      if (obj == null)
-        return false;
-      if (getClass() != obj.getClass())
-        return false;
-      XmlSuite other = (XmlSuite) obj;
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    XmlSuite other = (XmlSuite) obj;
 //      if (m_childSuites == null) {
 //        if (other.m_childSuites != null)
 //          return false;
 //      } else if (!m_childSuites.equals(other.m_childSuites))
 //        return false;
-      if (m_configFailurePolicy == null) {
-        if (other.m_configFailurePolicy != null)
-          return false;
-      } else if (!m_configFailurePolicy.equals(other.m_configFailurePolicy))
+    if (m_configFailurePolicy == null) {
+      if (other.m_configFailurePolicy != null)
         return false;
-      if (m_dataProviderThreadCount != other.m_dataProviderThreadCount)
+    } else if (!m_configFailurePolicy.equals(other.m_configFailurePolicy))
+      return false;
+    if (m_dataProviderThreadCount != other.m_dataProviderThreadCount)
+      return false;
+    if (m_expression == null) {
+      if (other.m_expression != null)
         return false;
-      if (m_expression == null) {
-        if (other.m_expression != null)
-          return false;
-      } else if (!m_expression.equals(other.m_expression))
+    } else if (!m_expression.equals(other.m_expression))
+      return false;
+    if (m_isJUnit == null) {
+      if (other.m_isJUnit != null)
         return false;
-      if (m_isJUnit == null) {
-        if (other.m_isJUnit != null)
-          return false;
-      } else if (!m_isJUnit.equals(other.m_isJUnit))
+    } else if (!m_isJUnit.equals(other.m_isJUnit))
+      return false;
+    if (m_listeners == null) {
+      if (other.m_listeners != null)
         return false;
-      if (m_listeners == null) {
-        if (other.m_listeners != null)
-          return false;
-      } else if (!m_listeners.equals(other.m_listeners))
+    } else if (!m_listeners.equals(other.m_listeners))
+      return false;
+    if (m_methodSelectors == null) {
+      if (other.m_methodSelectors != null)
         return false;
-      if (m_methodSelectors == null) {
-        if (other.m_methodSelectors != null)
-          return false;
-      } else if (!m_methodSelectors.equals(other.m_methodSelectors))
+    } else if (!m_methodSelectors.equals(other.m_methodSelectors))
+      return false;
+    if (m_name == null) {
+      if (other.m_name != null)
         return false;
-      if (m_name == null) {
-        if (other.m_name != null)
-          return false;
-      } else if (!m_name.equals(other.m_name))
+    } else if (!m_name.equals(other.m_name))
+      return false;
+    if (m_objectFactory == null) {
+      if (other.m_objectFactory != null)
         return false;
-      if (m_objectFactory == null) {
-        if (other.m_objectFactory != null)
-          return false;
-      } else if (!m_objectFactory.equals(other.m_objectFactory))
+    } else if (!m_objectFactory.equals(other.m_objectFactory))
+      return false;
+    if (m_parallel == null) {
+      if (other.m_parallel != null)
         return false;
-      if (m_parallel == null) {
-        if (other.m_parallel != null)
-          return false;
-      } else if (!m_parallel.equals(other.m_parallel))
+    } else if (!m_parallel.equals(other.m_parallel))
+      return false;
+    if (m_parameters == null) {
+      if (other.m_parameters != null)
         return false;
-      if (m_parameters == null) {
-        if (other.m_parameters != null)
-          return false;
-      } else if (!m_parameters.equals(other.m_parameters))
-        return false;
+    } else if (!m_parameters.equals(other.m_parameters))
+      return false;
 //      if (m_parentSuite == null) {
 //        if (other.m_parentSuite != null)
 //          return false;
