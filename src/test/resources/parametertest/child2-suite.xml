@@ -1,0 +1,15 @@
+<suite name="InheritedParametersSuite Child2">
+
+  <parameter name="parameter2" value="c2p2"/>
+  <parameter name="parameter3" value="c2p3"/>
+  <test name="InheritedParametersTest Child2">
+      <classes>
+          <class name="test.parameters.InheritFromSuiteChild2" />
+      </classes>
+  </test>
+  
+  <suite-files>
+    <suite-file path="./child3-suite.xml"/>
+  </suite-files>
+
+</suite>

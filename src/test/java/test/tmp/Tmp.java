@@ -10,7 +10,8 @@ public class Tmp {
   public void f() {
     ppp("START " + Thread.currentThread().getId());
     try {
-      Thread.sleep(Math.abs(new Random().nextInt() % 300));
+      Random r = new Random();
+      Thread.sleep(Math.abs(r.nextInt() % 300));
     }
     catch (InterruptedException e) {
       e.printStackTrace();

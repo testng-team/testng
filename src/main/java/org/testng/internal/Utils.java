@@ -23,7 +23,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -238,10 +237,8 @@ public final class Utils {
    */
   public static void dumpMap(Map<?, ?> result) {
     System.out.println("vvvvv");
-    for (Iterator<?> it = result.keySet().iterator(); it.hasNext();) {
-      Object key = it.next();
-      Object value = result.get(key);
-      System.out.println(key + " => " + value);
+    for (Map.Entry<?, ?> entry : result.entrySet()) {
+      System.out.println(entry.getKey() + " => " + entry.getValue());
     }
     System.out.println("^^^^^");
   }

@@ -18,6 +18,7 @@ import java.util.Set;
  */
 public class TestResult implements ITestResult {
 
+  private static final long serialVersionUID = 6273017418233324556L;
   private IClass m_testClass = null;
   private ITestNGMethod m_method = null;
   private int m_status = -1;

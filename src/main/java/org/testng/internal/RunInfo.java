@@ -19,6 +19,7 @@ import org.testng.collections.Lists;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class RunInfo implements Serializable {
+  private static final long serialVersionUID = -9085221672822562888L;
   transient private List<MethodSelectorDescriptor>
     m_methodSelectors = Lists.newArrayList();
   

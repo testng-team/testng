@@ -153,7 +153,7 @@ public class DistributedTest extends BaseDistributedTest {
   @Test
   public void twoHostsWithSuiteStrategy() throws IOException {
     startSlaves();
-    TestListenerAdapter listener = twoHosts( SuiteDispatcher.STRATEGY_SUITE);
+    twoHosts(SuiteDispatcher.STRATEGY_SUITE);
   }
 
   private Map<String, ITestResult> toMap(List<ITestResult> results) {

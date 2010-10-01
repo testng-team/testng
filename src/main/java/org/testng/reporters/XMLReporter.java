@@ -105,11 +105,11 @@ public class XMLReporter implements IReporter {
   private void writeSuiteGroups(XMLStringBuffer xmlBuffer, ISuite suite) {
     xmlBuffer.push(XMLReporterConfig.TAG_GROUPS);
     Map<String, Collection<ITestNGMethod>> methodsByGroups = suite.getMethodsByGroups();
-    for (String groupName : methodsByGroups.keySet()) {
+    for (Map.Entry<String, Collection<ITestNGMethod>> entry : methodsByGroups.entrySet()) {
       Properties groupAttrs = new Properties();
-      groupAttrs.setProperty(XMLReporterConfig.ATTR_NAME, groupName);
+      groupAttrs.setProperty(XMLReporterConfig.ATTR_NAME, entry.getKey());
       xmlBuffer.push(XMLReporterConfig.TAG_GROUP, groupAttrs);
-      Set<ITestNGMethod> groupMethods = getUniqueMethodSet(methodsByGroups.get(groupName));
+      Set<ITestNGMethod> groupMethods = getUniqueMethodSet(entry.getValue());
       for (ITestNGMethod groupMethod : groupMethods) {
         Properties methodAttrs = new Properties();
         methodAttrs.setProperty(XMLReporterConfig.ATTR_NAME, groupMethod.getMethodName());

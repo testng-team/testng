@@ -7,6 +7,8 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
 public class NoOpTestClass implements ITestClass {
+  private static final long serialVersionUID = -4544061405329040593L;
+
   protected Class m_testClass= null;
 
   // Test methods

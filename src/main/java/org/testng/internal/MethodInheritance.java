@@ -18,12 +18,11 @@ public class MethodInheritance {
   private static List<ITestNGMethod> findMethodListSuperClass(Map<Class, List<ITestNGMethod>> map, 
       Class< ? extends ITestNGMethod> methodClass)
   {
-    for (Class cls : map.keySet()) {
-      if (cls.isAssignableFrom(methodClass)) {
-        return map.get(cls);
+    for (Map.Entry<Class, List<ITestNGMethod>> entry : map.entrySet()) {
+      if (entry.getKey().isAssignableFrom(methodClass)) {
+        return entry.getValue();
       }
     }
-    
     return null;
   }
   
