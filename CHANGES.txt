@@ -13,6 +13,7 @@ Eclipse:
 Added: The progress bar will now be orange if the suite contained skipped tests and no failures
 Added: Skipped test and suite icons are now orange (previously: blue)
 Added: New method shortcuts: "Alt+Shift+X N", "Alt+Shift+D N" (Sven Johansson)
+Fixed: Workspace preferences now offer the "XML template" option as well as the project specific preferences (Asiel Brumfield)
 Fixed: TESTNG-418: Only last suite-file in testng.xml run by Eclipse plugin
 
 Documentation:
