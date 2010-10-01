@@ -15,10 +15,10 @@ import java.util.Arrays;
 
 public class ParamInheritanceTest extends SimpleBaseTest {
 
-  @Test(description = "When verbose is set to >1, TNG prints test results on CLI which are printed " +
-  		"using SuiteResultCounts.calculateResultCounts(). This method has being throwing NPE because " +
-  		"it's unable to find SuiteRunner in HashMap, because the list of parameters in SuiteRunner changed" +
-  		" during execution. This test makes sure we dont run into any NPEs")
+  @Test(description = "When verbose is set to >1, TNG prints test results on CLI which are printed "
+      + "using SuiteResultCounts.calculateResultCounts(). This method has been throwing NPE "
+      + "because it's unable to find SuiteRunner in HashMap, because the list of parameters in "
+      + "SuiteRunner changed" + " during execution. This test makes sure we dont run into any NPEs")
   public void noNPEInCountingResults() {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG tng = create();
@@ -30,7 +30,7 @@ public class ParamInheritanceTest extends SimpleBaseTest {
     PrintStream err = System.err;
     try {
       /*
-       * Changing system print streams so that exception or results stmt is not logged 
+       * Changing system print streams so that exception or results stmt is not logged
        * while running test (avoid confusing person running tests)
        */
       System.setOut(new PrintStream(os));
@@ -50,7 +50,7 @@ public class ParamInheritanceTest extends SimpleBaseTest {
     }
   }
 
-  @Test(description = "Checks to make sure parameters are inherited and overriden properly")
+  @Test(description = "Checks to make sure parameters are inherited and overridden properly")
   public void parameterInheritanceAndOverriding() {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG tng = create();
