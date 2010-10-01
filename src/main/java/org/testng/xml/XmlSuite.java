@@ -23,52 +23,52 @@ public class XmlSuite implements Serializable, Cloneable {
   // Possible value for the attribute annotations of <suite>
   // It would be nice to factor out these names as they are
   // also defined in the TestNG class.
-  
+
   /** @deprecated use JAVADOC_ANNOTATION_TYPE. */
   @Deprecated
   public static final String JAVADOC = "javadoc";
 
   /** The JDK50 annotation type ID ("JDK5"). */
   public static final String JDK5_ANNOTATION_TYPE = AnnotationTypeEnum.JDK.getName();
-  
+
   /** The JavaDoc annotation type ID ("javadoc"). */
   public static final String JAVADOC_ANNOTATION_TYPE = AnnotationTypeEnum.JAVADOC.getName();
-  
+
   /** Parallel modes */
   public static final String PARALLEL_TESTS = "tests";
   public static final String PARALLEL_METHODS = "methods";
   public static final String PARALLEL_CLASSES = "classes";
   public static final String PARALLEL_NONE = "none";
-  
+
   /** Configuration failure policy options */
   public static final String SKIP = "skip";
   public static final String CONTINUE = "continue";
-  
+
   private String m_test;
-  
+
   /** The default suite name TODO CQ is this OK as a default name. */
   private static final String DEFAULT_SUITE_NAME = "Default Suite";
 
   /** The suite name (defaults to DEFAULT_SUITE_NAME) */
   private String m_name = DEFAULT_SUITE_NAME;
-  
+
   /** The suite verbose flag. (0 to 10)*/
   public static Integer DEFAULT_VERBOSE = 1;
   private Integer m_verbose = null;
 
   public static String DEFAULT_PARALLEL = "false";
   private String m_parallel = null;
-  
+
   /** Whether to SKIP or CONTINUE to re-attempt failed configuration methods. */
   private String m_configFailurePolicy = SKIP;
-  
+
   /** JUnit compatibility flag. */
   public static Boolean DEFAULT_JUNIT = Boolean.FALSE;
   private Boolean m_isJUnit = DEFAULT_JUNIT;
 
   public static boolean DEFAULT_SKIP_FAILED_INVOCATION_COUNTS = Boolean.FALSE;
   private Boolean m_skipFailedInvocationCounts = DEFAULT_SKIP_FAILED_INVOCATION_COUNTS;
-  
+
   /** The thread count. */
   public static Integer DEFAULT_THREAD_COUNT = 5;
   private int m_threadCount = DEFAULT_THREAD_COUNT;
@@ -76,28 +76,28 @@ public class XmlSuite implements Serializable, Cloneable {
   /** Thread count for the data provider pool */
   public static final int DEFAULT_DATA_PROVIDER_THREAD_COUNT = 10;
   private int m_dataProviderThreadCount = DEFAULT_DATA_PROVIDER_THREAD_COUNT;
-  
+
   /** The suite annotation type. */
   private AnnotationTypeEnum m_annotations;
 
-  /** The suite default annotation type. */ 
+  /** The suite default annotation type. */
   private AnnotationTypeEnum m_defaultAnnotations = VersionInfo.getDefaultAnnotationType();
-  
+
   /** The packages containing test classes. */
   private List<XmlPackage> m_xmlPackages = Lists.newArrayList();
-  
+
   /** BeanShell expression. */
   private String m_expression = null;
-  
+
   /** Suite level method selectors. */
   private List<XmlMethodSelector> m_methodSelectors = Lists.newArrayList();
-  
+
   /** Tests in suite. */
   private List<XmlTest> m_tests = Lists.newArrayList();
-  
+
   /** Suite level parameters. */
   private Map<String, String> m_parameters = Maps.newHashMap();
-  
+
   /** Name of the XML file */
   private String m_fileName;
 
@@ -155,7 +155,7 @@ public class XmlSuite implements Serializable, Cloneable {
   public void setParallel(String parallel) {
     m_parallel = parallel;
   }
-  
+
   /**
    * Sets the configuration failure policy.
    * @param configFailurePolicy the config failure policy
@@ -373,8 +373,8 @@ public class XmlSuite implements Serializable, Cloneable {
    * Sets the overall default annotation type (JDK5/javadoc).
    * It is used if the annotation attribute of the suite definition
    * does not specify an explicit value.
-   * 
-   * @param annotationType one of the two string constant JAVADOC_ANNOTATION_TYPE or 
+   *
+   * @param annotationType one of the two string constant JAVADOC_ANNOTATION_TYPE or
    * JDK5_ANNOTATION_TYPE.
    * @see #JAVADOC_ANNOTATION_TYPE
    * @see #JDK5_ANNOTATION_TYPE
@@ -382,12 +382,12 @@ public class XmlSuite implements Serializable, Cloneable {
   public void setDefaultAnnotations(String annotationType) {
     m_defaultAnnotations = AnnotationTypeEnum.valueOf(annotationType);
   }
-  
+
   /**
    * Sets the annotation type for the suite. If this value is not explicitly set,
    * the suite annotation type defaults to the default annotation type. see
-   * setDefaultAnnotations  
-   * @param annotations one of the two string constant JAVADOC_ANNOTATION_TYPE or 
+   * setDefaultAnnotations
+   * @param annotations one of the two string constant JAVADOC_ANNOTATION_TYPE or
    * JDK5_ANNOTATION_TYPE.
    * @see #JAVADOC_ANNOTATION_TYPE
    * @see #JDK5_ANNOTATION_TYPE
@@ -403,7 +403,7 @@ public class XmlSuite implements Serializable, Cloneable {
   public Boolean isJUnit() {
     return m_isJUnit;
   }
-  
+
   /**
    * Sets the JUnit compatibility flag.
    *
@@ -479,7 +479,7 @@ public class XmlSuite implements Serializable, Cloneable {
     if (! DEFAULT_JUNIT.equals(m_isJUnit)) {
       p.setProperty("junit", m_isJUnit != null ? m_isJUnit.toString() : "false"); // TESTNG-141
     }
-    p.setProperty("skipfailedinvocationcounts", 
+    p.setProperty("skipfailedinvocationcounts",
         m_skipFailedInvocationCounts != null
           ? m_skipFailedInvocationCounts.toString() : "false");
     if(null != m_objectFactory)
@@ -594,93 +594,92 @@ public class XmlSuite implements Serializable, Cloneable {
     return result;
   }
 
-    /**
-     * Sets the timeout.
-     *
-     * @param timeOut the timeout.
-     */
-    public void setTimeOut(String timeOut) {
-        m_timeOut = timeOut;
-    }
+  /**
+   * Sets the timeout.
+   *
+   * @param timeOut the timeout.
+   */
+  public void setTimeOut(String timeOut) {
+    m_timeOut = timeOut;
+  }
 
-    /**
-     * Returns the timeout.
-     * @return the timeout.
-     */
-    public String getTimeOut() {
-        return m_timeOut;
-    }
-    
-    /**
-     * Returns the timeout as a long value specifying the default value to be used if
-     * no timeout was specified.
-     *
-     * @param def the the default value to be used if no timeout was specified.
-     * @return the timeout as a long value specifying the default value to be used if
-     * no timeout was specified.
-     */
-    public long getTimeOut(long def) {
-        long result = def;
-        if (m_timeOut != null) {
-            result = new Long(m_timeOut).longValue();
-        }
-        
-        return result;
-    }
+  /**
+   * Returns the timeout.
+   * @return the timeout.
+   */
+  public String getTimeOut() {
+    return m_timeOut;
+  }
 
-    /**
-     * Sets the suite files.
-     *
-     * @param files the suite files.
-     */
-    public void setSuiteFiles(List<String> files) {
-      m_suiteFiles = files;
+  /**
+   * Returns the timeout as a long value specifying the default value to be used if
+   * no timeout was specified.
+   *
+   * @param def the the default value to be used if no timeout was specified.
+   * @return the timeout as a long value specifying the default value to be used if
+   * no timeout was specified.
+   */
+  public long getTimeOut(long def) {
+    long result = def;
+    if (m_timeOut != null) {
+        result = new Long(m_timeOut).longValue();
     }
-    
-    /**
-     * Returns the suite files.
-     * @return the suite files.
-     */
-    public List<String> getSuiteFiles() {
-      return m_suiteFiles;
-    }
+    return result;
+  }
 
-    public void setListeners(List<String> listeners) {
-      m_listeners = listeners;
-    }
-    
-    public List<String> getListeners() {
-      if (m_parentSuite != null) {
-        List<String> listeners = m_parentSuite.getListeners();
-        for (String listener : listeners) {
-          if (!m_listeners.contains(listener)) {
-             m_listeners.add(listener);
-          }
+  /**
+   * Sets the suite files.
+   *
+   * @param files the suite files.
+   */
+  public void setSuiteFiles(List<String> files) {
+    m_suiteFiles = files;
+  }
+
+  /**
+   * Returns the suite files.
+   * @return the suite files.
+   */
+  public List<String> getSuiteFiles() {
+    return m_suiteFiles;
+  }
+
+  public void setListeners(List<String> listeners) {
+    m_listeners = listeners;
+  }
+
+  public List<String> getListeners() {
+    if (m_parentSuite != null) {
+      List<String> listeners = m_parentSuite.getListeners();
+      for (String listener : listeners) {
+        if (!m_listeners.contains(listener)) {
+           m_listeners.add(listener);
         }
       }
-      return m_listeners;
     }
+    return m_listeners;
+  }
 
-    public void setDataProviderThreadCount(int count) {
-      m_dataProviderThreadCount = count;
-    }
+  public void setDataProviderThreadCount(int count) {
+    m_dataProviderThreadCount = count;
+  }
 
-    public int getDataProviderThreadCount() {
-      return m_dataProviderThreadCount;
-    }
-    
-    public void setParentSuite(XmlSuite parentSuite) {
-      m_parentSuite = parentSuite;
-      updateParameters();
-    }
-     
-    public XmlSuite getParentSuite() {
-      return m_parentSuite;
-    }
+  public int getDataProviderThreadCount() {
+    return m_dataProviderThreadCount;
+  }
 
-    public List<XmlSuite> getChildSuites() {
-      return m_childSuites;
-    }
+  public void setParentSuite(XmlSuite parentSuite) {
+    m_parentSuite = parentSuite;
+    updateParameters();
+  }
+
+  public XmlSuite getParentSuite() {
+    return m_parentSuite;
+  }
+
+  public List<XmlSuite> getChildSuites() {
+    return m_childSuites;
+  }
 
   @Override
   public int hashCode() {
