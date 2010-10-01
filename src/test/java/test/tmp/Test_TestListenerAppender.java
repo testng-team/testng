@@ -8,7 +8,7 @@ public class Test_TestListenerAppender {
   @DataProvider(name = "test1")
   public Object[][] createData1() {
 //      throw new RuntimeException("Intentionally thrown exception");
-       return new Object[][] { { "Cedric", new Integer(36) }, {"Anne", new Integer(37) }, };
+       return new Object[][] { { "Cedric", Integer.valueOf(36) }, {"Anne", Integer.valueOf(37) }, };
   }
 
   @Test(dataProvider = "test1")

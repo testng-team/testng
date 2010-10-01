@@ -107,7 +107,7 @@ public class Logger {
 
   static {
     for(i= 0; i < LEVEL_COUNT; ++i) {
-      levelMap.put(levelNames[i], new Integer(i));
+      levelMap.put(levelNames[i], Integer.valueOf(i));
     }
   }
 

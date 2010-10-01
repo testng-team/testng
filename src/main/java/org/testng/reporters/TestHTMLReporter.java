@@ -167,7 +167,7 @@ public class TestHTMLReporter extends TestListenerAdapter {
 
       // Time
       long time = (tr.getEndMillis() - tr.getStartMillis()) / 1000;
-      String strTime = new Long(time).toString();
+      String strTime = Long.toString(time);
       sb.append("<td>").append(strTime).append("</td>\n");
 
       // Instance

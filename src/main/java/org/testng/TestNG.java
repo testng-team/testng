@@ -783,7 +783,7 @@ public class TestNG {
 
   private Integer m_suiteThreadPoolSize = CommandLineArgs.SUITE_THREAD_POOL_SIZE_DEFAULT;
 
-  private boolean m_randomizeSuites = Boolean.valueOf(CommandLineArgs.RANDOMIZE_SUITES);
+  private boolean m_randomizeSuites = Boolean.FALSE;
 
   /**
    * Sets the level of verbosity. This value will override the value specified
@@ -1304,7 +1304,7 @@ public class TestNG {
     if (cla.suiteFiles != null) setTestSuites(cla.suiteFiles);
 
     setSuiteThreadPoolSize(cla.suiteThreadPoolSize);
-    setRandomizeSuites(Boolean.valueOf(cla.randomizeSuites));
+    setRandomizeSuites(cla.randomizeSuites);
   }
 
   public void setSuiteThreadPoolSize(Integer suiteThreadPoolSize) {

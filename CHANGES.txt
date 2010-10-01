@@ -1,5 +1,6 @@
 Current
 
+Added: timeOut for configuration methods
 Added: -randomizesuites (Nalin Makar)
 Added: IConfigurable
 Fixed: TESTNG-186: Rename IWorkerApadter to IWorkerAdapter (Tom‡s Pollak)

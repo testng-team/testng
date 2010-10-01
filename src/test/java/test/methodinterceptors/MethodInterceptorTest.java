@@ -23,7 +23,7 @@ import java.util.List;
 public class MethodInterceptorTest extends SimpleBaseTest {
   
   private String XML =
-    XML = "<!DOCTYPE suite SYSTEM \"http://beust.com/testng/testng-1.0.dtd\" >" +
+    "<!DOCTYPE suite SYSTEM \"http://beust.com/testng/testng-1.0.dtd\" >" +
     "" +
     "<suite name=\"Single\" verbose=\"0\">" +
     "" +
@@ -98,8 +98,7 @@ public class MethodInterceptorTest extends SimpleBaseTest {
     BufferedWriter bw = new BufferedWriter(new FileWriter(f));
     bw.write(XML);
     bw.close();
-    
-    FileInputStream fis = null;
+
     try {
       List<XmlSuite> xmlSuites = new Parser(f.getAbsolutePath()).parseToList();
       
@@ -109,9 +108,6 @@ public class MethodInterceptorTest extends SimpleBaseTest {
     }
     catch(Exception ex) {
       ex.printStackTrace();
-    }
-    finally {
-      if (fis != null) fis.close();
     }
   }
 

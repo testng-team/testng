@@ -76,7 +76,7 @@ public class BaseTest extends BaseDistributedTest {
   }
 
   protected void setSuiteTimeOut(long n) {
-      m_suite.setTimeOut(new Long(n).toString());
+      m_suite.setTimeOut(Long.toString(n));
   }
 
   protected void setJUnit(boolean f) {

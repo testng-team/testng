@@ -9,11 +9,11 @@ public class IterableTest {
   private boolean m_ok2 = false;
 
   public static final String FN2 = "Anne Marie";
-  public static final Integer LN2 = new Integer(37);
+  public static final Integer LN2 = Integer.valueOf(37);
   public static final String FN1 = "Cedric";
-  public static final Integer LN1 = new Integer(36);
+  public static final Integer LN1 = Integer.valueOf(36);
   
-  public static final Object[][] DATA =new Object[][] {
+  public static final Object[][] DATA = new Object[][] {
     new Object[] { FN1, LN1 },
     new Object[] { FN2, LN2 },      
   };

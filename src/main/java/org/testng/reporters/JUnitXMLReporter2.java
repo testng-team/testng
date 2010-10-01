@@ -10,7 +10,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.testng.ISuite;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
@@ -122,7 +121,6 @@ public class JUnitXMLReporter2 implements IResultListener {
       rootElement.appendChild(propsElement);
 
       // properties. just TestNG properties or also System properties?
-      ISuite suite= m_testContext.getSuite();
 
       rootElement.setAttribute(XMLConstants.ATTR_TESTS, "" + m_allTests.size());
       rootElement.setAttribute(XMLConstants.ATTR_FAILURES, "" + m_numFailed);

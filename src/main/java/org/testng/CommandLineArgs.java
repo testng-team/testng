@@ -144,5 +144,5 @@ public class CommandLineArgs {
   public static final String RANDOMIZE_SUITES = "-randomizesuites";
   @Parameter(names = RANDOMIZE_SUITES, hidden = true,
       description = "Whether to run suites in same order as specified in XML or not")
-  public String randomizeSuites = "false";
+  public Boolean randomizeSuites = Boolean.FALSE;
 }

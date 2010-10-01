@@ -25,7 +25,6 @@ public class ConfigurationGroups4SampleTest {
     log("run");
     Assert.assertFalse(m_after);
     m_run = true;
-    m_run = true;
   }
 
   @AfterGroups("cg4-1")

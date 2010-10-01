@@ -248,38 +248,28 @@ public class Invoker implements IInvoker {
    * Is the current <code>IConfiguration</code> a class-level method.
    */
   private  boolean isClassConfiguration(IConfigurationAnnotation configurationAnnotation) {
-    if(null == configurationAnnotation) {
+    if (null == configurationAnnotation) {
       return false;
     }
-    
-    boolean before= (null != configurationAnnotation)
-      ? configurationAnnotation.getBeforeTestClass()
-      : false;
 
-    boolean after= (null != configurationAnnotation)
-      ? configurationAnnotation.getAfterTestClass()
-      : false;
+    boolean before = configurationAnnotation.getBeforeTestClass();
+    boolean after = configurationAnnotation.getAfterTestClass();
 
-    return (before || after);
+    return before || after;
   }
 
   /**
    * Is the current <code>IConfiguration</code> a suite level method.
    */
   private  boolean isSuiteConfiguration(IConfigurationAnnotation configurationAnnotation) {
-    if(null == configurationAnnotation) {
+    if (null == configurationAnnotation) {
       return false;
     }
-    
-    boolean before= (null != configurationAnnotation)
-      ? configurationAnnotation.getBeforeSuite()
-      : false;
 
-    boolean after= (null != configurationAnnotation)
-      ? configurationAnnotation.getAfterSuite()
-      : false;
+    boolean before = configurationAnnotation.getBeforeSuite();
+    boolean after = configurationAnnotation.getAfterSuite();
 
-    return (before || after);
+    return before || after;
   }
 
   /**
@@ -1059,7 +1049,7 @@ public class Invoker implements IInvoker {
     List<ITestResult> result = Lists.newArrayList();
     
     ITestClass testClass= testMethod.getTestClass();
-    long start= System.currentTimeMillis();
+    long start = System.currentTimeMillis();
 
     //
     // TODO:
@@ -1073,7 +1063,6 @@ public class Invoker implements IInvoker {
       timeOutInvocationCount > 0;
       
     int invocationCount = onlyOne ? 1 : testMethod.getInvocationCount();
-    
     int failureCount = 0;
 
     ExpectedExceptionsHolder expectedExceptionHolder = 
@@ -1101,7 +1090,6 @@ public class Invoker implements IInvoker {
             ITestNGMethod[] beforeMethods = filterMethods(testClass, testClass.getBeforeTestMethods());
             ITestNGMethod[] afterMethods = filterMethods(testClass, testClass.getAfterTestMethods());
 
-
             Map<String, String> allParameterNames = Maps.newHashMap();
             ParameterBag bag = createParameters(testClass, testMethod,
                 parameters, allParameterNames, null, suite, testContext, instances[0],
@@ -1122,7 +1110,6 @@ public class Invoker implements IInvoker {
             try {
               List<TestMethodWithDataProviderMethodWorker> workers = Lists.newArrayList();
 
-//                  if (false) { // bag.parameterHolder.origin == ParameterHolder.ORIGIN_DATA_PROVIDER) {
               if (bag.parameterHolder.origin == ParameterHolder.ORIGIN_DATA_PROVIDER &&
                   bag.parameterHolder.dataProviderHolder.annotation.isParallel()) {
                 while (allParameterValues.hasNext()) {
@@ -1710,11 +1697,9 @@ public class Invoker implements IInvoker {
     List<ITestNGMethod> vResult= Lists.newArrayList();
 
     for(ITestNGMethod tm : methods) {
-      if(null == testClass) {
-        testClass= tm.getTestClass();
-      }
+      testClass= tm.getTestClass();
 
-      if(tm.getTestClass().getName().equals(testClass.getName())) {
+      if (tm.getTestClass().getName().equals(testClass.getName())) {
         log(9, "        Keeping method " + tm + " for class " + testClass);
 
         vResult.add(tm);
@@ -1724,9 +1709,7 @@ public class Invoker implements IInvoker {
       }
     }
 
-    ITestNGMethod[] result= vResult.toArray(new ITestNGMethod[vResult.size()]);
-
-    return result;
+    return vResult.toArray(new ITestNGMethod[vResult.size()]);
   }
 
   /**
