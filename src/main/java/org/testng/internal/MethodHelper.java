@@ -38,11 +38,6 @@ import java.util.regex.Pattern;
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class MethodHelper {
-//  static private boolean m_quiet = true;
-
-  // ///
-  // public methods
-  //
 
   public static ITestNGMethod[] collectAndOrderMethods(List<ITestNGMethod> methods,
       RunInfo runInfo, IAnnotationFinder finder, List<ITestNGMethod> outExcludedMethods)
@@ -80,7 +75,6 @@ public class MethodHelper {
       sortMethods(forTests, includedMethods, finder).toArray(new ITestNGMethod[]{})
       : includedMethods.toArray(new ITestNGMethod[]{});
   }
-
 
   /**
    * @return all the methods that belong to the group specified by the regular
@@ -124,7 +118,7 @@ public class MethodHelper {
       if(null != fullyQualifiedRegexp) {
         String regexp = escapeRegexp(fullyQualifiedRegexp);
         currentRegexp = regexp;
-        boolean usePackage = regexp.indexOf(".") != -1;
+        boolean usePackage = regexp.indexOf('.') != -1;
 
         for (ITestNGMethod method : methods) {
           Method thisMethod = method.getMethod();
@@ -141,8 +135,12 @@ public class MethodHelper {
       }
 
       if (!foundAtLeastAMethod) {
-        if (m.ignoreMissingDependencies()) continue;
-        if (m.isAlwaysRun()) continue;
+        if (m.ignoreMissingDependencies()) {
+          continue;
+        }
+        if (m.isAlwaysRun()) {
+          continue;
+        }
         Method maybeReferringTo = findMethodByName(m, currentRegexp);
         if (maybeReferringTo != null) {
           throw new TestNGException(mainMethod + "() is not allowed to depend on " + maybeReferringTo);
@@ -158,7 +156,9 @@ public class MethodHelper {
   }
 
   private static Method findMethodByName(ITestNGMethod mainMethod, String regExp) {
-    if (regExp == null) return null;
+    if (regExp == null) {
+      return null;
+    }
     int lastDot = regExp.lastIndexOf('.');
     String className, methodName;
     if (lastDot == -1) {
@@ -172,7 +172,9 @@ public class MethodHelper {
     try {
       Class<?> c = Class.forName(className);
       for (Method m : c.getDeclaredMethods()) {
-        if (methodName.equals(m.getName())) return m;
+        if (methodName.equals(m.getName())) {
+          return m;
+        }
       }
     } catch (Exception e) {} // ignore
     return null;
@@ -573,10 +575,6 @@ public class MethodHelper {
     result.addAll(sl);
     result.addAll(pl);
     return result;
-  }
-
-  public static void ppp(String s) {
-    System.out.println("[MethodHelper] " + s);
   }
 
   /**

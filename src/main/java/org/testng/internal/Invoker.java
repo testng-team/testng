@@ -632,8 +632,8 @@ public class Invoker implements IInvoker {
       invokedMethod= new InvokedMethod(instance,
           tm,
           parameterValues,
-          true,
-          false,
+          true /* isTest */,
+          false /* isConfiguration */,
           System.currentTimeMillis());
 
       runInvokedMethodListeners(true, invokedMethod, testResult);
@@ -1068,7 +1068,7 @@ public class Invoker implements IInvoker {
     ExpectedExceptionsHolder expectedExceptionHolder =
         MethodHelper.findExpectedExceptions(m_annotationFinder, testMethod.getMethod());
     while(invocationCount-- > 0) {
-      boolean okToProceed = checkDependencies(testMethod, testClass, allTestMethods);
+      boolean okToProceed = checkDependencies(testMethod, allTestMethods);
 
       if (okToProceed) {
         //
@@ -1543,33 +1543,35 @@ public class Invoker implements IInvoker {
   }
 
   /**
-   * @param testMethod
+   * Checks to see of the test method has certain dependencies that prevents
+   * TestNG from executing it
+   * @param testMethod test method being checked for
    * @param testClass
    * @return dependencies have been run successfully
    */
-  private boolean checkDependencies(ITestNGMethod testMethod, ITestClass testClass,
+  private boolean checkDependencies(ITestNGMethod testMethod,
       ITestNGMethod[] allTestMethods)
   {
-    boolean result= true;
+    boolean result = true;
 
-    // If this method is marked alwaysRun, no need to check for its
-    // dependencies
+    // If this method is marked alwaysRun, no need to check for its dependencies
     if (testMethod.isAlwaysRun()) {
       return true;
     }
 
     // Any missing group?
-    if (testMethod.getMissingGroup() != null) {
-      if (!testMethod.ignoreMissingDependencies()) return false;
+    if (testMethod.getMissingGroup() != null 
+          && !testMethod.ignoreMissingDependencies()) {
+      return false;
     }
 
     // If this method depends on groups, collect all the methods that
     // belong to these groups and make sure they have been run successfully
-    if(dependsOnGroups(testMethod)) {
-      String[] groupsDependedUpon= testMethod.getGroupsDependedUpon();
+    if (dependsOnGroups(testMethod)) {
+      String[] groupsDependedUpon = testMethod.getGroupsDependedUpon();
 
       // Get all the methods that belong to the group depended upon
-      for(int i= 0; i < groupsDependedUpon.length; i++) {
+      for (int i= 0; i < groupsDependedUpon.length; i++) {
         ITestNGMethod[] methods =
           MethodHelper.findMethodsThatBelongToGroup(testMethod,
               m_testContext.getAllTestMethods(),
@@ -1581,11 +1583,11 @@ public class Invoker implements IInvoker {
 
     // If this method depends on other methods, make sure all these other
     // methods have been run successfully
-    if(dependsOnMethods(testMethod)) {
+    if (result && dependsOnMethods(testMethod)) {
       ITestNGMethod[] methods =
         MethodHelper.findMethodsNamed(testMethod, allTestMethods, testMethod.getMethodsDependedUpon());
 
-      result= result && haveBeenRunSuccessfully(methods);
+      result = result && haveBeenRunSuccessfully(methods);
     }
 
     return result;
@@ -1716,9 +1718,8 @@ public class Invoker implements IInvoker {
    * @return true if this method depends on certain groups.
    */
   private boolean dependsOnGroups(ITestNGMethod tm) {
-    String[] groups= tm.getGroupsDependedUpon();
-    boolean result= (null != groups) && (groups.length > 0);
-
+    String[] groups = tm.getGroupsDependedUpon();
+    boolean result = (null != groups) && (groups.length > 0);
     return result;
   }
 
@@ -1726,9 +1727,8 @@ public class Invoker implements IInvoker {
    * @return true if this method depends on certain groups.
    */
   private boolean dependsOnMethods(ITestNGMethod tm) {
-    String[] methods= tm.getMethodsDependedUpon();
-    boolean result= (null != methods) && (methods.length > 0);
-
+    String[] methods = tm.getMethodsDependedUpon();
+    boolean result = (null != methods) && (methods.length > 0);
     return result;
   }
 
@@ -1785,77 +1785,9 @@ public class Invoker implements IInvoker {
     }
   }
 
-  private static void ppp(String s) {
-    System.out.println("[Invoker]" + s);
-  }
-
   private void log(int level, String s) {
     Utils.log("Invoker " + Thread.currentThread().hashCode(), level, s);
   }
-
-//  private class DataTestMethodWorker implements IMethodWorker {
-//    final Object[] m_instances;
-//    final ITestNGMethod m_testMethod;
-//    final ITestNGMethod[] m_beforeMethods;
-//    final ITestNGMethod[] m_afterMethods;
-//    final ConfigurationGroupMethods m_groupMethods;
-//    final Object[] m_parameters;
-//    final XmlSuite m_suite;
-//    final Map<String, String> m_allParameterNames;
-//
-//    List<ITestResult> m_results;
-//
-//    public DataTestMethodWorker(Object[] instances,
-//        ITestNGMethod testMethod,
-//        Object[] params,
-//        ITestNGMethod[] befores,
-//        ITestNGMethod[] afters,
-//        ConfigurationGroupMethods groupMethods,
-//        XmlSuite suite,
-//        Map<String, String> paramNames) {
-//      m_instances= instances;
-//      m_testMethod= testMethod;
-//      m_parameters= params;
-//      m_beforeMethods= befores;
-//      m_afterMethods= afters;
-//      m_groupMethods= groupMethods;
-//      m_suite= suite;
-//      m_allParameterNames= paramNames;
-//    }
-//
-//    public long getMaxTimeOut() {
-//      return 0;
-//    }
-//
-//    public void run() {
-//      m_results= invokeTestMethod(m_instances,
-//          m_testMethod,
-//          m_parameters,
-//          m_suite,
-//          m_allParameterNames,
-//          m_testMethod.getTestClass(),
-//          m_beforeMethods,
-//          m_afterMethods,
-//          m_groupMethods);
-//    }
-//
-//    public List<ITestResult> getTestResults() {
-//      return m_results;
-//    }
-//
-//    public List<ITestNGMethod> getMethods() {
-//      return Arrays.asList(m_testMethod);
-//    }
-//
-//    public int getPriority() {
-//      return 1;
-//    }
-//
-//    public int compareTo(IMethodWorker other) {
-//      return getPriority() - other.getPriority();
-//    }
-//
-//  } // DataTestMethodWorker
 
   private static class ParameterBag {
     final ParameterHolder parameterHolder;

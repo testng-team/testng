@@ -32,16 +32,14 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   // Map of the test methods and their associated instances
   // It has to be a set because the same method can be passed several times
   // and associated to a different instance
-  protected IMethodInstance[] m_testMethods;
-  protected IInvoker m_invoker = null;
-  protected Map<String, String> m_parameters = null;
-  protected XmlSuite m_suite = null;
-//  protected Map<ITestClass, Set<Object>> m_invokedBeforeClassMethods = null;
-//  protected Map<ITestClass, Set<Object>> m_invokedAfterClassMethods = null;
-  protected ITestNGMethod[] m_allTestMethods;
-  protected List<ITestResult> m_testResults = Lists.newArrayList();
-  protected ConfigurationGroupMethods m_groupMethods = null;
-  protected ClassMethodMap m_classMethodMap = null;
+  private IMethodInstance[] m_testMethods;
+  private IInvoker m_invoker = null;
+  private Map<String, String> m_parameters = null;
+  private XmlSuite m_suite = null;
+  private ITestNGMethod[] m_allTestMethods;
+  private List<ITestResult> m_testResults = Lists.newArrayList();
+  private ConfigurationGroupMethods m_groupMethods = null;
+  private ClassMethodMap m_classMethodMap = null;
   private ITestContext m_testContext = null;
   
   public TestMethodWorker(IInvoker invoker, 
@@ -293,11 +291,5 @@ class SingleTestMethodWorker extends TestMethodWorker {
           EMPTY_GROUP_METHODS,
           null,
           testContext);
-  }
-
-  protected void invokeAfterClassMethods(ITestClass testClass, ITestNGMethod tm) {
-  }
-
-  protected void invokeBeforeClassMethods(ITestClass testClass) {
   }
 }

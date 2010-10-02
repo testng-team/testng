@@ -1476,56 +1476,10 @@ public class TestNG {
    *
    * @return true if this is the JDK 1.4 JAR version of TestNG, false otherwise.
    */
+  @Deprecated
   public static boolean isJdk14() {
-    return VersionInfo.IS_JDK14;
+    return false;
   }
-
-  /**
-   * Checks TestNG preconditions. For example, this method makes sure that if this is the
-   * JDK 1.4 version of TestNG, a source directory has been specified. This method calls
-   * System.exit(-1) or throws an exception if the preconditions are not satisfied.
-   *
-   * @param params the parsed command line parameters.
-   */
-//  @SuppressWarnings({"unchecked"})
-//  protected static Map checkConditions(Map params) {
-//    // TODO CQ document why sometimes we throw exceptions and sometimes we exit.
-//    String testClasses = (String) params.get(CommandLineArgs.TESTCLASS_COMMAND);
-//    List<String> testNgXml = (List<String>) params.get(CommandLineArgs.SUITE_DEF);
-//    Object testJar = params.get(CommandLineArgs.TESTJAR_COMMAND);
-//    Object slave = params.get(CommandLineArgs.SLAVE);
-//
-//    if (testClasses == null && testNgXml == null && slave == null && testJar == null) {
-//      System.err.println("You need to specify at least one testng.xml or one class");
-//      usage();
-//      System.exit(-1);
-//    }
-//
-//    if (VersionInfo.IS_JDK14) {
-//      String srcPath = (String) params.get(CommandLineArgs.SRC_COMMAND);
-//
-//      if ((null == srcPath) || "".equals(srcPath)) {
-//        throw new TestNGException("No sourcedir was specified");
-//      }
-//    }
-//
-//    String groups = (String) params.get(CommandLineArgs.GROUPS_COMMAND);
-//    String excludedGroups = (String) params.get(CommandLineArgs.EXCLUDED_GROUPS_COMMAND);
-//
-//    if (testJar == null &&
-//        (null != groups || null != excludedGroups) && testClasses == null && testNgXml == null) {
-//      throw new TestNGException("Groups option should be used with testclass option");
-//    }
-//
-//    // -slave & -master can't be set together
-//    if (params.containsKey(CommandLineArgs.SLAVE) &&
-//   		 params.containsKey(CommandLineArgs.MASTER)) {
-//   	 throw new TestNGException(CommandLineArgs.SLAVE + " can't be combined with " +
-//   	                           CommandLineArgs.MASTER);
-//    }
-//
-//    return params;
-//  }
 
   /**
    * Double check that the command line parameters are valid.

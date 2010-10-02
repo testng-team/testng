@@ -15,7 +15,7 @@ import org.testng.xml.XmlSuite;
 public class SuiteResult implements ISuiteResult, Comparable {
 	/* generated */
 	private static final long serialVersionUID = 6778513869858860756L;
-private String m_propertyFileName =  null;
+  private String m_propertyFileName =  null;
   private XmlSuite m_suite = null;  
   private ITestContext m_testContext = null;
   
