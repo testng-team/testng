@@ -18,7 +18,7 @@ public class SkipException extends RuntimeException {
     super(skipMessage);
   }
   
-  public SkipException(String skipMessage, Throwable cause) {
+  protected SkipException(String skipMessage, Throwable cause) {
     super(skipMessage, cause);
   }
   

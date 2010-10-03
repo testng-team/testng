@@ -12,7 +12,7 @@ import java.util.List;
  * @author cbeust
  *
  */
-public class PreserveOrderMethodInterceptor implements IMethodInterceptor {
+class PreserveOrderMethodInterceptor implements IMethodInterceptor {
 
   private void p(List<IMethodInstance> methods, String s) {
     System.out.println("[PreserveOrderMethodInterceptor] " + s);

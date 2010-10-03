@@ -60,7 +60,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
   /* generated */
   private static final long serialVersionUID = 4247820024988306670L;
   private ISuite m_suite;
-  protected XmlTest m_xmlTest;
+  private XmlTest m_xmlTest;
   private String m_testName;
 
   transient private List<XmlClass> m_testClassesFromXml= null;
@@ -135,7 +135,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
   private transient TestNGClassFinder m_testClassFinder;
   private transient IConfiguration m_configuration;
 
-  public TestRunner(IConfiguration configuration,
+  protected TestRunner(IConfiguration configuration,
                     ISuite suite,
                     XmlTest test,
                     String outputDirectory,
@@ -145,13 +145,6 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
   {
     init(configuration, suite, test, outputDirectory, finder, skipFailedInvocationCounts,
         invokedMethodListeners);
-  }
-
-  public TestRunner(IConfiguration configuration, ISuite suite, XmlTest test, 
-    IAnnotationFinder finder, boolean skipFailedInvocationCounts) 
-  {
-    init(configuration, suite, test, suite.getOutputDirectory(), finder, skipFailedInvocationCounts,
-        null);
   }
 
   public TestRunner(IConfiguration configuration, ISuite suite, XmlTest test,
@@ -238,9 +231,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
     addConfigurationListener(m_confListener);
   }
 
-  class ListenerHolder {
-    List<Class<? extends ITestNGListener>> listenerClasses;
-    Class<? extends ITestNGListenerFactory> listenerFactoryClass;
+  private class ListenerHolder {
+    private List<Class<? extends ITestNGListener>> listenerClasses;
+    private Class<? extends ITestNGListenerFactory> listenerFactoryClass;
   }
 
   /**
@@ -684,7 +677,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
     m_allTestMethods= runMethods.toArray(new ITestNGMethod[runMethods.size()]);
   }
   
-  public void privateRun(XmlTest xmlTest) {
+  private void privateRun(XmlTest xmlTest) {
     //
     // Calculate the lists of tests that can be run in sequence and in parallel
     //
@@ -1600,7 +1593,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
     m_testListeners.add(il);
   }
 
-  public void addConfigurationListener(IConfigurationListener icl) {
+  private void addConfigurationListener(IConfigurationListener icl) {
     m_configurationListeners.add(icl);
   }
   //
