@@ -16,18 +16,18 @@ import java.io.IOException;
 public class FileAssert {
 
   /**
-     * Protect constructor since it is a static only class
-     */
+   * Protect constructor since it is a static only class
+   */
   private FileAssert() {
   	// hide constructor
   }
   
   /**
-     * Asserts that a {@code tstvalue} is a proper directory. If it isn't,
-     * an AssertionError, with the given message, is thrown.
-     * @param tstvalue the file to evaluate
-     * @param message the assertion error message
-     */
+   * Asserts that a {@code tstvalue} is a proper directory. If it isn't,
+   * an AssertionError, with the given message, is thrown.
+   * @param tstvalue the file to evaluate
+   * @param message the assertion error message
+   */
   static public void assertDirectory(File tstvalue, String message) {
   	boolean condition=false;
   	try {
@@ -45,11 +45,11 @@ public class FileAssert {
   }
   
   /**
-     * Asserts that a {@code tstvalue} is a proper directory. If it isn't,
-     * an AssertionError, with the given message, is thrown.
-     * @param tstvalue the file to evaluate
-     * @param message the assertion error message
-     */
+   * Asserts that a {@code tstvalue} is a proper directory. If it isn't,
+   * an AssertionError, with the given message, is thrown.
+   * @param tstvalue the file to evaluate
+   * @param message the assertion error message
+   */
   static public void assertFile(File tstvalue, String message) {
   	boolean condition=false;
   	try {
@@ -63,19 +63,19 @@ public class FileAssert {
   }
   
   /**
-     * @see #assertFile(File, String)
-     */
+   * @see #assertFile(File, String)
+   */
   static public void assertFile(File tstvalue) {
   	assertFile(tstvalue, null);
   }
   
   /**
-     * Asserts that a {@code tstvalue} is a file of exactly {@code expected} characters
-     * or a directory of exactly {@code expected} entries. If it isn't,
-     * an AssertionError, with the given message, is thrown.
-     * @param tstvalue the file to evaluate
-     * @param message the assertion error message
-     */
+   * Asserts that a {@code tstvalue} is a file of exactly {@code expected} characters
+   * or a directory of exactly {@code expected} entries. If it isn't,
+   * an AssertionError, with the given message, is thrown.
+   * @param tstvalue the file to evaluate
+   * @param message the assertion error message
+   */
   static public void assertLength(File tstvalue, long expected, String message) {
   	long actual=-1L;
   	try {
@@ -89,19 +89,19 @@ public class FileAssert {
   }
   
   /**
-     * @see #assertLength(File, long, String)
-     */
+   * @see #assertLength(File, long, String)
+   */
   static public void assertLength(File tstvalue, long expected) {
   	assertLength(tstvalue, expected, null);
   }
   
   /**
-     * Asserts that a {@code tstvalue} is a file of at least {@code expected} characters
-     * or a directory of at least {@code expected} entries. If it isn't,
-     * an AssertionError, with the given message, is thrown.
-     * @param tstvalue the file to evaluate
-     * @param message the assertion error message
-     */
+   * Asserts that a {@code tstvalue} is a file of at least {@code expected} characters
+   * or a directory of at least {@code expected} entries. If it isn't,
+   * an AssertionError, with the given message, is thrown.
+   * @param tstvalue the file to evaluate
+   * @param message the assertion error message
+   */
   static public void assertMinLength(File tstvalue, long expected, String message) {
   	long actual=-1L;
   	try {
@@ -115,19 +115,19 @@ public class FileAssert {
   }
   
   /**
-     * @see #assertMinLength(File, long, String)
-     */
+   * @see #assertMinLength(File, long, String)
+   */
   static public void assertMinLength(File tstvalue, long expected) {
   	assertMinLength(tstvalue, expected, null);
   }
   
   /**
-     * Asserts that a {@code tstvalue} is a file of at most {@code expected} characters
-     * or a directory of at most {@code expected} entries. If it isn't,
-     * an AssertionError, with the given message, is thrown.
-     * @param tstvalue the file to evaluate
-     * @param message the assertion error message
-     */
+   * Asserts that a {@code tstvalue} is a file of at most {@code expected} characters
+   * or a directory of at most {@code expected} entries. If it isn't,
+   * an AssertionError, with the given message, is thrown.
+   * @param tstvalue the file to evaluate
+   * @param message the assertion error message
+   */
   static public void assertMaxLength(File tstvalue, long expected, String message) {
   	long actual=-1L;
   	try {
@@ -141,18 +141,18 @@ public class FileAssert {
   }
   
   /**
-     * @see #assertMaxLength(File, long, String)
-     */
+   * @see #assertMaxLength(File, long, String)
+   */
   static public void assertMaxLength(File tstvalue, long expected) {
   	assertMaxLength(tstvalue, expected, null);
   }
   
   /**
-     * Asserts that a {@code tstvalue} is readable. If it isn't,
-     * an AssertionError, with the given message, is thrown.
-     * @param tstvalue the file to evaluate
-     * @param message the assertion error message
-     */
+   * Asserts that a {@code tstvalue} is readable. If it isn't,
+   * an AssertionError, with the given message, is thrown.
+   * @param tstvalue the file to evaluate
+   * @param message the assertion error message
+   */
   static public void assertReadable(File tstvalue, String message) {
   	boolean condition=false;
   	try {
@@ -166,18 +166,18 @@ public class FileAssert {
   }
   
   /**
-     * @see #assertReadable(File, String)
-     */
+   * @see #assertReadable(File, String)
+   */
   static public void assertReadable(File tstvalue) {
   	assertReadable(tstvalue, null);
   }
   
   /**
-     * Asserts that a {@code tstvalue} is writeable. If it isn't,
-     * an AssertionError, with the given message, is thrown.
-     * @param tstvalue the file to evaluate
-     * @param message the assertion error message
-     */
+   * Asserts that a {@code tstvalue} is writeable. If it isn't,
+   * an AssertionError, with the given message, is thrown.
+   * @param tstvalue the file to evaluate
+   * @param message the assertion error message
+   */
   static public void assertWriteable(File tstvalue, String message) {
   	boolean condition=false;
   	try {
@@ -191,18 +191,18 @@ public class FileAssert {
   }
   
   /**
-     * @see #assertWriteable(File, String)
-     */
+   * @see #assertWriteable(File, String)
+   */
   static public void assertWriteable(File tstvalue) {
   	assertReadable(tstvalue, null);
   }
   
   /**
-     * Asserts that a {@code tstvalue} is readable and writeable. If it isn't,
-     * an AssertionError, with the given message, is thrown.
-     * @param tstvalue the file to evaluate
-     * @param message the assertion error message
-     */
+   * Asserts that a {@code tstvalue} is readable and writeable. If it isn't,
+   * an AssertionError, with the given message, is thrown.
+   * @param tstvalue the file to evaluate
+   * @param message the assertion error message
+   */
   static public void assertReadWrite(File tstvalue, String message) {
   	boolean condition=false;
   	try {
@@ -216,18 +216,18 @@ public class FileAssert {
   }
   
   /**
-     * @see #assertReadWrite(File, String)
-     */
+   * @see #assertReadWrite(File, String)
+   */
   static public void assertReadWrite(File tstvalue) {
   	assertReadWrite(tstvalue, null);
   }
   
   /**
-     * Fails a test with the given message and wrapping the original exception.
-     *
-     * @param message the assertion error message
-     * @param realCause the original exception
-     */
+   * Fails a test with the given message and wrapping the original exception.
+   *
+   * @param message the assertion error message
+   * @param realCause the original exception
+   */
   static public void fail(String message, Throwable realCause) {
   	AssertionError ae = new AssertionError(message);
   	ae.initCause(realCause);
@@ -236,23 +236,23 @@ public class FileAssert {
   }
   
   /**
-     * Fails a test with the given message.
-     * @param message the assertion error message
-     */
+   * Fails a test with the given message.
+   * @param message the assertion error message
+   */
   static public void fail(String message) {
   	throw new AssertionError(message);
   }
   
   /**
-     * Fails a test with no message.
-     */
+   * Fails a test with no message.
+   */
   static public void fail() {
   	fail(null);
   }
   
   /**
-     * Formats failure for file assertions
-     */
+   * Formats failure for file assertions
+   */
   private static void failFile(File path, String actual, String expected, String message) {
   	String formatted = "";
   	if(message != null) {
@@ -263,11 +263,11 @@ public class FileAssert {
   }
   
   /**
-     * @param tstvalue
-     * @param string
-     * @param string2
-     * @param message
-     */
+   * @param tstvalue
+   * @param string
+   * @param string2
+   * @param message
+   */
   private static void failSecurity(Exception e, File path, String actual, String expected, String message) {
   	String formatted = "";
   	if(message != null) {
@@ -282,8 +282,8 @@ public class FileAssert {
   }
   
   /**
-     * String representation of what sort of file {@code path} is.
-     */
+   * String representation of what sort of file {@code path} is.
+   */
   private static String fileType(File path) {
   	try {
   	if(!path.exists())
@@ -300,8 +300,8 @@ public class FileAssert {
   }
   
   /**
-     * String representation of what sort of file {@code path} is.
-     */
+   * String representation of what sort of file {@code path} is.
+   */
   private static String fileAccess(File path) {
   	try {
   	if(!path.exists())
