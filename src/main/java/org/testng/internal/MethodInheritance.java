@@ -118,7 +118,7 @@ public class MethodInheritance {
   
   private static boolean internalDependencyExists(ITestNGMethod m1, ITestNGMethod m2, ITestNGMethod[] methods) {
     ITestNGMethod[] methodsNamed = 
-      MethodHelper.findMethodsNamed(m1, methods, m1.getMethodsDependedUpon());
+      MethodHelper.findDependedUponMethods(m1, methods);
 
     for (ITestNGMethod method : methodsNamed) {
       if (method.equals(m2)) {
@@ -128,7 +128,7 @@ public class MethodInheritance {
 
     for (String group : m1.getGroupsDependedUpon()) {
       ITestNGMethod[] methodsThatBelongToGroup = 
-        MethodHelper.findMethodsThatBelongToGroup(m1, methods, group);
+        MethodGroupsHelper.findMethodsThatBelongToGroup(m1, methods, group);
       for (ITestNGMethod method : methodsThatBelongToGroup) {
          if (method.equals(m2)) {
            return true;

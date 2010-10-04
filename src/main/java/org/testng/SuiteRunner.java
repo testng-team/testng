@@ -92,7 +92,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
         null /* test listeners */);
   }
   
-  public SuiteRunner(IConfiguration configuration,
+  protected SuiteRunner(IConfiguration configuration,
       XmlSuite suite, 
       String outputDir, 
       ITestRunnerFactory runnerFactory, 
@@ -356,7 +356,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
    *
    * @param reporter
    */
-  public void addListener(ISuiteListener reporter) {
+  protected void addListener(ISuiteListener reporter) {
     m_listeners.add(reporter);
   }
 
@@ -472,7 +472,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   /**
    * The default implementation of {@link ITestRunnerFactory}.
    */
-  public static class DefaultTestRunnerFactory implements ITestRunnerFactory {
+  private static class DefaultTestRunnerFactory implements ITestRunnerFactory {
     private ITestListener[] m_failureGenerators;
     private boolean m_useDefaultListeners;
     private boolean m_skipFailedInvocationCounts;
@@ -525,7 +525,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     }
   }
 
-  public static class ProxyTestRunnerFactory implements ITestRunnerFactory {
+  private static class ProxyTestRunnerFactory implements ITestRunnerFactory {
     private ITestListener[] m_failureGenerators;
     private ITestRunnerFactory m_target;
 

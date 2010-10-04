@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-
 /**
  * A {@link SkipException} extension that transforms a skipped method
  * into a failed method based on a time trigger.
@@ -21,11 +20,11 @@ import java.util.Date;
  * @since 5.6
  */
 public class TimeBombSkipException extends SkipException {
+  private static final long serialVersionUID = -8599821478834048537L;
   private static final SimpleDateFormat SDF= new SimpleDateFormat("yyyy/MM/dd");
   private Calendar m_expireDate;
   private DateFormat m_inFormat= SDF;
   private DateFormat m_outFormat= SDF;
-  private volatile boolean m_stackChanged= false;
   
   /**
    * Creates a {@code TimeBombedSkipException} using the <tt>expirationDate</tt>.
@@ -191,7 +190,7 @@ public class TimeBombSkipException extends SkipException {
   }
   
   public boolean isSkip() {
-    if(null == m_expireDate) return false;
+    if (null == m_expireDate) return false;
     
     try {
       Calendar now= Calendar.getInstance();
@@ -223,6 +222,4 @@ public class TimeBombSkipException extends SkipException {
     reduceStackTrace();
     super.printStackTrace(s);
   }
-
-  
 }
