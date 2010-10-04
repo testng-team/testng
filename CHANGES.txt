@@ -22,6 +22,13 @@ Added: Section on Selenium (Felipe Knorr Kuhn)
 
 ===========================================================================
 
+5.14.1
+2010/10/2
+
+Fixed: TESTNG-401: ClassCastException when using a listener from Maven
+
+===========================================================================
+
 5.14
 2010/08/28
 
