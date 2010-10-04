@@ -685,7 +685,7 @@ public final class Utils {
     return sb.toString();
   }
 
-  public static String join(List<Class> classes, String separator) {
+  public static String joinClasses(List<Class> classes, String separator) {
     StringBuilder sb = new StringBuilder();
     int i = 0;
     for (Class s : classes) {

@@ -1302,7 +1302,7 @@ public class TestNG {
 
     List<Class> listeners = (List<Class>) cmdLineArgs.get(CommandLineArgs.LISTENER);
     if (null != listeners) {
-      result.listener = Utils.join(listeners, " ");
+      result.listener = Utils.joinClasses(listeners, " ");
     }
 
     String ms = (String) cmdLineArgs.get(CommandLineArgs.METHOD_SELECTORS);
