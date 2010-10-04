@@ -33,11 +33,11 @@ import java.util.List;
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public class RemoteTestNG extends TestNG {
-  private static final String LOCALHOST= "127.0.0.1";
+  private static final String LOCALHOST = "127.0.0.1";
 
   private ITestRunnerFactory m_customTestRunnerFactory;
-  protected String m_host;
-  protected int m_port;
+  private String m_host;
+  private int m_port;
 
   public void setConnectionParameters(String host, int port) {
     if((null == host) || "".equals(host)) {

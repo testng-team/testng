@@ -11,13 +11,11 @@ import org.testng.collections.Maps;
  * 
  *
  */
-public class InstanceOrderingMethodInterceptor implements IMethodInterceptor {
+class InstanceOrderingMethodInterceptor implements IMethodInterceptor {
 
   public List<IMethodInstance> intercept(List<IMethodInstance> methods,
       ITestContext context)  {
     return groupMethodsByInstance(methods);
-//    Collections.sort(methods, MethodInstance.SORT_BY_CLASS);
-//    return methods;
   }
 
   /**

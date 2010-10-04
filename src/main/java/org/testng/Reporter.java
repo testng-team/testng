@@ -75,60 +75,8 @@ public class Reporter {
     log(s, getCurrentTestResult());
   }
 
-  /**
-   * Log the passed string to the HTML reports if the current verbosity
-   * is equal or greater than the one passed in parameter. If logToStandardOut
-   * is true, the string will also be printed on standard out.
-   *
-   * @param s The message to log
-   * @param level The verbosity of this message
-   * @param logToStandardOut Whether to print this string on standard
-   * out too
-   */
-  public static void log(String s, int level, boolean logToStandardOut) {
-    if (TestRunner.getVerbose() >= level) {
-      log(s, getCurrentTestResult());
-      if (logToStandardOut) {
-        System.out.println(s);
-      }
-    }
-  }
-
-
-  /**
-   * Log the passed string to the HTML reports.  If logToStandardOut
-   * is true, the string will also be printed on standard out.
-   *
-   * @param s The message to log
-   * @param logToStandardOut Whether to print this string on standard
-   * out too
-   */
-  public static void log(String s, boolean logToStandardOut) {
-    log(s, getCurrentTestResult());
-    if (logToStandardOut) {
-      System.out.println(s);
-    }
-  }
-
-  /**
-   * Log the passed string to the HTML reports if the current verbosity
-   * is equal or greater than the one passed in parameter
-   *
-   * @param s The message to log
-   * @param level The verbosity of this message
-   */
-  public static void log(String s, int level) {
-    if (TestRunner.getVerbose() >= level) {
-      log(s, getCurrentTestResult());
-    }
-  }
-
-  public static ITestResult getCurrentTestResult() {
+  private static ITestResult getCurrentTestResult() {
     return m_currentTestResult.get();
-  }
-
-  private static void ppp(String s) {
-    System.out.println("[Reporter] " + s);
   }
 
   public static synchronized List<String> getOutput(ITestResult tr) {
@@ -142,16 +90,4 @@ public class Reporter {
 
     return result;
   }
-
-//  public static void setCurrentOutput(List<String> tmr) {
-//    m_output = tmr;
-////    m_localResult.set(tmr);
-//  }
-
-//  public static List<String> getCurrentOutput() {
-//    return m_output;
-////    List<String> result = (List<String>) m_localResult.get();
-////    return result;
-//  }
-
 }

@@ -392,7 +392,7 @@ public class XmlMethodSelector implements IMethodSelector {
     for (ITestNGMethod m : m_testMethods) {
       if (includeMethod(context, m, true)) includedMethods.add(m);
     }
-    MethodHelper.findGroupTransitiveClosure(this, includedMethods, m_testMethods, 
+    MethodGroupsHelper.findGroupTransitiveClosure(this, includedMethods, m_testMethods, 
         groups, groupClosure, methodClosure);
     
     // If we are asked to include or exclude specific groups, calculate

@@ -24,7 +24,7 @@ import org.testng.xml.XmlTest;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
-public class TestClass extends NoOpTestClass implements ITestClass {
+class TestClass extends NoOpTestClass implements ITestClass {
 	/* generated */
 	private static final long serialVersionUID = -8077917128278361294L;
   transient private IAnnotationFinder m_annotationFinder = null;
@@ -37,7 +37,7 @@ public class TestClass extends NoOpTestClass implements ITestClass {
   private XmlTest m_xmlTest;
   private XmlClass m_xmlClass;
   
-  public TestClass(IClass cls, 
+  protected TestClass(IClass cls, 
                    ITestMethodFinder testMethodFinder, 
                    IAnnotationFinder annotationFinder,
                    RunInfo runInfo,
@@ -202,7 +202,7 @@ public class TestClass extends NoOpTestClass implements ITestClass {
     System.out.println("[TestClass] " + s);
   }
   
-  public void dump() {
+  protected void dump() {
     ppp("\n======\nTESTCLASS: " + m_testClass.getName());
     for (ITestNGMethod m : m_beforeClassMethods) {
       ppp("BeforeClass : " + m);

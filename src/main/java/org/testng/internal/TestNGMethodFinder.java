@@ -177,11 +177,12 @@ public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
 
     List<ITestNGMethod> excludedMethods = Lists.newArrayList();
     boolean unique = configurationType == BEFORE_SUITE || configurationType == AFTER_SUITE;
-    ITestNGMethod[] tmResult = MethodHelper.collectAndOrderConfigurationMethods(vResult,
-                                                                                m_runInfo,
-                                                                                m_annotationFinder,
-                                                                                unique,
-                                                                                excludedMethods);
+    ITestNGMethod[] tmResult = MethodHelper.collectAndOrderMethods(Lists.newArrayList(vResult),
+                                              false /* forTests */,
+                                              m_runInfo,
+                                              m_annotationFinder,
+                                              unique,
+                                              excludedMethods);
 
     return tmResult;
   }

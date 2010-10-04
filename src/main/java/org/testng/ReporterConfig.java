@@ -5,7 +5,6 @@ import org.testng.internal.ClassHelper;
 import org.testng.internal.PropertyUtils;
 import org.testng.internal.Utils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,7 +13,7 @@ import java.util.List;
  *
  * @author Cosmin Marginean, Apr 12, 2007
  */
-public class ReporterConfig {
+class ReporterConfig {
 
   /**
    * The class name of the reporter listener
@@ -26,7 +25,7 @@ public class ReporterConfig {
    */
   private List<Property> m_properties = Lists.newArrayList();
 
-  public void addProperty(Property property) {
+  private void addProperty(Property property) {
     m_properties.add(property);
   }
 
@@ -42,7 +41,7 @@ public class ReporterConfig {
     this.m_className = className;
   }
 
-  public String serialize() {
+  protected String serialize() {
     StringBuffer sb = new StringBuffer();
     sb.append(m_className);
     if (!m_properties.isEmpty()) {
@@ -61,7 +60,7 @@ public class ReporterConfig {
     return sb.toString();
   }
 
-  public static ReporterConfig deserialize(String inputString) {
+  protected static ReporterConfig deserialize(String inputString) {
     ReporterConfig reporterConfig = null;
     if (!Utils.isStringEmpty(inputString)) {
       reporterConfig = new ReporterConfig();
@@ -92,7 +91,7 @@ public class ReporterConfig {
   /**
    * Creates a reporter based on the current configuration
    */
-  public Object newReporterInstance() {
+  protected Object newReporterInstance() {
     Object result = null;
     Class reporterClass = ClassHelper.forName(m_className);
     if (reporterClass != null) {
@@ -104,7 +103,7 @@ public class ReporterConfig {
     return result;
   }
 
-  public static class Property {
+  private static class Property {
     private String name;
     private String value;
 
