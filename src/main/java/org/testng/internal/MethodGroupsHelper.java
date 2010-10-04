@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 /**
  * Collections of helper methods to help deal with test methods
  * 
+ * @author Cedric Beust <cedric@beust.com>
  * @author nullin
  *
  */
