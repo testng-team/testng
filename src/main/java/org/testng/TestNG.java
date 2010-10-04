@@ -922,6 +922,7 @@ public class TestNG {
   }
 
   private static void usage() {
+    if (m_jCommander == null) m_jCommander = new JCommander(new CommandLineArgs());
     m_jCommander.usage();
   }
 
