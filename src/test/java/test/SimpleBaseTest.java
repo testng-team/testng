@@ -62,7 +62,7 @@ public class SimpleBaseTest {
   protected String getPathToResource(String fileName) {
     String result = System.getProperty("test.resources.dir");
     if (result == null) {
-      Utils.log("SimpleBaseTest", 2,  "Warning: System property test.resources.dir was not" +
+      Utils.log("SimpleBaseTest", 2,  "Warning: System property test.resources.dir was not " +
       		"defined.");
       return "target/test-classes/" + fileName;
     }
