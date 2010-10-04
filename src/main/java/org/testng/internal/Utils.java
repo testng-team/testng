@@ -78,19 +78,6 @@ public final class Utils {
 
     return result.toArray(new XmlClass[classes.length]);
   }
-  
-  /**
-   * Find all the classes inside this array, including nested ones.
-   * @param classes
-   * @return
-   */
-//  private static void findAllClasses(Class<?>[] classes, Map<Class<?>, Class<?>> result) {
-//    for (Class<?> cls : classes) {
-//      if (!result.containsKey(cls)) {
-//        result.put(cls, cls);
-//      }
-//    }
-//  }
 
   public static String[] parseMultiLine(String line) {
     List<String> vResult = Lists.newArrayList();
@@ -103,9 +90,7 @@ public final class Utils {
       //      result = line.split(" ");
     }
 
-    String[] result = vResult.toArray(new String[vResult.size()]);
-
-    return result;
+    return vResult.toArray(new String[vResult.size()]);
   }
 
   /**
@@ -509,28 +494,6 @@ public final class Utils {
         shortStackTrace, fullStackTrace
     };
   }
-
-//  private static String replaceAmpersand(String str, Pattern pattern) {
-//    int start = 0;
-//    int idx = str.indexOf('&', start);
-//    if(idx == -1) return str;
-//    StringBuffer result= new StringBuffer();
-//    while(idx != -1) {
-//      result.append(str.substring(start, idx));
-//      if(pattern.matcher(str.substring(idx)).matches()) {
-//        // do nothing it is an entity;
-//        result.append("&");
-//      }
-//      else {
-//        result.append("&amp;");
-//      }
-//      start= idx + 1;
-//      idx= str.indexOf('&', start);
-//    }
-//    result.append(str.substring(start));
-//
-//    return result.toString();
-//  }
   
   private static final Map<Character, String> ESCAPES = new HashMap<Character, String>() {{
     put('<', "&lt;");

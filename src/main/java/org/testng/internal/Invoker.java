@@ -505,7 +505,7 @@ public class Invoker implements IInvoker {
           //
           // If this method is a IConfigurable, invoke its run() method
           //
-          MethodHelper.invokeConfigurable(targetInstance, params, configurableInstance, method,
+          MethodInvocationHelper.invokeConfigurable(targetInstance, params, configurableInstance, method,
               testResult);
         }
         else {
@@ -513,10 +513,10 @@ public class Invoker implements IInvoker {
           // Not a IConfigurable, invoke directly
           //
           if (MethodHelper.calculateTimeOut(tm) <= 0) {
-            MethodHelper.invokeMethod(method, targetInstance, params);
+            MethodInvocationHelper.invokeMethod(method, targetInstance, params);
           }
           else {
-            MethodHelper.invokeWithTimeout(tm, targetInstance, params, testResult);
+            MethodInvocationHelper.invokeWithTimeout(tm, targetInstance, params, testResult);
             if (!testResult.isSuccess()) {
               // A time out happened
               throwConfigurationFailure(testResult, testResult.getThrowable());
@@ -657,14 +657,14 @@ public class Invoker implements IInvoker {
               IHookable.class.isAssignableFrom(thisMethod.getDeclaringClass()) ?
               (IHookable) instance : m_configuration.getHookable();
             if (hookableInstance != null) {
-              MethodHelper.invokeHookable(instance,
+              MethodInvocationHelper.invokeHookable(instance,
                   parameterValues, hookableInstance, thisMethod, testResult);
             }
             //
             // Not a IHookable, invoke directly
             //
             else {
-              MethodHelper.invokeMethod(thisMethod, instance,
+              MethodInvocationHelper.invokeMethod(thisMethod, instance,
                   parameterValues);
             }
             testResult.setStatus(ITestResult.SUCCESS);
@@ -679,7 +679,7 @@ public class Invoker implements IInvoker {
           //
           try {
             Reporter.setCurrentTestResult(testResult);
-            MethodHelper.invokeWithTimeout(tm, instance, parameterValues, testResult);
+            MethodInvocationHelper.invokeWithTimeout(tm, instance, parameterValues, testResult);
           }
           finally {
             Reporter.setCurrentTestResult(null);
@@ -1573,7 +1573,7 @@ public class Invoker implements IInvoker {
       // Get all the methods that belong to the group depended upon
       for (int i= 0; i < groupsDependedUpon.length; i++) {
         ITestNGMethod[] methods =
-          MethodHelper.findMethodsThatBelongToGroup(testMethod,
+          MethodGroupsHelper.findMethodsThatBelongToGroup(testMethod,
               m_testContext.getAllTestMethods(),
               groupsDependedUpon[i]);
 
@@ -1585,7 +1585,7 @@ public class Invoker implements IInvoker {
     // methods have been run successfully
     if (result && dependsOnMethods(testMethod)) {
       ITestNGMethod[] methods =
-        MethodHelper.findMethodsNamed(testMethod, allTestMethods, testMethod.getMethodsDependedUpon());
+        MethodHelper.findDependedUponMethods(testMethod, allTestMethods);
 
       result = result && haveBeenRunSuccessfully(methods);
     }

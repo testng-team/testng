@@ -15,6 +15,7 @@ import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.InvokedMethod;
 import org.testng.internal.Invoker;
 import org.testng.internal.MapList;
+import org.testng.internal.MethodGroupsHelper;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.MethodInstance;
 import org.testng.internal.ResultMap;
@@ -416,8 +417,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
     //
     // Calculate groups methods
     //
-    Map<String, List<ITestNGMethod>> beforeGroupMethods= MethodHelper.findGroupsMethods(m_classMap.values(), true);
-    Map<String, List<ITestNGMethod>> afterGroupMethods= MethodHelper.findGroupsMethods(m_classMap.values(), false);
+    Map<String, List<ITestNGMethod>> beforeGroupMethods= MethodGroupsHelper.findGroupsMethods(m_classMap.values(), true);
+    Map<String, List<ITestNGMethod>> afterGroupMethods= MethodGroupsHelper.findGroupsMethods(m_classMap.values(), false);
 
     //
     // Walk through all the TestClasses, store their method
@@ -442,35 +443,41 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
     //
     // Sort the methods
     //
-    m_beforeSuiteMethods = MethodHelper.collectAndOrderConfigurationMethods(beforeSuiteMethods,
+    m_beforeSuiteMethods = MethodHelper.collectAndOrderMethods(beforeSuiteMethods,
+                                                              false /* forTests */,
                                                               m_runInfo,
                                                               m_annotationFinder,
                                                               true /* unique */,
                                                               m_excludedMethods);
 
-    m_beforeXmlTestMethods = MethodHelper.collectAndOrderConfigurationMethods(beforeXmlTestMethods,
-                                                                m_runInfo,
-                                                                m_annotationFinder,
-                                                                true, // CQ added by me
-                                                                m_excludedMethods);
+    m_beforeXmlTestMethods = MethodHelper.collectAndOrderMethods(beforeXmlTestMethods,
+                                                              false /* forTests */,
+                                                              m_runInfo,
+                                                              m_annotationFinder,
+                                                              true /* unique (CQ added by me)*/,
+                                                              m_excludedMethods);
 
     m_allTestMethods = MethodHelper.collectAndOrderMethods(testMethods,
-                                                          m_runInfo,
-                                                          m_annotationFinder,
-                                                          m_excludedMethods);
+                                                                true /* forTest? */, 
+                                                                m_runInfo, 
+                                                                m_annotationFinder, 
+                                                                false /* unique */, 
+                                                                m_excludedMethods);
     m_classMethodMap = new ClassMethodMap(m_allTestMethods);
 
-    m_afterXmlTestMethods = MethodHelper.collectAndOrderConfigurationMethods(afterXmlTestMethods,
-                                                               m_runInfo,
-                                                               m_annotationFinder,
-                                                               true, // CQ added by me
-                                                               m_excludedMethods);
+    m_afterXmlTestMethods = MethodHelper.collectAndOrderMethods(afterXmlTestMethods,
+                                                              false /* forTests */,
+                                                              m_runInfo,
+                                                              m_annotationFinder,
+                                                              true /* unique (CQ added by me)*/,
+                                                              m_excludedMethods);
 
-    m_afterSuiteMethods = MethodHelper.collectAndOrderConfigurationMethods(afterSuiteMethods,
-                                                             m_runInfo,
-                                                             m_annotationFinder,
-                                                             true /* unique */,
-                                                             m_excludedMethods);
+    m_afterSuiteMethods = MethodHelper.collectAndOrderMethods(afterSuiteMethods,
+                                                              false /* forTests */, 
+                                                              m_runInfo,
+                                                              m_annotationFinder,
+                                                              true /* unique */,
+                                                              m_excludedMethods);
     // shared group methods
     m_groupMethods = new ConfigurationGroupMethods(m_allTestMethods, beforeGroupMethods, afterGroupMethods);
 
