@@ -22,6 +22,7 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -708,5 +709,27 @@ public final class Utils {
    }
   
    return fileName;
+  }
+
+  public static String join(Collection<String> strings, String separator) {
+    StringBuilder sb = new StringBuilder();
+    int i = 0;
+    for (String s : strings) {
+      if (i++ > 0) sb.append(separator);
+      sb.append(s);
+    }
+
+    return sb.toString();
+  }
+
+  public static String join(List<Class> classes, String separator) {
+    StringBuilder sb = new StringBuilder();
+    int i = 0;
+    for (Class s : classes) {
+      if (i++ > 0) sb.append(separator);
+      sb.append(s.getName());
+    }
+
+    return sb.toString();
   }
 }

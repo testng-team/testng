@@ -1388,9 +1388,9 @@ public class TestNG {
       result.testName = defaultTestName;
     }
 
-    String strClass = (String) cmdLineArgs.get(CommandLineArgs.LISTENER);
-    if (null != strClass) {
-      result.listener = strClass;
+    List<Class> listeners = (List<Class>) cmdLineArgs.get(CommandLineArgs.LISTENER);
+    if (null != listeners) {
+      result.listener = Utils.join(listeners, " ");
     }
 
     String ms = (String) cmdLineArgs.get(CommandLineArgs.METHOD_SELECTORS);
