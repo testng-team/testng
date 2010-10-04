@@ -3,6 +3,7 @@ Current
 Added: timeOut for configuration methods
 Added: -randomizesuites (Nalin Makar)
 Added: IConfigurable
+Fixed: TESTNG-401: ClassCastException when using a listener from Maven
 Fixed: TESTNG-186: Rename IWorkerApadter to IWorkerAdapter (Tom‡s Pollak)
 Fixed: TESTNG-415: Assert.assertEquals() for sets and maps fails with 'null' as arguments
 Fixed: typo -testRunFactory
