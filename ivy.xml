@@ -1,5 +1,5 @@
 <ivy-module version="2.0">
-  <info organisation="org.testng" module="testng" revision="5.12.2beta"/>
+  <info organisation="org.testng" module="testng" revision="5.14.3beta"/>
 
   <dependencies>
     <dependency org="ant" name="ant" rev="1.6.5" />
