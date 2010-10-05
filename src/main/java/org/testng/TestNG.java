@@ -1288,12 +1288,12 @@ public class TestNG {
       result.parallelMode = parallelMode;
     }
 
-    // TODO: verify that Surefire is passing an Integer here
-    Integer threadCount = (Integer) cmdLineArgs.get(CommandLineArgs.THREAD_COUNT);
+    String threadCount = (String) cmdLineArgs.get(CommandLineArgs.THREAD_COUNT);
     if (threadCount != null) {
-      result.threadCount = threadCount;
+      result.threadCount = Integer.parseInt(threadCount);
     }
-    // TODO: verify that Surefire is passing an Integer here
+
+    // Not supported by Surefire yet
     Integer dptc = (Integer) cmdLineArgs.get(CommandLineArgs.DATA_PROVIDER_THREAD_COUNT);
     if (dptc != null) {
       result.dataProviderThreadCount = dptc;
@@ -1308,9 +1308,11 @@ public class TestNG {
       result.testName = defaultTestName;
     }
 
-    List<Class> listeners = (List<Class>) cmdLineArgs.get(CommandLineArgs.LISTENER);
-    if (null != listeners) {
-      result.listener = Utils.joinClasses(listeners, " ");
+    Object listeners = cmdLineArgs.get(CommandLineArgs.LISTENER);
+    if (listeners instanceof List) {
+      result.listener = Utils.joinClasses((List<Class>) listeners, " ");
+    } else {
+      result.listener = (String) listeners;
     }
 
     String ms = (String) cmdLineArgs.get(CommandLineArgs.METHOD_SELECTORS);
