@@ -1,6 +1,5 @@
 package test.tmp;
 
-import org.testng.SkipException;
 import org.testng.annotations.Test;
 
 //@Test(sequential = true)
@@ -42,7 +41,7 @@ public class A {
 //    throw new SkipException("skipped");
   }
 
-  @Test
+  @Test(groups = "test", dependsOnGroups = "test")
   public void a2() {
     throw new RuntimeException("We have a problem");
 //    System.out.println("a2 " + Thread.currentThread().getId());

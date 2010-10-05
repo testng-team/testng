@@ -48,9 +48,7 @@ public class MethodHelper {
         finder,
         unique);
 
-    return includedMethods.size() > 1 ?
-      sortMethods(forTests, includedMethods, finder).toArray(new ITestNGMethod[]{})
-      : includedMethods.toArray(new ITestNGMethod[]{});
+    return sortMethods(forTests, includedMethods, finder).toArray(new ITestNGMethod[]{});
   }
 
   /**

@@ -1,11 +1,9 @@
 package org.testng.internal;
 
-import org.testng.ITestResult;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
