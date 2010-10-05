@@ -1235,6 +1235,14 @@ public class TestNG {
    }
 
   /**
+   * This method is invoked by Maven's Surefire, only remove it once
+   * Surefire has been modified to no longer call it.
+   */
+  public void setSourcePath(String path) {
+    // nop
+  }
+
+  /**
    * This method is invoked by Maven's Surefire to configure the runner,
    * do not remove unless you know for sure that Surefire has been updated
    * to use the new configure(CommandLineArgs) method.
@@ -1329,6 +1337,8 @@ public class TestNG {
     if (failurePolicy != null) {
       result.configFailurePolicy = failurePolicy;
     }
+
+    configure(result);
   }
 
   private void setTestNames(List<String> testNames) {
