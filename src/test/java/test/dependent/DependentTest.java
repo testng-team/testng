@@ -72,22 +72,17 @@ public class DependentTest extends BaseTest {
     verifyTests("Failed", failed, getFailedTests());
     verifyTests("Skipped", skipped, getSkippedTests());
   }
-  
-  @Test
-  @ExpectedExceptions({ org.testng.TestNGException.class })
+
+  @Test(expectedExceptions = org.testng.TestNGException.class )
   public void dependentMethodsWithCycle() {
     addClass("test.dependent.SampleDependentMethods6");
     run();
-    String[] passed = {
-        "step1", "step2"
-    };
-    String[] failed = {
-    };
-    String[] skipped = {
-    };
-    verifyTests("Passed", passed, getPassedTests());
-    verifyTests("Failed", failed, getFailedTests());
-    verifyTests("Skipped", skipped, getSkippedTests());
+  }
+
+  @Test(expectedExceptions = org.testng.TestNGException.class )
+  public void dependentGroupsWithCycle() {
+    addClass("test.dependent.SampleDependentMethods7");
+    run();
   }
   
 } // DependentTest

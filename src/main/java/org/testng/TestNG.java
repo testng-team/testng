@@ -1238,6 +1238,14 @@ public class TestNG {
    }
 
   /**
+   * This method is invoked by Maven's Surefire, only remove it once
+   * Surefire has been modified to no longer call it.
+   */
+  public void setSourcePath(String path) {
+    // nop
+  }
+
+  /**
    * This method is invoked by Maven's Surefire to configure the runner,
    * do not remove unless you know for sure that Surefire has been updated
    * to use the new configure(CommandLineArgs) method.
@@ -1283,12 +1291,12 @@ public class TestNG {
       result.parallelMode = parallelMode;
     }
 
-    // TODO: verify that Surefire is passing an Integer here
-    Integer threadCount = (Integer) cmdLineArgs.get(CommandLineArgs.THREAD_COUNT);
+    String threadCount = (String) cmdLineArgs.get(CommandLineArgs.THREAD_COUNT);
     if (threadCount != null) {
-      result.threadCount = threadCount;
+      result.threadCount = Integer.parseInt(threadCount);
     }
-    // TODO: verify that Surefire is passing an Integer here
+
+    // Not supported by Surefire yet
     Integer dptc = (Integer) cmdLineArgs.get(CommandLineArgs.DATA_PROVIDER_THREAD_COUNT);
     if (dptc != null) {
       result.dataProviderThreadCount = dptc;
@@ -1303,9 +1311,11 @@ public class TestNG {
       result.testName = defaultTestName;
     }
 
-    List<Class> listeners = (List<Class>) cmdLineArgs.get(CommandLineArgs.LISTENER);
-    if (null != listeners) {
-      result.listener = Utils.joinClasses(listeners, " ");
+    Object listeners = cmdLineArgs.get(CommandLineArgs.LISTENER);
+    if (listeners instanceof List) {
+      result.listener = Utils.joinClasses((List<Class>) listeners, " ");
+    } else {
+      result.listener = (String) listeners;
     }
 
     String ms = (String) cmdLineArgs.get(CommandLineArgs.METHOD_SELECTORS);
@@ -1332,6 +1342,8 @@ public class TestNG {
     if (failurePolicy != null) {
       result.configFailurePolicy = failurePolicy;
     }
+
+    configure(result);
   }
 
   private void setTestNames(List<String> testNames) {
