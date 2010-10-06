@@ -103,8 +103,8 @@ public class TestNG {
   /** The default name for a test launched from the command line */
   private static final String DEFAULT_COMMAND_LINE_TEST_NAME = "Command line test";
 
-  /** The default name of the result's output directory. */
-  private static final String DEFAULT_OUTPUTDIR = "test-output";
+  /** The default name of the result's output directory (keep public, used by Eclipse). */
+  public static final String DEFAULT_OUTPUTDIR = "test-output";
 
   /** System properties */
   public static final String SHOW_TESTNG_STACK_FRAMES = "testng.show.stack.frames";
