@@ -97,7 +97,7 @@ public class TestResultMessage implements IStringMessage {
   }
   
   public TestResultMessage(final ITestContext testCtx, final ITestResult result) {
-    this(testCtx.getSuite().getName(), testCtx.getName(), result);
+    this(testCtx.getSuite().getName(), result.getTestName(), result);
   }
 
   private void init(final int resultType,
@@ -204,7 +204,7 @@ public class TestResultMessage implements IStringMessage {
   }
   
   public String toDisplayString() {
-    StringBuffer buf= new StringBuffer(m_testMethodName);
+    StringBuffer buf= new StringBuffer(m_testName != null ? m_testName : m_testMethodName);
     
     if(null != m_parameters && m_parameters.length > 0) {
       buf.append("(");

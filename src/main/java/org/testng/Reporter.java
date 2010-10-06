@@ -75,7 +75,10 @@ public class Reporter {
     log(s, getCurrentTestResult());
   }
 
-  private static ITestResult getCurrentTestResult() {
+  /**
+   * @return the current test result.
+   */
+  public static ITestResult getCurrentTestResult() {
     return m_currentTestResult.get();
   }
 

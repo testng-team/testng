@@ -3,6 +3,8 @@ Current
 Added: timeOut for configuration methods
 Added: -randomizesuites (Nalin Makar)
 Added: IConfigurable
+Fixed: IDEA-59073: exceptions that don't match don't have stack trace printed in console (Anna Kozlova)
+Fixed: IDEA's plug-in was not honoring ITest (fixed in TestResultMessage)
 Fixed: Methods depending on a group they belong were skipped instead of throwing a cycle exception
 Fixed: TESTNG-401: ClassCastException when using a listener from Maven
 Fixed: TESTNG-186: Rename IWorkerApadter to IWorkerAdapter (Tom‡s Pollak)
@@ -12,7 +14,8 @@ Fixed: NPE while printing results for an empty suite (Nalin Makar)
 Fixed: Invoke IInvokedMethodListener.afterInvocation after fixing results for tests expecting exceptions (Nalin Makar)
 
 Eclipse:
-Added: The progress bar will now be orange if the suite contained skipped tests and no failures
+Added: The conversion of a JUnit test to TestNG now replaces Assert with AssertJUnit
+Added: The progress bar is now orange if the suite contained skipped tests and no failures
 Added: Skipped test and suite icons are now orange (previously: blue)
 Added: New method shortcuts: "Alt+Shift+X N", "Alt+Shift+D N" (Sven Johansson)
 Fixed: Workspace preferences now offer the "XML template" option as well as the project specific preferences (Asiel Brumfield)
@@ -20,6 +23,7 @@ Fixed: TESTNG-418: Only last suite-file in testng.xml run by Eclipse plugin
 
 Documentation:
 Added: Section on Selenium (Felipe Knorr Kuhn)
+Added: Link to an article on TestNG, Mockito and Emma in the Misc section
 
 ===========================================================================
 

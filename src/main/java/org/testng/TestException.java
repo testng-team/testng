@@ -17,4 +17,8 @@ public class TestException extends TestNGException {
 	public TestException(Throwable t) {
 		super(t);
 	}
+
+    public TestException(String message, Throwable t) {
+        super(message, t);
+    }
 }
