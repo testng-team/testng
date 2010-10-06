@@ -1310,7 +1310,7 @@ public class TestNG {
 
     Object listeners = cmdLineArgs.get(CommandLineArgs.LISTENER);
     if (listeners instanceof List) {
-      result.listener = Utils.joinClasses((List<Class>) listeners, " ");
+      result.listener = Utils.joinClasses((List<Class>) listeners, ",");
     } else {
       result.listener = (String) listeners;
     }
