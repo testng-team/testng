@@ -100,48 +100,46 @@ import java.util.StringTokenizer;
  */
 public class TestNGAntTask extends Task {
 
-  private CommandlineJava m_javaCommand;
+  protected CommandlineJava m_javaCommand;
 
-  private List<FileSet> m_xmlFilesets = Lists.newArrayList();
-  private List<FileSet> m_classFilesets = Lists.newArrayList();
-  private File m_outputDir;
-  private File m_testjar;
-  private File m_workingDir;
+  protected List<FileSet> m_xmlFilesets= Lists.newArrayList();
+  protected List<FileSet> m_classFilesets= Lists.newArrayList();
+  protected File m_outputDir;
+  protected File m_testjar;
+  protected File m_workingDir;
   private Integer m_timeout;
-  private Boolean m_isJUnit;
-  private List<String> m_listeners = Lists.newArrayList();
+  protected Boolean m_isJUnit;
+  private List<String> m_listeners= Lists.newArrayList();
   private String m_objectFactory;
-  private String m_testRunnerFactory;
+  protected String m_testRunnerFactory;
   private boolean m_delegateCommandSystemProperties = false;
 
-  private Environment m_environment = new Environment();
+  protected Environment m_environment= new Environment();
 
   /** The suite runner name (defaults to TestNG.class.getName(). */
-  private String m_mainClass = TestNG.class.getName();
+  protected String m_mainClass = TestNG.class.getName();
   
-  /** 
-   * True if the temporary file created by the Ant Task for command line parameters
-   * to TestNG should be preserved after execution. 
-   */
-  private boolean m_dump;
+  /** True if the temporary file created by the Ant Task for command line parameters
+   * to TestNG should be preserved after execution. */
+  protected boolean m_dump;
   private boolean m_dumpEnv;
   private boolean m_dumpSys;
   
-  private boolean m_assertEnabled = true;
-  private boolean m_haltOnFailure;
-  private String m_onHaltTarget;
-  private String m_failurePropertyName;
-  private boolean m_haltOnSkipped;
-  private String m_skippedPropertyName;
-  private boolean m_haltOnFSP;
-  private String m_fspPropertyName;
-  private String m_includedGroups;
-  private String m_excludedGroups;
-  private String m_parallelMode;
-  private String m_threadCount;
-  private String m_dataproviderthreadCount;
-  private String m_configFailurePolicy;
-  private Boolean m_randomizeSuites;
+  protected boolean m_assertEnabled= true;
+  protected boolean m_haltOnFailure;
+  protected String m_onHaltTarget;
+  protected String m_failurePropertyName;
+  protected boolean m_haltOnSkipped;
+  protected String m_skippedPropertyName;
+  protected boolean m_haltOnFSP;
+  protected String m_fspPropertyName;
+  protected String m_includedGroups;
+  protected String m_excludedGroups;
+  protected String m_parallelMode;
+  protected String m_threadCount;
+  protected String m_dataproviderthreadCount;
+  protected String m_configFailurePolicy;
+  protected Boolean m_randomizeSuites;
   public String m_useDefaultListeners;
   private String m_suiteName="Ant suite";
   private String m_testName="Ant test";
@@ -271,7 +269,7 @@ public class TestNGAntTask extends Task {
     return getJavaCommand().createVmArgument();
   }
 
-  private void addSysproperty(Environment.Variable sysp) {
+  public void addSysproperty(Environment.Variable sysp) {
     getJavaCommand().addSysproperty(sysp);
   }
 
@@ -287,8 +285,16 @@ public class TestNGAntTask extends Task {
    *
    * @return reference to the classpath in the embedded java command line
    */
-  private Path createClasspath() {
+  public Path createClasspath() {
     return getJavaCommand().createClasspath(getProject()).createPath();
+  }
+
+  /**
+   * Adds a path to the bootclasspath.
+   * @return reference to the bootclasspath in the embedded java command line
+   */
+  public Path createBootclasspath() {
+    return getJavaCommand().createBootclasspath(getProject()).createPath();
   }
 
   /**
@@ -708,7 +714,7 @@ public class TestNGAntTask extends Task {
     System.out.println("[TestNGAntTask] " + string);
   }
 
-  private void actOnResult(int exitValue, boolean wasKilled) {
+  protected void actOnResult(int exitValue, boolean wasKilled) {
     if(exitValue == -1) {
       executeHaltTarget(exitValue);
       throw new BuildException("an error occured when running TestNG tests");
@@ -794,8 +800,8 @@ public class TestNGAntTask extends Task {
    * @param watchdog
    * @return the exit status of the subprocess or INVALID.
    */
-  private int executeAsForked(CommandlineJava cmd, ExecuteWatchdog watchdog) {
-    Execute execute = new Execute(new LogStreamHandler(this, Project.MSG_INFO, Project.MSG_WARN),
+  protected int executeAsForked(CommandlineJava cmd, ExecuteWatchdog watchdog) {
+    Execute execute= new Execute(new LogStreamHandler(this, Project.MSG_INFO, Project.MSG_WARN),
                                  watchdog);
     execute.setCommandline(cmd.getCommandline());
     execute.setAntRun(getProject());
@@ -808,7 +814,7 @@ public class TestNGAntTask extends Task {
       }
     }
 
-    String[] environment = m_environment.getVariables();
+    String[] environment= m_environment.getVariables();
     if(null != environment) {
       for(String envEntry : environment) {
         log("Setting environment variable: " + envEntry, Project.MSG_VERBOSE);
@@ -832,10 +838,11 @@ public class TestNGAntTask extends Task {
   /**
    * Creates or returns the already created <CODE>CommandlineJava</CODE>.
    */
-  private CommandlineJava getJavaCommand() {
+  protected CommandlineJava getJavaCommand() {
     if(null == m_javaCommand) {
       m_javaCommand = new CommandlineJava();
     }
+
     return m_javaCommand;
   }
 
@@ -846,7 +853,7 @@ public class TestNGAntTask extends Task {
    * @throws BuildException under unspecified circumstances
    * @since Ant 1.2
    */
-  private ExecuteWatchdog createWatchdog() /*throws BuildException*/ {
+  protected ExecuteWatchdog createWatchdog() /*throws BuildException*/ {
     if(m_timeout == null) {
       return null;
     }
@@ -854,7 +861,7 @@ public class TestNGAntTask extends Task {
     return new ExecuteWatchdog(m_timeout.longValue());
   }
 
-  private void validateOptions() throws BuildException {
+  protected void validateOptions() throws BuildException {
     if (m_xmlFilesets.size() == 0
       && m_classFilesets.size() == 0
       && Utils.isStringEmpty(m_methods)
