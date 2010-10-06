@@ -1388,14 +1388,14 @@ public class Invoker implements IInvoker {
             testResult.setThrowable(
                 new TestException("The exception was thrown with the wrong message:" +
                     " expected \"" + expectedExceptionsHolder.messageRegExp + "\"" +
-                    " but got \"" + ite.getMessage() + "\""));
+                    " but got \"" + ite.getMessage() + "\"", ite));
             status= ITestResult.FAILURE;
           }
         } else if (ite != null && expectedExceptionsHolder != null) {
           testResult.setThrowable(
               new TestException("Expected exception "
                  + expectedExceptionsHolder.expectedClasses[0].getName()
-                 + " but got " + ite));
+                 + " but got " + ite, ite));
           status= ITestResult.FAILURE;
         }
         else if (SkipException.class.isAssignableFrom(ite.getClass())){
