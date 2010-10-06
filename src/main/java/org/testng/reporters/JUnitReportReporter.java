@@ -59,7 +59,11 @@ public class JUnitReportReporter implements IReporter {
       for (ITestResult tr: entry.getValue()) {
         TestTag testTag = new TestTag();
 
-        if (tr.getStatus() != ITestResult.SUCCESS) failures++;
+        boolean isError = ! (tr.getThrowable() instanceof AssertionError);
+        if (tr.getStatus() != ITestResult.SUCCESS) {
+          if (isError) errors++;
+          else failures++;
+        }
         Properties p2 = new Properties();
         p2.setProperty("classname", tr.getMethod().getMethod().getDeclaringClass().getName());
         p2.setProperty("name", tr.getMethod().getMethodName());
@@ -74,7 +78,7 @@ public class JUnitReportReporter implements IReporter {
           testTag.message = t.getMessage();
           testTag.type = t.getClass().getName();
           testTag.stackTrace = sw.toString();
-          errors++;
+          testTag.errorTag = isError ? "error" : "failure";
         }
         totalTime += time;
         testCount++;
@@ -109,9 +113,9 @@ public class JUnitReportReporter implements IReporter {
           Properties p = new Properties();
           if (testTag.message != null) p.setProperty("message", testTag.message);
           p.setProperty("type", testTag.type);
-          xsb.push("error", p);
+          xsb.push(testTag.errorTag, p);
           xsb.addCDATA(testTag.stackTrace);
-          xsb.pop("error");
+          xsb.pop(testTag.errorTag);
 
           xsb.pop("testcase");
         }
@@ -151,6 +155,7 @@ public class JUnitReportReporter implements IReporter {
     public String message;
     public String type;
     public String stackTrace;
+    public String errorTag;
   }
 
   private void addResults(Set<ITestResult> allResults, Map<Class<?>, Set<ITestResult>> out) {
