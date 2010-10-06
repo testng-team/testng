@@ -1,5 +1,6 @@
 package test.tmp;
 
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 //@Test(sequential = true)
@@ -30,20 +31,33 @@ public class A {
 //  }
 
 //  @BeforeClass(timeOut = 1000)
-  public void bc() throws InterruptedException {
-    System.out.println("bc");
+//  public void bc() throws InterruptedException {
+//    System.out.println("bc");
 //    Thread.sleep(2000);
-  }
+//  }
 
 //  @Test(timeOut = 1000)
-  public void a1() throws InterruptedException {
+//  public void a1() throws InterruptedException {
 //    Thread.sleep(2000);
 //    throw new SkipException("skipped");
+//  }
+
+//  @BeforeMethod
+  public void bm() {
+    System.out.println("@BeforeMethod");
   }
 
-  @Test(groups = "test", dependsOnGroups = "test")
+  @Test
+  public void a1() {
+//    throw new RuntimeException();
+    Assert.assertTrue(false);
+//    System.out.println("test1");
+  }
+
+//  @Test
   public void a2() {
-    throw new RuntimeException("We have a problem");
+    System.out.println("test2");
+//    throw new RuntimeException("We have a problem");
 //    System.out.println("a2 " + Thread.currentThread().getId());
   }
 }
