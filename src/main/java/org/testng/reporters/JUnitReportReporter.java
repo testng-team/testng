@@ -16,6 +16,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -54,7 +55,7 @@ public class JUnitReportReporter implements IReporter {
       int failures = 0;
       int errors = 0;
       int testCount = 0;
-      int totalTime = 0;
+      float totalTime = 0;
 
       for (ITestResult tr: entry.getValue()) {
         TestTag testTag = new TestTag();
@@ -90,7 +91,9 @@ public class JUnitReportReporter implements IReporter {
       p1.setProperty("errors", "" + errors);
       p1.setProperty("name", cls.getName());
       p1.setProperty("tests", "" + testCount);
-      p1.setProperty("time", "" + totalTime);
+      DecimalFormat format = new DecimalFormat("#.###");
+      format.setMinimumFractionDigits(3);
+      p1.setProperty("time", "" + format.format(totalTime / 1000.0f));
       try {
         p1.setProperty(XMLConstants.ATTR_HOSTNAME, InetAddress.getLocalHost().getHostName());
       } catch (UnknownHostException e) {
