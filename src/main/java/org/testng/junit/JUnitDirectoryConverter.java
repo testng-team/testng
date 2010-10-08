@@ -38,8 +38,8 @@ public class JUnitDirectoryConverter {
     *                      used, <tt>false</tt> if javadoc-like annotations should be use
     * @param restore flag if the output directory should reflect the package
     */
-   public JUnitDirectoryConverter(File srcDir, File outDir, String release, 
-       boolean useAnnotation, String[] groups) 
+   public JUnitDirectoryConverter(File srcDir, File outDir, String release,
+       boolean useAnnotation, String[] groups)
    {
       m_sourceDir = srcDir;
       m_outDir    = outDir;

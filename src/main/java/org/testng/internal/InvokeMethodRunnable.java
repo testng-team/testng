@@ -1,13 +1,9 @@
 package org.testng.internal;
 
+import org.testng.ITestNGMethod;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.testng.ITestNGMethod;
-import org.testng.internal.thread.ICountDown;
 
 /**
  * A Runnable Method invoker.
@@ -21,13 +17,14 @@ public class InvokeMethodRunnable implements Runnable {
 
   public InvokeMethodRunnable(ITestNGMethod thisMethod,
                               Object instance,
-                              Object[] parameters) 
+                              Object[] parameters)
   {
     m_method = thisMethod;
     m_instance = instance;
     m_parameters = parameters;
   }
 
+  @Override
   public void run() throws TestNGRuntimeException {
     // If there is an invocation time out, all the invocations need to be done within this
     // Runnable
@@ -40,7 +37,7 @@ public class InvokeMethodRunnable implements Runnable {
       runOne();
     }
   }
-  
+
   private void runOne() {
     try {
       RuntimeException t = null;
@@ -63,8 +60,13 @@ public class InvokeMethodRunnable implements Runnable {
       m_method.incrementCurrentInvocationCount();
     }
   }
-  
+
   public static class TestNGRuntimeException extends RuntimeException {
+    /**
+     *
+     */
+    private static final long serialVersionUID = -8619899270785596231L;
+
     public TestNGRuntimeException(Throwable rootCause) {
       super(rootCause);
     }

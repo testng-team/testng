@@ -62,13 +62,13 @@ public final class ClassHelper {
       throw new TestNGException(se);
     }
   }
-  
+
   /**
    * Tries to load the specified class using the context ClassLoader or if none,
-   * than from the default ClassLoader. This method differs from the standard 
-   * class loading methods in that it does not throw an exception if the class 
+   * than from the default ClassLoader. This method differs from the standard
+   * class loading methods in that it does not throw an exception if the class
    * is not found but returns null instead.
-   *  
+   *
    * @param className the class name to be loaded.
    *
    * @return the class or null if the class is not found.
@@ -115,14 +115,14 @@ public final class ClassHelper {
   }
 
   /**
-   * For the given class, returns the method annotated with &#64;Factory or null 
+   * For the given class, returns the method annotated with &#64;Factory or null
    * if none is found. This method does not search up the superclass hierarchy.
-   * If more than one method is @Factory annotated, a TestNGException is thrown. 
+   * If more than one method is @Factory annotated, a TestNGException is thrown.
    * @param cls The class to search for the @Factory annotation.
-   * @param finder The finder (JDK 1.4 or JDK 5.0+) use to search for the annotation. 
+   * @param finder The finder (JDK 1.4 or JDK 5.0+) use to search for the annotation.
    *
    * @return the @Factory <CODE>method</CODE> or null
-   *  
+   *
    * FIXME: @Factory method must be public!
    * TODO rename this method to findDeclaredFactoryMethod
    */
@@ -185,15 +185,15 @@ public final class ClassHelper {
     try {
       IJUnitTestRunner tr= (IJUnitTestRunner) ClassHelper.forName(JUNIT_TESTRUNNER).newInstance();
       tr.setTestResultNotifier(runner);
-      
+
       return tr;
     }
     catch(Exception ex) {
       throw new TestNGException("Cannot create JUnit runner " + JUNIT_TESTRUNNER, ex);
     }
   }
-  
-  private static Set<Method> extractMethods(Class<?> childClass, Class<?> clazz, 
+
+  private static Set<Method> extractMethods(Class<?> childClass, Class<?> clazz,
       Set<Method> collected) {
     Set<Method> methods = Sets.newHashSet();
 
@@ -212,7 +212,7 @@ public final class ClassHelper {
 
     for (Method method : declaredMethods) {
       int methodModifiers = method.getModifiers();
-      if ((Modifier.isPublic(methodModifiers) || Modifier.isProtected(methodModifiers)) 
+      if ((Modifier.isPublic(methodModifiers) || Modifier.isProtected(methodModifiers))
         || (isSamePackage && !Modifier.isPrivate(methodModifiers))) {
         if (!isOverridden(method, collected) && !Modifier.isAbstract(methodModifiers)) {
           methods.add(method);
@@ -226,13 +226,13 @@ public final class ClassHelper {
   private static boolean isOverridden(Method method, Set<Method> collectedMethods) {
     Class<?> methodClass = method.getDeclaringClass();
     Class<?>[] methodParams = method.getParameterTypes();
-    
+
     for (Method m: collectedMethods) {
       Class<?>[] paramTypes = m.getParameterTypes();
       if (method.getName().equals(m.getName())
          && methodClass.isAssignableFrom(m.getDeclaringClass())
          && methodParams.length == paramTypes.length) {
-        
+
         boolean sameParameters = true;
         for (int i= 0; i < methodParams.length; i++) {
           if (!methodParams[i].equals(paramTypes[i])) {
@@ -240,16 +240,16 @@ public final class ClassHelper {
             break;
           }
         }
-        
+
         if (sameParameters) {
           return true;
         }
       }
     }
-    
+
     return false;
   }
-  
+
   public static IMethodSelector createSelector(org.testng.xml.XmlMethodSelector selector) {
     try {
       Class<?> cls = Class.forName(selector.getClassName());
@@ -269,9 +269,9 @@ public final class ClassHelper {
                                       IAnnotationFinder finder,
                                       IObjectFactory objectFactory) {
     Object result;
-  
+
     try {
-  
+
       //
       // Any annotated constructor?
       //
@@ -279,7 +279,7 @@ public final class ClassHelper {
       if (null != constructor) {
         IParametersAnnotation annotation = (IParametersAnnotation) finder.findAnnotation(constructor,
                                                                      IParametersAnnotation.class);
-  
+
         String[] parameterNames = annotation.getValue();
         Object[] parameters = Parameters.createInstantiationParameters(constructor,
                                                           "@Parameters",
@@ -289,24 +289,24 @@ public final class ClassHelper {
                                                           xmlTest.getSuite());
         result = objectFactory.newInstance(constructor, parameters);
       }
-  
+
       //
       // No, just try to instantiate the parameterless constructor (or the one
       // with a String)
       //
       else {
-  
+
         // If this class is a (non-static) nested class, the constructor contains a hidden
         // parameter of the type of the enclosing class
         Class<?>[] parameterTypes = new Class[0];
         Object[] parameters = new Object[0];
         Class<?> ec = getEnclosingClass(declaringClass);
         boolean isStatic = 0 != (declaringClass.getModifiers() & Modifier.STATIC);
-  
+
         // Only add the extra parameter if the nested class is not static
         if ((null != ec) && !isStatic) {
           parameterTypes = new Class[] { ec };
-  
+
           // Create an instance of the enclosing class so we can instantiate
           // the nested class (actually, we reuse the existing instance).
           IClass enclosingIClass = classes.get(ec);
@@ -323,7 +323,7 @@ public final class ClassHelper {
             enclosingInstances = new Object[] { ec.newInstance() };
           }
           Object enclosingClassInstance = enclosingInstances[0];
-  
+
           // Utils.createInstance(ec, classes, xmlTest, finder);
           parameters = new Object[] { enclosingClassInstance };
         } // isStatic
@@ -343,16 +343,16 @@ public final class ClassHelper {
       throw new TestNGException("An error occurred while instantiating class "
           + declaringClass.getName() + ": " + cause.getMessage(), cause);
     }
-    
+
     if (null == result) {
       //result should not be null
       throw new TestNGException("An error occurred while instantiating class "
           + declaringClass.getName() + ". Check to make sure it can be accessed/instantiated.");
     }
-  
+
     return result;
   }
-  
+
   /**
    * Class.getEnclosingClass() only exists on JDK5, so reimplementing it
    * here.
@@ -382,8 +382,7 @@ public final class ClassHelper {
                                                       Class<?> declaringClass) {
     Constructor<?>[] constructors = declaringClass.getDeclaredConstructors();
 
-    for (int i = 0; i < constructors.length; i++) {
-      Constructor<?> result = constructors[i];
+    for (Constructor<?> result : constructors) {
       IParametersAnnotation annotation = (IParametersAnnotation)
           finder.findAnnotation(result, IParametersAnnotation.class);
 
@@ -426,18 +425,18 @@ public final class ClassHelper {
         + ".\nPlease make sure it has a constructor that accepts either a String or no parameter.";
       throw new TestNGException(error);
     }
-  
+
     return result;
   }
 
-  /** 
-   * When given a file name to form a class name, the file name is parsed and divided 
+  /**
+   * When given a file name to form a class name, the file name is parsed and divided
    * into segments. For example, "c:/java/classes/com/foo/A.class" would be divided
-   * into 6 segments {"C:" "java", "classes", "com", "foo", "A"}. The first segment 
+   * into 6 segments {"C:" "java", "classes", "com", "foo", "A"}. The first segment
    * actually making up the class name is [3]. This value is saved in m_lastGoodRootIndex
    * so that when we parse the next file name, we will try 3 right away. If 3 fails we
    * will take the long approach. This is just a optimization cache value.
-   */  
+   */
   private static int m_lastGoodRootIndex = -1;
 
   /**
@@ -448,14 +447,14 @@ public final class ClassHelper {
    * <li>A class file name: "/testng/src/org/testng/TestNG.class"</li>
    * <li>A class source name: "d:\testng\src\org\testng\TestNG.java"</li>
    * </ul>
-   * 
+   *
    * @param file
    *          the class name.
    * @return the class corresponding to the name specified.
    */
   public static Class<?> fileToClass(String file) {
     Class<?> result = null;
-    
+
     if(!file.endsWith(".class") && !file.endsWith(".java")) {
       // Doesn't end in .java or .class, assume it's a class name
       result = ClassHelper.forName(file);
@@ -466,28 +465,28 @@ public final class ClassHelper {
 
       return result;
     }
-    
+
     int classIndex = file.lastIndexOf(".class");
     if (-1 == classIndex) {
       classIndex = file.lastIndexOf(".java");
 //
 //      if(-1 == classIndex) {
 //        result = ClassHelper.forName(file);
-//  
+//
 //        if (null == result) {
 //          throw new TestNGException("Cannot load class from file: " + file);
 //        }
-//  
+//
 //        return result;
 //      }
 //
     }
 
     // Transforms the file name into a class name.
-    
+
     // Remove the ".class" or ".java" extension.
     String shortFileName = file.substring(0, classIndex);
-    
+
     // Split file name into segments. For example "c:/java/classes/com/foo/A"
     // becomes {"c:", "java", "classes", "com", "foo", "A"}
     String[] segments = shortFileName.split("[/\\\\]", -1);
@@ -495,11 +494,11 @@ public final class ClassHelper {
     //
     // Check if the last good root index works for this one. For example, if the previous
     // name was "c:/java/classes/com/foo/A.class" then m_lastGoodRootIndex is 3 and we
-    // try to make a class name ignoring the first m_lastGoodRootIndex segments (3). This 
-    // will succeed rapidly if the path is the same as the one from the previous name.   
-    //    
+    // try to make a class name ignoring the first m_lastGoodRootIndex segments (3). This
+    // will succeed rapidly if the path is the same as the one from the previous name.
+    //
     if (-1 != m_lastGoodRootIndex) {
-      
+
       // TODO use a SringBuffer here
       String className = segments[m_lastGoodRootIndex];
       for (int i = m_lastGoodRootIndex + 1; i < segments.length; i++) {
@@ -514,13 +513,13 @@ public final class ClassHelper {
     }
 
     //
-    // We haven't found a good root yet, start by resolving the class from the end segment 
+    // We haven't found a good root yet, start by resolving the class from the end segment
     // and work our way up.  For example, if we start with "c:/java/classes/com/foo/A"
-    // we'll start by resolving "A", then "foo.A", then "com.foo.A" until something 
+    // we'll start by resolving "A", then "foo.A", then "com.foo.A" until something
     // resolves.  When it does, we remember the path we are at as "lastGoodRoodIndex".
     //
-    
-    // TODO CQ use a StringBuffer here 
+
+    // TODO CQ use a StringBuffer here
     String className = null;
     for (int i = segments.length - 1; i >= 0; i--) {
       if (null == className) {

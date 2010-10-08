@@ -1,9 +1,9 @@
 package org.testng;
 
+import org.testng.collections.Lists;
+
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.CommaSeparatedConverter;
-
-import org.testng.collections.Lists;
 
 import java.util.ArrayList;
 import java.util.List;

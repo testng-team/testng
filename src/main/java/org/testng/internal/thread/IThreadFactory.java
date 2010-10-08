@@ -12,6 +12,6 @@ public interface IThreadFactory {
    Thread newThread(Runnable run);
 
    Object getThreadFactory();
-   
+
    List<Thread> getThreads();
 }

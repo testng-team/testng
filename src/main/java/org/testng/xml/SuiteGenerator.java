@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public class SuiteGenerator {
   private static final Collection<String> EMPTY_CLASS_LIST= Collections.emptyList();
-  
+
   public static LaunchSuite createProxiedXmlSuite(final File xmlSuitePath) {
     return new LaunchSuite.ExistingSuite(xmlSuitePath);
   }
@@ -57,6 +57,7 @@ public class SuiteGenerator {
   /**
    * @deprecated use {@link #createSuite(String, java.util.Collection, java.util.Map, java.util.Collection, java.util.Map, String, int)} instead.
    */
+  @Deprecated
   public static LaunchSuite createCustomizedSuite(final String projectName,
                                                   final Collection<String> packageNames,
                                                   final Collection<String> classNames,

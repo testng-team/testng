@@ -18,9 +18,9 @@ import java.util.regex.Pattern;
 
 /**
  * Collections of helper methods to help deal with test methods
- * 
+ *
  * @author Cedric Beust <cedric@beust.com>
- * @author nullin
+ * @author nullin <nalin.makar * gmail.com>
  *
  */
 public class MethodGroupsHelper {
@@ -46,7 +46,7 @@ public class MethodGroupsHelper {
         in = MethodGroupsHelper.includeMethod(AnnotationHelper.findTest(finder, m),
             runInfo, tm, forTests, unique, outIncludedMethods);
       }
-  
+
       //
       // @Configuration method
       //
@@ -73,7 +73,7 @@ public class MethodGroupsHelper {
       RunInfo runInfo, ITestNGMethod tm, boolean forTests, boolean unique, List<ITestNGMethod> outIncludedMethods)
   {
     boolean result = false;
-  
+
     if (MethodHelper.isEnabled(annotation)) {
       if (runInfo.includeMethod(tm, forTests)) {
         if (unique) {
@@ -86,7 +86,7 @@ public class MethodGroupsHelper {
         }
       }
     }
-  
+
     return result;
   }
 
@@ -110,7 +110,7 @@ public class MethodGroupsHelper {
         }
       }
     }
-  
+
     return false;
   }
 
@@ -138,7 +138,7 @@ public class MethodGroupsHelper {
         }
       }
     }
-  
+
     return result;
   }
 
@@ -155,18 +155,18 @@ public class MethodGroupsHelper {
     for (ITestNGMethod m : includedMethods) {
       runningMethods.put(m, m);
     }
-  
+
     Map<String, String> runningGroups = Maps.newHashMap();
     for (String thisGroup : includedGroups) {
       runningGroups.put(thisGroup, thisGroup);
     }
-  
+
     boolean keepGoing = true;
-  
+
     Map<ITestNGMethod, ITestNGMethod> newMethods = Maps.newHashMap();
     while (keepGoing) {
       for (ITestNGMethod m : includedMethods) {
-  
+
         //
         // Depends on groups?
         // Adds all included methods to runningMethods
@@ -178,7 +178,7 @@ public class MethodGroupsHelper {
             // our outMethod closure
             runningGroups.put(g, g);
             ITestNGMethod[] im =
-              MethodGroupsHelper.findMethodsThatBelongToGroup(m, 
+              MethodGroupsHelper.findMethodsThatBelongToGroup(m,
                     allMethods.toArray(new ITestNGMethod[allMethods.size()]), g);
             for (ITestNGMethod thisMethod : im) {
               if (! runningMethods.containsKey(thisMethod)) {
@@ -188,7 +188,7 @@ public class MethodGroupsHelper {
             }
           }
         } // groups
-  
+
         //
         // Depends on methods?
         // Adds all depended methods to runningMethods
@@ -201,9 +201,9 @@ public class MethodGroupsHelper {
             newMethods.put(thisMethod, thisMethod);
           }
         }
-  
+
       } // methods
-  
+
       //
       // Only keep going if new methods have been added
       //
@@ -212,7 +212,7 @@ public class MethodGroupsHelper {
       includedMethods.addAll(newMethods.keySet());
       newMethods = Maps.newHashMap();
     } // while keepGoing
-  
+
     outMethods.addAll(runningMethods.keySet());
     outGroups.addAll(runningGroups.keySet());
   }
@@ -222,19 +222,21 @@ public class MethodGroupsHelper {
       // TODO(cbeust):  account for package
       String methodName =
         m.getMethod().getDeclaringClass().getName() + "." + m.getMethodName();
-      if (methodName.equals(tm)) return m;
+      if (methodName.equals(tm)) {
+        return m;
+      }
     }
-  
+
     return null;
   }
 
   /**
    * Only used if a group is missing to flag an error on that method
-   * 
+   *
    * @param method if no group is found, group regex is set as this method's missing group
    * @param methods list of methods to search
    * @param groupRegexp regex representing the group
-   * 
+   *
    * @return all the methods that belong to the group specified by the regular
    * expression groupRegExp.  methods[] is the list of all the methods we
    * are choosing from and method is the method that owns the dependsOnGroups
@@ -255,11 +257,11 @@ public class MethodGroupsHelper {
         }
       }
     }
-  
+
     if (!foundGroup) {
       method.setMissingGroup(groupRegexp);
     }
-  
+
     return vResult.toArray(new ITestNGMethod[vResult.size()]);
   }
 

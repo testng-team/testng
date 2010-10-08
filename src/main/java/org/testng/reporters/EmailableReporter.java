@@ -31,14 +31,14 @@ import java.util.TreeSet;
 /**
  * Reported designed to render self-contained HTML top down view of a testing
  * suite.
- * 
+ *
  * @author Paul Mendelson
  * @since 5.2
  * @version $Revision: 719 $
  */
 public class EmailableReporter implements IReporter {
   private static final Logger L = Logger.getLogger(EmailableReporter.class);
-  
+
   // ~ Instance fields ------------------------------------------------------
 
   private PrintWriter m_out;
@@ -55,7 +55,7 @@ public class EmailableReporter implements IReporter {
   public void generateReport(List<XmlSuite> xml, List<ISuite> suites, String outdir) {
     try {
       m_out = createWriter(outdir);
-    } 
+    }
     catch (IOException e) {
       L.error("output file", e);
       return;
@@ -164,9 +164,9 @@ public class EmailableReporter implements IReporter {
         buff.append("<td><a href=\"#m" + m_methodIndex + "\">"
             + qualifiedName(method)
             + " " + (description != null && description.length() > 0
-                ? "(\"" + description + "\")" 
+                ? "(\"" + description + "\")"
                 : "")
-            + "</a>" + (null == testInstanceName ? "" : "<br>(" + testInstanceName + ")") 
+            + "</a>" + (null == testInstanceName ? "" : "<br>(" + testInstanceName + ")")
             + "</td>" + "<td class=\"numi\">"
             + resultSet.size() + "</td><td class=\"numi\">" + (end - start)
             + "</td></tr>");
@@ -194,7 +194,9 @@ public class EmailableReporter implements IReporter {
     if (length > 0 && !"basic".equalsIgnoreCase(groups[0])) {
       addon.append("(");
       for (int i = 0; i < length; i++) {
-        if (i > 0) addon.append(", ");
+        if (i > 0) {
+          addon.append(", ");
+        }
           addon.append(groups[i]);
         }
       addon.append(")");
@@ -245,28 +247,30 @@ public class EmailableReporter implements IReporter {
             if (hasParameters) {
               m_out.println("<tr" + (rq % 2 == 0 ? " class=\"stripe\"" : "")
                   + "><td" + indent + " colspan=\"" + parameters.length + "\">");
-            } 
+            }
             else {
               m_out.println("<div" + indent + ">");
             }
             if (hasReporterOutput) {
-              if(hasThrowable)
+              if(hasThrowable) {
                 m_out.println("<h3>Test Messages</h3>");
+              }
               for (String line : msgs) {
                 m_out.println(line + "<br/>");
               }
             }
             if(hasThrowable) {
               boolean wantsMinimalOutput = ans.getStatus()==ITestResult.SUCCESS;
-              if(hasReporterOutput)
+              if(hasReporterOutput) {
                 m_out.println("<h3>"
                     +(wantsMinimalOutput?"Expected Exception":"Failure")
                     +"</h3>");
+              }
               generateExceptionReport(exception,method);
             }
             if (hasParameters) {
               m_out.println("</td></tr>");
-            } 
+            }
             else {
               m_out.println("</div>");
             }
@@ -285,7 +289,7 @@ public class EmailableReporter implements IReporter {
   protected void generateExceptionReport(Throwable exception,ITestNGMethod method) {
     generateExceptionReport(exception, method, exception.getLocalizedMessage());
   }
-  
+
   private void generateExceptionReport(Throwable exception,ITestNGMethod method,String title) {
     m_out.println("<p>" + Utils.escapeHtml(title) + "</p>");
     StackTraceElement[] s1= exception.getStackTrace();
@@ -402,7 +406,7 @@ public class EmailableReporter implements IReporter {
   }
 
   /**
-   * 
+   *
    */
   private void tableStart(String cssclass) {
     m_out.println("<table cellspacing=0 cellpadding=0"
@@ -419,9 +423,9 @@ public class EmailableReporter implements IReporter {
     m_out.println("<tr><th colspan=\"" + cq + "\">" + label + "</th></tr>");
     m_row = 0;
   }
-  
+
   protected void writeStyle(String[] formats,String[] targets) {
-    
+
   }
 
   /** Starts HTML stream */

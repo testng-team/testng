@@ -1,19 +1,19 @@
 package org.testng;
 
-import java.io.Serializable;
-
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
+import java.io.Serializable;
+
 /**
  * <code>IClass</code> represents a test class and a collection of its instances.
- * 
+ *
  * @author <a href = "mailto:cedric&#64;beust.com">Cedric Beust</a>
  */
 public interface IClass extends Serializable {
-  
+
   /**
-   * @return this test class name.  This is the name of the 
+   * @return this test class name.  This is the name of the
    * corresponding Java class.
    */
   String getName();
@@ -39,9 +39,9 @@ public interface IClass extends Serializable {
   Class getRealClass();
 
   Object[] getInstances(boolean create);
-  
+
   int getInstanceCount();
-  
+
   long[] getInstanceHashCodes();
 
   void addInstance(Object instance);

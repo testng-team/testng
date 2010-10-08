@@ -124,6 +124,7 @@ class ReporterConfig {
     }
   }
 
+  @Override
   public String toString() {
     StringBuffer buf = new StringBuffer();
     buf.append("\nClass = " + m_className);

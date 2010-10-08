@@ -1,10 +1,10 @@
 package org.testng;
 
-import java.io.File;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.testng.junit.JUnitDirectoryConverter;
+
+import java.io.File;
 
 /**
  * @author Andy.Glover
@@ -15,11 +15,11 @@ public class JUnitConverterTask extends Task {
   private File m_outputDirectory;
   private boolean m_useAnnotations;
   private String[] m_groups;
-  
+
   public JUnitConverterTask() {
     super();
   }
-  
+
   @Override
   public void execute() throws BuildException {
     this.validate();
@@ -36,7 +36,7 @@ public class JUnitConverterTask extends Task {
       this.log("There were errors in file generation");
     }
   }
-  
+
   private void validate() throws BuildException {
     if (this.m_outputDirectory == null || this.m_outputDirectory.getName().equals("")) {
       throw new BuildException("OutputDir must have a value");
@@ -45,13 +45,13 @@ public class JUnitConverterTask extends Task {
       throw new BuildException("SourceDir must have a value");
     }
   }
-  
+
   @Override
   public void init() throws BuildException {
     super.init();
     m_useAnnotations = true;
   }
-  
+
   /**
    * Setter for report's output directory
    * @param outputDirectory
@@ -59,18 +59,18 @@ public class JUnitConverterTask extends Task {
   public void setOutputDir(final File outputDirectory) {
     m_outputDirectory = outputDirectory;
   }
-  
+
   public void setGroups(String groups) {
     m_groups = groups.split("[ ,]");
   }
-  
+
   /**
    * @param sourceDirectory
    */
   public void setSourceDir(final File sourceDirectory) {
     m_sourceDirectory = sourceDirectory;
   }
-  
+
   /**
    * @param annotations
    */

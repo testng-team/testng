@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
 @Target({METHOD, TYPE, CONSTRUCTOR})
 public @interface Test {
   /**
-   * The list of groups this class/method belongs to. 
+   * The list of groups this class/method belongs to.
    */
   public String[] groups() default {};
 
@@ -24,11 +24,11 @@ public @interface Test {
    * Whether methods on this class/method are enabled.
    */
   public boolean enabled() default true;
-  
+
   /**
    * The list of variables used to fill the parameters of this method.
    * These variables must be defined in the property file.
-   * 
+   *
    * @deprecated Use @Parameters
    */
   @Deprecated
@@ -39,7 +39,7 @@ public @interface Test {
    * member of one of these groups is guaranteed to have been
    * invoked before this method.  Furthermore, if any of these
    * methods was not a SUCCESS, this test method will not be
-   * run and will be flagged as a SKIP.  
+   * run and will be flagged as a SKIP.
    */
   public String[] dependsOnGroups() default {};
 
@@ -49,8 +49,8 @@ public @interface Test {
    * are guaranteed that all these methods will be run before the test method
    * that contains this annotation is run.  Furthermore, if any of these
    * methods was not a SUCCESS, this test method will not be
-   * run and will be flagged as a SKIP.  
-   * 
+   * run and will be flagged as a SKIP.
+   *
    * If some of these methods have been overloaded, all the overloaded
    * versions will be run.
    */
@@ -61,7 +61,7 @@ public @interface Test {
    * If it hasn't returned after this time, it will be marked as a FAIL.
    */
   public long timeOut() default 0;
-  
+
   /**
    * The maximum number of milliseconds that the total number of invocations on this test
    * method should take.  This annotation will be ignored if the attribute invocationCount
@@ -69,30 +69,30 @@ public @interface Test {
    * If it hasn't returned after this time, it will be marked as a FAIL.
    */
   public long invocationTimeOut() default 0;
-  
+
   /**
    * The number of times this method should be invoked.
    */
   public int invocationCount() default 1;
-  
+
   /**
    * The size of the thread pool for this method.  The method will be invoked
    * from multiple threads as specified by invocationCount.
    * Note:  this attribute is ignored if invocationCount is not specified
    */
   public int threadPoolSize() default 0;
-  
+
   /**
    * The percentage of success expected from this method.
    */
   public int successPercentage() default 100;
-  
+
   /**
    * The name of the data provider for this test method.
    * @see org.testng.annotations.DataProvider
    */
   public String dataProvider() default "";
-  
+
   /**
    * The class where to look for the data provider.  If not
    * specified, the dataprovider will be looked on the class
@@ -101,7 +101,7 @@ public @interface Test {
    * needs to be static on the specified class.
    */
   public Class<?> dataProviderClass() default Object.class;
-  
+
   /**
    * If set to true, this test method will always be run even if it depends
    * on a method that failed.  This attribute will be ignored if this test
@@ -114,9 +114,9 @@ public @interface Test {
    * HTML report and also on standard output if verbose >= 2.
    */
   public String description() default "";
-  
+
   /**
-   * The list of exceptions that a test method is expected to throw.  If no 
+   * The list of exceptions that a test method is expected to throw.  If no
    * exception or a different than one on this list is thrown, this test will be
    * marked a failure.
    */
@@ -124,7 +124,7 @@ public @interface Test {
 
   /**
    * If expectedExceptions was specified, its message must match the regular expression
-   * specified in this attribute. 
+   * specified in this attribute.
    */
   public String expectedExceptionsMessageRegExp() default ".*";
 
@@ -148,9 +148,9 @@ public @interface Test {
   /**
    * If set to true, all the methods on this test class are guaranteed to run
    * sequentially, even if the tests are currently being run with parallel="true".
-   * 
+   *
    * This attribute can only be used at the class level and will be ignored
-   * if used at the method level. 
+   * if used at the method level.
    */
   public boolean singleThreaded() default false;
 
@@ -161,14 +161,14 @@ public @interface Test {
    * should be retried.
    */
   public Class retryAnalyzer() default Class.class;
-  
+
   /**
    * If true and invocationCount is specified with a value > 1,
    * then all invocations after a failure will be marked as a SKIP
    * instead of a FAIL.
    */
   public boolean skipFailedInvocations() default false;
-  
+
   /**
    * If set to true, this test will run even if the methods
    * it depends on are missing or excluded.

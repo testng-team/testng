@@ -10,16 +10,16 @@ package org.testng.remote.strprotocol;
  */
 public interface IRemoteTestListener {
   void onStart(TestMessage tm);
-  
+
   void onFinish(TestMessage tm);
 
   void onTestStart(TestResultMessage trm);
-  
+
   void onTestSuccess(TestResultMessage trm);
-  
+
   void onTestFailure(TestResultMessage trm);
-  
+
   void onTestSkipped(TestResultMessage trm);
-  
+
   void onTestFailedButWithinSuccessPercentage(TestResultMessage trm);
 }

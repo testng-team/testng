@@ -23,7 +23,7 @@ public class JUnitConverter {
    // Deprecated, maintained for backward compatibility
    private static final String RESTORE_OPT  = "-restore";
    private static final String GROUPS_OPT  = "-groups";
-   
+
    private static int m_logLevel = 1;
 
    public static void main(String[] args) {
@@ -34,7 +34,7 @@ public class JUnitConverter {
       }
 
       Map params = extractOptions(args);
-      
+
       if (null != params.get(QUIET)) {
         m_logLevel = 0;
       }
@@ -71,7 +71,7 @@ public class JUnitConverter {
       }
 
       String outPath = overwrite ? srcPath : (String) params.get(OUT_DIR_OPT);
-      
+
       String groupsOpt = (String) params.get(GROUPS_OPT);
       String[] groups = null;
       if (groupsOpt != null) {
@@ -170,17 +170,17 @@ public class JUnitConverter {
    }
 
    private static boolean m_verbose = false;
-   
+
    public static void log(String s) {
      if (m_verbose) {
       System.out.println("[JUnitConverter] " + s);
      }
   }
-   
+
    public static int getLogLevel() {
      return m_logLevel;
    }
-   
+
    public static void ppp(String s) {
     System.out.println("[JUnitConverter] " + s);
   }

@@ -2,7 +2,7 @@ package org.testng;
 
 /**
  * This class is used by TestNG to locate the test classes.
- * 
+ *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public interface ITestClassFinder {
@@ -15,7 +15,7 @@ public interface ITestClassFinder {
    * - JUnit:  the class contains a suite() method
    */
   public IClass[] findTestClasses();
-  
+
   /**
    * Return the IClass for a given class
    */

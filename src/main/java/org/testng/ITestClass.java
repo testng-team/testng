@@ -9,13 +9,13 @@ import java.io.Serializable;
  * <li>The configuration methods (test and method)
  * <li>The class file
  * </ul>
- * 
+ *
  * Note that the methods returned by instances of this class
  * are expected to be correct at runtime.  In other words,
  * they might differ from what the ITestMethodFinder returned
  * since ITestClass will take into account the groups being
  * included and excluded.
- * 
+ *
  * @author <a href = "mailto:cedric&#64;beust.com">Cedric Beust</a>
  */
 public interface ITestClass extends IClass, Serializable {
@@ -24,20 +24,22 @@ public interface ITestClass extends IClass, Serializable {
    * Returns all the instances the methods will be invoked upon.
    * This will typically be an array of one object in the absence
    * of a @Factory annotation.
-   * 
+   *
    * @param reuse flag if a new set of instances must be returned
-   *  (if set to <tt>false</tt>) 
+   *  (if set to <tt>false</tt>)
    * @return All the instances the methods will be invoked upon.
-   * 
-   * {@inheritDoc}
-   */
-  Object[] getInstances(boolean reuse);
-  
-  /**
-   * TODO cquezel JavaDoc. 
    *
    * {@inheritDoc}
    */
+  @Override
+  Object[] getInstances(boolean reuse);
+
+  /**
+   * TODO cquezel JavaDoc.
+   *
+   * {@inheritDoc}
+   */
+  @Override
   long[] getInstanceHashCodes();
 
   /**
@@ -45,14 +47,15 @@ public interface ITestClass extends IClass, Serializable {
    * is needed for serialization since we don't know ahead of time if the
    * instances of the test classes will be serializable.
    */
+  @Override
   int getInstanceCount();
-  
+
   /**
    * Returns all the applicable test methods.
    * @return All the applicable test methods.
    */
   ITestNGMethod[] getTestMethods();
-  
+
   /**
    * Returns all the methods that should be invoked
    * before a test method is invoked.
@@ -68,7 +71,7 @@ public interface ITestClass extends IClass, Serializable {
    * after a test method completes.
    */
   ITestNGMethod[] getAfterTestMethods();
-  
+
   /**
    * Return all the methods that should be invoked
    * after the test class has been created and before
@@ -104,12 +107,12 @@ public interface ITestClass extends IClass, Serializable {
   ITestNGMethod[] getAfterSuiteMethods();
 
   /**
-   * Returns all &#64;Configuration methods that should be invoked before any others in the 
+   * Returns all &#64;Configuration methods that should be invoked before any others in the
    * current test.
    * @return all @Configuration methods that should be invoked before any others in the current test.
    */
   ITestNGMethod[] getBeforeTestConfigurationMethods();
-  
+
   /**
    * Returns all &#64;Configuration methods that should be invoked last before any others
    * in the current test.
@@ -117,7 +120,7 @@ public interface ITestClass extends IClass, Serializable {
    * in the current test.
    */
   ITestNGMethod[] getAfterTestConfigurationMethods();
-  
+
   /**
    * Returns all &#64;Configuration methods that should be invoked before certain groups.
    * @return all @Configuration methods that should be invoked before certain groups.

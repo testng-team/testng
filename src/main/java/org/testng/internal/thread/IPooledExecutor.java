@@ -1,7 +1,6 @@
 package org.testng.internal.thread;
 
 
-import java.util.List;
 
 /**
  * Reduced interface to mimic <code>ExecutorService</code>.

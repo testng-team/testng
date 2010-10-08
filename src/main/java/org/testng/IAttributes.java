@@ -25,7 +25,7 @@ public interface IAttributes extends Serializable {
 
   /**
    * Remove the attribute
-   * 
+   *
    * @return the attribute value if found, null otherwise
    */
   public Object removeAttribute(String name);

@@ -8,6 +8,6 @@ package org.testng;
 public interface IMethodInstance {
 
   ITestNGMethod getMethod();
-  
+
   Object[] getInstances();
 }

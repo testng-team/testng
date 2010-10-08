@@ -1,10 +1,5 @@
 package org.testng.xml;
 
-import javax.xml.parsers.FactoryConfigurationError;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
 import org.testng.TestNGException;
 import org.testng.internal.ClassHelper;
 import org.xml.sax.SAXException;
@@ -13,13 +8,18 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
 public class XmlParser implements IFileParser {
 
   private static SAXParser m_saxParser;
 
   static {
     SAXParserFactory spf = loadSAXParserFactory();
-    
+
     if (supportsValidation(spf)) {
       spf.setValidating(true);
     }
@@ -39,15 +39,15 @@ public class XmlParser implements IFileParser {
   /**
    * Tries to load a <code>SAXParserFactory</code> by trying in order the following:
    * <tt>com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl</tt> (SUN JDK5)
-   * <tt>org.apache.crimson.jaxp.SAXParserFactoryImpl</tt> (SUN JDK1.4) and 
+   * <tt>org.apache.crimson.jaxp.SAXParserFactoryImpl</tt> (SUN JDK1.4) and
    * last <code>SAXParserFactory.newInstance()</code>.
-   * 
+   *
    * @return a <code>SAXParserFactory</code> implementation
    * @throws TestNGException thrown if no <code>SAXParserFactory</code> can be loaded
    */
   private static SAXParserFactory loadSAXParserFactory() {
     SAXParserFactory spf = null;
-    
+
     StringBuffer errorLog= new StringBuffer();
     try {
       Class factoryClass= ClassHelper.forName("com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
@@ -67,7 +67,7 @@ public class XmlParser implements IFileParser {
         errorLog.append("\n").append("JDK1.4 SAXParserFactory cannot be loaded: " + ex.getMessage());
       }
     }
-    
+
     Throwable cause= null;
     if(null == spf) {
       try {
@@ -77,14 +77,14 @@ public class XmlParser implements IFileParser {
         cause= fcerr;
       }
     }
-    
-    if(null == spf) {      
+
+    if(null == spf) {
       throw new TestNGException("Cannot initialize a SAXParserFactory\n" + errorLog.toString(), cause);
     }
-    
+
     return spf;
   }
-  
+
 
   /**
    * Tests if the current <code>SAXParserFactory</code> supports DTD validation.
@@ -96,29 +96,29 @@ public class XmlParser implements IFileParser {
       return spf.getFeature("http://xml.org/sax/features/validation");
     }
     catch(Exception ex) { ; }
-    
+
     return false;
   }
-  
+
 //  private static void ppp(String s) {
 //    System.out.println("[Parser] " + s);
 //  }
-  
+
 //  /**
 //   *
 //   * @param argv ignored
-//   * @throws FileNotFoundException if the 
+//   * @throws FileNotFoundException if the
 //   * @throws ParserConfigurationException
 //   * @throws SAXException
 //   * @throws IOException
 //   * @since 1.0
 //   */
-//  public static void main(String[] argv) 
-//    throws FileNotFoundException, ParserConfigurationException, SAXException, IOException 
+//  public static void main(String[] argv)
+//    throws FileNotFoundException, ParserConfigurationException, SAXException, IOException
 //  {
-//    XmlSuite l = 
+//    XmlSuite l =
 //      new Parser("c:/eclipse-workspace/testng/test/testng.xml").parse();
-//    
+//
 //    System.out.println(l);
 //  }  @Override
   @Override
@@ -127,7 +127,7 @@ public class XmlParser implements IFileParser {
     TestNGContentHandler ch = new TestNGContentHandler(currentFile);
     try {
       m_saxParser.parse(inputStream, ch);
-      
+
       return ch.getSuite();
     }
     catch (FileNotFoundException e) {

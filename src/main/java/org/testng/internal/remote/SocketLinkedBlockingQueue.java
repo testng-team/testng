@@ -4,7 +4,7 @@ import java.net.Socket;
 
 /**
  * <code>SocketLinkedBlockingQueue</code> is a wrapper on LinkedBlockingQueue so
- * we may factor out code common to JDK14 and JDK5+ using different implementation 
+ * we may factor out code common to JDK14 and JDK5+ using different implementation
  * of LinkedBlockingQueue
  *
  * @author cquezel
@@ -12,5 +12,10 @@ import java.net.Socket;
  */
 public class SocketLinkedBlockingQueue extends java.util.concurrent.LinkedBlockingQueue<Socket>
 {
+
+  /**
+   *
+   */
+  private static final long serialVersionUID = 4548450495806527985L;
   // wrapper
 }

@@ -5,7 +5,7 @@ import org.testng.annotations.IConfigurationAnnotation;
 
 /**
  * An implementation of IConfiguration
- * 
+ *
  * Created on Dec 16, 2005
  * @author cbeust
  */
@@ -28,9 +28,9 @@ public class ConfigurationAnnotation extends TestOrConfiguration implements ICon
   private boolean m_lastTimeOnly = false;
 
   public ConfigurationAnnotation() {
-    
+
   }
-  
+
   public void setAfterSuite(boolean afterSuite) {
     m_afterSuite = afterSuite;
   }
@@ -76,34 +76,42 @@ public class ConfigurationAnnotation extends TestOrConfiguration implements ICon
     m_parameters = parameters;
   }
 
+  @Override
   public boolean getBeforeTestClass() {
     return m_beforeTestClass;
   }
 
+  @Override
   public boolean getAfterTestClass() {
     return m_afterTestClass;
   }
 
+  @Override
   public boolean getBeforeTestMethod() {
     return m_beforeTestMethod;
   }
 
+  @Override
   public boolean getAfterTestMethod() {
     return m_afterTestMethod;
   }
 
+  @Override
   public boolean getBeforeSuite() {
     return m_beforeSuite;
   }
 
+  @Override
   public boolean getAfterSuite() {
     return m_afterSuite;
   }
 
+  @Override
   public boolean getBeforeTest() {
     return m_beforeTest;
   }
 
+  @Override
   public boolean getAfterTest() {
     return m_afterTest;
   }
@@ -113,14 +121,17 @@ public class ConfigurationAnnotation extends TestOrConfiguration implements ICon
     return m_parameters;
   }
 
+  @Override
   public boolean getAlwaysRun() {
     return m_alwaysRun;
   }
 
+  @Override
   public boolean getInheritGroups() {
     return m_inheritGroups;
   }
 
+  @Override
   public String[] getAfterGroups() {
     return m_afterGroups;
   }
@@ -129,6 +140,7 @@ public class ConfigurationAnnotation extends TestOrConfiguration implements ICon
     m_afterGroups = afterGroups;
   }
 
+  @Override
   public String[] getBeforeGroups() {
     return m_beforeGroups;
   }
@@ -141,6 +153,7 @@ public class ConfigurationAnnotation extends TestOrConfiguration implements ICon
     m_isFakeConfiguration = b;
   }
 
+  @Override
   public boolean isFakeConfiguration() {
     return m_isFakeConfiguration;
   }

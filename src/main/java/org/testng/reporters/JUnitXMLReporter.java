@@ -34,14 +34,14 @@ public class JUnitXMLReporter implements IResultListener {
   private static final Pattern SINGLE_QUOTE = Pattern.compile("'");
   private static final Pattern QUOTE = Pattern.compile("\"");
   private static final Map<String, Pattern> ATTR_ESCAPES= Maps.newHashMap();
-  
+
   static {
     ATTR_ESCAPES.put("&lt;", LESS);
     ATTR_ESCAPES.put("&gt;", GREATER);
     ATTR_ESCAPES.put("&apos;", SINGLE_QUOTE);
     ATTR_ESCAPES.put("&quot;", QUOTE);
   }
-  
+
 
   /**
    * keep lists of all the results
@@ -101,7 +101,7 @@ public class JUnitXMLReporter implements IResultListener {
    */
   @Override
   public void onStart(ITestContext context) {
-	  
+
   }
 
   /**
@@ -142,7 +142,7 @@ public class JUnitXMLReporter implements IResultListener {
    * generate the XML report given what we know from all the test results
    */
   protected void generateReport(ITestContext context) {
-	  
+
       XMLStringBuffer document= new XMLStringBuffer("");
       document.setXmlDetails("1.0", "UTF-8");
       Properties attrs= new Properties();
@@ -162,7 +162,7 @@ public class JUnitXMLReporter implements IResultListener {
         attrs.setProperty(XMLConstants.ATTR_NAME, className);
 //        attrs.setProperty(XMLConstants.ATTR_PACKAGE, packages.iterator().next());
       }
-      
+
       attrs.setProperty(XMLConstants.ATTR_TESTS, "" + m_allTests.size());
       attrs.setProperty(XMLConstants.ATTR_TIME, ""
           + ((context.getEndDate().getTime() - context.getStartDate().getTime()) / 1000.0));
@@ -188,7 +188,9 @@ public class JUnitXMLReporter implements IResultListener {
     Set<String> result = Sets.newHashSet();
     for (ITestNGMethod m : context.getAllTestMethods()) {
       Package pkg = m.getMethod().getDeclaringClass().getPackage();
-      if (pkg != null) result.add(pkg.getName());
+      if (pkg != null) {
+        result.add(pkg.getName());
+      }
     }
     return result;
   }
@@ -239,7 +241,7 @@ public class JUnitXMLReporter implements IResultListener {
   private void createSkipElement(XMLStringBuffer doc, ITestResult tr) {
     doc.addEmptyElement("skipped");
   }
-  
+
   private String encodeAttr(String attr) {
     String result= replaceAmpersand(attr, ENTITY);
     for(Map.Entry<String, Pattern> e: ATTR_ESCAPES.entrySet()) {
@@ -252,7 +254,9 @@ public class JUnitXMLReporter implements IResultListener {
   private String replaceAmpersand(String str, Pattern pattern) {
     int start = 0;
     int idx = str.indexOf('&', start);
-    if(idx == -1) return str;
+    if(idx == -1) {
+      return str;
+    }
     StringBuffer result= new StringBuffer();
     while(idx != -1) {
       result.append(str.substring(start, idx));
@@ -267,11 +271,11 @@ public class JUnitXMLReporter implements IResultListener {
       idx= str.indexOf('&', start);
     }
     result.append(str.substring(start));
-    
+
     return result.toString();
   }
-  
-  
+
+
   /**
 	 * Reset all member variables for next test.
 	 * */
@@ -283,7 +287,7 @@ public class JUnitXMLReporter implements IResultListener {
 		m_numPassed = 0;
 		m_numSkipped = 0;
 	}
-	
+
 	/**
 	 * @author Borojevic Created this method to guarantee unique file names for
 	 *         reports.<br>

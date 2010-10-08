@@ -26,7 +26,7 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
   /**
    * Sets the test class having this method. This is not necessarily the declaring class.
    *
-   * @param cls The test class having this method. 
+   * @param cls The test class having this method.
    */
   void setTestClass(ITestClass cls);
 
@@ -35,9 +35,9 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
    * @return the corresponding Java test method.
    */
   Method getMethod();
-  
+
   /**
-   * Returns the method name. This is needed for serialization because 
+   * Returns the method name. This is needed for serialization because
    * methods are not Serializable.
    * @return the method name.
    */
@@ -72,7 +72,7 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
    */
   String getMissingGroup();
   public void setMissingGroup(String group);
-  
+
   /**
    * Before and After groups
    */
@@ -152,7 +152,7 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
    */
   int getInvocationCount();
   void setInvocationCount(int count);
-  
+
   /**
    * @return the success percentage for this method (between 0 and 100).
    */
@@ -173,7 +173,7 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
    * Returns if this ITestNGMethod can be invoked from within IClass.
    */
   boolean canRunFromClass(IClass testClass);
-  
+
   /**
    * @return true if this method is alwaysRun=true
    */
@@ -185,7 +185,7 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
   int getThreadPoolSize();
 
   void setThreadPoolSize(int threadPoolSize);
-  
+
   public String getDescription();
 
   public void incrementCurrentInvocationCount();
@@ -194,13 +194,13 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
   public int getParameterInvocationCount();
 
   public ITestNGMethod clone();
-  
+
   public IRetryAnalyzer getRetryAnalyzer();
   public void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer);
-  
+
   public boolean skipFailedInvocations();
   public void setSkipFailedInvocations(boolean skip);
-  
+
   /**
    * The time under which all invocationCount methods need to complete by.
    */

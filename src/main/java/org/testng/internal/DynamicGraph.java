@@ -50,10 +50,11 @@ public class DynamicGraph<T> {
       // A node is free if...
 
       // - no other nodes depend on it
-      if (!m_dependedUpon.containsKey(m)) result.add(m);
-
-      // - or all the nodes that it depends on have already run 
-      else if (getUnfinishedNodes(m_dependedUpon.get(m)).size() == 0) result.add(m);
+      if (!m_dependedUpon.containsKey(m)) {
+        result.add(m);
+      } else if (getUnfinishedNodes(m_dependedUpon.get(m)).size() == 0) {
+        result.add(m);
+      }
     }
     return result;
   }
@@ -64,7 +65,9 @@ public class DynamicGraph<T> {
   private Collection<? extends T> getUnfinishedNodes(List<T> nodes) {
     Set<T> result = Sets.newHashSet();
     for (T node : nodes) {
-      if (m_nodesReady.contains(node) || m_nodesRunning.contains(node)) result.add(node);
+      if (m_nodesReady.contains(node) || m_nodesRunning.contains(node)) {
+        result.add(node);
+      }
     }
     return result;
   }
@@ -156,7 +159,7 @@ public class DynamicGraph<T> {
       result.append("  " + getName(n) + color + "\n");
     }
     for (T n : m_nodesRunning) {
-      color = freeNodes.contains(n) ? FREE : RUNNING; 
+      color = freeNodes.contains(n) ? FREE : RUNNING;
       result.append("  " + getName(n) + color + "\n");
     }
     for (T n : m_nodesFinished) {

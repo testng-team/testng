@@ -43,22 +43,22 @@ public final class Utils {
       {'*','/','\\','?','%',':',';','<','>','&','~','|'};
   public static final char CHAR_REPLACEMENT = '_';
   public static final char UNICODE_REPLACEMENT = 0xFFFD;
- 
+
   /**
    * Hide constructor for utility class.
    */
   private Utils() {
     // Hide constructor
   }
-  
+
   /**
    * Splits the given String s into tokens where the separator is
-   * either the space character or the comma character. For example, 
+   * either the space character or the comma character. For example,
    * if s is "a,b, c" this method returns {"a", "b", "c"}
-   *  
+   *
    * @param s the string to split
-   * @return the split token 
-   */  
+   * @return the split token
+   */
   public static String[] stringToArray(String s) {
     // TODO CQ would s.split() be a better way of doing this?
     StringTokenizer st = new StringTokenizer(s, " ,");
@@ -95,7 +95,7 @@ public final class Utils {
   }
 
   /**
-   * Writes the content of the sb string to the file named filename in outDir encoding the output as UTF-8. 
+   * Writes the content of the sb string to the file named filename in outDir encoding the output as UTF-8.
    * If outDir does not exist, it is created.
    *
    * @param outputDir the output directory (may not exist). If <tt>null</tt> then current directory is used.
@@ -107,9 +107,9 @@ public final class Utils {
     final File outDir= new File(outDirPath);
     writeFile(outDir, fileName, escapeUnicode(sb), "UTF-8", false /* don't append */);
   }
-  
+
   /**
-   * Writes the content of the sb string to the file named filename in outDir. If 
+   * Writes the content of the sb string to the file named filename in outDir. If
    * outDir does not exist, it is created.
    *
    * @param outputDir the output directory (may not exist). If <tt>null</tt> then current directory is used.
@@ -121,7 +121,7 @@ public final class Utils {
     final File outDir= new File(outDirPath);
     writeFile(outDir, fileName, sb, null, false /* don't append */);
   }
-  
+
   /**
    * Appends contents of the string to the specified file. If output directory/file don't
    * exist, they are created.
@@ -134,9 +134,9 @@ public final class Utils {
      File outDir= new File(outDirPath);
      writeFile(outDir, fileName, sb, null, true /* append */);
   }
-  
+
   /**
-   * Writes the content of the sb string to the file named filename in outDir. If 
+   * Writes the content of the sb string to the file named filename in outDir. If
    * outDir does not exist, it is created.
    *
    * @param outDir the output directory (may not exist). If <tt>null</tt> then current directory is used.
@@ -148,7 +148,7 @@ public final class Utils {
       if (!outDir.exists()) {
         outDir.mkdirs();
       }
-      
+
       fileName = replaceSpecialCharacters(fileName);
       File outputFile = new File(outDir, fileName);
       if (!append) {
@@ -170,7 +170,9 @@ public final class Utils {
   private static void writeFile(File outputFile, String sb, String encoding, boolean append) {
     BufferedWriter fw = null;
     try {
-      if (!outputFile.exists()) outputFile.createNewFile();
+      if (!outputFile.exists()) {
+        outputFile.createNewFile();
+      }
       OutputStreamWriter osw= null;
       if (null != encoding) {
         osw = new OutputStreamWriter(new FileOutputStream(outputFile, append), encoding);
@@ -180,7 +182,7 @@ public final class Utils {
       }
       fw = new BufferedWriter(osw);
       fw.write(sb);
-  
+
       Utils.log("", 3, "Creating " + outputFile.getAbsolutePath());
     }
     catch(IOException ex) {
@@ -321,7 +323,7 @@ public final class Utils {
 
     return result;
   }
-  
+
   public static void log(String msg) {
     log("Utils", 2, msg);
   }
@@ -348,7 +350,7 @@ public final class Utils {
       }
     }
   }
-  
+
   public static void error(String errorMessage) {
     System.err.println("[Error] " + errorMessage);
   }
@@ -361,7 +363,7 @@ public final class Utils {
 //    return calculateInvokedMethodCount(
 //        (ITestNGMethod[]) map.getAllMethods().toArray(new ITestNGMethod[map.size()]));
 //  }
-  
+
   public static int calculateInvokedMethodCount(ITestNGMethod[] methods) {
     return methods.length;
 //    int result = 0;
@@ -387,9 +389,9 @@ public final class Utils {
       return new String[0];
     }
 
-    // TODO How different is this from: 
+    // TODO How different is this from:
     // return string.split(sep);
-    
+
     int start = 0;
     int idx = string.indexOf(sep, start);
     int len = sep.length();
@@ -446,9 +448,9 @@ public final class Utils {
       System.err.println("Couldn't find resource on the class path: " + resourceName);
 //      throw new IllegalArgumentException("Resource does not exist: " + resourceName);
     }
-    
+
     else {
-      
+
       try {
         FileOutputStream outputStream = new FileOutputStream(file);
         try {
@@ -475,28 +477,33 @@ public final class Utils {
     PrintWriter pw = new PrintWriter(sw);
     t.printStackTrace(pw);
     pw.flush();
-    
+
     String fullStackTrace = sw.getBuffer().toString();
     String shortStackTrace;
-    
+
     if (Boolean.getBoolean(TestNG.SHOW_TESTNG_STACK_FRAMES) || TestRunner.getVerbose() >= 2) {
       shortStackTrace = fullStackTrace;
     }
     else {
       shortStackTrace = filterTrace(sw.getBuffer().toString());
     }
-    
+
     if (tohtml) {
       shortStackTrace = escapeHtml(shortStackTrace);
       fullStackTrace = fullStackTrace.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
     }
-    
+
     return new String[] {
         shortStackTrace, fullStackTrace
     };
   }
-  
-  private static final Map<Character, String> ESCAPES = new HashMap<Character, String>() {{
+
+  private static final Map<Character, String> ESCAPES = new HashMap<Character, String>() {/**
+     *
+     */
+    private static final long serialVersionUID = 1285607660247157523L;
+
+  {
     put('<', "&lt;");
     put('>', "&gt;");
     put('\'', "&apos;");
@@ -504,22 +511,29 @@ public final class Utils {
   }};
 
   public static String escapeHtml(String s) {
-    if (s == null) return null;
+    if (s == null) {
+      return null;
+    }
 
     StringBuilder result = new StringBuilder();
 
     for (int i = 0; i < s.length(); i++) {
       char c = s.charAt(i);
       String nc = ESCAPES.get(c);
-      if (nc != null) result.append(nc);
-      else result.append(c);
+      if (nc != null) {
+        result.append(nc);
+      } else {
+        result.append(c);
+      }
     }
 
     return result.toString();
   }
 
   public static String escapeUnicode(String s) {
-    if (s == null) return null;
+    if (s == null) {
+      return null;
+    }
 
     StringBuilder result = new StringBuilder();
 
@@ -544,7 +558,7 @@ public final class Utils {
         return "";
       }
       buf.append(line).append(LINE_SEP);
-      
+
       //
       // the stack frames of the trace
       //
@@ -552,7 +566,7 @@ public final class Utils {
           "org.testng",
           "reflect"
       };
-      
+
       int excludedCount = 0;
       while((line = bufferedReader.readLine()) != null) {
         boolean isExcluded = false;
@@ -574,7 +588,7 @@ public final class Utils {
     catch(IOException ioex) {
       ; // do nothing
     }
-    
+
     return buf.toString();
   }
 
@@ -634,8 +648,8 @@ public final class Utils {
     else if(method.isAfterSuiteConfiguration()) {
       buf.append("@AfterSuite ");
     }
-    
-    return buf.append(fqn ? method.toString() : method.getMethodName()).toString(); 
+
+    return buf.append(fqn ? method.toString() : method.getMethodName()).toString();
   }
 
   public static String arrayToString(String[] strings) {
@@ -667,10 +681,10 @@ public final class Utils {
    if (fileName == null || fileName.length() == 0) {
      return fileName;
    }
-   for (int i = 0;i < SPECIAL_CHARACTERS.length;i++) {
-     fileName = fileName.replace(SPECIAL_CHARACTERS[i], CHAR_REPLACEMENT);
+   for (char element : SPECIAL_CHARACTERS) {
+     fileName = fileName.replace(element, CHAR_REPLACEMENT);
    }
-  
+
    return fileName;
   }
 
@@ -678,7 +692,9 @@ public final class Utils {
     StringBuilder sb = new StringBuilder();
     int i = 0;
     for (String s : strings) {
-      if (i++ > 0) sb.append(separator);
+      if (i++ > 0) {
+        sb.append(separator);
+      }
       sb.append(s);
     }
 
@@ -689,7 +705,9 @@ public final class Utils {
     StringBuilder sb = new StringBuilder();
     int i = 0;
     for (Class s : classes) {
-      if (i++ > 0) sb.append(separator);
+      if (i++ > 0) {
+        sb.append(separator);
+      }
       sb.append(s.getName());
     }
 

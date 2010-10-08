@@ -15,8 +15,8 @@ import java.util.Properties;
 
 /**
  * Default Master adapter, provides an adapter based on hosts file.
- * 
- *  
+ *
+ *
  * @author	Guy Korland
  * @date 	April 20, 2007
  */
@@ -33,7 +33,8 @@ implements IMasterAdapter
 	/*
 	 * @see org.testng.remote.adapter.IMasterAdapter#init(java.util.Properties)
 	 */
-	public void init(Properties properties)
+	@Override
+  public void init(Properties properties)
 	{
 		String hostLine = properties.getProperty(HOSTS);
 		m_hosts =  hostLine.split(" ");
@@ -73,12 +74,14 @@ implements IMasterAdapter
 	/*
 	 * @see org.testng.remote.adapter.IMasterAdapter#runSuitesRemotely(java.util.List, org.testng.internal.annotations.IAnnotationFinder, org.testng.internal.annotations.IAnnotationFinder)
 	 */
-	public void runSuitesRemotely( XmlSuite suite, RemoteResultListener listener) throws IOException
+	@Override
+  public void runSuitesRemotely( XmlSuite suite, RemoteResultListener listener) throws IOException
 	{
 		m_workers.add(new RemoteSuiteWorker(suite, m_slavePool, listener));
 	}
 
-	public void awaitTermination(long timeout) throws InterruptedException
+	@Override
+  public void awaitTermination(long timeout) throws InterruptedException
 	{
 		ThreadUtil.execute(m_workers, 1, 10 * 1000L, false);
 	}

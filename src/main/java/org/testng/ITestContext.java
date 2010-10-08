@@ -16,7 +16,7 @@ import java.util.Date;
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public interface ITestContext extends IAttributes {
-  
+
   /**
    * The name of this test.
    */
@@ -36,22 +36,22 @@ public interface ITestContext extends IAttributes {
    * @return A list of all the tests that run successfully.
    */
   public IResultMap getPassedTests();
-  
+
   /**
    * @return A list of all the tests that were skipped
    */
   public IResultMap  getSkippedTests();
-  
+
   /**
    * @return A list of all the tests that failed but are being ignored because
    * annotated with a successPercentage.
    */
   public IResultMap  getFailedButWithinSuccessPercentageTests();
-  
+
   /**
    * @return A map of all the tests that passed, indexed by
    * their ITextMethor.
-   * 
+   *
    * @see org.testng.ITestNGMethod
    */
   public IResultMap getFailedTests();
@@ -60,23 +60,23 @@ public interface ITestContext extends IAttributes {
    * @return All the groups that are included for this test run.
    */
   public String[] getIncludedGroups();
-  
+
   /**
    * @return All the groups that are excluded for this test run.
    */
   public String[] getExcludedGroups();
-  
+
   /**
    * @return Where the reports will be generated.
    */
   public String getOutputDirectory();
-  
-  /** 
+
+  /**
    * @return The Suite object that was passed to the runner
    * at start-up.
    */
   public ISuite getSuite();
-  
+
   /**
    * @return All the test methods that were run.
    */
@@ -92,17 +92,17 @@ public interface ITestContext extends IAttributes {
    * @return All the methods that were not included in this test run.
    */
   public Collection<ITestNGMethod> getExcludedMethods();
-  
+
   /**
    * Retrieves information about the successful configuration method invocations.
    */
   public IResultMap getPassedConfigurations();
-  
+
   /**
    * Retrieves information about the skipped configuration method invocations.
    */
   public IResultMap getSkippedConfigurations();
-  
+
   /**
    * Retrieves information about the failed configuration method invocations.
    */
