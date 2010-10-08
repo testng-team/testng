@@ -66,7 +66,7 @@ public class JUnitReportReporter implements IReporter {
           else failures++;
         }
         Properties p2 = new Properties();
-        p2.setProperty("classname", tr.getMethod().getMethod().getDeclaringClass().getName());
+        p2.setProperty("classname", cls.getName());
         p2.setProperty("name", tr.getMethod().getMethodName());
         long time = tr.getEndMillis() - tr.getStartMillis();
         p2.setProperty("time", "" + formatTime(time));
@@ -106,7 +106,9 @@ public class JUnitReportReporter implements IReporter {
 
       xsb.push("testsuite", p1);
       for (TestTag testTag : testCases) {
-        if (testTag.stackTrace == null) xsb.addEmptyElement("testcase", testTag.properties);
+        if (testTag.stackTrace == null) {
+          xsb.addEmptyElement("testcase", testTag.properties);
+        }
         else {
           xsb.push("testcase", testTag.properties);
 
