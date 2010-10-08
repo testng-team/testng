@@ -22,15 +22,18 @@ public class CountDownAdapter implements ICountDown {
       m_doneLatch = new CountDownLatch(count);
    }
 
-   public void await() throws InterruptedException {
+   @Override
+  public void await() throws InterruptedException {
       m_doneLatch.await();
    }
 
-   public boolean await(long timeout) throws InterruptedException {
+   @Override
+  public boolean await(long timeout) throws InterruptedException {
       return m_doneLatch.await(timeout, TimeUnit.MILLISECONDS);
    }
 
-   public void countDown() {
+   @Override
+  public void countDown() {
       m_doneLatch.countDown();
    }
 }

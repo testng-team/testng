@@ -1,7 +1,7 @@
 package org.testng.annotations;
 
 /**
- * Encapsulate the @ExpectedExceptions / @testng.expected-exceptions annotation 
+ * Encapsulate the @ExpectedExceptions / @testng.expected-exceptions annotation
  * Created on Dec 20, 2005
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */

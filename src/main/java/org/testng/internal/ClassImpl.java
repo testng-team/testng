@@ -13,7 +13,7 @@ import java.util.Map;
 
 /**
  * Implementation of an IClass.
- * 
+ *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class ClassImpl implements IClass {

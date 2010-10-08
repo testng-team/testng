@@ -31,7 +31,7 @@ public class TestResult implements ITestResult {
   transient private Object m_instance;
 
   public TestResult() {
-    
+
   }
 
   public TestResult(IClass testClass,
@@ -45,7 +45,7 @@ public class TestResult implements ITestResult {
   }
 
   /**
-   * 
+   *
    * @param testClass
    * @param instance
    * @param method
@@ -68,7 +68,7 @@ public class TestResult implements ITestResult {
     m_startMillis = start;
     m_endMillis = end;
     m_method = method;
-    
+
     m_instance = instance;
     if (m_instance == null) {
       m_name = m_method.getMethodName();
@@ -96,9 +96,9 @@ public class TestResult implements ITestResult {
   public void setEndMillis(long millis) {
     m_endMillis = millis;
   }
-  
+
   /**
-   * If this result's related instance implements ITest, returns its test name, 
+   * If this result's related instance implements ITest, returns its test name,
    * otherwise returns null.
    */
   @Override
@@ -196,20 +196,20 @@ public class TestResult implements ITestResult {
   public long getStartMillis() {
     return m_startMillis;
   }
-  
+
 //  public List<String> getOutput() {
 //    return m_output;
 //  }
-  
+
   @Override
   public String toString() {
     List<String> output = Reporter.getOutput(this);
-    String result = "[TestResult: " + getName() 
+    String result = "[TestResult: " + getName()
         + " STATUS:" + toString(m_status)
         + " METHOD:" + m_method;
     result += output != null && output.size() > 0 ? output.get(0) : ""
-        + "]\n";  
-        
+        + "]\n";
+
       return result;
   }
 
@@ -219,7 +219,7 @@ public class TestResult implements ITestResult {
       case FAILURE: return "FAILURE";
       case SKIP: return "SKIP";
       case SUCCESS_PERCENTAGE_FAILURE: return "SUCCESS WITHIN PERCENTAGE";
-      case STARTED: return "STARTED"; 
+      case STARTED: return "STARTED";
       default: throw new RuntimeException();
     }
   }
@@ -228,11 +228,11 @@ public class TestResult implements ITestResult {
   public String getHost() {
     return m_host;
   }
-  
+
   public void setHost(String host) {
     m_host = host;
   }
-  
+
   @Override
   public Object[] getParameters() {
     return m_parameters;

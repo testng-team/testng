@@ -241,7 +241,7 @@ public class XMLSuiteResultWriter {
       exceptionAttrs.setProperty(XMLReporterConfig.ATTR_CLASS, exception.getClass().getName());
       xmlBuffer.push(XMLReporterConfig.TAG_EXCEPTION, exceptionAttrs);
 
-      if (!Utils.isStringEmpty(exception.getMessage())) {        
+      if (!Utils.isStringEmpty(exception.getMessage())) {
         xmlBuffer.push(XMLReporterConfig.TAG_MESSAGE);
         xmlBuffer.addCDATA(exception.getMessage());
         xmlBuffer.pop();

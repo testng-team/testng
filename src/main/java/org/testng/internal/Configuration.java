@@ -1,17 +1,17 @@
 package org.testng.internal;
 
-import com.google.inject.Inject;
-
 import org.testng.IConfigurable;
 import org.testng.IHookable;
 import org.testng.IObjectFactory;
 import org.testng.internal.annotations.IAnnotationFinder;
 
+import com.google.inject.Inject;
+
 public class Configuration implements IConfiguration {
 
   @Inject
   IAnnotationFinder m_annotationFinder;
-  
+
   @Nullable
   @Inject
   IObjectFactory m_objectFactory;

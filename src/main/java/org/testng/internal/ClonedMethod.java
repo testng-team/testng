@@ -278,13 +278,14 @@ public class ClonedMethod implements ITestNGMethod {
     int result = -2;
     Class<?> thisClass = getRealClass();
     Class<?> otherClass = ((ITestNGMethod) o).getRealClass();
-    if (thisClass.isAssignableFrom(otherClass)) 
+    if (thisClass.isAssignableFrom(otherClass)) {
       result = -1;
-    else if (otherClass.isAssignableFrom(thisClass)) 
+    } else if (otherClass.isAssignableFrom(thisClass)) {
       result = 1;
-    else if (equals(o)) 
+    } else if (equals(o)) {
       result = 0;
-    
+    }
+
     return result;
   }
 
@@ -300,7 +301,9 @@ public class ClonedMethod implements ITestNGMethod {
     StringBuffer result = new StringBuffer(cls + "." + m.getName() + "(");
     int i = 0;
     for (Class<?> p : m.getParameterTypes()) {
-      if (i++ > 0) result.append(", ");
+      if (i++ > 0) {
+        result.append(", ");
+      }
       result.append(p.getName());
     }
     result.append(")");

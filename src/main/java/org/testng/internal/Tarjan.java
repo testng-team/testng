@@ -3,8 +3,6 @@ package org.testng.internal;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -30,7 +28,7 @@ public class Tarjan<T> {
     m_lowlinks.put(v, m_index);
     m_index++;
     m_s.push(v);
-    
+
     for (T vprime : graph.getPredecessors(v)) {
       if (! m_indices.containsKey(vprime)) {
         run(graph, vprime);
@@ -41,7 +39,7 @@ public class Tarjan<T> {
         m_lowlinks.put(v, Math.min(m_lowlinks.get(v), m_indices.get(vprime)));
       }
     }
-    
+
     if (m_lowlinks.get(v) == m_indices.get(v)) {
       m_cycle = Lists.newArrayList();
       T n;
@@ -50,7 +48,7 @@ public class Tarjan<T> {
         m_cycle.add(n);
       } while (! n.equals(v));
     }
-    
+
   }
 
   public static void main(String[] args) {
@@ -59,7 +57,7 @@ public class Tarjan<T> {
     g.addNode("b");
     g.addNode("c");
     g.addNode("d");
-    
+
     String[] edges = new String[] {
         "a", "b",
         "b", "a",
@@ -67,16 +65,16 @@ public class Tarjan<T> {
         "d", "a",
         "a", "c",
     };
-    
+
     for (int i = 0; i < edges.length; i += 2) {
       g.addPredecessor(edges[i], edges[i+1]);
     }
-    
+
     new Tarjan<String>(g, "a");
   }
 
   public List<T> getCycle() {
     return m_cycle;
   }
-    
+
 }

@@ -13,11 +13,11 @@ import java.lang.reflect.Method;
  */
 public interface IAnnotationTransformer2 extends IAnnotationTransformer {
   /**
-   * Transform an IConfiguration annotation. 
+   * Transform an IConfiguration annotation.
    *
    * Note that only one of the three parameters testClass,
    * testConstructor and testMethod will be non-null.
-   * 
+   *
    * @param annotation The annotation that was read from your
    * test class.
    * @param testClass If the annotation was found on a class, this
@@ -29,16 +29,16 @@ public interface IAnnotationTransformer2 extends IAnnotationTransformer {
    */
   public void transform(IConfigurationAnnotation annotation, Class testClass,
       Constructor testConstructor, Method testMethod);
-  
+
   /**
-   * Transform an IDataProvider annotation. 
+   * Transform an IDataProvider annotation.
    *
    * @param method The method annotated with the IDataProvider annotation.
    */
   public void transform(IDataProviderAnnotation annotation, Method method);
 
   /**
-   * Transform an IFactory annotation. 
+   * Transform an IFactory annotation.
    *
    * @param method The method annotated with the IFactory annotation.
    */

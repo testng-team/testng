@@ -15,7 +15,7 @@ import java.util.List;
  * getPassedTests()
  * getFailedTests()
  * getSkippedTests()
- * 
+ *
  * If you extend this class in order to override any of these
  * methods, remember to call their super equivalent if you want
  * this list of tests to be maintained.
@@ -35,37 +35,43 @@ public class TestListenerAdapter implements IResultListener {
   private List<ITestResult> m_skippedConfs= Collections.synchronizedList(Lists.<ITestResult>newArrayList());
   private List<ITestResult> m_passedConfs= Collections.synchronizedList(Lists.<ITestResult>newArrayList());
 
+  @Override
   public void onTestSuccess(ITestResult tr) {
     m_allTestMethods.add(tr.getMethod());
     m_passedTests.add(tr);
   }
 
+  @Override
   public void onTestFailure(ITestResult tr) {
     m_allTestMethods.add(tr.getMethod());
     m_failedTests.add(tr);
   }
 
+  @Override
   public void onTestSkipped(ITestResult tr) {
     m_allTestMethods.add(tr.getMethod());
     m_skippedTests.add(tr);
   }
-  
+
+  @Override
   public void onTestFailedButWithinSuccessPercentage(ITestResult tr) {
     m_allTestMethods.add(tr.getMethod());
     m_failedButWSPerTests.add(tr);
   }
-  
+
   protected ITestNGMethod[] getAllTestMethods() {
     return m_allTestMethods.toArray(new ITestNGMethod[m_allTestMethods.size()]);
   }
 
+  @Override
   public void onStart(ITestContext testContext) {
 	  m_testContexts.add(testContext);
   }
 
+  @Override
   public void onFinish(ITestContext testContext) {
   }
-  
+
   /**
    * @return Returns the failedButWithinSuccessPercentageTests.
    */
@@ -90,7 +96,7 @@ public class TestListenerAdapter implements IResultListener {
   public List<ITestResult> getSkippedTests() {
     return m_skippedTests;
   }
-  
+
   private static void ppp(String s) {
     System.out.println("[TestListenerAdapter] " + s);
   }
@@ -126,6 +132,7 @@ public class TestListenerAdapter implements IResultListener {
     m_skippedTests = skippedTests;
   }
 
+  @Override
   public void onTestStart(ITestResult result) {
   }
 
@@ -136,10 +143,11 @@ public class TestListenerAdapter implements IResultListener {
   public List<ITestResult> getConfigurationFailures() {
     return m_failedConfs;
   }
-  
+
   /**
    * @see org.testng.internal.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
    */
+  @Override
   public void onConfigurationFailure(ITestResult itr) {
     m_failedConfs.add(itr);
   }
@@ -147,10 +155,11 @@ public class TestListenerAdapter implements IResultListener {
   public List<ITestResult> getConfigurationSkips() {
     return m_skippedConfs;
   }
-  
+
   /**
    * @see org.testng.internal.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
    */
+  @Override
   public void onConfigurationSkip(ITestResult itr) {
     m_skippedConfs.add(itr);
   }
@@ -158,6 +167,7 @@ public class TestListenerAdapter implements IResultListener {
   /**
    * @see org.testng.internal.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
    */
+  @Override
   public void onConfigurationSuccess(ITestResult itr) {
     m_passedConfs.add(itr);
   }

@@ -7,13 +7,12 @@ import org.testng.ITestResult;
 import org.testng.collections.Lists;
 import org.testng.xml.XmlSuite;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
 public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITestResult>> {
-  
+
   private ITestNGMethod m_testMethod;
   private Object[] m_parameterValues;
   private Object[] m_instances;
@@ -60,11 +59,12 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
     m_failureCount = failureCount;
     m_notifier = notifier;
   }
-      
+
   public long getMaxTimeOut() {
     return 500;
   }
 
+  @Override
   public List<ITestResult> call() {
     List<ITestResult> tmpResults = Lists.newArrayList();
     long start = System.currentTimeMillis();
@@ -93,7 +93,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
         for (int i = 0; i < failedInstances.size(); i++) {
           List<ITestResult> retryResults = Lists.newArrayList();
 
-          m_failureCount = 
+          m_failureCount =
              m_invoker.retryFailed(failedInstances.toArray(),
                  i, m_testMethod, m_xmlSuite, m_testClass, m_beforeMethods,
                  m_afterMethods, m_groupMethods, retryResults,
@@ -102,12 +102,12 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
           m_testResults.addAll(retryResults);
         }
       }
-      
+
       //
       // If we have a failure, skip all the
       // other invocationCounts
       //
-      
+
       // If not specified globally, use the attribute
       // on the annotation
       //
@@ -116,7 +116,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
       }
       if (m_failureCount > 0 && m_skipFailedInvocationCounts) {
         while (m_invocationCount-- > 0) {
-          ITestResult r = 
+          ITestResult r =
             new TestResult(m_testMethod.getTestClass(),
               m_instances[0],
               m_testMethod,
@@ -131,7 +131,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
       }
     }
     m_parameterIndex++;
-    
+
     return m_testResults;
   }
 

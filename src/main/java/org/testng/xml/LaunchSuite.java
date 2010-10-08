@@ -23,9 +23,9 @@ import java.util.Properties;
 public abstract class LaunchSuite {
   /** This class's log4testng Logger. */
   private static final Logger LOGGER = Logger.getLogger(LaunchSuite.class);
-  
+
   protected boolean m_temporary;
-  
+
   /**
    * Constructs a <code>LaunchSuite</code>
    *
@@ -34,7 +34,7 @@ public abstract class LaunchSuite {
   protected LaunchSuite(boolean isTemp) {
     m_temporary = isTemp;
   }
-  
+
   /**
    * Returns the temporary state.
    * @return the temporary state.
@@ -42,9 +42,9 @@ public abstract class LaunchSuite {
   public boolean isTemporary() {
     return m_temporary;
   }
-  
+
   /**
-   * Saves the suite file in the specified directory and returns the file 
+   * Saves the suite file in the specified directory and returns the file
    * pathname.
    *
    * @param directory the directory where the suite file is to be saved.
@@ -53,29 +53,29 @@ public abstract class LaunchSuite {
   public abstract File save(File directory);
 
   /**
-   * <code>ExistingSuite</code> is a non-temporary LaunchSuite based on an existing 
+   * <code>ExistingSuite</code> is a non-temporary LaunchSuite based on an existing
    * file.
    */
   public static class ExistingSuite extends LaunchSuite {
-    
+
     /**
      * The existing suite path (either relative to the project root or an absolute path)
      */
     private File m_suitePath;
 
     /**
-     * Constructs a <code>ExistingSuite</code> based on an existing file 
+     * Constructs a <code>ExistingSuite</code> based on an existing file
      *
      * @param path the path to the existing Launch suite.
      */
     public ExistingSuite(File path) {
       super(false);
-      
+
       m_suitePath = path;
     }
 
     /**
-     * {@inheritDoc} This implementation saves nothing because the suite file already 
+     * {@inheritDoc} This implementation saves nothing because the suite file already
      * exists.
      */
     @Override
@@ -90,15 +90,15 @@ public abstract class LaunchSuite {
   private abstract static class CustomizedSuite extends LaunchSuite {
     protected String m_projectName;
     protected String m_suiteName;
-    
+
     /** The annotation type. May be null. */
     protected AnnotationTypeEnum m_annotationType;
-    
+
     protected Map<String, String> m_parameters;
-    
+
     /** The string buffer used to write the XML file. */
     private XMLStringBuffer m_suiteBuffer;
-    
+
     /**
      * Constructs a <code>CustomizedSuite</code> TODO cquezel JavaDoc.
      *
@@ -110,10 +110,10 @@ public abstract class LaunchSuite {
     private CustomizedSuite(final String projectName,
         final String className,
         final Map<String, String> parameters,
-        final String annotationType) 
+        final String annotationType)
     {
       super(true);
-      
+
       m_projectName = projectName;
       m_suiteName = className;
       m_parameters = parameters;
@@ -128,12 +128,12 @@ public abstract class LaunchSuite {
     protected XMLStringBuffer createContentBuffer() {
       XMLStringBuffer suiteBuffer = new XMLStringBuffer(""); //$NON-NLS-1$
       suiteBuffer.setDocType("suite SYSTEM \"" + Parser.TESTNG_DTD_URL + "\"");
-      
+
       Properties attrs = new Properties();
       attrs.setProperty("parallel", XmlSuite.PARALLEL_NONE);
       attrs.setProperty("name", m_suiteName);
       suiteBuffer.push("suite", attrs);
-      
+
       if (m_parameters != null) {
         for (Map.Entry<String, String> entry : m_parameters.entrySet()) {
           Properties paramAttrs = new Properties();
@@ -143,11 +143,11 @@ public abstract class LaunchSuite {
           suiteBuffer.pop("parameter");
         }
       }
-      
+
       initContentBuffer(suiteBuffer);
-      
+
       suiteBuffer.pop("suite");
-      
+
       return suiteBuffer;
     }
 
@@ -160,30 +160,30 @@ public abstract class LaunchSuite {
       if (null == m_suiteBuffer) {
         m_suiteBuffer = createContentBuffer();
       }
-      
+
       return m_suiteBuffer;
     }
 
     /**
-     * Initializes the content of the xml string buffer.  
+     * Initializes the content of the xml string buffer.
      *
      * @param suiteBuffer the string buffer to initialize.
      */
     protected abstract void initContentBuffer(XMLStringBuffer suiteBuffer);
-    
+
     /**
-     * {@inheritDoc} This implementation saves the suite to the "temp-testng-customsuite.xml" 
-     * file in the specified directory. 
+     * {@inheritDoc} This implementation saves the suite to the "temp-testng-customsuite.xml"
+     * file in the specified directory.
      */
     @Override
     public File save(File directory) {
       final File suiteFile = new File(directory, "temp-testng-customsuite.xml");
-      
+
       saveSuiteContent(suiteFile, getSuiteBuffer());
-      
+
       return suiteFile;
     }
-    
+
     /**
      * Saves the content of the string buffer to the specified file.
      *
@@ -191,7 +191,7 @@ public abstract class LaunchSuite {
      * @param content the content to write to the file.
      */
     protected void saveSuiteContent(final File file, final XMLStringBuffer content) {
-      
+
       try {
         FileWriter fw = new FileWriter(file);
         try {
@@ -202,20 +202,20 @@ public abstract class LaunchSuite {
         }
       }
       catch (IOException ioe) {
-        // TODO CQ is this normal to swallow exception here 
+        // TODO CQ is this normal to swallow exception here
         LOGGER.error("IO Exception", ioe);
       }
     }
   }
 
   /**
-   * A <code>MethodsSuite</code> is a suite made up of methods. 
+   * A <code>MethodsSuite</code> is a suite made up of methods.
    */
   static class MethodsSuite extends CustomizedSuite {
     protected Collection<String> m_methodNames;
     protected String m_className;
     protected int m_logLevel;
-    
+
     /**
      * Constructs a <code>MethodsSuite</code> TODO cquezel JavaDoc.
      *
@@ -233,12 +233,12 @@ public abstract class LaunchSuite {
         final String annotationType,
         final int logLevel) {
       super(projectName, className, parameters, annotationType);
-      
+
       m_className = className;
       m_methodNames = methodNames;
       m_logLevel = logLevel;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -250,25 +250,25 @@ public abstract class LaunchSuite {
         testAttrs.setProperty("annotations", m_annotationType.getName());
       }
       testAttrs.setProperty("verbose", String.valueOf(m_logLevel));
-      
+
       suiteBuffer.push("test", testAttrs);
-      
+
       suiteBuffer.push("classes");
-      
+
       Properties classAttrs = new Properties();
       classAttrs.setProperty("name", m_className);
-      
+
       if ((null != m_methodNames) && (m_methodNames.size() > 0)) {
         suiteBuffer.push("class", classAttrs);
-        
+
         suiteBuffer.push("methods");
-        
+
         for (Object methodName : m_methodNames) {
           Properties methodAttrs = new Properties();
           methodAttrs.setProperty("name", (String) methodName);
           suiteBuffer.addEmptyElement("include", methodAttrs);
         }
-        
+
         suiteBuffer.pop("methods");
         suiteBuffer.pop("class");
       }
@@ -283,7 +283,7 @@ public abstract class LaunchSuite {
   static class ClassesAndMethodsSuite extends CustomizedSuite {
     protected Map<String, Collection<String>> m_classes;
     protected int m_logLevel;
-    
+
     ClassesAndMethodsSuite(final String projectName,
         final Map<String, Collection<String>> classes,
         final Map<String, String> parameters,
@@ -293,7 +293,7 @@ public abstract class LaunchSuite {
       m_classes = classes;
       m_logLevel = logLevel;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -305,27 +305,27 @@ public abstract class LaunchSuite {
         testAttrs.setProperty("annotations", m_annotationType.getName());
       }
       testAttrs.setProperty("verbose", String.valueOf(m_logLevel));
-      
+
       suiteBuffer.push("test", testAttrs);
-      
+
       suiteBuffer.push("classes");
-      
+
       for(Map.Entry<String, Collection<String>> entry : m_classes.entrySet()) {
         Properties classAttrs = new Properties();
         classAttrs.setProperty("name", entry.getKey());
-        
+
         Collection<String> methodNames= sanitize(entry.getValue());
         if ((null != methodNames) && (methodNames.size() > 0)) {
           suiteBuffer.push("class", classAttrs);
-          
+
           suiteBuffer.push("methods");
-          
+
           for (String methodName : methodNames) {
             Properties methodAttrs = new Properties();
             methodAttrs.setProperty("name", methodName);
             suiteBuffer.addEmptyElement("include", methodAttrs);
           }
-          
+
           suiteBuffer.pop("methods");
           suiteBuffer.pop("class");
         }
@@ -336,21 +336,23 @@ public abstract class LaunchSuite {
       suiteBuffer.pop("classes");
       suiteBuffer.pop("test");
     }
-    
+
     private Collection<String> sanitize(Collection<String> source) {
-      if(null == source) return null;
-      
+      if(null == source) {
+        return null;
+      }
+
       List<String> result= Lists.newArrayList();
       for(String name: source) {
         if(!"".equals(name)) {
           result.add(name);
         }
       }
-      
+
       return result;
     }
   }
-  
+
   /**
    * <code>ClassListSuite</code> TODO cquezel JavaDoc.
    */
@@ -359,7 +361,7 @@ public abstract class LaunchSuite {
     protected Collection<String> m_classNames;
     protected Collection<String> m_groupNames;
     protected int m_logLevel;
-    
+
     ClassListSuite(final String projectName,
         final Collection<String> packageNames,
         final Collection<String> classNames,
@@ -368,13 +370,13 @@ public abstract class LaunchSuite {
         final String annotationType,
         final int logLevel) {
       super(projectName, "Custom suite", parameters, annotationType);
-      
+
       m_packageNames = packageNames;
       m_classNames = classNames;
       m_groupNames = groupNames;
       m_logLevel = logLevel;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -386,27 +388,27 @@ public abstract class LaunchSuite {
         testAttrs.setProperty("annotations", m_annotationType.getName());
       }
       testAttrs.setProperty("verbose", String.valueOf(m_logLevel));
-      
+
       suiteBuffer.push("test", testAttrs);
-      
+
       if (null != m_groupNames) {
         suiteBuffer.push("groups");
         suiteBuffer.push("run");
-        
+
         for (String groupName : m_groupNames) {
           Properties includeAttrs = new Properties();
           includeAttrs.setProperty("name", groupName);
           suiteBuffer.addEmptyElement("include", includeAttrs);
         }
-        
+
         suiteBuffer.pop("run");
         suiteBuffer.pop("groups");
       }
-      
+
       // packages belongs to suite according to the latest DTD
       if ((m_packageNames != null) && (m_packageNames.size() > 0)) {
         suiteBuffer.push("packages");
-        
+
         for (String packageName : m_packageNames) {
           Properties packageAttrs = new Properties();
           packageAttrs.setProperty("name", packageName);
@@ -414,16 +416,16 @@ public abstract class LaunchSuite {
         }
         suiteBuffer.pop("packages");
       }
-      
+
       if ((m_classNames != null) && (m_classNames.size() > 0)) {
         suiteBuffer.push("classes");
-        
+
         for (String className : m_classNames) {
           Properties classAttrs = new Properties();
           classAttrs.setProperty("name", className);
           suiteBuffer.addEmptyElement("class", classAttrs);
         }
-        
+
         suiteBuffer.pop("classes");
       }
       suiteBuffer.pop("test");

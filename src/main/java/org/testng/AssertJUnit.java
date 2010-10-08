@@ -51,7 +51,9 @@ public class AssertJUnit {
    * Fails a test with the given message.
    */
   static public void fail(String message) {
-    if (null == message) message = "";
+    if (null == message) {
+      message = "";
+    }
     throw new AssertionError(message);
   }
 
@@ -318,7 +320,7 @@ public class AssertJUnit {
   static public void assertEquals(final byte[] expected, final byte[] actual) {
     assertEquals("", expected, actual);
   }
-  
+
   static public void assertEquals(final String message, final byte[] expected, final byte[] actual) {
     if(expected == actual) {
         return;
@@ -329,7 +331,7 @@ public class AssertJUnit {
     if(null == actual) {
         fail("expected not null array, but null found. " + message);
     }
-    
+
     assertEquals("arrays don't have the same size. " + message, expected.length, actual.length);
 
     for(int i= 0; i < expected.length; i++) {
@@ -339,7 +341,7 @@ public class AssertJUnit {
         }
     }
   }
-  
+
   static private void failSame(String message) {
     String formatted = "";
     if(message != null) {

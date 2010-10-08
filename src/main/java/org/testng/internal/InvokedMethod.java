@@ -1,9 +1,9 @@
 package org.testng.internal;
 
-import java.io.Serializable;
-
 import org.testng.IInvokedMethod;
 import org.testng.ITestNGMethod;
+
+import java.io.Serializable;
 
 public class InvokedMethod implements Serializable, IInvokedMethod {
   private static final long serialVersionUID = 2126127194102819222L;
@@ -13,17 +13,17 @@ public class InvokedMethod implements Serializable, IInvokedMethod {
   private boolean m_isTest = true;
   private boolean m_isConfigurationMethod = false;
   private long m_date = System.currentTimeMillis();
-  
+
   /**
    * @param m_object
    * @param m_method
    * @param m_parameters
    */
-  public InvokedMethod(Object instance, 
-                       ITestNGMethod method, 
+  public InvokedMethod(Object instance,
+                       ITestNGMethod method,
                        Object[] parameters,
-                       boolean isTest, 
-                       boolean isConfiguration, 
+                       boolean isTest,
+                       boolean isConfiguration,
                        long date) {
     m_instance = instance;
     m_testMethod = method;
@@ -32,10 +32,11 @@ public class InvokedMethod implements Serializable, IInvokedMethod {
     m_isConfigurationMethod = isConfiguration;
     m_date = date;
   }
-  
+
   /* (non-Javadoc)
    * @see org.testng.internal.IInvokedMethod#isTestMethod()
    */
+  @Override
   public boolean isTestMethod() {
     return m_isTest;
   }
@@ -47,20 +48,22 @@ public class InvokedMethod implements Serializable, IInvokedMethod {
       result.append(p).append(" ");
     }
     result.append(" ").append(m_instance.hashCode());
-    
+
     return result.toString();
   }
-  
+
   /* (non-Javadoc)
    * @see org.testng.internal.IInvokedMethod#isConfigurationMethod()
    */
+  @Override
   public boolean isConfigurationMethod() {
     return m_isConfigurationMethod;
   }
-  
+
   /* (non-Javadoc)
    * @see org.testng.internal.IInvokedMethod#getTestMethod()
    */
+  @Override
   public ITestNGMethod getTestMethod() {
     return m_testMethod;
   }
@@ -68,6 +71,7 @@ public class InvokedMethod implements Serializable, IInvokedMethod {
   /* (non-Javadoc)
    * @see org.testng.internal.IInvokedMethod#getDate()
    */
+  @Override
   public long getDate() {
     return m_date;
   }

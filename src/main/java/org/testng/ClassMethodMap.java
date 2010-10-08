@@ -12,7 +12,7 @@ import java.util.Set;
  * It is used by TestWorkers to determine if the method they just ran
  * is the last of its class, in which case it's time to invoke all the
  * afterClass methods.
- * 
+ *
  * @author <a href='mailto:the[dot]mindstorm[at]gmail[dot]com'>Alex Popescu</a>
  */
 public class ClassMethodMap {
@@ -21,7 +21,7 @@ public class ClassMethodMap {
   // of what beforeClass/afterClass methods have been invoked
   private Map<ITestClass, Set<Object>> m_beforeClassMethods = Maps.newHashMap();
   private Map<ITestClass, Set<Object>> m_afterClassMethods = Maps.newHashMap();
-  
+
   public ClassMethodMap(ITestNGMethod[] methods) {
     for (ITestNGMethod m : methods) {
       for (Object instance : m.getInstances()) {
@@ -34,7 +34,7 @@ public class ClassMethodMap {
       }
     }
   }
-  
+
   /**
    * Remove the method from this map and returns true if it is the last
    * of its class.
@@ -48,15 +48,15 @@ public class ClassMethodMap {
   private Class<?> getMethodClass(ITestNGMethod m) {
     return m.getTestClass().getRealClass();
   }
-  
+
   public Map<ITestClass, Set<Object>> getInvokedBeforeClassMethods() {
     return m_beforeClassMethods;
   }
-  
+
   public Map<ITestClass, Set<Object>> getInvokedAfterClassMethods() {
     return m_afterClassMethods;
   }
-  
+
   public void clear() {
     for(Set<Object> instances: m_beforeClassMethods.values()) {
       instances.clear();

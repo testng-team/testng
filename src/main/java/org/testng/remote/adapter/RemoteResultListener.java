@@ -6,17 +6,17 @@
 
 package org.testng.remote.adapter;
 
-import java.util.Map;
-
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.SuiteRunner;
 import org.testng.reporters.TestHTMLReporter;
 
+import java.util.Map;
+
 /**
  * This listener is called by the {@link IWorkerAdapter} implementation when a remote test result is ready.
- * 
+ *
  * @author Guy Korland
  * @date April 9, 2007
  * @see IWorkerAdapter
@@ -38,7 +38,7 @@ public class RemoteResultListener
 	}
 
 	/**
-	 * Should called by the {@link IWorkerAdapter} implementation when a remote suite result is ready. 
+	 * Should called by the {@link IWorkerAdapter} implementation when a remote suite result is ready.
 	 * @param remoteSuiteRunner remote result.
 	 */
 	public void onResult( ISuite remoteSuiteRunner)
@@ -46,7 +46,7 @@ public class RemoteResultListener
 		m_runner.setHost(remoteSuiteRunner.getHost());
 		Map<String, ISuiteResult> tmpResults = remoteSuiteRunner.getResults();
 		Map<String, ISuiteResult> suiteResults = m_runner.getResults();
-		for (Map.Entry<String, ISuiteResult> entry : tmpResults.entrySet()) 
+		for (Map.Entry<String, ISuiteResult> entry : tmpResults.entrySet())
 		{
 			ISuiteResult suiteResult = entry.getValue();
 			suiteResults.put(entry.getKey(), suiteResult);

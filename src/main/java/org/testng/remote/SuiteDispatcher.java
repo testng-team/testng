@@ -22,8 +22,8 @@ import java.util.Properties;
 
 /**
  * Dispatches test suits according to the strategy defined.
- * 
- *  
+ *
+ *
  * @author	Guy Korland
  * @date 	April 20, 2007
  */
@@ -50,7 +50,7 @@ public class SuiteDispatcher
 
 	/**
 	 * Creates a new suite dispatcher.
-	 * 
+	 *
 	 * @param propertiesFile
 	 * @throws Exception
 	 */
@@ -85,7 +85,7 @@ public class SuiteDispatcher
 	}
 
 	/**
-	 * Dispatch test suites 
+	 * Dispatch test suites
 	 * @param suites
 	 * @param outputDir
 	 * @param javadocAnnotationFinder
@@ -135,15 +135,15 @@ public class SuiteDispatcher
 						tmpTest.setXmlClasses(test.getXmlClasses());
 						tmpTest.setXmlPackages(test.getXmlPackages());
 
-						m_masterAdpter.runSuitesRemotely(tmpSuite, listener); 
+						m_masterAdpter.runSuitesRemotely(tmpSuite, listener);
 					}
 				}
 				else
 				{
 					m_masterAdpter.runSuitesRemotely(suite, listener);
 				}
-				result.add(suiteRunner);  
-			}        
+				result.add(suiteRunner);
+			}
 
 			m_masterAdpter.awaitTermination(100000);
 
@@ -154,9 +154,9 @@ public class SuiteDispatcher
 				for (ISuiteResult suiteResult : suite.getResults().values()) {
 					Collection<ITestResult> allTests[] = new Collection[] {
 							suiteResult.getTestContext().getPassedTests().getAllResults(),
-							suiteResult.getTestContext().getFailedTests().getAllResults(),  
-							suiteResult.getTestContext().getSkippedTests().getAllResults(),  
-							suiteResult.getTestContext().getFailedButWithinSuccessPercentageTests().getAllResults(),  
+							suiteResult.getTestContext().getFailedTests().getAllResults(),
+							suiteResult.getTestContext().getSkippedTests().getAllResults(),
+							suiteResult.getTestContext().getFailedButWithinSuccessPercentageTests().getAllResults(),
 					};
 					for (Collection<ITestResult> all : allTests) {
 						for (ITestResult tr : all) {

@@ -5,7 +5,7 @@ package org.testng;
  * will be invoked instead of each configuration method found.  The invocation of
  * the configuration method will then be performed upon invocation of the callBack()
  * method of the IConfigureCallBack parameter.
- * 
+ *
  * @author cbeust
  * Sep 07, 2010
  */

@@ -19,6 +19,10 @@ import java.util.Comparator;
  * @author <a href = "mailto:the_mindstorm&#64;evolva.ro">Alexandru Popescu</a>
  */
 public class TestNGMethod extends BaseTestMethod implements Serializable {
+  /**
+   *
+   */
+  private static final long serialVersionUID = -1742868891986775307L;
   private int m_threadPoolSize = 0;
   private int m_invocationCount = 1;
   private int m_successPercentage = 100;
@@ -40,7 +44,7 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
       init(xmlTest);
     }
   }
-  
+
   /**
    * {@inheritDoc}
    */
@@ -64,7 +68,7 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
   public boolean isTest() {
     return true;
   }
-  
+
   private void ppp(String s) {
     System.out.println("[TestNGMethod] " + s);
   }
@@ -75,7 +79,7 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
         m_method.getDeclaringClass().getName() + "." + m_method.getName()));
     {
       ITestAnnotation testAnnotation = AnnotationHelper.findTest(getAnnotationFinder(), m_method);
-      
+
       if (testAnnotation == null) {
         // Try on the class
         testAnnotation = AnnotationHelper.findTest(getAnnotationFinder(), m_method.getDeclaringClass());
@@ -110,7 +114,7 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
   public int getThreadPoolSize() {
     return m_threadPoolSize;
   }
-  
+
   /**
    * Sets the number of threads on which this method should be invoked.
    */
@@ -118,7 +122,7 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
   public void setThreadPoolSize(int threadPoolSize) {
     m_threadPoolSize = threadPoolSize;
   }
-  
+
   /**
    * Sets the number of invocations for this method.
    */
@@ -160,20 +164,20 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
 
     return clone;
   }
-  
+
   private ITestNGMethod[] clone(ITestNGMethod[] sources) {
     ITestNGMethod[] clones= new ITestNGMethod[sources.length];
     for(int i= 0; i < sources.length; i++) {
       clones[i]= sources[i].clone();
     }
-    
+
     return clones;
   }
-  
+
   /** Sorts ITestNGMethod by Class name. */
   public static final Comparator<ITestNGMethod> SORT_BY_CLASS =
     new Comparator<ITestNGMethod>() {
-    
+
     @Override
     public int compare(ITestNGMethod o1, ITestNGMethod o2) {
       String c1 = o1.getTestClass().getName();

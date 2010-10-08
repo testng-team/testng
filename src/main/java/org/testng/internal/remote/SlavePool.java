@@ -10,22 +10,23 @@ import java.util.Map;
 
 /**
  * This class maintains a pool of slaves (represented by sockets).
- * 
+ *
  * @author cbeust
  */
 public class SlavePool {
   private static SocketLinkedBlockingQueue m_hosts = new SocketLinkedBlockingQueue();
   private static Map<Socket, ConnectionInfo> m_connectionInfos = Maps.newHashMap();
-  
+
   public void addSlaves(Socket[] slaves) throws IOException {
     for (Socket s : slaves) {
       addSlave(s);
     }
   }
-  
+
   public void addSlave(Socket s) {
-	  if( s==null)
-		  return;
+	  if( s==null) {
+      return;
+    }
 	  ConnectionInfo ci = new ConnectionInfo();
 	  ci.setSocket(s);
 	  addSlave(s, ci);
@@ -35,11 +36,11 @@ public class SlavePool {
     m_hosts.add(s);
     m_connectionInfos.put(s, ci);
   }
-  
+
   public ConnectionInfo getSlave() {
     ConnectionInfo result = null;
     Socket host = null;
-    
+
     try {
       host = m_hosts.take();
       result = m_connectionInfos.get(host);
@@ -47,10 +48,10 @@ public class SlavePool {
     catch (InterruptedException e) {
       e.printStackTrace();
     }
-    
+
     return result;
   }
-  
+
   public void returnSlave(ConnectionInfo slave) throws IOException {
     m_hosts.add(slave.getSocket());
 //    ConnectionInfo ci = m_connectionInfos.remove(slave.socket);

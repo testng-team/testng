@@ -159,7 +159,9 @@ public class Invoker implements IInvoker {
       IConfigurationAnnotation configurationAnnotation= null;
       try {
         Object[] instances= tm.getInstances();
-        if (instances == null || instances.length == 0) instances = new Object[] { instance };
+        if (instances == null || instances.length == 0) {
+          instances = new Object[] { instance };
+        }
         Class<?> objectClass= instances[0].getClass();
         Method method= tm.getMethod();
 
@@ -424,8 +426,11 @@ public class Invoker implements IInvoker {
     }
     else {
       if (m_classInvocationResults.containsKey(cls)) {
-        if (! m_continueOnFailedConfiguration) result = !m_classInvocationResults.containsKey(cls);
-        else result = !m_classInvocationResults.get(cls).contains(instance);
+        if (! m_continueOnFailedConfiguration) {
+          result = !m_classInvocationResults.containsKey(cls);
+        } else {
+          result = !m_classInvocationResults.get(cls).contains(instance);
+        }
       }
       // if method is BeforeClass, currentTestMethod will be null
       else if (m_continueOnFailedConfiguration &&
@@ -525,7 +530,9 @@ public class Invoker implements IInvoker {
           }
         }
         // Only run the method once if it's @BeforeSuite or @AfterSuite
-        if (isSuite) break;
+        if (isSuite) {
+          break;
+        }
       }
       catch (InvocationTargetException ex) {
        throwConfigurationFailure(testResult, ex);
@@ -896,7 +903,9 @@ public class Invoker implements IInvoker {
     // Skip this if the current method doesn't belong to any group
     // (only a method that belongs to a group can trigger the invocation
     // of afterGroups methods)
-    if (currentTestMethod.getGroups().length == 0) return;
+    if (currentTestMethod.getGroups().length == 0) {
+      return;
+    }
 
     // See if the currentMethod is the last method in any of the groups
     // it belongs to
@@ -909,7 +918,9 @@ public class Invoker implements IInvoker {
         }
       }
 
-      if(filteredGroups.isEmpty()) return;
+      if(filteredGroups.isEmpty()) {
+        return;
+      }
 
       // The list of afterMethods to run
       Map<ITestNGMethod, ITestNGMethod> afterMethods = Maps.newHashMap();
@@ -1478,8 +1489,11 @@ public class Invoker implements IInvoker {
     if (".*".equals(messageRegExp)) {
       return true;
     } else {
-      if (ite.getMessage() == null) return false;
-      else return Pattern.matches(messageRegExp, ite.getMessage());
+      if (ite.getMessage() == null) {
+        return false;
+      } else {
+        return Pattern.matches(messageRegExp, ite.getMessage());
+      }
     }
   }
 
@@ -1560,7 +1574,7 @@ public class Invoker implements IInvoker {
     }
 
     // Any missing group?
-    if (testMethod.getMissingGroup() != null 
+    if (testMethod.getMissingGroup() != null
           && !testMethod.ignoreMissingDependencies()) {
       return false;
     }
@@ -1571,11 +1585,11 @@ public class Invoker implements IInvoker {
       String[] groupsDependedUpon = testMethod.getGroupsDependedUpon();
 
       // Get all the methods that belong to the group depended upon
-      for (int i= 0; i < groupsDependedUpon.length; i++) {
+      for (String element : groupsDependedUpon) {
         ITestNGMethod[] methods =
           MethodGroupsHelper.findMethodsThatBelongToGroup(testMethod,
               m_testContext.getAllTestMethods(),
-              groupsDependedUpon[i]);
+              element);
 
         result = result && haveBeenRunSuccessfully(methods);
       }
@@ -1598,15 +1612,19 @@ public class Invoker implements IInvoker {
    */
   private boolean haveBeenRunSuccessfully(ITestNGMethod[] methods) {
     // Make sure the method has been run successfully
-    for(int j= 0; j < methods.length; j++) {
-      Set<ITestResult> results= m_notifier.getPassedTests(methods[j]);
-      Set<ITestResult> failedresults= m_notifier.getFailedTests(methods[j]);
+    for (ITestNGMethod method : methods) {
+      Set<ITestResult> results= m_notifier.getPassedTests(method);
+      Set<ITestResult> failedresults= m_notifier.getFailedTests(method);
 
       // If failed results were returned, then these tests didn't pass
-      if (failedresults != null && failedresults.size() > 0) return false;
+      if (failedresults != null && failedresults.size() > 0) {
+        return false;
+      }
 
       // If no results were returned, then these tests didn't pass
-      if (results == null || results.size() == 0) return false;
+      if (results == null || results.size() == 0) {
+        return false;
+      }
 
       for (ITestResult result : results) {
         if(!result.isSuccess()) {
@@ -1661,8 +1679,8 @@ public class Invoker implements IInvoker {
     Class<?>[] exceptions = exceptionHolder.expectedClasses;
     Class<?> realExceptionClass= ite.getClass();
 
-    for(int i= 0; i < exceptions.length; i++) {
-      if (exceptions[i].isAssignableFrom(realExceptionClass)) {
+    for (Class<?> exception : exceptions) {
+      if (exception.isAssignableFrom(realExceptionClass)) {
         return true;
       }
     }

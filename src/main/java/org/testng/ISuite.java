@@ -1,12 +1,12 @@
 package org.testng;
 
 
+import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.xml.XmlSuite;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.xml.XmlSuite;
 
 /**
  * Interface defining a Test Suite.
@@ -30,7 +30,7 @@ public interface ISuite extends IAttributes {
    * @return The object factory used to create all test instances.
    */
   public IObjectFactory getObjectFactory();
-  
+
   /**
    * @return The output directory used for the reports.
    */
@@ -59,6 +59,7 @@ public interface ISuite extends IAttributes {
    * @return a collection of ITestNGMethods belonging to all tests included in the suite.
    * @deprecated Use getAllInvokedMthods().
    */
+  @Deprecated
   public Collection<ITestNGMethod> getInvokedMethods();
 
   /**
@@ -81,14 +82,14 @@ public interface ISuite extends IAttributes {
    * returned string has the form:  host:port
    */
   public String getHost();
-  
+
   /**
    * Retrieves the shared state for a suite.
-   * 
-   * @return the share state of the current suite. 
+   *
+   * @return the share state of the current suite.
    */
   public SuiteRunState getSuiteState();
-  
+
   /**
    * @return the annotation finder used for the specified type (JDK5 or javadoc)
    */

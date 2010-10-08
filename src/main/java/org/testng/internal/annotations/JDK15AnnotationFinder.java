@@ -1,7 +1,5 @@
 package org.testng.internal.annotations;
 
-import com.google.inject.Inject;
-
 import org.testng.IAnnotationTransformer;
 import org.testng.IAnnotationTransformer2;
 import org.testng.annotations.AfterClass;
@@ -34,6 +32,8 @@ import org.testng.annotations.Test;
 import org.testng.annotations.TestInstance;
 import org.testng.collections.Maps;
 
+import com.google.inject.Inject;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -41,7 +41,7 @@ import java.util.Map;
 
 /**
  * This class implements IAnnotationFinder with JDK5 annotations
- * 
+ *
  * Created on Dec 20, 2005
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
@@ -50,7 +50,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   private Map<Class<?>, Class<?>> m_annotationMap = Maps.newHashMap();
   @Inject
   private IAnnotationTransformer m_transformer = null;
-  
+
   @SuppressWarnings({"deprecation"})
   public JDK15AnnotationFinder() {
     m_annotationMap.put(IConfigurationAnnotation.class, Configuration.class);
@@ -83,11 +83,14 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     else {
       while (cls != null) {
         Annotation result = cls.getAnnotation(a);
-        if (result != null) return result;
-        else cls = cls.getSuperclass();
+        if (result != null) {
+          return result;
+        } else {
+          cls = cls.getSuperclass();
+        }
       }
     }
-    
+
     return null;
   }
 
@@ -98,10 +101,10 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     IAnnotation result =
       findAnnotation(m.getDeclaringClass(), m.getAnnotation(a), annotationClass,
           null, null, m);
-    
+
     return result;
   }
-  
+
   private void transform(IAnnotation a, Class testClass,
       Constructor testConstructor, Method testMethod)
   {
@@ -111,7 +114,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     if (a instanceof ITestAnnotation) {
       m_transformer.transform((ITestAnnotation) a, testClass, testConstructor, testMethod);
     }
-    
+
     else if (m_transformer instanceof IAnnotationTransformer2) {
       IAnnotationTransformer2 transformer2 = (IAnnotationTransformer2) m_transformer;
 
@@ -122,7 +125,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
         IConfigurationAnnotation configuration = (IConfigurationAnnotation) a;
         transformer2.transform(configuration,testClass, testConstructor, testMethod);
       }
-      
+
       //
       // Transform @DataProvider
       //
@@ -138,7 +141,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
       }
     }
   }
-  
+
   @Override
   public IAnnotation findAnnotation(Class cls, Class annotationClass) {
     Class a = m_annotationMap.get(annotationClass);
@@ -151,29 +154,25 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
 
     return result;
   }
-  
+
   @Override
   public IAnnotation findAnnotation(Constructor m, Class annotationClass) {
     Class a = m_annotationMap.get(annotationClass);
     IAnnotation result =
       findAnnotation(m.getDeclaringClass(), m.getAnnotation(a), annotationClass,
           null, m, null);
-    
+
     return result;
   }
 
   private Map<Pair, IAnnotation> m_annotations = Maps.newHashMap();
 
-  private IAnnotation findAnnotation(Class cls, Annotation a, 
+  private IAnnotation findAnnotation(Class cls, Annotation a,
       Class annotationClass,
-      Class testClass, Constructor testConstructor, Method testMethod) 
+      Class testClass, Constructor testConstructor, Method testMethod)
   {
 
     IAnnotation result = null;
-    Pair<Annotation, Class> p1;
-    Pair<Annotation, Constructor> p2;
-    Pair<Annotation, Class> p3;
-    
     Pair p;
     if (testClass != null) {
       p = new Pair(a, testClass);
@@ -193,7 +192,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
 
     return result;
   }
-  
+
   class Pair<A, B> {
     public A a;
     public B b;
@@ -213,35 +212,42 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     }
     @Override
     public boolean equals(Object obj) {
-      if (this == obj)
+      if (this == obj) {
         return true;
-      if (obj == null)
+      }
+      if (obj == null) {
         return false;
-      if (getClass() != obj.getClass())
+      }
+      if (getClass() != obj.getClass()) {
         return false;
+      }
       final Pair other = (Pair) obj;
       if (a == null) {
-        if (other.a != null)
+        if (other.a != null) {
           return false;
+        }
       }
-      else if (!a.equals(other.a))
+      else if (!a.equals(other.a)) {
         return false;
+      }
       if (b == null) {
-        if (other.b != null)
+        if (other.b != null) {
           return false;
+        }
       }
-      else if (!b.equals(other.b))
+      else if (!b.equals(other.b)) {
         return false;
+      }
       return true;
     }
-    
-    
+
+
   }
 
   private void ppp(String string) {
     System.out.println("[JDK15AnnotationFinder] " + string);
   }
-  
+
   @Override
   public void addSourceDirs(String[] dirs) {
     // no-op for JDK 15
@@ -255,15 +261,15 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
       Annotation a = annotations[i][0];
       result = a instanceof TestInstance;
     }
-    
+
     return result;
   }
-  
+
   @Override
   public String[] findOptionalValues(Method method) {
     return optionalValues(method.getParameterAnnotations());
   }
-  
+
   @Override
   public String[] findOptionalValues(Constructor method) {
     return optionalValues(method.getParameterAnnotations());

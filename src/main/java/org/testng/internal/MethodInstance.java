@@ -18,21 +18,25 @@ public class MethodInstance implements IMethodInstance {
     m_instances = instances;
   }
 
+  @Override
   public ITestNGMethod getMethod() {
     return m_method;
   }
 
+  @Override
   public Object[] getInstances() {
     return m_instances;
   }
-  
+
+  @Override
   public String toString() {
     return "[MethodInstance m:" + m_method + " i:" + m_instances[0];
   }
 
 
-  public static final Comparator<IMethodInstance> SORT_BY_INDEX 
+  public static final Comparator<IMethodInstance> SORT_BY_INDEX
     = new Comparator<IMethodInstance>() {
+    @Override
     public int compare(IMethodInstance o1, IMethodInstance o2) {
       // If the two methods are in different <test>
       XmlTest test1 = o1.getMethod().getTestClass().getXmlTest();
@@ -70,13 +74,15 @@ public class MethodInstance implements IMethodInstance {
 
     private XmlInclude findXmlInclude(List<XmlInclude> includedMethods, String methodName) {
       for (XmlInclude xi : includedMethods) {
-        if (xi.getName().equals(methodName)) return xi;
+        if (xi.getName().equals(methodName)) {
+          return xi;
+        }
       }
       return null;
     }
   };
 
-//  public static final Comparator<IMethodInstance> SORT_BY_CLASS 
+//  public static final Comparator<IMethodInstance> SORT_BY_CLASS
 //    = new Comparator<IMethodInstance>() {
 //    public int compare(IMethodInstance o1, IMethodInstance o2) {
 //      int result= o1.getMethod().getTestClass().getName()
