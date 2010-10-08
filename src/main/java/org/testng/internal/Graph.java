@@ -37,10 +37,6 @@ public class Graph<T extends Object> {
     return findNode(node).getPredecessors().keySet();
   }
   
-  /*private boolean hasBeenSorted() {
-    return null != m_strictlySortedNodes;
-  }*/
-  
   public boolean isIndependent(T object) {
     return m_independentNodes.containsKey(object);
   }
@@ -173,13 +169,6 @@ public class Graph<T extends Object> {
     System.out.println("====== END SORTED NODES");
   }
 
-  private void dumpGraph() {
-    System.out.println("====== GRAPH");
-    for (Node<T> n : m_nodes.values()) {
-      System.out.println("  " + n);
-    }
-  }
-  
   /**
    * Remove a node from a list of nodes and update the list of predecessors
    * for all the remaining nodes.
@@ -299,8 +288,7 @@ public class Graph<T extends Object> {
      */
     public boolean removePredecessor(T o) {
       boolean result = false;
-      
-//      dump();
+
       T pred = m_predecessors.get(o);
       if (null != pred) {
         result = null != m_predecessors.remove(o);
@@ -311,14 +299,10 @@ public class Graph<T extends Object> {
           ppp("  FAILED TO REMOVE PRED " + o + " FROM NODE " + m_object);        
         }
       }
-      
+
       return result;
     }
-    
-    private void dump() {
-      ppp(toString());
-    }
-    
+
     @Override
     public String toString() {
       StringBuffer sb = new StringBuffer("[Node:" + m_object);
@@ -347,74 +331,5 @@ public class Graph<T extends Object> {
     public int compareTo(Node<T> o) {
       return getObject().toString().compareTo(o.getObject().toString());
     }
-  } 
-  
-  //
-  // class Node
-  /////
-  
-  public static void main(String[] argv) {
-    Graph<String> g = new Graph<String>();
-    g.addNode("3");
-    g.addNode("1");
-    g.addNode("2.2");
-    g.addNode("independent");
-    g.addNode("2.1");
-    g.addNode("2.3");
-    
-    // 1 ->  2.1, 2.2, 2.3 --> 3
-    g.addPredecessor("3", "2.1");
-    g.addPredecessor("3", "2.1");
-    g.addPredecessor("3", "2.3");
-    g.addPredecessor("2.1", "1");
-    g.addPredecessor("2.2", "1");
-    g.addPredecessor("2.3", "1");
-    
-    g.topologicalSort();
-    
-    List<String> l = g.getStrictlySortedNodes();
-    for (String s : l) {
-      System.out.println("  " + s);
-    }
-    int i = 0;
-    assert "1".equals(l.get(i));
-    i++;
-    assert "2.1".equals(l.get(i)) || "2.1".equals(l.get(i)) || "2.2".equals(l.get(i));
-    i++;
-    assert "2.1".equals(l.get(i)) || "2.1".equals(l.get(i)) || "2.2".equals(l.get(i));
-    i++;
-    assert "2.1".equals(l.get(i)) || "2.1".equals(l.get(i)) || "2.2".equals(l.get(i));
-    i++;
-    assert "3".equals(l.get(i));
-    
-    assert 1 == g.getIndependentNodes().size();
-    
-    //
-    // Test findPredecessors
-    //
-    ppp("GRAPH:" + g);
-    {
-      List<String> predecessors = g.findPredecessors("2.1");
-      assert predecessors.size() == 1;
-      assert predecessors.get(0).equals("1");
-    }
-    
-    {
-      List<String> predecessors = g.findPredecessors("3");
-      assert predecessors.size() == 4;
-      assert predecessors.get(0).equals("1");
-      assert predecessors.get(1).equals("2.1") ||
-        predecessors.get(2).equals("2.2") ||
-        predecessors.get(2).equals("2");
-      assert predecessors.get(2).equals("2.1") ||
-      predecessors.get(2).equals("2.2") ||
-      predecessors.get(2).equals("2");
-      assert predecessors.get(3).equals("2.1") ||
-      predecessors.get(2).equals("2.2") ||
-      predecessors.get(2).equals("2");
-    }
-
-    ppp("TESTS PASSED");
   }
-  
 }
