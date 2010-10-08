@@ -69,13 +69,12 @@ public class JUnitReportReporter implements IReporter {
           }
         }
         Properties p2 = new Properties();
-        p2.setProperty("classname", tr.getMethod().getMethod().getDeclaringClass().getName());
+        p2.setProperty("classname", cls.getName());
         p2.setProperty("name", tr.getMethod().getMethodName());
         long time = tr.getEndMillis() - tr.getStartMillis();
-        p2.setProperty("time", "" + time);
+        p2.setProperty("time", "" + formatTime(time));
         Throwable t = getThrowable(tr, failedConfigurations);
         if (t != null) {
-          t.fillInStackTrace();
           StringWriter sw = new StringWriter();
           PrintWriter pw = new PrintWriter(sw);
           t.printStackTrace(pw);
@@ -94,9 +93,7 @@ public class JUnitReportReporter implements IReporter {
       p1.setProperty("errors", "" + errors);
       p1.setProperty("name", cls.getName());
       p1.setProperty("tests", "" + testCount);
-      DecimalFormat format = new DecimalFormat("#.###");
-      format.setMinimumFractionDigits(3);
-      p1.setProperty("time", "" + format.format(totalTime / 1000.0f));
+      p1.setProperty("time", "" + formatTime(totalTime));
       try {
         p1.setProperty(XMLConstants.ATTR_HOSTNAME, InetAddress.getLocalHost().getHostName());
       } catch (UnknownHostException e) {
@@ -114,7 +111,8 @@ public class JUnitReportReporter implements IReporter {
       for (TestTag testTag : testCases) {
         if (testTag.stackTrace == null) {
           xsb.addEmptyElement("testcase", testTag.properties);
-        } else {
+        }
+        else {
           xsb.push("testcase", testTag.properties);
 
           Properties p = new Properties();
@@ -138,6 +136,12 @@ public class JUnitReportReporter implements IReporter {
 //    System.out.println(xsb.toXML());
 //    System.out.println("");
 
+  }
+
+  private String formatTime(float time) {
+    DecimalFormat format = new DecimalFormat("#.###");
+    format.setMinimumFractionDigits(3);
+    return format.format(time / 1000.0f);
   }
 
   private Throwable getThrowable(ITestResult tr,
