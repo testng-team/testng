@@ -14,7 +14,8 @@ Fixed: NPE while printing results for an empty suite (Nalin Makar)
 Fixed: Invoke IInvokedMethodListener.afterInvocation after fixing results for tests expecting exceptions (Nalin Makar)
 
 Eclipse:
-Added: The conversion of a JUnit test to TestNG now replaces Assert with AssertJUnit
+Added: The conversion of a JUnit test to TestNG now replaces fail() with AssertJUnit.fail() (5.14.2.2)
+Added: The conversion of a JUnit test to TestNG now replaces Assert with AssertJUnit (5.14.2.1)
 Added: The progress bar is now orange if the suite contained skipped tests and no failures
 Added: Skipped test and suite icons are now orange (previously: blue)
 Added: New method shortcuts: "Alt+Shift+X N", "Alt+Shift+D N" (Sven Johansson)
