@@ -27,16 +27,16 @@ public class ClassA {
   @Test (dependsOnMethods="sameNameE")
   public void sameNameF(){
     printMethod();
-  }  
+  }
   @Test (dependsOnMethods="sameNameF")
   public void sameNameG(){
     printMethod();
-  }  
+  }
   @Test (dependsOnMethods="sameNameG")
   public void sameNameH(){
     printMethod();
-  }  
-  
+  }
+
   public void nullTest(){
     printMethod();
   }
@@ -44,9 +44,9 @@ public class ClassA {
     StackTraceElement[] sTrace = new Exception().getStackTrace();
     String className = sTrace[0].getClassName();
     String methodName = sTrace[1].getMethodName();
-    
+
     System.out.printf("*********** executing --- %s %s\n", className, methodName);
-    
+
     VerifyTest.m_methods.add(className + "." + methodName);
   }
 }

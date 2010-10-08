@@ -4,7 +4,7 @@ import org.testng.annotations.Test;
 
 
 /**
- * This class/interface 
+ * This class/interface
  */
 public class Test2 {
   @Test
@@ -17,5 +17,5 @@ public class Test2 {
   public void method3() {
     System.out.println("method3");
     FailingSuiteFixture.s_invocations++;
-  } 
+  }
 }

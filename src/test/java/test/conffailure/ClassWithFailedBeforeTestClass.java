@@ -8,11 +8,11 @@ public class ClassWithFailedBeforeTestClass {
   public void setUpShouldFail() {
     throw new RuntimeException("Failing in setUp");
   }
-  
+
   // Adding this method or @Configuration will never be invoked
   @Test
   public void dummy() {
-    
+
   }
-  
+
 }

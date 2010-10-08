@@ -1,11 +1,12 @@
 package test.objectfactory;
 
-import org.testng.annotations.Test;
-import org.testng.annotations.AfterMethod;
 import org.testng.TestNG;
 import org.testng.TestNGException;
-import org.testng.xml.XmlSuite;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
+import org.testng.xml.XmlSuite;
+
 import test.TestHelper;
 
 /**
@@ -24,12 +25,12 @@ public class CustomFactoryTest
     tng.run();
     assert LoggingObjectFactory.invoked == 1 : "Logging factory invoked " + LoggingObjectFactory.invoked + " times";
   }
-  
+
   @AfterMethod
   public void resetCount() {
     LoggingObjectFactory.invoked = 0;
   }
-  
+
   @Test
   public void setFactoryOnSuite() {
     XmlSuite suite = TestHelper.createSuite("test.objectfactory.Simple", "objectfactory");
@@ -38,16 +39,16 @@ public class CustomFactoryTest
     tng.run();
     assert LoggingObjectFactory.invoked == 1 : "Logging factory invoked " + LoggingObjectFactory.invoked + " times";
   }
-  
-  @Test 
+
+  @Test
   public void setFactoryByAnnotation() {
     XmlSuite suite = TestHelper.createSuite("test.objectfactory.Simple", "objectfactory");
     suite.getTests().get(0).getXmlClasses().add(new XmlClass("test.objectfactory.MyFactoryFactory"));
     TestNG tng = TestHelper.createTestNG(suite);
     tng.run();
-    assert LoggingObjectFactory.invoked == 1 : "Logging factory invoked " + LoggingObjectFactory.invoked + " times";    
+    assert LoggingObjectFactory.invoked == 1 : "Logging factory invoked " + LoggingObjectFactory.invoked + " times";
   }
-  
+
   @Test
   public void factoryReceivesContext() {
     XmlSuite suite = TestHelper.createSuite("test.objectfactory.Simple", "objectfactory");
@@ -55,7 +56,7 @@ public class CustomFactoryTest
     TestNG tng = TestHelper.createTestNG(suite);
     tng.run();
   }
-  
+
   @Test(expectedExceptions = TestNGException.class)
   public void setInvalidMethodFactoryByAnnotation() {
     XmlSuite suite = TestHelper.createSuite("test.objectfactory.Simple", "objectfactory");

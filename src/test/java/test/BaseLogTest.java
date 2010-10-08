@@ -1,13 +1,13 @@
 package test;
 
-import java.util.List;
-
 import org.testng.annotations.BeforeSuite;
 import org.testng.collections.Lists;
 
+import java.util.List;
+
 /**
  * Base class for tests that need to log methods as they get called.
- * 
+ *
  * @author cbeust
  */
 public class BaseLogTest {

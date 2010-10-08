@@ -13,7 +13,7 @@ public class Base3 {
   public static boolean getBefore() {
     return m_before;
   }
-  
+
   @BeforeGroups("cg34-1")
   public void anotherBefore1() {
     log("anotherBefore1");
@@ -21,7 +21,7 @@ public class Base3 {
     Assert.assertFalse(ConfigurationGroups3SampleTest.getF1());
     m_before = true;
   }
-  
+
   private void log(String string) {
     ppp(string);
   }

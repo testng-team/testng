@@ -6,12 +6,12 @@ public class Test1 {
 
   @Test
   public void method11() {
-    
+
   }
-  
+
   @Test
   public void method12() {
-    
+
   }
-  
+
 }

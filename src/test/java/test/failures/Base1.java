@@ -7,7 +7,7 @@ public class Base1 extends Base0 {
    public void base2() {
      assert true;
    }
-   
+
    @Test
    public void failFromBase() {
      throw new RuntimeException("VOLUNTARILY FAILED");

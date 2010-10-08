@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 import test.BaseTest;
 
 public class ExpectedExceptionsTest extends BaseTest {
-  
+
   @Test
   public void expectedExceptionsDeprecatedSyntax() {
     runTest("test.expectedexceptions.SampleExceptions",

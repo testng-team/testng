@@ -11,6 +11,6 @@ public class Simple
 {
   @Test
   public void dummy() {
-    
+
   }
 }

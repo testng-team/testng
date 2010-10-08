@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 
 public class FailedInvocationCount {
   int m_count;
-  
+
   @BeforeClass
   public void setUp() {
     m_count = 0;
@@ -17,5 +17,5 @@ public class FailedInvocationCount {
       throw new RuntimeException();
     }
   }
-  
+
 }

@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 /**
  * Tests that when a DataProvider is declared with an ITestContext,
  * this parameter is correctly passed.
- * 
+ *
  * Created on Dec 28, 2006
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
@@ -27,22 +27,22 @@ public class TestContextSampleTest {
     for (int i = 0; i < n; i++) {
       result[i] = "foo";
     }
-    
+
     return new Object[][] {
         new Object[] { result },
     };
   }
-  
+
   private static void ppp(String s) {
     System.out.println("[TestContextSampleTest] " + s);
   }
-  
-  @Test(dataProvider = "testContext", groups="10") 
+
+  @Test(dataProvider = "testContext", groups="10")
   public void verifyTen(Object[] objects) {
     Assert.assertEquals(objects.length, 10);
   }
-  
-  @Test(dataProvider = "testContext", groups="5") 
+
+  @Test(dataProvider = "testContext", groups="5")
   public void verifyFive(Object[] objects) {
     Assert.assertEquals(objects.length, 5);
   }

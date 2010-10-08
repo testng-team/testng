@@ -1,11 +1,10 @@
 package test;
 
-import org.testng.annotations.*;
-import org.testng.xml.XmlSuite;
+import org.testng.annotations.Test;
 
 /**
  * This class
- * 
+ *
  * @author cbeust
  */
 public class Misc extends BaseTest {

@@ -10,6 +10,6 @@ public class InheritanceATest {
         new Object[] { "a"}
     };
   }
-  
-  
+
+
 }

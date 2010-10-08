@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 public class FastTestsFirstInterceptor implements IMethodInterceptor {
+  @Override
   public List<IMethodInstance> intercept(List<IMethodInstance> methods,
       ITestContext context)
   {

@@ -17,12 +17,12 @@ public class ThreadPoolSizeTest extends BaseThreadTest {
     log(getClass().getName(), "threadPoolSize:20");
     logThread(n);
   }
-  
+
   @Test(dependsOnMethods = {"f1"})
   public void verify() {
     int expected = 3;
-    Assert.assertEquals(getThreadCount(), expected,  
+    Assert.assertEquals(getThreadCount(), expected,
         "Should have run on " + expected + " threads but ran on " + getThreadCount());
   }
-  
+
 }

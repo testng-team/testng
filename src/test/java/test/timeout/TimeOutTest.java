@@ -1,43 +1,35 @@
 package test.timeout;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.testng.TestListenerAdapter;
-import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
-import org.testng.xml.XmlTest;
 
 import test.BaseTest;
 
 
 /**
  * This class
- * 
+ *
  * @author cbeust
  */
 public class TimeOutTest extends BaseTest {
   private Long m_id;
-  
+
   public TimeOutTest() {
-    m_id = Long.valueOf(System.currentTimeMillis());     
+    m_id = Long.valueOf(System.currentTimeMillis());
   }
-  
+
   @Test
   public void timeOutInParallel() {
     addClass("test.timeout.TimeOutSampleTest");
     setParallel(XmlSuite.PARALLEL_METHODS);
     run();
     String[] passed = {
-        "timeoutShouldPass", 
+        "timeoutShouldPass",
       };
       String[] failed = {
           "timeoutShouldFailByException", "timeoutShouldFailByTimeOut"
       };
-      
+
 //      dumpResults("Passed", getPassedTests());
 
       verifyTests("Passed", passed, getPassedTests());
@@ -49,7 +41,7 @@ public class TimeOutTest extends BaseTest {
     addClass("test.timeout.TimeOutSampleTest");
     run();
     String[] passed = {
-        "timeoutShouldPass", 
+        "timeoutShouldPass",
       };
       String[] failed = {
           "timeoutShouldFailByException", "timeoutShouldFailByTimeOut"
@@ -57,13 +49,13 @@ public class TimeOutTest extends BaseTest {
       verifyTests("Passed", passed, getPassedTests());
       verifyTests("Failed", failed, getFailedTests());
   }
-  
+
   @Test
   public void verifyInvocationTimeOut() {
     addClass("test.timeout.InvocationTimeOutSampleTest");
     run();
     String[] passed = {
-        "shouldPass", 
+        "shouldPass",
       };
       String[] failed = {
           "shouldFail"
@@ -71,10 +63,11 @@ public class TimeOutTest extends BaseTest {
       verifyTests("Passed", passed, getPassedTests());
       verifyTests("Failed", failed, getFailedTests());
   }
-  
+
+  @Override
   public Long getId() {
     return m_id;
   }
-  
-  
+
+
 }

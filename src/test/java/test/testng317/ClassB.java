@@ -23,7 +23,7 @@ public class ClassB {
   public void sameNameE(){
     printMethod();
   }
-  
+
   public void nullTest(){
     printMethod();
   }
@@ -31,9 +31,9 @@ public class ClassB {
     StackTraceElement[] sTrace = new Exception().getStackTrace();
     String className = sTrace[0].getClassName();
     String methodName = sTrace[1].getMethodName();
-    
+
     System.out.printf("*********** executing --- %s %s\n", className, methodName);
-    
+
     VerifyTest.m_methods.add(className + "." + methodName);
   }
 }

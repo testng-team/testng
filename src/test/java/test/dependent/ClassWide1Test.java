@@ -10,7 +10,7 @@ public class ClassWide1Test {
   public void init() {
     m_ok = false;
   }
-  
+
   @Test
   public void m1() {
     m_ok = true;

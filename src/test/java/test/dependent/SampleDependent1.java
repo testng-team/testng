@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
  * This class exercises dependent groups
  *
  * @author Cedric Beust, Aug 19, 2004
- * 
+ *
  */
 public class SampleDependent1 {
 
@@ -16,7 +16,7 @@ public class SampleDependent1 {
   public void fail() {
     Assert.assertTrue(false);
   }
-  
+
   @Test(dependsOnGroups = { "fail" })
   public void shouldBeSkipped() {
   }

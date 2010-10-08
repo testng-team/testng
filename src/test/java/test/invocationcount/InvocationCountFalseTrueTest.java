@@ -8,7 +8,7 @@ public class InvocationCountFalseTrueTest extends InvocationBase {
   public void beforeMethod() {
     incrementBefore();
   }
-  
+
   @AfterMethod(lastTimeOnly = true)
   public void afterMethod() {
     incrementAfter();

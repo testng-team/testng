@@ -1,8 +1,8 @@
 package test.dataprovider;
 
-import java.util.Iterator;
-
 import org.testng.Assert;
+
+import java.util.Iterator;
 
 public class IterableTest {
   private boolean m_ok1 = false;
@@ -12,10 +12,10 @@ public class IterableTest {
   public static final Integer LN2 = Integer.valueOf(37);
   public static final String FN1 = "Cedric";
   public static final Integer LN1 = Integer.valueOf(36);
-  
+
   public static final Object[][] DATA = new Object[][] {
     new Object[] { FN1, LN1 },
-    new Object[] { FN2, LN2 },      
+    new Object[] { FN2, LN2 },
   };
 
   /**
@@ -23,7 +23,7 @@ public class IterableTest {
    */
   public Iterator createData() {
     return new MyIterator(DATA);
-  } 
+  }
 
   /**
    * @testng.test dataProvider="test1"
@@ -38,14 +38,14 @@ public class IterableTest {
       Assert.assertEquals(MyIterator.getCount(), 2);
     }
   }
-  
+
   /**
    * @testng.test dependsOnMethods = "verifyNames"
    */
   public void verifyCount() {
     Assert.assertTrue(m_ok1 && m_ok2);
   }
-  
+
   private static void ppp(String s) {
     System.out.println("[IterableTest] " + s);
   }

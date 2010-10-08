@@ -1,15 +1,15 @@
 package test.inject;
 
-import java.lang.reflect.Method;
-
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.NoInjection;
 import org.testng.annotations.Test;
 
+import java.lang.reflect.Method;
+
 /**
  * Test the @NoInjection annotation.
- * 
+ *
  * @author cbeust
  */
 public class NoInjectionTest {

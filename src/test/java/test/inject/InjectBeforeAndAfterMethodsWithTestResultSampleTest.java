@@ -18,17 +18,17 @@ public class InjectBeforeAndAfterMethodsWithTestResultSampleTest {
   public void pass() {
     Assert.assertEquals(m_testResult.getAttribute("before"), 10);
   }
-  
+
   @Test
   public void fail() {
     throw new RuntimeException();
   }
-  
+
   @Test
   public void skip() {
     throw new SkipException("Skipped");
   }
-  
+
   @BeforeClass
   public void init() {
     m_success = 3;

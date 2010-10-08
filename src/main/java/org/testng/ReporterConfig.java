@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * Stores the information regarding the configuration of a pluggable report listener. Used also
- * in conjunction withe the &lt;reporter&gt; sub-element of the Ant task
+ * in conjunction with the &lt;reporter&gt; sub-element of the Ant task
  *
  * @author Cosmin Marginean, Apr 12, 2007
  */

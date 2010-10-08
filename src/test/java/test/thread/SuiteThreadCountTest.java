@@ -1,13 +1,13 @@
 package test.thread;
 
-import org.testng.annotations.Test;
-import org.testng.annotations.AfterClass;
-import org.testng.internal.thread.ThreadUtil;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.Test;
+import org.testng.internal.thread.ThreadUtil;
 
-import java.util.Set;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Test for test level thread-count.

@@ -9,7 +9,7 @@ public class ClassWithFailedBeforeMethod {
   public void setupShouldFail() {
     throw new RuntimeException("Failing in setUp");
   }
-    
+
   @Test
   public void test1() {
 

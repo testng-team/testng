@@ -1,8 +1,7 @@
 package test.morten;
 
-import java.util.HashMap;
-
-import org.testng.annotations.*;
+import org.testng.annotations.Factory;
+import org.testng.annotations.Test;
 
 public class SampleTest {
     private int capacity = 10;
@@ -17,9 +16,9 @@ public class SampleTest {
       };
       }
     };
-    
+
     public SampleTest() {
-      
+
     }
 
     public SampleTest(int capacity, float loadFactor)

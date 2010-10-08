@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 
 
 /**
- * This class/interface 
+ * This class/interface
  */
 public class SkippedTestWithExpectedExceptionTest {
   @BeforeClass
@@ -23,5 +23,5 @@ public class SkippedTestWithExpectedExceptionTest {
   public void test2()
   {
 //  empty
-  } 
+  }
 }

@@ -1,18 +1,18 @@
 package test.skipex;
 
-import java.util.List;
-
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
+import java.util.List;
+
 
 /**
- * This class/interface 
+ * This class/interface
  */
-public class SkippedExceptionTest {  
+public class SkippedExceptionTest {
   @Test
   public void skippedExceptionInConfigurationMethods() {
     TestListenerAdapter listener= new TestListenerAdapter();
@@ -25,12 +25,12 @@ public class SkippedExceptionTest {
     List<ITestResult> testSkips= listener.getSkippedTests();
     Assert.assertEquals(testSkips.size(), 1);
     Assert.assertEquals(testSkips.get(0).getMethod().getMethodName(), "dummyTest");
-    
+
     Assert.assertEquals(confSkips.size(), 1);
     Assert.assertEquals(confSkips.get(0).getMethod().getMethodName(), "configurationLevelSkipException");
-  }  
-  
-  
+  }
+
+
   @Test
   public void skippedExceptionInTestMethods() {
     TestListenerAdapter listener= new TestListenerAdapter();
@@ -45,5 +45,5 @@ public class SkippedExceptionTest {
     Assert.assertEquals(failures.size(), 1);
     Assert.assertEquals(skips.get(0).getMethod().getMethodName(), "genericSkipException");
     Assert.assertEquals(failures.get(0).getMethod().getMethodName(), "timedSkipException");
-  }  
+  }
 }

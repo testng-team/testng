@@ -19,7 +19,7 @@ public class InjectTestContextTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
     tng.run();
-    
+
     Assert.assertEquals(xmlTest.getName(), "Injection");
     Assert.assertEquals(tla.getPassedTests().size(), 1);
     Assert.assertEquals(tla.getPassedTests().get(0).getMethod().getMethodName(), "f");

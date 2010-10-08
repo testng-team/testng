@@ -19,7 +19,7 @@ public class VerifyTest extends SimpleBaseTest {
   public void verify() {
     XmlSuite suite = new XmlSuite();
     suite.setName("Suite");
-    
+
     XmlTest test = new XmlTest(suite);
     test.setName("Test");
     XmlClass c1 = new XmlClass(B.class);
@@ -27,14 +27,14 @@ public class VerifyTest extends SimpleBaseTest {
     XmlClass c2 = new XmlClass(Base.class);
     c2.setIncludedMethods(Arrays.asList(new XmlInclude[] { new XmlInclude("b")}));
     test.setXmlClasses(Arrays.asList(new XmlClass[] { c1, c2 }));
-    
+
     TestNG tng = new TestNG();
     tng.setVerbose(0);
     tng.setXmlSuites(Arrays.asList(new XmlSuite[] { suite }));
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
     tng.run();
-    
+
     Assert.assertEquals(tla.getPassedTests().size(), 2);
   }
 }

@@ -5,7 +5,6 @@ import org.testng.annotations.Test;
 import org.testng.internal.DynamicGraph;
 import org.testng.internal.DynamicGraph.Status;
 
-import java.util.Arrays;
 import java.util.Set;
 
 public class DynamicGraphTest {

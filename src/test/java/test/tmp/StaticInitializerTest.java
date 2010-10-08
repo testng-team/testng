@@ -12,8 +12,8 @@ public class StaticInitializerTest {
     public void testMe() {
         System.err.println("**** testMe ****");
     }
-    
+
     private static void foo() {
       throw new RuntimeException("FAILING");
     }
-} 
+}

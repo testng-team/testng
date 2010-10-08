@@ -8,11 +8,11 @@ import java.util.Map;
 
 public class BaseDistributedTest {
   private boolean m_verbose = false;
-  
+
   protected void verifyTests(String title, String[] exp, Map found) {
     Map expected = new HashMap();
-    for(int i = 0; i < exp.length; i++) {
-      expected.put(exp[i], exp[i]);
+    for (String element : exp) {
+      expected.put(element, element);
     }
 
     Assert.assertEquals(found.size(), expected.size(),
@@ -24,7 +24,7 @@ public class BaseDistributedTest {
         dumpMap("Expected", expected);
         dumpMap("Found", found);
       }
-      
+
       Assert.assertNotNull(found.get(name),
           "Expected to find method " + name + " in " + title
           + " but didn't find it.");

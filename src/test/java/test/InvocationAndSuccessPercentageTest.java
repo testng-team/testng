@@ -4,7 +4,7 @@ import org.testng.annotations.Test;
 
 /**
  * This class tests invocationCount and successPercentage
- * 
+ *
  * @author cbeust
  */
 public class InvocationAndSuccessPercentageTest extends BaseTest {
@@ -30,7 +30,7 @@ public class InvocationAndSuccessPercentageTest extends BaseTest {
       verifyTests("Passed", passed, getPassedTests());
       verifyTests("Failed", failed, getFailedTests());
     }
-   
+
    /**
     * Result expected:
     * 8 passed
@@ -47,13 +47,13 @@ public class InvocationAndSuccessPercentageTest extends BaseTest {
      String[] failed = {
      };
      String[] failedButWithinSuccessPercentage = {
-         "successPercentageShouldSucceed",         
+         "successPercentageShouldSucceed",
      };
-     verifyTests("FailedButWithinSuccessPercentage", 
+     verifyTests("FailedButWithinSuccessPercentage",
          failedButWithinSuccessPercentage, getFailedButWithinSuccessPercentageTests());
      verifyTests("Passed", passed, getPassedTests());
      verifyTests("Failed", failed, getFailedTests());
-     
+
      // Should have 8 passed, 2 failed but within success percentage
      verifyResults(getPassedTests(), 8, "passed tests");
      verifyResults(
@@ -76,26 +76,26 @@ public class InvocationAndSuccessPercentageTest extends BaseTest {
          "successPercentageShouldFail",
      };
      String[] failed = {
-         "successPercentageShouldFail",         
+         "successPercentageShouldFail",
      };
      String[] failedButWithinSuccessPercentage = {
-         "successPercentageShouldFail",         
+         "successPercentageShouldFail",
      };
-     verifyTests("FailedButWithinSuccessPercentage", 
+     verifyTests("FailedButWithinSuccessPercentage",
          failedButWithinSuccessPercentage, getFailedButWithinSuccessPercentageTests());
      verifyTests("Passed", passed, getPassedTests());
      verifyTests("Failed", failed, getFailedTests());
-     
+
      // Should have 8 passed, 2 failed but within success percentage
      verifyResults(getPassedTests(), 8, "passed tests");
      verifyResults(getFailedTests(), 1, "failed tests");
      verifyResults(
        getFailedButWithinSuccessPercentageTests(), 1,
        "failed_but_within_success_percentage_tests");
-   }   
+   }
 
    public static void ppp(String s) {
     System.out.println("[Invocation] " + s);
   }
-  
+
 }

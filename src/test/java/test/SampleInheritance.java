@@ -29,7 +29,7 @@ public class SampleInheritance extends BaseSampleInheritance {
   public void inheritedMethodsWereCalledInOrder() {
     assert m_invokedBaseMethod : "Didn't invoke test method in base class";
     assert m_invokedBaseConfiguration : "Didn't invoke configuration method in base class";
-  
+
   }
 
   @Test

@@ -8,7 +8,7 @@ public class DataProviderFalseTrueTest extends DataProviderBase {
   public void beforeMethod() {
     incrementBefore();
   }
-  
+
   @AfterMethod(lastTimeOnly = true)
   public void afterMethod() {
     incrementAfter();

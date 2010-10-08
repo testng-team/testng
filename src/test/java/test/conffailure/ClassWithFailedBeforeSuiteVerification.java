@@ -19,7 +19,7 @@ public class ClassWithFailedBeforeSuiteVerification {
   public void tearDown() {
     m_success2 = false;
   }
-  
+
   static public boolean success() {
     return m_success1 && m_success2;
   }

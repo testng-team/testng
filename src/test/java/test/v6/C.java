@@ -10,16 +10,16 @@ public class C {
 
   @BeforeTest
   public void beforeTest() {}
-  
+
   @AfterTest
   public void afterTest() {}
-  
+
   @Test
   public void fc1() {}
-  
+
   @BeforeSuite
   public void beforeSuite() {}
-  
+
   @AfterSuite
   public void afterSuite() {}
 

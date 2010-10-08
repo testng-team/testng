@@ -10,13 +10,13 @@ public class VerifyNoListenersSampleTest {
   @Verify
   @Test
   public void f1() {
-    log("f1");  
+    log("f1");
   }
 
   @Verify
   @Test
   public void f2() {
-    log("f2");  
+    log("f2");
   }
 
   @Verifier

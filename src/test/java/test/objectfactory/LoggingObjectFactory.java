@@ -1,8 +1,8 @@
 package test.objectfactory;
 
-import java.lang.reflect.Constructor;
-
 import org.testng.internal.ObjectFactoryImpl;
+
+import java.lang.reflect.Constructor;
 
 /**
  * @author Hani Suleiman
@@ -11,8 +11,13 @@ import org.testng.internal.ObjectFactoryImpl;
  */
 public class LoggingObjectFactory extends ObjectFactoryImpl
 {
+  /**
+   *
+   */
+  private static final long serialVersionUID = -395096650866727480L;
   public static int invoked;
-  
+
+  @Override
   public Object newInstance(Constructor constructor, Object... params)
   {
     invoked++;

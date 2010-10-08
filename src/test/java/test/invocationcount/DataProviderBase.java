@@ -7,7 +7,7 @@ public class DataProviderBase extends Base {
   @Test(dataProvider = "dp")
   public void f(Integer n) {
   }
-  
+
   @DataProvider
   public Object[][] dp() {
     return new Integer[][] {

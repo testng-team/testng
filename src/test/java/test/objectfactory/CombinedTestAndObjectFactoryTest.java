@@ -14,7 +14,7 @@ public class CombinedTestAndObjectFactoryTest extends BaseTest {
     verifyTests("Failures", new String[0], getFailedTests());
     verifyTests("Skipped", new String[0], getSkippedTests());
   }
-  
+
   public static void main(String[] args) {
     TestNG tng = new TestNG();
     tng.setTestClasses(new Class[] {CombinedTestAndObjectFactorySample.class});

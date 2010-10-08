@@ -18,7 +18,7 @@ public class SetUpExceptionTest extends test.BaseTest {
       "testM1", "tearDown"
     };
     verifyTests("Passed", passed, getPassedTests());
-    verifyTests("Skipped", skipped, getSkippedTests());    
-    verifyTests("Failed", failed, getFailedTests());    
+    verifyTests("Skipped", skipped, getSkippedTests());
+    verifyTests("Failed", failed, getFailedTests());
   }
 }

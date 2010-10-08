@@ -11,16 +11,17 @@ public class Sample2 {
   public void t1() {
     throw new IllegalArgumentException("Throw this exception on purpose in test");
   }
-  
+
   public class Sample2InvokedMethodListener implements IInvokedMethodListener
   {
-     
+
      boolean isSuccess = false;
 
      /**
       * {@inheritDoc}
       */
-     public void afterInvocation(IInvokedMethod m, ITestResult tr)
+     @Override
+    public void afterInvocation(IInvokedMethod m, ITestResult tr)
      {
         isSuccess = tr.isSuccess();
      }
@@ -28,11 +29,12 @@ public class Sample2 {
      /**
       * {@inheritDoc}
       */
-     public void beforeInvocation(IInvokedMethod arg0, ITestResult arg1)
+     @Override
+    public void beforeInvocation(IInvokedMethod arg0, ITestResult arg1)
      {
         // no need to implement this right now
      }
-     
+
      public boolean isSuccess() {
         return isSuccess;
      }

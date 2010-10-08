@@ -1,14 +1,14 @@
 package test.sample;
 
-import org.testng.annotations.*;
+import org.testng.annotations.Test;
 
 /**
  * This class tests paramete scopes.
- * 
+ *
  * @author cbeust
  */
 public class Scope {
-  
+
   @Test(groups = { "outer-group" }, parameters = { "parameter" })
   public void outerDeprecated(String s) {
     assert "out".equals(s)

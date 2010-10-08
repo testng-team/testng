@@ -53,18 +53,18 @@ import java.util.regex.Pattern;
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public class Invoker implements IInvoker {
-  private ITestContext m_testContext;
-  private ITestResultNotifier m_notifier;
-  private IAnnotationFinder m_annotationFinder;
-  private SuiteRunState m_suiteState;
+  private final ITestContext m_testContext;
+  private final ITestResultNotifier m_notifier;
+  private final IAnnotationFinder m_annotationFinder;
+  private final SuiteRunState m_suiteState;
   private boolean m_skipFailedInvocationCounts;
-  private List<IInvokedMethodListener> m_invokedMethodListeners;
+  private final List<IInvokedMethodListener> m_invokedMethodListeners;
   private boolean m_continueOnFailedConfiguration;
 
-  /** Group failures must be synched as the Invoker is accessed concurrently */
+  /** Group failures must be synced as the Invoker is accessed concurrently */
   private Map<String, Boolean> m_beforegroupsFailures = Maps.newHashtable();
 
-  /** Class failures must be synched as the Invoker is accessed concurrently */
+  /** Class failures must be synced as the Invoker is accessed concurrently */
   private Map<Class<?>, Set<Object>> m_classInvocationResults = Maps.newHashtable();
 
   /** Test methods whose configuration methods have failed. */
@@ -827,7 +827,7 @@ public class Invoker implements IInvoker {
    * This method is also reponsible for invoking @BeforeGroup, @BeforeMethod, @AfterMethod, @AfterGroup
    * if it is the case for the passed in @Test method.
    */
-  public List<ITestResult> invokeTestMethod(Object[] instances,
+  protected List<ITestResult> invokeTestMethod(Object[] instances,
                                              final ITestNGMethod tm,
                                              Object[] parameterValues,
                                              int parametersIndex,
@@ -1647,7 +1647,7 @@ public class Invoker implements IInvoker {
     testResult.setThrowable(throwable);
     int successPercentage= testMethod.getSuccessPercentage();
     int invocationCount= testMethod.getInvocationCount();
-    float numberOfTestsThatCanFail= ((100 - successPercentage) * invocationCount) / 100;
+    float numberOfTestsThatCanFail= ((100 - successPercentage) * invocationCount) / 100f;
 
     if(failureCount < numberOfTestsThatCanFail) {
       testResult.setStatus(ITestResult.SUCCESS_PERCENTAGE_FAILURE);

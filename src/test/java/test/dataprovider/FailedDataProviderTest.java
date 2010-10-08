@@ -32,7 +32,7 @@ public class FailedDataProviderTest extends BaseTest {
   @Test
   public void failedDataProviderShouldCauseSkip() {
     addClass("test.dataprovider.DependentSampleTest");
-    
+
     run();
     String[] passed = {
       "method1"

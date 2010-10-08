@@ -8,6 +8,7 @@ import org.testng.collections.Lists;
 import java.util.List;
 
 public class VerifyMethodInterceptor implements IMethodInterceptor {
+  @Override
   public List<IMethodInstance> intercept(List<IMethodInstance> methods,
       ITestContext context) {
     List<IMethodInstance> result = Lists.newArrayList();
@@ -37,5 +38,5 @@ public class VerifyMethodInterceptor implements IMethodInterceptor {
 
     return result;
   }
-  
+
 }
