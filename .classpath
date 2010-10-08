@@ -8,7 +8,7 @@
 	<classpathentry kind="lib" path="lib/bsh-2.0b4.jar"/>
 	<classpathentry kind="lib" path="lib/guice-2.0.jar"/>
 	<classpathentry kind="lib" path="lib/jbus-0-4.jar"/>
-	<classpathentry kind="lib" path="lib/junit-3.8.1.jar"/>
+	<classpathentry kind="lib" path="lib/junit-3.8.1.jar" sourcepath="/Users/cbeust/.m2/repository/junit/junit/3.8.1/junit-3.8.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/jcommander-1.10.jar"/>
 	<classpathentry kind="output" path="eclipse-build"/>
 </classpath>
