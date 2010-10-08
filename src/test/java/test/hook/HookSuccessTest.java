@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
 
 /**
  * Test harness for {@link IHookable}
- * 
+ *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  * @since Aug 01, 2006
  */
@@ -22,7 +22,9 @@ public class HookSuccessTest implements IHookable {
   public void run(IHookCallBack callBack, ITestResult testResult) {
     m_hook = true;
     Object[] parameters = callBack.getParameters();
-    if (parameters.length > 0) m_parameter = parameters[0].toString();
+    if (parameters.length > 0) {
+      m_parameter = parameters[0].toString();
+    }
     callBack.runTestMethod(testResult);
   }
 
@@ -48,5 +50,5 @@ public class HookSuccessTest implements IHookable {
   private void ppp(String string) {
     System.out.println("[HookTest] " + string);
   }
-  
+
 }

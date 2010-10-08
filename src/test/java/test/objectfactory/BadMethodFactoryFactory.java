@@ -1,7 +1,6 @@
 package test.objectfactory;
 
 import org.testng.annotations.ObjectFactory;
-import org.testng.IObjectFactory;
 
 /**
  * @author Hani Suleiman

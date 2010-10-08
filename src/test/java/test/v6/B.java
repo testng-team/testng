@@ -15,21 +15,21 @@ public class B {
 
   @Test(groups = "1")
   public void fb1() {}
-  
+
   @Test public void fb3() {}
 
   @BeforeMethod
   public void beforeMethod() {}
-  
+
   @AfterMethod(groups = "1")
   public void afterMethod() {}
-  
+
   @BeforeSuite
   public void beforeSuite() {}
-  
+
   @BeforeClass
   public void beforeClass() {}
-  
+
   @AfterClass
   public void afterClass() {}
 }

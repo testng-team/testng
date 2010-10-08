@@ -1,6 +1,6 @@
 package test.factory;
 
-import org.testng.annotations.*;
+import org.testng.annotations.Test;
 
 import java.util.Map;
 

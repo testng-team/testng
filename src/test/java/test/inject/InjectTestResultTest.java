@@ -12,7 +12,7 @@ public class InjectTestResultTest extends SimpleBaseTest {
   public void verifyTestResultInjection() {
     TestNG tng = create(InjectBeforeAndAfterMethodsWithTestResultSampleTest.class);
     tng.run();
-    
-    Assert.assertEquals(0, InjectBeforeAndAfterMethodsWithTestResultSampleTest.m_success); 
+
+    Assert.assertEquals(0, InjectBeforeAndAfterMethodsWithTestResultSampleTest.m_success);
   }
 }

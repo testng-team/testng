@@ -10,13 +10,13 @@ public class TestChild1 extends BaseTestClass {
     ppp("beforeTestChild1Class");
     InterleavedInvocationTest.LOG.add("beforeTestChild1Class");
   }
-  
+
   @AfterClass
   public void afterTestChildOneClass() {
     ppp("afterTestChild1Class");
     InterleavedInvocationTest.LOG.add("afterTestChild1Class");
   }
-  
+
   private void ppp(String s) {
     if (false) {
       System.out.println("[TestChild1] " + s);

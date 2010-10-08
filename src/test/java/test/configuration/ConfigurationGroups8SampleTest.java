@@ -1,18 +1,18 @@
 package test.configuration;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Run with group "A" and "B"
  * Make sure that only methods and configurations belonging to that group
  * get invoked.
- * 
+ *
  * @author cbeust
  * @date Mar 9, 2006
  */
@@ -23,7 +23,7 @@ public class ConfigurationGroups8SampleTest {
   public void dummy() {
     m_log.add("should not be invoked");
   }
-  
+
   @Test(groups = { "A" })
   public void testSomething() {
     m_log.add("1");

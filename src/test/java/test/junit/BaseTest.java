@@ -5,14 +5,14 @@ import junit.framework.TestCase;
 /**
  * Base JUnit test case to verify TestNG handles
  * TestCase hierarchies properly.
- * 
+ *
  * @author mperham
  */
 public abstract class BaseTest extends TestCase {
 
   private static int setUpInvokeCount = 0;
   private static int tearDownInvokeCount = 0;
-  
+
   public BaseTest(String name) {
     super(name);
   }
@@ -26,7 +26,7 @@ public abstract class BaseTest extends TestCase {
   protected void tearDown() throws Exception {
     tearDownInvokeCount++;
   }
-  
+
   public abstract void testA();
   public abstract void testB();
 

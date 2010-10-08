@@ -9,12 +9,12 @@ import java.util.Set;
 @Test(sequential = true)
 public class BugBase {
   static Set<Long> m_threadIds;
-  
+
   @BeforeClass
   public void setup() {
     m_threadIds = new HashSet<Long>();
   }
-  
+
   void log(long threadId) {
     m_threadIds.add(threadId);
   }

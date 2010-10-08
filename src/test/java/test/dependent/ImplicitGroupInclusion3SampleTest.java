@@ -15,5 +15,5 @@ public class ImplicitGroupInclusion3SampleTest {
  public void test3() {
    throw new RuntimeException("exclude me");
  }
- 
+
 }

@@ -11,5 +11,5 @@ public class SimpleTest {
   private void ppp(String string) {
     System.out.println("[SimpleTest] " + string);
   }
-  
+
 }

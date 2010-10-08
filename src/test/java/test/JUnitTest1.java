@@ -13,30 +13,30 @@ import test.sample.JUnitSample2;
  * This class
  *
  * @author Cedric Beust, May 5, 2004
- * 
+ *
  */
 public class JUnitTest1 extends BaseTest {
   @BeforeMethod(dependsOnGroups = { "initTest"} )
   public void initJUnitFlag() {
     getTest().setJUnit(true);
   }
-  
+
   @Test
   public void methodsThatStartWithTest() {
     addClass("test.sample.JUnitSample1");
     assert getTest().isJUnit();
-    
+
     run();
     String[] passed = {
         JUnitSample1.EXPECTED1, JUnitSample1.EXPECTED2
     };
     String[] failed = {
     };
-    
+
     verifyTests("Passed", passed, getPassedTests());
-    verifyTests("Failed", failed, getFailedTests());  
+    verifyTests("Failed", failed, getFailedTests());
   }
-  
+
   @Test
   public void methodsWithSetup() {
     addClass("test.sample.JUnitSample2");
@@ -46,11 +46,11 @@ public class JUnitTest1 extends BaseTest {
     };
     String[] failed = {
     };
-    
+
     verifyTests("Passed", passed, getPassedTests());
-    verifyTests("Failed", failed, getFailedTests());  
+    verifyTests("Failed", failed, getFailedTests());
   }
-  
+
   @Test
   public void testSuite() {
     addClass("test.sample.AllJUnitTests");
@@ -61,11 +61,11 @@ public class JUnitTest1 extends BaseTest {
     };
     String[] failed = {
     };
-    
+
     verifyTests("Passed", passed, getPassedTests());
-    verifyTests("Failed", failed, getFailedTests());  
-  }  
-  
+    verifyTests("Failed", failed, getFailedTests());
+  }
+
   @Test
   public void testNewInstance() {
     addClass("test.sample.JUnitSample3");
@@ -75,11 +75,11 @@ public class JUnitTest1 extends BaseTest {
     };
     String[] failed = {
     };
-    
+
     verifyTests("Passed", passed, getPassedTests());
-    verifyTests("Failed", failed, getFailedTests());  
-  }  
-  
+    verifyTests("Failed", failed, getFailedTests());
+  }
+
   @Test
   public void setUpFailingShouldCauseMethodsToBeSkipped() {
     addClass("test.junit.SetUpExceptionSampleTest");
@@ -93,8 +93,8 @@ public class JUnitTest1 extends BaseTest {
       /*"testM1", "tearDown"*/
     };
     verifyTests("Passed", passed, getPassedTests());
-    verifyTests("Skipped", skipped, getSkippedTests());    
-    verifyTests("Failed", failed, getFailedTests());    
+    verifyTests("Skipped", skipped, getSkippedTests());
+    verifyTests("Failed", failed, getFailedTests());
   }
 
   @Test
@@ -110,9 +110,9 @@ public class JUnitTest1 extends BaseTest {
     String[] skipped = {
     };
     verifyTests("Passed", passed, getPassedTests());
-    verifyTests("Skipped", skipped, getSkippedTests());    
-    verifyTests("Failed", failed, getFailedTests());    
-    
+    verifyTests("Skipped", skipped, getSkippedTests());
+    verifyTests("Failed", failed, getFailedTests());
+
     Assert.assertEquals(SetNameTest.m_ctorCount, 2,
         "Expected 2 instances to be created, found " + SetNameTest.m_ctorCount);
   }

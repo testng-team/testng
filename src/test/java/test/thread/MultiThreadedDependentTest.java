@@ -59,7 +59,7 @@ public class MultiThreadedDependentTest extends SimpleBaseTest {
   public void test2Threads() {
     test(2);
   }
-  
+
   @Test
   public void test3Threads() {
     test(3);

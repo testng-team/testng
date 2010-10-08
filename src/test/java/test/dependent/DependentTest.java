@@ -1,10 +1,12 @@
 package test.dependent;
 
+import org.testng.annotations.ExpectedExceptions;
+import org.testng.annotations.Test;
+
 import test.BaseTest;
-import org.testng.annotations.*;
 
 public class DependentTest extends BaseTest {
-  
+
   @Test
   public void simpleSkip() {
     addClass("test.dependent.SampleDependent1");
@@ -37,7 +39,7 @@ public class DependentTest extends BaseTest {
     verifyTests("Failed", failed, getFailedTests());
     verifyTests("Skipped", skipped, getSkippedTests());
   }
-  
+
   @Test
   public void dependentMethodsWithSkip() {
     addClass("test.dependent.SampleDependentMethods4");
@@ -84,7 +86,7 @@ public class DependentTest extends BaseTest {
     addClass("test.dependent.SampleDependentMethods7");
     run();
   }
-  
+
 } // DependentTest
 
 

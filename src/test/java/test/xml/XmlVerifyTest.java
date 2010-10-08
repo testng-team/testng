@@ -18,7 +18,7 @@ import java.io.PrintStream;
 import java.util.Arrays;
 
 public class XmlVerifyTest extends SimpleBaseTest {
-   
+
 //  private String getFinalPath(String file) {
 //    File currentDir = new File(".");
 //    String path = currentDir.getAbsolutePath();
@@ -38,10 +38,10 @@ public class XmlVerifyTest extends SimpleBaseTest {
     test.getXmlClasses().add(xClass);
     test.getExcludedGroups().add("fast");
     test.setVerbose(5);
-    
+
     suite.toXml();
   }
-  
+
   @Test(description="Checks to make sure that NPE is not thrown when <test> tag is missing",
       expectedExceptions = TestNGException.class)
   public void handleInvalidXml() {
@@ -50,7 +50,7 @@ public class XmlVerifyTest extends SimpleBaseTest {
      PrintStream err = System.err;
      try {
         /*
-         * Changing system print streams so that exception is not logged 
+         * Changing system print streams so that exception is not logged
          * while running test (avoid confusing person running tests)
          */
         System.setOut(new PrintStream(os));

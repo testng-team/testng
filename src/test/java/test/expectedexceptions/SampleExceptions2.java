@@ -4,7 +4,7 @@ import org.testng.annotations.Test;
 
 /**
  * This class tests @ExpectedExceptions
- * 
+ *
  * @author cbeust
  */
 public class SampleExceptions2 {
@@ -34,7 +34,7 @@ public class SampleExceptions2 {
   public void shouldFail3() {
     throw new NumberFormatException("This should bomb for good");
   }
-  
+
   @Test(expectedExceptions = NumberFormatException.class, expectedExceptionsMessageRegExp = ".*")
   public void shouldPass3() {
     throw new NumberFormatException(null);

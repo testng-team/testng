@@ -1,7 +1,5 @@
 package test.invokedmethodlistener;
 
-import java.util.List;
-
 import org.testng.Assert;
 import org.testng.IInvokedMethod;
 import org.testng.ITestResult;
@@ -10,25 +8,27 @@ import org.testng.annotations.Test;
 
 import test.SimpleBaseTest;
 
+import java.util.List;
+
 public class InvokedMethodListenerTest extends SimpleBaseTest {
-  
+
   private void run(Class[] classes, MyListener l) {
     TestNG tng = create();
     tng.setTestClasses(classes);
-    
+
     tng.addInvokedMethodListener(l);
     tng.run();
-    
+
     Assert.assertEquals(l.getBeforeCount(), 9);
     Assert.assertEquals(l.getAfterCount(), 9);
   }
-  
+
   @Test
   public void withSuccess() {
     MyListener l = new MyListener();
     run(new Class[] { Success.class }, l);
   }
-  
+
   @Test
   public void withFailure() {
     MyListener l = new MyListener();
@@ -36,7 +36,7 @@ public class InvokedMethodListenerTest extends SimpleBaseTest {
     Assert.assertEquals(l.getSuiteStatus(), ITestResult.FAILURE);
     Assert.assertTrue(null != l.getSuiteThrowable());
     Assert.assertTrue(l.getSuiteThrowable().getClass() == RuntimeException.class);
-    
+
     Assert.assertEquals(l.getMethodStatus(), ITestResult.FAILURE);
     Assert.assertTrue(null != l.getMethodThrowable());
     Assert.assertTrue(l.getMethodThrowable().getClass() == IllegalArgumentException.class);
@@ -62,7 +62,7 @@ public class InvokedMethodListenerTest extends SimpleBaseTest {
     Assert.assertTrue(after2.getTestMethod().isAfterMethodConfiguration());
     Assert.assertTrue(after1.getDate() != after2.getDate());
   }
-  
+
   @Test(description = "Test methods with expected exceptions should show up as pass" +
   		" in IInvokedMethodListener's afterInvocaiton method")
   public void testMethodsWithExpectedExceptionsShouldShowUpAsPass() {

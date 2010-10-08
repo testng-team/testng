@@ -9,12 +9,12 @@ public class ClassWithFailedBeforeMethodAndMultipleTests {
   public void setupShouldFail() {
     throw new RuntimeException("Failing in setUp");
   }
-    
+
   @Test
   public void test1() {
 
   }
-    
+
   @Test
   public void test2() {
 

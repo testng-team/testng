@@ -15,7 +15,7 @@ import java.util.List;
 
 public class FailedReporterTest extends BaseTest {
   private File mTempDirectory;
-  
+
   @BeforeMethod
   public void setUp() {
     File slashTmpDir = new File(System.getProperty("java.io.tmpdir"));
@@ -37,7 +37,7 @@ public class FailedReporterTest extends BaseTest {
   @Test
   public void failedMethodWithDataProviderShouldHaveInvocationNumbers() throws IOException {
     testFailedReporter(FailedReporter2SampleTest.class, new String[] { "f1" },
-        "<include invocationNumbers=\"1\" name=\"%s\"" + "\"/>"); 
+        "<include invocationNumbers=\"1\" name=\"%s\"" + "\"/>");
   }
 
   private void testFailedReporter(Class<?> cls, String[] expectedMethods, String expectedLine) {

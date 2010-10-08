@@ -6,20 +6,20 @@ import org.testng.annotations.Test;
 
 /**
  * Generates multiple permutations of TestNG output to see how things look in EmailableReporter.
- * 
+ *
  * @author Paul Mendelson
  * @since 5.3
  * @version $Revision$
  */
 @Test
 public class EmailableReportDriver {
-  
+
   public void doFailureSansLog() {
     Assert.fail("show failure in report");
-  }    
+  }
   public void doFailureNested() {
     Assert.fail("show failure in report",new Exception("Real cuase"));
-  }    
+  }
   public void doFailureWithLog() {
     Reporter.log("Preparing to fail");
     Assert.fail("show failure in report");
@@ -34,5 +34,5 @@ public class EmailableReportDriver {
   public void doExpectedExceptionWithLog() {
     Integer.parseInt("BAD TEXT");
   }
-  
+
 }

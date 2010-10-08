@@ -35,8 +35,8 @@ public class JUnitConverterTest {
    public void clean() {
       File[] files = m_output.listFiles();
 
-      for(int i = 0; i < files.length; i++) {
-         files[i].delete();
+      for (File file : files) {
+         file.delete();
       }
 
       m_output.delete();

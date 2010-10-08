@@ -34,7 +34,7 @@ public class FirstAndLastTimeTest {
   public void verifyDataProviderTrueTrue() {
     run(DataProviderTrueTrueTest.class, 1, 1);
   }
-  
+
   @Test
   public void verifyInvocationCountFalseFalse() {
     run(InvocationCountFalseFalseTest.class, 3, 3);
@@ -54,13 +54,13 @@ public class FirstAndLastTimeTest {
   public void verifyInvocationCountTrueTrue() {
     run(InvocationCountTrueTrueTest.class, 1, 1);
   }
-  
+
   private void run(Class cls, int expectedBefore, int expectedAfter) {
     TestNG tng = new TestNG();
     tng.setVerbose(0);
     tng.setTestClasses(new Class[] { cls });
     tng.run();
-    
+
     try {
       Method before = cls.getMethod("getBeforeCount", new Class[0]);
       Integer beforeCount = (Integer) before.invoke(null, (Object[]) null);
@@ -81,5 +81,5 @@ public class FirstAndLastTimeTest {
       e.printStackTrace();
     }
   }
-  
+
 }

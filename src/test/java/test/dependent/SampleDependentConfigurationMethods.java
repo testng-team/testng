@@ -11,13 +11,13 @@ public class SampleDependentConfigurationMethods {
   public void createInstance() {
     m_create = true;
   }
-  
+
   @BeforeMethod(dependsOnMethods = { "createInstance"})
   public void firstInvocation() {
-    assert m_create : "createInstance() was never called"; 
+    assert m_create : "createInstance() was never called";
     m_first = true;
   }
-  
+
   @Test
   public void verifyDependents() {
     assert m_create : "createInstance() was never called";

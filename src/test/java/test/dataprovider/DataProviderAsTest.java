@@ -10,10 +10,10 @@ import org.testng.annotations.Test;
  */
 @Test
 public class DataProviderAsTest {
-  
+
   public void f() {
   }
-  
+
   @DataProvider
   public Object[][] dataProvider() {
     throw new RuntimeException();

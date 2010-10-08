@@ -6,7 +6,7 @@ import org.testng.annotations.Test;
 
 /**
  * Simple afterGroups test
- * 
+ *
  * @author cbeust
  * @date Mar 7, 2006
  */
@@ -19,7 +19,7 @@ public class ConfigurationGroups4SampleTest {
   public void f() {
     log("f");
   }
-  
+
   @Test(groups = "cg4-1")
   public void run() {
     log("run");
@@ -34,14 +34,14 @@ public class ConfigurationGroups4SampleTest {
     Assert.assertFalse(m_after);
     m_after = true;
   }
-  
+
   @Test(dependsOnGroups = "cg4-1")
   public void verify() {
     log("verify");
     Assert.assertTrue(m_run, "run() wasn't run");
     Assert.assertTrue(m_after, "after1() wasn't run");
   }
-  
+
   private void log(String string) {
     ppp(string);
   }

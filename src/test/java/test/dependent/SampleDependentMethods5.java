@@ -1,14 +1,14 @@
 package test.dependent;
 
-import org.testng.annotations.*;
+import org.testng.annotations.Test;
 
 /**
  * This class
- * 
+ *
  * @author cbeust
  */
 public class SampleDependentMethods5 {
-  
+
   @Test
   public void step1() {
   }

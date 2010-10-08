@@ -39,8 +39,8 @@ public class ParallelSuiteTest extends SimpleBaseTest {
     tng.run(); //Shouldn't not deadlock
     Assert.assertEquals(BaseThreadTest.getThreadCount(), SUITE_THREAD_POOL_SIZE);
   }
-  
-  private void runTest(int suiteThreadPoolSize, int expectedThreadCount, 
+
+  private void runTest(int suiteThreadPoolSize, int expectedThreadCount,
         int expectedSuiteCount, Boolean randomizeSuites, List<String> paths) {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG tng = create();
@@ -94,11 +94,11 @@ public class ParallelSuiteTest extends SimpleBaseTest {
     Assert.assertEquals(suitesMap.keySet().size(), 3);
 
     final String SUITE_NAME_PREFIX = "Suite Parallel ";
-    Assert.assertTrue(suitesMap.get(SUITE_NAME_PREFIX + 1) 
+    Assert.assertTrue(suitesMap.get(SUITE_NAME_PREFIX + 1)
           < suitesMap.get(SUITE_NAME_PREFIX + 2));
-    Assert.assertTrue(suitesMap.get(SUITE_NAME_PREFIX + 2) 
+    Assert.assertTrue(suitesMap.get(SUITE_NAME_PREFIX + 2)
           < suitesMap.get(SUITE_NAME_PREFIX + 0));
-    
+
   }
 
   @Test(description = "Number of threads (1) is less than number of levels of suites (2)")

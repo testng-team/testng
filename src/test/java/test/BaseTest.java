@@ -1,10 +1,6 @@
 package test;
 
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Module;
-
 import org.testng.IInvokedMethodListener;
 import org.testng.ISuite;
 import org.testng.ITestResult;
@@ -24,6 +20,10 @@ import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Module;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -70,7 +70,7 @@ public class BaseTest extends BaseDistributedTest {
   protected void setVerbose(int n) {
     getTest().setVerbose(n);
   }
-  
+
   protected void setTestTimeOut(long n) {
       getTest().setTimeOut(n);
   }
@@ -130,7 +130,7 @@ public class BaseTest extends BaseDistributedTest {
   public Map<String, List<ITestResult>> getSkippedTests() {
     return getTests(m_skippedTests);
   }
-  
+
   public Map<String, List<ITestResult>> getFailedConfigs() {
     return getTests(m_failedConfigs);
   }
@@ -171,7 +171,7 @@ public class BaseTest extends BaseDistributedTest {
     setTests(m_failedConfigs, m);
   }
 
-  
+
   protected void run() {
     assert null != getTest() : "Test wasn't set, maybe @Configuration methodSetUp() was never called";
     setPassedTests(new HashMap());
@@ -283,7 +283,7 @@ public class BaseTest extends BaseDistributedTest {
     List result= new ArrayList();
 
     for(Iterator it= m1.keySet().iterator(); it.hasNext();) {
-      Object key= it.next();
+      it.next();
     }
 
     return result;
@@ -313,7 +313,7 @@ public class BaseTest extends BaseDistributedTest {
   public void addSkippedTest(ITestResult t) {
     addTest(getSkippedTests(), t);
   }
-  
+
   public void addPassedConfig(ITestResult t) {
     addTest(getPassedConfigs(), t);
   }
@@ -392,14 +392,14 @@ public class BaseTest extends BaseDistributedTest {
         String line = fr.readLine();
         int currentLine = 0;
         Pattern p = Pattern.compile(".*" + regexp + ".*");
-  
+
         while(null != line) {
   //        ppp("COMPARING " + p + " TO @@@" + line + "@@@");
           if(p.matcher(line).matches()) {
             resultLines.add(line);
             resultLineNumbers.add(currentLine);
           }
-  
+
           line = fr.readLine();
           currentLine++;
         }
@@ -420,9 +420,9 @@ public class BaseTest extends BaseDistributedTest {
           }
         }
       }
-  
+
       return resultLineNumbers;
-  
+
     }
 
   private static class InternalTestRunnerFactory implements ITestRunnerFactory {
@@ -463,14 +463,14 @@ public class BaseTest extends BaseDistributedTest {
   public static boolean deleteDir(File dir) {
     if (dir.isDirectory()) {
       String[] children = dir.list();
-      for (int i=0; i<children.length; i++) {
-        boolean success = deleteDir(new File(dir, children[i]));
+      for (String element : children) {
+        boolean success = deleteDir(new File(dir, element));
         if (!success) {
           return false;
         }
       }
     }
-  
+
     // The directory is now empty so delete it
     return dir.delete();
   }
@@ -513,7 +513,7 @@ class TestListener extends TestListenerAdapter {
   public void onTestSkipped(ITestResult tr) {
     m_test.addSkippedTest(tr);
   }
-  
+
   @Override
   public void onConfigurationSuccess(ITestResult tr) {
     m_test.addPassedConfig(tr);

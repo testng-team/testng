@@ -14,17 +14,17 @@ public class InjectAfterMethodWithTestResultSampleTest {
 
   @Test
   public void pass() {}
-  
+
   @Test
   public void fail() {
     throw new RuntimeException();
   }
-  
+
   @Test
   public void skip() {
     throw new SkipException("Skipped");
   }
-  
+
   @BeforeClass
   public void init() {
     m_success = 3;

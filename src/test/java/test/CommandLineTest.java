@@ -1,20 +1,22 @@
 package test;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
+import org.testng.Assert;
+import org.testng.ITestContext;
+import org.testng.ITestResult;
+import org.testng.TestListenerAdapter;
+import org.testng.TestNG;
+import org.testng.annotations.Test;
+
+import test.sample.JUnitSample1;
+import testhelper.OutputDirectoryPatch;
 
 import java.util.List;
 
-import org.testng.*;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.*;
-
-import test.sample.JUnitSample1;
-
-import testhelper.OutputDirectoryPatch;
-
 public class CommandLineTest {
-  
+
   /**
    * Test -junit
    */
@@ -22,22 +24,22 @@ public class CommandLineTest {
   public void junitParsing() {
     String[] argv = {
       "-log", "0",
-      "-d", OutputDirectoryPatch.getOutputDirectory(), 
-      "-junit", 
-      "-testclass", "test.sample.JUnitSample1"  
+      "-d", OutputDirectoryPatch.getOutputDirectory(),
+      "-junit",
+      "-testclass", "test.sample.JUnitSample1"
     };
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG.privateMain(argv, tla);
-    
+
     List<ITestResult> passed = tla.getPassedTests();
     assertEquals(passed.size(), 2);
     String test1 = passed.get(0).getMethod().getMethodName();
     String test2 = passed.get(1).getMethod().getMethodName();
-    
-    assertTrue(JUnitSample1.EXPECTED1.equals(test1) && JUnitSample1.EXPECTED2.equals(test2) || 
+
+    assertTrue(JUnitSample1.EXPECTED1.equals(test1) && JUnitSample1.EXPECTED2.equals(test2) ||
         JUnitSample1.EXPECTED1.equals(test2) && JUnitSample1.EXPECTED2.equals(test1));
     }
-  
+
   /**
    * Test the absence of -junit
    */
@@ -46,15 +48,15 @@ public class CommandLineTest {
     String[] argv = {
       "-log", "0",
       "-d", OutputDirectoryPatch.getOutputDirectory(),
-      "-testclass", "test.sample.JUnitSample1"  
+      "-testclass", "test.sample.JUnitSample1"
     };
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG.privateMain(argv, tla);
-    
+
     List<ITestResult> passed = tla.getPassedTests();
     assertEquals(passed.size(), 0);
     }
-  
+
   /**
    * Test the ability to override the default command line Suite name
    */
@@ -64,20 +66,20 @@ public class CommandLineTest {
     String[] argv = {
       "-log", "0",
       "-d", OutputDirectoryPatch.getOutputDirectory(),
-      "-junit", 
+      "-junit",
       "-testclass", "test.sample.JUnitSample1",
       "-suitename", "\""+suiteName+"\""
     };
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG.privateMain(argv, tla);
-    
+
     List<ITestContext> contexts = tla.getTestContexts();
     assertTrue(contexts.size()>0);
     for (ITestContext context:contexts) {
     	assertEquals(context.getSuite().getName(),suiteName);
     }
   }
-  
+
   /**
    * Test the ability to override the default command line test name
    */
@@ -87,13 +89,13 @@ public class CommandLineTest {
     String[] argv = {
       "-log", "0",
       "-d", OutputDirectoryPatch.getOutputDirectory(),
-      "-junit", 
+      "-junit",
       "-testclass", "test.sample.JUnitSample1",
       "-testname", "\""+testName+"\""
     };
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG.privateMain(argv, tla);
-    
+
     List<ITestContext> contexts = tla.getTestContexts();
     assertTrue(contexts.size()>0);
     for (ITestContext context:contexts) {
@@ -113,7 +115,7 @@ public class CommandLineTest {
     String[] argv = {
       "-log", "0",
       "-d", OutputDirectoryPatch.getOutputDirectory(),
-      "-methods", "test.sample.Sample2.method1,test.sample.Sample2.method3", 
+      "-methods", "test.sample.Sample2.method1,test.sample.Sample2.method3",
     };
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG.privateMain(argv, tla);
@@ -130,5 +132,5 @@ public class CommandLineTest {
   private static void ppp(String s) {
     System.out.println("[CommandLineTest] " + s);
   }
-  
+
 }

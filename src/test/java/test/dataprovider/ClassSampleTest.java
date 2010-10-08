@@ -18,6 +18,6 @@ public class ClassSampleTest {
   }
 
   public void g(String a) {
-  }    
+  }
 
 }

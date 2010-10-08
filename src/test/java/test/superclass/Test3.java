@@ -18,6 +18,6 @@ public class Test3 extends BaseTest {
         "fail"
     };
     verifyTests("Failed", failed, getFailedTests());
-    verifyTests("Passed", passed, getPassedTests());    
+    verifyTests("Passed", passed, getPassedTests());
   }
 }

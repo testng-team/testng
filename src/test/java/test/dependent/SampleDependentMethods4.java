@@ -5,14 +5,14 @@ import org.testng.annotations.Test;
 
 /**
  * This class
- * 
+ *
  * @author cbeust
  */
 public class SampleDependentMethods4 {
 
   @Test
   public void step1() {
-  } 
+  }
 
   @Test(dependsOnMethods = { "step1" })
   public void step2() {

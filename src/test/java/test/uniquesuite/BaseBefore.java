@@ -11,12 +11,12 @@ public class BaseBefore {
   public void incrementBefore() {
     m_beforeCount++;
   }
-  
+
   @AfterSuite
   public void incrementAfter() {
     m_afterCount++;
   }
-  
+
   private static void ppp(String s) {
     System.out.println("[Base] " + s);
   }

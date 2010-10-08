@@ -20,13 +20,13 @@ public class ClassWithFailedBeforeTestClassVerification {
   public void tearDown() {
     m_success2 = true;
   }
-  
+
   // Adding this method or @Configuration will never be invoked
   @Test
   public void dummy() {
-    
+
   }
-  
+
   static public boolean success() {
     return m_success1 && m_success2;
   }

@@ -11,18 +11,18 @@ public class AlwaysRunAfter1 {
   public void setUpShouldFail() {
     throw new RuntimeException("Failing in setUp");
   }
-  
+
   @AfterClass(alwaysRun = true)
   public void tearDown() {
     m_success = true;
   }
-  
+
   // Adding this method or @Configuration will never be invoked
   @Test
   public void dummy() {
-    
+
   }
-  
+
   static public boolean success() {
     return m_success;
   }

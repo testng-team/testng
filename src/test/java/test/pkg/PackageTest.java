@@ -1,14 +1,14 @@
 package test.pkg;
 
+import static org.testng.Assert.assertTrue;
+
 import org.testng.annotations.Test;
 
 import test.BaseTest;
 import test.pkg2.Test2;
-
-import static org.testng.Assert.assertTrue;
 /**
  * Tests that <package> in testng.xml works.
- * 
+ *
  * Created on Aug 2, 2005
  * @author cbeust
  */
@@ -35,7 +35,7 @@ public class PackageTest extends BaseTest {
     run();
     assertTrue(!NON_TEST_CONSTRUCTOR, Test2.class.getName() + " should not be considered");
   }
-  
+
   @Test
   public void packageWithRegExp1() {
     addPackage("test.pkg2", new String[] { ".*1.*"}, new String[0]);

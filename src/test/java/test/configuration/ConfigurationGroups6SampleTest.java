@@ -6,7 +6,7 @@ import org.testng.annotations.Test;
 
 /**
  * afterGroups test when the group contains more than one method
- * 
+ *
  * @author cbeust
  * @date Mar 7, 2006
  */
@@ -20,7 +20,7 @@ public class ConfigurationGroups6SampleTest {
   public void f() {
     log("f");
   }
-  
+
   @Test(groups = "cg6-1")
   public void run1() {
     log("run1");
@@ -43,7 +43,7 @@ public class ConfigurationGroups6SampleTest {
     Assert.assertFalse(m_after);
     m_after = true;
   }
-  
+
   @Test(dependsOnGroups = { "cg6-1" })
   public void verify() {
     log("verify");
@@ -51,7 +51,7 @@ public class ConfigurationGroups6SampleTest {
     Assert.assertTrue(m_run2, "run2() wasn't run");
     Assert.assertTrue(m_after, "after1() wasn't run");
   }
-  
+
   private void log(String string) {
     ppp(string);
   }

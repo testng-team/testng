@@ -10,10 +10,10 @@ public class ClassWide2Test {
   public void m2() {
     Assert.assertTrue(ClassWide1Test.m1WasRun());
   }
-  
+
 //  @Test
 //  public void m1() {
-//    
+//
 //  }
 
 }

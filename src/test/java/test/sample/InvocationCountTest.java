@@ -7,16 +7,16 @@ import org.testng.annotations.Test;
 
 /**
  * This class is used to test invocationCountTest
- * 
+ *
  * @author cbeust
  */
 public class InvocationCountTest {
- 
+
   //
   // Invocation test
   //
   private static int m_count = 0;
-  
+
   @AfterSuite(groups = {"invocationOnly"})
   public void afterSuite() {
     m_count = 0;
@@ -28,14 +28,14 @@ public class InvocationCountTest {
   public void tenTimesShouldSucceed() {
     m_count++;
   }
-  
+
   //
   // Invocation + Success percentage test
   // This method will work the first 8 times and fail after that, but overall
   // the test should still pass because successPercentage = 80
   //
   private static int m_count2 = 0;
-  
+
   @Test(groups = { "successPercentageThatSucceedsOnly" },
     invocationCount = 10, successPercentage = 80)
   public void successPercentageShouldSucceed() {
@@ -44,7 +44,7 @@ public class InvocationCountTest {
     }
     m_count2++;
   }
-   
+
   //
   // Invocation + Success percentage test
   // This method will work the first 8 times and fail after that.  One of
@@ -52,7 +52,7 @@ public class InvocationCountTest {
   // will not.
   //
   private static int m_count3 = 0;
-  
+
   @Test(groups = { "successPercentageThatFailsOnly" },
     invocationCount = 10, successPercentage = 90)
   public void successPercentageShouldFail() {
@@ -61,10 +61,10 @@ public class InvocationCountTest {
     }
     m_count3++;
   }
-  
+
   @AfterClass(groups = { "invocationOnly"})
   public void verify() {
-    assert 10 == m_count : "Method should have been invoked 10 times but was invoked " 
+    assert 10 == m_count : "Method should have been invoked 10 times but was invoked "
       + m_count + " times";
   }
 

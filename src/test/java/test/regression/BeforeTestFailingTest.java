@@ -15,7 +15,7 @@ public class BeforeTestFailingTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
     tng.run();
-    
+
     Assert.assertEquals(tla.getSkippedTests().size(), 1);
     Assert.assertEquals(tla.getPassedTests().size(), 0);
   }

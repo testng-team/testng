@@ -1,12 +1,12 @@
 package test.methodselectors;
 
-import java.util.List;
-
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+
+import java.util.List;
 
 public class PriorityTest {
 
@@ -18,7 +18,7 @@ public class PriorityTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
     tng.run();
-    
+
     List<ITestResult> passed = tla.getPassedTests();
     Assert.assertEquals(passedTests.length, passed.size());
     if (passedTests.length == 1) {
@@ -32,20 +32,20 @@ public class PriorityTest {
         || passed0.equals(passedTests[1]));
       Assert.assertTrue(passed1.equals(passedTests[0])
           || passed1.equals(passedTests[1]));
-      
+
     }
   }
-  
+
 //  @Test
   public void negativePriority() {
     runTest(-5, new String[] {});
   }
-  
+
   @Test
   public void lessThanTenPriority() {
     runTest(5, new String[] { "alwaysRun" });
   }
-  
+
 //  @Test
   public void greaterThanTenPriority() {
     runTest(15, new String[] { "alwaysRun", "neverRun" });

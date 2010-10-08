@@ -19,7 +19,7 @@ public class BaseSample {
 
   @BeforeClass
   public void bc() {
-    m_methods = Lists.newArrayList(); 
+    m_methods = Lists.newArrayList();
   }
 
   @Test

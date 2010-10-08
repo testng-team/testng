@@ -8,7 +8,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 public class IncludedExcludedSampleTest {
-  
+
   @BeforeSuite
   public void beforeSuite() {
     Reporter.log("beforeSuite");
@@ -38,7 +38,7 @@ public class IncludedExcludedSampleTest {
   public void test2() {
     Reporter.log("Child.test2");
   }
-  
+
   @Test(groups = "a")
   public void test3() {
     Reporter.log("Child.test3");

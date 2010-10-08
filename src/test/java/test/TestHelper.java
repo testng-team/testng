@@ -16,16 +16,16 @@ public class TestHelper {
   public static XmlSuite createSuite(String cls, String suiteName) {
     XmlSuite result = new XmlSuite();
     result.setName(suiteName);
-    
+
     XmlTest test = new XmlTest(result);
     test.setName("TmpTest");
     List<XmlClass> classes = new ArrayList<XmlClass>();
     classes.add(new XmlClass(cls));
     test.setXmlClasses(classes);
-    
+
     return result;
   }
-  
+
   public static TestNG createTestNG(String outputDir) {
     return createTestNG(null, outputDir);
   }
@@ -50,10 +50,10 @@ public class TestHelper {
     }
     result.setOutputDirectory(outputDir);
     result.setVerbose(-1);
-    
+
     return result;
   }
-  
+
   public static File createRandomDirectory() {
     String dir = System.getProperty("java.io.tmpdir");
     Random r = new Random(System.currentTimeMillis());
@@ -61,7 +61,7 @@ public class TestHelper {
     File result = new File(dir + File.separatorChar + name);
     result.deleteOnExit();
     result.mkdirs();
-    
+
     return result;
   }
 

@@ -22,8 +22,8 @@ public class Sub extends Base {
     public void subTest() {
         System.out.println ("sub test");
     }
-    
-    @Configuration(afterSuite = true) 
+
+    @Configuration(afterSuite = true)
     public void verify() {
       Assert.assertTrue(m_beforeTest);
       Assert.assertTrue(m_afterTest);

@@ -18,7 +18,7 @@ public class ExponentTest {
         new Object[] { 2.0, Math.exp(2) },
       };
     }
-    
+
     @BeforeMethod
     public void setUp() {
       ppp("BEFORE METHOD");
@@ -29,11 +29,11 @@ public class ExponentTest {
       ppp("COMPARING " + myExpFunction(exponent) + " AND " + expected);
       assertEquals(myExpFunction(exponent), expected);
     }
-    
+
     private static void ppp(String s) {
       System.out.println("[ExponentTest] " + s);
     }
-    
+
     private double myExpFunction(double exponent) {
       return Math.exp(exponent);
     }

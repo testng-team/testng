@@ -9,7 +9,7 @@ import test.BaseTest;
 /**
  * Because IHookable and IConfigurable are global, it's safer to run them in a
  * sub-TestNG object, otherwise they will be run for your entire test suite...
- * 
+ *
  * @author cbeust
  */
 public class HookableTest extends BaseTest {

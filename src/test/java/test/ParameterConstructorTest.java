@@ -1,6 +1,7 @@
 package test;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
@@ -20,7 +21,7 @@ public class ParameterConstructorTest {
   private float m_float = 0.0f;
   private long m_long = 0;
   private short m_short = 0;
-  
+
   @Parameters({ "string", "int", "boolean", "byte", "char", "double",
       "float", "long", "short"  })
   public ParameterConstructorTest(String s, int i, boolean bo, byte b, char c,
@@ -36,7 +37,7 @@ public class ParameterConstructorTest {
     m_long = l;
     m_short = sh;
   }
-  
+
   @Test
   public void verify() {
     assertEquals("Cedric", m_string);

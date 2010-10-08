@@ -11,9 +11,9 @@ import org.testng.annotations.Test;
 public class FactoryInSeparateClass {
   static private boolean m_wasRun = false;
   static private int m_checkSum = 0;
-  
+
   public static void addToSum(int i) {
-    m_checkSum += i; 
+    m_checkSum += i;
   }
 
   @BeforeTest
@@ -21,7 +21,7 @@ public class FactoryInSeparateClass {
     m_wasRun = false;
     m_checkSum = 0;
   }
-  
+
   @Factory
   public Object[] createObjects() {
     return new Object[] {
@@ -37,7 +37,7 @@ public class FactoryInSeparateClass {
       assert (m_checkSum == 6) :
         "Test instances made by factory did not invoke their test methods correctly.  expected 6 but got " + m_checkSum;
     }
-  
+
     public static boolean wasRun() {
       return m_wasRun;
     }
