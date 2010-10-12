@@ -14,6 +14,8 @@ Fixed: NPE while printing results for an empty suite (Nalin Makar)
 Fixed: Invoke IInvokedMethodListener.afterInvocation after fixing results for tests expecting exceptions (Nalin Makar)
 
 Eclipse:
+Added: The conversion of a JUnit test to TestNG now replaces @Test(timeout) with @Test(timeOut) (5.14.2.4)
+Added: The conversion of a JUnit test to TestNG now replaces @Test(expected) with @Test(expectedExceptions) (5.14.2.4)
 Added: The conversion of a JUnit test to TestNG now replaces fail() with AssertJUnit.fail() (5.14.2.2)
 Added: The conversion of a JUnit test to TestNG now replaces Assert with AssertJUnit (5.14.2.1)
 Added: The progress bar is now orange if the suite contained skipped tests and no failures
