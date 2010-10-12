@@ -97,7 +97,8 @@ public class TestResultMessage implements IStringMessage {
   }
   
   public TestResultMessage(final ITestContext testCtx, final ITestResult result) {
-    this(testCtx.getSuite().getName(), result.getTestName(), result);
+    this(testCtx.getSuite().getName(), testCtx.getCurrentXmlTest().getName(), result);
+//        result.getTestName() != null ? result.getTestName() : result.getName(), result);
   }
 
   private void init(final int resultType,
