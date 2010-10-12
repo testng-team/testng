@@ -21,7 +21,7 @@ public class SuiteWorkerFactory implements IThreadWorkerFactory<ISuite>
   private String m_defaultSuiteName;
   private Map<XmlSuite, ISuite> m_suiteRunnerMap;
 
-  public SuiteWorkerFactory(Map<XmlSuite, ISuite> suiteRunnerMap, 
+  public SuiteWorkerFactory(Map<XmlSuite, ISuite> suiteRunnerMap,
       Integer verbose, String defaultSuiteName) {
     m_suiteRunnerMap = suiteRunnerMap;
     m_verbose = verbose;
@@ -38,7 +38,7 @@ public class SuiteWorkerFactory implements IThreadWorkerFactory<ISuite>
   {
     List<IWorker<ISuite>> suiteWorkers = Lists.newArrayList();
     for (ISuite suiteRunner : suites) {
-      suiteWorkers.add(new SuiteRunnerWorker(suiteRunner, m_suiteRunnerMap, 
+      suiteWorkers.add(new SuiteRunnerWorker(suiteRunner, m_suiteRunnerMap,
         m_verbose, m_defaultSuiteName));
     }
     return suiteWorkers;

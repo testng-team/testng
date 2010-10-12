@@ -25,13 +25,13 @@ import java.util.Set;
 
 /**
  * This reporter is responsible for creating testng-failed.xml
- * 
+ *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class FailedReporter extends TestListenerAdapter implements IReporter {
   public static final String TESTNG_FAILED_XML = "testng-failed.xml";
-  
+
   private XmlSuite m_xmlSuite;
 
   public FailedReporter() {
@@ -41,6 +41,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     m_xmlSuite = xmlSuite;
   }
 
+  @Override
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
     for(int i= 0; i < suites.size(); i++) {
       generateFailureSuite(suites.get(i).getXmlSuite(), suites.get(i), outputDirectory);
@@ -56,17 +57,17 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     for(XmlTest xmlT: xmlSuite.getTests()) {
       xmlTests.put(xmlT.getName(), xmlT);
     }
-    
+
     Map<String, ISuiteResult> results = suite.getResults();
-    
+
     for(Map.Entry<String, ISuiteResult> entry : results.entrySet()) {
       ISuiteResult suiteResult = entry.getValue();
       ITestContext testContext = suiteResult.getTestContext();
 
-      generateXmlTest(suite, 
-                      xmlTests.get(testContext.getName()), 
-                      testContext, 
-                      testContext.getFailedTests().getAllResults(), 
+      generateXmlTest(suite,
+                      xmlTests.get(testContext.getName()),
+                      testContext,
+                      testContext.getFailedTests().getAllResults(),
                       testContext.getSkippedTests().getAllResults());
     }
 
@@ -78,32 +79,33 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
 
   /**
    * Do not rely on this method. The class is used as <code>IReporter</code>.
-   * 
+   *
    * @see org.testng.TestListenerAdapter#onFinish(org.testng.ITestContext)
    * @deprecated this class is used now as IReporter
    */
+  @Deprecated
   @Override
   public void onFinish(ITestContext context) {
     // Delete the previous file
 //    File f = new File(context.getOutputDirectory(), getFileName(context));
 //    f.delete();
-    
+
     // Calculate the methods we need to rerun :  failed tests and
     // their dependents
 //    List<ITestResult> failedTests = getFailedTests();
 //    List<ITestResult> skippedTests = getSkippedTests();
   }
-  
-  private void generateXmlTest(ISuite suite, 
-                               XmlTest xmlTest, 
-                               ITestContext context, 
-                               Collection<ITestResult> failedTests, 
+
+  private void generateXmlTest(ISuite suite,
+                               XmlTest xmlTest,
+                               ITestContext context,
+                               Collection<ITestResult> failedTests,
                                Collection<ITestResult> skippedTests) {
     // Note:  we can have skipped tests and no failed tests
     // if a method depends on nonexistent groups
     if (skippedTests.size() > 0 || failedTests.size() > 0) {
       Set<ITestNGMethod> methodsToReRun = Sets.newHashSet();
-      
+
       // Get the transitive closure of all the failed methods and the methods
       // they depend on
       Collection[] allTests = new Collection[] {
@@ -120,7 +122,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
             if (method.isTest()) {
               List<ITestNGMethod> methodsDependedUpon =
                   MethodHelper.getMethodsDependedUpon(method, context.getAllTestMethods());
-              
+
               for (ITestNGMethod m : methodsDependedUpon) {
                 if (m.isTest()) {
                   methodsToReRun.add(m);
@@ -130,7 +132,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
           }
         }
       }
-      
+
       //
       // Now we have all the right methods.  Go through the list of
       // all the methods that were run and only pick those that are
@@ -151,7 +153,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
           methodsToReRun.add(tm);
         }
       }
-      
+
       result.addAll(methodsToReRun);
       createXmlTest(context, result, xmlTest);
     }
@@ -173,7 +175,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     List<XmlClass> xmlClasses = createXmlClasses(methods);
     xmlTest.setXmlClasses(xmlClasses);
   }
-    
+
   /**
    * @param methods The methods we want to represent
    * @return A list of XmlClass objects (each representing a <class> tag) based
@@ -182,7 +184,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
   private List<XmlClass> createXmlClasses(List<ITestNGMethod> methods) {
     List<XmlClass> result = Lists.newArrayList();
     Map<Class, Set<ITestNGMethod>> methodsMap= Maps.newHashMap();
-    
+
     for (ITestNGMethod m : methods) {
       Object[] instances= m.getInstances();
       Class clazz= instances == null || instances.length == 0 ? m.getRealClass() : instances[0].getClass();
@@ -198,7 +200,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     for(Map.Entry<Class, Set<ITestNGMethod>> entry: methodsMap.entrySet()) {
       Class clazz= entry.getKey();
       Set<ITestNGMethod> methodList= entry.getValue();
-      // @author Borojevic 
+      // @author Borojevic
       // Need to check all the methods, not just @Test ones.
       XmlClass xmlClass= new XmlClass(clazz.getName(), Boolean.FALSE, index++);
       List<XmlInclude> methodNames= Lists.newArrayList(methodList.size());
@@ -209,12 +211,12 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       }
       xmlClass.setIncludedMethods(methodNames);
       result.add(xmlClass);
-      
+
     }
-        
+
     return result;
   }
-  
+
   /**
    * TODO:  we might want to make that more flexible in the future, but for
    * now, hardcode the file name
@@ -222,7 +224,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
   private String getFileName(ITestContext context) {
     return TESTNG_FAILED_XML;
   }
-  
+
   private static void ppp(String s) {
     System.out.println("[FailedReporter] " + s);
   }

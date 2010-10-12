@@ -6,7 +6,7 @@ import org.testng.TestNG;
 import org.testng.annotations.Test;
 
 public class FactoryTest {
-  
+
   @Test
   /**
    * In non-parallel mode, we should only have one thread id
@@ -31,7 +31,7 @@ public class FactoryTest {
   public void verifyFactoryParallelTests() {
     runTest("tests", 2);
   }
-  
+
   private void runTest(String parallelMode, int expectedThreadIdCount) {
     TestNG tng = new TestNG();
     tng.setVerbose(0);
@@ -41,21 +41,21 @@ public class FactoryTest {
     }
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
-    
+
     B.setUp();
     tng.run();
-    
+
     Assert.assertEquals(tla.getPassedTests().size(), 2);
     Assert.assertEquals(B.m_threadIds.size(), expectedThreadIdCount);
-    
-//    ppp("# TESTS RUN " + tla.getPassedTests().size() 
+
+//    ppp("# TESTS RUN " + tla.getPassedTests().size()
 //        + " ID:" + B.m_threadIds.size());
   }
-  
+
   private void ppp(String string) {
     System.out.println("[FactoryTest] " + string);
   }
-  
-  
+
+
 
 }

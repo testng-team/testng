@@ -11,7 +11,7 @@ import java.util.List;
 
 public class VerifyTest extends SimpleBaseTest {
   static List<String> m_methods = new ArrayList<String>();
-  
+
   @BeforeMethod
   public void before() {
     m_methods = new ArrayList<String>();
@@ -22,7 +22,7 @@ public class VerifyTest extends SimpleBaseTest {
     TestNG tng = create();
     tng.setTestClasses(new Class[] { test.testng317.ClassB.class, test.testng317.ClassA.class });
     tng.run();
-    
+
     System.out.println("Methods:" + m_methods.size());
   }
 }

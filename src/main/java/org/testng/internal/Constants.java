@@ -12,11 +12,11 @@ import java.util.Properties;
  * Constants used by TestNG
  *
  * @author Cedric Beust, May 2, 2004
- * 
+ *
  */
 public class Constants {
   private static final String NAMESPACE = "testng";
-  
+
 ////////  //
   // Properties
   //
@@ -29,43 +29,43 @@ public class Constants {
 //  public static final String PROP_JUNIT= NAMESPACE + "." + "junit";
 //  public static final String PROP_QUIET= NAMESPACE + "." + "quiet";
 //  public static final String PROP_GROUP= NAMESPACE + "." + "group";
-  
+
   private static final TestNGProperty[] COMMAND_LINE_PARAMETERS = {
     new TestNGProperty("-d", PROP_OUTPUT_DIR, "Directory where the result files will be created.", "test-output"),
   };
-  
+
   private static final Map<String, TestNGProperty> m_propertiesByName = Maps.newHashMap();
 
   static {
 //    for (int i = 0; i < PROPERTIES.length; i++) {
 //      m_propertiesByName.put(PROPERTIES[i].getName(), PROPERTIES[i]);
 //    }
-    for (int i = 0; i < COMMAND_LINE_PARAMETERS.length; i++) {
-      m_propertiesByName.put(COMMAND_LINE_PARAMETERS[i].getName(), COMMAND_LINE_PARAMETERS[i]);
+    for (TestNGProperty element : COMMAND_LINE_PARAMETERS) {
+      m_propertiesByName.put(element.getName(), element);
     }
   }
-  
+
   private static TestNGProperty getProperty(String propertyName) {
-    TestNGProperty result = (TestNGProperty) m_propertiesByName.get(propertyName);
+    TestNGProperty result = m_propertiesByName.get(propertyName);
     assert null != result : "Unknown property : " + propertyName;
-    
+
     return result;
   }
-  
+
   public static String getPropertyValue(Properties p, String propertyName) {
     TestNGProperty r= getProperty(propertyName);
     assert null != r : "Unknown property : " + propertyName;
-    
+
     String result = p.getProperty(r.getName());
-    
+
     return result;
   }
-  
+
   public static boolean getBooleanPropertyValue(Properties properties, String propertyName) {
     TestNGProperty p = getProperty(propertyName);
     String r = properties.getProperty(propertyName, p.getDefault());
     boolean result = "true".equalsIgnoreCase(r);
-  
+
     return Boolean.valueOf( result).booleanValue();
   }
 
@@ -73,7 +73,7 @@ public class Constants {
     TestNGProperty p = getProperty(propertyName);
     String r = properties.getProperty(propertyName, p.getDefault());
     int result = Integer.parseInt(r);
-  
+
     return result;
   }
 
@@ -87,10 +87,15 @@ public class Constants {
    * @return
    */
   public static String displayStatus(int status) {
-    if (ITestResult.SKIP == status) return "SKIP";
-    else if (ITestResult.SUCCESS == status) return "SUCCESS";
-    else if (ITestResult.FAILURE == status) return "FAILURE";
-    else return "UNKNOWN_STATUS";
+    if (ITestResult.SKIP == status) {
+      return "SKIP";
+    } else if (ITestResult.SUCCESS == status) {
+      return "SUCCESS";
+    } else if (ITestResult.FAILURE == status) {
+      return "FAILURE";
+    } else {
+      return "UNKNOWN_STATUS";
+    }
   }
 
 }

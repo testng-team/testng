@@ -62,8 +62,11 @@ public class JUnitReportReporter implements IReporter {
 
         boolean isError = ! (tr.getThrowable() instanceof AssertionError);
         if (tr.getStatus() != ITestResult.SUCCESS) {
-          if (isError) errors++;
-          else failures++;
+          if (isError) {
+            errors++;
+          } else {
+            failures++;
+          }
         }
         Properties p2 = new Properties();
         p2.setProperty("classname", cls.getName());
@@ -113,7 +116,9 @@ public class JUnitReportReporter implements IReporter {
           xsb.push("testcase", testTag.properties);
 
           Properties p = new Properties();
-          if (testTag.message != null) p.setProperty("message", testTag.message);
+          if (testTag.message != null) {
+            p.setProperty("message", testTag.message);
+          }
           p.setProperty("type", testTag.type);
           xsb.push(testTag.errorTag, p);
           xsb.addCDATA(testTag.stackTrace);
@@ -150,7 +155,9 @@ public class JUnitReportReporter implements IReporter {
           // out if it's this failure that caused the skip since (maybe by
           // seeing if the class of the configuration method is assignable to
           // the class of the test method, although that's not 100% fool proof
-          if (failure.getThrowable() != null) return failure.getThrowable();
+          if (failure.getThrowable() != null) {
+            return failure.getThrowable();
+          }
         }
       }
     }

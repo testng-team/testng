@@ -1,15 +1,15 @@
 package test;
 
+import org.testng.annotations.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.testng.annotations.Test;
-
 public class Test1 extends BaseTest {
-  
+
   @Test(groups = { "current" })
   public void includedGroups() {
     addClass("test.sample.Sample1");
@@ -43,8 +43,8 @@ public class Test1 extends BaseTest {
   };
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Failed", failed, getFailedTests());
-  }  
-  
+  }
+
   @Test
   public void groupsOfGroupsWithIndirections() {
     addClass("test.sample.Sample1");
@@ -67,7 +67,7 @@ public class Test1 extends BaseTest {
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Failed", failed, getFailedTests());
   }
-  
+
   @Test
   public void groupsOfGroupsWithCycle() {
     addClass("test.sample.Sample1");
@@ -82,7 +82,7 @@ public class Test1 extends BaseTest {
     };
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Failed", failed, getFailedTests());
-  }  
+  }
 
   @Test // (groups = { "one" })
   public void excludedGroups() {
@@ -99,8 +99,8 @@ public class Test1 extends BaseTest {
   };
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Failed", failed, getFailedTests());
-  }  
-  
+  }
+
   @Test
   public void regexp() {
     addClass("test.sample.Sample1");
@@ -114,8 +114,8 @@ public class Test1 extends BaseTest {
     };
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Failed", failed, getFailedTests());
-  }  
-  
+  }
+
   @Test(groups = { "currentold" })
   public void logger() {
     Logger logger = Logger.getLogger("");
@@ -127,7 +127,7 @@ public class Test1 extends BaseTest {
     }
     logger.setLevel(Level.SEVERE);
   }
-  
+
   static public void ppp(String s) {
     System.out.println("[Test1] " + s);
   }

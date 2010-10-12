@@ -7,7 +7,7 @@ import test.BaseTest;
 
 public class NonPublicClassTest extends BaseTest
 {
-  @Test(expectedExceptions = {TestNGException.class}, 
+  @Test(expectedExceptions = {TestNGException.class},
         expectedExceptionsMessageRegExp = "\\nAn error occurred while instantiating " +
         		"class ([\\w|\\.]*?)\\. Check to make sure it can be accessed/instantiated\\.")
   public void dontThrowNPEForNonPublicTestClass() {

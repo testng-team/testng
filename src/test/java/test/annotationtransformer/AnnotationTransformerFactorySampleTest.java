@@ -10,7 +10,7 @@ public class AnnotationTransformerFactorySampleTest {
         new Integer[] { 42 },
     };
   }
-  
+
   @Factory(dataProvider = "dp")
   public Object[] init(int n) {
     return new Object[] {

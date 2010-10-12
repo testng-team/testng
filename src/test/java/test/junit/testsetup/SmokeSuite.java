@@ -15,7 +15,7 @@ public class SmokeSuite extends LoggingTestSuite
 		TestSuite suite = new TestSuite( "Smoke Test Suite" );
 
 		suite.addTest(LayerATestSuite.suite());
-		
+
 		return suite;
 	}
 
@@ -23,7 +23,7 @@ public class SmokeSuite extends LoggingTestSuite
 //	{
 //		this("SmokeSuite");
 //	}
-	
+
 	public SmokeSuite( String name )
 	{
 		super( name );

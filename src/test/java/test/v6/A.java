@@ -18,30 +18,30 @@ public class A {
 
   @Test(groups = "1")
   public void fa1() {}
-  
+
   @Test public void fa3() {}
-  
+
   @BeforeGroups("1")
   public void beforeGroups() {}
-  
+
   @AfterGroups("1")
   public void afterGroups() {}
 
   @BeforeMethod
   public void beforeMethod() {}
-  
+
   @AfterMethod
   public void afterMethod() {}
-  
+
   @BeforeSuite
   public void beforeSuite() {}
-  
+
   @AfterSuite
   public void afterSuite() {}
-  
+
   @BeforeClass
   public void beforeClass() {}
-  
+
   @AfterClass
   public void afterClass() {}
 }

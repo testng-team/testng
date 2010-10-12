@@ -12,7 +12,7 @@ public class NestedFactoryTest {
   private float m_loadFactor = 0.4f;
 
   public class NestedFactory {
-    @Factory 
+    @Factory
     public Object[] createInstances() {
       return new NestedFactoryTest[] {
         new NestedFactoryTest(1, 0.1f),
@@ -20,14 +20,14 @@ public class NestedFactoryTest {
       };
     }
   };
-  
+
   private static int m_instanceCount = 0;
   public NestedFactoryTest() {
     m_instanceCount++;
   }
 
   public NestedFactoryTest(int capacity, float loadFactor) {
-    m_instanceCount++;    
+    m_instanceCount++;
    this.m_capacity=capacity;
    this.m_loadFactor=loadFactor;
   }
@@ -40,7 +40,7 @@ public class NestedFactoryTest {
     assertTrue((m_capacity == 1 && m_loadFactor == 0.1f) ||
         m_capacity == 10 && m_loadFactor == 0.5f);
   }
-  
+
   private static void ppp(String s) {
     System.out.println("[NestedFactoryTest] " + s);
   }

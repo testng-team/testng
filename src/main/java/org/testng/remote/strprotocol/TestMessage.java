@@ -5,7 +5,7 @@ import org.testng.ITestContext;
 
 /**
  * An <code>IStringMessage</code> implementation for test events.
- * 
+ *
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class TestMessage implements IStringMessage {
@@ -17,7 +17,7 @@ public class TestMessage implements IStringMessage {
   protected final int m_failedTestCount;
   protected final int m_skippedTestCount;
   protected final int m_successPercentageFailedTestCount;
-  
+
   TestMessage(final boolean isTestStart,
               final String suiteName,
               final String testName,
@@ -35,7 +35,7 @@ public class TestMessage implements IStringMessage {
     m_skippedTestCount = skippedCount;
     m_successPercentageFailedTestCount = percentageCount;
   }
-  
+
   public TestMessage(final ITestContext testContext, final boolean isTestStart) {
     this(isTestStart,
          testContext.getSuite().getName(),
@@ -46,17 +46,18 @@ public class TestMessage implements IStringMessage {
          testContext.getSkippedTests().size(),
          testContext.getFailedButWithinSuccessPercentageTests().size());
   }
-  
+
   public boolean isMessageOnStart() {
     return m_testStart;
   }
-  
+
   /**
    * @see net.noco.testng.runner.IStringMessage#getMessageAsString()
    */
+  @Override
   public String getMessageAsString() {
     StringBuffer buf = new StringBuffer();
-    
+
     buf.append(m_testStart ? MessageHelper.TEST_START : MessageHelper.TEST_FINISH)
         .append(MessageHelper.DELIMITER)
         .append(m_suiteName)
@@ -73,18 +74,18 @@ public class TestMessage implements IStringMessage {
         .append(MessageHelper.DELIMITER)
         .append(m_successPercentageFailedTestCount)
         ;
-    
+
     return buf.toString();
   }
 
   public String getSuiteName() {
     return m_suiteName;
   }
-  
+
   public String getTestName() {
     return m_testName;
   }
-  
+
   public boolean isTestStart() {
     return m_testStart;
   }

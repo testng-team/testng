@@ -5,7 +5,7 @@ package org.testng;
  * Listener for test suites.
  *
  * @author Cedric Beust, Aug 6, 2004
- * 
+ *
  */
 public interface ISuiteListener extends ITestNGListener {
   /**
@@ -18,5 +18,5 @@ public interface ISuiteListener extends ITestNGListener {
    * the test suites.
    */
   public void onFinish(ISuite suite);
-  
+
 }

@@ -33,17 +33,17 @@ public class ConfigurationGroupBothSampleTest {
     addToList(3);
     ppp("AFTER()");
   }
-  
+
   @DataProvider(name="MyData")
   public Object[][] input(){
     return new Object[][]{ {1,1}, {2,2}, {3,3}};
   }
-  
+
   private void ppp(String string) {
     if (false) {
       System.out.println("[A] " + string + " on Thread:" + Thread.currentThread());
     }
   }
-  
+
 
 }

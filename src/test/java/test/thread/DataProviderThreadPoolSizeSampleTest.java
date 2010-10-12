@@ -4,21 +4,18 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class DataProviderThreadPoolSizeSampleTest extends BaseThreadTest {
   @BeforeClass(alwaysRun = true)
   public void setUp() {
     log(getClass().getName(), "Init log ids");
     initThreadLog();
   }
-  
+
   @DataProvider(parallel = true)
   public Object[][] parallelDataProvider() {
     return createArray();
   }
-  
+
   @DataProvider
   public Object[][] sequentialDataProvider() {
     return createArray();
@@ -63,11 +60,11 @@ public class DataProviderThreadPoolSizeSampleTest extends BaseThreadTest {
     log(getClass().getName(), "Parallel");
     logThread(n);
   }
-  
+
 //  @Test(dependsOnMethods = {"f1"})
 //  public void verify() {
 //    int expected = 3;
-//    Assert.assertEquals(m_threadIds.size(), expected,  
+//    Assert.assertEquals(m_threadIds.size(), expected,
 //        "Should have run on " + expected + " threads but ran on " + m_threadIds.size());
 //  }
 }

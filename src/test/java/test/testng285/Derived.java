@@ -3,7 +3,7 @@ package test.testng285;
 import org.testng.annotations.Test;
 
 public class Derived extends BugBase {
-  
+
   @Test
   public void f1() {
     log(Thread.currentThread().getId());

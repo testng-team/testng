@@ -37,7 +37,7 @@ public class FactoryOrderSampleTest {
   public String toString() {
     return "[FactoryOrderSampleTest " + value + "]";
   }
-  
+
   public int getValue() {
     return value;
   }

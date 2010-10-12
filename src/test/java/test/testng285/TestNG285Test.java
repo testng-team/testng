@@ -13,7 +13,7 @@ public class TestNG285Test extends BaseTest {
     addClass("test.testng285.Derived");
     setParallel(XmlSuite.PARALLEL_METHODS);
     setThreadCount(5);
-    
+
     run();
 
     Assert.assertEquals(BugBase.m_threadIds.size(), 1);

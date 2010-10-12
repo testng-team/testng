@@ -6,6 +6,6 @@ import org.testng.annotations.Test;
 public class MChildCaptureTest extends MBaseCapture {
 
   public void f() {
-    
+
   }
 }

@@ -4,7 +4,7 @@ import org.testng.annotations.Test;
 
 
 /**
- * This class/interface 
+ * This class/interface
  */
 public class InnexistentDataProvider {
   @Test(dataProvider="doesnotexist")

@@ -1,23 +1,23 @@
 package test.dependent;
 
-import java.io.ByteArrayInputStream;
-
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.Parser;
+
+import java.io.ByteArrayInputStream;
 
 public class MissingGroupSampleTest {
 
   @Test(dependsOnGroups = {"missing-group"})
   public void shouldBeSkipped() {
-    
+
   }
 
   @Test(dependsOnGroups = {"missing-group"}, ignoreMissingDependencies=true)
   public void shouldNotBeSkipped() {
-    
+
   }
-  
+
   public static void main(String[] args) throws Exception {
     TestNG tng = new TestNG();
     String xml = "<suite name=\"dgf\" verbose=\"10\"><test name=\"dgf\"><classes><class name=\"test.dependent.MissingGroupSampleTest\"></class></classes></test></suite>";

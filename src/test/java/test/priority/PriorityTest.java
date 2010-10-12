@@ -4,9 +4,9 @@ import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-
 import test.SimpleBaseTest;
+
+import java.util.Arrays;
 
 public class PriorityTest extends SimpleBaseTest {
 

@@ -13,10 +13,10 @@ public class ConfigurationInheritGroupsSampleTest {
     m_ok = true;
   }
 
-  public void test1() { 
+  public void test1() {
     Assert.assertTrue(m_ok);
   }
-  
+
   private void ppp(String s) {
     System.out.println("[ConfigurationInheritGroupsSampleTest] " + s);
   }

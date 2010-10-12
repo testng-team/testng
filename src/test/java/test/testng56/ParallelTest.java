@@ -6,7 +6,7 @@ import org.testng.annotations.Test;
 
 
 /**
- * This class/interface 
+ * This class/interface
  */
 public class ParallelTest {
   @BeforeClass
@@ -42,5 +42,5 @@ public class ParallelTest {
   @Test
   public void test5() {
     System.out.println(Thread.currentThread().getId() + ":test5");
-  } 
+  }
 }

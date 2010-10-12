@@ -1,16 +1,16 @@
 package org.testng;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-
 import org.testng.annotations.Test;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.Sets;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+
 
 /**
- * This class/interface 
+ * This class/interface
  */
 public class AssertTest {
   @Test
@@ -19,14 +19,14 @@ public class AssertTest {
     Object[] actual= null;
     Assert.assertEquals(actual, expected);
   }
-  
+
   @Test
   public void nullObjectArrayAssertNoOrder() {
     Object[] expected= null;
     Object[] actual= null;
     Assert.assertEqualsNoOrder(actual, expected);
   }
-  
+
   @Test
   public void nullCollectionAssertEquals() {
     Collection expected = null;

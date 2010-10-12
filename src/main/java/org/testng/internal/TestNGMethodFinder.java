@@ -33,7 +33,7 @@ public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
   private static final int AFTER_TEST_METHOD = 8;
   private static final int BEFORE_GROUPS = 9;
   private static final int AFTER_GROUPS = 10;
-    
+
   private RunInfo m_runInfo = null;
   private IAnnotationFinder m_annotationFinder = null;
 
@@ -44,54 +44,65 @@ public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
     m_annotationFinder = annotationFinder;
   }
 
+  @Override
   public ITestNGMethod[] getTestMethods(Class clazz, XmlTest xmlTest) {
     return AnnotationHelper.findMethodsWithAnnotation(
         clazz, ITestAnnotation.class, m_annotationFinder, xmlTest);
   }
 
+  @Override
   public ITestNGMethod[] getBeforeClassMethods(Class cls) {
     return findConfiguration(cls, BEFORE_CLASS);
   }
 
+  @Override
   public ITestNGMethod[] getAfterClassMethods(Class cls) {
     return findConfiguration(cls, AFTER_CLASS);
   }
 
+  @Override
   public ITestNGMethod[] getBeforeTestMethods(Class cls) {
     return findConfiguration(cls, BEFORE_TEST_METHOD);
   }
 
+  @Override
   public ITestNGMethod[] getAfterTestMethods(Class cls) {
     return findConfiguration(cls, AFTER_TEST_METHOD);
   }
 
+  @Override
   public ITestNGMethod[] getBeforeSuiteMethods(Class cls) {
     return findConfiguration(cls, BEFORE_SUITE);
   }
 
+  @Override
   public ITestNGMethod[] getAfterSuiteMethods(Class cls) {
     return findConfiguration(cls, AFTER_SUITE);
   }
 
+  @Override
   public ITestNGMethod[] getBeforeTestConfigurationMethods(Class clazz) {
     return findConfiguration(clazz, BEFORE_TEST);
   }
 
+  @Override
   public ITestNGMethod[] getAfterTestConfigurationMethods(Class clazz) {
     return findConfiguration(clazz, AFTER_TEST);
   }
-  
+
+  @Override
   public ITestNGMethod[] getBeforeGroupsConfigurationMethods(Class clazz) {
-    return findConfiguration(clazz, BEFORE_GROUPS);    
+    return findConfiguration(clazz, BEFORE_GROUPS);
   }
 
+  @Override
   public ITestNGMethod[] getAfterGroupsConfigurationMethods(Class clazz) {
-    return findConfiguration(clazz, AFTER_GROUPS);        
+    return findConfiguration(clazz, AFTER_GROUPS);
   }
 
   private ITestNGMethod[] findConfiguration(final Class clazz, final int configurationType) {
     List<ITestNGMethod> vResult = Lists.newArrayList();
-    
+
     Set<Method> methods = ClassHelper.getAvailableMethods(clazz);
 
     for (Method m : methods) {
@@ -100,7 +111,7 @@ public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
       if (null == configuration) {
         continue;
       }
-      
+
       boolean create = false;
       boolean isBeforeSuite = false;
       boolean isAfterSuite = false;
@@ -112,7 +123,7 @@ public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
       boolean isAfterTestMethod = false;
       String[] beforeGroups = null;
       String[] afterGroups = null;
-      
+
       switch(configurationType) {
         case BEFORE_SUITE:
           create = configuration.getBeforeSuite();
@@ -157,18 +168,18 @@ public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
           isBeforeTestMethod = true;
           break;
       }
-    
+
       if(create) {
-        addConfigurationMethod(clazz, 
-                               vResult, 
-                               m, 
-                               isBeforeSuite, 
-                               isAfterSuite, 
-                               isBeforeTest, 
-                               isAfterTest, 
-                               isBeforeClass, 
-                               isAfterClass, 
-                               isBeforeTestMethod, 
+        addConfigurationMethod(clazz,
+                               vResult,
+                               m,
+                               isBeforeSuite,
+                               isAfterSuite,
+                               isBeforeTest,
+                               isAfterTest,
+                               isBeforeClass,
+                               isAfterClass,
+                               isBeforeTestMethod,
                                isAfterTestMethod,
                                beforeGroups,
                                afterGroups);
@@ -199,7 +210,7 @@ public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
                                       boolean isBeforeTestMethod,
                                       boolean isAfterTestMethod,
                                       String[] beforeGroups,
-                                      String[] afterGroups) 
+                                      String[] afterGroups)
   {
     if(method.getDeclaringClass().isAssignableFrom(clazz)) {
       ITestNGMethod confMethod = new ConfigurationMethod(method,
@@ -216,6 +227,6 @@ public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
                                                          afterGroups);
       results.add(confMethod);
     }
-  }  
+  }
 
 }

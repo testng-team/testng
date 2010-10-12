@@ -1,6 +1,8 @@
 package org.testng.remote.strprotocol;
 
 
+import org.testng.TestNGException;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -9,8 +11,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
-
-import org.testng.TestNGException;
 
 /**
  * String based socket based communication.
@@ -137,7 +137,7 @@ public class StringMessageSenderHelper {
   public void sendMessage(IStringMessage message) {
     sendMessage(message.getMessageAsString());
   }
-  
+
   private void sendMessage(String msg) {
     if(null == m_outStream) {
       ppp("WARNING the outputstream is null. Cannot send message.");
@@ -147,7 +147,7 @@ public class StringMessageSenderHelper {
 
     if(m_debugMode) {
       ppp(msg);
-  
+
       StringBuffer buf = new StringBuffer();
       for(int i = 0; i < msg.length(); i++) {
         if('\u0001' == msg.charAt(i)) {
@@ -166,7 +166,7 @@ public class StringMessageSenderHelper {
       m_outStream.flush();
       try {
           lock.wait();
-      } 
+      }
       catch(InterruptedException e) { }
     }
   }
@@ -174,7 +174,7 @@ public class StringMessageSenderHelper {
   private static void ppp(String msg) {
 //    System.out.println("[StringMessageSenderHelper]: " + msg); //$NON-NLS-1$
   }
-  
+
   /**
    * Reader thread that processes messages from the client.
    */

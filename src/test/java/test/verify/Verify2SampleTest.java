@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 
 /**
  * Illustrate the implementation of a @Verify/@Verifier test.
- * 
+ *
  * One method should be annotated with @Verifier and then each test method
  * annotated with @Verify will be followed with a call to the @Verifier
  * method.
@@ -20,13 +20,13 @@ public class Verify2SampleTest implements ITestNGListenerFactory {
   @Verify
   @Test
   public void f1() {
-    log("f1");  
+    log("f1");
   }
 
   @Verify
   @Test
   public void f2() {
-    log("f2");  
+    log("f2");
   }
 
   @Verifier
@@ -41,6 +41,7 @@ public class Verify2SampleTest implements ITestNGListenerFactory {
     }
   }
 
+  @Override
   public ITestNGListener createListener(Class<? extends ITestNGListener> listenerClass) {
     log("Creating a listener of type " + listenerClass);
     return null;

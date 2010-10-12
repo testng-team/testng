@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 /**
  * Test that if an individual method is specified on testng.xml, the @Configuration
  * method still runs.
- * 
+ *
  * Created on Aug 1, 2005
  * @author cbeust
  */

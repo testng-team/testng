@@ -14,15 +14,15 @@ public class Test1 {
     assertTrue(m_count < 1, "FAILING");
     m_count++;
   }
-  
+
   @AfterTest
   public void cleanUp() {
     m_count = 0;
   }
 
-  
+
   private static void ppp(String s) {
     System.out.println("[Test1] " + s);
   }
-  
+
 }

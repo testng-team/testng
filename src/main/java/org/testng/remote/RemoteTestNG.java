@@ -1,9 +1,6 @@
 package org.testng.remote;
 
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterException;
-
 import org.testng.CommandLineArgs;
 import org.testng.IInvokedMethodListener;
 import org.testng.ISuite;
@@ -21,6 +18,9 @@ import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 
 import java.util.List;
 

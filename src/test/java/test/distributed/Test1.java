@@ -7,7 +7,7 @@ public class Test1 {
   public void f1() {
 //    ppp("f1");
   }
-  
+
   private void ppp(String s) {
     System.out.println("[Test1] " + s);
   }

@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 
 /**
- * This class/interface 
+ * This class/interface
  */
 public interface IAtomicInteger extends Serializable{
   /**
@@ -12,10 +12,10 @@ public interface IAtomicInteger extends Serializable{
    * @return the current value
    */
   int get();
-  
+
   /**
-   * Atomically increment by one the current value. 
-   * 
+   * Atomically increment by one the current value.
+   *
    * @return the updated value
    */
   int incrementAndGet();

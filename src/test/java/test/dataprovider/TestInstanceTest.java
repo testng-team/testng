@@ -8,7 +8,7 @@ import org.testng.annotations.TestInstance;
 import java.lang.reflect.Method;
 
 public class TestInstanceTest {
-  
+
   private int m_n;
   private static int m_instanceCount = 0;
 
@@ -32,7 +32,8 @@ public class TestInstanceTest {
   @Test(dataProvider = "dp")
   public void f(int o) {
   }
-  
+
+  @Override
   public String toString() {
     return "[A n:" + m_n + "]";
   }

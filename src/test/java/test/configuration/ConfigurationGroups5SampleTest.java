@@ -6,7 +6,7 @@ import org.testng.annotations.Test;
 
 /**
  * afterGroups test with more than one group
- * 
+ *
  * @author cbeust
  * @date Mar 7, 2006
  */
@@ -21,18 +21,22 @@ public class ConfigurationGroups5SampleTest {
   public void f() {
     log("f");
   }
-  
+
   @Test(groups = "cg5-1")
   public void run1() {
     log("run1");
-    if (m_afterCount == 0) Assert.assertFalse(m_after);
+    if (m_afterCount == 0) {
+      Assert.assertFalse(m_after);
+    }
     m_run1 = true;
   }
 
   @Test(groups = "cg5-2")
   public void run2() {
     log("run2");
-    if (m_afterCount == 0) Assert.assertFalse(m_after);
+    if (m_afterCount == 0) {
+      Assert.assertFalse(m_after);
+    }
     m_run2 = true;
   }
 
@@ -41,10 +45,12 @@ public class ConfigurationGroups5SampleTest {
     log("after");
     m_afterCount++;
     Assert.assertTrue(m_run1 || m_run2);
-    if (m_afterCount == 0) Assert.assertFalse(m_after);
+    if (m_afterCount == 0) {
+      Assert.assertFalse(m_after);
+    }
     m_after = true;
   }
-  
+
   @Test(dependsOnGroups = { "cg5-1", "cg5-2" })
   public void verify() {
     log("verify");
@@ -53,7 +59,7 @@ public class ConfigurationGroups5SampleTest {
     Assert.assertTrue(m_after, "after1() wasn't run");
     Assert.assertEquals(2, m_afterCount);
   }
-  
+
   private void log(String string) {
     ppp(string);
   }

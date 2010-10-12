@@ -18,7 +18,7 @@ public class TestAfter {
     tng.run();
     Assert.assertEquals(BaseAfter.m_afterCount, 1);
   }
-  
+
   @AfterTest
   public void afterTest() {
     BaseAfter.m_afterCount = 0;

@@ -5,11 +5,11 @@ import org.testng.annotations.Test;
 import test.BaseTest;
 
 public class MissingMethodTest extends BaseTest {
-  
+
   @Test
-  public void verifyThatExceptionIsThrownIfMissingMethod() {    
+  public void verifyThatExceptionIsThrownIfMissingMethod() {
     addClass("test.dependent.MissingMethodSampleTest");
-    
+
     run();
     String[] passed = {
         "explicitlyIgnoreMissingMethod",
@@ -21,7 +21,7 @@ public class MissingMethodTest extends BaseTest {
     };
     verifyTests("Failed", failed, getFailedTests());
     verifyTests("Passed", passed, getPassedTests());
-    verifyTests("Skipped", skipped, getSkippedTests());    
+    verifyTests("Skipped", skipped, getSkippedTests());
 
   }
 

@@ -1,5 +1,7 @@
 package test.configurationfailurepolicy;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.ITestContext;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -9,8 +11,6 @@ import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 
 import testhelper.OutputDirectoryPatch;
-
-import static org.testng.Assert.*;
 
 public class FailurePolicyTest {
 
@@ -36,7 +36,7 @@ public class FailurePolicyTest {
     };
     return data;
   }
-    
+
   @Test( dataProvider = "dp" )
   public void confFailureTest(Class[] classesUnderTest, int configurationFailures, int configurationSkips, int skippedTests) {
 
@@ -55,25 +55,25 @@ public class FailurePolicyTest {
   @Test
   public void commandLineTest_policyAsSkip() {
     String[] argv = new String[] { "-log", "0", "-d", OutputDirectoryPatch.getOutputDirectory(),
-            "-configfailurepolicy", "skip", 
+            "-configfailurepolicy", "skip",
             "-testclass", "test.configurationfailurepolicy.ClassWithFailedBeforeMethodAndMultipleTests" };
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG.privateMain(argv, tla);
 
     verify(tla, 1, 1, 2);
   }
-  
+
   @Test
   public void commandLineTest_policyAsContinue() {
     String[] argv = new String[] { "-log", "0", "-d", OutputDirectoryPatch.getOutputDirectory(),
-            "-configfailurepolicy", "continue", 
+            "-configfailurepolicy", "continue",
             "-testclass", "test.configurationfailurepolicy.ClassWithFailedBeforeMethodAndMultipleTests" };
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG.privateMain(argv, tla);
 
     verify(tla, 2, 0, 2);
   }
-  
+
   @Test
   public void commandLineTestWithXMLFile_policyAsSkip() {
     String[] argv = new String[] { "-log", "0", "-d", OutputDirectoryPatch.getOutputDirectory(),
@@ -93,11 +93,11 @@ public class FailurePolicyTest {
 
     verify(tla, 2, 0, 2);
   }
-  
+
   private void verify( TestListenerAdapter tla, int configurationFailures, int configurationSkips, int skippedTests ) {
       assertEquals(tla.getConfigurationFailures().size(), configurationFailures, "wrong number of configuration failures");
       assertEquals(tla.getConfigurationSkips().size(), configurationSkips, "wrong number of configuration skips");
-      assertEquals(tla.getSkippedTests().size(), skippedTests, "wrong number of skipped tests");      
+      assertEquals(tla.getSkippedTests().size(), skippedTests, "wrong number of skipped tests");
   }
-  
+
 }

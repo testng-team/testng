@@ -13,6 +13,6 @@ public interface IExecutor {
    boolean awaitTermination(long timeout);
 
    void stopNow();
-   
+
    StackTraceElement[][] getStackTraces();
 }

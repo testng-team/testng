@@ -1,9 +1,9 @@
 package test.configuration;
 
-import java.util.Arrays;
-
 import org.testng.Assert;
 import org.testng.annotations.AfterSuite;
+
+import java.util.Arrays;
 
 public class VerifySuiteTest {
 

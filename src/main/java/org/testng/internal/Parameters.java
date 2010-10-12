@@ -28,23 +28,23 @@ import java.util.Set;
 /**
  * Methods that bind parameters declared in testng.xml to actual values
  * used to invoke methods.
- * 
+ *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
- *  
+ *
  * @@ANNOTATIONS@@
  */
 public class Parameters {
   public static final String NULL_VALUE= "null";
-  
+
   /**
    * Creates the parameters needed for constructing a test class instance.
    * @param finder TODO
    */
-  public static Object[] createInstantiationParameters(Constructor ctor, 
-      String methodAnnotation, 
-      IAnnotationFinder finder, 
-      String[] parameterNames, 
+  public static Object[] createInstantiationParameters(Constructor ctor,
+      String methodAnnotation,
+      IAnnotationFinder finder,
+      String[] parameterNames,
       Map<String, String> params, XmlSuite xmlSuite)
   {
     return createParameters(ctor.toString(), ctor.getParameterTypes(),
@@ -53,28 +53,28 @@ public class Parameters {
 
   /**
    * Creates the parameters needed for the specified <tt>@Configuration</tt> <code>Method</code>.
-   * 
+   *
    * @param m the configuraton method
-   * @param params 
+   * @param params
    * @param currentTestMethod the current @Test method or <code>null</code> if no @Test is available (this is not
    *    only in case the configuration method is a @Before/@AfterMethod
    * @param finder the annotation finder
    * @param xmlSuite
    * @return
    */
-  public static Object[] createConfigurationParameters(Method m, 
-      Map<String, String> params, 
+  public static Object[] createConfigurationParameters(Method m,
+      Map<String, String> params,
       Object[] parameterValues,
       ITestNGMethod currentTestMethod,
-      IAnnotationFinder finder, 
+      IAnnotationFinder finder,
       XmlSuite xmlSuite,
       ITestContext ctx,
-      ITestResult testResult) 
+      ITestResult testResult)
   {
-    Method currentTestMeth= currentTestMethod != null ? 
+    Method currentTestMeth= currentTestMethod != null ?
         currentTestMethod.getMethod() : null;
     return createParameters(m,
-        new MethodParameters(params, parameterValues, currentTestMeth, ctx, testResult), 
+        new MethodParameters(params, parameterValues, currentTestMeth, ctx, testResult),
         finder, xmlSuite, IConfigurationAnnotation.class, "@Configuration");
   }
 
@@ -117,9 +117,9 @@ public class Parameters {
     Object[] result = new Object[0];
     if(parameterTypes.length > 0) {
       List<Object> vResult = Lists.newArrayList();
-  
+
       checkParameterTypes(methodName, parameterTypes, methodAnnotation, parameterNames);
-  
+
       for(int i = 0, j = 0; i < parameterTypes.length; i++) {
         Object inject = getInjectedParameter(parameterTypes[i], params.currentTestMethod,
             params.context, params.testResult);
@@ -139,47 +139,54 @@ public class Parameters {
                 value = optionalValues[i];
               }
               if (null == value) {
-              throw new TestNGException("Parameter '" + p + "' is required by " 
+              throw new TestNGException("Parameter '" + p + "' is required by "
                   + methodAnnotation
-                  + " on method " 
+                  + " on method "
                   + methodName
                   + "\nbut has not been marked @Optional or defined "
                   + (xmlSuite.getFileName() != null ? "in "
                   + xmlSuite.getFileName() : ""));
               }
             }
-              
+
             vResult.add(convertType(parameterTypes[i], value, p));
             j++;
           }
         }
       }
-            
+
       result = vResult.toArray(new Object[vResult.size()]);
     }
-  
+
     return result;
   }
 
   // FIXME
-  private static void checkParameterTypes(String methodName, 
-      Class[] parameterTypes, String methodAnnotation, String[] parameterNames) 
+  private static void checkParameterTypes(String methodName,
+      Class[] parameterTypes, String methodAnnotation, String[] parameterNames)
   {
     int totalLength = parameterTypes.length;
-    Set<Class> injectedTypes = new HashSet<Class>() {{
+    Set<Class> injectedTypes = new HashSet<Class>() {/**
+       *
+       */
+      private static final long serialVersionUID = -5324894581793435812L;
+
+    {
       add(ITestContext.class);
       add(ITestResult.class);
       add(XmlTest.class);
       add(Method.class);
       add(Object[].class);
     }};
-    for (int i = 0; i < parameterTypes.length; i++) {
-      if (injectedTypes.contains(parameterTypes[i])) totalLength--;
+    for (Class parameterType : parameterTypes) {
+      if (injectedTypes.contains(parameterType)) {
+        totalLength--;
+      }
     }
 
     if (parameterNames.length != totalLength) {
-      throw new TestNGException( "Method " + methodName + " requires " 
-          + parameterTypes.length + " parameters but " 
+      throw new TestNGException( "Method " + methodName + " requires "
+          + parameterTypes.length + " parameters but "
           + parameterNames.length
           + " were supplied in the "
           + methodAnnotation
@@ -190,35 +197,35 @@ public class Parameters {
   //TODO: Cosmin - making this public is not the best solution
   public static Object convertType(Class type, String value, String paramName) {
     Object result = null;
-    
+
     if(NULL_VALUE.equals(value.toLowerCase())) {
       if(type.isPrimitive()) {
         Utils.log("Parameters", 2, "Attempt to pass null value to primitive type parameter '" + paramName + "'");
       }
-      
+
       return null; // null value must be used
     }
-    
+
     if(type == String.class) {
       result = value;
-    } 
+    }
     else if(type == int.class || type == Integer.class) {
       result = Integer.valueOf(Integer.parseInt(value));
     }
     else if(type == boolean.class || type == Boolean.class) {
-      result = Boolean.valueOf(value);          
+      result = Boolean.valueOf(value);
     }
     else if(type == byte.class || type == Byte.class) {
-      result = Byte.valueOf(Byte.parseByte(value));                    
+      result = Byte.valueOf(Byte.parseByte(value));
     }
     else if(type == char.class || type == Character.class) {
-      result = Character.valueOf(value.charAt(0));                              
+      result = Character.valueOf(value.charAt(0));
     }
     else if(type == double.class || type == Double.class) {
       result = Double.valueOf(Double.parseDouble(value));
     }
     else if(type == float.class || type == Float.class) {
-      result = Float.valueOf(Float.parseFloat(value));          
+      result = Float.valueOf(Float.parseFloat(value));
     }
     else if(type == long.class || type == Long.class) {
       result = Long.valueOf(Long.parseLong(value));
@@ -229,16 +236,16 @@ public class Parameters {
     else {
       assert false : "Unsupported type parameter : " + type;
     }
-    
+
     return result;
   }
-  
+
   private static DataProviderHolder findDataProvider(Class clazz, Method m,
       IAnnotationFinder finder) {
     DataProviderHolder result = null;
     String dataProviderName = null;
     Class dataProviderClass = null;
-    
+
     ITestAnnotation annotation = AnnotationHelper.findTest(finder, m);
     if (annotation == null) {
       annotation = AnnotationHelper.findTest(finder, clazz);
@@ -247,7 +254,7 @@ public class Parameters {
       dataProviderName = annotation.getDataProvider();
       dataProviderClass = annotation.getDataProviderClass();
     }
-    
+
     if (dataProviderName == null) {
       IFactoryAnnotation factory = AnnotationHelper.findFactory(finder, m);
       if (factory != null) {
@@ -255,25 +262,25 @@ public class Parameters {
         dataProviderClass = null;
       }
     }
-    
+
     if (null != dataProviderName && ! "".equals(dataProviderName)) {
       result = findDataProvider(clazz, finder, dataProviderName, dataProviderClass);
-      
+
       if(null == result) {
-        throw new TestNGException("Method " + m + " requires a @DataProvider named : " 
-            + dataProviderName + (dataProviderClass != null ? " in class " + dataProviderClass.getName() : "") 
+        throw new TestNGException("Method " + m + " requires a @DataProvider named : "
+            + dataProviderName + (dataProviderClass != null ? " in class " + dataProviderClass.getName() : "")
             );
       }
     }
 
     return result;
   }
-  
+
   /**
    * Find a method that has a @DataProvider(name=name)
    */
   private static DataProviderHolder findDataProvider(Class cls, IAnnotationFinder finder,
-      String name, Class dataProviderClass) 
+      String name, Class dataProviderClass)
   {
     boolean shouldBeStatic = false;
     if (dataProviderClass != null) {
@@ -286,22 +293,22 @@ public class Parameters {
           finder.findAnnotation(m, IDataProviderAnnotation.class);
       if (null != dp && (name.equals(dp.getName()) || name.equals(m.getName()))) {
         if (shouldBeStatic && (m.getModifiers() & Modifier.STATIC) == 0) {
-          throw new TestNGException("DataProvider should be static: " + m); 
+          throw new TestNGException("DataProvider should be static: " + m);
         }
-        
+
         return new DataProviderHolder(dp, m);
       }
     }
-    
+
     return null;
   }
 
   @SuppressWarnings({"deprecation"})
   private static Object[] createParameters(Method m, MethodParameters params,
-      IAnnotationFinder finder, XmlSuite xmlSuite, Class annotationClass, String atName) 
+      IAnnotationFinder finder, XmlSuite xmlSuite, Class annotationClass, String atName)
   {
     List<Object> result = Lists.newArrayList();
-    
+
     Object[] extraParameters = new Object[0];
     //
     // Try to find an @Parameters annotation
@@ -310,62 +317,61 @@ public class Parameters {
     Class<?>[] types = m.getParameterTypes();
     if(null != annotation) {
       String[] parameterNames = annotation.getValue();
-      extraParameters = createParameters(m.getName(), types, 
+      extraParameters = createParameters(m.getName(), types,
           finder.findOptionalValues(m), atName, finder, parameterNames, params, xmlSuite);
-    }  
-    
+    }
+
     //
     // Else, use the deprecated syntax
     //
-    else {    
+    else {
       IParameterizable a = (IParameterizable) finder.findAnnotation(m, annotationClass);
       if(null != a && a.getParameters().length > 0) {
         String[] parameterNames = a.getParameters();
-        extraParameters = createParameters(m.getName(), types, 
+        extraParameters = createParameters(m.getName(), types,
             finder.findOptionalValues(m), atName, finder, parameterNames, params, xmlSuite);
       }
       else {
-        extraParameters = createParameters(m.getName(), types, 
+        extraParameters = createParameters(m.getName(), types,
             finder.findOptionalValues(m), atName, finder, new String[0], params, xmlSuite);
       }
     }
-    
+
     // If the method declared an Object[] parameter and we have parameter values, inject them
-    for (int i = 0; i < types.length; i++) {
-        Class<?> type = types[i];
+    for (Class<?> type : types) {
         if (Object[].class.equals(type)) {
             result.add(params.parameterValues);
         }
     }
-    
+
     //
     // Add the extra parameters we found
     //
     for (Object p : extraParameters) {
       result.add(p);
     }
-    
+
     return result.toArray(new Object[result.size()]);
   }
-  
+
   /**
    * If the method has parameters, fill them in.  Either by using a @DataProvider
    * if any was provided, or by looking up <parameters> in testng.xml
    * @return An Iterator over the values for each parameter of this
    * method.
    */
-  public static ParameterHolder handleParameters(ITestNGMethod testMethod, 
+  public static ParameterHolder handleParameters(ITestNGMethod testMethod,
       Map<String, String> allParameterNames,
       Object instance,
-      MethodParameters methodParams, 
-      XmlSuite xmlSuite, 
+      MethodParameters methodParams,
+      XmlSuite xmlSuite,
       IAnnotationFinder annotationFinder,
       Object fedInstance)
   {
     ParameterHolder result;
 
     Iterator<Object[]> parameters = null;
-    
+
     //
     // Do we have a @DataProvider?  If yes, then we have several
     // sets of parameters for this method
@@ -376,7 +382,7 @@ public class Parameters {
 
     if (null != dataProviderHolder) {
       int parameterCount = testMethod.getMethod().getParameterTypes().length;
-  
+
       for (int i = 0; i < parameterCount; i++) {
         String n = "param" + i;
         allParameterNames.put(n, n);
@@ -384,14 +390,14 @@ public class Parameters {
 
       parameters  = MethodInvocationHelper.invokeDataProvider(
           instance, /* a test instance or null if the dataprovider is static*/
-          dataProviderHolder.method, 
+          dataProviderHolder.method,
           testMethod,
           methodParams.context,
           fedInstance,
           annotationFinder);
 
       Iterator<Object[]> filteredParameters = filterParameters(parameters,
-          testMethod.getInvocationNumbers()); 
+          testMethod.getInvocationNumbers());
 
       result = new ParameterHolder(filteredParameters, ParameterHolder.ORIGIN_DATA_PROVIDER,
           dataProviderHolder);
@@ -403,9 +409,9 @@ public class Parameters {
       allParameterNames.putAll(methodParams.xmlParameters);
       // Create an Object[][] containing just one row of parameters
       Object[][] allParameterValuesArray = new Object[1][];
-      allParameterValuesArray[0] = createParameters(testMethod.getMethod(), 
+      allParameterValuesArray[0] = createParameters(testMethod.getMethod(),
           methodParams, annotationFinder, xmlSuite, ITestAnnotation.class, "@Test");
-      
+
       // Mark that this method needs to have at least a certain
       // number of invocations (needed later to call AfterGroups
       // at the right time).
@@ -414,11 +420,11 @@ public class Parameters {
       parameters  = MethodHelper.createArrayIterator(allParameterValuesArray);
 
       result = new ParameterHolder(parameters,
-          allParameterValuesArray.length == 0 
+          allParameterValuesArray.length == 0
               ? ParameterHolder.ORIGIN_DATA_PROVIDER : ParameterHolder.ORIGIN_XML,
           dataProviderHolder);
     }
-    
+
     return result;
   }
 
@@ -435,7 +441,9 @@ public class Parameters {
       int i = 0;
       while (parameters.hasNext()) {
         Object[] next = parameters.next();
-        if (list.contains(i)) result.add(next);
+        if (list.contains(i)) {
+          result.add(next);
+        }
         i++;
       }
       return new ArrayIterator(result.toArray(new Object[list.size()][]));
@@ -453,15 +461,15 @@ public class Parameters {
     private final ITestContext context;
     private Object[] parameterValues;
     public ITestResult testResult;
-    
+
     public MethodParameters(Map<String, String> params) {
       this(params, null, null, null, null);
     }
-    
+
     public MethodParameters(Map<String, String> params, Method m) {
       this(params, null, m, null, null);
     }
-    
+
     public MethodParameters(Map<String, String> params, Object[] pv, Method m, ITestContext ctx,
         ITestResult tr) {
       xmlParameters = params;

@@ -24,7 +24,7 @@ import org.testng.annotations.Test;
     threadPoolSize = 3,
     dataProvider = "dp", description = "Class level description")
 public class MTest1 {
-  
+
   @Test(enabled = true, groups = {"group5", "group6"},
       alwaysRun = true, parameters = {"param5", "param6"},
       dependsOnGroups = {"dg5", "dg6"}, dependsOnMethods = {"dm5", "dm6"},
@@ -42,10 +42,10 @@ public class MTest1 {
   public void f() {}
 
   @Configuration(beforeSuite = true, beforeTestMethod = true,
-      beforeTest = true, beforeTestClass = true, 
+      beforeTest = true, beforeTestClass = true,
       beforeGroups = { "b1", "b2"})
   public void before() {}
-  
+
   @Configuration(afterSuite = true, afterTestMethod = true,
       afterTest = true, afterTestClass = true,
       afterGroups = {"a1", "a2"})
@@ -55,25 +55,25 @@ public class MTest1 {
       enabled = false, groups = {"ogroup1", "ogroup2"},
       dependsOnGroups = {"odg1","odg2"},
       dependsOnMethods = {"odm1", "odm2"}, alwaysRun = true,
-      inheritGroups = false, 
+      inheritGroups = false,
       description = "beforeSuite description")
    @DataProvider(name = "dp4")
    @ExpectedExceptions({MTest1.class, MTest2.class })
   public void otherConfigurations() {}
-  
+
   @Factory(parameters = {"pf1", "pf2"})
   public void factory() {}
 
   @Parameters({"pp1", "pp2", "pp3"})
   public void parameters() {}
-  
+
   @BeforeSuite
   @BeforeTest
   @BeforeGroups
   @BeforeClass
   @BeforeMethod
   public void newBefore() {}
-  
+
   @AfterSuite
   @AfterTest
   @AfterGroups

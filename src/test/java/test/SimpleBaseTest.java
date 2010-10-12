@@ -20,7 +20,7 @@ public class SimpleBaseTest {
     result.setVerbose(0);
     return result;
   }
-  
+
   protected TestNG create(Class<?> testClass) {
     TestNG result = create();
     result.setTestClasses(new Class[] { testClass});
@@ -77,7 +77,7 @@ public class SimpleBaseTest {
 
     int i = 0;
     while (it.hasNext()) {
-      Assert.assertEquals(it.next().getName(), methodNames[i++]); 
+      Assert.assertEquals(it.next().getName(), methodNames[i++]);
     }
   }
 }

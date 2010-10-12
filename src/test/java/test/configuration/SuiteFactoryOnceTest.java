@@ -3,9 +3,8 @@ package test.configuration;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
-import junit.framework.Assert;
-
 import test.SimpleBaseTest;
+import junit.framework.Assert;
 
 public class SuiteFactoryOnceTest extends SimpleBaseTest {
 
@@ -19,5 +18,5 @@ public class SuiteFactoryOnceTest extends SimpleBaseTest {
     Assert.assertEquals(1, SuiteFactoryOnceSample1Test.m_before);
     Assert.assertEquals(1, SuiteFactoryOnceSample1Test.m_after);
   }
-  
+
 }

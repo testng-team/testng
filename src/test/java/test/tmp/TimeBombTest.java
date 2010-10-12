@@ -1,9 +1,9 @@
 package test.tmp;
 
+import org.testng.annotations.Test;
+
 import java.lang.reflect.Method;
 import java.util.Calendar;
-
-import org.testng.annotations.Test;
 
 public class TimeBombTest {
 
@@ -18,19 +18,19 @@ public class TimeBombTest {
   }
 
   private long parseTime(String string) {
-    int hour = Integer.parseInt(string.substring(0, 2)); 
+    int hour = Integer.parseInt(string.substring(0, 2));
     int minute = Integer.parseInt(string.substring(2));
     Calendar result = Calendar.getInstance();
     result.set(Calendar.HOUR_OF_DAY, hour);
     result.set(Calendar.MINUTE, minute);
-    
+
     return result.getTimeInMillis();
   }
 
   private void ppp(String string) {
     System.out.println("[TimeBombTest] " + string);
   }
-  
+
 }
 
 

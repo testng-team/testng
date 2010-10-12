@@ -1,8 +1,8 @@
 package test.objectfactory;
 
-import org.testng.annotations.ObjectFactory;
 import org.testng.IObjectFactory;
 import org.testng.ITestContext;
+import org.testng.annotations.ObjectFactory;
 import org.testng.internal.ObjectFactoryImpl;
 
 /**

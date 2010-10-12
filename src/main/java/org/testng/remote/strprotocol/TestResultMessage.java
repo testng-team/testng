@@ -1,15 +1,14 @@
 package org.testng.remote.strprotocol;
 
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.collections.Lists;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.List;
 
 
 /**
@@ -20,7 +19,7 @@ import org.testng.collections.Lists;
 public class TestResultMessage implements IStringMessage {
   private static final Object[] EMPTY_PARAMS= new Object[0];
   private static final Class[] EMPTY_TYPES= new Class[0];
-  
+
   protected int    m_messageType;
   protected String m_suiteName;
   protected String m_testName;
@@ -42,7 +41,7 @@ public class TestResultMessage implements IStringMessage {
                     final String[] params,
                     final long startMillis,
                     final long endMillis,
-                    final String stackTrace) 
+                    final String stackTrace)
   {
     init(resultType,
          suiteName,
@@ -58,9 +57,9 @@ public class TestResultMessage implements IStringMessage {
     );
   }
 
-  public TestResultMessage(final String suiteName, 
-                           final String testName, 
-                           final ITestResult result) 
+  public TestResultMessage(final String suiteName,
+                           final String testName,
+                           final ITestResult result)
   {
     String stackTrace = null;
 
@@ -77,7 +76,7 @@ public class TestResultMessage implements IStringMessage {
         stackTrace= "unknown stack trace";
       }
     }
-    else if(ITestResult.SKIP == result.getStatus() 
+    else if(ITestResult.SKIP == result.getStatus()
         && (result.getThrowable() != null && SkipException.class.isAssignableFrom(result.getThrowable().getClass()))) {
       stackTrace= result.getThrowable().getMessage();
     }
@@ -95,7 +94,7 @@ public class TestResultMessage implements IStringMessage {
          MessageHelper.replaceUnicodeCharactersWithAscii(result.getName())
     );
   }
-  
+
   public TestResultMessage(final ITestContext testCtx, final ITestResult result) {
     this(testCtx.getSuite().getName(), testCtx.getCurrentXmlTest().getName(), result);
 //        result.getTestName() != null ? result.getTestName() : result.getName(), result);
@@ -129,13 +128,16 @@ public class TestResultMessage implements IStringMessage {
     return m_messageType;
   }
 
+  @Override
   public String getMessageAsString() {
     StringBuffer buf = new StringBuffer();
     StringBuffer parambuf = new StringBuffer();
-    
+
     if(null != m_parameters && m_parameters.length > 0) {
       for (int j = 0; j < m_parameters.length; j++) {
-        if (j > 0) parambuf.append(MessageHelper.PARAM_DELIMITER);
+        if (j > 0) {
+          parambuf.append(MessageHelper.PARAM_DELIMITER);
+        }
         parambuf.append(m_paramTypes[j] + ":" + m_parameters[j]);
       }
     }
@@ -179,15 +181,15 @@ public class TestResultMessage implements IStringMessage {
   public String getName() {
     return m_testName;
   }
-  
+
   public String getStackTrace() {
     return m_stackTrace;
   }
-  
+
   public long getEndMillis() {
     return m_endMillis;
   }
-  
+
   public long getStartMillis() {
     return m_startMillis;
   }
@@ -195,22 +197,24 @@ public class TestResultMessage implements IStringMessage {
   public String[] getParameters() {
     return m_parameters;
   }
-  
+
   public String[] getParameterTypes() {
     return m_paramTypes;
   }
-  
+
   public String getTestDescription() {
     return m_testDescription;
   }
-  
+
   public String toDisplayString() {
     StringBuffer buf= new StringBuffer(m_testName != null ? m_testName : m_testMethodName);
-    
+
     if(null != m_parameters && m_parameters.length > 0) {
       buf.append("(");
       for(int i= 0; i < m_parameters.length; i++) {
-        if(i > 0) buf.append(", ");
+        if(i > 0) {
+          buf.append(", ");
+        }
         if("java.lang.String".equals(m_paramTypes[i]) && !("null".equals(m_parameters[i]) || "\"\"".equals(m_parameters[i]))) {
           buf.append("\"").append(m_parameters[i]).append("\"");
         }
@@ -221,22 +225,34 @@ public class TestResultMessage implements IStringMessage {
       }
       buf.append(")");
     }
-    
+
     return buf.toString();
   }
-  
+
   @Override
   public boolean equals(Object o) {
-    if(this == o) return true;
-    if(o == null || getClass() != o.getClass()) return false;
+    if(this == o) {
+      return true;
+    }
+    if(o == null || getClass() != o.getClass()) {
+      return false;
+    }
 
     final TestResultMessage that = (TestResultMessage) o;
 
-    if(m_suiteName != null ? !m_suiteName.equals(that.m_suiteName) : that.m_suiteName != null) return false;
-    if(m_testName != null ? !m_testName.equals(that.m_testName) : that.m_testName != null) return false;
-    if(m_testClassName != null ? !m_testClassName.equals(that.m_testClassName) : that.m_testClassName != null) return false;
+    if(m_suiteName != null ? !m_suiteName.equals(that.m_suiteName) : that.m_suiteName != null) {
+      return false;
+    }
+    if(m_testName != null ? !m_testName.equals(that.m_testName) : that.m_testName != null) {
+      return false;
+    }
+    if(m_testClassName != null ? !m_testClassName.equals(that.m_testClassName) : that.m_testClassName != null) {
+      return false;
+    }
     String toDisplayString= toDisplayString();
-    if(toDisplayString != null ? !toDisplayString.equals(that.toDisplayString()) : that.toDisplayString() != null) return false;
+    if(toDisplayString != null ? !toDisplayString.equals(that.toDisplayString()) : that.toDisplayString() != null) {
+      return false;
+    }
 
     return true;
   }
@@ -249,9 +265,11 @@ public class TestResultMessage implements IStringMessage {
     result = 29 * result + toDisplayString().hashCode();
     return result;
   }
-  
+
   private String[] toString(Object[] objects, Class[] objectClasses) {
-    if(null == objects) return new String[0];
+    if(null == objects) {
+      return new String[0];
+    }
     List<String> result= Lists.newArrayList(objects.length);
     for(Object o: objects) {
       if(null == o) {
@@ -267,20 +285,22 @@ public class TestResultMessage implements IStringMessage {
         }
       }
     }
-    
+
     return result.toArray(new String[result.size()]);
   }
-  
+
   private String[] toString(Class[] classes) {
-    if(null == classes) return new String[0];
+    if(null == classes) {
+      return new String[0];
+    }
     List<String> result= Lists.newArrayList(classes.length);
     for(Class cls: classes) {
       result.add(cls.getName());
     }
-    
+
     return result.toArray(new String[result.size()]);
   }
-  
+
   /**
    * @param params
    * @return
@@ -290,7 +310,7 @@ public class TestResultMessage implements IStringMessage {
     for(String s: params) {
       result.add(s.substring(0, s.indexOf(':')));
     }
-    
+
     return result.toArray(new String[result.size()]);
   }
 
@@ -299,7 +319,7 @@ public class TestResultMessage implements IStringMessage {
     for(String s: params) {
       result.add(MessageHelper.replaceNewLineReplacer(s.substring(s.indexOf(':') + 1)));
     }
-    
+
     return result.toArray(new String[result.size()]);
   }
 }

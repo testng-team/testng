@@ -7,7 +7,6 @@ import org.testng.internal.ClassHelper;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -17,6 +16,10 @@ import java.util.Properties;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class XmlClass implements Serializable, Cloneable {
+  /**
+   *
+   */
+  private static final long serialVersionUID = 8885360896966149897L;
   private List<XmlInclude> m_includedMethods = Lists.newArrayList();
   private List<String> m_excludedMethods = Lists.newArrayList();
   private String       m_name = null;
@@ -54,7 +57,7 @@ public class XmlClass implements Serializable, Cloneable {
   public Class getSupportClass() {
     if(null == m_class) {
       m_class = ClassHelper.forName(m_name);
-      
+
       if(null == m_class) {
         throw new TestNGException("Cannot find class in classpath: " + m_name);
       }
@@ -133,7 +136,7 @@ public class XmlClass implements Serializable, Cloneable {
     if (!m_includedMethods.isEmpty() || !m_excludedMethods.isEmpty()) {
       xsb.push("class", pro);
       xsb.push("methods");
-      
+
       for (XmlInclude m : getIncludedMethods()) {
         xsb.getStringBuffer().append(m.toXml(indent + "    "));
       }
@@ -143,7 +146,7 @@ public class XmlClass implements Serializable, Cloneable {
         p.setProperty("name", m);
         xsb.addEmptyElement("exclude", p);
       }
-      
+
       xsb.pop("methods");
       xsb.pop("class");
     }
@@ -154,12 +157,14 @@ public class XmlClass implements Serializable, Cloneable {
     return xsb.toXML();
 
   }
-  
+
   public static String listToString(List<Integer> invocationNumbers) {
     StringBuilder result = new StringBuilder();
     int i = 0;
     for (Integer n : invocationNumbers) {
-      if (i++ > 0) result.append(" ");
+      if (i++ > 0) {
+        result.append(" ");
+      }
       result.append(n);
     }
     return result.toString();
@@ -173,7 +178,7 @@ public class XmlClass implements Serializable, Cloneable {
     XmlClass result = new XmlClass(getName(), getDeclaredClass(), getIndex());
     result.setExcludedMethods(getExcludedMethods());
     result.setIncludedMethods(getIncludedMethods());
-    
+
     return result;
   }
 
@@ -205,40 +210,54 @@ public class XmlClass implements Serializable, Cloneable {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     XmlClass other = (XmlClass) obj;
     if (m_class == null) {
-      if (other.m_class != null)
+      if (other.m_class != null) {
         return false;
-    } else if (!m_class.equals(other.m_class))
+      }
+    } else if (!m_class.equals(other.m_class)) {
       return false;
+    }
     if (m_declaredClass == null) {
-      if (other.m_declaredClass != null)
+      if (other.m_declaredClass != null) {
         return false;
-    } else if (!m_declaredClass.equals(other.m_declaredClass))
+      }
+    } else if (!m_declaredClass.equals(other.m_declaredClass)) {
       return false;
+    }
     if (m_excludedMethods == null) {
-      if (other.m_excludedMethods != null)
+      if (other.m_excludedMethods != null) {
         return false;
-    } else if (!m_excludedMethods.equals(other.m_excludedMethods))
+      }
+    } else if (!m_excludedMethods.equals(other.m_excludedMethods)) {
       return false;
+    }
     if (m_includedMethods == null) {
-      if (other.m_includedMethods != null)
+      if (other.m_includedMethods != null) {
         return false;
-    } else if (!m_includedMethods.equals(other.m_includedMethods))
+      }
+    } else if (!m_includedMethods.equals(other.m_includedMethods)) {
       return false;
-    if (m_index != other.m_index)
+    }
+    if (m_index != other.m_index) {
       return false;
+    }
     if (m_name == null) {
-      if (other.m_name != null)
+      if (other.m_name != null) {
         return false;
-    } else if (!m_name.equals(other.m_name))
+      }
+    } else if (!m_name.equals(other.m_name)) {
       return false;
+    }
     return true;
   }
 

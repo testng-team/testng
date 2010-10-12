@@ -9,12 +9,13 @@ public class ChildTest extends ParentTest {
   public void btm2() {
     ppp("CHILD BEFORE TEST");
   }
-  
+
   @Configuration(afterTestMethod = true)
   public void atm2() {
     ppp("CHILD AFTER TEST");
   }
 
+  @Override
   @Test
   public void t1() {
     ppp("TEST CHILD");
@@ -23,7 +24,7 @@ public class ChildTest extends ParentTest {
   private void ppp(String string) {
     System.out.println("[Parent] " + string);
   }
-  
-  
+
+
 
 }

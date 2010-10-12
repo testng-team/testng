@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 /**
  * Test whether nested propertysets are passed passed from the ant task. Executed by the "run:antprop" target
  * in test/build.xml.
- * 
+ *
  * @author <a href="mailto:ttopwells@gmail.com">Todd Wells</a>
  */
 public class AntSystemPropertySet {

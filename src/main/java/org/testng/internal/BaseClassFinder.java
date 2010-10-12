@@ -1,7 +1,5 @@
 package org.testng.internal;
 
-import java.util.Map;
-
 import org.testng.IClass;
 import org.testng.IObjectFactory;
 import org.testng.ITestClassFinder;
@@ -9,6 +7,8 @@ import org.testng.collections.Maps;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
+
+import java.util.Map;
 
 /**
  * This class
@@ -18,6 +18,7 @@ import org.testng.xml.XmlTest;
 abstract public class BaseClassFinder implements ITestClassFinder {
   private Map<Class, IClass> m_classes = Maps.newHashMap();
 
+  @Override
   public IClass getIClass(Class cls) {
     return m_classes.get(cls);
   }
@@ -60,6 +61,7 @@ abstract public class BaseClassFinder implements ITestClassFinder {
     return m_classes.containsKey(cls);
   }
 
+  @Override
   public IClass[] findTestClasses() {
     return m_classes.values().toArray(new IClass[m_classes.size()]);
    }

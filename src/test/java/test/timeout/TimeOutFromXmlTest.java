@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class TimeOutFromXmlTest extends BaseTest {
-    
+
     private void timeOutTest(boolean onSuite) {
         addClass("test.timeout.TestTimeOutSampleTest");
         if (onSuite) {
@@ -30,7 +30,7 @@ public class TimeOutFromXmlTest extends BaseTest {
         String[] failed = {
           "timeoutTest"
         };
-      
+
 //        dumpResults("Passed", getPassedTests());
 //        dumpResults("Failed", getFailedTests());
 
@@ -57,7 +57,7 @@ public class TimeOutFromXmlTest extends BaseTest {
         };
         String[] failed = {
         };
-        
+
         verifyTests("Passed", passed, getPassedTests());
         verifyTests("Failed", failed, getFailedTests());
     }
@@ -66,7 +66,7 @@ public class TimeOutFromXmlTest extends BaseTest {
     public void twoDifferentTests() {
       XmlSuite result = new XmlSuite();
       result.setName("Suite");
-      
+
       createXmlTest(result, "WithoutTimeOut");
       createXmlTest(result, "WithTimeOut").setTimeOut(1000);
 
@@ -76,7 +76,7 @@ public class TimeOutFromXmlTest extends BaseTest {
       TestListenerAdapter tla = new TestListenerAdapter();
       tng.addListener(tla);
       tng.run();
-      
+
 //      System.out.println("Passed:" + tla.getPassedTests().size()
 //          + " Failed:" + tla.getFailedTests().size());
       Assert.assertEquals(tla.getPassedTests().size(), 1);

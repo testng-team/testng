@@ -20,7 +20,7 @@ import java.util.Map;
 
 /**
  * Suite definition parser utility.
- * 
+ *
  * @author Cedric Beust
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
@@ -52,20 +52,20 @@ public class TestNGContentHandler extends DefaultHandler {
   private List<String> m_suiteFiles = Lists.newArrayList();
   private boolean m_enabledTest;
   private List<String> m_listeners;
-  
+
   private String m_fileName;
 
   public TestNGContentHandler(String fileName) {
     m_fileName = fileName;
   }
-  
+
   static private void ppp(String s) {
     System.out.println("[TestNGContentHandler] " + s);
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.xml.sax.EntityResolver#resolveEntity(java.lang.String,
    *      java.lang.String)
    */
@@ -96,7 +96,7 @@ public class TestNGContentHandler extends DefaultHandler {
 
     return result;
   }
-  
+
   /**
    * Parse <suite-file>
    */
@@ -120,7 +120,7 @@ public class TestNGContentHandler extends DefaultHandler {
       m_currentSuite.setFileName(m_fileName);
       m_currentSuite.setName(name);
       m_currentSuiteParameters = Maps.newHashMap();
-      
+
       String verbose = attributes.getValue("verbose");
       if (null != verbose) {
         m_currentSuite.setVerbose(new Integer(verbose));
@@ -320,7 +320,7 @@ public class TestNGContentHandler extends DefaultHandler {
       m_currentClasses = null;
     }
   }
-  
+
   /**
    * Parse <listeners>
    */
@@ -335,7 +335,7 @@ public class TestNGContentHandler extends DefaultHandler {
       }
     }
   }
-  
+
   /**
    * Parse <listener>
    */
@@ -362,7 +362,7 @@ public class TestNGContentHandler extends DefaultHandler {
           m_currentSuite.setXmlPackages(m_currentPackages);
         }
       }
-      
+
       m_currentPackages = null;
       m_currentPackage = null;
     }
@@ -382,7 +382,7 @@ public class TestNGContentHandler extends DefaultHandler {
       else {
         m_currentSuite.setMethodSelectors(m_currentSelectors);
       }
-      
+
       m_currentSelectors = null;
     }
   }
@@ -403,7 +403,7 @@ public class TestNGContentHandler extends DefaultHandler {
       // do nothing
     }
   }
-  
+
   /**
    * Parse <method-selector>
    */
@@ -626,12 +626,14 @@ public class TestNGContentHandler extends DefaultHandler {
   private boolean areWhiteSpaces(char[] ch, int start, int length) {
     for (int i = start; i < start + length; i++) {
       char c = ch[i];
-      if (c != '\n' && c != '\t' && c != ' ') return false;
-    }    
-    
+      if (c != '\n' && c != '\t' && c != ' ') {
+        return false;
+      }
+    }
+
     return true;
   }
-  
+
   @Override
   public void characters(char ch[], int start, int length) {
     if (null != m_currentLanguage && ! areWhiteSpaces(ch, start, length)) {

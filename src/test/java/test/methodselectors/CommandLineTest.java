@@ -41,13 +41,13 @@ public class CommandLineTest extends SimpleBaseTest {
   };
 
   private TestListenerAdapter tla;
-  
+
   @BeforeMethod
   public void setup() {
     ppp("setup()");
     tla = new TestListenerAdapter();
   }
-  
+
   @Test
   public void commandLineNegativePriorityAllGroups() {
     ppp("commandLineNegativePriorityAllGroups()");
@@ -61,7 +61,7 @@ public class CommandLineTest extends SimpleBaseTest {
     verifyTests("Passed", passed, tla.getPassedTests());
     verifyTests("Failed", failed, tla.getFailedTests());
   }
-  
+
   @Test
   public void commandLineNegativePriorityGroup2() {
     ppp("commandLineNegativePriorityGroup2()");
@@ -75,7 +75,7 @@ public class CommandLineTest extends SimpleBaseTest {
     verifyTests("Passed", passed, tla.getPassedTests());
     verifyTests("Failed", failed, tla.getFailedTests());
   }
-  
+
   @Test
   public void commandLineLessThanPriorityTest1Test() {
     ppp("commandLineLessThanPriorityTest1Test()");
@@ -90,7 +90,7 @@ public class CommandLineTest extends SimpleBaseTest {
     verifyTests("Passed", passed, tla.getPassedTests());
     verifyTests("Failed", failed, tla.getFailedTests());
   }
-  
+
   @Test
   public void commandLineGreaterThanPriorityTest1Test2() {
     ppp("commandLineGreaterThanPriorityTest1Test2()");
@@ -119,7 +119,7 @@ public class CommandLineTest extends SimpleBaseTest {
     verifyTests("Passed", passed, tla.getPassedTests());
     verifyTests("Failed", failed, tla.getFailedTests());
   }
-  
+
   @Test
   public void commandLineMultipleSelectors() {
     ppp("commandLineMultipleSelectors()");
@@ -134,7 +134,7 @@ public class CommandLineTest extends SimpleBaseTest {
     verifyTests("Passed", passed, tla.getPassedTests());
     verifyTests("Failed", failed, tla.getFailedTests());
   }
-  
+
   @Test
   public void commandLineNoTest1Selector() {
     ppp("commandLineNoTest1Selector()");
@@ -163,13 +163,13 @@ public class CommandLineTest extends SimpleBaseTest {
     verifyTests("Passed", passed, tla.getPassedTests());
     verifyTests("Failed", failed, tla.getFailedTests());
   }
-  
+
   private void verifyTests(String title, String[] expected, List<ITestResult> found) {
     List<String> resultMethods = new ArrayList<String>();
     for( ITestResult result : found ) {
       resultMethods.add( result.getName() );
-    }    
-    
+    }
+
     Assert.assertEquals(resultMethods.size(), expected.length, "wrong number of " + title + " tests");
 
     for(String e : expected) {
@@ -177,7 +177,7 @@ public class CommandLineTest extends SimpleBaseTest {
           + title + " but didn't find it.");
     }
   }
-  
+
   public static void ppp(String s) {
     //System.out.println("[CommandLineTest] " + s);
   }

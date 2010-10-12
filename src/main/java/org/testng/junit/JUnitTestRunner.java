@@ -25,7 +25,7 @@ import junit.framework.TestSuite;
 
 /**
  * A JUnit TestRunner that records/triggers all information/events necessary to TestNG.
- * 
+ *
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
@@ -35,38 +35,42 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
 
   private Map<Test, TestRunInfo> m_tests= new WeakHashMap<Test, TestRunInfo>();
   private List<ITestNGMethod> m_methods= Lists.newArrayList();
-  
+
   public JUnitTestRunner() {
   }
-  
+
   public JUnitTestRunner(ITestResultNotifier tr) {
     m_parentRunner= tr;
   }
 
   /**
    * Needed from TestRunner in order to figure out what JUnit test methods were run.
-   * 
+   *
    * @return the list of all JUnit test methods run
    */
+  @Override
   public List<ITestNGMethod> getTestMethods() {
     return m_methods;
   }
-  
+
+  @Override
   public void setTestResultNotifier(ITestResultNotifier notifier) {
     m_parentRunner= notifier;
   }
-  
+
   /**
    * @see junit.framework.TestListener#startTest(junit.framework.Test)
    */
+  @Override
   public void startTest(Test test) {
-    m_tests.put(test, new TestRunInfo(Calendar.getInstance().getTimeInMillis())); 
+    m_tests.put(test, new TestRunInfo(Calendar.getInstance().getTimeInMillis()));
   }
 
 
   /**
    * @see junit.framework.TestListener#addError(junit.framework.Test, java.lang.Throwable)
    */
+  @Override
   public void addError(Test test, Throwable t) {
     recordFailure(test, t);
   }
@@ -74,6 +78,7 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
   /**
    * @see junit.framework.TestListener#addFailure(junit.framework.Test, junit.framework.AssertionFailedError)
    */
+  @Override
   public void addFailure(Test test, AssertionFailedError t) {
     recordFailure(test, t);
   }
@@ -84,30 +89,31 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
       tri.setThrowable(t);
     }
   }
-  
+
   /**
    * @see junit.framework.TestListener#endTest(junit.framework.Test)
    */
+  @Override
   public void endTest(Test test) {
     TestRunInfo tri= m_tests.get(test);
     if(null == tri) {
       return; // HINT: this should never happen. How do I protect myself?
     }
-    
+
     org.testng.internal.TestResult tr= recordResults(test, tri);
-    
+
     runTestListeners(tr, m_parentRunner.getTestListeners());
   }
 
   private org.testng.internal.TestResult recordResults(Test test, TestRunInfo tri)  {
     JUnitUtils.JUnitTestClass tc= new JUnitUtils.JUnitTestClass(test);
     JUnitUtils.JUnitTestMethod tm= new JUnitUtils.JUnitTestMethod(test, tc);
-    
-    org.testng.internal.TestResult tr= new org.testng.internal.TestResult(tc, 
-                                                                          test, 
-                                                                          tm, 
-                                                                          tri.m_failure, 
-                                                                          tri.m_start, 
+
+    org.testng.internal.TestResult tr= new org.testng.internal.TestResult(tc,
+                                                                          test,
+                                                                          tm,
+                                                                          tri.m_failure,
+                                                                          tri.m_start,
                                                                           Calendar.getInstance().getTimeInMillis());
 
     if(tri.isFailure()) {
@@ -117,13 +123,13 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
     else {
       m_parentRunner.addPassedTest(tm, tr);
     }
-    
+
     m_parentRunner.addInvokedMethod(new InvokedMethod(test, tm, new Object[0], true, false, tri.m_start));
     m_methods.add(tm);
-    
+
     return tr;
   }
-  
+
   private static void runTestListeners(ITestResult tr, List<ITestListener> listeners) {
     for (ITestListener itl : listeners) {
       switch(tr.getStatus()) {
@@ -155,7 +161,7 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
       }
     }
   }
-  
+
   /**
    * Returns the Test corresponding to the given suite. This is
    * a template method, subclasses override runFailed(), clearStatus().
@@ -200,10 +206,11 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
    * A <code>start</code> implementation that ignores the <code>TestResult</code>
    * @param testClass the JUnit test class
    */
+  @Override
   public void run(Class testClass) {
     start(testClass);
   }
-  
+
   /**
    * Starts a test run. Analyzes the command line arguments and runs the given
    * test suite.
@@ -222,7 +229,7 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
     catch (Exception e) {
       runFailed(testCase, "could not create/run JUnit test suite: " + e.getMessage());
     }
-    
+
     return null;
   }
 
@@ -244,11 +251,11 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
 
     return result;
   }
-  
+
   private static class TestRunInfo {
     private final long m_start;
     private Throwable m_failure;
-    
+
     public TestRunInfo(long start) {
       m_start= start;
     }
@@ -256,7 +263,7 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
     public boolean isFailure() {
       return null != m_failure;
     }
-    
+
     public void setThrowable(Throwable t) {
       m_failure= t;
     }

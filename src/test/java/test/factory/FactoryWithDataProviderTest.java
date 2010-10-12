@@ -18,9 +18,9 @@ public class FactoryWithDataProviderTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
     tng.run();
-    
+
     Assert.assertEquals(tla.getPassedTests().size(), 4);
-    
+
   }
 
   private static void ppp(String s) {

@@ -1,10 +1,10 @@
 package test.triangle;
 
-import org.testng.annotations.*;
+import org.testng.annotations.Test;
 
 /**
  * This class
- * 
+ *
  * @author cbeust
  */
 public class Child2 extends Base {

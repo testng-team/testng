@@ -12,7 +12,7 @@ public class FailedDataProviderSample {
         new Integer[] { 3 },
     };
   }
-  
+
   @Test(dataProvider = "dp")
   public void f(int n) {
     FailedDataProviderTest.m_total += n;
@@ -20,5 +20,5 @@ public class FailedDataProviderSample {
       throw new RuntimeException("Failed")  ;
     }
   }
-  
+
 }

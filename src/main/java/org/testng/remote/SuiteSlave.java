@@ -16,8 +16,8 @@ import java.util.Properties;
 
 /**
  * Run test suits sent by the dispatcher.
- * 
- *  
+ *
+ *
  * @author	Guy Korland
  * @date 	April 20, 2007
  */
@@ -37,7 +37,7 @@ public class SuiteSlave
 
 	/**
 	 * Creates a new suite dispatcher.
-	 * 
+	 *
 	 * @param propertiesFile
 	 * @throws Exception
 	 */
@@ -74,15 +74,16 @@ public class SuiteSlave
 	 * Invoked in client mode.  In this case, wait for a connection
 	 * on the given port, run the XmlSuite we received and return the SuiteRunner
 	 * created to run it.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void waitForSuites() {
 		try {
 			while (true) {
 				//TODO set timeout
 				XmlSuite s = m_slaveAdpter.getSuite(Long.MAX_VALUE);
-				if( s== null)
-					continue;
+				if( s== null) {
+          continue;
+        }
 				log("Processing " + s.getName());
 				List<XmlSuite> suites = Lists.newArrayList();
 				suites.add(s);

@@ -1,19 +1,19 @@
 package test.tmp;
 
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Random;
 import java.util.Set;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
 public class AssertEqualsTest {
-  
+
   private void log(String s) {
     System.out.println("[" + Thread.currentThread().getId() + "] " + s);
   }
-  
+
   @Test(threadPoolSize = 3, invocationCount = 6)
   public void f1() {
     log("start");
@@ -26,7 +26,7 @@ public class AssertEqualsTest {
     }
     log("end");
   }
-  
+
   @Test(threadPoolSize = 10, invocationCount = 10000)
   public void verifyMethodIsThreadSafe() {
 //    foo();

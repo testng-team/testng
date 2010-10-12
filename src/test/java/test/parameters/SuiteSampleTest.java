@@ -10,7 +10,7 @@ public class SuiteSampleTest {
   public void suiteParameter(String s) {
     ppp("PARAM:" + s);
   }
-  
+
   private void ppp(String s) {
     System.out.println("[SuiteSampleTest] " + s);
   }

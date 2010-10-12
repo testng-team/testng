@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * An implementation of IRetryAnalyzer that allows you to specify
  * the maximum number of times you want your test to be retried.
- * 
+ *
  * @author tocman@gmail.com (Jeremie Lenfant-Engelmann)
  */
 public abstract class RetryAnalyzerCount implements IRetryAnalyzer {
@@ -25,7 +25,7 @@ public abstract class RetryAnalyzerCount implements IRetryAnalyzer {
   }
 
   /**
-   * Retries the test if count is not 0. 
+   * Retries the test if count is not 0.
    * @param result The result of the test.
    */
   @Override

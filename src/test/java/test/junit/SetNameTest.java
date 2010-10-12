@@ -1,8 +1,8 @@
 package test.junit;
 
-import junit.framework.TestCase;
-
 import org.testng.Assert;
+
+import junit.framework.TestCase;
 
 public class SetNameTest extends TestCase {
   public static int m_ctorCount = 0;
@@ -11,13 +11,13 @@ public class SetNameTest extends TestCase {
     ppp("CTOR");
     m_ctorCount++;
   }
-  
+
   @Override
   public void setName(String name) {
     ppp("SETNAME " + name);
     super.setName(name);
   }
-  
+
   public void testFoo() {
     Assert.assertEquals("testFoo", getName());
     ppp("FOO");
@@ -27,7 +27,7 @@ public class SetNameTest extends TestCase {
     Assert.assertEquals("testBar", getName());
     ppp("BAR");
   }
-  
+
   private void ppp(String string) {
     if (false) {
       System.out.println("[FooBarTest#" + hashCode() + "] " + string);

@@ -91,7 +91,7 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
     /*
      * Dummy Implementation
      *
-     * Used by IWorkers to prioritize execution in parallel. Not required by 
+     * Used by IWorkers to prioritize execution in parallel. Not required by
      * this Worker in current implementation
      */
     return 0;
@@ -103,7 +103,7 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
     suiteRunnerList.add(m_suiteRunner);
     return suiteRunnerList;
   }
-  
+
   @Override
   public String toString() {
     return "SuiteRunnerWorker(" + m_suiteRunner.getName() + ")";

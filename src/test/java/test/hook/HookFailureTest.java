@@ -19,7 +19,7 @@ public class HookFailureTest implements IHookable {
   public void verify() {
     m_testWasRun = true;
   }
-  
+
 //  @AfterMethod
 //  public void tearDown() {
 //    Assert.assertTrue(m_hook);
@@ -29,6 +29,6 @@ public class HookFailureTest implements IHookable {
   private void ppp(String string) {
     System.out.println("[HookFailureTest] " + string);
   }
-  
+
 
 }

@@ -16,7 +16,7 @@ public class TestContextTest {
   public void verifyFive() {
     verify("5", "verifyFive", 1, 0);
   }
-  
+
   @Test
   public void verifySix() {
     // Not including any group, so the two test methods should fail
@@ -33,12 +33,12 @@ public class TestContextTest {
     TestListenerAdapter al = new TestListenerAdapter();
     tng.addListener(al);
     tng.run();
-    
+
     if (passedCount > 0) {
       Assert.assertEquals(al.getPassedTests().size(), passedCount);
       Assert.assertEquals(al.getPassedTests().get(0).getMethod().getMethodName(), passed);
     }
-    
+
     if (failedCount > 0) {
       Assert.assertEquals(al.getFailedTests().size(), failedCount);
     }

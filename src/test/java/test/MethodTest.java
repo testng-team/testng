@@ -1,6 +1,6 @@
 package test;
 
-import org.testng.annotations.*;
+import org.testng.annotations.Test;
 
 public class MethodTest extends BaseTest {
   private static final String CLASS_NAME = "test.sample.Sample2";
@@ -19,7 +19,7 @@ public class MethodTest extends BaseTest {
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Failed", failed, getFailedTests());
   }
-  
+
   @Test(groups = { "current" })
   public void excludeMethodsOnly() {
     addClass(CLASS_NAME);
@@ -34,7 +34,7 @@ public class MethodTest extends BaseTest {
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Failed", failed, getFailedTests());
   }
-  
+
   @Test
   public void excludePackage() {
     addClass(CLASS_NAME);

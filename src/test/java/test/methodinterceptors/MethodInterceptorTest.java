@@ -1,7 +1,5 @@
 package test.methodinterceptors;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
@@ -15,13 +13,14 @@ import test.SimpleBaseTest;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 public class MethodInterceptorTest extends SimpleBaseTest {
-  
+
   private String XML =
     "<!DOCTYPE suite SYSTEM \"http://beust.com/testng/testng-1.0.dtd\" >" +
     "" +
@@ -45,13 +44,13 @@ public class MethodInterceptorTest extends SimpleBaseTest {
     tng.setTestClasses(new Class[] { FooTest.class });
     testNullInterceptor(tng);
   }
-  
+
   private void testNullInterceptor(TestNG tng) {
     tng.setMethodInterceptor(new NullMethodInterceptor());
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
     tng.run();
-    
+
     Assert.assertEquals(tla.getPassedTests().size(), 0);
     Assert.assertEquals(tla.getFailedTests().size(), 0);
     Assert.assertEquals(tla.getSkippedTests().size(), 0);
@@ -67,7 +66,7 @@ public class MethodInterceptorTest extends SimpleBaseTest {
 //    tng.setParallel("methods");
     tng.addListener(tla);
     tng.run();
-    
+
     Assert.assertEquals(tla.getPassedTests().size(), 3);
     ITestResult first = tla.getPassedTests().get(0);
 
@@ -83,7 +82,7 @@ public class MethodInterceptorTest extends SimpleBaseTest {
   public void fastShouldRunFirst() {
     testFast(true /* use interceptor */);
   }
-  
+
   @Test
   public void fastShouldNotRunFirst() {
     testFast(false /* don't use interceptor */);
@@ -101,7 +100,7 @@ public class MethodInterceptorTest extends SimpleBaseTest {
 
     try {
       List<XmlSuite> xmlSuites = new Parser(f.getAbsolutePath()).parseToList();
-      
+
       TestNG tng = create();
       tng.setXmlSuites(xmlSuites);
       testNullInterceptor(tng);

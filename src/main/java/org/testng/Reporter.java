@@ -3,7 +3,6 @@ package org.testng;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;

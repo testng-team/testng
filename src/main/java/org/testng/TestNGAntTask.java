@@ -31,7 +31,6 @@ import java.net.URL;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -64,7 +63,7 @@ import java.util.StringTokenizer;
  * <li>testrunfactory (attribute)</li>
  * <li>configFailurepolicy (attribute)</li>
  * <li>randomizeSuites (attribute)</li>
- * 
+ *
  * </ul>
  *
  * Ant settings:
@@ -94,7 +93,7 @@ import java.util.StringTokenizer;
  * <li>dumpEnv (boolean)</li>
  * <li>dumpSys (boolean)</li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:the_mindstorm@evolva.ro">Alexandru Popescu</a>
  * @author Cedric Beust
  */
@@ -118,13 +117,13 @@ public class TestNGAntTask extends Task {
 
   /** The suite runner name (defaults to TestNG.class.getName(). */
   protected String m_mainClass = TestNG.class.getName();
-  
+
   /** True if the temporary file created by the Ant Task for command line parameters
    * to TestNG should be preserved after execution. */
   protected boolean m_dump;
   private boolean m_dumpEnv;
   private boolean m_dumpSys;
-  
+
   protected boolean m_assertEnabled= true;
   protected boolean m_haltOnFailure;
   protected String m_onHaltTarget;
@@ -160,7 +159,7 @@ public class TestNGAntTask extends Task {
   public void setThreadCount(String threadCount) {
     m_threadCount= threadCount;
   }
-  
+
   public void setDataProviderThreadCount(String dataproviderthreadCount) {
     m_dataproviderthreadCount = dataproviderthreadCount;
   }
@@ -197,7 +196,7 @@ public class TestNGAntTask extends Task {
   public void setFSPProperty(String propertyName) {
     m_fspPropertyName= propertyName;
   }
-  
+
   public void setDelegateCommandSystemProperties(boolean value){
     m_delegateCommandSystemProperties = value;
   }
@@ -215,13 +214,13 @@ public class TestNGAntTask extends Task {
   /**
    * Sets the flag to write on <code>System.out</code> the Ant
    * Environment properties.
-   * 
-   * @param verbose <tt>true</tt> for printing 
+   *
+   * @param verbose <tt>true</tt> for printing
    */
   public void setDumpEnv(boolean verbose) {
     m_dumpEnv= verbose;
   }
-  
+
   /**
    * Sets te flag to write on <code>System.out</code> the system properties.
    * @param verbose <tt>true</tt> for dumping the info
@@ -229,7 +228,7 @@ public class TestNGAntTask extends Task {
   public void setDumpSys(boolean verbose) {
     m_dumpSys= verbose;
   }
-  
+
   public void setEnableAssert(boolean flag) {
     m_assertEnabled= flag;
   }
@@ -345,7 +344,7 @@ public class TestNGAntTask extends Task {
 
   /**
    * Sets the suite name
-   * @param s the name of the suite 
+   * @param s the name of the suite
    */
   public void setSuiteName(String s) {
     m_suiteName= s;
@@ -353,7 +352,7 @@ public class TestNGAntTask extends Task {
 
   /**
    * Sets the test name
-   * @param s the name of the test 
+   * @param s the name of the test
    */
   public void setTestName(String s) {
     m_testName= s;
@@ -426,7 +425,7 @@ public class TestNGAntTask extends Task {
       m_listeners.add(st.nextToken());
     }
   }
-  
+
   public void setConfigFailurePolicy(String failurePolicy) {
     m_configFailurePolicy = failurePolicy;
   }
@@ -459,13 +458,13 @@ public class TestNGAntTask extends Task {
         argv.add(CommandLineArgs.JUNIT);
       }
     }
-    
+
     if (null != m_skipFailedInvocationCounts) {
       if(m_skipFailedInvocationCounts.booleanValue()) {
         argv.add(CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS);
       }
     }
-    
+
     if (m_delegateCommandSystemProperties) {
       delegateCommandSystemProperties();
     }
@@ -481,7 +480,7 @@ public class TestNGAntTask extends Task {
 
     if(m_useDefaultListeners != null) {
       String useDefaultListeners = "false";
-      if ("yes".equalsIgnoreCase(m_useDefaultListeners) 
+      if ("yes".equalsIgnoreCase(m_useDefaultListeners)
           || "true".equalsIgnoreCase(m_useDefaultListeners))
       {
         useDefaultListeners = "true";
@@ -537,7 +536,9 @@ public class TestNGAntTask extends Task {
       StringBuffer listeners= new StringBuffer();
       for(int i= 0; i < m_listeners.size(); i++) {
         listeners.append(m_listeners.get(i));
-        if(i < m_listeners.size() - 1) listeners.append(';');
+        if(i < m_listeners.size() - 1) {
+          listeners.append(';');
+        }
       }
       argv.add(listeners.toString());
     }
@@ -556,12 +557,12 @@ public class TestNGAntTask extends Task {
       argv.add(CommandLineArgs.PARALLEL);
       argv.add(m_parallelMode);
     }
-    
+
     if (m_configFailurePolicy != null) {
       argv.add(CommandLineArgs.CONFIG_FAILURE_POLICY);
       argv.add(m_configFailurePolicy);
     }
-    
+
     if (m_randomizeSuites != null && m_randomizeSuites) {
       argv.add(CommandLineArgs.RANDOMIZE_SUITES);
     }
@@ -575,15 +576,15 @@ public class TestNGAntTask extends Task {
       argv.add(CommandLineArgs.DATA_PROVIDER_THREAD_COUNT);
       argv.add(m_dataproviderthreadCount);
     }
-    
+
     if(!"".equals(m_suiteName)) {
-    	argv.add(CommandLineArgs.SUITE_NAME);
-    	argv.add(m_suiteName);
+      argv.add(CommandLineArgs.SUITE_NAME);
+      argv.add(m_suiteName);
     }
 
     if(!"".equals(m_testName)) {
-    	argv.add(CommandLineArgs.TEST_NAME);
-    	argv.add(m_testName);
+      argv.add(CommandLineArgs.TEST_NAME);
+      argv.add(m_testName);
     }
 
     if (! Utils.isStringEmpty(m_testNames)) {
@@ -667,21 +668,21 @@ public class TestNGAntTask extends Task {
   }
 
   private void delegateCommandSystemProperties() {
-  	// Iterate over command-line args and pass them through as sysproperty
-  	// exclude any built-in properties that start with "ant."
-  	for (Object propKey : getProject().getUserProperties().keySet()) {
-  		String propName = (String) propKey;
-  		String propVal = getProject().getUserProperty(propName);
-  		if (propName.startsWith("ant.")) {
-  			log("Excluding ant property: " + propName + ": " + propVal, Project.MSG_DEBUG);
-  		}	else {
-  			log("Including user property: " + propName + ": " + propVal, Project.MSG_DEBUG);
-  			Environment.Variable var = new Environment.Variable();
-  			var.setKey(propName);
-  			var.setValue(propVal);
-  			addSysproperty(var);
-  		}
-  	}
+    // Iterate over command-line args and pass them through as sysproperty
+    // exclude any built-in properties that start with "ant."
+    for (Object propKey : getProject().getUserProperties().keySet()) {
+      String propName = (String) propKey;
+      String propVal = getProject().getUserProperty(propName);
+      if (propName.startsWith("ant.")) {
+        log("Excluding ant property: " + propName + ": " + propVal, Project.MSG_DEBUG);
+      }	else {
+        log("Including user property: " + propName + ": " + propVal, Project.MSG_DEBUG);
+        Environment.Variable var = new Environment.Variable();
+        var.setKey(propName);
+        var.setValue(propVal);
+        addSysproperty(var);
+      }
+    }
   }
 
   private void printDebugInfo(String fileName) {
@@ -709,7 +710,7 @@ public class TestNGAntTask extends Task {
       dumpCommand(fileName);
     }
   }
-  
+
   private void ppp(String string) {
     System.out.println("[TestNGAntTask] " + string);
   }
@@ -981,8 +982,7 @@ public class TestNGAntTask extends Task {
   private List<String> fileset(List<FileSet> filesets) throws BuildException {
     List<String> files= Lists.newArrayList();
 
-    for(Iterator<FileSet> iterator= filesets.iterator(); iterator.hasNext();) {
-      FileSet fileset= iterator.next();
+    for (FileSet fileset : filesets) {
       DirectoryScanner ds= fileset.getDirectoryScanner(getProject());
 
       for(String file : ds.getIncludedFiles()) {
@@ -1066,7 +1066,7 @@ public class TestNGAntTask extends Task {
   public void addConfiguredReporter(ReporterConfig reporterConfig) {
     reporterConfigs.add(reporterConfig);
   }
-  
+
   public void setSkipFailedInvocationCounts(boolean skip) {
     m_skipFailedInvocationCounts = Boolean.valueOf(skip);
   }
@@ -1092,5 +1092,5 @@ public class TestNGAntTask extends Task {
         log("Ignoring non-String property " + propKey, Project.MSG_WARN);
       }
     }
-	}
+  }
 }

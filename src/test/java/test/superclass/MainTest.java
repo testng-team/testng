@@ -18,7 +18,7 @@ public class MainTest extends BaseTest {
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Failed", failed, getFailedTests());
   }
-  
+
   @Test
   public void baseMethodIsCalledWithClassTest() {
     addClass("test.superclass.Child2Test");
@@ -31,6 +31,6 @@ public class MainTest extends BaseTest {
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Failed", failed, getFailedTests());
   }
-  
+
 
 }

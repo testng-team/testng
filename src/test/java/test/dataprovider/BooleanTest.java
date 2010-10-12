@@ -7,17 +7,21 @@ import org.testng.annotations.Test;
 public class BooleanTest {
   private boolean m_false = false;
   private boolean m_true = false;
-  
+
   @Test(dataProvider = "allBooleans")
   public void doStuff(boolean t) {
-    if (t) m_true = true;
-    if (! t) m_false = true;
+    if (t) {
+      m_true = true;
+    }
+    if (! t) {
+      m_false = true;
+    }
   }
-  
+
   @Test(dependsOnMethods = {"doStuff"} )
   public void verify() {
     Assert.assertTrue(m_true);
-    Assert.assertTrue(m_false);    
+    Assert.assertTrue(m_false);
   }
 
   private void ppp(String string) {
@@ -31,5 +35,5 @@ public class BooleanTest {
       new Object[] { false },
     };
   }
- 
+
 }

@@ -1,17 +1,16 @@
 package org.testng.reporters;
 
-import java.lang.reflect.Method;
-import java.util.List;
-
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.internal.Utils;
 
+import java.util.List;
+
 /**
  * A simple reporter that collects the results and does nothing else.
- * 
+ *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
@@ -24,7 +23,7 @@ public class TextReporter extends TestListenerAdapter {
     m_testName = testName;
     m_verbose = verbose;
   }
-  
+
   @Override
   public void onFinish(ITestContext context) {
     if (m_verbose >= 2) {
@@ -39,10 +38,10 @@ public class TextReporter extends TestListenerAdapter {
     for (ITestResult tr : results) {
       result[i++] = tr.getMethod();
     }
-    
+
     return result;
   }
-  
+
 
   private void logResults() {
     //
@@ -58,26 +57,26 @@ public class TextReporter extends TestListenerAdapter {
         }
       }
 
-      logResult("FAILED CONFIGURATION", 
-          Utils.detailedMethodName(tr.getMethod(), false), 
-          tr.getMethod().getDescription(), 
-          stackTrace, 
-          tr.getParameters(), 
+      logResult("FAILED CONFIGURATION",
+          Utils.detailedMethodName(tr.getMethod(), false),
+          tr.getMethod().getDescription(),
+          stackTrace,
+          tr.getParameters(),
           tr.getMethod().getMethod().getParameterTypes()
       );
     }
 
     for(Object o : getConfigurationSkips()) {
       ITestResult tr = (ITestResult) o;
-      logResult("SKIPPED CONFIGURATION", 
-          Utils.detailedMethodName(tr.getMethod(), false), 
-          tr.getMethod().getDescription(), 
-          null, 
-          tr.getParameters(), 
+      logResult("SKIPPED CONFIGURATION",
+          Utils.detailedMethodName(tr.getMethod(), false),
+          tr.getMethod().getDescription(),
+          null,
+          tr.getParameters(),
           tr.getMethod().getMethod().getParameterTypes()
       );
     }
-    
+
     for(Object o : getPassedTests()) {
       ITestResult tr = (ITestResult) o;
       logResult("PASSED", tr, null);
@@ -116,7 +115,7 @@ public class TextReporter extends TestListenerAdapter {
     logBuf.append("\n===============================================\n");
     logResult("", logBuf.toString());
   }
-  
+
   private String getName() {
     return m_testName;
   }
@@ -132,18 +131,18 @@ public class TextReporter extends TestListenerAdapter {
       buf.append(status).append(": ");
     }
     buf.append(message);
-    
+
     System.out.println(buf);
   }
-  
-  private void logResult(String status, String name, 
-          String description, String stackTrace, 
+
+  private void logResult(String status, String name,
+          String description, String stackTrace,
           Object[] params, Class[] paramTypes) {
     StringBuffer msg= new StringBuffer(name);
 
     if(null != params && params.length > 0) {
       msg.append("(");
-      
+
       // The error might be a data provider parameter mismatch, so make
       // a special case here
       if (params.length != paramTypes.length) {
@@ -154,10 +153,12 @@ public class TextReporter extends TestListenerAdapter {
       }
       else {
         for(int i= 0; i < params.length; i++) {
-          if(i > 0) msg.append(", ");
+          if(i > 0) {
+            msg.append(", ");
+          }
           msg.append(Utils.toString(params[i], paramTypes[i]));
         }
-          
+
         msg.append(")");
       }
     }
@@ -171,10 +172,10 @@ public class TextReporter extends TestListenerAdapter {
     if ( ! Utils.isStringEmpty(stackTrace)) {
       msg.append("\n").append(stackTrace);
     }
-    
+
     logResult(status, msg.toString());
   }
-  
+
   public void ppp(String s) {
     System.out.println("[TextReporter " + getName() + "] " + s);
   }

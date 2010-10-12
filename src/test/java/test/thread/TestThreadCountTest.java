@@ -1,8 +1,8 @@
 package test.thread;
 
 import org.testng.Assert;
-import org.testng.annotations.Test;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.Test;
 import org.testng.internal.thread.ThreadUtil;
 
 import java.util.Collections;

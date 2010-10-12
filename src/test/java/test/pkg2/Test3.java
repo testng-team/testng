@@ -6,8 +6,8 @@ public class Test3 {
 
   @Test
   public void method31() {
-    
+
   }
-  
-  
+
+
 }

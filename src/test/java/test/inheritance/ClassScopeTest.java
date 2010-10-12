@@ -10,7 +10,7 @@ public class ClassScopeTest extends BaseClassScope {
   public void setVerify() {
     m_verify = true;
   }
-  
+
   @Test(dependsOnMethods = "setVerify")
   public void verify() {
     Assert.assertTrue(m_verify);

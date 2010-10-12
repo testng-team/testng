@@ -6,27 +6,27 @@ import java.util.Stack;
 /**
  * This class allows you to generate an XML text document by pushing
  * and popping tags from a stack maintained internally.
- * 
+ *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a> Jul 21, 2003
  */
 public class XMLStringBuffer {
   /** End of line */
   private static final String EOL = System.getProperty("line.separator");
-  
+
   /** Tab space indent for XML document */
   private static final String DEFAULT_INDENT_INCREMENT = "  ";
-  
+
   /** The buffer to hold the xml document */
   private final StringBuffer m_buffer;
-  
+
   /** The stack of tags to make sure XML document is well formed. */
   private final Stack<Tag> m_tagStack = new Stack<Tag>();
 
   /** A string of space character representing the current indentation. */
   private String m_currentIndent = "";
-  
+
   /**
-   * 
+   *
    * @param start A string of spaces indicating the indentation at which
    * to start the generation.
    */
@@ -36,26 +36,26 @@ public class XMLStringBuffer {
 
   /**
    * Set the xml version and encoding for this document.
-   * 
+   *
    * @param v the XML version
    * @param enc the XML encoding
    */
   public void setXmlDetails(String v, String enc) {
     m_buffer.append("<?xml version=\"" + v + "\" encoding=\"" + enc + "\"?>").append(EOL);
   }
-  
+
   /**
    * Set the doctype for this document.
-   * 
+   *
    * @param docType The DOCTYPE string, without the "&lt;!DOCTYPE " "&gt;"
    */
   public void setDocType(String docType) {
     m_buffer.append("<!DOCTYPE " + docType + ">" + EOL);
   }
-  
-  
+
+
   /**
-   * 
+   *
    * @param buffer The StringBuffer to use internally to represent the
    * document.
    * @param start A string of spaces indicating the indentation at which
@@ -65,12 +65,12 @@ public class XMLStringBuffer {
     m_buffer = buffer;
     m_currentIndent = start;
   }
-  
-  
+
+
   /**
    * Push a new tag.  Its value is stored and will be compared against the parameter
    * passed to pop().
-   * 
+   *
    * @param tagName The name of the tag.
    * @param schema The schema to use (can be null or an empty string).
    * @param attributes A Properties file representing the attributes (or null)
@@ -84,35 +84,35 @@ public class XMLStringBuffer {
   /**
    * Push a new tag.  Its value is stored and will be compared against the parameter
    * passed to pop().
-   * 
+   *
    * @param tagName The name of the tag.
    * @param schema The schema to use (can be null or an empty string).
    */
   public void push(String tagName, String schema) {
     push(tagName, schema, null);
   }
-  
+
   /**
    * Push a new tag.  Its value is stored and will be compared against the parameter
    * passed to pop().
-   * 
+   *
    * @param tagName The name of the tag.
    * @param attributes A Properties file representing the attributes (or null)
    */
   public void push(String tagName, Properties attributes) {
     push(tagName, "", attributes);
   }
-  
+
   /**
    * Push a new tag.  Its value is stored and will be compared against the parameter
    * passed to pop().
-   * 
+   *
    * @param tagName The name of the tag.
    */
   public void push(String tagName) {
     push(tagName, "");
   }
-    
+
   /**
    * Pop the last pushed element without verifying it if matches the previously
    * pushed tag.
@@ -120,11 +120,11 @@ public class XMLStringBuffer {
   public void pop() {
     pop(null);
   }
-  
+
   /**
    * Pop the last pushed element and throws an AssertionError if it doesn't
    * match the corresponding tag that was pushed earlier.
-   * 
+   *
    * @param tagName The name of the tag this pop() is supposed to match.
    */
   public void pop(String tagName) {
@@ -139,7 +139,7 @@ public class XMLStringBuffer {
     }
     XMLUtils.xmlClose(m_buffer, m_currentIndent, t.tagName);
   }
-  
+
   /**
    * Add a required element to the current tag.  An opening and closing tag
    * will be generated even if value is null.
@@ -171,7 +171,7 @@ public class XMLStringBuffer {
   public void addOptional(String tagName, String value, Properties attributes) {
     XMLUtils.xmlOptional(m_buffer, m_currentIndent, tagName, value, attributes);
   }
-  
+
   /**
    * Add an optional String element to the current tag.  If value is null, nothing is
    * added.
@@ -181,7 +181,7 @@ public class XMLStringBuffer {
   public void addOptional(String tagName, String value) {
     addOptional(tagName, value, null);
   }
-  
+
   /**
    * Add an optional Boolean element to the current tag.  If value is null, nothing is
    * added.
@@ -194,7 +194,7 @@ public class XMLStringBuffer {
       XMLUtils.xmlOptional(m_buffer, m_currentIndent, tagName, value.toString(), attributes);
     }
   }
-  
+
   /**
    * Add an optional Boolean element to the current tag.  If value is null, nothing is
    * added.
@@ -208,14 +208,14 @@ public class XMLStringBuffer {
 
   /**
    * Add an empty element tag (e.g. <foo/>)
-   * 
+   *
    * @param tagName The name of the tag
-   * 
+   *
    */
   public void addEmptyElement(String tagName) {
     addEmptyElement(tagName, null);
   }
-  
+
   /**
    * Add an empty element tag (e.g. <foo/>)
    * @param tagName The name of the tag
@@ -234,7 +234,7 @@ public class XMLStringBuffer {
   private static void ppp(String s) {
     System.out.println("[XMLStringBuffer] " + s);
   }
-  
+
   /**
    * Add a CDATA tag.
    */
@@ -254,27 +254,27 @@ public class XMLStringBuffer {
       m_buffer.append(m_currentIndent).append("<![CDATA[").append(content).append("]]>" + EOL);
     }
   }
-  
+
   /**
-   * 
+   *
    * @return The StringBuffer used to create the document.
    */
   public StringBuffer getStringBuffer() {
     return m_buffer;
   }
-  
+
   /**
-   * 
+   *
    * @return The String representation of the XML for this XMLStringBuffer.
    */
   public String toXML() {
     return m_buffer.toString();
   }
-  
+
   public static void main(String[] argv) {
     StringBuffer result = new StringBuffer();
     XMLStringBuffer sb = new XMLStringBuffer(result, "");
-    
+
     sb.push("family");
     Properties p = new Properties();
     p.setProperty("prop1", "value1");
@@ -283,9 +283,9 @@ public class XMLStringBuffer {
     sb.addRequired("alois", "true");
     sb.addOptional("anne-marie", (String) null);
     sb.pop();
-    
+
     System.out.println(result.toString());
-    
+
     assert ("<family>" + EOL + "<cedric>true</cedric>" + EOL + "<alois>true</alois>" + EOL + "</family>"  + EOL)
       .equals(result.toString());
   }
@@ -297,7 +297,7 @@ public class XMLStringBuffer {
 class Tag {
   public final String tagName;
   public final String indent;
-  
+
   public Tag(String ind, String n) {
     tagName = n;
     indent = ind;

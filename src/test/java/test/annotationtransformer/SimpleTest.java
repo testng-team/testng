@@ -9,7 +9,7 @@ public class SimpleTest {
   public SimpleTest(int n) {
     m_n = n;
   }
-  
+
   @Test
   public void run() {
     Assert.assertEquals(m_n, 42);

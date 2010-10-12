@@ -14,7 +14,7 @@ public class InstanceDataProviderSampleTest {
         new Object[] { Integer.valueOf(hashCode()) },
     };
   }
-  
+
   @BeforeClass
   public void beforeTest() {
     p("BEFORE");
@@ -25,7 +25,7 @@ public class InstanceDataProviderSampleTest {
     p("  PARAM:" + n);
     Assert.assertEquals(n, Integer.valueOf(hashCode()));
   }
-  
+
   @AfterClass
   public void afterTest() {
     p("AFTER");

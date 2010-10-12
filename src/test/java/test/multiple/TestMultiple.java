@@ -13,7 +13,7 @@ public class TestMultiple extends BaseTest {
     addClass(CLASS_NAME);
     run();
     String[] passed = {
-      "f1", 
+      "f1",
     };
     String[] failed = {
       "f1","f1","f1","f1","f1", "f1","f1","f1","f1",

@@ -17,7 +17,7 @@ public class Sample1Test {
   public Object[][] createData() {
     return new Object[][] {
         new Object[] { FN1, LN1 },
-        new Object[] { FN2, LN2 },      
+        new Object[] { FN2, LN2 },
       };
   }
 

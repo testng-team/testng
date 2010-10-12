@@ -1,6 +1,5 @@
 package org.testng.junit;
 
-
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.Doclet;
 import com.sun.javadoc.MethodDoc;
@@ -18,14 +17,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 /**
  * This class converts a file to TestNG if it's a JUnit test class.
- * 
+ *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  * @author <a href="mailto:the_mindstorm@evolva.ro">the_mindstorm</a>
  */
@@ -46,7 +44,7 @@ public class JUnitTestConverter extends Doclet {
    * @param fileNames
    */
   public JUnitTestConverter(File[] fileNames, File outDir, String release,
-      boolean useAnnotations, String[] groups) 
+      boolean useAnnotations, String[] groups)
   {
     m_fileNames = fileNames;
     m_outDir = outDir;
@@ -86,7 +84,7 @@ public class JUnitTestConverter extends Doclet {
 
   /**
    * This method is required for all doclets.
-   * 
+   *
    * @return true on success.
    */
   public static boolean start(RootDoc root) {
@@ -97,8 +95,9 @@ public class JUnitTestConverter extends Doclet {
         continue;
       }
 
-      if(!cd.isAbstract())
+      if(!cd.isAbstract()) {
         m_classNames.add(cd.qualifiedTypeName());
+      }
 
       File file;
       if (null != cd.position().file()) {
@@ -253,7 +252,7 @@ public class JUnitTestConverter extends Doclet {
         break;
       }
     }
-    
+
     String groupsLine = createGroupsLine(m_groups);
 
     //
@@ -264,11 +263,11 @@ public class JUnitTestConverter extends Doclet {
       int line = sp.line() + 2;
       if (isTest(md)) {
         lines.add(line, "  @Test" + groupsLine);
-      } 
+      }
       else if (isSetUp(md)) {
         ppp("ADDING NEW BEFORE AT " + line);
         lines.add(line, "  @BeforeMethod" + groupsLine);
-      } 
+      }
       else if (isTearDown(md)) {
         lines.add(line, "  @AfterMethod" + groupsLine);
       }
@@ -279,16 +278,18 @@ public class JUnitTestConverter extends Doclet {
 
   private String createGroupsLine(String[] groups) {
     StringBuffer result = new StringBuffer();
-    
+
     if (groups != null) {
       result.append("(groups = {");
       for (int i = 0; i < groups.length; i++) {
-        if (i > 0) result.append(", ");
+        if (i > 0) {
+          result.append(", ");
+        }
         result.append("\""+ groups[i] + "\"");
       }
       result.append("})");
     }
-     
+
     return result.toString();
   }
 
@@ -333,7 +334,9 @@ public class JUnitTestConverter extends Doclet {
   }
 
   private File getPackageOutputDir(File outDir, String packageName) {
-    if (packageName == null) packageName = "";
+    if (packageName == null) {
+      packageName = "";
+    }
     return new File(outDir, packageName.replace('.', File.separatorChar));
   }
 
@@ -342,7 +345,7 @@ public class JUnitTestConverter extends Doclet {
       String line = lines.get(i);
       if (line.indexOf("*/") != -1 && line.indexOf("/**") == -1) {
         return i;
-      } else if (line.indexOf("*/") != -1 && line.indexOf("/**") != -1) { 
+      } else if (line.indexOf("*/") != -1 && line.indexOf("/**") != -1) {
         // HINT /** and */ on same line: must split
         StringBuffer buf = new StringBuffer(line);
         int idx = buf.indexOf("*/");
@@ -359,7 +362,7 @@ public class JUnitTestConverter extends Doclet {
 
   /**
    * Convert a file into a list of its lines
-   * 
+   *
    * @throws IOException
    */
   private List<String> fileToLines(File file) throws IOException {

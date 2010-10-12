@@ -21,7 +21,7 @@ public class AA {
   @DataProvider
   public Object[][] dp() {
     return new Object[][] {
-      new Object[] { 42 },   
+      new Object[] { 42 },
     };
   }
 

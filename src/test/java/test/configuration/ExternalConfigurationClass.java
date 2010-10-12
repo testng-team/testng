@@ -32,10 +32,10 @@ public class ExternalConfigurationClass {
     assertFalse(MethodCallOrderTest.s_beforeTest);
     assertFalse(MethodCallOrderTest.s_beforeClass);
     assertFalse(MethodCallOrderTest.s_beforeMethod);
-    
+
     MethodCallOrderTest.s_beforeTest = true;
   }
-  
+
   @AfterTest
   public void afterTest() {
     assertTrue(s_afterMethod, "afterTestMethod should have been run");
@@ -43,7 +43,7 @@ public class ExternalConfigurationClass {
     assertFalse(s_afterTest, "afterTest should haven't been run");
     s_afterTest = true;
   }
-  
+
   @AfterSuite
   public void afterSuite() {
     assertTrue(s_afterMethod, "afterTestMethod should have been run");
