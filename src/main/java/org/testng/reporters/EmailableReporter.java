@@ -21,12 +21,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Reported designed to render self-contained HTML top down view of a testing
@@ -314,8 +315,8 @@ public class EmailableReporter implements IReporter {
    * @return
    */
   private Collection<ITestNGMethod> getMethodSet(IResultMap tests) {
-    Set r = new TreeSet<ITestNGMethod>(new TestSorter<ITestNGMethod>());
-    r.addAll(tests.getAllMethods());
+    List<ITestNGMethod> r = new ArrayList<ITestNGMethod>(tests.getAllMethods());
+    Arrays.sort(r.toArray(new ITestNGMethod[r.size()]), new TestSorter());
     return r;
   }
 
@@ -468,16 +469,18 @@ public class EmailableReporter implements IReporter {
 
   // ~ Inner Classes --------------------------------------------------------
   /** Arranges methods by classname and method name */
-  private class TestSorter<T extends ITestNGMethod> implements Comparator {
+  private class TestSorter implements Comparator<ITestNGMethod> {
     // ~ Methods -------------------------------------------------------------
 
     /** Arranges methods by classname and method name */
-    public int compare(Object o1, Object o2) {
-      int r = ((T) o1).getTestClass().getName().compareTo(((T) o2).getTestClass().getName());
-      if (r == 0) {
-        r = ((T) o1).getMethodName().compareTo(((T) o2).getMethodName());
-      }
-      return r;
+    public int compare(ITestNGMethod o1, ITestNGMethod o2) {
+      System.out.println("Comparing " + o1.getDate() + " and " + o2.getDate());
+      return (int) (o1.getDate() - o2.getDate());
+//      int r = ((T) o1).getTestClass().getName().compareTo(((T) o2).getTestClass().getName());
+//      if (r == 0) {
+//        r = ((T) o1).getMethodName().compareTo(((T) o2).getMethodName());
+//      }
+//      return r;
     }
   }
 }
