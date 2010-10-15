@@ -124,9 +124,8 @@ public final class ClassHelper {
    * @return the @Factory <CODE>method</CODE> or null
    *
    * FIXME: @Factory method must be public!
-   * TODO rename this method to findDeclaredFactoryMethod
    */
-  public static Method findFactoryMethod(Class<?> cls, IAnnotationFinder finder) {
+  public static Method findDeclaredFactoryMethod(Class<?> cls, IAnnotationFinder finder) {
     Method result = null;
 
     for (Method method : cls.getMethods()) {
