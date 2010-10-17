@@ -55,8 +55,6 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     m_testMethods = testMethods;
     m_suite = suite;
     m_parameters = parameters;
-//    m_invokedBeforeClassMethods = invokedBeforeClassMethods;
-//    m_invokedAfterClassMethods = invokedAfterClassMethods;
     m_allTestMethods = allTestMethods;
     m_groupMethods = groupMethods;
     m_classMethodMap = classMethodMap;
@@ -250,10 +248,6 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
   private void ppp(String s) {
     Utils.log("TestMethodWorker", 2, ThreadUtil.currentThreadInfo() + ":" + s);
-  }
-
-  public void setAllTestMethods(ITestNGMethod[] allTestMethods) {
-    m_allTestMethods = allTestMethods;
   }
 
   @Override
