@@ -418,6 +418,7 @@
       <class name="test.dataprovider.FailingIterableDataProviderTest" />
       <class name="test.dataprovider.ClassTest" />
       <class name="test.dataprovider.InheritedDataProviderTest" />
+      <class name="test.dataprovider.TestNG411Test" />
     </classes>
   </test>
 

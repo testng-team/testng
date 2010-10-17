@@ -3,6 +3,7 @@ Current
 Added: timeOut for configuration methods
 Added: -randomizesuites (Nalin Makar)
 Added: IConfigurable
+Fixed: TESTNG-411: Throw exception on mismatch of parameter values (via DP and/or Inject) and test parameters
 Fixed: IDEA-59073: exceptions that don't match don't have stack trace printed in console (Anna Kozlova)
 Fixed: IDEA's plug-in was not honoring ITest (fixed in TestResultMessage)
 Fixed: Methods depending on a group they belong were skipped instead of throwing a cycle exception

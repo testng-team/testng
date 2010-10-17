@@ -643,7 +643,7 @@ public class Invoker implements IInvoker {
           false /* isConfiguration */,
           System.currentTimeMillis());
 
-      runInvokedMethodListeners(true, invokedMethod, testResult);
+      runInvokedMethodListeners(true /* before */, invokedMethod, testResult);
 
       m_notifier.addInvokedMethod(invokedMethod);
 
@@ -725,7 +725,7 @@ public class Invoker implements IInvoker {
 
       //Run invokedMethodListeners after fixing the test results based on
       //expectedExceptions, if any
-      runInvokedMethodListeners(false, invokedMethod, testResult);
+      runInvokedMethodListeners(false /* before */, invokedMethod, testResult);
 
       // If this method has a data provider and just failed, memorize the number
       // at which it failed.
@@ -1124,8 +1124,8 @@ public class Invoker implements IInvoker {
               if (bag.parameterHolder.origin == ParameterHolder.ORIGIN_DATA_PROVIDER &&
                   bag.parameterHolder.dataProviderHolder.annotation.isParallel()) {
                 while (allParameterValues.hasNext()) {
-                  Object[] parameterValues = getInjectedParameters(testMethod,
-                      testContext, allParameterValues);
+                  Object[] parameterValues = injectParameters(allParameterValues.next(),
+                      testMethod.getMethod(), testContext, null /* test result */);
                   TestMethodWithDataProviderMethodWorker w =
                     new TestMethodWithDataProviderMethodWorker(this,
                         testMethod, parametersIndex,
@@ -1143,8 +1143,8 @@ public class Invoker implements IInvoker {
 
               } else {
                 while (allParameterValues.hasNext()) {
-                  Object[] parameterValues = getInjectedParameters(testMethod,
-                      testContext, allParameterValues);
+                  Object[] parameterValues = injectParameters(allParameterValues.next(),
+                      testMethod.getMethod(), testContext, null /* test result */);
 
                   List<ITestResult> tmpResults = Lists.newArrayList();
 
@@ -1262,18 +1262,30 @@ public class Invoker implements IInvoker {
     return result;
   }
 
-  private Object[] getInjectedParameters(ITestNGMethod testMethod,
-      ITestContext testContext, Iterator<Object[]> allParameterValues) {
-    Object[] rawParameterValues = allParameterValues.next();
-    Object[] parameterValues = injectParameters(rawParameterValues,
-        testMethod.getMethod(), testContext, null /* test result */);
-    return parameterValues;
-  }
-
+  /**
+   * Gets an array of parameter values returned by data provider or the ones that
+   * are injected based on parameter type. The method also checks for {@code NoInjection}
+   * annotation
+   * @param parameterValues parameter values from a data provider
+   * @param method method to be invoked
+   * @param context test context
+   * @param testResult test result
+   * @return
+   */
   private Object[] injectParameters(Object[] parameterValues, Method method,
-      ITestContext context, ITestResult testResult) {
+      ITestContext context, ITestResult testResult)
+    throws TestNGException {
     List<Object> vResult = Lists.newArrayList();
     int i = 0;
+    int numValues = parameterValues.length;
+    int numParams = method.getParameterTypes().length;
+
+    if (numValues > numParams) {
+      throw new TestNGException("Number of parameter values passed in using "
+          + "data provider exceeds number of parameters defined on test method");
+    }
+
+    // beyond this, numValues <= numParams
     for (Class<?> cls : method.getParameterTypes()) {
       Annotation[] annotations = method.getParameterAnnotations()[i];
       boolean noInjection = false;
@@ -1287,7 +1299,13 @@ public class Invoker implements IInvoker {
       if (injected != null && ! noInjection) {
         vResult.add(injected);
       } else {
-        vResult.add(parameterValues[i++]);
+        try {
+          vResult.add(parameterValues[i++]);
+        } catch (ArrayIndexOutOfBoundsException ex) {
+          throw new TestNGException("Number of parameter values passed in using "
+                + "data provider is less than number of parameters defined on "
+                + "test method and TestNG is unable in inject a suitable object", ex);
+        }
       }
     }
     return vResult.toArray(new Object[vResult.size()]);
