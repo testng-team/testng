@@ -23,6 +23,7 @@ import org.testng.annotations.NoInjection;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.InvokeMethodRunnable.TestNGRuntimeException;
+import org.testng.internal.ParameterHolder.ParameterOrigin;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.Sets;
@@ -1062,13 +1063,7 @@ public class Invoker implements IInvoker {
     ITestClass testClass= testMethod.getTestClass();
     long start = System.currentTimeMillis();
 
-    //
-    // TODO:
-    // - [DONE] revisit invocationCount, threadPoolSize values
-    // - try to remove the isWithinThreadedMethod: still needed to determine the @BeforeMethod + @AfterMethod
-    // - [DONE] solve the results different approaches: assignment and addAll
-    //
-    // For invocationCount>1 and threadPoolSize>1 the method will be invoked on a thread pool
+    // For invocationCount > 1 and threadPoolSize > 1 the method will be invoked on a thread pool
     long timeOutInvocationCount = testMethod.getInvocationTimeOut();
     boolean onlyOne = testMethod.getThreadPoolSize() > 1 ||
       timeOutInvocationCount > 0;
@@ -1121,7 +1116,7 @@ public class Invoker implements IInvoker {
             try {
               List<TestMethodWithDataProviderMethodWorker> workers = Lists.newArrayList();
 
-              if (bag.parameterHolder.origin == ParameterHolder.ORIGIN_DATA_PROVIDER &&
+              if (bag.parameterHolder.origin == ParameterOrigin.ORIGIN_DATA_PROVIDER &&
                   bag.parameterHolder.dataProviderHolder.annotation.isParallel()) {
                 while (allParameterValues.hasNext()) {
                   Object[] parameterValues = injectParameters(allParameterValues.next(),
