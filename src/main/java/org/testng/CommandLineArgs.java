@@ -82,13 +82,6 @@ public class CommandLineArgs {
   @Parameter(names = REPORTER, description = "Extended configuration for custom report listener")
   public String reporter;
 
-  /**
-   * Used as map key for the complete list of report listeners provided with the above argument
-   */
-  public static final String REPORTERS_LIST = "-reporterslist";
-  @Parameter(names = REPORTERS_LIST, hidden = true)
-  public String reportersList;
-
   public static final String USE_DEFAULT_LISTENERS = "-usedefaultlisteners";
   @Parameter(names = USE_DEFAULT_LISTENERS, description = "Whether to use the default listeners")
   public String useDefaultListeners = "true";
