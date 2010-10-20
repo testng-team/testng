@@ -15,6 +15,7 @@ Fixed: NPE while printing results for an empty suite (Nalin Makar)
 Fixed: Invoke IInvokedMethodListener.afterInvocation after fixing results for tests expecting exceptions (Nalin Makar)
 
 Eclipse:
+Added: It's now possible "Run/Debug As" with a right click from pretty much anywhere
 Added: The conversion of a JUnit test to TestNG now replaces @Test(timeout) with @Test(timeOut) (5.14.2.4)
 Added: The conversion of a JUnit test to TestNG now replaces @Test(expected) with @Test(expectedExceptions) (5.14.2.4)
 Added: The conversion of a JUnit test to TestNG now replaces fail() with AssertJUnit.fail() (5.14.2.2)
