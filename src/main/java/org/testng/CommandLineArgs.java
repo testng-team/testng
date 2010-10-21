@@ -1,9 +1,9 @@
 package org.testng;
 
-import org.testng.collections.Lists;
-
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.CommaSeparatedConverter;
+
+import org.testng.collections.Lists;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -145,4 +145,8 @@ public class CommandLineArgs {
   @Parameter(names = RANDOMIZE_SUITES, hidden = true,
       description = "Whether to run suites in same order as specified in XML or not")
   public Boolean randomizeSuites = Boolean.FALSE;
+
+  public static final String DEBUG = "-debug";
+  @Parameter(names = DEBUG, hidden = true, description = "Used to debug TestNG")
+  public Boolean debug = Boolean.FALSE;
 }
