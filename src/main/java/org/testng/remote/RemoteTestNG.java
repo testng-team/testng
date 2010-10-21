@@ -1,6 +1,9 @@
 package org.testng.remote;
 
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
+
 import org.testng.CommandLineArgs;
 import org.testng.IInvokedMethodListener;
 import org.testng.ISuite;
@@ -19,9 +22,7 @@ import org.testng.reporters.TestHTMLReporter;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterException;
-
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -35,9 +36,19 @@ import java.util.List;
 public class RemoteTestNG extends TestNG {
   private static final String LOCALHOST = "127.0.0.1";
 
+  // The following constants are referenced by the Eclipse plug-in, make sure you
+  // modify the plug-in as well if you change any of them.
+  public static final String DEBUG_PORT = "12345";
+  public static final String DEBUG_SUITE_FILE = "testng-customsuite.xml";
+  public static final String DEBUG_SUITE_DIRECTORY = System.getProperty("java.io.tmpdir");
+  public static final String PROPERTY_DEBUG = "testng.eclipse.debug";
+  public static final String PROPERTY_VERBOSE = "testng.eclipse.verbose";
+  // End of Eclipse constants.
+
   private ITestRunnerFactory m_customTestRunnerFactory;
   private String m_host;
   private int m_port;
+  private static boolean m_debug;
 
   public void setConnectionParameters(String host, int port) {
     if((null == host) || "".equals(host)) {
@@ -50,13 +61,6 @@ public class RemoteTestNG extends TestNG {
     m_port= port;
   }
 
-  @Override
-  public void configure(CommandLineArgs args) {
-    super.configure(args);
-    setConnectionParameters(args.host, args.port);
-    System.out.println("Setting connection parameters:" + m_host + ":" + m_port);
-  }
-
   private void calculateAllSuites(List<XmlSuite> suites, List<XmlSuite> outSuites) {
     for (XmlSuite s : suites) {
       outSuites.add(s);
@@ -66,9 +70,15 @@ public class RemoteTestNG extends TestNG {
 
   @Override
   public void run() {
-    final StringMessageSenderHelper msh= new StringMessageSenderHelper(m_host, m_port);
+    final StringMessageSenderHelper msh = new StringMessageSenderHelper(m_host, m_port);
+    msh.setDebug(isDebug());
     try {
       if(msh.connect()) {
+        // We couldn't do this until now in debug mode since the .xml file didn't exist yet.
+        // Now that we have connected with the Eclipse client, we know that it created the .xml
+        // file so we can proceed with the initialization
+        initializeSuitesAndJarFile();
+
         List<XmlSuite> suites = Lists.newArrayList();
         calculateAllSuites(m_suites, suites);
         if(suites.size() > 0) {
@@ -101,7 +111,9 @@ public class RemoteTestNG extends TestNG {
     }
     finally {
       msh.shutDown();
-      System.exit(0);
+      if (! m_debug) {
+        System.exit(0);
+      }
     }
   }
 
@@ -137,11 +149,57 @@ public class RemoteTestNG extends TestNG {
   public static void main(String[] args) throws ParameterException {
     CommandLineArgs cla = new CommandLineArgs();
     new JCommander(cla, args);
-    validateCommandLineParameters(cla);
     RemoteTestNG testNG = new RemoteTestNG();
+    m_debug = cla.debug;
+    if (m_debug) {
+      // In debug mode, override the port and the XML file to a fixed location
+      cla.port = Integer.parseInt(DEBUG_PORT);
+      cla.suiteFiles = Arrays.asList(new String[] {
+          DEBUG_SUITE_DIRECTORY + DEBUG_SUITE_FILE
+      });
+    }
     testNG.configure(cla);
-    testNG.initializeSuitesAndJarFile();
-    testNG.run();
+    testNG.setConnectionParameters(cla.host, cla.port);
+    if (isVerbose()) {
+      StringBuilder sb = new StringBuilder("Invoked with ");
+      for (String s : args) {
+        sb.append(s).append(" ");
+      }
+      p(sb.toString());
+    }
+    validateCommandLineParameters(cla);
+    if (m_debug) {
+      // Run in a loop if in debug mode so it is possible to run several launches
+      // without having to relauch RemoteTestNG.
+      while(true) {
+        testNG.run();
+      }
+    } else {
+      testNG.run();
+    }
+  }
+
+  private static void p(String s) {
+    if (isVerbose()) {
+      System.out.println("[RemoteTestNG] " + s);
+    }
+  }
+
+  public static boolean isVerbose() {
+    boolean result = System.getProperty(PROPERTY_VERBOSE) != null || isDebug();
+    return result;
+  }
+
+  public static boolean isDebug() {
+    return System.getProperty(PROPERTY_DEBUG) != null;
+  }
+
+  private String getHost() {
+    return m_host;
+  }
+
+  private int getPort() {
+    return m_port;
   }
 
   /** A ISuiteListener wiring the results using the internal string-based protocol. */
