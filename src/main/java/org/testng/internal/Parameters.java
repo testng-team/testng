@@ -11,6 +11,7 @@ import org.testng.annotations.IParameterizable;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
+import org.testng.internal.ParameterHolder.ParameterOrigin;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlSuite;
@@ -355,7 +356,7 @@ public class Parameters {
   }
 
   /**
-   * If the method has parameters, fill them in.  Either by using a @DataProvider
+   * If the method has parameters, fill them in. Either by using a @DataProvider
    * if any was provided, or by looking up <parameters> in testng.xml
    * @return An Iterator over the values for each parameter of this
    * method.
@@ -369,13 +370,12 @@ public class Parameters {
       Object fedInstance)
   {
     ParameterHolder result;
-
     Iterator<Object[]> parameters = null;
 
-    //
-    // Do we have a @DataProvider?  If yes, then we have several
-    // sets of parameters for this method
-    //
+    /*
+     * Do we have a @DataProvider? If yes, then we have several
+     * sets of parameters for this method
+     */
     DataProviderHolder dataProviderHolder =
         findDataProvider(testMethod.getTestClass().getRealClass(),
         testMethod.getMethod(), annotationFinder);
@@ -388,7 +388,7 @@ public class Parameters {
         allParameterNames.put(n, n);
       }
 
-      parameters  = MethodInvocationHelper.invokeDataProvider(
+      parameters = MethodInvocationHelper.invokeDataProvider(
           instance, /* a test instance or null if the dataprovider is static*/
           dataProviderHolder.method,
           testMethod,
@@ -399,12 +399,12 @@ public class Parameters {
       Iterator<Object[]> filteredParameters = filterParameters(parameters,
           testMethod.getInvocationNumbers());
 
-      result = new ParameterHolder(filteredParameters, ParameterHolder.ORIGIN_DATA_PROVIDER,
+      result = new ParameterHolder(filteredParameters, ParameterOrigin.ORIGIN_DATA_PROVIDER,
           dataProviderHolder);
     }
     else {
       //
-      // Normal case:  we have only one set of parameters coming from testng.xml
+      // Normal case: we have only one set of parameters coming from testng.xml
       //
       allParameterNames.putAll(methodParams.xmlParameters);
       // Create an Object[][] containing just one row of parameters
@@ -417,11 +417,9 @@ public class Parameters {
       // at the right time).
       testMethod.setParameterInvocationCount(allParameterValuesArray.length);
       // Turn it into an Iterable
-      parameters  = MethodHelper.createArrayIterator(allParameterValuesArray);
+      parameters = MethodHelper.createArrayIterator(allParameterValuesArray);
 
-      result = new ParameterHolder(parameters,
-          allParameterValuesArray.length == 0
-              ? ParameterHolder.ORIGIN_DATA_PROVIDER : ParameterHolder.ORIGIN_XML,
+      result = new ParameterHolder(parameters, ParameterOrigin.ORIGIN_XML,
           dataProviderHolder);
     }
 

@@ -1229,8 +1229,8 @@ public class TestNG {
           ClassHelper.fileToClass(cla.testRunnerFactory));
     }
 
-    if (cla.reportersList != null) {
-      ReporterConfig reporterConfig = ReporterConfig.deserialize(cla.reportersList);
+    if (cla.reporter != null) {
+      ReporterConfig reporterConfig = ReporterConfig.deserialize(cla.reporter);
       addReporter(reporterConfig);
     }
 
@@ -1354,9 +1354,9 @@ public class TestNG {
       result.testRunnerFactory = runnerFactory;
     }
 
-    String reporterConfigs = (String) cmdLineArgs.get(CommandLineArgs.REPORTERS_LIST);
+    String reporterConfigs = (String) cmdLineArgs.get(CommandLineArgs.REPORTER);
     if (reporterConfigs != null) {
-      result.reportersList = reporterConfigs;
+      result.reporter = reporterConfigs;
     }
 
     String failurePolicy = (String)cmdLineArgs.get(CommandLineArgs.CONFIG_FAILURE_POLICY);
