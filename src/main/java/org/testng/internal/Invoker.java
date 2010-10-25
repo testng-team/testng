@@ -1101,6 +1101,7 @@ public class Invoker implements IInvoker {
 
         testResult.setStatus(ITestResult.SKIP);
         result.add(testResult);
+        m_notifier.addSkippedTest(testMethod, testResult);
         runTestListeners(testResult);
         return result;
       }
