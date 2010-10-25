@@ -8,16 +8,24 @@
   </listeners>
 
   <test name="A">
+    <groups>
+      <run>
+        <include name="group-a" />
+      </run>
+    </groups>
     <packages>
       <package name="test.tmp.a" />
+      <package name="test.tmp.b" />
     </packages>
   </test>
 
+<!-- 
   <test name="B">
     <packages>
       <package name="test.tmp.b" />
     </packages>
   </test>
-
+ -->
+ 
 </suite>
 
