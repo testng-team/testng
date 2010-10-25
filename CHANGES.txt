@@ -3,6 +3,8 @@ Current
 Added: timeOut for configuration methods
 Added: -randomizesuites (Nalin Makar)
 Added: IConfigurable
+Fixed: Skipped tests were not always counted.
+Fixed: EmailableReporter now sorts methods chronologically
 Fixed: TESTNG-411: Throw exception on mismatch of parameter values (via DP and/or Inject) and test parameters
 Fixed: IDEA-59073: exceptions that don't match don't have stack trace printed in console (Anna Kozlova)
 Fixed: IDEA's plug-in was not honoring ITest (fixed in TestResultMessage)
@@ -23,6 +25,8 @@ Added: The conversion of a JUnit test to TestNG now replaces Assert with AssertJ
 Added: The progress bar is now orange if the suite contained skipped tests and no failures
 Added: Skipped test and suite icons are now orange (previously: blue)
 Added: New method shortcuts: "Alt+Shift+X N", "Alt+Shift+D N" (Sven Johansson)
+Fixed: The counter in the progress bar sometimes went over the total number of test methods (5.14.2.9)
+Fixed: org.eclipse.ui.internal.ErrorViewPart cannot be cast to org.testng.eclipse.ui.TestRunnerViewPart (5.14.2.9)
 Fixed: Workspace preferences now offer the "XML template" option as well as the project specific preferences (Asiel Brumfield)
 Fixed: TESTNG-418: Only last suite-file in testng.xml run by Eclipse plugin
 

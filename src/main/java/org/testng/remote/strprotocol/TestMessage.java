@@ -39,7 +39,7 @@ public class TestMessage implements IStringMessage {
   public TestMessage(final ITestContext testContext, final boolean isTestStart) {
     this(isTestStart,
          testContext.getSuite().getName(),
-         testContext.getName(),
+         testContext.getCurrentXmlTest().getName(),
          testContext.getAllTestMethods().length,
          testContext.getPassedTests().size(),
          testContext.getFailedTests().size(),

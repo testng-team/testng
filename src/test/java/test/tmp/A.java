@@ -1,6 +1,7 @@
 package test.tmp;
 
 import org.testng.Assert;
+import org.testng.SkipException;
 import org.testng.annotations.Test;
 
 //@Test(sequential = true)
@@ -44,7 +45,8 @@ public class A {
 
 //  @BeforeMethod
   public void bm() {
-    System.out.println("@BeforeMethod");
+    throw new RuntimeException("Ex");
+//    System.out.println("@BeforeMethod");
   }
 
   @Test
@@ -54,11 +56,16 @@ public class A {
 //    System.out.println("test1");
   }
 
-//  @Test
+  @Test(dependsOnMethods = "a1")
   public void a2() {
     System.out.println("test2");
 //    throw new RuntimeException("We have a problem");
 //    System.out.println("a2 " + Thread.currentThread().getId());
+  }
+
+  @Test
+  public void a3() {
+    throw new SkipException("Skipped");
   }
 }
 
