@@ -474,7 +474,7 @@ public class EmailableReporter implements IReporter {
 
     /** Arranges methods by classname and method name */
     public int compare(ITestNGMethod o1, ITestNGMethod o2) {
-      System.out.println("Comparing " + o1.getDate() + " and " + o2.getDate());
+//      System.out.println("Comparing " + o1.getDate() + " and " + o2.getDate());
       return (int) (o1.getDate() - o2.getDate());
 //      int r = ((T) o1).getTestClass().getName().compareTo(((T) o2).getTestClass().getName());
 //      if (r == 0) {
