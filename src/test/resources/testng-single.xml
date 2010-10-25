@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
   
-<suite name="SingleSuite" verbose="1" parallel="false" thread-count="4"
+<suite name="SingleSuite" verbose="2" parallel="false" thread-count="4"
     data-provider-thread-count="3">
 
   <parameter name="n" value="42" />
@@ -19,22 +19,24 @@
       <package name="test.hook" />
     </packages>
 -->
+<!-- 
     <groups>
       <run>
         <exclude name="broken" />
-<!-- 
         <include name="verifyBaseClassTestListener" />
- -->
        </run>
     </groups>
+ -->
     <parameter name="string" value="s"/>
     <classes>
       <class name="test.tmp.A">
+<!-- 
         <methods>
           <include name="a1" />
           <include name="a2" />
         </methods>
-      </class>
+ -->
+       </class>
 <!-- 
       <class name="test.dependent.DependentTest">
       </class>
