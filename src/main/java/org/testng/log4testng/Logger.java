@@ -10,8 +10,8 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * TestNG support logging via a custom logging framework similar to
@@ -352,7 +352,7 @@ public class Logger {
       }
       loglog4testng("log4testng.debug set to " + debug);
     }
-    
+
     {
       // Set the value of the root logger (if any).
       String rootLevelStr= pProperties.getProperty(ROOT_LOGGER);

@@ -101,6 +101,7 @@
       <class name="test.preserveorder.PreserveOrderTest" />
       <class name="test.listeners.ResultEndMillisTest" />
       <class name="test.SerializationTest" />
+      <class name="test.CountTest" />
     </classes>
   </test>
   
@@ -418,6 +419,7 @@
       <class name="test.dataprovider.FailingIterableDataProviderTest" />
       <class name="test.dataprovider.ClassTest" />
       <class name="test.dataprovider.InheritedDataProviderTest" />
+      <class name="test.dataprovider.TestNG411Test" />
     </classes>
   </test>
 

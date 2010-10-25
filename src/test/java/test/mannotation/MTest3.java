@@ -11,7 +11,7 @@ public class MTest3 extends MBase {
 
   @Test
   public void groups2() {}
-  
+
   @Test(dependsOnGroups = "dog2")
   public void dependsOnGroups1() {}
 
@@ -23,13 +23,13 @@ public class MTest3 extends MBase {
 
   @Test
   public void dependsOnMethods2() {}
-  
+
   @Test(enabled = false)
   public void enabled1() {}
-  
+
   @Test
   public void enabled2() {}
-  
+
   @Configuration(beforeSuite = true, groups = "method-test3")
   public void beforeSuite() {
   }

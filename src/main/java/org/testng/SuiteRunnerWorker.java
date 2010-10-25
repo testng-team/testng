@@ -70,11 +70,11 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
       StringBuffer bufLog = new StringBuffer("\n===============================================\n")
           .append(xmlSuite.getName());
       bufLog.append("\nTotal tests run: ")
-          .append(counts.total).append(", Failures: ").append(counts.failed)
-          .append(", Skips: ").append(counts.skipped);
-      if(counts.confFailures > 0 || counts.confSkips > 0) {
-        bufLog.append("\nConfiguration Failures: ").append(counts.confFailures)
-             .append(", Skips: ").append(counts.confSkips);
+          .append(counts.m_total).append(", Failures: ").append(counts.m_failed)
+          .append(", Skips: ").append(counts.m_skipped);
+      if(counts.m_confFailures > 0 || counts.m_confSkips > 0) {
+        bufLog.append("\nConfiguration Failures: ").append(counts.m_confFailures)
+             .append(", Skips: ").append(counts.m_confSkips);
       }
       bufLog.append("\n===============================================\n");
       System.out.println(bufLog.toString());
@@ -91,7 +91,7 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
     /*
      * Dummy Implementation
      *
-     * Used by IWorkers to prioritize execution in parallel. Not required by 
+     * Used by IWorkers to prioritize execution in parallel. Not required by
      * this Worker in current implementation
      */
     return 0;
@@ -103,7 +103,7 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
     suiteRunnerList.add(m_suiteRunner);
     return suiteRunnerList;
   }
-  
+
   @Override
   public String toString() {
     return "SuiteRunnerWorker(" + m_suiteRunner.getName() + ")";
@@ -126,31 +126,31 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
 
 /**
  * Class to help calculate result counts for tests run as part of a suite and
- * it's children suites
+ * its children suites
  *
  * @author nullin
  *
  */
 class SuiteResultCounts {
 
-  int total = 0;
-  int skipped = 0;
-  int failed = 0;
-  int confFailures = 0;
-  int confSkips = 0;
+  int m_total = 0;
+  int m_skipped = 0;
+  int m_failed = 0;
+  int m_confFailures = 0;
+  int m_confSkips = 0;
 
   public void calculateResultCounts(XmlSuite xmlSuite, Map<XmlSuite, ISuite> xmlToISuiteMap)
   {
     Collection<ISuiteResult> tempSuiteResult = xmlToISuiteMap.get(xmlSuite).getResults().values();
     for (ISuiteResult isr : tempSuiteResult) {
       ITestContext ctx = isr.getTestContext();
-      int _skipped = ctx.getSkippedTests().size();
-      int _failed = ctx.getFailedTests().size() + ctx.getFailedButWithinSuccessPercentageTests().size();
-      skipped += _skipped;
-      failed += _failed;
-      confFailures += ctx.getFailedConfigurations().size();
-      confSkips += ctx.getSkippedConfigurations().size();
-      total += ctx.getPassedTests().size() + _failed + _skipped;
+      int skipped = ctx.getSkippedTests().size();
+      int failed = ctx.getFailedTests().size() + ctx.getFailedButWithinSuccessPercentageTests().size();
+      m_skipped += skipped;
+      m_failed += failed;
+      m_confFailures += ctx.getFailedConfigurations().size();
+      m_confSkips += ctx.getSkippedConfigurations().size();
+      m_total += ctx.getPassedTests().size() + failed + skipped;
     }
 
     for (XmlSuite childSuite : xmlSuite.getChildSuites()) {

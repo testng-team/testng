@@ -1,8 +1,5 @@
 package test.interleavedorder;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.testng.Assert;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -11,6 +8,9 @@ import org.testng.annotations.Test;
 
 import test.BaseTest;
 import testhelper.OutputDirectoryPatch;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class InterleavedInvocationTest extends BaseTest {
@@ -38,7 +38,7 @@ public class InterleavedInvocationTest extends BaseTest {
     testng.addListener(tla);
     testng.setVerbose(0);
     testng.run();
-    
+
     Assert.assertEquals(LOG.size(), 8, LOG.toString());
     int number1 = "beforeTestChild1Class".equals(LOG.get(0)) ? 1 : 2;
     int number2 = number1 == 1 ? 2 : 1;

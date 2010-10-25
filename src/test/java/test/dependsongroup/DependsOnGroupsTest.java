@@ -15,7 +15,7 @@ public class DependsOnGroupsTest extends SimpleBaseTest {
     TestNG tng = create(new Class[] {
         ZeroSampleTest.class, FirstSampleTest.class, SecondSampleTest.class
     });
-    
+
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
     tng.run();

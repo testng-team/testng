@@ -4,7 +4,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class CreateDataTest {
-  
+
   /**
    * @testng.data-provider name = "create-data"
    */

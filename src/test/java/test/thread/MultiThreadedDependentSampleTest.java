@@ -8,7 +8,6 @@ import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 
 import java.util.List;
-import java.util.Random;
 
 public class MultiThreadedDependentSampleTest {
   public static List<String> m_methods = Lists.newArrayList();
@@ -74,7 +73,7 @@ public class MultiThreadedDependentSampleTest {
     logThread();
     log("b4");
   }
-  
+
   @Test(groups = "2", dependsOnGroups = "1")
   public void b5() {
     logThread();

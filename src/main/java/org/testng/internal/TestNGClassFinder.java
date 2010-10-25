@@ -1,14 +1,6 @@
 package org.testng.internal;
 
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.testng.IClass;
 import org.testng.IInstanceInfo;
 import org.testng.IObjectFactory;
@@ -21,6 +13,13 @@ import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class creates an ITestClass from a test class.
@@ -53,7 +52,7 @@ public class TestNGClassFinder extends BaseClassFinder {
     if(objectFactory == null) {
       objectFactory = new ObjectFactoryImpl();
       outer:
-      for (Class cls : allClasses)
+      for (Class cls : allClasses) {
         try {
           if (null != cls) {
             for (Method m : cls.getMethods()) {
@@ -81,15 +80,14 @@ public class TestNGClassFinder extends BaseClassFinder {
         } catch (NoClassDefFoundError e) {
           Utils.log("[TestNGClassFinder]", 1, "Unable to read methods on class " + cls.getName() + " - unable to resolve class reference " + e.getMessage());
 
-          for (Iterator<XmlClass> iterator = xmlTest.getXmlClasses().iterator(); iterator.hasNext();) {
-            XmlClass xmlClass = iterator.next();
-
+          for (XmlClass xmlClass : xmlTest.getXmlClasses()) {
             if (xmlClass.getDeclaredClass() == Boolean.TRUE && xmlClass.getName().equals(cls.getName())) {
               throw e;
             }
           }
 
         }
+      }
     }
 
     for(Class cls : allClasses) {
@@ -99,7 +97,7 @@ public class TestNGClassFinder extends BaseClassFinder {
         for(Class c : allClasses) {
           ppp("  " + i + ": " + c);
         }
-        
+
         continue;
       }
 
@@ -123,7 +121,7 @@ public class TestNGClassFinder extends BaseClassFinder {
           Object instance= theseInstances[0];
           putIClass(cls, ic);
 
-          Method factoryMethod= ClassHelper.findFactoryMethod(cls, annotationFinder);
+          Method factoryMethod= ClassHelper.findDeclaredFactoryMethod(cls, annotationFinder);
           if(null != factoryMethod) {
             FactoryMethod fm= new FactoryMethod( /* cls, */
               factoryMethod,

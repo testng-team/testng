@@ -16,10 +16,11 @@ public class FutureResultAdapter implements IFutureResult {
       m_future = future;
    }
 
-   public Object get() throws InterruptedException, ThreadExecutionException {
+   @Override
+  public Object get() throws InterruptedException, ThreadExecutionException {
       try {
          return m_future.get();
-      } 
+      }
       catch(ExecutionException ee) {
          throw new ThreadExecutionException(ee.getCause()); // NOTE there is no need to keep the EE
       }

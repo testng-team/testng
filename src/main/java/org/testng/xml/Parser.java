@@ -17,19 +17,19 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <code>Parser</code> is a parser for a TestNG XML test suite file.   
+ * <code>Parser</code> is a parser for a TestNG XML test suite file.
  */
 public class Parser {
-  
+
   /** The name of the TestNG DTD. */
   public static final String TESTNG_DTD = "testng-1.0.dtd";
-  
+
   /** The URL to the deprecated TestNG DTD. */
   public static final String DEPRECATED_TESTNG_DTD_URL = "http://beust.com/testng/" + TESTNG_DTD;
-  
+
   /** The URL to the TestNG DTD. */
   public static final String TESTNG_DTD_URL = "http://testng.org/" + TESTNG_DTD;
-  
+
   /** The default file name for the TestNG test suite if none is specified (testng.xml). */
   public static final String DEFAULT_FILENAME = "testng.xml";
 
@@ -40,20 +40,20 @@ public class Parser {
   /** The file name of the xml suite being parsed. This may be null if the Parser
    * has not been initialized with a file name. TODO CQ This member is never used. */
   private String m_fileName;
-  
+
   private InputStream m_inputStream;
 
   /**
    * Constructs a <code>Parser</code> to use the inputStream as the source of
-   * the xml test suite to parse. 
+   * the xml test suite to parse.
    * @param filename the filename corresponding to the inputStream or null if
    * unknown.
-   * @param inputStream the xml test suite input stream. 
+   * @param inputStream the xml test suite input stream.
    */
   public Parser(String fileName) {
     init(fileName, null, null);
   }
-  
+
   /**
    * Creates a parser that will try to find the DEFAULT_FILENAME from the jar.
    * @throws FileNotFoundException if the DEFAULT_FILENAME resource is not
@@ -112,7 +112,7 @@ public class Parser {
    * tags.
    *
    * @return the parsed TestNG test suite.
-   * 
+   *
    * @throws ParserConfigurationException
    * @throws SAXException
    * @throws IOException if an I/O error occurs while parsing the test suite file or
@@ -126,7 +126,7 @@ public class Parser {
     // (e.g. "testng.xml" and "./testng.xml")
     List<String> processedSuites = Lists.newArrayList();
     XmlSuite resultSuite = null;
-    
+
     File parentFile = null;
     String mainFilePath = null;
 
@@ -140,13 +140,13 @@ public class Parser {
     List<String> toBeAdded = Lists.newArrayList();
     List<String> toBeRemoved = Lists.newArrayList();
     toBeParsed.add(mainFilePath);
-    
+
     /*
      * Keeps a track of parent XmlSuite for each child suite
      */
     Map<String, XmlSuite> childToParentMap = Maps.newHashMap();
     while (toBeParsed.size() > 0) {
-      
+
       for (String currentFile : toBeParsed) {
         InputStream inputStream = m_inputStream != null
             ? m_inputStream
@@ -157,7 +157,7 @@ public class Parser {
         XmlSuite currentXmlSuite = result;
         processedSuites.add(currentFile);
         toBeRemoved.add(currentFile);
-        
+
         if (childToParentMap.containsKey(currentFile)) {
            XmlSuite parentSuite = childToParentMap.get(currentFile);
            //Set parent
@@ -165,11 +165,11 @@ public class Parser {
            //append children
            parentSuite.getChildSuites().add(currentXmlSuite);
         }
-        
+
         if (null == resultSuite) {
            resultSuite = currentXmlSuite;
         }
-        
+
         List<String> suiteFiles = currentXmlSuite.getSuiteFiles();
         if (suiteFiles.size() > 0) {
           for (String path : suiteFiles) {
@@ -186,7 +186,7 @@ public class Parser {
           }
         }
       }
-      
+
       //
       // Add and remove files from toBeParsed before we loop
       //
@@ -194,22 +194,22 @@ public class Parser {
         toBeParsed.remove(s);
       }
       toBeRemoved = Lists.newArrayList();
-      
+
       for (String s : toBeAdded) {
         toBeParsed.add(s);
       }
       toBeAdded = Lists.newArrayList();
-      
+
     }
-    
+
     //returning a list of single suite to keep changes minimum
     List<XmlSuite> resultList = Lists.newArrayList();
     resultList.add(resultSuite);
     return resultList;
 
   }
-  
-  public List<XmlSuite> parseToList() 
+
+  public List<XmlSuite> parseToList()
     throws ParserConfigurationException, SAXException, IOException
   {
     List<XmlSuite> result = Lists.newArrayList();
@@ -217,11 +217,11 @@ public class Parser {
     for (XmlSuite suite : suites) {
       result.add(suite);
     }
-    
+
     return result;
   }
 
-  
+
 
 }
 

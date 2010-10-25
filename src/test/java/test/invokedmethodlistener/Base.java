@@ -20,16 +20,16 @@ public class Base {
   @BeforeMethod
   public void beforeMethod() {
   }
-  
+
   @AfterMethod
   public void afterMethod() {}
 
   @BeforeTest
   public void beforeTest() {}
-  
+
   @AfterTest
   public void afterTest() {}
-  
+
   @BeforeClass
   public void beforeClass() {}
 
@@ -41,12 +41,16 @@ public class Base {
 
   @AfterSuite
   public void afterSuite() {
-    if (m_fail) throw new RuntimeException("After Suite FAILING");
+    if (m_fail) {
+      throw new RuntimeException("After Suite FAILING");
+    }
   }
 
   @Test
   public void a() {
-     if (m_fail) throw new IllegalArgumentException("Test Method FAILING");
+     if (m_fail) {
+      throw new IllegalArgumentException("Test Method FAILING");
+    }
   }
-  
+
 }

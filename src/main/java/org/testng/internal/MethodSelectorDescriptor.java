@@ -1,22 +1,22 @@
 package org.testng.internal;
 
-import java.util.List;
-
 import org.testng.IMethodSelector;
 import org.testng.ITestNGMethod;
 
+import java.util.List;
+
 /**
- * This class describes a method selector: 
+ * This class describes a method selector:
  * - The class that implements it
  * - Its priority
- * 
+ *
  * Created on Sep 26, 2005
  * @author cbeust
  */
 public class MethodSelectorDescriptor implements Comparable {
   private IMethodSelector m_methodSelector;
   private int m_priority;
-  
+
   public int getPriority() {
     return m_priority;
   }
@@ -30,9 +30,10 @@ public class MethodSelectorDescriptor implements Comparable {
     m_priority = priority;
   }
 
+  @Override
   public int compareTo(Object o) {
     int result = 0;
-    
+
     try {
       MethodSelectorDescriptor other = (MethodSelectorDescriptor) o;
       int p1 = getPriority();
@@ -42,12 +43,12 @@ public class MethodSelectorDescriptor implements Comparable {
     catch(Exception ex) {
       // ignore
     }
-    
+
     return result;
   }
 
   public void setTestMethods(List<ITestNGMethod> testMethods) {
     m_methodSelector.setTestMethods(testMethods);
-    
+
   }
 }

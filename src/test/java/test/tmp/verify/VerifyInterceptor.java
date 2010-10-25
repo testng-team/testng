@@ -18,13 +18,14 @@ public class VerifyInterceptor implements IMethodInterceptor {
   /**
    * @return the list of methods received in parameters with all methods
    * annotated with @Verify inserted after each of these test methods.
-   * 
+   *
    * This happens in two steps:
    * - Find all the methods annotated with @Verify in the classes that contain test methods
    * - Insert these verify methods after each method passed in parameter
    * These @Verify methods are stored in a map keyed by the class in order to avoid looking them
    * up more than once on the same class.
    */
+  @Override
   public List<IMethodInstance> intercept(List<IMethodInstance> methods,
       ITestContext context) {
 
@@ -54,17 +55,22 @@ public class VerifyInterceptor implements IMethodInterceptor {
         final ITestNGMethod vm = TestNGUtils.createITestNGMethod(tm, m);
         result.add(new IMethodInstance() {
 
+          @Override
           public Object[] getInstances() {
             return tm.getInstances();
           }
 
+          @Override
           public ITestNGMethod getMethod() {
             return vm;
           }
 
           public int compareTo(IMethodInstance o) {
-            if (getInstances()[0] == o.getInstances()[0]) return 0;
-            else return -1;
+            if (getInstances()[0] == o.getInstances()[0]) {
+              return 0;
+            } else {
+              return -1;
+            }
           }
         });
       }

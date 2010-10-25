@@ -7,7 +7,6 @@ import org.testng.annotations.Test;
 
 import test.SimpleBaseTest;
 
-import java.io.File;
 import java.util.Arrays;
 
 public class JarTest extends SimpleBaseTest {

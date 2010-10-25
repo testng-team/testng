@@ -15,7 +15,7 @@ public class MethodInheritance {
    * @param methodClass
    * @return
    */
-  private static List<ITestNGMethod> findMethodListSuperClass(Map<Class, List<ITestNGMethod>> map, 
+  private static List<ITestNGMethod> findMethodListSuperClass(Map<Class, List<ITestNGMethod>> map,
       Class< ? extends ITestNGMethod> methodClass)
   {
     for (Map.Entry<Class, List<ITestNGMethod>> entry : map.entrySet()) {
@@ -25,22 +25,22 @@ public class MethodInheritance {
     }
     return null;
   }
-  
+
   /**
    * Look in map for a class that is a subclass of methodClass
    * @param map
    * @param methodClass
    * @return
    */
-  private static Class findSubClass(Map<Class, List<ITestNGMethod>> map, 
+  private static Class findSubClass(Map<Class, List<ITestNGMethod>> map,
       Class< ? extends ITestNGMethod> methodClass)
   {
     for (Class cls : map.keySet()) {
       if (methodClass.isAssignableFrom(cls)) {
-        return cls; 
+        return cls;
       }
     }
-    
+
     return null;
   }
 
@@ -48,7 +48,7 @@ public class MethodInheritance {
    * Fix the methodsDependedUpon to make sure that @Configuration methods
    * respect inheritance (before methods are invoked in the order Base first
    * and after methods are invoked in the order Child first)
-   * 
+   *
    * @param methods the list of methods
    * @param before true if we are handling a before method (meaning, the methods
    * need to be sorted base class first and subclass last). false otherwise (subclass
@@ -57,7 +57,7 @@ public class MethodInheritance {
   public static void fixMethodInheritance(ITestNGMethod[] methods, boolean before) {
     // Map of classes -> List of methods that belong to this class or same hierarchy
     Map<Class, List<ITestNGMethod>> map = Maps.newHashMap();
-    
+
     //
     // Put the list of methods in their hierarchy buckets
     //
@@ -82,7 +82,7 @@ public class MethodInheritance {
         }
       }
     }
-    
+
     //
     // Each bucket that has a list bigger than one element gets sorted
     //
@@ -90,12 +90,12 @@ public class MethodInheritance {
       if (l.size() > 1) {
         // Sort them
         sortMethodsByInheritance(l, before);
-        
+
         /*
          *  Set methodDependedUpon accordingly
          *  E.g. Base class can have multiple @BeforeClass methods. Need to ensure
          *  that @BeforeClass methods in derived class depend on all @BeforeClass methods
-         *  of base class. Vice versa for @AfterXXX methods  
+         *  of base class. Vice versa for @AfterXXX methods
          */
         for (int i = 0; i < l.size() - 1; i++) {
           ITestNGMethod m1 = l.get(i);
@@ -110,14 +110,14 @@ public class MethodInheritance {
       }
     }
   }
-  
+
   private static boolean dependencyExists(ITestNGMethod m1, ITestNGMethod m2, ITestNGMethod[] methods) {
-    return true == internalDependencyExists(m1, m2, methods) 
+    return true == internalDependencyExists(m1, m2, methods)
        ? true : internalDependencyExists(m2, m1, methods);
   }
-  
+
   private static boolean internalDependencyExists(ITestNGMethod m1, ITestNGMethod m2, ITestNGMethod[] methods) {
-    ITestNGMethod[] methodsNamed = 
+    ITestNGMethod[] methodsNamed =
       MethodHelper.findDependedUponMethods(m1, methods);
 
     for (ITestNGMethod method : methodsNamed) {
@@ -127,7 +127,7 @@ public class MethodInheritance {
     }
 
     for (String group : m1.getGroupsDependedUpon()) {
-      ITestNGMethod[] methodsThatBelongToGroup = 
+      ITestNGMethod[] methodsThatBelongToGroup =
         MethodGroupsHelper.findMethodsThatBelongToGroup(m1, methods, group);
       for (ITestNGMethod method : methodsThatBelongToGroup) {
          if (method.equals(m2)) {
@@ -143,7 +143,7 @@ public class MethodInheritance {
     try {
       Class c1 = m1.getRealClass();
       Class c2 = m2.getRealClass();
-      
+
       return c1 == null ? c2 == null : c1.equals(c2);
     }
     catch(Exception ex) {
@@ -151,13 +151,13 @@ public class MethodInheritance {
     }
   }
 
-  
+
   /**
    * Given a list of methods belonging to the same class hierarchy, orders them
    * from the base class to the child (if true) or from child to base class (if false)
    * @param methods
    */
-  private static void sortMethodsByInheritance(List<ITestNGMethod> methods, 
+  private static void sortMethodsByInheritance(List<ITestNGMethod> methods,
       boolean baseClassToChild)
   {
     Collections.sort(methods);

@@ -7,12 +7,12 @@ package test.triangle;
  */
 public class CountCalls {
   static int numCalls = 0;
-  
+
   public static void incr () {
     numCalls++;
   }
-  
-  public static int getNumCalls() { 
+
+  public static int getNumCalls() {
     return numCalls;
   }
 }

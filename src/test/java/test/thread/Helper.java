@@ -16,10 +16,10 @@ public class Helper {
       return result;
     }
 //    System.out.println("Putting class:" + className + " result:" + result);
-    
+
   }
-  
+
   public static void reset() {
-    m_maps = new HashMap<String, Map<Long, Long>>();    
+    m_maps = new HashMap<String, Map<Long, Long>>();
   }
 }

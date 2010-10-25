@@ -9,18 +9,18 @@ public class FactoryTest implements ITest {
   public static int m_count = 0;
 
   private String name;
-	
+
 	@Override
   public String getTestName() {
 		return  this.name;
 	}
-	
+
 	public FactoryTest(String name){
-		
+
 		this.name = name;
-		
+
 	}
-	
+
 	@Test(retryAnalyzer = MyRetry.class)
 	public void someTest1(){
 		System.out.println("Test Called : "+ this.name);
@@ -29,13 +29,13 @@ public class FactoryTest implements ITest {
 			m_count++;
 			Assert.fail();
 		}else{
-		
+
 		Assert.assertEquals(true, true);
 		}
-	} 
+	}
 
 
-	
-	
+
+
 
 }

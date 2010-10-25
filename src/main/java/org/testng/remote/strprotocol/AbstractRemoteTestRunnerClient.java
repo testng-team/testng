@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *     Julien Ruaux: jruaux@octo.com
  *     Vincent Massol: vmassol@octo.com
- *     
+ *
  * Adapted by:
  *     Alexandru Popescu: the_mindstorm@evolva.ro
  ******************************************************************************/
@@ -36,7 +36,7 @@ public abstract class AbstractRemoteTestRunnerClient {
    */
   protected IRemoteSuiteListener[] m_suiteListeners;
   protected IRemoteTestListener[] m_testListeners;
-  
+
   /**
    * The server socket
    */
@@ -54,18 +54,18 @@ public abstract class AbstractRemoteTestRunnerClient {
                                           ServerConnection serverConnection) {
     m_suiteListeners= suiteListeners;
     m_testListeners= testListeners;
-    
+
     serverConnection.start();
   }
-  
+
   public IRemoteSuiteListener[] getSuiteListeners() {
     return m_suiteListeners;
   }
-  
+
   public IRemoteTestListener[] getTestListeners() {
     return m_testListeners;
   }
-  
+
   private synchronized void shutdown() {
     if(m_outputWriter != null) {
       m_outputWriter.close();
@@ -116,14 +116,14 @@ public abstract class AbstractRemoteTestRunnerClient {
       shutdown();
     }
   }
-  
+
   private String readMessage(BufferedReader in) throws IOException {
     return in.readLine();
   }
 
   private void receiveMessage(String message) {
     int messageType = MessageHelper.getMessageType(message);
-    
+
     try {
       if(messageType < MessageHelper.SUITE) {
         // Generic message
@@ -134,18 +134,18 @@ public abstract class AbstractRemoteTestRunnerClient {
         // Suite message
         SuiteMessage sm = MessageHelper.createSuiteMessage(message);
         notifySuiteEvents(sm);
-      } 
+      }
       else if(messageType < MessageHelper.TEST_RESULT) {
         // Test message
         TestMessage tm = MessageHelper.createTestMessage(message);
         notifyTestEvents(tm);
-      } 
+      }
       else {
         // TestResult message
         TestResultMessage trm = MessageHelper.unmarshallTestResultMessage(message);
         notifyResultEvents(trm);
       }
-    } 
+    }
     finally {
       if(isRunning() && (null != m_outputWriter)) {
         m_outputWriter.println(MessageHelper.ACK_MSG);
@@ -157,12 +157,12 @@ public abstract class AbstractRemoteTestRunnerClient {
   protected abstract void notifyStart(final GenericMessage genericMessage);
 
   protected abstract void notifySuiteEvents(final SuiteMessage suiteMessage);
-  
+
   protected abstract void notifyTestEvents(final TestMessage testMessage);
-  
+
   protected abstract void notifyResultEvents(final TestResultMessage testResultMessage);
 
-  
+
   /**
    * Reads the message stream from the RemoteTestRunner
    */
@@ -188,7 +188,7 @@ public abstract class AbstractRemoteTestRunnerClient {
         }
         try {
           m_outputWriter = new PrintWriter(new OutputStreamWriter(fSocket.getOutputStream(), "UTF-8"),
-                                    true); //$NON-NLS-1$
+                                    true);
         }
         catch(UnsupportedEncodingException e1) {
           m_outputWriter = new PrintWriter(new OutputStreamWriter(fSocket.getOutputStream()), true);
@@ -208,8 +208,8 @@ public abstract class AbstractRemoteTestRunnerClient {
         shutdown();
       }
     }
-    
+
     protected abstract void handleThrowable(Throwable cause);
   }
-  
+
 }

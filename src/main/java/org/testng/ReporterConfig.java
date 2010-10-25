@@ -9,11 +9,13 @@ import java.util.List;
 
 /**
  * Stores the information regarding the configuration of a pluggable report listener. Used also
- * in conjunction withe the &lt;reporter&gt; sub-element of the Ant task
+ * in conjunction with the &lt;reporter&gt; sub-element of the Ant task
+ *
+ * NOTE: this class needs to be public. It's used by TestNG Ant task
  *
  * @author Cosmin Marginean, Apr 12, 2007
  */
-class ReporterConfig {
+public class ReporterConfig {
 
   /**
    * The class name of the reporter listener
@@ -25,7 +27,7 @@ class ReporterConfig {
    */
   private List<Property> m_properties = Lists.newArrayList();
 
-  private void addProperty(Property property) {
+  public void addProperty(Property property) {
     m_properties.add(property);
   }
 
@@ -41,7 +43,7 @@ class ReporterConfig {
     this.m_className = className;
   }
 
-  protected String serialize() {
+  public String serialize() {
     StringBuffer sb = new StringBuffer();
     sb.append(m_className);
     if (!m_properties.isEmpty()) {
@@ -60,7 +62,7 @@ class ReporterConfig {
     return sb.toString();
   }
 
-  protected static ReporterConfig deserialize(String inputString) {
+  public static ReporterConfig deserialize(String inputString) {
     ReporterConfig reporterConfig = null;
     if (!Utils.isStringEmpty(inputString)) {
       reporterConfig = new ReporterConfig();
@@ -91,7 +93,7 @@ class ReporterConfig {
   /**
    * Creates a reporter based on the current configuration
    */
-  protected Object newReporterInstance() {
+  public Object newReporterInstance() {
     Object result = null;
     Class reporterClass = ClassHelper.forName(m_className);
     if (reporterClass != null) {
@@ -103,7 +105,7 @@ class ReporterConfig {
     return result;
   }
 
-  private static class Property {
+  public static class Property {
     private String name;
     private String value;
 
@@ -124,6 +126,7 @@ class ReporterConfig {
     }
   }
 
+  @Override
   public String toString() {
     StringBuffer buf = new StringBuffer();
     buf.append("\nClass = " + m_className);

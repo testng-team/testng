@@ -37,13 +37,13 @@ public class ConfigurationGroupMethods implements Serializable {
 
   public ConfigurationGroupMethods(ITestNGMethod[] allMethods,
                                    Map<String, List<ITestNGMethod>> beforeGroupsMethods,
-                                   Map<String, List<ITestNGMethod>> afterGroupsMethods) 
+                                   Map<String, List<ITestNGMethod>> afterGroupsMethods)
   {
     m_allMethods= allMethods;
     m_beforeGroupsMethods= beforeGroupsMethods;
     m_afterGroupsMethods= afterGroupsMethods;
   }
-  
+
   public Map<String, List<ITestNGMethod>> getBeforeGroupsMethods() {
     return m_beforeGroupsMethods;
   }
@@ -71,11 +71,13 @@ public class ConfigurationGroupMethods implements Serializable {
     }
 
     List<ITestNGMethod> methodsInGroup= m_afterGroupsMap.get(group);
-    
-    if(null == methodsInGroup || methodsInGroup.isEmpty()) return false;
-    
+
+    if(null == methodsInGroup || methodsInGroup.isEmpty()) {
+      return false;
+    }
+
     methodsInGroup.remove(method);
-    
+
     // Note:  == is not good enough here as we may work with ITestNGMethod clones
     return methodsInGroup.isEmpty();
 
@@ -97,7 +99,7 @@ public class ConfigurationGroupMethods implements Serializable {
 
     return result;
   }
-  
+
   public synchronized void removeBeforeMethod(String group, ITestNGMethod method) {
     List<ITestNGMethod> methods= m_beforeGroupsMethods.get(group);
     if(methods != null) {
@@ -135,7 +137,7 @@ public class ConfigurationGroupMethods implements Serializable {
 //      log("Removing before group " + group);
       m_afterGroupsMethods.remove(group);
     }
-    
+
   }
 
 }

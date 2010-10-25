@@ -9,7 +9,7 @@ import java.util.List;
  * included in the HTML report:
  * - User-generated report
  * - Parameter info
- * 
+ *
  * Created on Feb 16, 2006
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */

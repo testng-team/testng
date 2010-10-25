@@ -1,16 +1,5 @@
 package org.testng.reporters;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-
 import org.testng.IInvokedMethod;
 import org.testng.IReporter;
 import org.testng.ISuite;
@@ -23,9 +12,20 @@ import org.testng.collections.Maps;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlSuite;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+
 /**
  * This class implements an HTML reporter for suites.
- * 
+ *
  * @author cbeust
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
@@ -37,28 +37,30 @@ public class SuiteHTMLReporter implements IReporter {
   public static final String REPORTER_OUTPUT = "reporter-output.html";
   public static final String METHODS_NOT_RUN = "methods-not-run.html";
   public static final String TESTNG_XML = "testng.xml.html";
-  
+
   private Map<String, ITestClass> m_classes = Maps.newHashMap();
   private String m_outputDirectory;
-  
+
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
     m_outputDirectory = outputDirectory;
-    
+
     try {
       HtmlHelper.generateStylesheet(outputDirectory);
     } catch (IOException e) {
       //  TODO Propagate the exception properly.
       e.printStackTrace();
     }
-    
+
     for (int i = 0; i < suites.size(); i++) {
-      
+
       //
       // Generate the various reports
       //
       ISuite suite = suites.get(i);
       XmlSuite xmlSuite = suite.getXmlSuite();
-      if (xmlSuite.getTests().size() == 0) continue;
+      if (xmlSuite.getTests().size() == 0) {
+        continue;
+      }
       generateTableOfContents(xmlSuite, suite);
       generateSuites(xmlSuite, suite);
       generateIndex(xmlSuite, suite);
@@ -74,18 +76,18 @@ public class SuiteHTMLReporter implements IReporter {
 
     generateIndex(suites);
   }
-  
+
   private void generateXmlFile(XmlSuite xmlSuite, ISuite suite) {
     String content = xmlSuite.toXml().replaceAll("<", "&lt;").replaceAll(">", "&gt;")
           .replaceAll(" ", "&nbsp;").replaceAll("\n", "<br/>");
-    
+
     StringBuffer sb = new StringBuffer("<html>");
-    
+
     sb.append("<head><title>").append("testng.xml for ")
       .append(xmlSuite.getName()).append("</title></head><body><tt>")
       .append(content)
       .append("</tt></body></html>");
-    
+
     Utils.writeFile(getOutputDirectory(xmlSuite), TESTNG_XML, sb.toString());
   }
 
@@ -102,21 +104,23 @@ public class SuiteHTMLReporter implements IReporter {
       .append("<h2><p align='center'>").append(title).append("</p></h2>\n")
       .append("<table border='1' width='100%' class='main-page'>")
       .append("<tr><th>Suite</th><th>Passed</th><th>Failed</th><th>Skipped</th><th>testng.xml</th></tr>\n");
-    
+
     int totalFailedTests = 0;
     int totalPassedTests = 0;
     int totalSkippedTests = 0;
-    
+
     StringBuffer suiteBuf= new StringBuffer();
     for (ISuite suite : suites) {
-      if (suite.getResults().size() == 0) continue;
-      
+      if (suite.getResults().size() == 0) {
+        continue;
+      }
+
       String name = suite.getName();
-    
+
       int failedTests= 0;
       int passedTests= 0;
       int skippedTests= 0;
-      
+
       Map<String, ISuiteResult> results = suite.getResults();
       for (ISuiteResult result : results.values()) {
         ITestContext context = result.getTestContext();
@@ -127,8 +131,8 @@ public class SuiteHTMLReporter implements IReporter {
         skippedTests += context.getSkippedTests().size();
         totalSkippedTests += context.getSkippedTests().size();
       }
-      
-      String cls = failedTests > 0 ? "invocation-failed" 
+
+      String cls = failedTests > 0 ? "invocation-failed"
           : (passedTests > 0  ? "invocation-passed" : "invocation-failed");
       suiteBuf.append("<tr align='center' class='").append(cls).append("'>")
         .append("<td><a href='").append(name).append("/index.html'>")
@@ -138,10 +142,10 @@ public class SuiteHTMLReporter implements IReporter {
         .append("<td>" + skippedTests + "</td>")
         .append("<td><a href='").append(name).append("/").append(TESTNG_XML).append("'>Link").append("</a></td>")
         .append("</tr>");
-      
+
     }
-    
-    String cls= totalFailedTests > 0 ? "invocation-failed" 
+
+    String cls= totalFailedTests > 0 ? "invocation-failed"
         : (totalPassedTests > 0 ? "invocation-passed" : "invocation-failed");
     sb.append("<tr align='center' class='").append(cls).append("'>")
       .append("<td><em>Total</em></td>")
@@ -152,12 +156,12 @@ public class SuiteHTMLReporter implements IReporter {
       .append("</tr>\n");
     sb.append(suiteBuf);
     sb.append("</table>").append("</body></html>\n");
-  
+
     Utils.writeFile(m_outputDirectory, "index.html", sb.toString());
   }
 
   private void generateExcludedMethodsReport(XmlSuite xmlSuite, ISuite suite) {
-      Collection<ITestNGMethod> excluded = suite.getExcludedMethods(); 
+      Collection<ITestNGMethod> excluded = suite.getExcludedMethods();
       StringBuffer sb2 = new StringBuffer("<h2>Methods that were not run</h2><table>\n");
       for (ITestNGMethod method : excluded) {
         Method m = method.getMethod();
@@ -171,13 +175,13 @@ public class SuiteHTMLReporter implements IReporter {
         }
       }
       sb2.append("</table>");
-      
+
       Utils.writeFile(getOutputDirectory(xmlSuite), METHODS_NOT_RUN, sb2.toString());
   }
 
   private void generateReporterOutput(XmlSuite xmlSuite, ISuite suite) {
     StringBuffer sb = new StringBuffer();
-    
+
     //
     // Reporter output
     //
@@ -187,12 +191,12 @@ public class SuiteHTMLReporter implements IReporter {
     for (String line : output) {
       sb.append("<tr><td>").append(line).append("</td></tr>\n");
     }
-    
+
     sb.append("</table>");
-    
-    Utils.writeFile(getOutputDirectory(xmlSuite), REPORTER_OUTPUT, sb.toString());    
+
+    Utils.writeFile(getOutputDirectory(xmlSuite), REPORTER_OUTPUT, sb.toString());
   }
-    
+
   private void generateClasses(XmlSuite xmlSuite, ISuite suite) {
     StringBuffer sb = new StringBuffer();
     sb.append("<table border='1'>\n")
@@ -203,29 +207,29 @@ public class SuiteHTMLReporter implements IReporter {
     .append("</tr>")
     ;
     for (ITestClass tc : m_classes.values()) {
-      sb.append(generateClass(tc));      
+      sb.append(generateClass(tc));
     }
-    
+
     sb.append("</table>\n");
-    
-    Utils.writeFile(getOutputDirectory(xmlSuite), CLASSES, sb.toString());    
+
+    Utils.writeFile(getOutputDirectory(xmlSuite), CLASSES, sb.toString());
   }
-  
+
   private final static String SP = "&nbsp;";
   private final static String SP2 = SP + SP + SP + SP;
   private final static String SP3 = SP2 + SP2;
   private final static String SP4 = SP3 + SP3;
-  
+
   private String generateClass(ITestClass cls) {
     StringBuffer sb = new StringBuffer();
-    
+
     sb.append("<tr>\n")
       .append("<td>").append(cls.getRealClass().getName()).append("</td>\n")
       .append("<td>&nbsp;</td>")
       .append("<td>&nbsp;</td>")
       .append("</tr>\n")
       ;
-    
+
     String[] tags = new String[] {
         "@Test",
         "@BeforeClass",
@@ -240,7 +244,7 @@ public class SuiteHTMLReporter implements IReporter {
       cls.getAfterTestMethods(),
       cls.getAfterClassMethods()
     };
-    
+
     for (int i = 0; i < tags.length; i++) {
       sb.append("<tr>\n")
       .append("<td align='center' colspan='3'>").append(tags[i]).append("</td>\n")
@@ -253,26 +257,26 @@ public class SuiteHTMLReporter implements IReporter {
 //
 //    sb.append("<div>").append(SP3).append("Test methods\n")
 //      .append(dumpMethods(cls.getTestMethods())).append("</div>\n")
-//      .append("<div>").append(SP3).append("@BeforeClass\n") 
+//      .append("<div>").append(SP3).append("@BeforeClass\n")
 //      .append(dumpMethods(cls.getBeforeClassMethods())).append("</div>\n")
-//      .append("<div>").append(SP3).append("@BeforeMethod\n") 
+//      .append("<div>").append(SP3).append("@BeforeMethod\n")
 //      .append(dumpMethods(cls.getBeforeTestMethods())).append("</div>\n")
-//      .append("<div>").append(SP3).append("@AfterMethod\n") 
+//      .append("<div>").append(SP3).append("@AfterMethod\n")
 //      .append(dumpMethods(cls.getAfterTestMethods())).append("</div>\n")
-//      .append("<div>").append(SP3).append("@AfterClass\n") 
+//      .append("<div>").append(SP3).append("@AfterClass\n")
 //      .append(dumpMethods(cls.getAfterClassMethods())).append("</div>\n")
 //     ;
-    
+
     String result = sb.toString();
     return result;
   }
-  
+
   private String dumpMethods(ITestNGMethod[] testMethods) {
     StringBuffer sb = new StringBuffer();
     if(null == testMethods || testMethods.length == 0) {
       return "";
     }
-    
+
     for (ITestNGMethod m : testMethods) {
       sb.append("<tr>\n");
       sb.append("<td>&nbsp;</td>\n")
@@ -290,8 +294,8 @@ public class SuiteHTMLReporter implements IReporter {
         sb.append("<td>&nbsp;</td>");
       }
       sb.append("</tr>\n");
-    }    
-    
+    }
+
 //    StringBuffer sb = new StringBuffer("<br/>");  //"<table bgcolor=\"#c0c0c0\"/>");
 //    for (ITestNGMethod tm : testMethods) {
 //      sb
@@ -300,42 +304,42 @@ public class SuiteHTMLReporter implements IReporter {
 //      .append("<br/>");
 //      ;
 //    }
-    
-    
+
+
     String result = sb.toString();
     return result;
   }
-  
+
   private String dumpGroups(String[] groups) {
     StringBuffer sb = new StringBuffer();
-    
+
     if (null != groups && groups.length > 0) {
       sb.append(SP4).append("<em>[");
-      
+
       for (String g : groups) {
         sb.append(g).append(" ");
       }
-      
+
       sb.append("]</em><br/>\n");
     }
-    
+
     String result = sb.toString();
     return result;
   }
-  
+
   /**
    * Generate information about the methods that were run
    */
   public static final String AFTER= "&lt;&lt;";
   public static final String BEFORE = "&gt;&gt;";
   private void generateMethodsChronologically(XmlSuite xmlSuite, ISuite suite,
-      String outputFileName, boolean alphabetical) 
+      String outputFileName, boolean alphabetical)
   {
     StringBuffer sb = new StringBuffer();
-    
+
     sb.append("<h2>Methods run, sorted chronologically</h2>");
     sb.append("<h3>" + BEFORE + " means before, " + AFTER + " means after</h3><p/>");
-    
+
     long startDate = -1;
     sb.append("<br/><em>").append(suite.getName()).append("</em><p/>");
     sb.append("<small><i>(Hover the method name to see the test class name)</i></small><p/>\n");
@@ -354,7 +358,7 @@ public class SuiteHTMLReporter implements IReporter {
       };
       Collections.sort((List) invokedMethods, alphabeticalComparator);
     }
-    
+
     SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
     StringBuffer table = new StringBuffer();
     boolean addedHeader = false;
@@ -399,13 +403,15 @@ public class SuiteHTMLReporter implements IReporter {
       String configurationSuiteMethod = isSuiteConfiguration ? (bs ? BEFORE : AFTER) + methodName : SP;
       String setUpOrTearDownMethod = isSetupOrTearDown ? (setUp ? BEFORE : AFTER) + methodName : SP;
       String testMethod = tm.isTest() ? methodName : SP;
-      
+
       StringBuffer instances = new StringBuffer();
       for (long o : tm.getInstanceHashCodes()) {
         instances.append(o).append(" ");
       }
-      
-      if (startDate == -1) startDate = iim.getDate();
+
+      if (startDate == -1) {
+        startDate = iim.getDate();
+      }
       String date = format.format(iim.getDate());
       table.append("<tr bgcolor=\"" + createColor(tm) + "\">")
         .append("  <td>").append(date).append("</td> ")
@@ -438,25 +444,27 @@ public class SuiteHTMLReporter implements IReporter {
     };
     // Not too dark
     for (int i = 0; i < rgb.length; i++) {
-      if (rgb[i] < 0x60) rgb[i] += 0x60;
+      if (rgb[i] < 0x60) {
+        rgb[i] += 0x60;
+      }
     }
     long adjustedColor = (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
     String result = Long.toHexString(adjustedColor);
-    
+
     return result;
   }
 
   private String td(String s) {
     StringBuffer result = new StringBuffer();
     String prefix = "";
-    
+
     if (s.startsWith(BEFORE)) {
       prefix = BEFORE;
     }
     else if (s.startsWith(AFTER)) {
       prefix = AFTER;
     }
-    
+
     if (! s.equals(SP)) {
       result.append("<td title=\"").append(s).append("\">");
       int open = s.lastIndexOf("(");
@@ -473,22 +481,22 @@ public class SuiteHTMLReporter implements IReporter {
     else {
       result.append("<td>").append(SP).append("</td>");
     }
-    
+
     return result.toString();
   }
-  
+
   private void ppp(String s) {
     System.out.println("[SuiteHTMLReporter] " + s);
   }
-  
+
   /**
    * Generate information about methods and groups
    */
   private void generateMethodsAndGroups(XmlSuite xmlSuite, ISuite suite) {
     StringBuffer sb = new StringBuffer();
-    
+
     Map<String, Collection<ITestNGMethod>> groups = suite.getMethodsByGroups();
-    
+
     sb.append("<h2>Groups used for this test run</h2>");
     if (groups.size() > 0) {
       sb.append("<table border=\"1\">\n")
@@ -510,12 +518,12 @@ public class SuiteHTMLReporter implements IReporter {
         }
         sb.append("<td>" + methodNames.toString() + "</td></tr>\n");
       }
-  
+
       sb.append("</table>\n");
     }
-    Utils.writeFile(getOutputDirectory(xmlSuite), GROUPS, sb.toString());    
+    Utils.writeFile(getOutputDirectory(xmlSuite), GROUPS, sb.toString());
   }
-  
+
   private void generateIndex(XmlSuite xmlSuite, ISuite sr) {
     StringBuffer index = new StringBuffer()
     .append("<html><head><title>Results for " + sr.getName() + "</title></head>\n")
@@ -525,30 +533,30 @@ public class SuiteHTMLReporter implements IReporter {
     .append("</frameset>\n")
     .append("</html>\n")
     ;
-    
-    Utils.writeFile(getOutputDirectory(xmlSuite), "index.html", index.toString());    
+
+    Utils.writeFile(getOutputDirectory(xmlSuite), "index.html", index.toString());
   }
-  
+
   private String makeTitle(ISuite suite) {
     return "Results for<br/><em>" + suite.getName() + "</em>";
   }
-  
+
   private void generateMain(XmlSuite xmlSuite, ISuite sr) {
     StringBuffer index = new StringBuffer()
     .append("<html><head><title>Results for " + sr.getName() + "</title></head>\n")
     .append("<body>Select a result on the left-hand pane.</body>")
     .append("</html>\n")
     ;
-    
-    Utils.writeFile(getOutputDirectory(xmlSuite), "main.html", index.toString());    
-  }  
-  
+
+    Utils.writeFile(getOutputDirectory(xmlSuite), "main.html", index.toString());
+  }
+
   /**
-   * 
+   *
    */
   private void generateTableOfContents(XmlSuite xmlSuite, ISuite suite) {
     StringBuffer tableOfContents = new StringBuffer();
-    
+
     //
     // Generate methods and groups hyperlinks
     //
@@ -558,14 +566,14 @@ public class SuiteHTMLReporter implements IReporter {
     for (ISuiteResult sr : suiteResults.values()) {
       ITestNGMethod[] methods = sr.getTestContext().getAllTestMethods();
       methodCount += Utils.calculateInvokedMethodCount(methods);
-        
+
       // Collect testClasses
       for (ITestNGMethod tm : methods) {
         ITestClass tc = tm.getTestClass();
         m_classes.put(tc.getRealClass().getName(), tc);
       }
     }
-      
+
     String name = "Results for " + suite.getName();
     tableOfContents
         .append("<html>\n")
@@ -600,25 +608,25 @@ public class SuiteHTMLReporter implements IReporter {
         .append("<td><a target='mainFrame' href='").append(TESTNG_XML).append("'>testng.xml</a></td>\n")
         .append("</tr>")
         .append("</table>");
-      
+
       //
       // Generate results for individual tests
       //
-      
+
       // Order the results so we can show the failures first, then the skip and
       // finally the successes
       Map<String, ISuiteResult> redResults = Maps.newHashMap();
       Map<String, ISuiteResult> yellowResults = Maps.newHashMap();
       Map<String, ISuiteResult> greenResults = Maps.newHashMap();
-      
+
       for (Map.Entry<String, ISuiteResult> entry : suiteResults.entrySet()) {
         String suiteName = entry.getKey();
         ISuiteResult sr = entry.getValue();
         ITestContext tc = sr.getTestContext();
-        int failed = tc.getFailedTests().size(); 
+        int failed = tc.getFailedTests().size();
         int skipped = tc.getSkippedTests().size();
         int passed = tc.getPassedTests().size();
-        
+
         if (failed > 0) {
           redResults.put(suiteName, sr);
         }
@@ -632,12 +640,12 @@ public class SuiteHTMLReporter implements IReporter {
           redResults.put(suiteName, sr);
         }
       }
-  
-      
+
+
       ISuiteResult[][] results = new ISuiteResult[][] {
         sortResults(redResults.values()), sortResults(yellowResults.values()), sortResults(greenResults.values())
       };
-      
+
       String[] colors = {"failed", "skipped", "passed"};
       for (int i = 0; i < colors.length; i++) {
         ISuiteResult[] r = results[i];
@@ -646,11 +654,11 @@ public class SuiteHTMLReporter implements IReporter {
           generateSuiteResult(suiteName, sr, colors[i], tableOfContents, m_outputDirectory);
         }
       }
-    
+
     tableOfContents.append("</body></html>");
     Utils.writeFile(getOutputDirectory(xmlSuite), "toc.html", tableOfContents.toString());
   }
-  
+
   private String pluralize(int count, String singular) {
     return count > 1 ? (singular.endsWith("s") ? singular + "es" : singular + "s") : singular;
   }
@@ -665,15 +673,15 @@ public class SuiteHTMLReporter implements IReporter {
     return result;
   }
 
-  private void generateSuiteResult(String suiteName, 
-                                   ISuiteResult sr, 
-                                   String cssClass, 
-                                   StringBuffer tableOfContents, 
+  private void generateSuiteResult(String suiteName,
+                                   ISuiteResult sr,
+                                   String cssClass,
+                                   StringBuffer tableOfContents,
                                    String outputDirectory)
   {
     ITestContext tc = sr.getTestContext();
     int passed = tc.getPassedTests().size();
-    int failed = tc.getFailedTests().size(); 
+    int failed = tc.getFailedTests().size();
     int skipped = tc.getSkippedTests().size();
     String baseFile = tc.getName();
     tableOfContents
@@ -691,10 +699,10 @@ public class SuiteHTMLReporter implements IReporter {
       .append("</tr></table>\n")
       .append("</td></tr><p/>\n")
       ;
-    
+
     tableOfContents.append("</table>\n");
   }
-  
+
   /**
    * Writes a property file for each suite result.
    *
@@ -707,11 +715,11 @@ public class SuiteHTMLReporter implements IReporter {
     for (ISuiteResult sr : suiteResults.values()) {
       ITestContext testContext = sr.getTestContext();
       StringBuffer sb = new StringBuffer();
-      
+
       for (ISuiteResult suiteResult : suiteResults.values()) {
         sb.append(suiteResult.toString());
       }
       Utils.writeFile(getOutputDirectory(xmlSuite), testContext.getName() + ".properties", sb.toString());
-    }    
+    }
   }
 }

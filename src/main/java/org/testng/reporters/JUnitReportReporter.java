@@ -62,17 +62,19 @@ public class JUnitReportReporter implements IReporter {
 
         boolean isError = ! (tr.getThrowable() instanceof AssertionError);
         if (tr.getStatus() != ITestResult.SUCCESS) {
-          if (isError) errors++;
-          else failures++;
+          if (isError) {
+            errors++;
+          } else {
+            failures++;
+          }
         }
         Properties p2 = new Properties();
-        p2.setProperty("classname", tr.getMethod().getMethod().getDeclaringClass().getName());
+        p2.setProperty("classname", cls.getName());
         p2.setProperty("name", tr.getMethod().getMethodName());
         long time = tr.getEndMillis() - tr.getStartMillis();
-        p2.setProperty("time", "" + time);
+        p2.setProperty("time", "" + formatTime(time));
         Throwable t = getThrowable(tr, failedConfigurations);
         if (t != null) {
-          t.fillInStackTrace();
           StringWriter sw = new StringWriter();
           PrintWriter pw = new PrintWriter(sw);
           t.printStackTrace(pw);
@@ -91,9 +93,7 @@ public class JUnitReportReporter implements IReporter {
       p1.setProperty("errors", "" + errors);
       p1.setProperty("name", cls.getName());
       p1.setProperty("tests", "" + testCount);
-      DecimalFormat format = new DecimalFormat("#.###");
-      format.setMinimumFractionDigits(3);
-      p1.setProperty("time", "" + format.format(totalTime / 1000.0f));
+      p1.setProperty("time", "" + formatTime(totalTime));
       try {
         p1.setProperty(XMLConstants.ATTR_HOSTNAME, InetAddress.getLocalHost().getHostName());
       } catch (UnknownHostException e) {
@@ -109,12 +109,16 @@ public class JUnitReportReporter implements IReporter {
 
       xsb.push("testsuite", p1);
       for (TestTag testTag : testCases) {
-        if (testTag.stackTrace == null) xsb.addEmptyElement("testcase", testTag.properties);
+        if (testTag.stackTrace == null) {
+          xsb.addEmptyElement("testcase", testTag.properties);
+        }
         else {
           xsb.push("testcase", testTag.properties);
 
           Properties p = new Properties();
-          if (testTag.message != null) p.setProperty("message", testTag.message);
+          if (testTag.message != null) {
+            p.setProperty("message", testTag.message);
+          }
           p.setProperty("type", testTag.type);
           xsb.push(testTag.errorTag, p);
           xsb.addCDATA(testTag.stackTrace);
@@ -134,6 +138,12 @@ public class JUnitReportReporter implements IReporter {
 
   }
 
+  private String formatTime(float time) {
+    DecimalFormat format = new DecimalFormat("#.###");
+    format.setMinimumFractionDigits(3);
+    return format.format(time / 1000.0f);
+  }
+
   private Throwable getThrowable(ITestResult tr,
       Map<Class<?>, Set<ITestResult>> failedConfigurations) {
     Throwable result = tr.getThrowable();
@@ -145,7 +155,9 @@ public class JUnitReportReporter implements IReporter {
           // out if it's this failure that caused the skip since (maybe by
           // seeing if the class of the configuration method is assignable to
           // the class of the test method, although that's not 100% fool proof
-          if (failure.getThrowable() != null) return failure.getThrowable();
+          if (failure.getThrowable() != null) {
+            return failure.getThrowable();
+          }
         }
       }
     }

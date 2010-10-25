@@ -31,10 +31,10 @@ import java.util.Set;
  * @author Cedric Beust, Apr 26, 2004
  */
 public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener {
-  
+
   /* generated */
   private static final long serialVersionUID = 5284208932089503131L;
-  
+
   private static final String DEFAULT_OUTPUT_DIR = "test-output";
 
   private Map<String, ISuiteResult> m_suiteResults = Maps.newHashMap();
@@ -50,13 +50,13 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
   transient private ITestRunnerFactory m_runnerFactory;
   transient private boolean m_useDefaultListeners = true;
-  
+
   // The remote host where this suite was run, or null if run locally
   private String m_host;
 
   // The configuration
   transient private IConfiguration m_configuration;
-  
+
   transient private IObjectFactory m_objectFactory;
   transient private Boolean m_skipFailedInvocationCounts = Boolean.FALSE;
 
@@ -69,21 +69,21 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 //  transient private IAnnotationTransformer m_annotationTransformer = null;
 
   public SuiteRunner(IConfiguration configuration, XmlSuite suite,
-      String outputDir) 
+      String outputDir)
   {
     this(configuration, suite, outputDir, null);
   }
 
-  public SuiteRunner(IConfiguration configuration, XmlSuite suite, String outputDir, 
-      ITestRunnerFactory runnerFactory) 
+  public SuiteRunner(IConfiguration configuration, XmlSuite suite, String outputDir,
+      ITestRunnerFactory runnerFactory)
   {
     this(configuration, suite, outputDir, runnerFactory, false);
   }
-  
+
   public SuiteRunner(IConfiguration configuration,
-      XmlSuite suite, 
-      String outputDir, 
-      ITestRunnerFactory runnerFactory, 
+      XmlSuite suite,
+      String outputDir,
+      ITestRunnerFactory runnerFactory,
       boolean useDefaultListeners)
   {
     this(configuration, suite, outputDir, runnerFactory, useDefaultListeners,
@@ -91,11 +91,11 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
         null /* invoked method listeners */,
         null /* test listeners */);
   }
-  
+
   protected SuiteRunner(IConfiguration configuration,
-      XmlSuite suite, 
-      String outputDir, 
-      ITestRunnerFactory runnerFactory, 
+      XmlSuite suite,
+      String outputDir,
+      ITestRunnerFactory runnerFactory,
       boolean useDefaultListeners,
       IMethodInterceptor methodInterceptor,
       List<IInvokedMethodListener> invokedMethodListeners,
@@ -104,11 +104,11 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     init(configuration, suite, outputDir, runnerFactory, useDefaultListeners,
       methodInterceptor, invokedMethodListeners, testListeners);
   }
-  
+
   private void init(IConfiguration configuration,
-    XmlSuite suite, 
-    String outputDir, 
-    ITestRunnerFactory runnerFactory, 
+    XmlSuite suite,
+    String outputDir,
+    ITestRunnerFactory runnerFactory,
     boolean useDefaultListeners,
     IMethodInterceptor methodInterceptor,
     List<IInvokedMethodListener> invokedMethodListener,
@@ -152,7 +152,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       m_testRunners.add(tr);
     }
   }
-  
+
   @Override
   public XmlSuite getXmlSuite() {
     return m_suite;
@@ -170,7 +170,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   public void setReportResults(boolean reportResults) {
     m_useDefaultListeners = reportResults;
   }
-  
+
   private void invokeListeners(boolean start) {
     for (ISuiteListener sl : m_listeners) {
       if (start) {
@@ -187,28 +187,28 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
         && m_useDefaultListeners) {
       outputdir= DEFAULT_OUTPUT_DIR;
     }
-    
+
     m_outputDir = (null != outputdir) ? new File(outputdir).getAbsolutePath()
         : null;
   }
 
   private ITestRunnerFactory buildRunnerFactory() {
     ITestRunnerFactory factory = null;
-    
+
     if (null == m_tmpRunnerFactory) {
       factory = new DefaultTestRunnerFactory(m_configuration,
-          m_testListeners.toArray(new ITestListener[m_testListeners.size()]), 
+          m_testListeners.toArray(new ITestListener[m_testListeners.size()]),
           m_useDefaultListeners, m_skipFailedInvocationCounts);
     }
     else {
       factory = new ProxyTestRunnerFactory(
-          m_testListeners.toArray(new ITestListener[m_testListeners.size()]), 
+          m_testListeners.toArray(new ITestListener[m_testListeners.size()]),
           m_tmpRunnerFactory);
     }
-    
+
     return factory;
   }
-  
+
   @Override
   public String getParallel() {
     return m_suite.getParallel();
@@ -226,19 +226,19 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   }
 
   private void privateRun() {
-    
+
     // Map for unicity, Linked for guaranteed order
     Map<Method, ITestNGMethod> beforeSuiteMethods= new LinkedHashMap<Method, ITestNGMethod>();
     Map<Method, ITestNGMethod> afterSuiteMethods = new LinkedHashMap<Method, ITestNGMethod>();
 
     IInvoker invoker = null;
-    
+
     // Get the invoker and find all the suite level methods
     for (TestRunner tr: m_testRunners) {
       // TODO: Code smell.  Invoker should belong to SuiteRunner, not TestRunner
       // -- cbeust
       invoker = tr.getInvoker();
-      
+
       for (ITestNGMethod m : tr.getBeforeSuiteMethods()) {
         beforeSuiteMethods.put(m.getMethod(), m);
       }
@@ -263,25 +263,25 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       }
 
       Utils.log("SuiteRunner", 3, "Created " + m_testRunners.size() + " TestRunners");
-  
+
       //
       // Run all the test runners
       //
       boolean testsInParallel = XmlSuite.PARALLEL_TESTS.equals(m_suite.getParallel());
       if (!testsInParallel) {
         runSequentially();
-      } 
+      }
       else {
         runInParallelTestMode();
       }
-      
+
 //      SuitePlan sp = new SuitePlan();
 //      for (TestRunner tr : m_testRunners) {
 //        sp.addTestPlan(tr.getTestPlan());
 //      }
-      
+
 //      sp.dump();
-  
+
       //
       // Invoke afterSuite methods
       //
@@ -330,7 +330,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     for(TestRunner tr: m_testRunners) {
       tasks.add(new SuiteWorker(tr));
     }
-    
+
     ThreadUtil.execute(tasks, m_suite.getThreadCount(),
         m_suite.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS), false);
   }
@@ -344,7 +344,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
       @Override
       public void run() {
-        Utils.log("[SuiteWorker]", 4, "Running XML Test '" 
+        Utils.log("[SuiteWorker]", 4, "Running XML Test '"
                   +  m_testRunner.getTest().getName() + "' in Parallel");
         runTest(m_testRunner);
       }
@@ -380,7 +380,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   public Map<String, ISuiteResult> getResults() {
     return m_suiteResults;
   }
-  
+
   /**
    * FIXME: should be removed?
    *
@@ -431,7 +431,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   public Collection<ITestNGMethod> getExcludedMethods() {
     return getIncludedOrExcludedMethods(false/* included */);
   }
-  
+
   private Collection<ITestNGMethod> getIncludedOrExcludedMethods(boolean included) {
     List<ITestNGMethod> result= Lists.newArrayList();
 
@@ -452,8 +452,8 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
   /**
    * Returns the annotation finder for the given annotation type.
-   * @param pAnnotationType the annotation type 
-   * @return the annotation finder for the given annotation type. 
+   * @param pAnnotationType the annotation type
+   * @return the annotation finder for the given annotation type.
    */
   @Override
   public IAnnotationFinder getAnnotationFinder(String pAnnotationType) {
@@ -477,7 +477,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     private boolean m_useDefaultListeners;
     private boolean m_skipFailedInvocationCounts;
     private IConfiguration m_configuration;
-    
+
     public DefaultTestRunnerFactory(IConfiguration configuration,
         ITestListener[] failureListeners,
         boolean useDefaultListeners,
@@ -496,7 +496,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       if (! skip) {
         skip = test.skipFailedInvocationCounts();
       }
-      TestRunner testRunner = 
+      TestRunner testRunner =
         new TestRunner(m_configuration,
             suite,
                         test,
@@ -504,23 +504,23 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
                         suite.getAnnotationFinder(test.getAnnotations()),
                         skip,
                         listeners);
-      
+
       if (m_useDefaultListeners) {
         testRunner.addListener(new TestHTMLReporter());
         testRunner.addListener(new JUnitXMLReporter());
-        
+
         //TODO: Moved these here because maven2 has output reporters running
         //already, the output from these causes directories to be created with
-        //files. This is not the desired behaviour of running tests in maven2. 
+        //files. This is not the desired behaviour of running tests in maven2.
         //Don't know what to do about this though, are people relying on these
         //to be added even with defaultListeners set to false?
         testRunner.addListener(new TextReporter(testRunner.getName(), TestRunner.getVerbose()));
       }
-      
+
       for (ITestListener itl : m_failureGenerators) {
         testRunner.addListener(itl);
       }
-      
+
       return testRunner;
     }
   }
@@ -552,7 +552,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   public void setHost(String host) {
     m_host = host;
   }
-  
+
   @Override
   public String getHost() {
     return m_host;

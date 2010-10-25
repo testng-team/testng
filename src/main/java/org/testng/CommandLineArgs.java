@@ -82,13 +82,6 @@ public class CommandLineArgs {
   @Parameter(names = REPORTER, description = "Extended configuration for custom report listener")
   public String reporter;
 
-  /**
-   * Used as map key for the complete list of report listeners provided with the above argument
-   */
-  public static final String REPORTERS_LIST = "-reporterslist";
-  @Parameter(names = REPORTERS_LIST, hidden = true)
-  public String reportersList;
-
   public static final String USE_DEFAULT_LISTENERS = "-usedefaultlisteners";
   @Parameter(names = USE_DEFAULT_LISTENERS, description = "Whether to use the default listeners")
   public String useDefaultListeners = "true";
@@ -145,4 +138,8 @@ public class CommandLineArgs {
   @Parameter(names = RANDOMIZE_SUITES, hidden = true,
       description = "Whether to run suites in same order as specified in XML or not")
   public Boolean randomizeSuites = Boolean.FALSE;
+
+  public static final String DEBUG = "-debug";
+  @Parameter(names = DEBUG, hidden = true, description = "Used to debug TestNG")
+  public Boolean debug = Boolean.FALSE;
 }

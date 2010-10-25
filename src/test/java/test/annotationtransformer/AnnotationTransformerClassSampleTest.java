@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 /**
  * This test will fail unless a time out transformer
  * is applied to it.
- * 
+ *
  * @author cbeust
  *
  */
@@ -26,5 +26,5 @@ public class AnnotationTransformerClassSampleTest {
   private void ppp(String string) {
     System.out.println("[Transformer] " + string);
   }
-  
+
 }

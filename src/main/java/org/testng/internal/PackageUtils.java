@@ -18,22 +18,22 @@ import java.util.regex.Pattern;
 
 /**
  * Utility class that finds all the classes in a given package.
- * 
+ *
  * Created on Feb 24, 2006
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class PackageUtils {
   private static String[] s_testClassPaths;
-  
+
   /**
    *
    * @param packageName
    * @return The list of all the classes inside this package
    * @throws IOException
    */
-  public static String[] findClassesInPackage(String packageName, 
+  public static String[] findClassesInPackage(String packageName,
       List<String> included, List<String> excluded)
-    throws IOException 
+    throws IOException
   {
     String packageOnly = packageName;
     boolean recursive = false;
@@ -41,7 +41,7 @@ public class PackageUtils {
       packageOnly = packageName.substring(0, packageName.lastIndexOf(".*"));
       recursive = true;
     }
-  
+
     List<String> vResult = Lists.newArrayList();
     String packageDirName = packageOnly.replace('.', '/');
     Enumeration<URL> dirs = Thread.currentThread().getContextClassLoader().getResources(packageDirName);
@@ -51,7 +51,7 @@ public class PackageUtils {
       if(!matchTestClasspath(url, packageDirName, recursive)) {
         continue;
       }
-      
+
       if ("file".equals(protocol)) {
         findClassesInDirPackage(packageOnly, included, excluded,
                                 URLDecoder.decode(url.getFile(), "UTF-8"),
@@ -72,7 +72,7 @@ public class PackageUtils {
             if (idx != -1) {
               packageName = name.substring(0, idx).replace('/', '.');
             }
-  
+
             Utils.log("PackageUtils", 4, "Package name is " + packageName);
             if ((idx != -1) || recursive) {
               //it's not inside a deeper dir
@@ -86,8 +86,8 @@ public class PackageUtils {
         }
       }
     }
-  
-    String[] result = vResult.toArray(new String[vResult.size()]); 
+
+    String[] result = vResult.toArray(new String[vResult.size()]);
     return result;
   }
 
@@ -95,15 +95,15 @@ public class PackageUtils {
     if (null != s_testClassPaths) {
       return s_testClassPaths;
     }
-    
+
     String testClasspath = System.getProperty(TestNG.TEST_CLASSPATH);
     if (null == testClasspath) {
       return null;
     }
-    
+
     String[] classpathFragments= Utils.split(testClasspath, File.pathSeparator);
     s_testClassPaths= new String[classpathFragments.length];
-    
+
     for(int i= 0; i < classpathFragments.length; i++)  {
       String path= null;
       if(classpathFragments[i].toLowerCase().endsWith(".jar") || classpathFragments[i].toLowerCase().endsWith(".zip")) {
@@ -117,13 +117,13 @@ public class PackageUtils {
           path= classpathFragments[i] + "/";
         }
       }
-      
+
       s_testClassPaths[i]= path.replace('\\', '/');
     }
-    
+
     return s_testClassPaths;
   }
-  
+
   /**
    * @param url
    * @return
@@ -141,15 +141,15 @@ public class PackageUtils {
     catch(UnsupportedEncodingException ueex) {
       ; // ignore. should never happen
     }
-    
+
     for(String classpathFrag: classpathFragments) {
       String path=  classpathFrag + lastFragment;
       int idx= fileName.indexOf(path);
       if((idx == -1) || (idx > 0 && fileName.charAt(idx-1) != '/')) {
         continue;
       }
-      
-      if(fileName.endsWith(classpathFrag + lastFragment) 
+
+      if(fileName.endsWith(classpathFrag + lastFragment)
           || (recursive && fileName.charAt(idx + path.length()) == '/')) {
         return true;
       }
@@ -165,11 +165,11 @@ public class PackageUtils {
                                               final boolean recursive,
                                               List<String> classes) {
     File dir = new File(packagePath);
-  
+
     if (!dir.exists() || !dir.isDirectory()) {
       return;
     }
-  
+
     File[] dirfiles = dir.listFiles(new FileFilter() {
           @Override
           public boolean accept(File file) {
@@ -178,7 +178,7 @@ public class PackageUtils {
               || (file.getName().endsWith(".groovy"));
           }
         });
-  
+
     Utils.log("PackageUtils", 4, "Looking for test classes in the directory: " + dir);
     for (File file : dirfiles) {
       if (file.isDirectory()) {
@@ -202,8 +202,8 @@ public class PackageUtils {
     return pkg.length() > 0 ? pkg + "." + cls : cls;
   }
 
-  private static void includeOrExcludeClass(String packageName, String className,  
-      List<String> included, List<String> excluded, List<String> classes) 
+  private static void includeOrExcludeClass(String packageName, String className,
+      List<String> included, List<String> excluded, List<String> classes)
   {
     if (isIncluded(className, included, excluded)) {
       Utils.log("PackageUtils", 4, "... Including class " + className);
@@ -217,17 +217,17 @@ public class PackageUtils {
   /**
    * @return true if name should be included.
    */
-  private static boolean isIncluded(String name, 
+  private static boolean isIncluded(String name,
       List<String> included, List<String> excluded)
   {
     boolean result = false;
-    
+
     //
     // If no includes nor excludes were specified, return true.
     //
     if (included.size() == 0 && excluded.size() == 0) {
       result = true;
-    } 
+    }
     else {
       boolean isIncluded = PackageUtils.find(name, included);
       boolean isExcluded = PackageUtils.find(name, excluded);
@@ -246,7 +246,9 @@ public class PackageUtils {
 
   private static boolean find(String name, List<String> list) {
     for (String regexpStr : list) {
-      if (Pattern.matches(regexpStr, name)) return true;
+      if (Pattern.matches(regexpStr, name)) {
+        return true;
+      }
     }
     return false;
   }

@@ -10,6 +10,6 @@ public class TestInstanceFactory {
         new TestInstanceTest(2)
     };
   }
-  
+
 
 }

@@ -12,14 +12,14 @@ public class BaseSequentialSample {
   Map getMap() {
     Map result = Helper.getMap(getClass().getName());
     ppp("RETURNING MAP " + result + " THIS:" + this);
-    
+
     return result;
   }
 
   protected void ppp(String s) {
     if (false) {
-      System.out.println("[BaseSequentialSample:" + getClass().getName() + " " 
-          + Thread.currentThread().getId() + " " 
+      System.out.println("[BaseSequentialSample:" + getClass().getName() + " "
+          + Thread.currentThread().getId() + " "
           + "] " + s);
     }
   }

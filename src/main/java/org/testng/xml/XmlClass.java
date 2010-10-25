@@ -16,6 +16,10 @@ import java.util.Properties;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class XmlClass implements Serializable, Cloneable {
+  /**
+   *
+   */
+  private static final long serialVersionUID = 8885360896966149897L;
   private List<XmlInclude> m_includedMethods = Lists.newArrayList();
   private List<String> m_excludedMethods = Lists.newArrayList();
   private String       m_name = null;
@@ -57,7 +61,7 @@ public class XmlClass implements Serializable, Cloneable {
   public Class getSupportClass() {
     if(null == m_class) {
       m_class = ClassHelper.forName(m_name);
-      
+
       if(null == m_class) {
         throw new TestNGException("Cannot find class in classpath: " + m_name);
       }
@@ -136,7 +140,7 @@ public class XmlClass implements Serializable, Cloneable {
     if (!m_includedMethods.isEmpty() || !m_excludedMethods.isEmpty()) {
       xsb.push("class", pro);
       xsb.push("methods");
-      
+
       for (XmlInclude m : getIncludedMethods()) {
         xsb.getStringBuffer().append(m.toXml(indent + "    "));
       }
@@ -146,7 +150,7 @@ public class XmlClass implements Serializable, Cloneable {
         p.setProperty("name", m);
         xsb.addEmptyElement("exclude", p);
       }
-      
+
       xsb.pop("methods");
       xsb.pop("class");
     }
@@ -157,12 +161,14 @@ public class XmlClass implements Serializable, Cloneable {
     return xsb.toXML();
 
   }
-  
+
   public static String listToString(List<Integer> invocationNumbers) {
     StringBuilder result = new StringBuilder();
     int i = 0;
     for (Integer n : invocationNumbers) {
-      if (i++ > 0) result.append(" ");
+      if (i++ > 0) {
+        result.append(" ");
+      }
       result.append(n);
     }
     return result.toString();
@@ -176,7 +182,7 @@ public class XmlClass implements Serializable, Cloneable {
     XmlClass result = new XmlClass(getName(), getDeclaredClass(), getIndex());
     result.setExcludedMethods(getExcludedMethods());
     result.setIncludedMethods(getIncludedMethods());
-    
+
     return result;
   }
 
@@ -208,8 +214,9 @@ public class XmlClass implements Serializable, Cloneable {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
+    }
     if (obj == null)
       return XmlSuite.f();
     if (getClass() != obj.getClass())
@@ -242,6 +249,7 @@ public class XmlClass implements Serializable, Cloneable {
         return XmlSuite.f();
     } else if (!m_name.equals(other.m_name))
       return XmlSuite.f();
+
     return true;
   }
 

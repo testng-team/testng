@@ -18,7 +18,7 @@ public class FactoryOrderMainTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
     tng.run();
-    
+
     List<ITestResult> passed = tla.getPassedTests();
     for (int i = 0; i < passed.size(); i++) {
       Assert.assertEquals(((FactoryOrderSampleTest) passed.get(i).getInstance()).getValue(), i);

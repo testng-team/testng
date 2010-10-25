@@ -1,5 +1,7 @@
 package test.alwaysrun;
 
+import static org.testng.Assert.assertTrue;
+
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -7,10 +9,8 @@ import org.testng.annotations.Test;
 import test.SimpleBaseTest;
 import testhelper.OutputDirectoryPatch;
 
-import static org.testng.Assert.assertTrue;
-
 public class AlwaysRunTest extends SimpleBaseTest {
-  
+
   @Test
   public void withAlwaysRunAfter() {
     TestListenerAdapter tla = new TestListenerAdapter();
@@ -21,7 +21,7 @@ public class AlwaysRunTest extends SimpleBaseTest {
     testng.run();
     assertTrue(AlwaysRunAfter1.success(), "afterTestMethod should have run");
   }
-  
+
   @Test
   public void withoutAlwaysRunAfter() {
     TestListenerAdapter tla = new TestListenerAdapter();

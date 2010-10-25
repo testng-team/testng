@@ -5,18 +5,18 @@ package org.testng.internal;
  * Describes a property
  *
  * @author Cedric Beust, May 2, 2004
- * 
+ *
  */
 public class TestNGProperty {
   private String m_commandLineName = null;
   private String m_name = null;
   private String m_documentation = null;
   private String m_default = null;
-  
+
   public TestNGProperty(String clName, String name, String doc, String def) {
     init(clName, name, doc, def);
   }
-  
+
   public TestNGProperty(String name, String doc, String def) {
     init(name, name, doc, def);
   }
@@ -46,7 +46,7 @@ public class TestNGProperty {
   public String getName() {
     return m_name;
   }
-  
+
   public String getCommandLineName() {
     return m_commandLineName;
   }

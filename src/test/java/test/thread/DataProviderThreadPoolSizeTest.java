@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 import test.SimpleBaseTest;
 
 public class DataProviderThreadPoolSizeTest extends SimpleBaseTest {
-  
+
   @Test
   public void shouldUseDefaultDataProviderThreadCount() {
     TestNG tng = create(DataProviderThreadPoolSizeSampleTest.class);
@@ -15,7 +15,7 @@ public class DataProviderThreadPoolSizeTest extends SimpleBaseTest {
     tng.run();
     Assert.assertEquals(DataProviderThreadPoolSizeSampleTest.getThreadCount(), 10);
   }
-  
+
   @Test
   public void shouldNotUseThreadsIfNotUsingParallel() {
     TestNG tng = create(DataProviderThreadPoolSizeSampleTest.class);

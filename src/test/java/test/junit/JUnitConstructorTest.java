@@ -5,7 +5,7 @@ import junit.framework.TestCase;
 
 /**
  * Test that the correct number of constructors is called
- * 
+ *
  * Created on Aug 9, 2005
  * @author cbeust
  */
@@ -20,7 +20,7 @@ public class JUnitConstructorTest extends TestCase {
     ppp("CONSTRUCTING");
     m_constructorCount++;
   }
-  
+
 //  public void test1() {
 //    ppp("TEST1");
 //  }
@@ -38,14 +38,14 @@ public class JUnitConstructorTest extends TestCase {
     ppp("TEST_QUERY");
     m_queryCount++;
   }
-  
+
   @Override
   public void tearDown() {
     assertEquals(3, m_constructorCount);
     assertTrue((1 == m_createCount && 0 == m_queryCount) ||
         (0 == m_createCount && 1 == m_queryCount));
   }
-  
+
   private static void ppp(String s) {
     System.out.println("[JUnitHierarchyTest] " + s);
   }

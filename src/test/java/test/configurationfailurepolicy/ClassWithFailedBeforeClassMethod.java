@@ -10,12 +10,12 @@ public class ClassWithFailedBeforeClassMethod {
   public void setupClassFails() {
     throw new RuntimeException( "setup class fail" );
   }
-    
+
   @BeforeMethod
   public void setupMethod() {
 
   }
-    
+
   @Test
   public void test1() {
 

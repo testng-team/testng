@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * A method interceptor that preserves the order in which test classes were found in
  * the &lt;test&gt; tag.
- * 
+ *
  * @author cbeust
  *
  */

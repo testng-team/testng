@@ -1,13 +1,6 @@
 package org.testng;
 
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterException;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -41,6 +34,11 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.xml.sax.SAXException;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -58,6 +56,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * This class is the main entry point for running tests in the TestNG framework.
@@ -266,7 +266,9 @@ public class TestNG {
   public void initializeSuitesAndJarFile() {
     // The Eclipse plug-in (RemoteTestNG) might have invoked this method already
     // so don't initialize suites twice.
-    if (m_suites.size() > 0) return;
+    if (m_suites.size() > 0) {
+      return;
+    }
 
     //
     // Parse the suites that were passed on the command line
@@ -317,7 +319,9 @@ public class TestNG {
           + suites + " instead");
       return;
     }
-    if ((null == m_jarPath) || "".equals(m_jarPath)) return;
+    if ((null == m_jarPath) || "".equals(m_jarPath)) {
+      return;
+    }
 
     // We have a jar file and no XML file was specified: try to find an XML file inside the jar
     File jarFile = new File(m_jarPath);
@@ -842,7 +846,9 @@ public class TestNG {
   }
 
   private static void usage() {
-    if (m_jCommander == null) m_jCommander = new JCommander(new CommandLineArgs());
+    if (m_jCommander == null) {
+      m_jCommander = new JCommander(new CommandLineArgs());
+    }
     m_jCommander.usage();
   }
 
@@ -957,7 +963,7 @@ public class TestNG {
    * @param suiteRunnerMap Map with XMLSuite as key and its respective SuiteRunner as value
    * @param xmlSuite XML Suite
    */
-  private void populateSuiteGraph(DynamicGraph<ISuite> suiteGraph /* OUT */, 
+  private void populateSuiteGraph(DynamicGraph<ISuite> suiteGraph /* OUT */,
       Map<XmlSuite, ISuite> suiteRunnerMap, XmlSuite xmlSuite) {
     ISuite parentSuiteRunner = suiteRunnerMap.get(xmlSuite);
     if (xmlSuite.getChildSuites().isEmpty()) {
@@ -972,9 +978,9 @@ public class TestNG {
   }
 
   /**
-   * Creates the {@code SuiteRunner}s and populates the suite runner map with 
+   * Creates the {@code SuiteRunner}s and populates the suite runner map with
    * this information
-   * @param suiteRunnerMap Map with XMLSuite as key and it's respective 
+   * @param suiteRunnerMap Map with XMLSuite as key and it's respective
    *   SuiteRunner as value. This is updated as part of this method call
    * @param xmlSuite Xml Suite (and it's children) for which {@code SuiteRunner}s are created
    */
@@ -1127,7 +1133,9 @@ public class TestNG {
    * Configure the TestNG instance based on the command line parameters.
    */
   protected void configure(CommandLineArgs cla) {
-    if (cla.verbose != null) setVerbose(cla.verbose);
+    if (cla.verbose != null) {
+      setVerbose(cla.verbose);
+    }
     setOutputDirectory(cla.outputDirectory);
 
     String testClasses = cla.testClass;
@@ -1165,14 +1173,24 @@ public class TestNG {
     setMaster(cla.master);
     setSlave(cla.slave);
     setSkipFailedInvocationCounts(cla.skipFailedInvocationCounts);
-    if (cla.parallelMode != null) setParallel(cla.parallelMode);
-    if (cla.configFailurePolicy != null) setConfigFailurePolicy(cla.configFailurePolicy);
-    if (cla.threadCount != null) setThreadCount(cla.threadCount);
+    if (cla.parallelMode != null) {
+      setParallel(cla.parallelMode);
+    }
+    if (cla.configFailurePolicy != null) {
+      setConfigFailurePolicy(cla.configFailurePolicy);
+    }
+    if (cla.threadCount != null) {
+      setThreadCount(cla.threadCount);
+    }
     if (cla.dataProviderThreadCount != null) {
       setDataProviderThreadCount(cla.dataProviderThreadCount);
     }
-    if (cla.suiteName != null) setDefaultSuiteName(cla.suiteName);
-    if (cla.testName != null) setDefaultTestName(cla.testName);
+    if (cla.suiteName != null) {
+      setDefaultSuiteName(cla.suiteName);
+    }
+    if (cla.testName != null) {
+      setDefaultTestName(cla.testName);
+    }
     if (cla.listener != null) {
       String sep = ";";
       if (cla.listener.indexOf(",") >= 0) {
@@ -1206,12 +1224,16 @@ public class TestNG {
       }
     }
 
-    if (cla.objectFactory != null) setObjectFactory(ClassHelper.fileToClass(cla.objectFactory));
-    if (cla.testRunnerFactory != null) setTestRunnerFactoryClass(
-        ClassHelper.fileToClass(cla.testRunnerFactory));
+    if (cla.objectFactory != null) {
+      setObjectFactory(ClassHelper.fileToClass(cla.objectFactory));
+    }
+    if (cla.testRunnerFactory != null) {
+      setTestRunnerFactoryClass(
+          ClassHelper.fileToClass(cla.testRunnerFactory));
+    }
 
-    if (cla.reportersList != null) {
-      ReporterConfig reporterConfig = ReporterConfig.deserialize(cla.reportersList);
+    if (cla.reporter != null) {
+      ReporterConfig reporterConfig = ReporterConfig.deserialize(cla.reporter);
       addReporter(reporterConfig);
     }
 
@@ -1219,7 +1241,9 @@ public class TestNG {
       m_commandLineMethods = cla.commandLineMethods;
     }
 
-    if (cla.suiteFiles != null) setTestSuites(cla.suiteFiles);
+    if (cla.suiteFiles != null) {
+      setTestSuites(cla.suiteFiles);
+    }
 
     setSuiteThreadPoolSize(cla.suiteThreadPoolSize);
     setRandomizeSuites(cla.randomizeSuites);
@@ -1249,7 +1273,7 @@ public class TestNG {
    * This method is invoked by Maven's Surefire to configure the runner,
    * do not remove unless you know for sure that Surefire has been updated
    * to use the new configure(CommandLineArgs) method.
-   * 
+   *
    * @deprecated use new configure(CommandLineArgs) method
    */
   @SuppressWarnings({"unchecked"})
@@ -1333,9 +1357,9 @@ public class TestNG {
       result.testRunnerFactory = runnerFactory;
     }
 
-    String reporterConfigs = (String) cmdLineArgs.get(CommandLineArgs.REPORTERS_LIST);
+    String reporterConfigs = (String) cmdLineArgs.get(CommandLineArgs.REPORTER);
     if (reporterConfigs != null) {
-      result.reportersList = reporterConfigs;
+      result.reporter = reporterConfigs;
     }
 
     String failurePolicy = (String)cmdLineArgs.get(CommandLineArgs.CONFIG_FAILURE_POLICY);

@@ -1,14 +1,14 @@
 package test.failures;
 
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 
 import test.TestHelper;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class FailuresTest extends BaseFailuresTest {
 
@@ -17,13 +17,13 @@ public class FailuresTest extends BaseFailuresTest {
     XmlSuite suite = TestHelper.createSuite("test.failures.Child", getSuiteName());
     TestNG tng = TestHelper.createTestNG(suite);
     tng.run();
-     
+
      String[] expected = new String[] {
        "<class name=\"test.failures.Child\">",
        "<include name=\"fail\"/>",
        "<include name=\"failFromBase\"/>",
      };
-     
+
      verify(getOutputDir(), expected);
   }
 
@@ -32,15 +32,15 @@ public class FailuresTest extends BaseFailuresTest {
     XmlSuite suite = TestHelper.createSuite("test.failures.DependentTest", getSuiteName());
     TestNG tng = TestHelper.createTestNG(suite);
     tng.run();
-    
+
     String[] expected = new String[] {
         "<include name=\"f1\"/>",
         "<include name=\"f2\"/>"
       };
-    
+
     verify(getOutputDir(), expected);
   }
-  
+
   @Test(enabled = false)
   public void shouldIncludeParameters() {
     XmlSuite suite = TestHelper.createSuite("test.failures.Child", getSuiteName());
@@ -48,17 +48,17 @@ public class FailuresTest extends BaseFailuresTest {
     params.put("first-name", "Cedric");
     params.put("last-name", "Beust");
     suite.setParameters(params);
-    
+
     TestNG tng = TestHelper.createTestNG(suite);
     tng.run();
-    
+
     String[] expected = new String[] {
         "<parameter name=\"first-name\" value=\"Cedric\"/>",
       };
-    
+
     verify(getOutputDir(), expected);
   }
-  
+
   private String getOutputDir() {
     return System.getProperty("java.io.tmpdir");
   }

@@ -15,6 +15,6 @@ public class ImplicitMethodInclusionSampleTest {
 
   private void ppp(String string) {
     System.out.println("[Implicit] " + string);
-  }  
-  
+  }
+
 }

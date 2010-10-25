@@ -17,7 +17,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class AnnotationTransformerTest extends SimpleBaseTest {
-  
+
   /**
    * Make sure that without a transformer in place, a class-level
    * annotation invocationCount is correctly used.
@@ -29,9 +29,9 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     tng.setTestClasses(new Class[] { AnnotationTransformerClassInvocationSampleTest.class});
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
-    
+
     tng.run();
-    
+
     List passed = tla.getPassedTests();
     Assert.assertEquals(passed.size(), 6);
   }
@@ -47,22 +47,22 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     tng.setTestClasses(new Class[] { AnnotationTransformerSampleTest.class});
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
-    
+
     tng.run();
-    
+
     List passed = tla.getPassedTests();
     Assert.assertEquals(passed.size(), 15);
   }
 
   /**
-   * Without an annotation transformer, we should have zero 
+   * Without an annotation transformer, we should have zero
    * passed tests and one failed test called "one".
    */
   @Test
   public void verifyAnnotationTransformerClass2() {
     runTest(null, null, "one");
   }
-  
+
   /**
    * With an annotation transformer, we should have one passed
    * test called "one" and zero failed tests.
@@ -71,7 +71,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
   public void verifyAnnotationTransformerClass() {
     runTest(new MyTimeOutTransformer(), "one", null);
   }
-  
+
   private void runTest(IAnnotationTransformer transformer,
       String passedName, String failedName)
   {
@@ -83,13 +83,13 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     tng.setTestClasses(new Class[] { AnnotationTransformerClassSampleTest.class});
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
-    
+
     tng.run();
-    
+
     List<ITestResult> results =
       passedName != null ? tla.getPassedTests() : tla.getFailedTests();
     String name = passedName != null ? passedName : failedName;
-      
+
     Assert.assertEquals(results.size(), 1);
     Assert.assertEquals(name, results.get(0).getMethod().getMethodName());
   }
@@ -103,7 +103,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     tng.setTestClasses(new Class[] { ConfigurationSampleTest.class});
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
-    
+
     tng.run();
 
     Assert.assertEquals(ConfigurationSampleTest.getBefore(), "correct");
@@ -116,7 +116,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     tng.setTestClasses(new Class[] { AnnotationTransformerDataProviderSampleTest.class});
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
-    
+
     tng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), 1);
@@ -129,7 +129,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     tng.setTestClasses(new Class[] { AnnotationTransformerFactorySampleTest.class});
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
-    
+
     tng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), 1);
@@ -156,10 +156,10 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     tng.setXmlSuites(Arrays.asList(suites.toArray(new XmlSuite[0])));
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
-    
+
     tng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), 1);
-    
+
   }
 }

@@ -76,7 +76,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
 
   transient private IConfigurationListener m_confListener= new ConfigurationListener();
   transient private boolean m_skipFailedInvocationCounts;
-  
+
   /**
    * All the test methods we found, associated with their respective classes.
    * Note that these test methods might belong to different classes.
@@ -125,7 +125,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
   private IResultMap m_skippedTests = new ResultMap();
 
   private RunInfo m_runInfo= new RunInfo();
-  
+
   // The host where this test was run, or null if run locally
   private String m_host;
 
@@ -142,7 +142,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
                     String outputDirectory,
                     IAnnotationFinder finder,
                     boolean skipFailedInvocationCounts,
-                    List<IInvokedMethodListener> invokedMethodListeners) 
+                    List<IInvokedMethodListener> invokedMethodListeners)
   {
     init(configuration, suite, test, outputDirectory, finder, skipFailedInvocationCounts,
         invokedMethodListeners);
@@ -151,7 +151,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
   public TestRunner(IConfiguration configuration, ISuite suite, XmlTest test,
       boolean skipFailedInvocationCounts,
       List<IInvokedMethodListener> listeners) {
-    init(configuration, suite, test, suite.getOutputDirectory(), 
+    init(configuration, suite, test, suite.getOutputDirectory(),
         suite.getAnnotationFinder(test.getAnnotations()),
         skipFailedInvocationCounts, listeners);
   }
@@ -177,7 +177,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
     m_methodInterceptor = preserveOrder ? new PreserveOrderMethodInterceptor()
         : new InstanceOrderingMethodInterceptor();
 
-    m_packageNamesFromXml= test.getXmlPackages();    
+    m_packageNamesFromXml= test.getXmlPackages();
     if(null != m_packageNamesFromXml) {
       for(XmlPackage xp: m_packageNamesFromXml) {
         m_testClassesFromXml.addAll(xp.getXmlClasses());
@@ -190,7 +190,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
 
     if (suite.getParallel() != null) {
       log(3, "Running the tests in '" + test.getName() + "' with parallel mode:" + suite.getParallel());
-    } 
+    }
 
     setOutputDirectory(outputDirectory);
 
@@ -280,7 +280,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
     for (IClass cls : getTestClasses()) {
       Class<? extends ITestNGListenerFactory> realClass = cls.getRealClass();
       ListenerHolder listenerHolder = findAllListeners(realClass);
-      if (listenerFactoryClass == null) listenerFactoryClass = listenerHolder.listenerFactoryClass;
+      if (listenerFactoryClass == null) {
+        listenerFactoryClass = listenerHolder.listenerFactoryClass;
+      }
       listenerClasses.addAll(listenerHolder.listenerClasses);
     }
 
@@ -290,7 +292,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
     // Instantiate all the requested listeners.
     //
     ITestNGListenerFactory listenerFactory = null;
- 
+
     // If we found a test listener factory, instantiate it.
     try {
       if (m_testClassFinder != null) {
@@ -311,7 +313,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
     // Instantiate all the listeners
     for (Class<? extends ITestNGListener> c : listenerClasses) {
       Object listener = listenerFactory != null ? listenerFactory.createListener(c) : null;
-      if (listener == null) listener = ClassHelper.newInstance(c);
+      if (listener == null) {
+        listener = ClassHelper.newInstance(c);
+      }
 
       if (listener instanceof IMethodInterceptor) {
         setMethodInterceptor((IMethodInterceptor) listener);
@@ -357,16 +361,16 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
 
     // Methods
     m_xmlMethodSelector.setXmlClasses(m_xmlTest.getXmlClasses());
-    
+
     m_runInfo.addMethodSelector(m_xmlMethodSelector, 10);
-    
+
     // Add user-specified method selectors (only class selectors, we can ignore
     // script selectors here)
     if (null != xmlTest.getMethodSelectors()) {
       for (org.testng.xml.XmlMethodSelector selector : xmlTest.getMethodSelectors()) {
         if (selector.getClassName() != null) {
           IMethodSelector s = ClassHelper.createSelector(selector);
-          
+
           m_runInfo.addMethodSelector(s, selector.getPriority());
         }
       }
@@ -394,14 +398,14 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
                                              this);
     ITestMethodFinder testMethodFinder
       = new TestNGMethodFinder<ITestNGMethod>(m_runInfo, m_annotationFinder);
-    
+
     m_runInfo.setTestMethods(testMethods);
-    
+
     //
     // Initialize TestClasses
     //
     IClass[] classes = m_testClassFinder.findTestClasses();
-    
+
     for (IClass ic : classes) {
 
       // Create TestClass
@@ -413,7 +417,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
                                    classMap.getXmlClass(ic.getRealClass()));
       m_classMap.put(ic.getRealClass(), tc);
     }
-    
+
     //
     // Calculate groups methods
     //
@@ -434,9 +438,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
       fixMethodsWithClass(tc.getAfterSuiteMethods(), tc, afterSuiteMethods);
       fixMethodsWithClass(tc.getBeforeTestConfigurationMethods(), tc, beforeXmlTestMethods);
       fixMethodsWithClass(tc.getAfterTestConfigurationMethods(), tc, afterXmlTestMethods);
-      fixMethodsWithClass(tc.getBeforeGroupsMethods(), tc, 
+      fixMethodsWithClass(tc.getBeforeGroupsMethods(), tc,
           MethodHelper.uniqueMethodList(beforeGroupMethods.values()));
-      fixMethodsWithClass(tc.getAfterGroupsMethods(), tc, 
+      fixMethodsWithClass(tc.getAfterGroupsMethods(), tc,
           MethodHelper.uniqueMethodList(afterGroupMethods.values()));
     }
 
@@ -458,10 +462,10 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
                                                               m_excludedMethods);
 
     m_allTestMethods = MethodHelper.collectAndOrderMethods(testMethods,
-                                                                true /* forTest? */, 
-                                                                m_runInfo, 
-                                                                m_annotationFinder, 
-                                                                false /* unique */, 
+                                                                true /* forTest? */,
+                                                                m_runInfo,
+                                                                m_annotationFinder,
+                                                                false /* unique */,
                                                                 m_excludedMethods);
     m_classMethodMap = new ClassMethodMap(m_allTestMethods);
 
@@ -473,7 +477,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
                                                               m_excludedMethods);
 
     m_afterSuiteMethods = MethodHelper.collectAndOrderMethods(afterSuiteMethods,
-                                                              false /* forTests */, 
+                                                              false /* forTests */,
                                                               m_runInfo,
                                                               m_annotationFinder,
                                                               true /* unique */,
@@ -613,13 +617,13 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
 
     // Invoke listeners
     fireEvent(true /*start*/);
-    
+
     // invoke @BeforeTest
     ITestNGMethod[] testConfigurationMethods= getBeforeTestConfigurationMethods();
     if(null != testConfigurationMethods && testConfigurationMethods.length > 0) {
       m_invoker.invokeConfigurations(null,
                                      testConfigurationMethods,
-                                     m_xmlTest.getSuite(), 
+                                     m_xmlTest.getSuite(),
                                      m_xmlTest.getParameters(),
                                      null, /* no parameter values */
                                      null /* instance */);
@@ -648,7 +652,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
        * @see java.lang.Runnable#run()
        */
       @Override
-      public void run() {    
+      public void run() {
         for(Class<?> tc: classes) {
           IJUnitTestRunner tr= ClassHelper.createTestRunner(TestRunner.this);
           try {
@@ -670,8 +674,11 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
 
       @Override
       public int getPriority() {
-        if (m_allTestMethods.length == 1) return m_allTestMethods[0].getPriority();
-        else return 0;
+        if (m_allTestMethods.length == 1) {
+          return m_allTestMethods[0].getPriority();
+        } else {
+          return 0;
+        }
       }
 
       @Override
@@ -683,7 +690,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
     runWorkers(workers, "" /* JUnit does not support parallel */, null);
     m_allTestMethods= runMethods.toArray(new ITestNGMethod[runMethods.size()]);
   }
-  
+
   private void privateRun(XmlTest xmlTest) {
     //
     // Calculate the lists of tests that can be run in sequence and in parallel
@@ -693,14 +700,14 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
     MapList<Integer, ITestNGMethod> sequentialMapList = new MapList<Integer, ITestNGMethod>();
 
     String parallelMode = xmlTest.getParallel();
-    boolean parallel = XmlSuite.PARALLEL_METHODS.equals(parallelMode) 
+    boolean parallel = XmlSuite.PARALLEL_METHODS.equals(parallelMode)
         || "true".equalsIgnoreCase(parallelMode)
-        || XmlSuite.PARALLEL_CLASSES.equals(parallelMode); 
+        || XmlSuite.PARALLEL_CLASSES.equals(parallelMode);
 
     if (!parallel) {
       // sequential
       computeTestLists(sequentialList, parallelList, sequentialMapList);
-      
+
       log(3, "Found " + (sequentialList.size() + parallelList.size()) + " applicable methods");
 
       //
@@ -717,11 +724,11 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
       // Create the workers
       //
       List<TestMethodWorker> workers = Lists.newArrayList();
-  
+
       createSequentialWorkers(sequentialList, xmlTest.getParameters(), m_classMethodMap, workers);
       MapList<Integer, TestMethodWorker> ml =
           createSequentialWorkers(sequentialMapList, xmlTest.getParameters(), m_classMethodMap);
-  
+
       // All the parallel tests are placed in a separate worker, so they can be
       // invoked in parallel
       createParallelWorkers(parallelList, xmlTest, m_classMethodMap, workers);
@@ -730,7 +737,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
 //        new TestPlan(sequentialList, parallelList, cmm,
 //          getBeforeSuiteMethods(), getAfterSuiteMethods(),
 //          m_groupMethods, xmlTest);
-  
+
       try {
         // Sort by priorities
         Collections.sort(workers);
@@ -823,7 +830,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
     Set<Class> sequentialClasses = Sets.newHashSet();
     for (ITestNGMethod m : methods) {
       Class<? extends ITestClass> cls = m.getRealClass();
-      org.testng.annotations.ITestAnnotation test = 
+      org.testng.annotations.ITestAnnotation test =
         (org.testng.annotations.ITestAnnotation) m_annotationFinder.
           findAnnotation(cls,
               org.testng.annotations.ITestAnnotation.class);
@@ -928,16 +935,18 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
     return result.toArray(new IMethodInstance[result.size()]);
   }
 
-  private void createParallelWorkers(List<ITestNGMethod> parallel, 
+  private void createParallelWorkers(List<ITestNGMethod> parallel,
       XmlTest xmlTest, ClassMethodMap cmm, List<TestMethodWorker> workers) {
 
-    if(parallel.isEmpty()) return;
-    
+    if(parallel.isEmpty()) {
+      return;
+    }
+
     List<IMethodInstance> methodInstances = Lists.newArrayList();
     for (ITestNGMethod tm : parallel) {
       methodInstances.addAll(methodsToMultipleMethodInstances(tm));
     }
-    
+
     //
     // Finally, sort the parallel methods by classes
     //
@@ -969,7 +978,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
               m_allTestMethods,
               m_groupMethods,
               cmm,
-              this));          
+              this));
       }
     }
     else {
@@ -1005,14 +1014,16 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
 
       return result;
   }
-  
-  private void createSequentialWorkers(List<List<ITestNGMethod>> sequentialList, 
+
+  private void createSequentialWorkers(List<List<ITestNGMethod>> sequentialList,
       Map<String, String> params, ClassMethodMap cmm, List<TestMethodWorker> workers) {
-    if(sequentialList.isEmpty()) return;
-    
+    if(sequentialList.isEmpty()) {
+      return;
+    }
+
     // All the sequential tests are place in one worker, guaranteeing they
     // will be invoked sequentially
-    for (List<ITestNGMethod> sl : sequentialList) {        
+    for (List<ITestNGMethod> sl : sequentialList) {
       workers.add(new TestMethodWorker(m_invoker,
                                        methodsToMethodInstances(sl),
                                        m_xmlTest.getSuite(),
@@ -1030,13 +1041,13 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
         }
         log(3, "====");
       }
-      
+
       log(3, "===");
     }
   }
 
   private MapList<Integer, TestMethodWorker> createSequentialWorkers(MapList<Integer,
-      ITestNGMethod> mapList, Map<String, String> params, ClassMethodMap cmm) { 
+      ITestNGMethod> mapList, Map<String, String> params, ClassMethodMap cmm) {
 
     MapList<Integer, TestMethodWorker> result = new MapList<Integer, TestMethodWorker>();
     // All the sequential tests are place in one worker, guaranteeing they
@@ -1062,7 +1073,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
         vResult.add(new MethodInstance(m, new Object[] { instance }));
       }
     }
-    
+
     return vResult;
   }
 
@@ -1071,7 +1082,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
     for (int i = 0; i < result.length; i++) {
       result[i] = new MethodInstance(sl.get(i), sl.get(i).getTestClass().getInstances(true));
     }
-    
+
     return result;
   }
 
@@ -1080,9 +1091,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
   //
   private void runWorkers(List<? extends IWorker<ITestNGMethod>> workers, String parallelMode,
       MapList<Integer, TestMethodWorker> sequentialWorkers) {
-    if (XmlSuite.PARALLEL_METHODS.equals(parallelMode) 
+    if (XmlSuite.PARALLEL_METHODS.equals(parallelMode)
         || "true".equalsIgnoreCase(parallelMode)
-        || XmlSuite.PARALLEL_CLASSES.equals(parallelMode)) 
+        || XmlSuite.PARALLEL_CLASSES.equals(parallelMode))
     {
       //
       // Parallel run
@@ -1109,14 +1120,14 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
       }
     }
   }
-  
+
   private void afterRun() {
     // invoke @AfterTest
     ITestNGMethod[] testConfigurationMethods= getAfterTestConfigurationMethods();
     if(null != testConfigurationMethods && testConfigurationMethods.length > 0) {
       m_invoker.invokeConfigurations(null,
                                      testConfigurationMethods,
-                                     m_xmlTest.getSuite(), 
+                                     m_xmlTest.getSuite(),
                                      m_xmlTest.getParameters(),
                                      null, /* no parameter values */
                                      null /* instance */);
@@ -1126,7 +1137,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
     // Log the end date
     //
     m_endDate = new Date(System.currentTimeMillis());
-    
+
     if (getVerbose() >= 3) {
       dumpInvokedMethods();
     }
@@ -1137,11 +1148,11 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
     // Statistics
 //    logResults();
   }
-  
+
   /**
    * @param regexps
    * @param group
-   * @return true if the map contains at least one regexp that matches the 
+   * @return true if the map contains at least one regexp that matches the
    * given group
    */
   private boolean containsString(Map<String, String> regexps, String group) {
@@ -1151,7 +1162,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
         return true;
       }
     }
-    
+
     return false;
   }
 
@@ -1166,10 +1177,10 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
         groups.put(g, m);
       }
     }
-    
+
     for (ITestNGMethod m : methods) {
       result.addNode(m);
-      
+
       // Dependent methods
       {
         String[] dependentMethods = m.getMethodsDependedUpon();
@@ -1178,7 +1189,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
             ITestNGMethod dm = map.get(d);
             if (dm == null) {
               throw new TestNGException("Method \"" + m
-                  + "\" depends on nonexistent method \"" + d + "\""); 
+                  + "\" depends on nonexistent method \"" + d + "\"");
             }
             result.addEdge(m, dm);
           }
@@ -1192,7 +1203,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
           List<ITestNGMethod> dg = groups.get(d);
           if (dg == null) {
             throw new TestNGException("Method \"" + m
-                + "\" depends on nonexistent group \"" + d + "\""); 
+                + "\" depends on nonexistent group \"" + d + "\"");
           }
           for (ITestNGMethod ddm : dg) {
             result.addEdge(m, ddm);
@@ -1214,19 +1225,19 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
 
     Map<String, String> groupsDependedUpon = Maps.newHashMap();
     Map<String, String> methodsDependedUpon = Maps.newHashMap();
-    
+
     Map<String, List<ITestNGMethod>> sequentialAttributeList = Maps.newHashMap();
     List<ITestNGMethod> sequentialList = Lists.newArrayList();
 
     for (int i= m_allTestMethods.length - 1; i >= 0; i--) {
       ITestNGMethod tm= m_allTestMethods[i];
-      
+
       //
       // If the class this method belongs to has @Test(sequential = true), we
       // put this method in the sequential list right away
       //
       Class<?> cls= tm.getRealClass();
-      org.testng.annotations.ITestAnnotation test = 
+      org.testng.annotations.ITestAnnotation test =
         (org.testng.annotations.ITestAnnotation) m_annotationFinder.
           findAnnotation(cls, org.testng.annotations.ITestAnnotation.class);
       if (test != null) {
@@ -1241,7 +1252,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
           continue;
         }
       }
-      
+
       //
       // Otherwise, determine if it depends on other methods/groups or if
       // it is depended upon
@@ -1250,7 +1261,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
       String[] currentGroupsDependedUpon= tm.getGroupsDependedUpon();
       String[] currentMethodsDependedUpon= tm.getMethodsDependedUpon();
 
-      String thisMethodName = tm.getMethod().getDeclaringClass().getName() 
+      String thisMethodName = tm.getMethod().getDeclaringClass().getName()
         + "." + tm.getMethod().getName();
       if (currentGroupsDependedUpon.length > 0) {
         for (String gdu : currentGroupsDependedUpon) {
@@ -1297,7 +1308,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
         parallelList.add(0, tm);
       }
     }
-    
+
     //
     // Put all the sequential methods in the output argument
     //
@@ -1322,7 +1333,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
 
   private boolean arrayContains(String[] array, String element) {
     for (String a : array) {
-      if (element.equals(a)) return true;
+      if (element.equals(a)) {
+        return true;
+      }
     }
     return false;
   }
@@ -1438,7 +1451,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
     return m_allTestMethods;
   }
 
-  
+
   @Override
   public String getHost() {
     return m_host;
@@ -1447,11 +1460,11 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
   @Override
   public Collection<ITestNGMethod> getExcludedMethods() {
     Map<ITestNGMethod, ITestNGMethod> vResult = Maps.newHashMap();
-    
+
     for (ITestNGMethod m : m_excludedMethods) {
       vResult.put(m, m);
     }
-    
+
     return vResult.keySet();
   }
 
@@ -1478,11 +1491,11 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
   public IResultMap getSkippedConfigurations() {
     return m_skippedConfigurations;
   }
-  
+
   //
   // ITestContext
   /////
-  
+
   /////
   // ITestResultNotifier
   //
@@ -1496,7 +1509,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
   public Set<ITestResult> getPassedTests(ITestNGMethod tm) {
     return m_passedTests.getResults(tm);
   }
-  
+
   @Override
   public Set<ITestResult> getFailedTests(ITestNGMethod tm) {
     return m_failedTests.getResults(tm);
@@ -1595,7 +1608,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
       addConfigurationListener((IConfigurationListener) listener);
     }
   }
-  
+
   public void addTestListener(ITestListener il) {
     m_testListeners.add(il);
   }
@@ -1640,7 +1653,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
   private IResultMap m_passedConfigurations= new ResultMap();
   private IResultMap m_skippedConfigurations= new ResultMap();
   private IResultMap m_failedConfigurations= new ResultMap();
-  
+
   private class ConfigurationListener implements IConfigurationListener {
     @Override
     public void onConfigurationFailure(ITestResult itr) {

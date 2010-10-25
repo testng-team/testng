@@ -28,7 +28,7 @@ public class CtorCalledOnce {
   public void testMethod3(){
     assert instantiated == 1 : "Expected 1, was invoked " + instantiated + " times";
   }
-  
+
   @AfterTest
   public void afterTest() {
     instantiated = 0;

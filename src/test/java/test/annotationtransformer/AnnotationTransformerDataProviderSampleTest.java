@@ -12,7 +12,7 @@ public class AnnotationTransformerDataProviderSampleTest {
         new Integer[] { 42 },
     };
   }
-  
+
   @Test(dataProvider = "dataProvider")
   public void f(Integer n) {
     Assert.assertEquals(n, Integer.valueOf(42));

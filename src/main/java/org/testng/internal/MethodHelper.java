@@ -29,7 +29,7 @@ public class MethodHelper {
    * Collects and orders test or configuration methods
    * @param methods methods to be worked on
    * @param forTests true for test methods, false for configuration methods
-   * @param runInfo 
+   * @param runInfo
    * @param finder annotation finder
    * @param unique true for unique methods, false otherwise
    * @param outExcludedMethods
@@ -130,7 +130,7 @@ public class MethodHelper {
           return m;
         }
       }
-    } 
+    }
     catch (Exception e) {
       //only logging
       Utils.log("MethodHelper", 3, "Caught exception while searching for methods using regex");

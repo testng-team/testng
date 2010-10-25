@@ -32,7 +32,7 @@ public class XmlInclude implements Serializable {
   public String getName() {
     return m_name;
   }
-  
+
   public List<Integer> getInvocationNumbers() {
     return m_invocationNumbers;
   }

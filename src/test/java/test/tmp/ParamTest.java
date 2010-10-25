@@ -5,14 +5,14 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class ParamTest {
-  
+
   @Test(dataProvider="dp")
   public void f(String s, int n) {
 //    if ("Alois".equals(s)) assert false;
     Reporter.log("CALL " + n);
     ppp("TEST : " + s);
   }
-  
+
   @DataProvider(name="dp")
   public Object[][] create() {
     return new Object[][] {
@@ -24,5 +24,5 @@ public class ParamTest {
   private void ppp(String string) {
     System.err.println("[ParamTest] " + string);
   }
-  
+
 }

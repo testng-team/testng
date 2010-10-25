@@ -21,10 +21,10 @@ import java.util.Set;
  * FIXME: reduce contention when this class is used through parallel invocation due to
  * invocationCount and threadPoolSize by not invoking the @BeforeClass and @AfterClass
  * which are already invoked on the original method.
- * 
+ *
  * This class implements Runnable and will invoke the ITestMethod passed in its
  * constructor on its run() method.
- * 
+ *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
@@ -32,17 +32,17 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   // Map of the test methods and their associated instances
   // It has to be a set because the same method can be passed several times
   // and associated to a different instance
-  private IMethodInstance[] m_testMethods;
-  private IInvoker m_invoker = null;
-  private Map<String, String> m_parameters = null;
-  private XmlSuite m_suite = null;
-  private ITestNGMethod[] m_allTestMethods;
+  private IMethodInstance[] m_methodInstances;
+  private final IInvoker m_invoker;
+  private final Map<String, String> m_parameters;
+  private final XmlSuite m_suite;
+  private final ITestNGMethod[] m_allTestMethods;
   private List<ITestResult> m_testResults = Lists.newArrayList();
-  private ConfigurationGroupMethods m_groupMethods = null;
-  private ClassMethodMap m_classMethodMap = null;
-  private ITestContext m_testContext = null;
-  
-  public TestMethodWorker(IInvoker invoker, 
+  private final ConfigurationGroupMethods m_groupMethods;
+  private final ClassMethodMap m_classMethodMap;
+  private final ITestContext m_testContext;
+
+  public TestMethodWorker(IInvoker invoker,
                           IMethodInstance[] testMethods,
                           XmlSuite suite,
                           Map<String, String> parameters,
@@ -52,104 +52,96 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
                           ITestContext testContext)
   {
     m_invoker = invoker;
-    m_testMethods = testMethods;
+    m_methodInstances = testMethods;
     m_suite = suite;
     m_parameters = parameters;
-//    m_invokedBeforeClassMethods = invokedBeforeClassMethods;
-//    m_invokedAfterClassMethods = invokedAfterClassMethods;
     m_allTestMethods = allTestMethods;
     m_groupMethods = groupMethods;
     m_classMethodMap = classMethodMap;
     m_testContext = testContext;
   }
-  
+
   /**
    * Retrieves the maximum specified timeout of all ITestNGMethods to
    * be run.
-   * 
+   *
    * @return the max timeout or 0 if no timeout was specified
    */
+  @Override
   public long getTimeOut() {
     long result = 0;
-    for (IMethodInstance mi : m_testMethods) {
+    for (IMethodInstance mi : m_methodInstances) {
       ITestNGMethod tm = mi.getMethod();
       if (tm.getTimeOut() > result) {
         result = tm.getTimeOut();
       }
     }
-    
+
     return result;
   }
-  
+
   @Override
   public String toString() {
     StringBuilder result = new StringBuilder("[Worker thread:" + Thread.currentThread().getId()
         + " priority:" + getPriority() + " ");
 
-    result.append(m_testMethods[0].getMethod());
-//    result.append(" instances[0]:").append(m_testMethods[0].getInstances()[0]).append(" methods:");
-//
-//    for (IMethodInstance m : m_testMethods) {
-//      result.append(m.getMethod()).append(" ");
-//    }
+    result.append(m_methodInstances[0].getMethod());
     result.append("]");
 
     return result.toString();
   }
-  
+
   /**
    * Run all the ITestNGMethods passed in through the constructor.
-   * 
+   *
    * @see java.lang.Runnable#run()
    */
+  @Override
   public void run() {
-    // Using an index here because we need to tell the invoker
-    // the index of the current method
-    for (int indexMethod = 0; indexMethod < m_testMethods.length; indexMethod++) {
-      ITestNGMethod tm = m_testMethods[indexMethod].getMethod();
-  
-      ITestClass testClass = tm.getTestClass();
+    for (IMethodInstance testMthdInst : m_methodInstances) {
+      ITestNGMethod testMethod = testMthdInst.getMethod();
+      ITestClass testClass = testMethod.getTestClass();
 
-      invokeBeforeClassMethods(testClass, m_testMethods[indexMethod]);
-      
-      //
+      invokeBeforeClassMethods(testClass, testMthdInst);
+
       // Invoke test method
-      //
       try {
-        invokeTestMethods(tm, m_testMethods[indexMethod].getInstances(), m_testContext);
+        invokeTestMethods(testMethod, testMthdInst.getInstances(), m_testContext);
       }
       finally {
-        invokeAfterClassMethods(testClass, m_testMethods[indexMethod]);
+        invokeAfterClassMethods(testClass, testMthdInst);
       }
     }
   }
-  
+
   protected void invokeTestMethods(ITestNGMethod tm, Object[] instances,
-      ITestContext testContext) 
+      ITestContext testContext)
   {
     // Potential bug here:  we look up the method index of tm among all
     // the test methods (not very efficient) but if this method appears
     // several times and these methods are run in parallel, the results
     // are unpredictable...  Need to think about this more (and make it
     // more efficient)
-    List<ITestResult> testResults = 
-        m_invoker.invokeTestMethods(tm, 
-            m_allTestMethods, 
-            indexOf(tm, m_allTestMethods), 
-            m_suite, 
-            m_parameters, 
+    List<ITestResult> testResults =
+        m_invoker.invokeTestMethods(tm,
+            m_allTestMethods,
+            indexOf(tm, m_allTestMethods),
+            m_suite,
+            m_parameters,
             m_groupMethods,
             instances,
             testContext);
-    
+
     if (testResults != null) {
-      m_testResults.addAll(testResults);        
+      m_testResults.addAll(testResults);
     }
   }
-  
-  //
-  // Invoke the before class methods if not done already
-  //
+
+  /**
+   * Invoke the @BeforeClass methods if not done already
+   * @param testClass
+   * @param mi
+   */
   protected void invokeBeforeClassMethods(ITestClass testClass, IMethodInstance mi) {
     // if no BeforeClass than return immediately
     // used for parallel case when BeforeClass were already invoked
@@ -160,7 +152,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     if(null == classMethods || classMethods.length == 0) {
       return;
     }
-    
+
     // the whole invocation must be synchronized as other threads must
     // get a full initialized test object (not the same for @After)
     Map<ITestClass, Set<Object>> invokedBeforeClassMethods =
@@ -176,7 +168,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
         invokedBeforeClassMethods.put(testClass, instances);
       }
       for(Object instance: mi.getInstances()) {
-        if (! instances.contains(instance)) {  
+        if (! instances.contains(instance)) {
           instances.add(instance);
           m_invoker.invokeConfigurations(testClass,
                                          testClass.getBeforeClassMethods(),
@@ -188,7 +180,12 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       }
     }
   }
-  
+
+  /**
+   * Invoke the @AfterClass methods if not done already
+   * @param testClass
+   * @param mi
+   */
   protected void invokeAfterClassMethods(ITestClass testClass, IMethodInstance mi) {
     // if no BeforeClass than return immediately
     // used for parallel case when BeforeClass were already invoked
@@ -196,11 +193,11 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       return;
     }
     ITestNGMethod[] afterClassMethods= testClass.getAfterClassMethods();
-    
+
     if(null == afterClassMethods || afterClassMethods.length == 0) {
       return;
     }
-    
+
     //
     // Invoke after class methods if this test method is the last one
     //
@@ -220,7 +217,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
           }
         }
       }
-      
+
       for(Object inst: invokeInstances) {
         m_invoker.invokeConfigurations(testClass,
                                        afterClassMethods,
@@ -231,11 +228,12 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       }
     }
   }
-  
-  
+
   protected int indexOf(ITestNGMethod tm, ITestNGMethod[] allTestMethods) {
     for (int i = 0; i < allTestMethods.length; i++) {
-      if (allTestMethods[i] == tm) return i;
+      if (allTestMethods[i] == tm) {
+        return i;
+      }
     }
     return -1;
   }
@@ -243,40 +241,42 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   public List<ITestResult> getTestResults() {
     return m_testResults;
   }
-  
+
   private void ppp(String s) {
     Utils.log("TestMethodWorker", 2, ThreadUtil.currentThreadInfo() + ":" + s);
-  }
-
-  public void setAllTestMethods(ITestNGMethod[] allTestMethods) {
-    m_allTestMethods = allTestMethods;
   }
 
   @Override
   public List<ITestNGMethod> getTasks()
   {
     List<ITestNGMethod> result = Lists.newArrayList();
-    for (IMethodInstance m : m_testMethods) {
+    for (IMethodInstance m : m_methodInstances) {
       result.add(m.getMethod());
     }
     return result;
   }
 
+  @Override
   public int compareTo(IWorker<ITestNGMethod> other) {
     return getPriority() - other.getPriority();
   }
 
+  @Override
   public int getPriority() {
-    return m_testMethods.length == 1 ? m_testMethods[0].getMethod().getPriority() : 0;
+    return m_methodInstances.length == 1 ? m_methodInstances[0].getMethod().getPriority() : 0;
   }
 }
 
+/**
+ * Extends {@code TestMethodWorker} and is used to work on only a single method
+ * instance
+ */
 class SingleTestMethodWorker extends TestMethodWorker {
-  private static final ConfigurationGroupMethods EMPTY_GROUP_METHODS=
-    new ConfigurationGroupMethods(new ITestNGMethod[0], 
+  private static final ConfigurationGroupMethods EMPTY_GROUP_METHODS =
+    new ConfigurationGroupMethods(new ITestNGMethod[0],
         new HashMap<String, List<ITestNGMethod>>(), new HashMap<String, List<ITestNGMethod>>());
-  
-  public SingleTestMethodWorker(IInvoker invoker, 
+
+  public SingleTestMethodWorker(IInvoker invoker,
                                 MethodInstance testMethod,
                                 XmlSuite suite,
                                 Map<String, String> parameters,

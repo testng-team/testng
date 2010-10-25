@@ -8,9 +8,9 @@ import java.lang.reflect.Method;
 
 /**
  * This interface defines how annotations are found on classes, methods
- * and constructors.  It will be implemented by both JDK 1.4 and JDK 5 
+ * and constructors.  It will be implemented by both JDK 1.4 and JDK 5
  * annotation finders.
- * 
+ *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public interface IAnnotationFinder {
@@ -30,7 +30,7 @@ public interface IAnnotationFinder {
    * If not found, return null.
    */
   public IAnnotation findAnnotation(Method m, Class annotationClass);
-  
+
   /**
    * @param m
    * @param annotationName
@@ -39,7 +39,7 @@ public interface IAnnotationFinder {
    * If not found, return null.
    */
   public IAnnotation findAnnotation(Constructor m, Class annotationClass);
-  
+
   // No op for JDK15
   public void addSourceDirs(String[] dirs);
 
@@ -47,13 +47,13 @@ public interface IAnnotationFinder {
    * @return true if the ith parameter of the given method has the annotation @TestInstance.
    */
   public boolean hasTestInstance(Method method, int i);
-  
+
   /**
-   * @return the @Optional values of this method's parameters (<code>null</code> 
+   * @return the @Optional values of this method's parameters (<code>null</code>
    * if the parameter isn't optional)
    */
   public String[] findOptionalValues(Method method);
-  
+
   /**
    * @return the @Optional values of this method's parameters (<code>null</code>
    * if the parameter isn't optional)

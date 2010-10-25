@@ -25,15 +25,18 @@ public class ExecutorAdapter extends ThreadPoolExecutor implements IExecutor {
       m_threadFactory = tf;
    }
 
-   public IFutureResult submitRunnable(final Runnable runnable) {
+   @Override
+  public IFutureResult submitRunnable(final Runnable runnable) {
       return new FutureResultAdapter(super.submit(runnable));
    }
 
-   public void stopNow() {
+   @Override
+  public void stopNow() {
       super.shutdownNow();
    }
 
-   public boolean awaitTermination(long timeout) {
+   @Override
+  public boolean awaitTermination(long timeout) {
      boolean result= false;
      try {
       result= super.awaitTermination(timeout, TimeUnit.MILLISECONDS);
@@ -42,10 +45,11 @@ public class ExecutorAdapter extends ThreadPoolExecutor implements IExecutor {
        System.out.println("[WARN] ThreadPoolExecutor has been interrupted while awaiting termination");
        Thread.currentThread().interrupt();
      }
-     
+
      return result;
    }
 
+  @Override
   public StackTraceElement[][] getStackTraces() {
     List<Thread> threads = m_threadFactory.getThreads();
     int threadCount = threads.size();

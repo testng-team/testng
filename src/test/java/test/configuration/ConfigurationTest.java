@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
 
 /**
  * Test @Configuration
- * 
+ *
  * @author cbeust
  */
 public class ConfigurationTest {
@@ -31,7 +31,7 @@ public class ConfigurationTest {
     assert ! m_afterMethod: "afterMethod shouldn't have run";
     m_beforeSuite = true;
   }
-  
+
   @BeforeClass
   public void beforeClass() {
     ppp("@@@@ BEFORE_CLASS");
@@ -55,7 +55,7 @@ public class ConfigurationTest {
     assert ! m_afterMethod: "afterMethod shouldn't have run";
     m_beforeMethod = true;
   }
-  
+
   @AfterMethod
   public void afterMethod() {
     ppp("@@@@ AFTER_METHOD");
@@ -104,11 +104,11 @@ public class ConfigurationTest {
     assert ! m_afterClass : "afterClass shouldn't have run";
     assert ! m_afterMethod: "afterMethod shouldn't have run";
   }
-  
+
   private static void ppp(String s) {
     if (false) {
       System.out.println("[ConfigurationTest] " + s);
     }
   }
-  
+
 }

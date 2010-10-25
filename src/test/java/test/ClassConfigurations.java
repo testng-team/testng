@@ -14,7 +14,7 @@ public class ClassConfigurations {
     ++beforeCount;
 //    System.out.println("@@@@@@ beforeTestClass has been called " + beforeCount + " time(s)");
   }
-  
+
   @AfterTest
   public void afterTest() {
     beforeCount = 0;

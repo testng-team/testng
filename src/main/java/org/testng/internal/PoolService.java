@@ -3,7 +3,6 @@ package org.testng.internal;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +20,7 @@ import java.util.concurrent.Future;
  * and the caller can either block while waiting for the results (@code{submitTasksAndWait})
  * or submit them asynchronously (@code{submitTasks}) and supply listeners to notify when
  * the callers are done.
- *  
+ *
  * @author cbeust
  *
  * @param <KeyType> The type of the key to index each list of Callables
@@ -37,7 +36,7 @@ public class PoolService<KeyType, FutureType> {
 
   /**
    * One pool is created per XmlSuite object.
-   * 
+   *
    * @param threadPoolSize the size of the thread pool
    */
   private PoolService(int threadPoolSize) {
@@ -47,6 +46,7 @@ public class PoolService<KeyType, FutureType> {
     m_listeners = Maps.newHashMap();
 
     m_listenerThread = new Thread() {
+      @Override
       public void run() {
         System.out.println("Listener thread starting, futures:" + m_futureMap.size());
         while (m_futureMap.size() > 0) {
@@ -146,8 +146,9 @@ public class PoolService<KeyType, FutureType> {
 
   private boolean isFinished(List<Future<FutureType>> futures) {
     for (Future<FutureType> f : futures) {
-      if (!f.isDone())
+      if (!f.isDone()) {
         return false;
+      }
     }
     return true;
   }

@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 
 /**
  * This class tests @ExpectedExceptions
- * 
+ *
  * @author cbeust
  */
 public class SampleExceptions {
@@ -35,11 +35,11 @@ public class SampleExceptions {
 //  public void throwWrongException() {
 //      throw new NullPointerException();
 //  }
-  
+
 //  @Test
 //  @ExpectedExceptions({ FileNotFoundException.class, IOException.class })
 //  public void shouldPass2() throws Exception {
 //    throw new FileNotFoundException();
 //  }
-  
+
 }

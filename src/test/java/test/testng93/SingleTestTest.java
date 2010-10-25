@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 
 
 /**
- * This class/interface 
+ * This class/interface
  */
 public class SingleTestTest {
   @BeforeMethod(groups={"group1"})

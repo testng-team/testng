@@ -22,8 +22,9 @@ import java.util.List;
 
 /**
  * Collections of helper methods to help deal with invocation of TestNG methods
- * 
- * @author nullin
+ *
+ * @author Cedric Beust <cedric@beust.com>
+ * @author nullin <nalin.makar * gmail.com>
  *
  */
 public class MethodInvocationHelper {
@@ -63,9 +64,9 @@ public class MethodInvocationHelper {
         }
       }
     }
-  
+
     boolean isPublic = Modifier.isPublic(thisMethod.getModifiers());
-  
+
     try {
       if (!isPublic) {
         thisMethod.setAccessible(true);
@@ -77,7 +78,7 @@ public class MethodInvocationHelper {
         thisMethod.setAccessible(false);
       }
     }
-  
+
     return result;
   }
 
@@ -87,11 +88,11 @@ public class MethodInvocationHelper {
   {
     Iterator<Object[]> result = null;
     Method testMethod = method.getMethod();
-  
+
     // If it returns an Object[][], convert it to an Iterable<Object[]>
     try {
       List<Object> lParameters = Lists.newArrayList();
-  
+
       // Go through all the parameters declared on this Data Provider and
       // make sure we have at most one Method and one ITestContext.
       // Anything else is an error
@@ -99,7 +100,7 @@ public class MethodInvocationHelper {
       if (parameterTypes.length > 2) {
         throw new TestNGException("DataProvider " + dataProvider + " cannot have more than two parameters");
       }
-  
+
       int i = 0;
       for (Class<?> cls : parameterTypes) {
         boolean isTestInstance = annotationFinder.hasTestInstance(dataProvider, i++);
@@ -114,7 +115,7 @@ public class MethodInvocationHelper {
         }
       }
       Object[] parameters = lParameters.toArray(new Object[lParameters.size()]);
-  
+
       Class< ? > returnType = dataProvider.getReturnType();
       if (Object[][].class.isAssignableFrom(returnType)) {
         Object[][] oResult = (Object[][]) invokeMethod(
@@ -139,7 +140,7 @@ public class MethodInvocationHelper {
     catch (IllegalAccessException e) {
       throw new TestNGException(e);
     }
-  
+
     return result;
   }
 
@@ -165,7 +166,7 @@ public class MethodInvocationHelper {
     Method runMethod = hookableInstance.getClass().getMethod("run",
         new Class[] { IHookCallBack.class, ITestResult.class });
     final Throwable[] error = new Throwable[1];
-  
+
     IHookCallBack callback = new IHookCallBack() {
       @Override
       public void runTestMethod(ITestResult tr) {
@@ -177,7 +178,7 @@ public class MethodInvocationHelper {
            tr.setThrowable( t ); // make Throwable available to IHookable
          }
        }
-  
+
       @Override
       public Object[] getParameters() {
         return parameters;
@@ -203,13 +204,13 @@ public class MethodInvocationHelper {
         ITestResult testResult)
     throws InterruptedException, ThreadExecutionException {
       IExecutor exec= ThreadUtil.createExecutor(1, tm.getMethod().getName());
-  
+
       InvokeMethodRunnable imr = new InvokeMethodRunnable(tm, instance, parameterValues);
       IFutureResult future= exec.submitRunnable(imr);
       exec.shutdown();
       long realTimeOut = MethodHelper.calculateTimeOut(tm);
       boolean finished = exec.awaitTermination(realTimeOut);
-  
+
       if (! finished) {
         exec.stopNow();
         ThreadTimeoutException exception = new ThreadTimeoutException("Method "
@@ -223,12 +224,12 @@ public class MethodInvocationHelper {
       else {
         Utils.log("Invoker " + Thread.currentThread().hashCode(), 3,
             "Method " + tm.getMethod() + " completed within the time-out " + tm.getTimeOut());
-  
+
         // We don't need the result from the future but invoking get() on it
         // will trigger the exception that was thrown, if any
         future.get();
   //      done.await();
-  
+
         testResult.setStatus(ITestResult.SUCCESS); // if no exception till here than SUCCESS
       }
     }
@@ -242,7 +243,7 @@ public class MethodInvocationHelper {
     Method runMethod = configurableInstance.getClass().getMethod("run",
         new Class[] { IConfigureCallBack.class, ITestResult.class });
     final Throwable[] error = new Throwable[1];
-  
+
     IConfigureCallBack callback = new IConfigureCallBack() {
       @Override
       public void runConfigurationMethod(ITestResult tr) {
@@ -253,7 +254,7 @@ public class MethodInvocationHelper {
           tr.setThrowable(t); // make Throwable available to IConfigurable
         }
       }
-  
+
       @Override
       public Object[] getParameters() {
         return parameters;

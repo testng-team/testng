@@ -22,10 +22,10 @@ public class MethodCallOrderTest {
     assertTrue(s_beforeTest);
     assertFalse(s_beforeClass);
     assertFalse(s_beforeMethod);
-    
+
     s_beforeClass = true;
   }
-  
+
   @AfterSuite
   public void cleanUp() {
     s_beforeSuite = false;
@@ -34,7 +34,7 @@ public class MethodCallOrderTest {
     s_beforeMethod = false;
   }
 
-  
+
   @BeforeMethod
   public void beforeMethod() {
     assertTrue(s_beforeSuite);
@@ -43,7 +43,7 @@ public class MethodCallOrderTest {
     assertFalse(s_beforeMethod);
     s_beforeMethod = true;
   }
-  
+
   @Test
   public void realTest() {
     assertTrue(s_beforeSuite);
@@ -51,7 +51,7 @@ public class MethodCallOrderTest {
     assertTrue(s_beforeClass);
     assertTrue(s_beforeMethod);
   }
-  
+
   @AfterMethod
   public void afterMethod() {
     assertFalse(ExternalConfigurationClass.s_afterMethod, "afterTestMethod shouldn't have been run");
@@ -60,7 +60,7 @@ public class MethodCallOrderTest {
 
     ExternalConfigurationClass.s_afterMethod = true;
   }
-  
+
   @AfterClass
   public void afterClass() {
     assertTrue(ExternalConfigurationClass.s_afterMethod, "afterTestMethod should have been run");

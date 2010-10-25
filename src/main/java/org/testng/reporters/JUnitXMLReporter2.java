@@ -1,15 +1,6 @@
 package org.testng.reporters;
 
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
@@ -26,12 +17,21 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 /**
  * this XML Reporter will produce XML format compatible with the XMLJUnitResultFormatter from ant
  * this enables TestNG output to be processed by tools that already handle this format
  *
  * borrows heavily from ideas in org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter
- * 
+ *
  * this is the original version which was replaced by JUnitXMLReporter
  * @TODO: clean up
  */
@@ -48,22 +48,25 @@ public class JUnitXMLReporter2 implements IResultListener {
   private int m_numFailed= 0;
   private int m_numSkipped= 0;
   private int m_numFailedButIgnored= 0;
-  private List<ITestResult> m_allTests 
+  private List<ITestResult> m_allTests
       = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
   private List<ITestResult> m_configIssues
       = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
 
+  @Override
   public void onTestStart(ITestResult result) {
   }
 
   /**
    * Invoked each time a test succeeds.
    */
+  @Override
   public void onTestSuccess(ITestResult tr) {
     m_allTests.add(tr);
     m_numPassed++;
   }
 
+  @Override
   public void onTestFailedButWithinSuccessPercentage(ITestResult tr) {
     m_allTests.add(tr);
     m_numFailedButIgnored++;
@@ -72,6 +75,7 @@ public class JUnitXMLReporter2 implements IResultListener {
   /**
    * Invoked each time a test fails.
    */
+  @Override
   public void onTestFailure(ITestResult tr) {
     m_allTests.add(tr);
     m_numFailed++;
@@ -80,6 +84,7 @@ public class JUnitXMLReporter2 implements IResultListener {
   /**
    * Invoked each time a test is skipped.
    */
+  @Override
   public void onTestSkipped(ITestResult tr) {
     m_allTests.add(tr);
     m_numSkipped++;
@@ -90,6 +95,7 @@ public class JUnitXMLReporter2 implements IResultListener {
    * any configuration method is called.
    *
    */
+  @Override
   public void onStart(ITestContext context) {
     m_outputFileName= context.getOutputDirectory() + File.separator + context.getName() + ".xml";
     m_outputFile= new File(m_outputFileName);
@@ -101,6 +107,7 @@ public class JUnitXMLReporter2 implements IResultListener {
    * Configuration methods have been called.
    *
    */
+  @Override
   public void onFinish(ITestContext context) {
     generateReport();
   }
@@ -167,20 +174,20 @@ public class JUnitXMLReporter2 implements IResultListener {
     resultElement.setAttribute(XMLConstants.ATTR_NAME, name);
     resultElement.setAttribute(XMLConstants.ATTR_CLASSNAME,
                                tr.getTestClass().getRealClass().getName());
-    resultElement.setAttribute(XMLConstants.ATTR_TIME, 
+    resultElement.setAttribute(XMLConstants.ATTR_TIME,
                                "" + ((double) elapsedTimeMillis)/1000);
     if (ITestResult.FAILURE == tr.getStatus()) {
-      Element nested = createFailureElement(doc, tr); 
+      Element nested = createFailureElement(doc, tr);
       resultElement.appendChild(nested);
     }
     else if (ITestResult.SKIP == tr.getStatus()) {
       Element nested = createSkipElement(doc, tr);
       resultElement.appendChild(nested);
     }
-    
+
     return resultElement;
   }
-  
+
   private Element createFailureElement(Document doc, ITestResult tr) {
     Element nested= doc.createElement(XMLConstants.FAILURE);
     Throwable t = tr.getThrowable();
@@ -193,17 +200,18 @@ public class JUnitXMLReporter2 implements IResultListener {
       CDATASection trace= doc.createCDATASection(Utils.stackTrace(t, false)[0]);
       nested.appendChild(trace);
     }
-    
+
     return nested;
   }
-  
+
   private Element createSkipElement(Document doc, ITestResult tr) {
     return doc.createElement("skipped");
   }
-  
+
   /**
    * @see org.testng.internal.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
    */
+  @Override
   public void onConfigurationFailure(ITestResult itr) {
     m_configIssues.add(itr);
   }
@@ -211,6 +219,7 @@ public class JUnitXMLReporter2 implements IResultListener {
   /**
    * @see org.testng.internal.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
    */
+  @Override
   public void onConfigurationSkip(ITestResult itr) {
     m_configIssues.add(itr);
   }
@@ -218,6 +227,7 @@ public class JUnitXMLReporter2 implements IResultListener {
   /**
    * @see org.testng.internal.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
    */
+  @Override
   public void onConfigurationSuccess(ITestResult itr) {
   }
 }

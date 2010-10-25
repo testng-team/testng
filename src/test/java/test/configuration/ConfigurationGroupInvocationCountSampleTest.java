@@ -1,15 +1,15 @@
 package test.configuration;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.testng.annotations.AfterGroups;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ConfigurationGroupInvocationCountSampleTest {
   static List<Integer> m_list = new ArrayList<Integer>();
-  
+
   @BeforeGroups(groups={"twice"}, value={"twice"})
   public void a(){
     ppp("BEFORE()");
@@ -27,12 +27,12 @@ public class ConfigurationGroupInvocationCountSampleTest {
     m_list.add(3);
     ppp("AFTER()");
   }
-  
+
   private void ppp(String string) {
     if (false) {
       System.out.println("[A] " + string);
     }
   }
-  
+
 
 }

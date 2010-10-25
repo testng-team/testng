@@ -1,6 +1,6 @@
 package test.dependent;
 
-import org.testng.annotations.*;
+import org.testng.annotations.Test;
 
 
 /**
@@ -8,7 +8,7 @@ import org.testng.annotations.*;
  * in the correct order.
  *
  * @author Cedric Beust, Aug 19, 2004
- * 
+ *
  */
 public class OrderMethodTest extends BaseOrderMethodTest {
   @Test(groups = { "1.0" })
@@ -16,7 +16,7 @@ public class OrderMethodTest extends BaseOrderMethodTest {
 //    ppp("1.0");
     m_group1[0] = true;
   }
-  
+
   @Test(groups = { "2.1" }, dependsOnGroups = { "1.0", "1.1" })
   public void a_second1() {
 //    ppp("2.1");
@@ -29,7 +29,7 @@ public class OrderMethodTest extends BaseOrderMethodTest {
 //    ppp("1.1");
     m_group1[1] = true;
   }
-  
-    
-  
+
+
+
 }

@@ -1,8 +1,8 @@
 package test.pholser;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * @author <a href="mailto:pholser@thoughtworks.com">Paul Holser</a>
@@ -13,10 +13,12 @@ public class Captor {
   private List<String> captives;
 
   public static Captor instance() {
-    if (null == instance) instance = new Captor();
+    if (null == instance) {
+      instance = new Captor();
+    }
     return instance;
   }
-  
+
   public static void reset() {
 //    System.out.println("@@PHOLSER RESETTING CAPTOR");
     instance().captives = new ArrayList<String>();

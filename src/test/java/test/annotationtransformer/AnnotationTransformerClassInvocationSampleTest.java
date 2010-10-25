@@ -6,6 +6,6 @@ import org.testng.annotations.Test;
 public class AnnotationTransformerClassInvocationSampleTest {
 
   public void f1() {}
-  
+
   public void f2() {}
 }

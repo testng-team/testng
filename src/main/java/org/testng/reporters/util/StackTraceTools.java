@@ -4,7 +4,7 @@ import org.testng.ITestNGMethod;
 
 /**
  * Functionality to allow tools to analyse and subdivide stack traces.
- * 
+ *
  * @author Paul Mendelson
  * @since 5.3
  * @version $Revision: 173 $

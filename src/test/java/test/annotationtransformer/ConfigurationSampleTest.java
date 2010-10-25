@@ -11,7 +11,7 @@ public class ConfigurationSampleTest {
   public void beforeClass() {
     m_before = "correct";
   }
-  
+
   @BeforeMethod(enabled = false)
   public void testingEnabledOnConfiguration() {
     m_before = "this method is not enabled, we should not be here";
@@ -22,10 +22,10 @@ public class ConfigurationSampleTest {
   public void beforeMethod() {
     m_before = "incorrect";
   }
-  
+
   @Test
   public void f() {}
-  
+
   public static String getBefore() {
     return m_before;
   }

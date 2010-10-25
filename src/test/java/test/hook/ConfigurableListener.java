@@ -14,7 +14,9 @@ public class ConfigurableListener implements IConfigurable {
   public void run(IConfigureCallBack callBack, ITestResult testResult) {
     m_hookCount++;
     Object[] parameters = callBack.getParameters();
-    if (parameters.length > 0) m_methodName = ((Method) parameters[0]).getName();
+    if (parameters.length > 0) {
+      m_methodName = ((Method) parameters[0]).getName();
+    }
     callBack.runConfigurationMethod(testResult);
   }
 

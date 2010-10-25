@@ -4,7 +4,7 @@ import org.testng.annotations.BeforeGroups;
 
 
 /**
- * This class/interface 
+ * This class/interface
  */
 public class FailingBeforeGroupMethod {
   @BeforeGroups(groups={"A"})

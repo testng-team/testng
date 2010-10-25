@@ -1,8 +1,8 @@
 package test.justin;
 
-import java.text.ParseException;
-
 import org.testng.annotations.Test;
+
+import java.text.ParseException;
 
 /**
  * Created Jul 10, 2005

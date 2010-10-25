@@ -27,24 +27,24 @@ public class AfterClassCalledAtEnd extends BaseAfterClassCalledAtEnd {
   }
 
   @Test(description = "Verify that beforeClass and afterClass are called correctly")
-  public void test1() { 
+  public void test1() {
     m_test1 = true;
     assert m_before1Class : "beforeClass configuration must be called before method";
     assert ! m_afterClass : "afterClass configuration must not be called before test method";
   }
-  
+
   @Test
   public void test2() {
     m_test2 = true;
     assert m_before1Class : "beforeClass configuration must be called before method";
-    assert ! m_afterClass : "afterClass configuration must not be called before test method"; 
+    assert ! m_afterClass : "afterClass configuration must not be called before test method";
   }
 
   @Test
   public void test3() {
     m_test3 = true;
     assert m_before1Class : "beforeClass configuration must be called before method";
-    assert ! m_afterClass : "afterClass configuration must not be called before test method"; 
+    assert ! m_afterClass : "afterClass configuration must not be called before test method";
   }
 
 }

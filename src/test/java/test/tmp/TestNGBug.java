@@ -18,7 +18,7 @@ public class TestNGBug {
   public void test2() {
     Reporter.log("Child.test2");
   }
-  
+
   @Test(groups = "a")
   public void test3() {
     Reporter.log("Child.test3");

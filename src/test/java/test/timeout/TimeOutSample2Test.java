@@ -11,7 +11,7 @@ public class TimeOutSample2Test {
   public void timeoutShouldFailByTimeOut() throws InterruptedException {
       Thread.sleep(10 * 1000);
   }
-  
+
   public static void ppp(String s) {
     System.out.println("[TimeOutTest]@@@@@@@@@@@@@@@ " + s);
   }

@@ -14,7 +14,7 @@ public class VerifyTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
     tng.run();
-    
+
     Assert.assertEquals(tla.getPassedTests().size(), expected);
   }
 

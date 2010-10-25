@@ -144,7 +144,9 @@ public class XMLReporter implements IReporter {
     }
 
     // The suite could be completely empty
-    if (maxEndDate == null) maxEndDate = minStartDate;
+    if (maxEndDate == null) {
+      maxEndDate = minStartDate;
+    }
     addDurationAttributes(config, props, minStartDate, maxEndDate);
     return props;
   }
