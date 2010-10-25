@@ -9,15 +9,19 @@ import java.util.Iterator;
  *
  */
 public class ParameterHolder {
-  public static final int ORIGIN_DATA_PROVIDER = 1;
-  public static final int ORIGIN_XML = 2;
-  public static final int ORIGIN_NO_PARAMETERS = 2;
+  /**
+   * Origin of the parameters.
+   */
+  public enum ParameterOrigin {
+    ORIGIN_DATA_PROVIDER, // A data provider
+    ORIGIN_XML // TestNG XML suite
+  };
 
   public DataProviderHolder dataProviderHolder;
   public Iterator<Object[]> parameters;
-  public int origin;
+  public ParameterOrigin origin;
 
-  public ParameterHolder(Iterator<Object[]> parameters, int origin, DataProviderHolder dph) {
+  public ParameterHolder(Iterator<Object[]> parameters, ParameterOrigin origin, DataProviderHolder dph) {
     super();
     this.parameters = parameters;
     this.origin = origin;

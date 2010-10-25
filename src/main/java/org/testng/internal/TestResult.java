@@ -70,20 +70,28 @@ public class TestResult implements ITestResult {
     m_method = method;
 
     m_instance = instance;
+
+    // Calculate the name: either the method name, ITest#getTestName or
+    // toString() if it's been overridden.
     if (m_instance == null) {
       m_name = m_method.getMethodName();
     } else {
-      String string = m_instance.toString();
-      // Only display toString() if it's been overridden by the user
-      m_name = getMethod().getMethodName();
-      try {
-        if (!Object.class.getMethod("toString")
-            .equals(m_instance.getClass().getMethod("toString"))) {
-          m_name = m_name + " on instance " + string;
-        }
+      if (m_instance instanceof ITest) {
+        m_name = ((ITest) m_instance).getTestName();
       }
-      catch(NoSuchMethodException ignore) {
-        // ignore
+      else {
+        String string = m_instance.toString();
+        // Only display toString() if it's been overridden by the user
+        m_name = getMethod().getMethodName();
+        try {
+          if (!Object.class.getMethod("toString")
+              .equals(m_instance.getClass().getMethod("toString"))) {
+            m_name = m_name + " on instance " + string;
+          }
+        }
+        catch(NoSuchMethodException ignore) {
+          // ignore
+        }
       }
     }
   }

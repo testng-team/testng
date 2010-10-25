@@ -3,7 +3,9 @@ Current
 Added: timeOut for configuration methods
 Added: -randomizesuites (Nalin Makar)
 Added: IConfigurable
+Fixed: Skipped tests were not always counted.
 Fixed: EmailableReporter now sorts methods chronologically
+Fixed: TESTNG-411: Throw exception on mismatch of parameter values (via DP and/or Inject) and test parameters
 Fixed: IDEA-59073: exceptions that don't match don't have stack trace printed in console (Anna Kozlova)
 Fixed: IDEA's plug-in was not honoring ITest (fixed in TestResultMessage)
 Fixed: Methods depending on a group they belong were skipped instead of throwing a cycle exception
@@ -15,6 +17,7 @@ Fixed: NPE while printing results for an empty suite (Nalin Makar)
 Fixed: Invoke IInvokedMethodListener.afterInvocation after fixing results for tests expecting exceptions (Nalin Makar)
 
 Eclipse:
+Added: It's now possible "Run/Debug As" with a right click from pretty much any element that makes sense in the tree.
 Added: The conversion of a JUnit test to TestNG now replaces @Test(timeout) with @Test(timeOut) (5.14.2.4)
 Added: The conversion of a JUnit test to TestNG now replaces @Test(expected) with @Test(expectedExceptions) (5.14.2.4)
 Added: The conversion of a JUnit test to TestNG now replaces fail() with AssertJUnit.fail() (5.14.2.2)

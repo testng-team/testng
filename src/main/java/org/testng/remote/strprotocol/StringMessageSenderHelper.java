@@ -2,6 +2,7 @@ package org.testng.remote.strprotocol;
 
 
 import org.testng.TestNGException;
+import org.testng.remote.RemoteTestNG;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -19,11 +20,11 @@ import java.net.Socket;
  */
 public class StringMessageSenderHelper {
 
-  private boolean        m_debugMode = false;
+  private boolean m_debug = false;
 
-  private Socket         m_clientSocket;
-  private String         m_host;
-  private int            m_port;
+  private Socket m_clientSocket;
+  private String m_host;
+  private int m_port;
 
   /** Outgoing message stream. */
   private PrintWriter    m_outStream;
@@ -42,16 +43,14 @@ public class StringMessageSenderHelper {
   /**
    * Starts the connection.
    *
-   * @return <TT>true</TT> if the connection was successfull, <TT>false</TT> otherwise
-   * @throws TestNGException if an exception occured while establishing the connection
+   * @return <TT>true</TT> if the connection was successful, <TT>false</TT> otherwise
+   * @throws TestNGException if an exception occurred while establishing the connection
    */
   public boolean connect() {
-    if(m_debugMode) {
-      ppp("trying to connect " + m_host + ":" + m_port); //$NON-NLS-1$ //$NON-NLS-2$
-    }
     Exception exception = null;
 
-    for(int i = 1; i < 20; i++) {
+    while (true) {
+      p("Waiting for Eclipse client on " + m_host + ":" + m_port);
       try {
         m_clientSocket = new Socket(m_host, m_port);
 
@@ -74,6 +73,7 @@ public class StringMessageSenderHelper {
           m_inStream = new BufferedReader(new InputStreamReader(m_clientSocket.getInputStream()));
         }
 
+        p("Connection established, starting reader thread");
         m_readerThread = new ReaderThread();
         m_readerThread.start();
 
@@ -84,14 +84,13 @@ public class StringMessageSenderHelper {
       }
 
       try {
-        Thread.sleep(2000);
+        Thread.sleep(4000);
       }
       catch(InterruptedException e) {
         ;
       }
     }
 
-    throw new TestNGException("Cannot establish connection: " + m_host + ":" + m_port, exception);
   }
 
   /**
@@ -124,7 +123,7 @@ public class StringMessageSenderHelper {
       }
     }
     catch(IOException e) {
-      if(m_debugMode) {
+      if(m_debug) {
         e.printStackTrace();
       }
     }
@@ -140,25 +139,25 @@ public class StringMessageSenderHelper {
 
   private void sendMessage(String msg) {
     if(null == m_outStream) {
-      ppp("WARNING the outputstream is null. Cannot send message.");
+      p("WARNING the outputstream is null. Cannot send message.");
 
       return;
     }
 
-    if(m_debugMode) {
-      ppp(msg);
+    if (RemoteTestNG.isVerbose()) {
+      p(msg);
 
       StringBuffer buf = new StringBuffer();
       for(int i = 0; i < msg.length(); i++) {
         if('\u0001' == msg.charAt(i)) {
-          ppp("word:[" + buf.toString() + "]");
+          p("word:[" + buf.toString() + "]");
           buf.delete(0, buf.length());
         }
         else {
           buf.append(msg.charAt(i));
         }
       }
-      ppp("word:[" + buf.toString() + "]");
+      p("word:[" + buf.toString() + "]");
     }
 
     synchronized(lock) {
@@ -171,8 +170,10 @@ public class StringMessageSenderHelper {
     }
   }
 
-  private static void ppp(String msg) {
-//    System.out.println("[StringMessageSenderHelper]: " + msg); //$NON-NLS-1$
+  private static void p(String msg) {
+    if (RemoteTestNG.isVerbose()) {
+      System.out.println("[StringMessageSenderHelper] " + msg); //$NON-NLS-1$
+    }
   }
 
   /**
@@ -189,8 +190,8 @@ public class StringMessageSenderHelper {
       try {
         String message;
         while((m_inStream != null) && (message = m_inStream.readLine()) != null) {
-          if(m_debugMode) {
-            ppp("Reply:" + message); //$NON-NLS-1$
+          if(m_debug) {
+            p("Reply:" + message); //$NON-NLS-1$
           }
           boolean acknowledge = MessageHelper.ACK_MSG.equals(message);
           boolean stop = MessageHelper.STOP_MSG.equals(message);
@@ -208,5 +209,9 @@ public class StringMessageSenderHelper {
         ;
       }
     }
+  }
+
+  public void setDebug(boolean debug) {
+    m_debug = debug;
   }
 }

@@ -92,10 +92,10 @@ public final class ClassHelper {
       try {
         return classLoader.loadClass(className);
       }
-      catch(Exception ex) {
+      catch(ClassNotFoundException ex) {
         // With additional class loaders, it is legitimate to ignore ClassNotFoundException
-        if(null == m_classLoaders || m_classLoaders.size() == 0) {
-          logInstantiationError(className, ex);
+        if (null == m_classLoaders || m_classLoaders.size() == 0) {
+          logClassNotFoundError(className, ex);
         }
       }
     }
@@ -104,14 +104,14 @@ public final class ClassHelper {
       return Class.forName(className);
     }
     catch(ClassNotFoundException cnfe) {
-      logInstantiationError(className, cnfe);
+      logClassNotFoundError(className, cnfe);
       return null;
     }
   }
 
-  private static void logInstantiationError(String className, Exception ex) {
-    Utils.log("ClassHelper", 2, "Could not instantiate " + className + ": "
-        + ex.getMessage());
+  private static void logClassNotFoundError(String className, Exception ex) {
+    Utils.log("ClassHelper", 2, "Could not instantiate " + className
+        + " : Class doesn't exist (" + ex.getMessage() + ")");
   }
 
   /**
@@ -124,9 +124,8 @@ public final class ClassHelper {
    * @return the @Factory <CODE>method</CODE> or null
    *
    * FIXME: @Factory method must be public!
-   * TODO rename this method to findDeclaredFactoryMethod
    */
-  public static Method findFactoryMethod(Class<?> cls, IAnnotationFinder finder) {
+  public static Method findDeclaredFactoryMethod(Class<?> cls, IAnnotationFinder finder) {
     Method result = null;
 
     for (Method method : cls.getMethods()) {

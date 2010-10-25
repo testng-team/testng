@@ -23,6 +23,7 @@ import org.testng.annotations.NoInjection;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.InvokeMethodRunnable.TestNGRuntimeException;
+import org.testng.internal.ParameterHolder.ParameterOrigin;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.Sets;
@@ -57,9 +58,9 @@ public class Invoker implements IInvoker {
   private final ITestResultNotifier m_notifier;
   private final IAnnotationFinder m_annotationFinder;
   private final SuiteRunState m_suiteState;
-  private boolean m_skipFailedInvocationCounts;
+  private final boolean m_skipFailedInvocationCounts;
   private final List<IInvokedMethodListener> m_invokedMethodListeners;
-  private boolean m_continueOnFailedConfiguration;
+  private final boolean m_continueOnFailedConfiguration;
 
   /** Group failures must be synced as the Invoker is accessed concurrently */
   private Map<String, Boolean> m_beforegroupsFailures = Maps.newHashtable();
@@ -643,7 +644,7 @@ public class Invoker implements IInvoker {
           false /* isConfiguration */,
           System.currentTimeMillis());
 
-      runInvokedMethodListeners(true, invokedMethod, testResult);
+      runInvokedMethodListeners(true /* before */, invokedMethod, testResult);
 
       m_notifier.addInvokedMethod(invokedMethod);
 
@@ -725,7 +726,7 @@ public class Invoker implements IInvoker {
 
       //Run invokedMethodListeners after fixing the test results based on
       //expectedExceptions, if any
-      runInvokedMethodListeners(false, invokedMethod, testResult);
+      runInvokedMethodListeners(false /* before */, invokedMethod, testResult);
 
       // If this method has a data provider and just failed, memorize the number
       // at which it failed.
@@ -1028,7 +1029,7 @@ public class Invoker implements IInvoker {
   }
 
   /**
-   * Invoke all the test methods.  Note the plural:  the method passed in
+   * Invoke all the test methods. Note the plural: the method passed in
    * parameter might be invoked several times if the test class it belongs
    * to has more than one instance (i.e., if an @Factory method has been
    * declared somewhere that returns several instances of this TestClass).
@@ -1059,17 +1060,19 @@ public class Invoker implements IInvoker {
 
     List<ITestResult> result = Lists.newArrayList();
 
+    if (!MethodHelper.isEnabled(testMethod.getMethod(), m_annotationFinder)) {
+      /*
+       * return if the method is not enabled. No need to do any more calculations
+       */
+      return result;
+    }
+
     ITestClass testClass= testMethod.getTestClass();
     long start = System.currentTimeMillis();
 
-    //
-    // TODO:
-    // - [DONE] revisit invocationCount, threadPoolSize values
-    // - try to remove the isWithinThreadedMethod: still needed to determine the @BeforeMethod + @AfterMethod
-    // - [DONE] solve the results different approaches: assignment and addAll
-    //
-    // For invocationCount>1 and threadPoolSize>1 the method will be invoked on a thread pool
+    // For invocationCount > 1 and threadPoolSize > 1 the method will be invoked on a thread pool
     long timeOutInvocationCount = testMethod.getInvocationTimeOut();
+    //FIXME: Is this correct?
     boolean onlyOne = testMethod.getThreadPoolSize() > 1 ||
       timeOutInvocationCount > 0;
 
@@ -1081,156 +1084,15 @@ public class Invoker implements IInvoker {
     while(invocationCount-- > 0) {
       boolean okToProceed = checkDependencies(testMethod, allTestMethods);
 
-      if (okToProceed) {
+      if (!okToProceed) {
         //
-        // Invoke the test method if it's enabled
+        // Not okToProceed. Test is being skipped
         //
-        if (MethodHelper.isEnabled(testMethod.getMethod(), m_annotationFinder)) {
-          //
-          // If threadPoolSize specified, run this method in its own pool thread.
-          //
-          if (testMethod.getThreadPoolSize() > 1 && testMethod.getInvocationCount() > 1) {
-              return invokePooledTestMethods(testMethod, allTestMethods, suite,
-                  parameters, groupMethods, testContext);
-          }
-
-          //
-          // No threads, regular invocation
-          //
-          else {
-            ITestNGMethod[] beforeMethods = filterMethods(testClass, testClass.getBeforeTestMethods());
-            ITestNGMethod[] afterMethods = filterMethods(testClass, testClass.getAfterTestMethods());
-
-            Map<String, String> allParameterNames = Maps.newHashMap();
-            ParameterBag bag = createParameters(testClass, testMethod,
-                parameters, allParameterNames, null, suite, testContext, instances[0],
-                null);
-
-            if(bag.hasErrors()) {
-              failureCount = handleInvocationResults(testMethod,
-                  bag.errorResults, null, failureCount, expectedExceptionHolder, true,
-                  true /* collect results */);
-              registerSkippedTestResult(testMethod, instances[0], start);
-              continue;
-            }
-
-            Iterator<Object[]> allParameterValues= bag.parameterHolder.parameters;
-
-            int parametersIndex = 0;
-
-            try {
-              List<TestMethodWithDataProviderMethodWorker> workers = Lists.newArrayList();
-
-              if (bag.parameterHolder.origin == ParameterHolder.ORIGIN_DATA_PROVIDER &&
-                  bag.parameterHolder.dataProviderHolder.annotation.isParallel()) {
-                while (allParameterValues.hasNext()) {
-                  Object[] parameterValues = getInjectedParameters(testMethod,
-                      testContext, allParameterValues);
-                  TestMethodWithDataProviderMethodWorker w =
-                    new TestMethodWithDataProviderMethodWorker(this,
-                        testMethod, parametersIndex,
-                        parameterValues, instances, suite, parameters, testClass,
-                        beforeMethods, afterMethods, groupMethods,
-                        expectedExceptionHolder, testContext, m_skipFailedInvocationCounts,
-                        invocationCount, failureCount, m_notifier);
-                  workers.add(w);
-                  // testng387: increment the param index in the bag.
-                  parametersIndex++;
-                }
-                PoolService ps = PoolService.getInstance();
-                List<ITestResult> r = ps.submitTasksAndWait(testMethod, workers);
-                result.addAll(r);
-
-              } else {
-                while (allParameterValues.hasNext()) {
-                  Object[] parameterValues = getInjectedParameters(testMethod,
-                      testContext, allParameterValues);
-
-                  List<ITestResult> tmpResults = Lists.newArrayList();
-
-                  try {
-                    tmpResults.addAll(invokeTestMethod(instances,
-                                                       testMethod,
-                                                       parameterValues,
-                                                       parametersIndex,
-                                                       suite,
-                                                       parameters,
-                                                       testClass,
-                                                       beforeMethods,
-                                                       afterMethods,
-                                                       groupMethods));
-                  }
-                  finally {
-                    List<Object> failedInstances = Lists.newArrayList();
-
-                    failureCount = handleInvocationResults(testMethod, tmpResults,
-                        failedInstances, failureCount, expectedExceptionHolder, true,
-                        false /* don't collect results */);
-                    if (failedInstances.isEmpty()) {
-                      result.addAll(tmpResults);
-                    } else {
-                      for (int i = 0; i < failedInstances.size(); i++) {
-                        List<ITestResult> retryResults = Lists.newArrayList();
-
-                        failureCount =
-                         retryFailed(failedInstances.toArray(),
-                         i, testMethod, suite, testClass, beforeMethods,
-                         afterMethods, groupMethods, retryResults,
-                         failureCount, expectedExceptionHolder,
-                         testContext, parameters, parametersIndex);
-                      result.addAll(retryResults);
-                      }
-                    }
-
-                    //
-                    // If we have a failure, skip all the
-                    // other invocationCounts
-                    //
-
-                    // If not specified globally, use the attribute
-                    // on the annotation
-                    //
-                    if (! m_skipFailedInvocationCounts) {
-                      m_skipFailedInvocationCounts = testMethod.skipFailedInvocations();
-                    }
-                    if (failureCount > 0 && m_skipFailedInvocationCounts) {
-                      while (invocationCount-- > 0) {
-                        result.add(registerSkippedTestResult(testMethod, instances[0], start));
-                      }
-                      break;
-                    }
-                  }// end
-                parametersIndex++;
-              }
-            }
-          }
-          catch (Throwable cause) {
-            ITestResult r =
-                new TestResult(testMethod.getTestClass(),
-                  instances[0],
-                  testMethod,
-                  cause,
-                  start,
-                  System.currentTimeMillis());
-              r.setStatus(TestResult.FAILURE);
-              result.add(r);
-              runTestListeners(r);
-              m_notifier.addFailedTest(testMethod, r);
-            } // catch
-          }
-        } // isTestMethodEnabled
-
-      } // okToProceed
-      else {
-        //
-        // Test is being skipped
-        //
-        ITestResult testResult= new TestResult(testClass, null,
+        ITestResult testResult = new TestResult(testClass, null /* instance */,
                                                testMethod,
-                                               null,
+                                               null /* cause */,
                                                start,
                                                System.currentTimeMillis());
-        testResult.setEndMillis(System.currentTimeMillis());
         String missingGroup = testMethod.getMissingGroup();
         if (missingGroup != null) {
           testResult.setThrowable(new Throwable("Method " + testMethod
@@ -1239,7 +1101,135 @@ public class Invoker implements IInvoker {
 
         testResult.setStatus(ITestResult.SKIP);
         result.add(testResult);
+        m_notifier.addSkippedTest(testMethod, testResult);
         runTestListeners(testResult);
+        return result;
+      }
+
+      //
+      // If threadPoolSize specified, run this method in its own pool thread.
+      //
+      if (testMethod.getThreadPoolSize() > 1 && testMethod.getInvocationCount() > 1) {
+          return invokePooledTestMethods(testMethod, allTestMethods, suite,
+              parameters, groupMethods, testContext);
+      }
+      //
+      // No threads, regular invocation
+      //
+      else {
+        ITestNGMethod[] beforeMethods = filterMethods(testClass, testClass.getBeforeTestMethods());
+        ITestNGMethod[] afterMethods = filterMethods(testClass, testClass.getAfterTestMethods());
+
+        Map<String, String> allParameterNames = Maps.newHashMap();
+        ParameterBag bag = createParameters(testClass, testMethod,
+            parameters, allParameterNames, null, suite, testContext, instances[0],
+            null);
+
+        if (bag.hasErrors()) {
+          failureCount = handleInvocationResults(testMethod,
+              bag.errorResults, null, failureCount, expectedExceptionHolder, true,
+              true /* collect results */);
+          registerSkippedTestResult(testMethod, instances[0], start);
+          continue;
+        }
+
+        Iterator<Object[]> allParameterValues = bag.parameterHolder.parameters;
+        int parametersIndex = 0;
+
+        try {
+          List<TestMethodWithDataProviderMethodWorker> workers = Lists.newArrayList();
+
+          if (bag.parameterHolder.origin == ParameterOrigin.ORIGIN_DATA_PROVIDER &&
+              bag.parameterHolder.dataProviderHolder.annotation.isParallel()) {
+            while (allParameterValues.hasNext()) {
+              Object[] parameterValues = injectParameters(allParameterValues.next(),
+                  testMethod.getMethod(), testContext, null /* test result */);
+              TestMethodWithDataProviderMethodWorker w =
+                new TestMethodWithDataProviderMethodWorker(this,
+                    testMethod, parametersIndex,
+                    parameterValues, instances, suite, parameters, testClass,
+                    beforeMethods, afterMethods, groupMethods,
+                    expectedExceptionHolder, testContext, m_skipFailedInvocationCounts,
+                    invocationCount, failureCount, m_notifier);
+              workers.add(w);
+              // testng387: increment the param index in the bag.
+              parametersIndex++;
+            }
+            PoolService ps = PoolService.getInstance();
+            List<ITestResult> r = ps.submitTasksAndWait(testMethod, workers);
+            result.addAll(r);
+
+          } else {
+            while (allParameterValues.hasNext()) {
+              Object[] parameterValues = injectParameters(allParameterValues.next(),
+                  testMethod.getMethod(), testContext, null /* test result */);
+
+              List<ITestResult> tmpResults = Lists.newArrayList();
+
+              try {
+                tmpResults.addAll(invokeTestMethod(instances,
+                                                   testMethod,
+                                                   parameterValues,
+                                                   parametersIndex,
+                                                   suite,
+                                                   parameters,
+                                                   testClass,
+                                                   beforeMethods,
+                                                   afterMethods,
+                                                   groupMethods));
+              }
+              finally {
+                List<Object> failedInstances = Lists.newArrayList();
+
+                failureCount = handleInvocationResults(testMethod, tmpResults,
+                    failedInstances, failureCount, expectedExceptionHolder, true,
+                    false /* don't collect results */);
+                if (failedInstances.isEmpty()) {
+                  result.addAll(tmpResults);
+                } else {
+                  for (int i = 0; i < failedInstances.size(); i++) {
+                    List<ITestResult> retryResults = Lists.newArrayList();
+
+                    failureCount =
+                     retryFailed(failedInstances.toArray(),
+                     i, testMethod, suite, testClass, beforeMethods,
+                     afterMethods, groupMethods, retryResults,
+                     failureCount, expectedExceptionHolder,
+                     testContext, parameters, parametersIndex);
+                  result.addAll(retryResults);
+                  }
+                }
+
+                //
+                // If we have a failure, skip all the
+                // other invocationCounts
+                //
+                if (failureCount > 0
+                      && (m_skipFailedInvocationCounts
+                            || testMethod.skipFailedInvocations())) {
+                  while (invocationCount-- > 0) {
+                    result.add(registerSkippedTestResult(testMethod, instances[0], start));
+                  }
+                  break;
+                }
+              }// end finally
+              parametersIndex++;
+            }
+          }
+        }
+        catch (Throwable cause) {
+          ITestResult r =
+              new TestResult(testMethod.getTestClass(),
+                instances[0],
+                testMethod,
+                cause,
+                start,
+                System.currentTimeMillis());
+            r.setStatus(TestResult.FAILURE);
+            result.add(r);
+            runTestListeners(r);
+            m_notifier.addFailedTest(testMethod, r);
+        } // catch
       }
     }
 
@@ -1262,18 +1252,30 @@ public class Invoker implements IInvoker {
     return result;
   }
 
-  private Object[] getInjectedParameters(ITestNGMethod testMethod,
-      ITestContext testContext, Iterator<Object[]> allParameterValues) {
-    Object[] rawParameterValues = allParameterValues.next();
-    Object[] parameterValues = injectParameters(rawParameterValues,
-        testMethod.getMethod(), testContext, null /* test result */);
-    return parameterValues;
-  }
-
+  /**
+   * Gets an array of parameter values returned by data provider or the ones that
+   * are injected based on parameter type. The method also checks for {@code NoInjection}
+   * annotation
+   * @param parameterValues parameter values from a data provider
+   * @param method method to be invoked
+   * @param context test context
+   * @param testResult test result
+   * @return
+   */
   private Object[] injectParameters(Object[] parameterValues, Method method,
-      ITestContext context, ITestResult testResult) {
+      ITestContext context, ITestResult testResult)
+    throws TestNGException {
     List<Object> vResult = Lists.newArrayList();
     int i = 0;
+    int numValues = parameterValues.length;
+    int numParams = method.getParameterTypes().length;
+
+    if (numValues > numParams) {
+      throw new TestNGException("Number of parameter values passed in using "
+          + "data provider exceeds number of parameters defined on test method");
+    }
+
+    // beyond this, numValues <= numParams
     for (Class<?> cls : method.getParameterTypes()) {
       Annotation[] annotations = method.getParameterAnnotations()[i];
       boolean noInjection = false;
@@ -1287,7 +1289,13 @@ public class Invoker implements IInvoker {
       if (injected != null && ! noInjection) {
         vResult.add(injected);
       } else {
-        vResult.add(parameterValues[i++]);
+        try {
+          vResult.add(parameterValues[i++]);
+        } catch (ArrayIndexOutOfBoundsException ex) {
+          throw new TestNGException("Number of parameter values passed in using "
+                + "data provider is less than number of parameters defined on "
+                + "test method and TestNG is unable in inject a suitable object", ex);
+        }
       }
     }
     return vResult.toArray(new Object[vResult.size()]);
@@ -1313,10 +1321,10 @@ public class Invoker implements IInvoker {
             suite,
             m_annotationFinder,
             fedInstance),
-          null);
+          null /* TestResult */);
     }
     catch(Throwable cause) {
-      return new ParameterBag(null,
+      return new ParameterBag(null /* ParameterHolder */,
           new TestResult(
               testMethod.getTestClass(),
               instance,
@@ -1325,7 +1333,6 @@ public class Invoker implements IInvoker {
               System.currentTimeMillis(),
               System.currentTimeMillis()));
     }
-
   }
 
   /**
@@ -1807,13 +1814,17 @@ public class Invoker implements IInvoker {
     Utils.log("Invoker " + Thread.currentThread().hashCode(), level, s);
   }
 
+  /**
+   * This class holds a {@code ParameterHolder} and in case of an error, a non-null
+   * {@code TestResult} containing the cause
+   */
   private static class ParameterBag {
     final ParameterHolder parameterHolder;
-    final List<ITestResult> errorResults= Lists.newArrayList();
+    final List<ITestResult> errorResults = Lists.newArrayList();
 
     public ParameterBag(ParameterHolder params, TestResult tr) {
       parameterHolder = params;
-      if(tr != null) {
+      if (tr != null) {
         errorResults.add(tr);
       }
     }
