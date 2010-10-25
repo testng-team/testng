@@ -101,6 +101,7 @@
       <class name="test.preserveorder.PreserveOrderTest" />
       <class name="test.listeners.ResultEndMillisTest" />
       <class name="test.SerializationTest" />
+      <class name="test.CountTest" />
     </classes>
   </test>
   
