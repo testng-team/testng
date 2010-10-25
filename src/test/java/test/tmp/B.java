@@ -4,6 +4,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class B extends C {
+  public static final String G = "group";
+
 
   @BeforeMethod
   public void bm() {
