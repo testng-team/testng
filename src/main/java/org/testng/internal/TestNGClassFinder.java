@@ -15,6 +15,8 @@ import org.testng.IObjectFactory;
 import org.testng.ITestContext;
 import org.testng.TestNGException;
 import org.testng.annotations.IAnnotation;
+import org.testng.annotations.ITestAnnotation;
+import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.AnnotationHelper;
@@ -201,9 +203,14 @@ public class TestNGClassFinder extends BaseClassFinder {
    * passed in, which may be a jdk14 or jdk15 {@link IAnnotationFinder} instance.
    * @param cls The class being tested
    * @param annotationFinder The instance of annotation finder being used
-   * @return True if class has any testng annotations
+   * @return True if class has any testng annotations and class-level {@link Test} enabled (if present)
    */
   public static boolean isTestNGClass(Class cls, IAnnotationFinder annotationFinder) {
+      final ITestAnnotation testClassAnnotation = (ITestAnnotation) annotationFinder.findAnnotation(cls, ITestAnnotation.class);
+      if (testClassAnnotation != null && !testClassAnnotation.getEnabled()) {
+        return false;
+      }
+
 	  Class[] allAnnotations= AnnotationHelper.getAllAnnotations();
 
       try {
