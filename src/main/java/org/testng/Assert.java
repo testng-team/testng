@@ -706,7 +706,7 @@ public class Assert {
       Object value = entry.getValue();
       Object expectedValue = expected.get(key);
       assertEquals(value, expectedValue, "Maps do not match for key:" + key + " actual:" + value
-          + " expected:" + expected);
+          + " expected:" + expectedValue);
     }
 
   }
