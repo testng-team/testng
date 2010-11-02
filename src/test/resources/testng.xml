@@ -102,6 +102,7 @@
       <class name="test.listeners.ResultEndMillisTest" />
       <class name="test.SerializationTest" />
       <class name="test.CountTest" />
+      <class name="test.MapTest" />
     </classes>
   </test>
   

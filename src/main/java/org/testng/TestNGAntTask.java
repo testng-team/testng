@@ -609,10 +609,8 @@ public class TestNGAntTask extends Task {
       argv.add(m_suiteThreadPoolSize.toString());
     }
 
-    if(m_xmlFilesets.size() > 0) {
-      for(String file : fileset(m_xmlFilesets)) {
-        argv.add(file);
-      }
+    for (String file : getSuiteFileNames()) {
+      argv.add(file);
     }
 
     String fileName= "";
@@ -665,6 +663,19 @@ public class TestNGAntTask extends Task {
     }
 
     actOnResult(exitValue, wasKilled);
+  }
+
+  /**
+   * @return the list of the XML file names. This method can be overridden by subclasses.
+   */
+  protected List<String> getSuiteFileNames() {
+    List<String> result = Lists.newArrayList();
+
+    for(String file : fileset(m_xmlFilesets)) {
+      result.add(file);
+    }
+
+    return result;
   }
 
   private void delegateCommandSystemProperties() {
@@ -863,14 +874,15 @@ public class TestNGAntTask extends Task {
   }
 
   protected void validateOptions() throws BuildException {
-    if (m_xmlFilesets.size() == 0
+    int suiteCount = getSuiteFileNames().size();
+    if (suiteCount == 0
       && m_classFilesets.size() == 0
       && Utils.isStringEmpty(m_methods)
       && ((null == m_testjar) || !m_testjar.isFile())) {
       throw new BuildException("No suites, classes, methods or jar file was specified.");
     }
 
-    if((null != m_includedGroups) && (m_classFilesets.size() == 0 && m_xmlFilesets.size() == 0)) {
+    if((null != m_includedGroups) && (m_classFilesets.size() == 0 && suiteCount == 0)) {
       throw new BuildException("No class filesets or xml file sets specified while using groups");
     }
 
