@@ -3,6 +3,7 @@ Current
 Added: timeOut for configuration methods
 Added: -randomizesuites (Nalin Makar)
 Added: IConfigurable
+Fixed: TESTNG-436: Deep Map comparison for assertEquals() (Nikolay Metchev)
 Fixed: Skipped tests were not always counted.
 Fixed: EmailableReporter now sorts methods chronologically
 Fixed: TESTNG-411: Throw exception on mismatch of parameter values (via DP and/or Inject) and test parameters
