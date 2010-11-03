@@ -886,7 +886,8 @@ public class TestNG {
          * size is 1, we run this block
          */
         for (XmlSuite xmlSuite : m_suites) {
-          runSuitesSequentially(xmlSuite, suiteRunnerMap, m_verbose, getDefaultSuiteName());
+          runSuitesSequentially(xmlSuite, suiteRunnerMap, xmlSuite.getVerbose(),
+              getDefaultSuiteName());
         }
       } else {
         /*
