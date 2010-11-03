@@ -163,6 +163,9 @@ public class RemoteTestNG extends TestNG {
         sb.append(s).append(" ");
       }
       p(sb.toString());
+      testNG.setVerbose(2);
+    } else {
+      testNG.setVerbose(0);
     }
     validateCommandLineParameters(cla);
     if (m_debug) {

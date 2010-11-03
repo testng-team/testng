@@ -689,8 +689,8 @@ public class TestNG {
     return m_suiteListeners;
   }
 
-  /** The verbosity level. TODO why not a simple int? */
-  private int m_verbose = 1;
+  /** If m_verbose gets set, it will override the verbose setting in testng.xml */
+  private Integer m_verbose = null;
 
   private IAnnotationTransformer m_annotationTransformer = new DefaultAnnotationTransformer();
 
@@ -869,32 +869,25 @@ public class TestNG {
   public List<ISuite> runSuitesLocally() {
     Map<XmlSuite, ISuite> suiteRunnerMap = Maps.newHashMap();
     if (m_suites.size() > 0) {
-      /*
-       * first initialize the suite runners to ensure there are no configuration issues.
-       * Create a map with XmlSuite as key and corresponding SuiteRunner as value
-       */
+       // First initialize the suite runners to ensure there are no configuration issues.
+       // Create a map with XmlSuite as key and corresponding SuiteRunner as value
       for (XmlSuite xmlSuite : m_suites) {
         createSuiteRunners(suiteRunnerMap, xmlSuite);
       }
 
-      /*
-       * Run suites
-       */
+      //
+      // Run suites
+      //
       if (m_suiteThreadPoolSize == 1 && !m_randomizeSuites) {
-        /*
-         * Only of we want suites to run in order specified in XML and the suite thread pool
-         * size is 1, we run this block
-         */
+        // Single threaded and not randomized: run the suites in order
         for (XmlSuite xmlSuite : m_suites) {
           runSuitesSequentially(xmlSuite, suiteRunnerMap, xmlSuite.getVerbose(),
               getDefaultSuiteName());
         }
       } else {
-        /*
-         * Generate a dynamic graph that stores the suite hierarchy. This is then
-         * used to run related suites in specific order. Parent suites are run only
-         * once all the child suites have completed execution
-         */
+        // Multithreaded: generate a dynamic graph that stores the suite hierarchy. This is then
+        // used to run related suites in specific order. Parent suites are run only
+        // once all the child suites have completed execution
         DynamicGraph<ISuite> suiteGraph = new DynamicGraph<ISuite>();
         for (XmlSuite xmlSuite : m_suites) {
           populateSuiteGraph(suiteGraph, suiteRunnerMap, xmlSuite);
@@ -908,10 +901,9 @@ public class TestNG {
           new LinkedBlockingQueue<Runnable>());
 
         Utils.log("TestNG", 2, "Starting executor for all suites");
-        //run all suites in parallel
+        // Run all suites in parallel
         pooledExecutor.run();
         try {
-          //TODO: Setting timeout to Long.MAX_VALUE. Is it correct/ok?
           pooledExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
           pooledExecutor.shutdownNow();
         }
@@ -1012,7 +1004,8 @@ public class TestNG {
       xmlSuite.setSkipFailedInvocationCounts(m_skipFailedInvocationCounts);
     }
 
-    if (xmlSuite.getVerbose() == null) {
+    // Override the XmlSuite verbose value with the one from TestNG
+    if (m_verbose != null) {
       xmlSuite.setVerbose(m_verbose);
     }
 
