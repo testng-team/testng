@@ -18,6 +18,7 @@ Fixed: NPE while printing results for an empty suite (Nalin Makar)
 Fixed: Invoke IInvokedMethodListener.afterInvocation after fixing results for tests expecting exceptions (Nalin Makar)
 
 Eclipse:
+Added: If you select a package before invoking the "New TestNG class" wizard, the source and package text boxes will be auto-filled
 Added: When an item is selected in a tab, the same item will be selected when switching tabs
 Added: A new "Summary" tab that allows the user to see a summary of the tests, sort them by time, name, etc...
 Added: It's now possible "Run/Debug As" with a right click from pretty much any element that makes sense in the tree.
@@ -28,6 +29,7 @@ Added: The conversion of a JUnit test to TestNG now replaces Assert with AssertJ
 Added: The progress bar is now orange if the suite contained skipped tests and no failures
 Added: Skipped test and suite icons are now orange (previously: blue)
 Added: New method shortcuts: "Alt+Shift+X N", "Alt+Shift+D N" (Sven Johansson)
+Fixed: NPE when you select a passed test and click on the Compare Result icon.
 Fixed: When the run is over, the plug-in will no longer force the focus back to the Console view
 Fixed: The counter in the progress bar sometimes went over the total number of test methods (5.14.2.9)
 Fixed: org.eclipse.ui.internal.ErrorViewPart cannot be cast to org.testng.eclipse.ui.TestRunnerViewPart (5.14.2.9)
