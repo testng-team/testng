@@ -14,9 +14,12 @@ import org.testng.xml.XmlClass;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringReader;
@@ -712,5 +715,31 @@ public final class Utils {
     }
 
     return sb.toString();
+  }
+
+  public static void copyFile(File from, File to) {
+    try{
+      InputStream in = new FileInputStream(from);
+
+      //For Append the file.
+//        OutputStream out = new FileOutputStream(f2,true);
+
+      //For Overwrite the file.
+      OutputStream out = new FileOutputStream(to);
+
+      byte[] buf = new byte[1024];
+      int len;
+      while ((len = in.read(buf)) > 0){
+        out.write(buf, 0, len);
+      }
+      in.close();
+      out.close();
+    }
+    catch(FileNotFoundException ex){
+      ex.printStackTrace();
+    }
+    catch(IOException e){
+      e.printStackTrace();
+    }
   }
 }

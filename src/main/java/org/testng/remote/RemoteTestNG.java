@@ -173,6 +173,7 @@ public class RemoteTestNG extends TestNG {
       // without having to relauch RemoteTestNG.
       while(true) {
         testNG.run();
+        testNG.configure(cla);
       }
     } else {
       testNG.run();
