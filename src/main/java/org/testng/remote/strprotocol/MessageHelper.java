@@ -67,9 +67,23 @@ public class MessageHelper {
     int type = getMessageType(message);
     String[] messageParts = parseMessage(message);
 
-    return new SuiteMessage(messageParts[1],
+    SuiteMessage result = new SuiteMessage(messageParts[1],
                             MessageHelper.SUITE_START == type,
                             Integer.parseInt(messageParts[2]));
+    // Any excluded methods?
+    if (messageParts.length > 3) {
+      int count = Integer.parseInt(messageParts[3]);
+      if (count > 0) {
+        List<String> methods = Lists.newArrayList();
+        int i = 4;
+        while (count-- > 0) {
+          methods.add(messageParts[i++]);
+        }
+        result.setExcludedMethods(methods);
+      }
+    }
+
+    return result;
   }
 
   public static TestMessage createTestMessage(final String message) {
