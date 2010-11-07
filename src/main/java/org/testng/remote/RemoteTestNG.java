@@ -14,8 +14,9 @@ import org.testng.TestRunner;
 import org.testng.collections.Lists;
 import org.testng.remote.strprotocol.GenericMessage;
 import org.testng.remote.strprotocol.MessageHelper;
-import org.testng.remote.strprotocol.RemoteMessageSenderTestListener;
-import org.testng.remote.strprotocol.StringMessageSenderHelper;
+import org.testng.remote.strprotocol.MessageHub;
+import org.testng.remote.strprotocol.RemoteTestListener;
+import org.testng.remote.strprotocol.StringMessageSender;
 import org.testng.remote.strprotocol.SuiteMessage;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
@@ -47,6 +48,8 @@ public class RemoteTestNG extends TestNG {
   private int m_port;
   private static boolean m_debug;
 
+  private static Integer m_serPort;
+
   public void setConnectionParameters(String host, int port) {
     if((null == host) || "".equals(host)) {
       m_host= LOCALHOST;
@@ -67,7 +70,7 @@ public class RemoteTestNG extends TestNG {
 
   @Override
   public void run() {
-    final StringMessageSenderHelper msh = new StringMessageSenderHelper(m_host, m_port);
+    final MessageHub msh = new MessageHub(m_host, m_port, new StringMessageSender());
     msh.setDebug(isDebug());
     try {
       if(msh.connect()) {
@@ -145,8 +148,9 @@ public class RemoteTestNG extends TestNG {
 
   public static void main(String[] args) throws ParameterException {
     CommandLineArgs cla = new CommandLineArgs();
-    new JCommander(cla, args);
-    RemoteTestNG testNG = new RemoteTestNG();
+    RemoteArgs ra = new RemoteArgs();
+    new JCommander(Arrays.asList(cla, ra), args);
+    RemoteTestNG remoteTestNg = new RemoteTestNG();
     m_debug = cla.debug;
     if (m_debug) {
       // In debug mode, override the port and the XML file to a fixed location
@@ -155,28 +159,28 @@ public class RemoteTestNG extends TestNG {
           DEBUG_SUITE_DIRECTORY + DEBUG_SUITE_FILE
       });
     }
-    testNG.configure(cla);
-    testNG.setConnectionParameters(cla.host, cla.port);
+    remoteTestNg.configure(cla);
+    remoteTestNg.setConnectionParameters(cla.host, cla.port);
+    m_serPort = ra.serPort;
     if (isVerbose()) {
       StringBuilder sb = new StringBuilder("Invoked with ");
       for (String s : args) {
         sb.append(s).append(" ");
       }
       p(sb.toString());
-      testNG.setVerbose(2);
+      remoteTestNg.setVerbose(2);
     } else {
-      testNG.setVerbose(0);
+      remoteTestNg.setVerbose(0);
     }
     validateCommandLineParameters(cla);
     if (m_debug) {
       // Run in a loop if in debug mode so it is possible to run several launches
       // without having to relauch RemoteTestNG.
-      while(true) {
-        testNG.run();
-        testNG.configure(cla);
+      while (true) {
+        remoteTestNg.run();
       }
     } else {
-      testNG.run();
+      remoteTestNg.run();
     }
   }
 
@@ -205,9 +209,9 @@ public class RemoteTestNG extends TestNG {
 
   /** A ISuiteListener wiring the results using the internal string-based protocol. */
   private static class RemoteSuiteListener implements ISuiteListener {
-    private final StringMessageSenderHelper m_messageSender;
+    private final MessageHub m_messageSender;
 
-    RemoteSuiteListener(StringMessageSenderHelper smsh) {
+    RemoteSuiteListener(MessageHub smsh) {
       m_messageSender= smsh;
     }
 
@@ -224,9 +228,9 @@ public class RemoteTestNG extends TestNG {
 
   private static class DelegatingTestRunnerFactory implements ITestRunnerFactory {
     private final ITestRunnerFactory m_delegateFactory;
-    private final StringMessageSenderHelper m_messageSender;
+    private final MessageHub m_messageSender;
 
-    DelegatingTestRunnerFactory(ITestRunnerFactory trf, StringMessageSenderHelper smsh) {
+    DelegatingTestRunnerFactory(ITestRunnerFactory trf, MessageHub smsh) {
       m_delegateFactory= trf;
       m_messageSender= smsh;
     }
@@ -235,7 +239,7 @@ public class RemoteTestNG extends TestNG {
     public TestRunner newTestRunner(ISuite suite, XmlTest test,
         List<IInvokedMethodListener> listeners) {
       TestRunner tr = m_delegateFactory.newTestRunner(suite, test, listeners);
-      tr.addListener(new RemoteMessageSenderTestListener(suite, test, m_messageSender));
+      tr.addListener(new RemoteTestListener(suite, test, m_messageSender));
       return tr;
     }
   }

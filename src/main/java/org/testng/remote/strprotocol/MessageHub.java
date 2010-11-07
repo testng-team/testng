@@ -14,11 +14,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 
 /**
- * String based socket based communication.
+ * Central class to connect to the host and send message.
  *
- * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
+ * @author Cedric Beust <cedric@beust.com>
  */
-public class StringMessageSenderHelper {
+public class MessageHub {
 
   private boolean m_debug = false;
 
@@ -27,17 +27,20 @@ public class StringMessageSenderHelper {
   private int m_port;
 
   /** Outgoing message stream. */
-  private PrintWriter    m_outStream;
+  private PrintWriter m_outStream;
 
   /** Ingoing message stream. */
   private volatile BufferedReader m_inStream;
 
-  private ReaderThread   m_readerThread;
-  private Object lock = new Object();
+  private ReaderThread m_readerThread;
+  private Object m_lock = new Object();
 
-  public StringMessageSenderHelper(final String host, final int port) {
+  private IMessageSender m_messageSender;
+
+  public MessageHub(String host, int port, IMessageSender messageSender) {
     m_host = host;
     m_port = port;
+    m_messageSender = messageSender;
   }
 
   /**
@@ -130,44 +133,13 @@ public class StringMessageSenderHelper {
   }
 
   public void sendMessage(IMessage message) {
-    throw new UnsupportedOperationException("This operation is too generic yet.");
-  }
-
-  public void sendMessage(IStringMessage message) {
-    sendMessage(message.getMessageAsString());
-  }
-
-  private void sendMessage(String msg) {
     if(null == m_outStream) {
       p("WARNING the outputstream is null. Cannot send message.");
 
       return;
     }
 
-    if (RemoteTestNG.isVerbose()) {
-      p(msg);
-
-      StringBuffer buf = new StringBuffer();
-      for(int i = 0; i < msg.length(); i++) {
-        if('\u0001' == msg.charAt(i)) {
-          p("word:[" + buf.toString() + "]");
-          buf.delete(0, buf.length());
-        }
-        else {
-          buf.append(msg.charAt(i));
-        }
-      }
-      p("word:[" + buf.toString() + "]");
-    }
-
-    synchronized(lock) {
-      m_outStream.println(msg);
-      m_outStream.flush();
-      try {
-          lock.wait();
-      }
-      catch(InterruptedException e) { }
-    }
+    m_messageSender.send(message, m_lock, m_outStream);
   }
 
   private static void p(String msg) {
@@ -196,8 +168,8 @@ public class StringMessageSenderHelper {
           boolean acknowledge = MessageHelper.ACK_MSG.equals(message);
           boolean stop = MessageHelper.STOP_MSG.equals(message);
           if(acknowledge || stop) {
-            synchronized(lock) {
-              lock.notifyAll();
+            synchronized(m_lock) {
+              m_lock.notifyAll();
             }
             if (stop) {
             	break;
