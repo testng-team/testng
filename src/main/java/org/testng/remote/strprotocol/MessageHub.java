@@ -4,14 +4,8 @@ package org.testng.remote.strprotocol;
 import org.testng.TestNGException;
 import org.testng.remote.RemoteTestNG;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.Socket;
+import java.util.List;
 
 /**
  * Central class to connect to the host and send message.
@@ -22,25 +16,10 @@ public class MessageHub {
 
   private boolean m_debug = false;
 
-  private Socket m_clientSocket;
-  private String m_host;
-  private int m_port;
+  private List<IMessageSender> m_messageSenders;
 
-  /** Outgoing message stream. */
-  private PrintWriter m_outStream;
-
-  /** Ingoing message stream. */
-  private volatile BufferedReader m_inStream;
-
-  private ReaderThread m_readerThread;
-  private Object m_lock = new Object();
-
-  private IMessageSender m_messageSender;
-
-  public MessageHub(String host, int port, IMessageSender messageSender) {
-    m_host = host;
-    m_port = port;
-    m_messageSender = messageSender;
+  public MessageHub(List<IMessageSender> messageSenders) {
+    m_messageSenders = messageSenders;
   }
 
   /**
@@ -49,97 +28,30 @@ public class MessageHub {
    * @return <TT>true</TT> if the connection was successful, <TT>false</TT> otherwise
    * @throws TestNGException if an exception occurred while establishing the connection
    */
-  public boolean connect() {
-    Exception exception = null;
-
-    while (true) {
-      p("Waiting for Eclipse client on " + m_host + ":" + m_port);
-      try {
-        m_clientSocket = new Socket(m_host, m_port);
-
-        try {
-          m_outStream = new PrintWriter(new BufferedWriter(new OutputStreamWriter(m_clientSocket.getOutputStream(), "UTF-8")), //$NON-NLS-1$
-                                        false /*autoflush*/);
-        }
-        catch(UnsupportedEncodingException ueex) {
-          // Should never happen
-          m_outStream = new PrintWriter(new BufferedWriter(
-              new OutputStreamWriter(m_clientSocket.getOutputStream())),
-                  false /*autoflush*/);
-        }
-
-        try {
-          m_inStream = new BufferedReader(new InputStreamReader(m_clientSocket.getInputStream(), "UTF-8")); //$NON-NLS-1$
-        }
-        catch(UnsupportedEncodingException ueex) {
-          // Should never happen
-          m_inStream = new BufferedReader(new InputStreamReader(m_clientSocket.getInputStream()));
-        }
-
-        p("Connection established, starting reader thread");
-        m_readerThread = new ReaderThread();
-        m_readerThread.start();
-
-        return true;
-      }
-      catch(IOException ioe) {
-        exception = ioe;
-      }
-
-      try {
-        Thread.sleep(4000);
-      }
-      catch(InterruptedException e) {
-        ;
-      }
+  public void connect() throws IOException {
+    for (IMessageSender sender : m_messageSenders) {
+      sender.connect();
     }
-
   }
 
   /**
    * Shutsdown the connection to the remote test listener.
    */
   public void shutDown() {
-    if(null != m_outStream) {
-      m_outStream.close();
-      m_outStream = null;
-    }
-
-    try {
-      if(null != m_readerThread) {
-        m_readerThread.interrupt();
-      }
-
-      if(null != m_inStream) {
-        m_inStream.close();
-        m_inStream = null;
-      }
-    }
-    catch(IOException e) {
-      e.printStackTrace();
-    }
-
-    try {
-      if(null != m_clientSocket) {
-        m_clientSocket.close();
-        m_clientSocket = null;
-      }
-    }
-    catch(IOException e) {
-      if(m_debug) {
-        e.printStackTrace();
-      }
+    for (IMessageSender sender : m_messageSenders) {
+      sender.shutDown();
     }
   }
 
   public void sendMessage(IMessage message) {
-    if(null == m_outStream) {
-      p("WARNING the outputstream is null. Cannot send message.");
-
-      return;
+    for (IMessageSender sender : m_messageSenders) {
+      try {
+        sender.sendMessage(message);
+      }
+      catch(Exception ex) {
+        ex.printStackTrace();
+      }
     }
-
-    m_messageSender.send(message, m_lock, m_outStream);
   }
 
   private static void p(String msg) {
@@ -148,40 +60,6 @@ public class MessageHub {
     }
   }
 
-  /**
-   * Reader thread that processes messages from the client.
-   */
-  private class ReaderThread extends Thread {
-
-    public ReaderThread() {
-      super("ReaderThread"); //$NON-NLS-1$
-    }
-
-    @Override
-    public void run() {
-      try {
-        String message;
-        while((m_inStream != null) && (message = m_inStream.readLine()) != null) {
-          if(m_debug) {
-            p("Reply:" + message); //$NON-NLS-1$
-          }
-          boolean acknowledge = MessageHelper.ACK_MSG.equals(message);
-          boolean stop = MessageHelper.STOP_MSG.equals(message);
-          if(acknowledge || stop) {
-            synchronized(m_lock) {
-              m_lock.notifyAll();
-            }
-            if (stop) {
-            	break;
-            }
-          }
-        }
-      }
-      catch(IOException ioe) {
-        ;
-      }
-    }
-  }
 
   public void setDebug(boolean debug) {
     m_debug = debug;

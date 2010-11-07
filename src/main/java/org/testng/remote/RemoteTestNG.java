@@ -13,9 +13,11 @@ import org.testng.TestNG;
 import org.testng.TestRunner;
 import org.testng.collections.Lists;
 import org.testng.remote.strprotocol.GenericMessage;
+import org.testng.remote.strprotocol.IMessageSender;
 import org.testng.remote.strprotocol.MessageHelper;
 import org.testng.remote.strprotocol.MessageHub;
 import org.testng.remote.strprotocol.RemoteTestListener;
+import org.testng.remote.strprotocol.SerializedMessageSender;
 import org.testng.remote.strprotocol.StringMessageSender;
 import org.testng.remote.strprotocol.SuiteMessage;
 import org.testng.reporters.JUnitXMLReporter;
@@ -45,20 +47,23 @@ public class RemoteTestNG extends TestNG {
 
   private ITestRunnerFactory m_customTestRunnerFactory;
   private String m_host;
-  private int m_port;
+
+  /** Port used for the string protocol */
+  private Integer m_port = null;
+
+  /** Port used for the serialized protocol */
+  private static Integer m_serPort = null;
+
+//  private List<IMessageSender> m_senders;
   private static boolean m_debug;
 
-  private static Integer m_serPort;
-
-  public void setConnectionParameters(String host, int port) {
+  public void setHost(String host) {
     if((null == host) || "".equals(host)) {
       m_host= LOCALHOST;
     }
     else {
       m_host= host;
     }
-
-    m_port= port;
   }
 
   private void calculateAllSuites(List<XmlSuite> suites, List<XmlSuite> outSuites) {
@@ -70,40 +75,43 @@ public class RemoteTestNG extends TestNG {
 
   @Override
   public void run() {
-    final MessageHub msh = new MessageHub(m_host, m_port, new StringMessageSender());
+    List<IMessageSender> senders = Lists.newArrayList();
+    if (m_port != null) {
+      senders.add(new StringMessageSender(m_host, m_port));
+    }
+    if (m_serPort != null) {
+      senders.add(new SerializedMessageSender(m_host, m_serPort));
+    }
+    final MessageHub msh = new MessageHub(senders);
     msh.setDebug(isDebug());
     try {
-      if(msh.connect()) {
-        // We couldn't do this until now in debug mode since the .xml file didn't exist yet.
-        // Now that we have connected with the Eclipse client, we know that it created the .xml
-        // file so we can proceed with the initialization
-        initializeSuitesAndJarFile();
+      msh.connect();
+      // We couldn't do this until now in debug mode since the .xml file didn't exist yet.
+      // Now that we have connected with the Eclipse client, we know that it created the .xml
+      // file so we can proceed with the initialization
+      initializeSuitesAndJarFile();
 
-        List<XmlSuite> suites = Lists.newArrayList();
-        calculateAllSuites(m_suites, suites);
-        if(suites.size() > 0) {
+      List<XmlSuite> suites = Lists.newArrayList();
+      calculateAllSuites(m_suites, suites);
+      if(suites.size() > 0) {
 
-          int testCount= 0;
+        int testCount= 0;
 
-          for(int i= 0; i < suites.size(); i++) {
-            testCount+= (suites.get(i)).getTests().size();
-          }
-
-          GenericMessage gm= new GenericMessage(MessageHelper.GENERIC_SUITE_COUNT);
-          gm.addProperty("suiteCount", suites.size()).addProperty("testCount", testCount);
-          msh.sendMessage(gm);
-
-          addListener(new RemoteSuiteListener(msh));
-          setTestRunnerFactory(new DelegatingTestRunnerFactory(buildTestRunnerFactory(), msh));
-
-          super.run();
+        for(int i= 0; i < suites.size(); i++) {
+          testCount+= (suites.get(i)).getTests().size();
         }
-        else {
-          System.err.println("No test suite found.  Nothing to run");
-        }
+
+        GenericMessage gm= new GenericMessage(MessageHelper.GENERIC_SUITE_COUNT);
+        gm.addProperty("suiteCount", suites.size()).addProperty("testCount", testCount);
+        msh.sendMessage(gm);
+
+        addListener(new RemoteSuiteListener(msh));
+        setTestRunnerFactory(new DelegatingTestRunnerFactory(buildTestRunnerFactory(), msh));
+
+        super.run();
       }
       else {
-        System.err.println("Cannot connect to " + m_host + " on " + m_port);
+        System.err.println("No test suite found. Nothing to run");
       }
     }
     catch(Throwable cause) {
@@ -160,8 +168,10 @@ public class RemoteTestNG extends TestNG {
       });
     }
     remoteTestNg.configure(cla);
-    remoteTestNg.setConnectionParameters(cla.host, cla.port);
+    m_debug = cla.debug;
+    remoteTestNg.setHost(cla.host);
     m_serPort = ra.serPort;
+    remoteTestNg.m_port = cla.port;
     if (isVerbose()) {
       StringBuilder sb = new StringBuilder("Invoked with ");
       for (String s : args) {
@@ -196,7 +206,7 @@ public class RemoteTestNG extends TestNG {
   }
 
   public static boolean isDebug() {
-    return System.getProperty(PROPERTY_DEBUG) != null;
+    return m_debug || System.getProperty(PROPERTY_DEBUG) != null;
   }
 
   private String getHost() {

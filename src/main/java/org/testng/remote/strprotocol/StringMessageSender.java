@@ -2,12 +2,30 @@ package org.testng.remote.strprotocol;
 
 import org.testng.remote.RemoteTestNG;
 
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 
-public class StringMessageSender implements IMessageSender {
+public class StringMessageSender extends BaseMessageSender {
+
+  public StringMessageSender(String host, int port) {
+    super(host, port);
+  }
 
   @Override
-  public void send(IMessage message, Object lock, PrintWriter outStream) {
+  public void sendMessage(IMessage message) {
+    PrintWriter writer;
+    try {
+      writer = new PrintWriter(new BufferedWriter(
+          new OutputStreamWriter(m_outStream, "UTF-8")), //$NON-NLS-1$
+          false /* autoflush */);
+    } catch (UnsupportedEncodingException e1) {
+      writer = new PrintWriter(new BufferedWriter(
+          new OutputStreamWriter(m_outStream)),
+          false /* autoflush */);
+    }
+
     String msg = ((IStringMessage) message).getMessageAsString();
     if (RemoteTestNG.isVerbose()) {
       p(msg);
@@ -25,11 +43,11 @@ public class StringMessageSender implements IMessageSender {
       p("word:[" + buf.toString() + "]");
     }
 
-    synchronized(lock) {
-      outStream.println(msg);
-      outStream.flush();
+    synchronized(m_lock) {
+      writer.println(msg);
+      writer.flush();
       try {
-          lock.wait();
+        m_lock.wait();
       }
       catch(InterruptedException e) { }
     }

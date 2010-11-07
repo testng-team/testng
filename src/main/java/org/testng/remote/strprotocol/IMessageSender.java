@@ -1,9 +1,12 @@
 package org.testng.remote.strprotocol;
 
-import java.io.PrintWriter;
+import java.io.IOException;
 
 public interface IMessageSender {
 
-  void send(IMessage message, Object lock, PrintWriter outStream);
+  void connect() throws IOException;
 
+  void sendMessage(IMessage message) throws Exception;
+
+  void shutDown();
 }
