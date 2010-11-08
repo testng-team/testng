@@ -16,15 +16,13 @@
 package org.testng.remote.strprotocol;
 
 
+import org.testng.TestNGException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 
 /**
  * The client side of the RemoteTestRunner. Handles the
@@ -117,42 +115,42 @@ public abstract class AbstractRemoteTestRunnerClient {
     }
   }
 
-  private String readMessage(BufferedReader in) throws IOException {
-    return in.readLine();
-  }
-
-  private void receiveMessage(String message) {
-    int messageType = MessageHelper.getMessageType(message);
-
-    try {
-      if(messageType < MessageHelper.SUITE) {
-        // Generic message
-        GenericMessage gm = MessageHelper.unmarshallGenericMessage(message);
-        notifyStart(gm);
-      }
-      else if(messageType < MessageHelper.TEST) {
-        // Suite message
-        SuiteMessage sm = MessageHelper.createSuiteMessage(message);
-        notifySuiteEvents(sm);
-      }
-      else if(messageType < MessageHelper.TEST_RESULT) {
-        // Test message
-        TestMessage tm = MessageHelper.createTestMessage(message);
-        notifyTestEvents(tm);
-      }
-      else {
-        // TestResult message
-        TestResultMessage trm = MessageHelper.unmarshallTestResultMessage(message);
-        notifyResultEvents(trm);
-      }
-    }
-    finally {
-      if(isRunning() && (null != m_outputWriter)) {
-        m_outputWriter.println(MessageHelper.ACK_MSG);
-        m_outputWriter.flush();
-      }
-    }
-  }
+//  private String readMessage(BufferedReader in) throws IOException {
+//    return in.readLine();
+//  }
+//
+//  private void receiveMessage(String message) {
+//    int messageType = MessageHelper.getMessageType(message);
+//
+//    try {
+//      if(messageType < MessageHelper.SUITE) {
+//        // Generic message
+//        GenericMessage gm = MessageHelper.unmarshallGenericMessage(message);
+//        notifyStart(gm);
+//      }
+//      else if(messageType < MessageHelper.TEST) {
+//        // Suite message
+//        SuiteMessage sm = MessageHelper.createSuiteMessage(message);
+//        notifySuiteEvents(sm);
+//      }
+//      else if(messageType < MessageHelper.TEST_RESULT) {
+//        // Test message
+//        TestMessage tm = MessageHelper.createTestMessage(message);
+//        notifyTestEvents(tm);
+//      }
+//      else {
+//        // TestResult message
+//        TestResultMessage trm = MessageHelper.unmarshallTestResultMessage(message);
+//        notifyResultEvents(trm);
+//      }
+//    }
+//    finally {
+//      if(isRunning() && (null != m_outputWriter)) {
+//        m_outputWriter.println(MessageHelper.ACK_MSG);
+//        m_outputWriter.flush();
+//      }
+//    }
+//  }
 
   protected abstract void notifyStart(final GenericMessage genericMessage);
 
@@ -167,46 +165,66 @@ public abstract class AbstractRemoteTestRunnerClient {
    * Reads the message stream from the RemoteTestRunner
    */
   public abstract class ServerConnection extends Thread {
-    int fServerPort;
+    private IMessageSender m_messageMarshaller;
 
-    public ServerConnection(int port) {
+    public ServerConnection(IMessageSender messageMarshaller) {
       super("ServerConnection"); //$NON-NLS-1$
-      fServerPort = port;
+      m_messageMarshaller = messageMarshaller;
     }
 
     @Override
     public void run() {
-      try {
-        fServerSocket = new ServerSocket(fServerPort);
-        fSocket = fServerSocket.accept();
-        try {
-          m_inputReader = new BufferedReader(new InputStreamReader(fSocket.getInputStream(),
-                                                                     "UTF-8")); //$NON-NLS-1$
+      IMessage message = m_messageMarshaller.receiveMessage();
+      while (message != null) {
+        if (message instanceof GenericMessage) {
+          notifyStart((GenericMessage) message);
         }
-        catch(UnsupportedEncodingException e) {
-          m_inputReader = new BufferedReader(new InputStreamReader(fSocket.getInputStream()));
+        else if (message instanceof SuiteMessage) {
+          notifySuiteEvents((SuiteMessage) message);
         }
-        try {
-          m_outputWriter = new PrintWriter(new OutputStreamWriter(fSocket.getOutputStream(), "UTF-8"),
-                                    true);
+        else if (message instanceof TestMessage) {
+          notifyTestEvents((TestMessage) message);
         }
-        catch(UnsupportedEncodingException e1) {
-          m_outputWriter = new PrintWriter(new OutputStreamWriter(fSocket.getOutputStream()), true);
+        else if (message instanceof TestResultMessage) {
+          notifyResultEvents((TestResultMessage) message);
         }
-        String message;
-        while((m_inputReader != null) && ((message = readMessage(m_inputReader)) != null)) {
-          receiveMessage(message);
+        else {
+          throw new TestNGException("Unknown message type:" + message);
         }
+        message = m_messageMarshaller.receiveMessage();
       }
-      catch(SocketException e) {
-        handleThrowable(e);
-      }
-      catch(IOException e) {
-        handleThrowable(e);
-      }
-      finally {
-        shutdown();
-      }
+      m_messageMarshaller.shutDown();
+//      try {
+//        fServerSocket = new ServerSocket(fServerPort);
+//        fSocket = fServerSocket.accept();
+//        try {
+//          m_inputReader = new BufferedReader(new InputStreamReader(fSocket.getInputStream(),
+//                                                                     "UTF-8")); //$NON-NLS-1$
+//        }
+//        catch(UnsupportedEncodingException e) {
+//          m_inputReader = new BufferedReader(new InputStreamReader(fSocket.getInputStream()));
+//        }
+//        try {
+//          m_outputWriter = new PrintWriter(new OutputStreamWriter(fSocket.getOutputStream(), "UTF-8"),
+//                                    true);
+//        }
+//        catch(UnsupportedEncodingException e1) {
+//          m_outputWriter = new PrintWriter(new OutputStreamWriter(fSocket.getOutputStream()), true);
+//        }
+//        String message;
+//        while((m_inputReader != null) && ((message = readMessage(m_inputReader)) != null)) {
+//          receiveMessage(message);
+//        }
+//      }
+//      catch(SocketException e) {
+//        handleThrowable(e);
+//      }
+//      catch(IOException e) {
+//        handleThrowable(e);
+//      }
+//      finally {
+//        shutdown();
+//      }
     }
 
     protected abstract void handleThrowable(Throwable cause);

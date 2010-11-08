@@ -24,4 +24,8 @@ public class SerializedMessageSender extends BaseMessageSender {
     }
   }
 
+  @Override
+  public IMessage receiveMessage() {
+    return null;
+  }
 }

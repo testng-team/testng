@@ -2,9 +2,9 @@ package org.testng.remote.strprotocol;
 
 
 /**
- * Marker interface for usage with remote listeners.
+ * Marker interface for messages exchanged between RemoteTestNG and a client.
  *
- * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
+ * @author Cedric Beust <cedric@beust.com>
  */
 public interface IMessage {
 }

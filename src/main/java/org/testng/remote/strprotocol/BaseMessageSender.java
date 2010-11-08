@@ -5,15 +5,17 @@ import org.testng.remote.RemoteTestNG;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 abstract public class BaseMessageSender implements IMessageSender {
   private boolean m_debug = false;
-  private Socket m_clientSocket;
+  protected Socket m_clientSocket;
   private String m_host;
   private int m_port;
   protected Object m_lock = new Object();
@@ -22,9 +24,11 @@ abstract public class BaseMessageSender implements IMessageSender {
   protected OutputStream m_outStream;
 
   /** Incoming message stream. */
-  private volatile BufferedReader m_inStream;
+  protected volatile InputStream m_inStream;
+  protected BufferedReader m_inReader;
 
   private ReaderThread m_readerThread;
+  protected InputStream m_receiverInputStream;
 
   public BaseMessageSender(String host, int port) {
     m_host = host;
@@ -45,14 +49,15 @@ abstract public class BaseMessageSender implements IMessageSender {
         m_clientSocket = new Socket(m_host, m_port);
   
         m_outStream = m_clientSocket.getOutputStream();
-  
+        m_inStream = m_clientSocket.getInputStream();
+
         try {
-          m_inStream = new BufferedReader(new InputStreamReader(m_clientSocket.getInputStream(),
+          m_inReader = new BufferedReader(new InputStreamReader(m_inStream,
               "UTF-8")); //$NON-NLS-1$
         }
         catch(UnsupportedEncodingException ueex) {
           // Should never happen
-          m_inStream = new BufferedReader(new InputStreamReader(m_clientSocket.getInputStream()));
+          m_inReader = new BufferedReader(new InputStreamReader(m_inStream));
         }
   
         p("Connection established, starting reader thread");
@@ -73,6 +78,21 @@ abstract public class BaseMessageSender implements IMessageSender {
   }
 
   @Override
+  public void initReceiver() {
+    if (m_receiverInputStream != null) {
+      p("Receiver already initialized");
+    }
+    ServerSocket serverSocket;
+    try {
+      serverSocket = new ServerSocket(m_port);
+      m_receiverInputStream = serverSocket.accept().getInputStream();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+
+  @Override
   public void shutDown() {
     if(null != m_outStream) {
       try {
@@ -89,9 +109,9 @@ abstract public class BaseMessageSender implements IMessageSender {
         m_readerThread.interrupt();
       }
 
-      if(null != m_inStream) {
-        m_inStream.close();
-        m_inStream = null;
+      if(null != m_inReader) {
+        m_inReader.close();
+        m_inReader = null;
       }
     }
     catch(IOException e) {
@@ -130,7 +150,7 @@ abstract public class BaseMessageSender implements IMessageSender {
     public void run() {
       try {
         String message;
-        while((m_inStream != null) && (message = m_inStream.readLine()) != null) {
+        while((m_inReader != null) && (message = m_inReader.readLine()) != null) {
           if(m_debug) {
             p("Reply:" + message); //$NON-NLS-1$
           }

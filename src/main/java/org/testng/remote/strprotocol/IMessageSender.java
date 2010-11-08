@@ -6,7 +6,11 @@ public interface IMessageSender {
 
   void connect() throws IOException;
 
+  void initReceiver();
+
   void sendMessage(IMessage message) throws Exception;
+
+  IMessage receiveMessage();
 
   void shutDown();
 }

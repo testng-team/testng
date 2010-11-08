@@ -2,12 +2,18 @@ package org.testng.remote.strprotocol;
 
 import org.testng.remote.RemoteTestNG;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.SocketException;
 
 public class StringMessageSender extends BaseMessageSender {
+
+  private PrintWriter writer;
 
   public StringMessageSender(String host, int port) {
     super(host, port);
@@ -15,7 +21,6 @@ public class StringMessageSender extends BaseMessageSender {
 
   @Override
   public void sendMessage(IMessage message) {
-    PrintWriter writer;
     try {
       writer = new PrintWriter(new BufferedWriter(
           new OutputStreamWriter(m_outStream, "UTF-8")), //$NON-NLS-1$
@@ -28,7 +33,7 @@ public class StringMessageSender extends BaseMessageSender {
 
     String msg = ((IStringMessage) message).getMessageAsString();
     if (RemoteTestNG.isVerbose()) {
-      p(msg);
+      p("Sending message:" + msg);
 
       StringBuffer buf = new StringBuffer();
       for(int i = 0; i < msg.length(); i++) {
@@ -46,10 +51,10 @@ public class StringMessageSender extends BaseMessageSender {
     synchronized(m_lock) {
       writer.println(msg);
       writer.flush();
-      try {
-        m_lock.wait();
-      }
-      catch(InterruptedException e) { }
+//      try {
+//        m_lock.wait();
+//      }
+//      catch(InterruptedException e) { }
     }
   }
 
@@ -59,4 +64,80 @@ public class StringMessageSender extends BaseMessageSender {
     }
   }
 
+  @Override
+  public IMessage receiveMessage() {
+    IMessage result = null;
+
+    if (m_inReader == null) {
+      try {
+        m_inReader = new BufferedReader(new InputStreamReader(m_receiverInputStream, "UTF-8"));
+      } catch (UnsupportedEncodingException e) {
+        m_inReader = new BufferedReader(new InputStreamReader(m_receiverInputStream));
+      }
+    }
+    try {
+//      try {
+//        m_outputWriter = new PrintWriter(new OutputStreamWriter(fSocket.getOutputStream(), "UTF-8"),
+//                                  true);
+//      }
+//      catch(UnsupportedEncodingException e1) {
+//        m_outputWriter = new PrintWriter(new OutputStreamWriter(fSocket.getOutputStream()), true);
+//      }
+      result = receiveMessage(m_inReader.readLine());
+    }
+    catch(SocketException e) {
+      handleThrowable(e);
+    }
+    catch(IOException e) {
+      handleThrowable(e);
+    }
+
+    return result;
+//    finally {
+//      shutDown();
+//      return null;
+//    }
+  }
+
+  protected void handleThrowable(Throwable cause) {
+    cause.printStackTrace();
+  }
+
+//  private String readMessage(BufferedReader in) throws IOException {
+//    return in.readLine();
+//  }
+
+  private IMessage receiveMessage(String message) {
+    IMessage result = null;
+
+    int messageType = MessageHelper.getMessageType(message);
+
+//    try {
+      if(messageType < MessageHelper.SUITE) {
+        // Generic message
+        result = MessageHelper.unmarshallGenericMessage(message);
+      }
+      else if(messageType < MessageHelper.TEST) {
+        // Suite message
+        result = MessageHelper.createSuiteMessage(message);
+      }
+      else if(messageType < MessageHelper.TEST_RESULT) {
+        // Test message
+        result = MessageHelper.createTestMessage(message);
+      }
+      else {
+        // TestResult message
+        result = MessageHelper.unmarshallTestResultMessage(message);
+      }
+//    }
+//    finally {
+//      if(isRunning() && (null != m_outputWriter)) {
+//        m_outputWriter.println(MessageHelper.ACK_MSG);
+//        m_outputWriter.flush();
+//      }
+//    }
+
+    p("receiveMessage() received:" + result);
+    return result;
+  }
 }
