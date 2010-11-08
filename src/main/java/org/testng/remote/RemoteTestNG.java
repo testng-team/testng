@@ -27,11 +27,8 @@ import java.util.List;
 
 /**
  * Extension of TestNG registering a remote TestListener.
- * <p>
- * <i>Developer note</i>: be aware that a copy of this source is distributed along with the
- * Eclipse plugin to assure backward compatibility.
- * </p>
- * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
+ *
+ * @author Cedric Beust <cedric@beust.com>
  */
 public class RemoteTestNG extends TestNG {
   private static final String LOCALHOST = "127.0.0.1";
@@ -166,6 +163,9 @@ public class RemoteTestNG extends TestNG {
         sb.append(s).append(" ");
       }
       p(sb.toString());
+      testNG.setVerbose(2);
+    } else {
+      testNG.setVerbose(0);
     }
     validateCommandLineParameters(cla);
     if (m_debug) {
@@ -173,6 +173,7 @@ public class RemoteTestNG extends TestNG {
       // without having to relauch RemoteTestNG.
       while(true) {
         testNG.run();
+        testNG.configure(cla);
       }
     } else {
       testNG.run();

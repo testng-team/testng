@@ -3,7 +3,9 @@ package org.testng.xml;
 
 import org.testng.collections.Lists;
 import org.testng.internal.AnnotationTypeEnum;
+import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
+import org.testng.remote.RemoteTestNG;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.io.File;
@@ -75,12 +77,14 @@ public abstract class LaunchSuite {
     }
 
     /**
-     * {@inheritDoc} This implementation saves nothing because the suite file already
-     * exists.
+     * Trying to run an existing XML file: copy its content to where the plug-in
+     * expects it.
      */
     @Override
     public File save(File directory) {
-      return m_suitePath;
+      File result = new File(directory, RemoteTestNG.DEBUG_SUITE_FILE);
+      Utils.copyFile(m_suitePath, result);
+      return result;
     }
   }
 
