@@ -1,6 +1,5 @@
 package org.testng.xml;
 
-
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.internal.ClassHelper;
@@ -16,9 +15,7 @@ import java.util.Properties;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class XmlClass implements Serializable, Cloneable {
-  /**
-   *
-   */
+
   private static final long serialVersionUID = 8885360896966149897L;
   private List<XmlInclude> m_includedMethods = Lists.newArrayList();
   private List<String> m_excludedMethods = Lists.newArrayList();
@@ -49,20 +46,20 @@ public class XmlClass implements Serializable, Cloneable {
     m_class = className;
     m_declaredClass = declaredClass;
     m_index = index;
+
+    if (null == m_class) {
+      m_class = ClassHelper.forName(m_name);
+
+      if (null == m_class) {
+        throw new TestNGException("Cannot find class in classpath: " + m_name);
+      }
+    }
   }
 
   /**
    * @return Returns the className.
    */
   public Class getSupportClass() {
-    if(null == m_class) {
-      m_class = ClassHelper.forName(m_name);
-
-      if(null == m_class) {
-        throw new TestNGException("Cannot find class in classpath: " + m_name);
-      }
-    }
-
     return m_class;
   }
 
