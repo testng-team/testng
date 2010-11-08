@@ -33,19 +33,20 @@ public class StringMessageSender extends BaseMessageSender {
 
     String msg = ((IStringMessage) message).getMessageAsString();
     if (RemoteTestNG.isVerbose()) {
-      p("Sending message:" + msg);
+      p("Sending message:" + message);
+      p("  String version:" + msg);
 
       StringBuffer buf = new StringBuffer();
       for(int i = 0; i < msg.length(); i++) {
         if('\u0001' == msg.charAt(i)) {
-          p("word:[" + buf.toString() + "]");
+          p("  word:[" + buf.toString() + "]");
           buf.delete(0, buf.length());
         }
         else {
           buf.append(msg.charAt(i));
         }
       }
-      p("word:[" + buf.toString() + "]");
+      p("  word:[" + buf.toString() + "]");
     }
 
     synchronized(m_lock) {
@@ -108,6 +109,7 @@ public class StringMessageSender extends BaseMessageSender {
 //  }
 
   private IMessage receiveMessage(String message) {
+    if (message == null) return null;
     IMessage result = null;
 
     int messageType = MessageHelper.getMessageType(message);

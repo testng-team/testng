@@ -43,8 +43,8 @@ abstract public class BaseMessageSender implements IMessageSender {
    */
   @Override
   public void connect() throws IOException {
+    p("Waiting for Eclipse client on " + m_host + ":" + m_port);
     while (true) {
-      p("Waiting for Eclipse client on " + m_host + ":" + m_port);
       try {
         m_clientSocket = new Socket(m_host, m_port);
   
