@@ -21,14 +21,19 @@ public class StringMessageSender extends BaseMessageSender {
 
   @Override
   public void sendMessage(IMessage message) {
-    try {
-      writer = new PrintWriter(new BufferedWriter(
-          new OutputStreamWriter(m_outStream, "UTF-8")), //$NON-NLS-1$
-          false /* autoflush */);
-    } catch (UnsupportedEncodingException e1) {
-      writer = new PrintWriter(new BufferedWriter(
-          new OutputStreamWriter(m_outStream)),
-          false /* autoflush */);
+    if (m_outStream == null) {
+      throw new IllegalStateException("Trying to send a message on a shutdown sender");
+    }
+    if (writer == null) {
+      try {
+        writer = new PrintWriter(new BufferedWriter(
+            new OutputStreamWriter(m_outStream, "UTF-8")), //$NON-NLS-1$
+            false /* autoflush */);
+      } catch (UnsupportedEncodingException e1) {
+        writer = new PrintWriter(new BufferedWriter(
+            new OutputStreamWriter(m_outStream)),
+            false /* autoflush */);
+      }
     }
 
     String msg = ((IStringMessage) message).getMessageAsString();

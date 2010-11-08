@@ -158,8 +158,19 @@ public class RemoteTestNG extends TestNG {
     CommandLineArgs cla = new CommandLineArgs();
     RemoteArgs ra = new RemoteArgs();
     new JCommander(Arrays.asList(cla, ra), args);
-    RemoteTestNG remoteTestNg = new RemoteTestNG();
     m_debug = cla.debug;
+    if (m_debug) {
+      while (true) {
+        initAndRun(args, cla, ra);
+      }
+    }
+    else {
+      initAndRun(args, cla, ra);
+    }
+  }
+
+  private static void initAndRun(String[] args, CommandLineArgs cla, RemoteArgs ra) {
+    RemoteTestNG remoteTestNg = new RemoteTestNG();
     if (m_debug) {
       // In debug mode, override the port and the XML file to a fixed location
       cla.port = Integer.parseInt(DEBUG_PORT);
@@ -168,7 +179,6 @@ public class RemoteTestNG extends TestNG {
       });
     }
     remoteTestNg.configure(cla);
-    m_debug = cla.debug;
     remoteTestNg.setHost(cla.host);
     m_serPort = ra.serPort;
     remoteTestNg.m_port = cla.port;
@@ -183,15 +193,17 @@ public class RemoteTestNG extends TestNG {
       remoteTestNg.setVerbose(0);
     }
     validateCommandLineParameters(cla);
-    if (m_debug) {
-      // Run in a loop if in debug mode so it is possible to run several launches
-      // without having to relauch RemoteTestNG.
-      while (true) {
-        remoteTestNg.run();
-      }
-    } else {
-      remoteTestNg.run();
-    }
+    remoteTestNg.run();
+//    if (m_debug) {
+//      // Run in a loop if in debug mode so it is possible to run several launches
+//      // without having to relauch RemoteTestNG.
+//      while (true) {
+//        remoteTestNg.run();
+//        remoteTestNg.configure(cla);
+//      }
+//    } else {
+//      remoteTestNg.run();
+//    }
   }
 
   private static void p(String s) {
