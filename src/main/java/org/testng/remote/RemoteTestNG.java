@@ -18,7 +18,6 @@ import org.testng.remote.strprotocol.MessageHelper;
 import org.testng.remote.strprotocol.MessageHub;
 import org.testng.remote.strprotocol.RemoteTestListener;
 import org.testng.remote.strprotocol.SerializedMessageSender;
-import org.testng.remote.strprotocol.StringMessageSender;
 import org.testng.remote.strprotocol.SuiteMessage;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
@@ -34,7 +33,7 @@ import java.util.List;
  * @author Cedric Beust <cedric@beust.com>
  */
 public class RemoteTestNG extends TestNG {
-  private static final String LOCALHOST = "127.0.0.1";
+  private static final String LOCALHOST = "localhost";
 
   // The following constants are referenced by the Eclipse plug-in, make sure you
   // modify the plug-in as well if you change any of them.
@@ -76,9 +75,9 @@ public class RemoteTestNG extends TestNG {
   @Override
   public void run() {
     List<IMessageSender> senders = Lists.newArrayList();
-    if (m_port != null) {
-      senders.add(new StringMessageSender(m_host, m_port));
-    }
+//    if (m_port != null) {
+//      senders.add(new StringMessageSender(m_host, m_port));
+//    }
     if (m_serPort != null) {
       senders.add(new SerializedMessageSender(m_host, m_serPort));
     }
@@ -102,7 +101,8 @@ public class RemoteTestNG extends TestNG {
         }
 
         GenericMessage gm= new GenericMessage(MessageHelper.GENERIC_SUITE_COUNT);
-        gm.addProperty("suiteCount", suites.size()).addProperty("testCount", testCount);
+        gm.setSuiteCount(suites.size());
+        gm.setTestCount(testCount);
         msh.sendMessage(gm);
 
         addListener(new RemoteSuiteListener(msh));
@@ -160,9 +160,9 @@ public class RemoteTestNG extends TestNG {
     new JCommander(Arrays.asList(cla, ra), args);
     m_debug = cla.debug;
     if (m_debug) {
-      while (true) {
+//      while (true) {
         initAndRun(args, cla, ra);
-      }
+//      }
     }
     else {
       initAndRun(args, cla, ra);
@@ -174,6 +174,7 @@ public class RemoteTestNG extends TestNG {
     if (m_debug) {
       // In debug mode, override the port and the XML file to a fixed location
       cla.port = Integer.parseInt(DEBUG_PORT);
+      ra.serPort = cla.port;
       cla.suiteFiles = Arrays.asList(new String[] {
           DEBUG_SUITE_DIRECTORY + DEBUG_SUITE_FILE
       });

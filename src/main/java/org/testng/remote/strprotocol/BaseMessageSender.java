@@ -1,13 +1,15 @@
 package org.testng.remote.strprotocol;
 
 import org.testng.TestNGException;
-import org.testng.remote.RemoteTestNG;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.ServerSocket;
@@ -22,13 +24,16 @@ abstract public class BaseMessageSender implements IMessageSender {
 
   /** Outgoing message stream. */
   protected OutputStream m_outStream;
+  /** Used to send ACK and STOP */
+  private PrintWriter m_outWriter;
 
   /** Incoming message stream. */
   protected volatile InputStream m_inStream;
-  protected BufferedReader m_inReader;
+  /** Used to receive ACK and STOP */
+  protected volatile BufferedReader m_inReader;
 
   private ReaderThread m_readerThread;
-  protected InputStream m_receiverInputStream;
+//  protected InputStream m_receiverInputStream;
 
   public BaseMessageSender(String host, int port) {
     m_host = host;
@@ -47,10 +52,14 @@ abstract public class BaseMessageSender implements IMessageSender {
     while (true) {
       try {
         m_clientSocket = new Socket(m_host, m_port);
-  
-        m_outStream = m_clientSocket.getOutputStream();
-        m_inStream = m_clientSocket.getInputStream();
+        p("Received a connection from Eclipse on " + m_host + ":" + m_port);
 
+        // Output streams
+        m_outStream = m_clientSocket.getOutputStream();
+        m_outWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(m_outStream)));
+
+        // Input streams
+        m_inStream = m_clientSocket.getInputStream();
         try {
           m_inReader = new BufferedReader(new InputStreamReader(m_inStream,
               "UTF-8")); //$NON-NLS-1$
@@ -59,7 +68,7 @@ abstract public class BaseMessageSender implements IMessageSender {
           // Should never happen
           m_inReader = new BufferedReader(new InputStreamReader(m_inStream));
         }
-  
+
         p("Connection established, starting reader thread");
         m_readerThread = new ReaderThread();
         m_readerThread.start();
@@ -77,15 +86,68 @@ abstract public class BaseMessageSender implements IMessageSender {
     }
   }
 
+  private void _initSockets() throws IOException {
+    m_clientSocket = new Socket(m_host, m_port);
+    p("Received a connection from Eclipse on " + m_host + ":" + m_port);
+
+    // Output streams
+    m_outStream = m_clientSocket.getOutputStream();
+    m_outWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(m_outStream)));
+
+    // Input streams
+    m_inStream = m_clientSocket.getInputStream();
+    try {
+      m_inReader = new BufferedReader(new InputStreamReader(m_inStream,
+          "UTF-8")); //$NON-NLS-1$
+    }
+    catch(UnsupportedEncodingException ueex) {
+      // Should never happen
+      m_inReader = new BufferedReader(new InputStreamReader(m_inStream));
+    }
+
+  }
+
+  private void sendAdminMessage(String message) {
+    p("Sending admin message " + message);
+    m_outWriter.println(message);
+    m_outWriter.flush();
+  }
+
+  @Override
+  public void sendAck() {
+//    p("Writing ack as an int");
+//    try {
+//      m_outStream.write(1);
+//      m_outStream.flush();
+//    } catch (IOException e) {
+//      // TODO Auto-generated catch block
+//      e.printStackTrace();
+//    }
+//    p("Done writing ack as an int");
+    sendAdminMessage(MessageHelper.ACK_MSG);
+  }
+
+  @Override
+  public void sendStop() {
+    sendAdminMessage(MessageHelper.STOP_MSG);
+  }
+
   @Override
   public void initReceiver() {
-    if (m_receiverInputStream != null) {
+    if (m_inStream != null) {
       p("Receiver already initialized");
     }
     ServerSocket serverSocket;
     try {
       serverSocket = new ServerSocket(m_port);
-      m_receiverInputStream = serverSocket.accept().getInputStream();
+      Socket socket = serverSocket.accept();
+      m_inStream = socket.getInputStream();
+      m_inReader = new BufferedReader(new InputStreamReader(m_inStream));
+      m_outStream = socket.getOutputStream();
+      m_outWriter = new PrintWriter(new OutputStreamWriter(m_outStream));
+
+//      initSockets();
+
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -132,7 +194,8 @@ abstract public class BaseMessageSender implements IMessageSender {
   }
 
   private static void p(String msg) {
-    if (RemoteTestNG.isVerbose()) {
+    if (true) {
+//    if (RemoteTestNG.isVerbose()) {
       System.out.println("[BaseMessageSender] " + msg); //$NON-NLS-1$
     }
   }
@@ -146,13 +209,27 @@ abstract public class BaseMessageSender implements IMessageSender {
       super("ReaderThread"); //$NON-NLS-1$
     }
 
+//    @Override
+    public void _run() {
+      try {
+        p("ReaderThread reading from instream");
+        int ack = m_inStream.read();
+        p("ReaderThread read int:" + ack);
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+
     @Override
     public void run() {
       try {
-        String message;
-        while((m_inReader != null) && (message = m_inReader.readLine()) != null) {
-          if(m_debug) {
-            p("Reply:" + message); //$NON-NLS-1$
+        p("ReaderThread waiting for an admin message");
+        String message = m_inReader.readLine();
+        p("ReaderThread received admin message:" + message);
+        while (message != null) {
+          if (m_debug) {
+            p("Admin message:" + message); //$NON-NLS-1$
           }
           boolean acknowledge = MessageHelper.ACK_MSG.equals(message);
           boolean stop = MessageHelper.STOP_MSG.equals(message);
@@ -164,10 +241,26 @@ abstract public class BaseMessageSender implements IMessageSender {
               break;
             }
           }
+          message = m_inReader.readLine();
         }
+//        while((m_reader != null) && (message = m_reader.readLine()) != null) {
+//          if (m_debug) {
+//            p("Admin message:" + message); //$NON-NLS-1$
+//          }
+//          boolean acknowledge = MessageHelper.ACK_MSG.equals(message);
+//          boolean stop = MessageHelper.STOP_MSG.equals(message);
+//          if(acknowledge || stop) {
+//            synchronized(m_lock) {
+//              m_lock.notifyAll();
+//            }
+//            if (stop) {
+//              break;
+//            }
+//          }
+//        }
       }
       catch(IOException ioe) {
-        ;
+        // ioe.printStackTrace();
       }
     }
   }

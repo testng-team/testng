@@ -76,9 +76,9 @@ public class StringMessageSender extends BaseMessageSender {
 
     if (m_inReader == null) {
       try {
-        m_inReader = new BufferedReader(new InputStreamReader(m_receiverInputStream, "UTF-8"));
+        m_inReader = new BufferedReader(new InputStreamReader(m_inStream, "UTF-8"));
       } catch (UnsupportedEncodingException e) {
-        m_inReader = new BufferedReader(new InputStreamReader(m_receiverInputStream));
+        m_inReader = new BufferedReader(new InputStreamReader(m_inStream));
       }
     }
     try {

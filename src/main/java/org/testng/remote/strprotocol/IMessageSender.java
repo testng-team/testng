@@ -10,7 +10,16 @@ public interface IMessageSender {
 
   void sendMessage(IMessage message) throws Exception;
 
-  IMessage receiveMessage();
+  /**
+   * Will return null or throw EOFException when the connection has been severed.
+   */
+  IMessage receiveMessage() throws Exception;
 
   void shutDown();
+
+  // These two methods should probably be in a separate class since they should all be
+  // the same for implementers of this interface.
+  void sendAck();
+
+  void sendStop();
 }

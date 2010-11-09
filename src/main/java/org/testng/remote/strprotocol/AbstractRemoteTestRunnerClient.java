@@ -18,9 +18,8 @@ package org.testng.remote.strprotocol;
 
 import org.testng.TestNGException;
 
-import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -40,8 +39,9 @@ public abstract class AbstractRemoteTestRunnerClient {
    */
   private ServerSocket       fServerSocket;
   private Socket             fSocket;
-  private PrintWriter        m_outputWriter;
-  private BufferedReader     m_inputReader;
+  private ServerConnection m_serverConnection;
+//  private PrintWriter        m_outputWriter;
+//  private BufferedReader     m_inputReader;
 
   /**
    * Start listening to a test run. Start a server connection that
@@ -52,6 +52,7 @@ public abstract class AbstractRemoteTestRunnerClient {
                                           ServerConnection serverConnection) {
     m_suiteListeners= suiteListeners;
     m_testListeners= testListeners;
+    m_serverConnection = serverConnection;
 
     serverConnection.start();
   }
@@ -65,19 +66,19 @@ public abstract class AbstractRemoteTestRunnerClient {
   }
 
   private synchronized void shutdown() {
-    if(m_outputWriter != null) {
-      m_outputWriter.close();
-      m_outputWriter = null;
-    }
-    try {
-      if(m_inputReader != null) {
-        m_inputReader.close();
-        m_inputReader = null;
-      }
-    }
-    catch(IOException e) {
-      e.printStackTrace();
-    }
+//    if(m_outputWriter != null) {
+//      m_outputWriter.close();
+//      m_outputWriter = null;
+//    }
+//    try {
+//      if(m_inputReader != null) {
+//        m_inputReader.close();
+//        m_inputReader = null;
+//      }
+//    }
+//    catch(IOException e) {
+//      e.printStackTrace();
+//    }
     try {
       if(fSocket != null) {
         fSocket.close();
@@ -99,7 +100,7 @@ public abstract class AbstractRemoteTestRunnerClient {
   }
 
   public boolean isRunning() {
-    return fSocket != null;
+    return m_serverConnection.getMessageSender() != null;
   }
 
   /**
@@ -107,10 +108,7 @@ public abstract class AbstractRemoteTestRunnerClient {
    */
   public synchronized void stopTest() {
     if(isRunning()) {
-      if(null != m_outputWriter) {
-        m_outputWriter.println(MessageHelper.STOP_MSG);
-        m_outputWriter.flush();
-      }
+      m_serverConnection.getMessageSender().sendStop();
       shutdown();
     }
   }
@@ -172,28 +170,46 @@ public abstract class AbstractRemoteTestRunnerClient {
       m_messageMarshaller = messageMarshaller;
     }
 
+    IMessageSender getMessageSender() {
+      return m_messageMarshaller;
+    }
+
     @Override
     public void run() {
-      IMessage message = m_messageMarshaller.receiveMessage();
-      while (message != null) {
-        if (message instanceof GenericMessage) {
-          notifyStart((GenericMessage) message);
+      try {
+        IMessage message = m_messageMarshaller.receiveMessage();
+        while (message != null) {
+          if (message instanceof GenericMessage) {
+            notifyStart((GenericMessage) message);
+          }
+          else if (message instanceof SuiteMessage) {
+            notifySuiteEvents((SuiteMessage) message);
+          }
+          else if (message instanceof TestMessage) {
+            notifyTestEvents((TestMessage) message);
+          }
+          else if (message instanceof TestResultMessage) {
+            notifyResultEvents((TestResultMessage) message);
+          }
+          else {
+            throw new TestNGException("Unknown message type:" + message);
+          }
+          if (isRunning()) {
+            m_messageMarshaller.sendAck();
+          }
+          message = m_messageMarshaller.receiveMessage();
         }
-        else if (message instanceof SuiteMessage) {
-          notifySuiteEvents((SuiteMessage) message);
-        }
-        else if (message instanceof TestMessage) {
-          notifyTestEvents((TestMessage) message);
-        }
-        else if (message instanceof TestResultMessage) {
-          notifyResultEvents((TestResultMessage) message);
-        }
-        else {
-          throw new TestNGException("Unknown message type:" + message);
-        }
-        message = m_messageMarshaller.receiveMessage();
       }
-      m_messageMarshaller.shutDown();
+      catch (EOFException ex) {
+        // Expected
+      }
+      catch(Exception ex) {
+        ex.printStackTrace();
+      }
+      finally {
+        m_messageMarshaller.shutDown();
+        m_messageMarshaller = null;
+      }
 //      try {
 //        fServerSocket = new ServerSocket(fServerPort);
 //        fSocket = fServerSocket.accept();
