@@ -16,6 +16,7 @@ Fixed: TESTNG-415: Assert.assertEquals() for sets and maps fails with 'null' as 
 Fixed: typo -testRunFactory
 Fixed: NPE while printing results for an empty suite (Nalin Makar)
 Fixed: Invoke IInvokedMethodListener.afterInvocation after fixing results for tests expecting exceptions (Nalin Makar)
+Fixed: TESTNG-441: NPE in SuiteHTMLReporter#generateMethodsChronologically caused by a race condition (Slawomir Ginter)
 
 Eclipse:
 Added: Excluded methods are now listed in the Summary tab
