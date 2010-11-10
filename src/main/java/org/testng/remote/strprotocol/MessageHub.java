@@ -72,4 +72,8 @@ public class MessageHub {
   public void initReceiver() {
     m_messageSender.initReceiver();
   }
+
+  public IMessageSender getMessageSender() {
+    return m_messageSender;
+  }
 }
