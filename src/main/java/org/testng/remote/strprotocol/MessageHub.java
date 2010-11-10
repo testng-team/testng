@@ -68,4 +68,8 @@ public class MessageHub {
   public void setDebug(boolean debug) {
     m_debug = debug;
   }
+
+  public void initReceiver() {
+    m_messageSender.initReceiver();
+  }
 }
