@@ -2,7 +2,6 @@ package org.testng.remote.strprotocol;
 
 import org.testng.remote.RemoteTestNG;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -45,8 +44,10 @@ public class SerializedMessageSender extends BaseMessageSender {
 //        sendAck();
 //      }
     }
-    catch(EOFException ex) {
-      // ignore
+    catch(Exception ex) {
+      if (RemoteTestNG.isVerbose()) {
+        ex.printStackTrace();
+      }
     }
     return result;
   }

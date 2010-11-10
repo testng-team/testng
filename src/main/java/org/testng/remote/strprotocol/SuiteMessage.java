@@ -3,9 +3,11 @@ package org.testng.remote.strprotocol;
 import org.testng.ISuite;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -18,6 +20,7 @@ public class SuiteMessage implements IStringMessage {
   protected final int m_testMethodCount;
   protected final boolean m_startSuite;
   private List<String> m_excludedMethods = null;
+  private Map<String, String> m_descriptions;
 
   SuiteMessage(final String suiteName, final boolean startSuiteRun, final int methodCount) {
     m_suiteName = suiteName;
@@ -32,8 +35,11 @@ public class SuiteMessage implements IStringMessage {
     Collection<ITestNGMethod> excludedMethods = suite.getExcludedMethods();
     if (excludedMethods != null && excludedMethods.size() > 0) {
       m_excludedMethods = Lists.newArrayList();
+      m_descriptions = Maps.newHashMap();
       for (ITestNGMethod m : excludedMethods) {
-        m_excludedMethods.add(m.getTestClass().getName() + "." + m.getMethodName());
+        String methodName = m.getTestClass().getName() + "." + m.getMethodName();
+        m_excludedMethods.add(methodName);
+        if (m.getDescription() != null) m_descriptions.put(methodName, m.getDescription());
       }
     }
   }
@@ -45,6 +51,10 @@ public class SuiteMessage implements IStringMessage {
 
   public List<String> getExcludedMethods() {
     return m_excludedMethods;
+  }
+
+  public String getDescriptionForMethod(String methodName) {
+    return m_descriptions.get(methodName);
   }
 
   public boolean isMessageOnStart() {

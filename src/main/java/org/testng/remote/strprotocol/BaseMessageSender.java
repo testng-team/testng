@@ -239,7 +239,9 @@ abstract public class BaseMessageSender implements IMessageSender {
 //        }
       }
       catch(IOException ioe) {
-        // ioe.printStackTrace();
+        if (RemoteTestNG.isVerbose()) {
+          ioe.printStackTrace();
+        }
       }
     }
   }
