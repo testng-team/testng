@@ -5,7 +5,6 @@ import org.testng.TestNGException;
 import org.testng.remote.RemoteTestNG;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Central class to connect to the host and send message.
@@ -16,10 +15,10 @@ public class MessageHub {
 
   private boolean m_debug = false;
 
-  private List<IMessageSender> m_messageSenders;
+  private IMessageSender m_messageSender;
 
-  public MessageHub(List<IMessageSender> messageSenders) {
-    m_messageSenders = messageSenders;
+  public MessageHub(IMessageSender messageSender) {
+    m_messageSender = messageSender;
   }
 
   /**
@@ -29,29 +28,34 @@ public class MessageHub {
    * @throws TestNGException if an exception occurred while establishing the connection
    */
   public void connect() throws IOException {
-    for (IMessageSender sender : m_messageSenders) {
-      sender.connect();
-    }
+    m_messageSender.connect();
   }
 
   /**
    * Shutsdown the connection to the remote test listener.
    */
   public void shutDown() {
-    for (IMessageSender sender : m_messageSenders) {
-      sender.shutDown();
-    }
+    m_messageSender.shutDown();
   }
 
   public void sendMessage(IMessage message) {
-    for (IMessageSender sender : m_messageSenders) {
-      try {
-        sender.sendMessage(message);
-      }
-      catch(Exception ex) {
-        ex.printStackTrace();
-      }
+    try {
+      m_messageSender.sendMessage(message);
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+  }
+
+  public IMessage receiveMessage() {
+    IMessage result = null;
+    try {
+      result = m_messageSender.receiveMessage();
+      m_messageSender.sendAck();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return result;
   }
 
   private static void p(String msg) {

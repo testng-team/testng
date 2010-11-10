@@ -83,4 +83,13 @@ public class SuiteMessage implements IStringMessage {
     }
     return buf.toString();
   }
+
+  @Override
+  public String toString() {
+    return "[SuiteMessage suite:" + m_suiteName
+        + (m_startSuite ? " starting" : " ending")
+        + " methodCount:" + m_testMethodCount
+        + "]";
+  }
+
 }

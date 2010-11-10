@@ -1,6 +1,7 @@
 package org.testng.remote.strprotocol;
 
 import org.testng.TestNGException;
+import org.testng.remote.RemoteTestNG;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -20,7 +21,7 @@ abstract public class BaseMessageSender implements IMessageSender {
   protected Socket m_clientSocket;
   private String m_host;
   private int m_port;
-  protected Object m_lock = new Object();
+  protected Object m_ackLock = new Object();
 
   /** Outgoing message stream. */
   protected OutputStream m_outStream;
@@ -108,22 +109,12 @@ abstract public class BaseMessageSender implements IMessageSender {
   }
 
   private void sendAdminMessage(String message) {
-    p("Sending admin message " + message);
     m_outWriter.println(message);
     m_outWriter.flush();
   }
 
   @Override
   public void sendAck() {
-//    p("Writing ack as an int");
-//    try {
-//      m_outStream.write(1);
-//      m_outStream.flush();
-//    } catch (IOException e) {
-//      // TODO Auto-generated catch block
-//      e.printStackTrace();
-//    }
-//    p("Done writing ack as an int");
     sendAdminMessage(MessageHelper.ACK_MSG);
   }
 
@@ -139,6 +130,7 @@ abstract public class BaseMessageSender implements IMessageSender {
     }
     ServerSocket serverSocket;
     try {
+      p("initReceiver on port " + m_port);
       serverSocket = new ServerSocket(m_port);
       Socket socket = serverSocket.accept();
       m_inStream = socket.getInputStream();
@@ -194,8 +186,7 @@ abstract public class BaseMessageSender implements IMessageSender {
   }
 
   private static void p(String msg) {
-    if (true) {
-//    if (RemoteTestNG.isVerbose()) {
+    if (RemoteTestNG.isVerbose()) {
       System.out.println("[BaseMessageSender] " + msg); //$NON-NLS-1$
     }
   }
@@ -207,18 +198,6 @@ abstract public class BaseMessageSender implements IMessageSender {
 
     public ReaderThread() {
       super("ReaderThread"); //$NON-NLS-1$
-    }
-
-//    @Override
-    public void _run() {
-      try {
-        p("ReaderThread reading from instream");
-        int ack = m_inStream.read();
-        p("ReaderThread read int:" + ack);
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
     }
 
     @Override
@@ -234,8 +213,8 @@ abstract public class BaseMessageSender implements IMessageSender {
           boolean acknowledge = MessageHelper.ACK_MSG.equals(message);
           boolean stop = MessageHelper.STOP_MSG.equals(message);
           if(acknowledge || stop) {
-            synchronized(m_lock) {
-              m_lock.notifyAll();
+            synchronized(m_ackLock) {
+              m_ackLock.notifyAll();
             }
             if (stop) {
               break;

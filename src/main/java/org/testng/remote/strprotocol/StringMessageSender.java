@@ -54,7 +54,7 @@ public class StringMessageSender extends BaseMessageSender {
       p("  word:[" + buf.toString() + "]");
     }
 
-    synchronized(m_lock) {
+    synchronized(m_ackLock) {
       writer.println(msg);
       writer.flush();
 //      try {
@@ -106,7 +106,9 @@ public class StringMessageSender extends BaseMessageSender {
   }
 
   protected void handleThrowable(Throwable cause) {
-    cause.printStackTrace();
+    if (RemoteTestNG.isVerbose()) {
+      cause.printStackTrace();
+    }
   }
 
 //  private String readMessage(BufferedReader in) throws IOException {

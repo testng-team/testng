@@ -10,6 +10,7 @@ import org.testng.ISuite;
 import org.testng.ISuiteListener;
 import org.testng.ITestRunnerFactory;
 import org.testng.TestNG;
+import org.testng.TestNGException;
 import org.testng.TestRunner;
 import org.testng.collections.Lists;
 import org.testng.remote.strprotocol.GenericMessage;
@@ -18,6 +19,7 @@ import org.testng.remote.strprotocol.MessageHelper;
 import org.testng.remote.strprotocol.MessageHub;
 import org.testng.remote.strprotocol.RemoteTestListener;
 import org.testng.remote.strprotocol.SerializedMessageSender;
+import org.testng.remote.strprotocol.StringMessageSender;
 import org.testng.remote.strprotocol.SuiteMessage;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
@@ -53,7 +55,6 @@ public class RemoteTestNG extends TestNG {
   /** Port used for the serialized protocol */
   private static Integer m_serPort = null;
 
-//  private List<IMessageSender> m_senders;
   private static boolean m_debug;
 
   public void setHost(String host) {
@@ -74,14 +75,10 @@ public class RemoteTestNG extends TestNG {
 
   @Override
   public void run() {
-    List<IMessageSender> senders = Lists.newArrayList();
-//    if (m_port != null) {
-//      senders.add(new StringMessageSender(m_host, m_port));
-//    }
-    if (m_serPort != null) {
-      senders.add(new SerializedMessageSender(m_host, m_serPort));
-    }
-    final MessageHub msh = new MessageHub(senders);
+    IMessageSender sender = m_serPort != null
+        ? new SerializedMessageSender(m_host, m_serPort)
+        : new StringMessageSender(m_host, m_port);
+    final MessageHub msh = new MessageHub(sender);
     msh.setDebug(isDebug());
     try {
       msh.connect();
@@ -158,6 +155,10 @@ public class RemoteTestNG extends TestNG {
     CommandLineArgs cla = new CommandLineArgs();
     RemoteArgs ra = new RemoteArgs();
     new JCommander(Arrays.asList(cla, ra), args);
+    if (cla.port != null && ra.serPort != null) {
+      throw new TestNGException("Can only specify one of " + CommandLineArgs.PORT
+          + " and " + RemoteArgs.PORT);
+    }
     m_debug = cla.debug;
     if (m_debug) {
 //      while (true) {
