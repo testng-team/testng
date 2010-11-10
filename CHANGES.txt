@@ -19,6 +19,7 @@ Fixed: Invoke IInvokedMethodListener.afterInvocation after fixing results for te
 
 Eclipse:
 Added: Excluded methods are now listed in the Summary tab
+Added: "Description" column in the excluded methods table
 Added: Double clicking on an excluded method in the Summary tab will take you to its definition
 Added: If you select a package before invoking the "New TestNG class" wizard, the source and package text boxes will be auto-filled
 Added: When an item is selected in a tab, the same item will be selected when switching tabs
