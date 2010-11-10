@@ -8,12 +8,8 @@ import org.testng.remote.strprotocol.SerializedMessageSender;
 import org.testng.remote.strprotocol.StringMessageSender;
 
 /**
- * A simple client that talks to RemoteTestNG. Launch RemoteTestNG as follows:
- *
- * java org.testng.RemoteTestNG -serport 12345 testng.xml
- *
- * and then launch this client. You should see all the messages as RemoteTestNG
- * runs through the suite.
+ * A simple client that launches RemoteTestNG and then talks to it via the
+ * two supported protocols, String and Serialized.
  *
  * @author Cedric Beust <cedric@beust.com>
  */
