@@ -20,37 +20,40 @@ import org.testng.remote.strprotocol.StringMessageSender;
 public class RemoteTest {
 
   public static void main(String[] args) throws Exception {
-//    new RemoteTest().testString();
+    new RemoteTest().testString();
     new RemoteTest().testSerialized();
   }
-  
+
   public void testSerialized() {
-    runTest("-serport", new SerializedMessageSender("localhost", 12345));
-  }
-  
-  public void testString() {
-    runTest("-port", new StringMessageSender("localhost", 12345));
+    runTest("-serport", 12345, new SerializedMessageSender("localhost", 12345));
   }
 
-  private void launchRemoteTestNG(final String portArg) {
+  public void testString() {
+    runTest("-port", 12346, new StringMessageSender("localhost", 12346));
+  }
+
+  private void launchRemoteTestNG(final String portArg, final int portValue) {
     new Thread(new Runnable() {
       @Override
       public void run() {
         RemoteTestNG.main(new String[] {
-            portArg, "12345",
+            portArg, Integer.toString(portValue),
             "/Users/cbeust/java/testng/src/test/resources/testng-single.xml"});
         }
       }).start();
   }
 
-  private void runTest(String arg, IMessageSender sms) {
-    launchRemoteTestNG(arg);
+  private void runTest(String arg, int portValue, IMessageSender sms) {
+    launchRemoteTestNG(arg, portValue);
     MessageHub mh = new MessageHub(sms);
     mh.initReceiver();
     IMessage message = mh.receiveMessage();
     while (message != null) {
       System.out.println("Received message:" + message);
       message = mh.receiveMessage();
+      if (message == null) {
+        System.out.println("Done");
+      }
     }
   }
 }
