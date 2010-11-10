@@ -18,7 +18,6 @@ package org.testng.remote.strprotocol;
 
 import org.testng.TestNGException;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -163,21 +162,21 @@ public abstract class AbstractRemoteTestRunnerClient {
    * Reads the message stream from the RemoteTestRunner
    */
   public abstract class ServerConnection extends Thread {
-    private IMessageSender m_messageMarshaller;
+    private MessageHub m_messageHub;
 
     public ServerConnection(IMessageSender messageMarshaller) {
       super("ServerConnection"); //$NON-NLS-1$
-      m_messageMarshaller = messageMarshaller;
+      m_messageHub = new MessageHub(messageMarshaller);
     }
 
     IMessageSender getMessageSender() {
-      return m_messageMarshaller;
+      return m_messageHub.getMessageSender();
     }
 
     @Override
     public void run() {
       try {
-        IMessage message = m_messageMarshaller.receiveMessage();
+        IMessage message = m_messageHub.receiveMessage();
         while (message != null) {
           if (message instanceof GenericMessage) {
             notifyStart((GenericMessage) message);
@@ -194,21 +193,15 @@ public abstract class AbstractRemoteTestRunnerClient {
           else {
             throw new TestNGException("Unknown message type:" + message);
           }
-          if (isRunning()) {
-            m_messageMarshaller.sendAck();
-          }
-          message = m_messageMarshaller.receiveMessage();
+//          if (isRunning()) {
+//            m_messageMarshaller.sendAck();
+//          }
+          message = m_messageHub.receiveMessage();
         }
       }
-      catch (EOFException ex) {
-        // Expected
-      }
-      catch(Exception ex) {
-        ex.printStackTrace();
-      }
       finally {
-        m_messageMarshaller.shutDown();
-        m_messageMarshaller = null;
+        m_messageHub.shutDown();
+        m_messageHub = null;
       }
 //      try {
 //        fServerSocket = new ServerSocket(fServerPort);
