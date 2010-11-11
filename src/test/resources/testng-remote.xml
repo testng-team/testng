@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+  
+<suite name="Remote" verbose="0">
+
+  <test name="RemoteTest">
+    <classes>
+      <class name="test.remote.RemoteSampleTest" />
+    </classes>
+  </test>
+
+</suite>
+
