@@ -52,7 +52,7 @@ public class A {
   @Test
   public void a1() {
 //    throw new RuntimeException();
-    Assert.assertTrue(false);
+    Assert.assertTrue(true);
 //    System.out.println("test1");
   }
 
@@ -63,7 +63,7 @@ public class A {
 //    System.out.println("a2 " + Thread.currentThread().getId());
   }
 
-  @Test
+  @Test(enabled = false)
   public void a3() {
     throw new SkipException("Skipped");
   }
