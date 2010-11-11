@@ -81,4 +81,8 @@ public class GenericMessage implements IStringMessage {
     return buf.toString();
   }
 
+  @Override
+  public String toString() {
+    return "[GenericMessage suiteCount:" + m_suiteCount + " testCount:" + m_testCount + "]";
+  }
 }
