@@ -57,6 +57,8 @@ public class RemoteTestNG extends TestNG {
 
   private static boolean m_debug;
 
+  private static boolean m_dontExit;
+
   public void setHost(String host) {
     if((null == host) || "".equals(host)) {
       m_host= LOCALHOST;
@@ -116,7 +118,7 @@ public class RemoteTestNG extends TestNG {
     }
     finally {
       msh.shutDown();
-      if (! m_debug) {
+      if (! m_debug && ! m_dontExit) {
         System.exit(0);
       }
     }
@@ -155,6 +157,7 @@ public class RemoteTestNG extends TestNG {
     CommandLineArgs cla = new CommandLineArgs();
     RemoteArgs ra = new RemoteArgs();
     new JCommander(Arrays.asList(cla, ra), args);
+    m_dontExit = ra.dontExit;
     if (cla.port != null && ra.serPort != null) {
       throw new TestNGException("Can only specify one of " + CommandLineArgs.PORT
           + " and " + RemoteArgs.PORT);

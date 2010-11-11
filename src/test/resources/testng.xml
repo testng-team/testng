@@ -103,6 +103,7 @@
       <class name="test.SerializationTest" />
       <class name="test.CountTest" />
       <class name="test.MapTest" />
+      <class name="test.remote.RemoteTest" />
     </classes>
   </test>
   

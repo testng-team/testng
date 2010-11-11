@@ -1,5 +1,8 @@
-package test;
+package test.remote;
 
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import org.testng.collections.Lists;
 import org.testng.remote.RemoteTestNG;
 import org.testng.remote.strprotocol.IMessage;
 import org.testng.remote.strprotocol.IMessageSender;
@@ -7,23 +10,36 @@ import org.testng.remote.strprotocol.MessageHub;
 import org.testng.remote.strprotocol.SerializedMessageSender;
 import org.testng.remote.strprotocol.StringMessageSender;
 
+import test.SimpleBaseTest;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A simple client that launches RemoteTestNG and then talks to it via the
  * two supported protocols, String and Serialized.
  *
  * @author Cedric Beust <cedric@beust.com>
  */
-public class RemoteTest {
+public class RemoteTest extends SimpleBaseTest {
+  private static final List<String> EXPECTED_MESSAGES = new ArrayList<String>() {{
+    add("GenericMessage"); // method and test counts
+    add("SuiteMessage");  // suite started
+    add("TestMessage");  // test started
+    add("TestResultMessage"); // status: started
+    add("TestResultMessage"); // status: succes/
+    add("TestResultMessage"); // status: started
+    add("TestResultMessage"); // status: success
+    add("TestMessage"); // test finished
+    add("SuiteMessage"); // suite finished
+  }};
 
-  public static void main(String[] args) throws Exception {
-    new RemoteTest().testString();
-    new RemoteTest().testSerialized();
-  }
-
+  @Test
   public void testSerialized() {
     runTest("-serport", 12345, new SerializedMessageSender("localhost", 12345));
   }
 
+  @Test
   public void testString() {
     runTest("-port", 12346, new StringMessageSender("localhost", 12346));
   }
@@ -33,23 +49,31 @@ public class RemoteTest {
       @Override
       public void run() {
         RemoteTestNG.main(new String[] {
-            portArg, Integer.toString(portValue),
-            "/Users/cbeust/java/testng/src/test/resources/testng-single.xml"});
+            portArg, Integer.toString(portValue), "-dontexit",
+            getPathToResource("testng-remote.xml")
+          });
         }
       }).start();
   }
 
   private void runTest(String arg, int portValue, IMessageSender sms) {
+    p("Launching RemoteTestNG on port " + portValue);
     launchRemoteTestNG(arg, portValue);
     MessageHub mh = new MessageHub(sms);
+    List<String> received = Lists.newArrayList();
     mh.initReceiver();
     IMessage message = mh.receiveMessage();
     while (message != null) {
-      System.out.println("Received message:" + message);
+      received.add(message.getClass().getSimpleName());
       message = mh.receiveMessage();
-      if (message == null) {
-        System.out.println("Done");
-      }
+    }
+
+    Assert.assertEquals(received, EXPECTED_MESSAGES);
+  }
+
+  private static void p(String s) {
+    if (false) {
+      System.out.println("[RemoteTest] " + s);
     }
   }
 }
