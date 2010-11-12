@@ -22,6 +22,10 @@ import java.util.List;
  * @author Cedric Beust <cedric@beust.com>
  */
 public class RemoteTest extends SimpleBaseTest {
+  // Note: don't use the ports used by the plug-in or the RemoteTestNG processes
+  // launched in this test will interfere with the plug-in.
+  private static final int PORT1 = 1243;
+  private static final int PORT2 = 1242;
   private static final List<String> EXPECTED_MESSAGES = new ArrayList<String>() {{
     add("GenericMessage"); // method and test counts
     add("SuiteMessage");  // suite started
@@ -36,12 +40,12 @@ public class RemoteTest extends SimpleBaseTest {
 
   @Test
   public void testSerialized() {
-    runTest("-serport", 12345, new SerializedMessageSender("localhost", 12345));
+    runTest("-serport", PORT1, new SerializedMessageSender("localhost", PORT1));
   }
 
   @Test
   public void testString() {
-    runTest("-port", 12346, new StringMessageSender("localhost", 12346));
+    runTest("-port", PORT2, new StringMessageSender("localhost", PORT2));
   }
 
   private void launchRemoteTestNG(final String portArg, final int portValue) {

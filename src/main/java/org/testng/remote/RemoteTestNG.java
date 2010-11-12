@@ -154,6 +154,8 @@ public class RemoteTestNG extends TestNG {
   }
 
   public static void main(String[] args) throws ParameterException {
+    System.out.println("RemoteTestNG starting");
+    long start = System.currentTimeMillis();
     CommandLineArgs cla = new CommandLineArgs();
     RemoteArgs ra = new RemoteArgs();
     new JCommander(Arrays.asList(cla, ra), args);
@@ -171,6 +173,8 @@ public class RemoteTestNG extends TestNG {
     else {
       initAndRun(args, cla, ra);
     }
+    long end = System.currentTimeMillis();
+    System.out.println("RemoteTesTNG ending:" + ((end - start) / 1000) + " seconds");
   }
 
   private static void initAndRun(String[] args, CommandLineArgs cla, RemoteArgs ra) {
