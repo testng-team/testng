@@ -1,6 +1,13 @@
 package org.testng;
 
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -34,11 +41,6 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.xml.sax.SAXException;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterException;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -56,8 +58,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * This class is the main entry point for running tests in the TestNG framework.
@@ -881,7 +881,8 @@ public class TestNG {
       if (m_suiteThreadPoolSize == 1 && !m_randomizeSuites) {
         // Single threaded and not randomized: run the suites in order
         for (XmlSuite xmlSuite : m_suites) {
-          runSuitesSequentially(xmlSuite, suiteRunnerMap, xmlSuite.getVerbose(),
+          int verbose = getVerbose(xmlSuite);
+          runSuitesSequentially(xmlSuite, suiteRunnerMap, verbose,
               getDefaultSuiteName());
         }
       } else {
@@ -923,6 +924,16 @@ public class TestNG {
     // Generate the suites report
     //
     return Lists.newArrayList(suiteRunnerMap.values());
+  }
+
+  /**
+   * @return the verbose level, checking in order: the verbose level on
+   * the suite, the verbose level on the TestNG object, or 1.
+   */
+  private int getVerbose(XmlSuite xmlSuite) {
+    int result = xmlSuite.getVerbose() != null ? xmlSuite.getVerbose()
+        : (m_verbose != null ? m_verbose : 1);
+    return result;
   }
 
   /**
