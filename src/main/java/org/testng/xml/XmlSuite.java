@@ -1,6 +1,7 @@
 package org.testng.xml;
 
 import org.testng.IObjectFactory;
+import org.testng.TestNG;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.AnnotationTypeEnum;
@@ -178,7 +179,7 @@ public class XmlSuite implements Serializable, Cloneable {
    * @return the verbose.
    */
   public Integer getVerbose() {
-    return m_verbose;
+    return m_verbose != null ? m_verbose : TestNG.DEFAULT_VERBOSE;
   }
 
   /**

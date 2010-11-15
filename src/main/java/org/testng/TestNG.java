@@ -144,6 +144,8 @@ public class TestNG {
   protected static final int HAS_FSP = 4;
   protected static final int HAS_NO_TEST = 8;
 
+  public static final Integer DEFAULT_VERBOSE = 1;
+
   private int m_status;
   private boolean m_hasTests= false;
 
@@ -881,7 +883,7 @@ public class TestNG {
       if (m_suiteThreadPoolSize == 1 && !m_randomizeSuites) {
         // Single threaded and not randomized: run the suites in order
         for (XmlSuite xmlSuite : m_suites) {
-          runSuitesSequentially(xmlSuite, suiteRunnerMap, xmlSuite.getVerbose(),
+          runSuitesSequentially(xmlSuite, suiteRunnerMap, getVerbose(xmlSuite),
               getDefaultSuiteName());
         }
       } else {
@@ -923,6 +925,16 @@ public class TestNG {
     // Generate the suites report
     //
     return Lists.newArrayList(suiteRunnerMap.values());
+  }
+
+  /**
+   * @return the verbose level, checking in order: the verbose level on
+   * the suite, the verbose level on the TestNG object, or 1.
+   */
+  private int getVerbose(XmlSuite xmlSuite) {
+    int result = xmlSuite.getVerbose() != null ? xmlSuite.getVerbose()
+        : (m_verbose != null ? m_verbose : DEFAULT_VERBOSE);
+    return result;
   }
 
   /**
