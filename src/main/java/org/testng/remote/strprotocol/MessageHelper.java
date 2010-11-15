@@ -3,10 +3,8 @@ package org.testng.remote.strprotocol;
 
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 
@@ -53,13 +51,17 @@ public class MessageHelper {
       return new GenericMessage(Integer.parseInt(messageParts[0]));
     }
     else {
-      Map props = Maps.newHashMap();
+      GenericMessage result = new GenericMessage(Integer.parseInt(messageParts[0]));
 
       for(int i = 1; i < messageParts.length; i+=2) {
-        props.put(messageParts[i], messageParts[i + 1]);
+        if ("testCount".equals(messageParts[i])) {
+          result.setTestCount(Integer.parseInt(messageParts[i + 1]));
+        } else if ("suiteCount".equals(messageParts[i])) {
+          result.setSuiteCount(Integer.parseInt(messageParts[i + 1]));
+        }
       }
 
-      return new GenericMessage(Integer.parseInt(messageParts[0]), props);
+      return result;
     }
   }
 

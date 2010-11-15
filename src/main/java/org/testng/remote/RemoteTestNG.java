@@ -10,12 +10,16 @@ import org.testng.ISuite;
 import org.testng.ISuiteListener;
 import org.testng.ITestRunnerFactory;
 import org.testng.TestNG;
+import org.testng.TestNGException;
 import org.testng.TestRunner;
 import org.testng.collections.Lists;
 import org.testng.remote.strprotocol.GenericMessage;
+import org.testng.remote.strprotocol.IMessageSender;
 import org.testng.remote.strprotocol.MessageHelper;
-import org.testng.remote.strprotocol.RemoteMessageSenderTestListener;
-import org.testng.remote.strprotocol.StringMessageSenderHelper;
+import org.testng.remote.strprotocol.MessageHub;
+import org.testng.remote.strprotocol.RemoteTestListener;
+import org.testng.remote.strprotocol.SerializedMessageSender;
+import org.testng.remote.strprotocol.StringMessageSender;
 import org.testng.remote.strprotocol.SuiteMessage;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
@@ -31,7 +35,7 @@ import java.util.List;
  * @author Cedric Beust <cedric@beust.com>
  */
 public class RemoteTestNG extends TestNG {
-  private static final String LOCALHOST = "127.0.0.1";
+  private static final String LOCALHOST = "localhost";
 
   // The following constants are referenced by the Eclipse plug-in, make sure you
   // modify the plug-in as well if you change any of them.
@@ -44,18 +48,24 @@ public class RemoteTestNG extends TestNG {
 
   private ITestRunnerFactory m_customTestRunnerFactory;
   private String m_host;
-  private int m_port;
+
+  /** Port used for the string protocol */
+  private Integer m_port = null;
+
+  /** Port used for the serialized protocol */
+  private static Integer m_serPort = null;
+
   private static boolean m_debug;
 
-  public void setConnectionParameters(String host, int port) {
+  private static boolean m_dontExit;
+
+  public void setHost(String host) {
     if((null == host) || "".equals(host)) {
       m_host= LOCALHOST;
     }
     else {
       m_host= host;
     }
-
-    m_port= port;
   }
 
   private void calculateAllSuites(List<XmlSuite> suites, List<XmlSuite> outSuites) {
@@ -67,40 +77,40 @@ public class RemoteTestNG extends TestNG {
 
   @Override
   public void run() {
-    final StringMessageSenderHelper msh = new StringMessageSenderHelper(m_host, m_port);
+    IMessageSender sender = m_serPort != null
+        ? new SerializedMessageSender(m_host, m_serPort)
+        : new StringMessageSender(m_host, m_port);
+    final MessageHub msh = new MessageHub(sender);
     msh.setDebug(isDebug());
     try {
-      if(msh.connect()) {
-        // We couldn't do this until now in debug mode since the .xml file didn't exist yet.
-        // Now that we have connected with the Eclipse client, we know that it created the .xml
-        // file so we can proceed with the initialization
-        initializeSuitesAndJarFile();
+      msh.connect();
+      // We couldn't do this until now in debug mode since the .xml file didn't exist yet.
+      // Now that we have connected with the Eclipse client, we know that it created the .xml
+      // file so we can proceed with the initialization
+      initializeSuitesAndJarFile();
 
-        List<XmlSuite> suites = Lists.newArrayList();
-        calculateAllSuites(m_suites, suites);
-        if(suites.size() > 0) {
+      List<XmlSuite> suites = Lists.newArrayList();
+      calculateAllSuites(m_suites, suites);
+      if(suites.size() > 0) {
 
-          int testCount= 0;
+        int testCount= 0;
 
-          for(int i= 0; i < suites.size(); i++) {
-            testCount+= (suites.get(i)).getTests().size();
-          }
-
-          GenericMessage gm= new GenericMessage(MessageHelper.GENERIC_SUITE_COUNT);
-          gm.addProperty("suiteCount", suites.size()).addProperty("testCount", testCount);
-          msh.sendMessage(gm);
-
-          addListener(new RemoteSuiteListener(msh));
-          setTestRunnerFactory(new DelegatingTestRunnerFactory(buildTestRunnerFactory(), msh));
-
-          super.run();
+        for(int i= 0; i < suites.size(); i++) {
+          testCount+= (suites.get(i)).getTests().size();
         }
-        else {
-          System.err.println("No test suite found.  Nothing to run");
-        }
+
+        GenericMessage gm= new GenericMessage(MessageHelper.GENERIC_SUITE_COUNT);
+        gm.setSuiteCount(suites.size());
+        gm.setTestCount(testCount);
+        msh.sendMessage(gm);
+
+        addListener(new RemoteSuiteListener(msh));
+        setTestRunnerFactory(new DelegatingTestRunnerFactory(buildTestRunnerFactory(), msh));
+
+        super.run();
       }
       else {
-        System.err.println("Cannot connect to " + m_host + " on " + m_port);
+        System.err.println("No test suite found. Nothing to run");
       }
     }
     catch(Throwable cause) {
@@ -108,7 +118,7 @@ public class RemoteTestNG extends TestNG {
     }
     finally {
       msh.shutDown();
-      if (! m_debug) {
+      if (! m_debug && ! m_dontExit) {
         System.exit(0);
       }
     }
@@ -144,40 +154,65 @@ public class RemoteTestNG extends TestNG {
   }
 
   public static void main(String[] args) throws ParameterException {
+    System.out.println("RemoteTestNG starting");
+    long start = System.currentTimeMillis();
     CommandLineArgs cla = new CommandLineArgs();
-    new JCommander(cla, args);
-    RemoteTestNG testNG = new RemoteTestNG();
+    RemoteArgs ra = new RemoteArgs();
+    new JCommander(Arrays.asList(cla, ra), args);
+    m_dontExit = ra.dontExit;
+    if (cla.port != null && ra.serPort != null) {
+      throw new TestNGException("Can only specify one of " + CommandLineArgs.PORT
+          + " and " + RemoteArgs.PORT);
+    }
     m_debug = cla.debug;
+    if (m_debug) {
+//      while (true) {
+        initAndRun(args, cla, ra);
+//      }
+    }
+    else {
+      initAndRun(args, cla, ra);
+    }
+    long end = System.currentTimeMillis();
+    System.out.println("RemoteTesTNG ending:" + ((end - start) / 1000) + " seconds");
+  }
+
+  private static void initAndRun(String[] args, CommandLineArgs cla, RemoteArgs ra) {
+    RemoteTestNG remoteTestNg = new RemoteTestNG();
     if (m_debug) {
       // In debug mode, override the port and the XML file to a fixed location
       cla.port = Integer.parseInt(DEBUG_PORT);
+      ra.serPort = cla.port;
       cla.suiteFiles = Arrays.asList(new String[] {
           DEBUG_SUITE_DIRECTORY + DEBUG_SUITE_FILE
       });
     }
-    testNG.configure(cla);
-    testNG.setConnectionParameters(cla.host, cla.port);
+    remoteTestNg.configure(cla);
+    remoteTestNg.setHost(cla.host);
+    m_serPort = ra.serPort;
+    remoteTestNg.m_port = cla.port;
     if (isVerbose()) {
       StringBuilder sb = new StringBuilder("Invoked with ");
       for (String s : args) {
         sb.append(s).append(" ");
       }
       p(sb.toString());
-      testNG.setVerbose(2);
+      remoteTestNg.setVerbose(2);
     } else {
-      testNG.setVerbose(0);
+      remoteTestNg.setVerbose(0);
     }
     validateCommandLineParameters(cla);
-    if (m_debug) {
-      // Run in a loop if in debug mode so it is possible to run several launches
-      // without having to relauch RemoteTestNG.
-      while(true) {
-        testNG.run();
-        testNG.configure(cla);
-      }
-    } else {
-      testNG.run();
-    }
+    remoteTestNg.run();
+//    if (m_debug) {
+//      // Run in a loop if in debug mode so it is possible to run several launches
+//      // without having to relauch RemoteTestNG.
+//      while (true) {
+//        remoteTestNg.run();
+//        remoteTestNg.configure(cla);
+//      }
+//    } else {
+//      remoteTestNg.run();
+//    }
   }
 
   private static void p(String s) {
@@ -192,7 +227,7 @@ public class RemoteTestNG extends TestNG {
   }
 
   public static boolean isDebug() {
-    return System.getProperty(PROPERTY_DEBUG) != null;
+    return m_debug || System.getProperty(PROPERTY_DEBUG) != null;
   }
 
   private String getHost() {
@@ -205,9 +240,9 @@ public class RemoteTestNG extends TestNG {
 
   /** A ISuiteListener wiring the results using the internal string-based protocol. */
   private static class RemoteSuiteListener implements ISuiteListener {
-    private final StringMessageSenderHelper m_messageSender;
+    private final MessageHub m_messageSender;
 
-    RemoteSuiteListener(StringMessageSenderHelper smsh) {
+    RemoteSuiteListener(MessageHub smsh) {
       m_messageSender= smsh;
     }
 
@@ -224,9 +259,9 @@ public class RemoteTestNG extends TestNG {
 
   private static class DelegatingTestRunnerFactory implements ITestRunnerFactory {
     private final ITestRunnerFactory m_delegateFactory;
-    private final StringMessageSenderHelper m_messageSender;
+    private final MessageHub m_messageSender;
 
-    DelegatingTestRunnerFactory(ITestRunnerFactory trf, StringMessageSenderHelper smsh) {
+    DelegatingTestRunnerFactory(ITestRunnerFactory trf, MessageHub smsh) {
       m_delegateFactory= trf;
       m_messageSender= smsh;
     }
@@ -235,7 +270,7 @@ public class RemoteTestNG extends TestNG {
     public TestRunner newTestRunner(ISuite suite, XmlTest test,
         List<IInvokedMethodListener> listeners) {
       TestRunner tr = m_delegateFactory.newTestRunner(suite, test, listeners);
-      tr.addListener(new RemoteMessageSenderTestListener(suite, test, m_messageSender));
+      tr.addListener(new RemoteTestListener(suite, test, m_messageSender));
       return tr;
     }
   }

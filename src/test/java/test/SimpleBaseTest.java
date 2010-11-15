@@ -14,7 +14,6 @@ import java.io.File;
 import java.util.Iterator;
 
 public class SimpleBaseTest {
-
   protected TestNG create() {
     TestNG result = new TestNG();
     result.setVerbose(0);
