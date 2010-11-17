@@ -108,6 +108,7 @@
       <class name="test.CountTest" />
       <class name="test.MapTest" />
       <class name="test.remote.RemoteTest" />
+      <class name="test.EclipseTest" />
     </classes>
   </test>
 
