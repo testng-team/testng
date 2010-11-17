@@ -19,7 +19,7 @@ public class SuiteMessage implements IStringMessage {
   protected final String m_suiteName;
   protected final int m_testMethodCount;
   protected final boolean m_startSuite;
-  private List<String> m_excludedMethods = null;
+  private List<String> m_excludedMethods = Lists.newArrayList();
   private Map<String, String> m_descriptions;
 
   SuiteMessage(final String suiteName, final boolean startSuiteRun, final int methodCount) {
