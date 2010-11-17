@@ -20,6 +20,7 @@ Fixed: Invoke IInvokedMethodListener.afterInvocation after fixing results for te
 Fixed: TESTNG-441: NPE in SuiteHTMLReporter#generateMethodsChronologically caused by a race condition (Slawomir Ginter)
 
 Eclipse:
+Added: Right clicking on a class/package/project now offers a menu "TestNG/Convert to TestNG"
 Added: Excluded methods are now listed in the Summary tab
 Added: "Description" column in the excluded methods table
 Added: Double clicking on an excluded method in the Summary tab will take you to its definition
@@ -34,6 +35,7 @@ Added: The conversion of a JUnit test to TestNG now replaces Assert with AssertJ
 Added: The progress bar is now orange if the suite contained skipped tests and no failures
 Added: Skipped test and suite icons are now orange (previously: blue)
 Added: New method shortcuts: "Alt+Shift+X N", "Alt+Shift+D N" (Sven Johansson)
+Fixed: XML files should be run in place and not copied.
 Fixed: NPE when you select a passed test and click on the Compare Result icon (Mohamed Mansour)
 Fixed: When the run is over, the plug-in will no longer force the focus back to the Console view
 Fixed: The counter in the progress bar sometimes went over the total number of test methods (5.14.2.9)
