@@ -9,7 +9,7 @@ import org.testng.internal.Utils;
 import java.util.List;
 
 /**
- * A simple reporter that collects the results and does nothing else.
+ * A simple reporter that collects the results and prints them on standard out.
  *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
@@ -31,7 +31,6 @@ public class TextReporter extends TestListenerAdapter {
     }
   }
 
-
   private ITestNGMethod[] resultsToMethods(List<ITestResult> results) {
     ITestNGMethod[] result = new ITestNGMethod[results.size()];
     int i = 0;
@@ -41,7 +40,6 @@ public class TextReporter extends TestListenerAdapter {
 
     return result;
   }
-
 
   private void logResults() {
     //

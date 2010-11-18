@@ -3,10 +3,8 @@ package org.testng.remote.strprotocol;
 
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 
@@ -53,13 +51,17 @@ public class MessageHelper {
       return new GenericMessage(Integer.parseInt(messageParts[0]));
     }
     else {
-      Map props = Maps.newHashMap();
+      GenericMessage result = new GenericMessage(Integer.parseInt(messageParts[0]));
 
       for(int i = 1; i < messageParts.length; i+=2) {
-        props.put(messageParts[i], messageParts[i + 1]);
+        if ("testCount".equals(messageParts[i])) {
+          result.setTestCount(Integer.parseInt(messageParts[i + 1]));
+        } else if ("suiteCount".equals(messageParts[i])) {
+          result.setSuiteCount(Integer.parseInt(messageParts[i + 1]));
+        }
       }
 
-      return new GenericMessage(Integer.parseInt(messageParts[0]), props);
+      return result;
     }
   }
 
@@ -67,9 +69,23 @@ public class MessageHelper {
     int type = getMessageType(message);
     String[] messageParts = parseMessage(message);
 
-    return new SuiteMessage(messageParts[1],
+    SuiteMessage result = new SuiteMessage(messageParts[1],
                             MessageHelper.SUITE_START == type,
                             Integer.parseInt(messageParts[2]));
+    // Any excluded methods?
+    if (messageParts.length > 3) {
+      int count = Integer.parseInt(messageParts[3]);
+      if (count > 0) {
+        List<String> methods = Lists.newArrayList();
+        int i = 4;
+        while (count-- > 0) {
+          methods.add(messageParts[i++]);
+        }
+        result.setExcludedMethods(methods);
+      }
+    }
+
+    return result;
   }
 
   public static TestMessage createTestMessage(final String message) {

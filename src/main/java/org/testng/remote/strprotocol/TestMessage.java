@@ -104,4 +104,11 @@ public class TestMessage implements IStringMessage {
   public int getSkippedTestCount() {
     return m_skippedTestCount;
   }
+
+  @Override
+  public String toString() {
+    return "[TestMessage suite:" + m_suiteName + " testName:" + m_testName
+        + " passed:" + m_passedTestCount + " failed:" + m_failedTestCount
+        + "]";
+  }
 }

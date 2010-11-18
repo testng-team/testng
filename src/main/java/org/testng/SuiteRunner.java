@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +65,8 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   private List<IInvokedMethodListener> m_invokedMethodListeners;
 
   /** The list of all the methods invoked during this run */
-  private List<IInvokedMethod> m_invokedMethods = Lists.newArrayList();
+  private List<IInvokedMethod> m_invokedMethods =
+      Collections.synchronizedList(Lists.<IInvokedMethod>newArrayList());
 
 //  transient private IAnnotationTransformer m_annotationTransformer = null;
 

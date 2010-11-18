@@ -1,8 +1,12 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-  
+
 <suite name="TestNG" verbose="1" parallel="false" thread-count="2"
     data-provider-thread-count="3">
-  
+
+  <suite-files>
+    <suite-file path="./junit-suite.xml" />
+  </suite-files>
+
   <test name="Nopackage">
     <groups>
       <run>
@@ -13,20 +17,20 @@
       <class name="NoPackageTest" />
     </classes>
   </test>
-   
+
   <parameter name="first-name" value="Cedric" />
-  
+
   <test name="Regression1" >
     <groups>
       <define name="evenodd">
         <include name="even" />
         <include name="odd" />
-      </define>      
+      </define>
       <run>
         <exclude name="excludeThisGroup" />
       </run>
     </groups>
-    
+
     <classes>
       <class name="test.parameters.ParameterSample" />
       <class name="test.parameters.ParameterTest" />
@@ -40,7 +44,7 @@
       <class name="test.parameters.ParamInheritanceTest"/>
     </classes>
   </test>
-  
+
   <test name="Regression2">
     <groups>
       <run>
@@ -102,9 +106,12 @@
       <class name="test.listeners.ResultEndMillisTest" />
       <class name="test.SerializationTest" />
       <class name="test.CountTest" />
+      <class name="test.MapTest" />
+      <class name="test.remote.RemoteTest" />
+      <class name="test.EclipseTest" />
     </classes>
   </test>
-  
+
   <test name="Injection">
     <classes>
       <class name="test.inject.InjectTestContextTest"/>
@@ -115,20 +122,20 @@
     </classes>
   </test>
 
-	<!--  Keep this in its own <test> tag -->
+  <!--  Keep this in its own <test> tag -->
   <test name="BeforeMethod">
     <classes>
       <class name="test.configuration.BeforeMethodTest" />
-    </classes>      
+    </classes>
   </test>
 
   <test name="Factory tests">
-		<classes>
-			<class name="test.factory.classconf.XClassOrderWithFactoryTest" />
+    <classes>
+      <class name="test.factory.classconf.XClassOrderWithFactoryTest" />
       <class name="test.factory.FactoryInterleavingTest"/>
-		</classes>
-	</test>
-  
+    </classes>
+  </test>
+
   <test name="Basic" >
     <classes>
       <class name="test.sample.Basic2" />
@@ -136,7 +143,7 @@
       <class name="test.Misc" />
     </classes>
   </test>
-  
+
   <test name="Exclusion">
     <groups>
       <run>
@@ -147,7 +154,7 @@
       <class name="test.Test2" />
     </classes>
   </test>
-  
+
   <test name="Dependents">
     <parameter name="foo" value="Cedric" />
     <classes>
@@ -169,18 +176,18 @@
       <class name="test.dependent.DepBugVerifyTest" />
       <class name="test.dependent.DependsOnProtectedMethodTest" />
       <class name="test.dependsongroup.DependsOnGroupsTest" />
-    </classes>      
+    </classes>
   </test>
-  
+
   <test name="Inheritance">
     <classes>
       <class name="test.SampleInheritance" />
       <class name="test.inheritance.ClassScopeTest" />
     </classes>
   </test>
-  
-  <!-- Test scopes -->  
-  
+
+  <!-- Test scopes -->
+
   <parameter name="parameter" value="out" />
 
   <test name="Test outer scope">
@@ -193,7 +200,7 @@
       <class name="test.sample.Scope" />
     </classes>
   </test>
-  
+
   <test name="Test inner scope">
     <parameter name="parameter" value="in" />
     <groups>
@@ -205,7 +212,7 @@
       <class name="test.sample.Scope" />
     </classes>
   </test>
-    
+
   <test name="AfterClassCalledAtEnd">
     <classes>
       <class name="test.sample.AfterClassCalledAtEnd"/>
@@ -217,7 +224,7 @@
       <class name="test.triangle.Child1" />
       <class name="test.triangle.Child2" />
     </classes>
-  </test>  
+  </test>
 
   <!-- note that CheckTriangePost must be run sequentially after Triangle-->
   <test name="CheckTrianglePost">
@@ -226,9 +233,9 @@
       <class name="test.triangle.CheckCount"/>
     </classes>
   </test>
-  
+
   <!-- Test that we can declare groups and dependents on classes -->
-  
+
   <test name="Test class groups 1" >
     <classes>
       <class name="test.classgroup.Second" />
@@ -242,7 +249,7 @@
       <class name="test.classgroup.Second" />
     </classes>
   </test>
-  
+
   <parameter name="factory-param" value="FactoryParam" />
   <test name="Factory">
     <classes>
@@ -250,11 +257,11 @@
       <class name="test.factory.VerifyFactoryTest" />
       <class name="test.factory.FactoryInSeparateClass" />
       <class name="test.factory.Factory2Test" />
-	  
+
       <class name="test.factory.FactoryWithInstanceInfoTest" />
       <class name="test.factory.VerifyFactoryWithInstanceInfoTest" />
       <class name="test.factory.TestClassAnnotationTest" />
-      
+
       <class name="test.factory.FactoryWithDataProviderTest" />
       <class name="test.factory.FactoryOrderMainTest" />
       <class name="test.factory.FactoryFailureTest" />
@@ -269,7 +276,7 @@
       <class name="test.timeout.TimeOutFromXmlTest"/>
     </classes>
   </test>
-  
+
   <test name="InvocationCount">
     <parameter name="count" value="10" />
     <classes>
@@ -291,7 +298,7 @@
           <class name="test.methods.VerifyMethod1" />
     </classes>
   </test>
-  
+
   <test name="Method2">
     <classes>
         <class name="test.methods.SampleMethod1">
@@ -303,7 +310,7 @@
         <class name="test.methods.VerifyMethod1" />
     </classes>
   </test>
-  
+
   <test name="Method3">
     <classes>
         <class name="test.methods.SampleMethod1">
@@ -321,8 +328,8 @@
       <class name="test.objectfactory.CombinedTestAndObjectFactoryTest" />
     </classes>
   </test>
-  
-  <!-- Test parameters for constructors -->  
+
+  <!-- Test parameters for constructors -->
   <parameter name="string" value="Cedric" />
   <parameter name="int" value="42" />
   <parameter name="boolean" value="true" />
@@ -338,24 +345,24 @@
       <class name="test.ParameterConstructorTest" />
     </classes>
   </test>
-  
+
   <test name="Excluded methods" >
     <groups>
       <run>
         <include name="group1" />
         <include name="group2" />
-      </run>        
+      </run>
     </groups>
     <classes>
       <class name="test.Exclude">
-		<methods>
+    <methods>
           <exclude name="excluded1" />
           <exclude name="excluded2" />
-		</methods>
+    </methods>
       </class>
     </classes>
-  </test>  
-  
+  </test>
+
   <test name="Parameters in init 1">
     <parameter name="param" value="value1"/>
     <classes>
@@ -369,7 +376,7 @@
       <class name="test.configuration.ConfigurationWithParameters"/>
     </classes>
   </test>
-  
+
   <test name="Individual method">
     <classes>
       <class name="test.IndividualMethodsTest">
@@ -383,7 +390,7 @@
   <test name="Method inheritance">
     <classes>
       <class name="test.inheritance.DChild_2" />
-      <class name="test.inheritance.VerifyTest" />	  
+      <class name="test.inheritance.VerifyTest" />
     </classes>
   </test>
 
@@ -428,7 +435,7 @@
       <class name="test.dataprovider.ParallelDataProviderTest" />
     </classes>
   </test>
-	
+
   <test name="UniqueSuite">
     <classes>
       <class name="test.uniquesuite.TestBefore1" />
@@ -453,19 +460,19 @@
     <classes>
       <class name="test.distributed.DistributedTest" />
     </classes>
-  </test>  
+  </test>
 -->
 
   <test name="Nested" >
     <groups>
       <run>
         <include name="unittest" />
-      </run>        
+      </run>
     </groups>
 
-	<packages>
-		<package name="test.nested.*"/>
-	</packages>
+  <packages>
+    <package name="test.nested.*"/>
+  </packages>
   </test>
 
   <test name="Hookable" >
@@ -473,19 +480,19 @@
       <class name="test.hook.HookableTest"/>
     </classes>
   </test>
-  
+
   <test name="BeforeGroups-AfterGroups-1" >
     <classes>
-	    <class name="test.configuration.ConfigurationGroups1SampleTest" />
-	    <class name="test.configuration.ConfigurationGroups2SampleTest" />
-	    <class name="test.configuration.ConfigurationGroups3SampleTest" />
-	    <class name="test.configuration.ConfigurationGroups4SampleTest" />
-	    <class name="test.configuration.ConfigurationGroups5SampleTest" />
-	    <class name="test.configuration.ConfigurationGroups6SampleTest" />
-	    <class name="test.configuration.ConfigurationGroups7SampleTest" />
+      <class name="test.configuration.ConfigurationGroups1SampleTest" />
+      <class name="test.configuration.ConfigurationGroups2SampleTest" />
+      <class name="test.configuration.ConfigurationGroups3SampleTest" />
+      <class name="test.configuration.ConfigurationGroups4SampleTest" />
+      <class name="test.configuration.ConfigurationGroups5SampleTest" />
+      <class name="test.configuration.ConfigurationGroups6SampleTest" />
+      <class name="test.configuration.ConfigurationGroups7SampleTest" />
     </classes>
   </test>
-  
+
   <test name="BeforeGroups-AfterGroups-2" >
     <groups>
       <run>
@@ -494,18 +501,18 @@
       </run>
     </groups>
     <classes>
-	    <class name="test.configuration.ConfigurationGroups8SampleTest" />
+      <class name="test.configuration.ConfigurationGroups8SampleTest" />
     </classes>
   </test>
-  
+
   <test name="JUnit">
     <classes>
       <class name="test.JUnitTest1" />
       <class name="test.CommandLineTest"/>
     </classes>
   </test>
-    
-<!-- 
+
+<!--
   <test name="JUnitConverter">
     <parameter name="source-directory" value="test/src/test/converter" />
     <classes>
@@ -520,16 +527,16 @@
         <class name="test.ant.TestCommandLineArgs" />
     </classes>
   </test>
- 
-  <!-- Group ordering 1 --> 
+
+  <!-- Group ordering 1 -->
   <test name="Class Run">
     <classes>
       <class name="test.regression.groupsordering.A" />
       <class name="test.regression.groupsordering.B" />
     </classes>
   </test>
-	
-  <!-- Group ordering 2 --> 
+
+  <!-- Group ordering 2 -->
   <test name="Groups Run">
     <groups>
       <run>
@@ -541,24 +548,24 @@
       <class name="test.regression.groupsordering.B" />
     </classes>
   </test>
-  
+
   <test name="External group invocation">
-		<groups>
-			<run>
-				<include name="a" />
-			</run>
-		</groups>
-		<classes>
-			<class name="test.groupinvocation.GroupConfiguration" />
-			<class name="test.groupinvocation.DummyTest" />
-		</classes>
+    <groups>
+      <run>
+        <include name="a" />
+      </run>
+    </groups>
+    <classes>
+      <class name="test.groupinvocation.GroupConfiguration" />
+      <class name="test.groupinvocation.DummyTest" />
+    </classes>
   </test>
-	
-	<test name="SkipExceptions">
-		<classes>
-			<class name="test.skipex.SkippedExceptionTest" />
-		</classes>
-	</test>
+
+  <test name="SkipExceptions">
+    <classes>
+      <class name="test.skipex.SkippedExceptionTest" />
+    </classes>
+  </test>
 
 <!--
   <test name="RetryAnalyzer">
@@ -573,20 +580,20 @@
       <class name="test.methodinterceptors.MethodInterceptorTest" />
     </classes>
   </test>
-  
+
   <test name="Asserts">
     <classes>
       <class name="org.testng.AssertTest" />
       <class name="test.asserttests.AssertTest" />
     </classes>
   </test>
-  
+
   <test name="Utils">
     <classes>
       <class name="org.testng.internal.UtilsTest" />
     </classes>
   </test>
- 
+
   <test name="ConfigFailurePolicy">
     <classes>
       <class name="test.configurationfailurepolicy.FailurePolicyTest" />

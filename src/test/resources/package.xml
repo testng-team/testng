@@ -1,0 +1,31 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+  
+<suite name="Package" verbose="1" parallel="false" thread-count="4"
+    data-provider-thread-count="3">
+
+  <listeners>
+    <listener class-name="test.tmp.BListener" />
+  </listeners>
+
+  <test name="A">
+    <groups>
+      <run>
+        <include name="group-a" />
+      </run>
+    </groups>
+    <packages>
+      <package name="test.tmp.a" />
+      <package name="test.tmp.b" />
+    </packages>
+  </test>
+
+<!-- 
+  <test name="B">
+    <packages>
+      <package name="test.tmp.b" />
+    </packages>
+  </test>
+ -->
+ 
+</suite>
+

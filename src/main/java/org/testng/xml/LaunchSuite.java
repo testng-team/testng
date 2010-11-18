@@ -3,7 +3,9 @@ package org.testng.xml;
 
 import org.testng.collections.Lists;
 import org.testng.internal.AnnotationTypeEnum;
+import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
+import org.testng.remote.RemoteTestNG;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.io.File;
@@ -15,10 +17,8 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Wrapper for real suites and custom configured suites.
- * Should only be used for integration purposes; creating a custom testng.xml
- *
- * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
+ * This class is used to encapsulate a launch. Various synthetic XML files are created
+ * depending on whether the user is trying to launch a suite, a class, a method, etc... 
  */
 public abstract class LaunchSuite {
   /** This class's log4testng Logger. */
@@ -75,12 +75,18 @@ public abstract class LaunchSuite {
     }
 
     /**
-     * {@inheritDoc} This implementation saves nothing because the suite file already
-     * exists.
+     * Trying to run an existing XML file: copy its content to where the plug-in
+     * expects it.
      */
     @Override
     public File save(File directory) {
-      return m_suitePath;
+      if (RemoteTestNG.isDebug()) {
+        File result = new File(directory, RemoteTestNG.DEBUG_SUITE_FILE);
+        Utils.copyFile(m_suitePath, result);
+        return result;
+      } else {
+        return m_suitePath;
+      }
     }
   }
 

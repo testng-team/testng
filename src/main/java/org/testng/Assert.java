@@ -691,7 +691,7 @@ public class Assert {
    * Asserts that two maps are equal.
    */
   static public void assertEquals(Map actual, Map expected) {
-    if(actual == expected) {
+    if (actual == expected) {
       return;
     }
 
@@ -699,9 +699,16 @@ public class Assert {
       fail("Maps not equal: expected: " + expected + " and actual: " + actual);
     }
 
-    if (!actual.equals(expected)) {
-      fail("Maps differ: expected " + expected + " but got " + actual);
+    Set entrySet = actual.entrySet();
+    for (Iterator iterator = entrySet.iterator(); iterator.hasNext();) {
+      Map.Entry entry = (Map.Entry) iterator.next();
+      Object key = entry.getKey();
+      Object value = entry.getValue();
+      Object expectedValue = expected.get(key);
+      assertEquals(value, expectedValue, "Maps do not match for key:" + key + " actual:" + value
+          + " expected:" + expectedValue);
     }
+
   }
 
 }

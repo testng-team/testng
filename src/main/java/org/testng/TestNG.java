@@ -1,6 +1,13 @@
 package org.testng;
 
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -34,11 +41,6 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.xml.sax.SAXException;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterException;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -56,8 +58,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * This class is the main entry point for running tests in the TestNG framework.
@@ -143,6 +143,8 @@ public class TestNG {
   protected static final int HAS_SKIPPED = 2;
   protected static final int HAS_FSP = 4;
   protected static final int HAS_NO_TEST = 8;
+
+  public static final Integer DEFAULT_VERBOSE = 1;
 
   private int m_status;
   private boolean m_hasTests= false;
@@ -691,8 +693,8 @@ public class TestNG {
     return m_suiteListeners;
   }
 
-  /** The verbosity level. TODO why not a simple int? */
-  private int m_verbose = 1;
+  /** If m_verbose gets set, it will override the verbose setting in testng.xml */
+  private Integer m_verbose = null;
 
   private IAnnotationTransformer m_annotationTransformer = new DefaultAnnotationTransformer();
 
@@ -871,31 +873,25 @@ public class TestNG {
   public List<ISuite> runSuitesLocally() {
     Map<XmlSuite, ISuite> suiteRunnerMap = Maps.newHashMap();
     if (m_suites.size() > 0) {
-      /*
-       * first initialize the suite runners to ensure there are no configuration issues.
-       * Create a map with XmlSuite as key and corresponding SuiteRunner as value
-       */
+       // First initialize the suite runners to ensure there are no configuration issues.
+       // Create a map with XmlSuite as key and corresponding SuiteRunner as value
       for (XmlSuite xmlSuite : m_suites) {
         createSuiteRunners(suiteRunnerMap, xmlSuite);
       }
 
-      /*
-       * Run suites
-       */
+      //
+      // Run suites
+      //
       if (m_suiteThreadPoolSize == 1 && !m_randomizeSuites) {
-        /*
-         * Only of we want suites to run in order specified in XML and the suite thread pool
-         * size is 1, we run this block
-         */
+        // Single threaded and not randomized: run the suites in order
         for (XmlSuite xmlSuite : m_suites) {
-          runSuitesSequentially(xmlSuite, suiteRunnerMap, m_verbose, getDefaultSuiteName());
+          runSuitesSequentially(xmlSuite, suiteRunnerMap, getVerbose(xmlSuite),
+              getDefaultSuiteName());
         }
       } else {
-        /*
-         * Generate a dynamic graph that stores the suite hierarchy. This is then
-         * used to run related suites in specific order. Parent suites are run only
-         * once all the child suites have completed execution
-         */
+        // Multithreaded: generate a dynamic graph that stores the suite hierarchy. This is then
+        // used to run related suites in specific order. Parent suites are run only
+        // once all the child suites have completed execution
         DynamicGraph<ISuite> suiteGraph = new DynamicGraph<ISuite>();
         for (XmlSuite xmlSuite : m_suites) {
           populateSuiteGraph(suiteGraph, suiteRunnerMap, xmlSuite);
@@ -909,10 +905,9 @@ public class TestNG {
           new LinkedBlockingQueue<Runnable>());
 
         Utils.log("TestNG", 2, "Starting executor for all suites");
-        //run all suites in parallel
+        // Run all suites in parallel
         pooledExecutor.run();
         try {
-          //TODO: Setting timeout to Long.MAX_VALUE. Is it correct/ok?
           pooledExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
           pooledExecutor.shutdownNow();
         }
@@ -932,6 +927,16 @@ public class TestNG {
     // Generate the suites report
     //
     return Lists.newArrayList(suiteRunnerMap.values());
+  }
+
+  /**
+   * @return the verbose level, checking in order: the verbose level on
+   * the suite, the verbose level on the TestNG object, or 1.
+   */
+  private int getVerbose(XmlSuite xmlSuite) {
+    int result = xmlSuite.getVerbose() != null ? xmlSuite.getVerbose()
+        : (m_verbose != null ? m_verbose : DEFAULT_VERBOSE);
+    return result;
   }
 
   /**
@@ -1013,7 +1018,8 @@ public class TestNG {
       xmlSuite.setSkipFailedInvocationCounts(m_skipFailedInvocationCounts);
     }
 
-    if (xmlSuite.getVerbose() == null) {
+    // Override the XmlSuite verbose value with the one from TestNG
+    if (m_verbose != null) {
       xmlSuite.setVerbose(m_verbose);
     }
 

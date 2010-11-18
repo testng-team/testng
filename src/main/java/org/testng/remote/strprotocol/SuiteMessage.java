@@ -1,6 +1,13 @@
 package org.testng.remote.strprotocol;
 
 import org.testng.ISuite;
+import org.testng.ITestNGMethod;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -12,6 +19,8 @@ public class SuiteMessage implements IStringMessage {
   protected final String m_suiteName;
   protected final int m_testMethodCount;
   protected final boolean m_startSuite;
+  private List<String> m_excludedMethods = Lists.newArrayList();
+  private Map<String, String> m_descriptions;
 
   SuiteMessage(final String suiteName, final boolean startSuiteRun, final int methodCount) {
     m_suiteName = suiteName;
@@ -23,6 +32,29 @@ public class SuiteMessage implements IStringMessage {
     m_suiteName = suite.getName();
     m_testMethodCount =suite.getInvokedMethods().size();
     m_startSuite = startSuiteRun;
+    Collection<ITestNGMethod> excludedMethods = suite.getExcludedMethods();
+    if (excludedMethods != null && excludedMethods.size() > 0) {
+      m_excludedMethods = Lists.newArrayList();
+      m_descriptions = Maps.newHashMap();
+      for (ITestNGMethod m : excludedMethods) {
+        String methodName = m.getTestClass().getName() + "." + m.getMethodName();
+        m_excludedMethods.add(methodName);
+        if (m.getDescription() != null) m_descriptions.put(methodName, m.getDescription());
+      }
+    }
+  }
+
+  public void setExcludedMethods(List<String> methods) {
+    m_excludedMethods = Lists.newArrayList();
+    m_excludedMethods.addAll(methods);
+  }
+
+  public List<String> getExcludedMethods() {
+    return m_excludedMethods;
+  }
+
+  public String getDescriptionForMethod(String methodName) {
+    return m_descriptions.get(methodName);
   }
 
   public boolean isMessageOnStart() {
@@ -51,6 +83,23 @@ public class SuiteMessage implements IStringMessage {
         .append(m_testMethodCount)
         ;
 
+    if (m_excludedMethods != null && m_excludedMethods.size() > 0) {
+      buf.append(MessageHelper.DELIMITER);
+      buf.append(m_excludedMethods.size());
+      for (String method : m_excludedMethods) {
+        buf.append(MessageHelper.DELIMITER);
+        buf.append(method);
+      }
+    }
     return buf.toString();
   }
+
+  @Override
+  public String toString() {
+    return "[SuiteMessage suite:" + m_suiteName
+        + (m_startSuite ? " starting" : " ending")
+        + " methodCount:" + m_testMethodCount
+        + "]";
+  }
+
 }

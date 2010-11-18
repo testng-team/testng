@@ -11,13 +11,13 @@ import org.testng.xml.XmlTest;
  *
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
-public class RemoteMessageSenderTestListener implements IResultListener {
-  private final StringMessageSenderHelper m_sender;
+public class RemoteTestListener implements IResultListener {
+  private final MessageHub m_sender;
   private ISuite m_suite;
   private XmlTest m_xmlTest;
   private ITestContext m_currentTestContext;
 
-  public RemoteMessageSenderTestListener(ISuite suite, XmlTest test, StringMessageSenderHelper msh) {
+  public RemoteTestListener(ISuite suite, XmlTest test, MessageHub msh) {
     m_sender = msh;
     m_suite= suite;
     m_xmlTest= test;

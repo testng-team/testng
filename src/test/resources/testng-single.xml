@@ -27,7 +27,7 @@
  -->
     <parameter name="string" value="s"/>
     <classes>
-      <class name="test.CountTest">
+      <class name="test.EclipseTest">
 <!-- 
         <methods>
           <include name="a1" />

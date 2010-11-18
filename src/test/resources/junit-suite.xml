@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="TestNG Running Junit Tests" verbose="0">
+
+  <test name="Junit via TestNG XML" junit="true">
+    <classes>
+      <class name="test.junit.SetNameTest" />
+    </classes>
+  </test>
+
+</suite>

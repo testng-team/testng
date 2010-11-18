@@ -97,6 +97,7 @@ public class TestResultMessage implements IStringMessage {
 
   public TestResultMessage(final ITestContext testCtx, final ITestResult result) {
     this(testCtx.getSuite().getName(), testCtx.getCurrentXmlTest().getName(), result);
+//    this(testCtx.getSuite().getName(),
 //        result.getTestName() != null ? result.getTestName() : result.getName(), result);
   }
 
@@ -321,5 +322,12 @@ public class TestResultMessage implements IStringMessage {
     }
 
     return result.toArray(new String[result.size()]);
+  }
+
+  @Override
+  public String toString() {
+    return "[TestResultMessage suite:" + m_suiteName + " test:" + m_testName
+        + " method:" + m_testMethodName
+        + "]";
   }
 }
