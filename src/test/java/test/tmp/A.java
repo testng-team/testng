@@ -1,6 +1,7 @@
 package test.tmp;
 
 import org.testng.Assert;
+import org.testng.ITestContext;
 import org.testng.SkipException;
 import org.testng.annotations.Test;
 
@@ -50,20 +51,21 @@ public class A {
   }
 
   @Test
-  public void a1() {
+  public void a1(ITestContext context) {
 //    throw new RuntimeException();
+    System.out.println("Context:" + context.getSuite().getXmlSuite().getFileName());
     Assert.assertTrue(true);
 //    System.out.println("test1");
   }
 
   @Test(dependsOnMethods = "a1")
   public void a2() {
-    System.out.println("test2");
+//    System.out.println("test2");
 //    throw new RuntimeException("We have a problem");
 //    System.out.println("a2 " + Thread.currentThread().getId());
   }
 
-  @Test(enabled = false)
+  @Test(enabled = false, description = "This test is disabled")
   public void a3() {
     throw new SkipException("Skipped");
   }
