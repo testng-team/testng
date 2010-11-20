@@ -146,7 +146,8 @@ public class MessageHelper {
                                  parseParameters(parametersFragment),
                                  Long.parseLong(startTimestampFragment),
                                  Long.parseLong(stopTimestampFragment),
-                                 replaceAsciiCharactersWithUnicode(replaceNewLineReplacer(stackTraceFragment))
+                                 replaceAsciiCharactersWithUnicode(replaceNewLineReplacer(stackTraceFragment)),
+                                 0, 0 /* invocation counts not supported by this protocol */
             );
   }
 

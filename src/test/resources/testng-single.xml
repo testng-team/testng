@@ -29,7 +29,7 @@
  -->
     <parameter name="string" value="s"/>
     <classes>
-      <class name="test.EclipseTest">
+      <class name="test.tmp.A">
 <!-- 
         <methods>
           <include name="a1" />
