@@ -347,6 +347,9 @@ public class XmlTest implements Serializable, Cloneable {
     if (m_preserveOrder != null) {
       p.setProperty("preserve-order", m_preserveOrder.toString());
     }
+    if (m_threadCount != -1) {
+      p.setProperty("thread-count", Integer.toString(m_threadCount));
+    }
 
     xsb.push("test", p);
 
@@ -420,7 +423,7 @@ public class XmlTest implements Serializable, Cloneable {
       xsb.push("packages");
 
       for (XmlPackage pack: m_xmlPackages) {
-        xsb.getStringBuffer().append(pack.toXml("  "));
+        xsb.getStringBuffer().append(pack.toXml("      "));
       }
 
       xsb.pop("packages");
