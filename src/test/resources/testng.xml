@@ -109,6 +109,7 @@
       <class name="test.MapTest" />
       <class name="test.remote.RemoteTest" />
       <class name="test.EclipseTest" />
+      <class name="test.ReporterApiTest" />
     </classes>
   </test>
 
