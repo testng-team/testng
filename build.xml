@@ -77,7 +77,7 @@
   <!-- ==================================================================== -->
 
   <path id="compile2.cp">
-    <fileset dir="${lib.dir}" includes="*.jar" />
+    <fileset dir="${lib.dir}" includes="${all.jar.files}" />
   </path>
 
   <target name="compile"
@@ -135,26 +135,39 @@
 
   <target name="dist" depends="build,maven-plugin,all-jar-flavors,dist-all-zip,dist-maven-bundle,eclipse" />
 
-  <target name="all-jar-flavors" depends="dist-bsh-guice,dist-nobsh-guice,dist-bsh-noguice,dist-nobsh-noguice" />
+  <target name="all-jar-flavors" depends="dist-bsh-guice3,dist-bsh-guice,dist-nobsh-guice,dist-bsh-noguice,dist-nobsh-noguice" />
 
   <target name="dist-bsh-guice">
     <antcall target="create-jar">
       <param name="jar.file" value="${testng.jar}" />
     </antcall>
     <jar jarfile="${testng.jar}" update="true">
-      <zipfileset src="${lib.dir}/${guice.jar}" />
+      <zipfileset src="${lib.dir}/${guice2.jar}" />
       <zipfileset src="${lib.dir}/${beanshell.jar}" />
       <zipfileset src="${lib.dir}/${jcommander.jar}" />
       <zipfileset src="${lib.dir}/${junit.jar}" />
     </jar>
   </target>
-  
+
+  <target name="dist-bsh-guice3">
+    <antcall target="create-jar">
+      <param name="jar.file" value="${other.jars.dir}/${testng-guice3.jar}" />
+    </antcall>
+    <jar jarfile="${testng.jar}" update="true">
+      <zipfileset src="${lib.dir}/${guice3.jar}" />
+      <zipfileset src="${lib.dir}/${inject.jar}" />
+      <zipfileset src="${lib.dir}/${beanshell.jar}" />
+      <zipfileset src="${lib.dir}/${jcommander.jar}" />
+      <zipfileset src="${lib.dir}/${junit.jar}" />
+    </jar>
+  </target>
+
   <target name="dist-nobsh-guice">
     <antcall target="create-jar">
       <param name="jar.file" value="${other.jars.dir}/${testng.nobsh.guice.jar}" />
     </antcall>
     <jar jarfile="${other.jars.dir}/${testng.nobsh.guice.jar}" update="true">
-      <zipfileset src="${lib.dir}/${guice.jar}" />
+      <zipfileset src="${lib.dir}/${guice2.jar}" />
       <zipfileset src="${lib.dir}/${jcommander.jar}" />
       <zipfileset src="${lib.dir}/${junit.jar}" />
     </jar>
@@ -209,11 +222,6 @@
       <zipfileset dir="${src.resources.dir}"
                prefix="${zip.dir}/resources" 
             includes="**/*.css"/>
-<!--
-      <zipfileset dir="${lib.dir}"
-                  prefix="${zip.dir}/${lib.dir}"
-                  includes="${beanshell.jar},${concurrent.jar},${guice.jar},${jcommander.jar}" />
--->
     </zip>
   </target>
   
