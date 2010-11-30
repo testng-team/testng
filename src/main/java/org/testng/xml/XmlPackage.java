@@ -98,20 +98,24 @@ public class XmlPackage implements Serializable {
     Properties p = new Properties();
     p.setProperty("name", getName());
 
-    xsb.push("package", p);
+    if (getInclude().isEmpty() && getExclude().isEmpty()) {
+      xsb.addEmptyElement("package", p);
+    } else {
+      xsb.push("package", p);
 
-    for (String m : getInclude()) {
-      Properties includeProp= new Properties();
-      includeProp.setProperty("name", m);
-      xsb.addEmptyElement("include", includeProp);
-    }
-    for (String m: getExclude()) {
-      Properties excludeProp= new Properties();
-      excludeProp.setProperty("name", m);
-      xsb.addEmptyElement("exclude", excludeProp);
-    }
+      for (String m : getInclude()) {
+        Properties includeProp= new Properties();
+        includeProp.setProperty("name", m);
+        xsb.addEmptyElement("include", includeProp);
+      }
+      for (String m: getExclude()) {
+        Properties excludeProp= new Properties();
+        excludeProp.setProperty("name", m);
+        xsb.addEmptyElement("exclude", excludeProp);
+      }
 
-    xsb.pop("package");
+      xsb.pop("package");
+    }
 
     return xsb.toXML();
   }
