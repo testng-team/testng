@@ -52,6 +52,8 @@ public abstract class LaunchSuite {
    */
   public abstract File save(File directory);
 
+  public abstract XMLStringBuffer getSuiteBuffer();
+
   /**
    * <code>ExistingSuite</code> is a non-temporary LaunchSuite based on an existing
    * file.
@@ -72,6 +74,11 @@ public abstract class LaunchSuite {
       super(false);
 
       m_suitePath = path;
+    }
+
+    @Override
+    public XMLStringBuffer getSuiteBuffer() {
+      throw new UnsupportedOperationException("Not implemented yet");
     }
 
     /**
@@ -162,7 +169,7 @@ public abstract class LaunchSuite {
      *
      * @return
      */
-    private XMLStringBuffer getSuiteBuffer() {
+    public XMLStringBuffer getSuiteBuffer() {
       if (null == m_suiteBuffer) {
         m_suiteBuffer = createContentBuffer();
       }
