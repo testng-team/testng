@@ -334,7 +334,9 @@ public class XmlTest implements Serializable, Cloneable {
     if (m_isJUnit != null) {
       XmlUtils.setProperty(p, "junit", m_isJUnit.toString(), XmlSuite.DEFAULT_JUNIT.toString());
     }
-    XmlUtils.setProperty(p, "parallel", m_parallel, XmlSuite.DEFAULT_PARALLEL);
+    if (m_parallel != null) {
+      XmlUtils.setProperty(p, "parallel", m_parallel, XmlSuite.DEFAULT_PARALLEL);
+    }
     if (m_verbose != null) {
       XmlUtils.setProperty(p, "verbose", m_verbose.toString(), XmlSuite.DEFAULT_VERBOSE.toString());
     }
@@ -420,7 +422,7 @@ public class XmlTest implements Serializable, Cloneable {
       xsb.push("packages");
 
       for (XmlPackage pack: m_xmlPackages) {
-        xsb.getStringBuffer().append(pack.toXml("        "));
+        xsb.getStringBuffer().append(pack.toXml("      "));
       }
 
       xsb.pop("packages");
