@@ -331,15 +331,12 @@ public class XmlTest implements Serializable, Cloneable {
     XMLStringBuffer xsb = new XMLStringBuffer(indent);
     Properties p = new Properties();
     p.setProperty("name", getName());
-    p.setProperty("junit", m_isJUnit != null ? m_isJUnit.toString() : "false");
-    if (null != m_parallel && !"".equals(m_parallel)) {
-      p.setProperty("parallel", m_parallel);
+    if (m_isJUnit != null) {
+      XmlUtils.setProperty(p, "junit", m_isJUnit.toString(), XmlSuite.DEFAULT_JUNIT.toString());
     }
-    if (null != m_verbose) {
-      p.setProperty("verbose", m_verbose.toString());
-    }
-    if (null != m_annotations) {
-      p.setProperty("annotations", m_annotations.toString());
+    XmlUtils.setProperty(p, "parallel", m_parallel, XmlSuite.DEFAULT_PARALLEL);
+    if (m_verbose != null) {
+      XmlUtils.setProperty(p, "verbose", m_verbose.toString(), XmlSuite.DEFAULT_VERBOSE.toString());
     }
     if (null != m_timeOut) {
       p.setProperty("time-out", m_timeOut.toString());
@@ -423,7 +420,7 @@ public class XmlTest implements Serializable, Cloneable {
       xsb.push("packages");
 
       for (XmlPackage pack: m_xmlPackages) {
-        xsb.getStringBuffer().append(pack.toXml("      "));
+        xsb.getStringBuffer().append(pack.toXml("        "));
       }
 
       xsb.pop("packages");

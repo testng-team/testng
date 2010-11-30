@@ -61,13 +61,14 @@ public class XmlSuite implements Serializable, Cloneable {
   private String m_parallel = null;
 
   /** Whether to SKIP or CONTINUE to re-attempt failed configuration methods. */
-  private String m_configFailurePolicy = SKIP;
+  public static String DEFAULT_CONFIG_FAILURE_POLICY = SKIP;
+  private String m_configFailurePolicy = DEFAULT_CONFIG_FAILURE_POLICY;
 
   /** JUnit compatibility flag. */
   public static Boolean DEFAULT_JUNIT = Boolean.FALSE;
   private Boolean m_isJUnit = DEFAULT_JUNIT;
 
-  public static boolean DEFAULT_SKIP_FAILED_INVOCATION_COUNTS = Boolean.FALSE;
+  public static Boolean DEFAULT_SKIP_FAILED_INVOCATION_COUNTS = Boolean.FALSE;
   private Boolean m_skipFailedInvocationCounts = DEFAULT_SKIP_FAILED_INVOCATION_COUNTS;
 
   /** The thread count. */
@@ -75,7 +76,7 @@ public class XmlSuite implements Serializable, Cloneable {
   private int m_threadCount = DEFAULT_THREAD_COUNT;
 
   /** Thread count for the data provider pool */
-  public static final int DEFAULT_DATA_PROVIDER_THREAD_COUNT = 10;
+  public static final Integer DEFAULT_DATA_PROVIDER_THREAD_COUNT = 10;
   private int m_dataProviderThreadCount = DEFAULT_DATA_PROVIDER_THREAD_COUNT;
 
   /** The suite annotation type. */
@@ -467,22 +468,23 @@ public class XmlSuite implements Serializable, Cloneable {
     Properties p = new Properties();
     p.setProperty("name", getName());
     if (getVerbose() != null) {
-      p.setProperty("verbose", getVerbose().toString());
+      XmlUtils.setProperty(p, "verbose", getVerbose().toString(), DEFAULT_VERBOSE.toString());
     }
     final String parallel= getParallel();
     if(null != parallel && !"".equals(parallel)) {
       p.setProperty("parallel", parallel);
     }
-    p.setProperty("configfailurepolicy", getConfigFailurePolicy());
-    p.setProperty("thread-count", String.valueOf(getThreadCount()));
-    p.setProperty("data-provider-thread-count", String.valueOf(getDataProviderThreadCount()));
-    p.setProperty("annotations", getAnnotations());
+    XmlUtils.setProperty(p, "configfailurepolicy", getConfigFailurePolicy(),
+        DEFAULT_CONFIG_FAILURE_POLICY);
+    XmlUtils.setProperty(p, "thread-count", String.valueOf(getThreadCount()),
+        DEFAULT_THREAD_COUNT.toString());
+    XmlUtils.setProperty(p, "data-provider-thread-count", String.valueOf(getDataProviderThreadCount()),
+        DEFAULT_DATA_PROVIDER_THREAD_COUNT.toString());
     if (! DEFAULT_JUNIT.equals(m_isJUnit)) {
       p.setProperty("junit", m_isJUnit != null ? m_isJUnit.toString() : "false"); // TESTNG-141
     }
-    p.setProperty("skipfailedinvocationcounts",
-        m_skipFailedInvocationCounts != null
-          ? m_skipFailedInvocationCounts.toString() : "false");
+    XmlUtils.setProperty(p, "skipfailedinvocationcounts", m_skipFailedInvocationCounts.toString(),
+        DEFAULT_SKIP_FAILED_INVOCATION_COUNTS.toString());
     if(null != m_objectFactory) {
       p.setProperty("object-factory", m_objectFactory.getClass().getName());
     }
