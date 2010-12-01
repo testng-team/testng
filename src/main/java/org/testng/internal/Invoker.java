@@ -635,7 +635,6 @@ public class Invoker implements IInvoker {
       testResult.setParameters(parameterValues);
       testResult.setHost(m_testContext.getHost());
       testResult.setStatus(ITestResult.STARTED);
-      runTestListeners(testResult);
 
       invokedMethod= new InvokedMethod(instance,
           tm,
@@ -643,6 +642,8 @@ public class Invoker implements IInvoker {
           true /* isTest */,
           false /* isConfiguration */,
           System.currentTimeMillis());
+
+      runTestListeners(testResult);
 
       runInvokedMethodListeners(true /* before */, invokedMethod, testResult);
 
