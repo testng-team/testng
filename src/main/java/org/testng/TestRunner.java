@@ -708,7 +708,12 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
       // sequential
       computeTestLists(sequentialList, parallelList, sequentialMapList);
 
-      log(3, "Found " + (sequentialList.size() + parallelList.size()) + " applicable methods");
+      int seqCount = 0;
+      for (List<ITestNGMethod> l : sequentialList) {
+        seqCount += l.size();
+      }
+      log(3, "Found " + seqCount + " sequential methods and " + parallelList.size()
+          + " parallel methods");
 
       //
       // If the user specified preserve-order = true, we can't change the ordering
@@ -796,7 +801,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
     // Put each method in their class bucket
     for (List<ITestNGMethod> ll : lists) {
       for (ITestNGMethod m : ll) {
-        List<ITestNGMethod> l = classes.get(m.getMethod().getDeclaringClass().getName());
+        String declaredClass = m.getTestClass().getName();
+        List<ITestNGMethod> l = classes.get(declaredClass);
         l.add(m);
       }
     }
