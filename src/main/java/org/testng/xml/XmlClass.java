@@ -29,6 +29,10 @@ public class XmlClass implements Serializable, Cloneable {
     init(name, null, Boolean.TRUE, 0);
   }
 
+  public XmlClass(String name, boolean resolve) {
+    init(name, null, Boolean.TRUE, 0, resolve);
+  }
+
   public XmlClass(Class className) {
     init(className.getName(), null, Boolean.TRUE, 0);
   }
@@ -42,12 +46,17 @@ public class XmlClass implements Serializable, Cloneable {
   }
 
   private void init(String name, Class className, Boolean declaredClass, int index) {
+    init(name, className, declaredClass, index, true /* resolve class */);
+  }
+
+  private void init(String name, Class className, Boolean declaredClass, int index,
+      boolean resolveClass) {
     m_name = name;
     m_class = className;
     m_declaredClass = declaredClass;
     m_index = index;
 
-    if (null == m_class) {
+    if (null == m_class && resolveClass) {
       m_class = ClassHelper.forName(m_name);
 
       if (null == m_class) {
