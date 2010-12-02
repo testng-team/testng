@@ -7,6 +7,7 @@ Fixed: XmlTest#toXml wasn't displaying the thread-count attribute
 Fixed: TESTNG-438: Regression in 5.14.1: JUnit Test Execution no longer working
 Fixed: TESTNG-436: Deep Map comparison for assertEquals() (Nikolay Metchev)
 Fixed: Skipped tests were not always counted.
+Fixed: test listeners that throw were not reporting correctly (ansgarkonermann)
 Fixed: <suite junit="true"> wasn't working.
 Fixed: EmailableReporter now sorts methods chronologically
 Fixed: TESTNG-411: Throw exception on mismatch of parameter values (via DP and/or Inject) and test parameters

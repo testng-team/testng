@@ -635,7 +635,6 @@ public class Invoker implements IInvoker {
       testResult.setParameters(parameterValues);
       testResult.setHost(m_testContext.getHost());
       testResult.setStatus(ITestResult.STARTED);
-      runTestListeners(testResult);
 
       invokedMethod= new InvokedMethod(instance,
           tm,
@@ -643,6 +642,12 @@ public class Invoker implements IInvoker {
           true /* isTest */,
           false /* isConfiguration */,
           System.currentTimeMillis());
+
+      // Fix from ansgarkonermann
+      // invokedMethod is used in the finally, which can be invoked if
+      // any of the test listeners throws an exception, therefore,
+      // invokedMethod must have a value before we get here
+      runTestListeners(testResult);
 
       runInvokedMethodListeners(true /* before */, invokedMethod, testResult);
 
