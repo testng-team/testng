@@ -129,7 +129,7 @@ public class TestNG {
   private String[] m_includedGroups;
   private String[] m_excludedGroups;
 
-  private Boolean m_isJUnit = Boolean.FALSE;
+  private Boolean m_isJUnit = XmlSuite.DEFAULT_JUNIT;
   protected boolean m_useDefaultListeners = true;
 
   private ITestRunnerFactory m_testRunnerFactory;
@@ -990,7 +990,7 @@ public class TestNG {
   private void createSuiteRunners(Map<XmlSuite, ISuite> suiteRunnerMap /* OUT */, XmlSuite xmlSuite) {
     xmlSuite.setDefaultAnnotations(m_defaultAnnotations.toString());
 
-    if (null != m_isJUnit) {
+    if (null != m_isJUnit && ! m_isJUnit.equals(XmlSuite.DEFAULT_JUNIT)) {
       xmlSuite.setJUnit(m_isJUnit);
     }
 
