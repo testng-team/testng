@@ -1,12 +1,21 @@
 package org.testng.remote.strprotocol;
 
 import java.io.IOException;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 
 public interface IMessageSender {
 
   void connect() throws IOException;
 
-  void initReceiver();
+  /**
+   * Initialize the receiver.
+   *
+   * @throws SocketException This exception will be thrown if a connection
+   * to the remote TestNG instance could not be established after ten
+   * seconds.
+   */
+  void initReceiver() throws SocketTimeoutException;
 
   void sendMessage(IMessage message) throws Exception;
 
