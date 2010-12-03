@@ -3,9 +3,8 @@ package org.testng.internal;
 import org.testng.IConfigurable;
 import org.testng.IHookable;
 import org.testng.IObjectFactory;
+import org.testng.guice.Inject;
 import org.testng.internal.annotations.IAnnotationFinder;
-
-import com.google.inject.Inject;
 
 public class Configuration implements IConfiguration {
 

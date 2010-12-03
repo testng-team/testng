@@ -5,12 +5,11 @@ import org.testng.annotations.Configuration;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Test;
+import org.testng.guice.Guice;
+import org.testng.guice.Injector;
+import org.testng.guice.Module;
 import org.testng.internal.DefaultGuiceModule;
 import org.testng.internal.annotations.IAnnotationFinder;
-
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Module;
 
 import java.lang.reflect.Method;
 

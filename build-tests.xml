@@ -13,7 +13,6 @@
   <!-- ==================================================================== -->
   <path id="compile.cp">
     <pathelement location="${testng.jar}" />
-    <fileset dir="${lib.dir}" includes="${all.jar.files}" />
   </path>
 
   <target name="env:info">
