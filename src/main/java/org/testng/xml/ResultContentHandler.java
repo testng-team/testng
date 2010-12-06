@@ -92,7 +92,6 @@ public class ResultContentHandler extends DefaultHandler {
       String parameter = string;
       if (parameter.trim().length() != 0) {
         m_params.add(parameter);
-        System.out.println("PARAMETER:" + parameter);
       }
     }
   }
