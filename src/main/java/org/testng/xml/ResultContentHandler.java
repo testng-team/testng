@@ -2,15 +2,17 @@ package org.testng.xml;
 
 import static org.testng.reporters.XMLReporterConfig.ATTR_DESC;
 import static org.testng.reporters.XMLReporterConfig.ATTR_DURATION_MS;
-import static org.testng.reporters.XMLReporterConfig.ATTR_METHOD_SIG;
 import static org.testng.reporters.XMLReporterConfig.ATTR_NAME;
 import static org.testng.reporters.XMLReporterConfig.ATTR_STATUS;
 import static org.testng.reporters.XMLReporterConfig.TAG_CLASS;
+import static org.testng.reporters.XMLReporterConfig.TAG_PARAMS;
+import static org.testng.reporters.XMLReporterConfig.TAG_PARAM_VALUE;
 import static org.testng.reporters.XMLReporterConfig.TAG_SUITE;
 import static org.testng.reporters.XMLReporterConfig.TAG_TEST;
 import static org.testng.reporters.XMLReporterConfig.TAG_TEST_METHOD;
 
 import org.testng.ITestResult;
+import org.testng.collections.Lists;
 import org.testng.remote.strprotocol.GenericMessage;
 import org.testng.remote.strprotocol.IRemoteSuiteListener;
 import org.testng.remote.strprotocol.IRemoteTestListener;
@@ -21,6 +23,8 @@ import org.testng.remote.strprotocol.TestResultMessage;
 import org.testng.reporters.XMLReporterConfig;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
+
+import java.util.List;
 
 public class ResultContentHandler extends DefaultHandler {
   private int m_suiteMethodCount = 0;
@@ -36,6 +40,7 @@ public class ResultContentHandler extends DefaultHandler {
   private TestResultMessage m_currentTestResult;
   private IRemoteSuiteListener m_suiteListener;
   private IRemoteTestListener m_testListener;
+  private List<String> m_params = null;
 
   public ResultContentHandler(IRemoteSuiteListener suiteListener,
       IRemoteTestListener testListener) {
@@ -75,11 +80,21 @@ public class ResultContentHandler extends DefaultHandler {
       if (status == ITestResult.SUCCESS) m_passed++;
       else if (status == ITestResult.FAILURE) m_failed++;
       else if (status == ITestResult.SKIP) m_skipped++;
+    } else if (TAG_PARAMS.equals(qName)) {
+      m_params = Lists.newArrayList();
     }
   }
 
-  private String[] parseParameters(String value) {
-    return new String[] { "n:42" };
+  @Override
+  public void characters(char[] ch, int start, int length) {
+    if (m_params != null) {
+      String string = new String(ch, start, length);
+      String parameter = string;
+      if (parameter.trim().length() != 0) {
+        m_params.add(parameter);
+        System.out.println("PARAMETER:" + parameter);
+      }
+    }
   }
 
   @Override
@@ -109,7 +124,17 @@ public class ResultContentHandler extends DefaultHandler {
       default:
        p("Ignoring test status:" + m_currentTestResult.getResult());
       }
-      
+    }
+    else if (TAG_PARAMS.equals(qName)) {
+      String[] params = new String[m_params.size()];
+      for (int i = 0; i < m_params.size(); i++) {
+        // The parameters are encoded  as type:value. Since we only care about the
+        // value (and we don't receive the type anyway), use a dummy character in
+        // its place
+        params[i] = "@:" + m_params.get(i);
+      }
+      m_currentTestResult.setParameters(params);
+      m_params = null;
     }
   }
 

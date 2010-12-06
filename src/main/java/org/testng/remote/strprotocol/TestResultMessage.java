@@ -358,4 +358,9 @@ public class TestResultMessage implements IStringMessage {
         + " method:" + m_testMethodName
         + "]";
   }
+
+  public void setParameters(String[] params) {
+    m_parameters = extractParams(params);
+    m_paramTypes = extractParamTypes(params);
+  }
 }

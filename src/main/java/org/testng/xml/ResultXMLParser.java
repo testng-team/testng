@@ -1,11 +1,16 @@
 package org.testng.xml;
 
 import org.testng.TestNGException;
+import org.testng.remote.strprotocol.GenericMessage;
 import org.testng.remote.strprotocol.IRemoteSuiteListener;
 import org.testng.remote.strprotocol.IRemoteTestListener;
-import org.testng.reporters.XMLReporterListener;
+import org.testng.remote.strprotocol.SuiteMessage;
+import org.testng.remote.strprotocol.TestMessage;
+import org.testng.remote.strprotocol.TestResultMessage;
 import org.xml.sax.SAXException;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,8 +46,55 @@ public class ResultXMLParser extends XMLParser<Object> {
   }
 
   public static void main(String[] args) throws FileNotFoundException {
-//    ResultXmlParser parser = new ResultXmlParser();
-//    String fileName = "/Users/cbeust/java/testng/test-output/testng-results.xml";
-//    parser.parse(fileName, new FileInputStream(new File(fileName)));
+    IRemoteSuiteListener l1 = new IRemoteSuiteListener() {
+
+      @Override
+      public void onInitialization(GenericMessage genericMessage) {
+      }
+
+      @Override
+      public void onStart(SuiteMessage suiteMessage) {
+      }
+
+      @Override
+      public void onFinish(SuiteMessage suiteMessage) {
+      }
+
+    };
+
+    IRemoteTestListener l2 = new IRemoteTestListener() {
+
+      @Override
+      public void onStart(TestMessage tm) {
+      }
+
+      @Override
+      public void onFinish(TestMessage tm) {
+      }
+
+      @Override
+      public void onTestStart(TestResultMessage trm) {
+      }
+
+      @Override
+      public void onTestSuccess(TestResultMessage trm) {
+      }
+
+      @Override
+      public void onTestFailure(TestResultMessage trm) {
+      }
+
+      @Override
+      public void onTestSkipped(TestResultMessage trm) {
+      }
+
+      @Override
+      public void onTestFailedButWithinSuccessPercentage(TestResultMessage trm) {
+      }
+
+    };
+    ResultXMLParser parser = new ResultXMLParser(l1, l2);
+    String fileName = "/Users/cbeust/java/testng/test-output/testng-results.xml";
+    parser.parse(fileName, new FileInputStream(new File(fileName)));
   }
 }
