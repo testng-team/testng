@@ -46,19 +46,21 @@ public class XMLReporterConfig {
   public static final String TEST_SKIPPED = "SKIP";
 
   /**
-   * Indicates that no file fragmentation should be performed. This value indicates the XML generator to write all the
-   * results in one big file. Not recommended for large test suites.
+   * Indicates that no file fragmentation should be performed. This value
+   * indicates the XML generator to write all the results in one big file. Not
+   * recommended for large test suites.
    */
   public static final int FF_LEVEL_NONE = 1;
   /**
-   * Will cause the XML generator to create separate files for each of the suites. A separate directory will be
-   * generated for each suite having the name of the suite and containing a <code>suite.xml</code> file that will be
+   * Will cause the XML generator to create separate files for each of the
+   * suites. A separate directory will be generated for each suite having the
+   * name of the suite and containing a <code>suite.xml</code> file that will be
    * referenced in the main file with an <code>url</code> attribute
    */
   public static final int FF_LEVEL_SUITE = 2;
   /**
-   * It behaves like <code>FF_LEVEL_SUITE</code>, except that it will also create a file for each
-   * <code>ISuiteResult</code>
+   * It behaves like <code>FF_LEVEL_SUITE</code>, except that it will also
+   * create a file for each <code>ISuiteResult</code>
    */
   public static final int FF_LEVEL_SUITE_RESULT = 3;
 
@@ -79,23 +81,25 @@ public class XMLReporterConfig {
    */
   public static final int STACKTRACE_BOTH = 3;
 
-  //note: We're hardcoding the 'Z' because Java doesn't support all the intricacies of ISO-8601.
+  // note: We're hardcoding the 'Z' because Java doesn't support all the
+  // intricacies of ISO-8601.
   static final String FMT_DEFAULT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
   /**
-   * Indicates the way that the file fragmentation should be performed. Set this property to one of the FF_LEVEL_*
-   * values for the desired output structure
+   * Indicates the way that the file fragmentation should be performed. Set this
+   * property to one of the FF_LEVEL_* values for the desired output structure
    */
   private int fileFragmentationLevel = FF_LEVEL_NONE;
 
   /**
-   * Stack trace output method for the failed tests using one of the STACKTRACE_* constants.
+   * Stack trace output method for the failed tests using one of the
+   * STACKTRACE_* constants.
    */
   private int stackTraceOutputMethod = STACKTRACE_FULL;
 
   /**
-   * The root output directory where the XMLs will be written. This will default for now to the default TestNG output
-   * directory
+   * The root output directory where the XMLs will be written. This will default
+   * for now to the default TestNG output directory
    */
   private String outputDirectory;
 
@@ -108,21 +112,21 @@ public class XMLReporterConfig {
   private boolean generateGroupsAttribute = false;
 
   /**
-   * When <code>true</code> it will generate the &lt;class&lt; element with a <code>name</code> and a
-   * <code>package</code> attribute. Otherwise, the fully qualified name will be used for the <code>name</code>
-   * attribute.
+   * When <code>true</code> it will generate the &lt;class&lt; element with a
+   * <code>name</code> and a <code>package</code> attribute. Otherwise, the
+   * fully qualified name will be used for the <code>name</code> attribute.
    */
   private boolean splitClassAndPackageNames = false;
 
   /**
-   * Indicates whether the <code>depends-on-methods</code> attribute should be generated for a <code>test-method</code>
-   * element
+   * Indicates whether the <code>depends-on-methods</code> attribute should be
+   * generated for a <code>test-method</code> element
    */
   private boolean generateDependsOnMethods = true;
 
   /**
-   * Indicates whether the <code>depends-on-groups</code> attribute should be generated for a <code>test-method</code>
-   * element
+   * Indicates whether the <code>depends-on-groups</code> attribute should be
+   * generated for a <code>test-method</code> element
    */
   private boolean generateDependsOnGroups = true;
 

@@ -21,7 +21,7 @@ import java.util.Set;
 
 /**
  * The main entry for the XML generation operation
- *
+ * 
  * @author Cosmin Marginean, Mar 16, 2007
  */
 public class XMLReporter implements IReporter {
@@ -30,7 +30,8 @@ public class XMLReporter implements IReporter {
   private XMLStringBuffer rootBuffer;
 
   @Override
-  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
+      String outputDirectory) {
     if (Utils.isStringEmpty(config.getOutputDirectory())) {
       config.setOutputDirectory(outputDirectory);
     }
@@ -46,7 +47,7 @@ public class XMLReporter implements IReporter {
   }
 
   private void writeReporterOutput(XMLStringBuffer xmlBuffer) {
-    //TODO: Cosmin - maybe a <line> element isn't indicated for each line
+    // TODO: Cosmin - maybe a <line> element isn't indicated for each line
     xmlBuffer.push(XMLReporterConfig.TAG_REPORTER_OUTPUT);
     List<String> output = Reporter.getOutput();
     for (String line : output) {
@@ -61,13 +62,13 @@ public class XMLReporter implements IReporter {
 
   private void writeSuite(XmlSuite xmlSuite, ISuite suite) {
     switch (config.getFileFragmentationLevel()) {
-      case XMLReporterConfig.FF_LEVEL_NONE:
-        writeSuiteToBuffer(rootBuffer, suite);
-        break;
-      case XMLReporterConfig.FF_LEVEL_SUITE:
-      case XMLReporterConfig.FF_LEVEL_SUITE_RESULT:
-        File suiteFile = referenceSuite(rootBuffer, suite);
-        writeSuiteToFile(suiteFile, suite);
+    case XMLReporterConfig.FF_LEVEL_NONE:
+      writeSuiteToBuffer(rootBuffer, suite);
+      break;
+    case XMLReporterConfig.FF_LEVEL_SUITE:
+    case XMLReporterConfig.FF_LEVEL_SUITE_RESULT:
+      File suiteFile = referenceSuite(rootBuffer, suite);
+      writeSuiteToFile(suiteFile, suite);
     }
   }
 
@@ -174,7 +175,7 @@ public class XMLReporter implements IReporter {
     return result;
   }
 
-  //TODO: This is not the smartest way to implement the config
+  // TODO: This is not the smartest way to implement the config
   public int getFileFragmentationLevel() {
     return config.getFileFragmentationLevel();
   }
