@@ -1,5 +1,13 @@
 package org.testng.reporters;
 
+import org.testng.ITestResult;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author Hani Suleiman Date: Mar 27, 2007 Time: 9:16:28 AM
  */
@@ -45,6 +53,16 @@ public class XMLReporterConfig {
   public static final String TEST_FAILED = "FAIL";
   public static final String TEST_SKIPPED = "SKIP";
 
+  private static Map<String, Integer> STATUSES = new HashMap<String, Integer>() {{
+    put(TEST_PASSED, ITestResult.SUCCESS);
+    put(TEST_FAILED, ITestResult.FAILURE);
+    put(TEST_SKIPPED, ITestResult.SKIP);
+  }};
+
+  public static Integer getStatus(String status) {
+    return STATUSES.get(status);
+  }
+
   /**
    * Indicates that no file fragmentation should be performed. This value
    * indicates the XML generator to write all the results in one big file. Not
@@ -84,6 +102,16 @@ public class XMLReporterConfig {
   // note: We're hardcoding the 'Z' because Java doesn't support all the
   // intricacies of ISO-8601.
   static final String FMT_DEFAULT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+
+  public static long convertDate(String date) {
+    SimpleDateFormat format = new SimpleDateFormat(getTimestampFormat());
+    try {
+      long result = format.parse(date).getTime();
+      return result;
+    } catch (ParseException e) {
+      return -1;
+    }
+  }
 
   /**
    * Indicates the way that the file fragmentation should be performed. Set this
@@ -133,7 +161,7 @@ public class XMLReporterConfig {
   /**
    * The output format for timestamps
    */
-  private String timestampFormat = FMT_DEFAULT;
+  private static String timestampFormat = FMT_DEFAULT;
 
   public int getFileFragmentationLevel() {
     return fileFragmentationLevel;
@@ -175,7 +203,7 @@ public class XMLReporterConfig {
     this.splitClassAndPackageNames = splitClassAndPackageNames;
   }
 
-  public String getTimestampFormat() {
+  public static String getTimestampFormat() {
     return timestampFormat;
   }
 

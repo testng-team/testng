@@ -18,7 +18,7 @@ public class TestMessage implements IStringMessage {
   protected final int m_skippedTestCount;
   protected final int m_successPercentageFailedTestCount;
 
-  TestMessage(final boolean isTestStart,
+  public TestMessage(final boolean isTestStart,
               final String suiteName,
               final String testName,
               final int methodCount,

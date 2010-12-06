@@ -38,7 +38,7 @@ public class TestResultMessage implements IStringMessage {
    * This constructor is used by the Eclipse client to initialize a result message based
    * on what was received over the network.
    */
-  TestResultMessage(final int resultType,
+  public TestResultMessage(final int resultType,
                     final String suiteName,
                     final String testName,
                     final String className,

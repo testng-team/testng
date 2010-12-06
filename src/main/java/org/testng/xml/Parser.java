@@ -40,7 +40,7 @@ public class Parser {
 
   private InputStream m_inputStream;
 
-  private IFileParser m_fileParser;
+  private IFileParser<XmlSuite> m_fileParser;
 
   /**
    * Constructs a <code>Parser</code> to use the inputStream as the source of

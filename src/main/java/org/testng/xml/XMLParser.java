@@ -3,18 +3,13 @@ package org.testng.xml;
 import org.testng.TestNGException;
 import org.testng.internal.ClassHelper;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-
-abstract public class XmlParser implements IFileParser {
+abstract public class XMLParser<T> implements IFileParser<T> {
 
   protected static SAXParser m_saxParser;
 

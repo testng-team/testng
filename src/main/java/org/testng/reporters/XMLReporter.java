@@ -158,7 +158,7 @@ public class XMLReporter implements IReporter {
    */
   public static void addDurationAttributes(XMLReporterConfig config, Properties attributes,
       Date minStartDate, Date maxEndDate) {
-    SimpleDateFormat format = new SimpleDateFormat(config.getTimestampFormat());
+    SimpleDateFormat format = new SimpleDateFormat(XMLReporterConfig.getTimestampFormat());
     String startTime = format.format(minStartDate);
     String endTime = format.format(maxEndDate);
     long duration = maxEndDate.getTime() - minStartDate.getTime();
