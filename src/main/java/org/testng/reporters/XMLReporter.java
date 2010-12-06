@@ -25,6 +25,7 @@ import java.util.Set;
  * @author Cosmin Marginean, Mar 16, 2007
  */
 public class XMLReporter implements IReporter {
+  public static final String FILE_NAME = "testng-results.xml";
 
   private final XMLReporterConfig config = new XMLReporterConfig();
   private XMLStringBuffer rootBuffer;
@@ -43,7 +44,7 @@ public class XMLReporter implements IReporter {
       writeSuite(suites.get(i).getXmlSuite(), suites.get(i));
     }
     rootBuffer.pop();
-    Utils.writeUtf8File(config.getOutputDirectory(), "testng-results.xml", rootBuffer.toXML());
+    Utils.writeUtf8File(config.getOutputDirectory(), FILE_NAME, rootBuffer.toXML());
   }
 
   private void writeReporterOutput(XMLStringBuffer xmlBuffer) {
@@ -77,12 +78,12 @@ public class XMLReporter implements IReporter {
     writeSuiteToBuffer(xmlBuffer, suite);
     File parentDir = suiteFile.getParentFile();
     if (parentDir.exists() || suiteFile.getParentFile().mkdirs()) {
-      Utils.writeFile(parentDir.getAbsolutePath(), "testng-results.xml", xmlBuffer.toXML());
+      Utils.writeFile(parentDir.getAbsolutePath(), FILE_NAME, xmlBuffer.toXML());
     }
   }
 
   private File referenceSuite(XMLStringBuffer xmlBuffer, ISuite suite) {
-    String relativePath = suite.getName() + File.separatorChar + "testng-results.xml";
+    String relativePath = suite.getName() + File.separatorChar + FILE_NAME;
     File suiteFile = new File(config.getOutputDirectory(), relativePath);
     Properties attrs = new Properties();
     attrs.setProperty(XMLReporterConfig.ATTR_URL, relativePath);

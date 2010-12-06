@@ -3,19 +3,20 @@ package org.testng.xml;
 import org.testng.TestNGException;
 import org.testng.internal.ClassHelper;
 import org.xml.sax.SAXException;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-public class XmlParser implements IFileParser {
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
-  private static SAXParser m_saxParser;
+abstract public class XmlParser implements IFileParser {
+
+  protected static SAXParser m_saxParser;
 
   static {
     SAXParserFactory spf = loadSAXParserFactory();
@@ -31,9 +32,6 @@ public class XmlParser implements IFileParser {
     } catch (SAXException e) {
       e.printStackTrace();
     }
-  }
-
-  public XmlParser() {
   }
 
   /**
@@ -121,22 +119,5 @@ public class XmlParser implements IFileParser {
 //
 //    System.out.println(l);
 //  }  @Override
-  @Override
-  public XmlSuite parse(String currentFile, InputStream inputStream) {
-
-    TestNGContentHandler ch = new TestNGContentHandler(currentFile);
-    try {
-      m_saxParser.parse(inputStream, ch);
-
-      return ch.getSuite();
-    }
-    catch (FileNotFoundException e) {
-      throw new TestNGException(e);
-    } catch (SAXException e) {
-      throw new TestNGException(e);
-    } catch (IOException e) {
-      throw new TestNGException(e);
-    }
-  }
 
 }
