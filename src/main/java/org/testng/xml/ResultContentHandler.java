@@ -1,10 +1,9 @@
 package org.testng.xml;
 
 import static org.testng.reporters.XMLReporterConfig.ATTR_DESC;
-import static org.testng.reporters.XMLReporterConfig.ATTR_FINISHED_AT;
+import static org.testng.reporters.XMLReporterConfig.ATTR_DURATION_MS;
 import static org.testng.reporters.XMLReporterConfig.ATTR_METHOD_SIG;
 import static org.testng.reporters.XMLReporterConfig.ATTR_NAME;
-import static org.testng.reporters.XMLReporterConfig.ATTR_STARTED_AT;
 import static org.testng.reporters.XMLReporterConfig.ATTR_STATUS;
 import static org.testng.reporters.XMLReporterConfig.TAG_CLASS;
 import static org.testng.reporters.XMLReporterConfig.TAG_SUITE;
@@ -66,10 +65,10 @@ public class ResultContentHandler extends DefaultHandler {
       Integer status = XMLReporterConfig.getStatus(attributes.getValue(ATTR_STATUS));
       m_currentTestResult = new TestResultMessage(status, m_currentSuite.getSuiteName(),
           m_currentTest.getTestName(), m_className, attributes.getValue(ATTR_NAME),
-          attributes.getValue(ATTR_DESC), parseParameters(attributes.getValue(ATTR_METHOD_SIG)),
-          XMLReporterConfig.convertDate(attributes.getValue(ATTR_STARTED_AT)),
-          XMLReporterConfig.convertDate(attributes.getValue(ATTR_FINISHED_AT)),
-          null /* stack trace, filled later */,
+          attributes.getValue(ATTR_DESC),
+          new String[0], /* no parameters, filled later */
+          0, Long.parseLong(attributes.getValue(ATTR_DURATION_MS)),
+          "" /* stack trace, filled later */,
           m_invocationCount, m_currentInvocationCount);
       m_suiteMethodCount++;
       m_testMethodCount++;
