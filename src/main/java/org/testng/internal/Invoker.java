@@ -636,10 +636,10 @@ public class Invoker implements IInvoker {
           false /* isConfiguration */,
           System.currentTimeMillis());
 
-       // Fix from ansgarkonermann
-       // invokedMethod is used in the finally, which can be invoked if
-       // any of the test listeners throws an exception, therefore,
-       // invokedMethod must have a value before we get here
+      // Fix from ansgarkonermann
+      // invokedMethod is used in the finally, which can be invoked if
+      // any of the test listeners throws an exception, therefore,
+      // invokedMethod must have a value before we get here
       runTestListeners(testResult);
 
       runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
