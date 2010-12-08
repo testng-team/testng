@@ -43,7 +43,7 @@ public class ResultContentHandler extends DefaultHandler {
   private List<String> m_params = null;
 
   public ResultContentHandler(IRemoteSuiteListener suiteListener,
-      IRemoteTestListener testListener) {
+      IRemoteTestListener testListener, boolean resolveClasses /* ignored */) {
     m_suiteListener = suiteListener;
     m_testListener = testListener;
   }

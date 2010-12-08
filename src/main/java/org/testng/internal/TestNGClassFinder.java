@@ -78,10 +78,11 @@ public class TestNGClassFinder extends BaseClassFinder {
             }
           }
         } catch (NoClassDefFoundError e) {
-          Utils.log("[TestNGClassFinder]", 1, "Unable to read methods on class " + cls.getName() + " - unable to resolve class reference " + e.getMessage());
+          Utils.log("[TestNGClassFinder]", 1, "Unable to read methods on class " + cls.getName()
+              + " - unable to resolve class reference " + e.getMessage());
 
           for (XmlClass xmlClass : xmlTest.getXmlClasses()) {
-            if (xmlClass.getDeclaredClass() == Boolean.TRUE && xmlClass.getName().equals(cls.getName())) {
+            if (xmlClass.loadClasses() && xmlClass.getName().equals(cls.getName())) {
               throw e;
             }
           }

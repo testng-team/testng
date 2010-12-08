@@ -28,8 +28,9 @@ public class ResultXMLParser extends XMLParser<Object> {
   }
 
   @Override
-  public Object parse(String currentFile, InputStream inputStream) {
-    ResultContentHandler handler = new ResultContentHandler(m_suiteListener, m_testListener);
+  public Object parse(String currentFile, InputStream inputStream, boolean loadClasses) {
+    ResultContentHandler handler = new ResultContentHandler(m_suiteListener, m_testListener,
+        loadClasses);
 
     try {
       m_saxParser.parse(inputStream, handler);
@@ -95,6 +96,6 @@ public class ResultXMLParser extends XMLParser<Object> {
     };
     ResultXMLParser parser = new ResultXMLParser(l1, l2);
     String fileName = "/Users/cbeust/java/testng/test-output/testng-results.xml";
-    parser.parse(fileName, new FileInputStream(new File(fileName)));
+    parser.parse(fileName, new FileInputStream(new File(fileName)), false /* don't load classes */);
   }
 }

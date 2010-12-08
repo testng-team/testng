@@ -42,6 +42,8 @@ public class Parser {
 
   private IFileParser<XmlSuite> m_fileParser;
 
+  private boolean m_loadClasses = true;
+
   /**
    * Constructs a <code>Parser</code> to use the inputStream as the source of
    * the xml test suite to parse.
@@ -70,6 +72,13 @@ public class Parser {
     m_fileName = fileName != null ? fileName : DEFAULT_FILENAME;
     m_inputStream = is;
     m_fileParser = fp != null ? fp : DEFAULT_FILE_PARSER;
+  }
+
+  /**
+   * If false, don't try to load the classes during the parsing.
+   */
+  public void setLoadClasses(boolean loadClasses) {
+    m_loadClasses = loadClasses;
   }
 
   /**
@@ -142,7 +151,7 @@ public class Parser {
             ? m_inputStream
             : new FileInputStream(currentFile);
 
-        XmlSuite result = m_fileParser.parse(currentFile, inputStream);
+        XmlSuite result = m_fileParser.parse(currentFile, inputStream, m_loadClasses);
         XmlSuite currentXmlSuite = result;
         processedSuites.add(currentFile);
         toBeRemoved.add(currentFile);

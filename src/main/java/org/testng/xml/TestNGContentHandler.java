@@ -54,9 +54,11 @@ public class TestNGContentHandler extends DefaultHandler {
   private List<String> m_listeners;
 
   private String m_fileName;
+  private boolean m_loadClasses;
 
-  public TestNGContentHandler(String fileName) {
+  public TestNGContentHandler(String fileName, boolean loadClasses) {
     m_fileName = fileName;
+    m_loadClasses = loadClasses;
   }
 
   static private void ppp(String s) {
@@ -70,7 +72,8 @@ public class TestNGContentHandler extends DefaultHandler {
    *      java.lang.String)
    */
   @Override
-  public InputSource resolveEntity(String systemId, String publicId) throws IOException, SAXException {
+  public InputSource resolveEntity(String systemId, String publicId)
+      throws IOException, SAXException {
     InputSource result = null;
     if (Parser.DEPRECATED_TESTNG_DTD_URL.equals(publicId)
         || Parser.TESTNG_DTD_URL.equals(publicId)) {
@@ -497,7 +500,7 @@ public class TestNGContentHandler extends DefaultHandler {
       // will complain, but in the meantime, dodge the NPE so SAX
       // can finish parsing the file.
       if (null != m_currentClasses) {
-        m_currentClass = new XmlClass(name, Boolean.TRUE, m_currentClassIndex++);
+        m_currentClass = new XmlClass(name, m_currentClassIndex++, m_loadClasses);
         m_currentClasses.add(m_currentClass);
       }
     }
