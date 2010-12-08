@@ -1,6 +1,5 @@
 package org.testng.internal;
 
-
 import org.testng.IClass;
 import org.testng.IInstanceInfo;
 import org.testng.IObjectFactory;
@@ -9,12 +8,10 @@ import org.testng.TestNGException;
 import org.testng.annotations.IAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
@@ -202,38 +199,39 @@ public class TestNGClassFinder extends BaseClassFinder {
    * @return True if class has any testng annotations
    */
   public static boolean isTestNGClass(Class cls, IAnnotationFinder annotationFinder) {
-	  Class[] allAnnotations= AnnotationHelper.getAllAnnotations();
-
-      try {
-        for(Class annotation : allAnnotations) {
-          // Try on the methods
-          for(Method m : cls.getMethods()) {
-            IAnnotation ma= annotationFinder.findAnnotation(m, annotation);
-            if(null != ma) {
-              return true;
-            }
-          }
-
-          // Try on the class
-	      IAnnotation a= annotationFinder.findAnnotation(cls, annotation);
-	      if(null != a) {
-	        return true;
-	      }
-
-	      // Try on the constructors
-  	      for(Constructor ctor : cls.getConstructors()) {
-  	        IAnnotation ca= annotationFinder.findAnnotation(ctor, annotation);
-  	        if(null != ca) {
-  	          return true;
-  	        }
-  	      }
-  	    }
-
-  	    return false;
-      } catch (NoClassDefFoundError e) {
-        Utils.log("[TestNGClassFinder]", 1, "Unable to read methods on class " + cls.getName() + " - unable to resolve class reference " + e.getMessage());
-        return false;
-      }
+    return true;
+//	  Class[] allAnnotations= AnnotationHelper.getAllAnnotations();
+//
+//      try {
+//        for(Class annotation : allAnnotations) {
+//          // Try on the methods
+//          for(Method m : cls.getMethods()) {
+//            IAnnotation ma= annotationFinder.findAnnotation(m, annotation);
+//            if(null != ma) {
+//              return true;
+//            }
+//          }
+//
+//          // Try on the class
+//	      IAnnotation a= annotationFinder.findAnnotation(cls, annotation);
+//	      if(null != a) {
+//	        return true;
+//	      }
+//
+//	      // Try on the constructors
+//  	      for(Constructor ctor : cls.getConstructors()) {
+//  	        IAnnotation ca= annotationFinder.findAnnotation(ctor, annotation);
+//  	        if(null != ca) {
+//  	          return true;
+//  	        }
+//  	      }
+//  	    }
+//
+//  	    return false;
+//      } catch (NoClassDefFoundError e) {
+//        Utils.log("[TestNGClassFinder]", 1, "Unable to read methods on class " + cls.getName() + " - unable to resolve class reference " + e.getMessage());
+//        return false;
+//      }
   }
 
   private void addInstance(Class clazz, Object o) {

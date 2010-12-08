@@ -5,6 +5,7 @@ import org.testng.TestNGException;
 import org.testng.remote.RemoteTestNG;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 
 /**
  * Central class to connect to the host and send message.
@@ -69,7 +70,7 @@ public class MessageHub {
     m_debug = debug;
   }
 
-  public void initReceiver() {
+  public void initReceiver() throws SocketTimeoutException {
     m_messageSender.initReceiver();
   }
 

@@ -4,6 +4,7 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,8 +13,6 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * <code>Parser</code> is a parser for a TestNG XML test suite file.
@@ -32,7 +31,7 @@ public class Parser {
   /** The default file name for the TestNG test suite if none is specified (testng.xml). */
   public static final String DEFAULT_FILENAME = "testng.xml";
 
-  private static final IFileParser DEFAULT_FILE_PARSER = new XmlParser();
+  private static final IFileParser DEFAULT_FILE_PARSER = new SuiteXmlParser();
 
   /** The file name of the xml suite being parsed. This may be null if the Parser
    * has not been initialized with a file name. TODO CQ This member is never used. */
@@ -40,7 +39,7 @@ public class Parser {
 
   private InputStream m_inputStream;
 
-  private IFileParser m_fileParser;
+  private IFileParser<XmlSuite> m_fileParser;
 
   /**
    * Constructs a <code>Parser</code> to use the inputStream as the source of

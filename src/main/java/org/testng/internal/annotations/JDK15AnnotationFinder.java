@@ -31,8 +31,7 @@ import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.testng.annotations.TestInstance;
 import org.testng.collections.Maps;
-
-import com.google.inject.Inject;
+import org.testng.guice.Inject;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;

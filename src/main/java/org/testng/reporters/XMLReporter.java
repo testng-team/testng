@@ -21,16 +21,18 @@ import java.util.Set;
 
 /**
  * The main entry for the XML generation operation
- *
+ * 
  * @author Cosmin Marginean, Mar 16, 2007
  */
 public class XMLReporter implements IReporter {
+  public static final String FILE_NAME = "testng-results.xml";
 
   private final XMLReporterConfig config = new XMLReporterConfig();
   private XMLStringBuffer rootBuffer;
 
   @Override
-  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
+      String outputDirectory) {
     if (Utils.isStringEmpty(config.getOutputDirectory())) {
       config.setOutputDirectory(outputDirectory);
     }
@@ -42,11 +44,11 @@ public class XMLReporter implements IReporter {
       writeSuite(suites.get(i).getXmlSuite(), suites.get(i));
     }
     rootBuffer.pop();
-    Utils.writeUtf8File(config.getOutputDirectory(), "testng-results.xml", rootBuffer.toXML());
+    Utils.writeUtf8File(config.getOutputDirectory(), FILE_NAME, rootBuffer.toXML());
   }
 
   private void writeReporterOutput(XMLStringBuffer xmlBuffer) {
-    //TODO: Cosmin - maybe a <line> element isn't indicated for each line
+    // TODO: Cosmin - maybe a <line> element isn't indicated for each line
     xmlBuffer.push(XMLReporterConfig.TAG_REPORTER_OUTPUT);
     List<String> output = Reporter.getOutput();
     for (String line : output) {
@@ -61,13 +63,13 @@ public class XMLReporter implements IReporter {
 
   private void writeSuite(XmlSuite xmlSuite, ISuite suite) {
     switch (config.getFileFragmentationLevel()) {
-      case XMLReporterConfig.FF_LEVEL_NONE:
-        writeSuiteToBuffer(rootBuffer, suite);
-        break;
-      case XMLReporterConfig.FF_LEVEL_SUITE:
-      case XMLReporterConfig.FF_LEVEL_SUITE_RESULT:
-        File suiteFile = referenceSuite(rootBuffer, suite);
-        writeSuiteToFile(suiteFile, suite);
+    case XMLReporterConfig.FF_LEVEL_NONE:
+      writeSuiteToBuffer(rootBuffer, suite);
+      break;
+    case XMLReporterConfig.FF_LEVEL_SUITE:
+    case XMLReporterConfig.FF_LEVEL_SUITE_RESULT:
+      File suiteFile = referenceSuite(rootBuffer, suite);
+      writeSuiteToFile(suiteFile, suite);
     }
   }
 
@@ -76,12 +78,12 @@ public class XMLReporter implements IReporter {
     writeSuiteToBuffer(xmlBuffer, suite);
     File parentDir = suiteFile.getParentFile();
     if (parentDir.exists() || suiteFile.getParentFile().mkdirs()) {
-      Utils.writeFile(parentDir.getAbsolutePath(), "testng-results.xml", xmlBuffer.toXML());
+      Utils.writeFile(parentDir.getAbsolutePath(), FILE_NAME, xmlBuffer.toXML());
     }
   }
 
   private File referenceSuite(XMLStringBuffer xmlBuffer, ISuite suite) {
-    String relativePath = suite.getName() + File.separatorChar + "testng-results.xml";
+    String relativePath = suite.getName() + File.separatorChar + FILE_NAME;
     File suiteFile = new File(config.getOutputDirectory(), relativePath);
     Properties attrs = new Properties();
     attrs.setProperty(XMLReporterConfig.ATTR_URL, relativePath);
@@ -156,7 +158,7 @@ public class XMLReporter implements IReporter {
    */
   public static void addDurationAttributes(XMLReporterConfig config, Properties attributes,
       Date minStartDate, Date maxEndDate) {
-    SimpleDateFormat format = new SimpleDateFormat(config.getTimestampFormat());
+    SimpleDateFormat format = new SimpleDateFormat(XMLReporterConfig.getTimestampFormat());
     String startTime = format.format(minStartDate);
     String endTime = format.format(maxEndDate);
     long duration = maxEndDate.getTime() - minStartDate.getTime();
@@ -174,7 +176,7 @@ public class XMLReporter implements IReporter {
     return result;
   }
 
-  //TODO: This is not the smartest way to implement the config
+  // TODO: This is not the smartest way to implement the config
   public int getFileFragmentationLevel() {
     return config.getFileFragmentationLevel();
   }

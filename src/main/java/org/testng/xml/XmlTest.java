@@ -417,7 +417,7 @@ public class XmlTest implements Serializable, Cloneable {
     }
 
 
-    // HINT: don't call getXmlPackages() cause you will retrieve the suite packages too
+    // Don't call getXmlPackages() or you will retrieve the suite packages too
     if (null != m_xmlPackages && !m_xmlPackages.isEmpty()) {
       xsb.push("packages");
 
