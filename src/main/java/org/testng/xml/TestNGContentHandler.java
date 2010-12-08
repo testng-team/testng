@@ -176,7 +176,7 @@ public class TestNGContentHandler extends DefaultHandler {
         m_currentSuite.setTimeOut(timeOut);
       }
       String objectFactory = attributes.getValue("object-factory");
-      if(null != objectFactory) {
+      if (null != objectFactory && m_loadClasses) {
         try {
           m_currentSuite.setObjectFactory((IObjectFactory)Class.forName(objectFactory).newInstance());
         }
