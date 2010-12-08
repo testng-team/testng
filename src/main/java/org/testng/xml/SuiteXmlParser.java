@@ -10,8 +10,8 @@ import java.io.InputStream;
 public class SuiteXmlParser extends XMLParser<XmlSuite> {
 
   @Override
-  public XmlSuite parse(String currentFile, InputStream inputStream) {
-    TestNGContentHandler contentHandler = new TestNGContentHandler(currentFile);
+  public XmlSuite parse(String currentFile, InputStream inputStream, boolean loadClasses) {
+    TestNGContentHandler contentHandler = new TestNGContentHandler(currentFile, loadClasses);
 
     try {
       m_saxParser.parse(inputStream, contentHandler);

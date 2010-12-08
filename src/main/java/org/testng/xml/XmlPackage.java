@@ -83,7 +83,7 @@ public class XmlPackage implements Serializable {
 
       int index = 0;
       for(String className: classes) {
-        result.add(new XmlClass(className, Boolean.FALSE, index++));
+        result.add(new XmlClass(className, index++, false /* don't load classes */));
       }
     }
     catch(IOException ioex) {

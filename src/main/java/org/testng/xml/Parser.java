@@ -4,6 +4,7 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,8 +13,6 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * <code>Parser</code> is a parser for a TestNG XML test suite file.
@@ -41,6 +40,8 @@ public class Parser {
   private InputStream m_inputStream;
 
   private IFileParser<XmlSuite> m_fileParser;
+
+  private boolean m_loadClasses = true;
 
   /**
    * Constructs a <code>Parser</code> to use the inputStream as the source of
@@ -70,6 +71,13 @@ public class Parser {
     m_fileName = fileName != null ? fileName : DEFAULT_FILENAME;
     m_inputStream = is;
     m_fileParser = fp != null ? fp : DEFAULT_FILE_PARSER;
+  }
+
+  /**
+   * If false, don't try to load the classes during the parsing.
+   */
+  public void setLoadClasses(boolean loadClasses) {
+    m_loadClasses = loadClasses;
   }
 
   /**
@@ -142,7 +150,7 @@ public class Parser {
             ? m_inputStream
             : new FileInputStream(currentFile);
 
-        XmlSuite result = m_fileParser.parse(currentFile, inputStream);
+        XmlSuite result = m_fileParser.parse(currentFile, inputStream, m_loadClasses);
         XmlSuite currentXmlSuite = result;
         processedSuites.add(currentFile);
         toBeRemoved.add(currentFile);
