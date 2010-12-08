@@ -1,6 +1,5 @@
 package org.testng.internal;
 
-
 import org.testng.IClass;
 import org.testng.IInstanceInfo;
 import org.testng.IObjectFactory;
@@ -9,12 +8,10 @@ import org.testng.TestNGException;
 import org.testng.annotations.IAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;

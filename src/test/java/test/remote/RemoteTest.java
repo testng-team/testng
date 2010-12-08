@@ -9,7 +9,6 @@ import org.testng.remote.strprotocol.IMessageSender;
 import org.testng.remote.strprotocol.MessageHub;
 import org.testng.remote.strprotocol.SerializedMessageSender;
 import org.testng.remote.strprotocol.StringMessageSender;
-
 import test.SimpleBaseTest;
 
 import java.net.SocketTimeoutException;

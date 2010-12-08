@@ -1,12 +1,10 @@
 package org.testng.internal;
 
-
 import org.testng.IClass;
 import org.testng.IConfigurable;
 import org.testng.IHookable;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
-import org.testng.IInvokedMethodListener2;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
@@ -27,6 +25,8 @@ import org.testng.internal.ParameterHolder.ParameterOrigin;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.Sets;
+import org.testng.internal.invokers.InvokedMethodListenerInvoker;
+import org.testng.internal.invokers.InvokedMethodListenerMethod;
 import org.testng.internal.thread.ThreadExecutionException;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.internal.thread.graph.IWorker;
@@ -42,6 +42,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import static org.testng.internal.invokers.InvokedMethodListenerMethod.AFTER_INVOCATION;
+import static org.testng.internal.invokers.InvokedMethodListenerMethod.BEFORE_INVOCATION;
 
 /**
  * This class is responsible for invoking methods:
@@ -488,15 +491,15 @@ public class Invoker implements IInvoker {
     tm.setId(ThreadUtil.currentThreadInfo());
 
     for(Object targetInstance : instances) {
-      InvokedMethod im= new InvokedMethod(targetInstance,
+      InvokedMethod invokedMethod= new InvokedMethod(targetInstance,
                                           tm,
                                           params,
                                           false, /* isTest */
                                           isClass, /* ??? */
                                           System.currentTimeMillis());
 
-      runInvokedMethodListeners(true /* before */, im, testResult);
-      m_notifier.addInvokedMethod(im);
+      runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
+      m_notifier.addInvokedMethod(invokedMethod);
       try {
         Reporter.setCurrentTestResult(testResult);
         Method method = tm.getMethod();
@@ -553,7 +556,7 @@ public class Invoker implements IInvoker {
       }
       finally {
         Reporter.setCurrentTestResult(testResult);
-        runInvokedMethodListeners(false /* after */, im, testResult);
+        runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
       }
     }
   }
@@ -564,31 +567,21 @@ public class Invoker implements IInvoker {
     testResult.setThrowable(ex.getCause() == null ? ex : ex.getCause());
   }
 
-  private void runInvokedMethodListeners(boolean before, IInvokedMethod method,
+  private void runInvokedMethodListeners(InvokedMethodListenerMethod listenerMethod, IInvokedMethod invokedMethod,
       ITestResult testResult)
   {
-    if (m_invokedMethodListeners != null) {
-      if (before) {
-        for (IInvokedMethodListener l : m_invokedMethodListeners) {
-          if (l instanceof IInvokedMethodListener2) {
-            IInvokedMethodListener2 l2 = (IInvokedMethodListener2) l;
-            l2.beforeInvocation(method, testResult, m_testContext);
-          } else {
-            l.beforeInvocation(method, testResult);
-          }
-        }
-      }
-      else {
-        for (IInvokedMethodListener l : m_invokedMethodListeners) {
-          if (l instanceof IInvokedMethodListener2) {
-            IInvokedMethodListener2 l2 = (IInvokedMethodListener2) l;
-            l2.afterInvocation(method, testResult, m_testContext);
-          } else {
-            l.afterInvocation(method, testResult);
-          }
-        }
-      }
+    if ( noListenersPresent() ) {
+      return;
     }
+
+    InvokedMethodListenerInvoker invoker = new InvokedMethodListenerInvoker(listenerMethod, testResult, m_testContext);
+    for (IInvokedMethodListener currentListener : m_invokedMethodListeners) {
+      invoker.invokeListener(currentListener, invokedMethod);
+    }
+  }
+
+  private boolean noListenersPresent() {
+    return (m_invokedMethodListeners == null) || (m_invokedMethodListeners.size() == 0);
   }
 
   // pass both paramValues and paramIndex to be thread safe in case parallel=true + dataprovider.
@@ -649,7 +642,7 @@ public class Invoker implements IInvoker {
       // invokedMethod must have a value before we get here
       runTestListeners(testResult);
 
-      runInvokedMethodListeners(true /* before */, invokedMethod, testResult);
+      runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
 
       m_notifier.addInvokedMethod(invokedMethod);
 
@@ -731,7 +724,7 @@ public class Invoker implements IInvoker {
 
       //Run invokedMethodListeners after fixing the test results based on
       //expectedExceptions, if any
-      runInvokedMethodListeners(false /* before */, invokedMethod, testResult);
+      runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
 
       // If this method has a data provider and just failed, memorize the number
       // at which it failed.

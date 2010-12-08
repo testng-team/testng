@@ -2,8 +2,6 @@ package org.testng.remote.strprotocol;
 
 import org.testng.ITestContext;
 
-import java.util.List;
-
 
 /**
  * An <code>IStringMessage</code> implementation for test events.

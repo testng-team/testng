@@ -2,7 +2,6 @@ package org.testng.reporters;
 
 import org.testng.ITestResult;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
