@@ -8,10 +8,12 @@ import org.testng.TestNGException;
 import org.testng.annotations.IAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
@@ -205,7 +207,7 @@ public class TestNGClassFinder extends BaseClassFinder {
 
         for (cls = c; cls != Object.class; cls = cls.getSuperclass()) {
           // Try on the methods
-          for(Method m : cls.getMethods()) {
+          for (Method m : cls.getMethods()) {
             IAnnotation ma= annotationFinder.findAnnotation(m, annotation);
             if(null != ma) {
               return true;
@@ -219,7 +221,7 @@ public class TestNGClassFinder extends BaseClassFinder {
           }
 
           // Try on the constructors
-          for(Constructor ctor : cls.getConstructors()) {
+          for (Constructor ctor : cls.getConstructors()) {
             IAnnotation ca= annotationFinder.findAnnotation(ctor, annotation);
             if(null != ca) {
               return true;
