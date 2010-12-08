@@ -9,14 +9,14 @@ public enum InvokedMethodListenerSubtype {
   EXTENDED_LISTENER(IInvokedMethodListener2.class),
   SIMPLE_LISTENER(IInvokedMethodListener.class);
 
-  private Class<? extends IInvokedMethodListener> matchingInterface;
+  private Class<? extends IInvokedMethodListener> m_matchingInterface;
 
   private InvokedMethodListenerSubtype(Class<? extends IInvokedMethodListener> listenerClass) {
-    this.matchingInterface = listenerClass;
+    m_matchingInterface = listenerClass;
   }
 
   private boolean isInstance(IInvokedMethodListener listenerInstance) {
-    return matchingInterface.isInstance(listenerInstance);
+    return m_matchingInterface.isInstance(listenerInstance);
   }
 
   public static InvokedMethodListenerSubtype fromListener(IInvokedMethodListener listenerInstance) {
@@ -26,6 +26,7 @@ public enum InvokedMethodListenerSubtype {
     else if (SIMPLE_LISTENER.isInstance(listenerInstance)) {
       return SIMPLE_LISTENER;
     }
-    throw new TestNGException("Illegal " + IInvokedMethodListener.class.getSimpleName() + " instance: " + listenerInstance.getClass().getName() + ".");
+    throw new TestNGException("Illegal " + IInvokedMethodListener.class.getSimpleName()
+        + " instance: " + listenerInstance.getClass().getName() + ".");
   }
 }

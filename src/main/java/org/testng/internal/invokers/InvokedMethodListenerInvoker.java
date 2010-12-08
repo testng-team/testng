@@ -12,7 +12,6 @@ import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.collections.Maps;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class InvokedMethodListenerInvoker {
