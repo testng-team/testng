@@ -6,8 +6,8 @@ import org.testng.TestNGException;
 
 public enum InvokedMethodListenerSubtype {
 
-  SIMPLE_LISTENER(IInvokedMethodListener.class),
-  EXTENDED_LISTENER(IInvokedMethodListener2.class);
+  EXTENDED_LISTENER(IInvokedMethodListener2.class),
+  SIMPLE_LISTENER(IInvokedMethodListener.class);
 
   private Class<? extends IInvokedMethodListener> matchingInterface;
 
