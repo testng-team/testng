@@ -1,16 +1,12 @@
 package org.testng;
 
-
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.guice.Guice;
+import org.testng.guice.Injector;
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.DynamicGraph;
@@ -41,6 +37,7 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -129,7 +126,7 @@ public class TestNG {
   private String[] m_includedGroups;
   private String[] m_excludedGroups;
 
-  private Boolean m_isJUnit = Boolean.FALSE;
+  private Boolean m_isJUnit = XmlSuite.DEFAULT_JUNIT;
   protected boolean m_useDefaultListeners = true;
 
   private ITestRunnerFactory m_testRunnerFactory;
@@ -992,7 +989,7 @@ public class TestNG {
   private void createSuiteRunners(Map<XmlSuite, ISuite> suiteRunnerMap /* OUT */, XmlSuite xmlSuite) {
     xmlSuite.setDefaultAnnotations(m_defaultAnnotations.toString());
 
-    if (null != m_isJUnit) {
+    if (null != m_isJUnit && ! m_isJUnit.equals(XmlSuite.DEFAULT_JUNIT)) {
       xmlSuite.setJUnit(m_isJUnit);
     }
 

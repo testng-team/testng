@@ -1,6 +1,5 @@
 package org.testng.internal;
 
-
 import org.testng.IClass;
 import org.testng.IInstanceInfo;
 import org.testng.IObjectFactory;
@@ -78,10 +77,11 @@ public class TestNGClassFinder extends BaseClassFinder {
             }
           }
         } catch (NoClassDefFoundError e) {
-          Utils.log("[TestNGClassFinder]", 1, "Unable to read methods on class " + cls.getName() + " - unable to resolve class reference " + e.getMessage());
+          Utils.log("[TestNGClassFinder]", 1, "Unable to read methods on class " + cls.getName()
+              + " - unable to resolve class reference " + e.getMessage());
 
           for (XmlClass xmlClass : xmlTest.getXmlClasses()) {
-            if (xmlClass.getDeclaredClass() == Boolean.TRUE && xmlClass.getName().equals(cls.getName())) {
+            if (xmlClass.loadClasses() && xmlClass.getName().equals(cls.getName())) {
               throw e;
             }
           }
@@ -195,19 +195,19 @@ public class TestNGClassFinder extends BaseClassFinder {
   }
 
   /**
-   * Checks if class is a testng class based on the {@link IAnnotationFinder}
-   * passed in, which may be a jdk14 or jdk15 {@link IAnnotationFinder} instance.
-   * @param cls The class being tested
-   * @param annotationFinder The instance of annotation finder being used
-   * @return True if class has any testng annotations
+   * @returns true if this class contains TestNG annotations (either on itself
+   * or on a superclass).
    */
-  public static boolean isTestNGClass(Class cls, IAnnotationFinder annotationFinder) {
-	  Class[] allAnnotations= AnnotationHelper.getAllAnnotations();
+  public static boolean isTestNGClass(Class c, IAnnotationFinder annotationFinder) {
+    Class[] allAnnotations= AnnotationHelper.getAllAnnotations();
+    Class cls = c;
 
-      try {
-        for(Class annotation : allAnnotations) {
+    try {
+      for(Class annotation : allAnnotations) {
+
+        for (cls = c; cls != null; cls = cls.getSuperclass()) {
           // Try on the methods
-          for(Method m : cls.getMethods()) {
+          for (Method m : cls.getMethods()) {
             IAnnotation ma= annotationFinder.findAnnotation(m, annotation);
             if(null != ma) {
               return true;
@@ -215,25 +215,29 @@ public class TestNGClassFinder extends BaseClassFinder {
           }
 
           // Try on the class
-	      IAnnotation a= annotationFinder.findAnnotation(cls, annotation);
-	      if(null != a) {
-	        return true;
-	      }
+          IAnnotation a= annotationFinder.findAnnotation(cls, annotation);
+          if(null != a) {
+            return true;
+          }
 
-	      // Try on the constructors
-  	      for(Constructor ctor : cls.getConstructors()) {
-  	        IAnnotation ca= annotationFinder.findAnnotation(ctor, annotation);
-  	        if(null != ca) {
-  	          return true;
-  	        }
-  	      }
-  	    }
-
-  	    return false;
-      } catch (NoClassDefFoundError e) {
-        Utils.log("[TestNGClassFinder]", 1, "Unable to read methods on class " + cls.getName() + " - unable to resolve class reference " + e.getMessage());
-        return false;
+          // Try on the constructors
+          for (Constructor ctor : cls.getConstructors()) {
+            IAnnotation ca= annotationFinder.findAnnotation(ctor, annotation);
+            if(null != ca) {
+              return true;
+            }
+          }
+        }
       }
+
+      return false;
+
+    } catch (NoClassDefFoundError e) {
+      Utils.log("[TestNGClassFinder]", 1,
+          "Unable to read methods on class " + cls.getName()
+          + " - unable to resolve class reference " + e.getMessage());
+      return false;
+    }
   }
 
   private void addInstance(Class clazz, Object o) {

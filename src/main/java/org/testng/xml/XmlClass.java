@@ -19,44 +19,61 @@ public class XmlClass implements Serializable, Cloneable {
   private static final long serialVersionUID = 8885360896966149897L;
   private List<XmlInclude> m_includedMethods = Lists.newArrayList();
   private List<String> m_excludedMethods = Lists.newArrayList();
-  private String       m_name = null;
-  private Class        m_class = null;
-  private Boolean      m_declaredClass = null;
+  private String m_name = null;
+  private Class m_class = null;
   /** The index of this class in the <test> tag */
   private int m_index;
+  /** True if the classes need to be loaded */
+  private boolean m_loadClasses = true;
 
   public XmlClass() {
-    init("", null, Boolean.TRUE, 0);
+    init("", null, 0, true /* load classes */);
   }
 
   public XmlClass(String name) {
-    init(name, null, Boolean.TRUE, 0);
+    init(name, null, 0);
+  }
+
+  public XmlClass(String name, boolean loadClasses) {
+    init(name, null, 0, loadClasses);
   }
 
   public XmlClass(Class className) {
-    init(className.getName(), null, Boolean.TRUE, 0);
+    init(className.getName(), null, 0, true);
   }
 
-  public XmlClass(String name, Boolean declaredClass, int index) {
-    init(name, null, declaredClass, index);
+  public XmlClass(Class className, boolean loadClasses) {
+    init(className.getName(), null, 0, loadClasses);
   }
 
-  public XmlClass(Class className, Boolean declaredClass) {
-    init(className.getName(), className, declaredClass, 0);
+  public XmlClass(String name, int index) {
+    init(name, null, index, true /* load classes */);
   }
 
-  private void init(String name, Class className, Boolean declaredClass, int index) {
+  public XmlClass(String name, int index, boolean loadClasses) {
+    init(name, null, index, loadClasses);
+  }
+
+  private void init(String name, Class className, int index) {
+    init(name, className, index, true /* load classes */);
+  }
+
+  private void init(String name, Class className, int index,
+      boolean resolveClass) {
     m_name = name;
     m_class = className;
-    m_declaredClass = declaredClass;
     m_index = index;
 
-    if (null == m_class) {
-      m_class = ClassHelper.forName(m_name);
+    if (null == m_class && resolveClass) {
+      loadClass();
+    }
+  }
 
-      if (null == m_class) {
-        throw new TestNGException("Cannot find class in classpath: " + m_name);
-      }
+  private void loadClass() {
+    m_class = ClassHelper.forName(m_name);
+
+    if (null == m_class) {
+      throw new TestNGException("Cannot find class in classpath: " + m_name);
     }
   }
 
@@ -64,6 +81,7 @@ public class XmlClass implements Serializable, Cloneable {
    * @return Returns the className.
    */
   public Class getSupportClass() {
+    if (m_class == null) loadClass();
     return m_class;
   }
 
@@ -116,12 +134,11 @@ public class XmlClass implements Serializable, Cloneable {
     m_name = name;
   }
 
-  public Boolean getDeclaredClass() {
-    return m_declaredClass;
-  }
-
-  public void setDeclaredClass(Boolean declaredClass) {
-    this.m_declaredClass = declaredClass;
+  /**
+   * @return true if the classes need to be loaded.
+   */
+  public boolean loadClasses() {
+    return m_loadClasses;
   }
 
   @Override
@@ -176,7 +193,7 @@ public class XmlClass implements Serializable, Cloneable {
    */
   @Override
   public Object clone() {
-    XmlClass result = new XmlClass(getName(), getDeclaredClass(), getIndex());
+    XmlClass result = new XmlClass(getName(), getIndex(), loadClasses());
     result.setExcludedMethods(getExcludedMethods());
     result.setIncludedMethods(getIncludedMethods());
 
@@ -198,8 +215,7 @@ public class XmlClass implements Serializable, Cloneable {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((m_class == null) ? 0 : m_class.hashCode());
-    result = prime * result
-        + ((m_declaredClass == null) ? 0 : m_declaredClass.hashCode());
+    result = prime * result + (m_loadClasses ? 1 : 0);
     result = prime * result
         + ((m_excludedMethods == null) ? 0 : m_excludedMethods.hashCode());
     result = prime * result
@@ -220,20 +236,17 @@ public class XmlClass implements Serializable, Cloneable {
       return XmlSuite.f();
     XmlClass other = (XmlClass) obj;
     if (m_class == null) {
-      if (other.m_class != null)
-        return XmlSuite.f();
-    } else if (!m_class.equals(other.m_class))
-      return XmlSuite.f();
-    if (m_declaredClass == null) {
-      if (other.m_declaredClass != null)
-        return XmlSuite.f();
-    } else if (!m_declaredClass.equals(other.m_declaredClass))
-      return XmlSuite.f();
-    if (m_excludedMethods == null) {
-      if (other.m_excludedMethods != null)
-        return XmlSuite.f();
-    } else if (!m_excludedMethods.equals(other.m_excludedMethods))
-      return XmlSuite.f();
+
+      if (other.m_class != null) {
+        return false;
+      }
+    } else if (!m_class.equals(other.m_class)) {
+      return false;
+    } else if (other.m_loadClasses != m_loadClasses) {
+      return false;
+    } else if (!m_excludedMethods.equals(other.m_excludedMethods)) {
+      return false;
+    }
     if (m_includedMethods == null) {
       if (other.m_includedMethods != null)
         return XmlSuite.f();

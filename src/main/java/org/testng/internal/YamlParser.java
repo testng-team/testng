@@ -10,7 +10,8 @@ import java.io.InputStream;
 public class YamlParser implements IFileParser {
 
   @Override
-  public XmlSuite parse(String filePath, InputStream is) throws TestNGException {
+  public XmlSuite parse(String filePath, InputStream is, boolean loadClasses)
+      throws TestNGException {
     try {
       return Yaml.parse(filePath, is);
     } catch (FileNotFoundException e) {

@@ -1,11 +1,11 @@
 package org.testng.xml;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.YamlParser;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,7 +33,7 @@ public class Parser {
   /** The default file name for the TestNG test suite if none is specified (testng.xml). */
   public static final String DEFAULT_FILENAME = "testng.xml";
 
-  private static final IFileParser XML_PARSER = new XmlParser();
+  private static final IFileParser XML_PARSER = new SuiteXmlParser();
   private static final IFileParser YAML_PARSER = new YamlParser();
   private static final IFileParser DEFAULT_FILE_PARSER = XML_PARSER;
   
@@ -42,6 +42,8 @@ public class Parser {
   private String m_fileName;
 
   private InputStream m_inputStream;
+
+  private boolean m_loadClasses = true;
 
   /**
    * Constructs a <code>Parser</code> to use the inputStream as the source of
@@ -70,6 +72,13 @@ public class Parser {
   private void init(String fileName, InputStream is, IFileParser fp) {
     m_fileName = fileName != null ? fileName : DEFAULT_FILENAME;
     m_inputStream = is;
+  }
+
+  /**
+   * If false, don't try to load the classes during the parsing.
+   */
+  public void setLoadClasses(boolean loadClasses) {
+    m_loadClasses = loadClasses;
   }
 
   /**
@@ -152,8 +161,8 @@ public class Parser {
             ? m_inputStream
             : new FileInputStream(currentFile);
 
-        XmlSuite result = getParser(currentFile).parse(currentFile, inputStream);
-//        System.out.println("Parsed " + currentFile + ":\n" + result.toXml());
+        IFileParser<XmlSuite> fileParser = getParser(currentFile);
+        XmlSuite result = fileParser.parse(currentFile, inputStream, m_loadClasses);
         XmlSuite currentXmlSuite = result;
         processedSuites.add(currentFile);
         toBeRemoved.add(currentFile);

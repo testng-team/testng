@@ -9,9 +9,9 @@ import org.testng.remote.strprotocol.IMessageSender;
 import org.testng.remote.strprotocol.MessageHub;
 import org.testng.remote.strprotocol.SerializedMessageSender;
 import org.testng.remote.strprotocol.StringMessageSender;
-
 import test.SimpleBaseTest;
 
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,14 +65,19 @@ public class RemoteTest extends SimpleBaseTest {
     launchRemoteTestNG(arg, portValue);
     MessageHub mh = new MessageHub(sms);
     List<String> received = Lists.newArrayList();
-    mh.initReceiver();
-    IMessage message = mh.receiveMessage();
-    while (message != null) {
-      received.add(message.getClass().getSimpleName());
-      message = mh.receiveMessage();
-    }
+    try {
+      mh.initReceiver();
+      IMessage message = mh.receiveMessage();
+      while (message != null) {
+        received.add(message.getClass().getSimpleName());
+        message = mh.receiveMessage();
+      }
 
-    Assert.assertEquals(received, EXPECTED_MESSAGES);
+      Assert.assertEquals(received, EXPECTED_MESSAGES);
+    }
+    catch(SocketTimeoutException ex) {
+      Assert.fail("Time out");
+    }
   }
 
   private static void p(String s) {

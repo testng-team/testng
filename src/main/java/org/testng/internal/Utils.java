@@ -76,7 +76,7 @@ public final class Utils {
     List<XmlClass> result = Lists.newArrayList();
 
     for (Class<?> cls : classes) {
-      result.add(new XmlClass(cls, Boolean.TRUE));
+      result.add(new XmlClass(cls, true /* load classes */));
     }
 
     return result.toArray(new XmlClass[classes.length]);

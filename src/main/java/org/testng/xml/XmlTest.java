@@ -373,21 +373,23 @@ public class XmlTest implements Serializable, Cloneable {
     XMLStringBuffer xsb = new XMLStringBuffer(indent);
     Properties p = new Properties();
     p.setProperty("name", getName());
-    p.setProperty("junit", m_isJUnit != null ? m_isJUnit.toString() : "false");
-    if (null != m_parallel && !"".equals(m_parallel)) {
-      p.setProperty("parallel", m_parallel);
+    if (m_isJUnit != null) {
+      XmlUtils.setProperty(p, "junit", m_isJUnit.toString(), XmlSuite.DEFAULT_JUNIT.toString());
     }
-    if (null != m_verbose) {
-      p.setProperty("verbose", m_verbose.toString());
+    if (m_parallel != null) {
+      XmlUtils.setProperty(p, "parallel", m_parallel, XmlSuite.DEFAULT_PARALLEL);
     }
-    if (null != m_annotations) {
-      p.setProperty("annotations", m_annotations.toString());
+    if (m_verbose != null) {
+      XmlUtils.setProperty(p, "verbose", m_verbose.toString(), XmlSuite.DEFAULT_VERBOSE.toString());
     }
     if (null != m_timeOut) {
       p.setProperty("time-out", m_timeOut.toString());
     }
     if (m_preserveOrder != null) {
       p.setProperty("preserve-order", m_preserveOrder.toString());
+    }
+    if (m_threadCount != -1) {
+      p.setProperty("thread-count", Integer.toString(m_threadCount));
     }
 
     xsb.push("test", p);
@@ -455,8 +457,7 @@ public class XmlTest implements Serializable, Cloneable {
 
       xsb.pop("groups");
     }
-    
-    // Don't call getXmlPackages() cause you will retrieve the suite packages too
+
     if (null != m_xmlPackages && !m_xmlPackages.isEmpty()) {
       xsb.push("packages");
 

@@ -4,8 +4,8 @@ import org.testng.TestNGException;
 
 import java.io.InputStream;
 
-public interface IFileParser {
+public interface IFileParser<T> {
 
-  XmlSuite parse(String filePath, InputStream is) throws TestNGException;
+  T parse(String filePath, InputStream is, boolean loadClasses) throws TestNGException;
 
 }

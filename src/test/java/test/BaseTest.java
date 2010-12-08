@@ -9,6 +9,9 @@ import org.testng.SuiteRunner;
 import org.testng.TestListenerAdapter;
 import org.testng.TestRunner;
 import org.testng.annotations.BeforeMethod;
+import org.testng.guice.Guice;
+import org.testng.guice.Injector;
+import org.testng.guice.Module;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.TestNGGuiceModule;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
@@ -20,10 +23,6 @@ import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Module;
 
 import java.io.BufferedReader;
 import java.io.File;

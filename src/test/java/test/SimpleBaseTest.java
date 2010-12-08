@@ -43,7 +43,7 @@ public class SimpleBaseTest {
     int index = 0;
     result.setName(name);
     for (String c : classes) {
-      XmlClass xc = new XmlClass(c, true /* declared class */, index++);
+      XmlClass xc = new XmlClass(c, index++, true /* load classes */);
       result.getXmlClasses().add(xc);
     }
 

@@ -4,13 +4,12 @@ import org.testng.IAnnotationTransformer;
 import org.testng.IConfigurable;
 import org.testng.IHookable;
 import org.testng.IObjectFactory;
+import org.testng.guice.Binder;
+import org.testng.guice.Module;
+import org.testng.guice.Provides;
+import org.testng.guice.Singleton;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
-
-import com.google.inject.Binder;
-import com.google.inject.Module;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
 
 public class TestNGGuiceModule implements Module {
 

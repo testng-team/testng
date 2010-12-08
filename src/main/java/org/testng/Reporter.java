@@ -75,6 +75,52 @@ public class Reporter {
   }
 
   /**
+   * Log the passed string to the HTML reports if the current verbosity
+   * is equal or greater than the one passed in parameter. If logToStandardOut
+   * is true, the string will also be printed on standard out.
+   *
+   * @param s The message to log
+   * @param level The verbosity of this message
+   * @param logToStandardOut Whether to print this string on standard
+   * out too
+   */
+  public static void log(String s, int level, boolean logToStandardOut) {
+    if (TestRunner.getVerbose() >= level) {
+      log(s, getCurrentTestResult());
+      if (logToStandardOut) {
+        System.out.println(s);
+      }
+    }
+  }
+
+  /**
+   * Log the passed string to the HTML reports.  If logToStandardOut
+   * is true, the string will also be printed on standard out.
+   *
+   * @param s The message to log
+   * @param logToStandardOut Whether to print this string on standard
+   * out too
+   */
+  public static void log(String s, boolean logToStandardOut) {
+    log(s, getCurrentTestResult());
+    if (logToStandardOut) {
+      System.out.println(s);
+    }
+  }
+  /**
+   * Log the passed string to the HTML reports if the current verbosity
+   * is equal or greater than the one passed in parameter
+   *
+   * @param s The message to log
+   * @param level The verbosity of this message
+   */
+  public static void log(String s, int level) {
+    if (TestRunner.getVerbose() >= level) {
+      log(s, getCurrentTestResult());
+    }
+  }
+
+  /**
    * @return the current test result.
    */
   public static ITestResult getCurrentTestResult() {

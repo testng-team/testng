@@ -15,6 +15,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 
 abstract public class BaseMessageSender implements IMessageSender {
   private boolean m_debug = false;
@@ -124,7 +125,7 @@ abstract public class BaseMessageSender implements IMessageSender {
   }
 
   @Override
-  public void initReceiver() {
+  public void initReceiver() throws SocketTimeoutException {
     if (m_inStream != null) {
       p("Receiver already initialized");
     }
@@ -132,6 +133,7 @@ abstract public class BaseMessageSender implements IMessageSender {
     try {
       p("initReceiver on port " + m_port);
       serverSocket = new ServerSocket(m_port);
+      serverSocket.setSoTimeout(5000);
       Socket socket = serverSocket.accept();
       m_inStream = socket.getInputStream();
       m_inReader = new BufferedReader(new InputStreamReader(m_inStream));
@@ -140,7 +142,11 @@ abstract public class BaseMessageSender implements IMessageSender {
 
 //      initSockets();
 
-    } catch (IOException e) {
+    }
+    catch(SocketTimeoutException ex) {
+      throw ex;
+    }
+    catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }

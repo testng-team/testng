@@ -37,7 +37,11 @@ and easily monitor their execution and their output. It has its own
 <br>
 &nbsp;&nbsp;<a class="summary" href="#eclipse-viewing">4 - Viewing the results</a>
 <br>
-&nbsp;&nbsp;<a class="summary" href="#eclipse-quickfix">5 - Converting JUnit tests</a>
+&nbsp;&nbsp;<a class="summary" href="#eclipse-search">5 - Search</a>
+<br>
+&nbsp;&nbsp;<a class="summary" href="#eclipse-summary">6 - The Summary tab</a>
+<br>
+&nbsp;&nbsp;<a class="summary" href="#eclipse-quickfix">7 - Converting JUnit tests</a>
 <br>
 &nbsp;&nbsp;<a class="summary" href="#testng-xml"></a>
 
@@ -134,12 +138,12 @@ If you specify a valid suite file as "XML template file", TestNG will reuse all 
 <!--
   Viewing
 -->
-<h4>
+<h3>
 <a name="eclipse-viewing">4 - Viewing the test results </a>
-</h4>
+</h3>
 
 <p align="center">
-<img src="http://testng.org/pictures/success.png" width="798" height="506" />
+<img src="http://testng.org/pictures/success.png" />
 </p>
 
 <p>The above view shows a successful run of the tests:&nbsp; the bar is green 
@@ -153,17 +157,68 @@ when you select such a test, the stack trace will be shown on the right-hand
 pane.&nbsp; You can double click on the offending line to be taken directly to 
 the failure in your code.</p>
 
+<h3>
+<a name="eclipse-search">5 - Search </a>
+</h3>
 
-<h3><a name="eclipse-quickfix">5 - Converting JUnit tests</a></h3>
-
-<p>When you are editing a JUnit class, press Ctrl-1 (Quick Fix) and the plug-in 
-will give you the option to convert it to TestNG:</p>
 
 <p align="center">
-
-<img src="http://beust.com/pics/quickfix1.png" />
-
+<img src="http://testng.org/pictures/search.png" />
 </p>
+
+<p>When you have hundreds of tests running, finding a specific one is not always easy, so you can type a few letters of the test method or its parameters in the Search box and the content of the tree will automatically narrow down to methods matching your search. Note in the screen shot above that the search also works on parameters provided by <tt>@DataProvider</tt>.</p>
+
+<h3>
+<a name="eclipse-summary">6 - Summary </a>
+</h3>
+
+
+<p align="center"> 
+<img src="http://testng.org/pictures/summary1.png" />
+</p> 
+<p>The Summary tab gives you statistics on your test run, such as the timings, the test names, the number of methods and classes, etc&#8230; Since the results are shown in a table, you can also sort on any criterion you like for easier parsing. This is especially handy when you are trying to determine what tests take the longest time.</p>
+
+<p>The search box works in this view as well, and note that in the screen shot below, the Time column is sorted in decreasing order:</p> 
+<p align="center"> 
+<img src="http://testng.org/pictures/summary2.png" />
+
+
+
+<h3><a name="eclipse-quickfix">7 - Converting JUnit tests</a></h3>
+
+You can easily convert JUnit 3 and JUnit 4 tests to TestNG.
+
+<p>
+
+Your first option is to use the Quick Fix function:
+
+<p>
+
+<p align="center"> 
+<img src="http://testng.org/pictures/convert1.png" />
+<br>
+<b>Convert from JUnit 3</b>
+</p>
+
+<p align="center"> 
+<img src="http://testng.org/pictures/convert2.png" />
+<br>
+<b>Convert from JUnit 4</b>
+</p>
+
+You can also convert packages or entire source folders with the conversion refactoring:
+
+<p align="center"> 
+<img src="http://testng.org/pictures/refactoring1.png" />
+</p>
+
+You are then presented with a refactoring dialog that lets you preview the refactoring and also select which files you want to convert:
+
+<p align="center"> 
+<img src="http://testng.org/pictures/refactoring2.png" />
+</p>
+
+
 
 <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
 </script>

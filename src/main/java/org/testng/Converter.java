@@ -3,14 +3,14 @@ package org.testng;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
-import com.google.inject.internal.Sets;
 
-import javax.xml.parsers.ParserConfigurationException;
-
+import org.testng.collections.Sets;
 import org.testng.internal.Yaml;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import java.io.File;
 import java.io.FileWriter;

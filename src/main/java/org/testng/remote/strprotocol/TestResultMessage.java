@@ -31,8 +31,14 @@ public class TestResultMessage implements IStringMessage {
   protected String[] m_parameters= new String[0];
   protected String[] m_paramTypes= new String[0];
   private String m_testDescription;
+  private int m_invocationCount;
+  private int m_currentInvocationCount;
 
-  TestResultMessage(final int resultType,
+  /**
+   * This constructor is used by the Eclipse client to initialize a result message based
+   * on what was received over the network.
+   */
+  public TestResultMessage(final int resultType,
                     final String suiteName,
                     final String testName,
                     final String className,
@@ -41,7 +47,9 @@ public class TestResultMessage implements IStringMessage {
                     final String[] params,
                     final long startMillis,
                     final long endMillis,
-                    final String stackTrace)
+                    final String stackTrace,
+                    int invocationCount,
+                    int currentInvocationCount)
   {
     init(resultType,
          suiteName,
@@ -53,10 +61,16 @@ public class TestResultMessage implements IStringMessage {
          endMillis,
          extractParams(params),
          extractParamTypes(params),
-         testDescriptor
+         testDescriptor,
+         invocationCount,
+         currentInvocationCount
     );
   }
 
+  /**
+   * This constructor is used by RemoteTestNG to initialize a result message
+   * from an ITestResult.
+   */
   public TestResultMessage(final String suiteName,
                            final String testName,
                            final ITestResult result)
@@ -91,7 +105,9 @@ public class TestResultMessage implements IStringMessage {
          result.getEndMillis(),
          toString(result.getParameters(), result.getMethod().getMethod().getParameterTypes()),
          toString(result.getMethod().getMethod().getParameterTypes()),
-         MessageHelper.replaceUnicodeCharactersWithAscii(result.getName())
+         MessageHelper.replaceUnicodeCharactersWithAscii(result.getName()),
+         result.getMethod().getInvocationCount(),
+         result.getMethod().getCurrentInvocationCount()
     );
   }
 
@@ -111,7 +127,9 @@ public class TestResultMessage implements IStringMessage {
                     final long endMillis,
                     final String[] parameters,
                     final String[] types,
-                    final String testDescription) {
+                    final String testDescription,
+                    int invocationCount,
+                    int currentInvocationCount) {
     m_messageType = resultType;
     m_suiteName = suiteName;
     m_testName = testName;
@@ -123,6 +141,8 @@ public class TestResultMessage implements IStringMessage {
     m_parameters= parameters;
     m_paramTypes= types;
     m_testDescription= testDescription;
+    m_invocationCount = invocationCount;
+    m_currentInvocationCount = currentInvocationCount;
   }
 
   public int getResult() {
@@ -324,10 +344,23 @@ public class TestResultMessage implements IStringMessage {
     return result.toArray(new String[result.size()]);
   }
 
+  public int getInvocationCount() {
+    return m_invocationCount;
+  }
+
+  public int getCurrentInvocationCount() {
+    return m_currentInvocationCount;
+  }
+
   @Override
   public String toString() {
     return "[TestResultMessage suite:" + m_suiteName + " test:" + m_testName
         + " method:" + m_testMethodName
         + "]";
+  }
+
+  public void setParameters(String[] params) {
+    m_parameters = extractParams(params);
+    m_paramTypes = extractParamTypes(params);
   }
 }

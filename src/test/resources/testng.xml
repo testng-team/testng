@@ -109,6 +109,8 @@
       <class name="test.MapTest" />
       <class name="test.remote.RemoteTest" />
       <class name="test.EclipseTest" />
+      <class name="test.ReporterApiTest" />
+      <class name="test.abstractmethods.AbstractTest" />
     </classes>
   </test>
 
@@ -470,9 +472,9 @@
       </run>
     </groups>
 
-  <packages>
-    <package name="test.nested.*"/>
-  </packages>
+	  <packages>
+	    <package name="test.nested.*"/>
+	  </packages>
   </test>
 
   <test name="Hookable" >
@@ -600,4 +602,9 @@
     </classes>
   </test>
 
+  <test name="Nested2">
+    <packages>
+      <package name="test.nested2" />
+    </packages>
+  </test>
 </suite>
