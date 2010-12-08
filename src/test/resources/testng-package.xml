@@ -1,0 +1,19 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+  
+<suite name="SingleSuite" verbose="2" parallel="false" thread-count="4"
+    data-provider-thread-count="3">
+
+  <test name="Nested" >
+    <groups>
+      <run>
+        <include name="unittest" />
+      </run>
+    </groups>
+
+    <packages>
+      <package name="test.nested.*"/>
+    </packages>
+  </test>
+
+</suite>
+
