@@ -908,13 +908,13 @@ public class TestNG {
         }
         catch (InterruptedException e) {
           Thread.currentThread().interrupt();
-          LOGGER.error("Error waiting for concurrent executors to finish " + e.getMessage());
+          error("Error waiting for concurrent executors to finish " + e.getMessage());
         }
       }
     }
     else {
       setStatus(HAS_NO_TEST);
-      System.err.println("[ERROR]: No test suite found. Nothing to run");
+      error("No test suite found. Nothing to run");
       usage();
     }
 
@@ -922,6 +922,10 @@ public class TestNG {
     // Generate the suites report
     //
     return Lists.newArrayList(suiteRunnerMap.values());
+  }
+
+  private static void error(String s) {
+    LOGGER.error(s);
   }
 
   /**
@@ -1121,7 +1125,7 @@ public class TestNG {
         ex.printStackTrace(System.out);
       }
       else {
-        System.err.println("[ERROR]: " + ex.getMessage());
+        error(ex.getMessage());
       }
       result.setStatus(HAS_FAILURE);
     }
@@ -1214,12 +1218,11 @@ public class TestNG {
           if (sel.length == 2) {
             addMethodSelector(sel[0], Integer.valueOf(sel[1]));
           } else {
-            LOGGER.error("ERROR: method selector value was not in the format" +
-                  " org.example.Selector:4");
+            error("Method selector value was not in the format org.example.Selector:4");
           }
         }
         catch (NumberFormatException nfe) {
-          LOGGER.error("ERROR: method selector value was not in the format org.example.Selector:4");
+          error("Method selector value was not in the format org.example.Selector:4");
         }
       }
     }
