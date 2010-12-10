@@ -14,6 +14,12 @@ import static org.testng.internal.invokers.InvokedMethodListenerMethod.BEFORE_IN
 import static org.testng.internal.invokers.InvokedMethodListenerSubtype.EXTENDED_LISTENER;
 import static org.testng.internal.invokers.InvokedMethodListenerSubtype.SIMPLE_LISTENER;
 
+/**
+ * Hides complexity of calling methods of {@link IInvokedMethodListener} and
+ * {@link IInvokedMethodListener2}.
+ *
+ * @author Ansgar Konermann
+ */
 public class InvokedMethodListenerInvoker {
 
   private InvokedMethodListenerMethod m_listenerMethod;
