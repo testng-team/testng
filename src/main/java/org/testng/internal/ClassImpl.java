@@ -116,50 +116,28 @@ public class ClassImpl implements IClass {
   /**
    * @return an instance from Guice if @Test(guiceModule) attribute was found, null otherwise
    */
+  @SuppressWarnings("unchecked")
   private Object getInstanceFromGuice() {
     Annotation testAnnotation = AnnotationHelper.findAnnotationSuperClasses(Test.class, m_class);
     if (testAnnotation == null) return null;
 
-    Test test = (Test) testAnnotation;
     Object result = null;
+    Test test = (Test) testAnnotation;
     Class testModuleClass = test.guiceModule();
-    // Note: use reflection here because jarjar will rename a literal to org.testng.guice.Module
     try {
-      Class guiceModuleClass = Module.class;
+      Class<Module> guiceModuleClass = Module.class;
       if (test != null && ! Object.class.equals(testModuleClass)) {
-//        if (! guiceModuleClass.isAssignableFrom(testModuleClass) &&
-//            ! testngGuiceClass.isAssignableFrom(testModuleClass)) {
-//          throw new TestNGException("The @Test annotation on " + m_class + " specifies"
-//              + " a guiceModule " + testModuleClass + " which does not extend "
-//              + guiceModuleClass);
-//        }
-
-        for (Class c : testModuleClass.getInterfaces()) {
-          System.out.println(" Implemented:" + c);
+        if (! guiceModuleClass.isAssignableFrom(testModuleClass)) {
+          throw new TestNGException("The @Test annotation on " + m_class + " specifies"
+              + " a guiceModule " + testModuleClass + " which does not extend "
+              + guiceModuleClass);
         }
-        Module moduleInstance = (Module) testModuleClass.newInstance();
-//        result = Guice.createInjector(moduleInstance).getInstance(m_class);
 
-        Class guiceClass = Class.forName("com.google.inject.Guice");
-        Class guiceModuleClasses = Array.newInstance(guiceModuleClass, 0).getClass();
-        Method createInjector = guiceClass.getMethod("createInjector", guiceModuleClasses);
-
-        Object parms = Array.newInstance(testModuleClass, 1);
-        Array.set(parms, 0, moduleInstance);
-        Object injector = createInjector.invoke(null, parms);
-        Method getInstanceMethod =
-            Class.forName("com.google.inject.Injector").getMethod("getInstance", Class.class);
-        result = getInstanceMethod.invoke(injector, m_class);
+        result = Guice.createInjector((Module) testModuleClass.newInstance()).getInstance(m_class);
       }
     } catch (IllegalAccessException e) {
       throw new TestNGException(e);
     } catch (InstantiationException e) {
-      throw new TestNGException(e);
-    } catch (ClassNotFoundException e) {
-      throw new TestNGException(e);
-    } catch (NoSuchMethodException e) {
-      throw new TestNGException(e);
-    } catch (InvocationTargetException e) {
       throw new TestNGException(e);
     }
 
