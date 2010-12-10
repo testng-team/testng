@@ -30,13 +30,13 @@ public class InvokedMethodListenerInvoker {
    *        This parameter is only used when calling methods on an {@link IInvokedMethodListener2}.
    */  
   public InvokedMethodListenerInvoker(InvokedMethodListenerMethod listenerMethod,
-      ITestResult testResult, ITestContext testContext) {
+                                      ITestResult testResult, ITestContext testContext) {
     m_listenerMethod = listenerMethod;
     m_testContext = testContext;
     m_testResult = testResult;
   }
 
-    /**
+  /**
    * Invoke the given {@code listenerInstance}, calling the method specified in the costructor of
    * this {@link InvokedMethodListenerInvoker}.
    *
@@ -49,9 +49,9 @@ public class InvokedMethodListenerInvoker {
    *        method.
    */
   public void invokeListener(IInvokedMethodListener listenerInstance,
-      IInvokedMethod invokedMethod) {
-    obtainStrategyFor(listenerInstance, m_listenerMethod)
-        .callMethod(listenerInstance, invokedMethod, m_testResult, m_testContext);
+                             IInvokedMethod invokedMethod) {
+    final InvocationStrategy strategy = obtainStrategyFor(listenerInstance, m_listenerMethod);
+    strategy.callMethod(listenerInstance, invokedMethod, m_testResult, m_testContext);
   }
 
   private InvocationStrategy obtainStrategyFor(IInvokedMethodListener listenerInstance,
