@@ -12,6 +12,7 @@ import org.testng.internal.TestNGMethod;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlTest;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -259,6 +260,15 @@ public class AnnotationHelper {
 
       return result;
     }
+
+  public static Annotation findAnnotationSuperClasses(Class annotationClass, Class c) {
+    while (c != null) {
+      Annotation result = c.getAnnotation(annotationClass);
+      if (result != null) return result;
+      else c = c.getSuperclass();
+    }
+    return null;
+  }
 
   private static boolean isAnnotationPresent(IAnnotationFinder annotationFinder,
       Method m, Class[] annotationClasses)

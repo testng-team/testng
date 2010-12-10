@@ -1,5 +1,6 @@
 Current
 
+Added: @Test(guiceModule)
 Added: timeOut for configuration methods
 Added: -randomizesuites (Nalin Makar)
 Added: IConfigurable

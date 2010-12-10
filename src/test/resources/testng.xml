@@ -607,4 +607,11 @@
       <package name="test.nested2" />
     </packages>
   </test>
+
+  <test name="Guice">
+    <classes>
+      <class name="test.guice.GuiceTest" />
+      <class name="test.guice.GuiceInheritanceTest" />
+    </classes>
+  </test>
 </suite>

@@ -1,13 +1,23 @@
 package org.testng.internal;
 
+import com.google.inject.Guice;
+import com.google.inject.Module;
+
 import org.testng.IClass;
 import org.testng.IObjectFactory;
 import org.testng.ITest;
+import org.testng.TestNGException;
+import org.testng.annotations.Test;
 import org.testng.collections.Lists;
+import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
@@ -86,12 +96,74 @@ public class ClassImpl implements IClass {
 
   private Object getDefaultInstance() {
     if (m_defaultInstance == null) {
-      m_defaultInstance = m_instance != null ? m_instance : ClassHelper
-          .createInstance(m_class, m_classes, m_xmlTest, m_annotationFinder,
-              m_objectFactory);
+      if (m_instance != null) {
+        m_defaultInstance = m_instance;
+      } else {
+        Object instance = getInstanceFromGuice();
+
+        if (instance != null) {
+          m_defaultInstance = instance;
+        } else {
+          m_defaultInstance = ClassHelper.createInstance(m_class, m_classes, m_xmlTest,
+              m_annotationFinder, m_objectFactory);
+        }
+      }
     }
 
     return m_defaultInstance;
+  }
+
+  /**
+   * @return an instance from Guice if @Test(guiceModule) attribute was found, null otherwise
+   */
+  private Object getInstanceFromGuice() {
+    Annotation testAnnotation = AnnotationHelper.findAnnotationSuperClasses(Test.class, m_class);
+    if (testAnnotation == null) return null;
+
+    Test test = (Test) testAnnotation;
+    Object result = null;
+    Class testModuleClass = test.guiceModule();
+    // Note: use reflection here because jarjar will rename a literal to org.testng.guice.Module
+    try {
+      Class guiceModuleClass = Module.class;
+      if (test != null && ! Object.class.equals(testModuleClass)) {
+//        if (! guiceModuleClass.isAssignableFrom(testModuleClass) &&
+//            ! testngGuiceClass.isAssignableFrom(testModuleClass)) {
+//          throw new TestNGException("The @Test annotation on " + m_class + " specifies"
+//              + " a guiceModule " + testModuleClass + " which does not extend "
+//              + guiceModuleClass);
+//        }
+
+        for (Class c : testModuleClass.getInterfaces()) {
+          System.out.println(" Implemented:" + c);
+        }
+        Module moduleInstance = (Module) testModuleClass.newInstance();
+//        result = Guice.createInjector(moduleInstance).getInstance(m_class);
+
+        Class guiceClass = Class.forName("com.google.inject.Guice");
+        Class guiceModuleClasses = Array.newInstance(guiceModuleClass, 0).getClass();
+        Method createInjector = guiceClass.getMethod("createInjector", guiceModuleClasses);
+
+        Object parms = Array.newInstance(testModuleClass, 1);
+        Array.set(parms, 0, moduleInstance);
+        Object injector = createInjector.invoke(null, parms);
+        Method getInstanceMethod =
+            Class.forName("com.google.inject.Injector").getMethod("getInstance", Class.class);
+        result = getInstanceMethod.invoke(injector, m_class);
+      }
+    } catch (IllegalAccessException e) {
+      throw new TestNGException(e);
+    } catch (InstantiationException e) {
+      throw new TestNGException(e);
+    } catch (ClassNotFoundException e) {
+      throw new TestNGException(e);
+    } catch (NoSuchMethodException e) {
+      throw new TestNGException(e);
+    } catch (InvocationTargetException e) {
+      throw new TestNGException(e);
+    }
+
+    return result;
   }
 
   @Override
