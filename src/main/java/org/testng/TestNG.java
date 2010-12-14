@@ -349,6 +349,8 @@ public class TestNG {
         }
       }
       if (! foundTestngXml) {
+        Utils.log("TestNG", 1,
+            "Couldn't find a testng.xml in the jar file, running all the classes");
         XmlSuite xmlSuite = new XmlSuite();
         xmlSuite.setVerbose(0);
         xmlSuite.setName("Jar suite");
