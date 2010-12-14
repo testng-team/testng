@@ -16,5 +16,5 @@ import java.lang.annotation.Target;
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target(TYPE)
 public @interface Guice {
-  Class<? extends Module>[] modules() default Module.class;
+  Class<? extends Module>[] modules() default {};
 }
