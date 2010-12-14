@@ -326,7 +326,15 @@ public final class ClassHelper {
           // Utils.createInstance(ec, classes, xmlTest, finder);
           parameters = new Object[] { enclosingClassInstance };
         } // isStatic
-        Constructor<?> ct = declaringClass.getDeclaredConstructor(parameterTypes);
+
+        Constructor<?> ct = null;
+        try {
+          ct = declaringClass.getDeclaredConstructor(parameterTypes);
+        }
+        catch (NoSuchMethodException ex) {
+          // Couldn't find a parameterless constructor, we'll pass a null constructor to the factory
+          // and hope it can deal with it
+        }
         result = objectFactory.newInstance(ct, parameters);
       }
     }
