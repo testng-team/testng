@@ -1,8 +1,8 @@
 package test.guice;
 
-import org.testng.annotations.Test;
+import org.testng.annotations.Guice;
 
-@Test(guiceModule = GuiceExampleModule.class)
+@Guice(modules = GuiceExampleModule.class)
 public class GuiceBase {
 
 }

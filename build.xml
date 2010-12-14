@@ -93,11 +93,12 @@
       <zipfileset src="${lib.dir}/${junit.jar}" />
     </jar>
 
-  	<!-- Save ClassImpl.class since we don't want jarjar to touch it -->
-
-  	<unzip dest="/tmp" src="${testng-untransformed.jar}">
+  	<!-- List of classes that we don't want jarjar to modify -->
+  	<property name="unpatched.dir" value="/tmp/testng-unpatched" />
+  	<unzip dest="${unpatched.dir}" src="${testng-untransformed.jar}">
       <patternset>
         <include name="org/testng/internal/ClassImpl.class" />
+        <include name="org/testng/annotations/Guice.class" />
       </patternset>
     </unzip>
 
@@ -106,14 +107,14 @@
     	<rule pattern="com.google.inject.**" result="org.testng.guice.@1" />
     </jarjar>
 
-  	<!-- Recreate a testng.jar with the ClassImpl.class untouched by jarjar -->
-
+  	<!-- Recreate a testng.jar including the unmodified classes -->
   	<property name="patched.dir" value="/tmp/testng-patched" />
   	<delete dir="${patched.dir}" />
   	<mkdir dir="${patched.dir}" />
   	<unjar dest="${patched.dir}" src="${testng.jar}" />
-  	<copy file="/tmp/org/testng/internal/ClassImpl.class" todir="${patched.dir}/org/testng/internal"
-  	  overwrite="true" />
+  	<copy todir="${patched.dir}" overwrite="true">
+      <fileset dir="${unpatched.dir}" />
+    </copy>
   	<delete file="${testng.jar}" />
   	<jar jarfile="${testng.jar}">
   	  <fileset dir="${patched.dir}" />

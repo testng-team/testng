@@ -180,5 +180,4 @@ public @interface Test {
    */
   int priority() default 0;
 
-  Class guiceModule() default Object.class;
 }

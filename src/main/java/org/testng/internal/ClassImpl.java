@@ -1,13 +1,12 @@
 package org.testng.internal;
 
-import com.google.inject.Guice;
 import com.google.inject.Module;
 
 import org.testng.IClass;
 import org.testng.IObjectFactory;
 import org.testng.ITest;
 import org.testng.TestNGException;
-import org.testng.annotations.Test;
+import org.testng.annotations.Guice;
 import org.testng.collections.Lists;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -15,9 +14,6 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
@@ -118,22 +114,17 @@ public class ClassImpl implements IClass {
    */
   @SuppressWarnings("unchecked")
   private Object getInstanceFromGuice() {
-    Annotation testAnnotation = AnnotationHelper.findAnnotationSuperClasses(Test.class, m_class);
-    if (testAnnotation == null) return null;
+    Annotation annotation = AnnotationHelper.findAnnotationSuperClasses(Guice.class, m_class);
+    if (annotation == null) return null;
 
     Object result = null;
-    Test test = (Test) testAnnotation;
-    Class testModuleClass = test.guiceModule();
+    Guice guice = (Guice) annotation;
+    Class<? extends Module>[] testModuleClasses = guice.modules();
     try {
-      Class<Module> guiceModuleClass = Module.class;
-      if (test != null && ! Object.class.equals(testModuleClass)) {
-        if (! guiceModuleClass.isAssignableFrom(testModuleClass)) {
-          throw new TestNGException("The @Test annotation on " + m_class + " specifies"
-              + " a guiceModule " + testModuleClass + " which does not extend "
-              + guiceModuleClass);
-        }
-
-        result = Guice.createInjector((Module) testModuleClass.newInstance()).getInstance(m_class);
+      for (Class<? extends Module> c : testModuleClasses) {
+        result = com.google.inject.Guice.createInjector(
+            (Module) c.newInstance()).getInstance(m_class);
+        if (result != null) return result;
       }
     } catch (IllegalAccessException e) {
       throw new TestNGException(e);
