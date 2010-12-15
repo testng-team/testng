@@ -424,7 +424,7 @@ public class Logger {
         return level.intValue();
       }
       int dot= name.lastIndexOf('.');
-      if(dot != -1) {
+      if(dot == -1) {
         loglog4testng("Found level " + rootLoggerLevel + " for root logger");
 
         // Logger name not found. Defaults to root logger level.
