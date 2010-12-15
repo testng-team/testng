@@ -40,4 +40,4 @@ rm -rf $rel
 wget http://testng.org/$rel.zip
 unzip $rel.zip
 cd $HOME/java/testng
-java -Dtest.resources.dir=$HOME/java/testng/src/test/resources -classpath $HOME/t/$rel/$rel.jar:target/test-classes:$CLASSPATH org.testng.TestNG $HOME/java/testng/src/test/resources/testng.xml
+java -Dtest.resources.dir=$HOME/java/testng/src/test/resources -classpath $HOME/t/$rel/$rel.jar:target/test-classes:lib/guice-2.0.jar org.testng.TestNG $HOME/java/testng/src/test/resources/testng.xml
