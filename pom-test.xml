@@ -74,7 +74,7 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>5.14.3-SNAPSHOT</version>
+            <version>5.14.4</version>
             <scope>test</scope>
         </dependency>
 
