@@ -5,5 +5,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="target/testng-5.14.3beta.jar"/>
 	<classpathentry kind="lib" path="lib/ant-1.6.5.jar"/>
+	<classpathentry kind="lib" path="lib/guice-2.0.jar"/>
 	<classpathentry kind="output" path="eclipse-build"/>
 </classpath>
