@@ -91,6 +91,7 @@
       <zipfileset src="${lib.dir}/${beanshell.jar}" />
       <zipfileset src="${lib.dir}/${jcommander.jar}" />
       <zipfileset src="${lib.dir}/${junit.jar}" />
+      <zipfileset src="${lib.dir}/${inject.jar}" />
     </jar>
 
   	<!-- List of classes that we don't want jarjar to modify -->
