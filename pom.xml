@@ -130,7 +130,7 @@
     <dependency>
       <groupId>com.beust</groupId>
       <artifactId>jcommander</artifactId>
-      <version>1.11</version>
+      <version>1.12</version>
     </dependency>
 
   </dependencies>    
