@@ -25,6 +25,7 @@ Fixed: Invoke IInvokedMethodListener.afterInvocation after fixing results for te
 Fixed: TESTNG-441: NPE in SuiteHTMLReporter#generateMethodsChronologically caused by a race condition (Slawomir Ginter)
 
 Eclipse:
+Added: Eclipse can now monitor a test-output/ directory and update the view when a new result is created
 Added: Right clicking on a class/package/project now offers a menu "TestNG/Convert to TestNG"
 Added: Excluded methods are now listed in the Summary tab
 Added: "Description" column in the excluded methods table
