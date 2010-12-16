@@ -54,6 +54,10 @@ public class MethodInstance implements IMethodInstance {
       XmlClass class1 = o1.getMethod().getTestClass().getXmlClass();
       XmlClass class2 = o2.getMethod().getTestClass().getXmlClass();
 
+      // This can happen if these classes came from a @Factory, in which case, they
+      // don't have an associated XmlClass
+      if (class1 == null || class2 == null) return 0;
+
       if (! class1.getName().equals(class2.getName())) {
         int index1 = class1.getIndex();
         int index2 = class2.getIndex();

@@ -339,8 +339,7 @@ public final class ClassHelper {
       }
     }
     catch (TestNGException ex) {
-      // We need to pass this along
-      throw ex;
+      throw new TestNGException("Couldn't instantiate class:" + declaringClass);
     }
     catch (NoSuchMethodException ex) {
       result = ClassHelper.tryOtherConstructor(declaringClass);
