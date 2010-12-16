@@ -1321,6 +1321,9 @@ public class Invoker implements IInvoker {
             fedInstance),
           null /* TestResult */);
     }
+    catch(TestNGException ex) {
+      throw ex;
+    }
     catch(Throwable cause) {
       return new ParameterBag(null /* ParameterHolder */,
           new TestResult(
