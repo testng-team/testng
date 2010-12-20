@@ -1127,7 +1127,9 @@ public class Invoker implements IInvoker {
           failureCount = handleInvocationResults(testMethod,
               bag.errorResults, null, failureCount, expectedExceptionHolder, true,
               true /* collect results */);
-          registerSkippedTestResult(testMethod, instances[0], start);
+          ITestResult tr = registerSkippedTestResult(testMethod, instances[0], start);
+          result.add(tr);
+          tr.setThrowable(bag.errorResults.get(0).getThrowable());
           continue;
         }
 
@@ -1321,9 +1323,9 @@ public class Invoker implements IInvoker {
             fedInstance),
           null /* TestResult */);
     }
-    catch(TestNGException ex) {
-      throw ex;
-    }
+//    catch(TestNGException ex) {
+//      throw ex;
+//    }
     catch(Throwable cause) {
       return new ParameterBag(null /* ParameterHolder */,
           new TestResult(
