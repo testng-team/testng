@@ -708,6 +708,8 @@ public class TestNG {
 
   private boolean m_randomizeSuites = Boolean.FALSE;
 
+  private boolean m_preserveOrder = false;
+
   /**
    * Sets the level of verbosity. This value will override the value specified
    * in the test suites.
@@ -731,6 +733,9 @@ public class TestNG {
       }
 
       for (XmlSuite s : m_cmdlineSuites) {
+        for (XmlTest t : s.getTests()) {
+          t.setPreserveOrder(m_preserveOrder ? "true " : "false");
+        }
         m_suites.add(s);
       }
     }
@@ -988,7 +993,7 @@ public class TestNG {
    * this information
    * @param suiteRunnerMap Map with XMLSuite as key and it's respective
    *   SuiteRunner as value. This is updated as part of this method call
-   * @param xmlSuite Xml Suite (and it's children) for which {@code SuiteRunner}s are created
+   * @param xmlSuite Xml Suite (and its children) for which {@code SuiteRunner}s are created
    */
   private void createSuiteRunners(Map<XmlSuite, ISuite> suiteRunnerMap /* OUT */, XmlSuite xmlSuite) {
     xmlSuite.setDefaultAnnotations(m_defaultAnnotations.toString());
@@ -1677,5 +1682,9 @@ public class TestNG {
     if (loader != null) {
       ClassHelper.addClassLoader(loader);
     }
+  }
+
+  public void setPreserveOrder(boolean b) {
+    m_preserveOrder = b;
   }
 }
