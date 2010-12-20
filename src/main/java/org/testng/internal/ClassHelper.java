@@ -267,7 +267,7 @@ public final class ClassHelper {
                                       XmlTest xmlTest,
                                       IAnnotationFinder finder,
                                       IObjectFactory objectFactory) {
-    Object result;
+    Object result = null;
 
     try {
 
@@ -332,8 +332,10 @@ public final class ClassHelper {
           ct = declaringClass.getDeclaredConstructor(parameterTypes);
         }
         catch (NoSuchMethodException ex) {
-          // Couldn't find a parameterless constructor, we'll pass a null constructor to the factory
-          // and hope it can deal with it
+          ct = declaringClass.getDeclaredConstructor(new Class[] {String.class});
+          parameters = new Object[] { "Default test name" };
+          // If ct == null here, we'll pass a null
+          // constructor to the factory and hope it can deal with it
         }
         result = objectFactory.newInstance(ct, parameters);
       }
@@ -342,7 +344,6 @@ public final class ClassHelper {
       throw new TestNGException("Couldn't instantiate class:" + declaringClass);
     }
     catch (NoSuchMethodException ex) {
-      result = ClassHelper.tryOtherConstructor(declaringClass);
     }
     catch (Throwable cause) {
       // Something else went wrong when running the constructor
