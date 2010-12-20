@@ -32,9 +32,9 @@ public class InvokedMethodListenerInvoker {
    *
    * @param listenerMethod method which should be called
    * @param testResult test result which should be passed to the listener method upon invocation
-   * @param testContext test context which should be passed to the listener meethod upon invocation.
+   * @param testContext test context which should be passed to the listener method upon invocation.
    *        This parameter is only used when calling methods on an {@link IInvokedMethodListener2}.
-   */  
+   */
   public InvokedMethodListenerInvoker(InvokedMethodListenerMethod listenerMethod,
                                       ITestResult testResult, ITestContext testContext) {
     m_listenerMethod = listenerMethod;
@@ -54,6 +54,8 @@ public class InvokedMethodListenerInvoker {
    *        or {@link IInvokedMethodListener2#afterInvocation(IInvokedMethod, ITestResult, ITestContext)}
    *        method.
    */
+
+  @SuppressWarnings("unchecked")
   public void invokeListener(IInvokedMethodListener listenerInstance,
                              IInvokedMethod invokedMethod) {
     final InvocationStrategy strategy = obtainStrategyFor(listenerInstance, m_listenerMethod);
