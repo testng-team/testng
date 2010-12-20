@@ -959,7 +959,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
     methodInstances = m_methodInterceptor.intercept(methodInstances, this);
 
     if (getVerbose() >= 2) {
-      log(3, "WILL BE RUN IN RANDOM ORDER:");
+      log(3, "Will be run in random order:");
       for (IMethodInstance mi : methodInstances) {
         log(3, "  " + mi.getMethod());
         log(3, "      on instances");

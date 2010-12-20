@@ -61,4 +61,8 @@ public class ResultMap implements IResultMap {
     return m_map.values();
   }
 
+  @Override
+  public String toString() {
+    return "[ResultMap " + m_map + "]";
+  }
 }

@@ -3,6 +3,7 @@ package org.testng.internal;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.SkipException;
 import org.testng.TestNGException;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
@@ -283,6 +284,8 @@ public class Parameters {
   private static DataProviderHolder findDataProvider(Class cls, IAnnotationFinder finder,
       String name, Class dataProviderClass)
   {
+    DataProviderHolder result = null;
+
     boolean shouldBeStatic = false;
     if (dataProviderClass != null) {
       cls = dataProviderClass;
@@ -297,11 +300,14 @@ public class Parameters {
           throw new TestNGException("DataProvider should be static: " + m);
         }
 
-        return new DataProviderHolder(dp, m);
+        if (result != null) {
+          throw new TestNGException("Found two providers called '" + name + "' on " + cls);
+        }
+        result = new DataProviderHolder(dp, m);
       }
     }
 
-    return null;
+    return result;
   }
 
   @SuppressWarnings({"deprecation"})

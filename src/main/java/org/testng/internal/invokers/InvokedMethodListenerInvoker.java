@@ -1,10 +1,5 @@
 package org.testng.internal.invokers;
 
-import static org.testng.internal.invokers.InvokedMethodListenerMethod.AFTER_INVOCATION;
-import static org.testng.internal.invokers.InvokedMethodListenerMethod.BEFORE_INVOCATION;
-import static org.testng.internal.invokers.InvokedMethodListenerSubtype.EXTENDED_LISTENER;
-import static org.testng.internal.invokers.InvokedMethodListenerSubtype.SIMPLE_LISTENER;
-
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.IInvokedMethodListener2;
@@ -14,23 +9,57 @@ import org.testng.collections.Maps;
 
 import java.util.Map;
 
+import static org.testng.internal.invokers.InvokedMethodListenerMethod.AFTER_INVOCATION;
+import static org.testng.internal.invokers.InvokedMethodListenerMethod.BEFORE_INVOCATION;
+import static org.testng.internal.invokers.InvokedMethodListenerSubtype.EXTENDED_LISTENER;
+import static org.testng.internal.invokers.InvokedMethodListenerSubtype.SIMPLE_LISTENER;
+
+/**
+ * Hides complexity of calling methods of {@link IInvokedMethodListener} and
+ * {@link IInvokedMethodListener2}.
+ *
+ * @author Ansgar Konermann
+ */
 public class InvokedMethodListenerInvoker {
 
   private InvokedMethodListenerMethod m_listenerMethod;
   private ITestContext m_testContext;
   private ITestResult m_testResult;
 
+  /**
+   * Creates a new invoker instance which can be used to call the specified {@code listenerMethod}
+   * on any number of {@link IInvokedMethodListener}s.
+   *
+   * @param listenerMethod method which should be called
+   * @param testResult test result which should be passed to the listener method upon invocation
+   * @param testContext test context which should be passed to the listener method upon invocation.
+   *        This parameter is only used when calling methods on an {@link IInvokedMethodListener2}.
+   */
   public InvokedMethodListenerInvoker(InvokedMethodListenerMethod listenerMethod,
-      ITestResult testResult, ITestContext testContext) {
+                                      ITestResult testResult, ITestContext testContext) {
     m_listenerMethod = listenerMethod;
     m_testContext = testContext;
     m_testResult = testResult;
   }
 
+  /**
+   * Invoke the given {@code listenerInstance}, calling the method specified in the constructor of
+   * this {@link InvokedMethodListenerInvoker}.
+   *
+   * @param listenerInstance the listener instance which should be invoked.
+   * @param invokedMethod the {@link IInvokedMethod} instance which should be passed to the
+   *        {@link IInvokedMethodListener#beforeInvocation(IInvokedMethod, ITestResult)},
+   *        {@link IInvokedMethodListener#afterInvocation(IInvokedMethod, ITestResult)},
+   *        {@link IInvokedMethodListener2#beforeInvocation(IInvokedMethod, ITestResult, ITestContext)}
+   *        or {@link IInvokedMethodListener2#afterInvocation(IInvokedMethod, ITestResult, ITestContext)}
+   *        method.
+   */
+
+  @SuppressWarnings("unchecked")
   public void invokeListener(IInvokedMethodListener listenerInstance,
-      IInvokedMethod invokedMethod) {
-    obtainStrategyFor(listenerInstance, m_listenerMethod)
-        .callMethod(listenerInstance, invokedMethod, m_testResult, m_testContext);
+                             IInvokedMethod invokedMethod) {
+    final InvocationStrategy strategy = obtainStrategyFor(listenerInstance, m_listenerMethod);
+    strategy.callMethod(listenerInstance, invokedMethod, m_testResult, m_testContext);
   }
 
   private InvocationStrategy obtainStrategyFor(IInvokedMethodListener listenerInstance,

@@ -171,4 +171,12 @@ public class TestListenerAdapter implements IResultListener {
   public void onConfigurationSuccess(ITestResult itr) {
     m_passedConfs.add(itr);
   }
+
+  @Override
+  public String toString() {
+    return "[TestListenerAdapter] Passed:" + getPassedTests().size()
+        + " Failed:" + getFailedTests().size()
+        + " Skipped:" + getSkippedTests().size()
+        + "]";
+  }
 }

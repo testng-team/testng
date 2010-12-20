@@ -35,7 +35,10 @@ public class ObjectFactoryImpl implements IObjectFactory {
     }
     catch(Exception ex) {
       throw new TestNGException("Cannot instantiate class "
-          + constructor.getDeclaringClass().getName(), ex);
+          + (constructor != null
+                ? constructor.getDeclaringClass().getName()
+                : ": couldn't find a suitable constructor"),
+                    ex);
     }
   }
 }

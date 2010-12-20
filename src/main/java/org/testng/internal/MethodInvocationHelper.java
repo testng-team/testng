@@ -135,10 +135,12 @@ public class MethodInvocationHelper {
       }
     }
     catch (InvocationTargetException e) {
-      throw new TestNGException(e);
+      // Don't throw TestNGException here or this test won't be reported as a skip or failure
+      throw new RuntimeException(e.getCause());
     }
     catch (IllegalAccessException e) {
-      throw new TestNGException(e);
+      // Don't throw TestNGException here or this test won't be reported as a skip or failure
+      throw new RuntimeException(e.getCause());
     }
 
     return result;

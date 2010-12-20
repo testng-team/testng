@@ -1,13 +1,19 @@
 package org.testng.internal;
 
+import com.google.inject.Module;
+
 import org.testng.IClass;
 import org.testng.IObjectFactory;
 import org.testng.ITest;
+import org.testng.TestNGException;
+import org.testng.annotations.Guice;
 import org.testng.collections.Lists;
+import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
 
@@ -86,12 +92,47 @@ public class ClassImpl implements IClass {
 
   private Object getDefaultInstance() {
     if (m_defaultInstance == null) {
-      m_defaultInstance = m_instance != null ? m_instance : ClassHelper
-          .createInstance(m_class, m_classes, m_xmlTest, m_annotationFinder,
-              m_objectFactory);
+      if (m_instance != null) {
+        m_defaultInstance = m_instance;
+      } else {
+        Object instance = getInstanceFromGuice();
+
+        if (instance != null) {
+          m_defaultInstance = instance;
+        } else {
+          m_defaultInstance = ClassHelper.createInstance(m_class, m_classes, m_xmlTest,
+              m_annotationFinder, m_objectFactory);
+        }
+      }
     }
 
     return m_defaultInstance;
+  }
+
+  /**
+   * @return an instance from Guice if @Test(guiceModule) attribute was found, null otherwise
+   */
+  @SuppressWarnings("unchecked")
+  private Object getInstanceFromGuice() {
+    Annotation annotation = AnnotationHelper.findAnnotationSuperClasses(Guice.class, m_class);
+    if (annotation == null) return null;
+
+    Object result = null;
+    Guice guice = (Guice) annotation;
+    Class<? extends Module>[] testModuleClasses = guice.modules();
+    try {
+      for (Class<? extends Module> c : testModuleClasses) {
+        result = com.google.inject.Guice.createInjector(
+            (Module) c.newInstance()).getInstance(m_class);
+        if (result != null) return result;
+      }
+    } catch (IllegalAccessException e) {
+      throw new TestNGException(e);
+    } catch (InstantiationException e) {
+      throw new TestNGException(e);
+    }
+
+    return result;
   }
 
   @Override

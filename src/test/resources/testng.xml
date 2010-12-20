@@ -601,10 +601,24 @@
       <class name="test.configurationfailurepolicy.FailurePolicyTest" />
     </classes>
   </test>
-
+  
   <test name="Nested2">
     <packages>
       <package name="test.nested2" />
     </packages>
   </test>
+
+  <test name="Guice">
+    <classes>
+      <class name="test.guice.GuiceTest" />
+      <class name="test.guice.GuiceInheritanceTest" />
+    </classes>
+  </test>
+  
+  <test name="Listener invokers">
+    <packages>
+      <package name="org.testng.internal.invokers"/>
+    </packages>
+  </test>
+  
 </suite>

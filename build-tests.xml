@@ -13,6 +13,7 @@
   <!-- ==================================================================== -->
   <path id="compile.cp">
     <pathelement location="${testng.jar}" />
+    <fileset dir="${lib.dir}" includes="${guice2.jar}" />
   </path>
 
   <target name="env:info">

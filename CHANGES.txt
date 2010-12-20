@@ -1,8 +1,10 @@
 Current
 
+Added: @Test(guiceModule)
 Added: timeOut for configuration methods
 Added: -randomizesuites (Nalin Makar)
 Added: IConfigurable
+Fixed: Throw an error when two data providers have the same name
 Fixed: Better handling of classes that don't have any TestNG annotations
 Fixed: XmlTest#toXml wasn't displaying the thread-count attribute
 Fixed: TESTNG-438: Regression in 5.14.1: JUnit Test Execution no longer working
@@ -24,6 +26,7 @@ Fixed: Invoke IInvokedMethodListener.afterInvocation after fixing results for te
 Fixed: TESTNG-441: NPE in SuiteHTMLReporter#generateMethodsChronologically caused by a race condition (Slawomir Ginter)
 
 Eclipse:
+Added: Eclipse can now monitor a test-output/ directory and update the view when a new result is created
 Added: Right clicking on a class/package/project now offers a menu "TestNG/Convert to TestNG"
 Added: Excluded methods are now listed in the Summary tab
 Added: "Description" column in the excluded methods table
