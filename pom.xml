@@ -263,6 +263,15 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <filters>
+                <filter>
+                  <artifact>org.testng:testng</artifact>
+                  <excludes>
+                    <exclude>org/testng/internal/ClassImpl.class</exclude>
+                    <exclude>org/testng/annotations/Guice.class</exclude>
+                  </excludes>
+                </filter>
+              </filters>
               <artifactSet>
                 <includes>
                   <include>com.google.inject:guice</include>
