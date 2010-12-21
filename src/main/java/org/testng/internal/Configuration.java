@@ -2,7 +2,7 @@ package org.testng.internal;
 
 import org.testng.IConfigurable;
 import org.testng.IHookable;
-import org.testng.IObjectFactory;
+import org.testng.ITestObjectFactory;
 import org.testng.guice.Inject;
 import org.testng.internal.annotations.IAnnotationFinder;
 
@@ -13,7 +13,7 @@ public class Configuration implements IConfiguration {
 
   @Nullable
   @Inject
-  IObjectFactory m_objectFactory;
+  ITestObjectFactory m_objectFactory;
 
   @Nullable
   @Inject
@@ -29,7 +29,7 @@ public class Configuration implements IConfiguration {
   }
 
   @Override
-  public IObjectFactory getObjectFactory() {
+  public ITestObjectFactory getObjectFactory() {
     return m_objectFactory;
   }
 

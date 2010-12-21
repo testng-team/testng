@@ -30,6 +30,7 @@ public interface ISuite extends IAttributes {
    * @return The object factory used to create all test instances.
    */
   public IObjectFactory getObjectFactory();
+  public IObjectFactory2 getObjectFactory2();
 
   /**
    * @return The output directory used for the reports.

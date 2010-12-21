@@ -328,6 +328,7 @@
     <classes>
       <class name="test.objectfactory.CustomFactoryTest" />
       <class name="test.objectfactory.CombinedTestAndObjectFactoryTest" />
+      <class name="test.objectfactory.ObjectFactory2Test"/>
     </classes>
   </test>
 

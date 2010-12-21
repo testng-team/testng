@@ -4,6 +4,7 @@ import org.testng.IClass;
 import org.testng.IInstanceInfo;
 import org.testng.IObjectFactory;
 import org.testng.ITestContext;
+import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.annotations.IAnnotation;
 import org.testng.collections.Lists;
@@ -46,7 +47,9 @@ public class TestNGClassFinder extends BaseClassFinder {
     //
     Set<Class<?>> allClasses= cim.getClasses();
 
-    IObjectFactory objectFactory = testContext.getSuite().getObjectFactory();
+    ITestObjectFactory objectFactory = testContext.getSuite().getObjectFactory();
+    if (objectFactory == null) objectFactory = testContext.getSuite().getObjectFactory2();
+
     //very first pass is to find ObjectFactory, can't create anything else until then
     if(objectFactory == null) {
       objectFactory = new ObjectFactoryImpl();
@@ -58,15 +61,15 @@ public class TestNGClassFinder extends BaseClassFinder {
               IAnnotation a = annotationFinder.findAnnotation(m,
                   org.testng.annotations.IObjectFactoryAnnotation.class);
               if (null != a) {
-                if (!IObjectFactory.class.isAssignableFrom(m.getReturnType())) {
+                if (!ITestObjectFactory.class.isAssignableFrom(m.getReturnType())) {
                   throw new TestNGException("Return type of " + m + " is not IObjectFactory");
                 }
                 try {
                   Object instance = cls.newInstance();
                   if (m.getParameterTypes().length > 0 && m.getParameterTypes()[0].equals(ITestContext.class)) {
-                    objectFactory = (IObjectFactory) m.invoke(instance, testContext);
+                    objectFactory = (ITestObjectFactory) m.invoke(instance, testContext);
                   } else {
-                    objectFactory = (IObjectFactory) m.invoke(instance);
+                    objectFactory = (ITestObjectFactory) m.invoke(instance);
                   }
                   break outer;
                 }

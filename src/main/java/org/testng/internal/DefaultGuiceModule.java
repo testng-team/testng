@@ -4,6 +4,7 @@ import org.testng.IAnnotationTransformer;
 import org.testng.IConfigurable;
 import org.testng.IHookable;
 import org.testng.IObjectFactory;
+import org.testng.ITestObjectFactory;
 import org.testng.guice.Binder;
 import org.testng.guice.Module;
 import org.testng.guice.Provides;
@@ -14,7 +15,7 @@ import org.testng.internal.annotations.JDK15AnnotationFinder;
 
 public class DefaultGuiceModule implements Module {
 
-  private IObjectFactory m_objectFactory;
+  private ITestObjectFactory m_objectFactory;
 
   @Nullable
   private IHookable m_hookable;
@@ -22,7 +23,7 @@ public class DefaultGuiceModule implements Module {
   @Nullable
   private IConfigurable m_configurable;
 
-  public DefaultGuiceModule(IObjectFactory factory) {
+  public DefaultGuiceModule(ITestObjectFactory factory) {
     m_objectFactory = factory;
   }
 
@@ -35,7 +36,7 @@ public class DefaultGuiceModule implements Module {
   }
 
   @Provides
-  IObjectFactory provideObjectFactory() {
+  ITestObjectFactory provideObjectFactory() {
     return m_objectFactory;
   }
 

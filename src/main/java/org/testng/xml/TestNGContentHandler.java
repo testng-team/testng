@@ -1,6 +1,6 @@
 package org.testng.xml;
 
-import org.testng.IObjectFactory;
+import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -178,7 +178,7 @@ public class TestNGContentHandler extends DefaultHandler {
       String objectFactory = attributes.getValue("object-factory");
       if (null != objectFactory && m_loadClasses) {
         try {
-          m_currentSuite.setObjectFactory((IObjectFactory)Class.forName(objectFactory).newInstance());
+          m_currentSuite.setObjectFactory((ITestObjectFactory)Class.forName(objectFactory).newInstance());
         }
         catch(Exception e) {
           Utils.log("Parser", 1, "[ERROR] Unable to create custom object factory '" + objectFactory + "' :" + e);

@@ -3,8 +3,8 @@ package org.testng.internal;
 import com.google.inject.Module;
 
 import org.testng.IClass;
-import org.testng.IObjectFactory;
 import org.testng.ITest;
+import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.annotations.Guice;
 import org.testng.collections.Lists;
@@ -33,12 +33,12 @@ public class ClassImpl implements IClass {
   private int m_instanceCount;
   private long[] m_instanceHashCodes;
   private transient Object m_instance;
-  private IObjectFactory m_objectFactory;
+  private ITestObjectFactory m_objectFactory;
   private String m_testName = null;
   private XmlClass m_xmlClass;
 
   public ClassImpl(Class cls, XmlClass xmlClass, Object instance, Map<Class, IClass> classes,
-      XmlTest xmlTest, IAnnotationFinder annotationFinder, IObjectFactory objectFactory) {
+      XmlTest xmlTest, IAnnotationFinder annotationFinder, ITestObjectFactory objectFactory) {
     m_class = cls;
     m_classes = classes;
     m_xmlClass = xmlClass;

@@ -162,7 +162,7 @@ public class TestNG {
 
   private Map<String, Integer> m_methodDescriptors = Maps.newHashMap();
 
-  private IObjectFactory m_objectFactory;
+  private ITestObjectFactory m_objectFactory;
 
   private List<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
 
@@ -598,10 +598,10 @@ public class TestNG {
   }
 
   public void setObjectFactory(Class c) {
-    m_objectFactory = (IObjectFactory)ClassHelper.newInstance(c);
+    m_objectFactory = (ITestObjectFactory) ClassHelper.newInstance(c);
   }
 
-  public void setObjectFactory(IObjectFactory factory) {
+  public void setObjectFactory(ITestObjectFactory factory) {
     m_objectFactory = factory;
   }
 

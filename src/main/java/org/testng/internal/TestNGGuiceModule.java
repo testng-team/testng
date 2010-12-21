@@ -3,7 +3,7 @@ package org.testng.internal;
 import org.testng.IAnnotationTransformer;
 import org.testng.IConfigurable;
 import org.testng.IHookable;
-import org.testng.IObjectFactory;
+import org.testng.ITestObjectFactory;
 import org.testng.guice.Binder;
 import org.testng.guice.Module;
 import org.testng.guice.Provides;
@@ -16,14 +16,14 @@ public class TestNGGuiceModule implements Module {
   private IAnnotationTransformer m_annotationTransformer;
 
   @Nullable
-  private IObjectFactory m_objectFactory;
+  private ITestObjectFactory m_objectFactory;
 
   @Nullable
   private IHookable m_hookable;
 
   private IConfigurable m_configurable;
 
-  public TestNGGuiceModule(IAnnotationTransformer transformer, IObjectFactory factory) {
+  public TestNGGuiceModule(IAnnotationTransformer transformer, ITestObjectFactory factory) {
     m_annotationTransformer = transformer;
     m_objectFactory = factory;
   }
@@ -44,7 +44,7 @@ public class TestNGGuiceModule implements Module {
   }
 
   @Provides
-  IObjectFactory provideObjectFactory() {
+  ITestObjectFactory provideObjectFactory() {
     return m_objectFactory;
   }
 
