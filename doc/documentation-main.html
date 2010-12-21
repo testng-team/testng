@@ -120,6 +120,10 @@ google_ad_channel ="5560744946";
 
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#dependency-injection">5.19 - Dependency injection</a></br>
 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#native-dependency-injection">5.19.1 - Native dependency injection</a></br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#native-dependency-injection">5.19.2 - Guice dependency injection</a></br>
+
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#invokedmethodlistener">5.20 - Invoked method listeners</a></br>
 
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#preserve-order">5.21 - Specifying the ordering of classes</a></br>
@@ -1955,6 +1959,12 @@ in your <tt>testng.xml</tt> file.
 <a name="dependency-injection">5.19 - Dependency injection</a>
 </h4>
 
+TestNG supports two different kinds of dependency injection: native (performed by TestNG itself) and external (performed by a dependency injection framework).
+
+<h5>
+<a name="native-dependency-injection">5.19.1 - Native dependency injection</a>
+</h5>
+
 TestNG lets you declare additional parameters in your methods.  When this happens, TestNG will automatically fill these parameters with the right value.  Dependency injection can be used in the following places:
 
 <ul>
@@ -1999,6 +2009,42 @@ public class NoInjectionTest {
   }
 }
 </pre>
+
+<h5>
+<a name="guice-dependency-injection">5.19.2 - Guice dependency injection</a>
+</h5>
+
+If you use Guice, TestNG gives you an easy way to inject your test objects with a Guice module:
+
+<pre class="brush: java">
+@Guice(modules = GuiceExampleModule.class)
+public class GuiceTest extends SimpleBaseTest {
+
+  @Inject
+  ISingleton m_singleton;
+
+  @Test
+  public void singletonShouldWork() {
+    m_singleton.doSomething();
+  }
+
+}
+</pre>
+
+In this example, <tt>GuiceExampleModule</tt> is expected to bind the interface <tt>ISingleton</tt> to some concrete class:
+
+<pre class="brush: java">
+public class GuiceExampleModule implements Module {
+
+  @Override
+  public void configure(Binder binder) {
+    binder.bind(ISingleton.class).to(ExampleSingleton.class).in(Singleton.class);
+  }
+
+}
+</pre>
+
+
 
 
 <!-------------------------------------
