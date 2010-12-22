@@ -9,10 +9,7 @@ import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Test;
-import org.testng.guice.Guice;
-import org.testng.guice.Injector;
-import org.testng.guice.Module;
-import org.testng.internal.DefaultGuiceModule;
+import org.testng.internal.IConfiguration;
 import org.testng.internal.annotations.IAfterSuite;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IBeforeSuite;
@@ -22,13 +19,12 @@ import java.lang.reflect.Method;
 
 @Test(enabled = true)
 public class MAnnotationSampleTest {
+  private IConfiguration m_configuration = new org.testng.internal.Configuration();
   private IAnnotationFinder m_finder;
 
   @Configuration(beforeTestClass = true, enabled = true)
   public void init() {
-    Module module = new DefaultGuiceModule(null);
-    Injector injector = Guice.createInjector(module);
-    m_finder = injector.getInstance(IAnnotationFinder.class);
+    m_finder = m_configuration.getAnnotationFinder();
   }
 
   public void verifyTestClassLevel() {
@@ -215,9 +211,6 @@ public class MAnnotationSampleTest {
 
   public void verifyParameters() throws SecurityException, NoSuchMethodException
   {
-    Module module = new DefaultGuiceModule(null);
-    Injector injector = Guice.createInjector(module);
-    m_finder = injector.getInstance(IAnnotationFinder.class);
     Method method = MTest1.class.getMethod("parameters", new Class[0]);
     IParametersAnnotation parameters =
       (IParametersAnnotation) m_finder.findAnnotation(method, IParametersAnnotation.class);

@@ -3,25 +3,31 @@ package org.testng.internal;
 import org.testng.IConfigurable;
 import org.testng.IHookable;
 import org.testng.ITestObjectFactory;
-import org.testng.guice.Inject;
+import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.JDK15AnnotationFinder;
 
 public class Configuration implements IConfiguration {
 
-  @Inject
   IAnnotationFinder m_annotationFinder;
 
-  @Nullable
-  @Inject
   ITestObjectFactory m_objectFactory;
 
-  @Nullable
-  @Inject
   IHookable m_hookable;
 
-  @Nullable
-  @Inject
   IConfigurable m_configurable;
+
+  public Configuration() {
+    init(new JDK15AnnotationFinder(new DefaultAnnotationTransformer()));
+  }
+
+  public Configuration(IAnnotationFinder finder) {
+    init(finder);
+  }
+
+  private void init(IAnnotationFinder finder) {
+    m_annotationFinder = finder;
+  }
 
   @Override
   public IAnnotationFinder getAnnotationFinder() {
@@ -31,6 +37,11 @@ public class Configuration implements IConfiguration {
   @Override
   public ITestObjectFactory getObjectFactory() {
     return m_objectFactory;
+  }
+
+  @Override
+  public void setObjectFactory(ITestObjectFactory factory) {
+    m_objectFactory = factory;
   }
 
   @Override

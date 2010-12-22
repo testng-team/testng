@@ -363,7 +363,8 @@ public final class ClassHelper {
       }
     }
     catch (TestNGException ex) {
-      throw new TestNGException("Couldn't instantiate class:" + declaringClass);
+      throw ex;
+//      throw new TestNGException("Couldn't instantiate class:" + declaringClass);
     }
     catch (NoSuchMethodException ex) {
     }

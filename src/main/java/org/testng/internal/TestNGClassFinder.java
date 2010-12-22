@@ -33,7 +33,7 @@ public class TestNGClassFinder extends BaseClassFinder {
   public TestNGClassFinder(ClassInfoMap cim,
                            Map<Class, List<Object>> instanceMap,
                            XmlTest xmlTest,
-                           IAnnotationFinder annotationFinder,
+                           IConfiguration configuration,
                            ITestContext testContext)
   {
     m_testContext = testContext;
@@ -42,13 +42,13 @@ public class TestNGClassFinder extends BaseClassFinder {
       instanceMap= Maps.newHashMap();
     }
 
+    IAnnotationFinder annotationFinder = configuration.getAnnotationFinder();
+    ITestObjectFactory objectFactory = configuration.getObjectFactory();
+
     //
     // Find all the new classes and their corresponding instances
     //
     Set<Class<?>> allClasses= cim.getClasses();
-
-    ITestObjectFactory objectFactory = testContext.getSuite().getObjectFactory();
-    if (objectFactory == null) objectFactory = testContext.getSuite().getObjectFactory2();
 
     //very first pass is to find ObjectFactory, can't create anything else until then
     if(objectFactory == null) {
@@ -167,7 +167,7 @@ public class TestNGClassFinder extends BaseClassFinder {
                 new TestNGClassFinder(moreClasses,
                     m_instanceMap,
                     xmlTest,
-                    annotationFinder,
+                    configuration,
                     m_testContext);
 
               IClass[] moreIClasses= finder.findTestClasses();

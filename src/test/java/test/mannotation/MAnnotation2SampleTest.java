@@ -5,22 +5,18 @@ import org.testng.annotations.Configuration;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Test;
-import org.testng.guice.Guice;
-import org.testng.guice.Injector;
-import org.testng.guice.Module;
-import org.testng.internal.DefaultGuiceModule;
+import org.testng.internal.IConfiguration;
 import org.testng.internal.annotations.IAnnotationFinder;
 
 import java.lang.reflect.Method;
 
 public class MAnnotation2SampleTest {
+  private IConfiguration m_configuration = new org.testng.internal.Configuration();
   private IAnnotationFinder m_finder;
 
   @Configuration(beforeTestClass = true, enabled = true, groups="current")
   public void init() {
-    Module module = new DefaultGuiceModule(null);
-    Injector injector = Guice.createInjector(module);
-    m_finder = injector.getInstance(IAnnotationFinder.class);
+    m_finder = m_configuration.getAnnotationFinder();
   }
 
   @Test
