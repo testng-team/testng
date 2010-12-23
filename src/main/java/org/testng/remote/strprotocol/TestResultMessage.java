@@ -75,13 +75,14 @@ public class TestResultMessage implements IStringMessage {
                            final String testName,
                            final ITestResult result)
   {
+    Throwable throwable = result.getThrowable();
     String stackTrace = null;
 
     if((ITestResult.FAILURE == result.getStatus())
       || (ITestResult.SUCCESS_PERCENTAGE_FAILURE == result.getStatus())) {
       StringWriter sw = new StringWriter();
       PrintWriter  pw = new PrintWriter(sw);
-      Throwable cause= result.getThrowable();
+      Throwable cause= throwable;
       if (null != cause) {
         cause.printStackTrace(pw);
         stackTrace = sw.getBuffer().toString();
@@ -91,8 +92,13 @@ public class TestResultMessage implements IStringMessage {
       }
     }
     else if(ITestResult.SKIP == result.getStatus()
-        && (result.getThrowable() != null && SkipException.class.isAssignableFrom(result.getThrowable().getClass()))) {
-      stackTrace= result.getThrowable().getMessage();
+        && (throwable != null && SkipException.class.isAssignableFrom(throwable.getClass()))) {
+      stackTrace= throwable.getMessage();
+    } else if (throwable != null) {
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter(sw);
+      throwable.printStackTrace(pw);
+      stackTrace = sw.toString();
     }
 
     init(MessageHelper.TEST_RESULT + result.getStatus(),

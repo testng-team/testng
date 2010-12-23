@@ -1127,9 +1127,9 @@ public class Invoker implements IInvoker {
           failureCount = handleInvocationResults(testMethod,
               bag.errorResults, null, failureCount, expectedExceptionHolder, true,
               true /* collect results */);
-          ITestResult tr = registerSkippedTestResult(testMethod, instances[0], start);
+          ITestResult tr = registerSkippedTestResult(testMethod, instances[0], start,
+              bag.errorResults.get(0).getThrowable());
           result.add(tr);
-          tr.setThrowable(bag.errorResults.get(0).getThrowable());
           continue;
         }
 
@@ -1208,7 +1208,7 @@ public class Invoker implements IInvoker {
                       && (m_skipFailedInvocationCounts
                             || testMethod.skipFailedInvocations())) {
                   while (invocationCount-- > 0) {
-                    result.add(registerSkippedTestResult(testMethod, instances[0], start));
+                    result.add(registerSkippedTestResult(testMethod, instances[0], start, null));
                   }
                   break;
                 }
@@ -1238,12 +1238,12 @@ public class Invoker implements IInvoker {
   } // invokeTestMethod
 
   private ITestResult registerSkippedTestResult(ITestNGMethod testMethod, Object instance,
-      long start) {
+      long start, Throwable throwable) {
     ITestResult result =
       new TestResult(testMethod.getTestClass(),
         instance,
         testMethod,
-        null,
+        throwable,
         start,
         System.currentTimeMillis());
     result.setStatus(TestResult.SKIP);
