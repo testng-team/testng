@@ -25,6 +25,12 @@ import static org.testng.reporters.XMLReporterConfig.TAG_SUITE;
 import static org.testng.reporters.XMLReporterConfig.TAG_TEST;
 import static org.testng.reporters.XMLReporterConfig.TAG_TEST_METHOD;
 
+/**
+ * Parses testng-result.xml, create TestResultMessages and send them back to the listener
+ * as we encounter them.
+ *
+ * @author Cedric Beust <cedric@beust.com>
+ */
 public class ResultContentHandler extends DefaultHandler {
   private int m_suiteMethodCount = 0;
   private int m_testMethodCount = 0;
