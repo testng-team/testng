@@ -503,14 +503,9 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       if (! skip) {
         skip = test.skipFailedInvocationCounts();
       }
-      TestRunner testRunner =
-        new TestRunner(m_configuration,
-            suite,
-                        test,
-                        suite.getOutputDirectory(),
-                        suite.getAnnotationFinder(test.getAnnotations()),
-                        skip,
-                        listeners);
+      TestRunner testRunner = new TestRunner(m_configuration, suite, test,
+          suite.getOutputDirectory(), suite.getAnnotationFinder(test.getAnnotations()), skip,
+          listeners);
 
       if (m_useDefaultListeners) {
         testRunner.addListener(new TestHTMLReporter());
