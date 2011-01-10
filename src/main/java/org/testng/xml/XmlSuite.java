@@ -59,7 +59,7 @@ public class XmlSuite implements Serializable, Cloneable {
   private Integer m_verbose = null;
 
   public static String DEFAULT_PARALLEL = "false";
-  private String m_parallel = null;
+  private String m_parallel = DEFAULT_PARALLEL;
 
   /** Whether to SKIP or CONTINUE to re-attempt failed configuration methods. */
   public static String DEFAULT_CONFIG_FAILURE_POLICY = SKIP;
@@ -245,35 +245,6 @@ public class XmlSuite implements Serializable, Cloneable {
    */
   public void setMethodSelectors(List<XmlMethodSelector> methodSelectors) {
     m_methodSelectors = methodSelectors;
-  }
-
-  /**
-   * Sets the bean shell expression.
-   *
-   * @param expression the bean shell expression.
-   */
-  public void setBeanShellExpression(String expression) {
-    m_expression = expression;
-  }
-
-  /**
-   * Returns the bean shell expression.
-   *
-   * @return the bean shell expression.
-   * @deprecated use getBeanShelltExpression()
-   */
-  @Deprecated
-  public String getExpression() {
-    return m_expression;
-  }
-
-  /**
-   * Returns the bean shell expression.
-   *
-   * @return the bean shell expression.
-   */
-  public String getBeanShellExpression() {
-    return m_expression;
   }
 
   /**
@@ -591,7 +562,7 @@ public class XmlSuite implements Serializable, Cloneable {
     result.setParameters(getAllParameters());
     result.setVerbose(getVerbose());
     result.setXmlPackages(getXmlPackages());
-    result.setBeanShellExpression(getExpression());
+//    result.setBeanShellExpression(getExpression());
     result.setMethodSelectors(getMethodSelectors());
     result.setJUnit(isJUnit()); // TESTNG-141
     result.setSkipFailedInvocationCounts(skipFailedInvocationCounts());
@@ -746,82 +717,82 @@ public class XmlSuite implements Serializable, Cloneable {
       return true;
     }
     if (obj == null) {
-      return false;
+      return f();
     }
     if (getClass() != obj.getClass()) {
-      return false;
+      return f();
     }
     XmlSuite other = (XmlSuite) obj;
 //      if (m_childSuites == null) {
 //        if (other.m_childSuites != null)
-//          return false;
+//          return f();
 //      } else if (!m_childSuites.equals(other.m_childSuites))
-//        return false;
+//        return f();
     if (m_configFailurePolicy == null) {
       if (other.m_configFailurePolicy != null) {
-        return false;
+        return f();
       }
     } else if (!m_configFailurePolicy.equals(other.m_configFailurePolicy)) {
-      return false;
+      return f();
     }
     if (m_dataProviderThreadCount != other.m_dataProviderThreadCount) {
-      return false;
+      return f();
     }
     if (m_expression == null) {
       if (other.m_expression != null) {
-        return false;
+        return f();
       }
     } else if (!m_expression.equals(other.m_expression)) {
-      return false;
+      return f();
     }
     if (m_isJUnit == null) {
       if (other.m_isJUnit != null) {
-        return false;
+        return f();
       }
     } else if (!m_isJUnit.equals(other.m_isJUnit)) {
-      return false;
+      return f();
     }
     if (m_listeners == null) {
       if (other.m_listeners != null) {
-        return false;
+        return f();
       }
     } else if (!m_listeners.equals(other.m_listeners)) {
-      return false;
+      return f();
     }
     if (m_methodSelectors == null) {
       if (other.m_methodSelectors != null) {
-        return false;
+        return f();
       }
     } else if (!m_methodSelectors.equals(other.m_methodSelectors)) {
-      return false;
+      return f();
     }
     if (m_name == null) {
       if (other.m_name != null) {
-        return false;
+        return f();
       }
     } else if (!m_name.equals(other.m_name)) {
-      return false;
+      return f();
     }
     if (m_objectFactory == null) {
       if (other.m_objectFactory != null) {
-        return false;
+        return f();
       }
     } else if (!m_objectFactory.equals(other.m_objectFactory)) {
-      return false;
+      return f();
     }
     if (m_parallel == null) {
       if (other.m_parallel != null) {
-        return false;
+        return f();
       }
     } else if (!m_parallel.equals(other.m_parallel)) {
-      return false;
+      return f();
     }
     if (m_parameters == null) {
       if (other.m_parameters != null) {
-        return false;
+        return f();
       }
     } else if (!m_parameters.equals(other.m_parameters)) {
-      return false;
+      return f();
     }
 //      if (m_parentSuite == null) {
 //        if (other.m_parentSuite != null)

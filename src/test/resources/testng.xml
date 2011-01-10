@@ -621,5 +621,10 @@
       <package name="org.testng.internal.invokers"/>
     </packages>
   </test>
-  
+
+  <test name="YAML">
+    <classes>
+      <class name="test.yaml.YamlTest" />
+    </classes>
+  </test>
 </suite>

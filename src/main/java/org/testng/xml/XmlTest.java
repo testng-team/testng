@@ -28,7 +28,7 @@ public class XmlTest implements Serializable, Cloneable {
   private XmlSuite m_suite;
   private String m_name = TestNG.DEFAULT_COMMAND_LINE_SUITE_NAME;
   private Integer m_verbose = XmlSuite.DEFAULT_VERBOSE;
-  private Boolean m_isJUnit = null;
+  private Boolean m_isJUnit = XmlSuite.DEFAULT_JUNIT;
   private int m_threadCount= -1;
 
   private List<XmlClass> m_xmlClasses = Lists.newArrayList();
@@ -43,8 +43,6 @@ public class XmlTest implements Serializable, Cloneable {
   /** */
   private AnnotationTypeEnum m_annotations;
 
-  // BeanShell expression
-  private String m_expression;
   private List<XmlMethodSelector> m_methodSelectors = Lists.newArrayList();
   // test level packages
   private List<XmlPackage> m_xmlPackages = Lists.newArrayList();
@@ -361,12 +359,29 @@ public class XmlTest implements Serializable, Cloneable {
     m_annotations = AnnotationTypeEnum.valueOf(annotations);
   }
 
+  public void setExpression(String expression) {
+    setBeanShellExpression(expression);
+  }
+
   public void setBeanShellExpression(String expression) {
-    m_expression = expression;
+    List<XmlMethodSelector> selectors = getMethodSelectors();
+    if (selectors.size() > 0) {
+      selectors.get(0).setExpression(expression);
+    } else if (expression != null) {
+      XmlMethodSelector xms = new XmlMethodSelector();
+      xms.setExpression(expression);
+      xms.setLanguage("BeanShell");
+      getMethodSelectors().add(xms);
+    }
   }
 
   public String getExpression() {
-    return m_expression;
+    List<XmlMethodSelector> selectors = getMethodSelectors();
+    if (selectors.size() > 0) {
+      return selectors.get(0).getExpression();
+    } else {
+      return null;
+    }
   }
 
   public String toXml(String indent) {
@@ -608,8 +623,6 @@ public class XmlTest implements Serializable, Cloneable {
     int result = 1;
     result = prime * result
         + ((m_excludedGroups == null) ? 0 : m_excludedGroups.hashCode());
-    result = prime * result
-        + ((m_expression == null) ? 0 : m_expression.hashCode());
     result = prime
         * result
         + ((m_failedInvocationNumbers == null) ? 0 : m_failedInvocationNumbers

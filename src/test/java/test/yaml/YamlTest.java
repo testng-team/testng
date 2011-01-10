@@ -1,7 +1,6 @@
 package test.yaml;
 
-import javax.xml.parsers.ParserConfigurationException;
-
+import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.xml.Parser;
@@ -10,11 +9,11 @@ import org.xml.sax.SAXException;
 
 import test.SimpleBaseTest;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-
-import junit.framework.Assert;
 
 public class YamlTest extends SimpleBaseTest {
 

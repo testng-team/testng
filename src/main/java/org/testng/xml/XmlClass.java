@@ -27,7 +27,7 @@ public class XmlClass implements Serializable, Cloneable {
   private boolean m_loadClasses = true;
 
   public XmlClass() {
-    init("", null, 0, true /* load classes */);
+    init("", null, 0, false /* load classes */);
   }
 
   public XmlClass(String name) {
@@ -240,7 +240,7 @@ public class XmlClass implements Serializable, Cloneable {
       if (other.m_class != null) {
         return false;
       }
-    } else if (!m_class.equals(other.m_class)) {
+    } else if (m_class != null && other.m_class != null && !m_class.equals(other.m_class)) {
       return false;
     } else if (other.m_loadClasses != m_loadClasses) {
       return false;

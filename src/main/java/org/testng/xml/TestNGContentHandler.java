@@ -224,9 +224,6 @@ public class TestNGContentHandler extends DefaultHandler {
       if (m_inTest) {
         m_currentTest.setBeanShellExpression(m_currentExpression);
       }
-      else {
-        m_currentSuite.setBeanShellExpression(m_currentExpression);
-      }
       m_currentLanguage = null;
       m_currentExpression = null;
     }
