@@ -9,12 +9,8 @@ import org.testng.SuiteRunner;
 import org.testng.TestListenerAdapter;
 import org.testng.TestRunner;
 import org.testng.annotations.BeforeMethod;
-import org.testng.guice.Guice;
-import org.testng.guice.Injector;
-import org.testng.guice.Module;
+import org.testng.internal.Configuration;
 import org.testng.internal.IConfiguration;
-import org.testng.internal.TestNGGuiceModule;
-import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
 import org.testng.xml.XmlClass;
@@ -50,12 +46,15 @@ public class BaseTest extends BaseDistributedTest {
 
   private XmlSuite m_suite= null;
   private ITestRunnerFactory m_testRunnerFactory;
-  private Injector m_injector;
+  private IConfiguration m_configuration;
 
   public BaseTest() {
     m_testRunnerFactory= new InternalTestRunnerFactory(this);
-    Module module = new TestNGGuiceModule(new DefaultAnnotationTransformer(), null);
-    m_injector = Guice.createInjector(module);
+    m_configuration = new Configuration();
+  }
+
+  private IConfiguration getConfiguration() {
+    return m_configuration;
   }
 
   protected void setDebug() {
@@ -182,14 +181,10 @@ public class BaseTest extends BaseDistributedTest {
     setFailedButWithinSuccessPercentageTests(new HashMap());
 
     m_suite.setVerbose(0);
-    SuiteRunner suite = new SuiteRunner(getConfiguration(),
+    SuiteRunner suite = new SuiteRunner(m_configuration,
         m_suite, m_outputDirectory, m_testRunnerFactory);
 
     suite.run();
-  }
-
-  private IConfiguration getConfiguration() {
-    return m_injector.getInstance(IConfiguration.class);
   }
 
   protected void addMethodSelector(String className, int priority) {

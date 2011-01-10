@@ -53,7 +53,7 @@ accepts the following attributes: <br>
 	<tr>
 		<td><tt>classfilesetref</tt> </td>
 		<td>A reference to a
-		<a href="http://ant.apache.org/manual/CoreTypes/fileset.html">FileSet</a> 
+		<a href="http://ant.apache.org/manual/Types/fileset.html">FileSet</a>
 		structure of the test classes to be run. </td>
 		<td>&nbsp; </td>
 	</tr>
@@ -135,6 +135,13 @@ accepts the following attributes: <br>
 		org.testng.IReporter</a>)</tt></td>
 		<td>No.</td>
 	</tr>
+
+        <tr>
+		<td><tt>methods</tt></td>
+		<td>A comma separated list of fully qualified class name and method. For example <tt>com.example.Foo.f1,com.example.Bar.f2</tt>.</td>
+		<td>No.</td>
+        </tr>
+
 	<tr>
 		<td><tt>outputdir</tt> </td>
 		<td>Directory for reports output. 
@@ -212,7 +219,7 @@ accepts the following attributes: <br>
 	<tr>
 		<td><tt>xmlfilesetref</tt> </td>
 		<td>A reference to a
-		<a href="http://ant.apache.org/manual/CoreTypes/fileset.html">FileSet</a> 
+		<a href="http://ant.apache.org/manual/Types/fileset.html">FileSet</a>
 		structure for the suite definitions to be run. </td>
 		<td>&nbsp; </td>
 	</tr>
@@ -254,11 +261,11 @@ that represents a <em>PATH</em>-like structure. </p>
 PATH-like</em> structure - will be ignored if <tt>fork </tt>is not set. </p>
 <h4>xmlfileset</h4>
 <p>The suite definitions (<tt>testng.xml</tt>) can be passed to the task with a
-<tt><a href="http://ant.apache.org/manual/CoreTypes/fileset.html">FileSet</a></tt> 
+<tt><a href="http://ant.apache.org/manual/Types/fileset.html">FileSet</a></tt>
 structure. </p>
 <h4>classfileset</h4>
 <p>TestNG can also run directly on classes, also supplied with a <tt>
-<a href="http://ant.apache.org/manual/CoreTypes/fileset.html">FileSet</a></tt> 
+<a href="http://ant.apache.org/manual/Types/fileset.html">FileSet</a></tt>
 structure.</p>
 <h4>sourcedir</h4>
 <p>A PATH-like structure for JDK 1.4 tests using Javadoc annotations. </p>

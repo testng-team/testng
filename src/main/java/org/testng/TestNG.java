@@ -2,20 +2,20 @@ package org.testng;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.guice.Guice;
-import org.testng.guice.Injector;
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.ClassHelper;
+import org.testng.internal.Configuration;
 import org.testng.internal.DynamicGraph;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IResultListener;
-import org.testng.internal.TestNGGuiceModule;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.JDK15AnnotationFinder;
 import org.testng.internal.annotations.Sets;
 import org.testng.internal.thread.graph.GraphThreadPoolExecutor;
 import org.testng.internal.thread.graph.IThreadWorkerFactory;
@@ -38,6 +38,7 @@ import org.testng.xml.XmlTest;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -162,7 +163,7 @@ public class TestNG {
 
   private Map<String, Integer> m_methodDescriptors = Maps.newHashMap();
 
-  private IObjectFactory m_objectFactory;
+  private ITestObjectFactory m_objectFactory;
 
   private List<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
 
@@ -446,6 +447,10 @@ public class TestNG {
     m_commandLineTestClasses = classes;
   }
 
+  /**
+   * Given a string com.example.Foo.f1, return an array where [0] is the class and [1]
+   * is the method.
+   */
   private String[] splitMethod(String m) {
     int index = m.lastIndexOf(".");
     if (index < 0) {
@@ -455,6 +460,12 @@ public class TestNG {
     return new String[] { m.substring(0, index), m.substring(index + 1) };
   }
 
+  /**
+   * @return a list of XmlSuite objects that represent the list of classes and methods passed
+   * in parameter.
+   *
+   * @param commandLineMethods a string with the form "com.example.Foo.f1,com.example.Bar.f2"
+   */
   private List<XmlSuite> createCommandLineSuitesForMethods(List<String> commandLineMethods) {
     //
     // Create the <classes> tag
@@ -492,7 +503,7 @@ public class TestNG {
     //
     XmlClass[] xmlClasses = Utils.classesToXmlClasses(classes);
     Map<String, XmlSuite> suites = Maps.newHashMap();
-    IAnnotationFinder finder = getAnnotationFinder();
+    IAnnotationFinder finder = m_configuration.getAnnotationFinder();
 
     for (int i = 0; i < classes.length; i++) {
       Class c = classes[i];
@@ -600,10 +611,10 @@ public class TestNG {
   }
 
   public void setObjectFactory(Class c) {
-    m_objectFactory = (IObjectFactory)ClassHelper.newInstance(c);
+    m_objectFactory = (ITestObjectFactory) ClassHelper.newInstance(c);
   }
 
-  public void setObjectFactory(IObjectFactory factory) {
+  public void setObjectFactory(ITestObjectFactory factory) {
     m_objectFactory = factory;
   }
 
@@ -701,8 +712,6 @@ public class TestNG {
 
   private IMethodInterceptor m_methodInterceptor = null;
 
-  private Injector m_injector;
-
   /** The list of test names to run from the given suite */
   private List<String> m_testNames;
 
@@ -711,6 +720,8 @@ public class TestNG {
   private boolean m_randomizeSuites = Boolean.FALSE;
 
   private boolean m_preserveOrder = false;
+
+  private IConfiguration m_configuration;
 
   /**
    * Sets the level of verbosity. This value will override the value specified
@@ -726,7 +737,7 @@ public class TestNG {
 
   private void initializeCommandLineSuites() {
     if (m_commandLineTestClasses != null || m_commandLineMethods != null) {
-      initializeInjector();
+      initializeConfiguration();
       if (null != m_commandLineMethods) {
         m_cmdlineSuites = createCommandLineSuitesForMethods(m_commandLineMethods);
       }
@@ -792,17 +803,48 @@ public class TestNG {
     }
   }
 
-  private void initializeInjector() {
-    TestNGGuiceModule module = new TestNGGuiceModule(getAnnotationTransformer(), m_objectFactory);
-    module.setHookable(m_hookable);
-    module.setConfigurable(m_configurable);
-    m_injector = Guice.createInjector(module);
+  private void initializeConfiguration() {
+    ITestObjectFactory factory = m_objectFactory;
+    for (XmlSuite s : m_suites) {
+      //
+      // Install the listeners
+      //
+      for (String listenerName : s.getListeners()) {
+        Class<?> listenerClass = ClassHelper.forName(listenerName);
+
+        // If specified listener does not exist, a TestNGException will be thrown
+        if(listenerClass == null) {
+          throw new TestNGException("Listener " + listenerName
+              + " was not found in project's classpath");
+        }
+
+        Object listener = ClassHelper.newInstance(listenerClass);
+        addListener(listener);
+      }
+
+      //
+      // Find if we have an object factory
+      //
+      if (s.getObjectFactory() != null) {
+        if (factory == null) {
+          factory = s.getObjectFactory();
+        } else {
+          throw new TestNGException("Found more than one object-factory tag in your suites");
+        }
+      }
+    }
+
+    m_configuration = new Configuration(new JDK15AnnotationFinder(getAnnotationTransformer()));
+    m_configuration.setHookable(m_hookable);
+    m_configuration.setConfigurable(m_configurable);
+    m_configuration.setObjectFactory(factory);
   }
 
   /**
    * Run TestNG.
    */
   public void run() {
+    initializeConfiguration();
     initializeSuitesAndJarFile();
     initializeDefaultListeners();
     initializeCommandLineSuites();
@@ -835,8 +877,6 @@ public class TestNG {
            m_suites, getOutputDirectory(),
            getTestListeners());
     }
-
-    initializeInjector();
 
     if(null != suiteRunners) {
       generateReports(suiteRunners);
@@ -1004,22 +1044,6 @@ public class TestNG {
       xmlSuite.setJUnit(m_isJUnit);
     }
 
-    //
-    // Install the listeners
-    //
-    for (String listenerName : xmlSuite.getListeners()) {
-      Class<?> listenerClass = ClassHelper.forName(listenerName);
-
-      // If specified listener does not exist, a TestNGException will be thrown
-      if(listenerClass == null) {
-        throw new TestNGException("Listener " + listenerName
-            + " was not found in project's classpath");
-      }
-
-      Object listener = ClassHelper.newInstance(listenerClass);
-      addListener(listener);
-    }
-
     // If the skip flag was invoked on the command line, it
     // takes precedence
     if (null != m_skipFailedInvocationCounts) {
@@ -1057,7 +1081,6 @@ public class TestNG {
    * @return returns the newly created suite runner
    */
   private SuiteRunner createSuiteRunner(XmlSuite xmlSuite) {
-    initializeInjector();
     SuiteRunner result = new SuiteRunner(getConfiguration(), xmlSuite,
         m_outputDir,
         m_testRunnerFactory,
@@ -1077,12 +1100,8 @@ public class TestNG {
     return result;
   }
 
-  private IAnnotationFinder getAnnotationFinder() {
-    return m_injector.getInstance(IAnnotationFinder.class);
-  }
-
   protected IConfiguration getConfiguration() {
-    return m_injector.getInstance(IConfiguration.class);
+    return m_configuration;
   }
 
   /**

@@ -394,7 +394,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
     m_testClassFinder= new TestNGClassFinder(classMap,
                                              null,
                                              m_xmlTest,
-                                             m_annotationFinder,
+                                             m_configuration,
                                              this);
     ITestMethodFinder testMethodFinder
       = new TestNGMethodFinder<ITestNGMethod>(m_runInfo, m_annotationFinder);

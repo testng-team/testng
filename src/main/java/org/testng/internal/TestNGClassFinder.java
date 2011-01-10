@@ -4,6 +4,7 @@ import org.testng.IClass;
 import org.testng.IInstanceInfo;
 import org.testng.IObjectFactory;
 import org.testng.ITestContext;
+import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.annotations.IAnnotation;
 import org.testng.collections.Lists;
@@ -32,7 +33,7 @@ public class TestNGClassFinder extends BaseClassFinder {
   public TestNGClassFinder(ClassInfoMap cim,
                            Map<Class, List<Object>> instanceMap,
                            XmlTest xmlTest,
-                           IAnnotationFinder annotationFinder,
+                           IConfiguration configuration,
                            ITestContext testContext)
   {
     m_testContext = testContext;
@@ -41,12 +42,14 @@ public class TestNGClassFinder extends BaseClassFinder {
       instanceMap= Maps.newHashMap();
     }
 
+    IAnnotationFinder annotationFinder = configuration.getAnnotationFinder();
+    ITestObjectFactory objectFactory = configuration.getObjectFactory();
+
     //
     // Find all the new classes and their corresponding instances
     //
     Set<Class<?>> allClasses= cim.getClasses();
 
-    IObjectFactory objectFactory = testContext.getSuite().getObjectFactory();
     //very first pass is to find ObjectFactory, can't create anything else until then
     if(objectFactory == null) {
       objectFactory = new ObjectFactoryImpl();
@@ -58,15 +61,15 @@ public class TestNGClassFinder extends BaseClassFinder {
               IAnnotation a = annotationFinder.findAnnotation(m,
                   org.testng.annotations.IObjectFactoryAnnotation.class);
               if (null != a) {
-                if (!IObjectFactory.class.isAssignableFrom(m.getReturnType())) {
+                if (!ITestObjectFactory.class.isAssignableFrom(m.getReturnType())) {
                   throw new TestNGException("Return type of " + m + " is not IObjectFactory");
                 }
                 try {
                   Object instance = cls.newInstance();
                   if (m.getParameterTypes().length > 0 && m.getParameterTypes()[0].equals(ITestContext.class)) {
-                    objectFactory = (IObjectFactory) m.invoke(instance, testContext);
+                    objectFactory = (ITestObjectFactory) m.invoke(instance, testContext);
                   } else {
-                    objectFactory = (IObjectFactory) m.invoke(instance);
+                    objectFactory = (ITestObjectFactory) m.invoke(instance);
                   }
                   break outer;
                 }
@@ -164,7 +167,7 @@ public class TestNGClassFinder extends BaseClassFinder {
                 new TestNGClassFinder(moreClasses,
                     m_instanceMap,
                     xmlTest,
-                    annotationFinder,
+                    configuration,
                     m_testContext);
 
               IClass[] moreIClasses= finder.findTestClasses();

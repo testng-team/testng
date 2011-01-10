@@ -3,6 +3,8 @@ package org.testng.internal;
 import org.testng.IClass;
 import org.testng.IMethodSelector;
 import org.testng.IObjectFactory;
+import org.testng.IObjectFactory2;
+import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.TestRunner;
 import org.testng.annotations.IAnnotation;
@@ -263,6 +265,26 @@ public final class ClassHelper {
    * Create an instance for the given class.
    */
   public static Object createInstance(Class<?> declaringClass,
+      Map<Class, IClass> classes,
+      XmlTest xmlTest,
+      IAnnotationFinder finder,
+      ITestObjectFactory objectFactory)
+  {
+    if (objectFactory instanceof IObjectFactory) {
+      return createInstance1(declaringClass, classes, xmlTest, finder,
+          (IObjectFactory) objectFactory);
+    } else if (objectFactory instanceof IObjectFactory2) {
+      return createInstance2(declaringClass, (IObjectFactory2) objectFactory);
+    } else {
+      throw new AssertionError("Unknown object factory type:" + objectFactory);
+    }
+  }
+
+  private static Object createInstance2(Class<?> declaringClass, IObjectFactory2 objectFactory) {
+    return objectFactory.newInstance(declaringClass);
+  }
+
+  public static Object createInstance1(Class<?> declaringClass,
                                       Map<Class, IClass> classes,
                                       XmlTest xmlTest,
                                       IAnnotationFinder finder,
@@ -341,7 +363,8 @@ public final class ClassHelper {
       }
     }
     catch (TestNGException ex) {
-      throw new TestNGException("Couldn't instantiate class:" + declaringClass);
+      throw ex;
+//      throw new TestNGException("Couldn't instantiate class:" + declaringClass);
     }
     catch (NoSuchMethodException ex) {
     }

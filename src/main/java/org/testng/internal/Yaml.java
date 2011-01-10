@@ -26,31 +26,9 @@ import java.util.Map;
 /**
  * YAML support for TestNG.
  * 
- * @author cbeust
+ * @author Cedric Beust <cedric@beust.com>
  */
 public class Yaml {
-
-  private static void addToMap(Map suite, String name, Map target) {
-    List<Map<String, String>> parameters = (List<Map<String, String>>) suite.get(name);
-    if (parameters != null) {
-      for (Map<String, String> parameter : parameters) {
-        for (Map.Entry p : parameter.entrySet()) {
-          target.put(p.getKey(), p.getValue().toString());
-        }
-      }
-    }
-  }
-
-  private static void addToList(Map suite, String name, List target) {
-    List<Map<String, String>> parameters = (List<Map<String, String>>) suite.get(name);
-    if (parameters != null) {
-      for (Map<String, String> parameter : parameters) {
-        for (Map.Entry p : parameter.entrySet()) {
-          target.add(p.getValue().toString());
-        }
-      }
-    }
-  }
 
   public static XmlSuite parse(String filePath, InputStream is)
       throws FileNotFoundException {
@@ -88,20 +66,6 @@ public class Yaml {
     }
 
     return result;
-  }
-
-  private static void setField(Object xml, Map<?, ?> map, String key, String methodName,
-      Class<?> parameter) {
-    Object o = map.get(key);
-    if (o != null) {
-      Method m;
-      try {
-        m = xml.getClass().getMethod(methodName, parameter);
-        m.invoke(xml, o);
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    }
   }
 
   private static void maybeAdd(StringBuilder sb, String key, Object value, Object def) {

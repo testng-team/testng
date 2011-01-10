@@ -1,6 +1,7 @@
 package org.testng.xml;
 
 import org.testng.IObjectFactory;
+import org.testng.ITestObjectFactory;
 import org.testng.TestNG;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -114,7 +115,7 @@ public class XmlSuite implements Serializable, Cloneable {
 
   private List<String> m_suiteFiles = Lists.newArrayList();
 
-  private IObjectFactory m_objectFactory;
+  private ITestObjectFactory m_objectFactory;
 
   private List<String> m_listeners = Lists.newArrayList();
 
@@ -142,11 +143,11 @@ public class XmlSuite implements Serializable, Cloneable {
     return m_parallel;
   }
 
-  public IObjectFactory getObjectFactory() {
+  public ITestObjectFactory getObjectFactory() {
     return m_objectFactory;
   }
 
-  public void setObjectFactory(IObjectFactory objectFactory) {
+  public void setObjectFactory(ITestObjectFactory objectFactory) {
     m_objectFactory = objectFactory;
   }
 

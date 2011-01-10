@@ -15,6 +15,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Parses testng-result.xml.
+ *
+ * @see ResultContentHandler
+ *
+ * @author Cedric Beust <cedric@beust.com>
+ */
 public class ResultXMLParser extends XMLParser<Object> {
   private IRemoteTestListener m_testListener;
   private IRemoteSuiteListener m_suiteListener;

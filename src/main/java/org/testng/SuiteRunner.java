@@ -58,7 +58,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   // The configuration
   transient private IConfiguration m_configuration;
 
-  transient private IObjectFactory m_objectFactory;
+  transient private ITestObjectFactory m_objectFactory;
   transient private Boolean m_skipFailedInvocationCounts = Boolean.FALSE;
 
   transient private IMethodInterceptor m_methodInterceptor;
@@ -165,7 +165,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     return m_suite.getName();
   }
 
-  public void setObjectFactory(IObjectFactory objectFactory) {
+  public void setObjectFactory(ITestObjectFactory objectFactory) {
     m_objectFactory = objectFactory;
   }
 
@@ -449,7 +449,12 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
   @Override
   public IObjectFactory getObjectFactory() {
-    return m_objectFactory;
+    return m_objectFactory instanceof IObjectFactory ? (IObjectFactory) m_objectFactory : null;
+  }
+
+  @Override
+  public IObjectFactory2 getObjectFactory2() {
+    return m_objectFactory instanceof IObjectFactory2 ? (IObjectFactory2) m_objectFactory : null;
   }
 
   /**
@@ -498,14 +503,9 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       if (! skip) {
         skip = test.skipFailedInvocationCounts();
       }
-      TestRunner testRunner =
-        new TestRunner(m_configuration,
-            suite,
-                        test,
-                        suite.getOutputDirectory(),
-                        suite.getAnnotationFinder(test.getAnnotations()),
-                        skip,
-                        listeners);
+      TestRunner testRunner = new TestRunner(m_configuration, suite, test,
+          suite.getOutputDirectory(), suite.getAnnotationFinder(test.getAnnotations()), skip,
+          listeners);
 
       if (m_useDefaultListeners) {
         testRunner.addListener(new TestHTMLReporter());

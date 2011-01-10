@@ -1,8 +1,8 @@
 package org.testng.internal;
 
 import org.testng.IClass;
-import org.testng.IObjectFactory;
 import org.testng.ITestClassFinder;
+import org.testng.ITestObjectFactory;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
@@ -41,7 +41,7 @@ abstract public class BaseClassFinder implements ITestClassFinder {
   protected IClass findOrCreateIClass(Class cls, XmlClass xmlClass, Object instance,
       XmlTest xmlTest,
       IAnnotationFinder annotationFinder,
-      IObjectFactory objectFactory)
+      ITestObjectFactory objectFactory)
   {
     IClass result = m_classes.get(cls);
     if (null == result) {
