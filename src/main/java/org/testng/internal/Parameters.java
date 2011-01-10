@@ -163,14 +163,11 @@ public class Parameters {
     return result;
   }
 
-  // FIXME
   private static void checkParameterTypes(String methodName,
       Class[] parameterTypes, String methodAnnotation, String[] parameterNames)
   {
     int totalLength = parameterTypes.length;
-    Set<Class> injectedTypes = new HashSet<Class>() {/**
-       *
-       */
+    Set<Class> injectedTypes = new HashSet<Class>() {
       private static final long serialVersionUID = -5324894581793435812L;
 
     {
@@ -196,7 +193,6 @@ public class Parameters {
     }
   }
 
-  //TODO: Cosmin - making this public is not the best solution
   public static Object convertType(Class type, String value, String paramName) {
     Object result = null;
 
