@@ -71,7 +71,9 @@ public class EmailableReporter implements IReporter {
   }
 
   protected PrintWriter createWriter(String outdir) throws IOException {
-    return new PrintWriter(new BufferedWriter(new FileWriter(new File(outdir, "emailable-report.html"))));
+    new File(outdir).mkdirs();
+    return new PrintWriter(new BufferedWriter(new FileWriter(new File(outdir,
+        "emailable-report.html"))));
   }
 
   /** Creates a table showing the highlights of each test method with links to the method details */
