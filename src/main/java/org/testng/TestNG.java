@@ -445,6 +445,10 @@ public class TestNG {
     m_commandLineTestClasses = classes;
   }
 
+  /**
+   * Given a string com.example.Foo.f1, return an array where [0] is the class and [1]
+   * is the method.
+   */
   private String[] splitMethod(String m) {
     int index = m.lastIndexOf(".");
     if (index < 0) {
@@ -454,6 +458,12 @@ public class TestNG {
     return new String[] { m.substring(0, index), m.substring(index + 1) };
   }
 
+  /**
+   * @return a list of XmlSuite objects that represent the list of classes and methods passed
+   * in parameter.
+   *
+   * @param commandLineMethods a string with the form "com.example.Foo.f1,com.example.Bar.f2"
+   */
   private List<XmlSuite> createCommandLineSuitesForMethods(List<String> commandLineMethods) {
     //
     // Create the <classes> tag
