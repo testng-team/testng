@@ -50,7 +50,7 @@ and easily monitor their execution and their output. It has its own <a href="htt
 <h3><a name="eclipse-installation">1 - Installation</a></h3><p>
 Once you have <a href="http://testng.org/doc/download.html">installed the plug-in</a>, restart Eclipse and select the menu <tt>Window / Show View 
 / Other...</tt>&nbsp; and you should see the TestNG view listed in the Java category.</p><p align="center">
-<img src="http://testng.org/pictures/view.png" />
+<img border="0" src="http://testng.org/pictures/view.png" />
 </p>
 
 <!--
@@ -61,9 +61,9 @@ Once you have <a href="http://testng.org/doc/download.html">installed the plug-i
 To create a new TestNG class, select the menu File / New / TestNG:
 
 <p align="center">
-<img src="http://testng.org/pictures/new-1.png" />
+<img border="0" src="http://testng.org/pictures/new-1.png" />
 &nbsp;&nbsp;
-<img src="http://testng.org/pictures/new-2.png" />
+<img border="0" src="http://testng.org/pictures/new-2.png" />
 </p>
 
 Select which annotations you want in this new class along with the class name, package and where the file should be created.
@@ -76,13 +76,13 @@ Additionally, you can specify the name of an XML file and the plug-in will gener
 more <tt>testng.xml</tt> files, you can create a TestNG Launch Configuration.&nbsp; 
 Select the <tt>Run / Run...</tt> (or <tt>Run / Debug...</tt>) menu and create a new TestNG 
 configuration:</p><p align="center">
-<img src="http://testng.org/pictures/launch.png" />
+<img border="0" src="http://testng.org/pictures/launch.png" />
 </p>
 <p>You should change the name of this configuration and pick a project, which 
 can be selected by clicking on the <tt>Browse...</tt> button at the top of the window.</p><p>Then you choose to launch your TestNG tests in the following ways:</p><h4><a name="eclipse-launch-class">4.2.1 - From a class file</a></h4><p>Make sure the box near <tt>Class</tt> is checked and then pick a class from your 
 project.&nbsp; You can click on the <tt>Browse...</tt> button and pick it directly from a 
 list.&nbsp; This list only contains classes that contain TestNG annotations:</p><p align="center">
-<img src="http://testng.org/pictures/classes.png" />
+<img border="0" src="http://testng.org/pictures/classes.png" />
 </p>
 
 <h4><a name="eclipse-create-groups">3.2 - From groups</a></h4>
@@ -90,7 +90,7 @@ list.&nbsp; This list only contains classes that contain TestNG annotations:</p>
 text field or pick them from a list by clicking on the <tt>Browse...</tt> button&nbsp;
 
 <p align="center">
-<img src="http://testng.org/pictures/groups.png" />
+<img border="0" src="http://testng.org/pictures/groups.png" />
 </p>
 
 
@@ -99,7 +99,7 @@ Finally, you can select a suite definition from your project.  It doesn't have t
 <tt>testng.xml</tt>, the plug-in will automatically identify all the applicable TestNG XML files 
 in your project:
 <p align="center">
-<img src="http://testng.org/pictures/suites.png" />
+<img border="0" src="http://testng.org/pictures/suites.png" />
 </p>
 
 
@@ -108,7 +108,7 @@ in your project:
 </h4>
 <p>This launch isn't accomplished from the Launch dialog but 
 directly from your Outline view:</p><p align="center">
-<img src="http://testng.org/pictures/outline.png" />
+<img border="0" src="http://testng.org/pictures/outline.png" />
 </p>
 You can right-click on any test methods and select <tt>Run as... / TestNG test</tt> and only the selected
 method will be run (not shown on the above screenshot because I couldn't find a way to capture
@@ -129,7 +129,7 @@ As you saw above, the plug-in will let you start tests in many different ways:  
 In order to give you access to the most flexibility, TestNG lets you specify an XML suite file for all these launches, which you can find in the Preferences menu:
 
 <p align="center">
-<img src="http://testng.org/pictures/template.png"/>
+<img border="0" src="http://testng.org/pictures/template.png"/>
 </p>
 
 If you specify a valid suite file as "XML template file", TestNG will reuse all the settings found in this XML file, such as parallel, name, listeners, thread pool size, etc...  Only the <tt>&lt;test&gt;</tt> tags in this file will be ignored since the plug-in will replace these by a generated <tt>&lt;test&gt;</tt> tag that represents the launch you chose.
@@ -142,13 +142,13 @@ If you specify a valid suite file as "XML template file", TestNG will reuse all 
 </h3>
 
 <p align="center">
-<img src="http://testng.org/pictures/success.png" />
+<img border="0" src="http://testng.org/pictures/success.png" />
 </p>
 
 <p>The above view shows a successful run of the tests:&nbsp; the bar is green 
 and no failed tests are reported.&nbsp; The <tt>All tests</tt> tab shows you a list of 
 all the classes and methods that were run.</p><p>If your test run contains failures, the view will look like this:</p><p align="center">
-<img src="http://testng.org/pictures/failure.png" />
+<img border="0" src="http://testng.org/pictures/failure.png" />
 </p>
 
 <p>You can use the <tt>Failed tests</tt> tab to display only these tests that failed, and 
@@ -162,7 +162,7 @@ the failure in your code.</p>
 
 
 <p align="center">
-<img src="http://testng.org/pictures/search.png" />
+<img border="0" src="http://testng.org/pictures/search.png" />
 </p>
 
 <p>When you have hundreds of tests running, finding a specific one is not always easy, so you can type a few letters of the test method or its parameters in the Search box and the content of the tree will automatically narrow down to methods matching your search. Note in the screen shot above that the search also works on parameters provided by <tt>@DataProvider</tt>.</p>
@@ -173,13 +173,13 @@ the failure in your code.</p>
 
 
 <p align="center"> 
-<img src="http://testng.org/pictures/summary1.png" />
+<img border="0" src="http://testng.org/pictures/summary1.png" />
 </p> 
 <p>The Summary tab gives you statistics on your test run, such as the timings, the test names, the number of methods and classes, etc&#8230; Since the results are shown in a table, you can also sort on any criterion you like for easier parsing. This is especially handy when you are trying to determine what tests take the longest time.</p>
 
 <p>The search box works in this view as well, and note that in the screen shot below, the Time column is sorted in decreasing order:</p> 
 <p align="center"> 
-<img src="http://testng.org/pictures/summary2.png" />
+<img border="0" src="http://testng.org/pictures/summary2.png" />
 
 
 
@@ -194,13 +194,13 @@ Your first option is to use the Quick Fix function:
 <p>
 
 <p align="center"> 
-<img src="http://testng.org/pictures/convert1.png" />
+<img border="0" src="http://testng.org/pictures/convert1.png" />
 <br>
 <b>Convert from JUnit 3</b>
 </p>
 
 <p align="center"> 
-<img src="http://testng.org/pictures/convert2.png" />
+<img border="0" src="http://testng.org/pictures/convert2.png" />
 <br>
 <b>Convert from JUnit 4</b>
 </p>
@@ -208,14 +208,31 @@ Your first option is to use the Quick Fix function:
 You can also convert packages or entire source folders with the conversion refactoring:
 
 <p align="center"> 
-<img src="http://testng.org/pictures/refactoring1.png" />
+<img border="0" src="http://testng.org/pictures/refactoring1.png" />
 </p>
 
-You are then presented with a refactoring dialog that lets you preview the refactoring and also select which files you want to convert:
+The refactoring wizard contains several pages:
 
 <p align="center"> 
-<img src="http://testng.org/pictures/refactoring2.png" />
+<img border="0" src="http://beust.com/pics/menu-convert2.png " />
 </p>
+ 
+This page lets you generate a testng.xml automatically. You can configure whether to include your test classes individually or by package, the suite and test name and also whether these tests should run in parallel.
+
+<p align="center"> 
+<img border="0" src="http://testng.org/pictures/refactoring2.png" />
+</p>
+
+This page gives you an overview of the changes that are about to be performed. You can also decide to exclude certain files from the refactoring.
+
+<p>
+
+When you are done, press the "Finish" button. Like all Eclipse refactorings, you can undo all these changes in one click:
+
+<p align="center"> 
+<img border="0" src="http://beust.com/pics/menu-convert4.png" />
+</p>
+
 
 
 

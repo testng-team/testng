@@ -319,7 +319,7 @@ The rest of this manual will explain the following:
 <tt>name</tt>
 </td>
 <td>
-The name of this DataProvider.
+The name of this data provider. If it's not supplied, the name of this data provider will automatically be set to the name of the method.
 </td>
 </tr>
 
@@ -488,6 +488,17 @@ The class where to look for the data provider.  If not specified, the data provi
 </td>
 <td>
           The maximum number of milliseconds this test should take for the cumulated time of all the invocationcounts.  This attribute will be ignored if invocationCount is not specified.
+</td>
+</tr>
+
+<tr>
+<td>
+</td>
+<td>
+<tt>priority</tt>
+</td>
+<td>
+          The priority for this test method. Lower priorities will be scheduled first.
 </td>
 </tr>
 

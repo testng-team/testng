@@ -30,55 +30,9 @@
 
 <h2 align="center">Migrating from JUnit</h2>
 
-<h3>Using JUnitConverter</h3>
-<p>You can easily convert your JUnit tests with <tt>org.testng.JUnitConverter,</tt>&nbsp; 
-which you can invoke as follows:</p><ul>
-	<li><tt>-annotation | -javadoc</tt> (required)<br>
-	If <tt>-annotation</tt>, <tt>
-	JUnitConverter</tt> will insert JDK5 annotations, and if you specify <tt>-javadoc</tt>, 
-	the tool will insert JavaDoc annotations.<br>
-&nbsp;</li><li><tt>-srcdir | -source &lt;fileName&gt;</tt> (required)<br>
-	<tt>-srcdir</tt>, the directory 
-	will be recursively traversed and any file that ends in .java will be 
-	processed.&nbsp; If you specify <tt>-source</tt>, only that specific Java 
-	file will be processed.<br>
-&nbsp;</li><li><tt>-d | -overwrite</tt> (mandatory)<br>
-	By default, <tt>JUnitConverter </tt>will modify the sources it finds.&nbsp; 
-	If you specify a directory with this option, this is where the modified 
-	files will be created.&nbsp; If you specify <tt>-overwrite</tt>, the source 
-	files will be directly modified.<br>
-&nbsp;</li><li><tt>-quiet</tt><br>
-	<tt>JUnitConverter</tt> will not print anything on the console.</li></ul>
+<h3>Using Eclipse</h3>
 
-	<p>Here is a sample use that will convert all the JUnit tests in the <tt>src/</tt> 
-directory to TestNG:</p>
-
-<pre class="brush: text">
-java org.testng.JUnitConverter -overwrite -annotation -srcdir src
-</pre>
-Notes:<blockquote>
-	<ul>
-		<li><i><tt>JUnitConverter</tt> uses classes from <tt>tools.jar</tt>, which is located in 
-		<tt>$JAVA_HOME/lib/tools.jar</tt>, 
-so make sure you have this jar file in your classpath.<br>
-&nbsp;</i></li>
-		<li><i><tt>JUnitConverter</tt> 
-only runs with the JDK5, so if you receive an error (such as &quot;unknown -quiet 
-parameter&quot;), make sure your classpath only contains JDK5 jar files.</i></li>
-	</ul>
-</blockquote><p><tt>JUnitConverter</tt> also has an ant task, which you can invoke as follows: </p>
-
-<pre class="brush: xml">
-&lt;project name="test" default="init"&gt;
-  &lt;target name="init"&gt;
-    &lt;taskdef resource="testngtasks" /&gt;
-  &lt;/target&gt;
-     
-  &lt;target name="junitconvert" depends="init"&gt;
-    &lt;junit-converter sourcedir="C:\dev\projects\test\java" outputdir="C:\dev\projects\temp" annotations="false" /&gt;
-  &lt;/target&gt;
-&lt;/project&gt;
-</pre>
+The easiest way to convert your JUnit tests to TestNG is to use the Eclipse TestNG plug-in refactoring support. You will find a full description of its features in the <a href="eclipse.html#eclipse-quickfix">Eclipse section</a>.
 
 <h3>Asserts</h3>
 Note that the class <tt>org.testng.Assert</tt> uses a different argument ordering than the ones used by JUnit. If you are porting code that uses JUnit's asserts, you might want to us a static import of that class:
