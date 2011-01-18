@@ -188,10 +188,11 @@ accepts the following attributes: <br>
 		<td>The parallel mode to use for running the tests - either methods or tests</td>
 		<td>No - if not present, parallel mode will not be selected</td>
 	</tr>
+
 	<tr>
-		<td><tt>threadCount</tt> </td>
-		<td>The number of threads to use for this run. Ignored unless the parallel mode is also specified</td>
-		<td>1</td>
+		<td><tt>suitename</tt> </td>
+		<td>Sets the default name of the test suite, if one is not specified in a suite xml file or in the source code</td>
+		<td>No. Defaults to "Ant suite"</td>
 	</tr>
 
 	<tr>
@@ -199,6 +200,26 @@ accepts the following attributes: <br>
 		<td>Path to a jar containing tests and a suite definition. </td>
 		<td>&nbsp;</td>
 	</tr>
+
+	<tr>
+		<td><tt>testname</tt> </td>
+		<td>Sets the default name of the test, if one is not specified in a suite xml file or in the source code</td>
+		<td>No. defaults to "Ant test"</td>
+	</tr>
+
+	<tr>
+		<td><tt>testnames</tt> </td>
+		<td>A comma separated list of test names, as defined
+		in the &lt;test&gt; tag.</td> Only these tests will be run.
+		<td>No. defaults to "Ant test"</td>
+	</tr>
+
+	<tr>
+		<td><tt>threadCount</tt> </td>
+		<td>The number of threads to use for this run. Ignored unless the parallel mode is also specified</td>
+		<td>1</td>
+	</tr>
+
 	<tr>
 		<td><tt>timeOut</tt></td>
 		<td>The maximum time out in milliseconds that all the tests should run 
@@ -223,23 +244,7 @@ accepts the following attributes: <br>
 		structure for the suite definitions to be run. </td>
 		<td>&nbsp; </td>
 	</tr>
-	<tr>
-		<td><tt>suitename</tt> </td>
-		<td>Sets the default name of the test suite, if one is not specified in a suite xml file or in the source code</td>
-		<td>No. Defaults to "Ant suite"</td>
-	</tr>
-	<tr>
-		<td><tt>testname</tt> </td>
-		<td>Sets the default name of the test, if one is not specified in a suite xml file or in the source code</td>
-		<td>No. defaults to "Ant test"</td>
-	</tr>
 
-	<tr>
-		<td><tt>testnames</tt> </td>
-		<td>A comma separated list of test names, as defined
-		in the &lt;test&gt; tag.</td> Only these tests will be run.
-		<td>No. defaults to "Ant test"</td>
-	</tr>
 </table>
 <br>
 One of attributes <tt>classpath</tt>, <tt>classpathref</tt> or nested <tt>
