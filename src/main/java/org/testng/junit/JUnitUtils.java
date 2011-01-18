@@ -69,7 +69,8 @@ public class JUnitUtils {
           m_method= test.getClass().getMethod(tc.getName(), new Class[0]);
         }
         catch(Exception ex) {
-          throw new TestNGException("cannot retrieve JUnit method", ex);
+          throw new TestNGException("Cannot find JUnit method "
+              + tc.getClass() + "." + tc.getName(), ex);
         }
       }
     }
