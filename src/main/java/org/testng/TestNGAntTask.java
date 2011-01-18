@@ -426,7 +426,7 @@ public class TestNGAntTask extends Task {
       m_listeners.add(st.nextToken());
     }
   }
-  
+
   public void setMethodSelectors(String methodSelectors) {
 	StringTokenizer st= new StringTokenizer(methodSelectors, " ,");
 	while(st.hasMoreTokens()) {
@@ -550,7 +550,7 @@ public class TestNGAntTask extends Task {
       }
       argv.add(listeners.toString());
     }
-    
+
     if(m_methodselectors != null && m_methodselectors.size() > 0) {
       argv.add(CommandLineArgs.METHOD_SELECTORS);
       StringBuffer methodselectors= new StringBuffer();
@@ -1126,4 +1126,3 @@ public class TestNGAntTask extends Task {
     }
   }
 }
- 
