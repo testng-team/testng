@@ -63,7 +63,7 @@ import java.util.StringTokenizer;
  * <li>testrunfactory (attribute)</li>
  * <li>configFailurepolicy (attribute)</li>
  * <li>randomizeSuites (attribute)</li>
- *
+ * <li>methodselectors (attribute)</li>
  * </ul>
  *
  * Ant settings:
@@ -109,6 +109,7 @@ public class TestNGAntTask extends Task {
   private Integer m_timeout;
   protected Boolean m_isJUnit;
   private List<String> m_listeners= Lists.newArrayList();
+  private List<String> m_methodselectors= Lists.newArrayList();
   private String m_objectFactory;
   protected String m_testRunnerFactory;
   private boolean m_delegateCommandSystemProperties = false;
@@ -425,6 +426,13 @@ public class TestNGAntTask extends Task {
       m_listeners.add(st.nextToken());
     }
   }
+  
+  public void setMethodSelectors(String methodSelectors) {
+	StringTokenizer st= new StringTokenizer(methodSelectors, " ,");
+	while(st.hasMoreTokens()) {
+	 m_methodselectors.add(st.nextToken());
+	}
+  }
 
   public void setConfigFailurePolicy(String failurePolicy) {
     m_configFailurePolicy = failurePolicy;
@@ -541,6 +549,18 @@ public class TestNGAntTask extends Task {
         }
       }
       argv.add(listeners.toString());
+    }
+    
+    if(m_methodselectors != null && m_methodselectors.size() > 0) {
+      argv.add(CommandLineArgs.METHOD_SELECTORS);
+      StringBuffer methodselectors= new StringBuffer();
+      for(int i= 0; i < m_methodselectors.size(); i++) {
+    	methodselectors.append(m_methodselectors.get(i));
+    	if(i < m_methodselectors.size() -1) {
+    	  methodselectors.append(';');
+    	}
+      }
+      argv.add(methodselectors.toString());
     }
 
     if(m_objectFactory != null) {
@@ -1106,3 +1126,4 @@ public class TestNGAntTask extends Task {
     }
   }
 }
+ 
