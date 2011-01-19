@@ -62,15 +62,21 @@ To create a new TestNG class, select the menu File / New / TestNG:
 
 <p align="center">
 <img border="0" src="http://testng.org/pictures/new-1.png" />
-&nbsp;&nbsp;
+</p>
+
+If you currently have a Java file open in the editor or if you have a Java file selected in the Navigator, the first page of the wizard will show you a list of all the public methods of that class and it will give you the option to select the ones you want to test. Each method you select on this page will be included in the new TestNG class with a default implementation that throws an exception, so you remember to implement it.
+
+<p align="center">
 <img border="0" src="http://testng.org/pictures/new-2.png" />
 </p>
 
-Select which annotations you want in this new class along with the class name, package and where the file should be created.
-<p>
-Additionally, you can specify the name of an XML file and the plug-in will generate a suite file which, if run, will invoke the class you just created.
+The next page lets you specify where that file will be created, whether it should contain default implementation for some configuration methods, if you'd like a data provider and finally, if a <tt>testng.xml</tt> file should be generated.
 
+<p align="center">
+<img border="0" src="http://testng.org/pictures/new-3.png" />
+</p>
 
+The plug-in will make a guess about the best location where this file should be created (for example, if you are using Maven, the default location will be under <tt>src/test/java</tt>).
 
 <h3><a name="eclipse-create-launch">3 - Launch configuration</a></h3><p>Once you have created classes that contain TestNG annotations and/or one or 
 more <tt>testng.xml</tt> files, you can create a TestNG Launch Configuration.&nbsp; 
