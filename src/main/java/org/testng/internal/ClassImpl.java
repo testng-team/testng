@@ -14,6 +14,7 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -119,13 +120,14 @@ public class ClassImpl implements IClass {
 
     Object result = null;
     Guice guice = (Guice) annotation;
-    Class<? extends Module>[] testModuleClasses = guice.modules();
+    Class<? extends Module>[] moduleClasses = guice.modules();
+    List<Module> moduleInstances = new ArrayList<Module>();
     try {
-      for (Class<? extends Module> c : testModuleClasses) {
-        result = com.google.inject.Guice.createInjector(
-            (Module) c.newInstance()).getInstance(m_class);
-        if (result != null) return result;
+      for (Class<? extends Module> c : moduleClasses) {
+        moduleInstances.add((Module) c.newInstance() );
       }
+      result = com.google.inject.Guice.createInjector(moduleInstances).getInstance(m_class);
+      if (result != null) return result;
     } catch (IllegalAccessException e) {
       throw new TestNGException(e);
     } catch (InstantiationException e) {
