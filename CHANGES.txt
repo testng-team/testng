@@ -44,6 +44,7 @@ Added: The conversion of a JUnit test to TestNG now replaces Assert with AssertJ
 Added: The progress bar is now orange if the suite contained skipped tests and no failures
 Added: Skipped test and suite icons are now orange (previously: blue)
 Added: New method shortcuts: "Alt+Shift+X N", "Alt+Shift+D N" (Sven Johansson)
+Added: "Create TestNG class" context menu
 Fixed: Stack traces of skipped tests were not showing in the Exception view
 Fixed: XML files should be run in place and not copied.
 Fixed: NPE when you select a passed test and click on the Compare Result icon (Mohamed Mansour)
