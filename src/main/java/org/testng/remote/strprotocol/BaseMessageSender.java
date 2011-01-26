@@ -191,6 +191,16 @@ abstract public class BaseMessageSender implements IMessageSender {
     }
   }
 
+  protected void waitForAck() {
+    try {
+      p("Message sent, waiting for ACK...");
+      m_ackLock.wait();
+      p("... ACK received");
+    }
+    catch(InterruptedException e) {
+    }
+  }
+
   private static void p(String msg) {
     if (RemoteTestNG.isVerbose()) {
       System.out.println("[BaseMessageSender] " + msg); //$NON-NLS-1$

@@ -57,10 +57,7 @@ public class StringMessageSender extends BaseMessageSender {
     synchronized(m_ackLock) {
       writer.println(msg);
       writer.flush();
-//      try {
-//        m_lock.wait();
-//      }
-//      catch(InterruptedException e) { }
+      waitForAck();
     }
   }
 

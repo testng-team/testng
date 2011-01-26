@@ -21,16 +21,9 @@ public class SerializedMessageSender extends BaseMessageSender {
       oos.writeObject(message);
       oos.flush();
 
-      try {
-        p("Message sent, waiting for ACK...");
-        m_ackLock.wait();
-        p("... lock done");
-      }
-      catch(InterruptedException e) {
-      }
+      waitForAck();
     }
   }
-
 
   @Override
   public IMessage receiveMessage() throws IOException, ClassNotFoundException {
@@ -52,7 +45,7 @@ public class SerializedMessageSender extends BaseMessageSender {
     return result;
   }
 
-  private static void p(String s) {
+  static void p(String s) {
     if (RemoteTestNG.isVerbose()) {
       System.out.println("[SerializedMessageSender] " + s);
     }
