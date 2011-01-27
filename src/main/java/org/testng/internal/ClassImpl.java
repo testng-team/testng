@@ -3,6 +3,7 @@ package org.testng.internal;
 import com.google.inject.Module;
 
 import org.testng.IClass;
+import org.testng.IModuleFactory;
 import org.testng.ITest;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
@@ -120,7 +121,12 @@ public class ClassImpl implements IClass {
 
     Object result = null;
     Guice guice = (Guice) annotation;
-    Class<? extends Module>[] moduleClasses = guice.modules();
+    Class<? extends Module>[] moduleClasses = getModules(guice, m_class);
+
+    if (moduleClasses.length == 0) {
+      throw new TestNGException("Couldn't find any Guice module for class " + m_class);
+    }
+
     List<Module> moduleInstances = new ArrayList<Module>();
     try {
       for (Class<? extends Module> c : moduleClasses) {
@@ -135,6 +141,29 @@ public class ClassImpl implements IClass {
     }
 
     return result;
+  }
+
+  private Class<? extends Module>[] getModules(Guice guice, Class<?> testClass) {
+    List<Class<? extends Module>> result = Lists.newArrayList();
+    for (Class<? extends Module> module : guice.modules()) {
+      result.add(module);
+    }
+    Class<? extends IModuleFactory> factory = guice.moduleFactory();
+    if (factory != IModuleFactory.class) {
+      try {
+        IModuleFactory factoryInstance = factory.newInstance();
+        Class moduleClass = factoryInstance.createModule(testClass);
+        if (moduleClass != null) {
+          result.add(moduleClass);
+        }
+      } catch (InstantiationException e) {
+        throw new TestNGException(e);
+      } catch (IllegalAccessException e) {
+        throw new TestNGException(e);
+      }
+    }
+
+    return result.toArray(new Class[result.size()]);
   }
 
   @Override
