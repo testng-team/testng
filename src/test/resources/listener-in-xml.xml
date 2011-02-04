@@ -1,0 +1,16 @@
+<suite name="SingleSuite" verbose="1" parallel="false" thread-count="4"
+    data-provider-thread-count="3">
+
+  <listeners>
+    <listener class-name="test.listeners.LListener" />
+  </listeners>
+
+  <test name="Regression2" preserve-order="true">
+
+    <classes>
+      <class name="test.listeners.LSampleTest" />
+    </classes>
+  </test>
+
+</suite>
+

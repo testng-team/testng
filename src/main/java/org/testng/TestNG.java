@@ -844,8 +844,8 @@ public class TestNG {
    * Run TestNG.
    */
   public void run() {
-    initializeConfiguration();
     initializeSuitesAndJarFile();
+    initializeConfiguration();
     initializeDefaultListeners();
     initializeCommandLineSuites();
     initializeCommandLineSuitesParams();
