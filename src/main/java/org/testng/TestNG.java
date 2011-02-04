@@ -12,6 +12,7 @@ import org.testng.internal.Configuration;
 import org.testng.internal.DynamicGraph;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IResultListener;
+import org.testng.internal.OverrideProcessor;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -42,6 +43,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -278,8 +280,7 @@ public class TestNG {
         LOGGER.debug("suiteXmlPath: \"" + suitePath + "\"");
       }
       try {
-        Parser parser = new Parser(suitePath);
-        Collection<XmlSuite> allSuites = parser.parse();
+        Collection<XmlSuite> allSuites = getParser(suitePath).parse();
 
         for (XmlSuite s : allSuites) {
           // If test names were specified, only run these test names
@@ -341,7 +342,7 @@ public class TestNG {
       while (entries.hasMoreElements()) {
         JarEntry je = entries.nextElement();
         if (je.getName().equals("testng.xml")) {
-          Parser parser = new Parser(jf.getInputStream(je));
+          Parser parser = getParser(jf.getInputStream(je));
           m_suites.addAll(parser.parse());
           foundTestngXml = true;
           break;
@@ -379,6 +380,18 @@ public class TestNG {
     catch(IOException ex) {
       ex.printStackTrace();
     }
+  }
+
+  private Parser getParser(String path) {
+    Parser result = new Parser(path);
+    result.setPostProcessor(new OverrideProcessor(m_includedGroups));
+    return result;
+  }
+
+  private Parser getParser(InputStream is) {
+    Parser result = new Parser(is);
+    result.setPostProcessor(new OverrideProcessor(m_includedGroups));
+    return result;
   }
 
   /**

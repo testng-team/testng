@@ -112,6 +112,7 @@
       <class name="test.ReporterApiTest" />
       <class name="test.abstractmethods.AbstractTest" />
       <class name="test.listeners.ListenerInXmlTest" />
+      <class name="test.override.OverrideTest" />
     </classes>
   </test>
 

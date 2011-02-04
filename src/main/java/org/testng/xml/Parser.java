@@ -42,6 +42,7 @@ public class Parser {
   private String m_fileName;
 
   private InputStream m_inputStream;
+  private IPostProcessor m_postProcessor;
 
   private boolean m_loadClasses = true;
 
@@ -72,6 +73,10 @@ public class Parser {
   private void init(String fileName, InputStream is, IFileParser fp) {
     m_fileName = fileName != null ? fileName : DEFAULT_FILENAME;
     m_inputStream = is;
+  }
+
+  public void setPostProcessor(IPostProcessor processor) {
+    m_postProcessor = processor;
   }
 
   /**
@@ -214,7 +219,14 @@ public class Parser {
     //returning a list of single suite to keep changes minimum
     List<XmlSuite> resultList = Lists.newArrayList();
     resultList.add(resultSuite);
-    return resultList;
+
+    boolean postProcess = true;
+
+    if (postProcess && m_postProcessor != null) {
+      return m_postProcessor.process(resultList);
+    } else {
+      return resultList;
+    }
 
   }
 

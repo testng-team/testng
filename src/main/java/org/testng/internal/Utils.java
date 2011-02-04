@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import org.testng.ITestNGMethod;
 import org.testng.TestNG;
+import org.testng.TestNGException;
 import org.testng.TestRunner;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.ITestAnnotation;
@@ -17,6 +18,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -737,6 +739,28 @@ public final class Utils {
     }
     catch(IOException e){
       e.printStackTrace();
+    }
+  }
+
+  /**
+   * @return a temporary file with the given content.
+   */
+  public static File createTempFile(String content) {
+    try {
+      // Create temp file.
+      File result = File.createTempFile("testng-tmp", "");
+
+      // Delete temp file when program exits.
+      result.deleteOnExit();
+
+      // Write to temp file
+      BufferedWriter out = new BufferedWriter(new FileWriter(result));
+      out.write(content);
+      out.close();
+
+      return result;
+    } catch (IOException e) {
+      throw new TestNGException(e);
     }
   }
 }
