@@ -15,20 +15,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
+/**
+ * Verify that command line switches override parameters in testng.xml.
+ *
+ * @author Cedric Beust <cedric@beust.com>
+ */
 public class OverrideTest extends SimpleBaseTest {
 
-  @Test(description = "Verify that groups specified on the command line override tests in " +
-  		"testng.xml")
-  public void overrideShouldWork() throws ParserConfigurationException, SAXException, IOException {
+  private void runTest(String include, String exclude) {
     File f = Utils.createTempFile(
         "<suite name=\"S\">"
         + "  <test name=\"T\">"
-        + "    <groups>"
-        + "      <run>"
-        + "        <include name=\"badGroup\" />"
-        + "       </run>"
-        + "    </groups>"
-        + ""
         + "    <classes>"
         + "      <class name=\"test.override.OverrideSampleTest\" />"
         + "    </classes>"
@@ -38,10 +35,29 @@ public class OverrideTest extends SimpleBaseTest {
     TestNG tng = create();
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
-    tng.setGroups("goodGroup");
+    if (include != null) tng.setGroups(include);
+    if (exclude != null) tng.setExcludedGroups(exclude);
     tng.setTestSuites(Arrays.asList(f.getAbsolutePath()));
     tng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), 1);
+  }
+
+  @Test(description = "Override -groups")
+  public void overrideIncludeShouldWork()
+      throws ParserConfigurationException, SAXException, IOException {
+    runTest("goodGroup", null);
+  }
+
+  @Test(description = "Override -excludegroups")
+  public void overrideExcludeShouldWork()
+      throws ParserConfigurationException, SAXException, IOException {
+    runTest(null, "badGroup");
+  }
+
+  @Test(description = "Override -groups and -excludegroups")
+  public void overrideIncludeAndExcludeShouldWork()
+      throws ParserConfigurationException, SAXException, IOException {
+    runTest("goodGroup", "badGroup");
   }
 }

@@ -384,14 +384,18 @@ public class TestNG {
 
   private Parser getParser(String path) {
     Parser result = new Parser(path);
-    result.setPostProcessor(new OverrideProcessor(m_includedGroups));
+    initProcessor(result);
     return result;
   }
 
   private Parser getParser(InputStream is) {
     Parser result = new Parser(is);
-    result.setPostProcessor(new OverrideProcessor(m_includedGroups));
+    initProcessor(result);
     return result;
+  }
+
+  private void initProcessor(Parser result) {
+    result.setPostProcessor(new OverrideProcessor(m_includedGroups, m_excludedGroups));
   }
 
   /**

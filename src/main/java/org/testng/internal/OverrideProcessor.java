@@ -15,9 +15,11 @@ import java.util.Collection;
 public class OverrideProcessor implements IPostProcessor {
 
   private String[] m_groups;
+  private String[] m_excludedGroups;
 
-  public OverrideProcessor(String[] groups) {
+  public OverrideProcessor(String[] groups, String[] excludedGroups) {
     m_groups = groups;
+    m_excludedGroups = excludedGroups;
   }
 
   @Override
@@ -27,6 +29,13 @@ public class OverrideProcessor implements IPostProcessor {
         for (XmlTest t : s.getTests()) {
           t.getIncludedGroups().clear();
           t.getIncludedGroups().addAll(Arrays.asList(m_groups));
+        }
+      }
+
+      if (m_excludedGroups != null && m_excludedGroups.length > 0) {
+        for (XmlTest t : s.getTests()) {
+          t.getExcludedGroups().clear();
+          t.getExcludedGroups().addAll(Arrays.asList(m_excludedGroups));
         }
       }
     }
