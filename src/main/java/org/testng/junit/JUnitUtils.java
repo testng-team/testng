@@ -515,6 +515,10 @@ public class JUnitUtils {
       // ignored
     }
 
+    @Override
+    public XmlTest getXmlTest() {
+      return null;
+    }
   }
 
   /**
@@ -690,4 +694,5 @@ public class JUnitUtils {
       return null;
     }
   }
+
 }

@@ -5,6 +5,7 @@ import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
+import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -339,5 +340,10 @@ public class ClonedMethod implements ITestNGMethod {
   @Override
   public void setPriority(int priority) {
     // ignored
+  }
+
+  @Override
+  public XmlTest getXmlTest() {
+    return m_method.getXmlTest();
   }
 }

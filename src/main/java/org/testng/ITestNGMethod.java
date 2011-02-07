@@ -1,6 +1,8 @@
 package org.testng;
 
 
+import org.testng.xml.XmlTest;
+
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -230,4 +232,9 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
    */
   public int getPriority();
   public void setPriority(int priority);
+
+  /**
+   * @return the XmlTest this method belongs to.
+   */
+  public XmlTest getXmlTest();
 }

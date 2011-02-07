@@ -738,6 +738,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     m_priority = priority;
   }
 
+  @Override
   public XmlTest getXmlTest() {
     return m_xmlTest;
   }
