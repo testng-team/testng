@@ -67,6 +67,7 @@ TESTNG.REPORT.DIR=${testng.report.dir}
             outputdir="${testng.report.dir}">
       <xmlfileset dir="${test.resources.dir}" includes="testng.xml"/>
       <jvmarg value="-Dtest.resources.dir=${test.resources.dir}" />
+      <jvmarg value="-Dsun.io.serialization.extendedDebugInfo=true" />
     </testng>
   </target>
 

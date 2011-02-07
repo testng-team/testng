@@ -2,9 +2,11 @@ package test.junit;
 
 import org.testng.Assert;
 
+import java.io.Serializable;
+
 import junit.framework.TestCase;
 
-public class SetNameTest extends TestCase {
+public class SetNameTest extends TestCase implements Serializable {
   public static int m_ctorCount = 0;
 
   public SetNameTest() {

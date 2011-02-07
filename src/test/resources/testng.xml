@@ -603,9 +603,11 @@
   </test>
 
   <test name="Guice">
+    <parameter name="inject" value="guice" />
     <classes>
       <class name="test.guice.GuiceTest" />
       <class name="test.guice.GuiceInheritanceTest" />
+      <class name="test.guice.GuiceModuleFactoryTest" />
     </classes>
   </test>
   
