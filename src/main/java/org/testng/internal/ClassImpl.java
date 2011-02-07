@@ -5,6 +5,7 @@ import com.google.inject.Module;
 import org.testng.IClass;
 import org.testng.IModuleFactory;
 import org.testng.ITest;
+import org.testng.ITestContext;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.annotations.Guice;
@@ -38,9 +39,12 @@ public class ClassImpl implements IClass {
   private ITestObjectFactory m_objectFactory;
   private String m_testName = null;
   private XmlClass m_xmlClass;
+  private ITestContext m_testContext;
 
-  public ClassImpl(Class cls, XmlClass xmlClass, Object instance, Map<Class, IClass> classes,
-      XmlTest xmlTest, IAnnotationFinder annotationFinder, ITestObjectFactory objectFactory) {
+  public ClassImpl(ITestContext context, Class cls, XmlClass xmlClass, Object instance,
+      Map<Class, IClass> classes, XmlTest xmlTest, IAnnotationFinder annotationFinder,
+      ITestObjectFactory objectFactory) {
+    m_testContext = context;
     m_class = cls;
     m_classes = classes;
     m_xmlClass = xmlClass;
@@ -152,7 +156,7 @@ public class ClassImpl implements IClass {
     if (factory != IModuleFactory.class) {
       try {
         IModuleFactory factoryInstance = factory.newInstance();
-        Class moduleClass = factoryInstance.createModule(testClass);
+        Class moduleClass = factoryInstance.createModule(m_testContext, testClass);
         if (moduleClass != null) {
           result.add(moduleClass);
         }

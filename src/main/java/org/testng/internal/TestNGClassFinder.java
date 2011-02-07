@@ -114,7 +114,7 @@ public class TestNGClassFinder extends BaseClassFinder {
           continue;
         }
 
-        IClass ic= findOrCreateIClass(cls, cim.getXmlClass(cls), thisInstance,
+        IClass ic= findOrCreateIClass(m_testContext, cls, cim.getXmlClass(cls), thisInstance,
             xmlTest, annotationFinder, objectFactory);
         if(null != ic) {
           Object[] theseInstances = ic.getInstances(false);

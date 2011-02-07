@@ -16,5 +16,5 @@ public interface IModuleFactory {
    * @return The class of the Guice module to instantiate in order to get an instance of this
    * test class.
    */
-  Class<? extends Module> createModule(Class<?> testClass); 
+  Class<? extends Module> createModule(ITestContext context, Class<?> testClass);
 }
