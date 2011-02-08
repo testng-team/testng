@@ -19,78 +19,55 @@ public class SuiteGenerator {
     return new LaunchSuite.ExistingSuite(xmlSuitePath);
   }
 
-  public static LaunchSuite createSuite(final String projectName,
-                                        final Collection<String> packageNames,
-                                        final Map<String, Collection<String>> classAndMethodNames,
-                                        final Collection<String> groupNames,
-                                        final Map<String, String> parameters,
-                                        final String annotationType,
-                                        final int logLevel) {
-    Collection<String> classes= classAndMethodNames != null ? classAndMethodNames.keySet() : EMPTY_CLASS_LIST;
-    if((null != groupNames) && !groupNames.isEmpty()) {
-      return new LaunchSuite.ClassListSuite(projectName,
-                                            packageNames,
-                                            classes,
-                                            groupNames,
-                                            parameters,
-                                            annotationType,
-                                            logLevel);
+  public static LaunchSuite createSuite(String projectName, Collection<String> packageNames,
+      Map<String, Collection<String>> classAndMethodNames, Collection<String> groupNames,
+      Map<String, String> parameters, String annotationType, int logLevel) {
+
+    LaunchSuite result;
+    Collection<String> classes = classAndMethodNames != null ? classAndMethodNames.keySet()
+        : EMPTY_CLASS_LIST;
+    if ((null != groupNames) && !groupNames.isEmpty()) {
+      //
+      // Create a suite from groups
+      //
+      result = new LaunchSuite.ClassListSuite(projectName, packageNames, classes, groupNames,
+          parameters, annotationType, logLevel);
+    } else if (packageNames != null && packageNames.size() > 0) {
+      //
+      // Create a suite from packages
+      //
+      result = new LaunchSuite.ClassListSuite(projectName, packageNames, classes, groupNames,
+          parameters, annotationType, logLevel);
+    } else {
+      //
+      // Default suite creation
+      //
+      result = new LaunchSuite.ClassesAndMethodsSuite(projectName, classAndMethodNames, parameters,
+          annotationType, logLevel);
     }
-    else if(packageNames != null && packageNames.size() > 0) {
-      return new LaunchSuite.ClassListSuite(projectName,
-                                            packageNames,
-                                            classes,
-                                            groupNames,
-                                            parameters,
-                                            annotationType,
-                                            logLevel);
-    }
-    else {
-      return new LaunchSuite.ClassesAndMethodsSuite(projectName,
-                                                    classAndMethodNames,
-                                                    parameters,
-                                                    annotationType,
-                                                    logLevel);
-    }
+
+    return result;
   }
 
   /**
-   * @deprecated use {@link #createSuite(String, java.util.Collection, java.util.Map, java.util.Collection, java.util.Map, String, int)} instead.
+   * @deprecated use {@link #createSuite(String, java.util.Collection, java.util.Map,
+   * java.util.Collection, java.util.Map, String, int)} instead.
    */
   @Deprecated
-  public static LaunchSuite createCustomizedSuite(final String projectName,
-                                                  final Collection<String> packageNames,
-                                                  final Collection<String> classNames,
-                                                  final Collection<String> methodNames,
-                                                  final Collection<String> groupNames,
-                                                  final Map<String, String> parameters,
-                                                  final String annotationType,
-                                                  final int logLevel) {
-    if((null != groupNames) && !groupNames.isEmpty()) {
-      return new LaunchSuite.ClassListSuite(projectName,
-                                            packageNames,
-                                            classNames,
-                                            groupNames,
-                                            parameters,
-                                            annotationType,
-                                            logLevel);
-    }
-    else if((classNames != null && classNames.size() > 1) || packageNames != null && packageNames.size() > 0) {
-      return new LaunchSuite.ClassListSuite(projectName,
-                                            packageNames,
-                                            classNames,
-                                            groupNames,
-                                            parameters,
-                                            annotationType,
-                                            logLevel);
-    }
-    else {
-      return new LaunchSuite.MethodsSuite(projectName,
-                                          classNames.iterator().next(),
-                                          methodNames,
-                                          parameters,
-                                          annotationType,
-                                          logLevel);
+  public static LaunchSuite createCustomizedSuite(String projectName,
+      Collection<String> packageNames, Collection<String> classNames,
+      Collection<String> methodNames, Collection<String> groupNames,
+      Map<String, String> parameters, String annotationType, int logLevel) {
+    if ((null != groupNames) && !groupNames.isEmpty()) {
+      return new LaunchSuite.ClassListSuite(projectName, packageNames, classNames, groupNames,
+          parameters, annotationType, logLevel);
+    } else if ((classNames != null && classNames.size() > 1) || packageNames != null
+        && packageNames.size() > 0) {
+      return new LaunchSuite.ClassListSuite(projectName, packageNames, classNames, groupNames,
+          parameters, annotationType, logLevel);
+    } else {
+      return new LaunchSuite.MethodsSuite(projectName, classNames.iterator().next(), methodNames,
+          parameters, annotationType, logLevel);
     }
   }
 }
