@@ -5,7 +5,7 @@
     </method-selector>
   </method-selectors>
   
-  <test name="Regression2">
+  <test name="Regression2" preserve-order="true">
     <classes>
       <class name="test.methodselectors.SampleTest" />
     </classes>

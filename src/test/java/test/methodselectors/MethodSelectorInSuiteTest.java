@@ -28,7 +28,7 @@ public class MethodSelectorInSuiteTest  extends SimpleBaseTest{
   }
 
   @Test
-  public void programaticXmlSuite() {
+  public void programmaticXmlSuite() {
     TestNG tng = create();
     XmlSuite suite = new XmlSuite();
     XmlMethodSelector methodSelector = new XmlMethodSelector();
@@ -72,7 +72,7 @@ public class MethodSelectorInSuiteTest  extends SimpleBaseTest{
     Assert.assertEquals(passed.size(), expectPassed.length);
     // doing this index based is probably not the best
     for (int i = 0; i < expectPassed.length; i++) {
-      Assert.assertEquals(passed.get(i), expectPassed[i]);
+      Assert.assertEquals(passed.get(i).getName(), expectPassed[i]);
     }
   }
 }
