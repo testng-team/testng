@@ -321,7 +321,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
         setMethodInterceptor((IMethodInterceptor) listener);
       }
       if (listener instanceof ISuiteListener) {
-        addListener(listener);
+        m_suite.addListener((ISuiteListener) listener);
       }
       if (listener instanceof IInvokedMethodListener) {
         m_suite.addListener((ITestNGListener) listener);

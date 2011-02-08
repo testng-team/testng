@@ -39,4 +39,14 @@ public class ListenerTest extends SimpleBaseTest {
     tng.run();
     Assert.assertEquals(AggregateSampleTest.m_count, 2);
   }
+
+  @Test(description = "@Listeners with an ISuiteListener")
+  public void suiteListenersShouldWork() {
+    TestNG tng = create(SuiteListenerSample.class);
+    SuiteListener.start = false;
+    SuiteListener.finish = false;
+    tng.run();
+    Assert.assertTrue(SuiteListener.start);
+    Assert.assertTrue(SuiteListener.finish);
+  }
 }

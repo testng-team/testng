@@ -366,6 +366,8 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   public void addListener(ITestNGListener listener) {
     if (listener instanceof IInvokedMethodListener) {
       m_invokedMethodListeners.add((IInvokedMethodListener) listener);
+    } else if (listener instanceof ISuiteListener) {
+      addListener((ISuiteListener) listener);
     } else if (listener instanceof IReporter) {
       addReporter((IReporter) listener);
     } else {
