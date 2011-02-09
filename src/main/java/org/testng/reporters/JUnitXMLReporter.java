@@ -143,8 +143,7 @@ public class JUnitXMLReporter implements IResultListener {
    */
   protected void generateReport(ITestContext context) {
 
-      XMLStringBuffer document= new XMLStringBuffer("");
-      document.setXmlDetails("1.0", "UTF-8");
+      XMLStringBuffer document= new XMLStringBuffer();
       Properties attrs= new Properties();
       attrs.setProperty(XMLConstants.ATTR_ERRORS, "0");
       attrs.setProperty(XMLConstants.ATTR_FAILURES, "" + m_numFailed);

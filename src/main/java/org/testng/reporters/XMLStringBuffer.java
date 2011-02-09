@@ -17,7 +17,7 @@ public class XMLStringBuffer {
   private static final String DEFAULT_INDENT_INCREMENT = "  ";
 
   /** The buffer to hold the xml document */
-  private final StringBuffer m_buffer;
+  private StringBuffer m_buffer;
 
   /** The stack of tags to make sure XML document is well formed. */
   private final Stack<Tag> m_tagStack = new Stack<Tag>();
@@ -26,21 +26,60 @@ public class XMLStringBuffer {
   private String m_currentIndent = "";
 
   /**
-   *
    * @param start A string of spaces indicating the indentation at which
-   * to start the generation.
+   * to start the generation. Note that this constructor will also insert
+   * an <?xml prologue with a default encoding
    */
-  public XMLStringBuffer(String start) {
-    this(new StringBuffer(), start);
+  public XMLStringBuffer() {
+    init(new StringBuffer(), "", "1.0", "UTF-8");
   }
 
   /**
+   * @param start A string of spaces indicating the indentation at which
+   * to start the generation. This constructor will not insert an <?xml
+   * prologue.
+   */
+  public XMLStringBuffer(String start) {
+    init(new StringBuffer(), start);
+  }
+
+  /**
+   * @param buffer The StringBuffer to use internally to represent the
+   * document.
+   * @param start A string of spaces indicating the indentation at which
+   * to start the generation.
+   */
+  public XMLStringBuffer(StringBuffer buffer, String start) {
+    init(buffer, start);
+  }
+
+  private void init(StringBuffer buffer, String start) {
+    init(buffer, start, null, null);
+  }
+
+  /**
+  *
+  * @param start A string of spaces indicating the indentation at which
+  * to start the generation.
+  */
+  private void init(StringBuffer buffer, String start, String version, String encoding) {
+    m_buffer = buffer;
+    m_currentIndent = start;
+    if (version != null) {
+      setXmlDetails(version, encoding);
+    }
+  }
+
+ /**
    * Set the xml version and encoding for this document.
    *
    * @param v the XML version
    * @param enc the XML encoding
    */
   public void setXmlDetails(String v, String enc) {
+    if (m_buffer.toString().length() != 0) {
+      throw new RuntimeException("Buffer should be empty: '" + m_buffer.toString() + "'");
+    }
     m_buffer.append("<?xml version=\"" + v + "\" encoding=\"" + enc + "\"?>").append(EOL);
   }
 
@@ -52,20 +91,6 @@ public class XMLStringBuffer {
   public void setDocType(String docType) {
     m_buffer.append("<!DOCTYPE " + docType + ">" + EOL);
   }
-
-
-  /**
-   *
-   * @param buffer The StringBuffer to use internally to represent the
-   * document.
-   * @param start A string of spaces indicating the indentation at which
-   * to start the generation.
-   */
-  public XMLStringBuffer(StringBuffer buffer, String start) {
-    m_buffer = buffer;
-    m_currentIndent = start;
-  }
-
 
   /**
    * Push a new tag.  Its value is stored and will be compared against the parameter

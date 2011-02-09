@@ -37,7 +37,7 @@ public class XMLReporter implements IReporter {
       config.setOutputDirectory(outputDirectory);
     }
 
-    rootBuffer = new XMLStringBuffer("");
+    rootBuffer = new XMLStringBuffer();
     rootBuffer.push(XMLReporterConfig.TAG_TESTNG_RESULTS);
     writeReporterOutput(rootBuffer);
     for (int i = 0; i < suites.size(); i++) {
@@ -74,7 +74,7 @@ public class XMLReporter implements IReporter {
   }
 
   private void writeSuiteToFile(File suiteFile, ISuite suite) {
-    XMLStringBuffer xmlBuffer = new XMLStringBuffer("");
+    XMLStringBuffer xmlBuffer = new XMLStringBuffer();
     writeSuiteToBuffer(xmlBuffer, suite);
     File parentDir = suiteFile.getParentFile();
     if (parentDir.exists() || suiteFile.getParentFile().mkdirs()) {

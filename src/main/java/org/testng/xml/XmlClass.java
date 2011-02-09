@@ -148,11 +148,11 @@ public class XmlClass implements Serializable, Cloneable {
 
   public String toXml(String indent) {
     XMLStringBuffer xsb = new XMLStringBuffer(indent);
-    Properties      pro = new Properties();
-    pro.setProperty("name", getName());
+    Properties prop = new Properties();
+    prop.setProperty("name", getName());
 
     if (!m_includedMethods.isEmpty() || !m_excludedMethods.isEmpty()) {
-      xsb.push("class", pro);
+      xsb.push("class", prop);
       xsb.push("methods");
 
       for (XmlInclude m : getIncludedMethods()) {
@@ -169,7 +169,7 @@ public class XmlClass implements Serializable, Cloneable {
       xsb.pop("class");
     }
     else {
-      xsb.addEmptyElement("class", pro);
+      xsb.addEmptyElement("class", prop);
     }
 
     return xsb.toXML();

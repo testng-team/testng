@@ -435,7 +435,7 @@ public class XmlSuite implements Serializable, Cloneable {
    * @return a String representation of this XML suite.
    */
   public String toXml() {
-    XMLStringBuffer xsb = new XMLStringBuffer("");
+    XMLStringBuffer xsb = new XMLStringBuffer();
     xsb.setDocType("suite SYSTEM \"" + Parser.TESTNG_DTD_URL + '\"');
     Properties p = new Properties();
     p.setProperty("name", getName());

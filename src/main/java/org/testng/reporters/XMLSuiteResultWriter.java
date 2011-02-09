@@ -48,7 +48,7 @@ public class XMLSuiteResultWriter {
       String parentDir =
               config.getOutputDirectory() + File.separatorChar + suiteResult.getTestContext().getSuite().getName();
       File file = referenceSuiteResult(xmlBuffer, parentDir, suiteResult);
-      XMLStringBuffer suiteXmlBuffer = new XMLStringBuffer("");
+      XMLStringBuffer suiteXmlBuffer = new XMLStringBuffer();
       writeAllToBuffer(suiteXmlBuffer, suiteResult);
       Utils.writeUtf8File(file.getAbsoluteFile().getParent(), file.getName(), suiteXmlBuffer.toXML());
     }

@@ -139,7 +139,7 @@ public abstract class LaunchSuite {
      * @return
      */
     protected XMLStringBuffer createContentBuffer() {
-      XMLStringBuffer suiteBuffer = new XMLStringBuffer(""); //$NON-NLS-1$
+      XMLStringBuffer suiteBuffer = new XMLStringBuffer();
       suiteBuffer.setDocType("suite SYSTEM \"" + Parser.TESTNG_DTD_URL + "\"");
 
       Properties attrs = new Properties();
