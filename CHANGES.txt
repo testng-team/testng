@@ -39,10 +39,13 @@ Added: If you select a package before invoking the "New TestNG class" wizard, th
 Added: When an item is selected in a tab, the same item will be selected when switching tabs
 Added: A new "Summary" tab that allows the user to see a summary of the tests, sort them by time, name, etc...
 Added: It's now possible "Run/Debug As" with a right click from pretty much any element that makes sense in the tree.
-Added: The conversion of a JUnit test to TestNG now replaces @Test(timeout) with @Test(timeOut) (5.14.2.4)
-Added: The conversion of a JUnit test to TestNG now replaces @Test(expected) with @Test(expectedExceptions) (5.14.2.4)
-Added: The conversion of a JUnit test to TestNG now replaces fail() with AssertJUnit.fail() (5.14.2.2)
-Added: The conversion of a JUnit test to TestNG now replaces Assert with AssertJUnit (5.14.2.1)
+Added: JUnit conversion: correctly replaces assertNull and assertNotNull
+Added: JUnit conversion: removes super.setUp() and super.tearDown()
+Added: JUnit conversion: removes @Override
+Added: JUnit conversion: replaces @Test(timeout) with @Test(timeOut) (5.14.2.4)
+Added: JUnit conversion: replaces @Test(expected) with @Test(expectedExceptions) (5.14.2.4)
+Added: JUnit conversion: replaces fail() with AssertJUnit.fail() (5.14.2.2)
+Added: JUnit conversion: replaces Assert with AssertJUnit (5.14.2.1)
 Added: The progress bar is now orange if the suite contained skipped tests and no failures
 Added: Skipped test and suite icons are now orange (previously: blue)
 Added: New method shortcuts: "Alt+Shift+X N", "Alt+Shift+D N" (Sven Johansson)
