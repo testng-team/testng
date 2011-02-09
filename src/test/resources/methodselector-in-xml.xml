@@ -1,0 +1,13 @@
+<suite name="SingleSuite" verbose="0">
+  <method-selectors>
+    <method-selector>
+      <selector-class name="test.methodselectors.Test2MethodSelector" priority="-1" />
+    </method-selector>
+  </method-selectors>
+  
+  <test name="Regression2" preserve-order="true">
+    <classes>
+      <class name="test.methodselectors.SampleTest" />
+    </classes>
+  </test>
+</suite>

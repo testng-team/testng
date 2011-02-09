@@ -840,6 +840,13 @@ public class TestNG {
       }
 
       //
+      // Install the method selectors
+      //
+      for (XmlMethodSelector methodSelector : s.getMethodSelectors() ) {
+        addMethodSelector(methodSelector.getClassName(), methodSelector.getPriority());
+      }
+
+      //
       // Find if we have an object factory
       //
       if (s.getObjectFactory() != null) {
