@@ -20,11 +20,11 @@ import testhelper.OutputDirectoryPatch;
 
 public class MethodSelectorInSuiteTest  extends SimpleBaseTest{
 
-  private TestListenerAdapter tla;
+  private TestListenerAdapter m_tla;
 
   @BeforeMethod
   public void setup() {
-    tla = new TestListenerAdapter();
+    m_tla = new TestListenerAdapter();
   }
 
   @Test
@@ -41,7 +41,7 @@ public class MethodSelectorInSuiteTest  extends SimpleBaseTest{
     XmlClass testClass = new XmlClass(test.methodselectors.SampleTest.class);
     test.setXmlClasses(Arrays.asList(testClass));
     tng.setXmlSuites(Arrays.asList(suite));
-    tng.addListener(tla);
+    tng.addListener(m_tla);
     tng.run();
 
     validate(new String[] { "test2" });
@@ -51,24 +51,24 @@ public class MethodSelectorInSuiteTest  extends SimpleBaseTest{
   public void xmlXmlSuite() {
     TestNG tng = create();
     tng.setTestSuites(Arrays.asList(getPathToResource("methodselector-in-xml.xml")));
-    tng.addListener(tla);
+    tng.addListener(m_tla);
     tng.run();
 
     validate(new String[] { "test2" });
   }
-  
+
   @Test
   public void fileOnCommandLine() {
-    String[] args = new String[] { 
+    String[] args = new String[] {
         "-d", OutputDirectoryPatch.getOutputDirectory(),
         getPathToResource("methodselector-in-xml.xml") };
-    TestNG.privateMain(args, tla);
-    
+    TestNG.privateMain(args, m_tla);
+
     validate(new String[] { "test2" });
   }
 
   private void validate(String[] expectPassed) {
-    List<ITestResult> passed = tla.getPassedTests();
+    List<ITestResult> passed = m_tla.getPassedTests();
     Assert.assertEquals(passed.size(), expectPassed.length);
     // doing this index based is probably not the best
     for (int i = 0; i < expectPassed.length; i++) {
