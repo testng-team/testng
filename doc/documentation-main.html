@@ -147,6 +147,9 @@ google_ad_channel ="5560744946";
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#logging-xml-reports">6.2.5 - XML Reports</a>
 <br>
+&nbsp; <a class="summary" href="#yaml">7 - YAML</a>
+<br>
+
 
 </pre>
 <!-------------------------------------
@@ -2151,7 +2154,6 @@ public class MyHook implements IHookable {
   TEST SUCCESS
   ------------------------------------>
 
-
 <h3>
 <a name="test-results">6 - Test results</a>
 </h3>
@@ -2452,6 +2454,59 @@ TestNG offers an XML reporter capturing TestNG specific information that is not 
   Please note that you cannot configure the built-in reporter because this one will only use default settings. If you need just the XML report with custom settings
   you will have to add it manually with one of the two methods and disable the default listeners.
 </p>
+
+<!------------------------------------
+  YAML
+  ------------------------------------>
+
+<h3>
+<a name="yaml">7 - YAML</a>
+</h3>
+
+TestNG supports <a href="http://www.yaml.org/">YAML</a> as an alternate way of specifying your suite file. For example, the following XML file:
+
+<pre class="brush: xml">
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+
+<suite name="SingleSuite" verbose="2" thread-count="4" >
+
+  &lt;parameter name="n" value="42" /&gt;
+
+  <test name="Regression2">
+    <groups>
+      <run>
+        &lt;exclude name="broken" /&gt;
+      </run>
+    </groups>
+
+    <classes>
+      &lt;class name="test.listeners.ResultEndMillisTest" /&gt;
+    </classes>
+  </test>
+</suite>
+</pre>
+<p>and here is its YAML version:</p>
+<pre class="brush: plain">
+name: SingleSuite
+threadCount: 4
+parameters: { n: 42 }
+
+tests:
+  - name: Regression2
+    parameters: { count: 10 }
+    excludedGroups: [ broken ]
+    classes:
+      - test.listeners.ResultEndMillisTest
+</pre>
+
+Here is <a href="https://github.com/cbeust/testng/blob/master/src/test/resources/testng.xml">TestNG's own suite file</a>, and its <a href="https://github.com/cbeust/testng/blob/master/src/test/resources/testng.yaml">YAML counterpart</a>.
+
+<p>
+
+You might find the YAML file format easier to read and to maintain. YAML files are also recognized by the TestNG Eclipse plug-in.
+
+
+<!---------------------------------------------------------------------->
 
 <a name="testng-dtd">
 &nbsp;<hr width="100%">
