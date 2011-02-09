@@ -6,6 +6,7 @@ Added: -randomizesuites (Nalin Makar)
 Added: IConfigurable
 Fixed: TESTNG-468: Listeners defined in suite XML file are ignored (Michael Benz)
 Fixed: TESTNG-465: Guice modules are bound individually to an injector meaning that multiple modules can't be effectively used (Danny Thomas)
+Fixed: Method selectors from suites were not properly initialized (toddq)
 Fixed: Throw an error when two data providers have the same name
 Fixed: Better handling of classes that don't have any TestNG annotations
 Fixed: XmlTest#toXml wasn't displaying the thread-count attribute
