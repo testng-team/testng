@@ -38,8 +38,9 @@ public class SuiteWorkerFactory implements IThreadWorkerFactory<ISuite>
   {
     List<IWorker<ISuite>> suiteWorkers = Lists.newArrayList();
     for (ISuite suiteRunner : suites) {
-      suiteWorkers.add(new SuiteRunnerWorker(suiteRunner, m_suiteRunnerMap,
-        m_verbose, m_defaultSuiteName));
+      SuiteRunnerWorker worker = new SuiteRunnerWorker(suiteRunner, m_suiteRunnerMap,
+        m_verbose, m_defaultSuiteName);
+      suiteWorkers.add(worker);
     }
     return suiteWorkers;
   }

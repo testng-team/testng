@@ -966,7 +966,7 @@ public class TestNG {
         }
 
         IThreadWorkerFactory<ISuite> factory = new SuiteWorkerFactory(suiteRunnerMap,
-          m_verbose, getDefaultSuiteName());
+          0 /* verbose hasn't been set yet */, getDefaultSuiteName());
         GraphThreadPoolExecutor<ISuite> pooledExecutor =
           new GraphThreadPoolExecutor<ISuite>(suiteGraph, factory, m_suiteThreadPoolSize,
           m_suiteThreadPoolSize, Integer.MAX_VALUE, TimeUnit.MILLISECONDS,
