@@ -51,6 +51,8 @@ Added: The progress bar is now orange if the suite contained skipped tests and n
 Added: Skipped test and suite icons are now orange (previously: blue)
 Added: New method shortcuts: "Alt+Shift+X N", "Alt+Shift+D N" (Sven Johansson)
 Added: "Create TestNG class" context menu
+Added: When generating a new class, handle overridden methods by generating mangled test method names
+Fixed: Green nodes could override red parent nodes back to green
 Fixed: Was trying to load the classes found in the XML template file
 Fixed: Stack traces of skipped tests were not showing in the Exception view
 Fixed: XML files should be run in place and not copied.
