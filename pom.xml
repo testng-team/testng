@@ -73,9 +73,7 @@
           <groupId>com.google.inject</groupId>
            <artifactId>guice</artifactId>
            <version>2.0</version>
-<!--
            <scope>provided</scope>
--->
         </dependency>
         <dependency>
           <groupId>com.beust</groupId>
@@ -114,9 +112,7 @@
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
       <version>2.0</version>
-<!--
       <scope>provided</scope>
--->
     </dependency>
 
     <dependency>

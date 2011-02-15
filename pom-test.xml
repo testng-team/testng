@@ -67,7 +67,7 @@
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
-      <version>5.14.9-SNAPSHOT</version>
+      <version>5.14.10-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
    </dependencies>
@@ -94,6 +94,7 @@
           <suiteXmlFiles>
             <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
           </suiteXmlFiles>
+          <excludedGroups>broken,maven-broken</excludedGroups>
           <properties>
             <property>
               <name>listener</name>
