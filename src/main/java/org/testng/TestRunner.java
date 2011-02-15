@@ -755,11 +755,15 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
     else {
       // parallel
       int threadCount = xmlTest.getThreadCount();
-      DynamicGraph<ITestNGMethod> graph = computeAlternateTestList(m_allTestMethods);
+      // Make sure we create a graph based on the intercepted methods, otherwise an interceptor
+      // removing methods would cause the graph never to terminate (because it would expect
+      // termination from methods that never get invoked).
+      DynamicGraph<ITestNGMethod> graph = computeAlternateTestList(intercept(m_allTestMethods));
       if (graph.getNodeCount() > 0) {
-        GraphThreadPoolExecutor<ITestNGMethod> executor = new GraphThreadPoolExecutor<ITestNGMethod>(graph, this,
-            threadCount, threadCount, 0, TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<Runnable>());
+        GraphThreadPoolExecutor<ITestNGMethod> executor =
+            new GraphThreadPoolExecutor<ITestNGMethod>(graph, this,
+                threadCount, threadCount, 0, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>());
         executor.run();
         try {
           long timeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
@@ -772,6 +776,24 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
         }
       }
     }
+  }
+
+  /**
+   * Apply the method interceptor (if applicable) to the list of methods.
+   */
+  private ITestNGMethod[] intercept(ITestNGMethod[] methods) {
+    if (m_methodInterceptor == null) return methods;
+
+    IMethodInstance[] instances = methodsToMethodInstances(Arrays.asList(methods));
+
+    List<IMethodInstance> resultInstances =
+        m_methodInterceptor.intercept(Arrays.asList(instances), this);
+    List<ITestNGMethod> result = Lists.newArrayList();
+    for (IMethodInstance imi : resultInstances) {
+      result.add(imi.getMethod());
+    }
+
+    return result.toArray(new ITestNGMethod[result.size()]);
   }
 
   /**
@@ -881,8 +903,8 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
       }
       else {
         // Parallel class: each method in its own worker
-          TestMethodWorker worker = createTestMethodWorker(Arrays.asList(im), params, c);
-          result.add(worker);
+        TestMethodWorker worker = createTestMethodWorker(Arrays.asList(im), params, c);
+        result.add(worker);
       }
     }
 

@@ -110,4 +110,10 @@ public class MethodInterceptorTest extends SimpleBaseTest {
     }
   }
 
+  @Test(timeOut = 1000)
+  public void shouldNotLockUpWithInterceptorThatRemovesMethods() {
+    TestNG tng = create(LockUpInterceptorSampleTest.class);
+    tng.setParallel("methods");
+    tng.run();
+  }
 }
