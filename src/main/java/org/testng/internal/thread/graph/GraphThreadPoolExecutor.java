@@ -82,7 +82,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
     setStatus((IWorker<T>) r, Status.FINISHED);
     synchronized(m_graph) {
       ppp("Node count:" + m_graph.getNodeCount() + " and "
-          + m_graph.getNodeCountWithStatus(Status.FINISHED));
+          + m_graph.getNodeCountWithStatus(Status.FINISHED) + " finished");
       if (m_graph.getNodeCount() == m_graph.getNodeCountWithStatus(Status.FINISHED)) {
         ppp("Shutting down executor " + this);
         if (DOT_FILES) {
