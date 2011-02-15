@@ -43,7 +43,8 @@ public class XmlVerifyTest extends SimpleBaseTest {
   }
 
   @Test(description="Checks to make sure that NPE is not thrown when <test> tag is missing",
-      expectedExceptions = TestNGException.class)
+      expectedExceptions = TestNGException.class,
+      groups = "maven-broken")
   public void handleInvalidXml() {
      OutputStream os = new ByteArrayOutputStream();
      PrintStream out = System.out;
