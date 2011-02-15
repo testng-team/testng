@@ -308,7 +308,9 @@ public class TestNG {
         // Probably a Yaml exception, unnest it
         Throwable t = ex;
         while (t.getCause() != null) t = t.getCause();
-        t.printStackTrace();
+//        t.printStackTrace();
+        if (t instanceof TestNGException) throw (TestNGException) t;
+        else throw new TestNGException(t);
       }
     }
 
