@@ -17,7 +17,7 @@ public class SerializationTest {
     oos.close();
   }
 
-  @Test(groups = "maven-broken")
+  @Test(groups = { "broken", "maven-broken" })
   public void testngMethodShouldBeSerializable(ITestContext context) throws IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     ObjectOutputStream oos = new ObjectOutputStream(out);
