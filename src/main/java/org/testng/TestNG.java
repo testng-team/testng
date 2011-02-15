@@ -304,6 +304,12 @@ public class TestNG {
       catch(SAXException e) {
         e.printStackTrace(System.out);
       }
+      catch(Exception ex) {
+        // Probably a Yaml exception, unnest it
+        Throwable t = ex;
+        while (t.getCause() != null) t = t.getCause();
+        t.printStackTrace();
+      }
     }
 
     //
