@@ -10,23 +10,23 @@ import java.util.Arrays;
 
 public class PriorityTest extends SimpleBaseTest {
 
-//  @Test
-  public void withoutPriority() {
-    TestNG tng = create(WithoutPrioritySampleTest.class);
+  private void runTest(Class<?> cls, String first, String second) {
+    TestNG tng = create(cls);
     tng.setParallel("methods");
     tng.run();
-    System.out.println(BaseSample.m_methods);
-    Assert.assertEquals(BaseSample.m_methods,
-        Arrays.asList("f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "first", "second"));
+//    System.out.println(BaseSample.m_methods);
+    Assert.assertEquals(BaseSample.m_methods.get(0), first);
+    Assert.assertEquals(BaseSample.m_methods.get(1), second);
   }
 
-  @Test
+  @Test(description = "Make sure priorities work even in parallel mode")
   public void withPriority() {
-    TestNG tng = create(WithPrioritySampleTest.class);
-    tng.setParallel("methods");
-    tng.run();
-    System.out.println(BaseSample.m_methods);
-    Assert.assertEquals(BaseSample.m_methods.get(0), "first");
-    Assert.assertEquals(BaseSample.m_methods.get(1), "second");
+    runTest(WithPrioritySampleTest.class, "first", "second");
   }
+
+  @Test(description = "Make sure priorities work even in parallel mode")
+  public void withPriority2() {
+    runTest(WithPrioritySample2Test.class, "second", "first");
+  }
+
 }

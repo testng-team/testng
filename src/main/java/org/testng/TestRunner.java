@@ -1206,8 +1206,36 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
       }
     }
 
+    // A map of each priority and the list of methods that have this priority
+    Map<Integer, List<ITestNGMethod>> methodsByPriority = Maps.newHashMap();
+    for (ITestNGMethod m : methods) {
+      List<ITestNGMethod> l = methodsByPriority.get(m.getPriority());
+      if (l == null) {
+        l = Lists.newArrayList();
+        methodsByPriority.put(m.getPriority(), l);
+      }
+      l.add(m);
+    }
+
+    // The priority map will contain at least one entry for all the methods that have
+    // a priority of zero (the default). If it has more than one entry, then we know that
+    // some test methods specified priorities, so we need to create dependencies
+    // that reflect the priority order.
+    boolean hasPriorities = false; // methodsByPriority.size() > 1;
+
     for (ITestNGMethod m : methods) {
       result.addNode(m);
+
+      // Priority
+      if (hasPriorities) {
+        for (Map.Entry<Integer, List<ITestNGMethod>> e : methodsByPriority.entrySet()) {
+          if (e.getKey() < m.getPriority()) {
+            for (ITestNGMethod dm : e.getValue()) {
+              result.addEdge(m, dm);
+            }
+          }
+        }
+      }
 
       // Dependent methods
       {
@@ -1238,6 +1266,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
           }
         }
       }
+
     }
 
     return result;

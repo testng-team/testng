@@ -11,7 +11,7 @@ public class BaseSample {
   public static List<String> m_methods;
 
   protected void add(String m) {
-    System.out.println("Running " + m);
+//    System.out.println("Running " + m);
     synchronized(m_methods) {
       m_methods.add(m);
     }
