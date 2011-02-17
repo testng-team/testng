@@ -1979,7 +1979,7 @@ in your <tt>testng.xml</tt> file.
 <a name="dependency-injection">5.19 - Dependency injection</a>
 </h4>
 
-TestNG supports two different kinds of dependency injection: native (performed by TestNG itself) and external (performed by a dependency injection framework).
+TestNG supports two different kinds of dependency injection: native (performed by TestNG itself) and external (performed by a dependency injection framework such as Guice).
 
 <h5>
 <a name="native-dependency-injection">5.19.1 - Native dependency injection</a>
@@ -2064,6 +2064,38 @@ public class GuiceExampleModule implements Module {
 }
 </pre>
 
+If you need more flexibility in specifying which modules should be used to instantiate your test classes, you can specify a module factory:
+
+<pre class="brush: java">
+@Guice(moduleFactory = ModuleFactory.class)
+public class GuiceModuleFactoryTest {
+
+  @Inject
+  ISingleton m_singleton;
+
+  @Test
+  public void singletonShouldWork() {
+    m_singleton.doSomething();
+  }
+}
+</pre>
+
+The module factory needs to implement the interface <a href="../javadocs/org/testng/IModuleFactory.html">IModuleFactory</a>:
+
+<pre class="brush: java">
+public interface IModuleFactory {
+ /**
+   * @param context The current test context
+   * @param testClass The test class
+   *
+   * @return The Guice module that should be used to get an instance of this
+   * test class.
+   */
+  Module createModule(ITestContext context, Class&lt;?&gt; testClass);
+}
+</pre>
+
+Your factory will be passed an instance of the test context and the test class that TestNG needs to instantiate. Your <tt>createModule</tt> method should return a Guice Module that will know how to instantiate this test class. You can use the test context to find out more information about your environment, such as parameters specified in <tt>testng.xml</tt>, etc...
 
 
 

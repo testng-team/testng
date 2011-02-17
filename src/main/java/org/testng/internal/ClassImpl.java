@@ -125,38 +125,38 @@ public class ClassImpl implements IClass {
 
     Object result = null;
     Guice guice = (Guice) annotation;
-    Class<? extends Module>[] moduleClasses = getModules(guice, m_class);
+    Module[] modules = getModules(guice, m_class);
 
-    if (moduleClasses.length == 0) {
+    if (modules.length == 0) {
       throw new TestNGException("Couldn't find any Guice module for class " + m_class);
     }
 
     List<Module> moduleInstances = new ArrayList<Module>();
-    try {
-      for (Class<? extends Module> c : moduleClasses) {
-        moduleInstances.add((Module) c.newInstance() );
-      }
-      result = com.google.inject.Guice.createInjector(moduleInstances).getInstance(m_class);
-      if (result != null) return result;
-    } catch (IllegalAccessException e) {
-      throw new TestNGException(e);
-    } catch (InstantiationException e) {
-      throw new TestNGException(e);
+    for (Module module : modules) {
+      moduleInstances.add(module);
     }
+    result = com.google.inject.Guice.createInjector(moduleInstances).getInstance(m_class);
+    if (result != null) return result;
 
     return result;
   }
 
-  private Class<? extends Module>[] getModules(Guice guice, Class<?> testClass) {
-    List<Class<? extends Module>> result = Lists.newArrayList();
-    for (Class<? extends Module> module : guice.modules()) {
-      result.add(module);
+  private Module[] getModules(Guice guice, Class<?> testClass) {
+    List<Module> result = Lists.newArrayList();
+    for (Class<? extends Module> moduleClass : guice.modules()) {
+      try {
+        result.add(moduleClass.newInstance());
+      } catch (InstantiationException e) {
+        throw new TestNGException(e);
+      } catch (IllegalAccessException e) {
+        throw new TestNGException(e);
+      }
     }
     Class<? extends IModuleFactory> factory = guice.moduleFactory();
     if (factory != IModuleFactory.class) {
       try {
         IModuleFactory factoryInstance = factory.newInstance();
-        Class moduleClass = factoryInstance.createModule(m_testContext, testClass);
+        Module moduleClass = factoryInstance.createModule(m_testContext, testClass);
         if (moduleClass != null) {
           result.add(moduleClass);
         }
@@ -167,7 +167,7 @@ public class ClassImpl implements IClass {
       }
     }
 
-    return result.toArray(new Class[result.size()]);
+    return result.toArray(new Module[result.size()]);
   }
 
   @Override
