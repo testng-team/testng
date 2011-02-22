@@ -529,9 +529,8 @@ public class Assert {
       i++;
       Object e = expIt.next();
       Object a = actIt.next();
-      String errorMessage = message == null
-          ? "Lists differ at element [" + i + "]: " + e + " != " + a
-          : message + ": Lists differ at element [" + i + "]: " + e + " != " + a;
+      String explanation = "Lists differ at element [" + i + "]: " + e + " != " + a;
+      String errorMessage = message == null ? explanation : message + ": " + explanation;
 
       assertEquals(a, e, errorMessage);
     }
