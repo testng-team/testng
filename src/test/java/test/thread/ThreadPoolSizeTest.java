@@ -11,7 +11,7 @@ public class ThreadPoolSizeTest extends BaseThreadTest {
     initThreadLog();
   }
 
-  @Test(invocationCount = 20, threadPoolSize = 3)
+  @Test(invocationCount = 5, threadPoolSize = 3)
   public void f1() {
     long n = Thread.currentThread().getId();
     log(getClass().getName(), "threadPoolSize:20");
