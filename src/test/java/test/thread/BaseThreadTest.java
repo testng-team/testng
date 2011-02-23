@@ -1,5 +1,6 @@
 package test.thread;
 
+import org.testng.Assert;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.Sets;
 
@@ -47,4 +48,8 @@ public class BaseThreadTest extends SimpleBaseTest {
     }
   }
 
+  protected void verifyThreads(int expected) {
+    Assert.assertEquals(getThreadCount(), expected,
+        "Ran on " + getThreadCount() + " instead of " + expected);
+  }
 }
