@@ -1221,7 +1221,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
     // a priority of zero (the default). If it has more than one entry, then we know that
     // some test methods specified priorities, so we need to create dependencies
     // that reflect the priority order.
-    boolean hasPriorities = false; // methodsByPriority.size() > 1;
+    boolean hasPriorities = methodsByPriority.size() > 1;
 
     for (ITestNGMethod m : methods) {
       result.addNode(m);
