@@ -205,36 +205,60 @@ public class MethodInvocationHelper {
     protected static void invokeWithTimeout(ITestNGMethod tm, Object instance, Object[] parameterValues,
         ITestResult testResult)
     throws InterruptedException, ThreadExecutionException {
-      IExecutor exec= ThreadUtil.createExecutor(1, tm.getMethod().getName());
-
-      InvokeMethodRunnable imr = new InvokeMethodRunnable(tm, instance, parameterValues);
-      IFutureResult future= exec.submitRunnable(imr);
-      exec.shutdown();
-      long realTimeOut = MethodHelper.calculateTimeOut(tm);
-      boolean finished = exec.awaitTermination(realTimeOut);
-
-      if (! finished) {
-        exec.stopNow();
-        ThreadTimeoutException exception = new ThreadTimeoutException("Method "
-          + tm.getClass().getName() + "." + tm.getMethodName() + "()"
-          + " didn't finish within the time-out "
-          + realTimeOut);
-        exception.setStackTrace(exec.getStackTraces()[0]);
-        testResult.setThrowable(exception);
-        testResult.setStatus(ITestResult.FAILURE);
-      }
-      else {
-        Utils.log("Invoker " + Thread.currentThread().hashCode(), 3,
-            "Method " + tm.getMethod() + " completed within the time-out " + tm.getTimeOut());
-
-        // We don't need the result from the future but invoking get() on it
-        // will trigger the exception that was thrown, if any
-        future.get();
-  //      done.await();
-
-        testResult.setStatus(ITestResult.SUCCESS); // if no exception till here than SUCCESS
+      if (tm.getThreadPoolSize() == 0) {
+        invokeWithTimeoutWithNewExecutor(tm, instance, parameterValues, testResult);
+      } else {
+        invokeWithTimeoutWithNoExecutor(tm, instance, parameterValues, testResult);
       }
     }
+
+  private static void invokeWithTimeoutWithNoExecutor(ITestNGMethod tm,
+      Object instance, Object[] parameterValues, ITestResult testResult) {
+
+    InvokeMethodRunnable imr = new InvokeMethodRunnable(tm, instance, parameterValues);
+    try {
+      imr.run();
+      testResult.setStatus(ITestResult.SUCCESS);
+    }
+    catch(Exception ex) {
+      testResult.setThrowable(ex.getCause());
+      testResult.setStatus(ITestResult.FAILURE);
+    }
+  }
+
+  private static void invokeWithTimeoutWithNewExecutor(ITestNGMethod tm,
+      Object instance, Object[] parameterValues, ITestResult testResult)
+      throws InterruptedException, ThreadExecutionException {
+    IExecutor exec= ThreadUtil.createExecutor(1, tm.getMethod().getName());
+
+    InvokeMethodRunnable imr = new InvokeMethodRunnable(tm, instance, parameterValues);
+    IFutureResult future = exec.submitRunnable(imr);
+    exec.shutdown();
+    long realTimeOut = MethodHelper.calculateTimeOut(tm);
+    boolean finished = exec.awaitTermination(realTimeOut);
+
+    if (! finished) {
+      exec.stopNow();
+      ThreadTimeoutException exception = new ThreadTimeoutException("Method "
+        + tm.getClass().getName() + "." + tm.getMethodName() + "()"
+        + " didn't finish within the time-out "
+        + realTimeOut);
+      exception.setStackTrace(exec.getStackTraces()[0]);
+      testResult.setThrowable(exception);
+      testResult.setStatus(ITestResult.FAILURE);
+    }
+    else {
+      Utils.log("Invoker " + Thread.currentThread().hashCode(), 3,
+          "Method " + tm.getMethod() + " completed within the time-out " + tm.getTimeOut());
+
+      // We don't need the result from the future but invoking get() on it
+      // will trigger the exception that was thrown, if any
+      future.get();
+//      done.await();
+
+      testResult.setStatus(ITestResult.SUCCESS); // if no exception till here than SUCCESS
+    }
+  }
 
   protected static void invokeConfigurable(final Object instance,
       final Object[] parameters, Object configurableInstance,

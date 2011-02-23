@@ -6,6 +6,7 @@ Added: timeOut for configuration methods
 Added: -randomizesuites (Nalin Makar)
 Added: IConfigurable
 Fixed: @Test(priority) was not being honored in parallel mode
+Fixed: @Test(timeOut) was causing threadPoolSize to be ignored
 Fixed: TESTNG-468: Listeners defined in suite XML file are ignored (Michael Benz)
 Fixed: TESTNG-465: Guice modules are bound individually to an injector meaning that multiple modules can't be effectively used (Danny Thomas)
 Fixed: Method selectors from suites were not properly initialized (toddq)
