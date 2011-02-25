@@ -58,7 +58,9 @@ public class Converter {
 
       for (String file : m_files) {
         Set<XmlSuite> allSuites = Sets.newHashSet();
-        findAllSuites(new Parser(file).parse(), allSuites);
+        Parser parser = new Parser(file);
+        parser.setLoadClasses(false);  // we might not have these classes on the classpath
+        findAllSuites(parser.parse(), allSuites);
 
         for (XmlSuite suite : allSuites) {
           String fileName = suite.getFileName();
