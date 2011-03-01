@@ -37,8 +37,26 @@ public class XMLReporter implements IReporter {
       config.setOutputDirectory(outputDirectory);
     }
 
+    // Calculate passed/failed/skipped
+    int passed = 0;
+    int failed = 0;
+    int skipped = 0;
+    for (ISuite s : suites) {
+      for (ISuiteResult sr : s.getResults().values()) {
+        ITestContext testContext = sr.getTestContext();
+        passed += testContext.getPassedTests().size();
+        failed += testContext.getFailedTests().size();
+        skipped += testContext.getSkippedTests().size();
+      }
+    }
+
     rootBuffer = new XMLStringBuffer();
-    rootBuffer.push(XMLReporterConfig.TAG_TESTNG_RESULTS);
+    Properties p = new Properties();
+    p.put("passed", passed);
+    p.put("failed", failed);
+    p.put("skipped", skipped);
+    p.put("total", passed + failed + skipped);
+    rootBuffer.push(XMLReporterConfig.TAG_TESTNG_RESULTS, p);
     writeReporterOutput(rootBuffer);
     for (int i = 0; i < suites.size(); i++) {
       writeSuite(suites.get(i).getXmlSuite(), suites.get(i));
