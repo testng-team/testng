@@ -82,7 +82,7 @@
   </target>
 
   <target name="single">
-    <ant antfile="build-test.xml" target="run:single"/>
+    <ant antfile="build-tests.xml" target="run:single"/>
   </target>
 
   <!-- ==================================================================== -->
