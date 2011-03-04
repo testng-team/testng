@@ -141,20 +141,26 @@ class SuiteResultCounts {
 
   public void calculateResultCounts(XmlSuite xmlSuite, Map<XmlSuite, ISuite> xmlToISuiteMap)
   {
-    Collection<ISuiteResult> tempSuiteResult = xmlToISuiteMap.get(xmlSuite).getResults().values();
-    for (ISuiteResult isr : tempSuiteResult) {
-      ITestContext ctx = isr.getTestContext();
-      int skipped = ctx.getSkippedTests().size();
-      int failed = ctx.getFailedTests().size() + ctx.getFailedButWithinSuccessPercentageTests().size();
-      m_skipped += skipped;
-      m_failed += failed;
-      m_confFailures += ctx.getFailedConfigurations().size();
-      m_confSkips += ctx.getSkippedConfigurations().size();
-      m_total += ctx.getPassedTests().size() + failed + skipped;
-    }
+    ISuite iSuite = xmlToISuiteMap.get(xmlSuite);
+    if (iSuite != null) {
+      Map<String, ISuiteResult> results = iSuite.getResults();
+      if (results != null) {
+        Collection<ISuiteResult> tempSuiteResult = results.values();
+        for (ISuiteResult isr : tempSuiteResult) {
+          ITestContext ctx = isr.getTestContext();
+          int skipped = ctx.getSkippedTests().size();
+          int failed = ctx.getFailedTests().size() + ctx.getFailedButWithinSuccessPercentageTests().size();
+          m_skipped += skipped;
+          m_failed += failed;
+          m_confFailures += ctx.getFailedConfigurations().size();
+          m_confSkips += ctx.getSkippedConfigurations().size();
+          m_total += ctx.getPassedTests().size() + failed + skipped;
+        }
 
-    for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
-      calculateResultCounts(childSuite, xmlToISuiteMap);
+        for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
+          calculateResultCounts(childSuite, xmlToISuiteMap);
+        }
+      }
     }
   }
 }
