@@ -1,5 +1,6 @@
 package test;
 
+import org.testng.Assert;
 import org.testng.annotations.Configuration;
 import org.testng.annotations.Test;
 
@@ -11,7 +12,6 @@ import org.testng.annotations.Test;
  */
 public class Test2 extends BaseTest {
   private boolean m_initializedCorrectly = false;
-  private boolean m_initializedIncorrectly = false;
 
   @Configuration(beforeTestMethod = true)
 //  @BeforeMethod
@@ -23,7 +23,7 @@ public class Test2 extends BaseTest {
   @Configuration(beforeTestMethod = true, groups = "excludeThisGroup")
 //  @BeforeMethod(groups = { "excludeThisGroup"} )
   public void incorrectSetup() {
-    m_initializedIncorrectly = true;
+    throw new RuntimeException("Should never be run");
   }
 
   @Test
@@ -46,9 +46,7 @@ public class Test2 extends BaseTest {
   @Test
   public void setUpWithGroups() {
     run();
-    assert m_initializedCorrectly && (! m_initializedIncorrectly) :
-      "Wrong set up method was called, correct:" + m_initializedCorrectly +
-      " incorrect:" + m_initializedIncorrectly;
+    Assert.assertTrue(m_initializedCorrectly, "Should have run the correctSetup method");
   }
 
   @Test
