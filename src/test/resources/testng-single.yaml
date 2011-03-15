@@ -1,9 +1,11 @@
 name: SingleSuite
-verbose: 2
+verbose: 10
 
 tests:
   - name: Test1
+    excludedGroups: [ excludeThisGroup ]
     classes:
-      - test.yaml.YamlTest
+#      - test.tmp.A
+      - test.Test2
 #      - name: test.CommandLineTest
 #        includedMethods: [ junitParsing ]
