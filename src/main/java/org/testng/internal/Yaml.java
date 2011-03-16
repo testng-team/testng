@@ -78,6 +78,10 @@ public class Yaml {
     }
   }
 
+  /**
+   * The main entry point to convert an XmlSuite into YAML. This method is allowed to be used
+   * by external tools (e.g. Eclipse).
+   */
   public static StringBuilder toYaml(XmlSuite suite) {
     StringBuilder result = new StringBuilder();
 
@@ -104,7 +108,6 @@ public class Yaml {
       result.append("packages:\n");
       toYaml(result, suite.getPackages());
     }
-    toYaml(result, "listeners", suite.getListeners());
     if (suite.getTests().size() > 0) {
       result.append("tests:\n");
       for (XmlTest t : suite.getTests()) {

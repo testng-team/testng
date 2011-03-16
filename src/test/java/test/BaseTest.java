@@ -48,6 +48,8 @@ public class BaseTest extends BaseDistributedTest {
   private ITestRunnerFactory m_testRunnerFactory;
   private IConfiguration m_configuration;
 
+  private Integer m_verbose = null;
+
   public BaseTest() {
     m_testRunnerFactory= new InternalTestRunnerFactory(this);
     m_configuration = new Configuration();
@@ -66,7 +68,7 @@ public class BaseTest extends BaseDistributedTest {
   }
 
   protected void setVerbose(int n) {
-    getTest().setVerbose(n);
+    m_verbose = n;
   }
 
   protected void setTestTimeOut(long n) {
@@ -180,7 +182,7 @@ public class BaseTest extends BaseDistributedTest {
     setSkippedConfigs(new HashMap());
     setFailedButWithinSuccessPercentageTests(new HashMap());
 
-    m_suite.setVerbose(0);
+    m_suite.setVerbose(m_verbose != null ? m_verbose : 0);
     SuiteRunner suite = new SuiteRunner(m_configuration,
         m_suite, m_outputDirectory, m_testRunnerFactory);
 
