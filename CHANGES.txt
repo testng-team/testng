@@ -1,5 +1,12 @@
 Current
 
+Fixed: JUnitReporter generates an <error> tag for successful expectedExceptions tests
+
+===========================================================================
+
+6.0
+2011/03/16
+
 Added: @Guice(moduleFactory) and IModuleFactory
 Added: @Guice(module)
 Added: timeOut for configuration methods

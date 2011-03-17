@@ -60,28 +60,29 @@ public class JUnitReportReporter implements IReporter {
       for (ITestResult tr: entry.getValue()) {
         TestTag testTag = new TestTag();
 
-        boolean isError = ! (tr.getThrowable() instanceof AssertionError);
-        if (tr.getStatus() != ITestResult.SUCCESS) {
-          if (isError) {
+        boolean isSuccess = tr.getStatus() == ITestResult.SUCCESS;
+        if (isSuccess) {
+          if (tr.getThrowable() instanceof AssertionError) {
             errors++;
           } else {
             failures++;
           }
         }
+
         Properties p2 = new Properties();
         p2.setProperty("classname", cls.getName());
         p2.setProperty("name", tr.getMethod().getMethodName());
         long time = tr.getEndMillis() - tr.getStartMillis();
         p2.setProperty("time", "" + formatTime(time));
         Throwable t = getThrowable(tr, failedConfigurations);
-        if (t != null) {
+        if (! isSuccess && t != null) {
           StringWriter sw = new StringWriter();
           PrintWriter pw = new PrintWriter(sw);
           t.printStackTrace(pw);
           testTag.message = t.getMessage();
           testTag.type = t.getClass().getName();
           testTag.stackTrace = sw.toString();
-          testTag.errorTag = isError ? "error" : "failure";
+          testTag.errorTag = tr.getThrowable() instanceof AssertionError ? "error" : "failure";
         }
         totalTime += time;
         testCount++;
