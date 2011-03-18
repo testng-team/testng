@@ -61,7 +61,7 @@ public class JUnitReportReporter implements IReporter {
         TestTag testTag = new TestTag();
 
         boolean isSuccess = tr.getStatus() == ITestResult.SUCCESS;
-        if (isSuccess) {
+        if (! isSuccess) {
           if (tr.getThrowable() instanceof AssertionError) {
             errors++;
           } else {
