@@ -2,6 +2,12 @@ Current
 
 Fixed: JUnitReporter generates an <error> tag for successful expectedExceptions tests
 
+Eclipse:
+
+Added: Converting @RunWith(Parameterized.class)
+Fixed: @BeforeClass/@AfterClass from JUnit4 are not being properly converted
+Fixed: Conversions generate @Test() instead of @Test
+
 ===========================================================================
 
 6.0
