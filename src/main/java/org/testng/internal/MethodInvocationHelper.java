@@ -33,9 +33,11 @@ public class MethodInvocationHelper {
   throws InvocationTargetException, IllegalAccessException
   {
     Object result = null;
+    Utils.checkInstanceOrStatic(instance, thisMethod);
+
     // TESTNG-326, allow IObjectFactory to load from non-standard classloader
     // If the instance has a different classloader, its class won't match the method's class
-    if (!thisMethod.getDeclaringClass().isAssignableFrom(instance.getClass())) {
+    if (instance == null || !thisMethod.getDeclaringClass().isAssignableFrom(instance.getClass())) {
       // for some reason, we can't call this method on this class
       // is it static?
       boolean isStatic = Modifier.isStatic(thisMethod.getModifiers());

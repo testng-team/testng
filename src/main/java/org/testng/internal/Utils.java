@@ -27,6 +27,7 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -761,6 +762,16 @@ public final class Utils {
       return result;
     } catch (IOException e) {
       throw new TestNGException(e);
+    }
+  }
+
+  /**
+   * Make sure that either we have an instance or if not, that the method is static
+   */
+  public static void checkInstanceOrStatic(Object instance, Method method) {
+    if (instance == null && ! Modifier.isStatic(method.getModifiers())) {
+      throw new TestNGException("Can't invoke " + method + ": either make it static or add "
+          + "a no-args constructor to your class");
     }
   }
 }

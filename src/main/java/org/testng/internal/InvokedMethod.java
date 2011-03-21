@@ -47,7 +47,7 @@ public class InvokedMethod implements Serializable, IInvokedMethod {
     for (Object p : m_parameters) {
       result.append(p).append(" ");
     }
-    result.append(" ").append(m_instance.hashCode());
+    result.append(" ").append(m_instance != null ? m_instance.hashCode() : " <static>");
 
     return result.toString();
   }

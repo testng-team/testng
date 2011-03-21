@@ -187,7 +187,9 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
 
     for (ITestNGMethod m : methods) {
       Object[] instances= m.getInstances();
-      Class clazz= instances == null || instances.length == 0 ? m.getRealClass() : instances[0].getClass();
+      Class clazz= instances == null || instances.length == 0 || instances[0] == null
+          ? m.getRealClass()
+          : instances[0].getClass();
       Set<ITestNGMethod> methodList= methodsMap.get(clazz);
       if(null == methodList) {
         methodList= new HashSet<ITestNGMethod>();

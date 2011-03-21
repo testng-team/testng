@@ -106,8 +106,9 @@ public class ClassImpl implements IClass {
         if (instance != null) {
           m_defaultInstance = instance;
         } else {
-          m_defaultInstance = ClassHelper.createInstance(m_class, m_classes, m_xmlTest,
-              m_annotationFinder, m_objectFactory);
+          m_defaultInstance =
+              ClassHelper.createInstance(m_class, m_classes, m_xmlTest,
+                  m_annotationFinder, m_objectFactory);
         }
       }
     }
