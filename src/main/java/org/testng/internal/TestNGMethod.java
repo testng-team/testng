@@ -79,7 +79,7 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
         m_method.getDeclaringClass().getName() + "." + m_method.getName()));
     {
       ITestAnnotation testAnnotation =
-          AnnotationHelper.findTest(getAnnotationFinder(), m_method.method);
+          AnnotationHelper.findTest(getAnnotationFinder(), m_method.getMethod());
 
       if (testAnnotation == null) {
         // Try on the class

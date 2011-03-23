@@ -3,37 +3,50 @@ package org.testng.internal;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
+/**
+ * Encapsulation of either a method or a constructor.
+ *
+ * @author Cedric Beust <cedric@beust.com>
+ */
 public class ConstructorOrMethod {
 
-  public Method method;
-  public Constructor constructor;
+  private Method m_method;
+  private Constructor m_constructor;
 
   public ConstructorOrMethod(Method m) {
-    method = m;
+    m_method = m;
   }
 
   public ConstructorOrMethod(Constructor c) {
-    constructor = c;
+    m_constructor = c;
   }
 
   public Class<?> getDeclaringClass() {
-    return method != null ? method.getDeclaringClass() : constructor.getDeclaringClass();
+    return getMethod() != null ? getMethod().getDeclaringClass() : getConstructor().getDeclaringClass();
   }
 
   public String getName() {
-    return method != null ? method.getName() : constructor.getName();
+    return getMethod() != null ? getMethod().getName() : getConstructor().getName();
   }
 
   public Class[] getParameterTypes() {
-    return method != null ? method.getParameterTypes() : constructor.getParameterTypes();
+    return getMethod() != null ? getMethod().getParameterTypes() : getConstructor().getParameterTypes();
+  }
+
+  public Method getMethod() {
+    return m_method;
+  }
+
+  public Constructor getConstructor() {
+    return m_constructor;
   }
 
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((constructor == null) ? 0 : constructor.hashCode());
-    result = prime * result + ((method == null) ? 0 : method.hashCode());
+    result = prime * result + ((getConstructor() == null) ? 0 : getConstructor().hashCode());
+    result = prime * result + ((getMethod() == null) ? 0 : getMethod().hashCode());
     return result;
   }
 
@@ -46,15 +59,15 @@ public class ConstructorOrMethod {
     if (getClass() != obj.getClass())
       return false;
     ConstructorOrMethod other = (ConstructorOrMethod) obj;
-    if (constructor == null) {
-      if (other.constructor != null)
+    if (getConstructor() == null) {
+      if (other.getConstructor() != null)
         return false;
-    } else if (!constructor.equals(other.constructor))
+    } else if (!getConstructor().equals(other.getConstructor()))
       return false;
-    if (method == null) {
-      if (other.method != null)
+    if (getMethod() == null) {
+      if (other.getMethod() != null)
         return false;
-    } else if (!method.equals(other.method))
+    } else if (!getMethod().equals(other.getMethod()))
       return false;
     return true;
   }

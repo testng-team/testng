@@ -244,8 +244,8 @@ public class Parameters {
     String dataProviderName = null;
     Class dataProviderClass = null;
 
-    if (m.method != null) {
-      ITestAnnotation annotation = AnnotationHelper.findTest(finder, m.method);
+    if (m.getMethod() != null) {
+      ITestAnnotation annotation = AnnotationHelper.findTest(finder, m.getMethod());
       if (annotation == null) {
         annotation = AnnotationHelper.findTest(finder, clazz);
       }
@@ -254,7 +254,7 @@ public class Parameters {
         dataProviderClass = annotation.getDataProviderClass();
       }
     } else {
-      IFactoryAnnotation f = AnnotationHelper.findFactory(finder, m.constructor);
+      IFactoryAnnotation f = AnnotationHelper.findFactory(finder, m.getConstructor());
       if (f != null) {
         dataProviderName = f.getDataProvider();
         dataProviderClass = f.getDataProviderClass();

@@ -76,13 +76,13 @@ public class FactoryMethod extends BaseTestMethod {
         Object[] parameters = parameterIterator.next();
         Object[] testInstances;
         ConstructorOrMethod com = getConstructorOrMethod();
-        if (com.method != null) {
+        if (com.getMethod() != null) {
           testInstances = (Object[]) getMethod().invoke(m_instance, parameters);
           for (Object testInstance : testInstances) {
             result.add(testInstance);
           }
         } else {
-          Object instance = com.constructor.newInstance(parameters);
+          Object instance = com.getConstructor().newInstance(parameters);
           result.add(instance);
         }
       }

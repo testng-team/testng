@@ -155,7 +155,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    */
   @Override
   public Method getMethod() {
-    return m_method.method;
+    return m_method.getMethod();
   }
 
   /**
