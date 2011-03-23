@@ -238,13 +238,15 @@ public class Parameters {
     return result;
   }
 
-  private static DataProviderHolder findDataProvider(Class clazz, Method m,
+  private static DataProviderHolder findDataProvider(Class clazz, ConstructorOrMethod m,
       IAnnotationFinder finder) {
     DataProviderHolder result = null;
     String dataProviderName = null;
     Class dataProviderClass = null;
 
-    ITestAnnotation annotation = AnnotationHelper.findTest(finder, m);
+    ITestAnnotation annotation = m.method != null
+        ? AnnotationHelper.findTest(finder, m.method)
+        : AnnotationHelper.findTest(finder, m.constructor);
     if (annotation == null) {
       annotation = AnnotationHelper.findTest(finder, clazz);
     }
@@ -254,8 +256,11 @@ public class Parameters {
     }
 
     if (dataProviderName == null) {
-      IFactoryAnnotation factory = AnnotationHelper.findFactory(finder, m);
-      if (factory != null) {
+      IFactoryAnnotation factory = m.method != null
+          ? AnnotationHelper.findFactory(finder, m.method)
+          : AnnotationHelper.findFactory(finder, m.constructor);
+
+          if (factory != null) {
         dataProviderName = factory.getDataProvider();
         dataProviderClass = null;
       }
@@ -380,10 +385,10 @@ public class Parameters {
      */
     DataProviderHolder dataProviderHolder =
         findDataProvider(testMethod.getTestClass().getRealClass(),
-        testMethod.getMethod(), annotationFinder);
+            testMethod.getConstructorOrMethod(), annotationFinder);
 
     if (null != dataProviderHolder) {
-      int parameterCount = testMethod.getMethod().getParameterTypes().length;
+      int parameterCount = testMethod.getConstructorOrMethod().getParameterTypes().length;
 
       for (int i = 0; i < parameterCount; i++) {
         String n = "param" + i;

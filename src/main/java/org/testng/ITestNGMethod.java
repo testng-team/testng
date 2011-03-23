@@ -1,6 +1,7 @@
 package org.testng;
 
 
+import org.testng.internal.ConstructorOrMethod;
 import org.testng.xml.XmlTest;
 
 import java.io.Serializable;
@@ -237,4 +238,6 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
    * @return the XmlTest this method belongs to.
    */
   public XmlTest getXmlTest();
+
+  ConstructorOrMethod getConstructorOrMethod();
 }

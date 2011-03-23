@@ -6,6 +6,7 @@ import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
+import org.testng.internal.ConstructorOrMethod;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
@@ -517,6 +518,11 @@ public class JUnitUtils {
 
     @Override
     public XmlTest getXmlTest() {
+      return null;
+    }
+
+    @Override
+    public ConstructorOrMethod getConstructorOrMethod() {
       return null;
     }
   }

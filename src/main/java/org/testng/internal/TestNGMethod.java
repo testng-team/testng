@@ -78,7 +78,8 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
     setInvocationNumbers(xmlTest.getInvocationNumbers(
         m_method.getDeclaringClass().getName() + "." + m_method.getName()));
     {
-      ITestAnnotation testAnnotation = AnnotationHelper.findTest(getAnnotationFinder(), m_method);
+      ITestAnnotation testAnnotation =
+          AnnotationHelper.findTest(getAnnotationFinder(), m_method.method);
 
       if (testAnnotation == null) {
         // Try on the class

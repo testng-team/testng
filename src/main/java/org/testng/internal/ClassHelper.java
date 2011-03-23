@@ -127,20 +127,30 @@ public final class ClassHelper {
    *
    * FIXME: @Factory method must be public!
    */
-  public static Method findDeclaredFactoryMethod(Class<?> cls, IAnnotationFinder finder) {
-    Method result = null;
+  public static ConstructorOrMethod findDeclaredFactoryMethod(Class<?> cls,
+      IAnnotationFinder finder) {
+    ConstructorOrMethod result = null;
 
     for (Method method : cls.getMethods()) {
       IAnnotation f = finder.findAnnotation(method, IFactoryAnnotation.class);
 
       if (null != f) {
-        if (null != result) {
+        if (result != null) {
           throw new TestNGException(cls.getName() + ":  only one @Factory method allowed");
         }
-        result = method;
+        result = new ConstructorOrMethod(method);
+        break;
       }
     }
 
+    if (result == null) {
+      for (Constructor constructor : cls.getDeclaredConstructors()) {
+        IAnnotation f = finder.findAnnotation(constructor, IFactoryAnnotation.class);
+        if (f != null) {
+          result = new ConstructorOrMethod(constructor);
+        }
+      }
+    }
     // If we didn't find anything, look for nested classes
 //    if (null == result) {
 //      Class[] subClasses = cls.getClasses();
