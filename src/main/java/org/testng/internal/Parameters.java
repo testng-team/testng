@@ -245,15 +245,31 @@ public class Parameters {
     Class dataProviderClass = null;
 
     if (m.getMethod() != null) {
+      //
+      // @Test(dataProvider)
+      //
       ITestAnnotation annotation = AnnotationHelper.findTest(finder, m.getMethod());
       if (annotation == null) {
         annotation = AnnotationHelper.findTest(finder, clazz);
+      }
+      if (annotation == null) {
+        //
+        // @Factory(dataProvider) on a method
+        //
+        IFactoryAnnotation fa = AnnotationHelper.findFactory(finder, m.getMethod());
+        if (fa != null) {
+          dataProviderName = fa.getDataProvider();
+          dataProviderClass = fa.getDataProviderClass();
+        }
       }
       if (annotation != null) {
         dataProviderName = annotation.getDataProvider();
         dataProviderClass = annotation.getDataProviderClass();
       }
     } else {
+      //
+      // @Factory(dataProvider) on a constructor
+      //
       IFactoryAnnotation f = AnnotationHelper.findFactory(finder, m.getConstructor());
       if (f != null) {
         dataProviderName = f.getDataProvider();
