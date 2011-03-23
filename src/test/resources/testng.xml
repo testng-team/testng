@@ -79,11 +79,11 @@
       <class name="test.failures.FailuresTest" />
       <class name="test.mannotation.MAnnotationSampleTest" />
       <class name="test.mannotation.MAnnotation2SampleTest" />
+      <class name="test.thread.FactoryTest" />
       <class name="test.thread.ThreadPoolSizeTest" />
       <class name="test.thread.ThreadPoolSizeWithTimeOutTest" />
       <class name="test.thread.SequentialTest" />
       <class name="test.thread.ParallelTestTest" />
-      <class name="test.thread.FactoryTest" />
       <class name="test.thread.DataProviderThreadPoolSizeTest" />
       <class name="test.thread.MultiThreadedDependentTest" />
       <class name="test.thread.ParallelSuiteTest"/>
@@ -132,13 +132,6 @@
   <test name="BeforeMethod">
     <classes>
       <class name="test.configuration.BeforeMethodTest" />
-    </classes>
-  </test>
-
-  <test name="Factory tests">
-    <classes>
-      <class name="test.factory.classconf.XClassOrderWithFactoryTest" />
-      <class name="test.factory.FactoryInterleavingTest"/>
     </classes>
   </test>
 
@@ -273,6 +266,10 @@
       <class name="test.factory.FactoryFailureTest" />
 
       <class name="test.factory.FactoryInSuperClassTest" />
+
+      <class name="test.factory.classconf.XClassOrderWithFactoryTest" />
+      <class name="test.factory.FactoryInterleavingTest"/>
+      <class name="test.factory.FactoryDataProviderTest"/>
     </classes>
   </test>
 
