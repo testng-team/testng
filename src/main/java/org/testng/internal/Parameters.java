@@ -244,27 +244,33 @@ public class Parameters {
     String dataProviderName = null;
     Class dataProviderClass = null;
 
-    ITestAnnotation annotation = m.method != null
-        ? AnnotationHelper.findTest(finder, m.method)
-        : AnnotationHelper.findTest(finder, m.constructor);
-    if (annotation == null) {
-      annotation = AnnotationHelper.findTest(finder, clazz);
-    }
-    if (annotation != null) {
-      dataProviderName = annotation.getDataProvider();
-      dataProviderClass = annotation.getDataProviderClass();
-    }
-
-    if (dataProviderName == null) {
-      IFactoryAnnotation factory = m.method != null
-          ? AnnotationHelper.findFactory(finder, m.method)
-          : AnnotationHelper.findFactory(finder, m.constructor);
-
-          if (factory != null) {
-        dataProviderName = factory.getDataProvider();
-        dataProviderClass = null;
+    if (m.method != null) {
+      ITestAnnotation annotation = AnnotationHelper.findTest(finder, m.method);
+      if (annotation == null) {
+        annotation = AnnotationHelper.findTest(finder, clazz);
+      }
+      if (annotation != null) {
+        dataProviderName = annotation.getDataProvider();
+        dataProviderClass = annotation.getDataProviderClass();
+      }
+    } else {
+      IFactoryAnnotation f = AnnotationHelper.findFactory(finder, m.constructor);
+      if (f != null) {
+        dataProviderName = f.getDataProvider();
+        dataProviderClass = f.getDataProviderClass();
       }
     }
+
+//    if (dataProviderName == null) {
+//      IFactoryAnnotation factory = m.method != null
+//          ? AnnotationHelper.findFactory(finder, m.method)
+//          : AnnotationHelper.findFactory(finder, m.constructor);
+//
+//      if (factory != null) {
+//        dataProviderName = factory.getDataProvider();
+//        dataProviderClass = null;
+//      }
+//    }
 
     if (null != dataProviderName && ! "".equals(dataProviderName)) {
       result = findDataProvider(clazz, finder, dataProviderName, dataProviderClass);

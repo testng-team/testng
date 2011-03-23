@@ -60,7 +60,7 @@ public class JDK15TagFactory {
         result = createExpectedExceptionsTag(a);
       }
       else if (annotationClass == IFactoryAnnotation.class) {
-        result = createFactoryTag(a);
+        result = createFactoryTag(cls, a);
       }
       else if (annotationClass == IParametersAnnotation.class) {
         result = createParametersTag(a);
@@ -339,11 +339,14 @@ public class JDK15TagFactory {
   }
 
   @SuppressWarnings({"deprecation"})
-  private IAnnotation createFactoryTag(Annotation a) {
+  private IAnnotation createFactoryTag(Class<?> cls, Annotation a) {
     FactoryAnnotation result = new FactoryAnnotation();
     Factory c = (Factory) a;
     result.setParameters(c.parameters());
     result.setDataProvider(c.dataProvider());
+    result.setDataProviderClass(
+        findInherited(c.dataProviderClass(), cls, Factory.class, "dataProviderClass",
+            DEFAULT_CLASS));
 
     return result;
   }

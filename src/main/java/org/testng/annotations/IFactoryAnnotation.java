@@ -9,4 +9,5 @@ package org.testng.annotations;
 public interface IFactoryAnnotation extends IParameterizable {
   public String getDataProvider();
   public void setDataProvider(String dataProvider);
+  public Class getDataProviderClass();
 }

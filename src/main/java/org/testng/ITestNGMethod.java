@@ -34,8 +34,9 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
   void setTestClass(ITestClass cls);
 
   /**
-   * Returns the corresponding Java test method.
    * @return the corresponding Java test method.
+   * @deprecated This method is deprecated and can now return null. Use
+   * getConstructorOrMethod() instead.
    */
   Method getMethod();
 

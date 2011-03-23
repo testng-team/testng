@@ -398,7 +398,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
         : other.m_testClass != null &&
           m_testClass.getRealClass().equals(other.m_testClass.getRealClass());
 
-    return isEqual && m_method.equals(other.m_method);
+    return isEqual && getConstructorOrMethod().equals(other.getConstructorOrMethod());
   }
 
   /**
