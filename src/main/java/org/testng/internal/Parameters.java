@@ -3,7 +3,6 @@ package org.testng.internal;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.SkipException;
 import org.testng.TestNGException;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
@@ -15,6 +14,7 @@ import org.testng.collections.Lists;
 import org.testng.internal.ParameterHolder.ParameterOrigin;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.IDataProvidable;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
@@ -238,37 +238,56 @@ public class Parameters {
     return result;
   }
 
-  private static DataProviderHolder findDataProvider(Class clazz, Method m,
+  private static DataProviderHolder findDataProvider(Class clazz, ConstructorOrMethod m,
       IAnnotationFinder finder) {
     DataProviderHolder result = null;
-    String dataProviderName = null;
-    Class dataProviderClass = null;
 
-    ITestAnnotation annotation = AnnotationHelper.findTest(finder, m);
-    if (annotation == null) {
-      annotation = AnnotationHelper.findTest(finder, clazz);
-    }
-    if (annotation != null) {
-      dataProviderName = annotation.getDataProvider();
-      dataProviderClass = annotation.getDataProviderClass();
-    }
+    IDataProvidable dp = findDataProviderInfo(clazz, m, finder);
+    if (dp != null) {
+      String dataProviderName = dp.getDataProvider();
+      Class dataProviderClass = dp.getDataProviderClass();
 
-    if (dataProviderName == null) {
-      IFactoryAnnotation factory = AnnotationHelper.findFactory(finder, m);
-      if (factory != null) {
-        dataProviderName = factory.getDataProvider();
-        dataProviderClass = null;
+      if (! Utils.isStringEmpty(dataProviderName)) {
+        result = findDataProvider(clazz, finder, dataProviderName, dataProviderClass);
+
+        if(null == result) {
+          throw new TestNGException("Method " + m + " requires a @DataProvider named : "
+              + dataProviderName + (dataProviderClass != null ? " in class " + dataProviderClass.getName() : "")
+              );
+        }
       }
     }
 
-    if (null != dataProviderName && ! "".equals(dataProviderName)) {
-      result = findDataProvider(clazz, finder, dataProviderName, dataProviderClass);
+    return result;
+  }
 
-      if(null == result) {
-        throw new TestNGException("Method " + m + " requires a @DataProvider named : "
-            + dataProviderName + (dataProviderClass != null ? " in class " + dataProviderClass.getName() : "")
-            );
+  /**
+   * Find the data provider info (data provider name and class) on either @Test(dataProvider),
+   * @Factory(dataProvider) on a method or @Factory(dataProvider) on a constructor.
+   */
+  private static IDataProvidable findDataProviderInfo(Class clazz, ConstructorOrMethod m,
+      IAnnotationFinder finder) {
+    IDataProvidable result = null;
+
+    if (m.getMethod() != null) {
+      //
+      // @Test(dataProvider)
+      //
+      result = AnnotationHelper.findTest(finder, m.getMethod());
+      if (result == null) {
+        result = AnnotationHelper.findTest(finder, clazz);
       }
+      if (result == null) {
+        //
+        // @Factory(dataProvider) on a method
+        //
+        result = AnnotationHelper.findFactory(finder, m.getMethod());
+      }
+    } else {
+      //
+      // @Factory(dataProvider) on a constructor
+      //
+      result = AnnotationHelper.findFactory(finder, m.getConstructor());
     }
 
     return result;
@@ -380,10 +399,10 @@ public class Parameters {
      */
     DataProviderHolder dataProviderHolder =
         findDataProvider(testMethod.getTestClass().getRealClass(),
-        testMethod.getMethod(), annotationFinder);
+            testMethod.getConstructorOrMethod(), annotationFinder);
 
     if (null != dataProviderHolder) {
-      int parameterCount = testMethod.getMethod().getParameterTypes().length;
+      int parameterCount = testMethod.getConstructorOrMethod().getParameterTypes().length;
 
       for (int i = 0; i < parameterCount; i++) {
         String n = "param" + i;

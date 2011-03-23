@@ -8,6 +8,7 @@ import org.testng.annotations.ITestOrConfiguration;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.IDataProvidable;
 import org.testng.internal.thread.IAtomicInteger;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.xml.XmlTest;
@@ -29,7 +30,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   protected ITestClass m_testClass;
 
   protected final transient Class<?> m_methodClass;
-  protected final transient Method m_method;
+  protected final transient ConstructorOrMethod m_method;
   protected String m_id = "";
   protected long m_date = System.currentTimeMillis();
   protected final transient IAnnotationFinder m_annotationFinder;
@@ -71,9 +72,13 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    * @param annotationFinder
    */
   public BaseTestMethod(Method method, IAnnotationFinder annotationFinder) {
-    m_methodClass = method.getDeclaringClass();
-    m_method = method;
-    m_methodName = m_method.getName();
+    this(new ConstructorOrMethod(method), annotationFinder);
+  }
+
+  public BaseTestMethod(ConstructorOrMethod com, IAnnotationFinder annotationFinder) {
+    m_methodClass = com.getDeclaringClass();
+    m_method = com;
+    m_methodName = com.getName();
     m_annotationFinder = annotationFinder;
     m_signature = initSignature();
   }
@@ -151,7 +156,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    */
   @Override
   public Method getMethod() {
-    return m_method;
+    return m_method.getMethod();
   }
 
   /**
@@ -394,7 +399,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
         : other.m_testClass != null &&
           m_testClass.getRealClass().equals(other.m_testClass.getRealClass());
 
-    return isEqual && m_method.equals(other.m_method);
+    return isEqual && getConstructorOrMethod().equals(other.getConstructorOrMethod());
   }
 
   /**
@@ -490,11 +495,10 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    * @return
    */
   private String initSignature() {
-    Method m = getMethod();
-    String cls = m.getDeclaringClass().getName();
-    StringBuffer result = new StringBuffer(cls + "." + m.getName() + "(");
+    String cls = m_method.getDeclaringClass().getName();
+    StringBuffer result = new StringBuffer(cls + "." + m_method.getName() + "(");
     int i = 0;
-    for (Class<?> p : m.getParameterTypes()) {
+    for (Class<?> p : m_method.getParameterTypes()) {
       if (i++ > 0) {
         result.append(", ");
       }
@@ -745,5 +749,9 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   public void setXmlTest(XmlTest xmlTest) {
     m_xmlTest = xmlTest;
+  }
+
+  public ConstructorOrMethod getConstructorOrMethod() {
+    return m_method;
   }
 }

@@ -14,6 +14,7 @@ public class FactoryAnnotation
 {
   private String[] m_parameters = {};
   private String m_dataProvider = null;
+  private Class<?> m_dataProviderClass;
 
   @Override
   public String getDataProvider() {
@@ -32,6 +33,15 @@ public class FactoryAnnotation
 
   public void setParameters(String[] parameters) {
     m_parameters = parameters;
+  }
+
+  public void setDataProviderClass(Class<?> dataProviderClass) {
+    m_dataProviderClass = dataProviderClass;
+  }
+
+  @Override
+  public Class<?> getDataProviderClass() {
+    return m_dataProviderClass;
   }
 
 }

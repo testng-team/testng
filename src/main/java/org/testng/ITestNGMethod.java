@@ -1,6 +1,7 @@
 package org.testng;
 
 
+import org.testng.internal.ConstructorOrMethod;
 import org.testng.xml.XmlTest;
 
 import java.io.Serializable;
@@ -33,8 +34,9 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
   void setTestClass(ITestClass cls);
 
   /**
-   * Returns the corresponding Java test method.
    * @return the corresponding Java test method.
+   * @deprecated This method is deprecated and can now return null. Use
+   * getConstructorOrMethod() instead.
    */
   Method getMethod();
 
@@ -237,4 +239,6 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
    * @return the XmlTest this method belongs to.
    */
   public XmlTest getXmlTest();
+
+  ConstructorOrMethod getConstructorOrMethod();
 }

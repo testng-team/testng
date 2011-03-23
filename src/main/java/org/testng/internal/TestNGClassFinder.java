@@ -124,9 +124,10 @@ public class TestNGClassFinder extends BaseClassFinder {
           Object instance= theseInstances[0];
           putIClass(cls, ic);
 
-          Method factoryMethod= ClassHelper.findDeclaredFactoryMethod(cls, annotationFinder);
-          if(null != factoryMethod) {
-            FactoryMethod fm= new FactoryMethod( /* cls, */
+          ConstructorOrMethod factoryMethod =
+            ClassHelper.findDeclaredFactoryMethod(cls, annotationFinder);
+          if (null != factoryMethod) {
+            FactoryMethod fm = new FactoryMethod( /* cls, */
               factoryMethod,
               instance,
               xmlTest,

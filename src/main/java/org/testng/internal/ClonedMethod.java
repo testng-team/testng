@@ -346,4 +346,9 @@ public class ClonedMethod implements ITestNGMethod {
   public XmlTest getXmlTest() {
     return m_method.getXmlTest();
   }
+
+  @Override
+  public ConstructorOrMethod getConstructorOrMethod() {
+    return null;
+  }
 }

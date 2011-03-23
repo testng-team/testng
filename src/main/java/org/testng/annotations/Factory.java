@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  */
 
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
-@Target(java.lang.annotation.ElementType.METHOD)
+@Target({java.lang.annotation.ElementType.METHOD, java.lang.annotation.ElementType.CONSTRUCTOR})
 public @interface Factory {
   /**
    * The list of variables used to fill the parameters of this method.
@@ -27,4 +27,13 @@ public @interface Factory {
    * @see org.testng.annotations.DataProvider
    */
   public String dataProvider() default "";
+
+  /**
+   * The class where to look for the data provider.  If not
+   * specified, the dataprovider will be looked on the class
+   * of the current test method or one of its super classes.
+   * If this attribute is specified, the data provider method
+   * needs to be static on the specified class.
+   */
+  public Class<?> dataProviderClass() default Object.class;
 }

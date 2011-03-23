@@ -5,6 +5,7 @@ import org.testng.ITestNGMethod;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.IDataProvidable;
 import org.testng.xml.XmlTest;
 
 import java.io.Serializable;
@@ -78,7 +79,8 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
     setInvocationNumbers(xmlTest.getInvocationNumbers(
         m_method.getDeclaringClass().getName() + "." + m_method.getName()));
     {
-      ITestAnnotation testAnnotation = AnnotationHelper.findTest(getAnnotationFinder(), m_method);
+      ITestAnnotation testAnnotation =
+          AnnotationHelper.findTest(getAnnotationFinder(), m_method.getMethod());
 
       if (testAnnotation == null) {
         // Try on the class

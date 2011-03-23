@@ -31,24 +31,25 @@ public class FactoryMethod extends BaseTestMethod {
    * @param testClass
    * @param method
    */
-  public FactoryMethod(Method method,
+  public FactoryMethod(ConstructorOrMethod com,
                        Object instance,
                        XmlTest xmlTest,
                        IAnnotationFinder annotationFinder,
                        ITestContext testContext)
   {
-    super(method, annotationFinder);
-    Utils.checkInstanceOrStatic(instance, method);
-    if (instance != null && ! method.getDeclaringClass().isAssignableFrom(instance.getClass())) {
+    super(com, annotationFinder);
+//    Utils.checkInstanceOrStatic(instance, method);
+    Class<?> declaringClass = com.getDeclaringClass();
+    if (instance != null && ! declaringClass.isAssignableFrom(instance.getClass())) {
       throw new TestNGException("Mismatch between instance/method classes:"
-          + instance.getClass() + " " + method.getDeclaringClass());
+          + instance.getClass() + " " + declaringClass);
     }
 
     m_instance = instance;
     m_xmlTest = xmlTest;
     m_testContext = testContext;
     NoOpTestClass tc = new NoOpTestClass();
-    tc.setTestClass(method.getDeclaringClass());
+    tc.setTestClass(declaringClass);
     m_testClass = tc;
   }
 
@@ -73,16 +74,23 @@ public class FactoryMethod extends BaseTestMethod {
     try {
       while (parameterIterator.hasNext()) {
         Object[] parameters = parameterIterator.next();
-        Object[] testInstances = (Object[]) getMethod().invoke(m_instance, parameters);
-
-        for (Object testInstance : testInstances) {
-          result.add(testInstance);
+        Object[] testInstances;
+        ConstructorOrMethod com = getConstructorOrMethod();
+        if (com.getMethod() != null) {
+          testInstances = (Object[]) getMethod().invoke(m_instance, parameters);
+          for (Object testInstance : testInstances) {
+            result.add(testInstance);
+          }
+        } else {
+          Object instance = com.getConstructor().newInstance(parameters);
+          result.add(instance);
         }
       }
     }
     catch (Throwable t) {
+      ConstructorOrMethod com = getConstructorOrMethod();
       throw new TestNGException("The factory method "
-          + getMethod().getDeclaringClass() + "." + getMethod().getName()
+          + com.getDeclaringClass() + "." + com.getName()
           + "() threw an exception", t);
     }
 
