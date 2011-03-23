@@ -3,7 +3,6 @@ package org.testng.internal;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.SkipException;
 import org.testng.TestNGException;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
@@ -15,6 +14,7 @@ import org.testng.collections.Lists;
 import org.testng.internal.ParameterHolder.ParameterOrigin;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.IDataProvidable;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
@@ -241,61 +241,53 @@ public class Parameters {
   private static DataProviderHolder findDataProvider(Class clazz, ConstructorOrMethod m,
       IAnnotationFinder finder) {
     DataProviderHolder result = null;
-    String dataProviderName = null;
-    Class dataProviderClass = null;
+
+    IDataProvidable dp = findDataProviderInfo(clazz, m, finder);
+    if (dp != null) {
+      String dataProviderName = dp.getDataProvider();
+      Class dataProviderClass = dp.getDataProviderClass();
+
+      if (! Utils.isStringEmpty(dataProviderName)) {
+        result = findDataProvider(clazz, finder, dataProviderName, dataProviderClass);
+
+        if(null == result) {
+          throw new TestNGException("Method " + m + " requires a @DataProvider named : "
+              + dataProviderName + (dataProviderClass != null ? " in class " + dataProviderClass.getName() : "")
+              );
+        }
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Find the data provider info (data provider name and class) on either @Test(dataProvider),
+   * @Factory(dataProvider) on a method or @Factory(dataProvider) on a constructor.
+   */
+  private static IDataProvidable findDataProviderInfo(Class clazz, ConstructorOrMethod m,
+      IAnnotationFinder finder) {
+    IDataProvidable result = null;
 
     if (m.getMethod() != null) {
       //
       // @Test(dataProvider)
       //
-      ITestAnnotation annotation = AnnotationHelper.findTest(finder, m.getMethod());
-      if (annotation == null) {
-        annotation = AnnotationHelper.findTest(finder, clazz);
+      result = AnnotationHelper.findTest(finder, m.getMethod());
+      if (result == null) {
+        result = AnnotationHelper.findTest(finder, clazz);
       }
-      if (annotation == null) {
+      if (result == null) {
         //
         // @Factory(dataProvider) on a method
         //
-        IFactoryAnnotation fa = AnnotationHelper.findFactory(finder, m.getMethod());
-        if (fa != null) {
-          dataProviderName = fa.getDataProvider();
-          dataProviderClass = fa.getDataProviderClass();
-        }
-      }
-      if (annotation != null) {
-        dataProviderName = annotation.getDataProvider();
-        dataProviderClass = annotation.getDataProviderClass();
+        result = AnnotationHelper.findFactory(finder, m.getMethod());
       }
     } else {
       //
       // @Factory(dataProvider) on a constructor
       //
-      IFactoryAnnotation f = AnnotationHelper.findFactory(finder, m.getConstructor());
-      if (f != null) {
-        dataProviderName = f.getDataProvider();
-        dataProviderClass = f.getDataProviderClass();
-      }
-    }
-
-//    if (dataProviderName == null) {
-//      IFactoryAnnotation factory = m.method != null
-//          ? AnnotationHelper.findFactory(finder, m.method)
-//          : AnnotationHelper.findFactory(finder, m.constructor);
-//
-//      if (factory != null) {
-//        dataProviderName = factory.getDataProvider();
-//        dataProviderClass = null;
-//      }
-//    }
-
-    if (null != dataProviderName && ! "".equals(dataProviderName)) {
-      result = findDataProvider(clazz, finder, dataProviderName, dataProviderClass);
-
-      if(null == result) {
-        throw new TestNGException("Method " + m + " requires a @DataProvider named : "
-            + dataProviderName + (dataProviderClass != null ? " in class " + dataProviderClass.getName() : "")
-            );
-      }
+      result = AnnotationHelper.findFactory(finder, m.getConstructor());
     }
 
     return result;

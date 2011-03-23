@@ -40,7 +40,7 @@ public class FactoryAnnotation
   }
 
   @Override
-  public Class getDataProviderClass() {
+  public Class<?> getDataProviderClass() {
     return m_dataProviderClass;
   }
 

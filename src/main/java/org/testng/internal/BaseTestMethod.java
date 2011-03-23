@@ -8,6 +8,7 @@ import org.testng.annotations.ITestOrConfiguration;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.IDataProvidable;
 import org.testng.internal.thread.IAtomicInteger;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.xml.XmlTest;
