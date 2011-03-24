@@ -1,11 +1,13 @@
 package org.testng;
 
+import org.testng.internal.junit.ArrayAsserts;
+
 
 /**
  * A set of assert methods.  Messages are only displayed when an assert fails.
  * Renamed from <CODE>junit.framework.Assert</CODE>.
  */
-public class AssertJUnit {
+public class AssertJUnit extends ArrayAsserts {
 
   /**
    * Protect constructor since it is a static only class
