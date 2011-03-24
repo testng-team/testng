@@ -1,5 +1,6 @@
 Current
 
+Added: @Factory(dataProvider / dataProviderClass) on constructors
 Added: assertArrayEquals() to AssertJUnit
 Fixed: JUnitReporter generates an <error> tag for successful expectedExceptions tests
 

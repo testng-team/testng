@@ -1507,11 +1507,28 @@ The objects returned can be of any class (not necessarily the same class as the
 factory class) and they don't even need to contain TestNG annotations (in which 
 case they will be ignored by TestNG).</p>
 
-<!------- -->
-<!-- ANT  -->
-<!------- -->
+<p>
 
-<!-- end maven stuff -->
+Factories can also be used with data providers, and you can leverage this functionality by putting the <tt>@Factory</tt> annotation either on a regular method or on a constructor. Here is an example of a constructor factory:
+
+<pre class="brush:java">
+  @Factory(dataProvider = "dp")
+  public FactoryDataProviderSampleTest(int n) {
+    super(n);
+  }
+
+  @DataProvider
+  static public Object[][] dp() {
+    return new Object[][] {
+      new Object[] { 41 },
+      new Object[] { 42 },
+    };
+  }
+</pre>
+
+The example will make TestNG create two test classes, on with the constructor invoked with the value 41 and the other with 42.
+
+
 
 <!-------------------------------------
   CLASS LEVEL ANNOTATIONS
