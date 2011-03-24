@@ -1,10 +1,12 @@
 Current
 
+Added: assertArrayEquals() to AssertJUnit
 Fixed: JUnitReporter generates an <error> tag for successful expectedExceptions tests
 
 Eclipse:
 
-Added: Converting @RunWith(Parameterized.class)
+Added: JUnit conversion: assertArrayEquals()
+Added: JUnit conversion: @RunWith(Parameterized.class)
 Fixed: @BeforeClass/@AfterClass from JUnit4 are not being properly converted
 Fixed: Conversions generate @Test() instead of @Test
 
