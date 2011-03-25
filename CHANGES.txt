@@ -1,11 +1,13 @@
 Current
 
 Added: @Factory(dataProvider / dataProviderClass) on constructors
+Added: assertNotEquals() to Assert
 Added: assertArrayEquals() to AssertJUnit
 Fixed: JUnitReporter generates an <error> tag for successful expectedExceptions tests
 
 Eclipse:
 
+Added: JUnit conversion: @Ignore
 Added: JUnit conversion: assertArrayEquals()
 Added: JUnit conversion: @RunWith(Parameterized.class)
 Fixed: @BeforeClass/@AfterClass from JUnit4 are not being properly converted

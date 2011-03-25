@@ -710,4 +710,116 @@ public class Assert {
 
   }
 
+  /////
+  // assertNotEquals
+  //
+
+  public static void assertNotEquals(Object actual1, Object actual2, String message) {
+    boolean fail = false;
+    try {
+      Assert.assertEquals(actual1, actual2);
+      fail = true;
+    } catch (AssertionError e) {
+    }
+
+    if (fail) {
+      Assert.fail(message);
+    }
+  }
+
+  public static void assertNotEquals(Object actual1, Object actual2) {
+    assertNotEquals(actual1, actual2, null);
+  }
+
+  static void assertNotEquals(String actual1, String actual2, String message) {
+    assertNotEquals((Object) actual1, (Object) actual2, message);
+  }
+
+  static void assertNotEquals(String actual1, String actual2) {
+    assertNotEquals(actual1, actual2, null);
+  }
+
+  static void assertNotEquals(long actual1, long actual2, String message) {
+    assertNotEquals(Long.valueOf(actual1), Long.valueOf(actual2), message);
+  }
+
+  static void assertNotEquals(long actual1, long actual2) {
+    assertNotEquals(actual1, actual2, null);
+  }
+
+  static void assertNotEquals(boolean actual1, boolean actual2, String message) {
+    assertNotEquals(Boolean.valueOf(actual1), Boolean.valueOf(actual2), message);
+  }
+
+  static void assertNotEquals(boolean actual1, boolean actual2) {
+    assertNotEquals(actual1, actual2, null);
+  }
+
+  static void assertNotEquals(byte actual1, byte actual2, String message) {
+    assertNotEquals(Byte.valueOf(actual1), Byte.valueOf(actual2), message);
+  }
+
+  static void assertNotEquals(byte actual1, byte actual2) {
+    assertNotEquals(actual1, actual2, null);
+  }
+
+  static void assertNotEquals(char actual1, char actual2, String message) {
+    assertNotEquals(Character.valueOf(actual1), Character.valueOf(actual2), message);
+  }
+
+  static void assertNotEquals(char actual1, char actual2) {
+    assertNotEquals(actual1, actual2, null);
+  }
+
+  static void assertNotEquals(short actual1, short actual2, String message) {
+    assertNotEquals(Short.valueOf(actual1), Short.valueOf(actual2), message);
+  }
+
+  static void assertNotEquals(short actual1, short actual2) {
+    assertNotEquals(actual1, actual2, null);
+  }
+
+  static void assertNotEquals(int actual1, int actual2, String message) {
+    assertNotEquals(Integer.valueOf(actual1), Integer.valueOf(actual2), message);
+  }
+
+  static void assertNotEquals(int actual1, int actual2) {
+    assertNotEquals(actual1, actual2, null);
+  }
+
+  static public void assertNotEquals(float actual1, float actual2, float delta, String message) {
+    boolean fail = false;
+    try {
+      Assert.assertEquals(actual1, actual2, delta, message);
+      fail = true;
+    } catch (AssertionError e) {
+
+    }
+
+    if (fail) {
+      Assert.fail(message);
+    }
+  }
+
+  static public void assertNotEquals(float actual1, float actual2, float delta) {
+    assertNotEquals(actual1, actual2, delta, null);
+  }
+
+  static public void assertNotEquals(double actual1, double actual2, double delta, String message) {
+    boolean fail = false;
+    try {
+      Assert.assertEquals(actual1, actual2, delta, message);
+      fail = true;
+    } catch (AssertionError e) {
+
+    }
+
+    if (fail) {
+      Assert.fail(message);
+    }
+  }
+
+  static public void assertNotEquals(double actual1, double actual2, double delta) {
+    assertNotEquals(actual1, actual2, delta, null);
+  }
 }
