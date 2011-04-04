@@ -698,6 +698,10 @@ public class Assert {
       fail("Maps not equal: expected: " + expected + " and actual: " + actual);
     }
 
+    if (actual.size() != expected.size()) {
+      fail("Maps do not have the same size:" + actual.size() + " != " + expected.size());
+    }
+
     Set entrySet = actual.entrySet();
     for (Iterator iterator = entrySet.iterator(); iterator.hasNext();) {
       Map.Entry entry = (Map.Entry) iterator.next();

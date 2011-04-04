@@ -3,13 +3,16 @@ Current
 Added: @Factory(dataProvider / dataProviderClass) on constructors
 Added: assertNotEquals() to Assert
 Added: assertArrayEquals() to AssertJUnit
+Fixed: TESTNG-471: assertEquals(Map, Map) fails if a map is a subset of the other
 Fixed: JUnitReporter generates an <error> tag for successful expectedExceptions tests
 
 Eclipse:
 
+Added: Two new @Test refactorings (pull to class level, push to method level)
 Added: JUnit conversion: @Ignore
 Added: JUnit conversion: assertArrayEquals()
 Added: JUnit conversion: @RunWith(Parameterized.class)
+Fixed: Workspace-wide XML template files are not being honored.
 Fixed: @BeforeClass/@AfterClass from JUnit4 are not being properly converted
 Fixed: Conversions generate @Test() instead of @Test
 

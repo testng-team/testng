@@ -5,6 +5,7 @@ import org.testng.collections.Maps;
 import org.testng.internal.annotations.Sets;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -100,5 +101,18 @@ public class AssertTest {
     catch (AssertionError error) {
       //do nothing
     }
+  }
+
+  @Test(expectedExceptions = AssertionError.class)
+  public void assertEqualsMapShouldFail() {
+    Map<String, String> mapActual = new HashMap<String, String>() {{
+      put("a","1");
+    }};
+    Map<String, String> mapExpected = new HashMap<String, String>() {{
+      put("a","1");
+      put("b","2");
+    }};
+
+    Assert.assertEquals(mapActual, mapExpected);
   }
 }
