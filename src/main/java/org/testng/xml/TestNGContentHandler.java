@@ -444,6 +444,8 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       m_currentTest.setIncludedGroups(m_currentIncludedGroups);
       m_currentTest.setExcludedGroups(m_currentExcludedGroups);
+
+      m_currentRuns = null;
     }
   }
 
