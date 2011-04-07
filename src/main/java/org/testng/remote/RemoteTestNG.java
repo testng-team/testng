@@ -17,7 +17,6 @@ import org.testng.remote.strprotocol.GenericMessage;
 import org.testng.remote.strprotocol.IMessageSender;
 import org.testng.remote.strprotocol.MessageHelper;
 import org.testng.remote.strprotocol.MessageHub;
-import org.testng.remote.strprotocol.RemoteTestListener;
 import org.testng.remote.strprotocol.SerializedMessageSender;
 import org.testng.remote.strprotocol.StringMessageSender;
 import org.testng.remote.strprotocol.SuiteMessage;
@@ -58,6 +57,8 @@ public class RemoteTestNG extends TestNG {
   private static boolean m_debug;
 
   private static boolean m_dontExit;
+
+  private static long m_start;
 
   public void setHost(String host) {
     if((null == host) || "".equals(host)) {
@@ -107,6 +108,7 @@ public class RemoteTestNG extends TestNG {
         addListener(new RemoteSuiteListener(msh));
         setTestRunnerFactory(new DelegatingTestRunnerFactory(buildTestRunnerFactory(), msh));
 
+        m_start = System.currentTimeMillis();
         super.run();
       }
       else {
@@ -154,8 +156,6 @@ public class RemoteTestNG extends TestNG {
   }
 
   public static void main(String[] args) throws ParameterException {
-//    System.out.println("RemoteTestNG starting");
-//    long start = System.currentTimeMillis();
     CommandLineArgs cla = new CommandLineArgs();
     RemoteArgs ra = new RemoteArgs();
     new JCommander(Arrays.asList(cla, ra), args);
@@ -173,8 +173,8 @@ public class RemoteTestNG extends TestNG {
     else {
       initAndRun(args, cla, ra);
     }
-//    long end = System.currentTimeMillis();
-//    System.out.println("RemoteTesTNG ending:" + ((end - start) / 1000) + " seconds");
+    long end = System.currentTimeMillis();
+    System.out.println("RemoteTesTNG ending:" + ((end - m_start) / 1000) + " seconds");
   }
 
   private static void initAndRun(String[] args, CommandLineArgs cla, RemoteArgs ra) {
@@ -197,11 +197,12 @@ public class RemoteTestNG extends TestNG {
         sb.append(s).append(" ");
       }
       p(sb.toString());
-      remoteTestNg.setVerbose(2);
+      remoteTestNg.setVerbose(1);
     } else {
       remoteTestNg.setVerbose(0);
     }
     validateCommandLineParameters(cla);
+    System.out.println("RemoteTestNG starting");
     remoteTestNg.run();
 //    if (m_debug) {
 //      // Run in a loop if in debug mode so it is possible to run several launches
