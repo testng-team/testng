@@ -17,6 +17,7 @@ import org.testng.remote.strprotocol.GenericMessage;
 import org.testng.remote.strprotocol.IMessageSender;
 import org.testng.remote.strprotocol.MessageHelper;
 import org.testng.remote.strprotocol.MessageHub;
+import org.testng.remote.strprotocol.RemoteTestListener;
 import org.testng.remote.strprotocol.SerializedMessageSender;
 import org.testng.remote.strprotocol.StringMessageSender;
 import org.testng.remote.strprotocol.SuiteMessage;
