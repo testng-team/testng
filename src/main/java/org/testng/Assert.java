@@ -391,6 +391,13 @@ public class Assert {
    * @param message the assertion error message
    */
   static public void assertNotNull(Object object, String message) {
+    if (object == null) {
+      String formatted = "";
+      if(message != null) {
+        formatted = message + " ";
+      }
+      fail(formatted + "expected object to not be null");
+    }
     assertTrue(object != null, message);
   }
 
@@ -410,7 +417,9 @@ public class Assert {
    * @param message the assertion error message
    */
   static public void assertNull(Object object, String message) {
-    assertTrue(object == null, message);
+    if (object != null) {
+      failNotSame(object, null, message);
+    }
   }
 
   /**
@@ -473,7 +482,7 @@ public class Assert {
     if(message != null) {
       formatted = message + " ";
     }
-    fail(formatted + "expected same with:<" + expected + "> but was:<" + actual + ">");
+    fail(formatted + "expected:<" + expected + "> but was:<" + actual + ">");
   }
 
   static private void failNotEquals(Object actual , Object expected, String message ) {
