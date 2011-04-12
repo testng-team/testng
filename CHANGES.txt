@@ -13,6 +13,7 @@ Added: Two new @Test refactorings (pull to class level, push to method level)
 Added: JUnit conversion: @Ignore
 Added: JUnit conversion: assertArrayEquals()
 Added: JUnit conversion: @RunWith(Parameterized.class)
+Fixed: When creating a new Run/Debug configuration, "Launch.label" was displayed
 Fixed: TESTNG-459: TestNG menu should not always be present in context menu (Mykola Nikishov)
 Fixed: Performance problems in the plug-in
 Fixed: Workspace-wide XML template files are not being honored.
