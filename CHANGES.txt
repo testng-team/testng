@@ -12,6 +12,7 @@ Added: Two new @Test refactorings (pull to class level, push to method level)
 Added: JUnit conversion: @Ignore
 Added: JUnit conversion: assertArrayEquals()
 Added: JUnit conversion: @RunWith(Parameterized.class)
+Fixed: Performance problems in the plug-in
 Fixed: Workspace-wide XML template files are not being honored.
 Fixed: @BeforeClass/@AfterClass from JUnit4 are not being properly converted
 Fixed: Conversions generate @Test() instead of @Test
