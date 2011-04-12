@@ -1698,10 +1698,12 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
 
   public List<ITestNGMethod> getInvokedMethods() {
     List<ITestNGMethod> result= Lists.newArrayList();
-    for (IInvokedMethod im : m_invokedMethods) {
-      ITestNGMethod tm= im.getTestMethod();
-      tm.setDate(im.getDate());
-      result.add(tm);
+    synchronized(m_invokedMethods) {
+      for (IInvokedMethod im : m_invokedMethods) {
+        ITestNGMethod tm= im.getTestMethod();
+        tm.setDate(im.getDate());
+        result.add(tm);
+      }
     }
 
     return result;

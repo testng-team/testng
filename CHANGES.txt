@@ -3,6 +3,7 @@ Current
 Added: @Factory(dataProvider / dataProviderClass) on constructors
 Added: assertNotEquals() to Assert
 Added: assertArrayEquals() to AssertJUnit
+Fixed: ConcurrentModificationException when using parallel data providers.
 Fixed: TESTNG-282: Problem when including+excluding packages (addicted)
 Fixed: TESTNG-471: assertEquals(Map, Map) fails if a map is a subset of the other
 Fixed: JUnitReporter generates an <error> tag for successful expectedExceptions tests
@@ -13,6 +14,7 @@ Added: Two new @Test refactorings (pull to class level, push to method level)
 Added: JUnit conversion: @Ignore
 Added: JUnit conversion: assertArrayEquals()
 Added: JUnit conversion: @RunWith(Parameterized.class)
+Fixed: When creating a new Run/Debug configuration, "Launch.label" was displayed
 Fixed: TESTNG-459: TestNG menu should not always be present in context menu (Mykola Nikishov)
 Fixed: Performance problems in the plug-in
 Fixed: Workspace-wide XML template files are not being honored.

@@ -99,26 +99,30 @@ public class PoolService<KeyType, FutureType> {
    * Submit the tasks to the thread pool.
    */
   public List<FutureType> submitTasksAndWait(KeyType key, List<Callable<FutureType>> tasks) {
+    List<FutureType> result = Lists.newArrayList();
     submitTasks(key, tasks, null);
-    List<Future<FutureType>> futures = m_futureMap.get(key);
-    while (!isFinished(futures)) {
-      try {
-        Thread.sleep(1000);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
+    List<Future<FutureType>> futures = null;
+    synchronized(m_futureMap) {
+      futures = m_futureMap.get(key);
+      while (!isFinished(futures)) {
+        try {
+          Thread.sleep(1000);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+
+      for (Future<FutureType> future : futures) {
+        try {
+          if (future != null) result.add(future.get());
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        } catch (ExecutionException e) {
+          e.printStackTrace();
+        }
       }
     }
 
-    List<FutureType> result = Lists.newArrayList();
-    for (Future<FutureType> future : futures) {
-      try {
-        result.add(future.get());
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      } catch (ExecutionException e) {
-        e.printStackTrace();
-      }
-    }
     return result;
   }
 
@@ -127,12 +131,14 @@ public class PoolService<KeyType, FutureType> {
 
     for (Callable<FutureType> task : tasks) {
       Future<FutureType> future = m_service.submit(task);
-      List<Future<FutureType>> list = m_futureMap.get(key);
-      if (list == null) {
-        list = Lists.newArrayList();
-        m_futureMap.put(key, list);
+      synchronized(m_futureMap) {
+        List<Future<FutureType>> list = m_futureMap.get(key);
+        if (list == null) {
+          list = Lists.newArrayList();
+          m_futureMap.put(key, list);
+        }
+        list.add(future);
       }
-      list.add(future);
     }
 
     if (listener != null) {
@@ -146,7 +152,7 @@ public class PoolService<KeyType, FutureType> {
 
   private boolean isFinished(List<Future<FutureType>> futures) {
     for (Future<FutureType> f : futures) {
-      if (!f.isDone()) {
+      if (f != null && !f.isDone()) {
         return false;
       }
     }
