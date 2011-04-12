@@ -205,7 +205,7 @@ public class PackageUtils {
   private static void includeOrExcludeClass(String packageName, String className,
       List<String> included, List<String> excluded, List<String> classes)
   {
-    if (isIncluded(className, included, excluded)) {
+    if (isIncluded(packageName, included, excluded)) {
       Utils.log("PackageUtils", 4, "... Including class " + className);
       classes.add(makeFullClassName(packageName, className));
     }
