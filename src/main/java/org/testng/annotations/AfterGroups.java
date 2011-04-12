@@ -7,10 +7,11 @@ import java.lang.annotation.Target;
 @Target(java.lang.annotation.ElementType.METHOD)
 public @interface AfterGroups {
   /**
-   * The list of groups that this configuration method will run before. If specified it overrides the
-   * list of groups provided through {@link #groups()} attribute.
-   * This method is guaranteed to run shortly before the first test method that
-   * belongs to any of these groups is invoked.
+   * The list of groups that this configuration method will run after. If
+   * specified it overrides the list of groups provided through
+   * {@link #groups()} attribute. This method is guaranteed to run shortly
+   * before the first test method that belongs to any of these groups is
+   * invoked.
    */
   public String[] value() default {};
 
