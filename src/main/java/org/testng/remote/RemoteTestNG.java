@@ -59,8 +59,6 @@ public class RemoteTestNG extends TestNG {
 
   private static boolean m_dontExit;
 
-  private static long m_start;
-
   public void setHost(String host) {
     if((null == host) || "".equals(host)) {
       m_host= LOCALHOST;
@@ -109,7 +107,7 @@ public class RemoteTestNG extends TestNG {
         addListener(new RemoteSuiteListener(msh));
         setTestRunnerFactory(new DelegatingTestRunnerFactory(buildTestRunnerFactory(), msh));
 
-        m_start = System.currentTimeMillis();
+        System.out.println("RemoteTestNG starting");
         super.run();
       }
       else {
@@ -120,6 +118,7 @@ public class RemoteTestNG extends TestNG {
       cause.printStackTrace(System.err);
     }
     finally {
+      System.out.println("RemoteTestNG finishing: " + (getEnd() - getStart()) + " ms");
       msh.shutDown();
       if (! m_debug && ! m_dontExit) {
         System.exit(0);
@@ -174,8 +173,6 @@ public class RemoteTestNG extends TestNG {
     else {
       initAndRun(args, cla, ra);
     }
-    long end = System.currentTimeMillis();
-    System.out.println("RemoteTesTNG ending after " + ((end - m_start) / 1000) + " seconds");
   }
 
   private static void initAndRun(String[] args, CommandLineArgs cla, RemoteArgs ra) {
@@ -203,7 +200,6 @@ public class RemoteTestNG extends TestNG {
       remoteTestNg.setVerbose(0);
     }
     validateCommandLineParameters(cla);
-    System.out.println("RemoteTestNG starting");
     remoteTestNg.run();
 //    if (m_debug) {
 //      // Run in a loop if in debug mode so it is possible to run several launches

@@ -178,6 +178,9 @@ public class TestNG {
   private IHookable m_hookable;
   private IConfigurable m_configurable;
 
+  protected long m_end;
+  protected long m_start;
+
   /**
    * Default constructor. Setting also usage of default listeners/reporters.
    */
@@ -885,6 +888,8 @@ public class TestNG {
 
     List<ISuite> suiteRunners = null;
 
+    m_start = System.currentTimeMillis();
+
     //
     // Slave mode
     //
@@ -909,6 +914,8 @@ public class TestNG {
            m_suites, getOutputDirectory(),
            getTestListeners());
     }
+
+    m_end = System.currentTimeMillis();
 
     if(null != suiteRunners) {
       generateReports(suiteRunners);
@@ -1740,5 +1747,13 @@ public class TestNG {
 
   public void setPreserveOrder(boolean b) {
     m_preserveOrder = b;
+  }
+
+  protected long getStart() {
+    return m_start;
+  }
+
+  protected long getEnd() {
+    return m_end;
   }
 }
