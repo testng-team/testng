@@ -88,35 +88,17 @@ abstract public class BaseMessageSender implements IMessageSender {
     }
   }
 
-  private void _initSockets() throws IOException {
-    m_clientSocket = new Socket(m_host, m_port);
-    p("Received a connection from Eclipse on " + m_host + ":" + m_port);
-
-    // Output streams
-    m_outStream = m_clientSocket.getOutputStream();
-    m_outWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(m_outStream)));
-
-    // Input streams
-    m_inStream = m_clientSocket.getInputStream();
-    try {
-      m_inReader = new BufferedReader(new InputStreamReader(m_inStream,
-          "UTF-8")); //$NON-NLS-1$
-    }
-    catch(UnsupportedEncodingException ueex) {
-      // Should never happen
-      m_inReader = new BufferedReader(new InputStreamReader(m_inStream));
-    }
-
-  }
-
   private void sendAdminMessage(String message) {
     m_outWriter.println(message);
     m_outWriter.flush();
   }
 
+  private int m_serial = 0;
+
   @Override
   public void sendAck() {
-    sendAdminMessage(MessageHelper.ACK_MSG);
+    p("Sending ACK " + m_serial);
+    sendAdminMessage(MessageHelper.ACK_MSG + m_serial++);
   }
 
   @Override
@@ -191,14 +173,18 @@ abstract public class BaseMessageSender implements IMessageSender {
     }
   }
 
+  private String m_latestAck;
+
   protected void waitForAck() {
-    try {
-      p("Message sent, waiting for ACK...");
-      m_ackLock.wait();
-      p("... ACK received");
-    }
-    catch(InterruptedException e) {
-    }
+//    try {
+//      p("Message sent, waiting for ACK...");
+//      synchronized(m_ackLock) {
+//        m_ackLock.wait();
+//      }
+//      p("... ACK received:" + m_latestAck);
+//    }
+//    catch(InterruptedException e) {
+//    }
   }
 
   private static void p(String msg) {
@@ -226,15 +212,21 @@ abstract public class BaseMessageSender implements IMessageSender {
           if (m_debug) {
             p("Admin message:" + message); //$NON-NLS-1$
           }
-          boolean acknowledge = MessageHelper.ACK_MSG.equals(message);
+          boolean acknowledge = message.startsWith(MessageHelper.ACK_MSG);
           boolean stop = MessageHelper.STOP_MSG.equals(message);
           if(acknowledge || stop) {
+            if (acknowledge) {
+              p("Received ACK:" + message);
+              m_latestAck = message;
+            }
             synchronized(m_ackLock) {
               m_ackLock.notifyAll();
             }
             if (stop) {
               break;
             }
+          } else {
+            p("Received unknown message: '" + message + "'");
           }
           message = m_inReader.readLine();
         }
