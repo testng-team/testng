@@ -15,7 +15,7 @@ public class SerializedMessageSender extends BaseMessageSender {
 
   @Override
   public void sendMessage(IMessage message) throws IOException {
-    synchronized(m_ackLock) {
+    synchronized(m_outStream) {
       p("Sending message " + message);
       ObjectOutputStream oos = new ObjectOutputStream(m_outStream);
       oos.writeObject(message);
