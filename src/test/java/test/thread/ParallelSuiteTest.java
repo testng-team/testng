@@ -94,10 +94,12 @@ public class ParallelSuiteTest extends SimpleBaseTest {
     Assert.assertEquals(suitesMap.keySet().size(), 3);
 
     final String SUITE_NAME_PREFIX = "Suite Parallel ";
-    Assert.assertTrue(suitesMap.get(SUITE_NAME_PREFIX + 1)
-          < suitesMap.get(SUITE_NAME_PREFIX + 2));
+    if (suitesMap.get(SUITE_NAME_PREFIX + 1) > suitesMap.get(SUITE_NAME_PREFIX + 2)) {
+      Assert.fail("Suite " + (SUITE_NAME_PREFIX + 1) + " should have run before "
+          + (SUITE_NAME_PREFIX + 2));
+    }
     Assert.assertTrue(suitesMap.get(SUITE_NAME_PREFIX + 2)
-          < suitesMap.get(SUITE_NAME_PREFIX + 0));
+          <= suitesMap.get(SUITE_NAME_PREFIX + 0));
 
   }
 
