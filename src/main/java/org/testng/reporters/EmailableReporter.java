@@ -209,82 +209,84 @@ public class EmailableReporter implements IReporter {
   }
 
   private void resultDetail(IResultMap tests, final String style) {
-    if (tests.getAllResults().size() > 0) {
+    for (ITestResult result : tests.getAllResults()) {
       int row = 0;
-      for (ITestNGMethod method : getMethodSet(tests)) {
+      ITestNGMethod method = result.getMethod();
         row += 1;
         m_methodIndex += 1;
         String cname = method.getTestClass().getName();
         m_out.println("<a id=\"m" + m_methodIndex + "\"></a><h2>" + cname + ":"
             + method.getMethodName() + "</h2>");
-        int rq = 0;
         Set<ITestResult> resultSet = tests.getResults(method);
-        for (ITestResult ans : resultSet) {
-          rq += 1;
-          Object[] parameters = ans.getParameters();
-          boolean hasParameters = parameters != null && parameters.length > 0;
-          if (hasParameters) {
-            if (rq == 1) {
-              tableStart("param");
-              m_out.print("<tr>");
-              for (int x = 1; x <= parameters.length; x++) {
-                m_out
-                    .print("<th style=\"padding-left:1em;padding-right:1em\">Parameter #"
-                        + x + "</th>");
-              }
-              m_out.println("</tr>");
-            }
-            m_out.print("<tr" + (rq % 2 == 0 ? " class=\"stripe\"" : "") + ">");
-            for (Object p : parameters) {
-              m_out.println("<td style=\"padding-left:.5em;padding-right:2em\">"
-                  + (p != null ? Utils.escapeHtml(p.toString()) : "null") + "</td>");
-            }
-            m_out.println("</tr>");
-          }
-          List<String> msgs = Reporter.getOutput(ans);
-          boolean hasReporterOutput = msgs.size() > 0;
-          Throwable exception=ans.getThrowable();
-          boolean hasThrowable = exception!=null;
-          if (hasReporterOutput||hasThrowable) {
-            String indent = " style=\"padding-left:3em\"";
-            if (hasParameters) {
-              m_out.println("<tr" + (rq % 2 == 0 ? " class=\"stripe\"" : "")
-                  + "><td" + indent + " colspan=\"" + parameters.length + "\">");
-            }
-            else {
-              m_out.println("<div" + indent + ">");
-            }
-            if (hasReporterOutput) {
-              if(hasThrowable) {
-                m_out.println("<h3>Test Messages</h3>");
-              }
-              for (String line : msgs) {
-                m_out.println(line + "<br/>");
-              }
-            }
-            if(hasThrowable) {
-              boolean wantsMinimalOutput = ans.getStatus()==ITestResult.SUCCESS;
-              if(hasReporterOutput) {
-                m_out.println("<h3>"
-                    +(wantsMinimalOutput?"Expected Exception":"Failure")
-                    +"</h3>");
-              }
-              generateExceptionReport(exception,method);
-            }
-            if (hasParameters) {
-              m_out.println("</td></tr>");
-            }
-            else {
-              m_out.println("</div>");
-            }
-          }
-          if (hasParameters) {
-            if (rq == resultSet.size()) {
-              m_out.println("</table>");
-            }
-          }
-        }
+        generateForResult(result, method, resultSet.size());
         m_out.println("<p class=\"totop\"><a href=\"#summary\">back to summary</a></p>");
+
+    }
+  }
+
+  private void generateForResult(ITestResult ans, ITestNGMethod method, int resultSetSize) {
+    int rq = 0;
+    rq += 1;
+    Object[] parameters = ans.getParameters();
+    boolean hasParameters = parameters != null && parameters.length > 0;
+    if (hasParameters) {
+      if (rq == 1) {
+        tableStart("param");
+        m_out.print("<tr>");
+        for (int x = 1; x <= parameters.length; x++) {
+          m_out
+              .print("<th style=\"padding-left:1em;padding-right:1em\">Parameter #"
+                  + x + "</th>");
+        }
+        m_out.println("</tr>");
+      }
+      m_out.print("<tr" + (rq % 2 == 0 ? " class=\"stripe\"" : "") + ">");
+      for (Object p : parameters) {
+        m_out.println("<td style=\"padding-left:.5em;padding-right:2em\">"
+            + (p != null ? Utils.escapeHtml(p.toString()) : "null") + "</td>");
+      }
+      m_out.println("</tr>");
+    }
+    List<String> msgs = Reporter.getOutput(ans);
+    boolean hasReporterOutput = msgs.size() > 0;
+    Throwable exception=ans.getThrowable();
+    boolean hasThrowable = exception!=null;
+    if (hasReporterOutput||hasThrowable) {
+      String indent = " style=\"padding-left:3em\"";
+      if (hasParameters) {
+        m_out.println("<tr" + (rq % 2 == 0 ? " class=\"stripe\"" : "")
+            + "><td" + indent + " colspan=\"" + parameters.length + "\">");
+      }
+      else {
+        m_out.println("<div" + indent + ">");
+      }
+      if (hasReporterOutput) {
+        if(hasThrowable) {
+          m_out.println("<h3>Test Messages</h3>");
+        }
+        for (String line : msgs) {
+          m_out.println(line + "<br/>");
+        }
+      }
+      if(hasThrowable) {
+        boolean wantsMinimalOutput = ans.getStatus()==ITestResult.SUCCESS;
+        if(hasReporterOutput) {
+          m_out.println("<h3>"
+              +(wantsMinimalOutput?"Expected Exception":"Failure")
+              +"</h3>");
+        }
+        generateExceptionReport(exception,method);
+      }
+      if (hasParameters) {
+        m_out.println("</td></tr>");
+      }
+      else {
+        m_out.println("</div>");
+      }
+    }
+    if (hasParameters) {
+      if (rq == resultSetSize) {
+        m_out.println("</table>");
       }
     }
   }
