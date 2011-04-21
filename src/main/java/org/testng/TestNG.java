@@ -940,7 +940,10 @@ public class TestNG {
   private void generateReports(List<ISuite> suiteRunners) {
     for (IReporter reporter : m_reporters) {
       try {
+        long start = System.currentTimeMillis();
         reporter.generateReport(m_suites, suiteRunners, m_outputDir);
+        Utils.log("TestNG", 2, "Time taken by " + reporter + ": "
+            + (System.currentTimeMillis() - start) + " ms");
       }
       catch(Exception ex) {
         System.err.println("[TestNG] Reporter " + reporter + " failed");
