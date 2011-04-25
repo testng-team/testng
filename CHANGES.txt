@@ -12,6 +12,8 @@ Fixed: JUnitReporter generates an <error> tag for successful expectedExceptions 
 
 Eclipse:
 
+Added: New "Clear results" icon in the tool bar
+Added: When the search filter is modified, don't update the tree live if it is too big 
 Added: Two new @Test refactorings (pull to class level, push to method level)
 Added: JUnit conversion: @Ignore
 Added: JUnit conversion: assertArrayEquals()
