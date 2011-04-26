@@ -170,7 +170,7 @@ public abstract class AbstractRemoteTestRunnerClient {
     }
 
     IMessageSender getMessageSender() {
-      return m_messageHub.getMessageSender();
+      return m_messageHub != null ? m_messageHub.getMessageSender() : null;
     }
 
     @Override
