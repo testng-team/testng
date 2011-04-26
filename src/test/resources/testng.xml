@@ -432,6 +432,7 @@
       <class name="test.dataprovider.ClassTest" />
       <class name="test.dataprovider.InheritedDataProviderTest" />
       <class name="test.dataprovider.TestNG411Test" />
+      <class name="test.dataprovider.VarArgsDataProviderTest" />
     </classes>
   </test>
 
