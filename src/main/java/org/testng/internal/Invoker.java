@@ -1292,7 +1292,8 @@ public class Invoker implements IInvoker {
         vResult.add(injected);
       } else {
         try {
-          vResult.add(parameterValues[i++]);
+          if (method.isVarArgs()) vResult.add(parameterValues);
+          else vResult.add(parameterValues[i++]);
         } catch (ArrayIndexOutOfBoundsException ex) {
           throw new TestNGException("The data provider is trying to pass " + numValues
               + " parameters but the method "

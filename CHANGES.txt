@@ -3,6 +3,7 @@ Current
 Added: @Factory(dataProvider / dataProviderClass) on constructors
 Added: assertNotEquals() to Assert
 Added: assertArrayEquals() to AssertJUnit
+Fixed: TESTNG-475: @DataProvider doesn't support varargs
 Fixed: Performance problems in EmailableReporter
 Fixed: TESTNG-472: Better output for assertNull()
 Fixed: ConcurrentModificationException when using parallel data providers.
