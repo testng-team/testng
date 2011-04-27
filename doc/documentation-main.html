@@ -707,6 +707,13 @@ You need to specify at least one XML file describing the TestNG suite you are tr
 
     <tbody>
         <tr>
+            <td>-configfailurepolicy</td>
+	    <td><tt>skip</tt>|<tt>continue</tt></td>
+	    <td>Whether TestNG should <tt>continue</tt> to execute the remaining tests in the suite or <tt>skip</tt> them if
+            an @Before* method fails.  Default behavior is <tt>skip</tt>.</td>
+        </tr>
+
+        <tr>
             <td>-d</td>
 	    <td>A directory</td>
 	    <td>The directory where the reports will be generated (defaults to <tt>test-output</tt>).</td>
