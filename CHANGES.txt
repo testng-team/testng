@@ -3,6 +3,7 @@ Current
 Added: @Factory(dataProvider / dataProviderClass) on constructors
 Added: assertNotEquals() to Assert
 Added: assertArrayEquals() to AssertJUnit
+Fixed: Now showing failed/skipped error messages on the console for verbose >= 2
 Fixed: TESTNG-410: Clearer error message
 Fixed: TESTNG-475: @DataProvider doesn't support varargs
 Fixed: Performance problems in EmailableReporter
