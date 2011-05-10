@@ -14,8 +14,12 @@ import java.io.File;
 import java.util.Iterator;
 
 public class SimpleBaseTest {
+  // System property specifying where the resources (e.g. xml files) can be found
+  private static final String TEST_RESOURCES_DIR = "test.resources.dir";
+
   protected TestNG create() {
     TestNG result = new TestNG();
+    result.setUseDefaultListeners(false);
     result.setVerbose(0);
     return result;
   }
@@ -59,10 +63,10 @@ public class SimpleBaseTest {
   }
 
   protected String getPathToResource(String fileName) {
-    String result = System.getProperty("test.resources.dir");
+    String result = System.getProperty(TEST_RESOURCES_DIR);
     if (result == null) {
-      Utils.log("SimpleBaseTest", 2,  "Warning: System property test.resources.dir was not " +
-      		"defined.");
+      Utils.log("SimpleBaseTest", 2,  "Warning: System property " + TEST_RESOURCES_DIR
+          + " was not defined.");
       return "target/test-classes/" + fileName;
     }
     else {

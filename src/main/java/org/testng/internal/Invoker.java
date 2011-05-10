@@ -1270,9 +1270,11 @@ public class Invoker implements IInvoker {
     int numValues = parameterValues.length;
     int numParams = method.getParameterTypes().length;
 
-    if (numValues > numParams) {
-      throw new TestNGException("Number of parameter values passed in using "
-          + "data provider exceeds number of parameters defined on test method");
+    if (numValues > numParams && ! method.isVarArgs()) {
+      throw new TestNGException("The data provider is trying to pass " + numValues
+          + " parameters but the method "
+          + method.getDeclaringClass().getName() + "#" + method.getName()
+          + " takes " + numParams);
     }
 
     // beyond this, numValues <= numParams
@@ -1290,11 +1292,14 @@ public class Invoker implements IInvoker {
         vResult.add(injected);
       } else {
         try {
-          vResult.add(parameterValues[i++]);
+          if (method.isVarArgs()) vResult.add(parameterValues);
+          else vResult.add(parameterValues[i++]);
         } catch (ArrayIndexOutOfBoundsException ex) {
-          throw new TestNGException("Number of parameter values passed in using "
-                + "data provider is less than number of parameters defined on "
-                + "test method and TestNG is unable in inject a suitable object", ex);
+          throw new TestNGException("The data provider is trying to pass " + numValues
+              + " parameters but the method "
+              + method.getDeclaringClass().getName() + "#" + method.getName()
+              + " takes " + numParams
+              + " and TestNG is unable in inject a suitable object", ex);
         }
       }
     }

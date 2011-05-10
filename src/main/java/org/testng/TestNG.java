@@ -178,6 +178,9 @@ public class TestNG {
   private IHookable m_hookable;
   private IConfigurable m_configurable;
 
+  protected long m_end;
+  protected long m_start;
+
   /**
    * Default constructor. Setting also usage of default listeners/reporters.
    */
@@ -885,6 +888,8 @@ public class TestNG {
 
     List<ISuite> suiteRunners = null;
 
+    m_start = System.currentTimeMillis();
+
     //
     // Slave mode
     //
@@ -910,6 +915,8 @@ public class TestNG {
            getTestListeners());
     }
 
+    m_end = System.currentTimeMillis();
+
     if(null != suiteRunners) {
       generateReports(suiteRunners);
     }
@@ -933,7 +940,10 @@ public class TestNG {
   private void generateReports(List<ISuite> suiteRunners) {
     for (IReporter reporter : m_reporters) {
       try {
+        long start = System.currentTimeMillis();
         reporter.generateReport(m_suites, suiteRunners, m_outputDir);
+        Utils.log("TestNG", 2, "Time taken by " + reporter + ": "
+            + (System.currentTimeMillis() - start) + " ms");
       }
       catch(Exception ex) {
         System.err.println("[TestNG] Reporter " + reporter + " failed");
@@ -1740,5 +1750,13 @@ public class TestNG {
 
   public void setPreserveOrder(boolean b) {
     m_preserveOrder = b;
+  }
+
+  protected long getStart() {
+    return m_start;
+  }
+
+  protected long getEnd() {
+    return m_end;
   }
 }

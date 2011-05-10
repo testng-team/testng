@@ -165,12 +165,12 @@ public abstract class AbstractRemoteTestRunnerClient {
     private MessageHub m_messageHub;
 
     public ServerConnection(IMessageSender messageMarshaller) {
-      super("ServerConnection"); //$NON-NLS-1$
+      super("TestNG - ServerConnection"); //$NON-NLS-1$
       m_messageHub = new MessageHub(messageMarshaller);
     }
 
     IMessageSender getMessageSender() {
-      return m_messageHub.getMessageSender();
+      return m_messageHub != null ? m_messageHub.getMessageSender() : null;
     }
 
     @Override

@@ -3,6 +3,10 @@ Current
 Added: @Factory(dataProvider / dataProviderClass) on constructors
 Added: assertNotEquals() to Assert
 Added: assertArrayEquals() to AssertJUnit
+Fixed: Now showing failed/skipped error messages on the console for verbose >= 2
+Fixed: TESTNG-410: Clearer error message
+Fixed: TESTNG-475: @DataProvider doesn't support varargs
+Fixed: Performance problems in EmailableReporter
 Fixed: TESTNG-472: Better output for assertNull()
 Fixed: ConcurrentModificationException when using parallel data providers.
 Fixed: TESTNG-282: Problem when including+excluding packages (addicted)
@@ -11,6 +15,8 @@ Fixed: JUnitReporter generates an <error> tag for successful expectedExceptions 
 
 Eclipse:
 
+Added: New "Clear results" icon in the tool bar
+Added: When the search filter is modified, don't update the tree live if it is too big 
 Added: Two new @Test refactorings (pull to class level, push to method level)
 Added: JUnit conversion: @Ignore
 Added: JUnit conversion: assertArrayEquals()

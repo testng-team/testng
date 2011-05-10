@@ -147,7 +147,7 @@
   <!-- Distribution                                                         -->
   <!-- ==================================================================== -->
 
-  <target name="dist" depends="build,maven-plugin,all-jar-flavors,dist-all-zip,dist-maven-bundle,eclipse" />
+  <target name="dist" depends="build,all-jar-flavors,dist-all-zip,eclipse" />
 
   <target name="all-jar-flavors" depends="dist-nobsh-guice,dist-bsh-noguice,dist-nobsh-noguice" />
 
@@ -214,6 +214,7 @@
     </zip>
   </target>
   
+<!--
   <target name="dist-maven-bundle" depends="dist-all-zip">
     <mkdir dir="${build.maven-bundle.dir}" />
     <copy file="bundle-pom.xml" tofile="${build.maven-bundle.dir}/pom.xml" overwrite="true">
@@ -226,19 +227,19 @@
     </jar>
 
     <exec executable="gpg">
-      <arg value="--yes" />
+      <arg value="- -yes" />
       <arg value="-ab" />
       <arg value="${testng.jar}" />
     </exec>
 
     <exec executable="gpg">
-      <arg value="--yes" />
+      <arg value="- -yes" />
       <arg value="-ab" />
       <arg value="${build.maven-bundle.dir}/pom.xml" />
     </exec>
 
     <exec executable="gpg">
-      <arg value="--yes" />
+      <arg value="- -yes" />
       <arg value="-ab" />
       <arg value="${build.maven-bundle.dir}/${sources.testng.jar}" />
     </exec>
@@ -251,6 +252,7 @@
       <fileset file="${testng.jar}.asc" />
     </jar>
   </target>
+-->
 
   <target name="dist-prepare" depends="update-readme">
     <delete file="{other.jars.dir}/${testng.nobsh.jar}" />
@@ -335,10 +337,12 @@
   <!-- Maven1/2 Distribution                                                -->
   <!-- ==================================================================== -->
 
+<!--
   <target name="maven-plugin">
     <jar destfile="maven-testng-plugin-${testng-maven.version}.jar"
          basedir="./maven/" />
   </target>
+-->
 
   <!-- ==================================================================== -->
   <!-- Ivy                                                                  -->
