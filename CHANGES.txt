@@ -3,8 +3,9 @@ Current
 Added: @Factory(dataProvider / dataProviderClass) on constructors
 Added: assertNotEquals() to Assert
 Added: assertArrayEquals() to AssertJUnit
+Added: Nested classes are now automatically added for consideration for inclusion
 Fixed: Now showing failed/skipped error messages on the console for verbose >= 2
-FIXED: ITestResult#getEndMillis() return 0
+Fixed: ITestResult#getEndMillis() return 0
 Fixed: TESTNG-410: Clearer error message
 Fixed: TESTNG-475: @DataProvider doesn't support varargs
 Fixed: Performance problems in EmailableReporter

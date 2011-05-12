@@ -116,6 +116,7 @@
       <class name="test.override.OverrideTest" />
       <class name="test.priority.PriorityTest" />
       <class name="test.listeners.EndMillisShouldNotBeZeroTest" />
+      <class name="test.NestedStaticTest" />
     </classes>
   </test>
 
