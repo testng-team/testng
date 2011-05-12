@@ -121,6 +121,9 @@ public class XmlSuite implements Serializable, Cloneable {
 
   private static final long serialVersionUID = 4999962288272750226L;
 
+  public static String DEFAULT_PRESERVE_ORDER = "false";
+  private String m_preserveOrder = DEFAULT_PRESERVE_ORDER;
+
   /**
    * @return the fileName
    */
@@ -856,4 +859,13 @@ public class XmlSuite implements Serializable, Cloneable {
     }
     return result;
   }
+
+  public void setPreserveOrder(String f) {
+    m_preserveOrder = f;
+  }
+
+  public String getPreserveOrder() {
+    return m_preserveOrder;
+  }
+
 }

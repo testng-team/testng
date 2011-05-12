@@ -12,6 +12,7 @@ import org.testng.internal.thread.ThreadUtil;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
 import org.testng.reporters.TextReporter;
+import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
@@ -20,6 +21,7 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -138,7 +140,17 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       m_testListeners.addAll(testListeners);
     }
     m_runnerFactory = buildRunnerFactory();
-    for (XmlTest test : m_suite.getTests()) {
+
+    // Order the <test> tags based on their order of appearance in testng.xml
+    List<XmlTest> xmlTests = m_suite.getTests();
+    Collections.sort(xmlTests, new Comparator<XmlTest>() {
+      @Override
+      public int compare(XmlTest arg0, XmlTest arg1) {
+        return arg0.getIndex() - arg1.getIndex();
+      }
+    });
+
+    for (XmlTest test : xmlTests) {
       TestRunner tr = m_runnerFactory.newTestRunner(this, test, m_invokedMethodListeners);
 
       //

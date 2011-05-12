@@ -51,17 +51,28 @@ public class XmlTest implements Serializable, Cloneable {
   private Boolean m_skipFailedInvocationCounts = XmlSuite.DEFAULT_SKIP_FAILED_INVOCATION_COUNTS;
   private Map<String, List<Integer>> m_failedInvocationNumbers = null; // lazily initialized
 
-  public static String DEFAULT_PRESERVE_ORDER = "false";
-  private String m_preserveOrder = DEFAULT_PRESERVE_ORDER;
+  private String m_preserveOrder = XmlSuite.DEFAULT_PRESERVE_ORDER;
+
+  private int m_index;
 
   /**
    * Constructs a <code>XmlTest</code> and adds it to suite's list of tests.
    *
    * @param suite the parent suite.
+   * @param index the index of this test tag in testng.xml
    */
+  public XmlTest(XmlSuite suite, int index) {
+    init(suite, index);
+  }
+
   public XmlTest(XmlSuite suite) {
+    init(suite, 0);
+  }
+
+  private void init(XmlSuite suite, int index) {
     m_suite = suite;
     m_suite.getTests().add(this);
+    m_index = index;
   }
 
   // For YAML
@@ -610,11 +621,26 @@ public class XmlTest implements Serializable, Cloneable {
   }
 
   public String getPreserveOrder() {
-    return m_preserveOrder;
+    String result = m_preserveOrder;
+    if (result == null || XmlSuite.DEFAULT_PRESERVE_ORDER.equals(m_verbose)) {
+      result = m_suite.getPreserveOrder();
+    }
+
+    return result;
   }
 
   public void setSuite(XmlSuite result) {
     m_suite = result;
+  }
+
+  /**
+   * Note that this attribute does not come from the XML file, it's calculated
+   * internally and represents the order in which this test tag was found in its
+   * &lt;suite&gt; tag.  It's used to calculate the ordering of the tests
+   * when preserve-test-order is true.
+   */
+  public int getIndex() {
+    return m_index;
   }
 
   @Override
