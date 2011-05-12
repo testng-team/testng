@@ -722,10 +722,6 @@ public class Invoker implements IInvoker {
       handleInvocationResults(tm, results, null, 0, expectedExceptionClasses, false,
           true /* collect results */);
 
-      //Run invokedMethodListeners after fixing the test results based on
-      //expectedExceptions, if any
-      runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
-
       // If this method has a data provider and just failed, memorize the number
       // at which it failed.
       // Note: we're not exactly testing that this method has a data provider, just
@@ -745,9 +741,9 @@ public class Invoker implements IInvoker {
         testResult.setEndMillis(System.currentTimeMillis());
       }
 
-//      if (testResult.getStatus() == ITestResult.SUCCESS) {
-        runTestListeners(testResult);
-//      }
+      // Run invokedMethodListeners after updating TestResult
+      runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
+      runTestListeners(testResult);
 
       //
       // Invoke afterMethods only if
