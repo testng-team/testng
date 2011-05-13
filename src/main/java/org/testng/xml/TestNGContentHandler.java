@@ -30,6 +30,7 @@ public class TestNGContentHandler extends DefaultHandler {
   private List<String> m_currentDefines = null;
   private List<String> m_currentRuns = null;
   private List<XmlClass> m_currentClasses = null;
+  private int m_currentTestIndex = 0;
   private int m_currentClassIndex = 0;
   private int m_currentIncludeIndex = 0;
   private List<XmlPackage> m_currentPackages = null;
@@ -184,6 +185,10 @@ public class TestNGContentHandler extends DefaultHandler {
           Utils.log("Parser", 1, "[ERROR] Unable to create custom object factory '" + objectFactory + "' :" + e);
         }
       }
+      String preserveOrder = attributes.getValue("preserve-order");
+      if (preserveOrder != null) {
+        m_currentSuite.setPreserveOrder(preserveOrder);
+      }
     }
     else {
       m_currentSuite.setParameters(m_currentSuiteParameters);
@@ -234,7 +239,7 @@ public class TestNGContentHandler extends DefaultHandler {
    */
   private void xmlTest(boolean start, Attributes attributes) {
     if (start) {
-      m_currentTest = new XmlTest(m_currentSuite);
+      m_currentTest = new XmlTest(m_currentSuite, m_currentTestIndex++);
       m_currentTestParameters = Maps.newHashMap();
       final String testName= attributes.getValue("name");
       if(null == testName || "".equals(testName.trim())) {

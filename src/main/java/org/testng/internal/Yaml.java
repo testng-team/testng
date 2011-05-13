@@ -134,7 +134,7 @@ public class Yaml {
     maybeAdd(result, sp2, "skipFailedInvocationCounts", t.skipFailedInvocationCounts(),
         XmlSuite.DEFAULT_SKIP_FAILED_INVOCATION_COUNTS);
 
-    maybeAdd(result, "preserveOrder", sp2, t.getPreserveOrder(), XmlTest.DEFAULT_PRESERVE_ORDER);
+    maybeAdd(result, "preserveOrder", sp2, t.getPreserveOrder(), XmlSuite.DEFAULT_PRESERVE_ORDER);
 
     toYaml(result, "parameters", sp2, t.getTestParameters());
 

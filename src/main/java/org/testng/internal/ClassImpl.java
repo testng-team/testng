@@ -136,10 +136,8 @@ public class ClassImpl implements IClass {
     for (Module module : modules) {
       moduleInstances.add(module);
     }
-    result = com.google.inject.Guice.createInjector(moduleInstances).getInstance(m_class);
-    if (result != null) return result;
 
-    return result;
+    return com.google.inject.Guice.createInjector(moduleInstances).getInstance(m_class);
   }
 
   private Module[] getModules(Guice guice, Class<?> testClass) {

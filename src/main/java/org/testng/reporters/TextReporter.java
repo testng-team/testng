@@ -95,7 +95,7 @@ public class TextReporter extends TestListenerAdapter {
 
     for(Object o : getSkippedTests()) {
       ITestResult tr = (ITestResult) o;
-      logResult("SKIPPED", tr, null);
+      logResult("SKIPPED", tr, Utils.stackTrace(tr.getThrowable(), false)[0]);
     }
 
     ITestNGMethod[] ft = resultsToMethods(getFailedTests());

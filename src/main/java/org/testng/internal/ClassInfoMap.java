@@ -16,14 +16,24 @@ public class ClassInfoMap {
   public ClassInfoMap(List<XmlClass> classes) {
     for (XmlClass xmlClass : classes) {
       try {
-        m_map.put(xmlClass.getSupportClass(), xmlClass);
-      }
-      catch (NoClassDefFoundError e) {
+        Class c = xmlClass.getSupportClass();
+        registerClass(c, xmlClass);
+      } catch (NoClassDefFoundError e) {
         Utils.log("[ClassInfoMap]", 1, "Unable to open class " + xmlClass.getName()
             + " - unable to resolve class reference " + e.getMessage());
         if (xmlClass.loadClasses()) {
           throw e;
         }
+      }
+    }
+  }
+
+  private void registerClass(Class cl, XmlClass xmlClass) {
+    boolean includeNestedClasses = true;
+    m_map.put(cl, xmlClass);
+    if (includeNestedClasses) {
+      for (Class c : cl.getClasses()) {
+        registerClass(c, xmlClass);
       }
     }
   }
