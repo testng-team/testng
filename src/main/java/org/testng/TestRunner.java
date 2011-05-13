@@ -330,6 +330,9 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
         // At this point, the field m_testListeners has already been used in the creation
         addTestListener((ITestListener) listener);
       }
+      if (listener instanceof IConfigurationListener) {
+        addConfigurationListener((IConfigurationListener) listener);
+      }
       if (listener instanceof IReporter) {
         m_suite.addListener((ITestNGListener) listener);
       }
