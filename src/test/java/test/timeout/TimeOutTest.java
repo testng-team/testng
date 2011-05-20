@@ -27,7 +27,7 @@ public class TimeOutTest extends BaseTest {
         "timeoutShouldPass",
       };
       String[] failed = {
-          "timeoutShouldFailByException", "timeoutShouldFailByTimeOut"
+        "timeoutShouldFailByException", "timeoutShouldFailByTimeOut"
       };
 
 //      dumpResults("Passed", getPassedTests());
