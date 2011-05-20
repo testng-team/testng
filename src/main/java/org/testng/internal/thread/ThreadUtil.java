@@ -18,6 +18,15 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:the_mindstorm@evolva.ro>Alex Popescu</a>
  */
 public class ThreadUtil {
+  private static final String THREAD_NAME = "TestNG";
+
+  /**
+   * @return true if the current thread was created by TestNG.
+   */
+  public static boolean isTestNGThread() {
+    return Thread.currentThread().getName().contains(THREAD_NAME);
+  }
+
   /**
    * Parallel execution of the <code>tasks</code>. The startup is synchronized so this method
    * emulates a load test.
@@ -31,11 +40,20 @@ public class ThreadUtil {
     final CountDownLatch startGate= new CountDownLatch(1);
     final CountDownLatch endGate= new CountDownLatch(tasks.size());
 
-    Utils.log("TestRunner", 2, "Starting executor with time out:" + timeout + " milliseconds.");
+    Utils.log("TestRunner", 2, "Starting executor timeOut:" + timeout + "ms"
+        + " workers:" + tasks.size() + " threadPoolSize:" + threadPoolSize);
     ExecutorService pooledExecutor = // Executors.newFixedThreadPool(threadPoolSize);
         new ThreadPoolExecutor(threadPoolSize, threadPoolSize,
         timeout, TimeUnit.MILLISECONDS,
-        new LinkedBlockingQueue<Runnable>());
+        new LinkedBlockingQueue<Runnable>(),
+        new ThreadFactory() {
+          @Override
+          public Thread newThread(Runnable r) {
+            Thread result = new Thread(r);
+            result.setName(THREAD_NAME);
+            return result;
+          }
+        });
 
     for(final Runnable task: tasks) {
       try {
