@@ -50,6 +50,6 @@ public class BaseThreadTest extends SimpleBaseTest {
 
   protected void verifyThreads(int expected) {
     Assert.assertEquals(getThreadCount(), expected,
-        "Ran on " + getThreadCount() + " instead of " + expected);
+        "Ran on " + getThreadCount() + " threads instead of " + expected);
   }
 }
