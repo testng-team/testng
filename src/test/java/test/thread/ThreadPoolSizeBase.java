@@ -11,7 +11,7 @@ public class ThreadPoolSizeBase extends BaseThreadTest {
 
   protected void logThread() {
     long n = Thread.currentThread().getId();
-    log(getClass().getName(), "threadPoolSize:3");
+    log(getClass().getName(), "");
     logThread(n);
   }
 
