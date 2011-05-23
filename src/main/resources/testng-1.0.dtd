@@ -30,7 +30,7 @@ Cedric Beust & Alexandru Popescu
 
 
 <!-- A suite is the top-level element of a testng.xml file                  -->
-<!ELEMENT suite (listeners|packages|test|parameter|method-selectors|suite-files)* >
+<!ELEMENT suite ((listeners|packages|test|parameter|method-selectors|suite-files)*|groups?) >
 
 <!-- Attributes: -->
 <!--

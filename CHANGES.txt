@@ -5,6 +5,7 @@ Added: assertNotEquals() to Assert
 Added: assertArrayEquals() to AssertJUnit
 Added: Nested classes are now automatically added for consideration for inclusion
 Added: <suite preserve-order="true"> will cause this attribute to be propagated to all <test> tags
+Added: <groups> can now be specified under a <suite>
 Fixed: IConfigurationListener#onConfigurationFailure was never called
 Fixed: TESTNG-476: <test> tags are now run in the order found in testng.xml
 Fixed: Now showing failed/skipped error messages on the console for verbose >= 2
@@ -26,6 +27,7 @@ Added: Two new @Test refactorings (pull to class level, push to method level)
 Added: JUnit conversion: @Ignore
 Added: JUnit conversion: assertArrayEquals()
 Added: JUnit conversion: @RunWith(Parameterized.class)
+Added: Support for Hamcrest failed assertions in the compare dialog
 Fixed: When creating a new Run/Debug configuration, "Launch.label" was displayed
 Fixed: TESTNG-459: TestNG menu should not always be present in context menu (Mykola Nikishov)
 Fixed: Performance problems in the plug-in

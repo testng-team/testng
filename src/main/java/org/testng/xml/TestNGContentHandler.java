@@ -444,11 +444,13 @@ public class TestNGContentHandler extends DefaultHandler {
       m_currentRuns = Lists.newArrayList();
     }
     else {
-      if (null == m_currentTest) {
-        throw new SAXException("Check the testng XML against schema. Expected <test> tag not found");
+      if (m_currentTest != null) {
+        m_currentTest.setIncludedGroups(m_currentIncludedGroups);
+        m_currentTest.setExcludedGroups(m_currentExcludedGroups);
+      } else {
+        m_currentSuite.setIncludedGroups(m_currentIncludedGroups);
+        m_currentSuite.setExcludedGroups(m_currentExcludedGroups);
       }
-      m_currentTest.setIncludedGroups(m_currentIncludedGroups);
-      m_currentTest.setExcludedGroups(m_currentExcludedGroups);
       m_currentRuns = null;
     }
   }

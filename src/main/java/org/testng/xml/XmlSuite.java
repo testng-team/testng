@@ -124,6 +124,9 @@ public class XmlSuite implements Serializable, Cloneable {
   public static String DEFAULT_PRESERVE_ORDER = "false";
   private String m_preserveOrder = DEFAULT_PRESERVE_ORDER;
 
+  private List<String> m_includedGroups = Lists.newArrayList();
+  private List<String> m_excludedGroups = Lists.newArrayList();
+
   /**
    * @return the fileName
    */
@@ -868,4 +871,41 @@ public class XmlSuite implements Serializable, Cloneable {
     return m_preserveOrder;
   }
 
+  /**
+   * @return Returns the includedGroups.
+   * Note: do not modify the returned value, use {@link #addIncludedGroup(String)}.
+   */
+  public List<String> getIncludedGroups() {
+    return m_includedGroups;
+  }
+
+  public void addIncludedGroup(String g) {
+    m_includedGroups.add(g);
+  }
+
+  /**
+   * @param g
+   */
+  public void setIncludedGroups(List<String> g) {
+    m_includedGroups = g;
+  }
+
+  /**
+   * @param g The excludedGrousps to set.
+   */
+  public void setExcludedGroups(List<String> g) {
+    m_excludedGroups = g;
+  }
+
+  /**
+   * @return Returns the excludedGroups.
+   * Note: do not modify the returned value, use {@link #addExcludedGroup(String)}.
+   */
+  public List<String> getExcludedGroups() {
+    return m_excludedGroups;
+  }
+
+  public void addExcludedGroup(String g) {
+    m_excludedGroups.add(g);
+  }
 }

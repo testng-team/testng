@@ -244,11 +244,11 @@ public class BaseTest extends BaseDistributedTest {
   }
 
   public void addIncludedGroup(String g) {
-    getTest().getIncludedGroups().add(g);
+    getTest().addIncludedGroup(g);
   }
 
   public void addExcludedGroup(String g) {
-    getTest().getExcludedGroups().add(g);
+    getTest().addExcludedGroup(g);
   }
 
   public void addMetaGroup(String mg, List<String> l) {
