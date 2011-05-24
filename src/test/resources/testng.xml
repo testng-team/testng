@@ -117,6 +117,7 @@
       <class name="test.priority.PriorityTest" />
       <class name="test.listeners.EndMillisShouldNotBeZeroTest" />
       <class name="test.NestedStaticTest" />
+      <class name="test.configuration.ConfigurationListenerTest" />
     </classes>
   </test>
 
