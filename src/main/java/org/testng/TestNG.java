@@ -3,6 +3,8 @@ package org.testng;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -37,8 +39,6 @@ import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -1444,7 +1444,10 @@ public class TestNG {
     configure(result);
   }
 
-  private void setTestNames(List<String> testNames) {
+  /**
+   * Only run the specified tests from the suite.
+   */
+  public void setTestNames(List<String> testNames) {
     m_testNames = testNames;
   }
 
