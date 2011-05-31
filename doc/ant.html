@@ -68,6 +68,11 @@ accepts the following attributes: <br>
 		<td>&nbsp; </td>
 	</tr>
 	<tr>
+		<td><tt>configFailurePolicy</tt> </td>
+		<td>Whether TestNG should <tt>continue</tt> to execute the remaining tests in the suite or <tt>skip</tt> them if an @Before* method fails.</td>
+		<td>No. Defaults to <tt>skip</tt></td>
+	</tr>
+	<tr>
 		<td><tt>dataProviderThreadCount</tt> </td>
 		<td>The number of threads to use for data providers
 		for this run. Ignored unless the parallel mode is also specified</td>
@@ -210,7 +215,7 @@ accepts the following attributes: <br>
 	<tr>
 		<td><tt>testnames</tt> </td>
 		<td>A comma separated list of test names, as defined
-		in the &lt;test&gt; tag.</td> Only these tests will be run.
+		in the &lt;test&gt; tag. Only these tests will be run.</td>
 		<td>No. defaults to "Ant test"</td>
 	</tr>
 
