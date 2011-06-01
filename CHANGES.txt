@@ -25,6 +25,7 @@ Fixed: JUnitReporter generates an <error> tag for successful expectedExceptions 
 
 Eclipse:
 
+Added: New quick fix "Add static import org.testng.AssertJUnit.assertXXX"
 Added: New workspace wide setting: excluded stack traces, to provide shorter stack traces in the view
 Added: New "Clear results" icon in the tool bar
 Added: When the search filter is modified, don't update the tree live if it is too big 
