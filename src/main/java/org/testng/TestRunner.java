@@ -996,35 +996,16 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
     }
 
     Map<String, String> params = xmlTest.getParameters();
-    // This should no longer happen when we are running the new 5.11 implementation but keeping
-    // it until I'm sure the new implementation is working fine.
-    // @deprecated
-    if (XmlSuite.PARALLEL_CLASSES.equals(xmlTest.getParallel())) {
-      Map<Class, Set<IMethodInstance>> list = groupMethodInstancesByClass(methodInstances);
-      for (Set<IMethodInstance> s : list.values()) {
-          workers.add(new TestMethodWorker(m_invoker,
-              s.toArray(new IMethodInstance[s.size()]),
-              m_xmlTest.getSuite(),
-              params,
-              m_allTestMethods,
-              m_groupMethods,
-              cmm,
-              this));
-      }
+    for (IMethodInstance mi : methodInstances) {
+      workers.add(new TestMethodWorker(m_invoker,
+                                       new IMethodInstance[] { mi },
+                                       m_xmlTest.getSuite(),
+                                       params,
+                                       m_allTestMethods,
+                                       m_groupMethods,
+                                       cmm,
+                                       this));
     }
-    else {
-      for (IMethodInstance mi : methodInstances) {
-        workers.add(new TestMethodWorker(m_invoker,
-                                         new IMethodInstance[] { mi },
-                                         m_xmlTest.getSuite(),
-                                         params,
-                                         m_allTestMethods,
-                                         m_groupMethods,
-                                         cmm,
-                                         this));
-        }
-    }
-
   }
 
   /**

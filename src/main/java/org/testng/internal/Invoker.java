@@ -141,7 +141,7 @@ public class Invoker implements IInvoker {
                                    ITestResult testMethodResult)
   {
     if(null == allMethods) {
-      log(5, "No @Configuration methods found");
+      log(5, "No configuration methods found");
 
       return;
     }
@@ -317,7 +317,7 @@ public class Invoker implements IInvoker {
         return;
       }
     }
-    Utils.log("", 3, "Failed to invoke @Configuration method "
+    Utils.log("", 3, "Failed to invoke configuration method "
         + tm.getRealClass().getName() + "." + tm.getMethodName() + ":" + cause.getMessage());
     handleException(cause, tm, testResult, 1);
     runConfigurationListeners(testResult);

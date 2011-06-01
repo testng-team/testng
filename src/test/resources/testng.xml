@@ -118,6 +118,7 @@
       <class name="test.listeners.EndMillisShouldNotBeZeroTest" />
       <class name="test.NestedStaticTest" />
       <class name="test.configuration.ConfigurationListenerTest" />
+      <class name="test.groupinvocation.GroupSuiteTest" />
     </classes>
   </test>
 

@@ -716,6 +716,13 @@ You need to specify at least one XML file describing the TestNG suite you are tr
 
     <tbody>
         <tr>
+            <td>-configfailurepolicy</td>
+	    <td><tt>skip</tt>|<tt>continue</tt></td>
+	    <td>Whether TestNG should <tt>continue</tt> to execute the remaining tests in the suite or <tt>skip</tt> them if
+            an @Before* method fails.  Default behavior is <tt>skip</tt>.</td>
+        </tr>
+
+        <tr>
             <td>-d</td>
 	    <td>A directory</td>
 	    <td>The directory where the reports will be generated (defaults to <tt>test-output</tt>).</td>
@@ -892,7 +899,14 @@ groups that contain other groups. Then TestNG can be invoked and asked to
 include a certain set of groups (or regular expressions) while excluding another 
 set.&nbsp; This gives you maximum flexibility in how you partition your tests 
 and doesn't require you to recompile anything if you want to run two different 
-sets of tests back to back.</p><p>For example, it is quite common to have at least two categories of tests</p><ul>
+sets of tests back to back.</p>
+
+<p>
+Groups are specified in your <tt>testng.xml</tt> file and can be found either under the <tt>&lt;test&gt;</tt> or <tt>&lt;suite&gt;</tt> tag. Groups specified in the <tt>&lt;suite&gt;</tt> tag apply to all the <tt>&lt;test&gt;</tt> tags underneath. Note that groups are accumulative in these tags: if you specify group "a" in <tt>&lt;suite&gt;</tt> and "b" in <tt>&lt;test&gt;</tt>, then both "a" and "b" will be included.
+
+<p>
+
+<p>For example, it is quite common to have at least two categories of tests</p><ul>
   <li>Check-in tests.&nbsp; These tests should be run before you submit new 
 	code.&nbsp; They should typically be fast and just make sure no basic 
 	functionality was broken.<br>

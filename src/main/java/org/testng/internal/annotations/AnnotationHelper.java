@@ -227,8 +227,9 @@ public class AnnotationHelper {
               if (isAnnotationPresent(annotationFinder, m, IConfigurationAnnotation.class) &&
                   isAnnotationPresent(annotationFinder, cls, ITestAnnotation.class))
               {
-                Utils.log("", 3, "Method " + m + " has a local @Configuration and a class-level @Test." +
-                    "This method will only be kept as a @Configuration.");
+                Utils.log("", 3, "Method " + m + " has a configuration annotation"
+                    + " and a class-level @Test. This method will only be kept as a"
+                    + " configuration method.");
 
                 continue;
               }

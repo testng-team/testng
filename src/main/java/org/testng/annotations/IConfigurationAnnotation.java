@@ -75,8 +75,9 @@ public interface IConfigurationAnnotation extends ITestOrConfiguration {
 
   /**
    * Internal use only.
-   * @return true if this configuration annotation is not a "true" @Configuration
-   * but a @BeforeSuite or similar that is represented as a @Configuration
+   * @return true if this configuration annotation is not a "true" configuration
+   * annotation but a @BeforeSuite or similar that is represented as a configuration
+   * annotation.
    */
   public boolean isFakeConfiguration();
 }

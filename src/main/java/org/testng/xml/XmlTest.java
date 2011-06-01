@@ -7,6 +7,7 @@ import org.testng.internal.AnnotationTypeEnum;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -114,10 +115,13 @@ public class XmlTest implements Serializable, Cloneable {
   }
 
   /**
-   * @return Returns the includedGroups.
+   * @return the includedGroups.
+   * Note: do not modify the returned value, use {@link #addIncludedGroup(String)}.
    */
   public List<String> getIncludedGroups() {
-    return m_includedGroups;
+    List<String> result = new ArrayList(m_includedGroups);
+    result.addAll(m_suite.getIncludedGroups());
+    return result;
   }
 
   /**
@@ -200,9 +204,20 @@ public class XmlTest implements Serializable, Cloneable {
 
   /**
    * @return Returns the excludedGroups.
+   * Note: do not modify the returned value, use {@link #addExcludedGroup(String)}.
    */
   public List<String> getExcludedGroups() {
-    return m_excludedGroups;
+    List<String> result = new ArrayList(m_excludedGroups);
+    result.addAll(m_suite.getExcludedGroups());
+    return result;
+  }
+
+  public void addIncludedGroup(String g) {
+    m_includedGroups.add(g);
+  }
+
+  public void addExcludedGroup(String g) {
+    m_excludedGroups.add(g);
   }
 
   /**
@@ -778,4 +793,5 @@ public class XmlTest implements Serializable, Cloneable {
 
     return true;
   }
+
 }
