@@ -1238,12 +1238,7 @@ tests. </i>
 &nbsp;&nbsp;<em><a name="parameters-dataproviders">5.5.2 - Parameters with DataProviders</a></em>
 
 
-<p>Specifying parameters in <tt>testng.xml</tt> might not be sufficient in the following 
-cases:</p><ul>
-	<li>You are not using a <tt>testng.xml</tt>.</li><li>You need to pass complex parameters, or parameters that need to be created 
-from Java (complex objects, objects read from a property file or a database, etc...).</li></ul><p>In this case, you can use a Data Provider to supply the values you need to 
-test.&nbsp; A Data Provider is a method on your class that returns an array of 
-array of objects.&nbsp; This method is annotated with <tt>@DataProvider</tt>:
+<p>Specifying parameters in <tt>testng.xml</tt> might not be sufficient if you need to pass complex parameters, or parameters that need to be created  from Java (complex objects, objects read from a property file or a database, etc...). In this case, you can use a Data Provider to supply the values you need to test.&nbsp; A Data Provider is a method on your class that returns an array of array of objects.&nbsp; This method is annotated with <tt>@DataProvider</tt>:
 
 <h3 class="sourcetitle">Java</h3>
 <pre class="brush: java">
