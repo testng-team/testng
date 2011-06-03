@@ -10,6 +10,7 @@ Added: assertArrayEquals() to AssertJUnit
 Added: Nested classes are now automatically added for consideration for inclusion
 Added: <suite preserve-order="true"> will cause this attribute to be propagated to all <test> tags
 Added: <groups> can now be specified under a <suite>
+Added: Tycho compatibility (Aleksander Pohl)
 Fixed: IConfigurationListener was not extending ITestNGListener
 Fixed: IConfigurationListener#onConfigurationFailure was never called
 Fixed: TESTNG-476: <test> tags are now run in the order found in testng.xml
