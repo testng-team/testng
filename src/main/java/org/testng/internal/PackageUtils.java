@@ -123,20 +123,19 @@ public class PackageUtils {
         }
       }
       else if ("bundleresource".equals(protocol)) {
-              try{
-                      Class params[] = {};
-                      // BundleURLConnection
-                      URLConnection connection = url.openConnection();
-                      Method thisMethod = url.openConnection().getClass().getDeclaredMethod("getFileURL", params);
-                      Object paramsObj[] = {};
-                      URL fileUrl = (URL)thisMethod.invoke(connection,paramsObj);
-                      findClassesInDirPackage(packageOnly, included, excluded,
-                                      URLDecoder.decode(fileUrl.getFile(), "UTF-8"),
-                                      recursive,
-                                      vResult);
-              } catch(Exception ex){
-                      //ignore - probably not an Eclipse OSGi bundle
-              }
+        try {
+          Class params[] = {};
+          // BundleURLConnection
+          URLConnection connection = url.openConnection();
+          Method thisMethod = url.openConnection().getClass()
+              .getDeclaredMethod("getFileURL", params);
+          Object paramsObj[] = {};
+          URL fileUrl = (URL) thisMethod.invoke(connection, paramsObj);
+          findClassesInDirPackage(packageOnly, included, excluded,
+              URLDecoder.decode(fileUrl.getFile(), "UTF-8"), recursive, vResult);
+        } catch (Exception ex) {
+          // ignore - probably not an Eclipse OSGi bundle
+        }
       }
     }
 
