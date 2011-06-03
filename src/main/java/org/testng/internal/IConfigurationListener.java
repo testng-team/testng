@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 
 
@@ -8,7 +9,7 @@ import org.testng.ITestResult;
  *
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
-public interface IConfigurationListener {
+public interface IConfigurationListener extends ITestNGListener {
   void onConfigurationSuccess(ITestResult itr);
 
   void onConfigurationFailure(ITestResult itr);
