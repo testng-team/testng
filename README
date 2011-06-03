@@ -1,3 +1,10 @@
+== Note about the fork ==
+
+This fork is used to implement the interoperability between TestNG and Tycho.
+This feature is caputred by:
+http://jira.opensymphony.com/browse/TESTNG-455
+https://issues.sonatype.org/browse/TYCHO-424
+
 Welcome to TestNG
 
 Please note that even though the .zip distribution contains the TestNG sources,

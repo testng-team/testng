@@ -7,14 +7,18 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
+import java.util.Vector;
+import java.util.Iterator;
 
 /**
  * Utility class that finds all the classes in a given package.
@@ -24,6 +28,14 @@ import java.util.regex.Pattern;
  */
 public class PackageUtils {
   private static String[] s_testClassPaths;
+
+  /** The additional class loaders to find classes in. */
+  private static final List<ClassLoader> m_classLoaders = new Vector<ClassLoader>();
+
+  /** Add a class loader to the searchable loaders. */
+  public static void addClassLoader(final ClassLoader loader) {
+    m_classLoaders.add(loader);
+  }
 
   /**
    *
@@ -44,9 +56,34 @@ public class PackageUtils {
 
     List<String> vResult = Lists.newArrayList();
     String packageDirName = packageOnly.replace('.', '/');
-    Enumeration<URL> dirs = Thread.currentThread().getContextClassLoader().getResources(packageDirName);
-    while (dirs.hasMoreElements()) {
-      URL url = dirs.nextElement();
+
+    Vector<URL> dirs = new Vector<URL>();
+    // go through additional class loaders
+    Vector<ClassLoader> allClassLoaders = new Vector<ClassLoader>();
+    ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+    if (contextClassLoader != null) {
+      allClassLoaders.add(contextClassLoader);
+    }
+    if (m_classLoaders != null) {
+      allClassLoaders.addAll(m_classLoaders);
+    }
+
+    int count = 0;
+    for (ClassLoader classLoader : allClassLoaders) {
+      ++count;
+      if (null == classLoader) {
+        continue;
+      }
+      Enumeration<URL> dirEnumeration = classLoader.getResources(packageDirName);
+      while(dirEnumeration.hasMoreElements()){
+        URL dir = dirEnumeration.nextElement();
+        dirs.add(dir);
+      }
+    }
+
+    Iterator<URL> dirIterator = dirs.iterator();
+    while (dirIterator.hasNext()) {
+      URL url = dirIterator.next();
       String protocol = url.getProtocol();
       if(!matchTestClasspath(url, packageDirName, recursive)) {
         continue;
@@ -84,6 +121,22 @@ public class PackageUtils {
             }
           }
         }
+      }
+      else if ("bundleresource".equals(protocol)) {
+              try{
+                      Class params[] = {};
+                      // BundleURLConnection
+                      URLConnection connection = url.openConnection();
+                      Method thisMethod = url.openConnection().getClass().getDeclaredMethod("getFileURL", params);
+                      Object paramsObj[] = {};
+                      URL fileUrl = (URL)thisMethod.invoke(connection,paramsObj);
+                      findClassesInDirPackage(packageOnly, included, excluded,
+                                      URLDecoder.decode(fileUrl.getFile(), "UTF-8"),
+                                      recursive,
+                                      vResult);
+              } catch(Exception ex){
+                      //ignore - probably not an Eclipse OSGi bundle
+              }
       }
     }
 
