@@ -124,7 +124,6 @@ public class ClassImpl implements IClass {
     Annotation annotation = AnnotationHelper.findAnnotationSuperClasses(Guice.class, m_class);
     if (annotation == null) return null;
 
-    Object result = null;
     Guice guice = (Guice) annotation;
     Module[] modules = getModules(guice, m_class);
 
