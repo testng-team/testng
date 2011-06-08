@@ -33,7 +33,7 @@ public class ClassInfoMap {
     m_map.put(cl, xmlClass);
     if (includeNestedClasses) {
       for (Class c : cl.getClasses()) {
-        registerClass(c, xmlClass);
+        if (! m_map.containsKey(c)) registerClass(c, xmlClass);
       }
     }
   }
