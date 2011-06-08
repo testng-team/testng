@@ -14,6 +14,7 @@ Added: Nested classes are now automatically added for consideration for inclusio
 Added: <suite preserve-order="true"> will cause this attribute to be propagated to all <test> tags
 Added: <groups> can now be specified under a <suite>
 Added: Tycho compatibility (Aleksander Pohl)
+Added: New <test> and <suite> flag: group-by-instances
 Fixed: Dependency failures only impact the same instance
 Fixed: Static classes could cause a StackOverFlowError
 Fixed: IConfigurationListener was not extending ITestNGListener

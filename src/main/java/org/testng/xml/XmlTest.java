@@ -56,6 +56,8 @@ public class XmlTest implements Serializable, Cloneable {
 
   private int m_index;
 
+  private Boolean m_groupByInstances;
+
   /**
    * Constructs a <code>XmlTest</code> and adds it to suite's list of tests.
    *
@@ -235,6 +237,23 @@ public class XmlTest implements Serializable, Cloneable {
       return 1;
     }
   }
+
+  public boolean groupByInstances() {
+    Boolean result = m_groupByInstances;
+    if (result == null || XmlSuite.DEFAULT_GROUP_BY_INSTANCES.equals(m_groupByInstances)) {
+      result = m_suite.groupByInstances();
+    }
+    if (result != null) {
+      return result.booleanValue();
+    } else {
+      return XmlSuite.DEFAULT_GROUP_BY_INSTANCES;
+    }
+  }
+
+  public void setGroupByInstances(boolean f) {
+    m_groupByInstances = f;
+  }
+
   /**
    * @return Returns the isJUnit.
    */

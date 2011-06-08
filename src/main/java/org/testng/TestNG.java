@@ -748,6 +748,7 @@ public class TestNG {
   private boolean m_randomizeSuites = Boolean.FALSE;
 
   private boolean m_preserveOrder = false;
+  private Boolean m_groupByInstances;
 
   private IConfiguration m_configuration;
 
@@ -778,6 +779,9 @@ public class TestNG {
           t.setPreserveOrder(m_preserveOrder ? "true " : "false");
         }
         m_suites.add(s);
+        if (m_groupByInstances != null) {
+          s.setGroupByInstances(m_groupByInstances);
+        }
       }
     }
   }
@@ -1761,5 +1765,9 @@ public class TestNG {
 
   protected long getEnd() {
     return m_end;
+  }
+
+  public void setGroupByInstances(boolean b) {
+    m_groupByInstances = b;
   }
 }

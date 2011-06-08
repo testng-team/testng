@@ -80,6 +80,10 @@ public class XmlSuite implements Serializable, Cloneable {
   public static final Integer DEFAULT_DATA_PROVIDER_THREAD_COUNT = 10;
   private int m_dataProviderThreadCount = DEFAULT_DATA_PROVIDER_THREAD_COUNT;
 
+  /** By default, a method failing will cause all instances of that class to skip */
+  public static final Boolean DEFAULT_GROUP_BY_INSTANCES = false;
+  private Boolean m_groupByInstances = DEFAULT_GROUP_BY_INSTANCES;
+
   /** The suite annotation type. */
   private AnnotationTypeEnum m_annotations;
 
@@ -907,5 +911,13 @@ public class XmlSuite implements Serializable, Cloneable {
 
   public void addExcludedGroup(String g) {
     m_excludedGroups.add(g);
+  }
+
+  public Boolean groupByInstances() {
+    return m_groupByInstances;
+  }
+
+  public void setGroupByInstances(boolean f) {
+    m_groupByInstances = f;
   }
 }

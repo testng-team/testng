@@ -153,6 +153,10 @@ public class TestNGContentHandler extends DefaultHandler {
           m_currentSuite.setConfigFailurePolicy(configFailurePolicy);
         }
       }
+      String groupByInstances = attributes.getValue("group-by-instances");
+      if (groupByInstances!= null) {
+        m_currentSuite.setGroupByInstances(Boolean.valueOf(groupByInstances).booleanValue());
+      }
       String skip = attributes.getValue("skipfailedinvocationcounts");
       if (skip != null) {
         m_currentSuite.setSkipFailedInvocationCounts(Boolean.valueOf(skip));
@@ -257,6 +261,10 @@ public class TestNGContentHandler extends DefaultHandler {
       String skip = attributes.getValue("skipfailedinvocationcounts");
       if (skip != null) {
         m_currentTest.setSkipFailedInvocationCounts(Boolean.valueOf(skip).booleanValue());
+      }
+      String groupByInstances = attributes.getValue("group-by-instances");
+      if (groupByInstances!= null) {
+        m_currentTest.setGroupByInstances(Boolean.valueOf(groupByInstances).booleanValue());
       }
       String preserveOrder = attributes.getValue("preserve-order");
       if (preserveOrder != null) {

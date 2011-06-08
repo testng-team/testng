@@ -1438,6 +1438,37 @@ overloaded methods, you should use <tt>dependsOnGroups</tt>.</p><p>For a more ad
 uses inheritance to provide an elegant solution to the problem of multiple 
 dependencies.</p>
 
+By default, dependent methods are grouped by class. For example, if method <tt>b()</tt> depends on method <tt>a()</tt> and you have several instances of the class that contains these methods (because of a factory of a data provider), then the invocation order will be as follows:
+
+<pre class="brush: plain">
+a(1)
+a(2)
+b(2)
+b(2)
+</pre>
+
+TestNG will not run <tt>b()</tt> until all the instances have invoked their <tt>a()</tt> method.
+
+<p>
+
+This behavior might not be desirable in certain scenarios, such as for example testing a sign in and sign out of a web browser for various countries. In such a case, you would like the following ordering:
+
+<pre class="brush: plain">
+signIn("us")
+signOut("us")
+signIn("uk")
+signOut("uk")
+</pre>
+
+For this ordering, you can use the XML attribute <tt>order-by-instances</tt>. This attribute is valid either on &lt;suite&gt; or &lt;test&gt;:
+
+<pre class="brush: xml">
+  &lt;suite name="Factory" group-by-instances="true"&gt;
+or
+  &lt;test name="Factory" group-by-instances="true"&gt;
+</pre>
+
+
 <!-------------------------------------
   FACTORIES
   ------------------------------------><h4>

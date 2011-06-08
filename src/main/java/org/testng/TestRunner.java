@@ -733,7 +733,7 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
       //
       List<TestMethodWorker> workers = Lists.newArrayList();
 
-      createSequentialWorkers(sequentialList, xmlTest.getParameters(), m_classMethodMap, workers);
+      createSequentialWorkers(sequentialList, xmlTest, m_classMethodMap, workers);
       MapList<Integer, TestMethodWorker> ml =
           createSequentialWorkers(sequentialMapList, xmlTest.getParameters(), m_classMethodMap);
 
@@ -1028,23 +1028,59 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
   }
 
   private void createSequentialWorkers(List<List<ITestNGMethod>> sequentialList,
-      Map<String, String> params, ClassMethodMap cmm, List<TestMethodWorker> workers) {
+      XmlTest xmlTest, ClassMethodMap cmm, List<TestMethodWorker> workers) {
+
+    Map<String, String> params = xmlTest.getParameters();
     if(sequentialList.isEmpty()) {
       return;
     }
 
-    // All the sequential tests are place in one worker, guaranteeing they
-    // will be invoked sequentially
+    Map<Object, List<ITestNGMethod>> map = Maps.newHashMap();
+
     for (List<ITestNGMethod> sl : sequentialList) {
-      workers.add(new TestMethodWorker(m_invoker,
-                                       methodsToMethodInstances(sl),
-                                       m_xmlTest.getSuite(),
-                                       params,
-                                       m_allTestMethods,
-                                       m_groupMethods,
-                                       cmm,
-                                       this));
+      for (ITestNGMethod m : sl) {
+        for (Object o : m.getInstances()) {
+          List<ITestNGMethod> l = map.get(o);
+          if (l == null) {
+            l = Lists.newArrayList();
+            map.put(o, l);
+          }
+          l.add(m);
+        }
+      }
     }
+
+    if (xmlTest.groupByInstances()) {
+      for (Map.Entry<Object, List<ITestNGMethod>> es : map.entrySet()) {
+        List<MethodInstance> instances = Lists.newArrayList();
+        for (ITestNGMethod m : es.getValue()) {
+          instances.add(new MethodInstance(m, new Object[] { es.getKey() }));
+        }
+
+        workers.add(new TestMethodWorker(m_invoker,
+            instances.toArray(new MethodInstance[instances.size()]),
+            m_xmlTest.getSuite(),
+            params,
+            m_allTestMethods,
+            m_groupMethods,
+            cmm,
+            this));
+      }
+    } else {
+      // All the sequential tests are place in one worker, guaranteeing they
+      // will be invoked sequentially
+      for (List<ITestNGMethod> sl : sequentialList) {
+        workers.add(new TestMethodWorker(m_invoker,
+                                         methodsToMethodInstances(sl),
+                                         m_xmlTest.getSuite(),
+                                         params,
+                                         m_allTestMethods,
+                                         m_groupMethods,
+                                         cmm,
+                                         this));
+      }
+    }
+
     if (getVerbose() >= 2) {
       log(3, "Will be run sequentially:");
       for (List<ITestNGMethod> l : sequentialList) {
