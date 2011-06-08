@@ -6,12 +6,12 @@ import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.collections.Sets;
 import org.testng.internal.Utils;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -56,7 +56,7 @@ public class XMLSuiteResultWriter {
 
   private void writeAllToBuffer(XMLStringBuffer xmlBuffer, ISuiteResult suiteResult) {
     xmlBuffer.push(XMLReporterConfig.TAG_TEST, getSuiteResultAttributes(suiteResult));
-    Set<ITestResult> testResults = new HashSet();
+    Set<ITestResult> testResults = Sets.newHashSet();
     addAllTestResults(testResults, suiteResult.getTestContext().getPassedTests());
     addAllTestResults(testResults, suiteResult.getTestContext().getFailedTests());
     addAllTestResults(testResults, suiteResult.getTestContext().getSkippedTests());
