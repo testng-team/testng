@@ -30,7 +30,6 @@ public class JUnitReportReporter implements IReporter {
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
       String defaultOutputDirectory) {
 
-    String outputDirectory = defaultOutputDirectory + File.separator + "junitreports";
     Map<Class<?>, Set<ITestResult>> results = Maps.newHashMap();
     Map<Class<?>, Set<ITestResult>> failedConfigurations = Maps.newHashMap();
     for (ISuite suite : suites) {
@@ -71,7 +70,7 @@ public class JUnitReportReporter implements IReporter {
 
         Properties p2 = new Properties();
         p2.setProperty("classname", cls.getName());
-        p2.setProperty("name", tr.getMethod().getMethodName());
+        p2.setProperty("name", getTestName(tr));
         long time = tr.getEndMillis() - tr.getStartMillis();
         p2.setProperty("time", "" + formatTime(time));
         Throwable t = getThrowable(tr, failedConfigurations);
@@ -129,13 +128,21 @@ public class JUnitReportReporter implements IReporter {
       }
       xsb.pop("testsuite");
 
-      String fileName = "TEST-" + cls.getName() + ".xml";
-      Utils.writeFile(outputDirectory, fileName, xsb.toXML());
+      String outputDirectory = defaultOutputDirectory + File.separator + "junitreports";
+      Utils.writeFile(outputDirectory, getFileName(cls), xsb.toXML());
     }
 
 //    System.out.println(xsb.toXML());
 //    System.out.println("");
 
+  }
+
+  protected String getFileName(Class cls) {
+    return "TEST-" + cls.getName() + ".xml";
+  }
+
+  protected String getTestName(ITestResult tr) {
+    return tr.getMethod().getMethodName();
   }
 
   private String formatTime(float time) {
