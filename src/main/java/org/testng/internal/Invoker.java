@@ -1602,7 +1602,7 @@ public class Invoker implements IInvoker {
               m_testContext.getAllTestMethods(),
               element);
 
-        result = result && haveBeenRunSuccessfully(methods);
+        result = result && haveBeenRunSuccessfully(testMethod, methods);
       }
     } // depends on groups
 
@@ -1612,28 +1612,37 @@ public class Invoker implements IInvoker {
       ITestNGMethod[] methods =
         MethodHelper.findDependedUponMethods(testMethod, allTestMethods);
 
-      result = result && haveBeenRunSuccessfully(methods);
+      result = result && haveBeenRunSuccessfully(testMethod, methods);
     }
 
     return result;
   }
 
   /**
+   * @return the test results that apply to one of the instances of the testMethod.
+   */
+  private Set<ITestResult> keepSameInstances(ITestNGMethod method, Set<ITestResult> results) {
+    Set<ITestResult> result = Sets.newHashSet();
+    for (ITestResult r : results) {
+      for (Object o : method.getInstances()) {
+        if (r.getInstance() == o) result.add(r);
+      }
+    }
+    return result;
+  }
+
+  /**
    * @return true if all the methods have been run successfully
    */
-  private boolean haveBeenRunSuccessfully(ITestNGMethod[] methods) {
+  private boolean haveBeenRunSuccessfully(ITestNGMethod testMethod, ITestNGMethod[] methods) {
     // Make sure the method has been run successfully
     for (ITestNGMethod method : methods) {
-      Set<ITestResult> results= m_notifier.getPassedTests(method);
-      Set<ITestResult> failedresults= m_notifier.getFailedTests(method);
+      Set<ITestResult> results = keepSameInstances(testMethod, m_notifier.getPassedTests(method));
+      Set<ITestResult> failedresults = keepSameInstances(testMethod,
+          m_notifier.getFailedTests(method));
 
-      // If failed results were returned, then these tests didn't pass
+      // If failed results were returned on the same instance, then these tests didn't pass
       if (failedresults != null && failedresults.size() > 0) {
-        return false;
-      }
-
-      // If no results were returned, then these tests didn't pass
-      if (results == null || results.size() == 0) {
         return false;
       }
 
@@ -1645,6 +1654,17 @@ public class Invoker implements IInvoker {
     }
 
     return true;
+  }
+
+  private boolean containsInstance(Set<ITestResult> failedresults, Object[] instances) {
+    for (ITestResult tr : failedresults) {
+      for (Object o : instances) {
+        if (o == tr.getInstance()) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   /**

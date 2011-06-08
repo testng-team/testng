@@ -7,18 +7,17 @@ import test.BaseTest;
 public class MultiGroupTest extends BaseTest {
   @Test
   public void verifyDependsOnMultiGroups() {
-     addClass("test.dependent.MultiGroup1SampleTest");
-     addClass("test.dependent.MultiGroup2SampleTest");
+     addClass(MultiGroup1SampleTest.class.getName());
+     addClass(MultiGroup2SampleTest.class.getName());
 
      run();
      String[] passed = {
-         "testA"
+         "testA", "test2"
       };
      String[] failed = {
         "test1"
      };
      String[] skipped = {
-         "test2"
      };
      verifyTests("Passed", passed, getPassedTests());
      verifyTests("Failed", failed, getFailedTests());

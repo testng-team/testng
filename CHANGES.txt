@@ -1,8 +1,11 @@
 Current
 
-Possible backward incompatible changes: don't mutate the value returned
-by XmlTest#getIncludedGroups and XmlTest#getExcludedGroups. Instead, use
-addIncludedGroup/addExcludedGroup.
+Possible backward incompatible changes:
+
+- Don't mutate the value returned by XmlTest#getIncludedGroups and XmlTest#getExcludedGroups.
+Instead, use addIncludedGroup/addExcludedGroup.
+- Failing methods that have dependees will only cause skips in the same instance. Different
+test instances will not be affected
 
 Added: @Factory(dataProvider / dataProviderClass) on constructors
 Added: assertNotEquals() to Assert
@@ -11,6 +14,7 @@ Added: Nested classes are now automatically added for consideration for inclusio
 Added: <suite preserve-order="true"> will cause this attribute to be propagated to all <test> tags
 Added: <groups> can now be specified under a <suite>
 Added: Tycho compatibility (Aleksander Pohl)
+Fixed: Dependency failures only impact the same instance
 Fixed: Static classes could cause a StackOverFlowError
 Fixed: IConfigurationListener was not extending ITestNGListener
 Fixed: IConfigurationListener#onConfigurationFailure was never called
