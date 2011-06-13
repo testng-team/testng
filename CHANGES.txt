@@ -15,6 +15,7 @@ Added: <suite preserve-order="true"> will cause this attribute to be propagated 
 Added: <groups> can now be specified under a <suite>
 Added: Tycho compatibility (Aleksander Pohl)
 Added: New <test> and <suite> flag: group-by-instances
+Added: -xmlpathinjar to specify the path of testng.xml inside a test jar file
 Fixed: Dependency failures only impact the same instance
 Fixed: Static classes could cause a StackOverFlowError
 Fixed: IConfigurationListener was not extending ITestNGListener

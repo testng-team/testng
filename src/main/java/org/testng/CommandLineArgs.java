@@ -102,6 +102,11 @@ public class CommandLineArgs {
   @Parameter(names = TEST_JAR, description = "A jar file containing the tests")
   public String testJar;
 
+  public static final String XML_PATH_IN_JAR = "-xmlpathinjar";
+  public static final String XML_PATH_IN_JAR_DEFAULT = "testng.xml";
+  @Parameter(names = XML_PATH_IN_JAR, description = "The full path to the xml file inside the jar file (only valid if -testjar was specified)")
+  public String xmlPathInJar = XML_PATH_IN_JAR_DEFAULT;
+
   public static final String TEST_RUNNER_FACTORY = "-testrunfactory";
   @Parameter(names = { TEST_RUNNER_FACTORY, "-testRunFactory" },
       description = "The factory used to create tests")
@@ -142,4 +147,5 @@ public class CommandLineArgs {
   public static final String DEBUG = "-debug";
   @Parameter(names = DEBUG, hidden = true, description = "Used to debug TestNG")
   public Boolean debug = Boolean.FALSE;
+
 }

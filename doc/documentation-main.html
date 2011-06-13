@@ -829,8 +829,14 @@ You need to specify at least one XML file describing the TestNG suite you are tr
 	    <td>The default number of threads to use when running tests in parallel.</td>
 	    <td>This sets the default maximum number of threads to use for running tests in parallel. It will only take effect if the parallel mode has been selected (for example, with the -parallel option). This can be overridden in the suite definition.</td>
         </tr>
-           
-    </tbody>
+
+	<tr>
+            <td>-xmlpathinjar</td>
+	    <td>The path of the XML file inside the jar file.</td>
+	    <td>This attribute should contain the path to a valid XML file inside the test jar (e.g. <tt>"resources/testng.xml"</tt>). The default is <tt>"testng.xml"</tt>, which means a file called "<tt>testng.xml</tt>" at the root of the jar file. This option will be ignored unless <tt>-testjar</tt> is specified.</td>
+        </tr>
+
+      </tbody>
 </table>
 
 <p>

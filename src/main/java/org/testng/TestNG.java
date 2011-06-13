@@ -172,6 +172,8 @@ public class TestNG {
   private Integer m_dataProviderThreadCount = null;
 
   private String m_jarPath;
+  /** The path of the testng.xml file inside the jar file */
+  private String m_xmlPathInJar = CommandLineArgs.XML_PATH_IN_JAR_DEFAULT;
 
   private List<String> m_stringSuites = Lists.newArrayList();
 
@@ -268,6 +270,13 @@ public class TestNG {
     m_jarPath = jarPath;
   }
 
+  /**
+   * Sets the path to the XML file in the test jar file.
+   */
+  public void setXmlPathInJar(String xmlPathInJar) {
+    m_xmlPathInJar = xmlPathInJar;
+  }
+
   public void initializeSuitesAndJarFile() {
     // The Eclipse plug-in (RemoteTestNG) might have invoked this method already
     // so don't initialize suites twice.
@@ -352,7 +361,7 @@ public class TestNG {
       boolean foundTestngXml = false;
       while (entries.hasMoreElements()) {
         JarEntry je = entries.nextElement();
-        if (je.getName().equals("testng.xml")) {
+        if (je.getName().equals(m_xmlPathInJar)) {
           Parser parser = getParser(jf.getInputStream(je));
           m_suites.addAll(parser.parse());
           foundTestngXml = true;
@@ -1248,6 +1257,7 @@ public class TestNG {
     setGroups(cla.groups);
     setExcludedGroups(cla.excludedGroups);
     setTestJar(cla.testJar);
+    setXmlPathInJar(cla.xmlPathInJar);
     setJUnit(cla.junit);
     setMaster(cla.master);
     setSlave(cla.slave);
@@ -1383,6 +1393,7 @@ public class TestNG {
     result.groups = (String) cmdLineArgs.get(CommandLineArgs.GROUPS);
     result.excludedGroups = (String) cmdLineArgs.get(CommandLineArgs.EXCLUDED_GROUPS);
     result.testJar = (String) cmdLineArgs.get(CommandLineArgs.TEST_JAR);
+    result.xmlPathInJar = (String) cmdLineArgs.get(CommandLineArgs.XML_PATH_IN_JAR);
     result.junit = (Boolean) cmdLineArgs.get(CommandLineArgs.JUNIT);
     result.master = (String) cmdLineArgs.get(CommandLineArgs.MASTER);
     result.slave = (String) cmdLineArgs.get(CommandLineArgs.SLAVE);
