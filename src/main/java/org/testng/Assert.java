@@ -495,8 +495,7 @@ public class Assert {
       formatted = message + " ";
     }
 
-    return formatted +
-      (formatted.trim().length() > 0 ? "" : "expected:<" + expected + "> but was:<" + actual + ">");
+    return formatted + "expected:<" + expected + "> but was:<" + actual + ">";
   }
 
   /**
