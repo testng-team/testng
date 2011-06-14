@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="SanityCheck tests">
+   <suite-files>
+      <suite-file path="./test1.xml"/>
+      <suite-file path="./test2.xml"/>
+   </suite-files>
+</suite>
