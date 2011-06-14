@@ -101,7 +101,7 @@ public class TestNG {
   public static final String DEFAULT_COMMAND_LINE_SUITE_NAME = "Command line suite";
 
   /** The default name for a test launched from the command line */
-  private static final String DEFAULT_COMMAND_LINE_TEST_NAME = "Command line test";
+  public static final String DEFAULT_COMMAND_LINE_TEST_NAME = "Command line test";
 
   /** The default name of the result's output directory (keep public, used by Eclipse). */
   public static final String DEFAULT_OUTPUTDIR = "test-output";
@@ -889,6 +889,37 @@ public class TestNG {
   }
 
   /**
+   * Before suites are executed, do a sanity check to ensure all required
+   * conditions are met. If not, throw an exception to stop test execution
+   *
+   * @throws TestNGException if the sanity check fails
+   */
+  private void sanityCheck()
+  {
+    checkTestNames(m_suites);
+  }
+
+  /**
+   * Ensure that two XmlTest within the same XmlSuite don't have the same name
+   */
+  private void checkTestNames(List<XmlSuite> suites)
+  {
+    for (XmlSuite suite : suites) {
+      List<String> testNames = Lists.newArrayList();
+      for (XmlTest test : suite.getTests()) {
+        if (testNames.contains(test.getName())) {
+          throw new TestNGException("Two tests in the same suite "
+              + "can not have the same name. Invalid test name: "
+              + test.getName());
+        } else {
+          testNames.add(test.getName());
+        }
+      }
+      checkTestNames(suite.getChildSuites());
+    }
+  }
+
+  /**
    * Run TestNG.
    */
   public void run() {
@@ -898,6 +929,8 @@ public class TestNG {
     initializeCommandLineSuites();
     initializeCommandLineSuitesParams();
     initializeCommandLineSuitesGroups();
+
+    sanityCheck();
 
     List<ISuite> suiteRunners = null;
 
@@ -1163,7 +1196,7 @@ public class TestNG {
    * The TestNG entry point for command line execution.
    *
    * @param argv the TestNG command line parameters.
-   * @throws FileNotFoundException 
+   * @throws FileNotFoundException
    */
   public static void main(String[] argv) {
     TestNG testng = privateMain(argv, null);

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 
 /**
  * This class describes the tag &lt;test&gt;  in testng.xml.
@@ -27,7 +28,7 @@ public class XmlTest implements Serializable, Cloneable {
   public static int DEFAULT_TIMEOUT_MS = Integer.MAX_VALUE;
 
   private XmlSuite m_suite;
-  private String m_name = TestNG.DEFAULT_COMMAND_LINE_SUITE_NAME;
+  private String m_name;
   private Integer m_verbose = XmlSuite.DEFAULT_VERBOSE;
   private Boolean m_isJUnit = XmlSuite.DEFAULT_JUNIT;
   private int m_threadCount= -1;
@@ -76,6 +77,10 @@ public class XmlTest implements Serializable, Cloneable {
     m_suite = suite;
     m_suite.getTests().add(this);
     m_index = index;
+    //no two tests in the same suite should have the same name.
+    //so, make the default test name unique
+    m_name = TestNG.DEFAULT_COMMAND_LINE_TEST_NAME
+      + " " + UUID.randomUUID().toString();
   }
 
   // For YAML
