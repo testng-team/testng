@@ -632,7 +632,7 @@
 
   <test name="Sanity Check">
     <classes>
-      <class name="test.sanitycheck.CheckTestNames" />
+      <class name="test.sanitycheck.CheckTestNamesTest" />
     </classes>
   </test>
 </suite>

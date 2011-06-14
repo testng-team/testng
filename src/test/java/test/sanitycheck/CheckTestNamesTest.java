@@ -13,7 +13,7 @@ import test.SimpleBaseTest;
 
 import java.util.Arrays;
 
-public class CheckTestNames extends SimpleBaseTest {
+public class CheckTestNamesTest extends SimpleBaseTest {
 
   /**
    * Child suites and same suite has two tests with same name

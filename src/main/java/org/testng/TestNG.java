@@ -894,18 +894,16 @@ public class TestNG {
    *
    * @throws TestNGException if the sanity check fails
    */
-  private void sanityCheck()
-  {
+  private void sanityCheck() {
     checkTestNames(m_suites);
   }
 
   /**
    * Ensure that two XmlTest within the same XmlSuite don't have the same name
    */
-  private void checkTestNames(List<XmlSuite> suites)
-  {
+  private void checkTestNames(List<XmlSuite> suites) {
     for (XmlSuite suite : suites) {
-      List<String> testNames = Lists.newArrayList();
+      Set<String> testNames = Sets.newHashSet();
       for (XmlTest test : suite.getTests()) {
         if (testNames.contains(test.getName())) {
           throw new TestNGException("Two tests in the same suite "
