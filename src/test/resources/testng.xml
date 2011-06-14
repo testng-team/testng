@@ -482,9 +482,9 @@
       </run>
     </groups>
 
-	  <packages>
-	    <package name="test.nested.*"/>
-	  </packages>
+     <packages>
+       <package name="test.nested.*"/>
+     </packages>
   </test>
 
   <test name="Hookable" >
@@ -602,7 +602,7 @@
       <class name="test.configurationfailurepolicy.FailurePolicyTest" />
     </classes>
   </test>
-  
+
   <test name="Nested2">
     <packages>
       <package name="test.nested2" />
@@ -617,7 +617,7 @@
       <class name="test.guice.GuiceModuleFactoryTest" />
     </classes>
   </test>
-  
+
   <test name="Listener invokers">
     <packages>
       <package name="org.testng.internal.invokers"/>
@@ -627,6 +627,12 @@
   <test name="YAML">
     <classes>
       <class name="test.yaml.YamlTest" />
+    </classes>
+  </test>
+
+  <test name="Sanity Check">
+    <classes>
+      <class name="test.sanitycheck.CheckTestNamesTest" />
     </classes>
   </test>
 </suite>
