@@ -907,8 +907,7 @@ public class TestNG {
       for (XmlTest test : suite.getTests()) {
         if (testNames.contains(test.getName())) {
           throw new TestNGException("Two tests in the same suite "
-              + "can not have the same name. Invalid test name: "
-              + test.getName());
+              + "cannot have the same name: " + test.getName());
         } else {
           testNames.add(test.getName());
         }
