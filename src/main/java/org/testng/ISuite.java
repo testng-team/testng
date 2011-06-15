@@ -102,4 +102,11 @@ public interface ISuite extends IAttributes {
   public XmlSuite getXmlSuite();
 
   public void addListener(ITestNGListener listener);
+
+  /**
+   * @return the total number of methods found in this suite. The presence of
+   * factories or data providers might cause the actual number of test methods
+   * run be bigger than this list.
+   */
+  List<ITestNGMethod> getAllMethods();
 }

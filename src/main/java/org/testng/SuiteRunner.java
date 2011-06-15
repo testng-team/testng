@@ -12,13 +12,13 @@ import org.testng.internal.thread.ThreadUtil;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
 import org.testng.reporters.TextReporter;
-import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -69,6 +69,8 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   /** The list of all the methods invoked during this run */
   private List<IInvokedMethod> m_invokedMethods =
       Collections.synchronizedList(Lists.<IInvokedMethod>newArrayList());
+
+  private List<ITestNGMethod> m_allTestMethods = Lists.newArrayList();
 
 //  transient private IAnnotationTransformer m_annotationTransformer = null;
 
@@ -164,6 +166,9 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       // (this is used to display the final suite report at the end)
       tr.addListener(m_textReporter);
       m_testRunners.add(tr);
+
+      // Add the methods found in this test to our global count
+      m_allTestMethods.addAll(Arrays.asList(tr.getAllTestMethods()));
     }
   }
 
@@ -635,5 +640,9 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   @Override
   public List<IInvokedMethod> getAllInvokedMethods() {
     return m_invokedMethods;
+  }
+
+  public List<ITestNGMethod> getAllMethods() {
+    return m_allTestMethods;
   }
 }
