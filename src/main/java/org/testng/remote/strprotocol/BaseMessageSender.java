@@ -228,7 +228,7 @@ abstract public class BaseMessageSender implements IMessageSender {
           } else {
             p("Received unknown message: '" + message + "'");
           }
-          message = m_inReader.readLine();
+          message = m_inReader != null ? m_inReader.readLine() : null;
         }
 //        while((m_reader != null) && (message = m_reader.readLine()) != null) {
 //          if (m_debug) {
