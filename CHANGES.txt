@@ -33,6 +33,7 @@ Fixed: TESTNG-282: Problem when including+excluding packages (addicted)
 Fixed: TESTNG-471: assertEquals(Map, Map) fails if a map is a subset of the other
 Fixed: JUnitReporter generates an <error> tag for successful expectedExceptions tests
 Fixed: ISSUE-47: Don't allow two <test>s with same name within same suite (Nalin Makar)
+Fixed: If a listener implements both ISuiteListener and IInvokedMethodListener, only one of them gets invoked
 
 Eclipse:
 

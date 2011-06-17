@@ -383,12 +383,12 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   public void addListener(ITestNGListener listener) {
     if (listener instanceof IInvokedMethodListener) {
       m_invokedMethodListeners.add((IInvokedMethodListener) listener);
-    } else if (listener instanceof ISuiteListener) {
+    }
+    if (listener instanceof ISuiteListener) {
       addListener((ISuiteListener) listener);
-    } else if (listener instanceof IReporter) {
+    }
+    if (listener instanceof IReporter) {
       addReporter((IReporter) listener);
-    } else {
-      throw new AssertionError("Trying to add unsupported listener:" + listener);
     }
   }
 

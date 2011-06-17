@@ -102,9 +102,7 @@
       <class name="test.verify.VerifyTest"/>
       <class name="test.abstractconfmethod.C" />
       <class name="test.issue78.NonPublicClassTest"/>
-      <class name="test.listeners.ListenerTest"/>
       <class name="test.preserveorder.PreserveOrderTest" />
-      <class name="test.listeners.ResultEndMillisTest" />
       <class name="test.SerializationTest" />
       <class name="test.CountTest" />
       <class name="test.MapTest" />
@@ -112,14 +110,22 @@
       <class name="test.EclipseTest" />
       <class name="test.ReporterApiTest" />
       <class name="test.abstractmethods.AbstractTest" />
-      <class name="test.listeners.ListenerInXmlTest" />
       <class name="test.override.OverrideTest" />
       <class name="test.priority.PriorityTest" />
-      <class name="test.listeners.EndMillisShouldNotBeZeroTest" />
       <class name="test.NestedStaticTest" />
       <class name="test.configuration.ConfigurationListenerTest" />
       <class name="test.groupinvocation.GroupSuiteTest" />
       <class name="test.StaticTest" />
+    </classes>
+  </test>
+
+  <test name="Listeners">
+    <classes>
+      <class name="test.listeners.EndMillisShouldNotBeZeroTest" />
+      <class name="test.listeners.ResultEndMillisTest" />
+      <class name="test.listeners.ListenerTest"/>
+      <class name="test.listeners.SuiteAndInvokedMethodListenerTest" />
+      <class name="test.listeners.ListenerInXmlTest" />
     </classes>
   </test>
 
