@@ -7,6 +7,7 @@ Instead, use addIncludedGroup/addExcludedGroup.
 - Failing methods that have dependees will only cause skips in the same instance. Different
 test instances will not be affected
 
+Added: Support for ServiceLoader for ITestNGListener
 Added: @Factory(dataProvider / dataProviderClass) on constructors
 Added: assertNotEquals() to Assert
 Added: assertArrayEquals() to AssertJUnit
@@ -46,6 +47,7 @@ Added: JUnit conversion: @Ignore
 Added: JUnit conversion: assertArrayEquals()
 Added: JUnit conversion: @RunWith(Parameterized.class)
 Added: Support for Hamcrest failed assertions in the compare dialog
+Fixed: JUnit conversion: super.setUp()/tearDown() were being removed when extending a class other than TestCase
 Fixed: "Run as" menu not appearing for methods that take a generic parameter.
 Fixed: The tree was incorrect if the same class is used in different <test> tags
 Fixed: When creating a new Run/Debug configuration, "Launch.label" was displayed

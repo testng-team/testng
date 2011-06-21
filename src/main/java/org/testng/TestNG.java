@@ -3,8 +3,6 @@ package org.testng;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -40,6 +38,8 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -53,6 +53,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -775,7 +776,6 @@ public class TestNG {
 
   private void initializeCommandLineSuites() {
     if (m_commandLineTestClasses != null || m_commandLineMethods != null) {
-      initializeConfiguration();
       if (null != m_commandLineMethods) {
         m_cmdlineSuites = createCommandLineSuitesForMethods(m_commandLineMethods);
       }
@@ -846,10 +846,23 @@ public class TestNG {
 
   private void initializeConfiguration() {
     ITestObjectFactory factory = m_objectFactory;
+    //
+    // Install the listeners found in ServiceLoader (or use the class
+    // loader for tests, if specified).
+    //
+    ServiceLoader<ITestNGListener> loader = m_serviceLoaderClassLoader != null
+      ? ServiceLoader.load(ITestNGListener.class, m_serviceLoaderClassLoader)
+      : ServiceLoader.load(ITestNGListener.class);
+    for (ITestNGListener l : loader) {
+      Utils.log("[TestNG]", 2, "Adding ServiceLoader listener:" + l);
+      addListener(l);
+      addServiceLoaderListener(l);
+    }
+
+    //
+    // Install the listeners found in the suites
+    //
     for (XmlSuite s : m_suites) {
-      //
-      // Install the listeners
-      //
       for (String listenerName : s.getListeners()) {
         Class<?> listenerClass = ClassHelper.forName(listenerName);
 
@@ -1811,4 +1824,36 @@ public class TestNG {
   public void setGroupByInstances(boolean b) {
     m_groupByInstances = b;
   }
+
+  /////
+  // ServiceLoader testing
+  //
+
+  private URLClassLoader m_serviceLoaderClassLoader;
+  private List<ITestNGListener> m_serviceLoaderListeners = Lists.newArrayList();
+
+  /*
+   * Used to test ServiceClassLoader
+   */
+  public void setServiceLoaderClassLoader(URLClassLoader ucl) {
+    m_serviceLoaderClassLoader = ucl;
+  }
+
+  /*
+   * Used to test ServiceClassLoader
+   */
+  private void addServiceLoaderListener(ITestNGListener l) {
+    m_serviceLoaderListeners.add(l);
+  }
+
+  /*
+   * Used to test ServiceClassLoader
+   */
+  public List<ITestNGListener> getServiceLoaderListeners() {
+    return m_serviceLoaderListeners;
+  }
+
+  //
+  // ServiceLoader testing
+  /////
 }

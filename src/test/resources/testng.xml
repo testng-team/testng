@@ -116,6 +116,7 @@
       <class name="test.configuration.ConfigurationListenerTest" />
       <class name="test.groupinvocation.GroupSuiteTest" />
       <class name="test.StaticTest" />
+      <class name="test.serviceloader.ServiceLoaderTest" />
     </classes>
   </test>
 
