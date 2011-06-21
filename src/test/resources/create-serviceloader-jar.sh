@@ -7,5 +7,6 @@ rm -rf /tmp/sl
 mkdir /tmp/sl
 cd /tmp/sl
 jar xvf ${j}/serviceloader.jar
-cp ${j}/../../../target/test-classes/test/tmp/TmpSuiteListener.class test/tmp
+echo "test.serviceloader.TmpSuiteListener" >META-INF/services/org.testng.ITestNGListener
+cp ${j}/../../../target/test-classes/test/serviceloader/TmpSuiteListener.class test/tmp
 jar cvf ${j}/serviceloader.jar .
