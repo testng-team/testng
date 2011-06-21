@@ -118,6 +118,10 @@ google_ad_channel ="5560744946";
 
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#testng-listeners">5.18 - TestNG Listeners</a><br>
 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#listeners-testng-xml">5.18.1 - Specifying listeners with testng.xml or Java</a><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#listeners-service-loader">5.18.2 - Specifying listeners with ServiceLoader</a><br>
+
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#dependency-injection">5.19 - Dependency injection</a></br>
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#native-dependency-injection">5.19.1 - Native dependency injection</a></br>
@@ -2008,7 +2012,10 @@ When you implement one of these interfaces, you can let TestNG know about it wit
   <li><a href="ant.html">Using &lt;listeners&gt; with ant.</a>
   <li>Using &lt;listeners&gt; in your <tt>testng.xml</tt> file.
   <li>Using the <tt>@Listeners</tt> annotation on any of your test classes.
+  <li>Using <tt>ServiceLoader</tt>.
 </ul>
+
+<h3><a name="listeners-testng-xml">5.18.1 - Specifying listeners with <tt>testng.xml</tt> or in Java</a></h3>
 
 Here is how you can define listeners in your <tt>testng.xml</tt> file:
 
@@ -2033,15 +2040,81 @@ public class MyTest {
 }
 </pre>
 
-The <tt>@Listeners</tt> annotation can contain any class that extends
-<tt>org.testng.ITestNGListener</tt> <b>except</b>
-<tt>IAnnotationTransformer</tt> and <tt>IAnnotationTransformer2</tt>.  The reason
-is that these listeners need to be known very early in the process so that TestNG
-can use them to rewrite your annotations, therefore you need to specify these listeners
-in your <tt>testng.xml</tt> file.
+The <tt>@Listeners</tt> annotation can contain any class that extends <tt>org.testng.ITestNGListener</tt> <b>except</b> <tt>IAnnotationTransformer</tt> and <tt>IAnnotationTransformer2</tt>.  The reason is that these listeners need to be known very early in the process so that TestNG can use them to rewrite your annotations, therefore you need to specify these listeners in your <tt>testng.xml</tt> file.
 
+<h3><a name="listeners-service-loader">5.18.2 - Specifying listeners with <tt>ServiceLoader</tt></a></h3>
 
+Finally, the JDK offers a very elegant mechanism to specify implementations of interfaces on the class path via the <tt><a href="http://download.oracle.com/javase/6/docs/api/java/util/ServiceLoader.html">ServiceLoader</a></tt> class.
 
+<p>
+With ServiceLoader, all you need to do is create a jar file that contains your listener(s) and a few configuration files, put that jar file on the classpath when you run TestNG and TestNG will automatically find them.
+<p>
+
+Here is a concrete example of how it works.
+
+<p>
+
+Let's start by creating a listener (any TestNG listener should work):
+
+<pre class="brush: java">
+package test.tmp;
+
+public class TmpSuiteListener implements ISuiteListener {
+  @Override
+  public void onFinish(ISuite suite) {
+    System.out.println("Finishing");
+  }
+
+  @Override
+  public void onStart(ISuite suite) {
+    System.out.println("Starting");
+  }
+}
+</pre>
+
+Compile this file, then create a file at the location <tt>META-INF/services/org.testng.ITestNGListener</tt>, which will name the implementation(s) you want for this interface.
+
+<p>
+
+You should end up with the following directory structure, with only two files:
+
+<pre class="brush: plain; highlight: [4, 7]">
+$ tree
+|____META-INF
+| |____services
+| | |____org.testng.ITestNGListener
+|____test
+| |____tmp
+| | |____TmpSuiteListener.class
+
+$ cat META-INF/services/org.testng.ITestNGListener
+test.tmp.TmpSuiteListener
+</pre>
+
+Create a jar of this directory:
+
+<pre class="brush: plain">
+$ jar cvf ../sl.jar .
+added manifest
+ignoring entry META-INF/
+adding: META-INF/services/(in = 0) (out= 0)(stored 0%)
+adding: META-INF/services/org.testng.ITestNGListener(in = 26) (out= 28)(deflated -7%)
+adding: test/(in = 0) (out= 0)(stored 0%)
+adding: test/tmp/(in = 0) (out= 0)(stored 0%)
+adding: test/tmp/TmpSuiteListener.class(in = 849) (out= 470)(deflated 44%)
+</pre>
+
+Next, put this jar file on your classpath when you invoke TestNG:
+
+<pre class="brush: plain">
+$ java -classpath sl.jar:testng.jar org.testng.TestNG testng-single.yaml
+Starting
+f2 11 2
+PASSED: f2("2")
+Finishing
+</pre>
+
+This mechanism allows you to apply the same set of listeners to an entire organization just be adding a jar file to the classpath, instead of asking every single developer to remember to specify these listeners in their testng.xml file. 
 
 <!-------------------------------------
   DEPENDENCY INJECTION
