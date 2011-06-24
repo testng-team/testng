@@ -18,6 +18,7 @@ Added: Tycho compatibility (Aleksander Pohl)
 Added: New <test> and <suite> flag: group-by-instances
 Added: -xmlpathinjar to specify the path of testng.xml inside a test jar file
 Added: ISuite#getAllMethods, to retrieve all the methods at the start of a suite.
+Fixed: Thread safety problem in MethodInvocationHelper (Baron Roberts)
 Fixed: Dependency failures only impact the same instance
 Fixed: Static classes could cause a StackOverFlowError
 Fixed: IConfigurationListener was not extending ITestNGListener

@@ -72,20 +72,12 @@ public class MethodInvocationHelper {
       }
     }
 
-    boolean isPublic = Modifier.isPublic(thisMethod.getModifiers());
-
-    try {
-      if (!isPublic) {
+    synchronized(thisMethod) {
+      if (! Modifier.isPublic(thisMethod.getModifiers())) {
         thisMethod.setAccessible(true);
       }
-      result = thisMethod.invoke(instance, parameters);
-    } finally {
-      if (!isPublic) {
-        thisMethod.setAccessible(false);
-      }
     }
-
-    return result;
+    return thisMethod.invoke(instance, parameters);
   }
 
   protected static Iterator<Object[]> invokeDataProvider(Object instance, Method dataProvider,
