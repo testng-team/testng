@@ -47,6 +47,7 @@ Added: JUnit conversion: @Ignore
 Added: JUnit conversion: assertArrayEquals()
 Added: JUnit conversion: @RunWith(Parameterized.class)
 Added: Support for Hamcrest failed assertions in the compare dialog
+Added: JUnit conversion: suite() methods can now either be removed, commented out or left untouched
 Fixed: JUnit conversion: super.setUp()/tearDown() were being removed when extending a class other than TestCase
 Fixed: "Run as" menu not appearing for methods that take a generic parameter.
 Fixed: The tree was incorrect if the same class is used in different <test> tags
