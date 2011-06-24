@@ -12,12 +12,13 @@ public class MultiGroupTest extends BaseTest {
 
      run();
      String[] passed = {
-         "testA", "test2"
+         "testA",
       };
      String[] failed = {
         "test1"
      };
      String[] skipped = {
+         "test2"
      };
      verifyTests("Passed", passed, getPassedTests());
      verifyTests("Failed", failed, getFailedTests());

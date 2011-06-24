@@ -1625,7 +1625,9 @@ public class Invoker implements IInvoker {
     Set<ITestResult> result = Sets.newHashSet();
     for (ITestResult r : results) {
       for (Object o : method.getInstances()) {
-        if (r.getInstance() == o) result.add(r);
+        // Keep this instance if 1) It's on a different class or 2) It's on the same class
+        // and on the same instance
+        if (r.getTestClass() != method.getTestClass() || r.getInstance() == o) result.add(r);
       }
     }
     return result;

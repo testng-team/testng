@@ -16,7 +16,23 @@ public class ClassDependsOnGroups extends BaseTest {
         "test0"
      };
      String[] skipped = {
-         "test2"
+         "test1", "test2"
+     };
+     verifyTests("Failed", failed, getFailedTests());
+     verifyTests("Skipped", skipped, getSkippedTests());
+  }
+
+  @Test
+  public void verifyGroupsAcrossClasses() {
+     addClass(test.dependent.C1.class.getName());
+     addClass(test.dependent.C2.class.getName());
+
+     run();
+     String[] failed = {
+        "failingTest"
+     };
+     String[] skipped = {
+         "shouldBeSkipped"
      };
      verifyTests("Failed", failed, getFailedTests());
      verifyTests("Skipped", skipped, getSkippedTests());
