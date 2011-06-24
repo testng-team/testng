@@ -1,11 +1,15 @@
 package org.testng.internal;
 
 import org.testng.IConfigurable;
+import org.testng.IExecutionListener;
 import org.testng.IHookable;
 import org.testng.ITestObjectFactory;
+import org.testng.collections.Lists;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
+
+import java.util.List;
 
 public class Configuration implements IConfiguration {
 
@@ -16,6 +20,8 @@ public class Configuration implements IConfiguration {
   IHookable m_hookable;
 
   IConfigurable m_configurable;
+
+  List<IExecutionListener> m_executionListeners = Lists.newArrayList();
 
   public Configuration() {
     init(new JDK15AnnotationFinder(new DefaultAnnotationTransformer()));
@@ -62,5 +68,13 @@ public class Configuration implements IConfiguration {
   @Override
   public void setConfigurable(IConfigurable c) {
     m_configurable = c;
+  }
+
+  public List<IExecutionListener> getExecutionListeners() {
+    return m_executionListeners;
+  }
+
+  public void addExecutionListener(IExecutionListener l) {
+    m_executionListeners.add(l);
   }
 }

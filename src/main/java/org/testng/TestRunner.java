@@ -342,6 +342,11 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
       if (listener instanceof IHookable) {
         m_configuration.setHookable((IHookable) listener);
       }
+      if (listener instanceof IExecutionListener) {
+        IExecutionListener iel = (IExecutionListener) listener;
+        iel.onExecutionStart();
+        m_configuration.addExecutionListener(iel);
+      }
     }
   }
 

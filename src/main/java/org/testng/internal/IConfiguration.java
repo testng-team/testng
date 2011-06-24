@@ -1,10 +1,12 @@
 package org.testng.internal;
 
-import org.testng.IAnnotationTransformer;
 import org.testng.IConfigurable;
+import org.testng.IExecutionListener;
 import org.testng.IHookable;
 import org.testng.ITestObjectFactory;
 import org.testng.internal.annotations.IAnnotationFinder;
+
+import java.util.List;
 
 public interface IConfiguration {
   IAnnotationFinder getAnnotationFinder();
@@ -18,4 +20,6 @@ public interface IConfiguration {
   IConfigurable getConfigurable();
   void setConfigurable(IConfigurable c);
 
+  List<IExecutionListener> getExecutionListeners();
+  void addExecutionListener(IExecutionListener l);
 }

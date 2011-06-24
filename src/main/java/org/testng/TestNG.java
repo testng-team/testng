@@ -44,6 +44,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -182,6 +184,8 @@ public class TestNG {
 
   protected long m_end;
   protected long m_start;
+
+  private List<IExecutionListener> m_executionListeners = Lists.newArrayList();
 
   /**
    * Default constructor. Setting also usage of default listeners/reporters.
@@ -699,6 +703,9 @@ public class TestNG {
       if (listener instanceof IConfigurable) {
         m_configurable = (IConfigurable) listener;
       }
+      if (listener instanceof IExecutionListener) {
+        addExecutionListener((IExecutionListener) listener);
+      }
     }
   }
 
@@ -973,6 +980,8 @@ public class TestNG {
 
     List<ISuite> suiteRunners = null;
 
+    runExecutionListeners(true /* start */);
+
     m_start = System.currentTimeMillis();
 
     //
@@ -1001,6 +1010,7 @@ public class TestNG {
     }
 
     m_end = System.currentTimeMillis();
+    runExecutionListeners(false /* finish */);
 
     if(null != suiteRunners) {
       generateReports(suiteRunners);
@@ -1013,6 +1023,20 @@ public class TestNG {
         usage();
       }
     }
+  }
+
+  private void runExecutionListeners(boolean start) {
+    for (List<IExecutionListener> listeners
+        : Arrays.asList(m_executionListeners, m_configuration.getExecutionListeners())) {
+      for (IExecutionListener l : listeners) {
+        if (start) l.onExecutionStart();
+        else l.onExecutionFinish();
+      }
+    }
+  }
+
+  public void addExecutionListener(IExecutionListener l) {
+    m_executionListeners.add(l);
   }
 
   private static void usage() {
