@@ -53,7 +53,6 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -850,14 +849,7 @@ public class TestNG {
     // Install the listeners found in ServiceLoader (or use the class
     // loader for tests, if specified).
     //
-    ServiceLoader<ITestNGListener> loader = m_serviceLoaderClassLoader != null
-      ? ServiceLoader.load(ITestNGListener.class, m_serviceLoaderClassLoader)
-      : ServiceLoader.load(ITestNGListener.class);
-    for (ITestNGListener l : loader) {
-      Utils.log("[TestNG]", 2, "Adding ServiceLoader listener:" + l);
-      addListener(l);
-      addServiceLoaderListener(l);
-    }
+    addServiceLoaderListeners();
 
     //
     // Install the listeners found in the suites
@@ -899,6 +891,43 @@ public class TestNG {
     m_configuration.setHookable(m_hookable);
     m_configuration.setConfigurable(m_configurable);
     m_configuration.setObjectFactory(factory);
+  }
+
+  /**
+   * Using reflection to remain Java 5 compliant.
+   */
+  private void addServiceLoaderListeners() {
+    try {
+      Class c = Class.forName("java.util.ServiceLoader");
+      List<Object> parameters = Lists.newArrayList();
+      parameters.add(ITestNGListener.class);
+      Method loadMethod;
+      if (m_serviceLoaderClassLoader != null) {
+        parameters.add(m_serviceLoaderClassLoader);
+        loadMethod = c.getMethod("load", Class.class, ClassLoader.class);
+      } else {
+        loadMethod = c.getMethod("load");
+      }
+      Iterable<ITestNGListener> loader =
+          (Iterable<ITestNGListener>) loadMethod.invoke(c, parameters.toArray());
+//      Object loader = c.
+//      ServiceLoader<ITestNGListener> loader = m_serviceLoaderClassLoader != null
+//      ? ServiceLoader.load(ITestNGListener.class, m_serviceLoaderClassLoader)
+//          : ServiceLoader.load(ITestNGListener.class);
+      for (ITestNGListener l : loader) {
+        Utils.log("[TestNG]", 2, "Adding ServiceLoader listener:" + l);
+        addListener(l);
+        addServiceLoaderListener(l);
+      }
+    } catch (ClassNotFoundException ex) {
+      // Ignore
+    } catch(NoSuchMethodException ex) {
+      // Ignore
+    } catch(IllegalAccessException ex) {
+      // Ignore
+    } catch(InvocationTargetException ex) {
+      // Ignore
+    }
   }
 
   /**
