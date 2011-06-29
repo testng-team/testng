@@ -1,6 +1,5 @@
 package org.testng.xml;
 
-import org.testng.IObjectFactory;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNG;
 import org.testng.collections.Lists;
@@ -919,5 +918,9 @@ public class XmlSuite implements Serializable, Cloneable {
 
   public void setGroupByInstances(boolean f) {
     m_groupByInstances = f;
+  }
+
+  public void addListener(String listener) {
+    m_listeners.add(listener);
   }
 }
