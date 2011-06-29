@@ -29,6 +29,8 @@ public class XMLReporterConfig {
   public static final String TAG_PARAM_VALUE = "value";
   public static final String TAG_REPORTER_OUTPUT = "reporter-output";
   public static final String TAG_LINE = "line";
+  public static final String TAG_ATTRIBUTES = "attributes";
+  public static final String TAG_ATTRIBUTE = "attribute";
 
   public static final String ATTR_URL = "url";
   public static final String ATTR_NAME = "name";
@@ -158,6 +160,12 @@ public class XMLReporterConfig {
   private boolean generateDependsOnGroups = true;
 
   /**
+   * Indicates whether {@link ITestResult} attributes should be generated for
+   * each <code>test-method</code> element
+   */
+  private boolean generateTestResultAttributes = false;
+
+  /**
    * The output format for timestamps
    */
   private static String timestampFormat = FMT_DEFAULT;
@@ -224,5 +232,13 @@ public class XMLReporterConfig {
 
   public void setGenerateDependsOnGroups(boolean generateDependsOnGroups) {
     this.generateDependsOnGroups = generateDependsOnGroups;
+  }
+
+  public void setGenerateTestResultAttributes(boolean generateTestResultAttributes) {
+    this.generateTestResultAttributes = generateTestResultAttributes;
+  }
+
+  public boolean isGenerateTestResultAttributes() {
+    return generateTestResultAttributes;
   }
 }

@@ -134,6 +134,9 @@ public class XMLSuiteResultWriter {
     xmlBuffer.push(XMLReporterConfig.TAG_TEST_METHOD, attribs);
     addTestMethodParams(xmlBuffer, testResult);
     addTestResultException(xmlBuffer, testResult);
+    if (config.isGenerateTestResultAttributes()) {
+      addTestResultAttributes(xmlBuffer, testResult);
+    }
     xmlBuffer.pop();
   }
 
@@ -261,6 +264,30 @@ public class XMLSuiteResultWriter {
         xmlBuffer.pop();
       }
 
+      xmlBuffer.pop();
+    }
+  }
+
+  private void addTestResultAttributes(XMLStringBuffer xmlBuffer, ITestResult testResult) {
+    if (testResult.getAttributeNames() != null && testResult.getAttributeNames().size() > 0) {
+      xmlBuffer.push(XMLReporterConfig.TAG_ATTRIBUTES);
+      for (String attrName: testResult.getAttributeNames()) {
+        if (attrName == null) {
+          continue;
+        }
+        Object attrValue = testResult.getAttribute(attrName);
+
+        Properties attributeAttrs = new Properties();
+        attributeAttrs.setProperty(XMLReporterConfig.ATTR_NAME, attrName);
+        if (attrValue == null) {
+          attributeAttrs.setProperty(XMLReporterConfig.ATTR_IS_NULL, "true");
+          xmlBuffer.addEmptyElement(XMLReporterConfig.TAG_ATTRIBUTE, attributeAttrs);
+        } else {
+          xmlBuffer.push(XMLReporterConfig.TAG_ATTRIBUTE, attributeAttrs);
+          xmlBuffer.addCDATA(attrValue.toString());
+          xmlBuffer.pop();
+        }
+      }
       xmlBuffer.pop();
     }
   }
