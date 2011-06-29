@@ -407,6 +407,7 @@
   <!-- Code coverage                                                        -->
   <!-- ==================================================================== -->
 
+<!--
   <property name="cobertura.dir" value="../cobertura-1.9.4.1" />
 
   <path id="cobertura.classpath">
@@ -429,5 +430,6 @@
   <target name="coverage">
     <cobertura-report srcdir="${src.dir}" destdir="target/coverage-report"/>
   </target>
+-->
 
 </project>

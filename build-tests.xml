@@ -51,6 +51,7 @@ TESTNG.REPORT.DIR=${testng.report.dir}
              classpath="${build.dir}"/>
   </target>
 
+<!--
   <property name="cobertura.dir" value="../cobertura-1.9.4.1" />
 
   <path id="cobertura.classpath">
@@ -59,14 +60,17 @@ TESTNG.REPORT.DIR=${testng.report.dir}
           <include name="lib/**/*.jar" />
       </fileset>
   </path>
+-->
 
-	<!-- ==================================================================== -->
+  <!-- ==================================================================== -->
   <!-- Run                                                             -->
   <!-- ==================================================================== -->
 
   <path id="run.cp">
+<!--
   	<path location="target/instrumented-classes" />
   	<path refid="cobertura.classpath" />
+-->
     <path refid="compile.cp"/>
     <pathelement location="${test.build.dir}"/>
   </path>
