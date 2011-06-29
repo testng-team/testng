@@ -258,4 +258,13 @@ public class XMLReporter implements IReporter {
   public boolean isGenerateDependsOnGroups() {
     return config.isGenerateDependsOnGroups();
   }
+
+  public void setGenerateTestResultAttributes(boolean generateTestResultAttributes) {
+    config.setGenerateTestResultAttributes(generateTestResultAttributes);
+  }
+
+  public boolean isGenerateTestResultAttributes() {
+    return config.isGenerateTestResultAttributes();
+  }
+
 }

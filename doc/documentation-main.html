@@ -2600,6 +2600,15 @@ TestNG offers an XML reporter capturing TestNG specific information that is not 
     <td>false</td>
   </tr>
   <tr>
+    <td>generateTestResultAttributes</td>
+    <td>
+      A boolean indicating if an <tt>&lt;attributes&gt;</tt> tag should be generated for each <tt>&lt;test-method&gt;</tt> element, containing the test result
+      attributes (See <tt>ITestResult.setAttribute()</tt> about setting test result attributes). Each attribute <tt>toString()</tt> representation will be
+      written in a <tt>&lt;attribute name="[attribute name]"&gt;</tt> tag.
+    </td>
+    <td>false</td>
+  </tr>
+  <tr>
     <td>stackTraceOutputMethod</td>
     <td>Specifies the type of stack trace that is to be generated for exceptions and has the following values:
          <br>
