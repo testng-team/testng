@@ -98,7 +98,7 @@
           description="Compiles sources">
     <echo message="                                 -- Compiling sources --" />
 
-  	<echo>Src:${src.dir}</echo>
+    <echo>Src:${src.dir}</echo>
     <javac classpathref="compile2.cp"
            verbose="false"
            target="1.5"
@@ -152,15 +152,15 @@
       <doclet name="com.google.doclava.Doclava">
         <param name="-stubs" value="build/stubs" />
         <param name="-hdf"/>
-	<param name="project.name" value="TestNG" />
+        <param name="project.name" value="TestNG" />
         <!-- versioning -->
         <param name="-since"/>
-	<param name="doclava/previous.xml"/>
-	<param name="v1" />
+        <param name="doclava/previous.xml"/>
+        <param name="v1" />
         <param name="-apiversion" value="v2"/>
         <!-- federation -->
         <param name="-federate" />
-	<param name="JDK"/>
+        <param name="JDK"/>
         <param name="http://download.oracle.com/javase/6/docs/api/index.html?"/>
         <param name="-federationxml"/><param name="JDK"/>
         <param name="http://doclava.googlecode.com/svn/static/api/openjdk-6.xml"/>
@@ -388,7 +388,7 @@
   <!-- Ivy                                                                  -->
   <!-- ==================================================================== -->
 
-	<target name="retrieve-dependencies" description="Retrieve dependencies with ivy">
+  <target name="retrieve-dependencies" description="Retrieve dependencies with ivy">
     <ivy:retrieve log="quiet" />
   </target>
 
@@ -407,27 +407,27 @@
   <!-- Code coverage                                                        -->
   <!-- ==================================================================== -->
 
-	<property name="cobertura.dir" value="../cobertura-1.9.4.1" />
+  <property name="cobertura.dir" value="../cobertura-1.9.4.1" />
 
-	<path id="cobertura.classpath">
-	    <fileset dir="${cobertura.dir}">
-	        <include name="cobertura.jar" />
-	        <include name="lib/**/*.jar" />
-	    </fileset>
-	</path>
+  <path id="cobertura.classpath">
+      <fileset dir="${cobertura.dir}">
+          <include name="cobertura.jar" />
+          <include name="lib/**/*.jar" />
+      </fileset>
+  </path>
 
-	<taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
+  <taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
 
   <target name="coverage:create">
-  	<cobertura-instrument classpath="cobertura-1.9.4.1/lib/*" todir="target/instrumented-classes">
-  		<fileset dir="${build.dir}">
-  		  <include name="**/*.class" />
-	    </fileset>
-	  </cobertura-instrument>
-	</target>
+    <cobertura-instrument classpath="cobertura-1.9.4.1/lib/*" todir="target/instrumented-classes">
+      <fileset dir="${build.dir}">
+        <include name="**/*.class" />
+      </fileset>
+    </cobertura-instrument>
+  </target>
 
-	<target name="coverage">
-	  <cobertura-report srcdir="${src.dir}" destdir="target/coverage-report"/>
-	</target>
+  <target name="coverage">
+    <cobertura-report srcdir="${src.dir}" destdir="target/coverage-report"/>
+  </target>
 
 </project>
