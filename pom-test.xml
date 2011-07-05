@@ -67,7 +67,7 @@
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
-      <version>6.1-SNAPSHOT</version>
+      <version>6.1.1-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
    </dependencies>
