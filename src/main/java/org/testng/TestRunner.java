@@ -1604,6 +1604,11 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
   }
 
   @Override
+  public Set<ITestResult> getSkippedTests(ITestNGMethod tm) {
+    return m_skippedTests.getResults(tm);
+  }
+
+  @Override
   public void addSkippedTest(ITestNGMethod tm, ITestResult tr) {
     m_skippedTests.addResult(tr, tm);
   }

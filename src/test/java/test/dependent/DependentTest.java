@@ -87,6 +87,23 @@ public class DependentTest extends BaseTest {
     run();
   }
 
+  @Test
+  public void multipleSkips() {
+    addClass(MultipleDependentSampleTest.class.getName());
+    run();
+    String[] passed = {
+        "init",
+    };
+    String[] failed = {
+        "fail",
+    };
+    String[] skipped = {
+        "skip1", "skip2"
+    };
+    verifyTests("Passed", passed, getPassedTests());
+    verifyTests("Failed", failed, getFailedTests());
+    verifyTests("Skipped", skipped, getSkippedTests());
+  }
 } // DependentTest
 
 

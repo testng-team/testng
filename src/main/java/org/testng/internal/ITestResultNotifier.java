@@ -21,6 +21,8 @@ public interface ITestResultNotifier {
 
   Set<ITestResult> getFailedTests(ITestNGMethod tm);
 
+  Set<ITestResult> getSkippedTests(ITestNGMethod tm);
+
   void addPassedTest(ITestNGMethod tm, ITestResult tr);
 
   void addSkippedTest(ITestNGMethod tm, ITestResult tr);

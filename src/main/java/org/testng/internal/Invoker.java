@@ -1627,7 +1627,9 @@ public class Invoker implements IInvoker {
       for (Object o : method.getInstances()) {
         // Keep this instance if 1) It's on a different class or 2) It's on the same class
         // and on the same instance
-        if (r.getTestClass() != method.getTestClass() || r.getInstance() == o) result.add(r);
+        Object instance = r.getInstance() != null
+            ? r.getInstance() : r.getMethod().getInstances()[0];
+        if (r.getTestClass() != method.getTestClass() || instance == o) result.add(r);
       }
     }
     return result;
@@ -1640,8 +1642,10 @@ public class Invoker implements IInvoker {
     // Make sure the method has been run successfully
     for (ITestNGMethod method : methods) {
       Set<ITestResult> results = keepSameInstances(testMethod, m_notifier.getPassedTests(method));
-      Set<ITestResult> failedresults = keepSameInstances(testMethod,
-          m_notifier.getFailedTests(method));
+      Set<ITestResult> failedAndSkippedMethods = Sets.newHashSet();
+      failedAndSkippedMethods.addAll(m_notifier.getFailedTests(method));
+      failedAndSkippedMethods.addAll(m_notifier.getSkippedTests(method));
+      Set<ITestResult> failedresults = keepSameInstances(testMethod, failedAndSkippedMethods);
 
       // If failed results were returned on the same instance, then these tests didn't pass
       if (failedresults != null && failedresults.size() > 0) {
