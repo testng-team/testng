@@ -9,7 +9,7 @@ public class DependentTest extends BaseTest {
 
   @Test
   public void simpleSkip() {
-    addClass("test.dependent.SampleDependent1");
+    addClass(SampleDependent1.class.getName());
     run();
     String[] passed = {
     };
@@ -26,7 +26,7 @@ public class DependentTest extends BaseTest {
 
   @Test
   public void dependentMethods() {
-    addClass("test.dependent.SampleDependentMethods");
+    addClass(SampleDependentMethods.class.getName());
     run();
     String[] passed = {
         "oneA", "oneB", "secondA", "thirdA", "canBeRunAnytime"
@@ -42,7 +42,7 @@ public class DependentTest extends BaseTest {
 
   @Test
   public void dependentMethodsWithSkip() {
-    addClass("test.dependent.SampleDependentMethods4");
+    addClass(SampleDependentMethods4.class.getName());
     run();
     String[] passed = {
         "step1",
@@ -61,7 +61,7 @@ public class DependentTest extends BaseTest {
   @Test
   @ExpectedExceptions({ org.testng.TestNGException.class })
   public void dependentMethodsWithNonExistentMethod() {
-    addClass("test.dependent.SampleDependentMethods5");
+    addClass(SampleDependentMethods5.class.getName());
     run();
     String[] passed = {
         "step1", "step2"
@@ -77,7 +77,7 @@ public class DependentTest extends BaseTest {
 
   @Test(expectedExceptions = org.testng.TestNGException.class )
   public void dependentMethodsWithCycle() {
-    addClass("test.dependent.SampleDependentMethods6");
+    addClass(SampleDependentMethods6.class.getName());
     run();
   }
 
