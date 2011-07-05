@@ -1,6 +1,7 @@
 Current
 
 Fixed: https://github.com/cbeust/testng/issues/56 testng-results.xml was reporting the instance name instead of the method name
+Fixed: NPE when using preserve-order and factories.
 
 ===========================================================================
 

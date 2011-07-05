@@ -833,6 +833,12 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
       for (ITestNGMethod m : ll) {
         String declaredClass = m.getTestClass().getName();
         List<ITestNGMethod> l = classes.get(declaredClass);
+        // The list might be null if the class came from somewhere else than XML,
+        // e.g. a factory
+        if (l == null) {
+          l = Lists.newArrayList();
+          classes.put(declaredClass, l);
+        }
         l.add(m);
       }
     }
