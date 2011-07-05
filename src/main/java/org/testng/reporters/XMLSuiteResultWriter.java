@@ -159,7 +159,7 @@ public class XMLSuiteResultWriter {
     if (!testResult.getMethod().isTest()) {
       attributes.setProperty(XMLReporterConfig.ATTR_IS_CONFIG, "true");
     }
-    attributes.setProperty(XMLReporterConfig.ATTR_NAME, testResult.getName());
+    attributes.setProperty(XMLReporterConfig.ATTR_NAME, testResult.getMethod().getMethodName());
     String testInstanceName = testResult.getTestName();
     if (null != testInstanceName) {
       attributes.setProperty(XMLReporterConfig.ATTR_TEST_INSTANCE_NAME, testInstanceName);

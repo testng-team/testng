@@ -1,5 +1,12 @@
 Current
 
+Fixed: https://github.com/cbeust/testng/issues/56 testng-results.xml was reporting the instance name instead of the method name
+
+===========================================================================
+
+6.1
+6/30/2011
+
 Possible backward incompatible changes:
 
 - Don't mutate the value returned by XmlTest#getIncludedGroups and XmlTest#getExcludedGroups.
