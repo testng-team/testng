@@ -1,21 +1,23 @@
 package test.guice;
 
-import com.google.inject.Inject;
-
-import org.testng.annotations.Guice;
+import org.testng.TestNG;
 import org.testng.annotations.Test;
+
+import junit.framework.Assert;
 
 import test.SimpleBaseTest;
 
-@Guice(modules = GuiceExampleModule.class)
 public class GuiceTest extends SimpleBaseTest {
 
-  @Inject
-  ISingleton m_singleton;
-
   @Test
-  public void singletonShouldWork() {
-    m_singleton.doSomething();
-  }
+  public void guiceTest() {
+    TestNG tng = create(new Class[] { Guice1Test.class, Guice2Test.class});
+    Guice1Test.m_object = null;
+    Guice2Test.m_object = null;
+    tng.run();
 
+    Assert.assertNotNull(Guice1Test.m_object);
+    Assert.assertNotNull(Guice2Test.m_object);
+    Assert.assertEquals(Guice1Test.m_object, Guice2Test.m_object);
+  }
 }

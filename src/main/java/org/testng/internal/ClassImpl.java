@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import com.google.inject.Injector;
 import com.google.inject.Module;
 
 import org.testng.IClass;
@@ -136,14 +137,27 @@ public class ClassImpl implements IClass {
       moduleInstances.add(module);
     }
 
-    return com.google.inject.Guice.createInjector(moduleInstances).getInstance(m_class);
+    // Reuse the previous injector, if any
+    Injector injector = m_testContext.getInjector(moduleInstances);
+    if (injector == null) {
+      injector = com.google.inject.Guice.createInjector(moduleInstances);
+      m_testContext.addInjector(moduleInstances, injector);
+    }
+    return injector.getInstance(m_class);
   }
 
   private Module[] getModules(Guice guice, Class<?> testClass) {
     List<Module> result = Lists.newArrayList();
     for (Class<? extends Module> moduleClass : guice.modules()) {
       try {
-        result.add(moduleClass.newInstance());
+        List<Module> modules = m_testContext.getGuiceModules(moduleClass);
+        if (modules != null && modules.size() > 0) {
+          result.addAll(modules);
+        } else {
+          Module instance = moduleClass.newInstance();
+          result.add(instance);
+          m_testContext.addGuiceModule(moduleClass, instance);
+        }
       } catch (InstantiationException e) {
         throw new TestNGException(e);
       } catch (IllegalAccessException e) {

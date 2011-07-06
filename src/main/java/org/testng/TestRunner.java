@@ -1,5 +1,8 @@
 package org.testng;
 
+import com.google.inject.Injector;
+import com.google.inject.Module;
+
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.Attributes;
@@ -57,7 +60,9 @@ import java.util.regex.Pattern;
  *
  * @author Cedric Beust, Apr 26, 2004
  */
-public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWorkerFactory<ITestNGMethod> {
+public class TestRunner
+    implements ITestContext, ITestResultNotifier, IThreadWorkerFactory<ITestNGMethod>
+{
   /* generated */
   private static final long serialVersionUID = 4247820024988306670L;
   private ISuite m_suite;
@@ -1795,6 +1800,36 @@ public class TestRunner implements ITestContext, ITestResultNotifier, IThreadWor
   @Override
   public Object removeAttribute(String name) {
     return m_attributes.removeAttribute(name);
+  }
+
+  private Map<Class<? extends Module>, List<Module>> m_guiceModules = Maps.newHashMap();
+
+  @Override
+  public List<Module> getGuiceModules(Class<? extends Module> cls) {
+    List<Module> result = m_guiceModules.get(cls);
+    return result;
+  }
+
+  @Override
+  public void addGuiceModule(Class<? extends Module> cls, Module module) {
+    List<Module> l = m_guiceModules.get(cls);
+    if (l == null) {
+      l = Lists.newArrayList();
+      m_guiceModules.put(cls,  l);
+    }
+    l.add(module);
+  }
+
+  private Map<List<Module>, Injector> m_injectors = Maps.newHashMap();
+
+  @Override
+  public Injector getInjector(List<Module> moduleInstances) {
+    return m_injectors .get(moduleInstances);
+  }
+
+  @Override
+  public void addInjector(List<Module> moduleInstances, Injector injector) {
+    m_injectors.put(moduleInstances, injector);
   }
 
 } // TestRunner

@@ -2,6 +2,8 @@ Current
 
 Added: xmlpathinjar to the TestNG ant task
 Added: TestNG can now invoke package protected constructors
+Added: Injectors created by the @Guice annotation are now shared at the <test> level
+Fixed: https://github.com/cbeust/testng/issues/57 Allow usage of package protected constructor of test classes
 
 ===========================================================================
 
