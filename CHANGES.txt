@@ -1,6 +1,7 @@
 Current
 
 Added: xmlpathinjar to the TestNG ant task
+Added: TestNG can now invoke package protected constructors
 
 ===========================================================================
 

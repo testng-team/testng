@@ -101,7 +101,6 @@
       <class name="test.attributes.AttributeTest"/>
       <class name="test.verify.VerifyTest"/>
       <class name="test.abstractconfmethod.C" />
-      <class name="test.issue78.NonPublicClassTest"/>
       <class name="test.preserveorder.PreserveOrderTest" />
       <class name="test.SerializationTest" />
       <class name="test.CountTest" />

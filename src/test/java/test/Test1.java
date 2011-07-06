@@ -10,6 +10,12 @@ import java.util.logging.Logger;
 
 public class Test1 extends BaseTest {
 
+  /**
+   * This constructor is package protected on purpose, to test that
+   * TestNG can still instantiate the class.
+   */
+  Test1() {}
+
   @Test(groups = { "current" })
   public void includedGroups() {
     addClass("test.sample.Sample1");

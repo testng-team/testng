@@ -25,6 +25,7 @@ public class ObjectFactoryImpl implements IObjectFactory {
   @Override
   public Object newInstance(Constructor constructor, Object... params) {
     try {
+      constructor.setAccessible(true);
       return constructor.newInstance(params);
     }
     catch (IllegalAccessException ex) {
