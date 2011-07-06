@@ -392,6 +392,8 @@ public class TestNGAntTask extends Task {
 
   private Integer m_suiteThreadPoolSize;
 
+  private String m_xmlPathInJar;
+
   public void setVerbose(Integer verbose) {
     m_verbose= verbose;
   }
@@ -629,6 +631,14 @@ public class TestNGAntTask extends Task {
       argv.add(m_suiteThreadPoolSize.toString());
     }
 
+    if (m_xmlPathInJar != null) {
+      argv.add(CommandLineArgs.XML_PATH_IN_JAR);
+      argv.add(m_xmlPathInJar);
+    }
+
+    //
+    // Done with command line options, now add the XML files
+    //
     for (String file : getSuiteFileNames()) {
       argv.add(file);
     }
@@ -1103,6 +1113,9 @@ public class TestNGAntTask extends Task {
     m_skipFailedInvocationCounts = Boolean.valueOf(skip);
   }
 
+  public void setXmlPathInJar(String path) {
+    m_xmlPathInJar = path;
+  }
   /**
    * Add the referenced property set as system properties for the TestNG JVM.
    *

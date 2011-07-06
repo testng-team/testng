@@ -1,5 +1,12 @@
 Current
 
+Added: xmlpathinjar to the TestNG ant task
+
+===========================================================================
+
+6.1.1
+7/5/2011
+
 Fixed: https://github.com/cbeust/testng/issues/56 testng-results.xml was reporting the instance name instead of the method name
 Fixed: NPE when using preserve-order and factories.
 Fixed: Depending on a skipped method would not cause a method to be skipped
