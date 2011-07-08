@@ -11,7 +11,9 @@ import org.testng.internal.Utils;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -57,20 +59,33 @@ public class XMLSuiteResultWriter {
   private void writeAllToBuffer(XMLStringBuffer xmlBuffer, ISuiteResult suiteResult) {
     xmlBuffer.push(XMLReporterConfig.TAG_TEST, getSuiteResultAttributes(suiteResult));
     Set<ITestResult> testResults = Sets.newHashSet();
-    addAllTestResults(testResults, suiteResult.getTestContext().getPassedTests());
-    addAllTestResults(testResults, suiteResult.getTestContext().getFailedTests());
-    addAllTestResults(testResults, suiteResult.getTestContext().getSkippedTests());
-    addAllTestResults(testResults, suiteResult.getTestContext().getPassedConfigurations());
-    addAllTestResults(testResults, suiteResult.getTestContext().getSkippedConfigurations());
-    addAllTestResults(testResults, suiteResult.getTestContext().getFailedConfigurations());
-    addAllTestResults(testResults, suiteResult.getTestContext().getFailedButWithinSuccessPercentageTests());
+    ITestContext testContext = suiteResult.getTestContext();
+    addAllTestResults(testResults, testContext.getPassedTests());
+    addAllTestResults(testResults, testContext.getFailedTests());
+    addAllTestResults(testResults, testContext.getSkippedTests());
+    addAllTestResults(testResults, testContext.getPassedConfigurations());
+    addAllTestResults(testResults, testContext.getSkippedConfigurations());
+    addAllTestResults(testResults, testContext.getFailedConfigurations());
+    addAllTestResults(testResults, testContext.getFailedButWithinSuccessPercentageTests());
     addTestResults(xmlBuffer, testResults);
     xmlBuffer.pop();
   }
 
+  @SuppressWarnings("unchecked")
   private void addAllTestResults(Set<ITestResult> testResults, IResultMap resultMap) {
     if (resultMap != null) {
-      testResults.addAll(resultMap.getAllResults());
+      // Sort the results chronologically before adding them
+      List<ITestResult> allResults = new ArrayList<ITestResult>();
+      allResults.addAll(resultMap.getAllResults());
+
+      Collections.sort(new ArrayList(allResults), new Comparator<ITestResult>() {
+        @Override
+        public int compare(ITestResult o1, ITestResult o2) {
+          return (int) (o1.getStartMillis() - o2.getStartMillis());
+        }
+      });
+
+      testResults.addAll(allResults);
     }
   }
 
