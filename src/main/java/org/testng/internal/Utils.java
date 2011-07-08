@@ -87,7 +87,7 @@ public final class Utils {
 
   public static String[] parseMultiLine(String line) {
     List<String> vResult = Lists.newArrayList();
-    if ((null != line) && !"".equals(line.trim())) {
+    if (isStringNotBlank(line)) {
       StringTokenizer st = new StringTokenizer(line, " ");
       while (st.hasMoreTokens()) {
         vResult.add(st.nextToken());
@@ -473,8 +473,24 @@ public final class Utils {
     }
   }
 
+  public static String defaultIfStringEmpty(String s, String defaultValue) {
+    return isStringEmpty(s) ? defaultValue : s;
+  }
+
+  public static boolean isStringBlank(String s) {
+    return s == null || "".equals(s.trim());
+  }
+
   public static boolean isStringEmpty(String s) {
     return s == null || "".equals(s);
+  }
+
+  public static boolean isStringNotBlank(String s) {
+    return !isStringBlank(s);
+  }
+
+  public static boolean isStringNotEmpty(String s) {
+    return !isStringEmpty(s);
   }
 
   public static String[] stackTrace(Throwable t, boolean tohtml) {

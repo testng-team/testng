@@ -1,5 +1,9 @@
 package org.testng;
 
+import static org.testng.internal.Utils.defaultIfStringEmpty;
+import static org.testng.internal.Utils.isStringEmpty;
+import static org.testng.internal.Utils.isStringNotEmpty;
+
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
@@ -223,7 +227,7 @@ public class TestNG {
    * @param outputdir The directory.
    */
   public void setOutputDirectory(final String outputdir) {
-    if ((null != outputdir) && !"".equals(outputdir)) {
+    if (isStringNotEmpty(outputdir)) {
       m_outputDir = outputdir;
     }
   }
@@ -254,7 +258,7 @@ public class TestNG {
    * default to TestNG.JDK_ANNOTATION_TYPE.
    */
   public void setAnnotations(String annotationType) {
-    if(null != annotationType && !"".equals(annotationType)) {
+    if(isStringNotEmpty(annotationType)) {
       setAnnotations(AnnotationTypeEnum.valueOf(annotationType));
     }
   }
@@ -344,7 +348,7 @@ public class TestNG {
           + suites + " instead");
       return;
     }
-    if ((null == m_jarPath) || "".equals(m_jarPath)) {
+    if (isStringEmpty(m_jarPath)) {
       return;
     }
 
@@ -552,14 +556,8 @@ public class TestNG {
       String suiteName = getDefaultSuiteName();
       String testName = getDefaultTestName();
       if (test != null) {
-        final String candidateSuiteName = test.getSuiteName();
-        if (candidateSuiteName != null && !"".equals(candidateSuiteName)) {
-          suiteName = candidateSuiteName;
-        }
-        final String candidateTestName = test.getTestName();
-        if (candidateTestName != null && !"".equals(candidateTestName)) {
-            testName = candidateTestName;
-        }
+        suiteName = defaultIfStringEmpty(test.getSuiteName(), suiteName);
+        testName = defaultIfStringEmpty(test.getTestName(), testName);
       }
       XmlSuite xmlSuite = suites.get(suiteName);
       if (xmlSuite == null) {

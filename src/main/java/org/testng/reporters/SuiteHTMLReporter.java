@@ -1,5 +1,7 @@
 package org.testng.reporters;
 
+import static org.testng.internal.Utils.isStringNotEmpty;
+
 import org.testng.IInvokedMethod;
 import org.testng.IReporter;
 import org.testng.ISuite;
@@ -168,8 +170,9 @@ public class SuiteHTMLReporter implements IReporter {
         if (m != null) {
           sb2.append("<tr><td>")
           .append(m.getDeclaringClass().getName() + "." + m.getName());
-          if(null != method.getDescription() && !"".equals(method.getDescription())) {
-            sb2.append("<br/>").append(SP2).append("<i>").append(method.getDescription()).append("</i>");
+          String description = method.getDescription();
+          if(isStringNotEmpty(description)) {
+            sb2.append("<br/>").append(SP2).append("<i>").append(description).append("</i>");
           }
           sb2.append("</td></tr>\n");
         }
