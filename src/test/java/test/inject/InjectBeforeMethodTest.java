@@ -6,6 +6,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.lang.reflect.Method;
+
 public class InjectBeforeMethodTest {
   private int m_beforeIndex = 0;
   private int m_afterIndex = 0;
@@ -18,6 +20,14 @@ public class InjectBeforeMethodTest {
   public void before(Object[] parameters) {
     Assert.assertEquals(DATA[m_beforeIndex], parameters);
     m_beforeIndex++;
+  }
+
+  @BeforeMethod
+  public void before2(Object[] parameters, Method m) {
+  }
+
+  @BeforeMethod
+  public void before3(Method m, Object[] parameters) {
   }
 
   @DataProvider

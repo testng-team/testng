@@ -359,19 +359,20 @@ public class Parameters {
       }
     }
 
-    // If the method declared an Object[] parameter and we have parameter values, inject them
-    for (Class<?> type : types) {
-        if (Object[].class.equals(type)) {
-            result.add(params.parameterValues);
-        }
-    }
-
     //
     // Add the extra parameters we found
     //
     for (Object p : extraParameters) {
       result.add(p);
     }
+
+    // If the method declared an Object[] parameter and we have parameter values, inject them
+    for (int i = 0; i < types.length; i++) {
+        if (Object[].class.equals(types[i])) {
+            result.add(i, params.parameterValues);
+        }
+    }
+
 
     return result.toArray(new Object[result.size()]);
   }
