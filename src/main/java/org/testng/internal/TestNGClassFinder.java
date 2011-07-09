@@ -154,9 +154,11 @@ public class TestNGClassFinder extends BaseClassFinder {
                 }
                 else {
                   for(Object o : instances) {
-                    addInstance(o.getClass(), o);
-                    if(!classExists(o.getClass())) {
-                      moreClasses.addClass(o.getClass());
+                    if(o != null) {
+                       addInstance(o.getClass(), o);
+                       if(!classExists(o.getClass())) {
+                          moreClasses.addClass(o.getClass());
+                       }
                     }
                   }
                 }
