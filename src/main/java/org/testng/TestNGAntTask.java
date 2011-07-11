@@ -1,6 +1,8 @@
 package org.testng;
 
 
+import static org.testng.internal.Utils.isStringNotEmpty;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
@@ -517,12 +519,12 @@ public class TestNGAntTask extends Task {
       argv.add(m_testjar.getAbsolutePath());
     }
 
-    if((null != m_includedGroups) && !"".equals(m_includedGroups)) {
+    if(isStringNotEmpty(m_includedGroups)) {
       argv.add(CommandLineArgs.GROUPS);
       argv.add(m_includedGroups);
     }
 
-    if((null != m_excludedGroups) && !"".equals(m_excludedGroups)) {
+    if(isStringNotEmpty(m_excludedGroups)) {
       argv.add(CommandLineArgs.EXCLUDED_GROUPS);
       argv.add(m_excludedGroups);
     }

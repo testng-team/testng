@@ -1,5 +1,7 @@
 package org.testng.xml;
 
+import static org.testng.internal.Utils.isStringBlank;
+
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
@@ -246,7 +248,7 @@ public class TestNGContentHandler extends DefaultHandler {
       m_currentTest = new XmlTest(m_currentSuite, m_currentTestIndex++);
       m_currentTestParameters = Maps.newHashMap();
       final String testName= attributes.getValue("name");
-      if(null == testName || "".equals(testName.trim())) {
+      if(isStringBlank(testName)) {
         throw new TestNGException("Test <test> element must define the name attribute");
       }
       m_currentTest.setName(attributes.getValue("name"));

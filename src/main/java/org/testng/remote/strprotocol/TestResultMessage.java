@@ -1,5 +1,6 @@
 package org.testng.remote.strprotocol;
 
+import static org.testng.internal.Utils.isStringEmpty;
 
 import org.testng.ITestContext;
 import org.testng.ITestResult;
@@ -304,7 +305,7 @@ public class TestResultMessage implements IStringMessage {
       }
       else {
         String tostring= o.toString();
-        if("".equals(tostring)) {
+        if(isStringEmpty(tostring)) {
           result.add("\"\"");
         }
         else {
