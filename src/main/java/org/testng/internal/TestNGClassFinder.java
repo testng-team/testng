@@ -139,32 +139,32 @@ public class TestNGClassFinder extends BaseClassFinder {
 //            ppp("INVOKING FACTORY " + fm + " " + this.hashCode());
               Object[] instances= fm.invoke();
 
-              // Make sure all the instances are non null
-              for (int i = 0; i < instances.length; i++) {
-                if (instances[i] == null) {
-                  throw new TestNGException("The factory " + fm + " returned a null instance at" +
-                  		" index " + i);
-                }
-              }
-
               //
               // If the factory returned IInstanceInfo, get the class from it,
               // otherwise, just call getClass() on the returned instances
               //
               if (instances.length > 0) {
-                Class elementClass = instances[0].getClass();
-                if(IInstanceInfo.class.isAssignableFrom(elementClass)) {
-                  for(Object o : instances) {
-                    IInstanceInfo ii = (IInstanceInfo) o;
-                    addInstance(ii.getInstanceClass(), ii.getInstance());
-                    moreClasses.addClass(ii.getInstanceClass());
+                if (instances[0] != null) {
+                  Class elementClass = instances[0].getClass();
+                  if(IInstanceInfo.class.isAssignableFrom(elementClass)) {
+                    for(Object o : instances) {
+                      IInstanceInfo ii = (IInstanceInfo) o;
+                      addInstance(ii.getInstanceClass(), ii.getInstance());
+                      moreClasses.addClass(ii.getInstanceClass());
+                    }
                   }
                 }
                 else {
-                  for(Object o : instances) {
-                    addInstance(o.getClass(), o);
-                    if(!classExists(o.getClass())) {
-                      moreClasses.addClass(o.getClass());
+                  for (int i = 0; i < instances.length; i++) {
+                    Object o = instances[i];
+                    if (o == null) {
+                      throw new TestNGException("The factory " + fm + " returned a null instance" +
+                          "at index " + i);
+                    } else {
+                      addInstance(o.getClass(), o);
+                      if(!classExists(o.getClass())) {
+                        moreClasses.addClass(o.getClass());
+                      }
                     }
                   }
                 }
