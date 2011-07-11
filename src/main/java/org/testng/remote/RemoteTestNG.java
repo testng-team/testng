@@ -1,5 +1,6 @@
 package org.testng.remote;
 
+import static org.testng.internal.Utils.defaultIfStringEmpty;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
@@ -60,12 +61,7 @@ public class RemoteTestNG extends TestNG {
   private static boolean m_dontExit;
 
   public void setHost(String host) {
-    if((null == host) || "".equals(host)) {
-      m_host= LOCALHOST;
-    }
-    else {
-      m_host= host;
-    }
+    m_host = defaultIfStringEmpty(host, LOCALHOST);
   }
 
   private void calculateAllSuites(List<XmlSuite> suites, List<XmlSuite> outSuites) {

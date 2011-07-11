@@ -1,5 +1,7 @@
 package org.testng.xml;
 
+import static org.testng.internal.Utils.isStringNotEmpty;
+
 import org.testng.ITestObjectFactory;
 import org.testng.TestNG;
 import org.testng.collections.Lists;
@@ -452,7 +454,7 @@ public class XmlSuite implements Serializable, Cloneable {
       XmlUtils.setProperty(p, "verbose", getVerbose().toString(), DEFAULT_VERBOSE.toString());
     }
     final String parallel= getParallel();
-    if(null != parallel && !"".equals(parallel) && !DEFAULT_PARALLEL.equals(parallel)) {
+    if(isStringNotEmpty(parallel) && !DEFAULT_PARALLEL.equals(parallel)) {
       p.setProperty("parallel", parallel);
     }
     XmlUtils.setProperty(p, "configfailurepolicy", getConfigFailurePolicy(),

@@ -1,5 +1,7 @@
 package org.testng;
 
+import static org.testng.internal.Utils.isStringBlank;
+
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.AnnotationTypeEnum;
@@ -202,9 +204,8 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   }
 
   private void setOutputDir(String outputdir) {
-    if (((null == outputdir) || "".equals(outputdir.trim()))
-        && m_useDefaultListeners) {
-      outputdir= DEFAULT_OUTPUT_DIR;
+    if (isStringBlank(outputdir) && m_useDefaultListeners) {
+      outputdir = DEFAULT_OUTPUT_DIR;
     }
 
     m_outputDir = (null != outputdir) ? new File(outputdir).getAbsolutePath()
