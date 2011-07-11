@@ -40,6 +40,14 @@ public class ListenerTest extends SimpleBaseTest {
     Assert.assertEquals(AggregateSampleTest.m_count, 2);
   }
 
+  @Test(description = "Should attach only one instance of the same @Listener class per test")
+  public void shouldAttachOnlyOneInstanceOfTheSameListenerClassPerTest() {
+    TestNG tng = create(new Class [] {Derived1.class, Derived2.class});
+    BaseWithListener.m_count = 0;
+    tng.run();
+    Assert.assertEquals(BaseWithListener.m_count, 2);
+  }
+
   @Test(description = "@Listeners with an ISuiteListener")
   public void suiteListenersShouldWork() {
     TestNG tng = create(SuiteListenerSample.class);
