@@ -139,6 +139,14 @@ public class TestNGClassFinder extends BaseClassFinder {
 //            ppp("INVOKING FACTORY " + fm + " " + this.hashCode());
               Object[] instances= fm.invoke();
 
+              // Make sure all the instances are non null
+              for (int i = 0; i < instances.length; i++) {
+                if (instances[i] == null) {
+                  throw new TestNGException("The factory " + fm + " returned a null instance at" +
+                  		" index " + i);
+                }
+              }
+
               //
               // If the factory returned IInstanceInfo, get the class from it,
               // otherwise, just call getClass() on the returned instances
