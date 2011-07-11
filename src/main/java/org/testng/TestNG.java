@@ -819,12 +819,17 @@ public class TestNG {
   }
 
   private void initializeCommandLineSuitesGroups() {
-    if (null != m_cmdlineSuites) {
-      for (XmlSuite s : m_cmdlineSuites) {
-        if(null != m_includedGroups && m_includedGroups.length > 0) {
+    // If groups were specified on the command line, they should override groups
+    // specified in the XML file
+    boolean hasIncludedGroups = null != m_includedGroups && m_includedGroups.length > 0;
+    boolean hasExcludedGroups = null != m_excludedGroups && m_excludedGroups.length > 0;
+    List<XmlSuite> suites = m_cmdlineSuites != null ? m_cmdlineSuites : m_suites;
+    if (hasIncludedGroups || hasExcludedGroups) {
+      for (XmlSuite s : suites) {
+        if(hasIncludedGroups) {
           s.getTests().get(0).setIncludedGroups(Arrays.asList(m_includedGroups));
         }
-        if(null != m_excludedGroups && m_excludedGroups.length > 0) {
+        if(hasExcludedGroups) {
           s.getTests().get(0).setExcludedGroups(Arrays.asList(m_excludedGroups));
         }
       }
@@ -1021,6 +1026,10 @@ public class TestNG {
         usage();
       }
     }
+  }
+
+  private void p(String string) {
+    System.out.println("[TestNG] " + string);
   }
 
   private void runExecutionListeners(boolean start) {

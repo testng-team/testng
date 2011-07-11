@@ -6,6 +6,7 @@ Added: Injectors created by the @Guice annotation are now shared at the <test> l
 Fixed: https://github.com/cbeust/testng/issues/57 Allow usage of package protected constructor of test classes
 Fixed: Injecting both Object[] and Method in @BeforeMethod didn't always work
 Fixed: testng-results.xml now lists the results chronologically
+Fixed: -groups and -excludegroups were no longer overriding testng.xml
 
 Eclipse:
 

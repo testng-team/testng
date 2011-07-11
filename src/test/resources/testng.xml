@@ -116,6 +116,7 @@
       <class name="test.groupinvocation.GroupSuiteTest" />
       <class name="test.StaticTest" />
       <class name="test.serviceloader.ServiceLoaderTest" />
+      <class name="test.commandline.CommandLineOverridesXml" />
     </classes>
   </test>
 
