@@ -11,6 +11,7 @@ Fixed: -groups and -excludegroups were no longer overriding testng.xml
 
 Eclipse:
 
+Added: Each data provider method now has a separate node entry in the TestNG view
 Fixed: The TestNG context menu no longer appears where it shouldn't
 
 ===========================================================================
