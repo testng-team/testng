@@ -44,7 +44,7 @@ public class SuiteHTMLReporter implements IReporter {
   private String m_outputDirectory;
 
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
-    m_outputDirectory = outputDirectory;
+    m_outputDirectory = generateOutputDirectoryName(outputDirectory);
 
     try {
       HtmlHelper.generateStylesheet(outputDirectory);
@@ -77,6 +77,14 @@ public class SuiteHTMLReporter implements IReporter {
     }
 
     generateIndex(suites);
+  }
+
+  /**
+   * Overridable by subclasses to create different directory names (e.g. with timestamps).
+   * @param outputDirectory the output directory specified by the user
+   */
+  protected String generateOutputDirectoryName(String outputDirectory) {
+    return outputDirectory;
   }
 
   private void generateXmlFile(XmlSuite xmlSuite, ISuite suite) {
