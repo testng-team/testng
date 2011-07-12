@@ -1,11 +1,15 @@
 package org.testng.internal;
 
+import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * A container to hold lists indexed by a key.
@@ -64,5 +68,13 @@ public class MapList<K, V> {
 
   public List<V> remove(K key) {
     return m_objects.remove(key);
+  }
+
+  public Set<Entry<K, List<V>>> getEntrySet() {
+    return m_objects.entrySet();
+  }
+
+  public Collection<List<V>> getValues() {
+    return m_objects.values();
   }
 }

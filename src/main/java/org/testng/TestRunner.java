@@ -1243,28 +1243,23 @@ public class TestRunner
     }
 
     // A map of each priority and the list of methods that have this priority
-    Map<Integer, List<ITestNGMethod>> methodsByPriority = Maps.newHashMap();
+    MapList<Integer, ITestNGMethod> methodsByPriority = Maps.newMapList();
     for (ITestNGMethod m : methods) {
-      List<ITestNGMethod> l = methodsByPriority.get(m.getPriority());
-      if (l == null) {
-        l = Lists.newArrayList();
-        methodsByPriority.put(m.getPriority(), l);
-      }
-      l.add(m);
+      methodsByPriority.put(m.getPriority(), m);
     }
 
     // The priority map will contain at least one entry for all the methods that have
     // a priority of zero (the default). If it has more than one entry, then we know that
     // some test methods specified priorities, so we need to create dependencies
     // that reflect the priority order.
-    boolean hasPriorities = methodsByPriority.size() > 1;
+    boolean hasPriorities = methodsByPriority.getSize() > 1;
 
     for (ITestNGMethod m : methods) {
       result.addNode(m);
 
       // Priority
       if (hasPriorities) {
-        for (Map.Entry<Integer, List<ITestNGMethod>> e : methodsByPriority.entrySet()) {
+        for (Map.Entry<Integer, List<ITestNGMethod>> e : methodsByPriority.getEntrySet()) {
           if (e.getKey() < m.getPriority()) {
             for (ITestNGMethod dm : e.getValue()) {
               result.addEdge(m, dm);
@@ -1802,7 +1797,7 @@ public class TestRunner
     return m_attributes.removeAttribute(name);
   }
 
-  private Map<Class<? extends Module>, List<Module>> m_guiceModules = Maps.newHashMap();
+  private MapList<Class<? extends Module>, Module> m_guiceModules = Maps.newMapList();
 
   @Override
   public List<Module> getGuiceModules(Class<? extends Module> cls) {
@@ -1812,12 +1807,7 @@ public class TestRunner
 
   @Override
   public void addGuiceModule(Class<? extends Module> cls, Module module) {
-    List<Module> l = m_guiceModules.get(cls);
-    if (l == null) {
-      l = Lists.newArrayList();
-      m_guiceModules.put(cls,  l);
-    }
-    l.add(module);
+    m_guiceModules.put(cls, module);
   }
 
   private Map<List<Module>, Injector> m_injectors = Maps.newHashMap();
