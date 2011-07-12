@@ -153,17 +153,17 @@ public class TestNGClassFinder extends BaseClassFinder {
                       moreClasses.addClass(ii.getInstanceClass());
                     }
                   }
-                }
-                else {
-                  for (int i = 0; i < instances.length; i++) {
-                    Object o = instances[i];
-                    if (o == null) {
-                      throw new TestNGException("The factory " + fm + " returned a null instance" +
-                          "at index " + i);
-                    } else {
-                      addInstance(o.getClass(), o);
-                      if(!classExists(o.getClass())) {
-                        moreClasses.addClass(o.getClass());
+                  else {
+                    for (int i = 0; i < instances.length; i++) {
+                      Object o = instances[i];
+                      if (o == null) {
+                        throw new TestNGException("The factory " + fm + " returned a null instance" +
+                            "at index " + i);
+                      } else {
+                        addInstance(o.getClass(), o);
+                        if(!classExists(o.getClass())) {
+                          moreClasses.addClass(o.getClass());
+                        }
                       }
                     }
                   }
