@@ -622,7 +622,7 @@ public final class Utils {
       return "null";
     }
     final String toString= object.toString();
-    if("".equals(toString)) {
+    if(isStringEmpty(toString)) {
       return "\"\"";
     }
     else if (String.class.equals(objectClass)) {
