@@ -1,6 +1,7 @@
 package org.testng;
 
 
+import static org.testng.internal.Utils.isStringNotBlank;
 import static org.testng.internal.Utils.isStringNotEmpty;
 
 import org.apache.tools.ant.BuildException;
@@ -601,25 +602,10 @@ public class TestNGAntTask extends Task {
       argv.add(m_dataproviderthreadCount);
     }
 
-    if(!"".equals(m_suiteName)) {
-      argv.add(CommandLineArgs.SUITE_NAME);
-      argv.add(m_suiteName);
-    }
-
-    if(!"".equals(m_testName)) {
-      argv.add(CommandLineArgs.TEST_NAME);
-      argv.add(m_testName);
-    }
-
-    if (! Utils.isStringEmpty(m_testNames)) {
-      argv.add(CommandLineArgs.TEST_NAMES);
-      argv.add(m_testNames);
-    }
-
-    if (! Utils.isStringEmpty(m_methods)) {
-      argv.add("-methods");
-      argv.add(m_methods);
-    }
+    addArgumentIfNotBlank(argv, CommandLineArgs.SUITE_NAME, m_suiteName);
+    addArgumentIfNotBlank(argv, CommandLineArgs.TEST_NAME, m_testName);
+    addArgumentIfNotBlank(argv, CommandLineArgs.TEST_NAMES, m_testNames);
+    addArgumentIfNotBlank(argv, "-methods", m_methods);
 
     if (!reporterConfigs.isEmpty()) {
       for (ReporterConfig reporterConfig : reporterConfigs) {
@@ -695,6 +681,13 @@ public class TestNGAntTask extends Task {
     }
 
     actOnResult(exitValue, wasKilled);
+  }
+  
+  private void addArgumentIfNotBlank(List<String> argv, String name, String value) {
+	  if (isStringNotBlank(value)) {
+		  argv.add(name);
+		  argv.add(value);
+	  }
   }
 
   /**
