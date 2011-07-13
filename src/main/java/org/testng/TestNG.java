@@ -15,6 +15,7 @@ import org.testng.internal.ClassHelper;
 import org.testng.internal.Configuration;
 import org.testng.internal.DynamicGraph;
 import org.testng.internal.IConfiguration;
+import org.testng.internal.IConfigurationListener;
 import org.testng.internal.IResultListener;
 import org.testng.internal.OverrideProcessor;
 import org.testng.internal.Utils;
@@ -212,6 +213,7 @@ public class TestNG {
     m_instance = this;
 
     m_useDefaultListeners = useDefaultListeners;
+    m_configuration = new Configuration();
   }
 
   public int getStatus() {
@@ -704,6 +706,9 @@ public class TestNG {
       if (listener instanceof IExecutionListener) {
         addExecutionListener((IExecutionListener) listener);
       }
+      if (listener instanceof IConfigurationListener) {
+        getConfiguration().addConfigurationListener((IConfigurationListener) listener);
+      }
     }
   }
 
@@ -897,7 +902,7 @@ public class TestNG {
       }
     }
 
-    m_configuration = new Configuration(new JDK15AnnotationFinder(getAnnotationTransformer()));
+    m_configuration.setAnnotationFinder(new JDK15AnnotationFinder(getAnnotationTransformer()));
     m_configuration.setHookable(m_hookable);
     m_configuration.setConfigurable(m_configurable);
     m_configuration.setObjectFactory(factory);
@@ -1253,6 +1258,10 @@ public class TestNG {
 
     for (IReporter r : result.getReporters()) {
       addListener(r);
+    }
+
+    for (IConfigurationListener cl : m_configuration.getConfigurationListeners()) {
+      result.addListener(cl);
     }
 
     return result;

@@ -7,6 +7,7 @@ import org.testng.collections.Maps;
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.Attributes;
 import org.testng.internal.IConfiguration;
+import org.testng.internal.IConfigurationListener;
 import org.testng.internal.IInvoker;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -391,6 +392,9 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     if (listener instanceof IReporter) {
       addReporter((IReporter) listener);
     }
+    if (listener instanceof IConfigurationListener) {
+      m_configuration.addConfigurationListener((IConfigurationListener) listener);
+    }
   }
 
   @Override
@@ -541,6 +545,9 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
       for (ITestListener itl : m_failureGenerators) {
         testRunner.addListener(itl);
+      }
+      for (IConfigurationListener cl : m_configuration.getConfigurationListeners()) {
+        testRunner.addListener(cl);
       }
 
       return testRunner;

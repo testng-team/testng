@@ -14,14 +14,11 @@ import java.util.List;
 public class Configuration implements IConfiguration {
 
   IAnnotationFinder m_annotationFinder;
-
   ITestObjectFactory m_objectFactory;
-
   IHookable m_hookable;
-
   IConfigurable m_configurable;
-
   List<IExecutionListener> m_executionListeners = Lists.newArrayList();
+  private List<IConfigurationListener> m_configurationListeners = Lists.newArrayList();
 
   public Configuration() {
     init(new JDK15AnnotationFinder(new DefaultAnnotationTransformer()));
@@ -38,6 +35,10 @@ public class Configuration implements IConfiguration {
   @Override
   public IAnnotationFinder getAnnotationFinder() {
     return m_annotationFinder;
+  }
+
+  public void setAnnotationFinder(IAnnotationFinder finder) {
+    m_annotationFinder = finder;
   }
 
   @Override
@@ -76,5 +77,15 @@ public class Configuration implements IConfiguration {
 
   public void addExecutionListener(IExecutionListener l) {
     m_executionListeners.add(l);
+  }
+
+  @Override
+  public List<IConfigurationListener> getConfigurationListeners() {
+    return Lists.newArrayList(m_configurationListeners);
+  }
+
+  @Override
+  public void addConfigurationListener(IConfigurationListener cl) {
+    m_configurationListeners.add(cl);
   }
 }
