@@ -3,6 +3,7 @@ package org.testng;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 
+import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.Attributes;
@@ -17,7 +18,6 @@ import org.testng.internal.IInvoker;
 import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.InvokedMethod;
 import org.testng.internal.Invoker;
-import org.testng.internal.MapList;
 import org.testng.internal.MethodGroupsHelper;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.MethodInstance;
@@ -710,7 +710,7 @@ public class TestRunner
     //
     List<List<ITestNGMethod>> sequentialList= Lists.newArrayList();
     List<ITestNGMethod> parallelList= Lists.newArrayList();
-    MapList<Integer, ITestNGMethod> sequentialMapList = new MapList<Integer, ITestNGMethod>();
+    ListMultiMap<Integer, ITestNGMethod> sequentialMapList = Maps.newListMultiMap();
 
     String parallelMode = xmlTest.getParallel();
     boolean parallel = XmlSuite.PARALLEL_METHODS.equals(parallelMode)
@@ -744,7 +744,7 @@ public class TestRunner
       List<TestMethodWorker> workers = Lists.newArrayList();
 
       createSequentialWorkers(sequentialList, xmlTest, m_classMethodMap, workers);
-      MapList<Integer, TestMethodWorker> ml =
+      ListMultiMap<Integer, TestMethodWorker> ml =
           createSequentialWorkers(sequentialMapList, xmlTest.getParameters(), m_classMethodMap);
 
       // All the parallel tests are placed in a separate worker, so they can be
@@ -1110,10 +1110,10 @@ public class TestRunner
     }
   }
 
-  private MapList<Integer, TestMethodWorker> createSequentialWorkers(MapList<Integer,
+  private ListMultiMap<Integer, TestMethodWorker> createSequentialWorkers(ListMultiMap<Integer,
       ITestNGMethod> mapList, Map<String, String> params, ClassMethodMap cmm) {
 
-    MapList<Integer, TestMethodWorker> result = new MapList<Integer, TestMethodWorker>();
+    ListMultiMap<Integer, TestMethodWorker> result = Maps.newListMultiMap();
     // All the sequential tests are place in one worker, guaranteeing they
     // will be invoked sequentially
     for (Integer i : mapList.getKeys()) {
@@ -1154,7 +1154,7 @@ public class TestRunner
   // Invoke the workers
   //
   private void runWorkers(List<? extends IWorker<ITestNGMethod>> workers, String parallelMode,
-      MapList<Integer, TestMethodWorker> sequentialWorkers) {
+      ListMultiMap<Integer, TestMethodWorker> sequentialWorkers) {
     if (XmlSuite.PARALLEL_METHODS.equals(parallelMode)
         || "true".equalsIgnoreCase(parallelMode)
         || XmlSuite.PARALLEL_CLASSES.equals(parallelMode))
@@ -1233,7 +1233,7 @@ public class TestRunner
   private DynamicGraph<ITestNGMethod> computeAlternateTestList(ITestNGMethod[] methods) {
     DynamicGraph<ITestNGMethod> result = new DynamicGraph<ITestNGMethod>();
     Map<String, ITestNGMethod> map = Maps.newHashMap();
-    MapList<String, ITestNGMethod> groups = new MapList<String, ITestNGMethod>();
+    ListMultiMap<String, ITestNGMethod> groups = Maps.newListMultiMap();
 
     for (ITestNGMethod m : methods) {
       map.put(m.getTestClass().getName() + "." + m.getMethodName(), m);
@@ -1243,7 +1243,7 @@ public class TestRunner
     }
 
     // A map of each priority and the list of methods that have this priority
-    MapList<Integer, ITestNGMethod> methodsByPriority = Maps.newMapList();
+    ListMultiMap<Integer, ITestNGMethod> methodsByPriority = Maps.newListMultiMap();
     for (ITestNGMethod m : methods) {
       methodsByPriority.put(m.getPriority(), m);
     }
@@ -1309,7 +1309,7 @@ public class TestRunner
    * @param parallelList the list of methods that can be run in parallel
    */
   private void computeTestLists(List<List<ITestNGMethod>> sl,
-      List<ITestNGMethod> parallelList, MapList<Integer, ITestNGMethod> outSequentialList) {
+      List<ITestNGMethod> parallelList, ListMultiMap<Integer, ITestNGMethod> outSequentialList) {
 
     Map<String, String> groupsDependedUpon = Maps.newHashMap();
     Map<String, String> methodsDependedUpon = Maps.newHashMap();
@@ -1797,7 +1797,7 @@ public class TestRunner
     return m_attributes.removeAttribute(name);
   }
 
-  private MapList<Class<? extends Module>, Module> m_guiceModules = Maps.newMapList();
+  private ListMultiMap<Class<? extends Module>, Module> m_guiceModules = Maps.newListMultiMap();
 
   @Override
   public List<Module> getGuiceModules(Class<? extends Module> cls) {

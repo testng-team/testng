@@ -1,6 +1,5 @@
 package org.testng.collections;
 
-import org.testng.internal.MapList;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -16,7 +15,7 @@ public class Maps {
     return new Hashtable<K, V>();
   }
 
-  public static <K, V> MapList<K, V> newMapList() {
-    return new MapList<K, V>();
+  public static <K, V> ListMultiMap<K, V> newListMultiMap() {
+    return new ListMultiMap<K, V>();
   }
 }

@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import org.testng.collections.ListMultiMap;
+import org.testng.collections.Maps;
 import org.testng.internal.annotations.Sets;
 
 import java.util.Collection;
@@ -16,8 +18,8 @@ public class DynamicGraph<T> {
   private Set<T> m_nodesRunning = Sets.newHashSet();
   private Set<T> m_nodesFinished = Sets.newHashSet();
 
-  private MapList<T, T> m_dependedUpon = new MapList<T, T>();
-  private MapList<T, T> m_dependingOn = new MapList<T, T>();
+  private ListMultiMap<T, T> m_dependedUpon = Maps.newListMultiMap();
+  private ListMultiMap<T, T> m_dependingOn = Maps.newListMultiMap();
 
   public static enum Status {
     READY, RUNNING, FINISHED

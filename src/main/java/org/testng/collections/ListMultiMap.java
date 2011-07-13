@@ -1,8 +1,5 @@
-package org.testng.internal;
+package org.testng.collections;
 
-import org.testng.ITestNGMethod;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +11,7 @@ import java.util.Set;
 /**
  * A container to hold lists indexed by a key.
  */
-public class MapList<K, V> {
+public class ListMultiMap<K, V> {
   private Map<K, List<V>> m_objects = Maps.newHashMap();
 
   public void put(K key, V method) {
