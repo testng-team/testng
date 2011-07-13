@@ -1,5 +1,7 @@
 package org.testng.reporters;
 
+import static org.testng.internal.Utils.isStringNotBlank;
+
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -126,7 +128,7 @@ public class TextReporter extends TestListenerAdapter {
 
   private void logResult(String status, String message) {
     StringBuffer buf= new StringBuffer();
-    if(!"".equals(status)) {
+    if(isStringNotBlank(status)) {
       buf.append(status).append(": ");
     }
     buf.append(message);

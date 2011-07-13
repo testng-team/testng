@@ -1,6 +1,8 @@
 package org.testng.xml;
 
 
+import static org.testng.internal.Utils.isStringNotBlank;
+
 import org.testng.collections.Lists;
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.Utils;
@@ -357,7 +359,7 @@ public abstract class LaunchSuite {
 
       List<String> result= Lists.newArrayList();
       for(String name: source) {
-        if(!"".equals(name)) {
+        if(isStringNotBlank(name)) {
           result.add(name);
         }
       }
