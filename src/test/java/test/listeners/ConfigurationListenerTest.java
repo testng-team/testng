@@ -1,10 +1,10 @@
 package test.listeners;
 
 import org.testng.Assert;
+import org.testng.IConfigurationListener;
 import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.internal.IConfigurationListener;
 
 import test.SimpleBaseTest;
 
@@ -15,20 +15,25 @@ public class ConfigurationListenerTest extends SimpleBaseTest {
     private static int m_status = 0;
 
     @Override
-    public void onConfigurationSuccess(ITestResult itr) {
+    public void beforeConfiguration(ITestResult tr) {
       m_status += 1;
     }
 
     @Override
-    public void onConfigurationFailure(ITestResult itr) {
+    public void onConfigurationSuccess(ITestResult itr) {
       m_status += 3;
     }
 
     @Override
-    public void onConfigurationSkip(ITestResult itr) {
+    public void onConfigurationFailure(ITestResult itr) {
       m_status += 5;
     }
-    
+
+    @Override
+    public void onConfigurationSkip(ITestResult itr) {
+      m_status += 7;
+    }
+
   }
 
   private void runTest(Class<?> cls, int expected) {
@@ -43,16 +48,16 @@ public class ConfigurationListenerTest extends SimpleBaseTest {
 
   @Test
   public void shouldSucceed() {
-    runTest(ConfigurationListenerSucceedSampleTest.class, 1);
+    runTest(ConfigurationListenerSucceedSampleTest.class, 1 + 3);
   }
 
   @Test
   public void shouldFail() {
-    runTest(ConfigurationListenerFailSampleTest.class, 3);
+    runTest(ConfigurationListenerFailSampleTest.class, 1 + 5);
   }
 
   @Test
   public void shouldSkip() {
-    runTest(ConfigurationListenerSkipSampleTest.class, 8); // fail + skip
+    runTest(ConfigurationListenerSkipSampleTest.class, 1 + 5 + 7); // fail + skip
   }
 }

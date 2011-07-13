@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import org.testng.IConfigurable;
+import org.testng.IConfigurationListener;
 import org.testng.IExecutionListener;
 import org.testng.IHookable;
 import org.testng.ITestObjectFactory;

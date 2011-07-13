@@ -15,6 +15,10 @@ public class ResultListener implements IResultListener {
   }
 
   @Override
+  public void beforeConfiguration(ITestResult tr) {
+  }
+
+  @Override
   public void onTestSuccess(ITestResult result) {
     m_end = result.getEndMillis();
   }

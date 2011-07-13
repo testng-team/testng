@@ -61,6 +61,10 @@ public class JUnitXMLReporter implements IResultListener {
   public void onTestStart(ITestResult result) {
   }
 
+  @Override
+  public void beforeConfiguration(ITestResult tr) {
+  }
+
   /**
    * Invoked each time a test succeeds.
    */
@@ -116,7 +120,7 @@ public class JUnitXMLReporter implements IResultListener {
   }
 
   /**
-   * @see org.testng.internal.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
+   * @see org.testng.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
    */
   @Override
   public void onConfigurationFailure(ITestResult itr) {
@@ -124,7 +128,7 @@ public class JUnitXMLReporter implements IResultListener {
   }
 
   /**
-   * @see org.testng.internal.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
+   * @see org.testng.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
    */
   @Override
   public void onConfigurationSkip(ITestResult itr) {
@@ -132,7 +136,7 @@ public class JUnitXMLReporter implements IResultListener {
   }
 
   /**
-   * @see org.testng.internal.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
+   * @see org.testng.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
    */
   @Override
   public void onConfigurationSuccess(ITestResult itr) {

@@ -7,7 +7,6 @@ import org.testng.collections.Maps;
 import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.Attributes;
 import org.testng.internal.IConfiguration;
-import org.testng.internal.IConfigurationListener;
 import org.testng.internal.IInvoker;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.IAnnotationFinder;

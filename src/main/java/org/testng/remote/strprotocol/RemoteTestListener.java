@@ -50,6 +50,10 @@ public class RemoteTestListener implements IResultListener {
   }
 
   @Override
+  public void beforeConfiguration(ITestResult tr) {
+  }
+
+  @Override
   public void onTestFailedButWithinSuccessPercentage(ITestResult testResult) {
     if (null == m_currentTestContext) {
       m_sender.sendMessage(new TestResultMessage(m_suite.getName(), m_xmlTest.getName(), testResult));
@@ -90,7 +94,7 @@ public class RemoteTestListener implements IResultListener {
   }
 
   /**
-   * @see org.testng.internal.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
+   * @see org.testng.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
    */
   @Override
   public void onConfigurationFailure(ITestResult itr) {
@@ -98,7 +102,7 @@ public class RemoteTestListener implements IResultListener {
   }
 
   /**
-   * @see org.testng.internal.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
+   * @see org.testng.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
    */
   @Override
   public void onConfigurationSkip(ITestResult itr) {
@@ -106,7 +110,7 @@ public class RemoteTestListener implements IResultListener {
   }
 
   /**
-   * @see org.testng.internal.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
+   * @see org.testng.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
    */
   @Override
   public void onConfigurationSuccess(ITestResult itr) {

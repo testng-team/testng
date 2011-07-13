@@ -13,7 +13,6 @@ import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.Constants;
 import org.testng.internal.DynamicGraph;
 import org.testng.internal.IConfiguration;
-import org.testng.internal.IConfigurationListener;
 import org.testng.internal.IInvoker;
 import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.InvokedMethod;
@@ -1750,6 +1749,10 @@ public class TestRunner
   private IResultMap m_failedConfigurations= new ResultMap();
 
   private class ConfigurationListener implements IConfigurationListener {
+    @Override
+    public void beforeConfiguration(ITestResult tr) {
+    }
+
     @Override
     public void onConfigurationFailure(ITestResult itr) {
       m_failedConfigurations.addResult(itr, itr.getMethod());

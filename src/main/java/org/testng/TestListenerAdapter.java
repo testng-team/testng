@@ -145,7 +145,7 @@ public class TestListenerAdapter implements IResultListener {
   }
 
   /**
-   * @see org.testng.internal.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
+   * @see org.testng.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
    */
   @Override
   public void onConfigurationFailure(ITestResult itr) {
@@ -156,8 +156,12 @@ public class TestListenerAdapter implements IResultListener {
     return m_skippedConfs;
   }
 
+  @Override
+  public void beforeConfiguration(ITestResult tr) {
+  }
+
   /**
-   * @see org.testng.internal.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
+   * @see org.testng.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
    */
   @Override
   public void onConfigurationSkip(ITestResult itr) {
@@ -165,7 +169,7 @@ public class TestListenerAdapter implements IResultListener {
   }
 
   /**
-   * @see org.testng.internal.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
+   * @see org.testng.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
    */
   @Override
   public void onConfigurationSuccess(ITestResult itr) {

@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import org.testng.IConfigurationListener;
 import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;

@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import org.testng.IClass;
 import org.testng.IConfigurable;
+import org.testng.IConfigurationListener;
 import org.testng.IHookable;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
@@ -199,12 +200,14 @@ public class Invoker implements IInvoker {
 
             Object[] newInstances= (null != instance) ? new Object[] { instance } : instances;
 
+            runConfigurationListeners(testResult, true /* before */);
+
             invokeConfigurationMethod(newInstances, tm,
               parameters, isClassConfiguration, isSuiteConfiguration, testResult);
 
             // TODO: probably we should trigger the event for each instance???
             testResult.setEndMillis(System.currentTimeMillis());
-            runConfigurationListeners(testResult);
+            runConfigurationListeners(testResult, false /* after */);
           }
           else {
             log(3,
@@ -247,7 +250,7 @@ public class Invoker implements IInvoker {
                                        XmlSuite suite) {
     recordConfigurationInvocationFailed(tm, testResult.getTestClass(), annotation, currentTestMethod, instance, suite);
     testResult.setStatus(ITestResult.SKIP);
-    runConfigurationListeners(testResult);
+    runConfigurationListeners(testResult, false /* after */);
   }
 
   /**
@@ -320,7 +323,7 @@ public class Invoker implements IInvoker {
     Utils.log("", 3, "Failed to invoke configuration method "
         + tm.getRealClass().getName() + "." + tm.getMethodName() + ":" + cause.getMessage());
     handleException(cause, tm, testResult, 1);
-    runConfigurationListeners(testResult);
+    runConfigurationListeners(testResult, false /* after */);
 
     //
     // If in TestNG mode, need to take a look at the annotation to figure out
@@ -1787,18 +1790,24 @@ public class Invoker implements IInvoker {
     return result;
   }
 
-  private void runConfigurationListeners(ITestResult tr) {
-    for(IConfigurationListener icl: m_notifier.getConfigurationListeners()) {
-      switch(tr.getStatus()) {
-        case ITestResult.SKIP:
-          icl.onConfigurationSkip(tr);
-          break;
-        case ITestResult.FAILURE:
-          icl.onConfigurationFailure(tr);
-          break;
-        case ITestResult.SUCCESS:
-          icl.onConfigurationSuccess(tr);
-          break;
+  private void runConfigurationListeners(ITestResult tr, boolean before) {
+    if (before) {
+      for(IConfigurationListener icl: m_notifier.getConfigurationListeners()) {
+        icl.beforeConfiguration(tr);
+      }
+    } else {
+      for(IConfigurationListener icl: m_notifier.getConfigurationListeners()) {
+        switch(tr.getStatus()) {
+          case ITestResult.SKIP:
+            icl.onConfigurationSkip(tr);
+            break;
+          case ITestResult.FAILURE:
+            icl.onConfigurationFailure(tr);
+            break;
+          case ITestResult.SUCCESS:
+            icl.onConfigurationSuccess(tr);
+            break;
+        }
       }
     }
   }

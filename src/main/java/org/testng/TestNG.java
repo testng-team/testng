@@ -15,7 +15,6 @@ import org.testng.internal.ClassHelper;
 import org.testng.internal.Configuration;
 import org.testng.internal.DynamicGraph;
 import org.testng.internal.IConfiguration;
-import org.testng.internal.IConfigurationListener;
 import org.testng.internal.IResultListener;
 import org.testng.internal.OverrideProcessor;
 import org.testng.internal.Utils;
@@ -1799,6 +1798,10 @@ public class TestNG {
     }
 
     @Override
+    public void beforeConfiguration(ITestResult tr) {
+    }
+
+    @Override
     public void onTestFailure(ITestResult result) {
       setHasRunTests();
       m_mainRunner.setStatus(HAS_FAILURE);
@@ -1840,7 +1843,7 @@ public class TestNG {
     }
 
     /**
-     * @see org.testng.internal.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
+     * @see org.testng.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
      */
     @Override
     public void onConfigurationFailure(ITestResult itr) {
@@ -1848,7 +1851,7 @@ public class TestNG {
     }
 
     /**
-     * @see org.testng.internal.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
+     * @see org.testng.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
      */
     @Override
     public void onConfigurationSkip(ITestResult itr) {
@@ -1856,7 +1859,7 @@ public class TestNG {
     }
 
     /**
-     * @see org.testng.internal.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
+     * @see org.testng.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
      */
     @Override
     public void onConfigurationSuccess(ITestResult itr) {
