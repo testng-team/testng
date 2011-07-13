@@ -897,7 +897,7 @@ The <a href="ant.html">ant task</a> and <a href="#testng-xml">testng.xml</a> all
 
 <p>
 
-<em>Important</em>: The command line flags that specify what tests should be run (e.g. -includedgroups, -excludedgroups) will be ignored if you also specify a <tt>testng.xml</tt> file. These flags will only work if you specify a test class. To achieve the same result, specify your included/excluded/... groups/classes/... in <tt>testng.xml</tt>. 
+<em>Important</em>: The command line flags that specify what tests should be run will be ignored if you also specify a <tt>testng.xml</tt> file, with the exception of <tt>-includedgroups</tt> and <tt>-excludedgroups</tt>, which will override all the group inclusions/exclusions found in <tt>testng.xml</tt>.
 
 <!-------------------------------------
   METHODS
