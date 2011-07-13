@@ -1,6 +1,6 @@
 <?
 
-print '<html><head><title>Generate title</title>
+print '<html><head><title>TestNG DTD</title>
 
         <link rel="stylesheet" href="testng.css" type="text/css" />
         <link type="text/css" rel="stylesheet" href="http://beust.com/beust.css"  />
