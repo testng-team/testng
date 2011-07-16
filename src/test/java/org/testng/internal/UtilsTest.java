@@ -1,7 +1,11 @@
 package org.testng.internal;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.testng.Assert.assertEquals;
+import static org.testng.internal.Utils.join;
 
+import java.util.List;
 import org.testng.annotations.Test;
 
 /**
@@ -19,5 +23,17 @@ public class UtilsTest {
 		assertEquals(Utils.escapeUnicode(String.valueOf(INVALID_CHAR)),
 				String.valueOf(REPLACEMENT_CHAR));
 
+	}
+
+	@Test
+	public void joinTwoStrings() throws Exception {
+		List<String> twoStrings = asList("one", "two");
+		assertEquals("one, two", join(twoStrings, ", "));
+	}
+
+	@Test
+	public void createEmptyStringWhenJoiningEmptyElist() throws Exception {
+		List<String> emptyList = emptyList();
+		assertEquals("", join(emptyList, ", "));
 	}
 }
