@@ -29,6 +29,7 @@ import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -709,14 +710,21 @@ public final class Utils {
    return fileName;
   }
 
-  public static String join(List<String> s, String sep) {
-    StringBuilder result = new StringBuilder();
-    for (int i = 0; i < s.size(); i++) {
-      if (i > 0) result.append(sep).append(" ");
-      result.append(s.get(i));
+  public static String joinStrings(Iterable<String> iterable, String separator) {
+    StringBuilder sb = new StringBuilder();
+    Iterator<String> iterator = iterable.iterator();
+    if (iterator.hasNext()) {
+      sb.append(iterator.next());
     }
+    while (iterator.hasNext()) {
+      sb.append(separator);
+      sb.append(iterator.next());
+    }
+    return sb.toString();
+  }
 
-    return result.toString();
+  public static String join(List<String> s, String separator) {
+    return joinStrings(s, separator + " ");
   }
 
   public static String joinClasses(List<Class> classes, String separator) {

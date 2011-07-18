@@ -1,8 +1,9 @@
 package org.testng;
 
 
+import static java.lang.Boolean.TRUE;
 import static org.testng.internal.Utils.isStringNotBlank;
-import static org.testng.internal.Utils.isStringNotEmpty;
+import static org.testng.internal.Utils.joinStrings;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
@@ -461,175 +462,14 @@ public class TestNGAntTask extends Task {
     validateOptions();
 
     CommandlineJava cmd = getJavaCommand();
-
     cmd.setClassname(m_mainClass);
-
-    List<String> argv= Lists.newArrayList();
-
-    if (null != m_isJUnit) {
-      if(m_isJUnit.booleanValue()) {
-        argv.add(CommandLineArgs.JUNIT);
-      }
-    }
-
-    if (null != m_skipFailedInvocationCounts) {
-      if(m_skipFailedInvocationCounts.booleanValue()) {
-        argv.add(CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS);
-      }
-    }
-
-    if (m_delegateCommandSystemProperties) {
-      delegateCommandSystemProperties();
-    }
-
-    if(null != m_verbose) {
-      argv.add(CommandLineArgs.LOG);
-      argv.add(m_verbose.toString());
-    }
-
     if(m_assertEnabled) {
       cmd.createVmArgument().setValue("-ea");
     }
-
-    if(m_useDefaultListeners != null) {
-      String useDefaultListeners = "false";
-      if ("yes".equalsIgnoreCase(m_useDefaultListeners)
-          || "true".equalsIgnoreCase(m_useDefaultListeners))
-      {
-        useDefaultListeners = "true";
-      }
-      argv.add(CommandLineArgs.USE_DEFAULT_LISTENERS);
-      argv.add(useDefaultListeners);
+    if (m_delegateCommandSystemProperties) {
+      delegateCommandSystemProperties();
     }
-
-    if((null != m_outputDir)) {
-      if(!m_outputDir.exists()) {
-        m_outputDir.mkdirs();
-      }
-      if(m_outputDir.isDirectory()) {
-        argv.add(CommandLineArgs.OUTPUT_DIRECTORY);
-        argv.add(m_outputDir.getAbsolutePath());
-      }
-      else {
-        throw new BuildException("Output directory is not a directory: " + m_outputDir);
-      }
-    }
-
-    if((null != m_testjar) && m_testjar.isFile()) {
-      argv.add(CommandLineArgs.TEST_JAR);
-      argv.add(m_testjar.getAbsolutePath());
-    }
-
-    if(isStringNotEmpty(m_includedGroups)) {
-      argv.add(CommandLineArgs.GROUPS);
-      argv.add(m_includedGroups);
-    }
-
-    if(isStringNotEmpty(m_excludedGroups)) {
-      argv.add(CommandLineArgs.EXCLUDED_GROUPS);
-      argv.add(m_excludedGroups);
-    }
-
-    if (m_classFilesets.size() > 0) {
-      List<String> files = fileset(m_classFilesets);
-      if (files.size() > 0) {
-        argv.add(CommandLineArgs.TEST_CLASS);
-        StringBuffer testClasses = new StringBuffer();
-        for (String file : files) {
-          testClasses.append(file);
-          testClasses.append(',');
-        }
-        testClasses.setLength(testClasses.length() - 1);
-        argv.add(testClasses.toString());
-      }
-    }
-
-    if(m_listeners != null && m_listeners.size() > 0) {
-      argv.add(CommandLineArgs.LISTENER);
-      StringBuffer listeners= new StringBuffer();
-      for(int i= 0; i < m_listeners.size(); i++) {
-        listeners.append(m_listeners.get(i));
-        if(i < m_listeners.size() - 1) {
-          listeners.append(';');
-        }
-      }
-      argv.add(listeners.toString());
-    }
-
-    if(m_methodselectors != null && m_methodselectors.size() > 0) {
-      argv.add(CommandLineArgs.METHOD_SELECTORS);
-      StringBuffer methodselectors= new StringBuffer();
-      for(int i= 0; i < m_methodselectors.size(); i++) {
-    	methodselectors.append(m_methodselectors.get(i));
-    	if(i < m_methodselectors.size() -1) {
-    	  methodselectors.append(';');
-    	}
-      }
-      argv.add(methodselectors.toString());
-    }
-
-    if(m_objectFactory != null) {
-      argv.add(CommandLineArgs.OBJECT_FACTORY);
-      argv.add(m_objectFactory);
-    }
-
-    if (m_testRunnerFactory != null) {
-      argv.add(CommandLineArgs.TEST_RUNNER_FACTORY);
-      argv.add(m_testRunnerFactory);
-    }
-
-    if(m_parallelMode != null) {
-      argv.add(CommandLineArgs.PARALLEL);
-      argv.add(m_parallelMode);
-    }
-
-    if (m_configFailurePolicy != null) {
-      argv.add(CommandLineArgs.CONFIG_FAILURE_POLICY);
-      argv.add(m_configFailurePolicy);
-    }
-
-    if (m_randomizeSuites != null && m_randomizeSuites) {
-      argv.add(CommandLineArgs.RANDOMIZE_SUITES);
-    }
-
-    if(m_threadCount != null) {
-      argv.add(CommandLineArgs.THREAD_COUNT);
-      argv.add(m_threadCount);
-    }
-
-    if(m_dataproviderthreadCount != null) {
-      argv.add(CommandLineArgs.DATA_PROVIDER_THREAD_COUNT);
-      argv.add(m_dataproviderthreadCount);
-    }
-
-    addArgumentIfNotBlank(argv, CommandLineArgs.SUITE_NAME, m_suiteName);
-    addArgumentIfNotBlank(argv, CommandLineArgs.TEST_NAME, m_testName);
-    addArgumentIfNotBlank(argv, CommandLineArgs.TEST_NAMES, m_testNames);
-    addArgumentIfNotBlank(argv, "-methods", m_methods);
-
-    if (!reporterConfigs.isEmpty()) {
-      for (ReporterConfig reporterConfig : reporterConfigs) {
-        argv.add(CommandLineArgs.REPORTER);
-        argv.add(reporterConfig.serialize());
-      }
-    }
-
-    if (m_suiteThreadPoolSize != null) {
-      argv.add(CommandLineArgs.SUITE_THREAD_POOL_SIZE);
-      argv.add(m_suiteThreadPoolSize.toString());
-    }
-
-    if (m_xmlPathInJar != null) {
-      argv.add(CommandLineArgs.XML_PATH_IN_JAR);
-      argv.add(m_xmlPathInJar);
-    }
-
-    //
-    // Done with command line options, now add the XML files
-    //
-    for (String file : getSuiteFileNames()) {
-      argv.add(file);
-    }
+    List<String> argv = createArguments();
 
     String fileName= "";
     FileWriter fw= null;
@@ -682,12 +522,124 @@ public class TestNGAntTask extends Task {
 
     actOnResult(exitValue, wasKilled);
   }
+
+  private List<String> createArguments() {
+	List<String> argv= Lists.newArrayList();
+    addBooleanIfTrue(argv, CommandLineArgs.JUNIT, m_isJUnit);
+    addBooleanIfTrue(argv, CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS, m_skipFailedInvocationCounts);
+    addIntegerIfNotNull(argv, CommandLineArgs.LOG, m_verbose);
+    addDefaultListeners(argv);
+    addOutputDir(argv);
+    addFileIfFile(argv, CommandLineArgs.TEST_JAR, m_testjar);
+    addStringIfNotBlank(argv, CommandLineArgs.GROUPS, m_includedGroups);
+    addStringIfNotBlank(argv, CommandLineArgs.EXCLUDED_GROUPS, m_excludedGroups);
+    addFilesOfFilesets(argv, CommandLineArgs.TEST_CLASS, m_classFilesets);
+    addListOfStringIfNotEmpty(argv, CommandLineArgs.LISTENER, m_listeners);
+    addListOfStringIfNotEmpty(argv, CommandLineArgs.METHOD_SELECTORS, m_methodselectors);
+    addStringIfNotNull(argv, CommandLineArgs.OBJECT_FACTORY, m_objectFactory);
+    addStringIfNotNull(argv, CommandLineArgs.TEST_RUNNER_FACTORY, m_testRunnerFactory);
+    addStringIfNotNull(argv, CommandLineArgs.PARALLEL, m_parallelMode);
+    addStringIfNotNull(argv, CommandLineArgs.CONFIG_FAILURE_POLICY, m_configFailurePolicy);
+    addBooleanIfTrue(argv, CommandLineArgs.RANDOMIZE_SUITES, m_randomizeSuites);
+    addStringIfNotNull(argv, CommandLineArgs.THREAD_COUNT, m_threadCount);
+    addStringIfNotNull(argv, CommandLineArgs.DATA_PROVIDER_THREAD_COUNT, m_dataproviderthreadCount);
+    addStringIfNotBlank(argv, CommandLineArgs.SUITE_NAME, m_suiteName);
+    addStringIfNotBlank(argv, CommandLineArgs.TEST_NAME, m_testName);
+    addStringIfNotBlank(argv, CommandLineArgs.TEST_NAMES, m_testNames);
+    addStringIfNotBlank(argv, CommandLineArgs.METHODS, m_methods);
+    addReporterConfigs(argv);
+    addIntegerIfNotNull(argv, CommandLineArgs.SUITE_THREAD_POOL_SIZE, m_suiteThreadPoolSize);
+    addStringIfNotNull(argv, CommandLineArgs.XML_PATH_IN_JAR, m_xmlPathInJar);
+    addXmlFiles(argv);
+	return argv;
+  }
+
+  private void addDefaultListeners(List<String> argv) {
+    if (m_useDefaultListeners != null) {
+      String useDefaultListeners = "false";
+      if ("yes".equalsIgnoreCase(m_useDefaultListeners) || "true".equalsIgnoreCase(m_useDefaultListeners)) {
+        useDefaultListeners = "true";
+      }
+      argv.add(CommandLineArgs.USE_DEFAULT_LISTENERS);
+      argv.add(useDefaultListeners);
+    }
+  }
+
+  private void addOutputDir(List<String> argv) {
+    if (null != m_outputDir) {
+      if (!m_outputDir.exists()) {
+        m_outputDir.mkdirs();
+      }
+      if (m_outputDir.isDirectory()) {
+        argv.add(CommandLineArgs.OUTPUT_DIRECTORY);
+        argv.add(m_outputDir.getAbsolutePath());
+      } else {
+        throw new BuildException("Output directory is not a directory: " + m_outputDir);
+      }
+    }
+  }
+
+  private void addReporterConfigs(List<String> argv) {
+    for (ReporterConfig reporterConfig : reporterConfigs) {
+      argv.add(CommandLineArgs.REPORTER);
+      argv.add(reporterConfig.serialize());
+    }
+  }
+
+  private void addFilesOfFilesets(List<String> argv, String name, List<FileSet> fileSets) {
+	addArgumentsIfNotEmpty(argv, name, fileset(fileSets), ",");
+  }
+
+  private void addListOfStringIfNotEmpty(List<String> argv, String name, List<String> arguments) {
+	addArgumentsIfNotEmpty(argv, name, arguments, ";");
+  }
+
+  private void addArgumentsIfNotEmpty(List<String> argv, String name, List<String> arguments, String separator) {
+	if (arguments != null && !arguments.isEmpty()) {
+      argv.add(name);
+      String value= joinStrings(arguments, separator);
+	  argv.add(value);
+	}
+  }
+
+  private void addFileIfFile(List<String> argv, String name, File file) {
+    if ((null != file) && file.isFile()) {
+      argv.add(name);
+      argv.add(file.getAbsolutePath());
+    }
+  }
   
-  private void addArgumentIfNotBlank(List<String> argv, String name, String value) {
-	  if (isStringNotBlank(value)) {
-		  argv.add(name);
-		  argv.add(value);
-	  }
+  private void addBooleanIfTrue(List<String> argv, String name, Boolean value) {
+    if (TRUE.equals(value)) {
+      argv.add(name);
+    }
+  }
+  
+  private void addIntegerIfNotNull(List<String> argv, String name, Integer value) {
+    if (value != null) {
+      argv.add(name);
+      argv.add(value.toString());
+    }
+  }
+  
+  private void addStringIfNotNull(List<String> argv, String name, String value) {
+    if (value != null) {
+      argv.add(name);
+      argv.add(value);
+    }
+  }
+  
+  private void addStringIfNotBlank(List<String> argv, String name, String value) {
+    if (isStringNotBlank(value)) {
+      argv.add(name);
+      argv.add(value);
+    }
+  }
+
+  private void addXmlFiles(List<String> argv) {
+    for (String file : getSuiteFileNames()) {
+      argv.add(file);
+    }
   }
 
   /**
