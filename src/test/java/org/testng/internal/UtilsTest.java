@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.internal.Utils.join;
+import static org.testng.internal.Utils.joinStrings;
 
 import java.util.List;
 import org.testng.annotations.Test;
@@ -26,14 +27,26 @@ public class UtilsTest {
 	}
 
 	@Test
-	public void joinTwoStrings() throws Exception {
+	public void joinTwoStringsWithJoin() throws Exception {
 		List<String> twoStrings = asList("one", "two");
-		assertEquals("one, two", join(twoStrings, ", "));
+		assertEquals("one, two", join(twoStrings, ","));
 	}
 
 	@Test
-	public void createEmptyStringWhenJoiningEmptyElist() throws Exception {
+	public void createEmptyStringWhenJoiningEmptyListWithJoin() throws Exception {
 		List<String> emptyList = emptyList();
-		assertEquals("", join(emptyList, ", "));
+		assertEquals("", join(emptyList, ","));
+	}
+
+	@Test
+	public void joinTwoStringsWithJoinStrings() throws Exception {
+		List<String> twoStrings = asList("one", "two");
+		assertEquals("one,two", joinStrings(twoStrings, ","));
+	}
+
+	@Test
+	public void createEmptyStringWhenJoiningEmptyListWithJoinStrings() throws Exception {
+		List<String> emptyList = emptyList();
+		assertEquals("", joinStrings(emptyList, ","));
 	}
 }
