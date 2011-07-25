@@ -28,7 +28,7 @@ public class UtilsTest {
 	@Test
 	public void joinTwoStrings() throws Exception {
 		List<String> twoStrings = asList("one", "two");
-		assertEquals("one, two", join(twoStrings, ", "));
+		assertEquals("one, two", join(twoStrings, ","));
 	}
 
 	@Test
