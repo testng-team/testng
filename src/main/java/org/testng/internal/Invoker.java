@@ -38,6 +38,7 @@ import org.testng.xml.XmlTest;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -493,7 +494,15 @@ public class Invoker implements IInvoker {
     // Mark this method with the current thread id
     tm.setId(ThreadUtil.currentThreadInfo());
 
-    for(Object targetInstance : instances) {
+    // Only a @BeforeMethod/@AfterMethod needs to be run before each instance, all the other
+    // configuration methods only need to be run once
+    List<Object> actualInstances = Lists.newArrayList();
+    if (tm.isBeforeMethodConfiguration() || tm.isAfterMethodConfiguration()) {
+      actualInstances.addAll(Arrays.asList(instances));
+    } else {
+      actualInstances.add(instances[0]);
+    }
+    for(Object targetInstance : actualInstances) {
       InvokedMethod invokedMethod= new InvokedMethod(targetInstance,
                                           tm,
                                           params,

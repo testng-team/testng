@@ -57,18 +57,6 @@
       <class name="test.sample.AfterClassCalledAtEnd"/>
       <class name="test.GraphTest"/>
       <class name="test.DynamicGraphTest"/>
-      <class name="test.configuration.BaseGroupsTest" />
-      <class name="test.configuration.BeforeClassThreadTest" />
-      <class name="test.configuration.BeforeTestOrderingTest" />
-      <class name="test.configuration.ConfigurationTest"/>
-      <class name="test.configuration.ExternalConfigurationClass"/>
-      <class name="test.configuration.GroupsTest"/>
-      <class name="test.configuration.MethodCallOrderTest"/>
-      <class name="test.configuration.MultipleBeforeGroupTest" />
-      <class name="test.configuration.ReflectMethodParametrizedConfigurationMethodTest" />
-      <class name="test.configuration.SuiteFactoryOnceTest" />
-      <class name="test.configuration.SuiteTest" />
-      <class name="test.configuration.VerifySuiteTest" />
       <class name="test.privatemethod.PrivateMethodTest$PrivateMethodInnerTest"/>
       <class name="test.multiple.TestMultiple"/>
       <class name="test.ClassConfigurations"/>
@@ -292,6 +280,9 @@
     <classes>
       <class name="test.timeout.TimeOutTest" />
       <class name="test.timeout.TimeOutFromXmlTest"/>
+<!--
+      <class name="test.timeout.TimeOutThreadLocalSampleTest"/>
+-->
     </classes>
   </test>
 
@@ -642,6 +633,24 @@
   <test name="Sanity Check">
     <classes>
       <class name="test.sanitycheck.CheckTestNamesTest" />
+    </classes>
+  </test>
+
+  <test name="Configuration">
+    <classes>
+      <class name="test.configuration.BaseGroupsTest" />
+      <class name="test.configuration.BeforeClassThreadTest" />
+      <class name="test.configuration.BeforeTestOrderingTest" />
+      <class name="test.configuration.ConfigurationTest"/>
+      <class name="test.configuration.ExternalConfigurationClass"/>
+      <class name="test.configuration.GroupsTest"/>
+      <class name="test.configuration.MethodCallOrderTest"/>
+      <class name="test.configuration.MultipleBeforeGroupTest" />
+      <class name="test.configuration.ReflectMethodParametrizedConfigurationMethodTest" />
+      <class name="test.configuration.SuiteFactoryOnceTest" />
+      <class name="test.configuration.SuiteTest" />
+      <class name="test.configuration.VerifySuiteTest" />
+      <class name="test.configuration.SingleConfigurationTest" />
     </classes>
   </test>
 </suite>

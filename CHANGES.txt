@@ -4,6 +4,7 @@ Added: xmlpathinjar to the TestNG ant task
 Added: TestNG can now invoke package protected constructors
 Added: Injectors created by the @Guice annotation are now shared at the <test> level
 Added: IConfigurationListener is now a public listener
+Fixed: @BeforeTest was invoked multiple times if a factory is used
 Fixed: https://github.com/cbeust/testng/issues/57 Allow usage of package protected constructor of test classes
 Fixed: Injecting both Object[] and Method in @BeforeMethod didn't always work
 Fixed: testng-results.xml now lists the results chronologically
