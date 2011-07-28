@@ -163,6 +163,7 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
     clone.setRetryAnalyzer(getRetryAnalyzer());
     clone.setSkipFailedInvocations(skipFailedInvocations());
     clone.setInvocationNumbers(getInvocationNumbers());
+    clone.setPriority(getPriority());
 
     return clone;
   }
