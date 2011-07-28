@@ -3,6 +3,7 @@ package test.thread;
 import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.collections.Lists;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -36,6 +37,11 @@ public class ParallelTestTest extends BaseTest {
     verifyExpected(XmlSuite.PARALLEL_CLASSES, 2);
   }
 
+  @Test(enabled = false, description = "Need to implement parallel factories")
+  public void verifyParallelClassesWithFactory() {
+    verifyExpected(XmlSuite.PARALLEL_CLASSES, 2, ParallelWithFactorySampleTest.class.getName());
+  }
+
   public static final String CLASS1 = "test.thread.Test1Test";
   public static final String CLASS2 = "test.thread.Test2Test";
 
@@ -47,11 +53,17 @@ public class ParallelTestTest extends BaseTest {
   }
 
   private void verifyExpected(String parallelMode, int expectedThreadCount) {
+    verifyExpected(parallelMode, expectedThreadCount, CLASS1, CLASS2);
+  }
+
+  private void verifyExpected(String parallelMode, int expectedThreadCount,
+      String... classNames) {
     XmlSuite xmlSuite = new XmlSuite();
     xmlSuite.setName("ParallelTestTest");
     xmlSuite.setParallel(parallelMode);
-    createTest(xmlSuite, CLASS1);
-    createTest(xmlSuite, CLASS2);
+    for (String cn : classNames) {
+      createTest(xmlSuite, cn);
+    }
 
     TestNG tng = new TestNG();
     tng.setVerbose(0);
@@ -61,9 +73,9 @@ public class ParallelTestTest extends BaseTest {
 
     tng.run();
 
-    Map<Long, Long>[] maps = new Map[] {
-        Helper.getMap(CLASS1),
-        Helper.getMap(CLASS2),
+    List<Map<Long, Long>> maps = Lists.newArrayList();
+    for (String c : classNames) {
+      maps.add(Helper.getMap(c));
     };
 
     Map<Long, Long> mergedMap = new HashMap<Long, Long>();
