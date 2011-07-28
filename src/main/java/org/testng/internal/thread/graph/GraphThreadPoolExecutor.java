@@ -1,5 +1,6 @@
 package org.testng.internal.thread.graph;
 
+import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.internal.DynamicGraph;
 import org.testng.internal.DynamicGraph.Status;
@@ -35,6 +36,10 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
     ppp("Initializing executor with " + corePoolSize + " threads and following graph " + graph);
     m_graph = graph;
     m_factory = factory;
+
+    if (m_graph.getFreeNodes().isEmpty()) {
+      throw new TestNGException("The graph of methods contains a cycle:" + graph.getEdges());
+    }
   }
 
   public void run() {

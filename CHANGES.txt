@@ -5,6 +5,7 @@ Added: TestNG can now invoke package protected constructors
 Added: Injectors created by the @Guice annotation are now shared at the <test> level
 Added: IConfigurationListener is now a public listener
 Fixed: Better ordering with mixed priorities and dependencies
+Fixed: Improved detection of graph cycles in parallel runs
 Fixed: @BeforeTest was invoked multiple times if a factory is used
 Fixed: https://github.com/cbeust/testng/issues/57 Allow usage of package protected constructor of test classes
 Fixed: Injecting both Object[] and Method in @BeforeMethod didn't always work

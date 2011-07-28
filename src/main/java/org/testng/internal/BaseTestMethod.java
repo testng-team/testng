@@ -8,7 +8,6 @@ import org.testng.annotations.ITestOrConfiguration;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.IDataProvidable;
 import org.testng.internal.thread.IAtomicInteger;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.xml.XmlTest;
@@ -41,8 +40,6 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   protected String[] m_afterGroups = {};
   private boolean m_isAlwaysRun;
 
-  // Methods are not serialized, but we can serialize their hashCode
-  private final String m_signature;
   private final String m_methodName;
   // If a depended group is not found
   private String m_missingGroup;
@@ -80,7 +77,6 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     m_method = com;
     m_methodName = com.getName();
     m_annotationFinder = annotationFinder;
-    m_signature = initSignature();
   }
 
   /**
@@ -486,15 +482,6 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    * @return
    */
   protected String getSignature() {
-    return m_signature;
-  }
-
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @return
-   */
-  private String initSignature() {
     String cls = m_method.getDeclaringClass().getName();
     StringBuffer result = new StringBuffer(cls + "." + m_method.getName() + "(");
     int i = 0;
@@ -505,9 +492,9 @@ public abstract class BaseTestMethod implements ITestNGMethod {
       result.append(p.getName());
     }
     result.append(")");
+    result.append("(" + getPriority() + ")");
 
     return result.toString();
-
   }
 
   /**

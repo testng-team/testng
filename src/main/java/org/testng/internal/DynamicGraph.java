@@ -12,7 +12,7 @@ import java.util.Set;
  * Representation of the graph of methods.
  */
 public class DynamicGraph<T> {
-  private static final boolean DEBUG = false;
+  private static final boolean DEBUG = true;
 
   private Set<T> m_nodesReady = Sets.newHashSet();
   private Set<T> m_nodesRunning = Sets.newHashSet();
@@ -179,5 +179,9 @@ public class DynamicGraph<T> {
     result.append("}\n");
 
     return result.toString();
+  }
+
+  public ListMultiMap<T, T> getEdges() {
+    return m_dependingOn;
   }
 }
