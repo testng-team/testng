@@ -85,7 +85,9 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     StringBuilder result = new StringBuilder("[Worker thread:" + Thread.currentThread().getId()
         + " priority:" + getPriority() + " ");
 
-    result.append(m_methodInstances[0].getMethod());
+    for (IMethodInstance m : m_methodInstances) {
+      result.append(m.getMethod()).append(" ");
+    }
     result.append("]");
 
     return result.toString();
@@ -261,9 +263,14 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     return getPriority() - other.getPriority();
   }
 
+  /**
+   * The priority of a worker is the priority of the first method it's going to run.
+   */
   @Override
   public int getPriority() {
-    return m_methodInstances.length == 1 ? m_methodInstances[0].getMethod().getPriority() : 0;
+    return m_methodInstances.length > 0
+        ? m_methodInstances[0].getMethod().getPriority()
+        : 0;
   }
 }
 
