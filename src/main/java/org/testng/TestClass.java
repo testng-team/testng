@@ -81,8 +81,8 @@ class TestClass extends NoOpTestClass implements ITestClass {
     m_runInfo = runInfo;
     m_testMethodFinder = testMethodFinder;
     m_annotationFinder = annotationFinder;
-    initMethods();
     initTestClassesAndInstances();
+    initMethods();
   }
 
   private void initTestClassesAndInstances() {
