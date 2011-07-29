@@ -61,22 +61,26 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   private int m_priority;
 
   private XmlTest m_xmlTest;
+  private Object m_instance;
 
   /**
    * Constructs a <code>BaseTestMethod</code> TODO cquezel JavaDoc.
    *
    * @param method
    * @param annotationFinder
+   * @param instance 
    */
-  public BaseTestMethod(Method method, IAnnotationFinder annotationFinder) {
-    this(new ConstructorOrMethod(method), annotationFinder);
+  public BaseTestMethod(Method method, IAnnotationFinder annotationFinder, Object instance) {
+    this(new ConstructorOrMethod(method), annotationFinder, instance);
   }
 
-  public BaseTestMethod(ConstructorOrMethod com, IAnnotationFinder annotationFinder) {
+  public BaseTestMethod(ConstructorOrMethod com, IAnnotationFinder annotationFinder,
+      Object instance) {
     m_methodClass = com.getDeclaringClass();
     m_method = com;
     m_methodName = com.getName();
     m_annotationFinder = annotationFinder;
+    m_instance = instance;
   }
 
   /**
@@ -168,7 +172,19 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    */
   @Override
   public Object[] getInstances() {
-    return m_testClass.getInstances(false);
+    if (m_instance != null) {
+      return new Object[] { m_instance };
+    } else {
+      System.out.println("NULL INSTANCES");
+      return m_testClass.getInstances(false);
+    }
+  }
+
+  protected Object getInstance() {
+    if (m_instance == null) {
+      System.out.println("NULL INSTANCE");
+    }
+    return m_instance;
   }
 
   /**
@@ -492,7 +508,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
       result.append(p.getName());
     }
     result.append(")");
-    result.append("(" + getPriority() + ")");
+    result.append("[" + getPriority() + ", " + m_instance + "]");
 
     return result.toString();
   }
@@ -741,4 +757,5 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   public ConstructorOrMethod getConstructorOrMethod() {
     return m_method;
   }
+
 }

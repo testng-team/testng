@@ -85,7 +85,8 @@ public class JUnitMethodFinder implements ITestMethodFinder {
       Method[] allMethods = current.getDeclaredMethods();
       for(Method allMethod : allMethods) {
         ITestNGMethod m = new TestNGMethod(/* allMethods[i].getDeclaringClass(), */ allMethod,
-            m_annotationFinder, null);
+            m_annotationFinder, null,
+            null); /* @@@ */
         Method method = m.getMethod();
         String methodName = method.getName();
         if(filter.accept(method) && !acceptedMethodNames.contains(methodName)) {

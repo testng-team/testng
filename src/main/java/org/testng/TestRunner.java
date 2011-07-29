@@ -479,7 +479,7 @@ public class TestRunner
                                                                 m_annotationFinder,
                                                                 false /* unique */,
                                                                 m_excludedMethods);
-    m_classMethodMap = new ClassMethodMap(m_allTestMethods);
+    m_classMethodMap = new ClassMethodMap(testMethods);
 
     m_afterXmlTestMethods = MethodHelper.collectAndOrderMethods(afterXmlTestMethods,
                                                               false /* forTests */,

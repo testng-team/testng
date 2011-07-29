@@ -182,7 +182,8 @@ public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
                                isBeforeTestMethod,
                                isAfterTestMethod,
                                beforeGroups,
-                               afterGroups);
+                               afterGroups,
+                               null); /* @@@ */
       }
     }
 
@@ -210,7 +211,8 @@ public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
                                       boolean isBeforeTestMethod,
                                       boolean isAfterTestMethod,
                                       String[] beforeGroups,
-                                      String[] afterGroups)
+                                      String[] afterGroups,
+                                      Object instance)
   {
     if(method.getDeclaringClass().isAssignableFrom(clazz)) {
       ITestNGMethod confMethod = new ConfigurationMethod(method,
@@ -224,7 +226,8 @@ public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
                                                          isBeforeTestMethod,
                                                          isAfterTestMethod,
                                                          beforeGroups,
-                                                         afterGroups);
+                                                         afterGroups,
+                                                         instance);
       results.add(confMethod);
     }
   }

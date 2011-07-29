@@ -34,12 +34,13 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
    * @param method
    * @param finder
    */
-  public TestNGMethod(Method method, IAnnotationFinder finder, XmlTest xmlTest) {
-    this(method, finder, true, xmlTest);
+  public TestNGMethod(Method method, IAnnotationFinder finder, XmlTest xmlTest, Object instance) {
+    this(method, finder, true, xmlTest, instance);
   }
 
-  private TestNGMethod(Method method, IAnnotationFinder finder, boolean initialize, XmlTest xmlTest) {
-    super(method, finder);
+  private TestNGMethod(Method method, IAnnotationFinder finder, boolean initialize,
+      XmlTest xmlTest, Object instance) {
+    super(method, finder, instance);
 
     if(initialize) {
       init(xmlTest);
@@ -138,8 +139,9 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
    * @see org.testng.internal.BaseTestMethod#clone()
    */
   @Override
-  public TestNGMethod clone() {
-    TestNGMethod clone= new TestNGMethod(getMethod(), getAnnotationFinder(), false, getXmlTest());
+  public BaseTestMethod clone() {
+    TestNGMethod clone= new TestNGMethod(getMethod(), getAnnotationFinder(), false, getXmlTest(),
+        getInstance());
     ITestClass tc= getTestClass();
     NoOpTestClass testClass= new NoOpTestClass(tc);
     testClass.setBeforeTestMethods(clone(tc.getBeforeTestMethods()));

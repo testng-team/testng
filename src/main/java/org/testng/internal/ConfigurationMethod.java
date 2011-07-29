@@ -56,9 +56,10 @@ public class ConfigurationMethod extends BaseTestMethod {
                               boolean isAfterMethod,
                               String[] beforeGroups,
                               String[] afterGroups,
-                              boolean initialize)
+                              boolean initialize,
+                              Object instance)
   {
-    super(method, annotationFinder);
+    super(method, annotationFinder, instance);
     if(initialize) {
       init();
     }
@@ -91,10 +92,12 @@ public class ConfigurationMethod extends BaseTestMethod {
                              boolean isBeforeMethod,
                              boolean isAfterMethod,
                              String[] beforeGroups,
-                             String[] afterGroups)
+                             String[] afterGroups,
+                             Object instance)
   {
     this(method, annotationFinder, isBeforeSuite, isAfterSuite, isBeforeTest, isAfterTest,
-        isBeforeClass, isAfterClass, isBeforeMethod, isAfterMethod, beforeGroups, afterGroups, true);
+        isBeforeClass, isAfterClass, isBeforeMethod, isAfterMethod, beforeGroups, afterGroups,
+        true, instance);
   }
 
   private static ITestNGMethod[] createMethods(ITestNGMethod[] methods, IAnnotationFinder finder,
@@ -107,7 +110,8 @@ public class ConfigurationMethod extends BaseTestMethod {
       boolean isBeforeMethod,
       boolean isAfterMethod,
       String[] beforeGroups,
-      String[] afterGroups)
+      String[] afterGroups,
+      Object instance)
   {
     List<ITestNGMethod> result = Lists.newArrayList();
     for(int i = 0; i < methods.length; i++) {
@@ -122,7 +126,8 @@ public class ConfigurationMethod extends BaseTestMethod {
                                           isBeforeMethod,
                                           ! isBeforeMethod,
                                           new String[0],
-                                          new String[0]));
+                                          new String[0],
+                                          instance));
     }
 
     return result.toArray(new ITestNGMethod[result.size()]);
@@ -130,7 +135,7 @@ public class ConfigurationMethod extends BaseTestMethod {
 
 
   public static ITestNGMethod[] createSuiteConfigurationMethods(ITestNGMethod[] methods,
-      IAnnotationFinder annotationFinder, boolean isBefore) {
+      IAnnotationFinder annotationFinder, boolean isBefore, Object instance) {
     return createMethods(methods, annotationFinder,
         isBefore,
         !isBefore,
@@ -141,11 +146,12 @@ public class ConfigurationMethod extends BaseTestMethod {
         false,
         false,
         new String[0],
-        new String[0]);
+        new String[0],
+        instance);
   }
 
   public static ITestNGMethod[] createTestConfigurationMethods(ITestNGMethod[] methods,
-      IAnnotationFinder annotationFinder, boolean isBefore) {
+      IAnnotationFinder annotationFinder, boolean isBefore, Object instance) {
     ITestNGMethod[] result = new ITestNGMethod[methods.length];
 
     for(int i = 0; i < methods.length; i++) {
@@ -160,14 +166,15 @@ public class ConfigurationMethod extends BaseTestMethod {
                                           false,
                                           false,
                                           new String[0],
-                                          new String[0]);
+                                          new String[0],
+                                          instance);
     }
 
     return result;
   }
 
   public static ITestNGMethod[] createClassConfigurationMethods(ITestNGMethod[] methods,
-      IAnnotationFinder annotationFinder, boolean isBefore)  {
+      IAnnotationFinder annotationFinder, boolean isBefore, Object instance)  {
     return createMethods(methods, annotationFinder,
         false,
         false,
@@ -178,11 +185,12 @@ public class ConfigurationMethod extends BaseTestMethod {
         false,
         false,
         new String[0],
-        new String[0]);
+        new String[0],
+        instance);
   }
 
   public static ITestNGMethod[] createBeforeConfigurationMethods(ITestNGMethod[] methods,
-      IAnnotationFinder annotationFinder, boolean isBefore)
+      IAnnotationFinder annotationFinder, boolean isBefore, Object instance)
   {
     ITestNGMethod[] result = new ITestNGMethod[methods.length];
     for(int i = 0; i < methods.length; i++) {
@@ -197,14 +205,15 @@ public class ConfigurationMethod extends BaseTestMethod {
           false,
           false,
           isBefore ? methods[i].getBeforeGroups() : new String[0],
-          new String[0]);
+          new String[0],
+          instance);
       }
 
     return result;
   }
 
   public static ITestNGMethod[] createAfterConfigurationMethods(ITestNGMethod[] methods,
-      IAnnotationFinder annotationFinder, boolean isBefore)
+      IAnnotationFinder annotationFinder, boolean isBefore, Object instance)
   {
     ITestNGMethod[] result = new ITestNGMethod[methods.length];
     for(int i = 0; i < methods.length; i++) {
@@ -219,14 +228,15 @@ public class ConfigurationMethod extends BaseTestMethod {
           false,
           false,
           new String[0],
-          isBefore ? new String[0] : methods[i].getAfterGroups());
+          isBefore ? new String[0] : methods[i].getAfterGroups(),
+          instance);
       }
 
     return result;
   }
 
   public static ITestNGMethod[] createTestMethodConfigurationMethods(ITestNGMethod[] methods,
-      IAnnotationFinder annotationFinder, boolean isBefore) {
+      IAnnotationFinder annotationFinder, boolean isBefore, Object instance) {
     return createMethods(methods, annotationFinder,
         false,
         false,
@@ -237,7 +247,8 @@ public class ConfigurationMethod extends BaseTestMethod {
         isBefore,
         !isBefore,
         new String[0],
-        new String[0]);
+        new String[0],
+        instance);
   }
 
   /**

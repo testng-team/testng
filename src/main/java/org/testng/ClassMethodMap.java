@@ -2,6 +2,7 @@ package org.testng;
 
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.internal.TestNGMethod;
 
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,7 @@ public class ClassMethodMap {
   private Map<ITestClass, Set<Object>> m_beforeClassMethods = Maps.newHashMap();
   private Map<ITestClass, Set<Object>> m_afterClassMethods = Maps.newHashMap();
 
-  public ClassMethodMap(ITestNGMethod[] methods) {
+  public ClassMethodMap(List<ITestNGMethod> methods) {
     for (ITestNGMethod m : methods) {
       for (Object instance : m.getInstances()) {
         List<ITestNGMethod> l = m_classMap.get(instance);
@@ -41,8 +42,12 @@ public class ClassMethodMap {
    */
   public synchronized boolean removeAndCheckIfLast(ITestNGMethod m, Object instance) {
     List<ITestNGMethod> l = m_classMap.get(instance);
-    l.remove(m);
-    return l.size() == 0;
+    if (l != null) {
+      l.remove(m);
+      return l.size() == 0;
+    } else {
+      throw new AssertionError("l should not be null");
+    }
   }
 
   private Class<?> getMethodClass(ITestNGMethod m) {

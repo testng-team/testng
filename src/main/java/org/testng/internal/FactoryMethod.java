@@ -37,7 +37,7 @@ public class FactoryMethod extends BaseTestMethod {
                        IAnnotationFinder annotationFinder,
                        ITestContext testContext)
   {
-    super(com, annotationFinder);
+    super(com, annotationFinder, instance);
 //    Utils.checkInstanceOrStatic(instance, method);
     Class<?> declaringClass = com.getDeclaringClass();
     if (instance != null && ! declaringClass.isAssignableFrom(instance.getClass())) {
