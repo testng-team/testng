@@ -1068,7 +1068,7 @@ public class TestRunner
       for (Map.Entry<Object, List<ITestNGMethod>> es : map.entrySet()) {
         List<MethodInstance> instances = Lists.newArrayList();
         for (ITestNGMethod m : es.getValue()) {
-          instances.add(new MethodInstance(m, m.getInstance()));
+          instances.add(new MethodInstance(m));
         }
 
         workers.add(new TestMethodWorker(m_invoker,
@@ -1133,8 +1133,7 @@ public class TestRunner
   private List<MethodInstance> methodsToMultipleMethodInstances(ITestNGMethod... sl) {
     List<MethodInstance> vResult = Lists.newArrayList();
     for (ITestNGMethod m : sl) {
-      Object instance = m.getInstance();
-      vResult.add(new MethodInstance(m, instance));
+      vResult.add(new MethodInstance(m));
     }
 
     return vResult;
@@ -1143,7 +1142,7 @@ public class TestRunner
   private MethodInstance[] methodsToMethodInstances(List<ITestNGMethod> sl) {
     MethodInstance[] result = new MethodInstance[sl.size()];
     for (int i = 0; i < result.length; i++) {
-      result[i] = new MethodInstance(sl.get(i), sl.get(i).getInstance());
+      result[i] = new MethodInstance(sl.get(i));
     }
 
     return result;

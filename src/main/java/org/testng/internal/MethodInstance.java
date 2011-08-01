@@ -11,14 +11,9 @@ import java.util.List;
 
 public class MethodInstance implements IMethodInstance {
   private ITestNGMethod m_method;
-  private Object m_instance;
 
-  public MethodInstance(ITestNGMethod method, Object instance) {
-    if (method.getInstance() != instance) {
-      System.out.println("MI:" + method.getInstance() + " " + instance);
-    }
+  public MethodInstance(ITestNGMethod method) {
     m_method = method;
-    m_instance = instance;
   }
 
   @Override
@@ -28,12 +23,17 @@ public class MethodInstance implements IMethodInstance {
 
   @Override
   public Object[] getInstances() {
-    return new Object[] { m_instance };
+    return new Object[] { getInstance() };
+  }
+
+  @Override
+  public Object getInstance() {
+    return m_method.getInstance();
   }
 
   @Override
   public String toString() {
-    return "[MethodInstance m:" + m_method + " i:" + m_instance;
+    return "[MethodInstance m:" + m_method + " i:" + getInstance();
   }
 
 

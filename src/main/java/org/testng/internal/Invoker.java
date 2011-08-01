@@ -1372,7 +1372,7 @@ public class Invoker implements IInvoker {
       clonedMethod.setInvocationCount(1);
       clonedMethod.setThreadPoolSize(1);
 
-      MethodInstance mi = new MethodInstance(clonedMethod, clonedMethod.getInstance());
+      MethodInstance mi = new MethodInstance(clonedMethod);
       workers.add(new SingleTestMethodWorker(this,
           mi,
           suite,

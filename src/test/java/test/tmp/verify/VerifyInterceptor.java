@@ -72,6 +72,11 @@ public class VerifyInterceptor implements IMethodInterceptor {
               return -1;
             }
           }
+
+          @Override
+          public Object getInstance() {
+            return tm.getInstance();
+          }
         });
       }
     }
