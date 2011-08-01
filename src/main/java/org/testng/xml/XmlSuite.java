@@ -41,6 +41,7 @@ public class XmlSuite implements Serializable, Cloneable {
   public static final String PARALLEL_TESTS = "tests";
   public static final String PARALLEL_METHODS = "methods";
   public static final String PARALLEL_CLASSES = "classes";
+  public static final String PARALLEL_INSTANCES = "instances";
   public static final String PARALLEL_NONE = "none";
 
   /** Configuration failure policy options */

@@ -714,7 +714,8 @@ public class TestRunner
     String parallelMode = xmlTest.getParallel();
     boolean parallel = XmlSuite.PARALLEL_METHODS.equals(parallelMode)
         || "true".equalsIgnoreCase(parallelMode)
-        || XmlSuite.PARALLEL_CLASSES.equals(parallelMode);
+        || XmlSuite.PARALLEL_CLASSES.equals(parallelMode)
+        || XmlSuite.PARALLEL_INSTANCES.equals(parallelMode);
 
     if (!parallel) {
       // sequential
@@ -869,8 +870,20 @@ public class TestRunner
    */
   @Override
   public List<IWorker<ITestNGMethod>> createWorkers(Set<ITestNGMethod> methods) {
-    List<IWorker<ITestNGMethod>> result = Lists.newArrayList();
+    List<IWorker<ITestNGMethod>> result;
+    if (XmlSuite.PARALLEL_INSTANCES.equals(m_xmlTest.getParallel())) {
+      result = createInstanceBasedParallelWorkers(methods);
+    } else {
+      result = createClassBasedParallelWorkers(methods);
+    }
+    return result;
+  }
 
+  /**
+   * Create workers for parallel="classes" and similar cases.
+   */
+  private List<IWorker<ITestNGMethod>> createClassBasedParallelWorkers(Set<ITestNGMethod> methods) {
+    List<IWorker<ITestNGMethod>> result = Lists.newArrayList();
     // Methods that belong to classes with a sequential=true or parallel=classes
     // attribute must all be run in the same worker
     Set<Class> sequentialClasses = Sets.newHashSet();
@@ -928,6 +941,36 @@ public class TestRunner
 
     // Sort by priorities
     Collections.sort(result);
+    return result;
+  }
+
+
+  /**
+   * Create workers for parallel="instances".
+   */
+  private List<IWorker<ITestNGMethod>>
+      createInstanceBasedParallelWorkers(Set<ITestNGMethod> methods) {
+    List<IWorker<ITestNGMethod>> result = Lists.newArrayList();
+    ListMultiMap<Object, ITestNGMethod> lmm = Maps.newListMultiMap();
+    for (ITestNGMethod m : methods) {
+      lmm.put(m.getInstance(), m);
+    }
+    for (Map.Entry<Object, List<ITestNGMethod>> es : lmm.getEntrySet()) {
+      List<IMethodInstance> methodInstances = Lists.newArrayList();
+      for (ITestNGMethod m : es.getValue()) {
+        methodInstances.add(new MethodInstance(m));
+      }
+      TestMethodWorker tmw = new TestMethodWorker(m_invoker,
+          methodInstances.toArray(new IMethodInstance[methodInstances.size()]),
+          m_xmlTest.getSuite(),
+          m_xmlTest.getParameters(),
+          m_allTestMethods,
+          m_groupMethods,
+          m_classMethodMap,
+          this);
+      result.add(tmw);
+    }
+
     return result;
   }
 

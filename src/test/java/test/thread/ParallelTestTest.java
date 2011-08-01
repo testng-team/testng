@@ -37,9 +37,14 @@ public class ParallelTestTest extends BaseTest {
     verifyExpected(XmlSuite.PARALLEL_CLASSES, 2);
   }
 
-  @Test(enabled = false, description = "Need to implement parallel factories")
+  @Test
   public void verifyParallelClassesWithFactory() {
-    verifyExpected(XmlSuite.PARALLEL_CLASSES, 2, ParallelWithFactorySampleTest.class.getName());
+    verifyExpected(XmlSuite.PARALLEL_INSTANCES, 2, ParallelWithFactorySampleTest.class.getName());
+  }
+
+  @Test
+  public void verifyNonParallelClassesWithFactory() {
+    verifyExpected(XmlSuite.PARALLEL_NONE, 1, ParallelWithFactorySampleTest.class.getName());
   }
 
   public static final String CLASS1 = "test.thread.Test1Test";
