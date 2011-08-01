@@ -51,8 +51,12 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
    * @return All the instances the methods will be invoked upon.
    * This will typically be an array of one object in the absence
    * of an @Factory annotation.
+   *
+   * @deprecated Use getInstance().
    */
   Object[] getInstances();
+
+  Object getInstance();
 
   /**
    * Needed for serialization.

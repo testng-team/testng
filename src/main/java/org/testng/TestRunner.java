@@ -1054,14 +1054,13 @@ public class TestRunner
 
     for (List<ITestNGMethod> sl : sequentialList) {
       for (ITestNGMethod m : sl) {
-        for (Object o : m.getInstances()) {
-          List<ITestNGMethod> l = map.get(o);
-          if (l == null) {
-            l = Lists.newArrayList();
-            map.put(o, l);
-          }
-          l.add(m);
+        Object o = m.getInstance();
+        List<ITestNGMethod> l = map.get(o);
+        if (l == null) {
+          l = Lists.newArrayList();
+          map.put(o, l);
         }
+        l.add(m);
       }
     }
 
@@ -1069,7 +1068,7 @@ public class TestRunner
       for (Map.Entry<Object, List<ITestNGMethod>> es : map.entrySet()) {
         List<MethodInstance> instances = Lists.newArrayList();
         for (ITestNGMethod m : es.getValue()) {
-          instances.add(new MethodInstance(m, new Object[] { es.getKey() }));
+          instances.add(new MethodInstance(m, m.getInstance()));
         }
 
         workers.add(new TestMethodWorker(m_invoker,
@@ -1128,13 +1127,14 @@ public class TestRunner
     return result;
   }
 
+  /**
+   * @@@ remove this
+   */
   private List<MethodInstance> methodsToMultipleMethodInstances(ITestNGMethod... sl) {
     List<MethodInstance> vResult = Lists.newArrayList();
     for (ITestNGMethod m : sl) {
-      Object[] instances = m.getInstances();
-      for (Object instance : instances) {
-        vResult.add(new MethodInstance(m, new Object[] { instance }));
-      }
+      Object instance = m.getInstance();
+      vResult.add(new MethodInstance(m, instance));
     }
 
     return vResult;
@@ -1143,7 +1143,7 @@ public class TestRunner
   private MethodInstance[] methodsToMethodInstances(List<ITestNGMethod> sl) {
     MethodInstance[] result = new MethodInstance[sl.size()];
     for (int i = 0; i < result.length; i++) {
-      result[i] = new MethodInstance(sl.get(i), sl.get(i).getInstances());
+      result[i] = new MethodInstance(sl.get(i), sl.get(i).getInstance());
     }
 
     return result;

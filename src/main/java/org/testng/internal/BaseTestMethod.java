@@ -180,10 +180,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     }
   }
 
-  protected Object getInstance() {
-    if (m_instance == null) {
-      System.out.println("NULL INSTANCE");
-    }
+  public Object getInstance() {
     return m_instance;
   }
 

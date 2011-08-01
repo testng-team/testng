@@ -88,6 +88,11 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
+  public Object getInstance() {
+    return m_method.getInstance();
+  }
+
+  @Override
   public int getInvocationCount() {
     return 1;
   }

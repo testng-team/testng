@@ -116,6 +116,11 @@ public class JUnitUtils {
       return m_instances;
     }
 
+    @Override
+    public Object getInstance() {
+      return m_instances[0];
+    }
+
     /**
      * @see org.testng.ITestNGMethod#getMethod()
      */

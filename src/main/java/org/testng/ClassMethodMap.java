@@ -25,14 +25,13 @@ public class ClassMethodMap {
 
   public ClassMethodMap(List<ITestNGMethod> methods) {
     for (ITestNGMethod m : methods) {
-      for (Object instance : m.getInstances()) {
-        List<ITestNGMethod> l = m_classMap.get(instance);
-        if (l == null) {
-          l = Lists.newArrayList();
-          m_classMap.put(instance, l);
-        }
-        l.add(m);
+      Object instance = m.getInstance();
+      List<ITestNGMethod> l = m_classMap.get(instance);
+      if (l == null) {
+        l = Lists.newArrayList();
+        m_classMap.put(instance, l);
       }
+      l.add(m);
     }
   }
 
