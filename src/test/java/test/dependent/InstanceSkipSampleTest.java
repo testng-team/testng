@@ -48,8 +48,9 @@ public class InstanceSkipSampleTest {
   private void log(String s) {
     m_list.add(s + "#" + m_n);
   }
+
   @Override
   public String toString() {
-    return "[" + getClass().getName() + " " + m_n + "]";
+    return "" + m_n;
   }
 }

@@ -1,6 +1,7 @@
 package test;
 
 
+import org.testng.Assert;
 import org.testng.IInvokedMethodListener;
 import org.testng.ISuite;
 import org.testng.ITestResult;
@@ -9,6 +10,7 @@ import org.testng.SuiteRunner;
 import org.testng.TestListenerAdapter;
 import org.testng.TestRunner;
 import org.testng.annotations.BeforeMethod;
+import org.testng.collections.Lists;
 import org.testng.internal.Configuration;
 import org.testng.internal.IConfiguration;
 import org.testng.reporters.JUnitXMLReporter;
@@ -367,6 +369,19 @@ public class BaseTest extends BaseDistributedTest {
         ppp("   " + tr);
       }
     }
+  }
+
+  protected static void verifyInstanceNames(String title, Map<String, List<ITestResult>> actual,
+      String[] expected)
+  {
+    List<String> actualNames = Lists.newArrayList();
+    for (Map.Entry<String, List<ITestResult>> es : actual.entrySet()) {
+      for (ITestResult tr : es.getValue()) {
+        Object instance = tr.getInstance();
+        actualNames.add(es.getKey() + "#" + (instance != null ? instance.toString() : ""));
+      }
+    }
+    Assert.assertEqualsNoOrder(actualNames.toArray(), expected);
   }
 
   /**
