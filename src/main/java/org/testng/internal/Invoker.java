@@ -1023,8 +1023,7 @@ public class Invoker implements IInvoker {
       instance = fedInstance;
     }
     else {
-      Object[] instances = testClass.getInstances(true);
-      instance = instances[0];
+      instance = testMethod.getInstance();
     }
 
     ParameterBag bag= handleParameters(testMethod,

@@ -172,12 +172,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    */
   @Override
   public Object[] getInstances() {
-    if (m_instance != null) {
-      return new Object[] { m_instance };
-    } else {
-      System.out.println("NULL INSTANCES");
-      return m_testClass.getInstances(false);
-    }
+    return new Object[] { getInstance() };
   }
 
   public Object getInstance() {
