@@ -17,4 +17,13 @@ public class BaseFactory {
   @Test
   public void f() {
   }
+
+  /**
+   * @@@ for some reason, the test results get added in the wrong order if
+   * I don't define a toString() method. Need to investigate.
+   */
+  @Override
+  public String toString() {
+    return "[" + getClass().getName() + " " + getN() + "]";
+  }
 }

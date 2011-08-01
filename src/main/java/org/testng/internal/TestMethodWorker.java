@@ -222,14 +222,12 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       }
 
       for(Object inst: invokeInstances) {
-        System.out.println("Invoking after classes for instance " + inst);
         m_invoker.invokeConfigurations(testClass,
                                        afterClassMethods,
                                        m_suite,
                                        m_parameters,
                                        null, /* no parameter values */
                                        inst);
-        System.out.println("Done invoking after classes for instance " + inst);
       }
     }
   }

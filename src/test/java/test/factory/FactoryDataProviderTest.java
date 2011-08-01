@@ -43,8 +43,11 @@ public class FactoryDataProviderTest extends SimpleBaseTest {
     Assert.assertEquals(tla.getPassedTests().size(), 2);
     Iterator<ITestResult> iterator = tla.getPassedTests().iterator();
     BaseFactory t1 = (BaseFactory) iterator.next().getInstance();
-    Assert.assertEquals(t1.getN(), n1);
     BaseFactory t2 = (BaseFactory) iterator.next().getInstance();
+//    Assert.assertTrue(t1.getN() == n1 || t1.getN() == n2);
+//    Assert.assertTrue(t2.getN() == n1 || t2.getN() == n2);
+//    System.out.println("Results:" + t1.getN() + " " + t2.getN());
+    Assert.assertEquals(t1.getN(), n1);
     Assert.assertEquals(t2.getN(), n2);
   }
 }

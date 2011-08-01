@@ -28,6 +28,11 @@ public class FactoryInterleavingTest extends SimpleBaseTest {
         10, 11, 12, 13,
     };
     Integer[] logArray = LOG.toArray(new Integer[LOG.size()]);
-    Assert.assertTrue(Arrays.equals(logArray, valid1) || Arrays.equals(logArray, valid2));
+    if (! logArray.equals(valid1)) {
+      Assert.assertEquals(logArray, valid1);
+    } else if (! logArray.equals(valid2)) {
+      System.err.println(logArray + " " + valid2);
+      Assert.assertEquals(logArray, valid2);
+    }
   }
 }

@@ -1131,7 +1131,7 @@ public class TestRunner
   private List<MethodInstance> methodsToMultipleMethodInstances(ITestNGMethod... sl) {
     List<MethodInstance> vResult = Lists.newArrayList();
     for (ITestNGMethod m : sl) {
-      Object[] instances = m.getTestClass().getInstances(true);
+      Object[] instances = m.getInstances();
       for (Object instance : instances) {
         vResult.add(new MethodInstance(m, new Object[] { instance }));
       }
@@ -1143,7 +1143,7 @@ public class TestRunner
   private MethodInstance[] methodsToMethodInstances(List<ITestNGMethod> sl) {
     MethodInstance[] result = new MethodInstance[sl.size()];
     for (int i = 0; i < result.length; i++) {
-      result[i] = new MethodInstance(sl.get(i), sl.get(i).getTestClass().getInstances(true));
+      result[i] = new MethodInstance(sl.get(i), sl.get(i).getInstances());
     }
 
     return result;

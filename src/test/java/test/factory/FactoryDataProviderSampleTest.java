@@ -19,4 +19,13 @@ public class FactoryDataProviderSampleTest extends BaseFactory {
     };
   }
 
+  @Override
+  public String toString() {
+    return "[FactoryDataProviderSampleTest " + getN() + "]";
+  }
+
+  @Test
+  public void f() {
+//    System.out.println("Test:" + getN());
+  }
 }

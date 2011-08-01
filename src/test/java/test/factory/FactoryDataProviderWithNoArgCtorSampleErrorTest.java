@@ -21,4 +21,8 @@ public class FactoryDataProviderWithNoArgCtorSampleErrorTest extends BaseFactory
       new Object[] { 46 },
     };
   }
+  @Override
+  public String toString() {
+    return "[FactoryDataProviderWithNoArgCtorSampleErrorTest " + getN() + "]";
+  }
 }
