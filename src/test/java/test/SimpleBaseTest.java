@@ -19,14 +19,14 @@ public class SimpleBaseTest {
   // System property specifying where the resources (e.g. xml files) can be found
   private static final String TEST_RESOURCES_DIR = "test.resources.dir";
 
-  protected TestNG create() {
+  public static TestNG create() {
     TestNG result = new TestNG();
     result.setUseDefaultListeners(false);
     result.setVerbose(0);
     return result;
   }
 
-  protected TestNG create(Class<?> testClass) {
+  public static TestNG create(Class<?> testClass) {
     TestNG result = create();
     result.setTestClasses(new Class[] { testClass});
     return result;

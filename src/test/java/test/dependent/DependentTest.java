@@ -1,9 +1,14 @@
 package test.dependent;
 
+import org.testng.Assert;
+import org.testng.TestNG;
 import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
+
 import test.BaseTest;
+import test.SimpleBaseTest;
 
 public class DependentTest extends BaseTest {
 
@@ -104,6 +109,16 @@ public class DependentTest extends BaseTest {
     verifyTests("Failed", failed, getFailedTests());
     verifyTests("Skipped", skipped, getSkippedTests());
   }
+
+  @Test
+  public void instanceDependencies() {
+    TestNG tng = SimpleBaseTest.create(InstanceSkipSampleTest.class);
+    InstanceSkipSampleTest.m_list.clear();
+    tng.run();
+    Assert.assertEqualsNoOrder(
+        InstanceSkipSampleTest.m_list.toArray(), new Object[] { "f#1", "f#3", "g#1", "g#3" });
+  }
+
 } // DependentTest
 
 

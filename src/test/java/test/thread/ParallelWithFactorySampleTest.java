@@ -5,6 +5,7 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 public class ParallelWithFactorySampleTest extends BaseSequentialSample {
+  private int m_n;
 
   @DataProvider
   public static Object[][] dp() {
@@ -16,11 +17,18 @@ public class ParallelWithFactorySampleTest extends BaseSequentialSample {
 
   @Factory(dataProvider = "dp")
   public ParallelWithFactorySampleTest(int n) {
+    m_n = n;
   }
+
+
+  protected int getN() {
+    return m_n;
+  }
+
 
   @Test
   public void f1() {
-    addId("f1", Thread.currentThread().getId());
+    addId("f1 " + getN(), Thread.currentThread().getId());
   }
 
   @Test
