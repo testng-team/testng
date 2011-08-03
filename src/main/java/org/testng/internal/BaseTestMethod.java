@@ -501,7 +501,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
       result.append(p.getName());
     }
     result.append(")");
-    result.append("[" + getPriority() + ", " + m_instance + "]");
+    result.append("[pri:" + getPriority() + ", instance:" + m_instance + "]");
 
     return result.toString();
   }

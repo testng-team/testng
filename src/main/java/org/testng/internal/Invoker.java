@@ -1673,16 +1673,16 @@ public class Invoker implements IInvoker {
     return true;
   }
 
-  private boolean containsInstance(Set<ITestResult> failedresults, Object[] instances) {
-    for (ITestResult tr : failedresults) {
-      for (Object o : instances) {
-        if (o == tr.getInstance()) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
+//  private boolean containsInstance(Set<ITestResult> failedresults, Object[] instances) {
+//    for (ITestResult tr : failedresults) {
+//      for (Object o : instances) {
+//        if (o == tr.getInstance()) {
+//          return true;
+//        }
+//      }
+//    }
+//    return false;
+//  }
 
   /**
    * An exception was thrown by the test, determine if this method

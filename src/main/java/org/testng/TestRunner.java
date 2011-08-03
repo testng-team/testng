@@ -771,7 +771,7 @@ public class TestRunner
       // Make sure we create a graph based on the intercepted methods, otherwise an interceptor
       // removing methods would cause the graph never to terminate (because it would expect
       // termination from methods that never get invoked).
-      DynamicGraph<ITestNGMethod> graph = computeAlternateTestList(intercept(m_allTestMethods));
+      DynamicGraph<ITestNGMethod> graph = createDynamicGraph(intercept(m_allTestMethods));
       if (graph.getNodeCount() > 0) {
         GraphThreadPoolExecutor<ITestNGMethod> executor =
             new GraphThreadPoolExecutor<ITestNGMethod>(graph, this,
@@ -1271,7 +1271,7 @@ public class TestRunner
     return false;
   }
 
-  private DynamicGraph<ITestNGMethod> computeAlternateTestList(ITestNGMethod[] methods) {
+  private DynamicGraph<ITestNGMethod> createDynamicGraph(ITestNGMethod[] methods) {
     DynamicGraph<ITestNGMethod> result = new DynamicGraph<ITestNGMethod>();
     Map<String, ITestNGMethod> map = Maps.newHashMap();
     ListMultiMap<String, ITestNGMethod> groups = Maps.newListMultiMap();
