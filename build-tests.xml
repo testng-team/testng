@@ -6,7 +6,7 @@
   <property name="junit.report.dir" value="${report.dir}/test-tmp"/>
   <property name="testng.report.dir" value="${report.dir}"/>
 
-  <target name="all" depends="prepare,compile,run,reports"/>
+  <target name="all" depends="prepare,compile,run,reports,done"/>
 
   <!-- ==================================================================== -->
   <!-- Compile                                                              -->
@@ -183,4 +183,9 @@ TESTNG.REPORT.DIR=${testng.report.dir}
 
     <delete dir="${test.build.dir}"/>
   </target>
+
+  <target name="done">
+    <echo>Reports can be found in:    open ${testng.report.dir}/index.html</echo>
+  </target>
+
 </project>
