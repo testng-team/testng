@@ -14,7 +14,7 @@ public class FactoryOrderSampleTest {
   }
 
   private void log(String string) {
-    System.out.println(string);
+//    System.out.println("[FactoryOrderSampleTest] " + string);
   }
 
   @BeforeClass(groups = { "s1ds" })

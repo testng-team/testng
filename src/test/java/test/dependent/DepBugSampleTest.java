@@ -43,7 +43,4 @@ public class DepBugSampleTest {
     log("send");
   }
 
-  public void list() throws Exception {
-    log("list");
-  }
 }
