@@ -1,10 +1,14 @@
 package org.testng.internal;
 
+import com.google.inject.internal.Lists;
+
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.Sets;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -12,17 +16,27 @@ import java.util.Set;
  * Representation of the graph of methods.
  */
 public class DynamicGraph<T> {
-  private static final boolean DEBUG = true;
+  private static final boolean DEBUG = false;
 
-  private Set<T> m_nodesReady = Sets.newHashSet();
-  private Set<T> m_nodesRunning = Sets.newHashSet();
-  private Set<T> m_nodesFinished = Sets.newHashSet();
+  private Set<T> m_nodesReady = Sets.newLinkedHashSet();
+  private Set<T> m_nodesRunning = Sets.newLinkedHashSet();
+  private Set<T> m_nodesFinished = Sets.newLinkedHashSet();
+
+  private Comparator<? super T> m_nodeComparator = null;
 
   private ListMultiMap<T, T> m_dependedUpon = Maps.newListMultiMap();
   private ListMultiMap<T, T> m_dependingOn = Maps.newListMultiMap();
 
   public static enum Status {
     READY, RUNNING, FINISHED
+  }
+
+  /**
+   * Define a comparator for the nodes of this graph, which will be used
+   * to order the free nodes when they are asked.
+   */
+  public void setComparator(Comparator<? super T> c) {
+    m_nodeComparator = c;
   }
 
   /**
@@ -46,8 +60,8 @@ public class DynamicGraph<T> {
   /**
    * @return a set of all the nodes that don't depend on any other nodes.
    */
-  public Set<T> getFreeNodes() {
-    Set<T> result = Sets.newHashSet();
+  public List<T> getFreeNodes() {
+    List<T> result = Lists.newArrayList();
     for (T m : m_nodesReady) {
       // A node is free if...
 
@@ -57,6 +71,10 @@ public class DynamicGraph<T> {
       } else if (getUnfinishedNodes(m_dependedUpon.get(m)).size() == 0) {
         result.add(m);
       }
+    }
+    if (result != null && !result.isEmpty() && m_nodeComparator != null) {
+      Collections.sort(result, m_nodeComparator);
+      ppp("Nodes after sorting:" + result.get(0));
     }
     return result;
   }
@@ -154,7 +172,7 @@ public class DynamicGraph<T> {
     String RUNNING = "[style=filled color=green]";
     String FINISHED = "[style=filled color=grey]";
     StringBuilder result = new StringBuilder("digraph g {\n");
-    Set<T> freeNodes = getFreeNodes();
+    List<T> freeNodes = getFreeNodes();
     String color;
     for (T n : m_nodesReady) {
       color = freeNodes.contains(n) ? FREE : "";

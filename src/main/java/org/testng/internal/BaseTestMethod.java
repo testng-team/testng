@@ -491,7 +491,8 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    * @return
    */
   protected String getSignature() {
-    String cls = m_method.getDeclaringClass().getName();
+    String classLong = m_method.getDeclaringClass().getName();
+    String cls = classLong.substring(classLong.lastIndexOf(".") + 1);
     StringBuffer result = new StringBuffer(cls + "." + m_method.getName() + "(");
     int i = 0;
     for (Class<?> p : m_method.getParameterTypes()) {

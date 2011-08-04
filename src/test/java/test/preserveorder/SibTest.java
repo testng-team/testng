@@ -15,7 +15,7 @@ public class SibTest {
     // }
   }
 
-  @Test
+  @Test(dependsOnMethods = "sib1")
   public void sib2() {
     // System.out.println("sib2");
   }

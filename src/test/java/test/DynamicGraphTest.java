@@ -5,6 +5,7 @@ import org.testng.annotations.Test;
 import org.testng.internal.DynamicGraph;
 import org.testng.internal.DynamicGraph.Status;
 
+import java.util.List;
 import java.util.Set;
 
 public class DynamicGraphTest {
@@ -24,7 +25,7 @@ public class DynamicGraphTest {
     dg.addEdge("c1", "b2");
     dg.addNode("x");
     dg.addNode("y");
-    Set<String> freeNodes = dg.getFreeNodes();
+    List<String> freeNodes = dg.getFreeNodes();
     assertFreeNodesEquals(dg, new String[] {"a1", "a2", "y", "x"});
 
     dg.setStatus(freeNodes, Status.RUNNING);
@@ -48,7 +49,7 @@ public class DynamicGraphTest {
     dg.addEdge("b1", "a1");
     dg.addEdge("b1", "a2");
     dg.addNode("x");
-    Set<String> freeNodes = dg.getFreeNodes();
+    List<String> freeNodes = dg.getFreeNodes();
     assertFreeNodesEquals(dg, new String[] { "a1", "a2", "x" });
 
     dg.setStatus(freeNodes, Status.RUNNING);

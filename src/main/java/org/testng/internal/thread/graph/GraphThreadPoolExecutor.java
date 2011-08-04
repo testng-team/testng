@@ -29,11 +29,13 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
   private List<Runnable> m_activeRunnables = Lists.newArrayList();
   private IThreadWorkerFactory<T> m_factory;
   private List<String> m_dotFiles = Lists.newArrayList();
+  private int m_threadCount;
 
   public GraphThreadPoolExecutor(DynamicGraph<T> graph, IThreadWorkerFactory<T> factory, int corePoolSize,
       int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
     super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
     ppp("Initializing executor with " + corePoolSize + " threads and following graph " + graph);
+    m_threadCount = maximumPoolSize;
     m_graph = graph;
     m_factory = factory;
 
@@ -47,7 +49,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
       if (DOT_FILES) {
         m_dotFiles.add(m_graph.toDot());
       }
-      Set<T> freeNodes = m_graph.getFreeNodes();
+      List<T> freeNodes = m_graph.getFreeNodes();
       runNodes(freeNodes);
     }
   }
@@ -55,8 +57,8 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
   /**
    * Create one worker per node and execute them.
    */
-  private void runNodes(Set<T> nodes) {
-    List<IWorker<T>> runnables = m_factory.createWorkers(nodes);
+  private void runNodes(List<T> freeNodes) {
+    List<IWorker<T>> runnables = m_factory.createWorkers(freeNodes);
     for (IWorker<T> r : runnables) {
       m_activeRunnables.add(r);
       ppp("Added to active runnable");
@@ -64,6 +66,8 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
       ppp("Executing: " + r);
       try {
         execute(r);
+//        if (m_threadCount > 1) execute(r);
+//        else r.run();
       }
       catch(Exception ex) {
         ex.printStackTrace();
@@ -98,7 +102,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
         if (DOT_FILES) {
           m_dotFiles.add(m_graph.toDot());
         }
-        Set<T> freeNodes = m_graph.getFreeNodes();
+        List<T> freeNodes = m_graph.getFreeNodes();
         runNodes(freeNodes);
       }
     }
@@ -128,7 +132,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
 
   private void ppp(String string) {
     if (DEBUG) {
-      System.out.println("   [GraphThreadPoolExecutor] " + Thread.currentThread().getId() + " "
+      System.out.println("============ [GraphThreadPoolExecutor] " + Thread.currentThread().getId() + " "
           + string);
     }
   }

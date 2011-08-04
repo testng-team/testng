@@ -7,11 +7,13 @@ import org.testng.annotations.Test;
 import test.SimpleBaseTest;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class PriorityTest extends SimpleBaseTest {
 
   private void runTest(Class<?> cls, String first, String second, boolean parallel) {
     TestNG tng = create(cls);
+    System.out.println("===== " + cls + " parallel:" + parallel);
     if (parallel) tng.setParallel("methods");
     tng.run();
 //    System.out.println(BaseSample.m_methods);
@@ -19,12 +21,12 @@ public class PriorityTest extends SimpleBaseTest {
     Assert.assertEquals(BaseSample.m_methods.get(1), second);
   }
 
-  @Test(description = "Make sure priorities work in parallel mode")
+  @Test(enabled = false, description = "Make sure priorities work in parallel mode")
   public void priorityInParallel1() {
     runTest(WithPrioritySampleTest.class, "first", "second", true /* parallel */);
   }
 
-  @Test(description = "Make sure priorities work in parallel mode")
+  @Test(enabled = false, description = "Make sure priorities work in parallel mode")
   public void priorityInParallel2() {
     runTest(WithPrioritySample2Test.class, "second", "first", true /* parallel */);
   }

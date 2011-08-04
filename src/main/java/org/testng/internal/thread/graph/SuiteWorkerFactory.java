@@ -34,7 +34,7 @@ public class SuiteWorkerFactory implements IThreadWorkerFactory<ISuite>
    * @return list of suite runner workers
    */
   @Override
-  public List<IWorker<ISuite>> createWorkers(Set<ISuite> suites)
+  public List<IWorker<ISuite>> createWorkers(List<ISuite> suites)
   {
     List<IWorker<ISuite>> suiteWorkers = Lists.newArrayList();
     for (ISuite suiteRunner : suites) {

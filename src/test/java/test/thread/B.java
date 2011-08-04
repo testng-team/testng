@@ -1,12 +1,14 @@
 package test.thread;
 
+import com.google.inject.internal.Maps;
+
 import org.testng.annotations.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class B {
-  public static Map<Long, Long> m_threadIds;
+  public static Map<Long, Long> m_threadIds = Maps.newHashMap();
 
   public static void setUp() {
     m_threadIds = new HashMap<Long, Long>();

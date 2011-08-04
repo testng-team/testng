@@ -433,8 +433,10 @@ public class TestRunner
     //
     // Calculate groups methods
     //
-    Map<String, List<ITestNGMethod>> beforeGroupMethods= MethodGroupsHelper.findGroupsMethods(m_classMap.values(), true);
-    Map<String, List<ITestNGMethod>> afterGroupMethods= MethodGroupsHelper.findGroupsMethods(m_classMap.values(), false);
+    Map<String, List<ITestNGMethod>> beforeGroupMethods =
+        MethodGroupsHelper.findGroupsMethods(m_classMap.values(), true);
+    Map<String, List<ITestNGMethod>> afterGroupMethods =
+        MethodGroupsHelper.findGroupsMethods(m_classMap.values(), false);
 
     //
     // Walk through all the TestClasses, store their method
@@ -717,7 +719,8 @@ public class TestRunner
         || XmlSuite.PARALLEL_CLASSES.equals(parallelMode)
         || XmlSuite.PARALLEL_INSTANCES.equals(parallelMode);
 
-    if (!parallel) {
+    // @@@
+    if (false) { // (!parallel) {
       // sequential
       computeTestLists(sequentialList, parallelList, sequentialMapList);
 
@@ -767,27 +770,40 @@ public class TestRunner
     }
     else {
       // parallel
-      int threadCount = xmlTest.getThreadCount();
+      int threadCount = parallel ? xmlTest.getThreadCount() : 1;
       // Make sure we create a graph based on the intercepted methods, otherwise an interceptor
       // removing methods would cause the graph never to terminate (because it would expect
       // termination from methods that never get invoked).
       DynamicGraph<ITestNGMethod> graph = createDynamicGraph(intercept(m_allTestMethods));
-      if (graph.getNodeCount() > 0) {
-        GraphThreadPoolExecutor<ITestNGMethod> executor =
-            new GraphThreadPoolExecutor<ITestNGMethod>(graph, this,
-                threadCount, threadCount, 0, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>());
-        executor.run();
-        try {
-          long timeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
-          Utils.log("TestRunner", 2, "Starting executor for test " + m_xmlTest.getName()
-              + " with time out:" + timeOut + " milliseconds.");
-          executor.awaitTermination(timeOut, TimeUnit.MILLISECONDS);
-          executor.shutdownNow();
-        } catch (InterruptedException e) {
-          e.printStackTrace();
+//      if (parallel) {
+        if (graph.getNodeCount() > 0) {
+          GraphThreadPoolExecutor<ITestNGMethod> executor =
+              new GraphThreadPoolExecutor<ITestNGMethod>(graph, this,
+                  threadCount, threadCount, 0, TimeUnit.MILLISECONDS,
+                  new LinkedBlockingQueue<Runnable>());
+          executor.run();
+//          if (parallel) {
+            try {
+              long timeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
+              Utils.log("TestRunner", 2, "Starting executor for test " + m_xmlTest.getName()
+                  + " with time out:" + timeOut + " milliseconds.");
+              executor.awaitTermination(timeOut, TimeUnit.MILLISECONDS);
+              executor.shutdownNow();
+            } catch (InterruptedException e) {
+              e.printStackTrace();
+            }
+//          }
         }
-      }
+//      } else {
+//        List<ITestNGMethod> freeNodes = graph.getFreeNodes();
+//        while (! freeNodes.isEmpty()) {
+//          List<IWorker<ITestNGMethod>> runnables = createWorkers(freeNodes);
+//          for (IWorker<ITestNGMethod> r : runnables) {
+//            r.run();
+//          }
+//          freeNodes = graph.getFreeNodes();
+//        }
+//      }
     }
   }
 
@@ -869,7 +885,7 @@ public class TestRunner
    * be put in the same worker in order to run in the same thread.
    */
   @Override
-  public List<IWorker<ITestNGMethod>> createWorkers(Set<ITestNGMethod> methods) {
+  public List<IWorker<ITestNGMethod>> createWorkers(List<ITestNGMethod> methods) {
     List<IWorker<ITestNGMethod>> result;
     if (XmlSuite.PARALLEL_INSTANCES.equals(m_xmlTest.getParallel())) {
       result = createInstanceBasedParallelWorkers(methods);
@@ -882,7 +898,7 @@ public class TestRunner
   /**
    * Create workers for parallel="classes" and similar cases.
    */
-  private List<IWorker<ITestNGMethod>> createClassBasedParallelWorkers(Set<ITestNGMethod> methods) {
+  private List<IWorker<ITestNGMethod>> createClassBasedParallelWorkers(List<ITestNGMethod> methods) {
     List<IWorker<ITestNGMethod>> result = Lists.newArrayList();
     // Methods that belong to classes with a sequential=true or parallel=classes
     // attribute must all be run in the same worker
@@ -949,7 +965,7 @@ public class TestRunner
    * Create workers for parallel="instances".
    */
   private List<IWorker<ITestNGMethod>>
-      createInstanceBasedParallelWorkers(Set<ITestNGMethod> methods) {
+      createInstanceBasedParallelWorkers(List<ITestNGMethod> methods) {
     List<IWorker<ITestNGMethod>> result = Lists.newArrayList();
     ListMultiMap<Object, ITestNGMethod> lmm = Maps.newListMultiMap();
     for (ITestNGMethod m : methods) {
@@ -1273,48 +1289,64 @@ public class TestRunner
 
   private DynamicGraph<ITestNGMethod> createDynamicGraph(ITestNGMethod[] methods) {
     DynamicGraph<ITestNGMethod> result = new DynamicGraph<ITestNGMethod>();
+    result.setComparator(new Comparator<ITestNGMethod>() {
+      @Override
+      public int compare(ITestNGMethod o1, ITestNGMethod o2) {
+        return o1.getPriority() - o2.getPriority();
+      }
+    });
+
+    // If preserve-order was specified and the class order is A, B
+    // create a new set of dependencies where each method of B depends
+    // on all the methods of A
+    ListMultiMap<ITestNGMethod, ITestNGMethod> classDependencies = null;
+    if ("true".equalsIgnoreCase(getCurrentXmlTest().getPreserveOrder())) {
+      classDependencies = createClassDependencies(methods, getCurrentXmlTest());
+    }
+
     Map<String, ITestNGMethod> map = Maps.newHashMap();
     ListMultiMap<String, ITestNGMethod> groups = Maps.newListMultiMap();
 
     for (ITestNGMethod m : methods) {
-      map.put(m.getTestClass().getName() + "." + m.getMethodName(), m);
+      map.put(/* m.getTestClass().getName() + "." + */ m.getMethodName(), m);
       for (String g : m.getGroups()) {
         groups.put(g, m);
       }
     }
 
     // A map of each priority and the list of methods that have this priority
-    ListMultiMap<Integer, ITestNGMethod> methodsByPriority = Maps.newListMultiMap();
-    for (ITestNGMethod m : methods) {
-      methodsByPriority.put(m.getPriority(), m);
-    }
+//    ListMultiMap<Integer, ITestNGMethod> methodsByPriority = Maps.newListMultiMap();
+//    for (ITestNGMethod m : methods) {
+//      methodsByPriority.put(m.getPriority(), m);
+//    }
 
     // The priority map will contain at least one entry for all the methods that have
     // a priority of zero (the default). If it has more than one entry, then we know that
     // some test methods specified priorities, so we need to create dependencies
     // that reflect the priority order.
-    boolean hasPriorities = methodsByPriority.getSize() > 1;
+//    boolean hasPriorities = methodsByPriority.getSize() > 1;
 
     for (ITestNGMethod m : methods) {
       result.addNode(m);
 
       // Priority
-      if (hasPriorities) {
-        for (Map.Entry<Integer, List<ITestNGMethod>> e : methodsByPriority.getEntrySet()) {
-          if (e.getKey() < m.getPriority()) {
-            for (ITestNGMethod dm : e.getValue()) {
-              result.addEdge(m, dm);
-            }
-          }
-        }
-      }
+//      if (hasPriorities) {
+//        for (Map.Entry<Integer, List<ITestNGMethod>> e : methodsByPriority.getEntrySet()) {
+//          if (e.getKey() < m.getPriority()) {
+//            for (ITestNGMethod dm : e.getValue()) {
+//              result.addEdge(m, dm);
+//            }
+//          }
+//        }
+//      }
 
       // Dependent methods
       {
         String[] dependentMethods = m.getMethodsDependedUpon();
         if (dependentMethods != null) {
           for (String d : dependentMethods) {
-            ITestNGMethod dm = map.get(d);
+            String shortMethodName = d.substring(d.lastIndexOf(".") + 1);
+            ITestNGMethod dm = map.get(shortMethodName);
             if (dm == null) {
               throw new TestNGException("Method \"" + m
                   + "\" depends on nonexistent method \"" + d + "\"");
@@ -1339,6 +1371,67 @@ public class TestRunner
         }
       }
 
+      // Preserve order
+      if (classDependencies != null) {
+        for (Map.Entry<ITestNGMethod, List<ITestNGMethod>> es : classDependencies.getEntrySet()) {
+          for (ITestNGMethod dm : es.getValue()) {
+  //          System.out.println("@@@ Dep from:" + m + " to " + dm);
+            result.addEdge(dm, es.getKey());
+          }
+        }
+      }
+    }
+
+    List<ITestNGMethod> n = result.getFreeNodes();
+    return result;
+  }
+
+  private ListMultiMap<ITestNGMethod, ITestNGMethod> createClassDependencies(
+      ITestNGMethod[] methods, XmlTest test)
+  {
+
+    Map<String, List<ITestNGMethod>> classes = Maps.newHashMap();
+    List<XmlClass> sortedClasses = Lists.newArrayList();
+
+    for (XmlClass c : test.getXmlClasses()) {
+      classes.put(c.getName(), new ArrayList<ITestNGMethod>());
+      sortedClasses.add(c);
+    }
+
+    // Sort the classes based on their order of appearance in the XML
+    Collections.sort(sortedClasses, new Comparator<XmlClass>() {
+      @Override
+      public int compare(XmlClass arg0, XmlClass arg1) {
+        return arg0.getIndex() - arg1.getIndex();
+      }
+    });
+
+    Map<String, Integer> indexedClasses1 = Maps.newHashMap();
+    Map<Integer, String> indexedClasses2 = Maps.newHashMap();
+    int i = 0;
+    for (XmlClass c : sortedClasses) {
+      indexedClasses1.put(c.getName(), i);
+      indexedClasses2.put(i, c.getName());
+      i++;
+    }
+
+    ListMultiMap<String, ITestNGMethod> methodsFromClass = Maps.newListMultiMap();
+    for (ITestNGMethod m : methods) {
+      methodsFromClass.put(m.getTestClass().getName(), m);
+    }
+
+    ListMultiMap<ITestNGMethod, ITestNGMethod> result = Maps.newListMultiMap();
+    for (ITestNGMethod m : methods) {
+      int index = indexedClasses1.get(m.getTestClass().getName());
+      if (index > 0) {
+        // Make this method depend on all the methods of the class in the previous
+        // index
+        String classDependedUpon = indexedClasses2.get(index - 1);
+        List<ITestNGMethod> methodsDependedUpon = methodsFromClass.get(classDependedUpon);
+        for (ITestNGMethod mdu : methodsDependedUpon) {
+          result.put(mdu, m);
+        }
+      }
     }
 
     return result;

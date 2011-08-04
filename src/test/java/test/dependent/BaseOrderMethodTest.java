@@ -25,7 +25,7 @@ public class BaseOrderMethodTest {
     m_group2[0] = true;
   }
 
-  @Test(groups = { "3" }, dependsOnGroups = { "2.*" })
+  @Test(groups = { "3" }, dependsOnGroups = { "2.0" })
   public void third0() {
     verifyGroup(3, m_group2);
     m_group3[0] = true;
