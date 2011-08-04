@@ -1298,14 +1298,6 @@ public class TestRunner
       }
     });
 
-    // If preserve-order was specified and the class order is A, B
-    // create a new set of dependencies where each method of B depends
-    // on all the methods of A
-    ListMultiMap<ITestNGMethod, ITestNGMethod> classDependencies = null;
-    if ("true".equalsIgnoreCase(getCurrentXmlTest().getPreserveOrder())) {
-      classDependencies = createClassDependencies(methods, getCurrentXmlTest());
-    }
-
     Map<String, ITestNGMethod> map = Maps.newHashMap();
     ListMultiMap<String, ITestNGMethod> groups = Maps.newListMultiMap();
 
@@ -1374,13 +1366,31 @@ public class TestRunner
       }
 
       // Preserve order
-      if (classDependencies != null) {
+      if ("true".equalsIgnoreCase(getCurrentXmlTest().getPreserveOrder())) {
+        // If preserve-order was specified and the class order is A, B
+        // create a new set of dependencies where each method of B depends
+        // on all the methods of A
+        ListMultiMap<ITestNGMethod, ITestNGMethod> classDependencies
+            = createClassDependencies(methods, getCurrentXmlTest());
+
         for (Map.Entry<ITestNGMethod, List<ITestNGMethod>> es : classDependencies.getEntrySet()) {
           for (ITestNGMethod dm : es.getValue()) {
-  //          System.out.println("@@@ Dep from:" + m + " to " + dm);
             result.addEdge(dm, es.getKey());
           }
         }
+      }
+
+      // Group by instances
+      if (getCurrentXmlTest().groupByInstances()) {
+        ListMultiMap<ITestNGMethod, ITestNGMethod> instanceDependencies
+            = createInstanceDependencies(methods, getCurrentXmlTest());
+
+        for (Map.Entry<ITestNGMethod, List<ITestNGMethod>> es : instanceDependencies.getEntrySet()) {
+          for (ITestNGMethod dm : es.getValue()) {
+            result.addEdge(dm, es.getKey());
+          }
+        }
+
       }
     }
 
@@ -1388,10 +1398,40 @@ public class TestRunner
     return result;
   }
 
+  private ListMultiMap<ITestNGMethod, ITestNGMethod> createInstanceDependencies(
+      ITestNGMethod[] methods, XmlTest currentXmlTest)
+  {
+    ListMultiMap<Object, ITestNGMethod> instanceMap = Maps.newListMultiMap();
+    for (ITestNGMethod m : methods) {
+      instanceMap.put(m.getInstance(), m);
+    }
+
+    ListMultiMap<ITestNGMethod, ITestNGMethod> result = Maps.newListMultiMap();
+    Object previousInstance = null;
+    for (Map.Entry<Object, List<ITestNGMethod>> es : instanceMap.getEntrySet()) {
+      if (previousInstance == null) {
+        previousInstance = es.getKey();
+      } else {
+        List<ITestNGMethod> previousMethods = instanceMap.get(previousInstance);
+        Object currentInstance = es.getKey();
+        List<ITestNGMethod> currentMethods = instanceMap.get(currentInstance);
+        // Make all the methods from the current instance depend on the methods of
+        // the previous instance
+        for (ITestNGMethod cm : currentMethods) {
+          for (ITestNGMethod pm : previousMethods) {
+            result.put(cm, pm);
+          }
+        }
+        currentInstance = previousInstance;
+      }
+    }
+
+    return result;
+  }
+
   private ListMultiMap<ITestNGMethod, ITestNGMethod> createClassDependencies(
       ITestNGMethod[] methods, XmlTest test)
   {
-
     Map<String, List<ITestNGMethod>> classes = Maps.newHashMap();
     List<XmlClass> sortedClasses = Lists.newArrayList();
 

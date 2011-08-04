@@ -12,6 +12,7 @@ public class GroupByInstancesSampleTest {
   public static List<String> m_log = Lists.newArrayList();
 
   private static void log(String method, String country) {
+    System.out.println("LOG:" + method + "#" + country);
     m_log.add(method + "#" + country);
   }
 

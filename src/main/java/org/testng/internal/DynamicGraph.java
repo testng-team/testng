@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import com.google.inject.internal.Lists;
 
+import org.testng.ITestNGMethod;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.Sets;
@@ -72,10 +73,15 @@ public class DynamicGraph<T> {
         result.add(m);
       }
     }
-    if (result != null && !result.isEmpty() && m_nodeComparator != null) {
-      Collections.sort(result, m_nodeComparator);
-      ppp("Nodes after sorting:" + result.get(0));
+
+    // Sort the free nodes if requested (e.g. priorities)
+    if (result != null && ! result.isEmpty()) {
+      if (m_nodeComparator != null) {
+        Collections.sort(result, m_nodeComparator);
+        ppp("Nodes after sorting:" + result.get(0));
+      }
     }
+
     return result;
   }
 
@@ -202,4 +208,5 @@ public class DynamicGraph<T> {
   public ListMultiMap<T, T> getEdges() {
     return m_dependingOn;
   }
+
 }
