@@ -797,6 +797,7 @@ public class TestRunner
         }
       } else {
         List<ITestNGMethod> freeNodes = graph.getFreeNodes();
+//        System.out.println("Free nodes:" + freeNodes);
         while (! freeNodes.isEmpty()) {
           List<IWorker<ITestNGMethod>> runnables = createWorkers(freeNodes);
           for (IWorker<ITestNGMethod> r : runnables) {
@@ -804,6 +805,7 @@ public class TestRunner
           }
           graph.setStatus(freeNodes, Status.FINISHED);
           freeNodes = graph.getFreeNodes();
+//          System.out.println("Free nodes:" + freeNodes);
         }
       }
     }
@@ -1364,34 +1366,35 @@ public class TestRunner
           }
         }
       }
+    }
 
-      // Preserve order
-      if ("true".equalsIgnoreCase(getCurrentXmlTest().getPreserveOrder())) {
-        // If preserve-order was specified and the class order is A, B
-        // create a new set of dependencies where each method of B depends
-        // on all the methods of A
-        ListMultiMap<ITestNGMethod, ITestNGMethod> classDependencies
-            = createClassDependencies(methods, getCurrentXmlTest());
+    // Preserve order
+    if ("true".equalsIgnoreCase(getCurrentXmlTest().getPreserveOrder())) {
+      // If preserve-order was specified and the class order is A, B
+      // create a new set of dependencies where each method of B depends
+      // on all the methods of A
+      ListMultiMap<ITestNGMethod, ITestNGMethod> classDependencies
+          = createClassDependencies(methods, getCurrentXmlTest());
 
-        for (Map.Entry<ITestNGMethod, List<ITestNGMethod>> es : classDependencies.getEntrySet()) {
-          for (ITestNGMethod dm : es.getValue()) {
-            result.addEdge(dm, es.getKey());
-          }
+      for (Map.Entry<ITestNGMethod, List<ITestNGMethod>> es : classDependencies.getEntrySet()) {
+        for (ITestNGMethod dm : es.getValue()) {
+          result.addEdge(dm, es.getKey());
+        }
+      }
+    }
+
+    // Group by instances
+    if (getCurrentXmlTest().groupByInstances()) {
+      ListMultiMap<ITestNGMethod, ITestNGMethod> instanceDependencies
+          = createInstanceDependencies(methods, getCurrentXmlTest());
+
+      for (Map.Entry<ITestNGMethod, List<ITestNGMethod>> es : instanceDependencies.getEntrySet()) {
+        for (ITestNGMethod dm : es.getValue()) {
+          System.out.println("Instance dep:" + dm + " depends on\n   " + es.getKey());
+          result.addEdge(dm, es.getKey());
         }
       }
 
-      // Group by instances
-      if (getCurrentXmlTest().groupByInstances()) {
-        ListMultiMap<ITestNGMethod, ITestNGMethod> instanceDependencies
-            = createInstanceDependencies(methods, getCurrentXmlTest());
-
-        for (Map.Entry<ITestNGMethod, List<ITestNGMethod>> es : instanceDependencies.getEntrySet()) {
-          for (ITestNGMethod dm : es.getValue()) {
-            result.addEdge(dm, es.getKey());
-          }
-        }
-
-      }
     }
 
     List<ITestNGMethod> n = result.getFreeNodes();

@@ -77,6 +77,9 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
 
   private void setStatus(IWorker<T> worker, Status status) {
     ppp("Set status:" + worker + " status:" + status);
+    if (status == Status.FINISHED) {
+      m_activeRunnables.remove(worker);
+    }
     synchronized(m_graph) {
       for (T m : worker.getTasks()) {
         m_graph.setStatus(m, status);
@@ -87,7 +90,6 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
   @Override
   public void afterExecute(Runnable r, Throwable t) {
     ppp("Finished runnable:" + r);
-    m_activeRunnables.remove(r);
     setStatus((IWorker<T>) r, Status.FINISHED);
     synchronized(m_graph) {
       ppp("Node count:" + m_graph.getNodeCount() + " and "
