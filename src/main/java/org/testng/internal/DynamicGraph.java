@@ -2,7 +2,6 @@ package org.testng.internal;
 
 import com.google.inject.internal.Lists;
 
-import org.testng.ITestNGMethod;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.Sets;
@@ -11,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -66,10 +66,11 @@ public class DynamicGraph<T> {
     for (T m : m_nodesReady) {
       // A node is free if...
 
+      List<T> du = m_dependedUpon.get(m);
       // - no other nodes depend on it
       if (!m_dependedUpon.containsKey(m)) {
         result.add(m);
-      } else if (getUnfinishedNodes(m_dependedUpon.get(m)).size() == 0) {
+      } else if (getUnfinishedNodes(du).size() == 0) {
         result.add(m);
       }
     }
@@ -158,7 +159,13 @@ public class DynamicGraph<T> {
     result.append("\n  Ready:" + m_nodesReady);
     result.append("\n  Running:" + m_nodesRunning);
     result.append("\n  Finished:" + m_nodesFinished);
-    result.append("\n  Edges:" + m_dependingOn);
+    result.append("\n  Edges:\n");
+    for (Map.Entry<T, List<T>> es : m_dependedUpon.getEntrySet()) {
+      result.append("     " + es.getKey() + "\n");
+      for (T t : es.getValue()) {
+        result.append("        " + t + "\n");
+      }
+    }
     result.append("]");
     return result.toString();
   }

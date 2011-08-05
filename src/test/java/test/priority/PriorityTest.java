@@ -13,10 +13,8 @@ public class PriorityTest extends SimpleBaseTest {
 
   private void runTest(Class<?> cls, String first, String second, boolean parallel) {
     TestNG tng = create(cls);
-    System.out.println("===== " + cls + " parallel:" + parallel);
     if (parallel) tng.setParallel("methods");
     tng.run();
-//    System.out.println(BaseSample.m_methods);
     Assert.assertEquals(BaseSample.m_methods.get(0), first);
     Assert.assertEquals(BaseSample.m_methods.get(1), second);
   }

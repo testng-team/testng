@@ -1300,15 +1300,7 @@ public class TestRunner
       }
     });
 
-    Map<String, ITestNGMethod> map = Maps.newHashMap();
-    ListMultiMap<String, ITestNGMethod> groups = Maps.newListMultiMap();
-
-    for (ITestNGMethod m : methods) {
-      map.put(/* m.getTestClass().getName() + "." + */ m.getMethodName(), m);
-      for (String g : m.getGroups()) {
-        groups.put(g, m);
-      }
-    }
+    DependencyMap dependencyMap = new DependencyMap(methods);
 
     // A map of each priority and the list of methods that have this priority
 //    ListMultiMap<Integer, ITestNGMethod> methodsByPriority = Maps.newListMultiMap();
@@ -1342,11 +1334,7 @@ public class TestRunner
         if (dependentMethods != null) {
           for (String d : dependentMethods) {
             String shortMethodName = d.substring(d.lastIndexOf(".") + 1);
-            ITestNGMethod dm = map.get(shortMethodName);
-            if (dm == null) {
-              throw new TestNGException("Method \"" + m
-                  + "\" depends on nonexistent method \"" + d + "\"");
-            }
+            ITestNGMethod dm = dependencyMap.getMethodDependingOn(shortMethodName, m);
             result.addEdge(m, dm);
           }
         }
@@ -1356,7 +1344,7 @@ public class TestRunner
       {
         String[] dependentGroups = m.getGroupsDependedUpon();
         for (String d : dependentGroups) {
-          List<ITestNGMethod> dg = groups.get(d);
+          List<ITestNGMethod> dg = dependencyMap.getMethodsThatBelongTo(d, m);
           if (dg == null) {
             throw new TestNGException("Method \"" + m
                 + "\" depends on nonexistent group \"" + d + "\"");
@@ -1390,7 +1378,6 @@ public class TestRunner
 
       for (Map.Entry<ITestNGMethod, List<ITestNGMethod>> es : instanceDependencies.getEntrySet()) {
         for (ITestNGMethod dm : es.getValue()) {
-          System.out.println("Instance dep:" + dm + " depends on\n   " + es.getKey());
           result.addEdge(dm, es.getKey());
         }
       }

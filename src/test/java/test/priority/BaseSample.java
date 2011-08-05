@@ -13,7 +13,7 @@ public class BaseSample {
 
   protected void add(String m) {
     String s = m;
-    System.out.println("BaseSample recording " + this + " " + s);
+//    System.out.println("BaseSample recording " + this + " " + s);
     synchronized(m_methods) {
       m_methods.add(s);
     }
