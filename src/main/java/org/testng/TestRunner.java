@@ -1087,7 +1087,7 @@ public class TestRunner
     }
 
     // Group by instances
-    if (getCurrentXmlTest().groupByInstances()) {
+    if (getCurrentXmlTest().getGroupByInstances()) {
       ListMultiMap<ITestNGMethod, ITestNGMethod> instanceDependencies
           = createInstanceDependencies(methods, getCurrentXmlTest());
 
