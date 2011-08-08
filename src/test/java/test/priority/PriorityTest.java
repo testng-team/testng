@@ -6,9 +6,6 @@ import org.testng.annotations.Test;
 
 import test.SimpleBaseTest;
 
-import java.util.Arrays;
-import java.util.List;
-
 public class PriorityTest extends SimpleBaseTest {
 
   private void runTest(Class<?> cls, String first, String second, boolean parallel) {
