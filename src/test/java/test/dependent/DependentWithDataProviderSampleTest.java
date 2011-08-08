@@ -23,7 +23,6 @@ public class DependentWithDataProviderSampleTest
   @DataProvider( name = "prov" )
   public static Object[][] dataProvider()
   {
-    System.out.println( "Provide data" );
     return new Object[][] {
       { "One" },
       { "Two" },
