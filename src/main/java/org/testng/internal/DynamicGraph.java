@@ -160,7 +160,7 @@ public class DynamicGraph<T> {
     result.append("\n  Running:" + m_nodesRunning);
     result.append("\n  Finished:" + m_nodesFinished);
     result.append("\n  Edges:\n");
-    for (Map.Entry<T, List<T>> es : m_dependedUpon.getEntrySet()) {
+    for (Map.Entry<T, List<T>> es : m_dependingOn.getEntrySet()) {
       result.append("     " + es.getKey() + "\n");
       for (T t : es.getValue()) {
         result.append("        " + t + "\n");
