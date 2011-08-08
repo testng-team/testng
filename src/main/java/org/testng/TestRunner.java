@@ -743,8 +743,11 @@ public class TestRunner
 //          }
         }
       } else {
+        boolean debug = false;
         List<ITestNGMethod> freeNodes = graph.getFreeNodes();
-//        System.out.println("Free nodes:" + freeNodes);
+        if (debug) {
+          System.out.println("Free nodes:" + freeNodes);
+        }
         while (! freeNodes.isEmpty()) {
           List<IWorker<ITestNGMethod>> runnables = createWorkers(freeNodes);
           for (IWorker<ITestNGMethod> r : runnables) {
@@ -752,7 +755,9 @@ public class TestRunner
           }
           graph.setStatus(freeNodes, Status.FINISHED);
           freeNodes = graph.getFreeNodes();
-//          System.out.println("Free nodes:" + freeNodes);
+          if (debug) {
+            System.out.println("Free nodes:" + freeNodes);
+          }
         }
       }
     }
