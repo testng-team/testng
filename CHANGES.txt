@@ -6,6 +6,7 @@ Added: Injectors created by the @Guice annotation are now shared at the <test> l
 Added: IConfigurationListener is now a public listener
 Added: When a method fails, only dependents of the same instance will be skipped
 Added: parallel=instances for factory instance parallel runs
+Fixed: ServiceLoader wasn't resolving correctly if no service loader classloader was specified
 Fixed: Better ordering with mixed priorities and dependencies
 Fixed: Improved detection of graph cycles in parallel runs
 Fixed: @BeforeTest was invoked multiple times if a factory is used

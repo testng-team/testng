@@ -920,7 +920,7 @@ public class TestNG {
         parameters.add(m_serviceLoaderClassLoader);
         loadMethod = c.getMethod("load", Class.class, ClassLoader.class);
       } else {
-        loadMethod = c.getMethod("load");
+        loadMethod = c.getMethod("load", Class.class);
       }
       Iterable<ITestNGListener> loader =
           (Iterable<ITestNGListener>) loadMethod.invoke(c, parameters.toArray());
