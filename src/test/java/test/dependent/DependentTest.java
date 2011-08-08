@@ -1,9 +1,14 @@
 package test.dependent;
 
+import org.testng.Assert;
+import org.testng.TestNG;
 import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Test;
 
 import test.BaseTest;
+import test.SimpleBaseTest;
+
+import java.util.List;
 
 public class DependentTest extends BaseTest {
 
@@ -92,5 +97,21 @@ public class DependentTest extends BaseTest {
         new String[] { "g#" });
   }
 
+  @Test
+  public void dependentWithDataProvider() {
+    TestNG tng = SimpleBaseTest.create(DependentWithDataProviderSampleTest.class);
+    tng.setGroupByInstances(true);
+    List<String> log = DependentWithDataProviderSampleTest.m_log;
+    log.clear();
+    tng.run();
+    for (int i = 0; i < 12; i += 4) {
+      String[] s = log.get(i).split("#");
+      String instance = s[1];
+      Assert.assertEquals(log.get(i), "prepare#" + instance);
+      Assert.assertEquals(log.get(i + 1), "test1#" + instance);
+      Assert.assertEquals(log.get(i + 2), "test2#" + instance);
+      Assert.assertEquals(log.get(i + 3), "clean#" + instance);
+    }
+  }
 } // DependentTest
 

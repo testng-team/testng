@@ -1144,7 +1144,7 @@ public class TestRunner
             result.put(cm, pm);
           }
         }
-        currentInstance = previousInstance;
+        previousInstance = currentInstance;
       }
     }
 

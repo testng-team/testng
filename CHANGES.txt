@@ -6,11 +6,12 @@ Added: Injectors created by the @Guice annotation are now shared at the <test> l
 Added: IConfigurationListener is now a public listener
 Added: When a method fails, only dependents of the same instance will be skipped
 Added: parallel=instances for factory instance parallel runs
+Fixed: GITHUB-74: Bad ordering of test methods when using a @Factory constructor with dataProvider
 Fixed: ServiceLoader wasn't resolving correctly if no service loader classloader was specified
 Fixed: Better ordering with mixed priorities and dependencies
 Fixed: Improved detection of graph cycles in parallel runs
 Fixed: @BeforeTest was invoked multiple times if a factory is used
-Fixed: https://github.com/cbeust/testng/issues/57 Allow usage of package protected constructor of test classes
+Fixed: GITHUB-57: Allow usage of package protected constructor of test classes
 Fixed: Injecting both Object[] and Method in @BeforeMethod didn't always work
 Fixed: testng-results.xml now lists the results chronologically
 Fixed: @Listeners specified on a base class will only be run once per listener class (dbriones)
