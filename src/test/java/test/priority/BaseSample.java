@@ -3,17 +3,19 @@ package test.priority;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 
 import java.util.List;
 
 
 public class BaseSample {
-  public static List<String> m_methods;
+  public static List<String> m_methods = Lists.newArrayList();
 
   protected void add(String m) {
-//    System.out.println("Running " + m);
+    String s = m;
+//    System.out.println("BaseSample recording " + this + " " + s);
     synchronized(m_methods) {
-      m_methods.add(m);
+      m_methods.add(s);
     }
   }
 

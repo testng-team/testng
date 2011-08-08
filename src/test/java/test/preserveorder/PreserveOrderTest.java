@@ -124,7 +124,11 @@ public class PreserveOrderTest extends SimpleBaseTest {
     tng.addListener(tla);
     tng.run();
 
-    verifyPassedTests(tla, expectedMethods);
+    try {
+      verifyPassedTests(tla, expectedMethods);
+    } catch(Exception ex) {
+      ex.printStackTrace();
+    }
   }
 
   @DataProvider

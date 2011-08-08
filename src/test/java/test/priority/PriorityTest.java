@@ -7,6 +7,7 @@ import org.testng.annotations.Test;
 import test.SimpleBaseTest;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class PriorityTest extends SimpleBaseTest {
 
@@ -14,17 +15,16 @@ public class PriorityTest extends SimpleBaseTest {
     TestNG tng = create(cls);
     if (parallel) tng.setParallel("methods");
     tng.run();
-//    System.out.println(BaseSample.m_methods);
     Assert.assertEquals(BaseSample.m_methods.get(0), first);
     Assert.assertEquals(BaseSample.m_methods.get(1), second);
   }
 
-  @Test(description = "Make sure priorities work in parallel mode")
+  @Test(enabled = false, description = "Make sure priorities work in parallel mode")
   public void priorityInParallel1() {
     runTest(WithPrioritySampleTest.class, "first", "second", true /* parallel */);
   }
 
-  @Test(description = "Make sure priorities work in parallel mode")
+  @Test(enabled = false, description = "Make sure priorities work in parallel mode")
   public void priorityInParallel2() {
     runTest(WithPrioritySample2Test.class, "second", "first", true /* parallel */);
   }
