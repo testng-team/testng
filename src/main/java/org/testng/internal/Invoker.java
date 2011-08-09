@@ -1,5 +1,8 @@
 package org.testng.internal;
 
+import static org.testng.internal.invokers.InvokedMethodListenerMethod.AFTER_INVOCATION;
+import static org.testng.internal.invokers.InvokedMethodListenerMethod.BEFORE_INVOCATION;
+
 import org.testng.IClass;
 import org.testng.IConfigurable;
 import org.testng.IConfigurationListener;
@@ -44,9 +47,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-
-import static org.testng.internal.invokers.InvokedMethodListenerMethod.AFTER_INVOCATION;
-import static org.testng.internal.invokers.InvokedMethodListenerMethod.BEFORE_INVOCATION;
 
 /**
  * This class is responsible for invoking methods:
@@ -732,7 +732,7 @@ public class Invoker implements IInvoker {
       List<ITestResult> results = Lists.newArrayList();
       results.add(testResult);
       handleInvocationResults(tm, results, null, 0, expectedExceptionClasses, false,
-          true /* collect results */);
+          false /* collect results */);
 
       // If this method has a data provider and just failed, memorize the number
       // at which it failed.
@@ -756,6 +756,7 @@ public class Invoker implements IInvoker {
       // Run invokedMethodListeners after updating TestResult
       runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
       runTestListeners(testResult);
+      collectResults(tm, results, testResult);
 
       //
       // Invoke afterMethods only if
@@ -776,6 +777,28 @@ public class Invoker implements IInvoker {
     }
 
     return testResult;
+  }
+
+  private void collectResults(ITestNGMethod testMethod, List<ITestResult> results, TestResult testResult) {
+    for (int i = 0; i < results.size(); i++) {
+      // Collect the results
+      int status = results.get(i).getStatus();
+      if(ITestResult.SUCCESS == status) {
+        m_notifier.addPassedTest(testMethod, testResult);
+      }
+      else if(ITestResult.SKIP == status) {
+        m_notifier.addSkippedTest(testMethod, testResult);
+      }
+      else if(ITestResult.FAILURE == status) {
+        m_notifier.addFailedTest(testMethod, testResult);
+      }
+      else if(ITestResult.SUCCESS_PERCENTAGE_FAILURE == status) {
+        m_notifier.addFailedButWithinSuccessPercentageTest(testMethod, testResult);
+      }
+      else {
+        assert false : "UNKNOWN STATUS:" + status;
+      }
+    }
   }
 
   /**
@@ -1476,7 +1499,7 @@ public class Invoker implements IInvoker {
           }
         }
       }
-      if (!retry || collectResults) {
+      if (collectResults) {
         // Collect the results
         if(ITestResult.SUCCESS == status) {
           m_notifier.addPassedTest(testMethod, testResult);
