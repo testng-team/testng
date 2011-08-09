@@ -7,6 +7,7 @@ Added: IConfigurationListener is now a public listener
 Added: When a method fails, only dependents of the same instance will be skipped
 Added: parallel=instances for factory instance parallel runs
 Fixed: GITHUB-74: Bad ordering of test methods when using a @Factory constructor with dataProvider
+Fixed: Changing the test result from success to failure in a listener would still count the test as a success
 Fixed: ServiceLoader wasn't resolving correctly if no service loader classloader was specified
 Fixed: Better ordering with mixed priorities and dependencies
 Fixed: Improved detection of graph cycles in parallel runs
