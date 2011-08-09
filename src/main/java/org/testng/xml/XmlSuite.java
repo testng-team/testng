@@ -915,7 +915,7 @@ public class XmlSuite implements Serializable, Cloneable {
     m_excludedGroups.add(g);
   }
 
-  public Boolean groupByInstances() {
+  public Boolean getGroupByInstances() {
     return m_groupByInstances;
   }
 

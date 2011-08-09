@@ -246,7 +246,7 @@ public class XmlTest implements Serializable, Cloneable {
   public boolean getGroupByInstances() {
     Boolean result = m_groupByInstances;
     if (result == null || XmlSuite.DEFAULT_GROUP_BY_INSTANCES.equals(m_groupByInstances)) {
-      result = m_suite.groupByInstances();
+      result = m_suite.getGroupByInstances();
     }
     if (result != null) {
       return result.booleanValue();
