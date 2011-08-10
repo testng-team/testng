@@ -1,8 +1,7 @@
 package org.testng.internal;
 
-import com.google.inject.internal.Lists;
-
 import org.testng.collections.ListMultiMap;
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.Sets;
 
