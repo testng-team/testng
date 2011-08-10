@@ -1168,8 +1168,13 @@ public class TestRunner
 
     ListMultiMap<ITestNGMethod, ITestNGMethod> result = Maps.newListMultiMap();
     for (ITestNGMethod m : methods) {
-      int index = indexedClasses1.get(m.getTestClass().getName());
-      if (index > 0) {
+      String name = m.getTestClass().getName();
+      Integer index = indexedClasses1.get(name);
+      // The index could be null if the classes listed in the XML are different
+      // from the methods being run (e.g. the .xml only contains a factory that
+      // instantiates methods from a different class). In this case, we cannot
+      // perform any ordering.
+      if (index != null && index > 0) {
         // Make this method depend on all the methods of the class in the previous
         // index
         String classDependedUpon = indexedClasses2.get(index - 1);

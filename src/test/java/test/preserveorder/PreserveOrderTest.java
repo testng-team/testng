@@ -158,4 +158,15 @@ public class PreserveOrderTest extends SimpleBaseTest {
 
     return result.toArray(new Object[result.size()][]);
   }
+
+  @Test(description = "preserve-order on a factory doesn't cause an NPE")
+  public void factoryPreserve() {
+    TestNG tng = create();
+    XmlSuite s = createXmlSuite("FactoryPreserve");
+    XmlTest t = new XmlTest(s);
+    t.getXmlClasses().add(new XmlClass(TestClassFactory.class.getName()));
+    t.setPreserveOrder("true");
+    tng.setXmlSuites(Arrays.asList(s));
+    tng.run();
+  }
 }
