@@ -103,7 +103,7 @@ public class RemoteTestNG extends TestNG {
         addListener(new RemoteSuiteListener(msh));
         setTestRunnerFactory(new DelegatingTestRunnerFactory(buildTestRunnerFactory(), msh));
 
-        System.out.println("RemoteTestNG starting");
+//        System.out.println("RemoteTestNG starting");
         super.run();
       }
       else {
@@ -114,7 +114,7 @@ public class RemoteTestNG extends TestNG {
       cause.printStackTrace(System.err);
     }
     finally {
-      System.out.println("RemoteTestNG finishing: " + (getEnd() - getStart()) + " ms");
+//      System.out.println("RemoteTestNG finishing: " + (getEnd() - getStart()) + " ms");
       msh.shutDown();
       if (! m_debug && ! m_dontExit) {
         System.exit(0);
