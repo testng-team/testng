@@ -68,8 +68,6 @@
       <class name="test.mannotation.MAnnotationSampleTest" />
       <class name="test.mannotation.MAnnotation2SampleTest" />
       <class name="test.thread.FactoryTest" />
-      <class name="test.thread.ThreadPoolSizeTest" />
-      <class name="test.thread.ThreadPoolSizeWithTimeOutTest" />
       <class name="test.thread.SequentialTest" />
       <class name="test.thread.ParallelTestTest" />
       <class name="test.thread.DataProviderThreadPoolSizeTest" />
@@ -107,6 +105,13 @@
       <class name="test.StaticTest" />
       <class name="test.serviceloader.ServiceLoaderTest" />
       <class name="test.commandline.CommandLineOverridesXml" />
+    </classes>
+  </test>
+
+  <test name="Threads">
+    <classes>
+      <class name="test.thread.ThreadPoolSizeTest" />
+      <class name="test.thread.ThreadPoolSizeWithTimeOutTest" />
     </classes>
   </test>
 
