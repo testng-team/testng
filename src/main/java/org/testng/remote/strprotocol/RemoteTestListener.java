@@ -98,6 +98,7 @@ public class RemoteTestListener implements IResultListener {
    */
   @Override
   public void onConfigurationFailure(ITestResult itr) {
+    // Show configuration failures in the main view for convenience
     onTestFailure(itr);
   }
 
