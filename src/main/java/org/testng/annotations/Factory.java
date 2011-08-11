@@ -36,4 +36,9 @@ public @interface Factory {
    * needs to be static on the specified class.
    */
   public Class<?> dataProviderClass() default Object.class;
+
+  /**
+   * Whether this factory is enabled.
+   */
+  public boolean enabled() default true;
 }

@@ -126,7 +126,7 @@ public class TestNGClassFinder extends BaseClassFinder {
 
           ConstructorOrMethod factoryMethod =
             ClassHelper.findDeclaredFactoryMethod(cls, annotationFinder);
-          if (null != factoryMethod) {
+          if (factoryMethod != null && factoryMethod.getEnabled()) {
             FactoryMethod fm = new FactoryMethod( /* cls, */
               factoryMethod,
               instance,

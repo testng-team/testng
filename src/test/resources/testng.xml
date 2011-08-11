@@ -277,6 +277,8 @@
       <class name="test.factory.classconf.XClassOrderWithFactoryTest" />
       <class name="test.factory.FactoryInterleavingTest"/>
       <class name="test.factory.FactoryDataProviderTest"/>
+
+      <class name="test.factory.DisabledFactoryTest"/>
     </classes>
   </test>
 

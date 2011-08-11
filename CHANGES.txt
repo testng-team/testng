@@ -6,6 +6,7 @@ Added: Injectors created by the @Guice annotation are now shared at the <test> l
 Added: IConfigurationListener is now a public listener
 Added: When a method fails, only dependents of the same instance will be skipped
 Added: parallel=instances for factory instance parallel runs
+Added: @Factory(enabled)
 Fixed: Using preserve-order with a factory that creates instances of a different class causes NPE
 Fixed: GITHUB-74: Bad ordering of test methods when using a @Factory constructor with dataProvider
 Fixed: Changing the test result from success to failure in a listener would still count the test as a success

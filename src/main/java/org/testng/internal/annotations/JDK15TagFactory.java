@@ -347,6 +347,7 @@ public class JDK15TagFactory {
     result.setDataProviderClass(
         findInherited(c.dataProviderClass(), cls, Factory.class, "dataProviderClass",
             DEFAULT_CLASS));
+    result.setEnabled(c.enabled());
 
     return result;
   }

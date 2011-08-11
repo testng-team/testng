@@ -132,13 +132,15 @@ public final class ClassHelper {
     ConstructorOrMethod result = null;
 
     for (Method method : cls.getMethods()) {
-      IAnnotation f = finder.findAnnotation(method, IFactoryAnnotation.class);
+      IFactoryAnnotation f = (IFactoryAnnotation) finder.findAnnotation(method,
+          IFactoryAnnotation.class);
 
       if (null != f) {
         if (result != null) {
           throw new TestNGException(cls.getName() + ":  only one @Factory method allowed");
         }
         result = new ConstructorOrMethod(method);
+        result.setEnabled(f.getEnabled());
         break;
       }
     }

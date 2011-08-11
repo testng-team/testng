@@ -15,6 +15,7 @@ public class FactoryAnnotation
   private String[] m_parameters = {};
   private String m_dataProvider = null;
   private Class<?> m_dataProviderClass;
+  private boolean m_enabled = true;
 
   @Override
   public String getDataProvider() {
@@ -42,6 +43,16 @@ public class FactoryAnnotation
   @Override
   public Class<?> getDataProviderClass() {
     return m_dataProviderClass;
+  }
+
+  @Override
+  public boolean getEnabled() {
+    return m_enabled;
+  }
+
+  @Override
+  public void setEnabled(boolean enabled) {
+    m_enabled = enabled;
   }
 
 }

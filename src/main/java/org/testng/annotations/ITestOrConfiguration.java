@@ -46,12 +46,6 @@ public interface ITestOrConfiguration extends IParameterizable {
   public void setDependsOnMethods(String[] dependsOnMethods);
 
   /**
-   * Whether methods on this class/method are enabled.
-   */
-  public boolean getEnabled();
-  public void setEnabled(boolean enabled);
-
-  /**
    * The description for this method, which will be shown in the reports.
    */
   public String getDescription();

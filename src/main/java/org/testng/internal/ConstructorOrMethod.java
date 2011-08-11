@@ -12,6 +12,7 @@ public class ConstructorOrMethod {
 
   private Method m_method;
   private Constructor m_constructor;
+  private boolean m_enabled = true;
 
   public ConstructorOrMethod(Method m) {
     m_method = m;
@@ -70,6 +71,14 @@ public class ConstructorOrMethod {
     } else if (!getMethod().equals(other.getMethod()))
       return false;
     return true;
+  }
+
+  public void setEnabled(boolean enabled) {
+    m_enabled = enabled;
+  }
+
+  public boolean getEnabled() {
+    return m_enabled;
   }
 
 }
