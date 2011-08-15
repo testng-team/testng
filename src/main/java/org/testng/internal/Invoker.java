@@ -25,6 +25,8 @@ import org.testng.annotations.NoInjection;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.InvokeMethodRunnable.TestNGRuntimeException;
+import org.testng.internal.Invoker.CanRunFromClassPredicate;
+import org.testng.internal.Invoker.Predicate;
 import org.testng.internal.ParameterHolder.ParameterOrigin;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -76,6 +78,11 @@ public class Invoker implements IInvoker {
   /** Test methods whose configuration methods have failed. */
   private Map<ITestNGMethod, Set<Object>> m_methodInvocationResults = Maps.newHashtable();
   private IConfiguration m_configuration;
+
+  /** Predicate to filter methods */
+  private static Predicate CAN_RUN_FROM_CLASS = new CanRunFromClassPredicate();
+  /** Predicate to filter methods */
+  private static final Predicate SAME_CLASS = new SameClassNamePredicate();
 
   private void setClassInvocationFailure(Class<?> clazz, Object instance) {
     Set<Object> instances = m_classInvocationResults.get( clazz );
@@ -148,7 +155,7 @@ public class Invoker implements IInvoker {
       return;
     }
 
-    ITestNGMethod[] methods= filterMethodsUnique(testClass, allMethods);
+    ITestNGMethod[] methods= filterMethods(testClass, allMethods, SAME_CLASS);
 
     for(ITestNGMethod tm : methods) {
       if(null == testClass) {
@@ -1145,8 +1152,10 @@ public class Invoker implements IInvoker {
       // No threads, regular invocation
       //
       else {
-        ITestNGMethod[] beforeMethods = filterMethods(testClass, testClass.getBeforeTestMethods());
-        ITestNGMethod[] afterMethods = filterMethods(testClass, testClass.getAfterTestMethods());
+        ITestNGMethod[] beforeMethods = filterMethods(testClass, testClass.getBeforeTestMethods(),
+            CAN_RUN_FROM_CLASS);
+        ITestNGMethod[] afterMethods = filterMethods(testClass, testClass.getAfterTestMethods(),
+            CAN_RUN_FROM_CLASS);
 
         Map<String, String> allParameterNames = Maps.newHashMap();
         ParameterBag bag = createParameters(testClass, testMethod,
@@ -1759,48 +1768,43 @@ public class Invoker implements IInvoker {
     return false;
   }
 
+  static interface Predicate<K, T> {
+    boolean isTrue(K k, T v);
+  }
+
+  static class CanRunFromClassPredicate implements Predicate <ITestNGMethod, IClass> {
+    @Override
+    public boolean isTrue(ITestNGMethod m, IClass v) {
+      return m.canRunFromClass(v);
+    }
+  }
+
+  static class SameClassNamePredicate implements Predicate<ITestNGMethod, IClass> {
+    @Override
+    public boolean isTrue(ITestNGMethod m, IClass c) {
+      return c == null || m.getTestClass().getName().equals(c.getName());
+    }
+  }
+
   /**
    * @return Only the ITestNGMethods applicable for this testClass
    */
-  private ITestNGMethod[] filterMethods(IClass testClass, ITestNGMethod[] methods) {
+  private ITestNGMethod[] filterMethods(IClass testClass, ITestNGMethod[] methods,
+      Predicate<ITestNGMethod, IClass> predicate) {
     List<ITestNGMethod> vResult= Lists.newArrayList();
 
     for(ITestNGMethod tm : methods) {
-      if(tm.canRunFromClass(testClass)) {
-        log(9, "Keeping method " + tm + " for class " + testClass);
+      if (predicate.isTrue(tm, testClass)) {
+        log(10, "Keeping method " + tm + " for class " + testClass);
         vResult.add(tm);
-      }
-      else {
-        log(9, "Filtering out method " + tm + " for class " + testClass);
+      } else {
+        log(10, "Filtering out method " + tm + " for class " + testClass);
       }
     }
 
     ITestNGMethod[] result= vResult.toArray(new ITestNGMethod[vResult.size()]);
 
     return result;
-  }
-
-  private ITestNGMethod[] filterMethodsUnique(IClass testClass, ITestNGMethod[] methods) {
-    if(null == testClass) {
-      return methods;
-    }
-
-    List<ITestNGMethod> vResult= Lists.newArrayList();
-
-    for(ITestNGMethod tm : methods) {
-      testClass= tm.getTestClass();
-
-      if (tm.getTestClass().getName().equals(testClass.getName())) {
-        log(9, "        Keeping method " + tm + " for class " + testClass);
-
-        vResult.add(tm);
-      }
-      else {
-        log(9, "        Filtering out method " + tm + " for class " + testClass);
-      }
-    }
-
-    return vResult.toArray(new ITestNGMethod[vResult.size()]);
   }
 
   /**
