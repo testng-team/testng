@@ -1476,20 +1476,20 @@ public class TestRunner
   private List<InvokedMethod> m_invokedMethods = Lists.newArrayList();
 
   private void dumpInvokedMethods() {
-    System.out.println("\n*********** INVOKED METHODS\n");
+    System.out.println("===== Invoked methods");
     for (IInvokedMethod im : m_invokedMethods) {
       if (im.isTestMethod()) {
-        System.out.print("\t\t");
+        System.out.print("    ");
       }
       else if (im.isConfigurationMethod()) {
-        System.out.print("\t");
+        System.out.print("  ");
       }
       else {
         continue;
       }
       System.out.println("" + im);
     }
-    System.out.println("\n***********\n");
+    System.out.println("=====");
   }
 
   public List<ITestNGMethod> getInvokedMethods() {

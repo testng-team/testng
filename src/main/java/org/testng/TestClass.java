@@ -217,23 +217,23 @@ class TestClass extends NoOpTestClass implements ITestClass {
   }
 
   protected void dump() {
-    ppp("\n======\nTESTCLASS: " + m_testClass.getName());
+    System.out.println("===== Test class\n" + m_testClass.getName());
     for (ITestNGMethod m : m_beforeClassMethods) {
-      ppp("BeforeClass : " + m);
+      System.out.println("  @BeforeClass " + m);
     }
     for (ITestNGMethod m : m_beforeTestMethods) {
-      ppp("BeforeMethod:\t" + m);
+      System.out.println("  @BeforeMethod " + m);
     }
     for (ITestNGMethod m : m_testMethods) {
-      ppp("Test        :\t\t" + m);
+      System.out.println("    @Test " + m);
     }
     for (ITestNGMethod m : m_afterTestMethods) {
-      ppp("AfterMethod :\t" + m);
+      System.out.println("  @AfterMethod " + m);
     }
     for (ITestNGMethod m : m_afterClassMethods) {
-      ppp("AfterClass  : " + m);
+      System.out.println("  @AfterClass " + m);
     }
-    ppp("\n======\n");
+    System.out.println("======");
   }
 
   @Override
