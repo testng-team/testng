@@ -19,6 +19,7 @@ import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -32,6 +33,7 @@ public class JUnitReportReporter implements IReporter {
 
     Map<Class<?>, Set<ITestResult>> results = Maps.newHashMap();
     Map<Class<?>, Set<ITestResult>> failedConfigurations = Maps.newHashMap();
+    Map<Class<?>, Set<ITestResult>> passedConfigurations = Maps.newHashMap();
     for (ISuite suite : suites) {
       Map<String, ISuiteResult> suiteResults = suite.getResults();
       for (ISuiteResult sr : suiteResults.values()) {
@@ -40,7 +42,14 @@ public class JUnitReportReporter implements IReporter {
         addResults(tc.getFailedTests().getAllResults(), results);
         addResults(tc.getSkippedTests().getAllResults(), results);
         addResults(tc.getFailedConfigurations().getAllResults(), failedConfigurations);
+        addResults(tc.getPassedConfigurations().getAllResults(), passedConfigurations);
       }
+    }
+
+    // A list of iterators for all the passed configuration, explanation below
+    Map<Class<?>, Iterator<ITestResult>> pc = Maps.newHashMap();
+    for (Map.Entry<Class<?>, Set<ITestResult>> es : passedConfigurations.entrySet()) {
+      pc.put(es.getKey(), es.getValue().iterator());
     }
 
     for (Map.Entry<Class<?>, Set<ITestResult>> entry : results.entrySet()) {
@@ -72,6 +81,35 @@ public class JUnitReportReporter implements IReporter {
         p2.setProperty("classname", cls.getName());
         p2.setProperty("name", getTestName(tr));
         long time = tr.getEndMillis() - tr.getStartMillis();
+
+        // Add the time of the before method to this test method. To do this,
+        // we retrieve the iterator pointing to the list of all the configuration
+        // methods for this class and we stop as soon as we find a before method.
+        // Since I stored iterators, I'm sure I will be using a different
+        // @BeforeMethod each time.
+        //
+        // The only problem with this method is that the timing of a test method
+        // might not be added to the time of the same @BeforeMethod that ran before
+        // it but since they should all be equivalent, this should never be
+        // an issue
+        Iterator<ITestResult> it = pc.get(tr.getMethod().getRealClass());
+        ITestResult trc = null;
+        if (it != null) {
+          while (it.hasNext()) {
+            ITestResult t = it.next();
+            if (t.getMethod().isBeforeMethodConfiguration()) {
+              trc = t;
+              break;
+            }
+          }
+        }
+
+        if (trc != null) {
+          // Found a before method, add its before time to that of the test method
+          long beforeTime = trc.getEndMillis() - trc.getStartMillis();
+          time = time + beforeTime;
+        }
+
         p2.setProperty("time", "" + formatTime(time));
         Throwable t = getThrowable(tr, failedConfigurations);
         if (! isSuccess && t != null) {

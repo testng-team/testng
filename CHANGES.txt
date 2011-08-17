@@ -7,6 +7,7 @@ Added: IConfigurationListener is now a public listener
 Added: When a method fails, only dependents of the same instance will be skipped
 Added: parallel=instances for factory instance parallel runs
 Added: @Factory(enabled)
+Fixed: JUnitReports reports now report the cumulated time @BeforeMethod+@Test for each test method
 Fixed: JUnitReports reports have the name of the <test> instead of that of the first class
 Fixed: Using preserve-order with a factory that creates instances of a different class causes NPE
 Fixed: GITHUB-74: Bad ordering of test methods when using a @Factory constructor with dataProvider
