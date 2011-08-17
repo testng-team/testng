@@ -4,7 +4,9 @@ import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
+import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.Utils;
@@ -47,9 +49,26 @@ public class JUnitReportReporter implements IReporter {
     }
 
     // A list of iterators for all the passed configuration, explanation below
-    Map<Class<?>, Iterator<ITestResult>> pc = Maps.newHashMap();
+    ListMultiMap<Class<?>, ITestResult> beforeConfigurations = Maps.newListMultiMap();
+    ListMultiMap<Class<?>, ITestResult> afterConfigurations = Maps.newListMultiMap();
     for (Map.Entry<Class<?>, Set<ITestResult>> es : passedConfigurations.entrySet()) {
-      pc.put(es.getKey(), es.getValue().iterator());
+      for (ITestResult tr : es.getValue()) {
+        ITestNGMethod method = tr.getMethod();
+        if (method.isBeforeMethodConfiguration()) {
+          beforeConfigurations.put(method.getRealClass(), tr);
+        }
+        if (method.isAfterMethodConfiguration()) {
+          afterConfigurations.put(method.getRealClass(), tr);
+        }
+      }
+    }
+    Map<Class<?>, Iterator<ITestResult>> befores = Maps.newHashMap();
+    for (Map.Entry<Class<?>, List<ITestResult>> es : beforeConfigurations.getEntrySet()) {
+      befores.put(es.getKey(), es.getValue().iterator());
+    }
+    Map<Class<?>, Iterator<ITestResult>> afters = Maps.newHashMap();
+    for (Map.Entry<Class<?>, List<ITestResult>> es : afterConfigurations.getEntrySet()) {
+      afters.put(es.getKey(), es.getValue().iterator());
     }
 
     for (Map.Entry<Class<?>, Set<ITestResult>> entry : results.entrySet()) {
@@ -82,33 +101,8 @@ public class JUnitReportReporter implements IReporter {
         p2.setProperty("name", getTestName(tr));
         long time = tr.getEndMillis() - tr.getStartMillis();
 
-        // Add the time of the before method to this test method. To do this,
-        // we retrieve the iterator pointing to the list of all the configuration
-        // methods for this class and we stop as soon as we find a before method.
-        // Since I stored iterators, I'm sure I will be using a different
-        // @BeforeMethod each time.
-        //
-        // The only problem with this method is that the timing of a test method
-        // might not be added to the time of the same @BeforeMethod that ran before
-        // it but since they should all be equivalent, this should never be
-        // an issue
-        Iterator<ITestResult> it = pc.get(tr.getMethod().getRealClass());
-        ITestResult trc = null;
-        if (it != null) {
-          while (it.hasNext()) {
-            ITestResult t = it.next();
-            if (t.getMethod().isBeforeMethodConfiguration()) {
-              trc = t;
-              break;
-            }
-          }
-        }
-
-        if (trc != null) {
-          // Found a before method, add its before time to that of the test method
-          long beforeTime = trc.getEndMillis() - trc.getStartMillis();
-          time = time + beforeTime;
-        }
+        time += getNextConfiguration(befores, tr);
+        time += getNextConfiguration(afters, tr);
 
         p2.setProperty("time", "" + formatTime(time));
         Throwable t = getThrowable(tr, failedConfigurations);
@@ -173,6 +167,36 @@ public class JUnitReportReporter implements IReporter {
 //    System.out.println(xsb.toXML());
 //    System.out.println("");
 
+  }
+
+  /**
+   * Add the time of the before method to this test method. To do this,
+   * we retrieve the iterator pointing to the list of all the configuration
+   * methods for this class and we stop as soon as we find a before method.
+   * Since I stored iterators, I'm sure I will be using a different
+   * @BeforeMethod each time.
+   *
+   * The only problem with this method is that the timing of a test method
+   * might not be added to the time of the same @BeforeMethod that ran before
+   * it but since they should all be equivalent, this should never be
+   * an issue.
+   */
+  private long getNextConfiguration(Map<Class<?>, Iterator<ITestResult>> configurations,
+      ITestResult tr)
+  {
+    long result = 0;
+
+    Iterator<ITestResult> resultIt = configurations.get(tr.getMethod().getRealClass());
+    ITestResult testResult = resultIt != null && resultIt.hasNext()
+        ? resultIt.next()
+        : null;
+
+    if (testResult != null) {
+      // Found a matching configuration method, add its before time to that of the test method
+      result = testResult.getEndMillis() - testResult.getStartMillis();
+    }
+
+    return result;
   }
 
   protected String getFileName(Class cls) {
