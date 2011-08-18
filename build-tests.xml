@@ -103,18 +103,12 @@ TESTNG.REPORT.DIR=${testng.report.dir}
 
     <testng outputdir="${testng.report.dir}"
         classpathref="run.cp"
-        useDefaultListeners="false"
-        methods="test.sample.Sample2.method1,test.sample.Sample2.method3"
+        useDefaultListeners="true"
         outputDir="${testng.report.dir}">
-      <reporter classname="org.testng.reporters.XMLReporter">
-        <property name="generateGroupsAttribute" value="true" />
-      </reporter>
-<!-- 
       <xmlfileset dir="${test.resources.dir}" includes="testng-single.xml"/>
- -->
      </testng>
 
-      <echo>Report created in ${testng.report.dir}</echo>
+      <echo>Report created in    open ${testng.report.dir}/index.html</echo>
   </target>
 
   <target name="run:antprop" description="Run a test to see if ant system propertes are passed correctly" depends="compile">
