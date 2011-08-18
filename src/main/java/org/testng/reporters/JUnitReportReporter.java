@@ -35,7 +35,8 @@ public class JUnitReportReporter implements IReporter {
 
     Map<Class<?>, Set<ITestResult>> results = Maps.newHashMap();
     Map<Class<?>, Set<ITestResult>> failedConfigurations = Maps.newHashMap();
-    Map<Class<?>, Set<ITestResult>> passedConfigurations = Maps.newHashMap();
+    ListMultiMap<Object, ITestResult> befores = Maps.newListMultiMap();
+    ListMultiMap<Object, ITestResult> afters = Maps.newListMultiMap();
     for (ISuite suite : suites) {
       Map<String, ISuiteResult> suiteResults = suite.getResults();
       for (ISuiteResult sr : suiteResults.values()) {
@@ -44,32 +45,41 @@ public class JUnitReportReporter implements IReporter {
         addResults(tc.getFailedTests().getAllResults(), results);
         addResults(tc.getSkippedTests().getAllResults(), results);
         addResults(tc.getFailedConfigurations().getAllResults(), failedConfigurations);
-        addResults(tc.getPassedConfigurations().getAllResults(), passedConfigurations);
+        for (ITestResult tr : tc.getPassedConfigurations().getAllResults()) {
+          if (tr.getMethod().isBeforeMethodConfiguration()) {
+            befores.put(tr.getInstance(), tr);
+          }
+          if (tr.getMethod().isAfterMethodConfiguration()) {
+            afters.put(tr.getInstance(), tr);
+          }
+        }
       }
     }
 
     // A list of iterators for all the passed configuration, explanation below
-    ListMultiMap<Class<?>, ITestResult> beforeConfigurations = Maps.newListMultiMap();
-    ListMultiMap<Class<?>, ITestResult> afterConfigurations = Maps.newListMultiMap();
-    for (Map.Entry<Class<?>, Set<ITestResult>> es : passedConfigurations.entrySet()) {
-      for (ITestResult tr : es.getValue()) {
-        ITestNGMethod method = tr.getMethod();
-        if (method.isBeforeMethodConfiguration()) {
-          beforeConfigurations.put(method.getRealClass(), tr);
-        }
-        if (method.isAfterMethodConfiguration()) {
-          afterConfigurations.put(method.getRealClass(), tr);
-        }
-      }
-    }
-    Map<Class<?>, Iterator<ITestResult>> befores = Maps.newHashMap();
-    for (Map.Entry<Class<?>, List<ITestResult>> es : beforeConfigurations.getEntrySet()) {
-      befores.put(es.getKey(), es.getValue().iterator());
-    }
-    Map<Class<?>, Iterator<ITestResult>> afters = Maps.newHashMap();
-    for (Map.Entry<Class<?>, List<ITestResult>> es : afterConfigurations.getEntrySet()) {
-      afters.put(es.getKey(), es.getValue().iterator());
-    }
+//    ListMultiMap<Class<?>, ITestResult> beforeConfigurations = Maps.newListMultiMap();
+//    ListMultiMap<Class<?>, ITestResult> afterConfigurations = Maps.newListMultiMap();
+//    for (Map.Entry<Class<?>, Set<ITestResult>> es : passedConfigurations.entrySet()) {
+//      for (ITestResult tr : es.getValue()) {
+//        ITestNGMethod method = tr.getMethod();
+//        if (method.isBeforeMethodConfiguration()) {
+//          beforeConfigurations.put(method.getRealClass(), tr);
+//        }
+//        if (method.isAfterMethodConfiguration()) {
+//          afterConfigurations.put(method.getRealClass(), tr);
+//        }
+//      }
+//    }
+//    Map<Object, Iterator<ITestResult>> befores = Maps.newHashMap();
+//    for (Map.Entry<Class<?>, List<ITestResult>> es : beforeConfigurations.getEntrySet()) {
+//      List<ITestResult> tr = es.getValue();
+//      for (ITestResult itr : es.getValue()) {
+//      }
+//    }
+//    Map<Class<?>, Iterator<ITestResult>> afters = Maps.newHashMap();
+//    for (Map.Entry<Class<?>, List<ITestResult>> es : afterConfigurations.getEntrySet()) {
+//      afters.put(es.getKey(), es.getValue().iterator());
+//    }
 
     for (Map.Entry<Class<?>, Set<ITestResult>> entry : results.entrySet()) {
       Class<?> cls = entry.getKey();
@@ -170,30 +180,27 @@ public class JUnitReportReporter implements IReporter {
   }
 
   /**
-   * Add the time of the before method to this test method. To do this,
-   * we retrieve the iterator pointing to the list of all the configuration
-   * methods for this class and we stop as soon as we find a before method.
-   * Since I stored iterators, I'm sure I will be using a different
-   * @BeforeMethod each time.
+   * Add the time of the configuration method to this test method.
    *
    * The only problem with this method is that the timing of a test method
-   * might not be added to the time of the same @BeforeMethod that ran before
-   * it but since they should all be equivalent, this should never be
-   * an issue.
+   * might not be added to the time of the same configuration method that ran before
+   * it but since they should all be equivalent, this should never be an issue.
    */
-  private long getNextConfiguration(Map<Class<?>, Iterator<ITestResult>> configurations,
+  private long getNextConfiguration(ListMultiMap<Object, ITestResult> configurations,
       ITestResult tr)
   {
     long result = 0;
 
-    Iterator<ITestResult> resultIt = configurations.get(tr.getMethod().getRealClass());
-    ITestResult testResult = resultIt != null && resultIt.hasNext()
-        ? resultIt.next()
-        : null;
-
-    if (testResult != null) {
-      // Found a matching configuration method, add its before time to that of the test method
-      result = testResult.getEndMillis() - testResult.getStartMillis();
+    List<ITestResult> confResults = configurations.get(tr.getInstance());
+    Map<ITestNGMethod, ITestResult> seen = Maps.newHashMap();
+    if (confResults != null) {
+      for (ITestResult r : confResults) {
+        if (! seen.containsKey(r.getMethod())) {
+          result += r.getEndMillis() - r.getStartMillis();
+          seen.put(r.getMethod(), r);
+        }
+      }
+      confResults.removeAll(seen.values());
     }
 
     return result;
