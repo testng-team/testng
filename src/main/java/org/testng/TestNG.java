@@ -15,7 +15,7 @@ import org.testng.internal.ClassHelper;
 import org.testng.internal.Configuration;
 import org.testng.internal.DynamicGraph;
 import org.testng.internal.IConfiguration;
-import org.testng.internal.IResultListener;
+import org.testng.internal.IResultListener2;
 import org.testng.internal.OverrideProcessor;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
@@ -1786,7 +1786,7 @@ public class TestNG {
     m_status |= HAS_SKIPPED;
   }
 
-  public static class ExitCodeListener implements IResultListener {
+  public static class ExitCodeListener implements IResultListener2 {
     private TestNG m_mainRunner;
 
     public ExitCodeListener() {

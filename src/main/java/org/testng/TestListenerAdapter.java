@@ -1,7 +1,7 @@
 package org.testng;
 
 import org.testng.collections.Lists;
-import org.testng.internal.IResultListener;
+import org.testng.internal.IResultListener2;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +23,7 @@ import java.util.List;
  * @author Cedric Beust, Aug 6, 2004
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
-public class TestListenerAdapter implements IResultListener {
+public class TestListenerAdapter implements IResultListener2 {
   private List<ITestNGMethod> m_allTestMethods =
       Collections.synchronizedList(Lists.<ITestNGMethod>newArrayList());
   private List<ITestResult> m_passedTests = Collections.synchronizedList(Lists.<ITestResult>newArrayList());

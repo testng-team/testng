@@ -1466,7 +1466,7 @@ public class TestRunner
     m_testListeners.add(il);
   }
 
-  private void addConfigurationListener(IConfigurationListener icl) {
+  void addConfigurationListener(IConfigurationListener icl) {
     m_configurationListeners.add(icl);
   }
   //
@@ -1509,7 +1509,7 @@ public class TestRunner
   private IResultMap m_skippedConfigurations= new ResultMap();
   private IResultMap m_failedConfigurations= new ResultMap();
 
-  private class ConfigurationListener implements IConfigurationListener {
+  private class ConfigurationListener implements IConfigurationListener2 {
     @Override
     public void beforeConfiguration(ITestResult tr) {
     }

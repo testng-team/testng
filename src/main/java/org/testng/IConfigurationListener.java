@@ -6,11 +6,6 @@ package org.testng;
 public interface IConfigurationListener extends ITestNGListener {
 
   /**
-   * Invoked before a configuration method is invoked.
-   */
-  void beforeConfiguration(ITestResult tr);
-
-  /**
    * Invoked whenever a configuration method succeeded.
    */
   void onConfigurationSuccess(ITestResult itr);

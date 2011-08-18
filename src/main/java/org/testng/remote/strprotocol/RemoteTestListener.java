@@ -3,7 +3,7 @@ package org.testng.remote.strprotocol;
 import org.testng.ISuite;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
-import org.testng.internal.IResultListener;
+import org.testng.internal.IResultListener2;
 import org.testng.xml.XmlTest;
 
 /**
@@ -11,7 +11,7 @@ import org.testng.xml.XmlTest;
  *
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
-public class RemoteTestListener implements IResultListener {
+public class RemoteTestListener implements IResultListener2 {
   private final MessageHub m_sender;
   private ISuite m_suite;
   private XmlTest m_xmlTest;

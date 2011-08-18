@@ -6,6 +6,7 @@ import static org.testng.internal.invokers.InvokedMethodListenerMethod.BEFORE_IN
 import org.testng.IClass;
 import org.testng.IConfigurable;
 import org.testng.IConfigurationListener;
+import org.testng.IConfigurationListener2;
 import org.testng.IHookable;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
@@ -25,8 +26,6 @@ import org.testng.annotations.NoInjection;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.InvokeMethodRunnable.TestNGRuntimeException;
-import org.testng.internal.Invoker.CanRunFromClassPredicate;
-import org.testng.internal.Invoker.Predicate;
 import org.testng.internal.ParameterHolder.ParameterOrigin;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -1828,7 +1827,9 @@ public class Invoker implements IInvoker {
   private void runConfigurationListeners(ITestResult tr, boolean before) {
     if (before) {
       for(IConfigurationListener icl: m_notifier.getConfigurationListeners()) {
-        icl.beforeConfiguration(tr);
+        if (icl instanceof IConfigurationListener2) {
+          ((IConfigurationListener2) icl).beforeConfiguration(tr);
+        }
       }
     } else {
       for(IConfigurationListener icl: m_notifier.getConfigurationListeners()) {

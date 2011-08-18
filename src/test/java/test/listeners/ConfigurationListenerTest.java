@@ -1,7 +1,7 @@
 package test.listeners;
 
 import org.testng.Assert;
-import org.testng.IConfigurationListener;
+import org.testng.IConfigurationListener2;
 import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -10,7 +10,7 @@ import test.SimpleBaseTest;
 
 public class ConfigurationListenerTest extends SimpleBaseTest {
 
-  static public class CL implements IConfigurationListener {
+  static public class CL implements IConfigurationListener2 {
 
     private static int m_status = 0;
 

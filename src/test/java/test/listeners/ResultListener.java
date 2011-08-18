@@ -2,9 +2,9 @@ package test.listeners;
 
 import org.testng.ITestContext;
 import org.testng.ITestResult;
-import org.testng.internal.IResultListener;
+import org.testng.internal.IResultListener2;
 
-public class ResultListener implements IResultListener {
+public class ResultListener implements IResultListener2 {
 
   public static long m_end = 0;
 

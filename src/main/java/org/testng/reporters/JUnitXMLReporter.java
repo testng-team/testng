@@ -6,7 +6,7 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.IResultListener;
+import org.testng.internal.IResultListener2;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.Sets;
 
@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
  *
  * @author <a href='mailto:the[dot]mindstorm[at]gmail[dot]com'>Alex Popescu</a>
  */
-public class JUnitXMLReporter implements IResultListener {
+public class JUnitXMLReporter implements IResultListener2 {
   private static final Pattern ENTITY= Pattern.compile("&[a-zA-Z]+;.*");
   private static final Pattern LESS= Pattern.compile("<");
   private static final Pattern GREATER= Pattern.compile(">");
