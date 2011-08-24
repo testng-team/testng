@@ -1,6 +1,7 @@
 Current
 
 Fixed: NPE when using inner classes
+Fixed: @AfterClass not being run in some subclassing situations
 
 ===========================================================================
 

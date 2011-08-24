@@ -2,7 +2,6 @@ package org.testng;
 
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.TestNGMethod;
 
 import java.util.List;
 import java.util.Map;
@@ -43,7 +42,12 @@ public class ClassMethodMap {
     List<ITestNGMethod> l = m_classMap.get(instance);
     if (l != null) {
       l.remove(m);
-      return l.size() == 0;
+      // It's the last method of this class if all the methods remaining in the list belong to a
+      // different class
+      for (ITestNGMethod tm : l) {
+        if (tm.getRealClass().equals(m.getRealClass())) return false;
+      }
+      return true;
     } else {
       throw new AssertionError("l should not be null");
     }
