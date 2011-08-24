@@ -81,4 +81,9 @@ public class ConstructorOrMethod {
     return m_enabled;
   }
 
+  @Override
+  public String toString() {
+    if (m_method != null) return m_method.toString();
+    else return m_constructor.toString();
+  }
 }
