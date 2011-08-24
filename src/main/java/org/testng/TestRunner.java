@@ -52,7 +52,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 /**
  * This class takes care of running one Test.
@@ -1179,8 +1178,10 @@ public class TestRunner
         // index
         String classDependedUpon = indexedClasses2.get(index - 1);
         List<ITestNGMethod> methodsDependedUpon = methodsFromClass.get(classDependedUpon);
-        for (ITestNGMethod mdu : methodsDependedUpon) {
-          result.put(mdu, m);
+        if (methodsDependedUpon != null) {
+          for (ITestNGMethod mdu : methodsDependedUpon) {
+            result.put(mdu, m);
+          }
         }
       }
     }

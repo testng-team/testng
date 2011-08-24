@@ -1,5 +1,12 @@
 Current
 
+Fixed: NPE when using inner classes
+
+===========================================================================
+
+6.2
+08/18/2011
+
 Added: xmlpathinjar to the TestNG ant task
 Added: TestNG can now invoke package protected constructors
 Added: Injectors created by the @Guice annotation are now shared at the <test> level
