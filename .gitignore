@@ -5,3 +5,5 @@ test-output
 test-output-tests
 testng-*.jar
 target
+eclipse-build
+javadocs
