@@ -3,6 +3,10 @@ Current
 Fixed: NPE when using inner classes
 Fixed: @AfterClass not being run in some subclassing situations
 
+Eclipse:
+
+Fixed: Variable substitution in VM arguments is not working properly (riemenschneider)
+
 ===========================================================================
 
 6.2
