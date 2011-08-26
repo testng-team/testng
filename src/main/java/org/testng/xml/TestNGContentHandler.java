@@ -136,16 +136,10 @@ public class TestNGContentHandler extends DefaultHandler {
         m_currentSuite.setJUnit( Boolean.valueOf(jUnit).booleanValue());
       }
       String parallel = attributes.getValue("parallel");
-      if (null != parallel) {
-        if(XmlSuite.PARALLEL_METHODS.equals(parallel)
-            || XmlSuite.PARALLEL_TESTS.equals(parallel)
-            || XmlSuite.PARALLEL_NONE.equals(parallel)
-            || XmlSuite.PARALLEL_CLASSES.equals(parallel)
-            || "true".equals(parallel)
-            || "false".equals(parallel)) {
+      if (parallel != null) {
+        if (isValidParallel(parallel)) {
           m_currentSuite.setParallel(parallel);
-        }
-        else {
+        } else {
           Utils.log("Parser", 1, "[WARN] Unknown value of attribute 'parallel' at suite level: '" + parallel + "'.");
         }
       }
@@ -273,16 +267,12 @@ public class TestNGContentHandler extends DefaultHandler {
         m_currentTest.setPreserveOrder(preserveOrder);
       }
       String parallel = attributes.getValue("parallel");
-      if (null != parallel) {
-        if(XmlSuite.PARALLEL_METHODS.equals(parallel)
-            || XmlSuite.PARALLEL_NONE.equals(parallel)
-            || XmlSuite.PARALLEL_CLASSES.equals(parallel)
-            || "true".equals(parallel)
-            || "false".equals(parallel)) {
+      if (parallel != null) {
+        if (isValidParallel(parallel)) {
           m_currentTest.setParallel(parallel);
-        }
-        else {
-          Utils.log("Parser", 1, "[WARN] Unknown value of attribute 'parallel' for test '" + m_currentTest.getName() + "': '" + parallel + "'");
+        } else {
+          Utils.log("Parser", 1, "[WARN] Unknown value of attribute 'parallel' for test '"
+            + m_currentTest.getName() + "': '" + parallel + "'");
         }
       }
       String threadCount = attributes.getValue("thread-count");
@@ -320,6 +310,10 @@ public class TestNGContentHandler extends DefaultHandler {
         tests.remove(tests.size() - 1);
       }
     }
+  }
+
+  private boolean isValidParallel(String parallel) {
+    return XmlSuite.PARALLEL_MODES.contains(parallel);
   }
 
   /**

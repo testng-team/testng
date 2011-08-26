@@ -11,6 +11,7 @@ import org.testng.internal.version.VersionInfo;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -43,6 +44,15 @@ public class XmlSuite implements Serializable, Cloneable {
   public static final String PARALLEL_CLASSES = "classes";
   public static final String PARALLEL_INSTANCES = "instances";
   public static final String PARALLEL_NONE = "none";
+  public static Set<String> PARALLEL_MODES = new HashSet<String>() {{
+    add(PARALLEL_TESTS);
+    add(PARALLEL_METHODS);
+    add(PARALLEL_CLASSES);
+    add(PARALLEL_INSTANCES);
+    add(PARALLEL_NONE);
+    add("true");
+    add("false");
+  }};
 
   /** Configuration failure policy options */
   public static final String SKIP = "skip";
