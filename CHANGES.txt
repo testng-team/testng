@@ -6,7 +6,7 @@ Fixed: @AfterClass not being run in some subclassing situations
 
 Eclipse:
 
-Fixed: Variable substitution in VM arguments is not working properly (riemenschneider)
+Fixed: Variable substitution in VM arguments is not working properly (svenhoff)
 
 ===========================================================================
 
