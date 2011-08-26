@@ -104,21 +104,23 @@ public class PoolService<KeyType, FutureType> {
     List<Future<FutureType>> futures = null;
     synchronized(m_futureMap) {
       futures = m_futureMap.get(key);
-      while (!isFinished(futures)) {
-        try {
-          Thread.sleep(1000);
-        } catch (InterruptedException e) {
-          e.printStackTrace();
+      if (futures != null) {
+        while (!isFinished(futures)) {
+          try {
+            Thread.sleep(1000);
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
         }
-      }
 
-      for (Future<FutureType> future : futures) {
-        try {
-          if (future != null) result.add(future.get());
-        } catch (InterruptedException e) {
-          e.printStackTrace();
-        } catch (ExecutionException e) {
-          e.printStackTrace();
+        for (Future<FutureType> future : futures) {
+          try {
+            if (future != null) result.add(future.get());
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          } catch (ExecutionException e) {
+            e.printStackTrace();
+          }
         }
       }
     }
