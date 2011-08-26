@@ -1,5 +1,6 @@
 Current
 
+Fixed: The XML parser doesn't recognize parallel="instances"
 Fixed: NPE when using inner classes
 Fixed: @AfterClass not being run in some subclassing situations
 
