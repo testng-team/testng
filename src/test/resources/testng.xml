@@ -106,6 +106,7 @@
       <class name="test.serviceloader.ServiceLoaderTest" />
       <class name="test.commandline.CommandLineOverridesXml" />
       <class name="test.jason.MainTest" />
+      <class name="test.bug90.Bug90Test" />
     </classes>
   </test>
 

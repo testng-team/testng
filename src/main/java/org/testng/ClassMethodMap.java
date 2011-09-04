@@ -2,6 +2,7 @@ package org.testng;
 
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.internal.XmlMethodSelector;
 
 import java.util.List;
 import java.util.Map;
@@ -22,8 +23,13 @@ public class ClassMethodMap {
   private Map<ITestClass, Set<Object>> m_beforeClassMethods = Maps.newHashMap();
   private Map<ITestClass, Set<Object>> m_afterClassMethods = Maps.newHashMap();
 
-  public ClassMethodMap(List<ITestNGMethod> methods) {
+  public ClassMethodMap(List<ITestNGMethod> methods, XmlMethodSelector xmlMethodSelector) {
     for (ITestNGMethod m : methods) {
+      // Only add to the class map methods that are included in the
+      // method selector. We can pass a null context here since the selector
+      // should already have been initialized
+      if (! xmlMethodSelector.includeMethod(null, m, true)) continue;
+
       Object instance = m.getInstance();
       List<ITestNGMethod> l = m_classMap.get(instance);
       if (l == null) {
