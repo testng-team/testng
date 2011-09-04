@@ -205,7 +205,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     //
     List<Object> invokeInstances= Lists.newArrayList();
     ITestNGMethod tm= mi.getMethod();
-    if (m_classMethodMap.removeAndCheckIfLast(tm, mi.getInstances()[0])) {
+    if (m_classMethodMap.removeAndCheckIfLast(tm, mi.getInstance())) {
       Map<ITestClass, Set<Object>> invokedAfterClassMethods
           = m_classMethodMap.getInvokedAfterClassMethods();
       synchronized(invokedAfterClassMethods) {
