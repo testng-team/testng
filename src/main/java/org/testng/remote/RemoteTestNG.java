@@ -191,9 +191,9 @@ public class RemoteTestNG extends TestNG {
         sb.append(s).append(" ");
       }
       p(sb.toString());
-      remoteTestNg.setVerbose(1);
-    } else {
-      remoteTestNg.setVerbose(0);
+//      remoteTestNg.setVerbose(1);
+//    } else {
+//      remoteTestNg.setVerbose(0);
     }
     validateCommandLineParameters(cla);
     remoteTestNg.run();

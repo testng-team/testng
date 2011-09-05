@@ -7,6 +7,7 @@ Fixed: @AfterClass not being run in some subclassing situations
 
 Eclipse:
 
+Fixed: Verbose levels specified in suites is now respected again
 Fixed: Variable substitution in VM arguments is not working properly (svenhoff)
 
 ===========================================================================
