@@ -9,6 +9,7 @@ import org.testng.remote.strprotocol.IMessageSender;
 import org.testng.remote.strprotocol.MessageHub;
 import org.testng.remote.strprotocol.SerializedMessageSender;
 import org.testng.remote.strprotocol.StringMessageSender;
+
 import test.SimpleBaseTest;
 
 import java.net.SocketTimeoutException;
@@ -31,7 +32,7 @@ public class RemoteTest extends SimpleBaseTest {
     add("SuiteMessage");  // suite started
     add("TestMessage");  // test started
     add("TestResultMessage"); // status: started
-    add("TestResultMessage"); // status: succes/
+    add("TestResultMessage"); // status: success
     add("TestResultMessage"); // status: started
     add("TestResultMessage"); // status: success
     add("TestMessage"); // test finished
