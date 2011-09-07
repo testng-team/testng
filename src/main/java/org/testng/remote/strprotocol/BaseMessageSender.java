@@ -35,11 +35,13 @@ abstract public class BaseMessageSender implements IMessageSender {
   protected volatile BufferedReader m_inReader;
 
   private ReaderThread m_readerThread;
+  private boolean m_ack;
 //  protected InputStream m_receiverInputStream;
 
-  public BaseMessageSender(String host, int port) {
+  public BaseMessageSender(String host, int port, boolean ack) {
     m_host = host;
     m_port = port;
+    m_ack = ack;
   }
 
   /**
@@ -176,15 +178,17 @@ abstract public class BaseMessageSender implements IMessageSender {
   private String m_latestAck;
 
   protected void waitForAck() {
-//    try {
-//      p("Message sent, waiting for ACK...");
-//      synchronized(m_ackLock) {
-//        m_ackLock.wait();
-//      }
-//      p("... ACK received:" + m_latestAck);
-//    }
-//    catch(InterruptedException e) {
-//    }
+    if (m_ack) {
+      try {
+        p("Message sent, waiting for ACK...");
+        synchronized(m_ackLock) {
+          m_ackLock.wait();
+        }
+        p("... ACK received:" + m_latestAck);
+      }
+      catch(InterruptedException e) {
+      }
+    }
   }
 
   private static void p(String msg) {

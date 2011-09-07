@@ -60,6 +60,8 @@ public class RemoteTestNG extends TestNG {
 
   private static boolean m_dontExit;
 
+  private static boolean m_ack;
+
   public void setHost(String host) {
     m_host = defaultIfStringEmpty(host, LOCALHOST);
   }
@@ -74,7 +76,7 @@ public class RemoteTestNG extends TestNG {
   @Override
   public void run() {
     IMessageSender sender = m_serPort != null
-        ? new SerializedMessageSender(m_host, m_serPort)
+        ? new SerializedMessageSender(m_host, m_serPort, m_ack)
         : new StringMessageSender(m_host, m_port);
     final MessageHub msh = new MessageHub(sender);
     msh.setDebug(isDebug());
@@ -161,6 +163,7 @@ public class RemoteTestNG extends TestNG {
           + " and " + RemoteArgs.PORT);
     }
     m_debug = cla.debug;
+    m_ack = ra.ack;
     if (m_debug) {
 //      while (true) {
         initAndRun(args, cla, ra);

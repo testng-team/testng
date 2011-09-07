@@ -10,4 +10,8 @@ public class RemoteArgs {
   public static final String DONT_EXIT= "-dontexit";
   @Parameter(names = DONT_EXIT, description = "Do not exit the JVM once done")
   public boolean dontExit = false;
+
+  public static final String ACK = "-ack";
+  @Parameter(names = ACK, description = "Use ACK's")
+  public boolean ack = false;
 }

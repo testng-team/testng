@@ -10,7 +10,11 @@ import java.io.ObjectOutputStream;
 public class SerializedMessageSender extends BaseMessageSender {
 
   public SerializedMessageSender(String host, int port) {
-    super(host, port);
+    super(host, port, false /* no ack */);
+  }
+
+  public SerializedMessageSender(String host, int port, boolean ack) {
+    super(host, port, ack);
   }
 
   @Override

@@ -16,7 +16,11 @@ public class StringMessageSender extends BaseMessageSender {
   private PrintWriter writer;
 
   public StringMessageSender(String host, int port) {
-    super(host, port);
+    super(host, port, false /* no ack */);
+  }
+
+  public StringMessageSender(String host, int port, boolean ack) {
+    super(host, port, ack);
   }
 
   @Override
