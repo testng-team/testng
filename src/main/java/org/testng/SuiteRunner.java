@@ -4,7 +4,6 @@ import static org.testng.internal.Utils.isStringBlank;
 
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.Attributes;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IInvoker;
@@ -486,12 +485,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
    * @return the annotation finder for the given annotation type.
    */
   @Override
-  public IAnnotationFinder getAnnotationFinder(String pAnnotationType) {
-    AnnotationTypeEnum annotationType = AnnotationTypeEnum.valueOf(pAnnotationType);
-    if (AnnotationTypeEnum.JDK != annotationType) {
-      throw new TestNGException("Javadoc annotations are no longer supported. Either" +
-      " update your tests to JDK annotations or use TestNG 5.11.");
-    }
+  public IAnnotationFinder getAnnotationFinder() {
     return m_configuration.getAnnotationFinder();
   }
 
@@ -527,7 +521,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
         skip = test.skipFailedInvocationCounts();
       }
       TestRunner testRunner = new TestRunner(m_configuration, suite, test,
-          suite.getOutputDirectory(), suite.getAnnotationFinder(test.getAnnotations()), skip,
+          suite.getOutputDirectory(), suite.getAnnotationFinder(), skip,
           listeners);
 
       if (m_useDefaultListeners) {
@@ -649,6 +643,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     return m_invokedMethods;
   }
 
+  @Override
   public List<ITestNGMethod> getAllMethods() {
     return m_allTestMethods;
   }

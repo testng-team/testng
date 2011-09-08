@@ -155,7 +155,7 @@ public class TestRunner
       boolean skipFailedInvocationCounts,
       List<IInvokedMethodListener> listeners) {
     init(configuration, suite, test, suite.getOutputDirectory(),
-        suite.getAnnotationFinder(test.getAnnotations()),
+        suite.getAnnotationFinder(),
         skipFailedInvocationCounts, listeners);
   }
 

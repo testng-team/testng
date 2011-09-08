@@ -94,7 +94,7 @@ public interface ISuite extends IAttributes {
   /**
    * @return the annotation finder used for the specified type (JDK5 or javadoc)
    */
-  public IAnnotationFinder getAnnotationFinder(String type);
+  public IAnnotationFinder getAnnotationFinder();
 
   /**
    * @return The representation of the current XML suite file.

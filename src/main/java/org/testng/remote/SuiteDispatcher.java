@@ -110,9 +110,8 @@ public class SuiteDispatcher
 					for (XmlTest test : suite.getTests()) {
 						XmlSuite tmpSuite = new XmlSuite();
 						tmpSuite.setXmlPackages(suite.getXmlPackages());
-						tmpSuite.setAnnotations(suite.getAnnotations());
 						tmpSuite.setJUnit(suite.isJUnit());
-           tmpSuite.setSkipFailedInvocationCounts(suite.skipFailedInvocationCounts());
+            tmpSuite.setSkipFailedInvocationCounts(suite.skipFailedInvocationCounts());
 						tmpSuite.setName("Temporary suite for " + test.getName());
 						tmpSuite.setParallel(suite.getParallel());
 						tmpSuite.setParameters(suite.getParameters());
@@ -121,7 +120,6 @@ public class SuiteDispatcher
 						tmpSuite.setVerbose(suite.getVerbose());
 						tmpSuite.setObjectFactory(suite.getObjectFactory());
 						XmlTest tmpTest = new XmlTest(tmpSuite);
-						tmpTest.setAnnotations(test.getAnnotations());
 						tmpTest.setBeanShellExpression(test.getExpression());
 						tmpTest.setXmlClasses(test.getXmlClasses());
 						tmpTest.setExcludedGroups(test.getExcludedGroups());

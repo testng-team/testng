@@ -7,10 +7,11 @@ import static org.testng.internal.Utils.isStringNotEmpty;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Configuration;
 import org.testng.internal.DynamicGraph;
@@ -25,7 +26,6 @@ import org.testng.internal.annotations.Sets;
 import org.testng.internal.thread.graph.GraphThreadPoolExecutor;
 import org.testng.internal.thread.graph.IThreadWorkerFactory;
 import org.testng.internal.thread.graph.SuiteWorkerFactory;
-import org.testng.internal.version.VersionInfo;
 import org.testng.log4testng.Logger;
 import org.testng.remote.SuiteDispatcher;
 import org.testng.remote.SuiteSlave;
@@ -41,8 +41,6 @@ import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -124,13 +122,6 @@ public class TestNG {
   protected List<XmlSuite> m_suites = Lists.newArrayList();
   private List<XmlSuite> m_cmdlineSuites;
   private String m_outputDir = DEFAULT_OUTPUTDIR;
-
-  /**
-   * The annotation type for suites/tests that have not explicitly set this attribute.
-   * This member used to be protected but has been changed to private use the sewtTarget
-   * method instead.
-   */
-  private AnnotationTypeEnum m_defaultAnnotations = VersionInfo.getDefaultAnnotationType();
 
   private String[] m_includedGroups;
   private String[] m_excludedGroups;
@@ -248,26 +239,6 @@ public class TestNG {
    */
   public void setUseDefaultListeners(boolean useDefaultListeners) {
     m_useDefaultListeners = useDefaultListeners;
-  }
-
-  /**
-   * Sets the default annotation type for suites that have not explicitly set the
-   * annotation property. The target is used only in JDK5+.
-   * @param annotationType the default annotation type. This is one of the two constants
-   * (TestNG.JAVADOC_ANNOTATION_TYPE or TestNG.JDK_ANNOTATION_TYPE).
-   * For backward compatibility reasons we accept "1.4", "1.5". Any other value will
-   * default to TestNG.JDK_ANNOTATION_TYPE.
-   */
-  public void setAnnotations(String annotationType) {
-    if(isStringNotEmpty(annotationType)) {
-      setAnnotations(AnnotationTypeEnum.valueOf(annotationType));
-    }
-  }
-
-  private void setAnnotations(AnnotationTypeEnum annotationType) {
-    if(null != annotationType) {
-      m_defaultAnnotations= annotationType;
-    }
   }
 
   /**
@@ -1200,8 +1171,6 @@ public class TestNG {
    * @param xmlSuite Xml Suite (and its children) for which {@code SuiteRunner}s are created
    */
   private void createSuiteRunners(Map<XmlSuite, ISuite> suiteRunnerMap /* OUT */, XmlSuite xmlSuite) {
-    xmlSuite.setDefaultAnnotations(m_defaultAnnotations.toString());
-
     if (null != m_isJUnit && ! m_isJUnit.equals(XmlSuite.DEFAULT_JUNIT)) {
       xmlSuite.setJUnit(m_isJUnit);
     }

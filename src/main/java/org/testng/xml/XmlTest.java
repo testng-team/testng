@@ -3,7 +3,6 @@ package org.testng.xml;
 import org.testng.TestNG;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.AnnotationTypeEnum;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.io.Serializable;
@@ -41,9 +40,6 @@ public class XmlTest implements Serializable, Cloneable {
   private Map<String, List<String>> m_metaGroups = Maps.newHashMap();
   private Map<String, String> m_parameters = Maps.newHashMap();
   private String m_parallel;
-
-  /** */
-  private AnnotationTypeEnum m_annotations;
 
   private List<XmlMethodSelector> m_methodSelectors = Lists.newArrayList();
   // test level packages
@@ -401,14 +397,6 @@ public class XmlTest implements Serializable, Cloneable {
       m_timeOut = Long.toString(timeOut);
   }
 
-  public String getAnnotations() {
-    return null != m_annotations ? m_annotations.toString() : m_suite.getAnnotations();
-  }
-
-  public void setAnnotations(String annotations) {
-    m_annotations = AnnotationTypeEnum.valueOf(annotations);
-  }
-
   public void setExpression(String expression) {
     setBeanShellExpression(expression);
   }
@@ -611,7 +599,6 @@ public class XmlTest implements Serializable, Cloneable {
     XmlTest result = new XmlTest(getSuite());
 
     result.setName(getName());
-    result.setAnnotations(getAnnotations());
     result.setIncludedGroups(getIncludedGroups());
     result.setExcludedGroups(getExcludedGroups());
     result.setJUnit(isJUnit());

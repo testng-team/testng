@@ -4,7 +4,6 @@ package org.testng.xml;
 import static org.testng.internal.Utils.isStringNotBlank;
 
 import org.testng.collections.Lists;
-import org.testng.internal.AnnotationTypeEnum;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 import org.testng.remote.RemoteTestNG;
@@ -107,8 +106,6 @@ public abstract class LaunchSuite {
     protected String m_suiteName;
 
     /** The annotation type. May be null. */
-    protected AnnotationTypeEnum m_annotationType;
-
     protected Map<String, String> m_parameters;
 
     /** The string buffer used to write the XML file. */
@@ -132,7 +129,6 @@ public abstract class LaunchSuite {
       m_projectName = projectName;
       m_suiteName = className;
       m_parameters = parameters;
-      m_annotationType = annotationType == null ? null : AnnotationTypeEnum.valueOf(annotationType, false);
     }
 
     /**
@@ -171,6 +167,7 @@ public abstract class LaunchSuite {
      *
      * @return
      */
+    @Override
     public XMLStringBuffer getSuiteBuffer() {
       if (null == m_suiteBuffer) {
         m_suiteBuffer = createContentBuffer();
@@ -261,9 +258,6 @@ public abstract class LaunchSuite {
     protected void initContentBuffer(XMLStringBuffer suiteBuffer) {
       Properties testAttrs = new Properties();
       testAttrs.setProperty("name", m_className);
-      if (m_annotationType != null) {
-        testAttrs.setProperty("annotations", m_annotationType.getName());
-      }
       testAttrs.setProperty("verbose", String.valueOf(m_logLevel));
 
       suiteBuffer.push("test", testAttrs);
@@ -316,9 +310,6 @@ public abstract class LaunchSuite {
     protected void initContentBuffer(XMLStringBuffer suiteBuffer) {
       Properties testAttrs = new Properties();
       testAttrs.setProperty("name", m_projectName);
-      if (m_annotationType != null) {
-        testAttrs.setProperty("annotations", m_annotationType.getName());
-      }
       testAttrs.setProperty("verbose", String.valueOf(m_logLevel));
 
       suiteBuffer.push("test", testAttrs);
@@ -399,9 +390,6 @@ public abstract class LaunchSuite {
     protected void initContentBuffer(XMLStringBuffer suiteBuffer) {
       Properties testAttrs = new Properties();
       testAttrs.setProperty("name", m_projectName);
-      if (m_annotationType != null) {
-        testAttrs.setProperty("annotations", m_annotationType.getName());
-      }
       testAttrs.setProperty("verbose", String.valueOf(m_logLevel));
 
       suiteBuffer.push("test", testAttrs);

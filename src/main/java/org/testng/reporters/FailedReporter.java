@@ -165,7 +165,6 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
   private void createXmlTest(ITestContext context, List<ITestNGMethod> methods, XmlTest srcXmlTest) {
     XmlTest xmlTest = new XmlTest(m_xmlSuite);
     xmlTest.setName(context.getName() + "(failed)");
-    xmlTest.setAnnotations(srcXmlTest.getAnnotations());
     xmlTest.setBeanShellExpression(srcXmlTest.getExpression());
     xmlTest.setIncludedGroups(srcXmlTest.getIncludedGroups());
     xmlTest.setExcludedGroups(srcXmlTest.getExcludedGroups());

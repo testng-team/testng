@@ -7,7 +7,6 @@ import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.Utils;
-import org.testng.internal.version.VersionInfo;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -165,13 +164,6 @@ public class TestNGContentHandler extends DefaultHandler {
       if (null != dataProviderThreadCount) {
         m_currentSuite.setDataProviderThreadCount(Integer.parseInt(dataProviderThreadCount));
       }
-      String annotations = attributes.getValue("annotations");
-      if (null != annotations) {
-        m_currentSuite.setAnnotations(annotations);
-      }
-      else if (VersionInfo.IS_JDK14) {
-        m_currentSuite.setAnnotations(XmlSuite.JAVADOC_ANNOTATION_TYPE);
-      }
       String timeOut = attributes.getValue("time-out");
       if (null != timeOut) {
         m_currentSuite.setTimeOut(timeOut);
@@ -282,10 +274,6 @@ public class TestNGContentHandler extends DefaultHandler {
       String timeOut = attributes.getValue("time-out");
       if (null != timeOut) {
         m_currentTest.setTimeOut(Long.parseLong(timeOut));
-      }
-      String annotations = attributes.getValue("annotations");
-      if (null != annotations) {
-        m_currentTest.setAnnotations(annotations);
       }
       m_inTest = true;
       m_enabledTest= true;

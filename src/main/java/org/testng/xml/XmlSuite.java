@@ -6,8 +6,6 @@ import org.testng.ITestObjectFactory;
 import org.testng.TestNG;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.AnnotationTypeEnum;
-import org.testng.internal.version.VersionInfo;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.io.Serializable;
@@ -24,20 +22,6 @@ import java.util.Set;
  * @author <a href = 'mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class XmlSuite implements Serializable, Cloneable {
-  // Possible value for the attribute annotations of <suite>
-  // It would be nice to factor out these names as they are
-  // also defined in the TestNG class.
-
-  /** @deprecated use JAVADOC_ANNOTATION_TYPE. */
-  @Deprecated
-  public static final String JAVADOC = "javadoc";
-
-  /** The JDK50 annotation type ID ("JDK5"). */
-  public static final String JDK5_ANNOTATION_TYPE = AnnotationTypeEnum.JDK.getName();
-
-  /** The JavaDoc annotation type ID ("javadoc"). */
-  public static final String JAVADOC_ANNOTATION_TYPE = AnnotationTypeEnum.JAVADOC.getName();
-
   /** Parallel modes */
   public static final String PARALLEL_TESTS = "tests";
   public static final String PARALLEL_METHODS = "methods";
@@ -95,12 +79,6 @@ public class XmlSuite implements Serializable, Cloneable {
   /** By default, a method failing will cause all instances of that class to skip */
   public static final Boolean DEFAULT_GROUP_BY_INSTANCES = false;
   private Boolean m_groupByInstances = DEFAULT_GROUP_BY_INSTANCES;
-
-  /** The suite annotation type. */
-  private AnnotationTypeEnum m_annotations;
-
-  /** The suite default annotation type. */
-  private AnnotationTypeEnum m_defaultAnnotations = VersionInfo.getDefaultAnnotationType();
 
   /** The packages containing test classes. */
   private List<XmlPackage> m_xmlPackages = Lists.newArrayList();
@@ -357,42 +335,6 @@ public class XmlSuite implements Serializable, Cloneable {
   }
 
   /**
-   * Returns the annotation type for the suite. If an annotation type has
-   * not been explicitly set, the default annotation type is returned.
-   * @return the annotation type for the suite.
-   */
-  public String getAnnotations() {
-    return (m_annotations != null ? m_annotations : m_defaultAnnotations).toString();
-  }
-
-  /**
-   * Sets the overall default annotation type (JDK5/javadoc).
-   * It is used if the annotation attribute of the suite definition
-   * does not specify an explicit value.
-   *
-   * @param annotationType one of the two string constant JAVADOC_ANNOTATION_TYPE or
-   * JDK5_ANNOTATION_TYPE.
-   * @see #JAVADOC_ANNOTATION_TYPE
-   * @see #JDK5_ANNOTATION_TYPE
-   */
-  public void setDefaultAnnotations(String annotationType) {
-    m_defaultAnnotations = AnnotationTypeEnum.valueOf(annotationType);
-  }
-
-  /**
-   * Sets the annotation type for the suite. If this value is not explicitly set,
-   * the suite annotation type defaults to the default annotation type. see
-   * setDefaultAnnotations
-   * @param annotations one of the two string constant JAVADOC_ANNOTATION_TYPE or
-   * JDK5_ANNOTATION_TYPE.
-   * @see #JAVADOC_ANNOTATION_TYPE
-   * @see #JDK5_ANNOTATION_TYPE
-   */
-  public void setAnnotations(String annotations) {
-    m_annotations = AnnotationTypeEnum.valueOf(annotations);
-  }
-
-  /**
    * Returns the JUnit compatibility flag.
    * @return the JUnit compatibility flag.
    */
@@ -576,7 +518,6 @@ public class XmlSuite implements Serializable, Cloneable {
 
     result.setName(getName());
     result.setListeners(getListeners());
-    result.setAnnotations(getAnnotations());
     result.setParallel(getParallel());
     result.setConfigFailurePolicy(getConfigFailurePolicy());
     result.setThreadCount(getThreadCount());
