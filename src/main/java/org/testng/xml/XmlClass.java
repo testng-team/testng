@@ -38,30 +38,30 @@ public class XmlClass implements Serializable, Cloneable {
     init(name, null, 0, loadClasses);
   }
 
-  public XmlClass(Class className) {
-    init(className.getName(), null, 0, true);
+  public XmlClass(Class cls) {
+    init(cls.getName(), cls, 0, true);
   }
 
-  public XmlClass(Class className, boolean loadClasses) {
-    init(className.getName(), className, 0, loadClasses);
+  public XmlClass(Class cls, boolean loadClasses) {
+    init(cls.getName(), cls, 0, loadClasses);
   }
 
-  public XmlClass(String name, int index) {
-    init(name, null, index, true /* load classes */);
+  public XmlClass(String className, int index) {
+    init(className, null, index, true /* load classes */);
   }
 
-  public XmlClass(String name, int index, boolean loadClasses) {
-    init(name, null, index, loadClasses);
+  public XmlClass(String className, int index, boolean loadClasses) {
+    init(className, null, index, loadClasses);
   }
 
-  private void init(String name, Class className, int index) {
-    init(name, className, index, true /* load classes */);
+  private void init(String className, Class cls, int index) {
+    init(className, cls, index, true /* load classes */);
   }
 
-  private void init(String name, Class className, int index,
+  private void init(String className, Class cls, int index,
       boolean resolveClass) {
-    m_name = name;
-    m_class = className;
+    m_name = className;
+    m_class = cls;
     m_index = index;
 
     if (null == m_class && resolveClass) {
