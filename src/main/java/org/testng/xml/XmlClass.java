@@ -43,7 +43,7 @@ public class XmlClass implements Serializable, Cloneable {
   }
 
   public XmlClass(Class className, boolean loadClasses) {
-    init(className.getName(), null, 0, loadClasses);
+    init(className.getName(), className, 0, loadClasses);
   }
 
   public XmlClass(String name, int index) {
