@@ -1,5 +1,7 @@
 Current
 
+Added: "description" attribute on <include>, made available on ITestNGMethod#getDescription
+Fixed: Groovy access bug
 Fixed: The XML parser doesn't recognize parallel="instances"
 Fixed: NPE when using inner classes
 Fixed: GITHUB-90: @AfterClass not being run when the class contains included and not included methods

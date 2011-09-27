@@ -524,12 +524,14 @@ public class TestNGContentHandler extends DefaultHandler {
     else if ("include".equals(qName)) {
       if (null != m_currentIncludedMethods) {
         String in = attributes.getValue("invocation-numbers");
+        XmlInclude include;
         if (!Utils.isStringEmpty(in)) {
-          m_currentIncludedMethods.add(new XmlInclude(name, stringToList(in),
-              m_currentIncludeIndex++));
+          include = new XmlInclude(name, stringToList(in), m_currentIncludeIndex++);
         } else {
-          m_currentIncludedMethods.add(new XmlInclude(name, m_currentIncludeIndex++));
+          include = new XmlInclude(name, m_currentIncludeIndex++);
         }
+        include.setDescription(attributes.getValue("description"));
+        m_currentIncludedMethods.add(include);
       }
       else if (null != m_currentDefines) {
         m_currentMetaGroup.add(name);
