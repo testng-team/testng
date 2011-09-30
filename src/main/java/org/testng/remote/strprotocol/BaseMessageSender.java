@@ -1,5 +1,6 @@
 package org.testng.remote.strprotocol;
 
+import com.sun.xml.internal.ws.wsdl.parser.InaccessibleWSDLException;
 import org.testng.TestNGException;
 import org.testng.remote.RemoteTestNG;
 
@@ -118,21 +119,33 @@ abstract public class BaseMessageSender implements IMessageSender {
       p("initReceiver on port " + m_port);
       serverSocket = new ServerSocket(m_port);
       serverSocket.setSoTimeout(5000);
-      Socket socket = serverSocket.accept();
-      m_inStream = socket.getInputStream();
-      m_inReader = new BufferedReader(new InputStreamReader(m_inStream));
-      m_outStream = socket.getOutputStream();
-      m_outWriter = new PrintWriter(new OutputStreamWriter(m_outStream));
 
-//      initSockets();
+      while (true) {
+        try {
+          Socket socket = serverSocket.accept();
+          m_inStream = socket.getInputStream();
+          m_inReader = new BufferedReader(new InputStreamReader(m_inStream));
+          m_outStream = socket.getOutputStream();
+          m_outWriter = new PrintWriter(new OutputStreamWriter(m_outStream));
 
+          break;
+        }
+        catch (IOException ioe) {
+          try {
+            Thread.sleep(100L);
+          }
+          catch (InterruptedException ie) {
+            // Do nothing.
+          }
+        }
+      }
     }
-    catch(SocketTimeoutException ex) {
-      throw ex;
+    catch(SocketTimeoutException ste) {
+      throw ste;
     }
-    catch (IOException e) {
+    catch (IOException ioe) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      ioe.printStackTrace();
     }
   }
 
