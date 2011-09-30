@@ -1,6 +1,5 @@
 package org.testng.remote.strprotocol;
 
-import com.sun.xml.internal.ws.wsdl.parser.InaccessibleWSDLException;
 import org.testng.TestNGException;
 import org.testng.remote.RemoteTestNG;
 

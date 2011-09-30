@@ -1,6 +1,7 @@
 Current
 
 Added: "description" attribute on <include>, made available on ITestNGMethod#getDescription
+Added: RemoteTestNG waits infinitely for a connection (Aleksey Kabanov)
 Fixed: Groovy access bug
 Fixed: The XML parser doesn't recognize parallel="instances"
 Fixed: NPE when using inner classes
