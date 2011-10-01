@@ -354,7 +354,7 @@ public class TestNG {
       }
       if (! foundTestngXml) {
         Utils.log("TestNG", 1,
-            "Couldn't find a testng.xml in the jar file, running all the classes");
+            "Couldn't find the " + m_xmlPathInJar + " in the jar file, running all the classes");
         XmlSuite xmlSuite = new XmlSuite();
         xmlSuite.setVerbose(0);
         xmlSuite.setName("Jar suite");
@@ -372,9 +372,6 @@ public class TestNG {
       ex.printStackTrace();
     }
     catch(SAXException ex) {
-      ex.printStackTrace();
-    }
-    catch(MalformedURLException ex) {
       ex.printStackTrace();
     }
     catch(IOException ex) {
