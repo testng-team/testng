@@ -44,6 +44,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   // If a depended group is not found
   private String m_missingGroup;
   private String m_description = null;
+  private boolean m_enabled = true;
   protected IAtomicInteger m_currentInvocationCount = ThreadUtil.createAtomicInteger(0);
   private int m_parameterInvocationCount = 1;
   private IRetryAnalyzer m_retryAnalyzer = null;
@@ -629,6 +630,18 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   @Override
   public String getDescription() {
     return m_description;
+  }
+
+  public void setEnabled(boolean enabled) {
+    m_enabled = enabled;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean getEnabled() {
+    return m_enabled;
   }
 
   /**

@@ -327,6 +327,7 @@ public class ConfigurationMethod extends BaseTestMethod {
     if (a != null) {
       m_inheritGroupsFromTestClass = annotation.getInheritGroups();
       setDescription(annotation.getDescription());
+      setEnabled(annotation.getEnabled());
     }
 
     if (annotation != null && annotation.isFakeConfiguration()) {
@@ -418,6 +419,7 @@ public class ConfigurationMethod extends BaseTestMethod {
     clone.setAlwaysRun(isAlwaysRun());
     clone.setMissingGroup(getMissingGroup());
     clone.setDescription(getDescription());
+    clone.setEnabled(getEnabled());
     clone.setParameterInvocationCount(getParameterInvocationCount());
     clone.m_inheritGroupsFromTestClass= inheritGroupsFromTestClass();
 

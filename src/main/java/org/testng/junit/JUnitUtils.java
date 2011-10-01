@@ -93,6 +93,14 @@ public class JUnitUtils {
     }
 
     /**
+     * @see org.testng.ITestNGMethod#getEnabled()
+     */
+    @Override
+    public boolean getEnabled() {
+      return true;
+    }
+
+      /**
      * @see org.testng.ITestNGMethod#getId()
      */
     @Override

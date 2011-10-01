@@ -196,6 +196,8 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
 
   public String getDescription();
 
+  public boolean getEnabled();
+
   public void incrementCurrentInvocationCount();
   public int getCurrentInvocationCount();
   public void setParameterInvocationCount(int n);
