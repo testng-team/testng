@@ -98,6 +98,7 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
         setThreadPoolSize(testAnnotation.getThreadPoolSize());
         setAlwaysRun(testAnnotation.getAlwaysRun());
         setDescription(findDescription(testAnnotation, xmlTest));
+        setEnabled(testAnnotation.getEnabled());
         setRetryAnalyzer(testAnnotation.getRetryAnalyzer());
         setSkipFailedInvocations(testAnnotation.skipFailedInvocations());
         setInvocationTimeOut(testAnnotation.invocationTimeOut());
@@ -180,6 +181,7 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
     clone.setMissingGroup(getMissingGroup());
     clone.setThreadPoolSize(getThreadPoolSize());
     clone.setDescription(getDescription());
+    clone.setEnabled(getEnabled());
     clone.setParameterInvocationCount(getParameterInvocationCount());
     clone.setInvocationCount(getInvocationCount());
     clone.m_successPercentage = getSuccessPercentage();

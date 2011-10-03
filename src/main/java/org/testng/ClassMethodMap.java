@@ -51,7 +51,7 @@ public class ClassMethodMap {
       // It's the last method of this class if all the methods remaining in the list belong to a
       // different class
       for (ITestNGMethod tm : l) {
-        if (tm.getRealClass().equals(m.getRealClass())) return false;
+        if (tm.getEnabled() && tm.getRealClass().equals(m.getRealClass())) return false;
       }
       return true;
     } else {

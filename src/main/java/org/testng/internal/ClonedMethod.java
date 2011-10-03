@@ -63,6 +63,11 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
+  public boolean getEnabled() {
+    return true;
+  }
+
+  @Override
   public String[] getGroups() {
     return m_method.getGroups();
   }

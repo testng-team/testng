@@ -664,6 +664,7 @@
       <class name="test.configuration.SuiteTest" />
       <class name="test.configuration.VerifySuiteTest" />
       <class name="test.configuration.SingleConfigurationTest" />
+      <class name="test.configuration.BeforeClassWithDisabledTest" />
     </classes>
   </test>
 </suite>
