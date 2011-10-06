@@ -2,6 +2,7 @@ Current
 
 Added: "description" attribute on <include>, made available on ITestNGMethod#getDescription
 Added: RemoteTestNG waits infinitely for a connection (Aleksey Kabanov)
+Fixed: A method that's both a test and a factory would not invoke its data provider
 Fixed: @AfterClass was not called if one of the methods was not enabled (Aleksey Kabanov)
 Fixed: Groovy access bug
 Fixed: The XML parser doesn't recognize parallel="instances"
