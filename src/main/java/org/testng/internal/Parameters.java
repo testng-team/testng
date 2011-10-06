@@ -6,7 +6,6 @@ import org.testng.ITestResult;
 import org.testng.TestNGException;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
-import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParameterizable;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
@@ -271,17 +270,19 @@ public class Parameters {
 
     if (m.getMethod() != null) {
       //
-      // @Test(dataProvider)
+      // @Test(dataProvider) on a method
       //
       result = AnnotationHelper.findTest(finder, m.getMethod());
-      if (result == null) {
-        result = AnnotationHelper.findTest(finder, clazz);
-      }
       if (result == null) {
         //
         // @Factory(dataProvider) on a method
         //
         result = AnnotationHelper.findFactory(finder, m.getMethod());
+      }
+      if (result == null) {
+        //
+        // @Test(dataProvider) on a class
+        result = AnnotationHelper.findTest(finder, clazz);
       }
     } else {
       //

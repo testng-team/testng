@@ -286,6 +286,7 @@
       <class name="test.factory.FactoryDataProviderTest"/>
 
       <class name="test.factory.DisabledFactoryTest"/>
+      <class name="test.factory.FactoryAndTestMethodTest" />
     </classes>
   </test>
 
