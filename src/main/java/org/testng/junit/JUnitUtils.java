@@ -100,6 +100,11 @@ public class JUnitUtils {
       return m_id;
     }
 
+    @Override
+    public boolean getEnabled() {
+      return true;
+    }
+
     /**
      * @see org.testng.ITestNGMethod#getInstanceHashCodes()
      */

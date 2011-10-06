@@ -7,3 +7,4 @@ testng-*.jar
 target
 eclipse-build
 javadocs
+.settings

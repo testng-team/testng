@@ -38,6 +38,7 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
    * @deprecated This method is deprecated and can now return null. Use
    * getConstructorOrMethod() instead.
    */
+  @Deprecated
   Method getMethod();
 
   /**
@@ -54,6 +55,7 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
    *
    * @deprecated Use getInstance().
    */
+  @Deprecated
   Object[] getInstances();
 
   Object getInstance();
@@ -193,6 +195,8 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
   int getThreadPoolSize();
 
   void setThreadPoolSize(int threadPoolSize);
+
+  boolean getEnabled();
 
   public String getDescription();
 

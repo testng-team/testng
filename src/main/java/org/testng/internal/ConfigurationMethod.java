@@ -1,6 +1,5 @@
 package org.testng.internal;
 
-import org.testng.Assert;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IConfigurationAnnotation;
@@ -326,6 +325,7 @@ public class ConfigurationMethod extends BaseTestMethod {
     IConfigurationAnnotation annotation = (IConfigurationAnnotation) a;
     if (a != null) {
       m_inheritGroupsFromTestClass = annotation.getInheritGroups();
+      setEnabled(annotation.getEnabled());
       setDescription(annotation.getDescription());
     }
 
@@ -418,6 +418,7 @@ public class ConfigurationMethod extends BaseTestMethod {
     clone.setAlwaysRun(isAlwaysRun());
     clone.setMissingGroup(getMissingGroup());
     clone.setDescription(getDescription());
+    clone.setEnabled(getEnabled());
     clone.setParameterInvocationCount(getParameterInvocationCount());
     clone.m_inheritGroupsFromTestClass= inheritGroupsFromTestClass();
 

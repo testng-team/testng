@@ -39,6 +39,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   protected String[] m_beforeGroups = {};
   protected String[] m_afterGroups = {};
   private boolean m_isAlwaysRun;
+  private boolean m_enabled;
 
   private final String m_methodName;
   // If a depended group is not found
@@ -175,6 +176,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return new Object[] { getInstance() };
   }
 
+  @Override
   public Object getInstance() {
     return m_instance;
   }
@@ -631,6 +633,15 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return m_description;
   }
 
+  public void setEnabled(boolean enabled) {
+    m_enabled = enabled;
+  }
+
+  @Override
+  public boolean getEnabled() {
+    return m_enabled;
+  }
+
   /**
    * {@inheritDoc}
    */
@@ -748,6 +759,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     m_xmlTest = xmlTest;
   }
 
+  @Override
   public ConstructorOrMethod getConstructorOrMethod() {
     return m_method;
   }

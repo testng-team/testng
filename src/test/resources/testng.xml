@@ -286,6 +286,7 @@
       <class name="test.factory.FactoryDataProviderTest"/>
 
       <class name="test.factory.DisabledFactoryTest"/>
+      <class name="test.factory.FactoryAndTestMethodTest" />
     </classes>
   </test>
 
@@ -664,6 +665,7 @@
       <class name="test.configuration.SuiteTest" />
       <class name="test.configuration.VerifySuiteTest" />
       <class name="test.configuration.SingleConfigurationTest" />
+      <class name="test.configuration.BeforeClassWithDisabledTest" />
     </classes>
   </test>
 </suite>

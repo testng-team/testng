@@ -14,19 +14,28 @@ public class XmlInclude implements Serializable {
   private String m_name;
   private List<Integer> m_invocationNumbers = Lists.newArrayList();
   private int m_index;
+  private String m_description;
 
   public XmlInclude(String n) {
-    this(n, Collections.<Integer>emptyList(), 0);
+    this(n, Collections.<Integer> emptyList(), 0);
   }
 
   public XmlInclude(String n, int index) {
-    this(n, Collections.<Integer>emptyList(), index);
+    this(n, Collections.<Integer> emptyList(), index);
   }
 
   public XmlInclude(String n, List<Integer> list, int index) {
     m_name = n;
     m_invocationNumbers = list;
     m_index = index;
+  }
+
+  public void setDescription(String description) {
+    m_description = description;
+  }
+
+  public String getDescription() {
+    return m_description;
   }
 
   public String getName() {
@@ -47,7 +56,8 @@ public class XmlInclude implements Serializable {
     p.setProperty("name", getName());
     List<Integer> invocationNumbers = getInvocationNumbers();
     if (invocationNumbers != null && invocationNumbers.size() > 0) {
-      p.setProperty("invocation-numbers", XmlClass.listToString(invocationNumbers).toString());
+      p.setProperty("invocation-numbers",
+          XmlClass.listToString(invocationNumbers).toString());
     }
     xsb.addEmptyElement("include", p);
 
@@ -74,8 +84,8 @@ public class XmlInclude implements Serializable {
     if (getClass() != obj.getClass())
       return XmlSuite.f();
     XmlInclude other = (XmlInclude) obj;
-//    if (m_index != other.m_index)
-//      return XmlSuite.f();
+    // if (m_index != other.m_index)
+    // return XmlSuite.f();
     if (m_invocationNumbers == null) {
       if (other.m_invocationNumbers != null)
         return XmlSuite.f();

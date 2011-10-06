@@ -5,12 +5,14 @@ import org.testng.ITestNGMethod;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.IDataProvidable;
+import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Comparator;
+import java.util.List;
 
 
 /**
@@ -95,7 +97,8 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
         setInvocationCount(testAnnotation.getInvocationCount());
         setThreadPoolSize(testAnnotation.getThreadPoolSize());
         setAlwaysRun(testAnnotation.getAlwaysRun());
-        setDescription(testAnnotation.getDescription());
+        setDescription(findDescription(testAnnotation, xmlTest));
+        setEnabled(testAnnotation.getEnabled());
         setRetryAnalyzer(testAnnotation.getRetryAnalyzer());
         setSkipFailedInvocations(testAnnotation.skipFailedInvocations());
         setInvocationTimeOut(testAnnotation.invocationTimeOut());
@@ -108,6 +111,26 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
         initGroups(ITestAnnotation.class);
       }
     }
+  }
+
+  private String findDescription(ITestAnnotation testAnnotation, XmlTest xmlTest) {
+    String result = testAnnotation.getDescription();
+    if (result == null) {
+      List<XmlClass> classes = xmlTest.getXmlClasses();
+      for (XmlClass c : classes) {
+        if (c.getName().equals(m_method.getMethod().getDeclaringClass().getName())); {
+          for (XmlInclude include : c.getIncludedMethods()) {
+            if (include.getName().equals(m_method.getName())) {
+              result = include.getDescription();
+              if (result != null) {
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+    return result;
   }
 
   /**
@@ -158,6 +181,7 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
     clone.setMissingGroup(getMissingGroup());
     clone.setThreadPoolSize(getThreadPoolSize());
     clone.setDescription(getDescription());
+    clone.setEnabled(getEnabled());
     clone.setParameterInvocationCount(getParameterInvocationCount());
     clone.setInvocationCount(getInvocationCount());
     clone.m_successPercentage = getSuccessPercentage();

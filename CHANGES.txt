@@ -1,5 +1,10 @@
 Current
 
+Added: "description" attribute on <include>, made available on ITestNGMethod#getDescription
+Added: RemoteTestNG waits infinitely for a connection (Aleksey Kabanov)
+Fixed: A method that's both a test and a factory would not invoke its data provider
+Fixed: @AfterClass was not called if one of the methods was not enabled (Aleksey Kabanov)
+Fixed: Groovy access bug
 Fixed: The XML parser doesn't recognize parallel="instances"
 Fixed: NPE when using inner classes
 Fixed: GITHUB-90: @AfterClass not being run when the class contains included and not included methods
@@ -7,7 +12,7 @@ Fixed: @AfterClass not being run in some subclassing situations
 
 Eclipse:
 
-Fixed: Verbose levels specified in suites is now respected again
+Fixed: Verbose levels specified in suites not respected
 Fixed: Variable substitution in VM arguments is not working properly (svenhoff)
 
 ===========================================================================
