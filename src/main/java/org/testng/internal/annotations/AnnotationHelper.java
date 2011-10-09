@@ -198,7 +198,6 @@ public class AnnotationHelper {
       vResult = Maps.newHashMap();
 //    Class[] classes = rootClass.getTestClasses();
       Class cls = rootClass;
-
       //
       // If the annotation is on the class or superclass, it applies to all public methods
       // except methods marked with @Configuration
@@ -233,9 +232,16 @@ public class AnnotationHelper {
 
                 continue;
               }
+              
+              
+              boolean testNonVoid = false;
+              if (xmlTest!=null){
+            	  testNonVoid="true".equalsIgnoreCase(xmlTest.getParameter("testNonVoid"));
+              }
+              
 
               // Skip the method if it has a return type
-              if (m.getReturnType() != void.class) {
+              if (m.getReturnType() != void.class && !testNonVoid) {
                 Utils.log("", 3, "Method " + m + " has a @Test annotation"
                     + " but also a return value:  ignoring it.");
                 continue;
