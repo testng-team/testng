@@ -17,6 +17,7 @@ parameters: { n: 42, p: 10, s: "a b c", t: "a,b" }
 
 tests:
   - name: Test3
+    preserveOrder: false
     includedGroups: [A, B]
     excludedGroups: [C, D]
     metaGroups: { a: [ b, d] }
@@ -29,6 +30,7 @@ tests:
         language: beanshell
 
   - name: Test1
+    preserveOrder: false
     classes:
       - name: test.tmp.A
         includedMethods: [test1, test2]
@@ -36,6 +38,7 @@ tests:
       - test.tmp.B
 
   - name: Test2
+    preserveOrder: false
     classes:
       - test.tmp.B
 

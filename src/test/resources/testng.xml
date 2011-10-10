@@ -174,8 +174,8 @@
 -->
       <class name="test.dependent.OrderMethodTest" />
       <class name="test.dependent.DependentTest" />
+      <class name="test.dependent.SampleDependentTest" />
       <class name="test.dependent.SampleDependentMethods" />
-      <class name="test.dependent.SampleDependentMethods2" />
       <class name="test.dependent.SampleDependentMethods3" />
       <class name="test.dependent.SampleDependentConfigurationMethods" />
       <class name="test.dependent.ClassDependsOnGroups"/>

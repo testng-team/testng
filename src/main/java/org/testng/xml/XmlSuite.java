@@ -115,7 +115,7 @@ public class XmlSuite implements Serializable, Cloneable {
 
   private static final long serialVersionUID = 4999962288272750226L;
 
-  public static String DEFAULT_PRESERVE_ORDER = "false";
+  public static String DEFAULT_PRESERVE_ORDER = "true";
   private String m_preserveOrder = DEFAULT_PRESERVE_ORDER;
 
   private List<String> m_includedGroups = Lists.newArrayList();

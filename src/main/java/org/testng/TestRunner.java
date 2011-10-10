@@ -1136,11 +1136,13 @@ public class TestRunner
       ITestNGMethod[] methods, XmlTest test)
   {
     Map<String, List<ITestNGMethod>> classes = Maps.newHashMap();
+    // Note: use a List here to preserve the ordering but make sure
+    // we don't add the same class twice
     List<XmlClass> sortedClasses = Lists.newArrayList();
 
     for (XmlClass c : test.getXmlClasses()) {
       classes.put(c.getName(), new ArrayList<ITestNGMethod>());
-      sortedClasses.add(c);
+      if (! sortedClasses.contains(c)) sortedClasses.add(c);
     }
 
     // Sort the classes based on their order of appearance in the XML

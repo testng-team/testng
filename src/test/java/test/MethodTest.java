@@ -1,14 +1,17 @@
 package test;
 
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import test.sample.Sample2;
+
 public class MethodTest extends BaseTest {
-  private static final String CLASS_NAME = "test.sample.Sample2";
+  private static final String CLASS_NAME = Sample2.class.getName();
 
   @Test(groups = { "current" })
   public void includeMethodsOnly() {
     addClass(CLASS_NAME);
-    assert 1 == getTest().getXmlClasses().size();
+    Assert.assertEquals(getTest().getXmlClasses().size(), 1);
     addIncludedMethod(CLASS_NAME, ".*method2");
     run();
     String[] passed = {
@@ -23,7 +26,7 @@ public class MethodTest extends BaseTest {
   @Test(groups = { "current" })
   public void excludeMethodsOnly() {
     addClass(CLASS_NAME);
-    assert 1 == getTest().getXmlClasses().size();
+    Assert.assertEquals(getTest().getXmlClasses().size(), 1);
     addExcludedMethod(CLASS_NAME, ".*method2");
     run();
     String[] passed = {

@@ -140,7 +140,7 @@ found in the XML file.
     time-out CDATA #IMPLIED
     enabled CDATA #IMPLIED
     skipfailedinvocationcounts (true | false) "false"
-    preserve-order (true | false) "false"
+    preserve-order (true | false) "true"
     group-by-instances (true | false) "false"
 >
 
