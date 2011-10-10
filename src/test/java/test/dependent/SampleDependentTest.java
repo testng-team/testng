@@ -13,7 +13,6 @@ public class SampleDependentTest extends SimpleBaseTest {
     TestNG tng = create(SD2.class);
     SD2.m_log.clear();
     tng.run();
-    System.out.println(SD2.m_log);
 
     boolean oneA = false;
     boolean oneB = false;
