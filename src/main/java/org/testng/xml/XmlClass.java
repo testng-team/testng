@@ -210,6 +210,10 @@ public class XmlClass implements Serializable, Cloneable {
     return m_index;
   }
 
+  public void setIndex(int index) {
+    m_index = index;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;

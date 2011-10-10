@@ -1,7 +1,5 @@
 package org.testng.internal;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.testng.xml.Parser;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
@@ -13,12 +11,13 @@ import org.yaml.snakeyaml.Loader;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.constructor.Constructor;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -60,9 +59,13 @@ public class Yaml {
     // DEBUG
 //    System.out.println("[Yaml] " + result.toXml());
 
-    // Adjust XmlTest parents
+    // Adjust XmlTest parents and indices
     for (XmlTest t : result.getTests()) {
       t.setSuite(result);
+      int index = 0;
+      for (XmlClass c : t.getClasses()) {
+        c.setIndex(index++);
+      }
     }
 
     return result;
