@@ -130,7 +130,6 @@ google_ad_channel ="5560744946";
 
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#invokedmethodlistener">5.20 - Invoked method listeners</a></br>
 
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#preserve-order">5.21 - Specifying the ordering of classes</a></br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#ihookable">5.22 - Overriding test methods</a></br>
 
 
@@ -650,11 +649,14 @@ You can also specify groups and methods to be included and excluded:
 <p>You can also define new groups inside <tt>testng.xml</tt> and specify additional details in attributes, such as whether to run the tests in parallel, how many threads to use, whether you are running JUnit tests, etc...&nbsp;
 <p>
 
-By default, TestNG will run the tests found in your <tt>testng.xml</tt> file in a random order. If you want the classes and methods listed in this file to be run in the exact same order you specified them, use the <tt>preserve-order</tt> attribute:
+By default, TestNG will run your tests in the order they are found in the XML
+file. If you want the classes and methods listed in this file to be
+run in an unpredictible order, set the <tt>preserve-order</tt>
+attribute to <tt>false</tt>
 
 <h3 class="sourcetitle">testng.xml</h3>
 <pre class="brush: xml">
-&lt;test name="Regression1" preserve-order="true"&gt;
+&lt;test name="Regression1" preserve-order="false"&gt;
   &lt;classes&gt;
 
     &lt;class name="test.Test1"&gt;
@@ -669,8 +671,6 @@ By default, TestNG will run the tests found in your <tt>testng.xml</tt> file in 
   &lt;/classes&gt;
 &lt;/test&gt;
 </pre>
-
-In the example above, the test classes will be run in the order <tt>Test1#m1, Test1#m2</tt> and then all the test methods found in <tt>Test2</tt>.
 
 <p>
 
@@ -2264,40 +2264,6 @@ and declare it as a listener, as explained in <a href="#testng-listeners">the se
 
 <p>
 
-
-<!-------------------------------------
-  TEST ORDERING
-  ------------------------------------>
-
-<h4>
-<a name="preserve-order">5.21 - Specifying the ordering of classes</a></h4>
-</h4>
-
-<p>
-
-You can specify the order in which your tests are run in several ways.  The most flexible one is to use a method interceptor, as explained in <a href="#methodinterceptors">this section</a>.  You can also use your XML file to specify that your classes should be run in a certain order.
-
-<p>
-
-By default, the classes specified in your XML file will be run in a non-deterministic order, but if you specify <tt>preserve-order="true"</tt> in the <tt>&lt;test&gt;</tt> tag, then TestNG will run these classes in the same order you listed them:
-
-<h3 class="sourcetitle">testng.xml</h3>
-<pre class="brush: xml; highlight: [4]">
-&lt;!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" &gt;
- 
-&lt;suite name="Suite" &gt;
-  &lt;test name="Test" preserve-order="true"&gt;
-    &lt;classes&gt;
-       &lt;class name="test.tmp.A" /&gt;
-       &lt;class name="test.tmp.B" /&gt;
-    &lt;/classes&gt;
-  &lt;/test&gt;
-&lt;/suite&gt;
-</pre>
-
-Because the attribute <tt>preserve-order</tt> was specifid on your <tt>&lt;test&gt;</tt> tag, TestNG will first run all the test methods on the class <tt>test.tmp.A</tt> first, and then on <tt>test.tmp.B</tt>.
-
-</pre>
 
 <!-------------------------------------
   IHOOKABLE AND ICONFIGURABLE
