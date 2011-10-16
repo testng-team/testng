@@ -2041,6 +2041,10 @@ public class MyTest {
 
 The <tt>@Listeners</tt> annotation can contain any class that extends <tt>org.testng.ITestNGListener</tt> <b>except</b> <tt>IAnnotationTransformer</tt> and <tt>IAnnotationTransformer2</tt>.  The reason is that these listeners need to be known very early in the process so that TestNG can use them to rewrite your annotations, therefore you need to specify these listeners in your <tt>testng.xml</tt> file.
 
+<p>
+
+Note that the <tt>@Listeners</tt> annotation will apply to your entire suite file, just as if you had specified it in a <tt>testng.xml</tt> file. If you want to restrict its scope (for example, only running on the current class), the code in your listener could first check the test method that's about to run and decide what to do then.
+
 <h3><a name="listeners-service-loader">5.18.2 - Specifying listeners with <tt>ServiceLoader</tt></a></h3>
 
 Finally, the JDK offers a very elegant mechanism to specify implementations of interfaces on the class path via the <tt><a href="http://download.oracle.com/javase/6/docs/api/java/util/ServiceLoader.html">ServiceLoader</a></tt> class.
