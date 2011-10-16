@@ -17,6 +17,9 @@ import java.lang.annotation.Target;
  * which need to be defined in XML since they have to be known before we even
  * start looking for annotations.
  *
+ * Note that listeners specified this way are global to your entire suite, just
+ * like listeners specified in testng.xml.
+ *
  * @author Cedric Beust, Mar 26, 2010
  *
  */
