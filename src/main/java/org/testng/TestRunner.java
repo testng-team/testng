@@ -818,6 +818,7 @@ public class TestRunner
       if (test != null && (test.getSequential() || test.getSingleThreaded()) ||
           XmlSuite.PARALLEL_CLASSES.equals(m_xmlTest.getParallel())) {
         sequentialClasses.add(cls);
+        sequentialClasses.add(m.getTestClass().getRealClass());
       }
     }
 
@@ -831,7 +832,6 @@ public class TestRunner
     //
     methodInstances = m_methodInterceptor.intercept(methodInstances, this);
     Map<String, String> params = m_xmlTest.getParameters();
-
     Set<Class<?>> processedClasses = Sets.newHashSet();
     for (IMethodInstance im : methodInstances) {
       Class<?> c = im.getMethod().getTestClass().getRealClass();
@@ -1136,13 +1136,11 @@ public class TestRunner
       ITestNGMethod[] methods, XmlTest test)
   {
     Map<String, List<ITestNGMethod>> classes = Maps.newHashMap();
-    // Note: use a List here to preserve the ordering but make sure
-    // we don't add the same class twice
     List<XmlClass> sortedClasses = Lists.newArrayList();
 
     for (XmlClass c : test.getXmlClasses()) {
       classes.put(c.getName(), new ArrayList<ITestNGMethod>());
-      if (! sortedClasses.contains(c)) sortedClasses.add(c);
+      sortedClasses.add(c);
     }
 
     // Sort the classes based on their order of appearance in the XML
