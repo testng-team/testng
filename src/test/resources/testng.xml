@@ -461,6 +461,12 @@
       <class name="test.dataprovider.ParallelDataProviderTest" />
     </classes>
   </test>
+  
+  <test name="bug111">
+    <classes>
+      <class name="test111.Test1" />
+    </classes>
+  </test>
 
   <test name="UniqueSuite">
     <classes>
