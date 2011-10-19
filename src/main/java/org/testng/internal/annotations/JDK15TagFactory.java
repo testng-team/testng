@@ -296,8 +296,8 @@ public class JDK15TagFactory {
     result.setFakeConfiguration(true);
     result.setBeforeSuite(beforeSuite);
     result.setAfterSuite(afterSuite);
-    result.setBeforeTestClass(beforeTest);
-    result.setAfterTestClass(afterTest);
+    result.setBeforeTest(beforeTest);
+    result.setAfterTest(afterTest);
     result.setBeforeTestClass(beforeClass);
     result.setAfterTestClass(afterClass);
     result.setBeforeGroups(beforeGroups);
