@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="TestTestngCounter">
+  <parameter name="hello" value="NOTSET"/>
+  <listeners>
+    <listener class-name="test.test107.MySuiteListener"/>
+  </listeners>
+  <test name="TestTestngCounter" preserve-order="false">
+    <classes>
+      <class name="test.test107.TestTestngCounter"/>
+    </classes>
+  </test>
+</suite>

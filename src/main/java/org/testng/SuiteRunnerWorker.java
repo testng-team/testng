@@ -25,8 +25,7 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
   public SuiteRunnerWorker(ISuite suiteRunner,
          Map<XmlSuite, ISuite> suiteRunnerMap,
          int verbose,
-         String defaultSuiteName)
-  {
+         String defaultSuiteName) {
     m_suiteRunnerMap = suiteRunnerMap;
     m_suiteRunner = (SuiteRunner) suiteRunner;
     m_verbose = verbose;
@@ -38,8 +37,7 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
    * @param suiteRunnerMap map of suiteRunners that are updated with test results
    * @param xmlSuite XML suites to run
    */
-  private void runSuite(Map<XmlSuite, ISuite> suiteRunnerMap /* OUT */, XmlSuite xmlSuite)
-  {
+  private void runSuite(Map<XmlSuite, ISuite> suiteRunnerMap /* OUT */, XmlSuite xmlSuite) {
     if (m_verbose > 0) {
       StringBuffer allFiles = new StringBuffer();
       allFiles.append("  ").append(xmlSuite.getFileName() != null
@@ -48,8 +46,18 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
     }
 
     PoolService.initialize(xmlSuite.getDataProviderThreadCount());
-    SuiteRunner suiteRunner = (SuiteRunner) suiteRunnerMap.get(xmlSuite);
+    ISuite suiteRun = suiteRunnerMap.get(xmlSuite);
+    XmlSuite oldSuite = (XmlSuite) xmlSuite.clone();
+  
+    SuiteRunner suiteRunner = (SuiteRunner) suiteRun;
     suiteRunner.run();
+  
+    if (!oldSuite.equals(xmlSuite)) {
+     suiteRunnerMap.remove(oldSuite);
+     suiteRunnerMap.put(xmlSuite, suiteRunner);
+    }
+    
+//    System.out.println(xmlSuite.hashCode());
 
     //TODO: this should be handled properly
     //    for (IReporter r : suiteRunner.getReporters()) {
