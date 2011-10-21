@@ -46,16 +46,23 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
     }
 
     PoolService.initialize(xmlSuite.getDataProviderThreadCount());
-    ISuite suiteRun = suiteRunnerMap.get(xmlSuite);
-    XmlSuite oldSuite = (XmlSuite) xmlSuite.clone();
-  
+    ISuite suiteRun = suiteRunnerMap.remove(xmlSuite);
+    
     SuiteRunner suiteRunner = (SuiteRunner) suiteRun;
     suiteRunner.run();
-  
-    if (!oldSuite.equals(xmlSuite)) {
-     suiteRunnerMap.remove(oldSuite);
-     suiteRunnerMap.put(xmlSuite, suiteRunner);
-    }
+    suiteRunnerMap.put(xmlSuite, suiteRunner);
+    
+//    if (oldKey!=xmlSuite.hashCode()) {
+//     suiteRunnerMap.remove(new XmlSuite(){
+//    	 public int hashCode() {
+//    		 return oldKey;
+//    	 }
+//    	 public boolean equals(Object obj) {
+//    		 return true;
+//    	 }
+//     });
+//     
+//    }
     
 //    System.out.println(xmlSuite.hashCode());
 
