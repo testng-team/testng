@@ -52,18 +52,6 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
     suiteRunner.run();
     suiteRunnerMap.put(xmlSuite, suiteRunner);
     
-//    if (oldKey!=xmlSuite.hashCode()) {
-//     suiteRunnerMap.remove(new XmlSuite(){
-//    	 public int hashCode() {
-//    		 return oldKey;
-//    	 }
-//    	 public boolean equals(Object obj) {
-//    		 return true;
-//    	 }
-//     });
-//     
-//    }
-    
 //    System.out.println(xmlSuite.hashCode());
 
     //TODO: this should be handled properly
