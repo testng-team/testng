@@ -648,8 +648,8 @@ public class XmlSuite implements Serializable, Cloneable {
         + ((m_objectFactory == null) ? 0 : m_objectFactory.hashCode());
     result = prime * result
         + ((m_parallel == null) ? 0 : m_parallel.hashCode());
-    result = prime * result
-        + ((m_parameters == null) ? 0 : m_parameters.hashCode());
+//    result = prime * result
+//        + ((m_parameters == null) ? 0 : m_parameters.hashCode());
 //      result = prime * result
 //          + ((m_parentSuite == null) ? 0 : m_parentSuite.hashCode());
     result = prime
@@ -750,13 +750,13 @@ public class XmlSuite implements Serializable, Cloneable {
     } else if (!m_parallel.equals(other.m_parallel)) {
       return f();
     }
-    if (m_parameters == null) {
-      if (other.m_parameters != null) {
-        return f();
-      }
-    } else if (!m_parameters.equals(other.m_parameters)) {
-      return f();
-    }
+//    if (m_parameters == null) {
+//      if (other.m_parameters != null) {
+//        return f();
+//      }
+//    } else if (!m_parameters.equals(other.m_parameters)) {
+//      return f();
+//    }
 //      if (m_parentSuite == null) {
 //        if (other.m_parentSuite != null)
 //          return f();
