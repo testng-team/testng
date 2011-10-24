@@ -7,8 +7,6 @@ import static org.testng.internal.Utils.isStringNotEmpty;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -18,6 +16,7 @@ import org.testng.internal.DynamicGraph;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IResultListener2;
 import org.testng.internal.OverrideProcessor;
+import org.testng.internal.SuiteRunnerMap;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -42,13 +41,14 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -1045,7 +1045,7 @@ public class TestNG {
    * until an alternative mechanism is found.
    */
   public List<ISuite> runSuitesLocally() {
-    Map<XmlSuite, ISuite> suiteRunnerMap = Maps.newHashMap();
+    SuiteRunnerMap suiteRunnerMap = new SuiteRunnerMap();
     if (m_suites.size() > 0) {
        // First initialize the suite runners to ensure there are no configuration issues.
        // Create a map with XmlSuite as key and corresponding SuiteRunner as value
@@ -1128,7 +1128,7 @@ public class TestNG {
    * @param defaultSuiteName default suite name
    */
   private void runSuitesSequentially(XmlSuite xmlSuite,
-      Map<XmlSuite, ISuite> suiteRunnerMap, int verbose, String defaultSuiteName) {
+      SuiteRunnerMap suiteRunnerMap, int verbose, String defaultSuiteName) {
     for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
       runSuitesSequentially(childSuite, suiteRunnerMap, verbose, defaultSuiteName);
     }
@@ -1147,7 +1147,7 @@ public class TestNG {
    * @param xmlSuite XML Suite
    */
   private void populateSuiteGraph(DynamicGraph<ISuite> suiteGraph /* OUT */,
-      Map<XmlSuite, ISuite> suiteRunnerMap, XmlSuite xmlSuite) {
+      SuiteRunnerMap suiteRunnerMap, XmlSuite xmlSuite) {
     ISuite parentSuiteRunner = suiteRunnerMap.get(xmlSuite);
     if (xmlSuite.getChildSuites().isEmpty()) {
       suiteGraph.addNode(parentSuiteRunner);
@@ -1167,7 +1167,7 @@ public class TestNG {
    *   SuiteRunner as value. This is updated as part of this method call
    * @param xmlSuite Xml Suite (and its children) for which {@code SuiteRunner}s are created
    */
-  private void createSuiteRunners(Map<XmlSuite, ISuite> suiteRunnerMap /* OUT */, XmlSuite xmlSuite) {
+  private void createSuiteRunners(SuiteRunnerMap suiteRunnerMap /* OUT */, XmlSuite xmlSuite) {
     if (null != m_isJUnit && ! m_isJUnit.equals(XmlSuite.DEFAULT_JUNIT)) {
       xmlSuite.setJUnit(m_isJUnit);
     }

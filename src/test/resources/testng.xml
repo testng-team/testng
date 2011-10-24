@@ -464,7 +464,7 @@
   
   <test name="bug111">
     <classes>
-      <class name="test111.Test1" />
+      <class name="test.test111.Test1" />
     </classes>
   </test>
 

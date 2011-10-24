@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<suite name="SanityCheck tests">
+<suite name="SanityCheck tests 2">
   <test name="SanityCheck:Tests" preserve-order="true">
     <classes>
       <class name="test.sanitycheck.SampleTest1"/>

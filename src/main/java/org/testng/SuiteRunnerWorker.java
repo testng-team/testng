@@ -2,6 +2,7 @@ package org.testng;
 
 import org.testng.collections.Lists;
 import org.testng.internal.PoolService;
+import org.testng.internal.SuiteRunnerMap;
 import org.testng.internal.Utils;
 import org.testng.internal.thread.graph.IWorker;
 import org.testng.xml.XmlSuite;
@@ -20,12 +21,12 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
   private SuiteRunner m_suiteRunner;
   private Integer m_verbose;
   private String m_defaultSuiteName;
-  private Map<XmlSuite, ISuite> m_suiteRunnerMap;
+  private SuiteRunnerMap m_suiteRunnerMap;
 
   public SuiteRunnerWorker(ISuite suiteRunner,
-         Map<XmlSuite, ISuite> suiteRunnerMap,
-         int verbose,
-         String defaultSuiteName)
+      SuiteRunnerMap suiteRunnerMap,
+      int verbose,
+      String defaultSuiteName)
   {
     m_suiteRunnerMap = suiteRunnerMap;
     m_suiteRunner = (SuiteRunner) suiteRunner;
@@ -38,7 +39,7 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
    * @param suiteRunnerMap map of suiteRunners that are updated with test results
    * @param xmlSuite XML suites to run
    */
-  private void runSuite(Map<XmlSuite, ISuite> suiteRunnerMap /* OUT */, XmlSuite xmlSuite)
+  private void runSuite(SuiteRunnerMap suiteRunnerMap /* OUT */, XmlSuite xmlSuite)
   {
     if (m_verbose > 0) {
       StringBuffer allFiles = new StringBuffer();
@@ -139,9 +140,9 @@ class SuiteResultCounts {
   int m_confFailures = 0;
   int m_confSkips = 0;
 
-  public void calculateResultCounts(XmlSuite xmlSuite, Map<XmlSuite, ISuite> xmlToISuiteMap)
+  public void calculateResultCounts(XmlSuite xmlSuite, SuiteRunnerMap suiteRunnerMap)
   {
-    ISuite iSuite = xmlToISuiteMap.get(xmlSuite);
+    ISuite iSuite = suiteRunnerMap.get(xmlSuite);
     if (iSuite != null) {
       Map<String, ISuiteResult> results = iSuite.getResults();
       if (results != null) {
@@ -158,7 +159,7 @@ class SuiteResultCounts {
         }
 
         for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
-          calculateResultCounts(childSuite, xmlToISuiteMap);
+          calculateResultCounts(childSuite, suiteRunnerMap);
         }
       }
     }
