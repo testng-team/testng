@@ -747,6 +747,11 @@ public class TestRunner
         if (debug) {
           System.out.println("Free nodes:" + freeNodes);
         }
+
+        if (graph.getNodeCount() > 0 && freeNodes.isEmpty()) {
+          throw new TestNGException("No free nodes found in:" + graph);
+        }
+
         while (! freeNodes.isEmpty()) {
           List<IWorker<ITestNGMethod>> runnables = createWorkers(freeNodes);
           for (IWorker<ITestNGMethod> r : runnables) {
@@ -1039,6 +1044,10 @@ public class TestRunner
 
     DependencyMap dependencyMap = new DependencyMap(methods);
 
+    // Keep track of whether we have group dependencies. If we do, preserve-order needs
+    // to be ignored since group dependencies create inter-class dependencies which can
+    // end up creating cycles when combined with preserve-order.
+    boolean hasDependencies = false;
     for (ITestNGMethod m : methods) {
       result.addNode(m);
 
@@ -1058,6 +1067,7 @@ public class TestRunner
       {
         String[] dependentGroups = m.getGroupsDependedUpon();
         for (String d : dependentGroups) {
+          hasDependencies = true;
           List<ITestNGMethod> dg = dependencyMap.getMethodsThatBelongTo(d, m);
           if (dg == null) {
             throw new TestNGException("Method \"" + m
@@ -1071,7 +1081,7 @@ public class TestRunner
     }
 
     // Preserve order
-    if ("true".equalsIgnoreCase(getCurrentXmlTest().getPreserveOrder())) {
+    if (! hasDependencies && "true".equalsIgnoreCase(getCurrentXmlTest().getPreserveOrder())) {
       // If preserve-order was specified and the class order is A, B
       // create a new set of dependencies where each method of B depends
       // on all the methods of A
