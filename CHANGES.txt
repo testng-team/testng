@@ -1,6 +1,7 @@
 Current
 
 Fixed: IAnnotationTransformer2 beforeTest/afterTest booleans were not being set
+Fixed: GITHUB-92: @BeforeTest method in a super class will be called multiple time when alwayRun = true (Bubuntux)
 Fixed: GITHUB-111: @AfterClass on base classes run once too many (lrivera)
 Fixed: GITHUB-107: Displaying 0 tests run if a listener modifies the parameters of the suite
 

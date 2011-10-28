@@ -107,6 +107,7 @@
       <class name="test.commandline.CommandLineOverridesXml" />
       <class name="test.jason.MainTest" />
       <class name="test.bug90.Bug90Test" />
+      <class name="test.bug92.Bug92Test" />
     </classes>
   </test>
 
