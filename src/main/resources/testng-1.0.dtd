@@ -68,6 +68,7 @@ Cedric Beust & Alexandru Popescu
     data-provider-thread-count CDATA "10"
     object-factory CDATA #IMPLIED
     group-by-instances (true | false) "false"
+    preserve-order (true | false) "true"
 >
 
 <!-- A list of XML files that contain more suite descriptions -->
