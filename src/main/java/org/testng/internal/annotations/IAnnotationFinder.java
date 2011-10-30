@@ -40,9 +40,6 @@ public interface IAnnotationFinder {
    */
   public IAnnotation findAnnotation(Constructor m, Class annotationClass);
 
-  // No op for JDK15
-  public void addSourceDirs(String[] dirs);
-
   /**
    * @return true if the ith parameter of the given method has the annotation @TestInstance.
    */

@@ -247,11 +247,6 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   }
 
   @Override
-  public void addSourceDirs(String[] dirs) {
-    // no-op for JDK 15
-  }
-
-  @Override
   public boolean hasTestInstance(Method method, int i) {
     boolean result = false;
     Annotation[][] annotations = method.getParameterAnnotations();
