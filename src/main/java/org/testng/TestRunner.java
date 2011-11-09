@@ -1576,25 +1576,21 @@ public class TestRunner
 
   private ListMultiMap<Class<? extends Module>, Module> m_guiceModules = Maps.newListMultiMap();
 
-  @Override
   public List<Module> getGuiceModules(Class<? extends Module> cls) {
     List<Module> result = m_guiceModules.get(cls);
     return result;
   }
 
-  @Override
   public void addGuiceModule(Class<? extends Module> cls, Module module) {
     m_guiceModules.put(cls, module);
   }
 
   private Map<List<Module>, Injector> m_injectors = Maps.newHashMap();
 
-  @Override
   public Injector getInjector(List<Module> moduleInstances) {
     return m_injectors .get(moduleInstances);
   }
 
-  @Override
   public void addInjector(List<Module> moduleInstances, Injector injector) {
     m_injectors.put(moduleInstances, injector);
   }
