@@ -38,6 +38,7 @@ public class Configuration implements IConfiguration {
     return m_annotationFinder;
   }
 
+  @Override
   public void setAnnotationFinder(IAnnotationFinder finder) {
     m_annotationFinder = finder;
   }
@@ -72,10 +73,12 @@ public class Configuration implements IConfiguration {
     m_configurable = c;
   }
 
+  @Override
   public List<IExecutionListener> getExecutionListeners() {
     return m_executionListeners;
   }
 
+  @Override
   public void addExecutionListener(IExecutionListener l) {
     m_executionListeners.add(l);
   }
@@ -87,6 +90,8 @@ public class Configuration implements IConfiguration {
 
   @Override
   public void addConfigurationListener(IConfigurationListener cl) {
-    m_configurationListeners.add(cl);
+    if (! m_configurationListeners.contains(cl)) {
+      m_configurationListeners.add(cl);
+    }
   }
 }

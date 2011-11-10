@@ -127,6 +127,7 @@
       <class name="test.listeners.ListenerInXmlTest" />
       <class name="test.listeners.ExecutionListenerTest" />
       <class name="test.listeners.ConfigurationListenerTest" />
+      <class name="test.multiplelisteners.TestMaker" />
     </classes>
   </test>
 
