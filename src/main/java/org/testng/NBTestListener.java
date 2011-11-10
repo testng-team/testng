@@ -6,7 +6,6 @@ package org.testng;
 
 import java.lang.reflect.Method;
 import java.util.List;
-import org.testng.annotations.*;
 import org.testng.internal.Utils;
 
 /**
@@ -203,8 +202,9 @@ public class NBTestListener extends TestListenerAdapter {
         logResult(status, msg.toString());
     }
 
-    //see https://github.com/cbeust/testng/issues/126
     @Deprecated
+    //perhaps should rather to adopt the original method
+    //TODO: send out also elapsed time
     private String detailedMethodName(ITestNGMethod method, boolean fqn) {
         Method m = method.getMethod();
         StringBuffer buf = new StringBuffer();
@@ -226,15 +226,15 @@ public class NBTestListener extends TestListenerAdapter {
             buf.append("@BeforeGroups ");
         } else if (method.isBeforeMethodConfiguration()) {
             buf.append("@BeforeMethod ");
-        } else if (m.getAnnotation(AfterMethod.class) != null) {
+        } else if (method.isAfterMethodConfiguration()) {
             buf.append("@AfterMethod ");
-        } else if (m.getAnnotation(AfterGroups.class) != null) {
+        } else if (method.isAfterGroupsConfiguration()) {
             buf.append("@AfterGroups ");
-        } else if (m.getAnnotation(AfterClass.class) != null) {
+        } else if (method.isAfterClassConfiguration()) {
             buf.append("@AfterClass ");
-        } else if (m.getAnnotation(AfterTest.class) != null) {
+        } else if (method.isAfterTestConfiguration()) {
             buf.append("@AfterTest ");
-        } else if (m.getAnnotation(AfterSuite.class) != null) {
+        } else if (method.isAfterSuiteConfiguration()) {
             buf.append("@AfterSuite ");
         }
         buf.append(m.getDeclaringClass().getName());
