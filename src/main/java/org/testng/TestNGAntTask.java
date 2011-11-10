@@ -38,6 +38,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import org.apache.tools.ant.taskdefs.*;
 
 /**
  * TestNG settings:
@@ -100,6 +101,7 @@ import java.util.StringTokenizer;
  *
  * @author <a href="mailto:the_mindstorm@evolva.ro">Alexandru Popescu</a>
  * @author Cedric Beust
+ * @author Lukas Jungmann
  */
 public class TestNGAntTask extends Task {
 
@@ -534,6 +536,9 @@ public class TestNGAntTask extends Task {
     addStringIfNotBlank(argv, CommandLineArgs.GROUPS, m_includedGroups);
     addStringIfNotBlank(argv, CommandLineArgs.EXCLUDED_GROUPS, m_excludedGroups);
     addFilesOfFilesets(argv, CommandLineArgs.TEST_CLASS, m_classFilesets);
+    if (NBHelper.usingNetBeans()) {
+        m_listeners.add(NBTestListener.class.getName());
+    }
     addListOfStringIfNotEmpty(argv, CommandLineArgs.LISTENER, m_listeners);
     addListOfStringIfNotEmpty(argv, CommandLineArgs.METHOD_SELECTORS, m_methodselectors);
     addStringIfNotNull(argv, CommandLineArgs.OBJECT_FACTORY, m_objectFactory);
@@ -790,7 +795,7 @@ public class TestNGAntTask extends Task {
    * @return the exit status of the subprocess or INVALID.
    */
   protected int executeAsForked(CommandlineJava cmd, ExecuteWatchdog watchdog) {
-    Execute execute= new Execute(new LogStreamHandler(this, Project.MSG_INFO, Project.MSG_WARN),
+    Execute execute= new Execute(new TestNGLogSH(this, Project.MSG_INFO, Project.MSG_WARN),
                                  watchdog);
     execute.setCommandline(cmd.getCommandline());
     execute.setAntRun(getProject());
@@ -1085,4 +1090,40 @@ public class TestNGAntTask extends Task {
       }
     }
   }
+
+    @Override
+    protected void handleOutput(String output) {
+        if (NBHelper.usingNetBeans() && output.startsWith(NBTestListener.LISTENER_PREFIX)) {
+            //send everything from NBListener to verbose level
+            log(output, Project.MSG_VERBOSE);
+        } else {
+            super.handleOutput(output);
+        }
+    }
+
+    private static class TestNGLogOS extends LogOutputStream {
+
+        private Task task;
+
+        public TestNGLogOS(Task task, int level) {
+            super(task, level);
+            this.task = task;
+        }
+
+        protected void processLine(String line, int level) {
+            if (line.startsWith(NBTestListener.LISTENER_PREFIX)) {
+                task.log(line, Project.MSG_VERBOSE);
+            } else {
+                super.processLine(line, level);
+            }
+        }
+    }
+
+    protected static class TestNGLogSH extends PumpStreamHandler {
+
+        public TestNGLogSH(Task task, int outlevel, int errlevel) {
+            super(new TestNGLogOS(task, outlevel),
+                    new LogOutputStream(task, errlevel));
+        }
+    }
 }
