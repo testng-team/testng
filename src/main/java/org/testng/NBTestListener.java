@@ -53,7 +53,8 @@ public class NBTestListener extends TestListenerAdapter {
         if (ex != null) {
             stackTrace = Utils.stackTrace(ex, false)[0];
         }
-        logResult("FAILED CONFIGURATION", detailedMethodName(tr.getMethod(), true), tr.getMethod().getDescription(), stackTrace, tr.getParameters(), tr.getMethod().getMethod().getParameterTypes());
+        long duration = tr.getEndMillis() - tr.getStartMillis();
+        logResult("FAILED CONFIGURATION", detailedMethodName(tr.getMethod(), true), tr.getMethod().getDescription(), stackTrace, tr.getParameters(), tr.getMethod().getMethod().getParameterTypes(), duration);
     }
 
     @Override
@@ -64,7 +65,8 @@ public class NBTestListener extends TestListenerAdapter {
         }
         r = tr;
         super.onConfigurationSkip(tr);
-        logResult("SKIPPED CONFIGURATION", detailedMethodName(tr.getMethod(), true), tr.getMethod().getDescription(), null, tr.getParameters(), tr.getMethod().getMethod().getParameterTypes());
+        long duration = tr.getEndMillis() - tr.getStartMillis();
+        logResult("SKIPPED CONFIGURATION", detailedMethodName(tr.getMethod(), true), tr.getMethod().getDescription(), null, tr.getParameters(), tr.getMethod().getMethod().getParameterTypes(), duration);
     }
 
     @Override
@@ -75,7 +77,8 @@ public class NBTestListener extends TestListenerAdapter {
         }
         r = tr;
         super.onConfigurationSuccess(tr);
-        logResult("PASSED CONFIGURATION", detailedMethodName(tr.getMethod(), true), tr.getMethod().getDescription(), null, tr.getParameters(), tr.getMethod().getMethod().getParameterTypes());
+        long duration = tr.getEndMillis() - tr.getStartMillis();
+        logResult("PASSED CONFIGURATION", detailedMethodName(tr.getMethod(), true), tr.getMethod().getDescription(), null, tr.getParameters(), tr.getMethod().getMethod().getParameterTypes(), duration);
     }
 
     @Override
@@ -111,7 +114,6 @@ public class NBTestListener extends TestListenerAdapter {
     @Override
     public void onStart(ITestContext ctx) {
         testName = ctx.getName();//ctx.getSuite().getXmlSuite().getFileName();
-
         logResult("RUNNING", "Suite: \"" + testName + "\" containing \"" + ctx.getAllTestMethods().length + "\" Tests (config: " + ctx.getSuite().getXmlSuite().getFileName() + ")");
 
     }
@@ -158,7 +160,8 @@ public class NBTestListener extends TestListenerAdapter {
     }
 
     private void logResult(String status, ITestResult tr, String stackTrace) {
-        logResult(status, detailedMethodName(tr.getMethod(), true), tr.getMethod().getDescription(), stackTrace, tr.getParameters(), tr.getMethod().getMethod().getParameterTypes());
+        long duration = tr.getEndMillis() - tr.getStartMillis();
+        logResult(status, detailedMethodName(tr.getMethod(), true), tr.getMethod().getDescription(), stackTrace, tr.getParameters(), tr.getMethod().getMethod().getParameterTypes(), duration);
     }
 
     private void logResult(String status, String message) {
@@ -171,7 +174,7 @@ public class NBTestListener extends TestListenerAdapter {
         System.out.println(buf.toString().replaceAll("(?m)^", LISTENER_PREFIX));
     }
 
-    private void logResult(String status, String name, String description, String stackTrace, Object[] params, Class[] paramTypes) {
+    private void logResult(String status, String name, String description, String stackTrace, Object[] params, Class[] paramTypes, long duration) {
         StringBuffer msg = new StringBuffer(name);
         if (null != params && params.length > 0) {
             msg.append("(value(s): ");
@@ -189,6 +192,9 @@ public class NBTestListener extends TestListenerAdapter {
                 msg.append(")");
             }
         }
+        msg.append(" finished in ");
+        msg.append(duration);
+        msg.append(" ms");
         if (!Utils.isStringEmpty(description)) {
             msg.append("\n");
             for (int i = 0; i < status.length() + 2; i++) {
@@ -204,7 +210,6 @@ public class NBTestListener extends TestListenerAdapter {
 
     @Deprecated
     //perhaps should rather to adopt the original method
-    //TODO: send out also elapsed time
     private String detailedMethodName(ITestNGMethod method, boolean fqn) {
         Method m = method.getMethod();
         StringBuffer buf = new StringBuffer();
