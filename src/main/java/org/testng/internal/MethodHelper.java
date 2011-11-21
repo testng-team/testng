@@ -96,7 +96,7 @@ public class MethodHelper {
               + maybeReferringTo + ", which is not annotated with @Test");
         }
         throw new TestNGException(canonicalMethodName
-            + "() depends on non-existent method " + regexp);
+            + "() depends on nonexistent method " + regexp);
       }
     }//end for
 
