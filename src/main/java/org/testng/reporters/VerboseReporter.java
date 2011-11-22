@@ -44,7 +44,6 @@ public class VerboseReporter extends TestListenerAdapter {
     public void beforeConfiguration(ITestResult tr) {
         if (tr.equals(r)) {
             r = null;
-            System.out.println("BUG");
             return;
         }
         r = tr;
@@ -73,7 +72,6 @@ public class VerboseReporter extends TestListenerAdapter {
     public void onConfigurationSkip(ITestResult tr) {
         if (tr.equals(r)) {
             r = null;
-            System.out.println("BUG");
             return;
         }
         r = tr;
