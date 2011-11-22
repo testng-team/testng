@@ -2,10 +2,14 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.testng;
+package org.testng.reporters;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import org.testng.ITestContext;
+import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
+import org.testng.TestListenerAdapter;
 import org.testng.internal.Utils;
 
 /**
@@ -19,13 +23,20 @@ import org.testng.internal.Utils;
 // - format of the message being logged
 // - message is logged immediately instead of in onFinish event
 // - all messages have specific prefix
-public class NBTestListener extends TestListenerAdapter {
+public class VerboseReporter extends TestListenerAdapter {
 
-    static final String LISTENER_PREFIX = "[NBTestListener] ";
+    public static final String LISTENER_PREFIX = "[VerboseTestNG] ";
     private String testName;
+    private final String prefix;
 
-    public NBTestListener() {
+    public VerboseReporter() {
+        this(LISTENER_PREFIX);
     }
+
+    public VerboseReporter(String prefix) {
+       this.prefix = prefix;
+    }
+
     //see https://github.com/cbeust/testng/issues/124
     private ITestResult r = null;
 
@@ -33,6 +44,7 @@ public class NBTestListener extends TestListenerAdapter {
     public void beforeConfiguration(ITestResult tr) {
         if (tr.equals(r)) {
             r = null;
+            System.out.println("BUG");
             return;
         }
         r = tr;
@@ -61,6 +73,7 @@ public class NBTestListener extends TestListenerAdapter {
     public void onConfigurationSkip(ITestResult tr) {
         if (tr.equals(r)) {
             r = null;
+            System.out.println("BUG");
             return;
         }
         r = tr;
@@ -170,8 +183,9 @@ public class NBTestListener extends TestListenerAdapter {
             buf.append(status).append(": ");
         }
         buf.append(message);
+//        System.out.println("LOG: " + buf.toString());
         //prefix all output lines
-        System.out.println(buf.toString().replaceAll("(?m)^", LISTENER_PREFIX));
+        System.out.println(buf.toString().replaceAll("(?m)^", prefix));
     }
 
     private void logResult(String status, String name, String description, String stackTrace, Object[] params, Class[] paramTypes, long duration) {
@@ -256,4 +270,10 @@ public class NBTestListener extends TestListenerAdapter {
         buf.append(")");
         return buf.toString();//buf.append(fqn ? method.toString() : method.getMethodName()).toString();
     }
+
+    @Override
+    public String toString() {
+        return "VerboseReporter{" + "testName=" + testName + ", r=" + r + '}';
+    }
+
 }
