@@ -605,6 +605,16 @@ public class XmlSuite implements Serializable, Cloneable {
   }
 
   public int getDataProviderThreadCount() {
+    // org.testng.CommandLineArgs.DATA_PROVIDER_THREAD_COUNT
+    String s = System.getProperty("dataproviderthreadcount");
+    if (s != null) {
+      try {
+        int nthreads = Integer.parseInt(s);
+        return nthreads;
+      } catch(NumberFormatException nfe) {
+        System.err.println("Parsing System property 'dataproviderthreadcount': " + nfe);
+      }
+    }
     return m_dataProviderThreadCount;
   }
 

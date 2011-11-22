@@ -1,5 +1,7 @@
 Current
 
+Added: New system property: dataproviderthreadcount (Bill Ross)
+Fixed: Configuration methods were reported incorrectly in listeners.
 Fixed: Was creating too many listeners (Jacek Pulut)
 Fixed: IAnnotationTransformer2 beforeTest/afterTest booleans were not being set
 Fixed: GITHUB-92: @BeforeTest method in a super class will be called multiple time when alwayRun = true (Bubuntux)
