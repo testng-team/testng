@@ -793,7 +793,7 @@ public class TestNGAntTask extends Task {
    * @return the exit status of the subprocess or INVALID.
    */
   protected int executeAsForked(CommandlineJava cmd, ExecuteWatchdog watchdog) {
-    Execute execute= new Execute(new TestNGLogSH(this, Project.MSG_INFO, Project.MSG_WARN, m_verbose < 5),
+    Execute execute= new Execute(new TestNGLogSH(this, Project.MSG_INFO, Project.MSG_WARN, (m_verbose == null || m_verbose < 5)),
                                  watchdog);
     execute.setCommandline(cmd.getCommandline());
     execute.setAntRun(getProject());

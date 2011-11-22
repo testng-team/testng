@@ -823,7 +823,7 @@ public class TestNG {
       addReporter(XMLReporter.class);
       addReporter(EmailableReporter.class);
       addReporter(JUnitReportReporter.class);
-      if (m_verbose > 4) {
+      if (m_verbose != null && m_verbose > 4) {
         m_testListeners.add(new VerboseReporter("[TestNG] "));
       }
     }
