@@ -824,7 +824,7 @@ public class TestNG {
       addReporter(EmailableReporter.class);
       addReporter(JUnitReportReporter.class);
       if (m_verbose != null && m_verbose > 4) {
-        m_testListeners.add(new VerboseReporter("[TestNG] "));
+        addListener(new VerboseReporter("[TestNG] "));
       }
     }
   }
