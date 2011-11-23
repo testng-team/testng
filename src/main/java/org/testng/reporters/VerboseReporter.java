@@ -37,27 +37,14 @@ public class VerboseReporter extends TestListenerAdapter {
        this.prefix = prefix;
     }
 
-    //see https://github.com/cbeust/testng/issues/124
-    private ITestResult r = null;
-
     @Override
     public void beforeConfiguration(ITestResult tr) {
-        if (tr.equals(r)) {
-            r = null;
-            return;
-        }
-        r = tr;
         super.beforeConfiguration(tr);
         logResult("INVOKING CONFIGURATION", detailedMethodName(tr.getMethod(), true));
     }
 
     @Override
     public void onConfigurationFailure(ITestResult tr) {
-        if (tr.equals(r)) {
-            r = null;
-            return;
-        }
-        r = tr;
         super.onConfigurationFailure(tr);
         Throwable ex = tr.getThrowable();
         String stackTrace = "";
@@ -70,11 +57,6 @@ public class VerboseReporter extends TestListenerAdapter {
 
     @Override
     public void onConfigurationSkip(ITestResult tr) {
-        if (tr.equals(r)) {
-            r = null;
-            return;
-        }
-        r = tr;
         super.onConfigurationSkip(tr);
         long duration = tr.getEndMillis() - tr.getStartMillis();
         logResult("SKIPPED CONFIGURATION", detailedMethodName(tr.getMethod(), true), tr.getMethod().getDescription(), null, tr.getParameters(), tr.getMethod().getMethod().getParameterTypes(), duration);
@@ -82,11 +64,6 @@ public class VerboseReporter extends TestListenerAdapter {
 
     @Override
     public void onConfigurationSuccess(ITestResult tr) {
-        if (tr.equals(r)) {
-            r = null;
-            return;
-        }
-        r = tr;
         super.onConfigurationSuccess(tr);
         long duration = tr.getEndMillis() - tr.getStartMillis();
         logResult("PASSED CONFIGURATION", detailedMethodName(tr.getMethod(), true), tr.getMethod().getDescription(), null, tr.getParameters(), tr.getMethod().getMethod().getParameterTypes(), duration);
@@ -159,9 +136,9 @@ public class VerboseReporter extends TestListenerAdapter {
         logBuf.append("    Tests run: ").append(Utils.calculateInvokedMethodCount(getAllTestMethods())).append(", Failures: ").append(Utils.calculateInvokedMethodCount(ft)).append(", Skips: ").append(Utils.calculateInvokedMethodCount(resultsToMethods(getSkippedTests())));
         int confFailures = getConfigurationFailures().size();
         int confSkips = getConfigurationSkips().size();
-        if (confFailures > 0 || confSkips > 0) {
+//        if (confFailures > 0 || confSkips > 0) {
             logBuf.append("\n").append("    Configuration Failures: ").append(confFailures).append(", Skips: ").append(confSkips);
-        }
+//        }
         logBuf.append("\n===============================================");
         logResult("", logBuf.toString());
     }
@@ -271,7 +248,7 @@ public class VerboseReporter extends TestListenerAdapter {
 
     @Override
     public String toString() {
-        return "VerboseReporter{" + "testName=" + testName + ", r=" + r + '}';
+        return "VerboseReporter{" + "testName=" + testName + '}';
     }
 
 }
