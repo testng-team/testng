@@ -1,5 +1,8 @@
 package org.testng.reporters;
 
+import com.google.inject.internal.Lists;
+
+import org.testng.IInvokedMethod;
 import org.testng.IReporter;
 import org.testng.IResultMap;
 import org.testng.ISuite;
@@ -21,7 +24,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -53,6 +55,7 @@ public class EmailableReporter implements IReporter {
   // ~ Methods --------------------------------------------------------------
 
   /** Creates summary of the run */
+  @Override
   public void generateReport(List<XmlSuite> xml, List<ISuite> suites, String outdir) {
     try {
       m_out = createWriter(outdir);
@@ -89,11 +92,16 @@ public class EmailableReporter implements IReporter {
       for (ISuiteResult r2 : r.values()) {
         ITestContext testContext = r2.getTestContext();
         String testName = testContext.getName();
-        resultSummary(testContext.getFailedConfigurations(), testName, "failed", " (configuration methods)");
-        resultSummary(testContext.getFailedTests(), testName, "failed", "");
-        resultSummary(testContext.getSkippedConfigurations(), testName, "skipped", " (configuration methods)");
-        resultSummary(testContext.getSkippedTests(), testName, "skipped", "");
-        resultSummary(testContext.getPassedTests(), testName, "passed", "");
+        resultSummary(suite, testContext.getFailedConfigurations(), testName,
+            "failed", " (configuration methods)");
+        resultSummary(suite, testContext.getFailedTests(), testName, "failed",
+            "");
+        resultSummary(suite, testContext.getSkippedConfigurations(), testName,
+            "skipped", " (configuration methods)");
+        resultSummary(suite, testContext.getSkippedTests(), testName,
+            "skipped", "");
+        resultSummary(suite, testContext.getPassedTests(), testName, "passed",
+            "");
       }
     }
     m_out.println("</table>");
@@ -109,11 +117,11 @@ public class EmailableReporter implements IReporter {
         if (r.values().size() > 0) {
           m_out.println("<h1>" + testContext.getName() + "</h1>");
         }
-        resultDetail(testContext.getFailedConfigurations(), "failed");
-        resultDetail(testContext.getFailedTests(), "failed");
-        resultDetail(testContext.getSkippedConfigurations(), "skipped");
-        resultDetail(testContext.getSkippedTests(), "skipped");
-        resultDetail(testContext.getPassedTests(), "passed");
+        resultDetail(testContext.getFailedConfigurations());
+        resultDetail(testContext.getFailedTests());
+        resultDetail(testContext.getSkippedConfigurations());
+        resultDetail(testContext.getSkippedTests());
+        resultDetail(testContext.getPassedTests());
       }
     }
   }
@@ -121,13 +129,14 @@ public class EmailableReporter implements IReporter {
   /**
    * @param tests
    */
-  private void resultSummary(IResultMap tests, String testname, String style, String details) {
+  private void resultSummary(ISuite suite, IResultMap tests, String testname, String style,
+      String details) {
     if (tests.getAllResults().size() > 0) {
       StringBuffer buff = new StringBuffer();
       String lastClassName = "";
       int mq = 0;
       int cq = 0;
-      for (ITestNGMethod method : getMethodSet(tests)) {
+      for (ITestNGMethod method : getMethodSet(tests, suite)) {
         m_row += 1;
         m_methodIndex += 1;
         ITestClass testClass = method.getTestClass();
@@ -170,9 +179,11 @@ public class EmailableReporter implements IReporter {
                 ? "(\"" + description + "\")"
                 : "")
             + "</a>" + (null == testInstanceName ? "" : "<br>(" + testInstanceName + ")")
-            + "</td>" + "<td class=\"numi\">"
-            + resultSet.size() + "</td><td class=\"numi\">" + (end - start)
-            + "</td></tr>");
+            + "</td>"
+            + "<td class=\"numi\">" + resultSet.size() + "</td>"
+            + "<td>" + start + "</td>"
+            + "<td class=\"numi\">" + (end - start) + "</td>"
+            + "</tr>");
       }
       if (mq > 0) {
         cq += 1;
@@ -186,7 +197,7 @@ public class EmailableReporter implements IReporter {
   private void startResultSummaryTable(String style) {
     tableStart(style);
     m_out.println("<tr><th>Class</th>"
-            + "<th>Method</th><th># of<br/>Scenarios</th><th>Time<br/>(Msecs)</th></tr>");
+            + "<th>Method</th><th># of<br/>Scenarios</th><th>Start</th><th>Time<br/>(ms)</th></tr>");
     m_row = 0;
   }
 
@@ -208,12 +219,10 @@ public class EmailableReporter implements IReporter {
     return "<b>" + method.getMethodName() + "</b> " + addon;
   }
 
-  private void resultDetail(IResultMap tests, final String style) {
+  private void resultDetail(IResultMap tests) {
     for (ITestResult result : tests.getAllResults()) {
-      int row = 0;
       ITestNGMethod method = result.getMethod();
-        row += 1;
-        m_methodIndex += 1;
+        m_methodIndex++;
         String cname = method.getTestClass().getName();
         m_out.println("<a id=\"m" + m_methodIndex + "\"></a><h2>" + cname + ":"
             + method.getMethodName() + "</h2>");
@@ -316,12 +325,24 @@ public class EmailableReporter implements IReporter {
 
   /**
    * @param tests
+   * @param suite 
    * @return
    */
-  private Collection<ITestNGMethod> getMethodSet(IResultMap tests) {
-    List<ITestNGMethod> r = new ArrayList<ITestNGMethod>(tests.getAllMethods());
-    Arrays.sort(r.toArray(new ITestNGMethod[r.size()]), new TestSorter());
-    return r;
+  private Collection<ITestNGMethod> getMethodSet(IResultMap tests, ISuite suite) {
+    List<IInvokedMethod> r = Lists.newArrayList();
+    List<IInvokedMethod> invokedMethods = suite.getAllInvokedMethods();
+    for (IInvokedMethod im : invokedMethods) {
+      if (tests.getAllMethods().contains(im.getTestMethod())) {
+        r.add(im);
+      }
+    }
+    Arrays.sort(r.toArray(new IInvokedMethod[r.size()]), new TestSorter());
+    List<ITestNGMethod> result = Lists.newArrayList();
+    for (IInvokedMethod m : r) {
+      result.add(m.getTestMethod());
+    }
+
+    return result;
   }
 
   public void generateSuiteSummaryReport(List<ISuite> suites) {
@@ -352,16 +373,16 @@ public class EmailableReporter implements IReporter {
         qty_tests += 1;
         ITestContext overview = r.getTestContext();
         startSummaryRow(overview.getName());
-        int q = getMethodSet(overview.getPassedTests()).size();
+        int q = getMethodSet(overview.getPassedTests(), suite).size();
         qty_pass_m += q;
         summaryCell(q,Integer.MAX_VALUE);
         q = overview.getPassedTests().size();
         qty_pass_s += q;
         summaryCell(q,Integer.MAX_VALUE);
-        q = getMethodSet(overview.getSkippedTests()).size();
+        q = getMethodSet(overview.getSkippedTests(), suite).size();
         qty_skip += q;
         summaryCell(q,0);
-        q = getMethodSet(overview.getFailedTests()).size();
+        q = getMethodSet(overview.getFailedTests(), suite).size();
         qty_fail += q;
         summaryCell(q,0);
         time_start = Math.min(overview.getStartDate().getTime(), time_start);
@@ -473,12 +494,14 @@ public class EmailableReporter implements IReporter {
 
   // ~ Inner Classes --------------------------------------------------------
   /** Arranges methods by classname and method name */
-  private class TestSorter implements Comparator<ITestNGMethod> {
+  private class TestSorter implements Comparator<IInvokedMethod> {
     // ~ Methods -------------------------------------------------------------
 
     /** Arranges methods by classname and method name */
-    public int compare(ITestNGMethod o1, ITestNGMethod o2) {
-//      System.out.println("Comparing " + o1.getDate() + " and " + o2.getDate());
+    @Override
+    public int compare(IInvokedMethod o1, IInvokedMethod o2) {
+//      System.out.println("Comparing " + o1.getMethodName() + " " + o1.getDate()
+//          + " and " + o2.getMethodName() + " " + o2.getDate());
       return (int) (o1.getDate() - o2.getDate());
 //      int r = ((T) o1).getTestClass().getName().compareTo(((T) o2).getTestClass().getName());
 //      if (r == 0) {

@@ -1,8 +1,12 @@
 Current
 
+
+Fixed: EmailableReporter: methods are now *really* sorted chronologically.
+
 ===========================================================================
 6.3.1
 10/22/2011
+
 Added: New system property: dataproviderthreadcount (Bill Ross)
 Fixed: Configuration methods were reported incorrectly in listeners.
 Fixed: Was creating too many listeners (Jacek Pulut)
