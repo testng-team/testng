@@ -12,7 +12,6 @@ import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Execute;
 import org.apache.tools.ant.taskdefs.ExecuteWatchdog;
-import org.apache.tools.ant.taskdefs.LogStreamHandler;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.CommandlineJava;
 import org.apache.tools.ant.types.Environment;
@@ -23,6 +22,7 @@ import org.apache.tools.ant.types.Reference;
 import org.apache.tools.ant.types.selectors.FilenameSelector;
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
+import org.testng.reporters.VerboseReporter;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -38,6 +38,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import org.apache.tools.ant.taskdefs.*;
 
 /**
  * TestNG settings:
@@ -100,6 +101,7 @@ import java.util.StringTokenizer;
  *
  * @author <a href="mailto:the_mindstorm@evolva.ro">Alexandru Popescu</a>
  * @author Cedric Beust
+ * @author Lukas Jungmann
  */
 public class TestNGAntTask extends Task {
 
@@ -469,6 +471,7 @@ public class TestNGAntTask extends Task {
     if (m_delegateCommandSystemProperties) {
       delegateCommandSystemProperties();
     }
+    setListeners(VerboseReporter.class.getName());
     List<String> argv = createArguments();
 
     String fileName= "";
@@ -790,7 +793,7 @@ public class TestNGAntTask extends Task {
    * @return the exit status of the subprocess or INVALID.
    */
   protected int executeAsForked(CommandlineJava cmd, ExecuteWatchdog watchdog) {
-    Execute execute= new Execute(new LogStreamHandler(this, Project.MSG_INFO, Project.MSG_WARN),
+    Execute execute= new Execute(new TestNGLogSH(this, Project.MSG_INFO, Project.MSG_WARN, (m_verbose == null || m_verbose < 5)),
                                  watchdog);
     execute.setCommandline(cmd.getCommandline());
     execute.setAntRun(getProject());
@@ -1085,4 +1088,43 @@ public class TestNGAntTask extends Task {
       }
     }
   }
+
+    @Override
+    protected void handleOutput(String output) {
+        if (output.startsWith(VerboseReporter.LISTENER_PREFIX)) {
+            //send everything from VerboseReporter to verbose level unless log level is > 4
+            log(output, m_verbose < 5 ? Project.MSG_VERBOSE : Project.MSG_INFO);
+        } else {
+            super.handleOutput(output);
+        }
+    }
+
+    private static class TestNGLogOS extends LogOutputStream {
+
+        private Task task;
+        private boolean verbose;
+
+        public TestNGLogOS(Task task, int level, boolean verbose) {
+            super(task, level);
+            this.task = task;
+            this.verbose = verbose;
+        }
+
+        @Override
+        protected void processLine(String line, int level) {
+            if (line.startsWith(VerboseReporter.LISTENER_PREFIX)) {
+                task.log(line, verbose ? Project.MSG_VERBOSE : Project.MSG_INFO);
+            } else {
+                super.processLine(line, level);
+            }
+        }
+    }
+
+    protected static class TestNGLogSH extends PumpStreamHandler {
+
+        public TestNGLogSH(Task task, int outlevel, int errlevel, boolean verbose) {
+            super(new TestNGLogOS(task, outlevel, verbose),
+                    new LogOutputStream(task, errlevel));
+        }
+    }
 }
