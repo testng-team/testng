@@ -31,7 +31,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   protected final transient Class<?> m_methodClass;
   protected final transient ConstructorOrMethod m_method;
   protected String m_id = "";
-  protected long m_date = System.currentTimeMillis();
+  protected long m_date = -1;
   protected final transient IAnnotationFinder m_annotationFinder;
   protected String[] m_groups = {};
   protected String[] m_groupsDependedUpon = {};
