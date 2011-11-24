@@ -9,11 +9,21 @@ import org.testng.TestListenerAdapter;
 import org.testng.internal.Utils;
 
 /**
+ * Reporter printing out detailed messages about what TestNG
+ * is going to run and what is the status of what has been just run.
+ *
+ * To see messages from this reporter, either run Ant in verbose mode ('ant -v')
+ * or set verbose level to 5 or higher
  *
  * @author Lukas Jungmann
+ * @since 6.4
  */
 public class VerboseReporter extends TestListenerAdapter {
 
+    /**
+     * Default prefix for messages printed out by this reporter
+     *
+     */
     public static final String LISTENER_PREFIX = "[VerboseTestNG] ";
     private String suiteName;
     private final String prefix;
@@ -29,10 +39,18 @@ public class VerboseReporter extends TestListenerAdapter {
         }
     }
 
+    /**
+     * Default constructor
+     */
     public VerboseReporter() {
         this(LISTENER_PREFIX);
     }
 
+    /**
+     * Create VerboseReporter with custom prefix
+     *
+     * @param prefix prefix for messages printed out by this reporter
+     */
     public VerboseReporter(String prefix) {
         this.prefix = prefix;
     }
@@ -94,7 +112,6 @@ public class VerboseReporter extends TestListenerAdapter {
     public void onStart(ITestContext ctx) {
         suiteName = ctx.getName();//ctx.getSuite().getXmlSuite().getFileName();
         log("RUNNING: Suite: \"" + suiteName + "\" containing \"" + ctx.getAllTestMethods().length + "\" Tests (config: " + ctx.getSuite().getXmlSuite().getFileName() + ")");
-
     }
 
     @Override
@@ -112,6 +129,9 @@ public class VerboseReporter extends TestListenerAdapter {
         return result;
     }
 
+    /**
+     * Print out test summary
+     */
     private void logResults() {
         //
         // Log test summary
@@ -132,6 +152,15 @@ public class VerboseReporter extends TestListenerAdapter {
         log(sb.toString());
     }
 
+    /**
+     * Log meaningful message for passed in arguments.
+     * Message itself is of form:
+     * $status: "$suiteName" - $methodDeclaration ($actualArguments) finished in $x ms
+     *
+     * @param st status of passed in itr
+     * @param itr test result to be described
+     * @param isConfMethod is itr describing configuration method
+     */
     private void logTestResult(Status st, ITestResult itr, boolean isConfMethod) {
         StringBuilder sb = new StringBuilder();
         String stackTrace = "";
@@ -212,8 +241,15 @@ public class VerboseReporter extends TestListenerAdapter {
         System.out.println(message.replaceAll("(?m)^", prefix));
     }
 
-    //perhaps should rather to adopt the original method
+    /**
+     *
+     * @param method method to be described
+     * @return FQN of a class + method declaration for a method passed in
+     *      ie. test.triangle.CheckCount.testCheckCount(java.lang.String)
+     */
     private String getMethodDeclaration(ITestNGMethod method) {
+        //see Utils.detailedMethodName
+        //perhaps should rather adopt the original method instead
         Method m = method.getMethod();
         StringBuilder buf = new StringBuilder();
         buf.append("\"");
@@ -262,6 +298,6 @@ public class VerboseReporter extends TestListenerAdapter {
 
     @Override
     public String toString() {
-        return "VerboseReporter{" + "testName=" + suiteName + '}';
+        return "VerboseReporter{" + "suiteName=" + suiteName + '}';
     }
 }
