@@ -62,6 +62,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import org.testng.reporters.*;
 
 /**
  * This class is the main entry point for running tests in the TestNG framework.
@@ -822,6 +823,9 @@ public class TestNG {
       addReporter(XMLReporter.class);
       addReporter(EmailableReporter.class);
       addReporter(JUnitReportReporter.class);
+      if (m_verbose != null && m_verbose > 4) {
+        addListener(new VerboseReporter("[TestNG] "));
+      }
     }
   }
 
