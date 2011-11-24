@@ -75,7 +75,7 @@ public class TestRunner
 
   /** ITestListeners support. */
   transient private List<ITestListener> m_testListeners = Lists.newArrayList();
-  transient private Set<IConfigurationListener> m_configurationListeners = Sets.<IConfigurationListener>newHashSet();
+  transient private Set<IConfigurationListener> m_configurationListeners = Sets.newHashSet();
 
   transient private IConfigurationListener m_confListener= new ConfigurationListener();
   transient private boolean m_skipFailedInvocationCounts;
