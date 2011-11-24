@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.testng.reporters;
 
 import java.lang.reflect.Method;
@@ -16,105 +12,95 @@ import org.testng.internal.Utils;
  *
  * @author Lukas Jungmann
  */
-//topic for discussion with Cedric
-//would be better to merge this class and org.testng.reporters.TextReporter
-//or keep this as separate listener?
-//main diferences are:
-// - format of the message being logged
-// - message is logged immediately instead of in onFinish event
-// - all messages have specific prefix
 public class VerboseReporter extends TestListenerAdapter {
 
     public static final String LISTENER_PREFIX = "[VerboseTestNG] ";
-    private String testName;
+    private String suiteName;
     private final String prefix;
+
+    private enum Status {
+
+        SUCCESS(ITestResult.SUCCESS), FAILURE(ITestResult.FAILURE), SKIP(ITestResult.SKIP),
+        SUCCESS_PERCENTAGE_FAILURE(ITestResult.SUCCESS_PERCENTAGE_FAILURE), STARTED(ITestResult.STARTED);
+        private int status;
+
+        private Status(int i) {
+            status = i;
+        }
+    }
 
     public VerboseReporter() {
         this(LISTENER_PREFIX);
     }
 
     public VerboseReporter(String prefix) {
-       this.prefix = prefix;
+        this.prefix = prefix;
     }
 
     @Override
     public void beforeConfiguration(ITestResult tr) {
         super.beforeConfiguration(tr);
-        logResult("INVOKING CONFIGURATION", detailedMethodName(tr.getMethod(), true));
+        logTestResult(Status.STARTED, tr, true);
     }
 
     @Override
     public void onConfigurationFailure(ITestResult tr) {
         super.onConfigurationFailure(tr);
-        Throwable ex = tr.getThrowable();
-        String stackTrace = "";
-        if (ex != null) {
-            stackTrace = Utils.stackTrace(ex, false)[0];
-        }
-        long duration = tr.getEndMillis() - tr.getStartMillis();
-        logResult("FAILED CONFIGURATION", detailedMethodName(tr.getMethod(), true), tr.getMethod().getDescription(), stackTrace, tr.getParameters(), tr.getMethod().getMethod().getParameterTypes(), duration);
+        logTestResult(Status.FAILURE, tr, true);
     }
 
     @Override
     public void onConfigurationSkip(ITestResult tr) {
         super.onConfigurationSkip(tr);
-        long duration = tr.getEndMillis() - tr.getStartMillis();
-        logResult("SKIPPED CONFIGURATION", detailedMethodName(tr.getMethod(), true), tr.getMethod().getDescription(), null, tr.getParameters(), tr.getMethod().getMethod().getParameterTypes(), duration);
+        logTestResult(Status.SKIP, tr, true);
     }
 
     @Override
     public void onConfigurationSuccess(ITestResult tr) {
         super.onConfigurationSuccess(tr);
-        long duration = tr.getEndMillis() - tr.getStartMillis();
-        logResult("PASSED CONFIGURATION", detailedMethodName(tr.getMethod(), true), tr.getMethod().getDescription(), null, tr.getParameters(), tr.getMethod().getMethod().getParameterTypes(), duration);
+        logTestResult(Status.SUCCESS, tr, true);
+    }
+
+    @Override
+    public void onTestStart(ITestResult tr) {
+        logTestResult(Status.STARTED, tr, false);
     }
 
     @Override
     public void onTestFailure(ITestResult tr) {
         super.onTestFailure(tr);
-        Throwable ex = tr.getThrowable();
-        String stackTrace = "";
-        if (ex != null) {
-            stackTrace = Utils.stackTrace(ex, false)[0];
-        }
-        logResult("FAILED", tr, stackTrace);
+        logTestResult(Status.FAILURE, tr, false);
     }
 
     @Override
     public void onTestFailedButWithinSuccessPercentage(ITestResult tr) {
         super.onTestFailedButWithinSuccessPercentage(tr);
-        logResult("PASSED with failures", tr, null);
+        logTestResult(Status.SUCCESS_PERCENTAGE_FAILURE, tr, false);
     }
 
     @Override
     public void onTestSkipped(ITestResult tr) {
         super.onTestSkipped(tr);
-        Throwable throwable = tr.getThrowable();
-        logResult("SKIPPED", tr, throwable != null ? Utils.stackTrace(throwable, false)[0] : null);
+        logTestResult(Status.SKIP, tr, false);
     }
 
     @Override
     public void onTestSuccess(ITestResult tr) {
         super.onTestSuccess(tr);
-        logResult("PASSED", tr, null);
+        logTestResult(Status.SUCCESS, tr, false);
     }
 
     @Override
     public void onStart(ITestContext ctx) {
-        testName = ctx.getName();//ctx.getSuite().getXmlSuite().getFileName();
-        logResult("RUNNING", "Suite: \"" + testName + "\" containing \"" + ctx.getAllTestMethods().length + "\" Tests (config: " + ctx.getSuite().getXmlSuite().getFileName() + ")");
+        suiteName = ctx.getName();//ctx.getSuite().getXmlSuite().getFileName();
+        log("RUNNING: Suite: \"" + suiteName + "\" containing \"" + ctx.getAllTestMethods().length + "\" Tests (config: " + ctx.getSuite().getXmlSuite().getFileName() + ")");
 
     }
 
     @Override
     public void onFinish(ITestContext context) {
         logResults();
-        testName = null;
-    }
-
-    @Override
-    public void onTestStart(ITestResult tr) {
-        logResult("INVOKING", detailedMethodName(tr.getMethod(), true));
+        suiteName = null;
     }
 
     private ITestNGMethod[] resultsToMethods(List<ITestResult> results) {
@@ -131,80 +117,108 @@ public class VerboseReporter extends TestListenerAdapter {
         // Log test summary
         //
         ITestNGMethod[] ft = resultsToMethods(getFailedTests());
-        StringBuffer logBuf = new StringBuffer("\n===============================================\n");
-        logBuf.append("    ").append(getName()).append("\n");
-        logBuf.append("    Tests run: ").append(Utils.calculateInvokedMethodCount(getAllTestMethods())).append(", Failures: ").append(Utils.calculateInvokedMethodCount(ft)).append(", Skips: ").append(Utils.calculateInvokedMethodCount(resultsToMethods(getSkippedTests())));
+        StringBuilder sb = new StringBuilder("\n===============================================\n");
+        sb.append("    ").append(suiteName).append("\n");
+        sb.append("    Tests run: ").append(Utils.calculateInvokedMethodCount(getAllTestMethods()));
+        sb.append(", Failures: ").append(Utils.calculateInvokedMethodCount(ft));
+        sb.append(", Skips: ").append(Utils.calculateInvokedMethodCount(resultsToMethods(getSkippedTests())));
         int confFailures = getConfigurationFailures().size();
         int confSkips = getConfigurationSkips().size();
-//        if (confFailures > 0 || confSkips > 0) {
-            logBuf.append("\n").append("    Configuration Failures: ").append(confFailures).append(", Skips: ").append(confSkips);
-//        }
-        logBuf.append("\n===============================================");
-        logResult("", logBuf.toString());
-    }
-
-    private String getName() {
-        return testName;
-    }
-
-    private void logResult(String status, ITestResult tr, String stackTrace) {
-        long duration = tr.getEndMillis() - tr.getStartMillis();
-        logResult(status, detailedMethodName(tr.getMethod(), true), tr.getMethod().getDescription(), stackTrace, tr.getParameters(), tr.getMethod().getMethod().getParameterTypes(), duration);
-    }
-
-    private void logResult(String status, String message) {
-        StringBuffer buf = new StringBuffer();
-        if (Utils.isStringNotBlank(status)) {
-            buf.append(status).append(": ");
+        if (confFailures > 0 || confSkips > 0) {
+            sb.append("\n").append("    Configuration Failures: ").append(confFailures);
+            sb.append(", Skips: ").append(confSkips);
         }
-        buf.append(message);
-//        System.out.println("LOG: " + buf.toString());
-        //prefix all output lines
-        System.out.println(buf.toString().replaceAll("(?m)^", prefix));
+        sb.append("\n===============================================");
+        log(sb.toString());
     }
 
-    private void logResult(String status, String name, String description, String stackTrace, Object[] params, Class[] paramTypes, long duration) {
-        StringBuffer msg = new StringBuffer(name);
+    private void logTestResult(Status st, ITestResult itr, boolean isConfMethod) {
+        StringBuilder sb = new StringBuilder();
+        String stackTrace = "";
+        switch (st) {
+            case STARTED:
+                sb.append("INVOKING");
+                break;
+            case SKIP:
+                sb.append("SKIPPED");
+                stackTrace = itr.getThrowable() != null
+                        ? Utils.stackTrace(itr.getThrowable(), false)[0] : "";
+                break;
+            case FAILURE:
+                sb.append("FAILED");
+                stackTrace = itr.getThrowable() != null
+                        ? Utils.stackTrace(itr.getThrowable(), false)[0] : "";
+                break;
+            case SUCCESS:
+                sb.append("PASSED");
+                break;
+            case SUCCESS_PERCENTAGE_FAILURE:
+                sb.append("PASSED with failures");
+                break;
+            default:
+                //not happen
+                throw new RuntimeException("Unsupported test status:" + itr.getStatus());
+        }
+        if (isConfMethod) {
+            sb.append(" CONFIGURATION: ");
+        } else {
+            sb.append(": ");
+        }
+        ITestNGMethod tm = itr.getMethod();
+        int identLevel = sb.length();
+        sb.append(getMethodDeclaration(tm));
+        Object[] params = itr.getParameters();
+        Class[] paramTypes = tm.getMethod().getParameterTypes();
         if (null != params && params.length > 0) {
-            msg.append("(value(s): ");
             // The error might be a data provider parameter mismatch, so make
             // a special case here
             if (params.length != paramTypes.length) {
-                msg.append(name + ": Wrong number of arguments were passed by " + "the Data Provider: found " + params.length + " but " + "expected " + paramTypes.length + ")");
+                sb.append("Wrong number of arguments were passed by the Data Provider: found ");
+                sb.append(params.length);
+                sb.append(" but expected ");
+                sb.append(paramTypes.length);
             } else {
+                sb.append("(value(s): ");
                 for (int i = 0; i < params.length; i++) {
                     if (i > 0) {
-                        msg.append(", ");
+                        sb.append(", ");
                     }
-                    msg.append(Utils.toString(params[i], paramTypes[i]));
+                    sb.append(Utils.toString(params[i], paramTypes[i]));
                 }
-                msg.append(")");
+                sb.append(")");
+
             }
         }
-        msg.append(" finished in ");
-        msg.append(duration);
-        msg.append(" ms");
-        if (!Utils.isStringEmpty(description)) {
-            msg.append("\n");
-            for (int i = 0; i < status.length() + 2; i++) {
-                msg.append(" ");
+        if (Status.STARTED != st) {
+            sb.append(" finished in ");
+            sb.append(itr.getEndMillis() - itr.getStartMillis());
+            sb.append(" ms");
+            if (!Utils.isStringEmpty(tm.getDescription())) {
+                sb.append("\n");
+                for (int i = 0; i < identLevel; i++) {
+                    sb.append(" ");
+                }
+                sb.append(tm.getDescription());
             }
-            msg.append(description);
+            if (!Utils.isStringEmpty(stackTrace)) {
+                sb.append("\n").append(stackTrace.substring(0, stackTrace.lastIndexOf(System.getProperty("line.separator"))));
+            }
         }
-        if (!Utils.isStringEmpty(stackTrace)) {
-            msg.append("\n").append(stackTrace.substring(0, stackTrace.lastIndexOf(System.getProperty("line.separator"))));
-        }
-        logResult(status, msg.toString());
+        log(sb.toString());
     }
 
-    @Deprecated
+    private void log(String message) {
+        //prefix all output lines
+        System.out.println(message.replaceAll("(?m)^", prefix));
+    }
+
     //perhaps should rather to adopt the original method
-    private String detailedMethodName(ITestNGMethod method, boolean fqn) {
+    private String getMethodDeclaration(ITestNGMethod method) {
         Method m = method.getMethod();
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("\"");
-        if (getName() != null) {
-            buf.append(getName());
+        if (suiteName != null) {
+            buf.append(suiteName);
         } else {
             buf.append("UNKNOWN");
         }
@@ -243,12 +257,11 @@ public class VerboseReporter extends TestListenerAdapter {
             buf.append(p.getName());
         }
         buf.append(")");
-        return buf.toString();//buf.append(fqn ? method.toString() : method.getMethodName()).toString();
+        return buf.toString();
     }
 
     @Override
     public String toString() {
-        return "VerboseReporter{" + "testName=" + testName + '}';
+        return "VerboseReporter{" + "testName=" + suiteName + '}';
     }
-
 }
