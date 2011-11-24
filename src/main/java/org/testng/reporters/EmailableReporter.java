@@ -323,9 +323,8 @@ public class EmailableReporter implements IReporter {
   }
 
   /**
-   * @param tests
-   * @param suite 
-   * @return
+   * Since the methods will be sorted chronologically, we want to return
+   * the ITestNGMethod from the invoked methods.
    */
   private Collection<ITestNGMethod> getMethodSet(IResultMap tests, ISuite suite) {
     List<IInvokedMethod> r = Lists.newArrayList();
@@ -337,10 +336,19 @@ public class EmailableReporter implements IReporter {
     }
     Arrays.sort(r.toArray(new IInvokedMethod[r.size()]), new TestSorter());
     List<ITestNGMethod> result = Lists.newArrayList();
+
+    // Add all the invoked methods
     for (IInvokedMethod m : r) {
       result.add(m.getTestMethod());
     }
 
+    // Add all the methods that weren't invoked (e.g. skipped) that we
+    // haven't added yet
+    for (ITestNGMethod m : tests.getAllMethods()) {
+      if (!result.contains(m)) {
+        result.add(m);
+      }
+    }
     return result;
   }
 
