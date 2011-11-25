@@ -1396,6 +1396,7 @@ public class Invoker implements IInvoker {
     //
     List<IWorker<ITestNGMethod>> workers = Lists.newArrayList();
 
+    // Create one worker per invocationCount
     for (int i = 0; i < testMethod.getInvocationCount(); i++) {
       // we use clones for reporting purposes
       ITestNGMethod clonedMethod= testMethod.clone();
