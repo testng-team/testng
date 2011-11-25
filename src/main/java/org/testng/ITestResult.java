@@ -88,4 +88,5 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
    */
   public String getTestName();
 
+  public String getInstanceName();
 }

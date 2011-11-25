@@ -143,6 +143,7 @@ public class MessageHelper {
                                  messageParts[3],
                                  messageParts[4],
                                  replaceAsciiCharactersWithUnicode(replaceNewLineReplacer(testDescriptor)),
+                                 replaceAsciiCharactersWithUnicode(replaceNewLineReplacer(testDescriptor)),
                                  parseParameters(parametersFragment),
                                  Long.parseLong(startTimestampFragment),
                                  Long.parseLong(stopTimestampFragment),

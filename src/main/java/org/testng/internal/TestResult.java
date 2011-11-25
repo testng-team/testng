@@ -29,6 +29,7 @@ public class TestResult implements ITestResult {
   private String m_host;
   transient private Object[] m_parameters = {};
   transient private Object m_instance;
+  private String m_instanceName;
 
   public TestResult() {
 
@@ -62,6 +63,7 @@ public class TestResult implements ITestResult {
   {
     m_testClass = testClass;
     m_throwable = throwable;
+    m_instanceName = m_testClass.getName();
     if (null == m_throwable) {
       m_status = ITestResult.SUCCESS;
     }
@@ -86,7 +88,10 @@ public class TestResult implements ITestResult {
         try {
           if (!Object.class.getMethod("toString")
               .equals(m_instance.getClass().getMethod("toString"))) {
-            m_name = m_name + " on instance " + string;
+            m_instanceName = string.startsWith("class ")
+                ? string.substring("class ".length())
+                : string;
+            m_name = m_name + " on " + m_instanceName;
           }
         }
         catch(NoSuchMethodException ignore) {
@@ -287,6 +292,11 @@ public class TestResult implements ITestResult {
 	  } else {
 		  return 0;
 	  }
+  }
+
+  @Override
+  public String getInstanceName() {
+    return m_instanceName;
   }
 }
 

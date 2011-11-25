@@ -1,5 +1,15 @@
 package org.testng.xml;
 
+import static org.testng.reporters.XMLReporterConfig.ATTR_DESC;
+import static org.testng.reporters.XMLReporterConfig.ATTR_DURATION_MS;
+import static org.testng.reporters.XMLReporterConfig.ATTR_NAME;
+import static org.testng.reporters.XMLReporterConfig.ATTR_STATUS;
+import static org.testng.reporters.XMLReporterConfig.TAG_CLASS;
+import static org.testng.reporters.XMLReporterConfig.TAG_PARAMS;
+import static org.testng.reporters.XMLReporterConfig.TAG_SUITE;
+import static org.testng.reporters.XMLReporterConfig.TAG_TEST;
+import static org.testng.reporters.XMLReporterConfig.TAG_TEST_METHOD;
+
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
 import org.testng.remote.strprotocol.GenericMessage;
@@ -14,16 +24,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.List;
-
-import static org.testng.reporters.XMLReporterConfig.ATTR_DESC;
-import static org.testng.reporters.XMLReporterConfig.ATTR_DURATION_MS;
-import static org.testng.reporters.XMLReporterConfig.ATTR_NAME;
-import static org.testng.reporters.XMLReporterConfig.ATTR_STATUS;
-import static org.testng.reporters.XMLReporterConfig.TAG_CLASS;
-import static org.testng.reporters.XMLReporterConfig.TAG_PARAMS;
-import static org.testng.reporters.XMLReporterConfig.TAG_SUITE;
-import static org.testng.reporters.XMLReporterConfig.TAG_TEST;
-import static org.testng.reporters.XMLReporterConfig.TAG_TEST_METHOD;
 
 /**
  * Parses testng-result.xml, create TestResultMessages and send them back to the listener
@@ -75,6 +75,7 @@ public class ResultContentHandler extends DefaultHandler {
       Integer status = XMLReporterConfig.getStatus(attributes.getValue(ATTR_STATUS));
       m_currentTestResult = new TestResultMessage(status, m_currentSuite.getSuiteName(),
           m_currentTest.getTestName(), m_className, attributes.getValue(ATTR_NAME),
+          attributes.getValue(ATTR_DESC),
           attributes.getValue(ATTR_DESC),
           new String[0], /* no parameters, filled later */
           0, Long.parseLong(attributes.getValue(ATTR_DURATION_MS)),

@@ -34,6 +34,7 @@ public class TestResultMessage implements IStringMessage {
   private String m_testDescription;
   private int m_invocationCount;
   private int m_currentInvocationCount;
+  private String m_instanceName;
 
   /**
    * This constructor is used by the Eclipse client to initialize a result message based
@@ -45,6 +46,7 @@ public class TestResultMessage implements IStringMessage {
                     final String className,
                     final String methodName,
                     final String testDescriptor,
+                    String instanceName,
                     final String[] params,
                     final long startMillis,
                     final long endMillis,
@@ -63,6 +65,7 @@ public class TestResultMessage implements IStringMessage {
          extractParams(params),
          extractParamTypes(params),
          testDescriptor,
+         instanceName,
          invocationCount,
          currentInvocationCount
     );
@@ -113,6 +116,7 @@ public class TestResultMessage implements IStringMessage {
          toString(result.getParameters(), result.getMethod().getMethod().getParameterTypes()),
          toString(result.getMethod().getMethod().getParameterTypes()),
          MessageHelper.replaceUnicodeCharactersWithAscii(result.getName()),
+         MessageHelper.replaceUnicodeCharactersWithAscii(result.getInstanceName()),
          result.getMethod().getInvocationCount(),
          result.getMethod().getCurrentInvocationCount()
     );
@@ -135,6 +139,7 @@ public class TestResultMessage implements IStringMessage {
                     final String[] parameters,
                     final String[] types,
                     final String testDescription,
+                    String instanceName,
                     int invocationCount,
                     int currentInvocationCount) {
     m_messageType = resultType;
@@ -150,6 +155,7 @@ public class TestResultMessage implements IStringMessage {
     m_testDescription= testDescription;
     m_invocationCount = invocationCount;
     m_currentInvocationCount = currentInvocationCount;
+    m_instanceName = instanceName;
   }
 
   public int getResult() {
@@ -369,5 +375,9 @@ public class TestResultMessage implements IStringMessage {
   public void setParameters(String[] params) {
     m_parameters = extractParams(params);
     m_paramTypes = extractParamTypes(params);
+  }
+
+  public String getInstanceName() {
+    return m_instanceName;
   }
 }
