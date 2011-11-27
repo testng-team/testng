@@ -2507,8 +2507,11 @@ TestNG offers an XML reporter capturing TestNG specific information that is not 
               started-at=&quot;2007-05-28T12:14:37Z&quot; description=&quot;someDescription2&quot;
               finished-at=&quot;2007-05-28T12:14:37Z&quot;&gt;
           &lt;exception class=&quot;java.lang.AssertionError&quot;&gt;
-            &lt;short-stacktrace&gt;java.lang.AssertionError
-              ... Removed 22 stack frames
+            &lt;short-stacktrace&gt;
+              &lt;![CDATA[
+                java.lang.AssertionError
+                ... Removed 22 stack frames
+              ]]&gt;
             &lt;/short-stacktrace&gt;
           &lt;/exception&gt;
         &lt;/test-method&gt;
