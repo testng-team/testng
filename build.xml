@@ -243,7 +243,7 @@
         <include name="${testng.fullname}.jar" />
       </zipfileset>
       <zipfileset prefix="${zip.dir}" dir="${basedir}" includesfile="FILES" />
-      <zipfileset dir="${other.jars.dir}" prefix="${zip.dir}/${other.jars.dir}"/>
+      <zipfileset dir="${other.jars.dir}" prefix="${zip.dir}/other-jars"/>
       <zipfileset dir="javadocs" prefix="${zip.dir}/javadocs" />
       <zipfileset dir="src" prefix="${zip.dir}/src" />
       <zipfileset dir="spring" prefix="${zip.dir}/spring" />
