@@ -15,6 +15,7 @@ import java.util.List;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
+import org.junit.runner.Description;
 
 /**
  * Help methods for JUnit
@@ -57,6 +58,17 @@ public class JUnitUtils {
       m_methodClass= test.getClass();
 
       init(test);
+      testClass.getTestMethodList().add(this);
+    }
+
+    public JUnitTestMethod(Description test, JUnitTestClass testClass) {
+      m_testClass= testClass;
+      m_instances= new Object[] {test};
+      m_instanceHashes= new long[] {test.hashCode()};
+      m_methodClass= test.getTestClass();
+
+      m_methodName = test.getMethodName();
+      m_signature = m_methodClass.getName() + "." + m_methodName + "()";
       testClass.getTestMethodList().add(this);
     }
 
@@ -131,6 +143,15 @@ public class JUnitUtils {
      */
     @Override
     public Method getMethod() {
+        if (m_method == null) {
+                try {
+                    m_method = m_methodClass.getMethod(getMethodName());
+                } catch (NoSuchMethodException ex) {
+                    // can be JUnit 3 - ignore
+                } catch (SecurityException ex) {
+                    // can be JUnit 3 - ignore
+                }
+        }
       return m_method;
     }
 
@@ -556,6 +577,12 @@ public class JUnitUtils {
       m_realClass= test.getClass();
       m_instances= new Object[] {test};
       m_instanceHashes= new long[] {test.hashCode()};
+    }
+
+    public JUnitTestClass(Description desc) {
+        m_realClass = desc.getTestClass();
+        m_instances = new Object[] {m_realClass};
+        m_instanceHashes = new long[] {m_realClass.hashCode()};
     }
 
     List<ITestNGMethod> getTestMethodList() {
