@@ -1023,7 +1023,7 @@ public class Invoker implements IInvoker {
        * TODO: This recreates all the parameters every time when we only need
        * one specific set. Should optimize it by only recreating the set needed.
        */
-      ParameterBag bag = createParameters(testClass, tm, parameters,
+      ParameterBag bag = createParameters(tm, parameters,
           allParameters, null, suite, testContext, null /* fedInstance */, null /* testResult */);
       Object[] parameterValues =
           getParametersFromIndex(bag.parameterHolder.parameters, parametersIndex);
@@ -1037,8 +1037,7 @@ public class Invoker implements IInvoker {
     return failureCount;
   }
 
-  private ParameterBag createParameters(ITestClass testClass,
-                                        ITestNGMethod testMethod,
+  private ParameterBag createParameters(ITestNGMethod testMethod,
                                         Map<String, String> parameters,
                                         Map<String, String> allParameterNames,
                                         Object[] parameterValues,
@@ -1157,7 +1156,7 @@ public class Invoker implements IInvoker {
             CAN_RUN_FROM_CLASS);
 
         Map<String, String> allParameterNames = Maps.newHashMap();
-        ParameterBag bag = createParameters(testClass, testMethod,
+        ParameterBag bag = createParameters(testMethod,
             parameters, allParameterNames, null, suite, testContext, instances[0],
             null);
 
