@@ -10,6 +10,7 @@ import org.testng.annotations.IParameterizable;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 import org.testng.internal.ParameterHolder.ParameterOrigin;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -20,6 +21,7 @@ import org.testng.xml.XmlTest;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -49,7 +51,9 @@ public class Parameters {
       Map<String, String> params, XmlSuite xmlSuite)
   {
     return createParameters(ctor.toString(), ctor.getParameterTypes(),
-        finder.findOptionalValues(ctor), methodAnnotation, finder, parameterNames, new MethodParameters(params), xmlSuite);
+        finder.findOptionalValues(ctor), methodAnnotation, finder, parameterNames,
+            new MethodParameters(params, Collections.<String, String>emptyMap()),
+            xmlSuite);
   }
 
   /**
@@ -66,7 +70,7 @@ public class Parameters {
   public static Object[] createConfigurationParameters(Method m,
       Map<String, String> params,
       Object[] parameterValues,
-      ITestNGMethod currentTestMethod,
+      @Nullable ITestNGMethod currentTestMethod,
       IAnnotationFinder finder,
       XmlSuite xmlSuite,
       ITestContext ctx,
@@ -74,8 +78,16 @@ public class Parameters {
   {
     Method currentTestMeth= currentTestMethod != null ?
         currentTestMethod.getMethod() : null;
+
+    Map<String, String> methodParams = currentTestMethod != null
+        ? currentTestMethod.findMethodParameters(ctx.getCurrentXmlTest())
+        : Collections.<String, String>emptyMap();
+
     return createParameters(m,
-        new MethodParameters(params, parameterValues, currentTestMeth, ctx, testResult),
+        new MethodParameters(params,
+            methodParams,
+            parameterValues,
+            currentTestMeth, ctx, testResult),
         finder, xmlSuite, IConfigurationAnnotation.class, "@Configuration");
   }
 
@@ -144,7 +156,7 @@ public class Parameters {
                   + methodAnnotation
                   + " on method "
                   + methodName
-                  + "\nbut has not been marked @Optional or defined "
+                  + " but has not been marked @Optional or defined\n"
                   + (xmlSuite.getFileName() != null ? "in "
                   + xmlSuite.getFileName() : ""));
               }
@@ -483,17 +495,31 @@ public class Parameters {
     private Object[] parameterValues;
     public ITestResult testResult;
 
-    public MethodParameters(Map<String, String> params) {
-      this(params, null, null, null, null);
+    public MethodParameters(Map<String, String> params, Map<String, String> methodParams) {
+      this(params, methodParams, null, null, null, null);
     }
 
-    public MethodParameters(Map<String, String> params, Method m) {
-      this(params, null, m, null, null);
+    public MethodParameters(Map<String, String> params, Map<String, String> methodParams,
+        Method m) {
+      this(params, methodParams, null, m, null, null);
     }
 
-    public MethodParameters(Map<String, String> params, Object[] pv, Method m, ITestContext ctx,
+    /**
+     * @param params parameters found in the suite and test tags
+     * @param methodParams parameters found in the include tag
+     * @param pv
+     * @param m
+     * @param ctx
+     * @param tr
+     */
+    public MethodParameters(Map<String, String> params,
+        Map<String, String> methodParams,
+        Object[] pv, Method m, ITestContext ctx,
         ITestResult tr) {
-      xmlParameters = params;
+      Map<String, String> allParams = Maps.newHashMap();
+      allParams.putAll(params);
+      allParams.putAll(methodParams);
+      xmlParameters = allParams;
       currentTestMethod = m;
       context = ctx;
       parameterValues = pv;

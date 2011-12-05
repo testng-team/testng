@@ -244,7 +244,7 @@ public class XmlSuite implements Serializable, Cloneable {
    * @param methodSelectors the method selectors.
    */
   public void setMethodSelectors(List<XmlMethodSelector> methodSelectors) {
-    m_methodSelectors = methodSelectors;
+    m_methodSelectors = Lists.newArrayList(methodSelectors);
   }
 
   /**
@@ -370,7 +370,7 @@ public class XmlSuite implements Serializable, Cloneable {
    * @param packages the XML packages.
    */
   public void setXmlPackages(List<XmlPackage> packages) {
-    m_xmlPackages = packages;
+    m_xmlPackages = Lists.newArrayList(packages);
   }
 
   /**
@@ -492,6 +492,10 @@ public class XmlSuite implements Serializable, Cloneable {
 
     for (XmlTest t : m_tests) {
       result.append("  ").append( t.toString()).append(' ');
+    }
+
+    for (XmlMethodSelector ms : m_methodSelectors) {
+      result.append(" methodSelector:" + ms);
     }
 
     result.append(']');
@@ -680,6 +684,9 @@ public class XmlSuite implements Serializable, Cloneable {
     return result;
   }
 
+  /**
+   * Used to debug equals() bugs.
+   */
   static boolean f() {
     return false;
   }

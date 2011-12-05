@@ -1,11 +1,13 @@
 package org.testng.xml;
 
 import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 public class XmlInclude implements Serializable {
@@ -15,6 +17,7 @@ public class XmlInclude implements Serializable {
   private List<Integer> m_invocationNumbers = Lists.newArrayList();
   private int m_index;
   private String m_description;
+  private Map<String, String> m_parameters = Maps.newHashMap();
 
   public XmlInclude(String n) {
     this(n, Collections.<Integer> emptyList(), 0);
@@ -60,6 +63,14 @@ public class XmlInclude implements Serializable {
           XmlClass.listToString(invocationNumbers).toString());
     }
     xsb.addEmptyElement("include", p);
+    if (!m_parameters.isEmpty()) {
+      for(Map.Entry<String, String> para: m_parameters.entrySet()) {
+        Properties paramProps= new Properties();
+        paramProps.setProperty("name", para.getKey());
+        paramProps.setProperty("value", para.getValue());
+        xsb.addEmptyElement("parameter", paramProps); // BUGFIX: TESTNG-27
+      }
+    }
 
     return xsb.toXML();
   }
@@ -97,5 +108,14 @@ public class XmlInclude implements Serializable {
     } else if (!m_name.equals(other.m_name))
       return XmlSuite.f();
     return true;
+  }
+
+  public void setParameters(Map<String, String> parameters) {
+    m_parameters.clear();
+    m_parameters.putAll(parameters);
+  }
+
+  public Map<String, String> getParameters() {
+    return m_parameters;
   }
 }

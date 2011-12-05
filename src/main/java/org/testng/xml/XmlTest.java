@@ -84,7 +84,7 @@ public class XmlTest implements Serializable, Cloneable {
   }
 
   public void setXmlPackages(List<XmlPackage> packages) {
-    m_xmlPackages = packages;
+    m_xmlPackages = Lists.newArrayList(packages);
   }
 
   public List<XmlPackage> getXmlPackages() {
@@ -106,7 +106,7 @@ public class XmlTest implements Serializable, Cloneable {
   }
 
   public void setMethodSelectors(List<XmlMethodSelector> methodSelectors) {
-    m_methodSelectors = methodSelectors;
+    m_methodSelectors = Lists.newArrayList(methodSelectors);
   }
 
   /**
@@ -573,6 +573,11 @@ public class XmlTest implements Serializable, Cloneable {
     result.append(" classes:");
     for (XmlClass cl : m_xmlClasses) {
       result.append(cl).append(" ");
+    }
+
+    result.append(" packages:");
+    for (XmlPackage p : m_xmlPackages) {
+      result.append(p).append(" ");
     }
 
     result.append("] ");
