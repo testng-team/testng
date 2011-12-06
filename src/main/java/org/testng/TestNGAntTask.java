@@ -526,7 +526,7 @@ public class TestNGAntTask extends Task {
     actOnResult(exitValue, wasKilled);
   }
 
-  private List<String> createArguments() {
+  protected List<String> createArguments() {
 	List<String> argv= Lists.newArrayList();
     addBooleanIfTrue(argv, CommandLineArgs.JUNIT, m_isJUnit);
     addBooleanIfTrue(argv, CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS, m_skipFailedInvocationCounts);
