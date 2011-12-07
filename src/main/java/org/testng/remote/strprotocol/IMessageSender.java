@@ -10,12 +10,17 @@ public interface IMessageSender {
 
   /**
    * Initialize the receiver.
-   *
-   * @throws SocketException This exception will be thrown if a connection
-   * to the remote TestNG instance could not be established after ten
-   * seconds.
+   * Method will try to initialize receiver for the indefinite amount of time.
    */
   void initReceiver() throws SocketTimeoutException;
+
+  /**
+   * @param soTimeout
+   * @throws SocketException This exception will be thrown if a connection
+   * to the remote TestNG instance could not be established after soTimeout
+   * milliseconds.
+   */
+  void initReceiver(int soTimeout) throws SocketTimeoutException;
 
   void sendMessage(IMessage message) throws Exception;
 
