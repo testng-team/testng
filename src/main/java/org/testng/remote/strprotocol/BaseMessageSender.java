@@ -36,6 +36,7 @@ abstract public class BaseMessageSender implements IMessageSender {
 
   private ReaderThread m_readerThread;
   private boolean m_ack;
+  private boolean m_shutdownRequested;
 //  protected InputStream m_receiverInputStream;
 
   public BaseMessageSender(String host, int port, boolean ack) {
@@ -120,6 +121,9 @@ abstract public class BaseMessageSender implements IMessageSender {
       serverSocket.setSoTimeout(5000);
 
       while (true) {
+        if (m_shutdownRequested) {
+          return;
+        }
         try {
           Socket socket = serverSocket.accept();
           m_inStream = socket.getInputStream();
@@ -185,6 +189,8 @@ abstract public class BaseMessageSender implements IMessageSender {
         e.printStackTrace();
       }
     }
+
+    m_shutdownRequested = true;
   }
 
   private String m_latestAck;
