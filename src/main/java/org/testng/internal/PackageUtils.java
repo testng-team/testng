@@ -55,7 +55,7 @@ public class PackageUtils {
     }
 
     List<String> vResult = Lists.newArrayList();
-    String packageDirName = packageOnly.replace('.', '/');
+    String packageDirName = packageOnly.replace('.', '/') + "/";
 
     Vector<URL> dirs = new Vector<URL>();
     // go through additional class loaders
