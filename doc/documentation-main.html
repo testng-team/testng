@@ -18,6 +18,7 @@
         SyntaxHighlighter.defaults['gutter'] = false;
         SyntaxHighlighter.all();
       </script>
+      <script type="text/javascript" src="http://beust.com/toc.js"></script>
 
         <style type="text/css">
             /* Set the command-line table option column width. */
@@ -26,7 +27,7 @@
             }
         </style>
     </head>
-<body onLoad="prettyPrint()">
+<body onLoad="generateToc();">
 
 <script type="text/javascript">
     displayMenu("documentation-main.html")
@@ -59,106 +60,20 @@ google_ad_channel ="5560744946";
 
 ------------------------------- -->
 
-
-
 <!-------------------------------------
   TOC
   ------------------------------------>
 
 <h3>Table of Contents</h3>
 
-&nbsp;&nbsp;<a class="summary" href="#introduction">1 - Introduction</a>
-<br>
-&nbsp;&nbsp;<a class="summary" href="#annotations">2 - Annotations</a>
-<br>
-&nbsp;&nbsp;<a class="summary" href="#testng-xml">3 - testng.xml</a>
-<br>
-&nbsp;&nbsp;<a class="summary" href="#running-testng">4 - Running TestNG</a>
-<br>
-&nbsp;&nbsp;<a class="summary" href="#methods">5 - User's manual</a>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#test-groups">5.1 - Test groups</a>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#groups-of-groups">5.2 - Groups of groups</a>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#exclusions">5.3 - Exclusion groups</a>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#partial-groups">5.4 - Partial groups</a>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#parameters">5.5 - Parameters</a>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#parameters-testng-xml">5.5.1 - From testng.xml</a>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#parameters-dataproviders">5.5.2 - From DataProviders</a>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#parameters-reports">5.5.3 - Parameters in the reports</a>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#dependent-methods">5.6 - Dependent methods</a>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#factories">5.7 - Factories</a>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#class-level">5.8 - Class level Annotations</a>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#parallel-running">5.9 - Parallelism and time-outs</a> 
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#parallel-running">5.9.1 - Parallel suites</a> 
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#parallel-running">5.9.2 - Parallel tests, classes and methods</a> 
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#rerunning">5.10 - Rerunning failed tests</a>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#junit">5.11 - JUnit tests</a>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#running-testng-programmatically">5.13 - Running TestNG programmatically</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#beanshell">5.14 - BeanShell and advanced group selection</a><br>
-
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#annotationtransformers">5.15 - Annotation transformers</a><br>
-
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#methodinterceptors">5.16 - Method Interceptors</a><br>
-
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#testng-listeners">5.18 - TestNG Listeners</a><br>
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#listeners-testng-xml">5.18.1 - Specifying listeners with testng.xml or Java</a><br>
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#listeners-service-loader">5.18.2 - Specifying listeners with ServiceLoader</a><br>
-
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#dependency-injection">5.19 - Dependency injection</a></br>
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#native-dependency-injection">5.19.1 - Native dependency injection</a></br>
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#native-dependency-injection">5.19.2 - Guice dependency injection</a></br>
-
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#invokedmethodlistener">5.20 - Invoked method listeners</a></br>
-
-&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#ihookable">5.22 - Overriding test methods</a></br>
+<div id="table-of-contents">
+</div>
 
 
-&nbsp; <a class="summary" href="#test-results">6 - Test results</a>
-<br>
-&nbsp;&nbsp;&nbsp; <a class="summary" href="#success-failure">6.1 - Success, failure and assert</a>
-<br>
-&nbsp;&nbsp;&nbsp; <a class="summary" href="#logging">6.2 - Logging and results</a>
-
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#logging-listeners">6.2.1 - Logging Listeners</a>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#logging-reporters">6.2.2 - Logging Reporters</a>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#logging-junitreports">6.2.3 - JUnitReports</a>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#logging-reporter-api">6.2.4 - Reporter API</a>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="summary" href="#logging-xml-reports">6.2.5 - XML Reports</a>
-<br>
-&nbsp; <a class="summary" href="#yaml">7 - YAML</a>
-<br>
-
-
-</pre>
 <!-------------------------------------
   INTRODUCTION
   ------------------------------------>
-<h3><a name="introduction">1 - Introduction</a></h3>TestNG is a testing framework designed to simply a broad range of testing needs, from unit testing (testing a class in isolation of the others) to integration testing (testing entire systems made of several classes, several packages and even several external frameworks, such as application servers).
+<h3><a class="section" name="introduction">Introduction</a></h3>TestNG is a testing framework designed to simply a broad range of testing needs, from unit testing (testing a class in isolation of the others) to integration testing (testing entire systems made of several classes, several packages and even several external frameworks, such as application servers).
 
 <p>
 
@@ -205,7 +120,7 @@ The rest of this manual will explain the following:
   ANNOTATIONS
   ------------------------------------>
 
-  <h3><a name="annotations">2 - Annotations</a></h3>Here is a quick overview of the annotations available in TestNG along with their attributes.
+  <h3><a class="section" name="annotations">Annotations</a></h3>Here is a quick overview of the annotations available in TestNG along with their attributes.
 
 <p>
 
@@ -575,7 +490,7 @@ invocationCount. <br>Note:  this attribute is ignored if invocationCount is not 
 <!-------------------------------------
   TESTNG.XML
   ------------------------------------>
-  <h3><a name="testng-xml">3 - testng.xml</a></h3><p>You can invoke TestNG in several different ways:</p><ul>
+  <h3><a class="section" name="testng-xml">testng.xml</a></h3><p>You can invoke TestNG in several different ways:</p><ul>
 	<li>With a <tt>testng.xml</tt> file</li><li><a href="http://testng.org/doc/ant.html">With ant</a></li><li>From the command line</li></ul><p>This section describes the format of <tt>testng.xml</tt> (you will find documentation 
 on ant and the command line below).</p><p>The current DTD for <tt>testng.xml</tt> can be found on the main Web site:&nbsp;
 <a href="http://testng.org/testng-1.0.dtd">http://testng.org/testng-1.0.dtd</a> 
@@ -680,7 +595,7 @@ Please see the DTD for a complete list of the features, or read on.</p>
   RUNNING TESTNG
   ------------------------------------>
 
-<h3><a name="running-testng">4 - Running TestNG</a></h3>TestNG can be invoked in different ways:
+<h3><a class="section" name="running-testng">Running TestNG</a></h3>TestNG can be invoked in different ways:
 
 <ul>
 <li>Command line
@@ -903,7 +818,13 @@ The <a href="ant.html">ant task</a> and <a href="#testng-xml">testng.xml</a> all
   METHODS
   ------------------------------------>
 
-<h3><a name="methods">5 - Test methods, Test classes and Test groups</a></h3><h4><a name="test-groups">5.1 - Test groups</a></h4><p>TestNG allows you to perform sophisticated groupings of test methods. Not 
+<h3><a class="section" name="methods">Test methods, Test classes and Test groups</a></h3>
+
+<h4><a class="section" indent=".." name="test-groups">Test groups</a></h4>
+
+<p>
+
+TestNG allows you to perform sophisticated groupings of test methods. Not 
 only can you declare that methods belong to groups, but you can also specify 
 groups that contain other groups. Then TestNG can be invoked and asked to 
 include a certain set of groups (or regular expressions) while excluding another 
@@ -1039,7 +960,7 @@ your testing framework likely to break if you start refactoring your Java code
 more).
 
 
-<h4><a name="groups-of-groups">5.2 - Groups of groups</a></h4>
+<h4><a class="section" indent=".." name="groups-of-groups">Groups of groups</a></h4>
 
 Groups can also include other groups.&nbsp;These groups are called &quot;MetaGroups&quot;.&nbsp; 
 For example, you might want to define a group &quot;all&quot; that includes &quot;checkintest&quot; 
@@ -1075,7 +996,9 @@ would define this in your property file:
 
 </p><!-------------------------------------
   EXCLUSION
-  ------------------------------------><h4><a name="exclusions">5.3 - Exclusion groups</a>
+  ------------------------------------>
+
+<h4><a class="section" indent=".." name="exclusions">Exclusion groups</a>
 
 </h4><p>TestNG allows you to include groups as well as exclude them.</p>
 
@@ -1127,7 +1050,7 @@ broken and need to be fixed later.</p>
   PARTIAL GROUPS
   ------------------------------------>
 
-<a name="partial-groups">5.4 - Partial groups</a></h4>
+<a class="section" indent=".." name="partial-groups">Partial groups</a></h4>
 
 You can define  groups at the class level and then add groups at the method level:
 
@@ -1151,7 +1074,7 @@ at the class level, while method1() belongs to both &quot;checkin-test&quot; and
   PARAMETERS
   ------------------------------------>
 
-<h4><a name="parameters">5.5 - Parameters</a></h4><p>
+<h4><a class="section" indent=".." name="parameters">Parameters</a></h4><p>
 
 
 Test methods don't have to be parameterless.&nbsp; You can use an arbitrary 
@@ -1163,7 +1086,7 @@ There are two ways to set these parameters:&nbsp; with <tt>testng.xml</tt> or
 programmatically.</p><p>
 
 
-&nbsp;&nbsp;<em><a name="parameters-testng-xml">5.5.1 - Parameters from <tt>testng.xml</tt></a></em></p>
+<em><a class="section" indent="..." name="parameters-testng-xml">Parameters from <tt>testng.xml</tt></a></em></p>
 
 
 If you are using simple values for your parameters, you can specify them in your 
@@ -1245,7 +1168,7 @@ tests. </i>
 </blockquote>
 
 
-&nbsp;&nbsp;<em><a name="parameters-dataproviders">5.5.2 - Parameters with DataProviders</a></em>
+<em><a class="section" indent="..." name="parameters-dataproviders">Parameters with DataProviders</a></em>
 
 
 <p>Specifying parameters in <tt>testng.xml</tt> might not be sufficient if you need to pass complex parameters, or parameters that need to be created  from Java (complex objects, objects read from a property file or a database, etc...). In this case, you can use a Data Provider to supply the values you need to test.&nbsp; A Data Provider is a method on your class that returns an array of array of objects.&nbsp; This method is annotated with <tt>@DataProvider</tt>:
@@ -1366,7 +1289,7 @@ If you want to run a few specific data providers in a different thread pool, you
 
 <p>
 
-&nbsp;&nbsp;<em><a name="parameters-reports">5.5.3 - Parameters in reports</a></em>
+<em><a class="section" indent="..." name="parameters-reports">Parameters in reports</a></em>
 
 <p>
 
@@ -1385,7 +1308,7 @@ Parameters used to invoke your test methods are shown in the HTML reports genera
   ------------------------------------>
 
 
-<h4><a name="dependent-methods">5.6 - Dependent methods</a></h4><p>Sometimes, you need your test methods to be invoked in a certain order.&nbsp; 
+<h4><a class="section" indent=".." name="dependent-methods">Dependent methods</a></h4><p>Sometimes, you need your test methods to be invoked in a certain order.&nbsp; 
 This is useful for example 
 
 <ul>
@@ -1481,8 +1404,10 @@ or
 
 <!-------------------------------------
   FACTORIES
-  ------------------------------------><h4>
-<a name="factories">5.7 - Factories</a>
+  ------------------------------------>
+
+<h4>
+<a class="section" indent=".." name="factories">Factories</a>
 </h4>
 
 Factories allow you to create tests dynamically. For example, imagine you 
@@ -1593,7 +1518,7 @@ The example will make TestNG create two test classes, on with the constructor in
   CLASS LEVEL ANNOTATIONS
   ------------------------------------>
 
-<h4><a name="class-level">5.8 - Class level annotations</a></h4>
+<h4><a class="section" indent=".." name="class-level">Class level annotations</a></h4>
 
 The <tt>@Test</tt> annotation can be put on a class instead of a test method:
 
@@ -1634,11 +1559,11 @@ will make both <tt>test1()</tt> and <tt>test2()</tt> test methods but on top of 
   PARALLEL RUNNING
   ------------------------------------>
 
-<h4><a name="parallel-running">5.9 - Parallelism and time-outs</a></h4>
+<h4><a class="section" indent=".." name="parallel-running">Parallelism and time-outs</a></h4>
 
 You can  instruct TestNG to run your tests in separate threads in various ways.
 
-<h5><a name="parallel-tests">5.9.1 - Parallel suites</a></h5>
+<h5><a class="section" indent="..." name="parallel-tests">Parallel suites</a></h5>
 
 This is useful if you are running several suite files (e.g. "<tt>java org.testng.TestNG testng1.xml testng2.xml"</tt>) and you want each of these suites to be run in a separate thread. You can use the following command line flag to specify the size of a thread pool:
 
@@ -1648,7 +1573,7 @@ java org.testng.TestNG -suitethreadpoolsize 3 testng1.xml testng2.xml testng3.xm
 
 The corresponding ant task name is <tt>suitethreadpoolsize</tt>.
 
-<h5><a name="parallel-tests">5.9.2 - Parallel tests, classes and methods</a></h5>
+<h5><a class="section" indent="..." name="parallel-tests">Parallel tests, classes and methods</a></h5>
 The <i>parallel</i> attribute on the &lt;suite&gt; tag can take one of following values:
 
 <pre class="brush: xml">
@@ -1703,7 +1628,7 @@ In this example, the function <tt>testServer</tt> will be invoked ten times from
   ------------------------------------>
 
 
-<h4><a name="rerunning">5.10 - Rerunning failed tests</a></h4>Every time tests fail in a suite, TestNG creates a file called <tt>testng-failed.xml</tt> in the output directory.
+<h4><a class="section" indent=".." name="rerunning">Rerunning failed tests</a></h4>Every time tests fail in a suite, TestNG creates a file called <tt>testng-failed.xml</tt> in the output directory.
 This XML file contains the necessary information to rerun only these methods 
 that failed, allowing you to quickly reproduce the failures without having to 
 run the entirety of your tests.&nbsp; Therefore, a typical session would look 
@@ -1718,7 +1643,7 @@ java -classpath testng.jar;%CLASSPATH% org.testng.TestNG -d test-outputs test-ou
 methods so that you are guaranteed to run the methods that failed without any 
 SKIP failures.</p>
 
-<h4><a name="junit">5.11 - JUnit tests</a></h4>
+<h4><a class="section" indent=".." name="junit">JUnit tests</a></h4>
 
 TestNG can run JUnit 3 tests (JUnit 4 is not supported).&nbsp; All
 you need to do is specify your JUnit test classes in the <tt>testng.classNames</tt> property and set the <tt>testng.junit</tt> property to true:
@@ -1745,7 +1670,7 @@ you need to do is specify your JUnit test classes in the <tt>testng.classNames</
 <!-------------------------------------
   RUNNING TESTNG
  ------------------------------------><h4>
-<a name="running-testng-programmatically">5.13 - Running TestNG programmatically</a>
+<a class="section" indent=".." name="running-testng-programmatically">Running TestNG programmatically</a>
 </h4>
 
 You can invoke TestNG from your own programs very easily:
@@ -1805,7 +1730,7 @@ tng.run();
  ------------------------------------>
 	
 <h4>
-<a name="beanshell">5.14 - BeanShell and advanced group selection</a>
+<a class="section" indent=".." name="beanshell">BeanShell and advanced group selection</a>
 </h4>
 
 
@@ -1841,7 +1766,7 @@ You might want to surround your expression with a <tt>CDATA</tt> declaration (as
  ------------------------------------>
 	
 <h4>
-<a name="annotationtransformers">5.15 - Annotation Transformers</a>
+<a class="section" indent=".." name="annotationtransformers">Annotation Transformers</a>
 </h4>
 
 TestNG allows you to modify the content of all the annotations at runtime.  This is especially useful if the annotations in the source code are right most of the time, but there are a few situations where you'd like to override their value.
@@ -1920,7 +1845,7 @@ For example, here is how you would override the attribute <tt>invocationCount</t
  ------------------------------------>
 	
 <h4>
-<a name="methodinterceptors">5.16 - Method Interceptors</a>
+<a class="section" indent=".." name="methodinterceptors">Method Interceptors</a>
 </h4>
 Once TestNG has calculated in what order the test methods will be invoked, these methods are split in two groups:
 
@@ -1988,7 +1913,7 @@ public List&lt;IMethodInstance&gt; intercept(List&lt;IMethodInstance&gt; methods
  ------------------------------------>
 	
 <h4>
-<a name="testng-listeners">5.18 - TestNG Listeners</a>
+<a class="section" indent=".." name="testng-listeners">TestNG Listeners</a>
 </h4>
 
 There are several interfaces that allow you to modify TestNG's behavior.  These interfaces are broadly called "TestNG Listeners".  Here are a few listeners:
@@ -2014,7 +1939,7 @@ When you implement one of these interfaces, you can let TestNG know about it wit
   <li>Using <tt>ServiceLoader</tt>.
 </ul>
 
-<h3><a name="listeners-testng-xml">5.18.1 - Specifying listeners with <tt>testng.xml</tt> or in Java</a></h3>
+<h3><a class="section" indent="..." name="listeners-testng-xml">Specifying listeners with <tt>testng.xml</tt> or in Java</a></h3>
 
 Here is how you can define listeners in your <tt>testng.xml</tt> file:
 
@@ -2045,7 +1970,7 @@ The <tt>@Listeners</tt> annotation can contain any class that extends <tt>org.te
 
 Note that the <tt>@Listeners</tt> annotation will apply to your entire suite file, just as if you had specified it in a <tt>testng.xml</tt> file. If you want to restrict its scope (for example, only running on the current class), the code in your listener could first check the test method that's about to run and decide what to do then.
 
-<h3><a name="listeners-service-loader">5.18.2 - Specifying listeners with <tt>ServiceLoader</tt></a></h3>
+<h3><a class="section" indent="..." name="listeners-service-loader">Specifying listeners with <tt>ServiceLoader</tt></a></h3>
 
 Finally, the JDK offers a very elegant mechanism to specify implementations of interfaces on the class path via the <tt><a href="http://download.oracle.com/javase/6/docs/api/java/util/ServiceLoader.html">ServiceLoader</a></tt> class.
 
@@ -2124,13 +2049,13 @@ This mechanism allows you to apply the same set of listeners to an entire organi
  ------------------------------------>
 	
 <h4>
-<a name="dependency-injection">5.19 - Dependency injection</a>
+<a class="section" indent=".." name="dependency-injection">Dependency injection</a>
 </h4>
 
 TestNG supports two different kinds of dependency injection: native (performed by TestNG itself) and external (performed by a dependency injection framework such as Guice).
 
 <h5>
-<a name="native-dependency-injection">5.19.1 - Native dependency injection</a>
+<a class="section" indent="..." name="native-dependency-injection">Native dependency injection</a>
 </h5>
 
 TestNG lets you declare additional parameters in your methods.  When this happens, TestNG will automatically fill these parameters with the right value.  Dependency injection can be used in the following places:
@@ -2179,7 +2104,7 @@ public class NoInjectionTest {
 </pre>
 
 <h5>
-<a name="guice-dependency-injection">5.19.2 - Guice dependency injection</a>
+<a class="section" indent="..." name="guice-dependency-injection">Guice dependency injection</a>
 </h5>
 
 If you use Guice, TestNG gives you an easy way to inject your test objects with a Guice module:
@@ -2252,7 +2177,7 @@ Your factory will be passed an instance of the test context and the test class t
  ------------------------------------>
 	
 <h4>
-<a name="invokedmethodlistener">5.20 - Listening to method invocations</a>
+<a class="section" indent=".." name="invokedmethodlistener">Listening to method invocations</a>
 </h4>
 
 The listener <tt><a href="../javadocs/org/testng/IInvokedMethodListener.html">IInvokedMethodListener</a></tt> allows you to be notified whenever TestNG is about to invoke a test (annotated with <tt>@Test</tt>) or configuration (annotated with any of the <tt>@Before</tt> or <tt>@After</tt> annotation) method.  You need to implement the following interface:
@@ -2274,7 +2199,7 @@ and declare it as a listener, as explained in <a href="#testng-listeners">the se
   ------------------------------------>
 
 <h4>
-<a name="ihookable">5.22 - Overriding test methods</a></h4>
+<a class="section" indent=".." name="ihookable">Overriding test methods</a></h4>
 </h4>
 
 TestNG allows you to override and possibly skip the invocation of test methods. One example of where this is useful is if you need to your test methods with a specific security manager. You achieve this by providing a listener that implements <a href="../javadocs/org/testng/IHookable.html"><tt>IHookable</tt></a>.
@@ -2301,12 +2226,12 @@ public class MyHook implements IHookable {
   ------------------------------------>
 
 <h3>
-<a name="test-results">6 - Test results</a>
+<a class="section" indent="." name="test-results">Test results</a>
 </h3>
 
 
 <h4>
-<a name="success-failure">6.1 - Success, failure and assert</a>
+<a class="section" indent=".." name="success-failure">Success, failure and assert</a>
 </h4>
 
 
@@ -2347,7 +2272,9 @@ public void verify() {
   ------------------------------------>
 </p>
 
-<h3><a name="logging">6.2 - Logging and results</a></h3>The results of the test run are created in a file called <tt>index.html</tt> in the 
+<h3><a class="section" indent=".." name="logging">Logging and results</a>
+
+</h3>The results of the test run are created in a file called <tt>index.html</tt> in the 
 directory specified when launching SuiteRunner.&nbsp; This file points to 
 various other HTML and text files that contain the result of the entire test 
 run.&nbsp; You can see a typical example
@@ -2361,7 +2288,7 @@ It's very easy to generate your own reports with TestNG with Listeners and Repor
 
 <p>
 
-&nbsp;&nbsp;<a name="logging-listeners"><em>6.2.1 - Logging Listeners</em></a>
+<a class="section" indent="..." name="logging-listeners">Logging Listeners</a>
 <p>
 
 Here is a listener that displays a "." for each passed test, a "F" for each failure and a "S" for each skip:
@@ -2426,7 +2353,7 @@ Note that when you use <tt>-listener</tt>, TestNG will automatically determine t
 
 <p>
 
-&nbsp;&nbsp;<a name="logging-reporters"><em>6.2.2 - Logging Reporters</em></a>
+<a class="section" indent="..." name="logging-reporters">Logging Reporters</a>
 
 <p>
 
@@ -2440,7 +2367,7 @@ This method will be invoked by TestNG when all the suites have been run and you 
 
 <p>
 
-&nbsp;&nbsp;<a name="logging-junitreports"><em>6.2.3 - JUnitReport</em></a>
+<a class="section" indent="..." name="logging-junitreports">JUnitReports</a>
 
 <p>
 
@@ -2467,7 +2394,7 @@ prevents the frame version from working, so you need to specify &quot;noframes&q
 get this to work for now.</em>
 	</blockquote>
 
-&nbsp;&nbsp;<a name="logging-reporter-api"><em>6.2.4 - Reporter API</em></a>
+<a class="section" indent="..." name="logging-reporter-api">Reporter API</a>
 
 <p>
 If you need to log messages that should appear in the generated HTML reports, you can use the class <tt><a href="../javadocs/org/testng/Reporter.html">org.testng.Reporter</a></tt>:
@@ -2484,7 +2411,7 @@ If you need to log messages that should appear in the generated HTML reports, yo
 
 </p>
 
-&nbsp;&nbsp;<a name="logging-xml-reports"><em>6.2.5 - XML Reports</em></a>
+<a class="section" indent="..." name="logging-xml-reports">XML Reports</a>
 <p>
 TestNG offers an XML reporter capturing TestNG specific information that is not available in JUnit reports. This is particulary useful when the user's test environment needs to consume XML results with TestNG-specific data that the JUnit format can't provide.  Below is a sample of the output of such a reporter:
 </p>
@@ -2615,7 +2542,7 @@ TestNG offers an XML reporter capturing TestNG specific information that is not 
   ------------------------------------>
 
 <h3>
-<a name="yaml">7 - YAML</a>
+<a class="section" name="yaml">YAML</a>
 </h3>
 
 TestNG supports <a href="http://www.yaml.org/">YAML</a> as an alternate way of specifying your suite file. For example, the following XML file:
