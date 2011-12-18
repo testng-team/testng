@@ -5,7 +5,6 @@ import java.text.StringCharacterIterator;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-
 /**
  * Static helpers for XML.
  *
@@ -21,37 +20,47 @@ public final class XMLUtils {
     // Hide constructor
   }
 
-  static public String xml(String indent, String elementName, String content, Properties attributes) {
+  static public String xml(String indent, String elementName, String content,
+      Properties attributes) {
     StringBuffer result = new StringBuffer();
     xmlOpen(result, indent, elementName, attributes, true /* no newline */);
     result.append(content);
-    xmlClose(result, "", elementName);
+    xmlClose(result, "", elementName, XMLUtils.extractComment(attributes));
 
     return result.toString();
   }
+
+  public static String extractComment(Properties properties) {
+    String comment = null;
+    if (properties != null) {
+      comment = properties.getProperty("id") != null
+          ? properties.getProperty("id")
+          : properties.getProperty("name");
+    }
+    return comment != null ? " <!-- " + comment + " -->" : null;
+  }
+
   public static void xmlOptional(StringBuffer result, String sp,
-                                                      String elementName, Boolean value, Properties attributes)
-  {
+      String elementName, Boolean value, Properties attributes) {
     if (null != value) {
       xmlRequired(result, sp, elementName, value.toString(), attributes);
     }
   }
+
   public static void xmlOptional(StringBuffer result, String sp,
-                                                      String elementName, String value, Properties attributes)
-  {
+      String elementName, String value, Properties attributes) {
     if (null != value) {
       xmlRequired(result, sp, elementName, value, attributes);
     }
   }
+
   public static void xmlRequired(StringBuffer result, String sp,
-                                                       String elementName, String value, Properties attributes)
-  {
+      String elementName, String value, Properties attributes) {
     result.append(xml(sp, elementName, value, attributes));
   }
 
-  public static void xmlOpen(StringBuffer result, String indent,
-      String tag, Properties attributes)
-  {
+  public static void xmlOpen(StringBuffer result, String indent, String tag,
+      Properties attributes) {
     xmlOpen(result, indent, tag, attributes, false /* no newline */);
   }
 
@@ -59,8 +68,10 @@ public final class XMLUtils {
    * Appends the attributes to result. The attributes are added on a single line
    * as: key1="value1" key2="value2" ... (a space is added before the first key)
    *
-   * @param result the buffer to append attributes to.
-   * @param attributes the attributes to append (may be null).
+   * @param result
+   *          the buffer to append attributes to.
+   * @param attributes
+   *          the attributes to append (may be null).
    */
   public static void appendAttributes(StringBuffer result, Properties attributes) {
     if (null != attributes) {
@@ -73,22 +84,20 @@ public final class XMLUtils {
     }
   }
 
-  public static void xmlOpen(StringBuffer result, String indent,
-                                                 String tag, Properties attributes,
-                                                 boolean noNewLine)
-  {
+  public static void xmlOpen(StringBuffer result, String indent, String tag,
+      Properties attributes, boolean noNewLine) {
     result.append(indent).append("<").append(tag);
     appendAttributes(result, attributes);
     result.append(">");
-    if (! noNewLine) {
+    if (!noNewLine) {
       result.append(EOL);
     }
   }
 
-  public static void xmlClose(StringBuffer result, String indent,
-                                                 String tag)
-  {
-    result.append(indent).append("</").append(tag).append(">").append(EOL);
+  public static void xmlClose(StringBuffer result, String indent, String tag, String comment) {
+    result.append(indent).append("</").append(tag).append(">")
+        .append(comment != null ? comment : "")
+        .append(EOL);
   }
 
   public static String escape(String input) {

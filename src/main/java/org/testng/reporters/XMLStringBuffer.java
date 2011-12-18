@@ -102,7 +102,7 @@ public class XMLStringBuffer {
    */
   public void push(String tagName, String schema, Properties attributes) {
     XMLUtils.xmlOpen(m_buffer, m_currentIndent, tagName + schema, attributes);
-    m_tagStack.push(new Tag(m_currentIndent, tagName));
+    m_tagStack.push(new Tag(m_currentIndent, tagName, attributes));
     m_currentIndent += DEFAULT_INDENT_INCREMENT;
   }
 
@@ -126,6 +126,18 @@ public class XMLStringBuffer {
    */
   public void push(String tagName, Properties attributes) {
     push(tagName, "", attributes);
+  }
+
+  public void push(String tagName, String... attributes) {
+    push(tagName, createProperties(attributes));
+  }
+
+  private Properties createProperties(String[] attributes) {
+    Properties result = new Properties();
+    for (int i = 0; i < attributes.length; i += 2) {
+      result.put(attributes[i], attributes[i + 1]);
+    }
+    return result;
   }
 
   /**
@@ -162,7 +174,7 @@ public class XMLStringBuffer {
             "Popping the wrong tag: " + t.tagName + " but expected " + tagName);
       }
     }
-    XMLUtils.xmlClose(m_buffer, m_currentIndent, t.tagName);
+    XMLUtils.xmlClose(m_buffer, m_currentIndent, t.tagName, XMLUtils.extractComment(t.properties));
   }
 
   /**
@@ -197,6 +209,10 @@ public class XMLStringBuffer {
     XMLUtils.xmlOptional(m_buffer, m_currentIndent, tagName, value, attributes);
   }
 
+  public void addOptional(String tagName, String value, String... attributes) {
+    XMLUtils.xmlOptional(m_buffer, m_currentIndent, tagName, value, createProperties(attributes));
+  }
+
   /**
    * Add an optional String element to the current tag.  If value is null, nothing is
    * added.
@@ -204,7 +220,7 @@ public class XMLStringBuffer {
    * @param value The value for this tag
    */
   public void addOptional(String tagName, String value) {
-    addOptional(tagName, value, null);
+    addOptional(tagName, value, (Properties) null);
   }
 
   /**
@@ -254,6 +270,10 @@ public class XMLStringBuffer {
 
   public void addComment(String comment) {
     m_buffer.append(m_currentIndent).append("<!-- " + comment + " -->\n");
+  }
+
+  public void addString(String s) {
+    m_buffer.append(s);
   }
 
   private static void ppp(String s) {
@@ -322,9 +342,11 @@ public class XMLStringBuffer {
 class Tag {
   public final String tagName;
   public final String indent;
+  public final Properties properties;
 
-  public Tag(String ind, String n) {
+  public Tag(String ind, String n, Properties p) {
     tagName = n;
     indent = ind;
+    properties = p;
   }
 }
