@@ -5,7 +5,6 @@ import org.testng.IResultMap;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
-import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Maps;
@@ -58,12 +57,15 @@ public class JqReporter implements IReporter {
       XMLStringBuffer xs3 = new XMLStringBuffer("    ");
       for (ISuiteResult result : results.values()) {
         ITestContext context = result.getTestContext();
-        generateTests("failure", context.getFailedTests(), context, xs1);
-        generateTests("skip", context.getSkippedTests(), context, xs2);
-        generateTests("success", context.getPassedTests(), context, xs3);
+        generateTests("failed", context.getFailedTests(), context, xs1);
+        generateTests("skipped", context.getSkippedTests(), context, xs2);
+        generateTests("passed", context.getPassedTests(), context, xs3);
       }
+      xsb.addOptional("div", "Failed" + " tests", "class", "result-banner " + "failed");
       xsb.addString(xs1.toXML());
+      xsb.addOptional("div", "Skipped" + " tests", "class", "result-banner " + "skipped");
       xsb.addString(xs2.toXML());
+      xsb.addOptional("div", "Passed" + " tests", "class", "result-banner " + "passed");
       xsb.addString(xs3.toXML());
     }
     xsb.pop("div");
@@ -72,6 +74,9 @@ public class JqReporter implements IReporter {
     return xsb;
   }
 
+  private String capitalize(String s) {
+    return Character.toUpperCase(s.charAt(0)) + s.substring(1);
+  }
   private void generateTests(String tagClass, IResultMap tests, ITestContext context,
       XMLStringBuffer xsb) {
 
@@ -79,10 +84,8 @@ public class JqReporter implements IReporter {
 
     xsb.push("div", "class", "test" + (tagClass != null ? " " + tagClass : ""));
     ListMultiMap<Class<?>, ITestResult> map = Maps.newListMultiMap();
-    for (ITestNGMethod m : tests.getAllMethods()) {
-      for (ITestResult result : tests.getResults(m)) {
-        map.put(m.getTestClass().getRealClass(), result);
-      }
+    for (ITestResult m : tests.getAllResults()) {
+      map.put(m.getTestClass().getRealClass(), m);
     }
 
     xsb.push("a", "href", "#");
@@ -91,12 +94,14 @@ public class JqReporter implements IReporter {
 
     xsb.push("div", "class", "test-content");
     for (Class<?> c : map.getKeys()) {
+      xsb.push("div", "class", "class");
       xsb.addOptional("span", c.getName(), "class", "class-name");
       xsb.push("div", "class", "class-content");
       List<ITestResult> l = map.get(c);
-      for (ITestResult tr : l) {
-        generateMethod(tagClass, tr, context, xsb);
+      for (ITestResult m : l) {
+        generateMethod(tagClass, m, context, xsb);
       }
+      xsb.pop("div");
       xsb.pop("div");
     }
     xsb.pop("div");
