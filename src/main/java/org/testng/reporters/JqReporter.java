@@ -122,7 +122,17 @@ public class JqReporter implements IReporter {
     xsb.push("div", "class", "method");
     xsb.push("div", "class", "method-content");
     xsb.addOptional("span", tr.getMethod().getMethodName(), "class", "method-name");
-    xsb.addOptional("span", " (" + Long.toString(time) + " ms)", "class", "method-time");
+    if (tr.getParameters().length > 0) {
+      StringBuilder sb = new StringBuilder();
+      boolean first = true;
+      for (Object p : tr.getParameters()) {
+        if (!first) sb.append(", ");
+        first = false;
+        sb.append(p.toString());
+      }
+      xsb.addOptional("span", "(" + sb.toString() + ")", "class", "parameters");
+    }
+    xsb.addOptional("span", " " + Long.toString(time) + " ms", "class", "method-time");
     xsb.pop("div");
     xsb.pop("div");
   }
