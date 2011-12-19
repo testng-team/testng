@@ -95,7 +95,10 @@ public class JqReporter implements IReporter {
     xsb.push("div", "class", "test-content");
     for (Class<?> c : map.getKeys()) {
       xsb.push("div", "class", "class");
+      xsb.push("div", "class", "class-header");
+      xsb.addEmptyElement("img", "src", getImage(tagClass));
       xsb.addOptional("span", c.getName(), "class", "class-name");
+      xsb.pop("div");
       xsb.push("div", "class", "class-content");
       List<ITestResult> l = map.get(c);
       for (ITestResult m : l) {
@@ -107,6 +110,10 @@ public class JqReporter implements IReporter {
     xsb.pop("div");
 
     xsb.pop("div");
+  }
+
+  private static String getImage(String tagClass) {
+    return tagClass + ".png";
   }
 
   private void generateMethod(String tagClass, ITestResult tr,

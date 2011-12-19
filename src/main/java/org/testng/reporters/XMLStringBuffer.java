@@ -254,7 +254,7 @@ public class XMLStringBuffer {
    *
    */
   public void addEmptyElement(String tagName) {
-    addEmptyElement(tagName, null);
+    addEmptyElement(tagName, (Properties) null);
   }
 
   /**
@@ -266,6 +266,10 @@ public class XMLStringBuffer {
     m_buffer.append(m_currentIndent).append("<").append(tagName);
     XMLUtils.appendAttributes(m_buffer, attributes);
     m_buffer.append("/>").append(EOL);
+  }
+
+  public void addEmptyElement(String tagName, String... attributes) {
+    addEmptyElement(tagName, createProperties(attributes));
   }
 
   public void addComment(String comment) {
