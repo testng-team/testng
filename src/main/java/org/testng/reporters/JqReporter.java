@@ -88,16 +88,23 @@ public class JqReporter implements IReporter {
       map.put(m.getTestClass().getRealClass(), m);
     }
 
-    xsb.push("a", "href", "#");
     xsb.addOptional("span", context.getName(), "class", "test-name");
+
+    // Expand icon
+    xsb.push("a", "class", "expand", "href", "#");
+    xsb.addEmptyElement("img", "src", getStatusImage(tagClass));
     xsb.pop("a");
 
     xsb.push("div", "class", "test-content");
     for (Class<?> c : map.getKeys()) {
       xsb.push("div", "class", "class");
       xsb.push("div", "class", "class-header");
+
+      // Passed/failed icon
       xsb.addEmptyElement("img", "src", getImage(tagClass));
+
       xsb.addOptional("span", c.getName(), "class", "class-name");
+
       xsb.pop("div");
       xsb.push("div", "class", "class-content");
       List<ITestResult> l = map.get(c);
@@ -110,6 +117,12 @@ public class JqReporter implements IReporter {
     xsb.pop("div");
 
     xsb.pop("div");
+  }
+
+  private static String getStatusImage(String status) {
+    return "up.png";
+//    if ("passed".equals(status)) return "down.png";
+//    else return "up.png";
   }
 
   private static String getImage(String tagClass) {
