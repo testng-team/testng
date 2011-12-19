@@ -338,6 +338,10 @@ public class XMLStringBuffer {
     assert ("<family>" + EOL + "<cedric>true</cedric>" + EOL + "<alois>true</alois>" + EOL + "</family>"  + EOL)
       .equals(result.toString());
   }
+
+  public String getCurrentIndent() {
+    return m_currentIndent;
+  }
 }
 
 

@@ -17,8 +17,13 @@ import java.util.List;
 import java.util.Map;
 
 public class JqReporter implements IReporter {
+  private static final String C = "class";
+  private static final String D = "div";
+  private static final String S = "span";
 
+  private int m_testCount = 0;
   private String m_outputDirectory;
+  private Map<String, String> m_testMap = Maps.newHashMap();
 
   @Override
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
@@ -26,9 +31,9 @@ public class JqReporter implements IReporter {
     m_outputDirectory = "/Users/cedric/java/misc/jquery";
 
     XMLStringBuffer xsb = new XMLStringBuffer("  ");
-    xsb.push("div", "id", "suites");
+    xsb.push(D, "id", "suites");
     generateSuites(xmlSuites, suites, xsb);
-    xsb.pop("div");
+    xsb.pop(D);
 
     String all;
     try {
@@ -41,82 +46,133 @@ public class JqReporter implements IReporter {
   }
 
   private XMLStringBuffer generateSuites(List<XmlSuite> xmlSuites,
-      List<ISuite> suites, XMLStringBuffer xsb) {
+      List<ISuite> suites, XMLStringBuffer main) {
      for (ISuite suite : suites) {
       if (suite.getResults().size() == 0) {
         continue;
       }
 
-      xsb.push("div", "class", "suite");
-      xsb.addOptional("span", suite.getName(), "class", "suite-name");
+      XMLStringBuffer xsb = new XMLStringBuffer(main.getCurrentIndent());
+      XMLStringBuffer header = new XMLStringBuffer(main.getCurrentIndent());
 
-      xsb.push("div", "class", "suite-content");
+      xsb.push(D, C, "suite-content");
       Map<String, ISuiteResult> results = suite.getResults();
-      XMLStringBuffer xs1 = new XMLStringBuffer("    ");
-      XMLStringBuffer xs2 = new XMLStringBuffer("    ");
-      XMLStringBuffer xs3 = new XMLStringBuffer("    ");
+      XMLStringBuffer xs1 = new XMLStringBuffer(xsb.getCurrentIndent());
+      XMLStringBuffer xs2 = new XMLStringBuffer(xsb.getCurrentIndent());
+      XMLStringBuffer xs3 = new XMLStringBuffer(xsb.getCurrentIndent());
+      int failed = 0;
+      int skipped = 0;
+      int passed = 0;
       for (ISuiteResult result : results.values()) {
         ITestContext context = result.getTestContext();
+        failed += context.getFailedTests().size();
         generateTests("failed", context.getFailedTests(), context, xs1);
+        skipped += context.getSkippedTests().size();
         generateTests("skipped", context.getSkippedTests(), context, xs2);
+        passed += context.getPassedTests().size();
         generateTests("passed", context.getPassedTests(), context, xs3);
       }
-      xsb.addOptional("div", "Failed" + " tests", "class", "result-banner " + "failed");
+      xsb.addOptional(D, "Failed" + " tests", C, "result-banner " + "failed");
       xsb.addString(xs1.toXML());
-      xsb.addOptional("div", "Skipped" + " tests", "class", "result-banner " + "skipped");
+      xsb.addOptional(D, "Skipped" + " tests", C, "result-banner " + "skipped");
       xsb.addString(xs2.toXML());
-      xsb.addOptional("div", "Passed" + " tests", "class", "result-banner " + "passed");
+      xsb.addOptional(D, "Passed" + " tests", C, "result-banner " + "passed");
       xsb.addString(xs3.toXML());
-    }
-    xsb.pop("div");
-    xsb.pop("div");
 
-    return xsb;
+
+      header.push(D, C, "suite");
+      header.push(D, C, "suite-header");
+      header.addOptional(S, suite.getName(), C, "suite-name");
+      header.push(D, C, "stats");
+      int total = failed + skipped + passed;
+      String stats = String.format("%s, %d failed, %d skipped, %d passed",
+          pluralize(total, "method"), failed, skipped, passed);
+      header.push("ul");
+
+      // Method stats
+      header.push("li");
+      header.addOptional(S, stats, C, "method-stats");
+      header.pop("li");
+
+      // Tests
+      header.push("li");
+      header.addOptional(S, String.format("%s ", pluralize(results.values().size(), "test"),
+          C, "test-stats"));
+      header.pop("li");
+
+      // List of tests
+      header.push("ul");
+      for (ISuiteResult tr : results.values()) {
+        String testName = tr.getTestContext().getName();
+        header.push("li");
+        header.addOptional("a", testName, "href", "#" + m_testMap.get(testName));
+        header.pop("li");
+      }
+      header.pop("ul");
+
+      header.pop("ul");
+      header.pop(D);
+
+      header.pop(D);
+
+      main.addString(header.toXML());
+      main.addString(xsb.toXML());
+    }
+
+    return main;
   }
 
   private String capitalize(String s) {
     return Character.toUpperCase(s.charAt(0)) + s.substring(1);
   }
+
   private void generateTests(String tagClass, IResultMap tests, ITestContext context,
       XMLStringBuffer xsb) {
 
     if (tests.getAllMethods().isEmpty()) return;
 
-    xsb.push("div", "class", "test" + (tagClass != null ? " " + tagClass : ""));
+    xsb.push(D, C, "test" + (tagClass != null ? " " + tagClass : ""));
     ListMultiMap<Class<?>, ITestResult> map = Maps.newListMultiMap();
     for (ITestResult m : tests.getAllResults()) {
       map.put(m.getTestClass().getRealClass(), m);
     }
 
-    xsb.addOptional("span", context.getName(), "class", "test-name");
+    String testName = "test-" + (m_testCount++);
+    m_testMap.put(context.getName(), testName);
+    xsb.push(D, C, "test-name");
+    xsb.push("a", "name", testName);
+    xsb.addString(context.getName());
+    xsb.pop("a");
 
     // Expand icon
-    xsb.push("a", "class", "expand", "href", "#");
+    xsb.push("a", C, "expand", "href", "#");
     xsb.addEmptyElement("img", "src", getStatusImage(tagClass));
     xsb.pop("a");
 
-    xsb.push("div", "class", "test-content");
+    xsb.pop(D);
+
+    xsb.push(D, C, "test-content");
     for (Class<?> c : map.getKeys()) {
-      xsb.push("div", "class", "class");
-      xsb.push("div", "class", "class-header");
+      xsb.push(D, C, C);
+      xsb.push(D, C, "class-header");
 
       // Passed/failed icon
       xsb.addEmptyElement("img", "src", getImage(tagClass));
 
-      xsb.addOptional("span", c.getName(), "class", "class-name");
+      xsb.addOptional(S, c.getName(), C, "class-name");
 
-      xsb.pop("div");
-      xsb.push("div", "class", "class-content");
+      xsb.pop(D);
+      xsb.push(D, C, "class-content");
       List<ITestResult> l = map.get(c);
       for (ITestResult m : l) {
         generateMethod(tagClass, m, context, xsb);
       }
-      xsb.pop("div");
-      xsb.pop("div");
+      xsb.pop(D);
+      xsb.pop(D);
     }
-    xsb.pop("div");
+    xsb.pop(D);
 
-    xsb.pop("div");
+    xsb.pop(D);
   }
 
   private static String getStatusImage(String status) {
@@ -132,9 +188,9 @@ public class JqReporter implements IReporter {
   private void generateMethod(String tagClass, ITestResult tr,
       ITestContext context, XMLStringBuffer xsb) {
     long time = tr.getEndMillis() - tr.getStartMillis();
-    xsb.push("div", "class", "method");
-    xsb.push("div", "class", "method-content");
-    xsb.addOptional("span", tr.getMethod().getMethodName(), "class", "method-name");
+    xsb.push(D, C, "method");
+    xsb.push(D, C, "method-content");
+    xsb.addOptional(S, tr.getMethod().getMethodName(), C, "method-name");
 
     // Parameters?
     if (tr.getParameters().length > 0) {
@@ -145,7 +201,7 @@ public class JqReporter implements IReporter {
         first = false;
         sb.append(p != null ? p.toString() : "<NULL>");
       }
-      xsb.addOptional("span", "(" + sb.toString() + ")", "class", "parameters");
+      xsb.addOptional(S, "(" + sb.toString() + ")", C, "parameters");
     }
 
     // Exception?
@@ -154,13 +210,13 @@ public class JqReporter implements IReporter {
       for (StackTraceElement str : tr.getThrowable().getStackTrace()) {
         stackTrace.append(str.toString()).append("<br>");
       }
-      xsb.addOptional("div", stackTrace.toString() + "\n",
-          "class", "stack-trace");
+      xsb.addOptional(D, stackTrace.toString() + "\n",
+          C, "stack-trace");
     }
 
-    xsb.addOptional("span", " " + Long.toString(time) + " ms", "class", "method-time");
-    xsb.pop("div");
-    xsb.pop("div");
+    xsb.addOptional(S, " " + Long.toString(time) + " ms", C, "method-time");
+    xsb.pop(D);
+    xsb.pop(D);
   }
 
   /**
@@ -170,4 +226,10 @@ public class JqReporter implements IReporter {
   protected String generateOutputDirectoryName(String outputDirectory) {
     return outputDirectory;
   }
+
+  private String pluralize(int count, String singular) {
+    return Integer.toString(count) + " "
+        + (count > 1 ? (singular.endsWith("s") ? singular + "es" : singular + "s") : singular);
+  }
+
 }
