@@ -26,36 +26,36 @@ public class JqReporter implements IReporter {
       String outputDirectory) {
     m_outputDirectory = "/Users/cedric/java/misc/jquery";
 
-    XMLStringBuffer xsb = new XMLStringBuffer();
+    XMLStringBuffer xsb = new XMLStringBuffer("  ");
     xsb.push("div", "id", "suites");
-    createReport(xmlSuites, suites, xsb);
+    generateSuites(xmlSuites, suites, xsb);
     xsb.pop("div");
 
     String all;
     try {
       all = Files.readFile(new File("/Users/cedric/java/misc/jquery/head"));
-      Utils.writeFile(m_outputDirectory, "index-all.html", all + xsb.toXML());
+      Utils.writeFile(m_outputDirectory, "index2.html", all + xsb.toXML());
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
 
-  private XMLStringBuffer createReport(List<XmlSuite> xmlSuites,
+  private XMLStringBuffer generateSuites(List<XmlSuite> xmlSuites,
       List<ISuite> suites, XMLStringBuffer xsb) {
      for (ISuite suite : suites) {
       if (suite.getResults().size() == 0) {
         continue;
       }
 
-      xsb.push("h2");
+      xsb.push("div", "class", "suite");
       xsb.addOptional("span", suite.getName(), "class", "suite-name");
-      xsb.pop("h2");
 
+      xsb.push("div", "class", "suite-content");
       Map<String, ISuiteResult> results = suite.getResults();
-      XMLStringBuffer xs1 = new XMLStringBuffer();
-      XMLStringBuffer xs2 = new XMLStringBuffer();
-      XMLStringBuffer xs3 = new XMLStringBuffer();
+      XMLStringBuffer xs1 = new XMLStringBuffer("    ");
+      XMLStringBuffer xs2 = new XMLStringBuffer("    ");
+      XMLStringBuffer xs3 = new XMLStringBuffer("    ");
       for (ISuiteResult result : results.values()) {
         ITestContext context = result.getTestContext();
         generateTests("failure", context.getFailedTests(), context, xs1);
@@ -66,6 +66,8 @@ public class JqReporter implements IReporter {
       xsb.addString(xs2.toXML());
       xsb.addString(xs3.toXML());
     }
+    xsb.pop("div");
+    xsb.pop("div");
 
     return xsb;
   }
@@ -83,19 +85,19 @@ public class JqReporter implements IReporter {
       }
     }
 
-    xsb.push("h3");
     xsb.push("a", "href", "#");
     xsb.addOptional("span", context.getName(), "class", "test-name");
     xsb.pop("a");
-    xsb.pop("h3");
 
     xsb.push("div", "class", "test-content");
     for (Class<?> c : map.getKeys()) {
       xsb.addOptional("span", c.getName(), "class", "class-name");
+      xsb.push("div", "class", "class-content");
       List<ITestResult> l = map.get(c);
       for (ITestResult tr : l) {
         generateMethod(tagClass, tr, context, xsb);
       }
+      xsb.pop("div");
     }
     xsb.pop("div");
 
@@ -106,8 +108,10 @@ public class JqReporter implements IReporter {
       ITestContext context, XMLStringBuffer xsb) {
     long time = tr.getEndMillis() - tr.getStartMillis();
     xsb.push("div", "class", "method");
+    xsb.push("div", "class", "method-content");
     xsb.addOptional("span", tr.getMethod().getMethodName(), "class", "method-name");
-    xsb.addOptional("span", Long.toString(time), "class", "method-time");
+    xsb.addOptional("span", " (" + Long.toString(time) + " ms)", "class", "method-time");
+    xsb.pop("div");
     xsb.pop("div");
   }
 
