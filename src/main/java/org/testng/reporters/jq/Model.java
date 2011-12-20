@@ -18,7 +18,9 @@ public class Model {
   private Map<ISuite, String> m_suiteTags = Maps.newHashMap();
   private Map<String, String> m_testTags = Maps.newHashMap();
   private Map<ITestResult, String> m_testResultMap = Maps.newHashMap();
-  private ListMultiMap<Class, ITestResult> m_failedResultsByClass = Maps.newListMultiMap();
+  private Map<ISuite, ResultsByClass> m_failedResultsByClass = Maps.newHashMap();
+  private Map<ISuite, ResultsByClass> m_skippedResultsByClass = Maps.newHashMap();
+  private Map<ISuite, ResultsByClass> m_passedResultsByClass = Maps.newHashMap();
 
   public Model(List<ISuite> suites) {
     m_suites = suites;
@@ -50,9 +52,33 @@ public class Model {
           }
         }
       }
-      for (ITestResult tr : failed) {
-        m_failedResultsByClass.put(tr.getTestClass().getRealClass(), tr);
+      // Failed
+      {
+        ResultsByClass rbc = new ResultsByClass();
+        for (ITestResult tr : failed) {
+          rbc.addResult(tr.getTestClass().getRealClass(), tr);
+        }
+        m_failedResultsByClass.put(suite, rbc);
       }
+
+      // Skipped
+      {
+        ResultsByClass rbc = new ResultsByClass();
+        for (ITestResult tr : skipped) {
+          rbc.addResult(tr.getTestClass().getRealClass(), tr);
+        }
+        m_skippedResultsByClass.put(suite, rbc);
+      }
+
+      // Passed
+      {
+        ResultsByClass rbc = new ResultsByClass();
+        for (ITestResult tr : passed) {
+          rbc.addResult(tr.getTestClass().getRealClass(), tr);
+        }
+        m_passedResultsByClass.put(suite, rbc);
+      }
+
       m_model.putAll(suite, failed);
       m_model.putAll(suite, skipped);
       m_model.putAll(suite, passed);
@@ -60,10 +86,17 @@ public class Model {
     System.out.println("Model size:" + m_model);
   }
 
-  public ListMultiMap<Class, ITestResult> getFailedResultsByClass() {
-    return m_failedResultsByClass;
+  public ResultsByClass getFailedResultsByClass(ISuite suite) {
+    return m_failedResultsByClass.get(suite);
   }
 
+  public ResultsByClass getSkippedResultsByClass(ISuite suite) {
+    return m_skippedResultsByClass.get(suite);
+  }
+
+  public ResultsByClass getPassedResultsByClass(ISuite suite) {
+    return m_passedResultsByClass.get(suite);
+  }
   public String getTag(ISuite s) {
     return m_suiteTags.get(s);
   }
