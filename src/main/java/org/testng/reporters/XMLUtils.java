@@ -31,13 +31,17 @@ public final class XMLUtils {
   }
 
   public static String extractComment(Properties properties) {
-    String comment = null;
-    if (properties != null) {
-      comment = properties.getProperty("id") != null
-          ? properties.getProperty("id")
-          : properties.getProperty("name");
+    if (properties == null) return null;
+
+    String[] attributes = new String[] { "id", "name", "class" };
+    for (String a : attributes) {
+      String comment = properties.getProperty(a);
+      if (comment != null) {
+        return " <!-- " + comment + " -->";
+      }
     }
-    return comment != null ? " <!-- " + comment + " -->" : null;
+
+    return null;
   }
 
   public static void xmlOptional(StringBuffer result, String sp,

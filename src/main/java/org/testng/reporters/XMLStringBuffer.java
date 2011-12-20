@@ -357,4 +357,9 @@ class Tag {
     indent = ind;
     properties = p;
   }
+
+  @Override
+  public String toString() {
+    return tagName;
+  }
 }
