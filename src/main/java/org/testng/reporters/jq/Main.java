@@ -5,7 +5,6 @@ import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
-import org.testng.collections.ListMultiMap;
 import org.testng.internal.Utils;
 import org.testng.reporters.Files;
 import org.testng.reporters.XMLStringBuffer;
@@ -20,6 +19,10 @@ public class Main implements IReporter {
   private static final String C = "class";
   private static final String D = "div";
   private static final String S = "span";
+
+  private static final String PASSED = "passed";
+  private static final String SKIPPED = "skipped";
+  private static final String FAILED = "failed";
 
   private Model m_model;
   private String m_outputDirectory;
@@ -110,21 +113,8 @@ public class Main implements IReporter {
           C, "test-stats"));
       header.pop("li");
 
-      // Test methods
-      header.push("li");
-      header.addString("Test methods");
-      // List of failed methods
-      header.push("ul");
-      for (ITestResult tr : m_model.getTestResults(suite)) {
-        if (tr.getStatus() == ITestResult.FAILURE) {
-          String testName = Model.getTestResultName(tr);
-          header.push("li");
-          header.addOptional("a", testName, "href", "#" + m_model.getTag(tr));
-          header.pop("li");
-        }
-      }
-      header.pop("ul");
-      header.pop("li");
+      generateFailedMethods("Failed methods", ITestResult.FAILURE, suite, header);
+      generateFailedMethods("Skipped methods", ITestResult.SKIP, suite, header);
 
       header.pop("ul");
       header.pop(D); // stats
@@ -134,6 +124,26 @@ public class Main implements IReporter {
 
       main.addString(header.toXML());
     }
+  }
+
+  private void generateFailedMethods(String name, int status, ISuite suite,
+      XMLStringBuffer header) {
+    // Failed methods
+    header.push("li");
+    header.addString(name);
+
+    // List of failed methods
+    header.push("ul");
+    for (ITestResult tr : m_model.getTestResults(suite)) {
+      if (tr.getStatus() == status) {
+        String testName = Model.getTestResultName(tr);
+        header.push("li");
+        header.addOptional("a", testName, "href", "#" + m_model.getTag(tr));
+        header.pop("li");
+      }
+    }
+    header.pop("ul");
+    header.pop("li");
   }
 
   private void generateFooPanel(XMLStringBuffer xsb, String divName) {
@@ -150,25 +160,35 @@ public class Main implements IReporter {
 
   private void generateSuitePanel(ISuite suite, XMLStringBuffer xsb, String divName) {
     xsb.push(D, C, "panel " + divName);
-//    if (m_model.getSize() > 0) {
-      ListMultiMap<Class, ITestResult> byClass = m_model.getFailedResultsByClass();
-      for (Class c : byClass.getKeys()) {
-        generateClassPanel(c, byClass.get(c), xsb);
+    {
+      ResultsByClass byClass = m_model.getFailedResultsByClass(suite);
+      for (Class<?> c : byClass.getClasses()) {
+        generateClassPanel(c, byClass.getResults(c), xsb, FAILED);
+      }
+      byClass = m_model.getSkippedResultsByClass(suite);
+      for (Class<?> c : byClass.getClasses()) {
+        generateClassPanel(c, byClass.getResults(c), xsb, SKIPPED);
+      }
+      byClass = m_model.getPassedResultsByClass(suite);
+      for (Class<?> c : byClass.getClasses()) {
+        generateClassPanel(c, byClass.getResults(c), xsb, PASSED);
+      }
     }
     xsb.pop(D);
   }
 
-  private void generateClassPanel(Class c, List<ITestResult> results,XMLStringBuffer xsb) {
+  private void generateClassPanel(Class c, List<ITestResult> results,XMLStringBuffer xsb,
+      String status) {
     xsb.push(D, C, "class-header");
 
     // Passed/failed icon
-    xsb.addEmptyElement("img", "src", getImage("failed"));
+    xsb.addEmptyElement("img", "src", getImage(status));
     xsb.addOptional(S, c.getName(), C, "class-name");
     xsb.pop(D);
 
     xsb.push(D, C, "class-content");
 
-    for (ITestResult tr : result) {
+    for (ITestResult tr : results) {
       generateMethod(tr, xsb);
     }
     xsb.pop(D);
