@@ -25,13 +25,13 @@ public final class XMLUtils {
     StringBuffer result = new StringBuffer();
     xmlOpen(result, indent, elementName, attributes, true /* no newline */);
     result.append(content);
-    xmlClose(result, "", elementName, XMLUtils.extractComment(attributes));
+    xmlClose(result, "", elementName, XMLUtils.extractComment(elementName, attributes));
 
     return result.toString();
   }
 
-  public static String extractComment(Properties properties) {
-    if (properties == null) return null;
+  public static String extractComment(String tag, Properties properties) {
+    if (properties == null || "span".equals(tag)) return null;
 
     String[] attributes = new String[] { "id", "name", "class" };
     for (String a : attributes) {

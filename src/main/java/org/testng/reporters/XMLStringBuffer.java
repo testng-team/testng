@@ -174,7 +174,8 @@ public class XMLStringBuffer {
             "Popping the wrong tag: " + t.tagName + " but expected " + tagName);
       }
     }
-    XMLUtils.xmlClose(m_buffer, m_currentIndent, t.tagName, XMLUtils.extractComment(t.properties));
+    XMLUtils.xmlClose(m_buffer, m_currentIndent, t.tagName,
+        XMLUtils.extractComment(tagName, t.properties));
   }
 
   /**
