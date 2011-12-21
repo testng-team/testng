@@ -16,9 +16,9 @@ import java.util.List;
 import java.util.Map;
 
 public class Main implements IReporter {
-  private static final String C = "class";
-  private static final String D = "div";
-  private static final String S = "span";
+  public static final String C = "class";
+  public static final String D = "div";
+  public static final String S = "span";
 
   private static final String PASSED = "passed";
   private static final String SKIPPED = "skipped";
@@ -43,15 +43,10 @@ public class Main implements IReporter {
     xsb.push(D, C, "wrapper");
     xsb.push(D, "class", "main-panel-root");
 
-    int suiteCount = 0;
     for (ISuite s : suites) {
       generateSuitePanel(s, xsb, m_model.getTag(s));
-//      System.out.println("Suite:" + s.getName());
-//      for (ITestResult r : model.get(s)) {
-//        System.out.println("  TestResult: " + r);
-//      }
     }
-    generateFooPanel(xsb, "test-panel");
+    new TestPanel().generate(suites, xsb);
     xsb.pop(D); // main-panel-root
     xsb.pop(D); // wrapper
 
@@ -72,10 +67,13 @@ public class Main implements IReporter {
    * Create the left hand navigator.
    */
   private void generateNavigator(XMLStringBuffer main) {
+    int suiteCount = 0;
     for (ISuite suite : m_suites) {
       if (suite.getResults().size() == 0) {
         continue;
       }
+
+      String suiteName = "suite-" + suiteCount++;
 
       XMLStringBuffer header = new XMLStringBuffer(main.getCurrentIndent());
 
@@ -92,7 +90,9 @@ public class Main implements IReporter {
 
       header.push(D, C, "suite");
       header.push(D, C, "suite-header");
+      header.push("a", "href", "#", "class", "navigator-link " + suiteName);
       header.addOptional(S, suite.getName(), C, "suite-name");
+      header.pop("a");
       header.push(D, C, "stats");
       int total = failed + skipped + passed;
       String stats = String.format("%s, %s %s %s",
@@ -102,19 +102,21 @@ public class Main implements IReporter {
           maybe(passed, "passed", ""));
       header.push("ul");
 
+      // Tests
+      header.push("li");
+      header.push("a", "href", "#", "class", "navigator-link " + TestPanel.getTag());
+      header.addOptional(S, String.format("%s ", pluralize(results.values().size(), "test"),
+          C, "test-stats"));
+      header.pop("a");
+      header.pop("li");
+
       // Method stats
       header.push("li");
       header.addOptional(S, stats, C, "method-stats");
       header.pop("li");
 
-      // Tests
-      header.push("li");
-      header.addOptional(S, String.format("%s ", pluralize(results.values().size(), "test"),
-          C, "test-stats"));
-      header.pop("li");
-
-      generateFailedMethods("Failed methods", ITestResult.FAILURE, suite, header);
-      generateFailedMethods("Skipped methods", ITestResult.SKIP, suite, header);
+      generateFailedMethods("Failed methods", ITestResult.FAILURE, suite, suiteName, header);
+      generateFailedMethods("Skipped methods", ITestResult.SKIP, suite, suiteName, header);
 
       header.pop("ul");
       header.pop(D); // stats
@@ -126,7 +128,7 @@ public class Main implements IReporter {
     }
   }
 
-  private void generateFailedMethods(String name, int status, ISuite suite,
+  private void generateFailedMethods(String name, int status, ISuite suite, String suiteName,
       XMLStringBuffer header) {
     // Failed methods
     header.push("li");
@@ -138,18 +140,13 @@ public class Main implements IReporter {
       if (tr.getStatus() == status) {
         String testName = Model.getTestResultName(tr);
         header.push("li");
-        header.addOptional("a", testName, "href", "#" + m_model.getTag(tr));
+        header.addOptional("a", testName, "href", "#",
+            C, "method " + m_model.getTag(tr) + " " + suiteName);
         header.pop("li");
       }
     }
     header.pop("ul");
     header.pop("li");
-  }
-
-  private void generateFooPanel(XMLStringBuffer xsb, String divName) {
-    xsb.push(D, C, "panel " + divName);
-    xsb.addString("FOO PANEL");
-    xsb.pop(D);
   }
 
   private String getTag(ITestResult tr) {
@@ -214,7 +211,7 @@ public class Main implements IReporter {
     }
 
     // Exception?
-    if (tr.getThrowable() != null) {
+    if (tr.getStatus() != ITestResult.SUCCESS && tr.getThrowable() != null) {
       StringBuilder stackTrace = new StringBuilder();
       stackTrace.append("<b>\"")
               .append(tr.getThrowable().getMessage())
