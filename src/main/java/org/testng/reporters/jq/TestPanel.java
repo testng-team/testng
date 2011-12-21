@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Display the list of <test> tags.
  */
-public class TestPanel {
+public class TestPanel implements IPanel {
 
   public static String getTag() {
     return "test-0";

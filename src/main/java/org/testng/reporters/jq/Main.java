@@ -43,10 +43,23 @@ public class Main implements IReporter {
     xsb.push(D, C, "wrapper");
     xsb.push(D, "class", "main-panel-root");
 
+    //
+    // Suite panels
+    //
     for (ISuite s : suites) {
       generateSuitePanel(s, xsb, m_model.getTag(s));
     }
+
+    //
+    // Panel that displays the list of test names
+    //
     new TestPanel().generate(suites, xsb);
+
+    //
+    // Panel that displays the content of testng.xml
+    //
+    new TestNgXmlPanel().generate(suites, xsb);
+
     xsb.pop(D); // main-panel-root
     xsb.pop(D); // wrapper
 
@@ -73,7 +86,7 @@ public class Main implements IReporter {
         continue;
       }
 
-      String suiteName = "suite-" + suiteCount++;
+      String suiteName = "suite-" + suiteCount;
 
       XMLStringBuffer header = new XMLStringBuffer(main.getCurrentIndent());
 
@@ -89,7 +102,7 @@ public class Main implements IReporter {
       }
 
       header.push(D, C, "suite");
-      header.push(D, C, "suite-header");
+      header.push(D, C, "suite-header rounded-window");
       header.push("a", "href", "#", "class", "navigator-link " + suiteName);
       header.addOptional(S, suite.getName(), C, "suite-name");
       header.pop("a");
@@ -110,13 +123,22 @@ public class Main implements IReporter {
       header.pop("a");
       header.pop("li");
 
+      // testng.xml
+      header.push("li");
+      header.push("a", "href", "#", "class", "navigator-link " + TestNgXmlPanel.getTag(suiteCount));
+      String fqName = suite.getXmlSuite().getFileName();
+      header.addOptional(S, fqName.substring(fqName.lastIndexOf("/") + 1),
+          C, "testng-xml");
+      header.pop("a");
+      header.pop("li");
+
       // Method stats
       header.push("li");
       header.addOptional(S, stats, C, "method-stats");
       header.pop("li");
 
-      generateFailedMethods("Failed methods", ITestResult.FAILURE, suite, suiteName, header);
-      generateFailedMethods("Skipped methods", ITestResult.SKIP, suite, suiteName, header);
+      generateMethodList("Failed methods", ITestResult.FAILURE, suite, suiteName, header);
+      generateMethodList("Skipped methods", ITestResult.SKIP, suite, suiteName, header);
 
       header.pop("ul");
       header.pop(D); // stats
@@ -125,28 +147,38 @@ public class Main implements IReporter {
       header.pop(D); // suite
 
       main.addString(header.toXML());
+
+      suiteCount++;
     }
   }
 
-  private void generateFailedMethods(String name, int status, ISuite suite, String suiteName,
-      XMLStringBuffer header) {
+  private void generateMethodList(String name, int status, ISuite suite, String suiteName,
+      XMLStringBuffer main) {
+    XMLStringBuffer xsb = new XMLStringBuffer(main.getCurrentIndent());
+
     // Failed methods
-    header.push("li");
-    header.addString(name);
+    xsb.push("li");
+    xsb.addString(name);
 
     // List of failed methods
-    header.push("ul");
+    xsb.push("ul");
+    int count = 0;
     for (ITestResult tr : m_model.getTestResults(suite)) {
       if (tr.getStatus() == status) {
         String testName = Model.getTestResultName(tr);
-        header.push("li");
-        header.addOptional("a", testName, "href", "#",
+        xsb.push("li");
+        xsb.addOptional("a", testName, "href", "#",
             C, "method " + m_model.getTag(tr) + " " + suiteName);
-        header.pop("li");
+        xsb.pop("li");
+        count++;
       }
     }
-    header.pop("ul");
-    header.pop("li");
+    xsb.pop("ul");
+    xsb.pop("li");
+
+    if (count > 0) {
+      main.addString(xsb.toXML());
+    }
   }
 
   private String getTag(ITestResult tr) {
@@ -176,14 +208,14 @@ public class Main implements IReporter {
 
   private void generateClassPanel(Class c, List<ITestResult> results,XMLStringBuffer xsb,
       String status) {
-    xsb.push(D, C, "class-header");
+    xsb.push(D, C, "class-header rounded-window-top");
 
     // Passed/failed icon
     xsb.addEmptyElement("img", "src", getImage(status));
     xsb.addOptional(S, c.getName(), C, "class-name");
     xsb.pop(D);
 
-    xsb.push(D, C, "class-content");
+    xsb.push(D, C, "class-content rounded-window-bottom");
 
     for (ITestResult tr : results) {
       generateMethod(tr, xsb);
@@ -192,7 +224,6 @@ public class Main implements IReporter {
   }
 
   private void generateMethod(ITestResult tr, XMLStringBuffer xsb) {
-    long time = tr.getEndMillis() - tr.getStartMillis();
     xsb.push(D, C, "method");
     xsb.push(D, C, "method-content");
     xsb.addEmptyElement("a", "name", Model.getTestResultName(tr));
@@ -224,7 +255,8 @@ public class Main implements IReporter {
           C, "stack-trace");
     }
 
-    xsb.addOptional(S, " " + Long.toString(time) + " ms", C, "method-time");
+//    long time = tr.getEndMillis() - tr.getStartMillis();
+//    xsb.addOptional(S, " " + Long.toString(time) + " ms", C, "method-time");
     xsb.pop(D);
     xsb.pop(D);
   }
