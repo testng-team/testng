@@ -7,39 +7,40 @@ import org.testng.xml.XmlTest;
 /**
  * Display the list of <test> tags.
  */
-public class TestPanel extends BasePanel {
+public class TestPanel extends BaseMultiSuitePanel {
 
   public TestPanel(Model model) {
     super(model);
   }
 
-  public static String getTag(ISuite suite) {
+  private static String getTag(ISuite suite) {
     return "testlist-" + suite.getName().replace(" ", "_");
   }
 
   @Override
-  public void generate(XMLStringBuffer xsb) {
-    for (ISuite s : getSuites()) {
-      xsb.push(D, C, "panel", "panel-name", getTag(s));
+  public String getHeader(ISuite suite) {
+    return "Tests for " + suite.getName();
+  }
 
-      xsb.push(D, C, "main-panel-header rounded-window-top");
-      xsb.addOptional(S, "Tests for " + s.getName(),
-          C, "header-content");
-      xsb.pop(D);
+  @Override
+  public String getPanelName(ISuite suite) {
+    return getTag(suite);
+  }
 
-      xsb.push(D, C, "main-panel-content rounded-window-bottom");
-      xsb.push("ul");
-      for (XmlTest test : s.getXmlSuite().getTests()) {
-        xsb.push("li");
-        int count = test.getXmlClasses().size();
-        String name = test.getName() + " (" + pluralize(count, "class") + ")";
-        xsb.addRequired(S, name, C, "test-name");
-        xsb.pop("li");
-      }
-      xsb.pop("ul");
-      xsb.pop(D);
+  @Override
+  public String getContent(ISuite suite, XMLStringBuffer main) {
+    XMLStringBuffer xsb = new XMLStringBuffer(main.getCurrentIndent());
 
-      xsb.pop(D);
+    xsb.push("ul");
+    for (XmlTest test : suite.getXmlSuite().getTests()) {
+      xsb.push("li");
+      int count = test.getXmlClasses().size();
+      String name = test.getName() + " (" + pluralize(count, "class") + ")";
+      xsb.addRequired(S, name, C, "test-name");
+      xsb.pop("li");
     }
+    xsb.pop("ul");
+
+    return xsb.toXML();
   }
 }

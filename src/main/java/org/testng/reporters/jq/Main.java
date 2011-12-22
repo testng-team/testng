@@ -36,7 +36,9 @@ public class Main implements IReporter {
     new BannerPanel(m_model).generate(xsb);
 
     // Navigator on the left hand side
-    new NavigatorPanel(m_model).generate(xsb);
+    TestNgXmlPanel testNgPanel = new TestNgXmlPanel(m_model);
+    TestPanel testPanel = new TestPanel(m_model);
+    new NavigatorPanel(m_model, testNgPanel, testPanel).generate(xsb);
 
     xsb.push(D, C, "wrapper");
     xsb.push(D, "class", "main-panel-root");
@@ -49,12 +51,12 @@ public class Main implements IReporter {
     //
     // Panel that displays the list of test names
     //
-    new TestPanel(m_model).generate(xsb);
+    testPanel.generate(xsb);
 
     //
     // Panel that displays the content of testng.xml
     //
-    new TestNgXmlPanel(m_model).generate(xsb);
+    testNgPanel.generate(xsb);
 
     xsb.pop(D); // main-panel-root
     xsb.pop(D); // wrapper

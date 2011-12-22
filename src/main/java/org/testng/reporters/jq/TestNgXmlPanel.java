@@ -4,36 +4,33 @@ import org.testng.ISuite;
 import org.testng.internal.Utils;
 import org.testng.reporters.XMLStringBuffer;
 
-public class TestNgXmlPanel extends BasePanel {
+public class TestNgXmlPanel extends BaseMultiSuitePanel {
 
   public TestNgXmlPanel(Model model) {
     super(model);
   }
 
-  public static String getTag(int count) {
-    return "test-xml-" + count;
+  private static String getTag(ISuite suite) {
+    return "test-xml-" + suiteToTag(suite);
   }
 
   @Override
-  public void generate(XMLStringBuffer xsb) {
-    int counter = 0;
-    for (ISuite s : getSuites()) {
-      xsb.push(D, C, "panel", "panel-name", getTag(counter));
-      xsb.push(D, C, "main-panel-header rounded-window-top");
-      xsb.addOptional(S, s.getXmlSuite().getFileName(),
-          C, "header-content");
-      xsb.pop(D);
+  public String getHeader(ISuite suite) {
+    return suite.getXmlSuite().getFileName();
+  }
 
-      xsb.push(D, C, "main-panel-content rounded-window-bottom");
-      xsb.push("pre");
-      xsb.addString(Utils.escapeHtml(s.getXmlSuite().toXml()));
-      xsb.pop("pre");
-      xsb.pop(D);
+  @Override
+  public String getPanelName(ISuite suite) {
+    return getTag(suite);
+  }
 
-      xsb.pop(D);
-
-      counter++;
-    }
+  @Override
+  public String getContent(ISuite suite, XMLStringBuffer main) {
+    XMLStringBuffer xsb = new XMLStringBuffer(main.getCurrentIndent());
+    xsb.push("pre");
+    xsb.addString(Utils.escapeHtml(suite.getXmlSuite().toXml()));
+    xsb.pop("pre");
+    return xsb.toXML();
   }
 
 }

@@ -28,4 +28,7 @@ abstract public class BasePanel implements IPanel {
         + (count > 1 ? (singular.endsWith("s") ? singular + "es" : singular + "s") : singular);
   }
 
+  protected static String suiteToTag(ISuite suite) {
+    return suite.getName().replace(" ", "_");
+  }
 }

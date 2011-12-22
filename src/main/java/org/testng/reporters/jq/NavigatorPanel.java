@@ -10,8 +10,13 @@ import java.util.Map;
 
 public class NavigatorPanel extends BasePanel {
 
-  public NavigatorPanel(Model model) {
+  private TestNgXmlPanel m_testNgPanel;
+  private TestPanel m_testPanel;
+
+  public NavigatorPanel(Model model, TestNgXmlPanel testNgPanel, TestPanel testPanel) {
     super(model);
+    m_testNgPanel = testNgPanel;
+    m_testPanel = testPanel;
   }
 
   @Override
@@ -74,7 +79,7 @@ public class NavigatorPanel extends BasePanel {
       // Tests
       header.push("li");
       header.push("a", "href", "#",
-          "panel-name",  TestPanel.getTag(suite),
+          "panel-name", m_testPanel.getPanelName(suite),
           C, "navigator-link ");
       header.addOptional(S, String.format("%s ", pluralize(results.values().size(), "test"),
           C, "test-stats"));
@@ -84,7 +89,7 @@ public class NavigatorPanel extends BasePanel {
       // testng.xml
       header.push("li");
       header.push("a", "href", "#",
-          "panel-name", TestNgXmlPanel.getTag(suiteCount),
+          "panel-name", m_testNgPanel.getPanelName(suite),
           C, "navigator-link");
       String fqName = suite.getXmlSuite().getFileName();
       header.addOptional(S, fqName.substring(fqName.lastIndexOf("/") + 1),
