@@ -142,7 +142,7 @@ public class Main implements IReporter {
     xsb.pop(D);
   }
 
-  private static String getImage(String tagClass) {
+  public static String getImage(String tagClass) {
     return tagClass + ".png";
   }
 }

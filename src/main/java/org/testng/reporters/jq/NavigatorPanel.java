@@ -115,8 +115,10 @@ public class NavigatorPanel implements IPanel {
       header.addOptional(S, stats, C, "method-stats");
       header.pop("li");
 
-      generateMethodList("Failed methods", ITestResult.FAILURE, suite, suiteName, header);
-      generateMethodList("Skipped methods", ITestResult.SKIP, suite, suiteName, header);
+      generateMethodList("Failed methods", ITestResult.FAILURE, Main.getImage("failed"),
+          suite, suiteName, header);
+      generateMethodList("Skipped methods", ITestResult.SKIP, Main.getImage("skipped"),
+          suite, suiteName, header);
 
       header.pop("ul");
 
@@ -138,24 +140,26 @@ public class NavigatorPanel implements IPanel {
     return count > 0 ? count + " " + s + sep: "";
   }
 
-  private void generateMethodList(String name, int status, ISuite suite, String suiteName,
-      XMLStringBuffer main) {
+  private void generateMethodList(String name, int status, String image, ISuite suite,
+      String suiteName, XMLStringBuffer main) {
     XMLStringBuffer xsb = new XMLStringBuffer(main.getCurrentIndent());
 
     xsb.push("li");
     // Failed methods
     xsb.addRequired(S, name, C, "method-list-title");
 
-    // List of failed methods
+    // List of methods
     xsb.push(D, C, "method-list-content");
     int count = 0;
     for (ITestResult tr : m_model.getTestResults(suite)) {
       if (tr.getStatus() == status) {
         String testName = Model.getTestResultName(tr);
+        xsb.addEmptyElement("img", "src", image, "width", "3%");
         xsb.addRequired("a", testName, "href", "#",
             "hash-for-method", m_model.getTag(tr),
             "panel-name", suiteName,
             C, "method navigator-link");
+        xsb.addEmptyElement("br");
         count++;
       }
     }
