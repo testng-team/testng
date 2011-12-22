@@ -44,14 +44,14 @@ public class SuitePanel extends BasePanel {
 
   private void generateClassPanel(Class c, List<ITestResult> results,XMLStringBuffer xsb,
       String status) {
-    xsb.push(D, C, "class-header rounded-window-top");
+    xsb.push(D, C, "main-panel-header rounded-window-top");
 
     // Passed/failed icon
     xsb.addEmptyElement("img", "src", Main.getImage(status));
     xsb.addOptional(S, c.getName(), C, "class-name");
     xsb.pop(D);
 
-    xsb.push(D, C, "class-content rounded-window-bottom");
+    xsb.push(D, C, "main-panel-content rounded-window-bottom");
 
     for (ITestResult tr : results) {
       generateMethod(tr, xsb);

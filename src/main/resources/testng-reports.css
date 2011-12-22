@@ -35,9 +35,17 @@ a:hover {
     font-family: Times;
 }
 
-.class-header {
+.main-panel-header {
     padding: 5px;
     background-color: #9FB4D9; //afeeee;
+    font-family: monospace;
+    font-size: 18px;
+}
+
+.main-panel-content {
+    padding: 5px;
+    margin-bottom: 10px;
+    background-color: #DEE8FC; //d0ffff;
 }
 
 .rounded-window {
@@ -65,17 +73,6 @@ a:hover {
     border-bottom-left-radius: 10px 10px;
 }
 
-.class-content {
-    padding: 5px;
-    margin-bottom: 10px;
-    background-color: #DEE8FC; //d0ffff;
-}
-
-.class-name {
-    font-size: 18px;
-    font-family: monospace;
-}
-
 .method-name {
     font-size: 14px;
     font-family: monospace;
@@ -94,21 +91,8 @@ a:hover {
     margin-left: 20px;
 }
 
-
 .testng-xml {
     font-family: monospace;
-}
-
-.testng-xml-panel.header {
-    padding: 5px;
-    background: #ddd;
-    font-family: monospace;
-    font-size: 18px;
-}
-
-.testng-xml-panel.content {
-    padding: 5px;
-    background: #eee;
 }
 
 .method-list-content {

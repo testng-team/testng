@@ -19,12 +19,12 @@ public class TestNgXmlPanel extends BasePanel {
     int counter = 0;
     for (ISuite s : getSuites()) {
       xsb.push(D, C, "panel " + getTag(counter));
-      xsb.push(D, C, "testng-xml-panel header rounded-window-top");
+      xsb.push(D, C, "main-panel-header rounded-window-top");
       xsb.addOptional(S, s.getXmlSuite().getFileName(),
           C, "header-content");
       xsb.pop(D);
 
-      xsb.push(D, C, "testng-xml-panel content rounded-window-bottom");
+      xsb.push(D, C, "main-panel-content rounded-window-bottom");
       xsb.push("pre");
       xsb.addString(Utils.escapeHtml(s.getXmlSuite().toXml()));
       xsb.pop("pre");
