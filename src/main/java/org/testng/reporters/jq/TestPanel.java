@@ -13,23 +13,33 @@ public class TestPanel extends BasePanel {
     super(model);
   }
 
-  public static String getTag() {
-    return "test-0";
+  public static String getTag(ISuite suite) {
+    return "testlist-" + suite.getName().replace(" ", "_");
   }
 
   @Override
   public void generate(XMLStringBuffer xsb) {
-    xsb.push(D, C, "panel " + getTag());
     for (ISuite s : getSuites()) {
+      xsb.push(D, C, "panel", "panel-name", getTag(s));
+
+      xsb.push(D, C, "main-panel-header rounded-window-top");
+      xsb.addOptional(S, "Tests for " + s.getName(),
+          C, "header-content");
+      xsb.pop(D);
+
+      xsb.push(D, C, "main-panel-content rounded-window-bottom");
       xsb.push("ul");
-      xsb.addOptional("li", s.getName());
       for (XmlTest test : s.getXmlSuite().getTests()) {
-        xsb.push("ul");
-        xsb.addOptional("li", test.getName());
-        xsb.pop("ul");
+        xsb.push("li");
+        int count = test.getXmlClasses().size();
+        String name = test.getName() + " (" + pluralize(count, "class") + ")";
+        xsb.addRequired(S, name, C, "test-name");
+        xsb.pop("li");
       }
       xsb.pop("ul");
+      xsb.pop(D);
+
+      xsb.pop(D);
     }
-    xsb.pop(D);
   }
 }

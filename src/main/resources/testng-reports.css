@@ -1,3 +1,11 @@
+ul {
+    margin: 0px;
+}
+
+li {
+    list-style-type: none;
+}
+
 a {
     text-decoration: none;
 }
@@ -114,10 +122,6 @@ a:hover {
     font-weight: bold;
 }
 
-ul {
-    margin: 0px;
-}
-
 .suite-section-content {
     list-style-image: url(navigator-bullet.png);
 }
@@ -134,4 +138,9 @@ ul {
 
 .top-banner-title-font {
     font-size: 25px;
+}
+
+.test-name {
+    font-family: 'Lucida Grande';
+    font-size: 16px;
 }

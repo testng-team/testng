@@ -22,4 +22,10 @@ abstract public class BasePanel implements IPanel {
   protected List<ISuite> getSuites() {
     return getModel().getSuites();
   }
+
+  protected static String pluralize(int count, String singular) {
+    return Integer.toString(count) + " "
+        + (count > 1 ? (singular.endsWith("s") ? singular + "es" : singular + "s") : singular);
+  }
+
 }

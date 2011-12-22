@@ -74,7 +74,7 @@ public class NavigatorPanel extends BasePanel {
       // Tests
       header.push("li");
       header.push("a", "href", "#",
-          "panel-name",  TestPanel.getTag(),
+          "panel-name",  TestPanel.getTag(suite),
           C, "navigator-link ");
       header.addOptional(S, String.format("%s ", pluralize(results.values().size(), "test"),
           C, "test-stats"));
@@ -151,11 +151,13 @@ public class NavigatorPanel extends BasePanel {
     for (ITestResult tr : getModel().getTestResults(suite)) {
       if (tr.getStatus() == status) {
         String testName = Model.getTestResultName(tr);
+        xsb.push(S);
         xsb.addEmptyElement("img", "src", image, "width", "3%");
         xsb.addRequired("a", testName, "href", "#",
             "hash-for-method", getModel().getTag(tr),
             "panel-name", suiteName,
             C, "method navigator-link");
+        xsb.pop(S);
         xsb.addEmptyElement("br");
         count++;
       }
@@ -166,11 +168,6 @@ public class NavigatorPanel extends BasePanel {
     if (count > 0) {
       main.addString(xsb.toXML());
     }
-  }
-
-  private String pluralize(int count, String singular) {
-    return Integer.toString(count) + " "
-        + (count > 1 ? (singular.endsWith("s") ? singular + "es" : singular + "s") : singular);
   }
 
 }

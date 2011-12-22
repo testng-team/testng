@@ -16,7 +16,7 @@ $(document).ready(function() {
     });
 
     // Hide all the panels and display the first one (do this last
-    // to make sure the click() will invoke
+    // to make sure the click() will invoke the listeners)
     $('.panel').hide();
     $('.navigator-link').first().click();
 
@@ -32,7 +32,7 @@ function getPanelName(element) {
 
 function showPanel(panelName) {
     $('.panel').hide();
-    $('.panel.' + panelName).show();
+    $('.panel[panel-name="' + panelName + '"]').show();
 }
 
 function showMethod(element) {

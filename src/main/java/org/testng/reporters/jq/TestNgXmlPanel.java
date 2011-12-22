@@ -18,7 +18,7 @@ public class TestNgXmlPanel extends BasePanel {
   public void generate(XMLStringBuffer xsb) {
     int counter = 0;
     for (ISuite s : getSuites()) {
-      xsb.push(D, C, "panel " + getTag(counter));
+      xsb.push(D, C, "panel", "panel-name", getTag(counter));
       xsb.push(D, C, "main-panel-header rounded-window-top");
       xsb.addOptional(S, s.getXmlSuite().getFileName(),
           C, "header-content");
