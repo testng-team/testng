@@ -28,7 +28,7 @@ public class Main implements IReporter {
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
       String outputDirectory) {
     m_model = new Model(suites);
-    m_outputDirectory = outputDirectory;
+    m_outputDirectory = outputDirectory + File.separatorChar + "new";
 
     XMLStringBuffer xsb = new XMLStringBuffer("  ");
 
@@ -70,7 +70,7 @@ public class Main implements IReporter {
               new File(m_outputDirectory, fileName));
         }
         all = Files.readFile(head3);
-        Utils.writeFile(m_outputDirectory, "index3.html", all + xsb.toXML());
+        Utils.writeFile(m_outputDirectory, "index.html", all + xsb.toXML());
       }
     } catch (IOException e) {
       // TODO Auto-generated catch block
