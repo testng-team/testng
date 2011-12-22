@@ -2,8 +2,6 @@ package org.testng.reporters.jq;
 
 import org.testng.IReporter;
 import org.testng.ISuite;
-import org.testng.ISuiteResult;
-import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.internal.Utils;
 import org.testng.reporters.Files;
@@ -13,7 +11,6 @@ import org.testng.xml.XmlSuite;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 public class Main implements IReporter {
   public static final String C = "class";
@@ -26,18 +23,16 @@ public class Main implements IReporter {
 
   private Model m_model;
   private String m_outputDirectory;
-  private List<ISuite> m_suites;
 
   @Override
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
       String outputDirectory) {
-    m_suites = suites;
     m_model = new Model(suites);
     m_outputDirectory = "/Users/cedric/java/misc/jquery";
 
     XMLStringBuffer xsb = new XMLStringBuffer("  ");
     xsb.push(D, C, "navigator-root");
-    generateNavigator(xsb);
+    new NavigatorPanel(m_model).generate(suites, xsb);
     xsb.pop(D);
 
     xsb.push(D, C, "wrapper");
@@ -71,128 +66,6 @@ public class Main implements IReporter {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-  }
-
-  private String maybe(int count, String s, String sep) {
-    return count > 0 ? count + " " + s + sep: "";
-  }
-  /**
-   * Create the left hand navigator.
-   */
-  private void generateNavigator(XMLStringBuffer main) {
-    int suiteCount = 0;
-    for (ISuite suite : m_suites) {
-      if (suite.getResults().size() == 0) {
-        continue;
-      }
-
-      String suiteName = "suite-" + suiteCount;
-
-      XMLStringBuffer header = new XMLStringBuffer(main.getCurrentIndent());
-
-      Map<String, ISuiteResult> results = suite.getResults();
-      int failed = 0;
-      int skipped = 0;
-      int passed = 0;
-      for (ISuiteResult result : results.values()) {
-        ITestContext context = result.getTestContext();
-        failed += context.getFailedTests().size();
-        skipped += context.getSkippedTests().size();
-        passed += context.getPassedTests().size();
-      }
-
-      header.push(D, C, "suite");
-      header.push(D, C, "suite-header rounded-window");
-      header.push("a", "href", "#",
-          "panel-name", suiteName,
-          C, "navigator-link");
-      header.addOptional(S, suite.getName(), C, "suite-name");
-      header.pop("a");
-      header.push(D, C, "stats");
-      int total = failed + skipped + passed;
-      String stats = String.format("%s, %s %s %s",
-          pluralize(total, "method"),
-          maybe(failed, "failed", ", "),
-          maybe(skipped, "skipped", ", "),
-          maybe(passed, "passed", ""));
-      header.push("ul");
-
-      // Tests
-      header.push("li");
-      header.push("a", "href", "#",
-          "panel-name",  TestPanel.getTag(),
-          C, "navigator-link ");
-      header.addOptional(S, String.format("%s ", pluralize(results.values().size(), "test"),
-          C, "test-stats"));
-      header.pop("a");
-      header.pop("li");
-
-      // testng.xml
-      header.push("li");
-      header.push("a", "href", "#",
-          "panel-name", TestNgXmlPanel.getTag(suiteCount),
-          C, "navigator-link");
-      String fqName = suite.getXmlSuite().getFileName();
-      header.addOptional(S, fqName.substring(fqName.lastIndexOf("/") + 1),
-          C, "testng-xml");
-      header.pop("a");
-      header.pop("li");
-
-      // Method stats
-      header.push("li");
-      header.addOptional(S, stats, C, "method-stats");
-      header.pop("li");
-
-      generateMethodList("Failed methods", ITestResult.FAILURE, suite, suiteName, header);
-      generateMethodList("Skipped methods", ITestResult.SKIP, suite, suiteName, header);
-
-      header.pop("ul");
-      header.pop(D); // stats
-
-      header.pop(D); // suite-header
-      header.pop(D); // suite
-
-      main.addString(header.toXML());
-
-      suiteCount++;
-    }
-  }
-
-  private void generateMethodList(String name, int status, ISuite suite, String suiteName,
-      XMLStringBuffer main) {
-    XMLStringBuffer xsb = new XMLStringBuffer(main.getCurrentIndent());
-
-    // Failed methods
-    xsb.push("li");
-    xsb.addString(name);
-
-    // List of failed methods
-    xsb.push("ul");
-    int count = 0;
-    for (ITestResult tr : m_model.getTestResults(suite)) {
-      if (tr.getStatus() == status) {
-        String testName = Model.getTestResultName(tr);
-        xsb.push("li");
-        xsb.addOptional("a", testName, "href", "#",
-            "hash-for-method", m_model.getTag(tr),
-            "panel-name", suiteName,
-            C, "method navigator-link");
-        xsb.pop("li");
-        count++;
-      }
-    }
-    xsb.pop("ul");
-    xsb.pop("li");
-
-    if (count > 0) {
-      main.addString(xsb.toXML());
-    }
-  }
-
-  private String getTag(ITestResult tr) {
-    if (tr.getStatus() == ITestResult.SUCCESS) return "passed";
-    else if (tr.getStatus() == ITestResult.SKIP) return "skipped";
-    else return "failed";
   }
 
   private void generateSuitePanel(ISuite suite, XMLStringBuffer xsb, String divName) {
@@ -268,17 +141,6 @@ public class Main implements IReporter {
     xsb.pop(D);
     xsb.pop(D);
   }
-
-  private String pluralize(int count, String singular) {
-    return Integer.toString(count) + " "
-        + (count > 1 ? (singular.endsWith("s") ? singular + "es" : singular + "s") : singular);
-  }
-
-//  private static String getStatusImage(String status) {
-//    return "up.png";
-//    if ("passed".equals(status)) return "down.png";
-//    else return "up.png";
-//  }
 
   private static String getImage(String tagClass) {
     return tagClass + ".png";
