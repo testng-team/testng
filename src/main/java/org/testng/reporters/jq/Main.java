@@ -103,7 +103,9 @@ public class Main implements IReporter {
 
       header.push(D, C, "suite");
       header.push(D, C, "suite-header rounded-window");
-      header.push("a", "href", "#", "class", "navigator-link " + suiteName);
+      header.push("a", "href", "#",
+          "panel-name", suiteName,
+          C, "navigator-link");
       header.addOptional(S, suite.getName(), C, "suite-name");
       header.pop("a");
       header.push(D, C, "stats");
@@ -117,7 +119,9 @@ public class Main implements IReporter {
 
       // Tests
       header.push("li");
-      header.push("a", "href", "#", "class", "navigator-link " + TestPanel.getTag());
+      header.push("a", "href", "#",
+          "panel-name",  TestPanel.getTag(),
+          C, "navigator-link ");
       header.addOptional(S, String.format("%s ", pluralize(results.values().size(), "test"),
           C, "test-stats"));
       header.pop("a");
@@ -125,7 +129,9 @@ public class Main implements IReporter {
 
       // testng.xml
       header.push("li");
-      header.push("a", "href", "#", "class", "navigator-link " + TestNgXmlPanel.getTag(suiteCount));
+      header.push("a", "href", "#",
+          "panel-name", TestNgXmlPanel.getTag(suiteCount),
+          C, "navigator-link");
       String fqName = suite.getXmlSuite().getFileName();
       header.addOptional(S, fqName.substring(fqName.lastIndexOf("/") + 1),
           C, "testng-xml");
@@ -168,7 +174,9 @@ public class Main implements IReporter {
         String testName = Model.getTestResultName(tr);
         xsb.push("li");
         xsb.addOptional("a", testName, "href", "#",
-            C, "method " + m_model.getTag(tr) + " " + suiteName);
+            "hash-for-method", m_model.getTag(tr),
+            "panel-name", suiteName,
+            C, "method navigator-link");
         xsb.pop("li");
         count++;
       }
