@@ -16,6 +16,7 @@ public class NavigatorPanel extends BasePanel {
 
   @Override
   public void generate(XMLStringBuffer main) {
+    main.push(D, C, "navigator-root");
     int suiteCount = 0;
     for (ISuite suite : getSuites()) {
       if (suite.getResults().size() == 0) {
@@ -129,6 +130,7 @@ public class NavigatorPanel extends BasePanel {
 
       suiteCount++;
     }
+    main.pop(D);
   }
 
   private static String maybe(int count, String s, String sep) {

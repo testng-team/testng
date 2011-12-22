@@ -31,9 +31,12 @@ public class Main implements IReporter {
     m_outputDirectory = outputDirectory;
 
     XMLStringBuffer xsb = new XMLStringBuffer("  ");
-    xsb.push(D, C, "navigator-root");
+
+    // Top banner
+    new BannerPanel(m_model).generate(xsb);
+
+    // Navigator on the left hand side
     new NavigatorPanel(m_model).generate(xsb);
-    xsb.pop(D);
 
     xsb.push(D, C, "wrapper");
     xsb.push(D, "class", "main-panel-root");

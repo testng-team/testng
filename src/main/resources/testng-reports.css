@@ -31,7 +31,7 @@ a:hover {
 
 .suite-name {
     padding-left: 10px;
-    font-size: 30px;
+    font-size: 25px;
     font-family: Times;
 }
 
@@ -122,5 +122,16 @@ ul {
     list-style-image: url(navigator-bullet.png);
 }
 
+.top-banner {
+    padding: 5px;
+    margin: 0px 0px 5px 0px;
+    height: 30px;
+    background-color: #0066ff;
+    font-family: Times;
+    color: #fff;
+    text-align: center;
+}
 
-
+.top-banner-title-font {
+    font-size: 25px;
+}
