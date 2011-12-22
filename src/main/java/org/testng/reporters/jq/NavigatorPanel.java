@@ -55,14 +55,24 @@ public class NavigatorPanel implements IPanel {
       header.pop("a");
       header.pop(D);
 
-      // Stats
-      header.push(D, C, "stats");
+      header.push(D, C, "navigator-suite-content");
+
+      //
+      // Info
+      //
+      header.push(D, C, "suite-section-title");
+      header.addRequired(S, "Info");
+      header.pop(D);
+
+      // Info content
+      header.push(D, C, "suite-section-content");
       int total = failed + skipped + passed;
       String stats = String.format("%s, %s %s %s",
           pluralize(total, "method"),
           maybe(failed, "failed", ", "),
           maybe(skipped, "skipped", ", "),
           maybe(passed, "passed", ""));
+
       header.push("ul");
 
       // Tests
@@ -86,7 +96,21 @@ public class NavigatorPanel implements IPanel {
       header.pop("a");
       header.pop("li");
 
+      header.pop("ul");
+      header.pop(D); // suite-section-content
+
+      //
+      // Methods
+      //
+      header.push(D, C, "result-section");
+
+      header.push(D, C, "suite-section-title");
+      header.addRequired(S, "Results");
+      header.pop(D);
+
       // Method stats
+      header.push(D, C, "suite-section-content");
+      header.push("ul");
       header.push("li");
       header.addOptional(S, stats, C, "method-stats");
       header.pop("li");
@@ -95,10 +119,14 @@ public class NavigatorPanel implements IPanel {
       generateMethodList("Skipped methods", ITestResult.SKIP, suite, suiteName, header);
 
       header.pop("ul");
-      header.pop(D); // stats
 
+      header.pop(D); // suite-section-content
       header.pop(D); // suite-header
       header.pop(D); // suite
+
+      header.pop(D); // result-section
+
+      header.pop(D); // navigator-suite-content
 
       main.addString(header.toXML());
 
@@ -114,26 +142,24 @@ public class NavigatorPanel implements IPanel {
       XMLStringBuffer main) {
     XMLStringBuffer xsb = new XMLStringBuffer(main.getCurrentIndent());
 
-    // Failed methods
     xsb.push("li");
-    xsb.addString(name);
+    // Failed methods
+    xsb.addRequired(S, name, C, "method-list-title");
 
     // List of failed methods
-    xsb.push("ul");
+    xsb.push(D, C, "method-list-content");
     int count = 0;
     for (ITestResult tr : m_model.getTestResults(suite)) {
       if (tr.getStatus() == status) {
         String testName = Model.getTestResultName(tr);
-        xsb.push("li");
-        xsb.addOptional("a", testName, "href", "#",
+        xsb.addRequired("a", testName, "href", "#",
             "hash-for-method", m_model.getTag(tr),
             "panel-name", suiteName,
             C, "method navigator-link");
-        xsb.pop("li");
         count++;
       }
     }
-    xsb.pop("ul");
+    xsb.pop(D);
     xsb.pop("li");
 
     if (count > 0) {

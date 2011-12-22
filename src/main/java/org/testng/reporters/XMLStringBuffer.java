@@ -185,7 +185,7 @@ public class XMLStringBuffer {
    * @param value The value for this tag
    */
   public void addRequired(String tagName, String value) {
-    addRequired(tagName, value, null);
+    addRequired(tagName, value, (Properties) null);
   }
 
   /**
@@ -197,6 +197,9 @@ public class XMLStringBuffer {
    */
   public void addRequired(String tagName, String value, Properties attributes) {
     XMLUtils.xmlRequired(m_buffer, m_currentIndent, tagName, value, attributes);
+  }
+  public void addRequired(String tagName, String value, String... attributes) {
+    addRequired(tagName, value, createProperties(attributes));
   }
 
   /**
