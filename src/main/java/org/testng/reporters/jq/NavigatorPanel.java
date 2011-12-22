@@ -1,28 +1,23 @@
 package org.testng.reporters.jq;
 
-import static org.testng.reporters.jq.Main.C;
-import static org.testng.reporters.jq.Main.D;
-import static org.testng.reporters.jq.Main.S;
-
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.reporters.XMLStringBuffer;
 
-import java.util.List;
 import java.util.Map;
 
-public class NavigatorPanel implements IPanel {
-  private Model m_model;
+public class NavigatorPanel extends BasePanel {
+
   public NavigatorPanel(Model model) {
-    m_model = model;
+    super(model);
   }
 
   @Override
-  public void generate(List<ISuite> suites, XMLStringBuffer main) {
+  public void generate(XMLStringBuffer main) {
     int suiteCount = 0;
-    for (ISuite suite : suites) {
+    for (ISuite suite : getSuites()) {
       if (suite.getResults().size() == 0) {
         continue;
       }
@@ -151,12 +146,12 @@ public class NavigatorPanel implements IPanel {
     // List of methods
     xsb.push(D, C, "method-list-content");
     int count = 0;
-    for (ITestResult tr : m_model.getTestResults(suite)) {
+    for (ITestResult tr : getModel().getTestResults(suite)) {
       if (tr.getStatus() == status) {
         String testName = Model.getTestResultName(tr);
         xsb.addEmptyElement("img", "src", image, "width", "3%");
         xsb.addRequired("a", testName, "href", "#",
-            "hash-for-method", m_model.getTag(tr),
+            "hash-for-method", getModel().getTag(tr),
             "panel-name", suiteName,
             C, "method navigator-link");
         xsb.addEmptyElement("br");

@@ -1,25 +1,23 @@
 package org.testng.reporters.jq;
 
-import static org.testng.reporters.jq.Main.C;
-import static org.testng.reporters.jq.Main.D;
-import static org.testng.reporters.jq.Main.S;
-
 import org.testng.ISuite;
 import org.testng.internal.Utils;
 import org.testng.reporters.XMLStringBuffer;
 
-import java.util.List;
+public class TestNgXmlPanel extends BasePanel {
 
-public class TestNgXmlPanel implements IPanel {
+  public TestNgXmlPanel(Model model) {
+    super(model);
+  }
 
   public static String getTag(int count) {
     return "test-xml-" + count;
   }
 
   @Override
-  public void generate(List<ISuite> suites, XMLStringBuffer xsb) {
+  public void generate(XMLStringBuffer xsb) {
     int counter = 0;
-    for (ISuite s : suites) {
+    for (ISuite s : getSuites()) {
       xsb.push(D, C, "panel " + getTag(counter));
       xsb.push(D, C, "testng-xml-panel header rounded-window-top");
       xsb.addOptional(S, s.getXmlSuite().getFileName(),

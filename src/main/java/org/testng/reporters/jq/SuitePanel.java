@@ -1,9 +1,5 @@
 package org.testng.reporters.jq;
 
-import static org.testng.reporters.jq.Main.C;
-import static org.testng.reporters.jq.Main.D;
-import static org.testng.reporters.jq.Main.S;
-
 import org.testng.ISuite;
 import org.testng.ITestResult;
 import org.testng.reporters.XMLStringBuffer;
@@ -20,8 +16,8 @@ public class SuitePanel extends BasePanel {
   }
 
   @Override
-  public void generate(List<ISuite> suites, XMLStringBuffer xsb) {
-    for (ISuite suite : suites) {
+  public void generate(XMLStringBuffer xsb) {
+    for (ISuite suite : getSuites()) {
       generateSuitePanel(suite, xsb);
     }
   }

@@ -1,5 +1,8 @@
 package org.testng.reporters.jq;
 
+import static org.testng.reporters.jq.BasePanel.C;
+import static org.testng.reporters.jq.BasePanel.D;
+
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.internal.Utils;
@@ -13,10 +16,6 @@ import java.io.InputStream;
 import java.util.List;
 
 public class Main implements IReporter {
-  public static final String C = "class";
-  public static final String D = "div";
-  public static final String S = "span";
-
   private static final String[] RESOURCES = new String[] {
     "jquery-1.7.1.min.js", "testng-reports.css", "testng-reports.js",
     "passed.png", "failed.png", "skipped.png", "navigator-bullet.png"
@@ -33,7 +32,7 @@ public class Main implements IReporter {
 
     XMLStringBuffer xsb = new XMLStringBuffer("  ");
     xsb.push(D, C, "navigator-root");
-    new NavigatorPanel(m_model).generate(suites, xsb);
+    new NavigatorPanel(m_model).generate(xsb);
     xsb.pop(D);
 
     xsb.push(D, C, "wrapper");
@@ -42,17 +41,17 @@ public class Main implements IReporter {
     //
     // Suite panels
     //
-    new SuitePanel(m_model).generate(suites, xsb);
+    new SuitePanel(m_model).generate(xsb);
 
     //
     // Panel that displays the list of test names
     //
-    new TestPanel().generate(suites, xsb);
+    new TestPanel(m_model).generate(xsb);
 
     //
     // Panel that displays the content of testng.xml
     //
-    new TestNgXmlPanel().generate(suites, xsb);
+    new TestNgXmlPanel(m_model).generate(xsb);
 
     xsb.pop(D); // main-panel-root
     xsb.pop(D); // wrapper
