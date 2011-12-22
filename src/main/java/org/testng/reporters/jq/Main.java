@@ -10,6 +10,7 @@ import org.testng.xml.XmlSuite;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 public class Main implements IReporter {
@@ -21,6 +22,11 @@ public class Main implements IReporter {
   private static final String SKIPPED = "skipped";
   private static final String FAILED = "failed";
 
+  private static final String[] RESOURCES = new String[] {
+    "jquery-1.7.1.min.js", "testng-reports.css", "testng-reports.js",
+    "passed.png", "failed.png", "skipped.png", "navigator-bullet.png"
+  };
+
   private Model m_model;
   private String m_outputDirectory;
 
@@ -28,7 +34,7 @@ public class Main implements IReporter {
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
       String outputDirectory) {
     m_model = new Model(suites);
-    m_outputDirectory = "/Users/cedric/java/misc/jquery";
+    m_outputDirectory = outputDirectory;
 
     XMLStringBuffer xsb = new XMLStringBuffer("  ");
     xsb.push(D, C, "navigator-root");
@@ -60,8 +66,17 @@ public class Main implements IReporter {
 
     String all;
     try {
-      all = Files.readFile(new File("/Users/cedric/java/misc/jquery/head3"));
-      Utils.writeFile(m_outputDirectory, "index3.html", all + xsb.toXML());
+      InputStream head3 = getClass().getResourceAsStream("/head3");
+      if (head3 == null) {
+        throw new RuntimeException("Couldn't find resource head3");
+      } else {
+        for (String fileName : RESOURCES) {
+          Files.copyFile(getClass().getResourceAsStream("/" + fileName),
+              new File(m_outputDirectory, fileName));
+        }
+        all = Files.readFile(head3);
+        Utils.writeFile(m_outputDirectory, "index3.html", all + xsb.toXML());
+      }
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();

@@ -1,0 +1,142 @@
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.navigator-selected {
+    background: #ffa500;
+}
+
+.wrapper {
+    overflow: hidden;
+}
+
+.navigator-root {
+    float: left;
+    width: 400px;
+}
+
+.main-panel-root {
+    float:left;
+    width: 100%;
+}
+
+.suite {
+    margin: 0px 10px 10px 0px;
+    background-color: #fff8dc;
+}
+
+.suite-name {
+    padding-left: 10px;
+    font-size: 30px;
+    font-family: Times;
+}
+
+.class-header {
+    padding: 5px;
+    background-color: #9FB4D9; //afeeee;
+}
+
+.rounded-window {
+    border-radius: 10px;
+    border-style: solid;
+    border-width: 1px;
+}
+
+.rounded-window-top {
+    border-top-right-radius: 10px 10px;
+    border-top-left-radius: 10px 10px;
+    border-style: solid;
+    border-width: 1px;
+}
+
+.light-rounded-window-top {
+    border-top-right-radius: 10px 10px;
+    border-top-left-radius: 10px 10px;
+}
+
+.rounded-window-bottom {
+    border-style: solid;
+    border-width: 0px 1px 1px 1px;
+    border-bottom-right-radius: 10px 10px;
+    border-bottom-left-radius: 10px 10px;
+}
+
+.class-content {
+    padding: 5px;
+    margin-bottom: 10px;
+    background-color: #DEE8FC; //d0ffff;
+}
+
+.class-name {
+    font-size: 18px;
+    font-family: monospace;
+}
+
+.method-name {
+    font-size: 14px;
+    font-family: monospace;
+}
+
+.parameters {
+    font-size: 14px;
+    font-family: monospace;
+}
+
+.stack-trace {
+    whitespace: pre;
+    font-family: monospace;
+    font-size: 12px;
+    margin-top: 0px;
+    margin-left: 20px;
+}
+
+
+.testng-xml {
+    font-family: monospace;
+}
+
+.testng-xml-panel.header {
+    padding: 5px;
+    background: #ddd;
+    font-family: monospace;
+    font-size: 18px;
+}
+
+.testng-xml-panel.content {
+    padding: 5px;
+    background: #eee;
+}
+
+.method-list-content {
+    margin-left: 10px;
+}
+
+.navigator-suite-content {
+    margin-left: 10px;
+    font: 12px 'Lucida Grande';
+}
+
+.suite-section-title {
+    margin-top: 10px;
+    width: 80%;
+    border-style: solid;
+    border-width: 1px 0px 0px 0px;
+    font-family: Times;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+ul {
+    margin: 0px;
+}
+
+.suite-section-content {
+    list-style-image: url(navigator-bullet.png);
+}
+
+
+
