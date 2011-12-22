@@ -27,6 +27,10 @@ public class Model {
     init();
   }
 
+  public List<ISuite> getSuites() {
+    return m_suites;
+  }
+
   private void init() {
     int counter = 0;
     int testCounter = 0;
