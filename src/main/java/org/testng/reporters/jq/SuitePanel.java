@@ -24,7 +24,7 @@ public class SuitePanel extends BasePanel {
 
   private void generateSuitePanel(ISuite suite, XMLStringBuffer xsb) {
     String divName = getModel().getTag(suite);
-    xsb.push(D, C, "panel " + divName);
+    xsb.push(D, C, "panel " + divName, "panel-name", divName);
     {
       ResultsByClass byClass = getModel().getFailedResultsByClass(suite);
       for (Class<?> c : byClass.getClasses()) {
