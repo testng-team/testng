@@ -34,6 +34,7 @@ import org.testng.reporters.JUnitReportReporter;
 import org.testng.reporters.SuiteHTMLReporter;
 import org.testng.reporters.VerboseReporter;
 import org.testng.reporters.XMLReporter;
+import org.testng.reporters.jq.Main;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
@@ -820,6 +821,7 @@ public class TestNG {
 
     if (m_useDefaultListeners) {
       addReporter(SuiteHTMLReporter.class);
+      addReporter(Main.class);
       addReporter(FailedReporter.class);
       addReporter(XMLReporter.class);
       addReporter(EmailableReporter.class);
