@@ -25,18 +25,17 @@ public class SuitePanel extends BasePanel {
   private void generateSuitePanel(ISuite suite, XMLStringBuffer xsb) {
     String divName = getModel().getTag(suite);
     xsb.push(D, C, "panel " + divName, "panel-name", divName);
-    {
-      ResultsByClass byClass = getModel().getFailedResultsByClass(suite);
+    String[] statuses = new String[] { FAILED, SKIPPED, PASSED };
+    ResultsByClass[] results = new ResultsByClass[] {
+        getModel().getFailedResultsByClass(suite),
+        getModel().getSkippedResultsByClass(suite),
+        getModel().getPassedResultsByClass(suite),
+    };
+
+    for (int i = 0; i < results.length; i++) {
+      ResultsByClass byClass = results[i];
       for (Class<?> c : byClass.getClasses()) {
-        generateClassPanel(c, byClass.getResults(c), xsb, FAILED);
-      }
-      byClass = getModel().getSkippedResultsByClass(suite);
-      for (Class<?> c : byClass.getClasses()) {
-        generateClassPanel(c, byClass.getResults(c), xsb, SKIPPED);
-      }
-      byClass = getModel().getPassedResultsByClass(suite);
-      for (Class<?> c : byClass.getClasses()) {
-        generateClassPanel(c, byClass.getResults(c), xsb, PASSED);
+        generateClassPanel(c, byClass.getResults(c), xsb, statuses[i]);
       }
     }
     xsb.pop(D);
