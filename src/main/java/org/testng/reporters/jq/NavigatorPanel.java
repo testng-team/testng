@@ -6,6 +6,8 @@ import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.reporters.XMLStringBuffer;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public class NavigatorPanel extends BasePanel {
@@ -153,7 +155,9 @@ public class NavigatorPanel extends BasePanel {
     // List of methods
     xsb.push(D, C, "method-list-content");
     int count = 0;
-    for (ITestResult tr : getModel().getTestResults(suite)) {
+    List<ITestResult> testResults = getModel().getTestResults(suite);
+    Collections.sort(testResults, ResultsByClass.METHOD_NAME_COMPARATOR);
+    for (ITestResult tr : testResults) {
       if (tr.getStatus() == status) {
         String testName = Model.getTestResultName(tr);
         xsb.push(S);

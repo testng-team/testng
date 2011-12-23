@@ -4,9 +4,22 @@ import org.testng.ITestResult;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Maps;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class ResultsByClass {
+  public static Comparator<ITestResult> METHOD_NAME_COMPARATOR =
+      new Comparator<ITestResult>() {
+
+    @Override
+    public int compare(ITestResult arg0, ITestResult arg1) {
+      return arg0.getMethod().getMethodName().compareTo(
+          arg1.getMethod().getMethodName());
+    }
+
+  };
+
   private ListMultiMap<Class<?>, ITestResult> m_results = Maps.newListMultiMap();
 
   public void addResult(Class<?> c, ITestResult tr) {
@@ -14,8 +27,11 @@ public class ResultsByClass {
   }
 
   public List<ITestResult> getResults(Class<?> c) {
-    return m_results.get(c);
+    List<ITestResult> result = m_results.get(c);
+    Collections.sort(result, METHOD_NAME_COMPARATOR);
+    return result;
   }
+
   public List<Class<?>> getClasses() {
     return m_results.getKeys();
   }
