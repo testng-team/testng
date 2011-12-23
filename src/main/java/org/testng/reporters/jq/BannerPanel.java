@@ -10,7 +10,7 @@ public class BannerPanel extends BasePanel {
 
   @Override
   public void generate(XMLStringBuffer xsb) {
-    xsb.push(D, C, "top-banner rounded-window");
+    xsb.push(D, C, "top-banner-root rounded-window");
     xsb.addRequired(S, "Test results", C, "top-banner-title-font");
     xsb.pop(D);
   }

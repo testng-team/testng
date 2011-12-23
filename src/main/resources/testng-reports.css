@@ -126,7 +126,7 @@ a:hover {
     list-style-image: url(navigator-bullet.png);
 }
 
-.top-banner {
+.top-banner-root {
     padding: 5px;
     margin: 0px 0px 5px 0px;
     height: 30px;
