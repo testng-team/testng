@@ -87,7 +87,6 @@ public class Model {
       m_model.putAll(suite, skipped);
       m_model.putAll(suite, passed);
     }
-    System.out.println("Model size:" + m_model);
   }
 
   public ResultsByClass getFailedResultsByClass(ISuite suite) {
