@@ -94,6 +94,7 @@ public class NavigatorPanel extends BasePanel {
           "panel-name", m_testNgPanel.getPanelName(suite),
           C, "navigator-link");
       String fqName = suite.getXmlSuite().getFileName();
+      if (fqName == null) fqName = "/[unset file name]";
       header.addOptional(S, fqName.substring(fqName.lastIndexOf("/") + 1),
           C, "testng-xml");
       header.pop("a");
@@ -118,9 +119,11 @@ public class NavigatorPanel extends BasePanel {
       header.addOptional(S, stats, C, "method-stats");
       header.pop("li");
 
-      generateMethodList("Failed methods", ITestResult.FAILURE, Main.getImage("failed"),
+      generateMethodList("Failed methods", ITestResult.FAILURE, "failed",
           suite, suiteName, header);
-      generateMethodList("Skipped methods", ITestResult.SKIP, Main.getImage("skipped"),
+      generateMethodList("Skipped methods", ITestResult.SKIP, "skipped",
+          suite, suiteName, header);
+      generateMethodList("Passed methods", ITestResult.SUCCESS, "passed",
           suite, suiteName, header);
 
       header.pop("ul");
@@ -144,31 +147,42 @@ public class NavigatorPanel extends BasePanel {
     return count > 0 ? count + " " + s + sep: "";
   }
 
-  private void generateMethodList(String name, int status, String image, ISuite suite,
+  private void generateMethodList(String name, int status, String type, ISuite suite,
       String suiteName, XMLStringBuffer main) {
     XMLStringBuffer xsb = new XMLStringBuffer(main.getCurrentIndent());
 
+    String image = Main.getImage(type);
+
     xsb.push("li");
-    // Failed methods
-    xsb.addRequired(S, name, C, "method-list-title");
+
+    // The methods themselves
+    xsb.addRequired(S, name, C, "method-list-title " + type);
+
+    // The mark up to show the (hide)/(show) links
+    xsb.push(S, C, "show-or-hide-methods " + type);
+    xsb.addRequired("a", " (hide)", "href", "#", C, "hide-methods " + type);
+    xsb.addRequired("a", " (show)", "href", "#", C, "show-methods " + type);
+    xsb.pop(S);
 
     // List of methods
-    xsb.push(D, C, "method-list-content");
+    xsb.push(D, C, "method-list-content " + type);
     int count = 0;
     List<ITestResult> testResults = getModel().getTestResults(suite);
-    Collections.sort(testResults, ResultsByClass.METHOD_NAME_COMPARATOR);
-    for (ITestResult tr : testResults) {
-      if (tr.getStatus() == status) {
-        String testName = Model.getTestResultName(tr);
-        xsb.push(S);
-        xsb.addEmptyElement("img", "src", image, "width", "3%");
-        xsb.addRequired("a", testName, "href", "#",
-            "hash-for-method", getModel().getTag(tr),
-            "panel-name", suiteName,
-            C, "method navigator-link");
-        xsb.pop(S);
-        xsb.addEmptyElement("br");
-        count++;
+    if (testResults != null) {
+      Collections.sort(testResults, ResultsByClass.METHOD_NAME_COMPARATOR);
+      for (ITestResult tr : testResults) {
+        if (tr.getStatus() == status) {
+          String testName = Model.getTestResultName(tr);
+          xsb.push(S);
+          xsb.addEmptyElement("img", "src", image, "width", "3%");
+          xsb.addRequired("a", testName, "href", "#",
+              "hash-for-method", getModel().getTag(tr),
+              "panel-name", suiteName,
+              C, "method navigator-link");
+          xsb.pop(S);
+          xsb.addEmptyElement("br");
+          count++;
+        }
       }
     }
     xsb.pop(D);

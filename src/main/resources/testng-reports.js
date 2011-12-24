@@ -10,6 +10,10 @@ $(document).ready(function() {
         showPanel(panel);
     });
 
+    installMethodHandlers('failed');
+    installMethodHandlers('skipped');
+    installMethodHandlers('passed', true); // hide passed methods by default
+
     $('a.method').click(function() {
         showMethod($(this));
         return false;
@@ -21,6 +25,27 @@ $(document).ready(function() {
     $('.navigator-link').first().click();
 
 });
+
+// The handlers that take care of showing/hiding the methods
+function installMethodHandlers(name, hide) {
+    $('a.hide-methods.' + name).click(function() {
+        $('.method-list-content.' + name).hide();
+        $('a.hide-methods.' + name).hide();
+        $('a.show-methods.' + name).show();
+    });
+
+    $('a.show-methods.' + name).click(function() {
+        $('.method-list-content.' + name).show();
+        $('a.hide-methods.' + name).show();
+        $('a.show-methods.' + name).hide();
+    });
+
+    if (hide) {
+        $('a.hide-methods.' + name).click();
+    } else {
+        $('a.show-methods.' + name).click();
+    }
+}
 
 function getHashForMethod(element) {
     return element.attr('hash-for-method');
