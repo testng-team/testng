@@ -21,6 +21,7 @@ public class Model {
   private Map<ISuite, ResultsByClass> m_failedResultsByClass = Maps.newHashMap();
   private Map<ISuite, ResultsByClass> m_skippedResultsByClass = Maps.newHashMap();
   private Map<ISuite, ResultsByClass> m_passedResultsByClass = Maps.newHashMap();
+  private List<ITestResult> m_allFailedResults = Lists.newArrayList();
 
   public Model(List<ISuite> suites) {
     m_suites = suites;
@@ -61,6 +62,7 @@ public class Model {
         ResultsByClass rbc = new ResultsByClass();
         for (ITestResult tr : failed) {
           rbc.addResult(tr.getTestClass().getRealClass(), tr);
+          m_allFailedResults.add(tr);
         }
         m_failedResultsByClass.put(suite, rbc);
       }
@@ -127,4 +129,7 @@ public class Model {
     return result.toString();
   }
 
+  public List<ITestResult> getAllFailedResults() {
+    return m_allFailedResults;
+  }
 }
