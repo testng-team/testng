@@ -57,7 +57,8 @@ function getPanelName(element) {
 
 function showPanel(panelName) {
     $('.panel').hide();
-    $('.panel[panel-name="' + panelName + '"]').show();
+    var panel = $('.panel[panel-name="' + panelName + '"]');
+    panel.show();
 }
 
 function showMethod(element) {
@@ -67,4 +68,6 @@ function showMethod(element) {
     var current = document.location.href;
     var base = current.substring(0, current.indexOf('#'))
     document.location.href = base + '#' + hashTag;
+    var newPosition = $(document).scrollTop() - 65;
+    $(document).scrollTop(newPosition);
 }

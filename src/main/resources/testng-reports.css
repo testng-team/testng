@@ -23,12 +23,20 @@ a:hover {
 }
 
 .navigator-root {
+    margin-top: 60px;
     float: left;
     width: 400px;
+    position: fixed;
+}
+
+.navigator-root.fixed {
+    position: fixed;
+    top: 0;
 }
 
 .main-panel-root {
-    float:left;
+    margin-top: 60px;
+    margin-left: 400px;
     width: 100%;
 }
 
@@ -127,6 +135,8 @@ a:hover {
 }
 
 .top-banner-root {
+    position: fixed;
+    width: 100%;
     padding: 5px;
     margin: 0px 0px 5px 0px;
     height: 45px;
