@@ -178,6 +178,7 @@ public class NavigatorPanel extends BasePanel {
           xsb.addRequired("a", testName, "href", "#",
               "hash-for-method", getModel().getTag(tr),
               "panel-name", suiteName,
+              "title", tr.getTestClass().getName(),
               C, "method navigator-link");
           xsb.pop(S);
           xsb.addEmptyElement("br");
