@@ -144,3 +144,9 @@ a:hover {
     font-family: 'Lucida Grande';
     font-size: 16px;
 }
+
+.suite-icon {
+    padding: 5px;
+    float: right;
+    height: 20;
+}

@@ -80,7 +80,4 @@ public class Main implements IReporter {
     }
   }
 
-  public static String getImage(String tagClass) {
-    return tagClass + ".png";
-  }
 }

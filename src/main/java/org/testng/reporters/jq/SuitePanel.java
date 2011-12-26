@@ -46,7 +46,7 @@ public class SuitePanel extends BasePanel {
     xsb.push(D, C, "main-panel-header rounded-window-top");
 
     // Passed/failed icon
-    xsb.addEmptyElement("img", "src", Main.getImage(status));
+    xsb.addEmptyElement("img", "src", Model.getImage(status));
     xsb.addOptional(S, c.getName(), C, "class-name");
     xsb.pop(D);
 

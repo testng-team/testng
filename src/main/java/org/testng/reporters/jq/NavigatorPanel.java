@@ -55,6 +55,8 @@ public class NavigatorPanel extends BasePanel {
           "panel-name", suiteName,
           C, "navigator-link");
       header.addOptional(S, suite.getName(), C, "suite-name");
+      header.addEmptyElement("img", C, "suite-icon",
+          "src", getModel().getImageForSuite(suite.getName()));
       header.pop("a");
       header.pop(D);
 
@@ -151,7 +153,7 @@ public class NavigatorPanel extends BasePanel {
       String suiteName, XMLStringBuffer main) {
     XMLStringBuffer xsb = new XMLStringBuffer(main.getCurrentIndent());
 
-    String image = Main.getImage(type);
+    String image = Model.getImage(type);
 
     xsb.push("li");
 

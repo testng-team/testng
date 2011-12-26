@@ -22,6 +22,8 @@ public class Model {
   private Map<ISuite, ResultsByClass> m_skippedResultsByClass = Maps.newHashMap();
   private Map<ISuite, ResultsByClass> m_passedResultsByClass = Maps.newHashMap();
   private List<ITestResult> m_allFailedResults = Lists.newArrayList();
+  // Each suite is mapped to failed.png, skipped.png or nothing (which means passed.png)
+  private Map<String, String> m_imageBySuiteName = Maps.newHashMap();
 
   public Model(List<ISuite> suites) {
     m_suites = suites;
@@ -57,24 +59,9 @@ public class Model {
           }
         }
       }
-      // Failed
-      {
-        ResultsByClass rbc = new ResultsByClass();
-        for (ITestResult tr : failed) {
-          rbc.addResult(tr.getTestClass().getRealClass(), tr);
-          m_allFailedResults.add(tr);
-        }
-        m_failedResultsByClass.put(suite, rbc);
-      }
 
-      // Skipped
-      {
-        ResultsByClass rbc = new ResultsByClass();
-        for (ITestResult tr : skipped) {
-          rbc.addResult(tr.getTestClass().getRealClass(), tr);
-        }
-        m_skippedResultsByClass.put(suite, rbc);
-      }
+      // Process them in the order passed, skipped and failed, so that the failed
+      // icon overrides all the others and the skipped icon overrides passed.
 
       // Passed
       {
@@ -83,6 +70,27 @@ public class Model {
           rbc.addResult(tr.getTestClass().getRealClass(), tr);
         }
         m_passedResultsByClass.put(suite, rbc);
+      }
+
+      // Skipped
+      {
+        ResultsByClass rbc = new ResultsByClass();
+        for (ITestResult tr : skipped) {
+          m_imageBySuiteName.put(suite.getName(), getImage("skipped"));
+          rbc.addResult(tr.getTestClass().getRealClass(), tr);
+        }
+        m_skippedResultsByClass.put(suite, rbc);
+      }
+
+      // Failed
+      {
+        ResultsByClass rbc = new ResultsByClass();
+        for (ITestResult tr : failed) {
+          m_imageBySuiteName.put(suite.getName(), getImage("failed"));
+          rbc.addResult(tr.getTestClass().getRealClass(), tr);
+          m_allFailedResults.add(tr);
+        }
+        m_failedResultsByClass.put(suite, rbc);
       }
 
       m_model.putAll(suite, failed);
@@ -131,5 +139,17 @@ public class Model {
 
   public List<ITestResult> getAllFailedResults() {
     return m_allFailedResults;
+  }
+
+  public static String getImage(String tagClass) {
+    return tagClass + ".png";
+  }
+
+  public String getImageForSuite(String suiteName) {
+    String result = m_imageBySuiteName.get(suiteName);
+    if (result == null) {
+      result = getImage("passed");
+    }
+    return result;
   }
 }
