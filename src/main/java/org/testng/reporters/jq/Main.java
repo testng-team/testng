@@ -18,7 +18,8 @@ import java.util.List;
 public class Main implements IReporter {
   private static final String[] RESOURCES = new String[] {
     "jquery-1.7.1.min.js", "testng-reports.css", "testng-reports.js",
-    "passed.png", "failed.png", "skipped.png", "navigator-bullet.png"
+    "passed.png", "failed.png", "skipped.png", "navigator-bullet.png",
+    "bullet_point.png"
   };
 
   private Model m_model;
@@ -73,8 +74,11 @@ public class Main implements IReporter {
         throw new RuntimeException("Couldn't find resource head3");
       } else {
         for (String fileName : RESOURCES) {
-          Files.copyFile(getClass().getResourceAsStream("/" + fileName),
-              new File(m_outputDirectory, fileName));
+          InputStream is = getClass().getResourceAsStream("/" + fileName);
+          if (is == null) {
+            throw new AssertionError("Couldn't find resource: " + fileName);
+          }
+          Files.copyFile(is, new File(m_outputDirectory, fileName));
         }
         all = Files.readFile(head3);
         Utils.writeFile(m_outputDirectory, "index.html", all + xsb.toXML());
