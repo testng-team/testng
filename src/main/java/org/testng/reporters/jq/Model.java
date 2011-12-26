@@ -113,7 +113,18 @@ public class Model {
    }
 
   public static String getTestResultName(ITestResult tr) {
-    return tr.getMethod().getMethodName();
+    StringBuilder result = new StringBuilder(tr.getMethod().getMethodName());
+    Object[] parameters = tr.getParameters();
+    if (parameters.length > 0) {
+      result.append("(");
+      for (int i = 0; i < parameters.length; i++) {
+        if (i > 0) result.append(", ");
+        result.append(parameters[i] != null ? parameters[i].toString() : "null");
+      }
+      result.append(")");
+    }
+
+    return result.toString();
   }
 
 }
