@@ -150,3 +150,20 @@ a:hover {
     float: right;
     height: 20;
 }
+
+.test-group {
+    font: 20px 'Lucida Grande';
+    margin: 5px 5px 10px 5px;
+    border-width: 0px 0px 1px 0px;
+    border-style: solid;
+    padding: 5px;
+}
+
+.test-group-name {
+    font-weight: bold;
+}
+
+.method-in-group {
+    font-size: 16px;
+    margin-left: 80px;
+}

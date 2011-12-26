@@ -18,4 +18,8 @@ public class Maps {
   public static <K, V> ListMultiMap<K, V> newListMultiMap() {
     return new ListMultiMap<K, V>();
   }
+
+  public static <K, V> SetMultiMap<K, V> newSetMultiMap() {
+    return new SetMultiMap<K, V>();
+  }
 }

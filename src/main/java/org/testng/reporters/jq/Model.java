@@ -8,9 +8,13 @@ import org.testng.ITestResult;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.collections.SetMultiMap;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Model {
   private ListMultiMap<ISuite, ITestResult> m_model = Maps.newListMultiMap();
@@ -24,6 +28,8 @@ public class Model {
   private List<ITestResult> m_allFailedResults = Lists.newArrayList();
   // Each suite is mapped to failed.png, skipped.png or nothing (which means passed.png)
   private Map<String, String> m_imageBySuiteName = Maps.newHashMap();
+  private SetMultiMap<String, String> m_groupsBySuiteName = Maps.newSetMultiMap();
+  private SetMultiMap<String, String> m_methodsByGroup = Maps.newSetMultiMap();
 
   public Model(List<ISuite> suites) {
     m_suites = suites;
@@ -68,6 +74,7 @@ public class Model {
         ResultsByClass rbc = new ResultsByClass();
         for (ITestResult tr : passed) {
           rbc.addResult(tr.getTestClass().getRealClass(), tr);
+          updateGroups(suite, tr);
         }
         m_passedResultsByClass.put(suite, rbc);
       }
@@ -78,6 +85,7 @@ public class Model {
         for (ITestResult tr : skipped) {
           m_imageBySuiteName.put(suite.getName(), getImage("skipped"));
           rbc.addResult(tr.getTestClass().getRealClass(), tr);
+          updateGroups(suite, tr);
         }
         m_skippedResultsByClass.put(suite, rbc);
       }
@@ -89,6 +97,7 @@ public class Model {
           m_imageBySuiteName.put(suite.getName(), getImage("failed"));
           rbc.addResult(tr.getTestClass().getRealClass(), tr);
           m_allFailedResults.add(tr);
+          updateGroups(suite, tr);
         }
         m_failedResultsByClass.put(suite, rbc);
       }
@@ -96,6 +105,15 @@ public class Model {
       m_model.putAll(suite, failed);
       m_model.putAll(suite, skipped);
       m_model.putAll(suite, passed);
+    }
+  }
+
+  private void updateGroups(ISuite suite, ITestResult tr) {
+    String[] groups = tr.getMethod().getGroups();
+    m_groupsBySuiteName.putAll(suite.getName(),
+        Arrays.asList(groups));
+    for (String group : groups) {
+      m_methodsByGroup.put(group, tr.getMethod().getMethodName());
     }
   }
 
@@ -150,6 +168,26 @@ public class Model {
     if (result == null) {
       result = getImage("passed");
     }
+    return result;
+  }
+
+  public <T> Set<T> nonnullSet(Set<T> l) {
+    return l != null ? l : Collections.<T>emptySet();
+  }
+
+  public <T> List<T> nonnullList(List<T> l) {
+    return l != null ? l : Collections.<T>emptyList();
+  }
+
+  public List<String> getGroups(String name) {
+    List<String> result = Lists.newArrayList(nonnullSet(m_groupsBySuiteName.get(name)));
+    Collections.sort(result);
+    return result;
+  }
+
+  public List<String> getMethodsInGroup(String groupName) {
+    List<String> result = Lists.newArrayList(nonnullSet(m_methodsByGroup.get(groupName)));
+    Collections.sort(result);
     return result;
   }
 }

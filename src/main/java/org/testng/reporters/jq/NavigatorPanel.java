@@ -14,11 +14,14 @@ public class NavigatorPanel extends BasePanel {
 
   private TestNgXmlPanel m_testNgPanel;
   private TestPanel m_testPanel;
+  private GroupPanel m_groupPanel;
 
-  public NavigatorPanel(Model model, TestNgXmlPanel testNgPanel, TestPanel testPanel) {
+  public NavigatorPanel(Model model, TestNgXmlPanel testNgPanel, TestPanel testPanel,
+      GroupPanel groupPanel) {
     super(model);
     m_testNgPanel = testNgPanel;
     m_testPanel = testPanel;
+    m_groupPanel = groupPanel;
   }
 
   @Override
@@ -69,7 +72,9 @@ public class NavigatorPanel extends BasePanel {
       header.addRequired(S, "Info");
       header.pop(D);
 
-      // Info content
+      //
+      // Info
+      //
       header.push(D, C, "suite-section-content");
       int total = failed + skipped + passed;
       String stats = String.format("%s, %s %s %s",
@@ -80,7 +85,7 @@ public class NavigatorPanel extends BasePanel {
 
       header.push("ul");
 
-      // Tests
+      // "59 Tests"
       header.push("li");
       header.push("a", "href", "#",
           "panel-name", m_testPanel.getPanelName(suite),
@@ -90,7 +95,17 @@ public class NavigatorPanel extends BasePanel {
       header.pop("a");
       header.pop("li");
 
-      // testng.xml
+      // "12 groups"
+      header.push("li");
+      header.push("a", "href", "#",
+          "panel-name", m_groupPanel.getPanelName(suite),
+          C, "navigator-link ");
+      header.addOptional(S,
+          String.format("%s ", pluralize(getModel().getGroups(suite.getName()).size(), "group")));
+      header.pop("a");
+      header.pop("li");
+
+      // "testng.xml"
       header.push("li");
       header.push("a", "href", "#",
           "panel-name", m_testNgPanel.getPanelName(suite),
@@ -106,7 +121,7 @@ public class NavigatorPanel extends BasePanel {
       header.pop(D); // suite-section-content
 
       //
-      // Methods
+      // Results
       //
       header.push(D, C, "result-section");
 
