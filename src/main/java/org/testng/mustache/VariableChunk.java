@@ -16,4 +16,8 @@ public class VariableChunk extends BaseChunk {
     return result;
   }
 
+  @Override
+  public String toString() {
+    return "[VariableChunk " + m_variable + " model:" + m_model + "]";
+  }
 }

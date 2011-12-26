@@ -24,33 +24,47 @@ public class MustacheTest {
     }
   }
 
+  public static class Age {
+    public int age;
+    public Age(int a) {
+      this.age = a;
+    }
+  }
+
   private static final List<Person> PEOPLE = new ArrayList<Person>(
       Arrays.asList(new Person("Carl"), new Person("Christopher")));
+
+  private static final List<Age> AGES = new ArrayList<Age>(
+      Arrays.asList(new Age(42), new Age(43)));
 
   @DataProvider
   public Object[][] dp() {
     return new Object[][] {
+        // Simple
         new Object[] {
             create("one", "ello", "two", "orld"),
             "H{{one}} W{{two}}",
             "Hello World"
         },
+        // Null condition
         new Object[] {
             Collections.emptyMap(),
             "E{{#foo}}xxx{{/foo}}lephant",
             "Elephant"
         },
+        // Null condition with new line
         new Object[] {
             Collections.emptyMap(),
             "Hello\n{{#foo}}@\n{{/foo}}World",
             "Hello\nWorld"
         },
+        // Simple scope
         new Object[] {
             create("person", new Person("John"), "day", "Monday"),
             "Hello {{#person}}{{name}}{{/person}}, {{day}}",
             "Hello John, Monday"
         },
-        // Test scopes
+        // Scope with shadowing
         new Object[] {
             create("person", new Person("John"), "name", "Carl"),
             "Hello {{#person}}{{name}}{{/person}}, {{name}}",
@@ -62,10 +76,11 @@ public class MustacheTest {
             "People:@{{#people}}-{{/people}}!",
             "People:@--!",
         },
+        // Nested scopes
         new Object[] {
-            create("people", PEOPLE),
-            "People:@{{#people}}{{name}}@{{/people}}!",
-            "People:@Carl@Christopher@!",
+            create("people", PEOPLE, "ages", AGES),
+            ":@{{#people}}{{name}}{{#ages}}{{age}}{{/ages}}@{{/people}}!_",
+            ":@Carl4243@Christopher4243@!_",
         },
     };
   }

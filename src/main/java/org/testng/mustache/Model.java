@@ -51,11 +51,11 @@ public class Model {
         Field f = cls.getField(variable);
         return new Value(f.get(object));
       } catch (IllegalAccessException e) {
-        e.printStackTrace();
+//        e.printStackTrace();
       } catch (SecurityException e) {
-        e.printStackTrace();
+//        e.printStackTrace();
       } catch (NoSuchFieldException e) {
-        e.printStackTrace();
+//        e.printStackTrace();
       }
 //    }
 
@@ -78,5 +78,10 @@ public class Model {
     } else {
       return "";
     }
+  }
+
+  @Override
+  public String toString() {
+    return "[Model " + m_model + " subModel:" + m_subModels + "]";
   }
 }

@@ -10,7 +10,12 @@ public class StringChunk extends BaseChunk {
   }
 
   @Override
-  String compose() {
+  public String compose() {
     return m_string;
+  }
+
+  @Override
+  public String toString() {
+    return "[StringChunk " + m_string + "]";
   }
 }
