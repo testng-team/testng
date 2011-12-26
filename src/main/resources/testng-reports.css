@@ -94,6 +94,14 @@ a:hover {
     font-family: monospace;
 }
 
+.method-content {
+    border-style: solid;
+    border-width: 0px 0px 1px 0px;
+    margin-bottom: 10;
+    padding-bottom: 5px;
+    width: 80%;
+}
+
 .parameters {
     font-size: 14px;
     font-family: monospace;
