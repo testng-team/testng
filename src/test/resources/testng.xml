@@ -676,4 +676,10 @@
       <class name="test.configuration.BeforeClassWithDisabledTest" />
     </classes>
   </test>
+
+  <test name="Mustache">
+    <classes>
+      <class name="test.mustache.MustacheTest" />
+    </classes>
+  </test>
 </suite>
