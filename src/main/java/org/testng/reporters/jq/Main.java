@@ -75,9 +75,9 @@ public class Main implements IReporter {
 
     String all;
     try {
-      InputStream head3 = getClass().getResourceAsStream("/head3");
-      if (head3 == null) {
-        throw new RuntimeException("Couldn't find resource head3");
+      InputStream header = getClass().getResourceAsStream("/header");
+      if (header == null) {
+        throw new RuntimeException("Couldn't find resource header");
       } else {
         for (String fileName : RESOURCES) {
           InputStream is = getClass().getResourceAsStream("/" + fileName);
@@ -86,7 +86,7 @@ public class Main implements IReporter {
           }
           Files.copyFile(is, new File(m_outputDirectory, fileName));
         }
-        all = Files.readFile(head3);
+        all = Files.readFile(header);
         Utils.writeFile(m_outputDirectory, "index.html", all + xsb.toXML());
       }
     } catch (IOException e) {
