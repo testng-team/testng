@@ -136,48 +136,40 @@ public class NavigatorPanel extends BasePanel {
     header.push("ul");
 
     // "59 Tests"
-    header.push("li");
-    header.push("a", "href", "#",
-        "panel-name", m_testPanel.getPanelName(suite),
-        C, "navigator-link ");
-    header.addOptional(S, String.format("%s ", pluralize(results.values().size(), "test"),
-        C, "test-stats"));
-    header.pop("a");
-    header.pop("li");
+    addLinkTo(header, m_testPanel, suite,
+        pluralize(results.values().size(), "test"),
+        "test-stats");
 
     // "12 groups"
-    header.push("li");
-    header.push("a", "href", "#",
-        "panel-name", m_groupPanel.getPanelName(suite),
-        C, "navigator-link ");
-    header.addOptional(S,
-        String.format("%s ", pluralize(getModel().getGroups(suite.getName()).size(), "group")));
-    header.pop("a");
-    header.pop("li");
+    addLinkTo(header, m_groupPanel, suite,
+        pluralize(getModel().getGroups(suite.getName()).size(), "group"),
+        null /* no class */);
 
     // Times
-    header.push("li");
-    header.push("a", "href", "#",
-        "panel-name", m_timePanel.getPanelName(suite),
-        C, "navigator-link ");
-    header.addRequired(S, "Times");
-    header.pop("a");
-    header.pop("li");
+    addLinkTo(header, m_timePanel, suite, "Times", null);
 
     // "testng.xml"
-    header.push("li");
-    header.push("a", "href", "#",
-        "panel-name", m_testNgPanel.getPanelName(suite),
-        C, "navigator-link");
     String fqName = suite.getXmlSuite().getFileName();
     if (fqName == null) fqName = "/[unset file name]";
-    header.addOptional(S, fqName.substring(fqName.lastIndexOf("/") + 1),
-        C, "testng-xml");
-    header.pop("a");
-    header.pop("li");
+    addLinkTo(header, m_testNgPanel, suite, fqName.substring(fqName.lastIndexOf("/") + 1), null);
 
     header.pop("ul");
     header.pop(D); // suite-section-content
+  }
+
+  private void addLinkTo(XMLStringBuffer header, INavigatorPanel panel, ISuite suite,
+      String text, String className) {
+    header.push("li");
+    header.push("a", "href", "#",
+        "panel-name", panel.getPanelName(suite),
+        C, "navigator-link ");
+    if (className != null) {
+      header.addOptional(S, text, C, className);
+    } else {
+      header.addOptional(S, text);
+    }
+    header.pop("a");
+    header.pop("li");
   }
 
   private static String maybe(int count, String s, String sep) {

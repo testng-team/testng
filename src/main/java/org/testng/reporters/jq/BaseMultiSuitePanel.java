@@ -3,10 +3,9 @@ package org.testng.reporters.jq;
 import org.testng.ISuite;
 import org.testng.reporters.XMLStringBuffer;
 
-abstract public class BaseMultiSuitePanel extends BasePanel {
+abstract public class BaseMultiSuitePanel extends BasePanel implements INavigatorPanel {
 
   abstract String getHeader(ISuite suite);
-  abstract String getPanelName(ISuite suite);
   abstract String getContent(ISuite suite, XMLStringBuffer xsb);
 
   public BaseMultiSuitePanel(Model model) {
