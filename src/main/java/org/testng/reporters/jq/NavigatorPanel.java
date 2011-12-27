@@ -65,83 +65,8 @@ public class NavigatorPanel extends BasePanel {
 
       header.push(D, C, "navigator-suite-content");
 
-      //
-      // Info
-      //
-      header.push(D, C, "suite-section-title");
-      header.addRequired(S, "Info");
-      header.pop(D);
-
-      //
-      // Info
-      //
-      header.push(D, C, "suite-section-content");
-      int total = failed + skipped + passed;
-      String stats = String.format("%s, %s %s %s",
-          pluralize(total, "method"),
-          maybe(failed, "failed", ", "),
-          maybe(skipped, "skipped", ", "),
-          maybe(passed, "passed", ""));
-
-      header.push("ul");
-
-      // "59 Tests"
-      header.push("li");
-      header.push("a", "href", "#",
-          "panel-name", m_testPanel.getPanelName(suite),
-          C, "navigator-link ");
-      header.addOptional(S, String.format("%s ", pluralize(results.values().size(), "test"),
-          C, "test-stats"));
-      header.pop("a");
-      header.pop("li");
-
-      // "12 groups"
-      header.push("li");
-      header.push("a", "href", "#",
-          "panel-name", m_groupPanel.getPanelName(suite),
-          C, "navigator-link ");
-      header.addOptional(S,
-          String.format("%s ", pluralize(getModel().getGroups(suite.getName()).size(), "group")));
-      header.pop("a");
-      header.pop("li");
-
-      // "testng.xml"
-      header.push("li");
-      header.push("a", "href", "#",
-          "panel-name", m_testNgPanel.getPanelName(suite),
-          C, "navigator-link");
-      String fqName = suite.getXmlSuite().getFileName();
-      if (fqName == null) fqName = "/[unset file name]";
-      header.addOptional(S, fqName.substring(fqName.lastIndexOf("/") + 1),
-          C, "testng-xml");
-      header.pop("a");
-      header.pop("li");
-
-      header.pop("ul");
-      header.pop(D); // suite-section-content
-
-      //
-      // Results
-      //
-      header.push(D, C, "result-section");
-
-      header.push(D, C, "suite-section-title");
-      header.addRequired(S, "Results");
-      header.pop(D);
-
-      // Method stats
-      header.push(D, C, "suite-section-content");
-      header.push("ul");
-      header.push("li");
-      header.addOptional(S, stats, C, "method-stats");
-      header.pop("li");
-
-      generateMethodList("Failed methods", ITestResult.FAILURE, "failed",
-          suite, suiteName, header);
-      generateMethodList("Skipped methods", ITestResult.SKIP, "skipped",
-          suite, suiteName, header);
-      generateMethodList("Passed methods", ITestResult.SUCCESS, "passed",
-          suite, suiteName, header);
+      generateInfo(header, suite, results);
+      generateResult(header, failed, skipped, passed, suite, suiteName);
 
       header.pop("ul");
 
@@ -158,6 +83,90 @@ public class NavigatorPanel extends BasePanel {
       suiteCount++;
     }
     main.pop(D);
+  }
+
+  private void generateResult(XMLStringBuffer header, int failed, int skipped, int passed,
+      ISuite suite, String suiteName) {
+    //
+    // Results
+    //
+    header.push(D, C, "result-section");
+
+    header.push(D, C, "suite-section-title");
+    header.addRequired(S, "Results");
+    header.pop(D);
+
+    // Method stats
+    int total = failed + skipped + passed;
+    String stats = String.format("%s, %s %s %s",
+        pluralize(total, "method"),
+        maybe(failed, "failed", ", "),
+        maybe(skipped, "skipped", ", "),
+        maybe(passed, "passed", ""));
+    header.push(D, C, "suite-section-content");
+    header.push("ul");
+    header.push("li");
+    header.addOptional(S, stats, C, "method-stats");
+    header.pop("li");
+
+    generateMethodList("Failed methods", ITestResult.FAILURE, "failed",
+        suite, suiteName, header);
+    generateMethodList("Skipped methods", ITestResult.SKIP, "skipped",
+        suite, suiteName, header);
+    generateMethodList("Passed methods", ITestResult.SUCCESS, "passed",
+        suite, suiteName, header);
+    }
+
+  private void generateInfo(XMLStringBuffer header, ISuite suite,
+      Map<String, ISuiteResult> results) {
+    //
+    // Info
+    //
+    header.push(D, C, "suite-section-title");
+    header.addRequired(S, "Info");
+    header.pop(D);
+
+    //
+    // Info
+    //
+    header.push(D, C, "suite-section-content");
+
+    header.push("ul");
+
+    // "59 Tests"
+    header.push("li");
+    header.push("a", "href", "#",
+        "panel-name", m_testPanel.getPanelName(suite),
+        C, "navigator-link ");
+    header.addOptional(S, String.format("%s ", pluralize(results.values().size(), "test"),
+        C, "test-stats"));
+    header.pop("a");
+    header.pop("li");
+
+    // "12 groups"
+    header.push("li");
+    header.push("a", "href", "#",
+        "panel-name", m_groupPanel.getPanelName(suite),
+        C, "navigator-link ");
+    header.addOptional(S,
+        String.format("%s ", pluralize(getModel().getGroups(suite.getName()).size(), "group")));
+    header.pop("a");
+    header.pop("li");
+
+    // "testng.xml"
+    header.push("li");
+    header.push("a", "href", "#",
+        "panel-name", m_testNgPanel.getPanelName(suite),
+        C, "navigator-link");
+    String fqName = suite.getXmlSuite().getFileName();
+    if (fqName == null) fqName = "/[unset file name]";
+    header.addOptional(S, fqName.substring(fqName.lastIndexOf("/") + 1),
+        C, "testng-xml");
+    header.pop("a");
+    header.pop("li");
+
+    header.pop("ul");
+    header.pop(D); // suite-section-content
   }
 
   private static String maybe(int count, String s, String sep) {
