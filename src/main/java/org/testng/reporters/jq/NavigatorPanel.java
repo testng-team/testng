@@ -15,10 +15,10 @@ public class NavigatorPanel extends BasePanel {
   private TestNgXmlPanel m_testNgPanel;
   private TestPanel m_testPanel;
   private GroupPanel m_groupPanel;
-  private TimePanel m_timePanel;
+  private TimesPanel m_timePanel;
 
   public NavigatorPanel(Model model, TestNgXmlPanel testNgPanel, TestPanel testPanel,
-      GroupPanel groupPanel, TimePanel timePanel) {
+      GroupPanel groupPanel, TimesPanel timePanel) {
     super(model);
     m_testNgPanel = testNgPanel;
     m_testPanel = testPanel;

@@ -3,8 +3,8 @@ package org.testng.reporters.jq;
 import org.testng.ISuite;
 import org.testng.reporters.XMLStringBuffer;
 
-public class TimePanel extends BaseMultiSuitePanel {
-  public TimePanel(Model model) {
+public class TimesPanel extends BaseMultiSuitePanel {
+  public TimesPanel(Model model) {
     super(model);
   }
 

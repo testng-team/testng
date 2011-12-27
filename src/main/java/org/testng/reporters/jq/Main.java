@@ -40,7 +40,7 @@ public class Main implements IReporter {
     TestNgXmlPanel testNgPanel = new TestNgXmlPanel(m_model);
     TestPanel testPanel = new TestPanel(m_model);
     GroupPanel groupPanel = new GroupPanel(m_model);
-    TimePanel timePanel = new TimePanel(m_model);
+    TimesPanel timePanel = new TimesPanel(m_model);
     new NavigatorPanel(m_model, testNgPanel, testPanel, groupPanel, timePanel).generate(xsb);
 
     xsb.push(D, C, "wrapper");
