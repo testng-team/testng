@@ -190,4 +190,14 @@ public class Model {
     Collections.sort(result);
     return result;
   }
+
+  public List<ITestResult> getAllTestResults(ISuite suite) {
+    List<ITestResult> result = Lists.newArrayList();
+    for (ISuiteResult sr : suite.getResults().values()) {
+      result.addAll(sr.getTestContext().getPassedTests().getAllResults());
+      result.addAll(sr.getTestContext().getFailedTests().getAllResults());
+      result.addAll(sr.getTestContext().getSkippedTests().getAllResults());
+    }
+    return result;
+  }
 }

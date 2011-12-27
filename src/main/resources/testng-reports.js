@@ -71,3 +71,12 @@ function showMethod(element) {
     var newPosition = $(document).scrollTop() - 65;
     $(document).scrollTop(newPosition);
 }
+
+function drawTable() {
+    var data = tableData();
+    var table = new google.visualization.Table(document
+            .getElementById('times-div'));
+    table.draw(data, {
+        showRowNumber : true
+    });
+}
