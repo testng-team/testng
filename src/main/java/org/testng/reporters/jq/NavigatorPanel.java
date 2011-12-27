@@ -15,13 +15,15 @@ public class NavigatorPanel extends BasePanel {
   private TestNgXmlPanel m_testNgPanel;
   private TestPanel m_testPanel;
   private GroupPanel m_groupPanel;
+  private TimePanel m_timePanel;
 
   public NavigatorPanel(Model model, TestNgXmlPanel testNgPanel, TestPanel testPanel,
-      GroupPanel groupPanel) {
+      GroupPanel groupPanel, TimePanel timePanel) {
     super(model);
     m_testNgPanel = testNgPanel;
     m_testPanel = testPanel;
     m_groupPanel = groupPanel;
+    m_timePanel = timePanel;
   }
 
   @Override
@@ -150,6 +152,15 @@ public class NavigatorPanel extends BasePanel {
         C, "navigator-link ");
     header.addOptional(S,
         String.format("%s ", pluralize(getModel().getGroups(suite.getName()).size(), "group")));
+    header.pop("a");
+    header.pop("li");
+
+    // Times
+    header.push("li");
+    header.push("a", "href", "#",
+        "panel-name", m_timePanel.getPanelName(suite),
+        C, "navigator-link ");
+    header.addRequired(S, "Times");
     header.pop("a");
     header.pop("li");
 

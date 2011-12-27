@@ -40,7 +40,8 @@ public class Main implements IReporter {
     TestNgXmlPanel testNgPanel = new TestNgXmlPanel(m_model);
     TestPanel testPanel = new TestPanel(m_model);
     GroupPanel groupPanel = new GroupPanel(m_model);
-    new NavigatorPanel(m_model, testNgPanel, testPanel, groupPanel).generate(xsb);
+    TimePanel timePanel = new TimePanel(m_model);
+    new NavigatorPanel(m_model, testNgPanel, testPanel, groupPanel, timePanel).generate(xsb);
 
     xsb.push(D, C, "wrapper");
     xsb.push(D, "class", "main-panel-root");
@@ -53,6 +54,11 @@ public class Main implements IReporter {
     //
     // Group panel
     groupPanel.generate(xsb);
+
+    //
+    // Times panel
+    //
+    timePanel.generate(xsb);
 
     //
     // Panel that displays the list of test names
