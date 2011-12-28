@@ -27,6 +27,7 @@ $(document).ready(function() {
     // Keep the navigator div always visible
     var $scrollingDiv = $(".navigator-root");
     $(window).scroll(function() {
+        $scrollingDiv.css('height', $(window).height() - 65);
         $scrollingDiv.stop()
             .animate({"marginTop": ($(window).scrollTop() + 60) + "px"} );
     });
