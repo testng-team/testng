@@ -181,3 +181,7 @@ a:hover {
     font-size: 16px;
     margin-left: 80px;
 }
+
+table.google-visualization-table-table {
+    width: 100%;
+}

@@ -28,7 +28,7 @@ $(document).ready(function() {
     var $scrollingDiv = $(".navigator-root");
     $(window).scroll(function() {
         $scrollingDiv.stop()
-            .animate({"marginTop": ($(window).scrollTop() + 60) + "px"}, "slow" );
+            .animate({"marginTop": ($(window).scrollTop() + 60) + "px"} );
     });
 });
 
