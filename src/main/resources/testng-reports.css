@@ -215,3 +215,25 @@ table.google-visualization-table-table {
     border-width: 0px 0px 0px 1px;
     border-style: solid;
 }
+
+.border-failed {
+    border-top-left-radius: 10px 10px;
+    border-style: solid;
+    border-width: 0px 0px 0px 10px;
+    border-color: #f00;
+}
+
+.border-skipped {
+    border-top-left-radius: 10px 10px;
+    border-style: solid;
+    border-width: 0px 0px 0px 10px;
+    border-color: #edc600;
+}
+
+.border-passed {
+    border-top-left-radius: 10px 10px;
+    border-style: solid;
+    border-width: 0px 0px 0px 10px;
+    border-color: #19f52d;
+}
+

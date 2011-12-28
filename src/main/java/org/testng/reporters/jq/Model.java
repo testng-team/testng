@@ -27,7 +27,7 @@ public class Model {
   private Map<ISuite, ResultsByClass> m_passedResultsByClass = Maps.newHashMap();
   private List<ITestResult> m_allFailedResults = Lists.newArrayList();
   // Each suite is mapped to failed.png, skipped.png or nothing (which means passed.png)
-  private Map<String, String> m_imageBySuiteName = Maps.newHashMap();
+  private Map<String, String> m_statusBySuiteName = Maps.newHashMap();
   private SetMultiMap<String, String> m_groupsBySuiteName = Maps.newSetMultiMap();
   private SetMultiMap<String, String> m_methodsByGroup = Maps.newSetMultiMap();
 
@@ -83,7 +83,7 @@ public class Model {
       {
         ResultsByClass rbc = new ResultsByClass();
         for (ITestResult tr : skipped) {
-          m_imageBySuiteName.put(suite.getName(), getImage("skipped"));
+          m_statusBySuiteName.put(suite.getName(), "skipped");
           rbc.addResult(tr.getTestClass().getRealClass(), tr);
           updateGroups(suite, tr);
         }
@@ -94,7 +94,7 @@ public class Model {
       {
         ResultsByClass rbc = new ResultsByClass();
         for (ITestResult tr : failed) {
-          m_imageBySuiteName.put(suite.getName(), getImage("failed"));
+          m_statusBySuiteName.put(suite.getName(), "failed");
           rbc.addResult(tr.getTestClass().getRealClass(), tr);
           m_allFailedResults.add(tr);
           updateGroups(suite, tr);
@@ -163,12 +163,9 @@ public class Model {
     return tagClass + ".png";
   }
 
-  public String getImageForSuite(String suiteName) {
-    String result = m_imageBySuiteName.get(suiteName);
-    if (result == null) {
-      result = getImage("passed");
-    }
-    return result;
+  public String getStatusForSuite(String suiteName) {
+    String result = m_statusBySuiteName.get(suiteName);
+    return result != null ? result : "passed";
   }
 
   public <T> Set<T> nonnullSet(Set<T> l) {

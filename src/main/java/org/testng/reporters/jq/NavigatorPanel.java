@@ -58,16 +58,15 @@ public class NavigatorPanel extends BasePanel {
 
       // Suite name in big font
       header.push(D, C, "suite");
-      header.push(D, C, "suite-header rounded-window");
+      header.push(D, C, "rounded-window");
       // Extra div so the highlighting logic will only highlight this line and not
       // the entire container
-      header.push(D, C, "light-rounded-window-top");
+      header.push(D, C, "suite-header light-rounded-window-top");
       header.push("a", "href", "#",
           "panel-name", suiteName,
           C, "navigator-link");
-      header.addOptional(S, suite.getName(), C, "suite-name");
-      header.addEmptyElement("img", C, "suite-icon",
-          "src", getModel().getImageForSuite(suite.getName()));
+      header.addOptional(S, suite.getName(),
+          C, "suite-name border-" + getModel().getStatusForSuite(suite.getName()));
       header.pop("a");
       header.pop(D);
 
