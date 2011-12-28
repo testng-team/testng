@@ -24,6 +24,12 @@ $(document).ready(function() {
     $('.panel').hide();
     $('.navigator-link').first().click();
 
+    // Keep the navigator div always visible
+    var $scrollingDiv = $(".navigator-root");
+    $(window).scroll(function() {
+        $scrollingDiv.stop()
+            .animate({"marginTop": ($(window).scrollTop() + 60) + "px"}, "slow" );
+    });
 });
 
 // The handlers that take care of showing/hiding the methods

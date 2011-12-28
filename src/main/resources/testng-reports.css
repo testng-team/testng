@@ -26,18 +26,10 @@ a:hover {
     margin-top: 60px;
     float: left;
     width: 400px;
-    position: fixed;
-}
-
-.navigator-root.fixed {
-    position: fixed;
-    top: 0;
 }
 
 .main-panel-root {
     margin-top: 60px;
-    margin-left: 400px;
-    width: 74%;
 }
 
 .suite {
