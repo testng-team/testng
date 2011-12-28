@@ -42,7 +42,9 @@ public class Main implements IReporter {
     GroupPanel groupPanel = new GroupPanel(m_model);
     TimesPanel timePanel = new TimesPanel(m_model);
     ReporterPanel reporterPanel = new ReporterPanel(m_model);
-    new NavigatorPanel(m_model, testNgPanel, testPanel, groupPanel, timePanel, reporterPanel)
+    IgnoredMethodsPanel ignoredMethodsPanel = new IgnoredMethodsPanel(m_model);
+    new NavigatorPanel(m_model, testNgPanel, testPanel, groupPanel, timePanel, reporterPanel,
+        ignoredMethodsPanel)
         .generate(xsb);
 
     xsb.push(D, C, "wrapper");
@@ -52,31 +54,12 @@ public class Main implements IReporter {
     // Suite panels
     //
     new SuitePanel(m_model).generate(xsb);
-
-    //
-    // Group panel
-    //
     groupPanel.generate(xsb);
-
-    //
-    // Reporter panel
-    //
     reporterPanel.generate(xsb);
-
-    //
-    // Times panel
-    //
     timePanel.generate(xsb);
-
-    //
-    // Panel that displays the list of test names
-    //
     testPanel.generate(xsb);
-
-    //
-    // Panel that displays the content of testng.xml
-    //
     testNgPanel.generate(xsb);
+    ignoredMethodsPanel.generate(xsb);
 
     xsb.pop(D); // main-panel-root
     xsb.pop(D); // wrapper

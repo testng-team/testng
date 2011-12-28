@@ -201,3 +201,17 @@ table.google-visualization-table-table {
     border-width: 0px 0px 0px 1px;
     border-style: solid;
 }
+
+.ignored-class-div {
+    font-size: 14px;
+    font-family: monospace;
+}
+
+.ignored-methods-div {
+    padding: 5px;
+    margin: 0px 0px 5px 20px;
+    font-size: 12px;
+    font-family: monospace;
+    border-width: 0px 0px 0px 1px;
+    border-style: solid;
+}

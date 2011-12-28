@@ -18,15 +18,18 @@ public class NavigatorPanel extends BasePanel {
   private GroupPanel m_groupPanel;
   private TimesPanel m_timePanel;
   private ReporterPanel m_reporterPanel;
+  private IgnoredMethodsPanel m_ignoredMethodsPanel;
 
   public NavigatorPanel(Model model, TestNgXmlPanel testNgPanel, TestPanel testPanel,
-      GroupPanel groupPanel, TimesPanel timePanel, ReporterPanel reporterPanel) {
+      GroupPanel groupPanel, TimesPanel timePanel, ReporterPanel reporterPanel,
+      IgnoredMethodsPanel ignoredMethodsPanel) {
     super(model);
     m_testNgPanel = testNgPanel;
     m_testPanel = testPanel;
     m_groupPanel = groupPanel;
     m_timePanel = timePanel;
     m_reporterPanel = reporterPanel;
+    m_ignoredMethodsPanel = ignoredMethodsPanel;
   }
 
   @Override
@@ -154,6 +157,9 @@ public class NavigatorPanel extends BasePanel {
     // Reporter
     addLinkTo(header, m_reporterPanel, suite, "Reporter output", null);
 
+    // Ignored methods
+    addLinkTo(header, m_ignoredMethodsPanel, suite, "Ignored methods", null);
+
     // "testng.xml"
     String fqName = suite.getXmlSuite().getFileName();
     if (fqName == null) fqName = "/[unset file name]";
@@ -207,6 +213,7 @@ public class NavigatorPanel extends BasePanel {
       m_suite = suite;
       m_type = type;
     }
+
     @Override
     public String getType() {
       return m_type;
