@@ -4,6 +4,7 @@ import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
+import org.testng.collections.Lists;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.util.Collections;
@@ -113,12 +114,12 @@ public class NavigatorPanel extends BasePanel {
     header.addOptional(S, stats, C, "method-stats");
     header.pop("li");
 
-    generateMethodList("Failed methods", ITestResult.FAILURE, "failed",
-        suite, suiteName, header);
-    generateMethodList("Skipped methods", ITestResult.SKIP, "skipped",
-        suite, suiteName, header);
-    generateMethodList("Passed methods", ITestResult.SUCCESS, "passed",
-        suite, suiteName, header);
+    generateMethodList("Failed methods", new ResultsByStatus(suite, "failed", ITestResult.FAILURE),
+        suiteName, header);
+    generateMethodList("Skipped methods", new ResultsByStatus(suite, "skipped", ITestResult.SKIP),
+        suiteName, header);
+    generateMethodList("Passed methods", new ResultsByStatus(suite, "passed", ITestResult.SUCCESS),
+        suiteName, header);
     }
 
   private void generateInfo(XMLStringBuffer header, ISuite suite,
@@ -181,10 +182,55 @@ public class NavigatorPanel extends BasePanel {
     return count > 0 ? count + " " + s + sep: "";
   }
 
-  private void generateMethodList(String name, int status, String type, ISuite suite,
+  private List<ITestResult> getMethodsByStatus(ISuite suite, int status) {
+    List<ITestResult> result = Lists.newArrayList();
+    List<ITestResult> testResults = getModel().getTestResults(suite);
+    for (ITestResult tr : testResults) {
+      if (tr.getStatus() == status) {
+        result.add(tr);
+      }
+    }
+    Collections.sort(result, ResultsByClass.METHOD_NAME_COMPARATOR);
+
+    return result;
+  }
+
+  private static interface IResultProvider {
+    List<ITestResult> getResults();
+    String getType();
+  }
+
+  private abstract static class BaseResultProvider implements IResultProvider {
+    protected ISuite m_suite;
+    protected String m_type;
+    public BaseResultProvider(ISuite suite, String type) {
+      m_suite = suite;
+      m_type = type;
+    }
+    @Override
+    public String getType() {
+      return m_type;
+    }
+  }
+
+  private class ResultsByStatus extends BaseResultProvider {
+    private final int m_status;
+
+    public ResultsByStatus(ISuite suite, String type, int status) {
+      super(suite, type);
+      m_status = status;
+    }
+
+    @Override
+    public List<ITestResult> getResults() {
+      return getMethodsByStatus(m_suite, m_status);
+    }
+  }
+
+  private void generateMethodList(String name, IResultProvider provider,
       String suiteName, XMLStringBuffer main) {
     XMLStringBuffer xsb = new XMLStringBuffer(main.getCurrentIndent());
-
+    String type = provider.getType();
     String image = Model.getImage(type);
 
     xsb.push("li");
@@ -203,23 +249,21 @@ public class NavigatorPanel extends BasePanel {
     // List of methods
     xsb.push(D, C, "method-list-content " + type + " " + suiteName);
     int count = 0;
-    List<ITestResult> testResults = getModel().getTestResults(suite);
+    List<ITestResult> testResults = provider.getResults();
     if (testResults != null) {
       Collections.sort(testResults, ResultsByClass.METHOD_NAME_COMPARATOR);
       for (ITestResult tr : testResults) {
-        if (tr.getStatus() == status) {
-          String testName = Model.getTestResultName(tr);
-          xsb.push(S);
-          xsb.addEmptyElement("img", "src", image, "width", "3%");
-          xsb.addRequired("a", testName, "href", "#",
-              "hash-for-method", getModel().getTag(tr),
-              "panel-name", suiteName,
-              "title", tr.getTestClass().getName(),
-              C, "method navigator-link");
-          xsb.pop(S);
-          xsb.addEmptyElement("br");
-          count++;
-        }
+        String testName = Model.getTestResultName(tr);
+        xsb.push(S);
+        xsb.addEmptyElement("img", "src", image, "width", "3%");
+        xsb.addRequired("a", testName, "href", "#",
+            "hash-for-method", getModel().getTag(tr),
+            "panel-name", suiteName,
+            "title", tr.getTestClass().getName(),
+            C, "method navigator-link");
+        xsb.pop(S);
+        xsb.addEmptyElement("br");
+        count++;
       }
     }
     xsb.pop(D);
