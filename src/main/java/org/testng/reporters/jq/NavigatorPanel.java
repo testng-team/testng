@@ -16,14 +16,16 @@ public class NavigatorPanel extends BasePanel {
   private TestPanel m_testPanel;
   private GroupPanel m_groupPanel;
   private TimesPanel m_timePanel;
+  private ReporterPanel m_reporterPanel;
 
   public NavigatorPanel(Model model, TestNgXmlPanel testNgPanel, TestPanel testPanel,
-      GroupPanel groupPanel, TimesPanel timePanel) {
+      GroupPanel groupPanel, TimesPanel timePanel, ReporterPanel reporterPanel) {
     super(model);
     m_testNgPanel = testNgPanel;
     m_testPanel = testPanel;
     m_groupPanel = groupPanel;
     m_timePanel = timePanel;
+    m_reporterPanel = reporterPanel;
   }
 
   @Override
@@ -147,6 +149,9 @@ public class NavigatorPanel extends BasePanel {
 
     // Times
     addLinkTo(header, m_timePanel, suite, "Times", null);
+
+    // Reporter
+    addLinkTo(header, m_reporterPanel, suite, "Reporter output", null);
 
     // "testng.xml"
     String fqName = suite.getXmlSuite().getFileName();

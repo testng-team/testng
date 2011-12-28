@@ -187,3 +187,17 @@ a:hover {
 table.google-visualization-table-table {
     width: 100%;
 }
+
+.reporter-method-name {
+    font-size: 14px;
+    font-family: monospace;
+}
+
+.reporter-method-output-div {
+    padding: 5px;
+    margin: 0px 0px 5px 20px;
+    font-size: 12px;
+    font-family: monospace;
+    border-width: 0px 0px 0px 1px;
+    border-style: solid;
+}

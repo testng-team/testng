@@ -41,7 +41,9 @@ public class Main implements IReporter {
     TestPanel testPanel = new TestPanel(m_model);
     GroupPanel groupPanel = new GroupPanel(m_model);
     TimesPanel timePanel = new TimesPanel(m_model);
-    new NavigatorPanel(m_model, testNgPanel, testPanel, groupPanel, timePanel).generate(xsb);
+    ReporterPanel reporterPanel = new ReporterPanel(m_model);
+    new NavigatorPanel(m_model, testNgPanel, testPanel, groupPanel, timePanel, reporterPanel)
+        .generate(xsb);
 
     xsb.push(D, C, "wrapper");
     xsb.push(D, "class", "main-panel-root");
@@ -53,7 +55,13 @@ public class Main implements IReporter {
 
     //
     // Group panel
+    //
     groupPanel.generate(xsb);
+
+    //
+    // Reporter panel
+    //
+    reporterPanel.generate(xsb);
 
     //
     // Times panel
