@@ -73,10 +73,18 @@ function showMethod(element) {
 }
 
 function drawTable() {
-    var data = tableData();
-    var table = new google.visualization.Table(document
-            .getElementById('times-div'));
-    table.draw(data, {
-        showRowNumber : true
-    });
+    for (var i = 0; i < suiteTableInitFunctions.length; i++) {
+        window[suiteTableInitFunctions[i]]();
+    }
+
+    for (var k in window.suiteTableData) {
+        var v = window.suiteTableData[k];
+        var div = v.tableDiv;
+        var data = v.tableData
+        var table = new google.visualization.Table(document
+                .getElementById(div));
+        table.draw(data, {
+            showRowNumber : true
+        });
+    }
 }

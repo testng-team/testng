@@ -27,12 +27,14 @@ public class TimesPanel extends BaseMultiSuitePanel {
   }
 
   private String js(ISuite suite) {
+    String functionName = "tableData_" + suiteToTag(suite);
     StringBuilder result = new StringBuilder(
-    "function tableData() {\n" +
-      "var data = new google.visualization.DataTable();\n" +
-      "data.addColumn('string', 'Method');\n" +
-      "data.addColumn('string', 'Class');\n" +
-      "data.addColumn('number', 'Time (ms)');\n");
+        "suiteTableInitFunctions.push('" + functionName + "');\n"
+          + "function " + functionName + "() {\n"
+          + "var data = new google.visualization.DataTable();\n"
+          + "data.addColumn('string', 'Method');\n"
+          + "data.addColumn('string', 'Class');\n"
+          + "data.addColumn('number', 'Time (ms)');\n");
 
     List<ITestResult> allTestResults = getModel().getAllTestResults(suite);
     result.append(
@@ -52,8 +54,10 @@ public class TimesPanel extends BaseMultiSuitePanel {
     }
 
     result.append(
-      "return data;\n" +
-      "}\n");
+        "window.suiteTableData['" + suiteToTag(suite) + "']" +
+        		"= { tableData: data, tableDiv: 'times-div-" + suiteToTag(suite) + "'}\n"
+        + "return data;\n" +
+        "}\n");
 
     return result.toString();
   }
@@ -64,7 +68,7 @@ public class TimesPanel extends BaseMultiSuitePanel {
     xsb.push("script", "type", "text/javascript");
     xsb.addString(js(suite));
     xsb.pop("script");
-    xsb.push(D, "id", "times-div");
+    xsb.push(D, "id", "times-div-" + suiteToTag(suite));
     xsb.pop(D);
     return xsb.toXML();
   }

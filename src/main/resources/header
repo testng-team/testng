@@ -9,6 +9,8 @@
   <script type='text/javascript'>
       google.load('visualization', '1', {packages:['table']});
       google.setOnLoadCallback(drawTable);
+      var suiteTableInitFunctions = new Array();
+      var suiteTableData = new Array();
     </script>
 <!--
 <script type="text/javascript" src="jquery-ui/js/jquery-ui-1.8.16.custom.min.js"></script>
