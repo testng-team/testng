@@ -34,16 +34,31 @@ $(document).ready(function() {
 
 // The handlers that take care of showing/hiding the methods
 function installMethodHandlers(name, hide) {
+    function getContent(t) {
+    return $('.method-list-content.' + name + "." + t.attr('panel-name'));
+    }
+
+    function getHideLink(t) {
+        var s = 'a.hide-methods.' + name + "." + t.attr('panel-name');
+    return $(s);
+    }
+
+    function getShowLink(t) {
+        return $('a.show-methods.' + name + "." + t.attr('panel-name'));
+    }
+
     $('a.hide-methods.' + name).click(function() {
-        $('.method-list-content.' + name).hide();
-        $('a.hide-methods.' + name).hide();
-        $('a.show-methods.' + name).show();
+        var w = getContent($(this));
+        w.hide();
+    getHideLink($(this)).hide();
+    getShowLink($(this)).show();
     });
 
     $('a.show-methods.' + name).click(function() {
-        $('.method-list-content.' + name).show();
-        $('a.hide-methods.' + name).show();
-        $('a.show-methods.' + name).hide();
+        var w = getContent($(this));
+        w.show();
+    getHideLink($(this)).show();
+    getShowLink($(this)).hide();
     });
 
     if (hide) {

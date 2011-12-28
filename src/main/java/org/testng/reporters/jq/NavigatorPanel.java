@@ -189,12 +189,14 @@ public class NavigatorPanel extends BasePanel {
 
     // The mark up to show the (hide)/(show) links
     xsb.push(S, C, "show-or-hide-methods " + type);
-    xsb.addRequired("a", " (hide)", "href", "#", C, "hide-methods " + type);
-    xsb.addRequired("a", " (show)", "href", "#", C, "show-methods " + type);
+    xsb.addRequired("a", " (hide)", "href", "#", C, "hide-methods " + type + " " + suiteName,
+        "panel-name", suiteName);
+    xsb.addRequired("a", " (show)", "href", "#",C, "show-methods " + type + " " + suiteName,
+        "panel-name", suiteName);
     xsb.pop(S);
 
     // List of methods
-    xsb.push(D, C, "method-list-content " + type);
+    xsb.push(D, C, "method-list-content " + type + " " + suiteName);
     int count = 0;
     List<ITestResult> testResults = getModel().getTestResults(suite);
     if (testResults != null) {
