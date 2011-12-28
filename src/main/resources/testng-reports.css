@@ -30,6 +30,8 @@ a:hover {
     margin-top: 60px;
     float: left;
     width: 400px;
+    height: 100%;
+    overflow-y: auto;
 }
 
 .main-panel-root {
