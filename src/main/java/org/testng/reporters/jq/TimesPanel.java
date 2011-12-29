@@ -3,11 +3,15 @@ package org.testng.reporters.jq;
 import org.testng.ISuite;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.util.List;
+import java.util.Map;
 
 public class TimesPanel extends BaseMultiSuitePanel {
+  private Map<String, Long> m_totalTime = Maps.newHashMap();
+
   public TimesPanel(Model model) {
     super(model);
   }
@@ -50,6 +54,11 @@ public class TimesPanel extends BaseMultiSuitePanel {
               + "1, '" + m.getTestClass().getName() + "')\n")
           .append("data.setCell(" + index + ", "
               + "2, " + time + ");\n");
+      Long total = m_totalTime.get(suite.getName());
+      if (total == null) {
+        total = 0L;
+      }
+      m_totalTime.put(suite.getName(), total + time);
       index++;
     }
 
@@ -65,11 +74,30 @@ public class TimesPanel extends BaseMultiSuitePanel {
   @Override
   public String getContent(ISuite suite, XMLStringBuffer main) {
     XMLStringBuffer xsb = new XMLStringBuffer(main.getCurrentIndent());
+    xsb.push(D, C, "times-div");
     xsb.push("script", "type", "text/javascript");
     xsb.addString(js(suite));
     xsb.pop("script");
+    xsb.addRequired(S, String.format("Total running time: %s",
+        prettyDuration(m_totalTime.get(suite.getName()))),
+        C, "suite-total-time");
     xsb.push(D, "id", "times-div-" + suiteToTag(suite));
     xsb.pop(D);
+    xsb.pop(D);
     return xsb.toXML();
+  }
+
+  private String prettyDuration(long totalTime) {
+    String result;
+    if (totalTime < 1000) {
+      result = totalTime + " ms";
+    } else if (totalTime < 1000 * 60) {
+      result = (totalTime / 1000) + " seconds";
+    } else if (totalTime < 1000 * 60 * 60) {
+      result = (totalTime / 1000 / 60) + " minutes";
+    } else {
+      result = (totalTime / 1000 / 60 / 60) + " hours";
+    }
+    return result;
   }
 }

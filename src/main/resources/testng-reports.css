@@ -237,3 +237,11 @@ table.google-visualization-table-table {
     border-color: #19f52d;
 }
 
+.times-div {
+    text-align: center;
+    padding: 5px;
+}
+
+.suite-total-time {
+    font: 16px 'Lucida Grande';
+}
