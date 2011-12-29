@@ -43,8 +43,9 @@ public class Main implements IReporter {
     TimesPanel timePanel = new TimesPanel(m_model);
     ReporterPanel reporterPanel = new ReporterPanel(m_model);
     IgnoredMethodsPanel ignoredMethodsPanel = new IgnoredMethodsPanel(m_model);
+    ChronologicalPanel chronologicalPanel = new ChronologicalPanel(m_model);
     new NavigatorPanel(m_model, testNgPanel, testPanel, groupPanel, timePanel, reporterPanel,
-        ignoredMethodsPanel)
+        ignoredMethodsPanel, chronologicalPanel)
         .generate(xsb);
 
     xsb.push(D, C, "wrapper");
@@ -60,6 +61,7 @@ public class Main implements IReporter {
     testPanel.generate(xsb);
     testNgPanel.generate(xsb);
     ignoredMethodsPanel.generate(xsb);
+    chronologicalPanel.generate(xsb);
 
     xsb.pop(D); // main-panel-root
     xsb.pop(D); // wrapper

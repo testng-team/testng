@@ -19,10 +19,11 @@ public class NavigatorPanel extends BasePanel {
   private TimesPanel m_timePanel;
   private ReporterPanel m_reporterPanel;
   private IgnoredMethodsPanel m_ignoredMethodsPanel;
+  private ChronologicalPanel m_chronologicalPanel;
 
   public NavigatorPanel(Model model, TestNgXmlPanel testNgPanel, TestPanel testPanel,
       GroupPanel groupPanel, TimesPanel timePanel, ReporterPanel reporterPanel,
-      IgnoredMethodsPanel ignoredMethodsPanel) {
+      IgnoredMethodsPanel ignoredMethodsPanel,ChronologicalPanel chronologicalPanel) {
     super(model);
     m_testNgPanel = testNgPanel;
     m_testPanel = testPanel;
@@ -30,6 +31,7 @@ public class NavigatorPanel extends BasePanel {
     m_timePanel = timePanel;
     m_reporterPanel = reporterPanel;
     m_ignoredMethodsPanel = ignoredMethodsPanel;
+    m_chronologicalPanel = chronologicalPanel;
   }
 
   @Override
@@ -155,6 +157,9 @@ public class NavigatorPanel extends BasePanel {
 
     // Reporter
     addLinkTo(header, m_reporterPanel, suite, "Reporter output", null);
+
+    // Chronological
+    addLinkTo(header, m_chronologicalPanel, suite, "Chronological view", null);
 
     // Ignored methods
     addLinkTo(header, m_ignoredMethodsPanel, suite, "Ignored methods", null);

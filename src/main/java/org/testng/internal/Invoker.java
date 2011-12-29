@@ -514,7 +514,8 @@ public class Invoker implements IInvoker {
                                           params,
                                           false, /* isTest */
                                           isClass, /* ??? */
-                                          System.currentTimeMillis());
+                                          System.currentTimeMillis(),
+                                          testResult);
 
       runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
       m_notifier.addInvokedMethod(invokedMethod);
@@ -652,7 +653,8 @@ public class Invoker implements IInvoker {
           parameterValues,
           true /* isTest */,
           false /* isConfiguration */,
-          System.currentTimeMillis());
+          System.currentTimeMillis(),
+          testResult);
 
       // Fix from ansgarkonermann
       // invokedMethod is used in the finally, which can be invoked if

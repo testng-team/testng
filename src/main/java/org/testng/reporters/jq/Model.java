@@ -189,11 +189,20 @@ public class Model {
   }
 
   public List<ITestResult> getAllTestResults(ISuite suite) {
+    return getAllTestResults(suite, true /* tests only */);
+  }
+
+  public List<ITestResult> getAllTestResults(ISuite suite, boolean testsOnly) {
     List<ITestResult> result = Lists.newArrayList();
     for (ISuiteResult sr : suite.getResults().values()) {
       result.addAll(sr.getTestContext().getPassedTests().getAllResults());
       result.addAll(sr.getTestContext().getFailedTests().getAllResults());
       result.addAll(sr.getTestContext().getSkippedTests().getAllResults());
+      if (! testsOnly) {
+        result.addAll(sr.getTestContext().getPassedConfigurations().getAllResults());
+        result.addAll(sr.getTestContext().getFailedConfigurations().getAllResults());
+        result.addAll(sr.getTestContext().getSkippedConfigurations().getAllResults());
+      }
     }
     return result;
   }

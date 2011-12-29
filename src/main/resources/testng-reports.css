@@ -245,3 +245,39 @@ table.google-visualization-table-table {
 .suite-total-time {
     font: 16px 'Lucida Grande';
 }
+
+.configuration-suite {
+    margin-left: 20px;
+}
+
+.configuration-test {
+    margin-left: 40px;
+}
+
+.configuration-class {
+    margin-left: 60px;
+}
+
+.configuration-method {
+    margin-left: 80px;
+}
+
+.test-method {
+    margin-left: 100px;
+}
+
+.chronological-class {
+    background-color: #0ccff;
+    border-style: solid;
+    border-width: 0px 0px 1px 1px;
+}
+
+.method-start {
+    float: right;
+}
+
+.chronological-class-name {
+    text-align: center;
+    font-family: monospace;
+    font-size: 16px;
+}
