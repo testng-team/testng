@@ -61,7 +61,8 @@ public class SuitePanel extends BasePanel {
   private void generateMethod(ITestResult tr, XMLStringBuffer xsb) {
     xsb.push(D, C, "method");
     xsb.push(D, C, "method-content");
-    xsb.addEmptyElement("a", "name", Model.getTestResultName(tr));
+    xsb.push("a", "name", Model.getTestResultName(tr));
+    xsb.pop("a");
     xsb.addOptional(S, tr.getMethod().getMethodName(), C, "method-name");
 
     // Parameters?

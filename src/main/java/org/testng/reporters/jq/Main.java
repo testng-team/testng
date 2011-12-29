@@ -31,7 +31,7 @@ public class Main implements IReporter {
     m_model = new Model(suites);
     m_outputDirectory = outputDirectory + File.separatorChar + "new";
 
-    XMLStringBuffer xsb = new XMLStringBuffer("  ");
+    XMLStringBuffer xsb = new XMLStringBuffer("    ");
 
     // Top banner
     new BannerPanel(m_model).generate(xsb);
@@ -63,6 +63,9 @@ public class Main implements IReporter {
 
     xsb.pop(D); // main-panel-root
     xsb.pop(D); // wrapper
+
+    xsb.addString("  </body>\n");
+    xsb.addString("</html>\n");
 
     String all;
     try {
