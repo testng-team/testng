@@ -137,7 +137,7 @@ public class Model {
   }
 
   public List<ITestResult> getTestResults(ISuite suite) {
-    return m_model.get(suite);
+    return nonnullList(m_model.get(suite));
    }
 
   public static String getTestResultName(ITestResult tr) {
