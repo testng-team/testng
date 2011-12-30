@@ -116,7 +116,7 @@ function drawTable() {
         var table = new google.visualization.Table(document
                 .getElementById(div));
         table.draw(data, {
-            showRowNumber : true
+            showRowNumber : false
         });
     }
 }

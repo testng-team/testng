@@ -36,6 +36,7 @@ public class TimesPanel extends BaseMultiSuitePanel {
         "suiteTableInitFunctions.push('" + functionName + "');\n"
           + "function " + functionName + "() {\n"
           + "var data = new google.visualization.DataTable();\n"
+          + "data.addColumn('number', 'Number');\n"
           + "data.addColumn('string', 'Method');\n"
           + "data.addColumn('string', 'Class');\n"
           + "data.addColumn('number', 'Time (ms)');\n");
@@ -48,12 +49,15 @@ public class TimesPanel extends BaseMultiSuitePanel {
     for (ITestResult tr : allTestResults) {
       ITestNGMethod m = tr.getMethod();
       long time = tr.getEndMillis() - tr.getStartMillis();
-      result.append("data.setCell(" + index + ", "
-              + "0, '" + m.getMethodName() + "')\n")
+      result
           .append("data.setCell(" + index + ", "
-              + "1, '" + m.getTestClass().getName() + "')\n")
+              + "0, " + index + ")\n")
           .append("data.setCell(" + index + ", "
-              + "2, " + time + ");\n");
+              + "1, '" + m.getMethodName() + "')\n")
+          .append("data.setCell(" + index + ", "
+              + "2, '" + m.getTestClass().getName() + "')\n")
+          .append("data.setCell(" + index + ", "
+              + "3, " + time + ");\n");
       Long total = m_totalTime.get(suite.getName());
       if (total == null) {
         total = 0L;
