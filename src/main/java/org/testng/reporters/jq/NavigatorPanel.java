@@ -37,6 +37,13 @@ public class NavigatorPanel extends BasePanel {
   @Override
   public void generate(XMLStringBuffer main) {
     main.push(D, C, "navigator-root");
+    main.push(D, C, "navigator-suite-header");
+    main.addRequired(S, "All suites");
+    main.push("a", C, "collapse-all-link", "href", "#", "title", "Collapse/expand all the suites");
+    main.push("img", "src", "collapseall.gif", C, "collapse-all-icon");
+    main.pop("img");
+    main.pop("a");
+    main.pop(D);
     int suiteCount = 0;
     for (ISuite suite : getSuites()) {
       if (suite.getResults().size() == 0) {

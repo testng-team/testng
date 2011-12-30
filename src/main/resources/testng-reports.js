@@ -24,6 +24,16 @@ $(document).ready(function() {
     $('.panel').hide();
     $('.navigator-link').first().click();
 
+    // Collapse/expand the suites
+    $('a.collapse-all-link').click(function() {
+        var contents = $('.navigator-suite-content');
+        if (contents.css('display') == 'none') {
+            contents.show();
+        } else {
+            contents.hide();
+        }
+    });
+
     // Keep the navigator div always visible
     var $scrollingDiv = $(".navigator-root");
     $(window).scroll(function() {
@@ -41,7 +51,7 @@ function installMethodHandlers(name, hide) {
 
     function getHideLink(t) {
         var s = 'a.hide-methods.' + name + "." + t.attr('panel-name');
-    return $(s);
+        return $(s);
     }
 
     function getShowLink(t) {
@@ -51,15 +61,15 @@ function installMethodHandlers(name, hide) {
     $('a.hide-methods.' + name).click(function() {
         var w = getContent($(this));
         w.hide();
-    getHideLink($(this)).hide();
-    getShowLink($(this)).show();
+        getHideLink($(this)).hide();
+        getShowLink($(this)).show();
     });
 
     $('a.show-methods.' + name).click(function() {
         var w = getContent($(this));
         w.show();
-    getHideLink($(this)).show();
-    getShowLink($(this)).hide();
+        getHideLink($(this)).show();
+        getShowLink($(this)).hide();
     });
 
     if (hide) {

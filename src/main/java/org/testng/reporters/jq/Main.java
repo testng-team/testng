@@ -19,7 +19,7 @@ public class Main implements IReporter {
   private static final String[] RESOURCES = new String[] {
     "jquery-1.7.1.min.js", "testng-reports.css", "testng-reports.js",
     "passed.png", "failed.png", "skipped.png", "navigator-bullet.png",
-    "bullet_point.png"
+    "bullet_point.png", "collapseall.gif"
   };
 
   private Model m_model;

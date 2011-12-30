@@ -218,6 +218,7 @@ table.google-visualization-table-table {
 
 .border-failed {
     border-top-left-radius: 10px 10px;
+    border-bottom-left-radius: 10px 10px;
     border-style: solid;
     border-width: 0px 0px 0px 10px;
     border-color: #f00;
@@ -225,6 +226,7 @@ table.google-visualization-table-table {
 
 .border-skipped {
     border-top-left-radius: 10px 10px;
+    border-bottom-left-radius: 10px 10px;
     border-style: solid;
     border-width: 0px 0px 0px 10px;
     border-color: #edc600;
@@ -232,6 +234,7 @@ table.google-visualization-table-table {
 
 .border-passed {
     border-top-left-radius: 10px 10px;
+    border-bottom-left-radius: 10px 10px;
     border-style: solid;
     border-width: 0px 0px 0px 10px;
     border-color: #19f52d;
@@ -284,4 +287,16 @@ table.google-visualization-table-table {
 .after, .before, .test-method {
     font-family: monospace;
     font-size: 14px;
+}
+
+.navigator-suite-header {
+    font-size: 22px;
+    margin: 0px 10px 5px 0px;
+    background-color: brown;
+    text-align: center;
+}
+
+.collapse-all-icon {
+    padding: 5px;
+    float: right;
 }
