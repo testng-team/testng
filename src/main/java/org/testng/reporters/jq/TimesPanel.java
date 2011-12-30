@@ -82,9 +82,11 @@ public class TimesPanel extends BaseMultiSuitePanel {
     xsb.push("script", "type", "text/javascript");
     xsb.addString(js(suite));
     xsb.pop("script");
-    xsb.addRequired(S, String.format("Total running time: %s",
-        prettyDuration(m_totalTime.get(suite.getName()))),
-        C, "suite-total-time");
+    Long time = m_totalTime.get(suite.getName());
+    if (time != null) {
+      xsb.addRequired(S, String.format("Total running time: %s", prettyDuration(time)),
+          C, "suite-total-time");
+    }
     xsb.push(D, "id", "times-div-" + suiteToTag(suite));
     xsb.pop(D);
     xsb.pop(D);
