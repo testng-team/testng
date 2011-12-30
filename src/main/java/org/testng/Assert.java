@@ -580,13 +580,13 @@ public class Assert {
     }
 
     if ((actual == null && expected != null) || (actual != null && expected == null)) {
-      failAssertNoEqual(actual, expected,
+      failAssertNoEqual(
           "Arrays not equal: " + Arrays.toString(expected) + " and " + Arrays.toString(actual),
           message);
     }
 
     if (actual.length != expected.length) {
-      failAssertNoEqual(actual, expected,
+      failAssertNoEqual(
           "Arrays do not have the same size:" + actual.length + " != " + expected.length,
           message);
     }
@@ -599,15 +599,13 @@ public class Assert {
       actualCollection.remove(o);
     }
     if (actualCollection.size() != 0) {
-      failAssertNoEqual(actual, expected,
+      failAssertNoEqual(
           "Arrays not equal: " + Arrays.toString(expected) + " and " + Arrays.toString(actual),
           message);
     }
   }
 
-  private static void failAssertNoEqual(Object[] actual, Object[] expected,
-		  String message, String defaultMessage)
-  {
+  private static void failAssertNoEqual(String defaultMessage, String message) {
     if (message != null) {
       fail(message);
     } else {
