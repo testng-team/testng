@@ -79,6 +79,14 @@ public class ChronologicalPanel extends BaseMultiSuitePanel {
         currentClass = m.getTestClass().getName();
       }
       xsb.push(D, C, cls);
+      if (tr.getStatus() == ITestResult.FAILURE) {
+        xsb.push("img", "src", Model.getImage("failed"));
+        xsb.pop("img");
+      }
+
+      // No need to check for skipped methods since by definition, they were never
+      // invoked.
+
       xsb.addRequired(S, methodName, C, "method-name");
 //      xsb.addRequired(S, "BeforeSuite", C, "method-type");
       if (start == 0) {
