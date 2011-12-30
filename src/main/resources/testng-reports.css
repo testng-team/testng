@@ -88,7 +88,7 @@ a:hover {
 }
 
 .method-name {
-    font-size: 14px;
+    font-size: 12px;
     font-family: monospace;
 }
 
@@ -277,7 +277,11 @@ table.google-visualization-table-table {
 }
 
 .chronological-class-name {
-    text-align: center;
+    padding: 0px 0px 0px 5px;
+    color: #008;
+}
+
+.after, .before, .test-method {
     font-family: monospace;
-    font-size: 16px;
+    font-size: 14px;
 }
