@@ -149,37 +149,37 @@ public class NavigatorPanel extends BasePanel {
     header.push("ul");
 
     // "59 Tests"
-    addLinkTo(header, m_testPanel, suite, "test-stats");
+    addLinkTo(header, m_testPanel, suite);
 
     // "12 groups"
-    addLinkTo(header, m_groupPanel, suite, null /* no class */);
+    addLinkTo(header, m_groupPanel, suite);
 
     // Times
-    addLinkTo(header, m_timePanel, suite, null);
+    addLinkTo(header, m_timePanel, suite);
 
     // Reporter
-    addLinkTo(header, m_reporterPanel, suite, null);
+    addLinkTo(header, m_reporterPanel, suite);
 
     // Chronological
-    addLinkTo(header, m_chronologicalPanel, suite, null);
+    addLinkTo(header, m_chronologicalPanel, suite);
 
     // Ignored methods
-    addLinkTo(header, m_ignoredMethodsPanel, suite, null);
+    addLinkTo(header, m_ignoredMethodsPanel, suite);
 
     // "testng.xml"
-    addLinkTo(header, m_testNgPanel, suite, null);
+    addLinkTo(header, m_testNgPanel, suite);
 
     header.pop("ul");
     header.pop(D); // suite-section-content
   }
 
-  private void addLinkTo(XMLStringBuffer header, INavigatorPanel panel, ISuite suite,
-      String className) {
+  private void addLinkTo(XMLStringBuffer header, INavigatorPanel panel, ISuite suite) {
     String text = panel.getNavigatorLink(suite);
     header.push("li");
     header.push("a", "href", "#",
         "panel-name", panel.getPanelName(suite),
         C, "navigator-link ");
+    String className = panel.getClassName();
     if (className != null) {
       header.addOptional(S, text, C, className);
     } else {

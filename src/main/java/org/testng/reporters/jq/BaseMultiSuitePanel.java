@@ -27,4 +27,9 @@ abstract public class BaseMultiSuitePanel extends BasePanel implements INavigato
       xsb.pop(D);
     }
   }
+
+  @Override
+  public String getClassName() {
+    return null;
+  }
 }

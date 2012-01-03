@@ -48,4 +48,9 @@ public class TestPanel extends BaseMultiSuitePanel {
   public String getNavigatorLink(ISuite suite) {
     return pluralize(suite.getXmlSuite().getTests().size(), "test");
   }
+
+  @Override
+  public String getClassName() {
+    return "test-stats";
+  }
 }
