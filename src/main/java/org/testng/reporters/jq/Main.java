@@ -34,10 +34,10 @@ public class Main implements IReporter {
 
     XMLStringBuffer xsb = new XMLStringBuffer("    ");
 
-    // Top banner
+    // Generate the top banner
     new BannerPanel(m_model).generate(xsb);
 
-    // Navigator on the left hand side
+    // All the panels selectable from the navigator
     List<INavigatorPanel> panels = Arrays.<INavigatorPanel>asList(
         new TestNgXmlPanel(m_model),
         new TestPanel(m_model),
@@ -46,15 +46,19 @@ public class Main implements IReporter {
         new ReporterPanel(m_model),
         new IgnoredMethodsPanel(m_model),
         new ChronologicalPanel(m_model));
+
+    // Generate the navigator on the left hand side
     new NavigatorPanel(m_model, panels).generate(xsb);
 
     xsb.push(D, C, "wrapper");
     xsb.push(D, "class", "main-panel-root");
 
     //
-    // Suite panels
+    // Generate the main suite panel
     //
     new SuitePanel(m_model).generate(xsb);
+
+    // Generate all the navigator panels
     for (INavigatorPanel panel : panels) {
       panel.generate(xsb);
     }
