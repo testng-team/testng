@@ -13,6 +13,7 @@ import org.testng.xml.XmlSuite;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 
 public class Main implements IReporter {
@@ -37,16 +38,15 @@ public class Main implements IReporter {
     new BannerPanel(m_model).generate(xsb);
 
     // Navigator on the left hand side
-    TestNgXmlPanel testNgPanel = new TestNgXmlPanel(m_model);
-    TestPanel testPanel = new TestPanel(m_model);
-    GroupPanel groupPanel = new GroupPanel(m_model);
-    TimesPanel timePanel = new TimesPanel(m_model);
-    ReporterPanel reporterPanel = new ReporterPanel(m_model);
-    IgnoredMethodsPanel ignoredMethodsPanel = new IgnoredMethodsPanel(m_model);
-    ChronologicalPanel chronologicalPanel = new ChronologicalPanel(m_model);
-    new NavigatorPanel(m_model, testNgPanel, testPanel, groupPanel, timePanel, reporterPanel,
-        ignoredMethodsPanel, chronologicalPanel)
-        .generate(xsb);
+    List<INavigatorPanel> panels = Arrays.<INavigatorPanel>asList(
+        new TestNgXmlPanel(m_model),
+        new TestPanel(m_model),
+        new GroupPanel(m_model),
+        new TimesPanel(m_model),
+        new ReporterPanel(m_model),
+        new IgnoredMethodsPanel(m_model),
+        new ChronologicalPanel(m_model));
+    new NavigatorPanel(m_model, panels).generate(xsb);
 
     xsb.push(D, C, "wrapper");
     xsb.push(D, "class", "main-panel-root");
@@ -55,13 +55,9 @@ public class Main implements IReporter {
     // Suite panels
     //
     new SuitePanel(m_model).generate(xsb);
-    groupPanel.generate(xsb);
-    reporterPanel.generate(xsb);
-    timePanel.generate(xsb);
-    testPanel.generate(xsb);
-    testNgPanel.generate(xsb);
-    ignoredMethodsPanel.generate(xsb);
-    chronologicalPanel.generate(xsb);
+    for (INavigatorPanel panel : panels) {
+      panel.generate(xsb);
+    }
 
     xsb.pop(D); // main-panel-root
     xsb.pop(D); // wrapper

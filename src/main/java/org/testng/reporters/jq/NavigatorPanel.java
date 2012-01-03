@@ -13,25 +13,11 @@ import java.util.Map;
 
 public class NavigatorPanel extends BasePanel {
 
-  private TestNgXmlPanel m_testNgPanel;
-  private TestPanel m_testPanel;
-  private GroupPanel m_groupPanel;
-  private TimesPanel m_timePanel;
-  private ReporterPanel m_reporterPanel;
-  private IgnoredMethodsPanel m_ignoredMethodsPanel;
-  private ChronologicalPanel m_chronologicalPanel;
+  private List<INavigatorPanel> m_panels;
 
-  public NavigatorPanel(Model model, TestNgXmlPanel testNgPanel, TestPanel testPanel,
-      GroupPanel groupPanel, TimesPanel timePanel, ReporterPanel reporterPanel,
-      IgnoredMethodsPanel ignoredMethodsPanel,ChronologicalPanel chronologicalPanel) {
+  public NavigatorPanel(Model model, List<INavigatorPanel> panels) {
     super(model);
-    m_testNgPanel = testNgPanel;
-    m_testPanel = testPanel;
-    m_groupPanel = groupPanel;
-    m_timePanel = timePanel;
-    m_reporterPanel = reporterPanel;
-    m_ignoredMethodsPanel = ignoredMethodsPanel;
-    m_chronologicalPanel = chronologicalPanel;
+    m_panels = panels;
   }
 
   @Override
@@ -141,33 +127,14 @@ public class NavigatorPanel extends BasePanel {
     header.addRequired(S, "Info");
     header.pop(D);
 
-    //
-    // Info
-    //
     header.push(D, C, "suite-section-content");
 
     header.push("ul");
 
-    // "59 Tests"
-    addLinkTo(header, m_testPanel, suite);
-
-    // "12 groups"
-    addLinkTo(header, m_groupPanel, suite);
-
-    // Times
-    addLinkTo(header, m_timePanel, suite);
-
-    // Reporter
-    addLinkTo(header, m_reporterPanel, suite);
-
-    // Chronological
-    addLinkTo(header, m_chronologicalPanel, suite);
-
-    // Ignored methods
-    addLinkTo(header, m_ignoredMethodsPanel, suite);
-
-    // "testng.xml"
-    addLinkTo(header, m_testNgPanel, suite);
+    // All the panels
+    for (INavigatorPanel panel : m_panels) {
+      addLinkTo(header, panel, suite);
+    }
 
     header.pop("ul");
     header.pop(D); // suite-section-content
