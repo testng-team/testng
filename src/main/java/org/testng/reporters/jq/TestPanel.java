@@ -43,4 +43,9 @@ public class TestPanel extends BaseMultiSuitePanel {
 
     return xsb.toXML();
   }
+
+  @Override
+  public String getNavigatorLink(ISuite suite) {
+    return pluralize(suite.getXmlSuite().getTests().size(), "test");
+  }
 }

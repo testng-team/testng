@@ -49,4 +49,9 @@ public class ReporterPanel extends BaseMultiSuitePanel {
     return xsb.toXML();
   }
 
+  @Override
+  public String getNavigatorLink(ISuite suite) {
+    return "Reporter output";
+  }
+
 }

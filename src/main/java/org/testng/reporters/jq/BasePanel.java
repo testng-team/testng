@@ -24,11 +24,17 @@ abstract public class BasePanel implements IPanel {
   }
 
   protected static String pluralize(int count, String singular) {
-    return Integer.toString(count) + " "
-        + (count > 1 ? (singular.endsWith("s") ? singular + "es" : singular + "s") : singular);
+    return Integer.toString(count) + " " + (count == 0 || count > 1
+        ? (singular.endsWith("s") ? singular + "es" : singular + "s")
+        : singular);
   }
 
   protected static String suiteToTag(ISuite suite) {
     return suite.getName().replace(" ", "_");
+  }
+
+  @Override
+  public String getNavigatorLink(ISuite suite) {
+    return "";
   }
 }

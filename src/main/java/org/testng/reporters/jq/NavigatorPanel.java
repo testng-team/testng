@@ -150,38 +150,33 @@ public class NavigatorPanel extends BasePanel {
     header.push("ul");
 
     // "59 Tests"
-    addLinkTo(header, m_testPanel, suite,
-        pluralize(results.values().size(), "test"),
-        "test-stats");
+    addLinkTo(header, m_testPanel, suite, "test-stats");
 
     // "12 groups"
-    addLinkTo(header, m_groupPanel, suite,
-        pluralize(getModel().getGroups(suite.getName()).size(), "group"),
-        null /* no class */);
+    addLinkTo(header, m_groupPanel, suite, null /* no class */);
 
     // Times
-    addLinkTo(header, m_timePanel, suite, "Times", null);
+    addLinkTo(header, m_timePanel, suite, null);
 
     // Reporter
-    addLinkTo(header, m_reporterPanel, suite, "Reporter output", null);
+    addLinkTo(header, m_reporterPanel, suite, null);
 
     // Chronological
-    addLinkTo(header, m_chronologicalPanel, suite, "Chronological view", null);
+    addLinkTo(header, m_chronologicalPanel, suite, null);
 
     // Ignored methods
-    addLinkTo(header, m_ignoredMethodsPanel, suite, "Ignored methods", null);
+    addLinkTo(header, m_ignoredMethodsPanel, suite, null);
 
     // "testng.xml"
-    String fqName = suite.getXmlSuite().getFileName();
-    if (fqName == null) fqName = "/[unset file name]";
-    addLinkTo(header, m_testNgPanel, suite, fqName.substring(fqName.lastIndexOf("/") + 1), null);
+    addLinkTo(header, m_testNgPanel, suite, null);
 
     header.pop("ul");
     header.pop(D); // suite-section-content
   }
 
   private void addLinkTo(XMLStringBuffer header, INavigatorPanel panel, ISuite suite,
-      String text, String className) {
+      String className) {
+    String text = panel.getNavigatorLink(suite);
     header.push("li");
     header.push("a", "href", "#",
         "panel-name", panel.getPanelName(suite),

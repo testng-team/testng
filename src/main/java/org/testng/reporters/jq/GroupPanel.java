@@ -45,4 +45,9 @@ public class GroupPanel extends BaseMultiSuitePanel {
     }
     return xsb.toXML();
   }
+
+  @Override
+  public String getNavigatorLink(ISuite suite) {
+    return pluralize(getModel().getGroups(suite.getName()).size(), "group");
+  }
 }

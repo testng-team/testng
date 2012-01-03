@@ -49,4 +49,9 @@ public class IgnoredMethodsPanel extends BaseMultiSuitePanel {
     return xsb.toXML();
   }
 
+  @Override
+  public String getNavigatorLink(ISuite suite) {
+    return "Ignored methods";
+  }
+
 }

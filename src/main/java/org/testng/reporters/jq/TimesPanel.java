@@ -106,4 +106,9 @@ public class TimesPanel extends BaseMultiSuitePanel {
     }
     return result;
   }
+
+  @Override
+  public String getNavigatorLink(ISuite suite) {
+    return "Times";
+  }
 }
