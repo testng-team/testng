@@ -33,8 +33,4 @@ abstract public class BasePanel implements IPanel {
     return suite.getName().replace(" ", "_");
   }
 
-  @Override
-  public String getNavigatorLink(ISuite suite) {
-    return "";
-  }
 }

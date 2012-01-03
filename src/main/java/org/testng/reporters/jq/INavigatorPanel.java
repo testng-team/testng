@@ -7,4 +7,5 @@ import org.testng.ISuite;
  */
 public interface INavigatorPanel extends IPanel {
   String getPanelName(ISuite suite);
+  String getNavigatorLink(ISuite suite);
 }
