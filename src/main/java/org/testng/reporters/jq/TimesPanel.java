@@ -16,18 +16,15 @@ public class TimesPanel extends BaseMultiSuitePanel {
     super(model);
   }
 
-  private static String getTag(ISuite suite) {
-    return "times-" + suiteToTag(suite);
+
+  @Override
+  public String getPrefix() {
+    return "times-";
   }
 
   @Override
   public String getHeader(ISuite suite) {
     return "Times for " + suite.getName();
-  }
-
-  @Override
-  public String getPanelName(ISuite suite) {
-    return getTag(suite);
   }
 
   private String js(ISuite suite) {

@@ -10,18 +10,15 @@ public class TestNgXmlPanel extends BaseMultiSuitePanel {
     super(model);
   }
 
-  private static String getTag(ISuite suite) {
-    return "test-xml-" + suiteToTag(suite);
+
+  @Override
+  public String getPrefix() {
+    return "test-xml-";
   }
 
   @Override
   public String getHeader(ISuite suite) {
     return suite.getXmlSuite().getFileName();
-  }
-
-  @Override
-  public String getPanelName(ISuite suite) {
-    return getTag(suite);
   }
 
   @Override

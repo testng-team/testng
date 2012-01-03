@@ -12,18 +12,15 @@ public class IgnoredMethodsPanel extends BaseMultiSuitePanel {
     super(model);
   }
 
-  private static String getTag(ISuite suite) {
-    return "ignored-methods-" + suiteToTag(suite);
+
+  @Override
+  public String getPrefix() {
+    return "ignored-methods-";
   }
 
   @Override
   public String getHeader(ISuite suite) {
     return pluralize(suite.getExcludedMethods().size(), "ignored method");
-  }
-
-  @Override
-  public String getPanelName(ISuite suite) {
-    return getTag(suite);
   }
 
   @Override

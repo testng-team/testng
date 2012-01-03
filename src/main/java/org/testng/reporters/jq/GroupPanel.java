@@ -11,18 +11,14 @@ public class GroupPanel extends BaseMultiSuitePanel {
     super(model);
   }
 
-  private static String getTag(ISuite suite) {
-    return "group-" + suiteToTag(suite);
+  @Override
+  public String getPrefix() {
+    return "group-";
   }
 
   @Override
   public String getHeader(ISuite suite) {
     return "Groups for " + suite.getName();
-  }
-
-  @Override
-  public String getPanelName(ISuite suite) {
-    return getTag(suite);
   }
 
   @Override

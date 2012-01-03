@@ -32,4 +32,10 @@ abstract public class BaseMultiSuitePanel extends BasePanel implements INavigato
   public String getClassName() {
     return null;
   }
+
+  @Override
+  public String getPanelName(ISuite suite) {
+    return getPrefix() + suiteToTag(suite);
+  }
+
 }

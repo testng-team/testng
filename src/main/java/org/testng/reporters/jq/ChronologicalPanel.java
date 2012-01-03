@@ -16,18 +16,14 @@ public class ChronologicalPanel extends BaseMultiSuitePanel {
     super(model);
   }
 
-  private static String getTag(ISuite suite) {
-    return "chronological-" + suiteToTag(suite);
+  @Override
+  public String getPrefix() {
+    return "chronological-";
   }
 
   @Override
   public String getHeader(ISuite suite) {
     return "Methods in chronological order";
-  }
-
-  @Override
-  public String getPanelName(ISuite suite) {
-    return getTag(suite);
   }
 
   @Override

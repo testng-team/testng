@@ -16,18 +16,15 @@ public class ReporterPanel extends BaseMultiSuitePanel {
     super(model);
   }
 
-  private static String getTag(ISuite suite) {
-    return "reporter-" + suiteToTag(suite);
+
+  @Override
+  public String getPrefix() {
+    return "reporter-";
   }
 
   @Override
   public String getHeader(ISuite suite) {
     return "Reporter output for " + suite.getName();
-  }
-
-  @Override
-  public String getPanelName(ISuite suite) {
-    return getTag(suite);
   }
 
   @Override

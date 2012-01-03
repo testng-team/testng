@@ -13,18 +13,15 @@ public class TestPanel extends BaseMultiSuitePanel {
     super(model);
   }
 
-  private static String getTag(ISuite suite) {
-    return "testlist-" + suite.getName().replace(" ", "_");
+
+  @Override
+  public String getPrefix() {
+    return "testlist-";
   }
 
   @Override
   public String getHeader(ISuite suite) {
     return "Tests for " + suite.getName();
-  }
-
-  @Override
-  public String getPanelName(ISuite suite) {
-    return getTag(suite);
   }
 
   @Override
