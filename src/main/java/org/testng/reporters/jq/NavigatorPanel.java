@@ -81,7 +81,7 @@ public class NavigatorPanel extends BasePanel {
 
       header.push(D, C, "navigator-suite-content");
 
-      generateInfo(header, suite, results);
+      generateInfo(header, suite);
       generateResult(header, failed, skipped, passed, suite, suiteName);
 
       header.pop("ul");
@@ -133,8 +133,7 @@ public class NavigatorPanel extends BasePanel {
         suiteName, header);
     }
 
-  private void generateInfo(XMLStringBuffer header, ISuite suite,
-      Map<String, ISuiteResult> results) {
+  private void generateInfo(XMLStringBuffer header, ISuite suite) {
     //
     // Info
     //
