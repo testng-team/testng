@@ -1,9 +1,11 @@
 package org.testng.reporters;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -27,6 +29,15 @@ public class Files {
       line = br.readLine();
     }
     return result.toString();
+  }
+
+  public static void writeFile(String string, File f) throws IOException {
+    f.getParentFile().mkdirs();
+    FileWriter fw = new FileWriter(f);
+    BufferedWriter bw = new BufferedWriter(fw);
+    bw.write(string);
+    bw.close();
+    fw.close();
   }
 
   public static void copyFile(InputStream from, File to) throws IOException {
