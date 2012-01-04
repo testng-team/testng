@@ -49,27 +49,36 @@ function installMethodHandlers(name, hide) {
     return $('.method-list-content.' + name + "." + t.attr('panel-name'));
     }
 
-    function getHideLink(t) {
+    function getHideLink(t, name) {
         var s = 'a.hide-methods.' + name + "." + t.attr('panel-name');
         return $(s);
     }
 
-    function getShowLink(t) {
+    function getShowLink(t, name) {
         return $('a.show-methods.' + name + "." + t.attr('panel-name'));
+    }
+
+    function getMethodPanelClassSel(element, name) {
+        var panelName = getPanelName(element);
+    var sel = '.' + panelName + "-class-" + name;
+        return $(sel);
     }
 
     $('a.hide-methods.' + name).click(function() {
         var w = getContent($(this));
         w.hide();
-        getHideLink($(this)).hide();
-        getShowLink($(this)).show();
+        getHideLink($(this), name).hide();
+        getShowLink($(this), name).show();
+    getMethodPanelClassSel($(this), name).hide();
     });
 
     $('a.show-methods.' + name).click(function() {
         var w = getContent($(this));
         w.show();
-        getHideLink($(this)).show();
-        getShowLink($(this)).hide();
+        getHideLink($(this), name).show();
+        getShowLink($(this), name).hide();
+    showPanel(getPanelName($(this)));
+    getMethodPanelClassSel($(this), name).show();
     });
 
     if (hide) {
@@ -113,8 +122,7 @@ function drawTable() {
         var v = window.suiteTableData[k];
         var div = v.tableDiv;
         var data = v.tableData
-        var table = new google.visualization.Table(document
-                .getElementById(div));
+        var table = new google.visualization.Table(document.getElementById(div));
         table.draw(data, {
             showRowNumber : false
         });

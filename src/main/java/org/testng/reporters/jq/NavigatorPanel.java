@@ -30,13 +30,12 @@ public class NavigatorPanel extends BasePanel {
     main.pop("img");
     main.pop("a");
     main.pop(D);
-    int suiteCount = 0;
     for (ISuite suite : getSuites()) {
       if (suite.getResults().size() == 0) {
         continue;
       }
 
-      String suiteName = "suite-" + suiteCount;
+      String suiteName = "suite-" + suiteToTag(suite);
 
       XMLStringBuffer header = new XMLStringBuffer(main.getCurrentIndent());
 
@@ -81,8 +80,6 @@ public class NavigatorPanel extends BasePanel {
       header.pop(D); // navigator-suite-content
 
       main.addString(header.toXML());
-
-      suiteCount++;
     }
     main.pop(D);
   }

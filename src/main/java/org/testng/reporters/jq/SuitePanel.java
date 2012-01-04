@@ -23,8 +23,8 @@ public class SuitePanel extends BasePanel {
   }
 
   private void generateSuitePanel(ISuite suite, XMLStringBuffer xsb) {
-    String divName = getModel().getTag(suite);
-    xsb.push(D, C, "panel " + divName, "panel-name", divName);
+    String divName = suiteToTag(suite);
+    xsb.push(D, C, "panel " + divName, "panel-name", "suite-" + divName);
     String[] statuses = new String[] { FAILED, SKIPPED, PASSED };
     ResultsByClass[] results = new ResultsByClass[] {
         getModel().getFailedResultsByClass(suite),
@@ -35,14 +35,15 @@ public class SuitePanel extends BasePanel {
     for (int i = 0; i < results.length; i++) {
       ResultsByClass byClass = results[i];
       for (Class<?> c : byClass.getClasses()) {
-        generateClassPanel(c, byClass.getResults(c), xsb, statuses[i]);
+        generateClassPanel(c, byClass.getResults(c), xsb, statuses[i], suite);
       }
     }
     xsb.pop(D);
   }
 
-  private void generateClassPanel(Class c, List<ITestResult> results,XMLStringBuffer xsb,
-      String status) {
+  private void generateClassPanel(Class c, List<ITestResult> results, XMLStringBuffer xsb,
+      String status, ISuite suite) {
+    xsb.push(D, C, "suite-" + suiteToTag(suite) + "-class-" + status);
     xsb.push(D, C, "main-panel-header rounded-window-top");
 
     // Passed/failed icon
@@ -55,6 +56,7 @@ public class SuitePanel extends BasePanel {
     for (ITestResult tr : results) {
       generateMethod(tr, xsb);
     }
+    xsb.pop(D);
     xsb.pop(D);
   }
 

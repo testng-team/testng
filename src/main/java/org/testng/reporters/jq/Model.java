@@ -19,7 +19,6 @@ import java.util.Set;
 public class Model {
   private ListMultiMap<ISuite, ITestResult> m_model = Maps.newListMultiMap();
   private List<ISuite> m_suites = null;
-  private Map<ISuite, String> m_suiteTags = Maps.newHashMap();
   private Map<String, String> m_testTags = Maps.newHashMap();
   private Map<ITestResult, String> m_testResultMap = Maps.newHashMap();
   private Map<ISuite, ResultsByClass> m_failedResultsByClass = Maps.newHashMap();
@@ -41,10 +40,8 @@ public class Model {
   }
 
   private void init() {
-    int counter = 0;
     int testCounter = 0;
     for (ISuite suite : m_suites) {
-      m_suiteTags.put(suite, "suite-" + counter++);
       List<ITestResult> passed = Lists.newArrayList();
       List<ITestResult> failed = Lists.newArrayList();
       List<ITestResult> skipped = Lists.newArrayList();
@@ -127,9 +124,6 @@ public class Model {
 
   public ResultsByClass getPassedResultsByClass(ISuite suite) {
     return m_passedResultsByClass.get(suite);
-  }
-  public String getTag(ISuite s) {
-    return m_suiteTags.get(s);
   }
 
   public String getTag(ITestResult tr) {
