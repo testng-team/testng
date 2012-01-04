@@ -28,4 +28,9 @@ public @interface DataProvider {
    * Whether this data provider should be run in parallel.
    */
   boolean parallel() default false;
+
+  /**
+   * Which indices to run from this data provider, default: all.
+   */
+  int[] indices() default {};
 }

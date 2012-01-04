@@ -1,6 +1,7 @@
 Current
 
 
+Added: @DataProvider(indices) to return specific indices of a data provider
 Added: New HTML reports
 Fixed: GITHUB-149: reversed arguments in failAssertEqualsNoOrder().
 Fixed: EmailableReporter: methods are now *really* sorted chronologically.
