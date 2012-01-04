@@ -6,6 +6,8 @@ import org.testng.ITestResult;
 import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +43,15 @@ public class TimesPanel extends BaseMultiSuitePanel {
     List<ITestResult> allTestResults = getModel().getAllTestResults(suite);
     result.append(
       "data.addRows(" + allTestResults.size() + ");\n");
+
+    Collections.sort(allTestResults, new Comparator<ITestResult>() {
+      @Override
+      public int compare(ITestResult o1, ITestResult o2) {
+        long t1 = o1.getEndMillis() - o1.getStartMillis();
+        long t2 = o2.getEndMillis() - o2.getStartMillis();
+        return (int) (t2 - t1);
+      }
+    });
 
     int index = 0;
     for (ITestResult tr : allTestResults) {
