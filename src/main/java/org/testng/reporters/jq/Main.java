@@ -30,7 +30,7 @@ public class Main implements IReporter {
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
       String outputDirectory) {
     m_model = new Model(suites);
-    m_outputDirectory = outputDirectory + File.separatorChar + "new";
+    m_outputDirectory = outputDirectory;
 
     XMLStringBuffer xsb = new XMLStringBuffer("    ");
 
