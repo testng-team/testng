@@ -93,7 +93,7 @@ public class MethodHelper {
         Method maybeReferringTo = findMethodByName(m, regexp);
         if (maybeReferringTo != null) {
           throw new TestNGException(canonicalMethodName + "() is depending on method "
-              + maybeReferringTo + ", which is not annotated with @Test");
+              + maybeReferringTo + ", which is not annotated with @Test or not included.");
         }
         throw new TestNGException(canonicalMethodName
             + "() depends on nonexistent method " + regexp);

@@ -76,7 +76,9 @@
       <class name="test.thread.ParallelSuiteTest"/>
 -->
       <class name="test.simple.IncludedExcludedTest" />
+<!-- 
       <class name="test.reports.ReportTest" />
+-->
       <class name="test.annotationtransformer.AnnotationTransformerTest" />
       <class name="test.jar.JarTest" />
       <class name="test.xml.XmlVerifyTest" />
@@ -455,6 +457,7 @@
       <class name="test.dataprovider.InheritedDataProviderTest" />
       <class name="test.dataprovider.TestNG411Test" />
       <class name="test.dataprovider.VarArgsDataProviderTest" />
+      <class name="test.dataprovider.IndicesTest" />
     </classes>
   </test>
 
@@ -674,6 +677,12 @@
       <class name="test.configuration.VerifySuiteTest" />
       <class name="test.configuration.SingleConfigurationTest" />
       <class name="test.configuration.BeforeClassWithDisabledTest" />
+    </classes>
+  </test>
+
+  <test name="Mustache">
+    <classes>
+      <class name="test.mustache.MustacheTest" />
     </classes>
   </test>
 </suite>

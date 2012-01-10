@@ -11,7 +11,9 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -556,6 +558,11 @@ public class JUnitUtils {
     public ConstructorOrMethod getConstructorOrMethod() {
       return null;
     }
+
+    @Override
+    public Map<String, String> findMethodParameters(XmlTest test) {
+      return Collections.emptyMap();
+    }
   }
 
   /**
@@ -737,5 +744,4 @@ public class JUnitUtils {
       return null;
     }
   }
-
 }

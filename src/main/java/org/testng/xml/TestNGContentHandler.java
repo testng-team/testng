@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 /**
  * Suite definition parser utility.
@@ -41,9 +42,17 @@ public class TestNGContentHandler extends DefaultHandler {
   private List<String> m_currentExcludedGroups = null;
   private Map<String, String> m_currentTestParameters = null;
   private Map<String, String> m_currentSuiteParameters = null;
+  private Include m_currentInclude;
   private List<String> m_currentMetaGroup = null;
   private String m_currentMetaGroupName;
-  private boolean m_inTest = false;
+
+  enum Location {
+    SUITE,
+    TEST,
+    INCLUDE
+  }
+  private Stack<Location> m_locations = new Stack<Location>();
+
   private XmlClass m_currentClass = null;
   private ArrayList<XmlInclude> m_currentIncludedMethods = null;
   private List<String> m_currentExcludedMethods = null;
@@ -108,10 +117,12 @@ public class TestNGContentHandler extends DefaultHandler {
   private void xmlSuiteFile(boolean start, Attributes attributes) {
     if (start) {
       String path = attributes.getValue("path");
+      pushLocation(Location.SUITE);
       m_suiteFiles.add(path);
     }
     else {
       m_currentSuite.setSuiteFiles(m_suiteFiles);
+      popLocation();
     }
   }
 
@@ -120,6 +131,7 @@ public class TestNGContentHandler extends DefaultHandler {
    */
   private void xmlSuite(boolean start, Attributes attributes) {
     if (start) {
+      pushLocation(Location.SUITE);
       String name = attributes.getValue("name");
       m_currentSuite = new XmlSuite();
       m_currentSuite.setFileName(m_fileName);
@@ -186,6 +198,7 @@ public class TestNGContentHandler extends DefaultHandler {
       m_currentSuite.setParameters(m_currentSuiteParameters);
       m_suites.add(m_currentSuite);
       m_currentSuiteParameters = null;
+      popLocation();
     }
   }
 
@@ -218,7 +231,7 @@ public class TestNGContentHandler extends DefaultHandler {
 //      ppp("CLOSE SCRIPT:@@" + m_currentExpression + "@@");
       m_currentSelector.setExpression(m_currentExpression);
       m_currentSelector.setLanguage(m_currentLanguage);
-      if (m_inTest) {
+      if (m_locations.peek() == Location.TEST) {
         m_currentTest.setBeanShellExpression(m_currentExpression);
       }
       m_currentLanguage = null;
@@ -232,6 +245,7 @@ public class TestNGContentHandler extends DefaultHandler {
   private void xmlTest(boolean start, Attributes attributes) {
     if (start) {
       m_currentTest = new XmlTest(m_currentSuite, m_currentTestIndex++);
+      pushLocation(Location.TEST);
       m_currentTestParameters = Maps.newHashMap();
       final String testName= attributes.getValue("name");
       if(isStringBlank(testName)) {
@@ -275,7 +289,6 @@ public class TestNGContentHandler extends DefaultHandler {
       if (null != timeOut) {
         m_currentTest.setTimeOut(Long.parseLong(timeOut));
       }
-      m_inTest = true;
       m_enabledTest= true;
       String enabledTestString = attributes.getValue("enabled");
       if(null != enabledTestString) {
@@ -292,7 +305,7 @@ public class TestNGContentHandler extends DefaultHandler {
       m_currentClasses = null;
       m_currentTest = null;
       m_currentTestParameters = null;
-      m_inTest = false;
+      popLocation();
       if(!m_enabledTest) {
         List<XmlTest> tests= m_currentSuite.getTests();
         tests.remove(tests.size() - 1);
@@ -352,11 +365,15 @@ public class TestNGContentHandler extends DefaultHandler {
     }
     else {
       if (null != m_currentPackages) {
-        if(m_inTest) {
-          m_currentTest.setXmlPackages(m_currentPackages);
-        }
-        else {
-          m_currentSuite.setXmlPackages(m_currentPackages);
+        switch(m_locations.peek()) {
+          case TEST:
+            m_currentTest.setXmlPackages(m_currentPackages);
+            break;
+          case SUITE:
+            m_currentSuite.setXmlPackages(m_currentPackages);
+            break;
+          case INCLUDE:
+            throw new UnsupportedOperationException("INCLUDE");
         }
       }
 
@@ -373,11 +390,13 @@ public class TestNGContentHandler extends DefaultHandler {
       m_currentSelectors = new ArrayList<XmlMethodSelector>();
     }
     else {
-      if (m_inTest) {
-        m_currentTest.setMethodSelectors(m_currentSelectors);
-      }
-      else {
-        m_currentSuite.setMethodSelectors(m_currentSelectors);
+      switch(m_locations.peek()) {
+        case TEST:
+          m_currentTest.setMethodSelectors(m_currentSelectors);
+          break;
+        default:
+          m_currentSuite.setMethodSelectors(m_currentSelectors);
+          break;
       }
 
       m_currentSelectors = null;
@@ -522,26 +541,7 @@ public class TestNGContentHandler extends DefaultHandler {
       xmlMethod(true, attributes);
     }
     else if ("include".equals(qName)) {
-      if (null != m_currentIncludedMethods) {
-        String in = attributes.getValue("invocation-numbers");
-        XmlInclude include;
-        if (!Utils.isStringEmpty(in)) {
-          include = new XmlInclude(name, stringToList(in), m_currentIncludeIndex++);
-        } else {
-          include = new XmlInclude(name, m_currentIncludeIndex++);
-        }
-        include.setDescription(attributes.getValue("description"));
-        m_currentIncludedMethods.add(include);
-      }
-      else if (null != m_currentDefines) {
-        m_currentMetaGroup.add(name);
-      }
-      else if (null != m_currentRuns) {
-        m_currentIncludedGroups.add(name);
-      }
-      else if (null != m_currentPackage) {
-        m_currentPackage.getInclude().add(name);
-      }
+      xmlInclude(true, attributes);
     }
     else if ("exclude".equals(qName)) {
       if (null != m_currentExcludedMethods) {
@@ -556,13 +556,67 @@ public class TestNGContentHandler extends DefaultHandler {
     }
     else if ("parameter".equals(qName)) {
       String value = attributes.getValue("value");
-      if (m_inTest) {
-        m_currentTestParameters.put(name, value);
-      }
-      else {
-        m_currentSuiteParameters.put(name, value);
+      switch(m_locations.peek()) {
+        case TEST:
+          m_currentTestParameters.put(name, value);
+          break;
+        case SUITE:
+          m_currentSuiteParameters.put(name, value);
+          break;
+        case INCLUDE:
+          m_currentInclude.parameters.put(name, value);
       }
     }
+  }
+
+  private class Include {
+    String name;
+    String invocationNumbers;
+    String description;
+    Map<String, String> parameters;
+  }
+
+  private void xmlInclude(boolean start, Attributes attributes) {
+    if (start) {
+      m_currentInclude = new Include();
+      m_currentInclude.name = attributes.getValue("name");
+      m_currentInclude.parameters = Maps.newHashMap();
+      m_currentInclude.invocationNumbers = attributes.getValue("invocation-numbers");
+      pushLocation(Location.INCLUDE);
+    } else {
+      String name = m_currentInclude.name;
+      if (null != m_currentIncludedMethods) {
+        String in = m_currentInclude.invocationNumbers;
+        XmlInclude include;
+        if (!Utils.isStringEmpty(in)) {
+          include = new XmlInclude(name, stringToList(in), m_currentIncludeIndex++);
+        } else {
+          include = new XmlInclude(name, m_currentIncludeIndex++);
+        }
+        include.setParameters(m_currentInclude.parameters);
+        include.setDescription(m_currentInclude.description);
+        m_currentIncludedMethods.add(include);
+      }
+      else if (null != m_currentDefines) {
+        m_currentMetaGroup.add(name);
+      }
+      else if (null != m_currentRuns) {
+        m_currentIncludedGroups.add(name);
+      }
+      else if (null != m_currentPackage) {
+        m_currentPackage.getInclude().add(name);
+      }
+      m_currentInclude = null;
+      popLocation();
+    }
+  }
+
+  private void pushLocation(Location l) {
+    m_locations.push(l);
+  }
+
+  private Location popLocation() {
+    return m_locations.pop();
   }
 
   private List<Integer> stringToList(String in) {
@@ -618,6 +672,9 @@ public class TestNGContentHandler extends DefaultHandler {
     else if ("packages".equals(qName)) {
       xmlPackages(false, null);
     }
+    else if ("include".equals(qName)) {
+      xmlInclude(false, null);
+    }
   }
 
   @Override
@@ -646,4 +703,5 @@ public class TestNGContentHandler extends DefaultHandler {
   public XmlSuite getSuite() {
     return m_currentSuite;
   }
+
 }

@@ -32,7 +32,9 @@ import org.testng.reporters.EmailableReporter;
 import org.testng.reporters.FailedReporter;
 import org.testng.reporters.JUnitReportReporter;
 import org.testng.reporters.SuiteHTMLReporter;
+import org.testng.reporters.VerboseReporter;
 import org.testng.reporters.XMLReporter;
+import org.testng.reporters.jq.Main;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
@@ -62,7 +64,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import org.testng.reporters.*;
 
 /**
  * This class is the main entry point for running tests in the TestNG framework.
@@ -469,7 +470,8 @@ public class TestNG {
   private String[] splitMethod(String m) {
     int index = m.lastIndexOf(".");
     if (index < 0) {
-      throw new TestNGException("Bad format for command line method:" + m);
+      throw new TestNGException("Bad format for command line method:" + m
+          + ", expected <class>.<method>");
     }
 
     return new String[] { m.substring(0, index), m.substring(index + 1) };
@@ -819,6 +821,7 @@ public class TestNG {
 
     if (m_useDefaultListeners) {
       addReporter(SuiteHTMLReporter.class);
+      addReporter(Main.class);
       addReporter(FailedReporter.class);
       addReporter(XMLReporter.class);
       addReporter(EmailableReporter.class);

@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import org.testng.IInvokedMethod;
 import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
 
 import java.io.Serializable;
 
@@ -13,6 +14,7 @@ public class InvokedMethod implements Serializable, IInvokedMethod {
   private boolean m_isTest = true;
   private boolean m_isConfigurationMethod = false;
   private long m_date = System.currentTimeMillis();
+  private ITestResult m_testResult;
 
   /**
    * @param m_object
@@ -24,13 +26,15 @@ public class InvokedMethod implements Serializable, IInvokedMethod {
                        Object[] parameters,
                        boolean isTest,
                        boolean isConfiguration,
-                       long date) {
+                       long date,
+                       ITestResult testResult) {
     m_instance = instance;
     m_testMethod = method;
     m_parameters = parameters;
     m_isTest = isTest;
     m_isConfigurationMethod = isConfiguration;
     m_date = date;
+    m_testResult = testResult;
   }
 
   /* (non-Javadoc)
@@ -76,4 +80,8 @@ public class InvokedMethod implements Serializable, IInvokedMethod {
     return m_date;
   }
 
+  @Override
+  public ITestResult getTestResult() {
+    return m_testResult;
+  }
 }

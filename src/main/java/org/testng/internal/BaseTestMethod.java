@@ -10,9 +10,12 @@ import org.testng.collections.Maps;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.thread.IAtomicInteger;
 import org.testng.internal.thread.ThreadUtil;
+import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -764,4 +767,18 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return m_method;
   }
 
+  @Override
+  public Map<String, String> findMethodParameters(XmlTest test) {
+    for (XmlClass xmlClass: test.getXmlClasses()) {
+      if (xmlClass.getName().equals(getTestClass().getName())) {
+        for (XmlInclude include : xmlClass.getIncludedMethods()) {
+          if (include.getName().equals(getMethodName())) {
+            return include.getParameters();
+          }
+        }
+      }
+    }
+
+    return Collections.emptyMap();
+  }
 }

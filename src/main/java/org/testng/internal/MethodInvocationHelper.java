@@ -6,6 +6,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
+import org.testng.annotations.DataProvider;
 import org.testng.collections.Lists;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.thread.IExecutor;
@@ -13,7 +14,6 @@ import org.testng.internal.thread.IFutureResult;
 import org.testng.internal.thread.ThreadExecutionException;
 import org.testng.internal.thread.ThreadTimeoutException;
 import org.testng.internal.thread.ThreadUtil;
-import org.testng.xml.XmlSuite;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -114,7 +114,20 @@ public class MethodInvocationHelper {
 
       Class<?> returnType = dataProvider.getReturnType();
       if (Object[][].class.isAssignableFrom(returnType)) {
-        Object[][] oResult = (Object[][]) invokeMethod(dataProvider, instance, parameters);
+        Object[][] originalResult = (Object[][]) invokeMethod(dataProvider, instance, parameters);
+
+        // If the data provider is restricting the indices to return, filter them out
+        int[] indices = dataProvider.getAnnotation(DataProvider.class).indices();
+        Object[][] oResult;
+        if (indices.length > 0) {
+          oResult = new Object[indices.length][];
+          for (int j = 0; j < indices.length; j++) {
+            oResult[j] = originalResult[indices[j]];
+          }
+        } else {
+          oResult = originalResult;
+        }
+
         method.setParameterInvocationCount(oResult.length);
         result = MethodHelper.createArrayIterator(oResult);
       } else if (Iterator.class.isAssignableFrom(returnType)) {

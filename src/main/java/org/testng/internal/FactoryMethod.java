@@ -8,7 +8,6 @@ import org.testng.collections.Maps;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
 
-import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +64,9 @@ public class FactoryMethod extends BaseTestMethod {
       Parameters.handleParameters(this,
           allParameterNames,
           m_instance,
-          new Parameters.MethodParameters(m_xmlTest.getParameters(), null, null, m_testContext,
+          new Parameters.MethodParameters(m_xmlTest.getParameters(),
+              findMethodParameters(m_xmlTest),
+              null, null, m_testContext,
               null /* testResult */),
           m_xmlTest.getSuite(),
           m_annotationFinder,

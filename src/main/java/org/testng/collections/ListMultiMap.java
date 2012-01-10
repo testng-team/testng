@@ -74,4 +74,10 @@ public class ListMultiMap<K, V> {
   public Collection<List<V>> getValues() {
     return m_objects.values();
   }
+
+  public void putAll(K k, Collection<V> values) {
+    for (V v : values) {
+      put(k, v);
+    }
+  }
 }

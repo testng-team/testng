@@ -624,14 +624,14 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
   @Override
   public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-    if (method == null) {
-      throw new NullPointerException("Method should not be null");
-    }
-    m_invokedMethods.add(method);
   }
 
   @Override
   public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
+    if (method == null) {
+      throw new NullPointerException("Method should not be null");
+    }
+    m_invokedMethods.add(method);
   }
 
   //

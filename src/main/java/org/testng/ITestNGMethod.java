@@ -7,6 +7,7 @@ import org.testng.xml.XmlTest;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Describes a TestNG annotated method and the instance on which it will be invoked.
@@ -249,4 +250,11 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
   public XmlTest getXmlTest();
 
   ConstructorOrMethod getConstructorOrMethod();
+
+  /**
+   * @return the parameters found in the include tag, if any
+   * @param test
+   * @return
+   */
+  Map<String, String> findMethodParameters(XmlTest test);
 }
