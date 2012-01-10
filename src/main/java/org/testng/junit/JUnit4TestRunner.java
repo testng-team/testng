@@ -121,7 +121,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
                     l.onTestSuccess(tr);
                 }
             }
-            m_parentRunner.addInvokedMethod(new InvokedMethod(tr.getTestClass(), tr.getMethod(), new Object[0], true, false, tr.getStartMillis()));
+            m_parentRunner.addInvokedMethod(new InvokedMethod(tr.getTestClass(), tr.getMethod(), new Object[0], true, false, tr.getStartMillis(), tr));
             m_methods.add(tr.getMethod());
         }
 
@@ -134,7 +134,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
             for (ITestListener l : m_listeners) {
                 l.onTestSkipped(tr);
             }
-            m_parentRunner.addInvokedMethod(new InvokedMethod(tr.getTestClass(), tr.getMethod(), new Object[0], true, false, tr.getStartMillis()));
+            m_parentRunner.addInvokedMethod(new InvokedMethod(tr.getTestClass(), tr.getMethod(), new Object[0], true, false, tr.getStartMillis(), tr));
             m_methods.add(tr.getMethod());
         }
 
