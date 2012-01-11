@@ -134,6 +134,9 @@ public class TestRunner
 
   // Defined dynamically depending on <test preserve-order="true/false">
   private transient IMethodInterceptor m_methodInterceptor;
+  
+  private transient IMethodInterceptor m_methodInterceptor_user_define;
+
 
   private transient ClassMethodMap m_classMethodMap;
   private transient TestNGClassFinder m_testClassFinder;
@@ -771,12 +774,12 @@ public class TestRunner
    * Apply the method interceptor (if applicable) to the list of methods.
    */
   private ITestNGMethod[] intercept(ITestNGMethod[] methods) {
-    if (m_methodInterceptor == null) return methods;
+    if (m_methodInterceptor_user_define == null) return methods;
 
     IMethodInstance[] instances = methodsToMethodInstances(Arrays.asList(methods));
 
     List<IMethodInstance> resultInstances =
-        m_methodInterceptor.intercept(Arrays.asList(instances), this);
+        m_methodInterceptor_user_define.intercept(Arrays.asList(instances), this);
     List<ITestNGMethod> result = Lists.newArrayList();
     for (IMethodInstance imi : resultInstances) {
       result.add(imi.getMethod());
@@ -1544,7 +1547,7 @@ public class TestRunner
   }
 
   public void setMethodInterceptor(IMethodInterceptor methodInterceptor) {
-    m_methodInterceptor = methodInterceptor;
+    m_methodInterceptor_user_define = methodInterceptor;
   }
 
   @Override
