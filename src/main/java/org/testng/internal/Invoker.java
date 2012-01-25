@@ -166,7 +166,8 @@ public class Invoker implements IInvoker {
                                              tm,
                                              null,
                                              System.currentTimeMillis(),
-                                             System.currentTimeMillis());
+                                             System.currentTimeMillis(),
+                                             m_testContext);
 
       IConfigurationAnnotation configurationAnnotation= null;
       try {
@@ -643,7 +644,8 @@ public class Invoker implements IInvoker {
                                  tm,
                                  null,
                                  System.currentTimeMillis(),
-                                 0);
+                                 0,
+                                 m_testContext);
       testResult.setParameters(parameterValues);
       testResult.setHost(m_testContext.getHost());
       testResult.setStatus(ITestResult.STARTED);
@@ -1127,7 +1129,8 @@ public class Invoker implements IInvoker {
                                                testMethod,
                                                null /* cause */,
                                                start,
-                                               System.currentTimeMillis());
+                                               System.currentTimeMillis(),
+                                               m_testContext);
         String missingGroup = testMethod.getMissingGroup();
         if (missingGroup != null) {
           testResult.setThrowable(new Throwable("Method " + testMethod
@@ -1263,7 +1266,8 @@ public class Invoker implements IInvoker {
                 testMethod,
                 cause,
                 start,
-                System.currentTimeMillis());
+                System.currentTimeMillis(),
+                m_testContext);
             r.setStatus(TestResult.FAILURE);
             result.add(r);
             runTestListeners(r);
@@ -1284,7 +1288,8 @@ public class Invoker implements IInvoker {
         testMethod,
         throwable,
         start,
-        System.currentTimeMillis());
+        System.currentTimeMillis(),
+        m_testContext);
     result.setStatus(TestResult.SKIP);
     runTestListeners(result);
 
@@ -1380,7 +1385,8 @@ public class Invoker implements IInvoker {
               testMethod,
               cause,
               System.currentTimeMillis(),
-              System.currentTimeMillis()));
+              System.currentTimeMillis(),
+              m_testContext));
     }
   }
 

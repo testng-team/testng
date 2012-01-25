@@ -89,4 +89,9 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
   public String getTestName();
 
   public String getInstanceName();
+  
+  /**
+   * Get this tests {@link ITestContext}
+   */
+  public ITestContext getContext();
 }
