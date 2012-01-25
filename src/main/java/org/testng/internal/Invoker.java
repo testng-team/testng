@@ -98,7 +98,7 @@ public class Invoker implements IInvoker {
       instances = Sets.newHashSet();
       m_methodInvocationResults.put(method, instances);
     }
-    instances.add(instance);
+    instances.add(getMethodInvocationToken(method, instance));
   }
 
   public Invoker(IConfiguration configuration,
@@ -450,7 +450,7 @@ public class Invoker implements IInvoker {
       else if (m_continueOnFailedConfiguration &&
               currentTestMethod != null &&
               m_methodInvocationResults.containsKey(currentTestMethod)) {
-        result = !m_methodInvocationResults.get(currentTestMethod).contains(instance);
+        result = !m_methodInvocationResults.get(currentTestMethod).contains(getMethodInvocationToken(currentTestMethod, instance));
       }
       else if (! m_continueOnFailedConfiguration) {
         for(Class<?> clazz: m_classInvocationResults.keySet()) {
@@ -474,6 +474,12 @@ public class Invoker implements IInvoker {
       }
     }
     return result;
+  }
+
+   // Creates a token for tracking a unique invocation of a method on an instance.
+   // Is used when configFailurePolicy=continue.
+  private Object getMethodInvocationToken(ITestNGMethod method, Object instance) {
+    return String.format("%s+%d", instance.toString(), method.getCurrentInvocationCount());
   }
 
   /**
