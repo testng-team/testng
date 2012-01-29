@@ -26,12 +26,14 @@ public class FailurePolicyTest {
       // params - confFail, confSkip, skipedTests
       new Object[] { new Class[] { ClassWithFailedBeforeClassMethod.class }, 1, 1, 1 },
       new Object[] { new Class[] { ClassWithFailedBeforeMethodAndMultipleTests.class }, 2, 0, 2 },
+      new Object[] { new Class[] { ClassWithFailedBeforeMethodAndMultipleInvocations.class }, 4, 0, 4 },
       new Object[] { new Class[] { ExtendsClassWithFailedBeforeMethod.class }, 2, 2, 2 },
       new Object[] { new Class[] { ClassWithFailedBeforeClassMethod.class }, 1, 1, 1 },
       new Object[] { new Class[] { ExtendsClassWithFailedBeforeClassMethod.class }, 1, 2, 2 },
       new Object[] { new Class[] { ClassWithFailedBeforeClassMethod.class, ExtendsClassWithFailedBeforeClassMethod.class }, 2, 3, 3 },
       new Object[] { new Class[] { ClassWithSkippingBeforeMethod.class }, 0, 1, 1 },
       new Object[] { new Class[] { FactoryClassWithFailedBeforeMethod.class }, 2, 0, 2 },
+      new Object[] { new Class[] { FactoryClassWithFailedBeforeMethodAndMultipleInvocations.class }, 8, 0, 8 },
       new Object[] { new Class[] { FactoryClassWithFailedBeforeClassMethod.class }, 2, 2, 2 },
     };
     return data;
