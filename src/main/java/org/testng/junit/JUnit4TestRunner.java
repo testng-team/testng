@@ -5,12 +5,10 @@ import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
+import org.junit.runner.manipulation.Filter;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
-import org.testng.ITestListener;
-import org.testng.ITestNGMethod;
-import org.testng.ITestResult;
-import org.testng.TestNGException;
+import org.testng.*;
 import org.testng.collections.Lists;
 import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.InvokedMethod;
@@ -27,6 +25,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
     private ITestResultNotifier m_parentRunner;
     private List<ITestNGMethod> m_methods = Lists.newArrayList();
     private List<ITestListener> m_listeners = Lists.newArrayList();
+    private List<IInvokedMethodListener> m_invokeListeners = Lists.newArrayList();
 
     public JUnit4TestRunner() {
     }
@@ -53,6 +52,10 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
         m_listeners = m_parentRunner.getTestListeners();
     }
 
+    public void setInvokedMethodListeners(List<IInvokedMethodListener> listeners) {
+        m_invokeListeners = listeners;
+    }
+
     /**
      * A
      * <code>start</code> implementation that ignores the
@@ -61,20 +64,43 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
      * @param testClass the JUnit test class
      */
     @Override
-    public void run(Class testClass) {
-        start(testClass);
+    public void run(Class testClass, String... methods) {
+        start(testClass, methods);
     }
 
     /**
      * Starts a test run. Analyzes the command line arguments and runs the given
      * test suite.
      */
-    public Result start(Class testCase) {
+    public Result start(final Class testCase, final String... methods) {
         try {
             JUnitCore core = new JUnitCore();
             core.addListener(new RL());
             Request r = Request.aClass(testCase);
-            return core.run(r);
+            return core.run(r.filterWith(new Filter() {
+
+                @Override
+                public boolean shouldRun(Description description) {
+                    if (description == null) {
+                        return false;
+                    }
+                    if (methods.length == 0) {
+                        //run everything
+                        return true;
+                    }
+                    for (String m: methods) {
+                        if (m.equals(description.getMethodName())) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
+                @Override
+                public String describe() {
+                    return "TestNG method filter";
+                }
+            }));
         } catch (Throwable t) {
             throw new TestNGException("Failure in JUnit mode for class " + testCase.getName(), t);
         }
@@ -92,6 +118,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
             tr.setStatus(TestResult.FAILURE);
             tr.setEndMillis(Calendar.getInstance().getTimeInMillis());
             tr.setThrowable(failure.getException());
+            m_parentRunner.addFailedTest(tr.getMethod(), tr);
             for (ITestListener l : m_listeners) {
                 l.onTestFailure(tr);
             }
@@ -105,6 +132,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
             tr.setStatus(TestResult.FAILURE);
             tr.setEndMillis(Calendar.getInstance().getTimeInMillis());
             tr.setThrowable(failure.getException());
+            m_parentRunner.addFailedTest(tr.getMethod(), tr);
             for (ITestListener l : m_listeners) {
                 l.onTestFailure(tr);
             }
@@ -117,11 +145,11 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
             if (!failures.contains(description)) {
                 tr.setStatus(TestResult.SUCCESS);
                 tr.setEndMillis(Calendar.getInstance().getTimeInMillis());
+                m_parentRunner.addPassedTest(tr.getMethod(), tr);
                 for (ITestListener l : m_listeners) {
                     l.onTestSuccess(tr);
                 }
             }
-            m_parentRunner.addInvokedMethod(new InvokedMethod(tr.getTestClass(), tr.getMethod(), new Object[0], true, false, tr.getStartMillis(), tr));
             m_methods.add(tr.getMethod());
         }
 
@@ -131,23 +159,21 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
             ITestResult tr = createTestResult(description);
             tr.setStatus(TestResult.SKIP);
             tr.setEndMillis(tr.getStartMillis());
+            m_parentRunner.addSkippedTest(tr.getMethod(), tr);
+            m_methods.add(tr.getMethod());
             for (ITestListener l : m_listeners) {
                 l.onTestSkipped(tr);
             }
-            m_parentRunner.addInvokedMethod(new InvokedMethod(tr.getTestClass(), tr.getMethod(), new Object[0], true, false, tr.getStartMillis(), tr));
-            m_methods.add(tr.getMethod());
         }
 
         @Override
         public void testRunFinished(Result result) throws Exception {
             super.testRunFinished(result);
-            //TODO: ITestContext to be implemented by JUnitTestRunner
         }
 
         @Override
         public void testRunStarted(Description description) throws Exception {
             super.testRunStarted(description);
-            //TODO: ITestContext to be implemented by JUnitTestRunner
         }
 
         @Override
@@ -161,8 +187,8 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
         }
 
         private ITestResult createTestResult(Description test) {
-            JUnitUtils.JUnitTestClass tc = new JUnitUtils.JUnitTestClass(test);
-            JUnitUtils.JUnitTestMethod tm = new JUnitUtils.JUnitTestMethod(test, tc);
+            JUnit4TestClass tc = new JUnit4TestClass(test);
+            JUnitTestMethod tm = new JUnit4TestMethod(tc, test);
 
             TestResult tr = new TestResult(tc,
                     test,
@@ -171,6 +197,11 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
                     Calendar.getInstance().getTimeInMillis(),
                     0);
 
+            InvokedMethod im = new InvokedMethod(tr.getTestClass(), tr.getMethod(), new Object[0], true, false, tr.getStartMillis(), tr);
+            m_parentRunner.addInvokedMethod(im);
+            for (IInvokedMethodListener l: m_invokeListeners) {
+                l.beforeInvocation(im, tr);
+            }
             return tr;
         }
     }
