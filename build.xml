@@ -311,6 +311,11 @@
 
     <delete file="${jdk15.jar}" />
     <copy file="${testng.jar}" tofile="${jdk15.jar}" />
+
+    <!-- sources -->
+    <property name="sources" value="${testng-eclipse.dir}/lib/testng-sources.jar"/>
+    <echo>Sources: ${sources}</echo>
+    <jar destfile="${sources}" basedir="src/main/java/" />
   </target>
 
   <target name="ftp">
