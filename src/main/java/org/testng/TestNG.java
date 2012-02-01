@@ -64,6 +64,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import org.testng.junit.JUnitTestFinder;
 
 /**
  * This class is the main entry point for running tests in the TestNG framework.
@@ -129,6 +130,7 @@ public class TestNG {
   private String[] m_excludedGroups;
 
   private Boolean m_isJUnit = XmlSuite.DEFAULT_JUNIT;
+  private Boolean m_isMixed = XmlSuite.DEFAULT_MIXED;
   protected boolean m_useDefaultListeners = true;
 
   private ITestRunnerFactory m_testRunnerFactory;
@@ -497,7 +499,13 @@ public class TestNG {
     //
     // Add the method tags
     //
-    List<XmlClass> xmlClasses = result.get(0).getTests().get(0).getXmlClasses();
+    List<XmlClass> xmlClasses = Lists.newArrayList();
+    for (XmlSuite s : result) {
+        for (XmlTest t : s.getTests()) {
+            xmlClasses.addAll(t.getClasses());
+        }
+    }
+
     for (XmlClass xc : xmlClasses) {
       for (String m : commandLineMethods) {
         String[] split = splitMethod(m);
@@ -527,14 +535,24 @@ public class TestNG {
       ITestAnnotation test = (ITestAnnotation) finder.findAnnotation(c, ITestAnnotation.class);
       String suiteName = getDefaultSuiteName();
       String testName = getDefaultTestName();
+      boolean isJUnit = false;
       if (test != null) {
         suiteName = defaultIfStringEmpty(test.getSuiteName(), suiteName);
         testName = defaultIfStringEmpty(test.getTestName(), testName);
+      } else {
+          if (m_isMixed && JUnitTestFinder.isJUnitTest(c)) {
+              isJUnit = true;
+              suiteName += "-junit";
+              testName += "-junit";
+          }
       }
       XmlSuite xmlSuite = suites.get(suiteName);
       if (xmlSuite == null) {
         xmlSuite = new XmlSuite();
         xmlSuite.setName(suiteName);
+        if (isJUnit) {
+            xmlSuite.setJUnit(isJUnit);
+        }
         suites.put(suiteName, xmlSuite);
       }
 
@@ -1343,6 +1361,7 @@ public class TestNG {
     setTestJar(cla.testJar);
     setXmlPathInJar(cla.xmlPathInJar);
     setJUnit(cla.junit);
+    setMixed(cla.mixed);
     setMaster(cla.master);
     setSlave(cla.slave);
     setSkipFailedInvocationCounts(cla.skipFailedInvocationCounts);
@@ -1479,6 +1498,7 @@ public class TestNG {
     result.testJar = (String) cmdLineArgs.get(CommandLineArgs.TEST_JAR);
     result.xmlPathInJar = (String) cmdLineArgs.get(CommandLineArgs.XML_PATH_IN_JAR);
     result.junit = (Boolean) cmdLineArgs.get(CommandLineArgs.JUNIT);
+    result.mixed = (Boolean) cmdLineArgs.get(CommandLineArgs.MIXED);
     result.master = (String) cmdLineArgs.get(CommandLineArgs.MASTER);
     result.slave = (String) cmdLineArgs.get(CommandLineArgs.SLAVE);
     result.skipFailedInvocationCounts = (Boolean) cmdLineArgs.get(
@@ -1591,6 +1611,15 @@ public class TestNG {
   }
 
   /**
+   * Specify if this run should be made in mixed mode
+   *
+   * @param isJUnit
+   */
+  public void setMixed(Boolean isMixed) {
+    m_isMixed = isMixed;
+  }
+
+  /**
    * @deprecated The TestNG version is now established at load time. This
    * method is not required anymore and is now a no-op.
    */
@@ -1638,6 +1667,13 @@ public class TestNG {
     if (args.slave != null && args.master != null) {
      throw new ParameterException(CommandLineArgs.SLAVE + " can't be combined with "
          + CommandLineArgs.MASTER);
+    }
+
+    Boolean junit = args.junit;
+    Boolean mixed = args.mixed;
+    if (junit && mixed) {
+     throw new ParameterException(CommandLineArgs.MIXED + " can't be combined with "
+         + CommandLineArgs.JUNIT);
     }
   }
 

@@ -52,6 +52,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import org.testng.xml.*;
 
 /**
  * This class takes care of running one Test.
@@ -644,7 +645,7 @@ public class TestRunner
   }
 
   private void privateRunJUnit(XmlTest xmlTest) {
-    ClassInfoMap cim = new ClassInfoMap(m_testClassesFromXml);
+    final ClassInfoMap cim = new ClassInfoMap(m_testClassesFromXml);
     final Set<Class<?>> classes = cim.getClasses();
     final List<ITestNGMethod> runMethods = Lists.newArrayList();
     List<IWorker<ITestNGMethod>> workers = Lists.newArrayList();
@@ -667,9 +668,14 @@ public class TestRunner
       @Override
       public void run() {
         for(Class<?> tc: classes) {
+          List<XmlInclude> includedMethods = cim.getXmlClass(tc).getIncludedMethods();
+          List<String> methods = Lists.newArrayList();
+          for (XmlInclude inc: includedMethods) {
+              methods.add(inc.getName());
+          }
           IJUnitTestRunner tr= ClassHelper.createTestRunner(TestRunner.this);
           try {
-            tr.run(tc);
+            tr.run(tc, methods.toArray(new String[methods.size()]));
           }
           catch(Exception ex) {
             ex.printStackTrace();

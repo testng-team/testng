@@ -5,6 +5,7 @@ import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
+import org.junit.runner.manipulation.Filter;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 import org.testng.ITestListener;
@@ -61,20 +62,40 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
      * @param testClass the JUnit test class
      */
     @Override
-    public void run(Class testClass) {
-        start(testClass);
+    public void run(Class testClass, String... methods) {
+        start(testClass, methods);
     }
 
     /**
      * Starts a test run. Analyzes the command line arguments and runs the given
      * test suite.
      */
-    public Result start(Class testCase) {
+    public Result start(final Class testCase, final String... methods) {
         try {
             JUnitCore core = new JUnitCore();
             core.addListener(new RL());
             Request r = Request.aClass(testCase);
-            return core.run(r);
+            return core.run(r.filterWith(new Filter() {
+
+                @Override
+                public boolean shouldRun(Description description) {
+                    if (methods.length == 0) {
+                        //run everything
+                        return true;
+                    }
+                    for (String m: methods) {
+                        if (m.equals(description.getMethodName())) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
+                @Override
+                public String describe() {
+                    return "TestNG method filter";
+                }
+            }));
         } catch (Throwable t) {
             throw new TestNGException("Failure in JUnit mode for class " + testCase.getName(), t);
         }

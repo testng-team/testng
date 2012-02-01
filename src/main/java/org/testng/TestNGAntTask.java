@@ -113,7 +113,6 @@ public class TestNGAntTask extends Task {
   protected File m_testjar;
   protected File m_workingDir;
   private Integer m_timeout;
-  protected Boolean m_isJUnit;
   private List<String> m_listeners= Lists.newArrayList();
   private List<String> m_methodselectors= Lists.newArrayList();
   private String m_objectFactory;
@@ -151,7 +150,12 @@ public class TestNGAntTask extends Task {
   private String m_testName="Ant test";
   private Boolean m_skipFailedInvocationCounts;
   private String m_methods;
+  private Mode mode = Mode.TESTNG;
 
+  public enum Mode {
+      TESTNG, JUNIT, MIXED;
+  }
+  
   /**
    * The list of report listeners added via &lt;reporter&gt; sub-element of the Ant task
    */
@@ -367,7 +371,12 @@ public class TestNGAntTask extends Task {
 
   // TestNG settings
   public void setJUnit(boolean value) {
-    m_isJUnit= Boolean.valueOf(value);
+    mode = value ? Mode.JUNIT : Mode.TESTNG;
+  }
+
+  // TestNG settings
+  public void setMode(Mode mode) {
+    this.mode = mode;
   }
 
   /**
@@ -528,7 +537,8 @@ public class TestNGAntTask extends Task {
 
   private List<String> createArguments() {
 	List<String> argv= Lists.newArrayList();
-    addBooleanIfTrue(argv, CommandLineArgs.JUNIT, m_isJUnit);
+    addBooleanIfTrue(argv, CommandLineArgs.JUNIT, mode == Mode.JUNIT);
+    addBooleanIfTrue(argv, CommandLineArgs.MIXED, mode == Mode.MIXED);
     addBooleanIfTrue(argv, CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS, m_skipFailedInvocationCounts);
     addIntegerIfNotNull(argv, CommandLineArgs.LOG, m_verbose);
     addDefaultListeners(argv);

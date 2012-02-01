@@ -27,7 +27,7 @@ JUNIT.REPORT.DIR =${junit.report.dir}
 TESTNG.REPORT.DIR=${testng.report.dir}
     </echo>
   </target>
-  
+
   <target name="compile" depends="prepare">
     <echo message="                                 -- Compiling tests --"/>
 
@@ -38,7 +38,7 @@ TESTNG.REPORT.DIR=${testng.report.dir}
            srcdir="${test.dir}"
            destdir="${test.build.dir}"
     />
-      
+
   </target>
 
   <target name="prepare">
@@ -46,7 +46,7 @@ TESTNG.REPORT.DIR=${testng.report.dir}
     <mkdir dir="${test.build.dir}"/>
     <mkdir dir="${junit.report.dir}"/>
     <mkdir dir="${testng.report.dir}"/>
-    
+
   <taskdef name="testng"
              classname="org.testng.TestNGAntTask"
              classpath="${build.dir}"/>

@@ -14,7 +14,7 @@ import java.util.List;
 public interface IJUnitTestRunner {
   void setTestResultNotifier(ITestResultNotifier notifier);
 
-  void run(Class junitTestClass);
+  void run(Class junitTestClass, String... methods);
 
   List<ITestNGMethod> getTestMethods();
 
