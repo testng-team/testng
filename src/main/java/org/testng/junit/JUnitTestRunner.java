@@ -114,7 +114,8 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
                                                                           tm,
                                                                           tri.m_failure,
                                                                           tri.m_start,
-                                                                          Calendar.getInstance().getTimeInMillis());
+                                                                          Calendar.getInstance().getTimeInMillis(),
+                                                                          null);
 
     if(tri.isFailure()) {
       tr.setStatus(ITestResult.FAILURE);

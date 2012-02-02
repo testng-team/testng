@@ -3,6 +3,7 @@ package org.testng.internal;
 import org.testng.IAttributes;
 import org.testng.IClass;
 import org.testng.ITest;
+import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
@@ -30,6 +31,7 @@ public class TestResult implements ITestResult {
   transient private Object[] m_parameters = {};
   transient private Object m_instance;
   private String m_instanceName;
+  private ITestContext m_context;
 
   public TestResult() {
 
@@ -40,9 +42,10 @@ public class TestResult implements ITestResult {
       ITestNGMethod method,
       Throwable throwable,
       long start,
-      long end)
+      long end,
+      ITestContext context)
   {
-    init(testClass, instance, method, throwable, start, end);
+    init(testClass, instance, method, throwable, start, end, context);
   }
 
   /**
@@ -59,7 +62,8 @@ public class TestResult implements ITestResult {
       ITestNGMethod method,
       Throwable throwable,
       long start,
-      long end)
+      long end,
+      ITestContext context)
   {
     m_testClass = testClass;
     m_throwable = throwable;
@@ -70,6 +74,7 @@ public class TestResult implements ITestResult {
     m_startMillis = start;
     m_endMillis = end;
     m_method = method;
+    m_context = context;
 
     m_instance = instance;
 
@@ -281,6 +286,14 @@ public class TestResult implements ITestResult {
   @Override
   public Object removeAttribute(String name) {
     return m_attributes.removeAttribute(name);
+  }
+  
+  public ITestContext getContext() {
+	  return m_context;
+  }
+  
+  public void setContext(ITestContext context) {
+	  m_context = context;
   }
 
   @Override
