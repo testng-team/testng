@@ -4,6 +4,7 @@ Current
 Added: @DataProvider(indices) to return specific indices of a data provider
 Added: New HTML reports
 Added: configfailurepolicy=continue with DataProviders (toddq)
+Added: ITestResult#getTestContext (bpedman)
 Fixed: invocationCount > 1 + timeOut wasn't timing out properly
 Fixed: When running TestNG programmatically, child xml suites are not run (when added using setSuiteFIles()) (Gaurav Gupta)
 Fixed: GITHUB-145: Excessive test method execution (githubCast)

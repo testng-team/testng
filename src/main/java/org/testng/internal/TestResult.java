@@ -288,7 +288,7 @@ public class TestResult implements ITestResult {
     return m_attributes.removeAttribute(name);
   }
   
-  public ITestContext getContext() {
+  public ITestContext getTestContext() {
 	  return m_context;
   }
   
