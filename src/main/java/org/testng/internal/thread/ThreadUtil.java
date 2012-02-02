@@ -4,10 +4,10 @@ import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +40,7 @@ public class ThreadUtil {
     final CountDownLatch startGate= new CountDownLatch(1);
     final CountDownLatch endGate= new CountDownLatch(tasks.size());
 
-    Utils.log("TestRunner", 2, "Starting executor timeOut:" + timeout + "ms"
+    Utils.log("ThreadUtil", 2, "Starting executor timeOut:" + timeout + "ms"
         + " workers:" + tasks.size() + " threadPoolSize:" + threadPoolSize);
     ExecutorService pooledExecutor = // Executors.newFixedThreadPool(threadPoolSize);
         new ThreadPoolExecutor(threadPoolSize, threadPoolSize,
@@ -55,24 +55,50 @@ public class ThreadUtil {
           }
         });
 
-    for(final Runnable task: tasks) {
-      try {
-        pooledExecutor.execute(new CountDownLatchedRunnable(task,
-            endGate, triggerAtOnce ? null : startGate));
-      }
-      catch(RejectedExecutionException reex) {
-        ; // this should never happen as we submit all tasks at once
-      }
+    List<Callable<Object>> callables = Lists.newArrayList();
+    for (final Runnable task : tasks) {
+      callables.add(new Callable<Object>() {
+
+        @Override
+        public Object call() throws Exception {
+          task.run();
+          return null;
+        }
+
+      });
     }
     try {
-      startGate.countDown();
-      endGate.await();
-      pooledExecutor.shutdown();
+      if (timeout != 0) {
+        pooledExecutor.invokeAll(callables, timeout, TimeUnit.MILLISECONDS);
+      } else {
+        pooledExecutor.invokeAll(callables);
+      }
+    } catch (InterruptedException e1) {
+      e1.printStackTrace();
     }
-    catch(InterruptedException e) {
-      Thread.currentThread().interrupt();
-      log(2, "Error waiting for concurrent executors to finish " + e.getMessage());
-    }
+//    for(final Runnable task: tasks) {
+//      try {
+//        pooledExecutor.execute(new CountDownLatchedRunnable(task,
+//            endGate, triggerAtOnce ? null : startGate));
+//        pooledExecutor.awaitTermination(timeout, TimeUnit.MILLISECONDS);
+//      }
+//      catch(RejectedExecutionException reex) {
+//        reex.printStackTrace();
+//        ; // this should never happen as we submit all tasks at once
+//      }
+//      catch(Exception ex) {
+//        ex.printStackTrace();
+//      }
+//    }
+//    try {
+//      startGate.countDown();
+//      endGate.await();
+//      pooledExecutor.shutdown();
+//    }
+//    catch(InterruptedException e) {
+//      Thread.currentThread().interrupt();
+//      log(2, "Error waiting for concurrent executors to finish " + e.getMessage());
+//    }
   }
 
   /**
