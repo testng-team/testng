@@ -21,7 +21,7 @@ public class JUnit3TestMethod extends JUnitTestMethod {
             name = (String) nameMethod.invoke(t);
             return t.getClass().getMethod(name);
         } catch (Throwable th) {
-            Utils.log("JUnit4TestMethod", 2,
+            Utils.log("JUnit3TestMethod", 2,
                     "Method '" + name + "' not found in class '" + t + "': " + th.getMessage());
             return null;
         }
