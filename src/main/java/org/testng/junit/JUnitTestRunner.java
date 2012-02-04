@@ -23,6 +23,7 @@ import junit.framework.Test;
 import junit.framework.TestListener;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
+import org.testng.*;
 
 /**
  * A JUnit TestRunner that records/triggers all information/events necessary to TestNG.
@@ -36,6 +37,7 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
 
   private Map<Test, TestRunInfo> m_tests= new WeakHashMap<Test, TestRunInfo>();
   private List<ITestNGMethod> m_methods= Lists.newArrayList();
+  private List<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
 
   public JUnitTestRunner() {
   }
@@ -106,9 +108,14 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
     runTestListeners(tr, m_parentRunner.getTestListeners());
   }
 
+    public void setInvokedMethodListeners(List<IInvokedMethodListener> listeners) {
+        m_invokedMethodListeners = listeners;
+    }
+
+
   private org.testng.internal.TestResult recordResults(Test test, TestRunInfo tri)  {
-    JUnitUtils.JUnitTestClass tc= new JUnitUtils.JUnitTestClass(test);
-    JUnitUtils.JUnitTestMethod tm= new JUnitUtils.JUnitTestMethod(test, tc);
+    JUnitTestClass tc= new JUnit3TestClass(test);
+    JUnitTestMethod tm= new JUnit3TestMethod(tc, test);
 
     org.testng.internal.TestResult tr= new org.testng.internal.TestResult(tc,
                                                                           test,
@@ -125,9 +132,12 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
       m_parentRunner.addPassedTest(tm, tr);
     }
 
-    m_parentRunner.addInvokedMethod(
-        new InvokedMethod(test, tm, new Object[0], true, false, tri.m_start, tr));
+    InvokedMethod im = new InvokedMethod(test, tm, new Object[0], true, false, tri.m_start, tr);
+    m_parentRunner.addInvokedMethod(im);
     m_methods.add(tm);
+    for (IInvokedMethodListener l: m_invokedMethodListeners) {
+        l.beforeInvocation(im, tr);
+    }
 
     return tr;
   }

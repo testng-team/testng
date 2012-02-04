@@ -540,19 +540,15 @@ public class TestNG {
         suiteName = defaultIfStringEmpty(test.getSuiteName(), suiteName);
         testName = defaultIfStringEmpty(test.getTestName(), testName);
       } else {
-          if (m_isMixed && JUnitTestFinder.isJUnitTest(c)) {
-              isJUnit = true;
-              suiteName += "-junit";
-              testName += "-junit";
-          }
+        if (m_isMixed && JUnitTestFinder.isJUnitTest(c)) {
+          isJUnit = true;
+          testName = c.getName();
+        }
       }
       XmlSuite xmlSuite = suites.get(suiteName);
       if (xmlSuite == null) {
         xmlSuite = new XmlSuite();
         xmlSuite.setName(suiteName);
-        if (isJUnit) {
-            xmlSuite.setJUnit(isJUnit);
-        }
         suites.put(suiteName, xmlSuite);
       }
 
@@ -570,6 +566,7 @@ public class TestNG {
       if (xmlTest == null) {
         xmlTest = new XmlTest(xmlSuite);
         xmlTest.setName(testName);
+        xmlTest.setJUnit(isJUnit);
       }
 
       xmlTest.getXmlClasses().add(xmlClasses[i]);
