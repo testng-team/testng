@@ -195,7 +195,8 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
                     tm,
                     null,
                     Calendar.getInstance().getTimeInMillis(),
-                    0);
+                    0,
+                    null);
 
             InvokedMethod im = new InvokedMethod(tr.getTestClass(), tr.getMethod(), new Object[0], true, false, tr.getStartMillis(), tr);
             m_parentRunner.addInvokedMethod(im);
