@@ -265,6 +265,32 @@ public class TestNG {
     // The Eclipse plug-in (RemoteTestNG) might have invoked this method already
     // so don't initialize suites twice.
     if (m_suites.size() > 0) {
+    	//to parse the suite files (<suite-file>), if any
+    	for (XmlSuite s: m_suites){
+	        List<String> suiteFiles = s.getSuiteFiles();
+			for (int i = 0; i < suiteFiles.size(); i++) {
+				try {
+					Collection<XmlSuite> childSuites = getParser(suiteFiles.get(i)).parse();
+					for (XmlSuite cSuite : childSuites){
+						cSuite.setParentSuite(s);
+						s.getChildSuites().add(cSuite);
+					}
+				}
+				catch(FileNotFoundException e) {
+					e.printStackTrace(System.out);
+				}
+				catch (ParserConfigurationException e) {
+					e.printStackTrace(System.out);
+				} catch (SAXException e) {
+					e.printStackTrace(System.out);
+				} catch (IOException e) {
+					e.printStackTrace(System.out);
+				}
+
+
+			}
+
+    	}
       return;
     }
 

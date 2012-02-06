@@ -122,7 +122,8 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
               m_testMethod,
               null,
               start,
-              System.currentTimeMillis());
+              System.currentTimeMillis(),
+              m_testContext);
           r.setStatus(TestResult.SKIP);
           m_testResults.add(r);
           m_invoker.runTestListeners(r);

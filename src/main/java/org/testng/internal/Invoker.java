@@ -98,7 +98,7 @@ public class Invoker implements IInvoker {
       instances = Sets.newHashSet();
       m_methodInvocationResults.put(method, instances);
     }
-    instances.add(instance);
+    instances.add(getMethodInvocationToken(method, instance));
   }
 
   public Invoker(IConfiguration configuration,
@@ -166,7 +166,8 @@ public class Invoker implements IInvoker {
                                              tm,
                                              null,
                                              System.currentTimeMillis(),
-                                             System.currentTimeMillis());
+                                             System.currentTimeMillis(),
+                                             m_testContext);
 
       IConfigurationAnnotation configurationAnnotation= null;
       try {
@@ -450,7 +451,7 @@ public class Invoker implements IInvoker {
       else if (m_continueOnFailedConfiguration &&
               currentTestMethod != null &&
               m_methodInvocationResults.containsKey(currentTestMethod)) {
-        result = !m_methodInvocationResults.get(currentTestMethod).contains(instance);
+        result = !m_methodInvocationResults.get(currentTestMethod).contains(getMethodInvocationToken(currentTestMethod, instance));
       }
       else if (! m_continueOnFailedConfiguration) {
         for(Class<?> clazz: m_classInvocationResults.keySet()) {
@@ -474,6 +475,12 @@ public class Invoker implements IInvoker {
       }
     }
     return result;
+  }
+
+   // Creates a token for tracking a unique invocation of a method on an instance.
+   // Is used when configFailurePolicy=continue.
+  private Object getMethodInvocationToken(ITestNGMethod method, Object instance) {
+    return String.format("%s+%d", instance.toString(), method.getCurrentInvocationCount());
   }
 
   /**
@@ -643,7 +650,8 @@ public class Invoker implements IInvoker {
                                  tm,
                                  null,
                                  System.currentTimeMillis(),
-                                 0);
+                                 0,
+                                 m_testContext);
       testResult.setParameters(parameterValues);
       testResult.setHost(m_testContext.getHost());
       testResult.setStatus(ITestResult.STARTED);
@@ -1127,7 +1135,8 @@ public class Invoker implements IInvoker {
                                                testMethod,
                                                null /* cause */,
                                                start,
-                                               System.currentTimeMillis());
+                                               System.currentTimeMillis(),
+                                               m_testContext);
         String missingGroup = testMethod.getMissingGroup();
         if (missingGroup != null) {
           testResult.setThrowable(new Throwable("Method " + testMethod
@@ -1263,7 +1272,8 @@ public class Invoker implements IInvoker {
                 testMethod,
                 cause,
                 start,
-                System.currentTimeMillis());
+                System.currentTimeMillis(),
+                m_testContext);
             r.setStatus(TestResult.FAILURE);
             result.add(r);
             runTestListeners(r);
@@ -1284,7 +1294,8 @@ public class Invoker implements IInvoker {
         testMethod,
         throwable,
         start,
-        System.currentTimeMillis());
+        System.currentTimeMillis(),
+        m_testContext);
     result.setStatus(TestResult.SKIP);
     runTestListeners(result);
 
@@ -1380,7 +1391,8 @@ public class Invoker implements IInvoker {
               testMethod,
               cause,
               System.currentTimeMillis(),
-              System.currentTimeMillis()));
+              System.currentTimeMillis(),
+              m_testContext));
     }
   }
 
