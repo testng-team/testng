@@ -198,17 +198,21 @@ public final class ClassHelper {
   public static IJUnitTestRunner createTestRunner(TestRunner runner) {
       try {
           //try to get runner for JUnit 4 first
+          Class.forName("org.junit.Test");
           IJUnitTestRunner tr = (IJUnitTestRunner) ClassHelper.forName(JUNIT_4_TESTRUNNER).newInstance();
           tr.setTestResultNotifier(runner);
           return tr;
       } catch (Throwable t) {
+          Utils.log("ClassHelper", 2, "JUnit 4 was not found on the classpath");
           try {
               //fallback to JUnit 3
+              Class.forName("junit.framework.Test");
               IJUnitTestRunner tr = (IJUnitTestRunner) ClassHelper.forName(JUNIT_TESTRUNNER).newInstance();
               tr.setTestResultNotifier(runner);
 
               return tr;
           } catch (Exception ex) {
+              Utils.log("ClassHelper", 2, "JUnit 3 was not found on the classpath");
               //there's no JUnit on the classpath
               throw new TestNGException("Cannot create JUnit runner", ex);
           }
