@@ -100,7 +100,13 @@ abstract public class BaseMessageSender implements IMessageSender {
   @Override
   public void sendAck() {
     p("Sending ACK " + m_serial);
-    sendAdminMessage(MessageHelper.ACK_MSG + m_serial++);
+    // Note: adding the serial at the end of this message causes a lock up if interacting
+    // with TestNG 5.14 and older (reported by JetBrains). The following git commit:
+    // 5730bdfb33ec7a8bf4104852cd4a5f2875ba8267
+    // changed equals() to startsWith().
+    // It's ok to add this serial back for debugging, but don't commit it until JetBrains
+    // confirms they no longer need backward compatibility with 5.14.
+    sendAdminMessage(MessageHelper.ACK_MSG); // + m_serial++);
   }
 
   @Override
