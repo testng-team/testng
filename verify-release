@@ -17,7 +17,7 @@ v2=`perl -ne 'BEGIN{undef $/}; print "$1" if m/(artifactId.testng.*\n.*version)/
 if [ $v1 != $v2 ]
 then
   echo "Versions of pom.xml and pom-test.xml do not match: $v1 $v2"
-  exit -1
+#  exit -1
 fi
 
 #
@@ -37,7 +37,7 @@ fi
 cd $HOME/t
 rm -f *zip
 rm -rf $rel
-wget http://testng.org/$rel.zip
+curl http://testng.org/$rel.zip >$rel.zip
 unzip $rel.zip
 cd $HOME/java/testng
 java -Dtest.resources.dir=$HOME/java/testng/src/test/resources -classpath $HOME/t/$rel/$rel.jar:target/test-classes:lib/guice-2.0.jar org.testng.TestNG $HOME/java/testng/src/test/resources/testng.xml
