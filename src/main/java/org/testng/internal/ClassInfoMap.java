@@ -9,11 +9,17 @@ import java.util.Set;
 
 public class ClassInfoMap {
   private Map<Class<?>, XmlClass> m_map = Maps.newHashMap();
+  private boolean includeNestedClasses;
 
   public ClassInfoMap() {
   }
 
   public ClassInfoMap(List<XmlClass> classes) {
+    this(classes, true);
+  }
+
+  public ClassInfoMap(List<XmlClass> classes, boolean includeNested) {
+    includeNestedClasses = includeNested;
     for (XmlClass xmlClass : classes) {
       try {
         Class c = xmlClass.getSupportClass();
@@ -29,7 +35,6 @@ public class ClassInfoMap {
   }
 
   private void registerClass(Class cl, XmlClass xmlClass) {
-    boolean includeNestedClasses = true;
     m_map.put(cl, xmlClass);
     if (includeNestedClasses) {
       for (Class c : cl.getClasses()) {

@@ -35,6 +35,11 @@ public class CommandLineArgs {
   @Parameter(names = JUNIT, description ="JUnit mode")
   public Boolean junit = Boolean.FALSE;
 
+  public static final String MIXED = "-mixed";
+  @Parameter(names = MIXED, description ="Mixed mode - autodetect the type of current test" +
+      " and run it with appropriate runner")
+  public Boolean mixed = Boolean.FALSE;
+
   public static final String LISTENER = "-listener";
   @Parameter(names = LISTENER, description = "List of .class files or list of class names" +
       " implementing ITestListener or ISuiteListener")
