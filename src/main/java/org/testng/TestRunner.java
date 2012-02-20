@@ -52,6 +52,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import org.testng.xml.*;
 
 /**
  * This class takes care of running one Test.
@@ -79,6 +80,8 @@ public class TestRunner
 
   transient private IConfigurationListener m_confListener= new ConfigurationListener();
   transient private boolean m_skipFailedInvocationCounts;
+
+  transient private List<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
 
   /**
    * All the test methods we found, associated with their respective classes.
@@ -188,6 +191,7 @@ public class TestRunner
     }
 
     m_annotationFinder= annotationFinder;
+    m_invokedMethodListeners = invokedMethodListeners;
     m_invoker = new Invoker(m_configuration, this, this, m_suite.getSuiteState(),
         m_skipFailedInvocationCounts, invokedMethodListeners);
 
@@ -644,7 +648,7 @@ public class TestRunner
   }
 
   private void privateRunJUnit(XmlTest xmlTest) {
-    ClassInfoMap cim = new ClassInfoMap(m_testClassesFromXml);
+    final ClassInfoMap cim = new ClassInfoMap(m_testClassesFromXml, false);
     final Set<Class<?>> classes = cim.getClasses();
     final List<ITestNGMethod> runMethods = Lists.newArrayList();
     List<IWorker<ITestNGMethod>> workers = Lists.newArrayList();
@@ -667,9 +671,15 @@ public class TestRunner
       @Override
       public void run() {
         for(Class<?> tc: classes) {
+          List<XmlInclude> includedMethods = cim.getXmlClass(tc).getIncludedMethods();
+          List<String> methods = Lists.newArrayList();
+          for (XmlInclude inc: includedMethods) {
+              methods.add(inc.getName());
+          }
           IJUnitTestRunner tr= ClassHelper.createTestRunner(TestRunner.this);
+          tr.setInvokedMethodListeners(m_invokedMethodListeners);
           try {
-            tr.run(tc);
+            tr.run(tc, methods.toArray(new String[methods.size()]));
           }
           catch(Exception ex) {
             ex.printStackTrace();

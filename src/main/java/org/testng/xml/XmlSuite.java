@@ -65,6 +65,10 @@ public class XmlSuite implements Serializable, Cloneable {
   public static Boolean DEFAULT_JUNIT = Boolean.FALSE;
   private Boolean m_isJUnit = DEFAULT_JUNIT;
 
+  /** mixed mode flag. */
+  public static Boolean DEFAULT_MIXED = Boolean.FALSE;
+  private Boolean m_isMixed = DEFAULT_MIXED;
+
   public static Boolean DEFAULT_SKIP_FAILED_INVOCATION_COUNTS = Boolean.FALSE;
   private Boolean m_skipFailedInvocationCounts = DEFAULT_SKIP_FAILED_INVOCATION_COUNTS;
 
