@@ -99,7 +99,7 @@ public abstract class AbstractRemoteTestRunnerClient {
   }
 
   public boolean isRunning() {
-    return m_serverConnection.getMessageSender() != null;
+    return m_serverConnection != null && m_serverConnection.getMessageSender() != null;
   }
 
   /**

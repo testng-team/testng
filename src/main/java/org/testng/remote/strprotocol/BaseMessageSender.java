@@ -36,6 +36,8 @@ abstract public class BaseMessageSender implements IMessageSender {
 
   private ReaderThread m_readerThread;
   private boolean m_ack;
+  private boolean m_shutdownRequested;
+  private ServerSocket m_serverSocket;
 //  protected InputStream m_receiverInputStream;
 
   public BaseMessageSender(String host, int port, boolean ack) {
@@ -96,6 +98,7 @@ abstract public class BaseMessageSender implements IMessageSender {
   }
 
   private int m_serial = 0;
+  private ServerSocket _serverSocket;
 
   @Override
   public void sendAck() {
@@ -119,15 +122,17 @@ abstract public class BaseMessageSender implements IMessageSender {
     if (m_inStream != null) {
       p("Receiver already initialized");
     }
-    ServerSocket serverSocket;
     try {
       p("initReceiver on port " + m_port);
-      serverSocket = new ServerSocket(m_port);
-      serverSocket.setSoTimeout(5000);
+      m_serverSocket = new ServerSocket(m_port);
+      m_serverSocket.setSoTimeout(5000);
 
       while (true) {
+        if (m_shutdownRequested) {
+          return;
+        }
         try {
-          Socket socket = serverSocket.accept();
+          Socket socket = m_serverSocket.accept();
           m_inStream = socket.getInputStream();
           m_inReader = new BufferedReader(new InputStreamReader(m_inStream));
           m_outStream = socket.getOutputStream();
@@ -191,6 +196,21 @@ abstract public class BaseMessageSender implements IMessageSender {
         e.printStackTrace();
       }
     }
+
+    try
+    {
+      if (null != m_serverSocket)
+      {
+        m_serverSocket.close();
+      }
+    }
+    catch (Exception e) {
+      if(m_debug) {
+        e.printStackTrace();
+      }
+    }
+
+    m_shutdownRequested = true;
   }
 
   private String m_latestAck;
