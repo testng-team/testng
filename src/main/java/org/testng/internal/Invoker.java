@@ -1471,14 +1471,7 @@ public class Invoker implements IInvoker {
                     " but got \"" + ite.getMessage() + "\"", ite));
             status= ITestResult.FAILURE;
           }
-        } else if (ite != null && expectedExceptionsHolder != null) {
-          testResult.setThrowable(
-              new TestException("Expected exception "
-                 + expectedExceptionsHolder.expectedClasses[0].getName()
-                 + " but got " + ite, ite));
-          status= ITestResult.FAILURE;
-        }
-        else if (SkipException.class.isAssignableFrom(ite.getClass())){
+        } else if (SkipException.class.isAssignableFrom(ite.getClass())){
           SkipException skipEx= (SkipException) ite;
           if(skipEx.isSkip()) {
             status = ITestResult.SKIP;
@@ -1487,8 +1480,13 @@ public class Invoker implements IInvoker {
             handleException(ite, testMethod, testResult, failureCount++);
             status = ITestResult.FAILURE;
           }
-        }
-        else {
+        } else if (ite != null && expectedExceptionsHolder != null) {
+          testResult.setThrowable(
+              new TestException("Expected exception "
+                 + expectedExceptionsHolder.expectedClasses[0].getName()
+                 + " but got " + ite, ite));
+          status= ITestResult.FAILURE;
+        } else {
           handleException(ite, testMethod, testResult, failureCount++);
           status= testResult.getStatus();
         }

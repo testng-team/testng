@@ -1,5 +1,11 @@
 Current
 
+Fixed: SkippedException are considered as real exception with @Test(expectedExceptions)
+
+===========================================================================
+
+6.4:
+02/15/2012
 
 Added: @DataProvider(indices) to return specific indices of a data provider
 Added: New HTML reports

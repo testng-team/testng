@@ -593,6 +593,7 @@
   <test name="SkipExceptions">
     <classes>
       <class name="test.skipex.SkippedExceptionTest" />
+      <class name="test.skipex.SkipAndExpectedTest" />
     </classes>
   </test>
 
