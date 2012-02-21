@@ -55,6 +55,8 @@ public class XmlTest implements Serializable, Cloneable {
 
   private Boolean m_groupByInstances;
 
+  private Boolean m_allowReturnValues = null;
+
   /**
    * Constructs a <code>XmlTest</code> and adds it to suite's list of tests.
    *
@@ -662,6 +664,15 @@ public class XmlTest implements Serializable, Cloneable {
 
   public void setSuite(XmlSuite result) {
     m_suite = result;
+  }
+
+  public Boolean getAllowReturnValues() {
+    if (m_allowReturnValues != null) return m_allowReturnValues;
+    else return getSuite().getAllowReturnValues();
+  }
+
+  public void setAllowReturnValues(Boolean allowReturnValues) {
+    m_allowReturnValues = allowReturnValues;
   }
 
   /**

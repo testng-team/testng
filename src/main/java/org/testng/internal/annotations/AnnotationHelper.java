@@ -235,9 +235,10 @@ public class AnnotationHelper {
               }
 
               // Skip the method if it has a return type
-              if (m.getReturnType() != void.class) {
-                Utils.log("", 3, "Method " + m + " has a @Test annotation"
-                    + " but also a return value:  ignoring it.");
+              if (m.getReturnType() != void.class && ! xmlTest.getAllowReturnValues()) {
+                Utils.log("", 2, "Method " + m + " has a @Test annotation"
+                    + " but also a return value:"
+                    + " ignoring it. Use <suite allow-return-values=\"true\"> to fix this");
                 continue;
               }
 

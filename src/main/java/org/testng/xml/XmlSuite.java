@@ -124,6 +124,7 @@ public class XmlSuite implements Serializable, Cloneable {
 
   private List<String> m_includedGroups = Lists.newArrayList();
   private List<String> m_excludedGroups = Lists.newArrayList();
+  private Boolean m_allowReturnValues = false;
 
   /**
    * @return the fileName
@@ -897,5 +898,13 @@ public class XmlSuite implements Serializable, Cloneable {
 
   public void addListener(String listener) {
     m_listeners.add(listener);
+  }
+
+  public Boolean getAllowReturnValues() {
+    return m_allowReturnValues;
+  }
+
+  public void setAllowReturnValues(Boolean allowReturnValues) {
+    m_allowReturnValues = allowReturnValues;
   }
 }

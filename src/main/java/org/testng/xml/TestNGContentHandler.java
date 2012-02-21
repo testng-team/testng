@@ -193,6 +193,10 @@ public class TestNGContentHandler extends DefaultHandler {
       if (preserveOrder != null) {
         m_currentSuite.setPreserveOrder(preserveOrder);
       }
+      String allowReturnValues = attributes.getValue("allow-return-values");
+      if (allowReturnValues != null) {
+        m_currentSuite.setAllowReturnValues(Boolean.valueOf(allowReturnValues));
+      }
     }
     else {
       m_currentSuite.setParameters(m_currentSuiteParameters);

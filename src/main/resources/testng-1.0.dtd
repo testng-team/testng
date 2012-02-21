@@ -54,6 +54,7 @@ Cedric Beust & Alexandru Popescu
        for parallel data providers.
 @attr  object-factory A class that implements IObjectFactory that will be used to
        instantiate the test objects.
+@attr allow-return-values If true, tests that return a value will be run as well
 -->
 <!ATTLIST suite 
     name CDATA #REQUIRED
@@ -69,6 +70,7 @@ Cedric Beust & Alexandru Popescu
     object-factory CDATA #IMPLIED
     group-by-instances (true | false) "false"
     preserve-order (true | false) "true"
+    allow-return-values (true | false) "false"
 >
 
 <!-- A list of XML files that contain more suite descriptions -->
@@ -130,6 +132,7 @@ A test contains parameters and classes.  Additionally, you can define additional
 @attr  skipfailedinvocationcounts Whether to skip failed invocations.
 @attr preserve-order If true, the classes in this tag will be run in the same order as
 found in the XML file.
+@attr allow-return-values If true, tests that return a value will be run as well
 -->
 <!ATTLIST test
     name CDATA #REQUIRED 
@@ -143,6 +146,7 @@ found in the XML file.
     skipfailedinvocationcounts (true | false) "false"
     preserve-order (true | false) "true"
     group-by-instances (true | false) "false"
+    allow-return-values (true | false) "false"
 >
 
 <!--
