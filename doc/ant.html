@@ -147,6 +147,12 @@ accepts the following attributes: <br>
 		<td>No.</td>
         </tr>
 
+        <tr>
+		<td><tt>mode</tt></td>
+                <td>Either <tt>TESTNG</tt>, <tt>JUNIT</tt> or <tt>MIXED</tt>. Whether TestNG should run only TestNG tests, JUnit tests or both.</td>
+		<td>No. Defaults to TESTNG.</td>
+        </tr>
+
 	<tr>
 		<td><tt>outputdir</tt> </td>
 		<td>Directory for reports output. 
@@ -268,6 +274,15 @@ sourcedirref</tt> or the nested <tt>&lt;sourcedir&gt;</tt> must be provided. </p
 <p><u>Note</u>: using <tt>&lt;classfileset&gt;</tt> doesn't automatically adds the 
 test classes to your classpath: you might need to repeat these classes in the 
 classpath for the task to work.</p>
+
+<h3>TestNG modes</h3>
+<p>TestNG mode gets applied when tests are passed to TestNG using <tt>classfilesetref</tt>, <tt>methods</tt>
+or nested <tt>&lt;classfileset&gt;</tt> and tells TestNG what kind of tests
+it should look for and run. In <tt>TESTNG</tt> mode (default one) it will find and run TestNG tests,
+in <tt>JUNIT</tt> mode it will find and run JUnit tests and in <tt>MIXED</tt> mode it will find and run
+both kind of tests at once.</p>
+<p><u>Note</u>: <tt>JUNIT</tt> and <tt>MIXED</tt> modes require JUnit library on the tests classpath.</p>
+
 <h3><a name="nested">Nested Elements</a></h3>
 <h4>classpath</h4>
 <p>The <tt>&lt;testng&gt;</tt> task supports a nested <tt>&lt;classpath&gt;</tt> element 
