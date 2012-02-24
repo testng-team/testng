@@ -43,13 +43,11 @@ import static org.testng.AssertJUnit.*;
 
 <h3>Running JUnit Tests</h3>
 
-<p>Converting all tests from JUnit to TestNG may not be always feasible, such as in projects with huge codebase.
-But there's still a way for you to switch to TestNG - since it is able to automatically recognize and run JUnit tests
-you can use TestNG as a runner for all your existing tests and write new tests using TestNG.</p>
+<p>TestNG can automatically recognize and run JUnit tests, so you can use TestNG as a runner for all your existing tests and write new tests using TestNG.</p>
 
 <p>All you have to do is to put JUnit library on the TestNG classpath, so it can find and use JUnit classes,
-change your test runner from JUnit to TestNG in Ant, respectively on the command line, and run TestNG in <tt>MIXED</tt> mode.
-This way you can have all your tests in the same project, even in the same package and start using TestNG.
+change your test runner from JUnit to TestNG in Ant and then run TestNG in <tt>"mixed"</tt> mode.
+This way you can have all your tests in the same project, even in the same package, and start using TestNG.
 This approach also allows you to convert your existing JUnit tests to TestNG incrementally.</p>
 
 <h4>Example - replacing JUnit Ant task with TestNG one</h4>
@@ -82,7 +80,7 @@ TestNG version:
     &lt;include name="**/*Test.*"/&gt;
 &lt;/fileset&gt;
 
-&lt;testng mode="MIXED" classfilesetref="mixed.tests" workingDir="${work.dir}" failureProperty="tests.failed" outputdir="${build.test.results.dir}"&gt;
+&lt;testng mode="mixed" classfilesetref="mixed.tests" workingDir="${work.dir}" failureProperty="tests.failed" outputdir="${build.test.results.dir}"&gt;
     &lt;classpath&gt;
         &lt;pathelement path="${build.test.classes.dir}"/&gt;
         &lt;pathelement path="${run.test.classpath}"/&gt;

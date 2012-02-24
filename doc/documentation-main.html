@@ -1645,8 +1645,8 @@ SKIP failures.</p>
 
 <h4><a class="section" indent=".." name="junit">JUnit tests</a></h4>
 
-TestNG can run JUnit 3 and JUnit 4 tests.&nbsp; All you need to do is put JUnit library
-on the classpath, specify your JUnit test classes in the <tt>testng.classNames</tt>
+TestNG can run JUnit 3 and JUnit 4 tests.&nbsp; All you need to do is
+put the JUnit jar file on the classpath, specify your JUnit test classes in the <tt>testng.classNames</tt>
 property and set the <tt>testng.junit</tt> property to true:
 
 <p></p>
@@ -1669,7 +1669,7 @@ property and set the <tt>testng.junit</tt> property to true:
     </li>
     <li>JUnit 4:
         <ul>
-            <li>TestNG will use org.junit.runner.JUnitCore runner to run your tests</li>
+            <li>TestNG will use the <tt>org.junit.runner.JUnitCore</tt> runner to run your tests</li>
         </ul>
     </li>
 </ul>

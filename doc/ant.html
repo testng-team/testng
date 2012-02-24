@@ -276,12 +276,17 @@ test classes to your classpath: you might need to repeat these classes in the
 classpath for the task to work.</p>
 
 <h3>TestNG modes</h3>
-<p>TestNG mode gets applied when tests are passed to TestNG using <tt>classfilesetref</tt>, <tt>methods</tt>
-or nested <tt>&lt;classfileset&gt;</tt> and tells TestNG what kind of tests
-it should look for and run. In <tt>TESTNG</tt> mode (default one) it will find and run TestNG tests,
-in <tt>JUNIT</tt> mode it will find and run JUnit tests and in <tt>MIXED</tt> mode it will find and run
-both kind of tests at once.</p>
-<p><u>Note</u>: <tt>JUNIT</tt> and <tt>MIXED</tt> modes require JUnit library on the tests classpath.</p>
+<p>The TestNG mode gets applied when tests are passed to TestNG using <tt>classfilesetref</tt>, <tt>methods</tt>
+or nested <tt>&lt;classfileset&gt;</tt> and tells TestNG what kind of
+tests it should look for and run:
+
+<ul>
+  <li><tt>"testng"</tt>: find and run TestNG tests.
+  <li><tt>"junit"</tt>: find and run JUnit tests.
+  <li><tt>"mixed"</tt>: run both TestNG and JUnit tests.
+</ul>
+
+<p><em>Note</em>: <tt>"junit"</tt> and <tt>"mixed"</tt> modes require the JUnit jar file on the classpath.</p>
 
 <h3><a name="nested">Nested Elements</a></h3>
 <h4>classpath</h4>
