@@ -1645,8 +1645,9 @@ SKIP failures.</p>
 
 <h4><a class="section" indent=".." name="junit">JUnit tests</a></h4>
 
-TestNG can run JUnit 3 tests (JUnit 4 is not supported).&nbsp; All
-you need to do is specify your JUnit test classes in the <tt>testng.classNames</tt> property and set the <tt>testng.junit</tt> property to true:
+TestNG can run JUnit 3 and JUnit 4 tests.&nbsp; All you need to do is put JUnit library
+on the classpath, specify your JUnit test classes in the <tt>testng.classNames</tt>
+property and set the <tt>testng.junit</tt> property to true:
 
 <p></p>
 <h3 class="sourcetitle">testng.xml</h3>
@@ -1656,13 +1657,23 @@ you need to do is specify your JUnit test classes in the <tt>testng.classNames</
     &lt;!-- ... --&gt;
 </pre>
 
-<p>The behavior of TestNG in this case is similar to JUnit:<br>
+<p>The behavior of TestNG in this case is similar to JUnit depending on the JUnit version found on the class path:<br>
 </p>
+<ul>
+    <li>JUnit 3:
 <ul>
   <li>All methods starting with test* in your classes will be run</li><li>If there is a method setUp() on your test class, it will be invoked before 
 	every test method</li><li>If there is a method tearDown() on your test class, it will be invoked 
 	before after every test method</li><li>If your test class contains a method suite(), all the tests returned by 
-	this method will be invoked</li></ul><!-------------------------------------
+	this method will be invoked</li></ul>
+    </li>
+    <li>JUnit 4:
+        <ul>
+            <li>TestNG will use org.junit.runner.JUnitCore runner to run your tests</li>
+        </ul>
+    </li>
+</ul>
+    <!-------------------------------------
   JUNIT
  ------------------------------------><h4>
 
