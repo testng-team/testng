@@ -84,6 +84,9 @@ public class XmlSuite implements Serializable, Cloneable {
   public static final Boolean DEFAULT_GROUP_BY_INSTANCES = false;
   private Boolean m_groupByInstances = DEFAULT_GROUP_BY_INSTANCES;
 
+  public static Boolean DEFAULT_ALLOW_RETURN_VALUES = Boolean.FALSE;
+  private Boolean m_allowReturnValues = DEFAULT_ALLOW_RETURN_VALUES;
+
   /** The packages containing test classes. */
   private List<XmlPackage> m_xmlPackages = Lists.newArrayList();
 
@@ -124,7 +127,6 @@ public class XmlSuite implements Serializable, Cloneable {
 
   private List<String> m_includedGroups = Lists.newArrayList();
   private List<String> m_excludedGroups = Lists.newArrayList();
-  private Boolean m_allowReturnValues = false;
 
   /**
    * @return the fileName
@@ -429,6 +431,8 @@ public class XmlSuite implements Serializable, Cloneable {
     if(null != m_objectFactory) {
       p.setProperty("object-factory", m_objectFactory.getClass().getName());
     }
+    XmlUtils.setProperty(p, "allow-return-values", String.valueOf(getAllowReturnValues()),
+        DEFAULT_ALLOW_RETURN_VALUES.toString());
     xsb.push("suite", p);
 
     for (String paramName : m_parameters.keySet()) {

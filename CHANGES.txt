@@ -3,6 +3,9 @@ Current
 Added: <suite allow-return-values="true"> (and in <test> as well)
 Fixed: SkippedException are considered as real exception with @Test(expectedExceptions)
 
+Eclipse:
+Added: <suite allow-return-values="true"> (and in <test> as well)
+
 ===========================================================================
 
 6.4:
