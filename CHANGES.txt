@@ -1,6 +1,7 @@
 Current
 
 Added: <suite allow-return-values="true"> (and in <test> as well)
+Added: data-provider attribute to testng-results.xml
 Fixed: SkippedException are considered as real exception with @Test(expectedExceptions)
 
 Eclipse:

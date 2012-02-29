@@ -49,6 +49,7 @@ public class XMLReporterConfig {
   public static final String ATTR_IS_CONFIG = "is-config";
   public static final String ATTR_DEPENDS_ON_METHODS = "depends-on-methods";
   public static final String ATTR_DEPENDS_ON_GROUPS = "depends-on-groups";
+  public static final String ATTR_DATA_PROVIDER = "data-provider";
 
   public static final String TEST_PASSED = "PASS";
   public static final String TEST_FAILED = "FAIL";

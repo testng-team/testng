@@ -4,10 +4,13 @@ import org.testng.IResultMap;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
+import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
+import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.Utils;
+import org.testng.util.Strings;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -213,6 +216,16 @@ public class XMLSuiteResultWriter {
       String dependsOnStr = Utils.arrayToString(testResult.getMethod().getGroupsDependedUpon());
       if (!Utils.isStringEmpty(dependsOnStr)) {
         attributes.setProperty(XMLReporterConfig.ATTR_DEPENDS_ON_GROUPS, dependsOnStr);
+      }
+    }
+
+    ConstructorOrMethod cm = testResult.getMethod().getConstructorOrMethod();
+    Test testAnnotation;
+    if (cm.getMethod() != null) {
+      testAnnotation = cm.getMethod().getAnnotation(Test.class);
+      String dataProvider = testAnnotation.dataProvider();
+      if (!Strings.isNullOrEmpty(dataProvider)) {
+        attributes.setProperty(XMLReporterConfig.ATTR_DATA_PROVIDER, dataProvider);
       }
     }
 
