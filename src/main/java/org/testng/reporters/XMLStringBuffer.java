@@ -2,6 +2,7 @@ package org.testng.reporters;
 
 import java.util.Properties;
 import java.util.Stack;
+import java.util.regex.Pattern;
 
 /**
  * This class allows you to generate an XML text document by pushing
@@ -316,12 +317,14 @@ public class XMLStringBuffer {
     return m_buffer;
   }
 
+  private static final Pattern INVALID_XML_CHARS =
+      Pattern.compile("[^\\u0009\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\uD800\uDC00-\uDBFF\uDFFF]");
+
   /**
-   *
    * @return The String representation of the XML for this XMLStringBuffer.
    */
   public String toXML() {
-    return m_buffer.toString();
+    return INVALID_XML_CHARS.matcher(m_buffer.toString()).replaceAll("");
   }
 
   public static void main(String[] argv) {
