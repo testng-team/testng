@@ -291,7 +291,6 @@ public class XmlSuite implements Serializable, Cloneable {
    * Set of parameters for a suite is appended with parameters from parent suite.
    * Also, parameters from this suite override the same named parameters from
    * parent suite.
-   * @return
    */
   public Map<String, String> getParameters() {
     return m_parameters;

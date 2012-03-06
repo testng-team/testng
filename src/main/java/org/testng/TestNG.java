@@ -25,6 +25,7 @@ import org.testng.internal.annotations.Sets;
 import org.testng.internal.thread.graph.GraphThreadPoolExecutor;
 import org.testng.internal.thread.graph.IThreadWorkerFactory;
 import org.testng.internal.thread.graph.SuiteWorkerFactory;
+import org.testng.junit.JUnitTestFinder;
 import org.testng.log4testng.Logger;
 import org.testng.remote.SuiteDispatcher;
 import org.testng.remote.SuiteSlave;
@@ -64,7 +65,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import org.testng.junit.JUnitTestFinder;
 
 /**
  * This class is the main entry point for running tests in the TestNG framework.
@@ -1297,11 +1297,6 @@ public class TestNG {
 
   /**
    * <B>Note</B>: this method is not part of the public API and is meant for internal usage only.
-   * TODO  JavaDoc.
-   *
-   * @param argv
-   * @param listener
-   * @return
    */
   public static TestNG privateMain(String[] argv, ITestListener listener) {
     TestNG result = new TestNG();
@@ -1635,8 +1630,6 @@ public class TestNG {
 
   /**
    * Specify if this run should be made in mixed mode
-   *
-   * @param isJUnit
    */
   public void setMixed(Boolean isMixed) {
     m_isMixed = isMixed;
