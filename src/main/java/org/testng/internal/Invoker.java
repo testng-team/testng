@@ -583,6 +583,7 @@ public class Invoker implements IInvoker {
       finally {
         Reporter.setCurrentTestResult(testResult);
         runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
+        Reporter.setCurrentTestResult(null);
       }
     }
   }
