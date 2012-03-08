@@ -2,6 +2,7 @@ Current
 
 Added: <suite allow-return-values="true"> (and in <test> as well)
 Added: data-provider attribute to testng-results.xml
+Fixed: ThreadLocal<ITestResult> leak (aslakknutsen)
 Fixed: In the HTML reports, only show the first 100 characters of the parameters
 Fixed: SkippedException are considered as real exception with @Test(expectedExceptions)
 
