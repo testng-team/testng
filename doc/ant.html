@@ -43,13 +43,6 @@ accepts the following attributes: <br>
 		<th>Description </th>
 		<th>Required </th>
 	</tr>
-		<tr>
-		<td><tt>annotations</tt> </td>
-		<td>Either the string "JDK" or "Javadoc".  Defines which kind of annotations are used in these tests.
-		If you use "Javadoc", you will also need to specify "sourcedir".</td>
-		<td>No.  Defaults to "JDK" if you're using the JDK 5 jar and to "Javadoc" if you're using the JDK 1.4 jar.</td>
-	</tr>
-
 	<tr>
 		<td><tt>classfilesetref</tt> </td>
 		<td>A reference to a
@@ -87,11 +80,6 @@ accepts the following attributes: <br>
 		<td><tt>dumpCommand</tt> </td>
 		<td>Print the TestNG launcher command. </td>
 		<td>No. Defaults to false </td>
-	</tr>
-	<tr>
-		<td><tt>enableAssert</tt> </td>
-		<td>Enables JDK 1.4 assertion. </td>
-		<td>No. Defaults to true </td>
 	</tr>
 	<tr>
 		<td><tt>failureProperty</tt> </td>
@@ -164,20 +152,6 @@ accepts the following attributes: <br>
 		<td>The name of a property to set in the event of a skipped test. It is 
 		used only if the <tt>haltonskipped</tt> is not set. </td>
 		<td>No. </td>
-	</tr>
-	<tr>
-		<td><tt>sourcedir</tt> </td>
-		<td>A PATH-like structure for JDK 1.4 tests (using JavaDoc-like 
-		annotations) 
-		</td>
-		<td>&nbsp; </td>
-	</tr>
-	<tr>
-		<td><tt>sourcedirref</tt> 
-		</td>
-		<td>A reference to a PATH-like structure for JDK 1.4 tests (using 
-		JavaDoc-like annotations). </td>
-		<td>&nbsp; </td>
 	</tr>
 	<tr>
 		<td><tt>suiteRunnerClass</tt> </td>
@@ -269,11 +243,6 @@ One of attributes <tt>classpath</tt>, <tt>classpathref</tt> or nested <tt>
 <p>One of the attributes <tt>xmlfilesetref</tt>, <tt>classfilesetref</tt> or 
 nested <tt>&lt;xmlfileset&gt;</tt>, respectively <tt>&lt;classfileset&gt;</tt> must be used 
 for providing the tests. </p>
-<p><u>Note</u>: if using JDK 1.4 one of the attributes <tt>sourcedir</tt>, <tt>
-sourcedirref</tt> or the nested <tt>&lt;sourcedir&gt;</tt> must be provided. </p>
-<p><u>Note</u>: using <tt>&lt;classfileset&gt;</tt> doesn't automatically adds the 
-test classes to your classpath: you might need to repeat these classes in the 
-classpath for the task to work.</p>
 
 <h3>TestNG modes</h3>
 <p>The TestNG mode gets applied when tests are passed to TestNG using <tt>classfilesetref</tt>, <tt>methods</tt>
@@ -303,8 +272,6 @@ structure. </p>
 <p>TestNG can also run directly on classes, also supplied with a <tt>
 <a href="http://ant.apache.org/manual/Types/fileset.html">FileSet</a></tt>
 structure.</p>
-<h4>sourcedir</h4>
-<p>A PATH-like structure for JDK 1.4 tests using Javadoc annotations. </p>
 <h4>jvmarg</h4>
 <p>Additional parameters may be passed to the new VM via nested <tt>&lt;jvmarg&gt;</tt> 
 elements. For example: </p>
