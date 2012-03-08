@@ -223,9 +223,11 @@ public class XMLSuiteResultWriter {
     Test testAnnotation;
     if (cm.getMethod() != null) {
       testAnnotation = cm.getMethod().getAnnotation(Test.class);
-      String dataProvider = testAnnotation.dataProvider();
-      if (!Strings.isNullOrEmpty(dataProvider)) {
-        attributes.setProperty(XMLReporterConfig.ATTR_DATA_PROVIDER, dataProvider);
+      if (testAnnotation != null) {
+        String dataProvider = testAnnotation.dataProvider();
+        if (!Strings.isNullOrEmpty(dataProvider)) {
+          attributes.setProperty(XMLReporterConfig.ATTR_DATA_PROVIDER, dataProvider);
+        }
       }
     }
 
