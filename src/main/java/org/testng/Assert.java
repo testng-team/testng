@@ -680,18 +680,34 @@ public class Assert {
    * Asserts that two sets are equal.
    */
   static public void assertEquals(Set actual, Set expected) {
-    if(actual == expected) {
-      return;
-    }
-
-    if (actual == null || expected == null) {
-      fail("Sets not equal: expected: " + expected + " and actual: " + actual);
-    }
-
-    if (!actual.equals(expected)) {
-      fail("Sets differ: expected " + expected + " but got " + actual);
-    }
+    assertEquals(actual, expected, null);
   }
+  
+	/**
+	 * Assert set equals
+	 */
+    static public void assertEquals(Set actual, Set expected, String message) {
+      if (actual == expected) {
+		return;
+	  }
+
+	  if (actual == null || expected == null) {
+			// Keep the back compatible
+        if (message == null) {
+          fail("Sets not equal: expected: " + expected + " and actual: "+ actual);
+		} else {
+		    failNotEquals(actual, expected, message);
+		}
+	  }
+
+	  if (!actual.equals(expected)) {
+	    if (message == null) {
+		  fail("Sets differ: expected " + expected + " but got " + actual);
+		} else {
+				failNotEquals(actual, expected, message);
+		}
+	  }
+	}
 
   /**
    * Asserts that two maps are equal.
