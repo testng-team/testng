@@ -686,33 +686,33 @@ public class Assert {
 	/**
 	 * Assert set equals
 	 */
-    static public void assertEquals(Set actual, Set expected, String message) {
-      if (actual == expected) {
-		return;
-	  }
+  static public void assertEquals(Set<?> actual, Set<?> expected, String message) {
+    if (actual == expected) {
+      return;
+    }
 
-	  if (actual == null || expected == null) {
-			// Keep the back compatible
-        if (message == null) {
-          fail("Sets not equal: expected: " + expected + " and actual: "+ actual);
-		} else {
-		    failNotEquals(actual, expected, message);
-		}
-	  }
+    if (actual == null || expected == null) {
+      // Keep the back compatible
+      if (message == null) {
+        fail("Sets not equal: expected: " + expected + " and actual: " + actual);
+      } else {
+        failNotEquals(actual, expected, message);
+      }
+    }
 
-	  if (!actual.equals(expected)) {
-	    if (message == null) {
-		  fail("Sets differ: expected " + expected + " but got " + actual);
-		} else {
-				failNotEquals(actual, expected, message);
-		}
-	  }
-	}
+    if (!actual.equals(expected)) {
+      if (message == null) {
+        fail("Sets differ: expected " + expected + " but got " + actual);
+      } else {
+        failNotEquals(actual, expected, message);
+      }
+    }
+  }
 
   /**
    * Asserts that two maps are equal.
    */
-  static public void assertEquals(Map actual, Map expected) {
+  static public void assertEquals(Map<?, ?> actual, Map<?, ?> expected) {
     if (actual == expected) {
       return;
     }
@@ -725,9 +725,9 @@ public class Assert {
       fail("Maps do not have the same size:" + actual.size() + " != " + expected.size());
     }
 
-    Set entrySet = actual.entrySet();
-    for (Iterator iterator = entrySet.iterator(); iterator.hasNext();) {
-      Map.Entry entry = (Map.Entry) iterator.next();
+    Set<?> entrySet = actual.entrySet();
+    for (Iterator<?> iterator = entrySet.iterator(); iterator.hasNext();) {
+      Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iterator.next();
       Object key = entry.getKey();
       Object value = entry.getValue();
       Object expectedValue = expected.get(key);
