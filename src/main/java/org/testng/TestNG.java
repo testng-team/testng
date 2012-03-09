@@ -517,7 +517,10 @@ public class TestNG {
     //
     Set<Class> classes = Sets.newHashSet();
     for (String m : commandLineMethods) {
-      classes.add(ClassHelper.forName(splitMethod(m)[0]));
+      Class c = ClassHelper.forName(splitMethod(m)[0]);
+      if (c != null) {
+          classes.add(c);
+      }
     }
 
     List<XmlSuite> result = createCommandLineSuitesForClasses(classes.toArray(new Class[0]));
