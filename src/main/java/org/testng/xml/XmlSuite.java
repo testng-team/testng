@@ -84,6 +84,9 @@ public class XmlSuite implements Serializable, Cloneable {
   public static final Boolean DEFAULT_GROUP_BY_INSTANCES = false;
   private Boolean m_groupByInstances = DEFAULT_GROUP_BY_INSTANCES;
 
+  public static Boolean DEFAULT_ALLOW_RETURN_VALUES = Boolean.FALSE;
+  private Boolean m_allowReturnValues = DEFAULT_ALLOW_RETURN_VALUES;
+
   /** The packages containing test classes. */
   private List<XmlPackage> m_xmlPackages = Lists.newArrayList();
 
@@ -124,7 +127,6 @@ public class XmlSuite implements Serializable, Cloneable {
 
   private List<String> m_includedGroups = Lists.newArrayList();
   private List<String> m_excludedGroups = Lists.newArrayList();
-  private Boolean m_allowReturnValues = false;
 
   /**
    * @return the fileName
@@ -289,7 +291,6 @@ public class XmlSuite implements Serializable, Cloneable {
    * Set of parameters for a suite is appended with parameters from parent suite.
    * Also, parameters from this suite override the same named parameters from
    * parent suite.
-   * @return
    */
   public Map<String, String> getParameters() {
     return m_parameters;
@@ -429,6 +430,8 @@ public class XmlSuite implements Serializable, Cloneable {
     if(null != m_objectFactory) {
       p.setProperty("object-factory", m_objectFactory.getClass().getName());
     }
+    XmlUtils.setProperty(p, "allow-return-values", String.valueOf(getAllowReturnValues()),
+        DEFAULT_ALLOW_RETURN_VALUES.toString());
     xsb.push("suite", p);
 
     for (String paramName : m_parameters.keySet()) {
@@ -539,6 +542,7 @@ public class XmlSuite implements Serializable, Cloneable {
     result.setJUnit(isJUnit()); // TESTNG-141
     result.setSkipFailedInvocationCounts(skipFailedInvocationCounts());
     result.setObjectFactory(getObjectFactory());
+    result.setAllowReturnValues(getAllowReturnValues());
     return result;
   }
 

@@ -481,7 +481,6 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
   /**
    * Returns the annotation finder for the given annotation type.
-   * @param pAnnotationType the annotation type
    * @return the annotation finder for the given annotation type.
    */
   @Override
