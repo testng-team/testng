@@ -542,6 +542,7 @@ public class XmlSuite implements Serializable, Cloneable {
     result.setJUnit(isJUnit()); // TESTNG-141
     result.setSkipFailedInvocationCounts(skipFailedInvocationCounts());
     result.setObjectFactory(getObjectFactory());
+    result.setAllowReturnValues(getAllowReturnValues());
     return result;
   }
 

@@ -9,6 +9,7 @@ Fixed: SkippedException are considered as real exception with @Test(expectedExce
 Eclipse:
 Fixed: Java constants are properly resolved if they are used as group names (susanin)
 Fixed: @Test(groups = Foo.CONSTANT) (susanin)
+Fixed: Failed tests with allow-return-values="true" were not rerun
 Added: <suite allow-return-values="true"> (and in <test> as well)
 
 ===========================================================================
