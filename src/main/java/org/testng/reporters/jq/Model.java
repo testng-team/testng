@@ -139,9 +139,17 @@ public class Model {
     Object[] parameters = tr.getParameters();
     if (parameters.length > 0) {
       result.append("(");
+      StringBuilder p = new StringBuilder();
       for (int i = 0; i < parameters.length; i++) {
-        if (i > 0) result.append(", ");
-        result.append(parameters[i] != null ? parameters[i].toString() : "null");
+        if (i > 0) p.append(", ");
+        p.append(parameters[i] != null ? parameters[i].toString() : "null");
+      }
+      if (p.length() > 100) {
+        String s = p.toString().substring(0, 100);
+        s = s + "...";
+        result.append(s);
+      } else {
+        result.append(p.toString());
       }
       result.append(")");
     }
