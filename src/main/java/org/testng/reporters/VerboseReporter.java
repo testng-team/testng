@@ -163,6 +163,7 @@ public class VerboseReporter extends TestListenerAdapter {
      */
     private void logTestResult(Status st, ITestResult itr, boolean isConfMethod) {
         StringBuilder sb = new StringBuilder();
+        StringBuilder succRate = null;
         String stackTrace = "";
         switch (st) {
             case STARTED:
@@ -238,6 +239,12 @@ public class VerboseReporter extends TestListenerAdapter {
             }
             if (!Utils.isStringEmpty(stackTrace)) {
                 sb.append("\n").append(stackTrace.substring(0, stackTrace.lastIndexOf(System.getProperty("line.separator"))));
+            }
+        } else {
+            if (!isConfMethod && tm.getInvocationCount() > 1) {
+                sb.append(" success: ");
+                sb.append(tm.getSuccessPercentage());
+                sb.append("%");
             }
         }
         log(sb.toString());
