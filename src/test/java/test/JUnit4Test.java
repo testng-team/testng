@@ -67,7 +67,6 @@ public class JUnit4Test extends BaseTest {
         addClass("test.junit4.InheritedTest");
         addClass("test.junit4.JUnit4Sample1");
         assert getTest().isJUnit();
-        setDebug();
 
         run();
         String[] passed = {"t1", "t1"};
