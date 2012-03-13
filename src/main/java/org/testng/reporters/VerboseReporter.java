@@ -155,7 +155,7 @@ public class VerboseReporter extends TestListenerAdapter {
     /**
      * Log meaningful message for passed in arguments.
      * Message itself is of form:
-     * $status: "$suiteName" - $methodDeclaration ($actualArguments) finished in $x ms
+     * $status: "$suiteName" - $methodDeclaration ($actualArguments) finished in $x ms ($run of $totalRuns)
      *
      * @param st status of passed in itr
      * @param itr test result to be described
@@ -228,6 +228,13 @@ public class VerboseReporter extends TestListenerAdapter {
                     sb.append(" ");
                 }
                 sb.append(tm.getDescription());
+            }
+            if (tm.getInvocationCount() > 1) {
+                sb.append(" (");
+                sb.append(tm.getCurrentInvocationCount());
+                sb.append(" of ");
+                sb.append(tm.getInvocationCount());
+                sb.append(")");
             }
             if (!Utils.isStringEmpty(stackTrace)) {
                 sb.append("\n").append(stackTrace.substring(0, stackTrace.lastIndexOf(System.getProperty("line.separator"))));
