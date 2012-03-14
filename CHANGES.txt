@@ -5,6 +5,7 @@ Added: data-provider attribute to testng-results.xml
 Added: Reporter display the results in the same order as test methods (Libor Zoubek)
 Added: Support for running JUnit 4 tests (Lukas Jungmann)
 Added: Ability to auto-detect JUnit tests ('-mixed' mode) (Lukas Jungmann)
+Added: Support for ResourceCollections in an Ant tasks (requires Ant >= 1.7.1) (Lukas Jungmann)
 Fixed: ThreadLocal<ITestResult> leak (aslakknutsen)
 Fixed: In the HTML reports, only show the first 100 characters of the parameters
 Fixed: SkippedException are considered as real exception with @Test(expectedExceptions)
@@ -206,7 +207,7 @@ Fixed: IDEA-59073: exceptions that don't match don't have stack trace printed in
 Fixed: IDEA's plug-in was not honoring ITest (fixed in TestResultMessage)
 Fixed: Methods depending on a group they belong were skipped instead of throwing a cycle exception
 Fixed: TESTNG-401: ClassCastException when using a listener from Maven
-Fixed: TESTNG-186: Rename IWorkerApadter to IWorkerAdapter (Tom�s Pollak)
+Fixed: TESTNG-186: Rename IWorkerApadter to IWorkerAdapter (Tomas Pollak)
 Fixed: TESTNG-415: Assert.assertEquals() for sets and maps fails with 'null' as arguments
 Fixed: typo -testRunFactory
 Fixed: NPE while printing results for an empty suite (Nalin Makar)
@@ -321,7 +322,7 @@ Fixed: XML test results contained skipfailedinvocationCounts instead of skipfail
 Fixed: Issue4 assertEquals for primitive arrays, Issue34 assertNull javadoc updated
 Fixed: Issue78 NPE with non-public class. Now throws TestNG exception
 Fixed: NPE with @Optional null parameters (Yves Dessertine)
-Fixed: TESTNG-387 TestNG not rerunning test method with the right data set from Data Provider (Fran�ois Reynaud)
+Fixed: TESTNG-387 TestNG not rerunning test method with the right data set from Data Provider (Francois Reynaud)
 Fixed: Show correct number of pass/failed numbers for tests using @DataProvider
 Fixed: Return correct method status and exception (if any) in InvokedMethodListener.afterInvocation() 
 Fixed: Trivial fixes: TESTNG-241 (log message at Info), Issue2 (throw SAXException and not NPE for invalid testng xml) 
