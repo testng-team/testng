@@ -12,6 +12,8 @@ import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Execute;
 import org.apache.tools.ant.taskdefs.ExecuteWatchdog;
+import org.apache.tools.ant.taskdefs.LogOutputStream;
+import org.apache.tools.ant.taskdefs.PumpStreamHandler;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.CommandlineJava;
 import org.apache.tools.ant.types.Environment;
@@ -19,6 +21,8 @@ import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.PropertySet;
 import org.apache.tools.ant.types.Reference;
+import org.apache.tools.ant.types.ResourceCollection;
+import org.apache.tools.ant.types.resources.FileResource;
 import org.apache.tools.ant.types.selectors.FilenameSelector;
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
@@ -35,10 +39,10 @@ import java.net.URL;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import org.apache.tools.ant.taskdefs.*;
 
 /**
  * TestNG settings:
@@ -107,8 +111,8 @@ public class TestNGAntTask extends Task {
 
   protected CommandlineJava m_javaCommand;
 
-  protected List<FileSet> m_xmlFilesets= Lists.newArrayList();
-  protected List<FileSet> m_classFilesets= Lists.newArrayList();
+  protected List<ResourceCollection> m_xmlFilesets= Lists.newArrayList();
+  protected List<ResourceCollection> m_classFilesets= Lists.newArrayList();
   protected File m_outputDir;
   protected File m_testjar;
   protected File m_workingDir;
@@ -330,7 +334,7 @@ public class TestNGAntTask extends Task {
   }
 
   public void setXmlfilesetRef(Reference ref) {
-    m_xmlFilesets.add(createFileSet(ref));
+    m_xmlFilesets.add(createResourceCollection(ref));
   }
 
   public void addClassfileset(FileSet fs) {
@@ -338,7 +342,7 @@ public class TestNGAntTask extends Task {
   }
 
   public void setClassfilesetRef(Reference ref) {
-    m_classFilesets.add(createFileSet(ref));
+    m_classFilesets.add(createResourceCollection(ref));
   }
 
   public void setTestNames(String testNames) {
@@ -546,7 +550,7 @@ public class TestNGAntTask extends Task {
     addFileIfFile(argv, CommandLineArgs.TEST_JAR, m_testjar);
     addStringIfNotBlank(argv, CommandLineArgs.GROUPS, m_includedGroups);
     addStringIfNotBlank(argv, CommandLineArgs.EXCLUDED_GROUPS, m_excludedGroups);
-    addFilesOfFilesets(argv, CommandLineArgs.TEST_CLASS, m_classFilesets);
+    addFilesOfRCollection(argv, CommandLineArgs.TEST_CLASS, m_classFilesets);
     addListOfStringIfNotEmpty(argv, CommandLineArgs.LISTENER, m_listeners);
     addListOfStringIfNotEmpty(argv, CommandLineArgs.METHOD_SELECTORS, m_methodselectors);
     addStringIfNotNull(argv, CommandLineArgs.OBJECT_FACTORY, m_objectFactory);
@@ -599,8 +603,8 @@ public class TestNGAntTask extends Task {
     }
   }
 
-  private void addFilesOfFilesets(List<String> argv, String name, List<FileSet> fileSets) {
-	addArgumentsIfNotEmpty(argv, name, fileset(fileSets), ",");
+  private void addFilesOfRCollection(List<String> argv, String name, List<ResourceCollection> resources) {
+	addArgumentsIfNotEmpty(argv, name, getFiles(resources), ",");
   }
 
   private void addListOfStringIfNotEmpty(List<String> argv, String name, List<String> arguments) {
@@ -661,7 +665,7 @@ public class TestNGAntTask extends Task {
   protected List<String> getSuiteFileNames() {
     List<String> result = Lists.newArrayList();
 
-    for(String file : fileset(m_xmlFilesets)) {
+    for(String file : getFiles(m_xmlFilesets)) {
       result.add(file);
     }
 
@@ -884,12 +888,16 @@ public class TestNGAntTask extends Task {
 
   }
 
-  private FileSet createFileSet(Reference ref) {
-    FileSet fs= new FileSet();
-    fs.setRefid(ref);
-    fs.setProject(getProject());
-
-    return fs;
+  private ResourceCollection createResourceCollection(Reference ref) {
+    Object o = ref.getReferencedObject();
+    if (!(o instanceof ResourceCollection)) {
+        throw new BuildException("Only File based ResourceCollections are supported.");
+    }
+    ResourceCollection rc = (ResourceCollection) o;
+    if (!rc.isFilesystemOnly()) {
+        throw new BuildException("Only ResourceCollections from local file system are supported.");
+    }
+    return rc;
   }
 
   private FileSet appendClassSelector(FileSet fs) {
@@ -975,22 +983,53 @@ public class TestNGAntTask extends Task {
   }
 
   /**
-   * Returns the list of files corresponding to the filesets
+   * Returns the list of files corresponding to the resource collection
    *
-   * @param filesets
-   * @return the list of files corresponding to the filesets
+   * @param resources
+   * @return the list of files corresponding to the resource collection
    * @throws BuildException
    */
-  private List<String> fileset(List<FileSet> filesets) throws BuildException {
+  private List<String> getFiles(List<ResourceCollection> resources) throws BuildException {
+    List<String> files= Lists.newArrayList();
+    for (ResourceCollection rc : resources) {
+      if (rc instanceof FileSet) {
+          files.addAll(fileset((FileSet) rc));
+      } else {
+        for (Iterator i = rc.iterator(); i.hasNext();) {
+          Object o = i.next();
+          if (o instanceof FileResource) {
+            FileResource fr = ((FileResource) o);
+            if (fr.isDirectory()) {
+              throw new BuildException("Directory based FileResources are not supported.");
+            }
+            if (fr.isExists()) {
+              log("'" + fr.toLongString() + "' does not exist", Project.MSG_VERBOSE);
+            }
+            files.add(fr.getFile().getAbsolutePath());
+          } else {
+              log("Unsupported Resource type: " + o.toString(), Project.MSG_VERBOSE);
+          }
+        }
+      }
+    }
+    return files;
+  }
+
+  /**
+   * Returns the list of files corresponding to the fileset
+   *
+   * @param filesets
+   * @return the list of files corresponding to the fileset
+   * @throws BuildException
+   */
+  private List<String> fileset(FileSet fileset) throws BuildException {
     List<String> files= Lists.newArrayList();
 
-    for (FileSet fileset : filesets) {
       DirectoryScanner ds= fileset.getDirectoryScanner(getProject());
 
       for(String file : ds.getIncludedFiles()) {
         files.add(ds.getBasedir() + File.separator + file);
       }
-    }
 
     return files;
   }
