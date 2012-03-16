@@ -548,6 +548,7 @@
     <classes>
       <class name="test.JUnitTest1" />
       <class name="test.CommandLineTest"/>
+      <class name="test.JUnit4Test" />
     </classes>
   </test>
 

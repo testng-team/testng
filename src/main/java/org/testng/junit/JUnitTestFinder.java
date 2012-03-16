@@ -32,8 +32,8 @@ public final class JUnitTestFinder {
         if (!haveJUnit()) {
             return false;
         }
-        //only public not-abstract classes are interesting, so filter out the rest
-        if (Modifier.isAbstract(c.getModifiers()) || !Modifier.isPublic(c.getModifiers()) || c.isInterface() || c.isAnnotation() || c.isEnum()) {
+        //only public classes are interesting, so filter out the rest
+        if (!Modifier.isPublic(c.getModifiers()) || c.isInterface() || c.isAnnotation() || c.isEnum()) {
             return false;
         }
         return (junit3 != null && junit3.isTest(c)) || (junit4 != null && junit4.isTest(c));
