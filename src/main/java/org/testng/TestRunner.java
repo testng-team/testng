@@ -1066,8 +1066,7 @@ public class TestRunner
         String[] dependentMethods = m.getMethodsDependedUpon();
         if (dependentMethods != null) {
           for (String d : dependentMethods) {
-            String shortMethodName = d.substring(d.lastIndexOf(".") + 1);
-            ITestNGMethod dm = dependencyMap.getMethodDependingOn(shortMethodName, m);
+            ITestNGMethod dm = dependencyMap.getMethodDependingOn(d, m);
             result.addEdge(m, dm);
           }
         }
