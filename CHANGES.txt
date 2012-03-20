@@ -5,7 +5,7 @@ Added: data-provider attribute to testng-results.xml
 Added: Reporter display the results in the same order as test methods (Libor Zoubek)
 Added: Support for running JUnit 4 tests (Lukas Jungmann)
 Added: Ability to auto-detect JUnit tests ('-mixed' mode) (Lukas Jungmann)
-Added: Support for ResourceCollections in an Ant tasks (requires Ant >= 1.7.1) (Lukas Jungmann)
+Added: Support for ResourceCollections in an Ant tasks (requires Ant >= 1.7.0) (Lukas Jungmann)
 Fixed: ThreadLocal<ITestResult> leak (aslakknutsen)
 Fixed: In the HTML reports, only show the first 100 characters of the parameters
 Fixed: SkippedException are considered as real exception with @Test(expectedExceptions)
