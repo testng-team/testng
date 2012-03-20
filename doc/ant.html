@@ -46,8 +46,10 @@ accepts the following attributes: <br>
 	<tr>
 		<td><tt>classfilesetref</tt> </td>
 		<td>A reference to a
-		<a href="http://ant.apache.org/manual/Types/fileset.html">FileSet</a>
-		structure of the test classes to be run. </td>
+		<a href="http://ant.apache.org/manual/Types/resources.html#collection">ResourceCollection</a>
+		containing the test classes to be run. Only File based
+                <a href="http://ant.apache.org/manual/Types/resources.html#collection">ResourceCollection</a>s
+                are supported (ie. <a href="http://ant.apache.org/manual/Types/fileset.html">FileSet</a>).</td>
 		<td>&nbsp; </td>
 	</tr>
 	<tr>
@@ -137,8 +139,8 @@ accepts the following attributes: <br>
 
         <tr>
 		<td><tt>mode</tt></td>
-                <td>Either <tt>TESTNG</tt>, <tt>JUNIT</tt> or <tt>MIXED</tt>. Whether TestNG should run only TestNG tests, JUnit tests or both.</td>
-		<td>No. Defaults to TESTNG.</td>
+                <td>Either <tt>"testng"</tt>, <tt>"junit"</tt> or <tt>"mixed"</tt>. Whether TestNG should run only TestNG tests, JUnit tests or both.</td>
+		<td>No. Defaults to "testng".</td>
         </tr>
 
 	<tr>
@@ -226,8 +228,10 @@ accepts the following attributes: <br>
 	<tr>
 		<td><tt>xmlfilesetref</tt> </td>
 		<td>A reference to a
-		<a href="http://ant.apache.org/manual/Types/fileset.html">FileSet</a>
-		structure for the suite definitions to be run. </td>
+		<a href="http://ant.apache.org/manual/Types/resources.html#collection">ResourceCollection</a>
+		containing the suite definitions to be run. Only File based
+                <a href="http://ant.apache.org/manual/Types/resources.html#collection">ResourceCollection</a>s
+                are supported (ie. <a href="http://ant.apache.org/manual/Types/fileset.html">FileSet</a>).</td>
 		<td>&nbsp; </td>
 	</tr>
 

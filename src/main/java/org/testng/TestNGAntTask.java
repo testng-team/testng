@@ -154,10 +154,11 @@ public class TestNGAntTask extends Task {
   private String m_testName="Ant test";
   private Boolean m_skipFailedInvocationCounts;
   private String m_methods;
-  private Mode mode = Mode.TESTNG;
+  private Mode mode = Mode.testng;
 
   public enum Mode {
-      TESTNG, JUNIT, MIXED;
+      //lower-case to better look in build scripts
+      testng, junit, mixed;
   }
   
   /**
@@ -375,7 +376,7 @@ public class TestNGAntTask extends Task {
 
   // TestNG settings
   public void setJUnit(boolean value) {
-    mode = value ? Mode.JUNIT : Mode.TESTNG;
+    mode = value ? Mode.junit : Mode.testng;
   }
 
   // TestNG settings
@@ -541,8 +542,8 @@ public class TestNGAntTask extends Task {
 
   private List<String> createArguments() {
 	List<String> argv= Lists.newArrayList();
-    addBooleanIfTrue(argv, CommandLineArgs.JUNIT, mode == Mode.JUNIT);
-    addBooleanIfTrue(argv, CommandLineArgs.MIXED, mode == Mode.MIXED);
+    addBooleanIfTrue(argv, CommandLineArgs.JUNIT, mode == Mode.junit);
+    addBooleanIfTrue(argv, CommandLineArgs.MIXED, mode == Mode.mixed);
     addBooleanIfTrue(argv, CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS, m_skipFailedInvocationCounts);
     addIntegerIfNotNull(argv, CommandLineArgs.LOG, m_verbose);
     addDefaultListeners(argv);
