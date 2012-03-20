@@ -2,7 +2,7 @@
   <info organisation="org.testng" module="testng" revision="6.5beta"/>
 
   <dependencies>
-    <dependency org="org.apache.ant" name="ant" rev="1.7.1" />
+    <dependency org="org.apache.ant" name="ant" rev="1.7.0" />
     <dependency org="junit" name="junit" rev="4.10" />
     <dependency org="org.beanshell" name="bsh" rev="2.0b4" />
     <dependency org="com.google.inject" name="guice" rev="2.0" />
