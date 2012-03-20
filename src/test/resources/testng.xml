@@ -115,6 +115,11 @@
   </test>
 
   <test name="Threads">
+    <groups>
+      <run>
+        <exclude name="broken" />
+      </run>
+    </groups>
     <classes>
       <class name="test.thread.ThreadPoolSizeTest" />
       <class name="test.thread.ThreadPoolSizeWithTimeOutTest" />
