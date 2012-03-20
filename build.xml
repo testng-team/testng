@@ -188,7 +188,7 @@
 
   <target name="dist" depends="build,all-jar-flavors,dist-all-zip,eclipse" />
 
-  <target name="all-jar-flavors" depends="dist-junit,dist-nobsh-guice,dist-bsh-noguice,dist-nobsh-noguice" />
+  <target name="all-jar-flavors" depends="dist-junit,dist-nobsh-guice,dist-bsh-noguice,dist-nobsh-noguice,dist-testng-dist" />
 
   <target name="dist-junit">
     <antcall target="create-jar">
@@ -231,6 +231,15 @@
     <jar jarfile="${other.jars.dir}/${testng.bsh.noguice.jar}" update="true">
       <zipfileset src="${lib.dir}/${jcommander.jar}" />
       <zipfileset src="${lib.dir}/${junit.jar}" />
+    </jar>
+  </target>
+
+  <target name="dist-testng-dist">
+    <antcall target="create-jar">
+      <param name="jar.file" value="${other.jars.dir}/${testng.dist.jar}" />
+    </antcall>
+    <jar jarfile="${other.jars.dir}/${testng.dist.jar}" update="true">
+      <zipfileset src="${lib.dir}/${jcommander.jar}" />
     </jar>
   </target>
 
