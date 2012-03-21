@@ -121,5 +121,17 @@ public class JUnitTest1 extends BaseTest {
     System.out.println("[JUnitTest1] " + s);
   }
 
+  @Test
+  public void testAbstract() {
+    addClass("test.sample.JUnitSample4");
+    run();
+    String[] passed = {
+      "testXY", "testXY", "testXY"
+    };
+    String[] failed = {
+    };
 
+    verifyTests("Passed", passed, getPassedTests());
+    verifyTests("Failed", failed, getFailedTests());
+  }
 }

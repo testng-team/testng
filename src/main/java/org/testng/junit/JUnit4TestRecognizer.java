@@ -2,6 +2,7 @@ package org.testng.junit;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import org.junit.runner.RunWith;
 
 /**
  *
@@ -13,6 +14,11 @@ public final class JUnit4TestRecognizer implements JUnitTestRecognizer {
     }
 
     public boolean isTest(Class c) {
+        for (Annotation an: c.getAnnotations()) {
+            if (RunWith.class.isAssignableFrom(an.annotationType())) {
+                return true;
+            }
+        }
         boolean haveTest = false;
         for (Method m : c.getMethods()) {
             for (Annotation a : m.getDeclaredAnnotations()) {

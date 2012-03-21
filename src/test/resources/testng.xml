@@ -115,6 +115,11 @@
   </test>
 
   <test name="Threads">
+    <groups>
+      <run>
+        <exclude name="broken" />
+      </run>
+    </groups>
     <classes>
       <class name="test.thread.ThreadPoolSizeTest" />
       <class name="test.thread.ThreadPoolSizeWithTimeOutTest" />
@@ -548,6 +553,7 @@
     <classes>
       <class name="test.JUnitTest1" />
       <class name="test.CommandLineTest"/>
+      <class name="test.JUnit4Test" />
     </classes>
   </test>
 

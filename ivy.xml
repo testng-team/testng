@@ -1,8 +1,8 @@
 <ivy-module version="2.0">
-  <info organisation="org.testng" module="testng" revision="5.14.3beta"/>
+  <info organisation="org.testng" module="testng" revision="6.5beta"/>
 
   <dependencies>
-    <dependency org="ant" name="ant" rev="1.6.5" />
+    <dependency org="org.apache.ant" name="ant" rev="1.7.0" />
     <dependency org="junit" name="junit" rev="4.10" />
     <dependency org="org.beanshell" name="bsh" rev="2.0b4" />
     <dependency org="com.google.inject" name="guice" rev="2.0" />
