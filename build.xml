@@ -188,7 +188,7 @@
 
   <target name="dist" depends="build,all-jar-flavors,dist-all-zip,eclipse" />
 
-  <target name="all-jar-flavors" depends="dist-junit,dist-nobsh-guice,dist-bsh-noguice,dist-nobsh-noguice,dist-testng-dist" />
+  <target name="all-jar-flavors" depends="dist-junit,dist-nobsh-guice,dist-bsh-noguice,dist-nobsh-noguice,dist-testng-dist,dist-testng-javadoc" />
 
   <target name="dist-junit">
     <antcall target="create-jar">
@@ -241,6 +241,12 @@
     <jar jarfile="${other.jars.dir}/${testng.dist.jar}" update="true">
       <zipfileset src="${lib.dir}/${jcommander.jar}" />
     </jar>
+  </target>
+
+  <target name="dist-testng-javadoc" depends="javadocs">
+    <zip destfile="${other.jars.dir}/${testng.javadoc.zip}">
+        <fileset dir="javadocs"/>
+    </zip>
   </target>
 
   <target name="create-jar" description="Create a jar file with the Testng classes and nothing else" >
