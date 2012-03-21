@@ -688,6 +688,12 @@
       <class name="test.configuration.BeforeClassWithDisabledTest" />
     </classes>
   </test>
+  
+  <test name="Bug173">
+    <classes>
+      <class name="test.testng173.TestNG173Test" />
+    </classes>
+  </test>
 
   <test name="Mustache">
     <classes>
