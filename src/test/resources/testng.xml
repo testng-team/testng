@@ -111,6 +111,7 @@
       <class name="test.bug90.Bug90Test" />
       <class name="test.bug92.Bug92Test" />
       <class name="test.ReturnValueTest" />
+      <class name="test.groupbug.GroupBugTest" />
     </classes>
   </test>
 
