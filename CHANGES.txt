@@ -6,6 +6,7 @@ Added: Reporter display the results in the same order as test methods (Libor Zou
 Added: Support for running JUnit 4 tests (Lukas Jungmann)
 Added: Ability to auto-detect JUnit tests ('-mixed' mode) (Lukas Jungmann)
 Added: Support for ResourceCollections in an Ant tasks (requires Ant >= 1.7.0) (Lukas Jungmann)
+Fixed: GITHUB-198: JUnitReportsReporter use commas in certain locales, which JUnitReports doesn't like
 Fixed: GITHUB-173: Dependent methods executed out-of-order if method names match across classes (jjedMoriAnktah)
 Fixed: ThreadLocal<ITestResult> leak (aslakknutsen)
 Fixed: In the HTML reports, only show the first 100 characters of the parameters
