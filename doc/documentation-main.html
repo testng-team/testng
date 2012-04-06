@@ -820,6 +820,19 @@ The <a href="ant.html">ant task</a> and <a href="#testng-xml">testng.xml</a> all
 
 <h3><a class="section" name="methods">Test methods, Test classes and Test groups</a></h3>
 
+<h4><a class="section" indent=".." name="test-groups">Test methods</a></h4>
+
+Test methods are annotated with <tt>@Test</tt>. Methods annotated with <tt>@Test</tt> that happen to return a value will be ignored, unless you set <tt>allow-return-values</tt> to <tt>true</tt> in your <tt>testng.xml</tt>:
+
+<pre class="brush: xml">
+&lt;suite allow-return-values="true"&gt;
+
+or
+
+&lt;test allow-return-values="true"&gt;
+</pre>
+
+
 <h4><a class="section" indent=".." name="test-groups">Test groups</a></h4>
 
 <p>
