@@ -24,6 +24,8 @@ fi
 # Maven
 #
 
+./build-with-maven
+
 #cd $HOME/t
 #rm -rf surefire
 #svn co http://svn.apache.org/repos/asf/maven/surefire/trunk surefire
