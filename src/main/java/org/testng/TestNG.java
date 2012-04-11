@@ -1635,6 +1635,9 @@ public class TestNG {
    * Specify if this run should be made in mixed mode
    */
   public void setMixed(Boolean isMixed) {
+      if(isMixed==null){
+          return;
+      }
     m_isMixed = isMixed;
   }
 
