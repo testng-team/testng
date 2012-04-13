@@ -106,7 +106,7 @@ a:hover {
 }
 
 .stack-trace {
-    whitespace: pre;
+    white-space: pre;
     font-family: monospace;
     font-size: 12px;
     margin-top: 0px;

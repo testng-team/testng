@@ -1,5 +1,12 @@
 Current
 
+Fixed: GITHUB-205: white-space was spelled whitespace in testng.css (carlin-scott)
+
+===========================================================================
+
+6.5.1:
+04/10/2012
+
 Added: <suite allow-return-values="true"> (and in <test> as well)
 Added: data-provider attribute to testng-results.xml
 Added: Reporter display the results in the same order as test methods (Libor Zoubek)
