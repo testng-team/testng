@@ -1,9 +1,13 @@
 package org.testng;
 
 import org.testng.collections.ListMultiMap;
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.collections.Sets;
 
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Helper class to keep track of dependencies.
@@ -24,9 +28,21 @@ public class DependencyMap {
   }
 
   public List<ITestNGMethod> getMethodsThatBelongTo(String group, ITestNGMethod fromMethod) {
-    List<ITestNGMethod> result = m_groups.get(group);
-    if (result == null) {
-      throw new TestNGException("Method \"" + fromMethod
+    List<String> keys = m_groups.getKeys();
+    Set<String> uniqueKeys = Sets.newHashSet(keys);
+
+    List<ITestNGMethod> result = Lists.newArrayList();
+
+    for (String k : uniqueKeys) {
+      if (Pattern.matches(group, k)) {
+        List<ITestNGMethod> temp = m_groups.get(k);
+        if (temp != null)
+          result.addAll(m_groups.get(k));
+      }
+    }
+
+    if (result.isEmpty()) {
+      throw new TestNGException("DependencyMap::Method \"" + fromMethod
           + "\" depends on nonexistent group \"" + group + "\"");
     } else {
       return result;
