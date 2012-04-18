@@ -1,6 +1,7 @@
 package org.testng.junit;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
@@ -89,9 +90,8 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
                         return true;
                     }
                     for (String m: methods) {
-                        if (m.equals(description.getMethodName())) {
-                            return true;
-                        }
+                        Pattern p = Pattern.compile(m);
+                        return p.matcher(description.getMethodName()).matches();
                     }
                     return false;
                 }

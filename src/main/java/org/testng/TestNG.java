@@ -502,7 +502,7 @@ public class TestNG {
           + ", expected <class>.<method>");
     }
 
-    return new String[] { m.substring(0, index), m.substring(index + 1) };
+    return new String[] { m.substring(0, index), m.substring(index + 1).replaceAll("\\*", "\\.\\*") };
   }
 
   /**
