@@ -73,32 +73,10 @@ public class ThreadUtil {
       } else {
         pooledExecutor.invokeAll(callables);
       }
-    } catch (InterruptedException e1) {
-      e1.printStackTrace();
+    } catch (InterruptedException handled) {
+      handled.printStackTrace();
+      Thread.currentThread().interrupt();
     }
-//    for(final Runnable task: tasks) {
-//      try {
-//        pooledExecutor.execute(new CountDownLatchedRunnable(task,
-//            endGate, triggerAtOnce ? null : startGate));
-//        pooledExecutor.awaitTermination(timeout, TimeUnit.MILLISECONDS);
-//      }
-//      catch(RejectedExecutionException reex) {
-//        reex.printStackTrace();
-//        ; // this should never happen as we submit all tasks at once
-//      }
-//      catch(Exception ex) {
-//        ex.printStackTrace();
-//      }
-//    }
-//    try {
-//      startGate.countDown();
-//      endGate.await();
-//      pooledExecutor.shutdown();
-//    }
-//    catch(InterruptedException e) {
-//      Thread.currentThread().interrupt();
-//      log(2, "Error waiting for concurrent executors to finish " + e.getMessage());
-//    }
   }
 
   /**
@@ -180,8 +158,9 @@ public class ThreadUtil {
         try {
           m_startGate.await();
         }
-        catch(InterruptedException iex) {
-          log(2, "Cannot wait for startup gate when executing " + m_task + "; thread was already interrupted " + iex.getMessage());
+        catch(InterruptedException handled) {
+          log(2, "Cannot wait for startup gate when executing "
+              + m_task + "; thread was already interrupted " + handled.getMessage());
           Thread.currentThread().interrupt();
           return;
         }

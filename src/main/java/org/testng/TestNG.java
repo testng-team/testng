@@ -1136,9 +1136,9 @@ public class TestNG {
           pooledExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
           pooledExecutor.shutdownNow();
         }
-        catch (InterruptedException e) {
+        catch (InterruptedException handled) {
           Thread.currentThread().interrupt();
-          error("Error waiting for concurrent executors to finish " + e.getMessage());
+          error("Error waiting for concurrent executors to finish " + handled.getMessage());
         }
       }
     }

@@ -52,7 +52,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import org.testng.xml.*;
 
 /**
  * This class takes care of running one Test.
@@ -739,17 +738,16 @@ public class TestRunner
                   threadCount, threadCount, 0, TimeUnit.MILLISECONDS,
                   new LinkedBlockingQueue<Runnable>());
           executor.run();
-//          if (parallel) {
-            try {
-              long timeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
-              Utils.log("TestRunner", 2, "Starting executor for test " + m_xmlTest.getName()
-                  + " with time out:" + timeOut + " milliseconds.");
-              executor.awaitTermination(timeOut, TimeUnit.MILLISECONDS);
-              executor.shutdownNow();
-            } catch (InterruptedException e) {
-              e.printStackTrace();
-            }
-//          }
+          try {
+            long timeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
+            Utils.log("TestRunner", 2, "Starting executor for test " + m_xmlTest.getName()
+                + " with time out:" + timeOut + " milliseconds.");
+            executor.awaitTermination(timeOut, TimeUnit.MILLISECONDS);
+            executor.shutdownNow();
+          } catch (InterruptedException handled) {
+            handled.printStackTrace();
+            Thread.currentThread().interrupt();
+          }
         }
       } else {
         boolean debug = false;

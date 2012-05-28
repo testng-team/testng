@@ -8,8 +8,8 @@ public class TestTimeOutSampleTest {
     public void timeoutTest() {
         try {
             Thread.sleep(2000);
-        } catch (InterruptedException e) {
-//            System.out.println("Interrupted exception");
+        } catch (InterruptedException handled) {
+          Thread.currentThread().interrupt();
         }
 //        System.out.println("Finished normally");
     }

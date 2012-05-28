@@ -67,8 +67,9 @@ public class PoolService<KeyType, FutureType> {
           }
           try {
             Thread.sleep(1000);
-          } catch (InterruptedException e) {
-            e.printStackTrace();
+          } catch (InterruptedException handled) {
+            handled.printStackTrace();
+            Thread.currentThread().interrupt();
           }
         }
         System.out.println("Listener thread ending");
@@ -108,16 +109,18 @@ public class PoolService<KeyType, FutureType> {
         while (!isFinished(futures)) {
           try {
             Thread.sleep(1000);
-          } catch (InterruptedException e) {
-            e.printStackTrace();
+          } catch (InterruptedException handled) {
+            handled.printStackTrace();
+            Thread.currentThread().interrupt();
           }
         }
 
         for (Future<FutureType> future : futures) {
           try {
             if (future != null) result.add(future.get());
-          } catch (InterruptedException e) {
-            e.printStackTrace();
+          } catch (InterruptedException handled) {
+            handled.printStackTrace();
+            Thread.currentThread().interrupt();
           } catch (ExecutionException e) {
             e.printStackTrace();
           }

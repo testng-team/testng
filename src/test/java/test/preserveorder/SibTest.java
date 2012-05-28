@@ -6,13 +6,6 @@ import org.testng.annotations.Test;
 public class SibTest {
   @Test
   public void sib1() {
-    // System.out.println("sib1");
-    // try {
-    // Thread.sleep(1);
-    // } catch (InterruptedException e) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
   }
 
   @Test(dependsOnMethods = "sib1")

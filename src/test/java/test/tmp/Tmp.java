@@ -13,8 +13,9 @@ public class Tmp {
       Random r = new Random();
       Thread.sleep(Math.abs(r.nextInt() % 300));
     }
-    catch (InterruptedException e) {
-      e.printStackTrace();
+    catch (InterruptedException handled) {
+      Thread.currentThread().interrupt();
+      handled.printStackTrace();
     }
     ppp("END " + Thread.currentThread().getId());
   }

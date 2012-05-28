@@ -83,8 +83,8 @@ abstract public class BaseMessageSender implements IMessageSender {
         try {
           Thread.sleep(4000);
         }
-        catch(InterruptedException e) {
-          ;
+        catch(InterruptedException handled) {
+          Thread.currentThread().interrupt();
         }
       }
     }
@@ -195,7 +195,8 @@ abstract public class BaseMessageSender implements IMessageSender {
         }
         p("... ACK received:" + m_latestAck);
       }
-      catch(InterruptedException e) {
+      catch(InterruptedException handled) {
+        Thread.currentThread().interrupt();
       }
     }
   }

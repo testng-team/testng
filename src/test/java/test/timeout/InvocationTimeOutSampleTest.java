@@ -9,7 +9,8 @@ public class InvocationTimeOutSampleTest {
     try {
       Thread.sleep(250);
     }
-    catch (InterruptedException e) {
+    catch (InterruptedException handled) {
+      Thread.currentThread().interrupt();
     }
   }
 
@@ -18,7 +19,8 @@ public class InvocationTimeOutSampleTest {
     try {
       Thread.sleep(250);
     }
-    catch (InterruptedException e) {
+    catch (InterruptedException handled) {
+      Thread.currentThread().interrupt();
     }
   }
 }

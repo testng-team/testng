@@ -123,11 +123,6 @@ public class MultiThreadedDependentSampleTest {
 
   private void logThread() {
     long id = Thread.currentThread().getId();
-//    Thread.yield();
-//    try {
-//      Thread.sleep(new Random().nextInt() % 1000);
-//    } catch (InterruptedException e) {
-//    }
     Helper.getMap(getClass().getName()).put(id, id);
   }
 
@@ -135,14 +130,6 @@ public class MultiThreadedDependentSampleTest {
     synchronized(m_methods) {
       m_methods.add(string);
     }
-//    System.out.println(string + "() thread:" + Thread.currentThread().getId());
-//    int sleep = Math.abs(new Random().nextInt() % 500);
-//    System.out.println("   sleeping " + sleep);
-//    try {
-//        Thread.sleep(sleep);
-//    } catch (InterruptedException e) {
-//        e.printStackTrace();
-//    }
   }
 
 }
