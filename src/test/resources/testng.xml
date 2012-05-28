@@ -201,6 +201,7 @@
       <class name="test.dependent.DependsOnProtectedMethodTest" />
       <class name="test.dependsongroup.DependsOnGroupsTest" />
       <class name="test.dependent.GroupByInstancesTest" />
+      <class name="test.dependent.xml.GroupDependencyTest" />
     </classes>
   </test>
 
