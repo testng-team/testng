@@ -2,6 +2,7 @@ package org.testng;
 
 
 import static java.lang.Boolean.TRUE;
+
 import static org.testng.internal.Utils.isStringNotBlank;
 import static org.testng.internal.Utils.joinStrings;
 
@@ -485,7 +486,6 @@ public class TestNGAntTask extends Task {
     if (m_delegateCommandSystemProperties) {
       delegateCommandSystemProperties();
     }
-    setListeners(VerboseReporter.class.getName());
     List<String> argv = createArguments();
 
     String fileName= "";
