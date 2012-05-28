@@ -1,6 +1,7 @@
 package org.testng.xml;
 
 import org.testng.TestNG;
+import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
@@ -472,7 +473,8 @@ public class XmlTest implements Serializable, Cloneable {
     }
 
     // groups
-    if (!m_metaGroups.isEmpty() || !m_includedGroups.isEmpty() || !m_excludedGroups.isEmpty()) {
+    if (!m_metaGroups.isEmpty() || !m_includedGroups.isEmpty() || !m_excludedGroups.isEmpty()
+        || !m_xmlDependencyGroups.isEmpty()) {
       xsb.push("groups");
 
       // define
@@ -492,6 +494,7 @@ public class XmlTest implements Serializable, Cloneable {
         xsb.pop("define");
       }
 
+      // run
       if (!m_includedGroups.isEmpty() || !m_excludedGroups.isEmpty()) {
         xsb.push("run");
 
@@ -510,6 +513,15 @@ public class XmlTest implements Serializable, Cloneable {
         }
 
         xsb.pop("run");
+      }
+
+      // group dependencies
+      if (m_xmlDependencyGroups != null && ! m_xmlDependencyGroups.isEmpty()) {
+        xsb.push("dependencies");
+        for (Map.Entry<String, String> entry : m_xmlDependencyGroups.entrySet()) {
+          xsb.addEmptyElement("group", "name", entry.getKey(), "depends-on", entry.getValue());
+        }
+        xsb.pop("dependencies");
       }
 
       xsb.pop("groups");
@@ -824,7 +836,12 @@ public class XmlTest implements Serializable, Cloneable {
   }
 
   public void addXmlDependencyGroup(String group, String dependsOn) {
-    m_xmlDependencyGroups.put(group, dependsOn);
+    if (! m_xmlDependencyGroups.containsKey(group)) {
+      m_xmlDependencyGroups.put(group, dependsOn);
+    } else {
+      throw new TestNGException("Duplicate group dependency found for group \"" + group + "\""
+          + ", use a space-separated list of groups in the \"depends-on\" attribute");
+    }
   }
 
   public Map<String, String> getXmlDependencyGroups() {
