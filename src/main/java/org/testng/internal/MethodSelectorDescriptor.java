@@ -13,7 +13,7 @@ import java.util.List;
  * Created on Sep 26, 2005
  * @author cbeust
  */
-public class MethodSelectorDescriptor implements Comparable {
+public class MethodSelectorDescriptor implements Comparable<MethodSelectorDescriptor> {
   private IMethodSelector m_methodSelector;
   private int m_priority;
 
@@ -31,11 +31,10 @@ public class MethodSelectorDescriptor implements Comparable {
   }
 
   @Override
-  public int compareTo(Object o) {
+  public int compareTo(MethodSelectorDescriptor other) {
     int result = 0;
 
     try {
-      MethodSelectorDescriptor other = (MethodSelectorDescriptor) o;
       int p1 = getPriority();
       int p2 = other.getPriority();
       result = p1 - p2;
