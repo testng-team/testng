@@ -7,6 +7,7 @@ import org.testng.ITestNGMethod;
 import org.testng.annotations.ITestOrConfiguration;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.collections.Sets;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.thread.IAtomicInteger;
 import org.testng.internal.thread.ThreadUtil;
@@ -15,10 +16,13 @@ import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Superclass to represent both &#64;Test and &#64;Configuration methods.
@@ -421,11 +425,6 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return m_method.hashCode();
   }
 
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @param annotationClass
-   */
   protected void initGroups(Class<?> annotationClass) {
     //
     // Init groups
@@ -453,9 +452,18 @@ public abstract class BaseTestMethod implements ITestNGMethod {
         (ITestOrConfiguration) getAnnotationFinder().findAnnotation(getMethod().getDeclaringClass(),
           annotationClass);
 
+      Map<String, Set<String>> xgd = calculateXmlGroupDependencies(m_xmlTest);
+      List<String> xmlGroupDependencies = Lists.newArrayList();
+      for (String g : getGroups()) {
+        Set<String> gdu = xgd.get(g);
+        if (gdu != null) {
+          xmlGroupDependencies.addAll(gdu);
+        }
+      }
       setGroupsDependedUpon(
           getStringArray(null != annotation ? annotation.getDependsOnGroups() : null,
-          null != classAnnotation ? classAnnotation.getDependsOnGroups() : null));
+          null != classAnnotation ? classAnnotation.getDependsOnGroups() : null),
+          xmlGroupDependencies);
 
       String[] methodsDependedUpon =
         getStringArray(null != annotation ? annotation.getDependsOnMethods() : null,
@@ -472,20 +480,31 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     }
   }
 
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @return
-   */
+
+  private Map<String, Set<String>> calculateXmlGroupDependencies(XmlTest xmlTest) {
+    Map<String, Set<String>> result = Maps.newHashMap();
+    if (xmlTest == null) {
+      return result;
+    }
+
+    for (Map.Entry<String, String> e : xmlTest.getXmlDependencyGroups().entrySet()) {
+      String name = e.getKey();
+      String dependsOn = e.getValue();
+      Set<String> set = result.get(name);
+      if (set == null) {
+        set = Sets.newHashSet();
+        result.put(name, set);
+      }
+      set.addAll(Arrays.asList(dependsOn.split(" +")));
+    }
+
+    return result;
+  }
+
   protected IAnnotationFinder getAnnotationFinder() {
     return m_annotationFinder;
   }
 
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @return
-   */
   protected IClass getIClass() {
     return m_testClass;
   }
@@ -547,8 +566,11 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     m_groups = groups;
   }
 
-  protected void setGroupsDependedUpon(String[] groups) {
-    m_groupsDependedUpon = groups;
+  protected void setGroupsDependedUpon(String[] groups, Collection<String> xmlGroupDependencies) {
+    List<String> l = Lists.newArrayList();
+    l.addAll(Arrays.asList(groups));
+    l.addAll(xmlGroupDependencies);
+    m_groupsDependedUpon = l.toArray(new String[l.size()]);
   }
 
   protected void setMethodsDependedUpon(String[] methods) {

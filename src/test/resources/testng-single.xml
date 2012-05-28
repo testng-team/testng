@@ -5,67 +5,21 @@
 
   <parameter name="n" value="42" />
 
-  <listeners>
-    <listener class-name="test.methodinterceptors.FastTestsFirstInterceptor" />
-    <listener class-name="test.invokedmethodlistener.MyListener" />
-  </listeners>
-
   <test name="Regression2" preserve-order="true">
-<!--
-    <packages>
-      <package name="test.testng355.org.apache.tapestry5" />
-      <package name="test.hook" />
-    </packages>
--->
-<!-- 
-    <groups>
-      <run>
-        <exclude name="broken" />
-        <include name="verifyBaseClassTestListener" />
-       </run>
-    </groups>
- -->
     <parameter name="string" value="s"/>
+
+    <groups>
+      <dependencies>
+        <group name="c" depends-on="a  b" />
+        <group name="z" depends-on="c" />
+      </dependencies>
+    </groups>
+
     <classes>
       <class name="test.tmp.A">
-<!-- 
-        <methods>
-          <include name="a1" />
-          <include name="a2" />
-        </methods>
- -->
        </class>
-<!-- 
-      <class name="test.dependent.DependentTest">
-      </class>
-      <class name="test.tmp.A" />
-	      <methods>
-	        <include name="configurableSuccess" />
-	      </methods>
-	    </class>
-      <class name="test.tmp.C2"/>
-      </class>
-        <methods>
-          <include name="verifyBaseClassTestListener" />
-        </methods>
-      <class name="test.sample.InvocationCountTest" />
-      <class name="test.preserveorder.SibTest"/>
-      <class name="test.preserveorder.EdnTest"/>
- -->
      </classes>
   </test>
-<!-- 
-      <class name="test.xml.XmlVerifyTest">
-      <class name="test.listeners.ResultEndMillisTest">
-       </class>
- -->
-<!-- 
-       <class name="test.inject.NoInjectionTest" />
-      <class name="test.tmp.B" />
-      </class>
-    </classes>
-  </test>
- -->
 
 </suite>
 

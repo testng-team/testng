@@ -470,6 +470,17 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
+
+  /**
+   * Parse <group>
+   */
+  public void xmlGroup(boolean start, Attributes attributes) throws SAXException {
+    if (start) {
+      m_currentTest.addXmlDependencyGroup(attributes.getValue("name"),
+          attributes.getValue("depends-on"));
+    }
+  }
+
   /**
    * NOTE: I only invoke xml*methods (e.g. xmlSuite()) if I am acting on both
    * the start and the end of the tag. This way I can keep the treatment of
@@ -536,6 +547,9 @@ public class TestNGContentHandler extends DefaultHandler {
     }
     else if ("run".equals(qName)) {
       xmlRun(true, attributes);
+    }
+    else if ("group".equals(qName)) {
+      xmlGroup(true, attributes);
     }
     else if ("groups".equals(qName)) {
       m_currentIncludedGroups = Lists.newArrayList();

@@ -11,6 +11,7 @@ import org.testng.xml.XmlTest;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -172,7 +173,7 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
     clone.m_testClass= testClass;
     clone.setDate(getDate());
     clone.setGroups(getGroups());
-    clone.setGroupsDependedUpon(getGroupsDependedUpon());
+    clone.setGroupsDependedUpon(getGroupsDependedUpon(), Collections.<String>emptyList());
     clone.setMethodsDependedUpon(getMethodsDependedUpon());
     clone.setAlwaysRun(isAlwaysRun());
     clone.m_beforeGroups= getBeforeGroups();

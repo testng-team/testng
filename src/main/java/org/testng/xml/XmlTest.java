@@ -57,6 +57,8 @@ public class XmlTest implements Serializable, Cloneable {
 
   private Boolean m_allowReturnValues = null;
 
+  private Map<String, String> m_xmlDependencyGroups = Maps.newHashMap();
+
   /**
    * Constructs a <code>XmlTest</code> and adds it to suite's list of tests.
    *
@@ -821,4 +823,11 @@ public class XmlTest implements Serializable, Cloneable {
     return true;
   }
 
+  public void addXmlDependencyGroup(String group, String dependsOn) {
+    m_xmlDependencyGroups.put(group, dependsOn);
+  }
+
+  public Map<String, String> getXmlDependencyGroups() {
+    return m_xmlDependencyGroups;
+  }
 }

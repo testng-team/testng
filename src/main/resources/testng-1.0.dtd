@@ -152,7 +152,7 @@ found in the XML file.
 <!--
 Defines additional groups ("groups of groups") and also which groups to include in this test run
 -->
-<!ELEMENT groups (define*,run?) >
+<!ELEMENT groups (define*,run?,dependencies?) >
 
 <!ELEMENT define (include*)>
 <!ATTLIST define
@@ -172,6 +172,13 @@ Defines additional groups ("groups of groups") and also which groups to include 
 
 <!-- The subtag of groups used to define which groups should be run         -->
 <!ELEMENT run (include?,exclude?)* >
+
+<!ELEMENT dependencies (group*)>
+
+<!ELEMENT group ANY>
+<!ATTLIST group
+    name CDATA #REQUIRED
+    depends-on CDATA #REQUIRED>
 
 <!-- The list of classes to include in this test                            -->
 <!ELEMENT classes (class*) >
