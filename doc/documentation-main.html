@@ -1317,12 +1317,13 @@ Parameters used to invoke your test methods are shown in the HTML reports genera
 
 
 <!-------------------------------------
-  DEPENDENT METHODS
+  DEPENDENCIES
   ------------------------------------>
 
 
-<h4><a class="section" indent=".." name="dependent-methods">Dependent methods</a></h4><p>Sometimes, you need your test methods to be invoked in a certain order.&nbsp; 
-This is useful for example 
+<h4><a class="section" indent=".." name="dependent-methods">Dependencies</a></h4><p>Sometimes, you need
+your test methods to be invoked in a certain order.&nbsp; Here are a
+few examples:
 
 <ul>
 <li>To make sure a certain number of test methods have completed and succeeded 
@@ -1332,9 +1333,12 @@ test methods as well (methods tagged with <tt>@Before/After</tt> will not be par
 final report).
 </ul>
 
-</p>
-<p>In order to do this, you can use the attributes <tt>dependsOnMethods</tt> or
-<tt>dependsOnGroups</tt>, found on the <tt>@Test</tt> annotation.</p>There are two kinds of dependencies:
+TestNG allows you to specify dependencies either with annotations or
+in XML.
+
+<h5><a class="section" indent="..." name="dependencies-with-annotations">Dependencies with annotations</a></h5>
+
+<p>You can use the attributes <tt>dependsOnMethods</tt> or <tt>dependsOnGroups</tt>, found on the <tt>@Test</tt> annotation.</p>There are two kinds of dependencies:
 
 <ul>
 <li><b>Hard dependencies</b>.  All the methods you depend on must have run and succeeded for you to run.  If at least one failure occurred in your dependencies, you will not be invoked and marked as a SKIP in the report.
@@ -1413,6 +1417,24 @@ For this ordering, you can use the XML attribute <tt>group-by-instances</tt>. Th
 or
   &lt;test name="Factory" order-by-instances="true"&gt;
 </pre>
+
+
+<h5><a class="section" indent="..." name="dependencies-in-xml">Dependencies in XML</a></h5>
+
+Alternatively, you can specify your group dependencies in the <tt>testng.xml</tt> file. You use the <tt>&lt;dependencies&gt;</tt> tag to achieve this:
+
+<pre class="brush: xml">
+  &lt;test name="My suite"&gt;
+    &lt;groups&gt;
+      &lt;dependencies&gt;
+        &lt;group name="c" depends-on="a  b" /&gt;
+        &lt;group name="z" depends-on="c" /&gt;
+      &lt;/dependencies&gt;
+    &lt;/groups&gt;
+  &lt;/test&gt;
+</pre>
+
+The <tt>&lt;depends-on&gt;</tt> tag contains a space-separate list of groups.
 
 
 <!-------------------------------------
