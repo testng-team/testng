@@ -358,10 +358,7 @@ public class TestNG {
     File jarFile = new File(m_jarPath);
 
     try {
-      URL jarfileUrl = jarFile.getCanonicalFile().toURI().toURL();
-      URLClassLoader jarLoader = new URLClassLoader(new URL[] { jarfileUrl });
-      Thread.currentThread().setContextClassLoader(jarLoader);
-
+ 
       Utils.log("TestNG", 2, "Trying to open jar file:" + jarFile);
 
       JarFile jf = new JarFile(jarFile);
