@@ -251,10 +251,11 @@ public class MethodGroupsHelper {
   {
     boolean foundGroup = false;
     List<ITestNGMethod> vResult = Lists.newArrayList();
+    Pattern groupPattern = Pattern.compile(groupRegexp);
     for (ITestNGMethod tm : methods) {
       String[] groups = tm.getGroups();
       for (String group : groups) {
-        if (Pattern.matches(groupRegexp, group)) {
+        if (groupPattern.matcher(group).matches()) {
           vResult.add(tm);
           foundGroup = true;
         }
