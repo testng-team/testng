@@ -14,7 +14,9 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 /**
@@ -24,6 +26,7 @@ import java.util.regex.Pattern;
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class MethodHelper {
+  private static final Map<Method, String> CANONICAL_NAME_CACHE = new ConcurrentHashMap<Method, String>();
 
   /**
    * Collects and orders test or configuration methods
@@ -69,6 +72,7 @@ public class MethodHelper {
       if (null != fullyQualifiedRegexp) {
         regexp = escapeRegexp(fullyQualifiedRegexp);
         boolean usePackage = regexp.indexOf('.') != -1;
+        Pattern pattern = Pattern.compile(regexp);
 
         for (ITestNGMethod method : methods) {
           Method thisMethod = method.getMethod();
@@ -76,7 +80,7 @@ public class MethodHelper {
           String methodName = usePackage ?
               calculateMethodCanonicalName(thisMethod)
               : thisMethodName;
-          if (Pattern.matches(regexp, methodName)) {
+          if (pattern.matcher(methodName).matches()) {
             vResult.add(method);
             foundAtLeastAMethod = true;
           }
@@ -275,6 +279,11 @@ public class MethodHelper {
   }
 
   private static String calculateMethodCanonicalName(Method m) {
+    String result = CANONICAL_NAME_CACHE.get(m);
+    if (result != null) {
+      return result;
+    }
+
     String packageName = m.getDeclaringClass().getName() + "." + m.getName();
 
     // Try to find the method on this class or parents
@@ -292,7 +301,8 @@ public class MethodHelper {
       cls = cls.getSuperclass();
     }
 
-    String result = packageName + "." + m.getName();
+    result = packageName + "." + m.getName();
+    CANONICAL_NAME_CACHE.put(m, result);
     return result;
   }
 
