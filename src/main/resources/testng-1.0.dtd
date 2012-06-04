@@ -196,7 +196,7 @@ Defines additional groups ("groups of groups") and also which groups to include 
     name CDATA #REQUIRED >
 
 <!-- The list of methods to include/exclude from this test                 -->
-<!ELEMENT methods (include?,exclude?)* >
+<!ELEMENT methods (include?,exclude?,parameter?)* >
 
 <!-- The list of listeners that will be passed to TestNG -->
 <!ELEMENT listeners (listener*) >
