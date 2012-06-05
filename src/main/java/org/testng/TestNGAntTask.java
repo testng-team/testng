@@ -485,7 +485,7 @@ public class TestNGAntTask extends Task {
     if (m_delegateCommandSystemProperties) {
       delegateCommandSystemProperties();
     }
-    setListeners(VerboseReporter.class.getName());
+
     List<String> argv = createArguments();
 
     String fileName= "";
@@ -577,6 +577,7 @@ public class TestNGAntTask extends Task {
       String useDefaultListeners = "false";
       if ("yes".equalsIgnoreCase(m_useDefaultListeners) || "true".equalsIgnoreCase(m_useDefaultListeners)) {
         useDefaultListeners = "true";
+        setListeners(VerboseReporter.class.getName());
       }
       argv.add(CommandLineArgs.USE_DEFAULT_LISTENERS);
       argv.add(useDefaultListeners);
