@@ -845,11 +845,14 @@ public class TestNG {
     List<XmlSuite> suites = m_cmdlineSuites != null ? m_cmdlineSuites : m_suites;
     if (hasIncludedGroups || hasExcludedGroups) {
       for (XmlSuite s : suites) {
-        if(hasIncludedGroups) {
-          s.getTests().get(0).setIncludedGroups(Arrays.asList(m_includedGroups));
-        }
-        if(hasExcludedGroups) {
-          s.getTests().get(0).setExcludedGroups(Arrays.asList(m_excludedGroups));
+        //set on each test, instead of just the first one of the suite
+        for (XmlTest t : s.getTests()) {
+          if(hasIncludedGroups) {
+            t.setIncludedGroups(Arrays.asList(m_includedGroups));
+          }
+          if(hasExcludedGroups) {
+            t.setExcludedGroups(Arrays.asList(m_excludedGroups));
+          }
         }
       }
     }

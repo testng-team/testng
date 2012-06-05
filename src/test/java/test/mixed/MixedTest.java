@@ -12,6 +12,23 @@ import testhelper.OutputDirectoryPatch;
  * @author lukas
  */
 public class MixedTest extends BaseTest {
+    @Test
+    public void mixedWithExcludedGroups() {
+        String[] argv = {
+                "-d", OutputDirectoryPatch.getOutputDirectory(),
+                "-log", "0",
+                "-mixed",
+                "-groups", "unit",
+                "-excludegroups", "ignore",
+                "-testclass", "test.mixed.JUnit3Test1,test.mixed.JUnit4Test1,test.mixed.TestNGTest1,test.mixed.TestNGGroups"
+        };
+        TestListenerAdapter tla = new TestListenerAdapter();
+        TestNG.privateMain(argv, tla);
+
+        Assert.assertEquals(tla.getPassedTests().size(), 5); //2 from junit3test1, 2 from junit4test1, 0 from testngtest1 (no groups), 1 from testnggroups (1 is included, 1 is excluded)
+        Assert.assertEquals(tla.getFailedTests().size(), 0);
+
+    }
 
     @Test
     public void mixedClasses() {
