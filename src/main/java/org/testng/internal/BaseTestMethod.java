@@ -23,12 +23,15 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Superclass to represent both &#64;Test and &#64;Configuration methods.
  */
 public abstract class BaseTestMethod implements ITestNGMethod {
   private static final long serialVersionUID = -2666032602580652173L;
+  private static final Pattern SPACE_SEPARATOR_PATTERN = Pattern.compile(" +");
+
   /**
    * The test class on which the test method was found. Note that this is not
    * necessarily the declaring class.
@@ -483,7 +486,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   }
 
 
-  private Map<String, Set<String>> calculateXmlGroupDependencies(XmlTest xmlTest) {
+  private static Map<String, Set<String>> calculateXmlGroupDependencies(XmlTest xmlTest) {
     Map<String, Set<String>> result = Maps.newHashMap();
     if (xmlTest == null) {
       return result;
@@ -497,7 +500,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
         set = Sets.newHashSet();
         result.put(name, set);
       }
-      set.addAll(Arrays.asList(dependsOn.split(" +")));
+      set.addAll(Arrays.asList(SPACE_SEPARATOR_PATTERN.split(dependsOn)));
     }
 
     return result;
@@ -590,9 +593,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   public void addMethodDependedUpon(String method) {
     String[] newMethods = new String[m_methodsDependedUpon.length + 1];
     newMethods[0] = method;
-    for (int i =1; i < newMethods.length; i++) {
-      newMethods[i] = m_methodsDependedUpon[i - 1];
-    }
+    System.arraycopy(m_methodsDependedUpon, 0, newMethods, 1, m_methodsDependedUpon.length);
     m_methodsDependedUpon = newMethods;
   }
 

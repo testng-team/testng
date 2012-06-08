@@ -59,8 +59,7 @@ public class MethodGroupsHelper {
       else {
         IConfigurationAnnotation annotation = AnnotationHelper.findConfiguration(finder, m);
         if (annotation.getAlwaysRun()) {
-        	if (!unique || (unique && !MethodGroupsHelper
-    						.isMethodAlreadyPresent(outIncludedMethods, tm))) {
+        	if (!unique || !MethodGroupsHelper.isMethodAlreadyPresent(outIncludedMethods, tm)) {
         		in = true;
         	}
         }
