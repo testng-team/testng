@@ -37,6 +37,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   protected final transient Class<?> m_methodClass;
   protected final transient ConstructorOrMethod m_method;
+  private final transient String m_signature;
   protected String m_id = "";
   protected long m_date = -1;
   protected final transient IAnnotationFinder m_annotationFinder;
@@ -89,6 +90,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     m_methodName = com.getName();
     m_annotationFinder = annotationFinder;
     m_instance = instance;
+    m_signature = computeSignature();
   }
 
   /**
@@ -509,15 +511,10 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return m_testClass;
   }
 
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @return
-   */
-  protected String getSignature() {
+  private String computeSignature() {
     String classLong = m_method.getDeclaringClass().getName();
     String cls = classLong.substring(classLong.lastIndexOf(".") + 1);
-    StringBuffer result = new StringBuffer(cls + "." + m_method.getName() + "(");
+    StringBuilder result = new StringBuilder(cls).append(".").append(m_method.getName()).append("(");
     int i = 0;
     for (Class<?> p : m_method.getParameterTypes()) {
       if (i++ > 0) {
@@ -526,9 +523,18 @@ public abstract class BaseTestMethod implements ITestNGMethod {
       result.append(p.getName());
     }
     result.append(")");
-    result.append("[pri:" + getPriority() + ", instance:" + m_instance + "]");
+    result.append("[pri:").append(getPriority()).append(", instance:").append(m_instance).append("]");
 
     return result.toString();
+  }
+
+  /**
+   * TODO cquezel JavaDoc.
+   *
+   * @return
+   */
+  protected String getSignature() {
+    return m_signature;
   }
 
   /**

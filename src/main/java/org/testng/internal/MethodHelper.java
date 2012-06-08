@@ -9,6 +9,7 @@ import org.testng.collections.Lists;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.Sets;
+import org.testng.internal.collections.Pair;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -27,6 +28,8 @@ import java.util.regex.Pattern;
  */
 public class MethodHelper {
   private static final Map<Method, String> CANONICAL_NAME_CACHE = new ConcurrentHashMap<Method, String>();
+  private static final Map<Pair<String, String>, Boolean> MATCH_CACHE =
+      new ConcurrentHashMap<Pair<String, String>, Boolean>();
 
   /**
    * Collects and orders test or configuration methods
@@ -80,7 +83,13 @@ public class MethodHelper {
           String methodName = usePackage ?
               calculateMethodCanonicalName(thisMethod)
               : thisMethodName;
-          if (pattern.matcher(methodName).matches()) {
+          Pair<String, String> cacheKey = Pair.create(regexp, methodName);
+          Boolean match = MATCH_CACHE.get(cacheKey);
+          if (match == null) {
+              match = pattern.matcher(methodName).matches();
+              MATCH_CACHE.put(cacheKey, match);
+          }
+          if (match) {
             vResult.add(method);
             foundAtLeastAMethod = true;
           }

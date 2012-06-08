@@ -8,12 +8,14 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.collections.Pair;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 /**
@@ -25,7 +27,11 @@ import java.util.regex.Pattern;
  */
 public class MethodGroupsHelper {
 
-  /**
+  private static final Map<String, Pattern> PATTERN_CACHE = new ConcurrentHashMap<String, Pattern>();
+  private static final Map<Pair<String, String>, Boolean> MATCH_CACHE =
+      new ConcurrentHashMap<Pair<String, String>, Boolean>();
+
+    /**
    * Collect all the methods that belong to the included groups and exclude all
    * the methods that belong to an excluded group.
    */
@@ -251,11 +257,21 @@ public class MethodGroupsHelper {
   {
     boolean foundGroup = false;
     List<ITestNGMethod> vResult = Lists.newArrayList();
-    Pattern groupPattern = Pattern.compile(groupRegexp);
+    Pattern groupPattern = PATTERN_CACHE.get(groupRegexp);
+    if (groupPattern == null) {
+      groupPattern = Pattern.compile(groupRegexp);
+      PATTERN_CACHE.put(groupRegexp, groupPattern);
+    }
     for (ITestNGMethod tm : methods) {
       String[] groups = tm.getGroups();
       for (String group : groups) {
-        if (groupPattern.matcher(group).matches()) {
+        Pair<String, String> cacheKey = Pair.create(groupRegexp, group);
+        Boolean match = MATCH_CACHE.get(cacheKey);
+        if (match == null) {
+          match = groupPattern.matcher(group).matches();
+          MATCH_CACHE.put(cacheKey, match);
+        }
+        if (match) {
           vResult.add(tm);
           foundGroup = true;
         }
