@@ -37,7 +37,7 @@ public final class XMLUtils {
     for (String a : attributes) {
       String comment = properties.getProperty(a);
       if (comment != null) {
-        return " <!-- " + comment + " -->";
+        return " <!-- " + comment.replaceAll("[-]{2,}", "-") + " -->";
       }
     }
 
