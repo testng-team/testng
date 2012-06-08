@@ -278,7 +278,7 @@ public class XMLStringBuffer {
   }
 
   public void addComment(String comment) {
-    m_buffer.append(m_currentIndent).append("<!-- " + comment + " -->\n");
+    m_buffer.append(m_currentIndent).append("<!-- " + comment.replaceAll("[-]{2,}", "-") + " -->\n");
   }
 
   public void addString(String s) {
