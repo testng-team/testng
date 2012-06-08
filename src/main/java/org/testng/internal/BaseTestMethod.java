@@ -23,12 +23,15 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Superclass to represent both &#64;Test and &#64;Configuration methods.
  */
 public abstract class BaseTestMethod implements ITestNGMethod {
   private static final long serialVersionUID = -2666032602580652173L;
+  private static final Pattern SPACE_SEPARATOR_PATTERN = Pattern.compile(" +");
+
   /**
    * The test class on which the test method was found. Note that this is not
    * necessarily the declaring class.
@@ -37,6 +40,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   protected final transient Class<?> m_methodClass;
   protected final transient ConstructorOrMethod m_method;
+  private final transient String m_signature;
   protected String m_id = "";
   protected long m_date = -1;
   protected final transient IAnnotationFinder m_annotationFinder;
@@ -89,6 +93,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     m_methodName = com.getName();
     m_annotationFinder = annotationFinder;
     m_instance = instance;
+    m_signature = computeSignature();
   }
 
   /**
@@ -481,7 +486,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   }
 
 
-  private Map<String, Set<String>> calculateXmlGroupDependencies(XmlTest xmlTest) {
+  private static Map<String, Set<String>> calculateXmlGroupDependencies(XmlTest xmlTest) {
     Map<String, Set<String>> result = Maps.newHashMap();
     if (xmlTest == null) {
       return result;
@@ -495,7 +500,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
         set = Sets.newHashSet();
         result.put(name, set);
       }
-      set.addAll(Arrays.asList(dependsOn.split(" +")));
+      set.addAll(Arrays.asList(SPACE_SEPARATOR_PATTERN.split(dependsOn)));
     }
 
     return result;
@@ -509,15 +514,10 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return m_testClass;
   }
 
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @return
-   */
-  protected String getSignature() {
+  private String computeSignature() {
     String classLong = m_method.getDeclaringClass().getName();
     String cls = classLong.substring(classLong.lastIndexOf(".") + 1);
-    StringBuffer result = new StringBuffer(cls + "." + m_method.getName() + "(");
+    StringBuilder result = new StringBuilder(cls).append(".").append(m_method.getName()).append("(");
     int i = 0;
     for (Class<?> p : m_method.getParameterTypes()) {
       if (i++ > 0) {
@@ -526,9 +526,18 @@ public abstract class BaseTestMethod implements ITestNGMethod {
       result.append(p.getName());
     }
     result.append(")");
-    result.append("[pri:" + getPriority() + ", instance:" + m_instance + "]");
+    result.append("[pri:").append(getPriority()).append(", instance:").append(m_instance).append("]");
 
     return result.toString();
+  }
+
+  /**
+   * TODO cquezel JavaDoc.
+   *
+   * @return
+   */
+  protected String getSignature() {
+    return m_signature;
   }
 
   /**
@@ -584,9 +593,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   public void addMethodDependedUpon(String method) {
     String[] newMethods = new String[m_methodsDependedUpon.length + 1];
     newMethods[0] = method;
-    for (int i =1; i < newMethods.length; i++) {
-      newMethods[i] = m_methodsDependedUpon[i - 1];
-    }
+    System.arraycopy(m_methodsDependedUpon, 0, newMethods, 1, m_methodsDependedUpon.length);
     m_methodsDependedUpon = newMethods;
   }
 
