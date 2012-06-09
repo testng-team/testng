@@ -42,6 +42,7 @@ public class TestNGContentHandler extends DefaultHandler {
   private List<String> m_currentExcludedGroups = null;
   private Map<String, String> m_currentTestParameters = null;
   private Map<String, String> m_currentSuiteParameters = null;
+  private Map<String, String> m_currentMethodParameters = null;
   private Include m_currentInclude;
   private List<String> m_currentMetaGroup = null;
   private String m_currentMetaGroupName;
@@ -49,7 +50,7 @@ public class TestNGContentHandler extends DefaultHandler {
   enum Location {
     SUITE,
     TEST,
-    INCLUDE
+    METHODS
   }
   private Stack<Location> m_locations = new Stack<Location>();
 
@@ -122,7 +123,7 @@ public class TestNGContentHandler extends DefaultHandler {
     }
     else {
       m_currentSuite.setSuiteFiles(m_suiteFiles);
-      popLocation();
+      popLocation(Location.SUITE);
     }
   }
 
@@ -202,7 +203,7 @@ public class TestNGContentHandler extends DefaultHandler {
       m_currentSuite.setParameters(m_currentSuiteParameters);
       m_suites.add(m_currentSuite);
       m_currentSuiteParameters = null;
-      popLocation();
+      popLocation(Location.SUITE);
     }
   }
 
@@ -309,7 +310,7 @@ public class TestNGContentHandler extends DefaultHandler {
       m_currentClasses = null;
       m_currentTest = null;
       m_currentTestParameters = null;
-      popLocation();
+      popLocation(Location.TEST);
       if(!m_enabledTest) {
         List<XmlTest> tests= m_currentSuite.getTests();
         tests.remove(tests.size() - 1);
@@ -376,8 +377,8 @@ public class TestNGContentHandler extends DefaultHandler {
           case SUITE:
             m_currentSuite.setXmlPackages(m_currentPackages);
             break;
-          case INCLUDE:
-            throw new UnsupportedOperationException("INCLUDE");
+          case METHODS:
+            throw new UnsupportedOperationException("METHODS");
         }
       }
 
@@ -442,12 +443,16 @@ public class TestNGContentHandler extends DefaultHandler {
       m_currentIncludedMethods = new ArrayList<XmlInclude>();
       m_currentExcludedMethods = Lists.newArrayList();
       m_currentIncludeIndex = 0;
+      m_currentMethodParameters = Maps.newHashMap();
+      pushLocation(Location.METHODS);
     }
     else {
       m_currentClass.setIncludedMethods(m_currentIncludedMethods);
       m_currentClass.setExcludedMethods(m_currentExcludedMethods);
       m_currentIncludedMethods = null;
       m_currentExcludedMethods = null;
+      m_currentMethodParameters = null;
+      popLocation(Location.METHODS);
     }
   }
 
@@ -581,8 +586,8 @@ public class TestNGContentHandler extends DefaultHandler {
         case SUITE:
           m_currentSuiteParameters.put(name, value);
           break;
-        case INCLUDE:
-          m_currentInclude.parameters.put(name, value);
+        case METHODS:
+          m_currentMethodParameters.put(name, value);
       }
     }
   }
@@ -600,7 +605,6 @@ public class TestNGContentHandler extends DefaultHandler {
       m_currentInclude.name = attributes.getValue("name");
       m_currentInclude.parameters = Maps.newHashMap();
       m_currentInclude.invocationNumbers = attributes.getValue("invocation-numbers");
-      pushLocation(Location.INCLUDE);
     } else {
       String name = m_currentInclude.name;
       if (null != m_currentIncludedMethods) {
@@ -611,7 +615,7 @@ public class TestNGContentHandler extends DefaultHandler {
         } else {
           include = new XmlInclude(name, m_currentIncludeIndex++);
         }
-        include.setParameters(m_currentInclude.parameters);
+        include.setParameters(m_currentMethodParameters);
         include.setDescription(m_currentInclude.description);
         m_currentIncludedMethods.add(include);
       }
@@ -625,7 +629,6 @@ public class TestNGContentHandler extends DefaultHandler {
         m_currentPackage.getInclude().add(name);
       }
       m_currentInclude = null;
-      popLocation();
     }
   }
 
@@ -633,7 +636,7 @@ public class TestNGContentHandler extends DefaultHandler {
     m_locations.push(l);
   }
 
-  private Location popLocation() {
+  private Location popLocation(Location location) {
     return m_locations.pop();
   }
 
