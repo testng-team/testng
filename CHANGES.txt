@@ -2,6 +2,7 @@ Current
 
 Added: Big performance improvement when generating the reports (Frank Pavageau)
 Added: <dependencies> allows you to specify group dependencies in testng.xml
+Fixed: GITHUB-221: Honor excludeGroups on testng tests when run in mixed mode (criccio)
 Fixed: dependsOnGroups = {regexp} wasn't working properly (Alistair Ward)
 Fixed: GITHUB-205: white-space was spelled whitespace in testng.css (carlin-scott)
 

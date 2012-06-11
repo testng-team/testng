@@ -112,6 +112,7 @@
       <class name="test.bug92.Bug92Test" />
       <class name="test.ReturnValueTest" />
       <class name="test.groupbug.GroupBugTest" />
+      <class name="test.parameters.ShadowTest" />
     </classes>
   </test>
 
