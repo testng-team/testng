@@ -17,7 +17,7 @@ import java.util.Set;
  *
  * @author Cedric Beust, Aug 19, 2004
  */
-public class Graph<T extends Object> {
+public class Graph<T> {
   private static boolean m_verbose = false;
   private Map<T, Node<T>> m_nodes = Maps.newHashMap();
   private List<T> m_strictlySortedNodes = null;
@@ -56,9 +56,7 @@ public class Graph<T extends Object> {
       // Remove these two nodes from the independent list
       if (null == m_independentNodes) {
         m_independentNodes = Maps.newHashMap();
-        for (T k : m_nodes.keySet()) {
-          m_independentNodes.put(k, m_nodes.get(k));
-        }
+        m_independentNodes.putAll(m_nodes);
       }
       m_independentNodes.remove(predecessor);
       m_independentNodes.remove(tm);
@@ -142,7 +140,7 @@ public class Graph<T extends Object> {
       Node<T> node = findNodeWithNoPredecessors(nodes2);
       if (null == node) {
         List<T> cycle = new Tarjan<T>(this, nodes2.get(0).getObject()).getCycle();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("The following methods have cyclic dependencies:\n");
         for (T m : cycle) {
           sb.append(m).append("\n");
@@ -235,7 +233,7 @@ public class Graph<T extends Object> {
 
   @Override
   public String toString() {
-    StringBuffer result = new StringBuffer("[Graph ");
+    StringBuilder result = new StringBuilder("[Graph ");
     for (T node : m_nodes.keySet()) {
       result.append(findNode(node)).append(" ");
     }
@@ -305,10 +303,10 @@ public class Graph<T extends Object> {
 
     @Override
     public String toString() {
-      StringBuffer sb = new StringBuffer("[Node:" + m_object);
+      StringBuilder sb = new StringBuilder("[Node:" + m_object);
       sb.append("  pred:");
       for (T o : m_predecessors.values()) {
-        sb.append(" " + o.toString());
+        sb.append(" ").append(o);
       }
       sb.append("]");
       String result = sb.toString();
