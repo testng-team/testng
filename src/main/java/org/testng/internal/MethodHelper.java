@@ -27,6 +27,8 @@ import java.util.regex.Pattern;
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class MethodHelper {
+  private static final Map<ITestNGMethod[], Graph<ITestNGMethod>> GRAPH_CACHE =
+      new ConcurrentHashMap<ITestNGMethod[], Graph<ITestNGMethod>>();
   private static final Map<Method, String> CANONICAL_NAME_CACHE = new ConcurrentHashMap<Method, String>();
   private static final Map<Pair<String, String>, Boolean> MATCH_CACHE =
       new ConcurrentHashMap<Pair<String, String>, Boolean>();
@@ -326,9 +328,13 @@ public class MethodHelper {
    * @return A sorted array containing all the methods 'method' depends on
    */
   public static List<ITestNGMethod> getMethodsDependedUpon(ITestNGMethod method, ITestNGMethod[] methods) {
-    List<ITestNGMethod> parallelList = Lists.newArrayList();
-    List<ITestNGMethod> sequentialList = Lists.newArrayList();
-    Graph<ITestNGMethod> g = topologicalSort(methods, sequentialList, parallelList);
+    Graph<ITestNGMethod> g = GRAPH_CACHE.get(methods);
+    if (g == null) {
+      List<ITestNGMethod> parallelList = Lists.newArrayList();
+      List<ITestNGMethod> sequentialList = Lists.newArrayList();
+      g = topologicalSort(methods, sequentialList, parallelList);
+      GRAPH_CACHE.put(methods, g);
+    }
 
     List<ITestNGMethod> result = g.findPredecessors(method);
     return result;
