@@ -7,7 +7,7 @@ import org.testng.xml.XmlSuite;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-public class YamlParser implements IFileParser {
+public class YamlParser implements IFileParser<XmlSuite> {
 
   @Override
   public XmlSuite parse(String filePath, InputStream is, boolean loadClasses)
