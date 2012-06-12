@@ -6,6 +6,9 @@ Fixed: GITHUB-221: Honor excludeGroups on testng tests when run in mixed mode (c
 Fixed: dependsOnGroups = {regexp} wasn't working properly (Alistair Ward)
 Fixed: GITHUB-205: white-space was spelled whitespace in testng.css (carlin-scott)
 
+Eclipse:
+Fixed: Rerunning failed tests will preserve the environment of the original launch
+
 ===========================================================================
 
 6.5.1:
