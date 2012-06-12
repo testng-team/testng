@@ -18,6 +18,7 @@ import org.testng.internal.IResultListener2;
 import org.testng.internal.OverrideProcessor;
 import org.testng.internal.SuiteRunnerMap;
 import org.testng.internal.Utils;
+import org.testng.internal.Version;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
@@ -52,7 +53,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1098,8 +1098,12 @@ public class TestNG {
   public List<ISuite> runSuitesLocally() {
     SuiteRunnerMap suiteRunnerMap = new SuiteRunnerMap();
     if (m_suites.size() > 0) {
-       // First initialize the suite runners to ensure there are no configuration issues.
-       // Create a map with XmlSuite as key and corresponding SuiteRunner as value
+      if (m_suites.get(0).getVerbose() >= 2) {
+        Version.displayBanner();
+      }
+
+      // First initialize the suite runners to ensure there are no configuration issues.
+      // Create a map with XmlSuite as key and corresponding SuiteRunner as value
       for (XmlSuite xmlSuite : m_suites) {
         createSuiteRunners(suiteRunnerMap, xmlSuite);
       }
