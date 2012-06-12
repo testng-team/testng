@@ -90,11 +90,14 @@ public class DomUtil {
             XmlClass xmlClass = new XmlClass();
             populateAttributes(item4, xmlClass);
             xmlTest.getClasses().add(xmlClass);
+
+            // TODO: excluded/included methods
           }
         }
       } else if ("groups".equals(item2.getNodeName())) {
         NodeList item2Children = item2.getChildNodes();
         List<String> includes = Lists.newArrayList();
+        List<String> excludes = Lists.newArrayList();
         for (int l = 0; l < item2Children.getLength(); l++) {
           Node item3 = item2Children.item(l);
           if ("run".equals(item3.getNodeName())) {
@@ -102,17 +105,46 @@ public class DomUtil {
             for (int m = 0; m < item3Children.getLength(); m++) {
               Node item4 = item3Children.item(m);
               if ("include".equals(item4.getNodeName())) {
-                Element e = (Element) item4;
-                includes.add(e.getAttribute("name"));
+                includes.add(((Element) item4).getAttribute("name"));
+              } else if ("exclude".equals(item4.getNodeName())) {
+                excludes.add(((Element) item4).getAttribute("name"));
               }
             }
-          } // TODO: (define*,dependencies?) >
+          } else if ("dependencies".equals(item3.getNodeName())) {
+            NodeList item3Children = item3.getChildNodes();
+            for (int m = 0; m < item3Children.getLength(); m++) {
+              Node item4 = item3Children.item(m);
+              if ("group".equals(item4.getNodeName())) {
+                Element e = (Element) item4;
+                xmlTest.addXmlDependencyGroup(e.getAttribute("name"), e.getAttribute("depends-on"));
+              }
+            }
+          } else if ("define".equals(item3.getNodeName())) {
+            xmlDefine(xmlTest, item3);
+          }
         }
         xmlTest.setIncludedGroups(includes);
+        xmlTest.setExcludedGroups(excludes);
       } // TODO: (method-selectors?,packages?) >
     }
 
     xmlTest.setParameters(testParameters);
+  }
+
+  /**
+   * Parse the <define> tag.
+   */
+  private void xmlDefine(XmlTest xmlTest, Node item) {
+    NodeList item3Children = item.getChildNodes();
+    List<String> groups = Lists.newArrayList();
+    for (int m = 0; m < item3Children.getLength(); m++) {
+      Node item4 = item3Children.item(m);
+      if ("include".equals(item4.getNodeName())) {
+        Element e = (Element) item4;
+        groups.add(e.getAttribute("name"));
+      }
+    }
+    xmlTest.addMetaGroup(((Element) item).getAttribute("name"), groups);
   }
 
   private void populateAttributes(Node node, Object object) throws XPathExpressionException {
