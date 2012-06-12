@@ -44,31 +44,8 @@ public class DomUtil {
             Element e = (Element) item2;
             parameters.put(e.getAttribute("name"), e.getAttribute("value"));
           } else if ("test".equals(item2.getNodeName())) {
-            Map<String, String> testParameters = Maps.newHashMap();
             XmlTest xmlTest = new XmlTest(xmlSuite);
-            populateAttributes(item2, xmlTest);
-            NodeList item2Children = item2.getChildNodes();
-            for (int k = 0; k < item2Children.getLength(); k++) {
-              Node item3 = item2Children.item(k);
-              if ("parameter".equals(item3.getNodeName())) {
-                Element e = (Element) item3;
-                testParameters.put(e.getAttribute("name"), e.getAttribute("value"));
-              } else if ("classes".equals(item3.getNodeName())) {
-                NodeList item3Children = item3.getChildNodes();
-                for (int l = 0; l < item3Children.getLength(); l++) {
-                  Node item4 = item3Children.item(l);
-                  if ("class".equals(item4.getNodeName())) {
-                    XmlClass xmlClass = new XmlClass();
-                    populateAttributes(item4, xmlClass);
-                    xmlTest.getClasses().add(xmlClass);
-                  }
-                }
-              } else if ("groups".equals(item3.getNodeName())) {
-                //@@
-              }
-            }
-
-            xmlTest.setParameters(testParameters);
+            populateTest(xmlTest, item2);
           } else if ("suite-files".equals(item2.getNodeName())) {
             NodeList item2Children = item2.getChildNodes();
             List<String> suiteFiles = Lists.newArrayList();
@@ -94,6 +71,48 @@ public class DomUtil {
 //      Node node = tests.item(i);
 //      System.out.println("<test>:" + node);
 //    }
+  }
+
+  private void populateTest(XmlTest xmlTest, Node item) throws XPathExpressionException {
+    Map<String, String> testParameters = Maps.newHashMap();
+    populateAttributes(item, xmlTest);
+    NodeList itemChildren = item.getChildNodes();
+    for (int k = 0; k < itemChildren.getLength(); k++) {
+      Node item2 = itemChildren.item(k);
+      if ("parameter".equals(item2.getNodeName())) {
+        Element e = (Element) item2;
+        testParameters.put(e.getAttribute("name"), e.getAttribute("value"));
+      } else if ("classes".equals(item2.getNodeName())) {
+        NodeList item2Children = item2.getChildNodes();
+        for (int l = 0; l < item2Children.getLength(); l++) {
+          Node item4 = item2Children.item(l);
+          if ("class".equals(item4.getNodeName())) {
+            XmlClass xmlClass = new XmlClass();
+            populateAttributes(item4, xmlClass);
+            xmlTest.getClasses().add(xmlClass);
+          }
+        }
+      } else if ("groups".equals(item2.getNodeName())) {
+        NodeList item2Children = item2.getChildNodes();
+        List<String> includes = Lists.newArrayList();
+        for (int l = 0; l < item2Children.getLength(); l++) {
+          Node item3 = item2Children.item(l);
+          if ("run".equals(item3.getNodeName())) {
+            NodeList item3Children = item3.getChildNodes();
+            for (int m = 0; m < item3Children.getLength(); m++) {
+              Node item4 = item3Children.item(m);
+              if ("include".equals(item4.getNodeName())) {
+                Element e = (Element) item4;
+                includes.add(e.getAttribute("name"));
+              }
+            }
+          } // TODO: (define*,dependencies?) >
+        }
+        xmlTest.setIncludedGroups(includes);
+      } // TODO: (method-selectors?,packages?) >
+    }
+
+    xmlTest.setParameters(testParameters);
   }
 
   private void populateAttributes(Node node, Object object) throws XPathExpressionException {
