@@ -1,16 +1,23 @@
 package org.testng.xml.dom;
 
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
+import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlTest;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 public class DomUtil {
 
@@ -25,13 +32,62 @@ public class DomUtil {
 
   public void populate(XmlSuite xmlSuite) throws XPathExpressionException {
     NodeList nodes = m_document.getChildNodes();
+    Map<String, String> parameters = Maps.newHashMap();
     for (int i = 0; i < nodes.getLength(); i++) {
-      Node item = nodes.item(i);
-      if ("suite".equals(item.getNodeName()) && item.getAttributes() != null) {
-        populateAttributes(item, xmlSuite);
+      Node item1 = nodes.item(i);
+      if ("suite".equals(item1.getNodeName()) && item1.getAttributes() != null) {
+        populateAttributes(item1, xmlSuite);
+        NodeList item1Children = item1.getChildNodes();
+        for (int j = 0; j < item1Children.getLength(); j++) {
+          Node item2 = item1Children.item(j);
+          if ("parameter".equals(item2.getNodeName())) {
+            Element e = (Element) item2;
+            parameters.put(e.getAttribute("name"), e.getAttribute("value"));
+          } else if ("test".equals(item2.getNodeName())) {
+            Map<String, String> testParameters = Maps.newHashMap();
+            XmlTest xmlTest = new XmlTest(xmlSuite);
+            populateAttributes(item2, xmlTest);
+            NodeList item2Children = item2.getChildNodes();
+            for (int k = 0; k < item2Children.getLength(); k++) {
+              Node item3 = item2Children.item(k);
+              if ("parameter".equals(item3.getNodeName())) {
+                Element e = (Element) item3;
+                testParameters.put(e.getAttribute("name"), e.getAttribute("value"));
+              } else if ("classes".equals(item3.getNodeName())) {
+                NodeList item3Children = item3.getChildNodes();
+                for (int l = 0; l < item3Children.getLength(); l++) {
+                  Node item4 = item3Children.item(l);
+                  if ("class".equals(item4.getNodeName())) {
+                    XmlClass xmlClass = new XmlClass();
+                    populateAttributes(item4, xmlClass);
+                    xmlTest.getClasses().add(xmlClass);
+                  }
+                }
+              } else if ("groups".equals(item3.getNodeName())) {
+                //@@
+              }
+            }
+
+            xmlTest.setParameters(testParameters);
+          } else if ("suite-files".equals(item2.getNodeName())) {
+            NodeList item2Children = item2.getChildNodes();
+            List<String> suiteFiles = Lists.newArrayList();
+            for (int k = 0; k < item2Children.getLength(); k++) {
+              Node item3 = item2Children.item(k);
+              if (item3 instanceof Element) {
+                Element e = (Element) item3;
+                if ("suite-file".equals(item3.getNodeName())) {
+                  suiteFiles.add(e.getAttribute("path"));
+                }
+              }
+            }
+            xmlSuite.setSuiteFiles(suiteFiles);
+          }
+        }
       }
     }
 
+    xmlSuite.setParameters(parameters);
 //    XPathExpression expr = m_xpath.compile("//suite/test");
 //    NodeList tests = (NodeList) expr.evaluate(m_document, XPathConstants.NODESET);
 //    for (int i = 0; i < tests.getLength(); i++) {
@@ -43,7 +99,7 @@ public class DomUtil {
   private void populateAttributes(Node node, Object object) throws XPathExpressionException {
     for (int j = 0; j < node.getAttributes().getLength(); j++) {
       Node item = node.getAttributes().item(j);
-      System.out.println(node.getAttributes().item(j));
+      p(node.getAttributes().item(j).toString());
       setProperty(object, item.getLocalName(), item.getNodeValue());
     }
   }
@@ -82,7 +138,7 @@ public class DomUtil {
   }
 
   private void p(String string) {
-    System.out.println("[XPathUtil] " + string);
+//    System.out.println("[XPathUtil] " + string);
   }
 
   private String toCamelCaseSetter(String name) {
