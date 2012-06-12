@@ -33,7 +33,9 @@ public class Parser {
   /** The default file name for the TestNG test suite if none is specified (testng.xml). */
   public static final String DEFAULT_FILENAME = "testng.xml";
 
-  private static final IFileParser<XmlSuite> XML_PARSER = new SuiteXmlParser();
+  private static final IFileParser<XmlSuite> XML_PARSER =
+//      new DomXmlParser();
+      new SuiteXmlParser();
   private static final IFileParser<XmlSuite> YAML_PARSER = new YamlParser();
   private static final IFileParser<XmlSuite> DEFAULT_FILE_PARSER = XML_PARSER;
   
