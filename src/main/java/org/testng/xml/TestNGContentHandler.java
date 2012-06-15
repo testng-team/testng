@@ -134,6 +134,9 @@ public class TestNGContentHandler extends DefaultHandler {
     if (start) {
       pushLocation(Location.SUITE);
       String name = attributes.getValue("name");
+      if (isStringBlank(name)) {
+        throw new TestNGException("The <suite> tag must define the name attribute");
+      }
       m_currentSuite = new XmlSuite();
       m_currentSuite.setFileName(m_fileName);
       m_currentSuite.setName(name);
@@ -254,7 +257,7 @@ public class TestNGContentHandler extends DefaultHandler {
       m_currentTestParameters = Maps.newHashMap();
       final String testName= attributes.getValue("name");
       if(isStringBlank(testName)) {
-        throw new TestNGException("Test <test> element must define the name attribute");
+        throw new TestNGException("The <test> tag must define the name attribute");
       }
       m_currentTest.setName(attributes.getValue("name"));
       String verbose = attributes.getValue("verbose");
