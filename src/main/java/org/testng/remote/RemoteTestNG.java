@@ -69,7 +69,7 @@ public class RemoteTestNG extends TestNG {
   private void calculateAllSuites(List<XmlSuite> suites, List<XmlSuite> outSuites) {
     for (XmlSuite s : suites) {
       outSuites.add(s);
-      calculateAllSuites(s.getChildSuites(), outSuites);
+//      calculateAllSuites(s.getChildSuites(), outSuites);
     }
   }
 
@@ -89,6 +89,8 @@ public class RemoteTestNG extends TestNG {
 
       List<XmlSuite> suites = Lists.newArrayList();
       calculateAllSuites(m_suites, suites);
+//      System.out.println("Suites: " + m_suites.get(0).getChildSuites().size()
+//          + " and:" + suites.get(0).getChildSuites().size());
       if(suites.size() > 0) {
 
         int testCount= 0;

@@ -186,6 +186,8 @@ public class TestNG {
 
   private List<IExecutionListener> m_executionListeners = Lists.newArrayList();
 
+  private boolean m_isInitialized = false;
+
   /**
    * Default constructor. Setting also usage of default listeners/reporters.
    */
@@ -264,10 +266,15 @@ public class TestNG {
   public void initializeSuitesAndJarFile() {
     // The Eclipse plug-in (RemoteTestNG) might have invoked this method already
     // so don't initialize suites twice.
+    if (m_isInitialized) {
+      return;
+    }
+
+    m_isInitialized = true;
     if (m_suites.size() > 0) {
     	//to parse the suite files (<suite-file>), if any
-    	for (XmlSuite s: m_suites){
-	        List<String> suiteFiles = s.getSuiteFiles();
+    	for (XmlSuite s: m_suites) {
+	      List<String> suiteFiles = s.getSuiteFiles();
   			for (int i = 0; i < suiteFiles.size(); i++) {
   				try {
   					Collection<XmlSuite> childSuites = getParser(suiteFiles.get(i)).parse();
