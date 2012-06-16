@@ -425,10 +425,23 @@ public class Invoker implements IInvoker {
   }
 
   /**
+   * @return true if this class or a parent class failed to initialize.
+   */
+  private boolean classConfigurationFailed(Class<?> cls) {
+    for (Class<?> c : m_classInvocationResults.keySet()) {
+      if (c == cls || cls.isAssignableFrom(c)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
    * @return true if this class has successfully run all its @Configuration
    * method or false if at least one of these methods failed.
    */
-  private boolean confInvocationPassed(ITestNGMethod method, ITestNGMethod currentTestMethod, IClass testClass, Object instance) {
+  private boolean confInvocationPassed(ITestNGMethod method, ITestNGMethod currentTestMethod,
+      IClass testClass, Object instance) {
     boolean result= true;
 
     // If continuing on config failure, check invocation results for the class
@@ -440,9 +453,9 @@ public class Invoker implements IInvoker {
       result= false;
     }
     else {
-      if (m_classInvocationResults.containsKey(cls)) {
+      if (classConfigurationFailed(cls)) {
         if (! m_continueOnFailedConfiguration) {
-          result = !m_classInvocationResults.containsKey(cls);
+          result = !classConfigurationFailed(cls);
         } else {
           result = !m_classInvocationResults.get(cls).contains(instance);
         }
