@@ -237,10 +237,11 @@ public class XmlMethodSelector implements IMethodSelector {
   }
 
   private void checkMethod(String className, String methodName) {
+    Pattern p = Pattern.compile(methodName);
     try {
       Class<?> c = Class.forName(className);
       for (Method m : c.getMethods()) {
-        if (m.getName().equals(methodName)) {
+        if (p.matcher(m.getName()).matches()) {
           return;
         }
       }
@@ -248,8 +249,8 @@ public class XmlMethodSelector implements IMethodSelector {
       throw new TestNGException(e);
     }
 
-    throw new TestNGException("Trying to include/exclude an unknown method: "
-        + className + "." + methodName);
+    throw new TestNGException("The regular exception \"" + methodName + "\" didn't match any" +
+    		" method in class " + className);
   }
 
   public void setXmlClasses(List<XmlClass> classes) {
