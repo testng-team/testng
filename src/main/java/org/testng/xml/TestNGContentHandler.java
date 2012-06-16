@@ -42,7 +42,7 @@ public class TestNGContentHandler extends DefaultHandler {
   private List<String> m_currentExcludedGroups = null;
   private Map<String, String> m_currentTestParameters = null;
   private Map<String, String> m_currentSuiteParameters = null;
-  private Map<String, String> m_currentMethodParameters = null;
+  private Map<String, String> m_currentClassParameters = null;
   private Include m_currentInclude;
   private List<String> m_currentMetaGroup = null;
   private String m_currentMetaGroupName;
@@ -50,7 +50,7 @@ public class TestNGContentHandler extends DefaultHandler {
   enum Location {
     SUITE,
     TEST,
-    METHODS
+    CLASS
   }
   private Stack<Location> m_locations = new Stack<Location>();
 
@@ -380,8 +380,8 @@ public class TestNGContentHandler extends DefaultHandler {
           case SUITE:
             m_currentSuite.setXmlPackages(m_currentPackages);
             break;
-          case METHODS:
-            throw new UnsupportedOperationException("METHODS");
+          case CLASS:
+            throw new UnsupportedOperationException("CLASS");
         }
       }
 
@@ -446,16 +446,12 @@ public class TestNGContentHandler extends DefaultHandler {
       m_currentIncludedMethods = new ArrayList<XmlInclude>();
       m_currentExcludedMethods = Lists.newArrayList();
       m_currentIncludeIndex = 0;
-      m_currentMethodParameters = Maps.newHashMap();
-      pushLocation(Location.METHODS);
     }
     else {
       m_currentClass.setIncludedMethods(m_currentIncludedMethods);
       m_currentClass.setExcludedMethods(m_currentExcludedMethods);
       m_currentIncludedMethods = null;
       m_currentExcludedMethods = null;
-      m_currentMethodParameters = null;
-      popLocation(Location.METHODS);
     }
   }
 
@@ -540,7 +536,9 @@ public class TestNGContentHandler extends DefaultHandler {
       // can finish parsing the file.
       if (null != m_currentClasses) {
         m_currentClass = new XmlClass(name, m_currentClassIndex++, m_loadClasses);
+        m_currentClassParameters = Maps.newHashMap();
         m_currentClasses.add(m_currentClass);
+        pushLocation(Location.CLASS);
       }
     }
     else if ("package".equals(qName)) {
@@ -589,8 +587,8 @@ public class TestNGContentHandler extends DefaultHandler {
         case SUITE:
           m_currentSuiteParameters.put(name, value);
           break;
-        case METHODS:
-          m_currentMethodParameters.put(name, value);
+        case CLASS:
+          m_currentClassParameters.put(name, value);
       }
     }
   }
@@ -618,7 +616,7 @@ public class TestNGContentHandler extends DefaultHandler {
         } else {
           include = new XmlInclude(name, m_currentIncludeIndex++);
         }
-        include.setParameters(m_currentMethodParameters);
+//        include.setParameters(m_currentMethodParameters);
         include.setDescription(m_currentInclude.description);
         m_currentIncludedMethods.add(include);
       }
@@ -678,9 +676,11 @@ public class TestNGContentHandler extends DefaultHandler {
     else if ("packages".equals(qName)) {
       xmlPackages(false, null);
     }
-//    else if ("class".equals(qName)) {
-//      m_currentClass.setParameters(m_currentMethodParameters);
-//    }
+    else if ("class".equals(qName)) {
+      m_currentClass.setParameters(m_currentClassParameters);
+      m_currentClassParameters = null;
+      popLocation(Location.CLASS);
+    }
     else if ("listeners".equals(qName)) {
       xmlListeners(false, null);
     }

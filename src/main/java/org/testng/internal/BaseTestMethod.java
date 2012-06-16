@@ -802,7 +802,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
       if (xmlClass.getName().equals(getTestClass().getName())) {
         for (XmlInclude include : xmlClass.getIncludedMethods()) {
           if (include.getName().equals(getMethodName())) {
-            return include.getParameters();
+            return xmlClass.getParameters();
           }
         }
       }
