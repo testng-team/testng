@@ -3,6 +3,7 @@ package org.testng.internal;
 import org.testng.IMethodSelector;
 import org.testng.IMethodSelectorContext;
 import org.testng.ITestNGMethod;
+import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.xml.XmlClass;
@@ -38,7 +39,7 @@ public class XmlMethodSelector implements IMethodSelector {
   private IBsh m_bsh = Dynamic.hasBsh() ? new Bsh() : new BshMock();
 
   @Override
-  public boolean  includeMethod(IMethodSelectorContext context,
+  public boolean includeMethod(IMethodSelectorContext context,
       ITestNGMethod tm, boolean isTestMethod)
   {
 //    ppp("XML METHOD SELECTOR " + tm + " " + m_isInitialized);
@@ -235,10 +236,27 @@ public class XmlMethodSelector implements IMethodSelector {
     return className + "." + methodName;
   }
 
+  private void checkMethod(String className, String methodName) {
+    try {
+      Class<?> c = Class.forName(className);
+      for (Method m : c.getMethods()) {
+        if (m.getName().equals(methodName)) {
+          return;
+        }
+      }
+    } catch (ClassNotFoundException e) {
+      throw new TestNGException(e);
+    }
+
+    throw new TestNGException("Trying to include/exclude an unknown method: "
+        + className + "." + methodName);
+  }
+
   public void setXmlClasses(List<XmlClass> classes) {
     m_classes = classes;
     for (XmlClass c : classes) {
       for (XmlInclude m : c.getIncludedMethods()) {
+        checkMethod(c.getName(), m.getName());
         m_includedMethods.add(makeMethodName(c.getName(), m.getName()));
       }
     }
