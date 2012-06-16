@@ -675,9 +675,12 @@ public class TestNGContentHandler extends DefaultHandler {
     else if ("classes".equals(qName)) {
       xmlClasses(false, null);
     }
-    else if ("classes".equals(qName)) {
+    else if ("packages".equals(qName)) {
       xmlPackages(false, null);
     }
+//    else if ("class".equals(qName)) {
+//      m_currentClass.setParameters(m_currentMethodParameters);
+//    }
     else if ("listeners".equals(qName)) {
       xmlListeners(false, null);
     }
