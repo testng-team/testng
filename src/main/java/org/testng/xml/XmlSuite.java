@@ -9,6 +9,7 @@ import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -442,7 +443,7 @@ public class XmlSuite implements Serializable, Cloneable {
       xsb.addEmptyElement("parameter", paramProps);
     }
 
-    if (null != m_listeners && !m_listeners.isEmpty()) {
+    if (hasElements(m_listeners)) {
       xsb.push("listeners");
       for (String listenerName: m_listeners) {
         Properties listenerProps = new Properties();
@@ -452,7 +453,7 @@ public class XmlSuite implements Serializable, Cloneable {
       xsb.pop("listeners");
     }
 
-    if (null != getXmlPackages() && !getXmlPackages().isEmpty()) {
+    if (hasElements(getXmlPackages())) {
       xsb.push("packages");
 
       for (XmlPackage pack : getXmlPackages()) {
@@ -462,7 +463,7 @@ public class XmlSuite implements Serializable, Cloneable {
       xsb.pop("packages");
     }
 
-    if (null != getMethodSelectors() && !getMethodSelectors().isEmpty()) {
+    if (hasElements(getMethodSelectors())) {
       xsb.push("method-selectors");
       for (XmlMethodSelector selector : getMethodSelectors()) {
         xsb.getStringBuffer().append(selector.toXml("  "));
@@ -482,6 +483,21 @@ public class XmlSuite implements Serializable, Cloneable {
       xsb.pop("suite-files");
     }
 
+    List<String> included = getIncludedGroups();
+    List<String> excluded = getExcludedGroups();
+    if (hasElements(included) || hasElements(excluded)) {
+      xsb.push("groups");
+      xsb.push("run");
+      for (String g : included) {
+        xsb.addEmptyElement("include", "name", g);
+      }
+      for (String g : excluded) {
+        xsb.addEmptyElement("exclude", "name", g);
+      }
+      xsb.pop("run");
+      xsb.pop("groups");
+    }
+
     for (XmlTest test : getTests()) {
       xsb.getStringBuffer().append(test.toXml("  "));
     }
@@ -489,6 +505,10 @@ public class XmlSuite implements Serializable, Cloneable {
     xsb.pop("suite");
 
     return xsb.toXML();
+  }
+
+  private static boolean hasElements(Collection<?> c) {
+    return c != null && ! c.isEmpty();
   }
 
   /**
