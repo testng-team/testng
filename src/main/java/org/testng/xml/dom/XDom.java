@@ -1,0 +1,217 @@
+package org.testng.xml.dom;
+
+import org.testng.collections.ListMultiMap;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
+import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlTest;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
+
+public class XDom {
+  private static Map<String, Class<?>> m_map = Maps.newHashMap();
+  private Document m_document;
+
+  public XDom(Map<String, Class<?>> map, Document document) throws XPathExpressionException,
+      InstantiationException, IllegalAccessException {
+    m_map.putAll(map);
+    m_document = document;
+  }
+
+  public Object parse() throws XPathExpressionException, InstantiationException,
+      IllegalAccessException {
+    Object result = null;
+    NodeList nodes = m_document.getChildNodes();
+    for (int i = 0; i < nodes.getLength(); i++) {
+      Node item = nodes.item(i);
+      if (item.getAttributes() != null) {
+        String nodeName = item.getNodeName();
+        System.out.println("Node name:" + nodeName);
+        Class<?> c = m_map.get(nodeName);
+        if (c == null) {
+          throw new RuntimeException("No class found for tag " + nodeName);
+        }
+  
+        result = c.newInstance();
+        if (ITagSetter.class.isAssignableFrom(result.getClass())) {
+          System.out.println("Tag setter:"  + result);
+        }
+        populateAttributes(item, result);
+
+        populateChildren(item, result);
+      }
+    }
+    return result;
+  }
+
+  public void populateChildren(Node root, Object result) throws InstantiationException,
+      IllegalAccessException, XPathExpressionException {
+    NodeList childNodes = root.getChildNodes();
+    ListMultiMap<String, Object> children = ListMultiMap.create();
+    for (int i = 0; i < childNodes.getLength(); i++) {
+      Node item = childNodes.item(i);
+      if (item.getAttributes() != null) {
+        String nodeName = item.getNodeName();
+        Class<?> c = m_map.get(nodeName);
+        if (c == null) {
+          System.out.println("Warning: No class found for tag " + nodeName);
+        } else {
+          Object object = c.newInstance();
+          if (ITagSetter.class.isAssignableFrom(object.getClass())) {
+            System.out.println("Tag setter:"  + result);
+            ((ITagSetter) object).setProperty(nodeName, result, item);
+          } else {
+            children.put(nodeName, object);
+            populateAttributes(item, object);
+          }
+        }
+      }
+    }
+    System.out.println("Found children:" + children);
+    for (String s : children.getKeys()) {
+      setCollectionProperty(result, s, children.get(s));
+    }
+  }
+
+  private void populateAttributes(Node node, Object object) throws XPathExpressionException {
+    for (int j = 0; j < node.getAttributes().getLength(); j++) {
+      Node item = node.getAttributes().item(j);
+      p(node.getAttributes().item(j).toString());
+      setProperty(object, item.getLocalName(), item.getNodeValue());
+    }
+  }
+
+  private void setCollectionProperty(Object result, String property, List<Object> list) {
+    Method method = findSetter(result, property + "s");
+    if (method != null) {
+      try {
+        method.invoke(result, list);
+      } catch (IllegalArgumentException e) {
+        e.printStackTrace();
+      } catch (IllegalAccessException e) {
+        e.printStackTrace();
+      } catch (InvocationTargetException e) {
+        e.printStackTrace();
+      }
+    } else {
+      throw new RuntimeException("couldn't set property for " + property);
+    }
+  }
+
+  private void setProperty(Object object, String name, Object value) {
+    Method foundMethod = findSetter(object, name);
+
+    if (foundMethod == null) {
+      p("Warning: couldn't find setter method for property" + name + " on " + object.getClass());
+    } else {
+      String methodName = foundMethod.getName();
+      try {
+        p("Invoking " + methodName + " with " + value);
+        Class<?> type = foundMethod.getParameterTypes()[0];
+        if (type == Boolean.class || type == boolean.class) {
+          foundMethod.invoke(object, Boolean.parseBoolean(value.toString()));
+        } else if (type == Integer.class || type == int.class) {
+          foundMethod.invoke(object, Integer.parseInt(value.toString()));
+        } else {
+          foundMethod.invoke(object, value.toString());
+        }
+      } catch (IllegalArgumentException e) {
+        e.printStackTrace();
+      } catch (IllegalAccessException e) {
+        e.printStackTrace();
+      } catch (InvocationTargetException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  private Method findSetter(Object object, String name) {
+    String methodName = toCamelCaseSetter(name);
+    Method foundMethod = null;
+    for (Method m : object.getClass().getDeclaredMethods()) {
+      if (m.getName().equals(methodName)) {
+        foundMethod = m;
+        break;
+      }
+    }
+    return foundMethod;
+  }
+
+  private String toCamelCaseSetter(String name) {
+    StringBuilder result = new StringBuilder("set" + name.substring(0, 1).toUpperCase());
+    for (int i = 1; i < name.length(); i++) {
+      if (name.charAt(i) == '-') {
+        result.append(Character.toUpperCase(name.charAt(i + 1)));
+        i++;
+      } else {
+        result.append(name.charAt(i));
+      }
+    }
+    return result.toString();
+  }
+
+  private void p(String string) {
+    System.out.println("[XDom] " + string);
+  }
+
+  public static class ChildSuite implements ITagSetter<XmlSuite> {
+    @Override
+    public void setProperty(String name, XmlSuite parent, Node node) {
+      System.out.println("Filling suite-files");
+      List<String> suiteFiles = Lists.newArrayList();
+      for (int i = 0; i < node.getChildNodes().getLength(); i++) {
+        Node item = node.getChildNodes().item(i);
+        if (item.hasAttributes()) {
+          System.out.println("found one");
+          suiteFiles.add(((Element) item).getAttribute("path"));
+        }
+      }
+      parent.setSuiteFiles(suiteFiles);
+    }
+  }
+
+  public static class Parameter implements ITagSetter<XmlSuite> {
+    @Override
+    public void setProperty(String name, XmlSuite parent, Node node) {
+      System.out.println("Filling parameter");
+      Element element = (Element) node;
+      parent.getParameters()
+          .put(element.getAttribute("name"), element.getAttribute("value"));
+    }
+  }
+
+  public static void main(String[] args) throws SAXException, IOException,
+      ParserConfigurationException, XPathExpressionException, InstantiationException,
+      IllegalAccessException {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    factory.setNamespaceAware(true); // never forget this!
+    DocumentBuilder builder = factory.newDocumentBuilder();
+    FileInputStream inputStream =
+        new FileInputStream(new File("/Users/cedric/java/testng/src/test/resources/testng.xml"));
+    Document doc = builder.parse(inputStream);
+    Map<String, Class<?>> map = Maps.newHashMap();
+    map.put("suite", XmlSuite.class);
+    map.put("test", XmlTest.class);
+    map.put("suite-files", ChildSuite.class);
+    map.put("parameter", Parameter.class);
+    XmlSuite result = (XmlSuite) new XDom(map, doc).parse();
+
+    System.out.println(result.toXml());
+  }
+}

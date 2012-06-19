@@ -80,4 +80,8 @@ public class ListMultiMap<K, V> {
       put(k, v);
     }
   }
+
+  public static <K, V> ListMultiMap<K, V> create() {
+    return new ListMultiMap<K, V>();
+  }
 }
