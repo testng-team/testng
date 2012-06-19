@@ -1,5 +1,6 @@
 package org.testng.xml;
 
+import static org.testng.collections.CollectionUtils.hasElements;
 import static org.testng.internal.Utils.isStringNotEmpty;
 
 import org.testng.ITestObjectFactory;
@@ -9,7 +10,6 @@ import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -498,6 +498,10 @@ public class XmlSuite implements Serializable, Cloneable {
       xsb.pop("groups");
     }
 
+    if (m_xmlGroups != null) {
+      xsb.getStringBuffer().append(m_xmlGroups.toXml("  "));
+    }
+
     for (XmlTest test : getTests()) {
       xsb.getStringBuffer().append(test.toXml("  "));
     }
@@ -505,10 +509,6 @@ public class XmlSuite implements Serializable, Cloneable {
     xsb.pop("suite");
 
     return xsb.toXML();
-  }
-
-  private static boolean hasElements(Collection<?> c) {
-    return c != null && ! c.isEmpty();
   }
 
   /**
@@ -930,5 +930,10 @@ public class XmlSuite implements Serializable, Cloneable {
 
   public void setAllowReturnValues(Boolean allowReturnValues) {
     m_allowReturnValues = allowReturnValues;
+  }
+
+  private XmlGroups m_xmlGroups;
+  public void setGroups(XmlGroups xmlGroups) {
+    m_xmlGroups = xmlGroups;
   }
 }

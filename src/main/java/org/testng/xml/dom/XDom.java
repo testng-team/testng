@@ -3,6 +3,10 @@ package org.testng.xml.dom;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.xml.XmlDefine;
+import org.testng.xml.XmlDependencies;
+import org.testng.xml.XmlGroups;
+import org.testng.xml.XmlRun;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.w3c.dom.Document;
@@ -21,6 +25,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +74,10 @@ public class XDom {
       if (item.getAttributes() != null) {
         String nodeName = item.getNodeName();
         Class<?> c = m_map.get(nodeName);
-        if (c == null) {
+        Method nodeSetter = findSetter(result, nodeName + "Node");
+        if (nodeSetter != null) {
+          setProperty(result, nodeName + "Node", item);
+        } else if (c == null) {
           System.out.println("Warning: No class found for tag " + nodeName);
         } else {
           Object object = c.newInstance();
@@ -80,6 +88,7 @@ public class XDom {
             children.put(nodeName, object);
             populateAttributes(item, object);
           }
+          populateChildren(item, object);
         }
       }
     }
@@ -92,16 +101,23 @@ public class XDom {
   private void populateAttributes(Node node, Object object) throws XPathExpressionException {
     for (int j = 0; j < node.getAttributes().getLength(); j++) {
       Node item = node.getAttributes().item(j);
-      p(node.getAttributes().item(j).toString());
+//      p(node.getAttributes().item(j).toString());
       setProperty(object, item.getLocalName(), item.getNodeValue());
     }
   }
 
   private void setCollectionProperty(Object result, String property, List<Object> list) {
     Method method = findSetter(result, property + "s");
+    if (method == null) {
+      method = findSetter(result, property);
+    }
     if (method != null) {
       try {
-        method.invoke(result, list);
+        if (Collection.class.isAssignableFrom(method.getParameterTypes()[0])) {
+          method.invoke(result, list);
+        } else {
+          method.invoke(result, list.get(0));
+        }
       } catch (IllegalArgumentException e) {
         e.printStackTrace();
       } catch (IllegalAccessException e) {
@@ -110,7 +126,7 @@ public class XDom {
         e.printStackTrace();
       }
     } else {
-      throw new RuntimeException("couldn't set property for " + property);
+      p("Warning: couldn't set property for " + property);
     }
   }
 
@@ -118,18 +134,18 @@ public class XDom {
     Method foundMethod = findSetter(object, name);
 
     if (foundMethod == null) {
-      p("Warning: couldn't find setter method for property" + name + " on " + object.getClass());
+      e("Couldn't find setter method for property" + name + " on " + object.getClass());
     } else {
       String methodName = foundMethod.getName();
       try {
-        p("Invoking " + methodName + " with " + value);
+//        p("Invoking " + methodName + " with " + value);
         Class<?> type = foundMethod.getParameterTypes()[0];
         if (type == Boolean.class || type == boolean.class) {
           foundMethod.invoke(object, Boolean.parseBoolean(value.toString()));
         } else if (type == Integer.class || type == int.class) {
           foundMethod.invoke(object, Integer.parseInt(value.toString()));
         } else {
-          foundMethod.invoke(object, value.toString());
+          foundMethod.invoke(object, value);
         }
       } catch (IllegalArgumentException e) {
         e.printStackTrace();
@@ -170,6 +186,10 @@ public class XDom {
     System.out.println("[XDom] " + string);
   }
 
+  private void e(String string) {
+    System.out.println("[XDom] [Error] " + string);
+  }
+
   public static class ChildSuite implements ITagSetter<XmlSuite> {
     @Override
     public void setProperty(String name, XmlSuite parent, Node node) {
@@ -203,13 +223,17 @@ public class XDom {
     factory.setNamespaceAware(true); // never forget this!
     DocumentBuilder builder = factory.newDocumentBuilder();
     FileInputStream inputStream =
-        new FileInputStream(new File("/Users/cedric/java/testng/src/test/resources/testng.xml"));
+        new FileInputStream(new File("/Users/cedric/java/testng/src/test/resources/testng-all.xml"));
     Document doc = builder.parse(inputStream);
     Map<String, Class<?>> map = Maps.newHashMap();
     map.put("suite", XmlSuite.class);
     map.put("test", XmlTest.class);
     map.put("suite-files", ChildSuite.class);
     map.put("parameter", Parameter.class);
+    map.put("groups", XmlGroups.class);
+    map.put("define", XmlDefine.class);
+    map.put("run", XmlRun.class);
+    map.put("dependencies", XmlDependencies.class);
     XmlSuite result = (XmlSuite) new XDom(map, doc).parse();
 
     System.out.println(result.toXml());
