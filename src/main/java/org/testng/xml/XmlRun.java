@@ -4,8 +4,7 @@ import static org.testng.collections.CollectionUtils.hasElements;
 
 import org.testng.collections.Lists;
 import org.testng.reporters.XMLStringBuffer;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import org.testng.xml.dom.OnElement;
 
 import java.util.List;
 
@@ -32,13 +31,15 @@ public class XmlRun {
 
   private List<String> m_excludes = Lists.newArrayList();
 
-  public void setExcludeNode(Node node) {
-    m_excludes.add(((Element) node).getAttribute("name"));
+  @OnElement(tag = "exclude", attributes = "name")
+  public void onExclude(String name) {
+    m_excludes.add(name);
   }
 
   private List<String> m_includes = Lists.newArrayList();
 
-  public void setIncludeNode(Node node) {
-    m_includes.add(((Element) node).getAttribute("name"));
+  @OnElement(tag = "include", attributes = "name")
+  public void onInclude(String name) {
+    m_includes.add(name);
   }
 }

@@ -2,18 +2,12 @@ package org.testng.xml.dom;
 
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.xml.XmlSuite;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,7 +16,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 
 public class XDom {
 //  private static Map<String, Class<?>> m_map = Maps.newHashMap();
@@ -70,22 +68,22 @@ public class XDom {
       Node item = childNodes.item(i);
       if (item.getAttributes() != null) {
         String nodeName = item.getNodeName();
-        Class<?> c = m_tagFactory.getClassForTag(nodeName);
-        Method nodeSetter = findSetter(result, nodeName + "Node");
-        if (nodeSetter != null) {
-          setProperty(result, nodeName + "Node", item);
-        } else if (c == null) {
-          System.out.println("Warning: No class found for tag " + nodeName);
-        } else {
-          Object object = c.newInstance();
-          if (ITagSetter.class.isAssignableFrom(object.getClass())) {
-            System.out.println("Tag setter:"  + result);
-            ((ITagSetter) object).setProperty(nodeName, result, item);
+        boolean foundSetter = invokeOnSetter(result, nodeName, (Element) item);
+        if (! foundSetter) {
+          Class<?> c = m_tagFactory.getClassForTag(nodeName);
+          if (c == null) {
+            System.out.println("Warning: No class found for tag " + nodeName);
           } else {
-            children.put(nodeName, object);
-            populateAttributes(item, object);
+            Object object = c.newInstance();
+            if (ITagSetter.class.isAssignableFrom(object.getClass())) {
+              System.out.println("Tag setter:"  + result);
+              ((ITagSetter) object).setProperty(nodeName, result, item);
+            } else {
+              children.put(nodeName, object);
+              populateAttributes(item, object);
+            }
+            populateChildren(item, object);
           }
-          populateChildren(item, object);
         }
       }
     }
@@ -93,6 +91,29 @@ public class XDom {
     for (String s : children.getKeys()) {
       setCollectionProperty(result, s, children.get(s));
     }
+  }
+
+  private boolean invokeOnSetter(Object result, String nodeName, Element element) {
+    for (Method m : result.getClass().getMethods()) {
+      OnElement onElement = m.getAnnotation(OnElement.class);
+      if (onElement != null && nodeName.equals(onElement.tag())) {
+        List<String> parameters = Lists.newArrayList();
+        for (String attributeName : onElement.attributes()) {
+          parameters.add(element.getAttribute(attributeName));
+        }
+        try {
+          m.invoke(result, parameters.toArray());
+          return true;
+        } catch (IllegalArgumentException e) {
+          e.printStackTrace();
+        } catch (IllegalAccessException e) {
+          e.printStackTrace();
+        } catch (InvocationTargetException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+    return false;
   }
 
   private void populateAttributes(Node node, Object object) throws XPathExpressionException {
@@ -225,7 +246,6 @@ public class XDom {
     FileInputStream inputStream =
         new FileInputStream(new File("/Users/cedric/java/testng/src/test/resources/testng-all.xml"));
     Document doc = builder.parse(inputStream);
-    Map<String, Class<?>> map = Maps.newHashMap();
     XmlSuite result = (XmlSuite) new XDom(new TestNGTagFactory(), doc).parse();
 
     System.out.println(result.toXml());

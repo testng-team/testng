@@ -8,8 +8,7 @@ import org.testng.TestNG;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import org.testng.xml.dom.OnElement;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -939,8 +938,8 @@ public class XmlSuite implements Serializable, Cloneable {
     m_xmlGroups = xmlGroups;
   }
 
-  public void setParameterNode(Node node) {
-    Element e = (Element) node;
-    getParameters().put(e.getAttribute("name"), e.getAttribute("value"));
+  @OnElement(tag = "parameter", attributes = { "name", "value" })
+  public void onElement(String name, String value) {
+    getParameters().put(name, value);
   }
 }

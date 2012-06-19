@@ -2,21 +2,20 @@ package org.testng.xml;
 
 import static org.testng.collections.CollectionUtils.hasElements;
 
-import com.google.inject.internal.Maps;
-
 import org.testng.reporters.XMLStringBuffer;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import org.testng.xml.dom.OnElement;
 
 import java.util.Map;
+
+import com.google.inject.internal.Maps;
 
 public class XmlDependencies {
 
   private Map<String, String> m_xmlDependencyGroups = Maps.newHashMap();
 
-  public void setGroupNode(Node group) {
-    Element e = (Element) group;
-    m_xmlDependencyGroups.put(e.getAttribute("name"), e.getAttribute("depends-on"));
+  @OnElement(tag = "group", attributes = { "name", "depends-on" })
+  public void onGroup(String name, String dependsOn) {
+    m_xmlDependencyGroups.put(name, dependsOn);
   }
 
   public String toXml(String indent) {
