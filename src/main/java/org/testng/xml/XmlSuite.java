@@ -9,6 +9,7 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.dom.OnElement;
+import org.testng.xml.dom.OnElementList;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -942,6 +943,7 @@ public class XmlSuite implements Serializable, Cloneable {
   }
 
   private XmlGroups m_xmlGroups;
+
   public void setGroups(XmlGroups xmlGroups) {
     m_xmlGroups = xmlGroups;
   }
@@ -949,6 +951,16 @@ public class XmlSuite implements Serializable, Cloneable {
   @OnElement(tag = "parameter", attributes = { "name", "value" })
   public void onElement(String name, String value) {
     getParameters().put(name, value);
+  }
+
+  @OnElementList(tag = "listeners", attributes = { "class-name" })
+  public void onListenerElement(String className) {
+    addListener(className);
+  }
+
+  @OnElementList(tag = "suite-files", attributes = { "path" })
+  public void onSuiteFilesElement(String path) {
+    getSuiteFiles().add(path);
   }
 
   public XmlGroups getGroups() {

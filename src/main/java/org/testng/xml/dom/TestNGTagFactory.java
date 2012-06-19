@@ -1,15 +1,15 @@
 package org.testng.xml.dom;
 
-import com.google.inject.internal.Maps;
-
 import java.util.Map;
+
+import com.google.inject.internal.Maps;
 
 public class TestNGTagFactory implements ITagFactory {
 
   private Map<String, Class<?>> m_map = Maps.newHashMap();
 
   public TestNGTagFactory() {
-    m_map.put("suite-files", XDom.ChildSuite.class);
+//    m_map.put("suite-files", XDom.ChildSuite.class);
   }
 
   @Override

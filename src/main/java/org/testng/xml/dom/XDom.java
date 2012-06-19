@@ -75,19 +75,22 @@ public class XDom {
         String nodeName = item.getNodeName();
         boolean foundSetter = invokeOnSetter(result, nodeName, (Element) item);
         if (! foundSetter) {
-          Class<?> c = m_tagFactory.getClassForTag(nodeName);
-          if (c == null) {
-            System.out.println("Warning: No class found for tag " + nodeName);
-          } else {
-            Object object = c.newInstance();
-            if (ITagSetter.class.isAssignableFrom(object.getClass())) {
-              System.out.println("Tag setter:"  + result);
-              ((ITagSetter) object).setProperty(nodeName, result, item);
+          boolean foundListSetter = invokeOnListSetter(result, nodeName, item);
+          if (! foundListSetter) {
+            Class<?> c = m_tagFactory.getClassForTag(nodeName);
+            if (c == null) {
+              System.out.println("Warning: No class found for tag " + nodeName);
             } else {
-              children.put(nodeName, object);
-              populateAttributes(item, object);
+              Object object = c.newInstance();
+              if (ITagSetter.class.isAssignableFrom(object.getClass())) {
+                System.out.println("Tag setter:"  + result);
+                ((ITagSetter) object).setProperty(nodeName, result, item);
+              } else {
+                children.put(nodeName, object);
+                populateAttributes(item, object);
+              }
+              populateChildren(item, object);
             }
-            populateChildren(item, object);
           }
         }
       }
@@ -108,6 +111,40 @@ public class XDom {
         }
         try {
           m.invoke(result, parameters.toArray());
+          return true;
+        } catch (IllegalArgumentException e) {
+          e.printStackTrace();
+        } catch (IllegalAccessException e) {
+          e.printStackTrace();
+        } catch (InvocationTargetException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+    return false;
+  }
+
+  private boolean invokeOnListSetter(Object result, String tagName, Node node) {
+    for (Method m : result.getClass().getMethods()) {
+      OnElementList onElement = m.getAnnotation(OnElementList.class);
+      if (onElement != null && tagName.equals(onElement.tag())) {
+        List<List<Object>> parameterList = Lists.newArrayList();
+        String[] attributeNames = onElement.attributes();
+        for (int i = 0; i < node.getChildNodes().getLength(); i++) {
+          Node item = node.getChildNodes().item(i);
+          if (item.hasAttributes()) {
+            List<Object> l = Lists.newArrayList();
+            for (int j = 0; j < attributeNames.length; j++) {
+              l.add(((Element) item).getAttribute(attributeNames[j]));
+            }
+            parameterList.add(l);
+          }
+        }
+        try {
+          System.out.println("Invoking");
+          for (List<Object> parameters : parameterList) {
+            m.invoke(result, parameters.toArray());
+          }
           return true;
         } catch (IllegalArgumentException e) {
           e.printStackTrace();
@@ -159,9 +196,7 @@ public class XDom {
     if (foundMethod == null) {
       e("Couldn't find setter method for property" + name + " on " + object.getClass());
     } else {
-      String methodName = foundMethod.getName();
       try {
-//        p("Invoking " + methodName + " with " + value);
         Class<?> type = foundMethod.getParameterTypes()[0];
         if (type == Boolean.class || type == boolean.class) {
           foundMethod.invoke(object, Boolean.parseBoolean(value.toString()));
@@ -217,31 +252,6 @@ public class XDom {
     System.out.println("[XDom] [Error] " + string);
   }
 
-  public static class ChildSuite implements ITagSetter<XmlSuite> {
-    @Override
-    public void setProperty(String name, XmlSuite parent, Node node) {
-      List<String> suiteFiles = Lists.newArrayList();
-      for (int i = 0; i < node.getChildNodes().getLength(); i++) {
-        Node item = node.getChildNodes().item(i);
-        if (item.hasAttributes()) {
-          System.out.println("found one");
-          suiteFiles.add(((Element) item).getAttribute("path"));
-        }
-      }
-      parent.setSuiteFiles(suiteFiles);
-    }
-  }
-
-  public static class Parameter implements ITagSetter<XmlSuite> {
-    @Override
-    public void setProperty(String name, XmlSuite parent, Node node) {
-      System.out.println("Filling parameter");
-      Element element = (Element) node;
-      parent.getParameters()
-          .put(element.getAttribute("name"), element.getAttribute("value"));
-    }
-  }
-
   public static void main(String[] args) throws SAXException, IOException,
       ParserConfigurationException, XPathExpressionException, InstantiationException,
       IllegalAccessException {
@@ -289,6 +299,9 @@ public class XDom {
       Assert.assertEquals("bigSuite", define.getName());
       Assert.assertEquals(Arrays.asList("suite1", "suite2"), define.getIncludes());
 
+      // listeners
+      Assert.assertEquals(Arrays.asList("com.beust.Listener1", "com.beust.Listener2"),
+          s.getListeners());
       // dependencies
       // only defined on test for now
     }
