@@ -3,12 +3,7 @@ package org.testng.xml.dom;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.xml.XmlDefine;
-import org.testng.xml.XmlDependencies;
-import org.testng.xml.XmlGroups;
-import org.testng.xml.XmlRun;
 import org.testng.xml.XmlSuite;
-import org.testng.xml.XmlTest;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -30,12 +25,14 @@ import java.util.List;
 import java.util.Map;
 
 public class XDom {
-  private static Map<String, Class<?>> m_map = Maps.newHashMap();
+//  private static Map<String, Class<?>> m_map = Maps.newHashMap();
   private Document m_document;
+  private ITagFactory m_tagFactory;
 
-  public XDom(Map<String, Class<?>> map, Document document) throws XPathExpressionException,
+  public XDom(ITagFactory tagFactory, Document document)
+      throws XPathExpressionException,
       InstantiationException, IllegalAccessException {
-    m_map.putAll(map);
+    m_tagFactory = tagFactory;
     m_document = document;
   }
 
@@ -48,7 +45,7 @@ public class XDom {
       if (item.getAttributes() != null) {
         String nodeName = item.getNodeName();
         System.out.println("Node name:" + nodeName);
-        Class<?> c = m_map.get(nodeName);
+        Class<?> c = m_tagFactory.getClassForTag(nodeName);
         if (c == null) {
           throw new RuntimeException("No class found for tag " + nodeName);
         }
@@ -73,7 +70,7 @@ public class XDom {
       Node item = childNodes.item(i);
       if (item.getAttributes() != null) {
         String nodeName = item.getNodeName();
-        Class<?> c = m_map.get(nodeName);
+        Class<?> c = m_tagFactory.getClassForTag(nodeName);
         Method nodeSetter = findSetter(result, nodeName + "Node");
         if (nodeSetter != null) {
           setProperty(result, nodeName + "Node", item);
@@ -170,7 +167,11 @@ public class XDom {
   }
 
   private String toCamelCaseSetter(String name) {
-    StringBuilder result = new StringBuilder("set" + name.substring(0, 1).toUpperCase());
+    return "set" + toCapitalizedCamelCase(name);
+  }
+
+  public static String toCapitalizedCamelCase(String name) {
+    StringBuilder result = new StringBuilder(name.substring(0, 1).toUpperCase());
     for (int i = 1; i < name.length(); i++) {
       if (name.charAt(i) == '-') {
         result.append(Character.toUpperCase(name.charAt(i + 1)));
@@ -226,15 +227,7 @@ public class XDom {
         new FileInputStream(new File("/Users/cedric/java/testng/src/test/resources/testng-all.xml"));
     Document doc = builder.parse(inputStream);
     Map<String, Class<?>> map = Maps.newHashMap();
-    map.put("suite", XmlSuite.class);
-    map.put("test", XmlTest.class);
-    map.put("suite-files", ChildSuite.class);
-    map.put("parameter", Parameter.class);
-    map.put("groups", XmlGroups.class);
-    map.put("define", XmlDefine.class);
-    map.put("run", XmlRun.class);
-    map.put("dependencies", XmlDependencies.class);
-    XmlSuite result = (XmlSuite) new XDom(map, doc).parse();
+    XmlSuite result = (XmlSuite) new XDom(new TestNGTagFactory(), doc).parse();
 
     System.out.println(result.toXml());
   }
