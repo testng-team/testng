@@ -880,7 +880,11 @@ public class XmlSuite implements Serializable, Cloneable {
    * Note: do not modify the returned value, use {@link #addIncludedGroup(String)}.
    */
   public List<String> getIncludedGroups() {
-    return m_includedGroups;
+    if (m_xmlGroups != null) {
+      return m_xmlGroups.getRun().getIncludes();
+    } else {
+      return m_includedGroups;
+    }
   }
 
   public void addIncludedGroup(String g) {
@@ -906,7 +910,11 @@ public class XmlSuite implements Serializable, Cloneable {
    * Note: do not modify the returned value, use {@link #addExcludedGroup(String)}.
    */
   public List<String> getExcludedGroups() {
-    return m_excludedGroups;
+    if (m_xmlGroups != null) {
+      return m_xmlGroups.getRun().getExcludes();
+    } else {
+      return m_excludedGroups;
+    }
   }
 
   public void addExcludedGroup(String g) {
@@ -942,4 +950,9 @@ public class XmlSuite implements Serializable, Cloneable {
   public void onElement(String name, String value) {
     getParameters().put(name, value);
   }
+
+  public XmlGroups getGroups() {
+    return m_xmlGroups;
+  }
 }
+

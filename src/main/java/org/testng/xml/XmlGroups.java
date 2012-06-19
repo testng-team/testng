@@ -2,21 +2,17 @@ package org.testng.xml;
 
 import static org.testng.collections.CollectionUtils.hasElements;
 
-import com.google.inject.internal.Lists;
-
 import org.testng.reporters.XMLStringBuffer;
 
 import java.util.List;
 
+import com.google.inject.internal.Lists;
+
 public class XmlGroups {
 
   private List<XmlDefine> m_defines = Lists.newArrayList();
-  private List<XmlRun> m_runs = Lists.newArrayList();
+  private XmlRun m_run;
   private List<XmlDependencies> m_dependencies = Lists.newArrayList();
-
-  public XmlGroups() {
-    
-  }
 
   public List<XmlDefine> getDefines() {
     return m_defines;
@@ -26,12 +22,12 @@ public class XmlGroups {
     m_defines = defines;
   }
 
-  public List<XmlRun> getRuns() {
-    return m_runs;
+  public XmlRun getRun() {
+    return m_run;
   }
 
-  public void setRuns(List<XmlRun> runs) {
-    m_runs = runs;
+  public void setRun(XmlRun run) {
+    m_run = run;
   }
 
   public List<XmlDependencies> getDependencies() {
@@ -46,7 +42,7 @@ public class XmlGroups {
     XMLStringBuffer xsb = new XMLStringBuffer(indent);
     String indent2 = indent + "  ";
 
-    boolean hasGroups = hasElements(m_defines) || hasElements(m_runs)
+    boolean hasGroups = hasElements(m_defines) || m_run != null
         || hasElements(m_dependencies);
 
     if (hasGroups) {
@@ -57,9 +53,7 @@ public class XmlGroups {
       xsb.getStringBuffer().append(d.toXml(indent2));
     }
 
-    for (XmlRun d : m_runs) {
-      xsb.getStringBuffer().append(d.toXml(indent2));
-    }
+    xsb.getStringBuffer().append(m_run.toXml(indent2));
 
     for (XmlDependencies d : m_dependencies) {
       xsb.getStringBuffer().append(d.toXml(indent2));

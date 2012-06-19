@@ -1,7 +1,10 @@
 package org.testng.xml.dom;
 
+import org.testng.Assert;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
+import org.testng.xml.XmlDefine;
+import org.testng.xml.XmlGroups;
 import org.testng.xml.XmlSuite;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -14,8 +17,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -248,6 +253,49 @@ public class XDom {
     Document doc = builder.parse(inputStream);
     XmlSuite result = (XmlSuite) new XDom(new TestNGTagFactory(), doc).parse();
 
+    test(result);
     System.out.println(result.toXml());
+  }
+
+  private static void test(XmlSuite s) {
+    Assert.assertEquals("TestNG", s.getName());
+    Assert.assertEquals(3, s.getDataProviderThreadCount());
+    Assert.assertEquals(2, s.getThreadCount());
+
+    {
+      // child-suites
+      List<String> suiteFiles = s.getSuiteFiles();
+      Assert.assertEquals(Arrays.asList("./junit-suite.xml"), suiteFiles);
+    }
+
+    {
+      // parameters
+      Map<String, String> p = s.getParameters();
+      Assert.assertEquals(2, p.size());
+      Assert.assertEquals("suiteParameterValue", p.get("suiteParameter"));
+      Assert.assertEquals("Cedric", p.get("first-name"));
+    }
+
+    {
+      // run
+      Assert.assertEquals(Arrays.asList("includeThisGroup"), s.getIncludedGroups());
+      Assert.assertEquals(Arrays.asList("excludeThisGroup"), s.getExcludedGroups());
+      XmlGroups groups = s.getGroups();
+
+      // define
+      List<XmlDefine> defines = groups.getDefines();
+      Assert.assertEquals(1, defines.size());
+      XmlDefine define = defines.get(0);
+      Assert.assertEquals("bigSuite", define.getName());
+      Assert.assertEquals(Arrays.asList("suite1", "suite2"), define.getIncludes());
+
+      // dependencies
+      // only defined on test for now
+    }
+
+    {
+      // tests
+      Assert.assertEquals(3, s.getTests().size());
+    }
   }
 }

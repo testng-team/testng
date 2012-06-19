@@ -31,12 +31,20 @@ public class XmlRun {
 
   private List<String> m_excludes = Lists.newArrayList();
 
+  public List<String> getExcludes() {
+    return m_excludes;
+  }
+
   @OnElement(tag = "exclude", attributes = "name")
   public void onExclude(String name) {
     m_excludes.add(name);
   }
 
   private List<String> m_includes = Lists.newArrayList();
+
+  public List<String> getIncludes() {
+    return m_includes;
+  }
 
   @OnElement(tag = "include", attributes = "name")
   public void onInclude(String name) {

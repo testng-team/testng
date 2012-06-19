@@ -16,6 +16,10 @@ public class XmlDefine {
     m_name = name;
   }
 
+  public String getName() {
+    return m_name;
+  }
+
   public String toXml(String indent) {
     XMLStringBuffer xsb = new XMLStringBuffer(indent);
     boolean hasElements = hasElements(m_includes);
@@ -37,5 +41,9 @@ public class XmlDefine {
   @OnElement(tag = "include", attributes = "name")
   public void onElement(String name) {
     m_includes.add(name);
+  }
+
+  public List<String> getIncludes() {
+    return m_includes;
   }
 }
