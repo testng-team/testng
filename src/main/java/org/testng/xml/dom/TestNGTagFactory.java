@@ -1,16 +1,29 @@
 package org.testng.xml.dom;
 
+import com.google.inject.internal.Maps;
+
+import java.util.Map;
+
 public class TestNGTagFactory implements ITagFactory {
+
+  private Map<String, Class<?>> m_map = Maps.newHashMap();
+
+  public TestNGTagFactory() {
+    m_map.put("suite-files", XDom.ChildSuite.class);
+  }
 
   @Override
   public Class<?> getClassForTag(String tag) {
-    Class<?> result = null;
-    String className = "org.testng.xml.Xml"
-        + XDom.toCapitalizedCamelCase(tag);
-    try {
-      result = Class.forName(className);
-    } catch (ClassNotFoundException e) {
-//      e.printStackTrace();
+    Class<?> result = m_map.get(tag);
+    if (result != null) {
+      return result;
+    } else {
+      String className = "org.testng.xml.Xml" + XDom.toCapitalizedCamelCase(tag);
+      try {
+        result = Class.forName(className);
+      } catch (ClassNotFoundException e) {
+        System.out.println("Couldn't find class " + className);
+      }
     }
 
     return result;
