@@ -19,7 +19,6 @@ public class DomXmlParser extends XMLParser<XmlSuite> {
     XmlSuite result = null;
     try {
       result = parse2(currentFile, inputStream, loadClasses);
-      return result;
     } catch (Exception e) {
       e.printStackTrace();
     }
