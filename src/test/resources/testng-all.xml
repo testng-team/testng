@@ -3,6 +3,9 @@
 <suite name="TestNG" verbose="1" parallel="false" thread-count="2"
     data-provider-thread-count="3">
 
+  <parameter name="first-name" value="Cedric" />
+  <parameter name="suiteParameter" value="suiteParameterValue" />
+
   <suite-files>
     <suite-file path="./junit-suite.xml" />
   </suite-files>
@@ -49,8 +52,6 @@
       <class name="NoPackageTest" />
     </classes>
   </test>
-
-  <parameter name="first-name" value="Cedric" />
 
   <test name="Regression1" >
     <groups>

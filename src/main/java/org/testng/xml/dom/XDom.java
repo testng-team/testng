@@ -194,7 +194,6 @@ public class XDom {
   public static class ChildSuite implements ITagSetter<XmlSuite> {
     @Override
     public void setProperty(String name, XmlSuite parent, Node node) {
-      System.out.println("Filling suite-files");
       List<String> suiteFiles = Lists.newArrayList();
       for (int i = 0; i < node.getChildNodes().getLength(); i++) {
         Node item = node.getChildNodes().item(i);
