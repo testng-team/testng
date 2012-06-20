@@ -10,8 +10,10 @@ import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.dom.OnElement;
 import org.testng.xml.dom.OnElementList;
+import org.testng.xml.dom.Tag;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -130,6 +132,7 @@ public class XmlSuite implements Serializable, Cloneable {
 
   private List<String> m_includedGroups = Lists.newArrayList();
   private List<String> m_excludedGroups = Lists.newArrayList();
+  private XmlMethodSelectors m_xmlMethodSelectors;
 
   /**
    * @return the fileName
@@ -397,6 +400,11 @@ public class XmlSuite implements Serializable, Cloneable {
     return getXmlPackages();
   }
 
+  @Tag(name = "method-selectors")
+  public void setMethodSelectors(XmlMethodSelectors xms) {
+    m_xmlMethodSelectors = xms;
+  }
+
   // For YAML
   public void setPackages(List<XmlPackage> packages) {
     setXmlPackages(packages);
@@ -465,14 +473,7 @@ public class XmlSuite implements Serializable, Cloneable {
       xsb.pop("packages");
     }
 
-    if (hasElements(getMethodSelectors())) {
-      xsb.push("method-selectors");
-      for (XmlMethodSelector selector : getMethodSelectors()) {
-        xsb.getStringBuffer().append(selector.toXml("  "));
-      }
-
-      xsb.pop("method-selectors");
-    }
+    xsb.getStringBuffer().append(getXmlMethodSelectors().toXml("  "));
 
     List<String> suiteFiles = getSuiteFiles();
     if (suiteFiles.size() > 0) {
@@ -511,6 +512,15 @@ public class XmlSuite implements Serializable, Cloneable {
     xsb.pop("suite");
 
     return xsb.toXML();
+  }
+
+  @Tag(name = "method-selectors")
+  public void setXmlMethodSelectors(XmlMethodSelectors xms) {
+    m_xmlMethodSelectors = xms;
+  }
+
+  private XmlMethodSelectors getXmlMethodSelectors() {
+    return m_xmlMethodSelectors;
   }
 
   /**
@@ -949,7 +959,7 @@ public class XmlSuite implements Serializable, Cloneable {
   }
 
   @OnElement(tag = "parameter", attributes = { "name", "value" })
-  public void onElement(String name, String value) {
+  public void onParameterElement(String name, String value) {
     getParameters().put(name, value);
   }
 
@@ -963,8 +973,26 @@ public class XmlSuite implements Serializable, Cloneable {
     getSuiteFiles().add(path);
   }
 
+  @OnElementList(tag = "packages", attributes = { "name" })
+  public void onPackagesElement(String name) {
+    getPackages().add(new XmlPackage(name));
+  }
+
+//  @OnElementList(tag = "method-selectors", attributes = { "language", "name", "priority" })
+  public void onMethodSelectorElement(String language, String name, String priority) {
+    System.out.println("Language:" + language);
+  }
+
   public XmlGroups getGroups() {
     return m_xmlGroups;
+  }
+
+  public Collection<String> getPackageNames() {
+    List<String> result = Lists.newArrayList();
+    for (XmlPackage p : getPackages()) {
+      result.add(p.getName());
+    }
+    return result;
   }
 }
 

@@ -18,7 +18,7 @@ public class TestNGTagFactory implements ITagFactory {
     if (result != null) {
       return result;
     } else {
-      String className = "org.testng.xml.Xml" + XDom.toCapitalizedCamelCase(tag);
+      String className = "org.testng.xml.Xml" + Reflect.toCapitalizedCamelCase(tag);
       try {
         result = Class.forName(className);
       } catch (ClassNotFoundException e) {

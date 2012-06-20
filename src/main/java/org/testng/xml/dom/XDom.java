@@ -3,6 +3,7 @@ package org.testng.xml.dom;
 import org.testng.Assert;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
+import org.testng.internal.collections.Pair;
 import org.testng.xml.XmlDefine;
 import org.testng.xml.XmlGroups;
 import org.testng.xml.XmlSuite;
@@ -47,6 +48,7 @@ public class XDom {
       Node item = nodes.item(i);
       if (item.getAttributes() != null) {
         String nodeName = item.getNodeName();
+
         System.out.println("Node name:" + nodeName);
         Class<?> c = m_tagFactory.getClassForTag(nodeName);
         if (c == null) {
@@ -54,11 +56,10 @@ public class XDom {
         }
   
         result = c.newInstance();
-        if (ITagSetter.class.isAssignableFrom(result.getClass())) {
-          System.out.println("Tag setter:"  + result);
-        }
         populateAttributes(item, result);
-
+        if (ITagSetter.class.isAssignableFrom(result.getClass())) {
+          throw new RuntimeException("TAG SETTER");
+        }
         populateChildren(item, result);
       }
     }
@@ -73,7 +74,11 @@ public class XDom {
       Node item = childNodes.item(i);
       if (item.getAttributes() != null) {
         String nodeName = item.getNodeName();
-        boolean foundSetter = invokeOnSetter(result, nodeName, (Element) item);
+        if ("suite-files".equals(nodeName)) {
+          System.out.println("BREAK");
+        }
+
+        boolean foundSetter = invokeOnSetter(result, (Element) item, nodeName);
         if (! foundSetter) {
           boolean foundListSetter = invokeOnListSetter(result, nodeName, item);
           if (! foundListSetter) {
@@ -89,44 +94,63 @@ public class XDom {
                 children.put(nodeName, object);
                 populateAttributes(item, object);
               }
+              setProperty(result, nodeName, object);
               populateChildren(item, object);
             }
           }
         }
       }
     }
-    System.out.println("Found children:" + children);
+//    System.out.println("Found children:" + children);
     for (String s : children.getKeys()) {
       setCollectionProperty(result, s, children.get(s));
     }
   }
 
-  private boolean invokeOnSetter(Object result, String nodeName, Element element) {
-    for (Method m : result.getClass().getMethods()) {
-      OnElement onElement = m.getAnnotation(OnElement.class);
-      if (onElement != null && nodeName.equals(onElement.tag())) {
-        List<String> parameters = Lists.newArrayList();
-        for (String attributeName : onElement.attributes()) {
-          parameters.add(element.getAttribute(attributeName));
-        }
-        try {
-          m.invoke(result, parameters.toArray());
-          return true;
-        } catch (IllegalArgumentException e) {
-          e.printStackTrace();
-        } catch (IllegalAccessException e) {
-          e.printStackTrace();
-        } catch (InvocationTargetException e) {
-          e.printStackTrace();
-        }
+//  private List<Pair<Method, ? extends Annotation>>
+//      findMethodsWithAnnotation(Class<?> c, Class<? extends Annotation> ac) {
+//    List<Pair<Method, ? extends Annotation>> result = Lists.newArrayList();
+//    for (Method m : c.getMethods()) {
+//      Annotation a = m.getAnnotation(ac);
+//      if (a != null) {
+//        result.add(Pair.of(m, a));
+//      }
+//    }
+//    return result;
+//  }
+
+  private boolean invokeOnSetter(Object object, Element element, String nodeName) {
+    Pair<Method, Wrapper> pair =
+        Reflect.findSetterForTag(object.getClass(), nodeName);
+
+    if (pair != null) {
+      Method m = pair.first();
+//      OnElement onElement = (OnElement) pair.second();
+//      List<String> parameters = Lists.newArrayList();
+//      for (String attributeName : onElement.attributes()) {
+//        parameters.add(element.getAttribute(attributeName));
+//      }
+      try {
+        m.invoke(object, pair.second().getParameters(element));
+        return true;
+      } catch (IllegalArgumentException e) {
+        e.printStackTrace();
+      } catch (IllegalAccessException e) {
+        e.printStackTrace();
+      } catch (InvocationTargetException e) {
+        e.printStackTrace();
       }
     }
+
     return false;
   }
 
-  private boolean invokeOnListSetter(Object result, String tagName, Node node) {
-    for (Method m : result.getClass().getMethods()) {
-      OnElementList onElement = m.getAnnotation(OnElementList.class);
+  private boolean invokeOnListSetter(Object object, String tagName, Node node) {
+    Pair<Method, Wrapper> pair =
+        Reflect.findSetterForTag(object.getClass(), tagName);
+
+    if (pair != null) {
+      OnElementList onElement = (OnElementList) pair.second();
       if (onElement != null && tagName.equals(onElement.tag())) {
         List<List<Object>> parameterList = Lists.newArrayList();
         String[] attributeNames = onElement.attributes();
@@ -141,9 +165,9 @@ public class XDom {
           }
         }
         try {
-          System.out.println("Invoking");
+//          System.out.println("Invoking");
           for (List<Object> parameters : parameterList) {
-            m.invoke(result, parameters.toArray());
+            pair.first().invoke(object, parameters.toArray());
           }
           return true;
         } catch (IllegalArgumentException e) {
@@ -155,6 +179,7 @@ public class XDom {
         }
       }
     }
+
     return false;
   }
 
@@ -166,17 +191,20 @@ public class XDom {
     }
   }
 
-  private void setCollectionProperty(Object result, String property, List<Object> list) {
-    Method method = findSetter(result, property + "s");
-    if (method == null) {
-      method = findSetter(result, property);
+  private void setCollectionProperty(Object object, String property, List<Object> list) {
+    Pair<Method, Wrapper> setter = Reflect.findSetterForTag(object.getClass(),
+        property + "s");
+    if (setter == null) {
+      setter = Reflect.findSetterForTag(object.getClass(), property);
     }
-    if (method != null) {
+
+    if (setter != null) {
+      Method method = setter.first();
       try {
         if (Collection.class.isAssignableFrom(method.getParameterTypes()[0])) {
-          method.invoke(result, list);
+          method.invoke(object, list);
         } else {
-          method.invoke(result, list.get(0));
+          method.invoke(object, list.get(0));
         }
       } catch (IllegalArgumentException e) {
         e.printStackTrace();
@@ -190,12 +218,20 @@ public class XDom {
     }
   }
 
-  private void setProperty(Object object, String name, Object value) {
-    Method foundMethod = findSetter(object, name);
+//  private Method findMethodTaggedWith(Class<?> c, String tagName) {
+//    Pair<Method, ? extends Annotation> pair = findMethodWithAnnotation(c, Tag.class);
+//    if (pair != null && ((Tag) pair.second()).name().equals(tagName)) {
+//      return pair.first();
+//    } else {
+//      return null;
+//    }
+//  }
 
-    if (foundMethod == null) {
-      e("Couldn't find setter method for property" + name + " on " + object.getClass());
-    } else {
+  private void setProperty(Object object, String name, Object value) {
+    Pair<Method, Wrapper> setter = Reflect.findSetterForTag(object.getClass(), name);
+
+    if (setter != null) {
+      Method foundMethod = setter.first();
       try {
         Class<?> type = foundMethod.getParameterTypes()[0];
         if (type == Boolean.class || type == boolean.class) {
@@ -212,37 +248,22 @@ public class XDom {
       } catch (InvocationTargetException e) {
         e.printStackTrace();
       }
+    } else {
+      e("Couldn't find setter method for property" + name + " on " + object.getClass());
     }
   }
 
-  private Method findSetter(Object object, String name) {
-    String methodName = toCamelCaseSetter(name);
-    Method foundMethod = null;
-    for (Method m : object.getClass().getDeclaredMethods()) {
-      if (m.getName().equals(methodName)) {
-        foundMethod = m;
-        break;
-      }
-    }
-    return foundMethod;
-  }
-
-  private String toCamelCaseSetter(String name) {
-    return "set" + toCapitalizedCamelCase(name);
-  }
-
-  public static String toCapitalizedCamelCase(String name) {
-    StringBuilder result = new StringBuilder(name.substring(0, 1).toUpperCase());
-    for (int i = 1; i < name.length(); i++) {
-      if (name.charAt(i) == '-') {
-        result.append(Character.toUpperCase(name.charAt(i + 1)));
-        i++;
-      } else {
-        result.append(name.charAt(i));
-      }
-    }
-    return result.toString();
-  }
+//  private Method findSetter(Object object, String name) {
+//    String methodName = toCamelCaseSetter(name);
+//    Method foundMethod = null;
+//    for (Method m : object.getClass().getDeclaredMethods()) {
+//      if (m.getName().equals(methodName)) {
+//        foundMethod = m;
+//        break;
+//      }
+//    }
+//    return foundMethod;
+//  }
 
   private void p(String string) {
     System.out.println("[XDom] " + string);
@@ -298,6 +319,9 @@ public class XDom {
       XmlDefine define = defines.get(0);
       Assert.assertEquals("bigSuite", define.getName());
       Assert.assertEquals(Arrays.asList("suite1", "suite2"), define.getIncludes());
+
+      // packages
+      Assert.assertEquals(Arrays.asList("com.example1", "com.example2"), s.getPackageNames());
 
       // listeners
       Assert.assertEquals(Arrays.asList("com.beust.Listener1", "com.beust.Listener2"),

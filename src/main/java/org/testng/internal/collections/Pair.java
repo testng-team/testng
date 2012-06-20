@@ -3,6 +3,7 @@ package org.testng.internal.collections;
 
 
 
+
 public class Pair<A, B> {
   private final A first;
   private final B second;
@@ -61,6 +62,10 @@ public class Pair<A, B> {
   }
 
   public static <A, B> Pair<A, B> create(A first, B second) {
-    return new Pair<A, B>(first, second);
+    return of(first, second);
+  }
+
+  public static <A, B> Pair<A, B> of(A a, B b) {
+    return new Pair<A, B>(a, b);
   }
 }
