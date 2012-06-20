@@ -68,4 +68,9 @@ public class Pair<A, B> {
   public static <A, B> Pair<A, B> of(A a, B b) {
     return new Pair<A, B>(a, b);
   }
+
+  @Override
+  public String toString() {
+    return "[Pair " + first() + ", " + second() + "]";
+  }
 }

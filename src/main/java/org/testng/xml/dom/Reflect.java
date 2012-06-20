@@ -10,26 +10,26 @@ import java.util.List;
 
 public class Reflect {
   public static List<Pair<Method, Wrapper>> findMethodsWithAnnotation(
-      Class<?> c, Class<? extends Annotation> ac) {
+      Class<?> c, Class<? extends Annotation> ac, Object bean) {
     List<Pair<Method, Wrapper>> result = Lists.newArrayList();
     for (Method m : c.getMethods()) {
       Annotation a = m.getAnnotation(ac);
       if (a != null) {
-        result.add(Pair.of(m, new Wrapper(a)));
+        result.add(Pair.of(m, new Wrapper(a, bean)));
       }
     }
     return result;
   }
 
   public static Pair<Method, Wrapper> findSetterForTag(
-      Class<?> c, String tagName) {
+      Class<?> c, String tagName, Object bean) {
 
     // Try to find an annotation
     List<Class<? extends Annotation>> annotations =
         Arrays.asList(OnElement.class, OnElementList.class, Tag.class);
     for (Class<? extends Annotation> annotationClass : annotations) {
       List<Pair<Method, Wrapper>> methods
-          = findMethodsWithAnnotation(c, annotationClass);
+          = findMethodsWithAnnotation(c, annotationClass, bean);
   
       for (Pair<Method, Wrapper> pair : methods) {
         if (pair.second().getTagName().equals(tagName)) {
@@ -38,7 +38,6 @@ public class Reflect {
       }
     }
 
-    // Try to find a setter
     for (Method m : c.getDeclaredMethods()) {
       String methodName = toCamelCaseSetter(tagName);
       if (m.getName().equals(methodName)) {

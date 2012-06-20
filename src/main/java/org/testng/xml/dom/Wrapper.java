@@ -2,6 +2,7 @@ package org.testng.xml.dom;
 
 import org.testng.collections.Lists;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -11,8 +12,10 @@ public class Wrapper {
   private OnElement m_onElement;
   private OnElementList m_onElementList;
   private Tag m_tag;
+  private Object m_bean;
 
-  public Wrapper(Annotation a) {
+  public Wrapper(Annotation a, Object bean) {
+    m_bean = bean;
     if (a instanceof OnElement) m_onElement = (OnElement) a;
     else if (a instanceof OnElementList) m_onElementList = (OnElementList) a;
     else if (a instanceof Tag) m_tag = (Tag) a;
@@ -25,18 +28,32 @@ public class Wrapper {
     else return m_tag.name();
   }
 
-  public List<Object> getParameters(Element element) {
-    List<Object> result = Lists.newArrayList();
+  public List<Object[]> getParameters(Element element) {
+    List<Object[]> allParameters = Lists.newArrayList();
     if (m_onElement != null) {
+      List<Object> result = Lists.newArrayList();
       for (String attributeName : m_onElement.attributes()) {
         result.add(element.getAttribute(attributeName));
       }
+      allParameters.add(result.toArray());
     } else if (m_tag != null) {
-      result.add(element);
+      List<Object> result = Lists.newArrayList();
+      result.add(m_bean);
+      allParameters.add(result.toArray());
     } else {
-      throw new RuntimeException("getParameters() problem");
+      NodeList childNodes = element.getChildNodes();
+      for (int i = 0; i < childNodes.getLength(); i++) {
+        if (childNodes.item(i).hasAttributes()) {
+          Element item = (Element) childNodes.item(i);
+          List<Object> result = Lists.newArrayList();
+          for (String attributeName : m_onElementList.attributes()) {
+            result.add(item.getAttribute(attributeName));
+          }
+          allParameters.add(result.toArray());
+        }
+      }
     }
 
-    return result;
+    return allParameters;
   }
 }

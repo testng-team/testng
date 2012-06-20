@@ -2,6 +2,7 @@ package org.testng.xml;
 
 import org.testng.TestNGException;
 import org.testng.reporters.XMLStringBuffer;
+import org.testng.xml.dom.OnElement;
 
 import java.util.Properties;
 
@@ -26,6 +27,7 @@ public class XmlMethodSelector {
   }
 
   // For YAML
+  @OnElement(tag = "selector-class", attributes = "name")
   public void setClassName(String name) {
     setName(name);
   }
@@ -58,6 +60,7 @@ public class XmlMethodSelector {
   /**
    * @param language The language to set.
    */
+  @OnElement(tag = "script", attributes = "language")
   public void setLanguage(String language) {
     m_language = language;
   }

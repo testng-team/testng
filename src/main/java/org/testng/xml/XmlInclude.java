@@ -17,6 +17,9 @@ public class XmlInclude implements Serializable {
   private String m_description;
 //  private Map<String, String> m_parameters = Maps.newHashMap();
 
+  public XmlInclude() {
+  }
+
   public XmlInclude(String n) {
     this(n, Collections.<Integer> emptyList(), 0);
   }

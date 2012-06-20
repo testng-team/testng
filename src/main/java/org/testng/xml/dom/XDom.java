@@ -6,6 +6,7 @@ import org.testng.collections.Lists;
 import org.testng.internal.collections.Pair;
 import org.testng.xml.XmlDefine;
 import org.testng.xml.XmlGroups;
+import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlSuite;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -68,6 +69,7 @@ public class XDom {
 
   public void populateChildren(Node root, Object result) throws InstantiationException,
       IllegalAccessException, XPathExpressionException {
+    p("populateChildren: " + root.getLocalName());
     NodeList childNodes = root.getChildNodes();
     ListMultiMap<String, Object> children = ListMultiMap.create();
     for (int i = 0; i < childNodes.getLength(); i++) {
@@ -78,33 +80,37 @@ public class XDom {
           System.out.println("BREAK");
         }
 
-        boolean foundSetter = invokeOnSetter(result, (Element) item, nodeName);
-        if (! foundSetter) {
-          boolean foundListSetter = invokeOnListSetter(result, nodeName, item);
-          if (! foundListSetter) {
-            Class<?> c = m_tagFactory.getClassForTag(nodeName);
-            if (c == null) {
-              System.out.println("Warning: No class found for tag " + nodeName);
-            } else {
-              Object object = c.newInstance();
-              if (ITagSetter.class.isAssignableFrom(object.getClass())) {
-                System.out.println("Tag setter:"  + result);
-                ((ITagSetter) object).setProperty(nodeName, result, item);
-              } else {
-                children.put(nodeName, object);
-                populateAttributes(item, object);
-              }
-              setProperty(result, nodeName, object);
-              populateChildren(item, object);
-            }
+        Class<?> c = m_tagFactory.getClassForTag(nodeName);
+        if (c == null) {
+          System.out.println("Warning: No class found for tag " + nodeName);
+          boolean foundSetter = invokeOnSetter(result, (Element) item, nodeName, null);
+          System.out.println("  found setter:" + foundSetter);
+        } else {
+          Object object = c.newInstance();
+          if (ITagSetter.class.isAssignableFrom(object.getClass())) {
+            System.out.println("Tag setter:"  + result);
+            ((ITagSetter) object).setProperty(nodeName, result, item);
+          } else {
+            children.put(nodeName, object);
+            populateAttributes(item, object);
           }
+          boolean foundSetter = invokeOnSetter(result, (Element) item, nodeName, object);
+//          setProperty(result, nodeName, object);
+          populateChildren(item, object);
         }
+
+//        boolean foundSetter = invokeOnSetter(result, (Element) item, nodeName);
+//        if (! foundSetter) {
+//          boolean foundListSetter = invokeOnListSetter(result, nodeName, item);
+//          if (! foundListSetter) {
+//          }
+//        }
       }
     }
 //    System.out.println("Found children:" + children);
-    for (String s : children.getKeys()) {
-      setCollectionProperty(result, s, children.get(s));
-    }
+//    for (String s : children.getKeys()) {
+//      setCollectionProperty(result, s, children.get(s), object);
+//    }
   }
 
 //  private List<Pair<Method, ? extends Annotation>>
@@ -119,9 +125,10 @@ public class XDom {
 //    return result;
 //  }
 
-  private boolean invokeOnSetter(Object object, Element element, String nodeName) {
+  private boolean invokeOnSetter(Object object, Element element, String nodeName,
+      Object bean) {
     Pair<Method, Wrapper> pair =
-        Reflect.findSetterForTag(object.getClass(), nodeName);
+       Reflect.findSetterForTag(object.getClass(), nodeName, bean);
 
     if (pair != null) {
       Method m = pair.first();
@@ -131,8 +138,20 @@ public class XDom {
 //        parameters.add(element.getAttribute(attributeName));
 //      }
       try {
-        m.invoke(object, pair.second().getParameters(element));
+        List<Object[]> allParameters;
+        if (pair.second() != null) {
+          allParameters = pair.second().getParameters(element);
+        } else {
+          allParameters = Lists.newArrayList();
+          allParameters.add(new Object[] { bean });
+        }
+
+        for (Object[] p : allParameters) {
+          m.invoke(object, p);
+        }
         return true;
+      } catch(NullPointerException ex) {
+        System.out.println("NPE");
       } catch (IllegalArgumentException e) {
         e.printStackTrace();
       } catch (IllegalAccessException e) {
@@ -145,9 +164,10 @@ public class XDom {
     return false;
   }
 
-  private boolean invokeOnListSetter(Object object, String tagName, Node node) {
+  private boolean invokeOnListSetter(Object object, String tagName, Node node,
+      Object bean) {
     Pair<Method, Wrapper> pair =
-        Reflect.findSetterForTag(object.getClass(), tagName);
+        Reflect.findSetterForTag(object.getClass(), tagName, bean);
 
     if (pair != null) {
       OnElementList onElement = (OnElementList) pair.second();
@@ -191,11 +211,12 @@ public class XDom {
     }
   }
 
-  private void setCollectionProperty(Object object, String property, List<Object> list) {
+  private void setCollectionProperty(Object object, String property, List<Object> list,
+      Object bean) {
     Pair<Method, Wrapper> setter = Reflect.findSetterForTag(object.getClass(),
-        property + "s");
+        property + "s", bean);
     if (setter == null) {
-      setter = Reflect.findSetterForTag(object.getClass(), property);
+      setter = Reflect.findSetterForTag(object.getClass(), property, bean);
     }
 
     if (setter != null) {
@@ -228,7 +249,8 @@ public class XDom {
 //  }
 
   private void setProperty(Object object, String name, Object value) {
-    Pair<Method, Wrapper> setter = Reflect.findSetterForTag(object.getClass(), name);
+    Pair<Method, Wrapper> setter = Reflect.findSetterForTag(object.getClass(), name,
+        value);
 
     if (setter != null) {
       Method foundMethod = setter.first();
@@ -290,49 +312,54 @@ public class XDom {
 
   private static void test(XmlSuite s) {
     Assert.assertEquals("TestNG", s.getName());
-    Assert.assertEquals(3, s.getDataProviderThreadCount());
-    Assert.assertEquals(2, s.getThreadCount());
+    Assert.assertEquals(s.getDataProviderThreadCount(), 3);
+    Assert.assertEquals(s.getThreadCount(), 2);
 
+    {
+      // method-selectors
+      List<XmlMethodSelector> selectors = s.getMethodSelectors();
+      System.out.println("Selectors: " + selectors.size());
+    }
     {
       // child-suites
       List<String> suiteFiles = s.getSuiteFiles();
-      Assert.assertEquals(Arrays.asList("./junit-suite.xml"), suiteFiles);
+      Assert.assertEquals(suiteFiles, Arrays.asList("./junit-suite.xml"));
     }
 
     {
       // parameters
       Map<String, String> p = s.getParameters();
-      Assert.assertEquals(2, p.size());
-      Assert.assertEquals("suiteParameterValue", p.get("suiteParameter"));
-      Assert.assertEquals("Cedric", p.get("first-name"));
+      Assert.assertEquals(p.size(), 2);
+      Assert.assertEquals(p.get("suiteParameter"), "suiteParameterValue");
+      Assert.assertEquals(p.get("first-name"), "Cedric");
     }
 
     {
       // run
-      Assert.assertEquals(Arrays.asList("includeThisGroup"), s.getIncludedGroups());
-      Assert.assertEquals(Arrays.asList("excludeThisGroup"), s.getExcludedGroups());
+      Assert.assertEquals(s.getIncludedGroups(), Arrays.asList("includeThisGroup"));
+      Assert.assertEquals(s.getExcludedGroups(), Arrays.asList("excludeThisGroup"));
       XmlGroups groups = s.getGroups();
 
       // define
       List<XmlDefine> defines = groups.getDefines();
-      Assert.assertEquals(1, defines.size());
+      Assert.assertEquals(defines.size(), 1);
       XmlDefine define = defines.get(0);
-      Assert.assertEquals("bigSuite", define.getName());
-      Assert.assertEquals(Arrays.asList("suite1", "suite2"), define.getIncludes());
+      Assert.assertEquals(define.getName(), "bigSuite");
+      Assert.assertEquals(define.getIncludes(), Arrays.asList("suite1", "suite2"));
 
       // packages
-      Assert.assertEquals(Arrays.asList("com.example1", "com.example2"), s.getPackageNames());
+      Assert.assertEquals(s.getPackageNames(), Arrays.asList("com.example1", "com.example2"));
 
       // listeners
-      Assert.assertEquals(Arrays.asList("com.beust.Listener1", "com.beust.Listener2"),
-          s.getListeners());
+      Assert.assertEquals(s.getListeners(),
+          Arrays.asList("com.beust.Listener1", "com.beust.Listener2"));
       // dependencies
       // only defined on test for now
     }
 
     {
       // tests
-      Assert.assertEquals(3, s.getTests().size());
+      Assert.assertEquals(s.getTests().size(), 3);
     }
   }
 }
