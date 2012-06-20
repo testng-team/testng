@@ -3,6 +3,15 @@
 <suite name="TestNG" verbose="1" parallel="false" thread-count="2"
     data-provider-thread-count="3">
 
+  <method-selectors>
+    <method-selector>
+      <script language="javascript">foo()</script>
+    </method-selector>
+    <method-selector>
+      <selector-class name="SelectorClass" priority="3" />
+    </method-selector>
+  </method-selectors>
+
   <parameter name="first-name" value="Cedric" />
   <parameter name="suiteParameter" value="suiteParameterValue" />
 
@@ -26,21 +35,14 @@
   </groups>
 
   <listeners>
-    <listener class-name="com.beust.Listener" />
+    <listener class-name="com.beust.Listener1" />
+    <listener class-name="com.beust.Listener2" />
   </listeners>
 
   <packages>
-    <package name="com.example" />
+    <package name="com.example1" />
+    <package name="com.example2" />
   </packages>
-
-  <method-selectors>
-    <method-selector>
-      <script language="javascript">foo()</script>
-    </method-selector>
-    <method-selector>
-      <selector-class name="SelectorClass" priority="3" />
-    </method-selector>
-  </method-selectors>
 
   <test name="Nopackage">
     <groups>
