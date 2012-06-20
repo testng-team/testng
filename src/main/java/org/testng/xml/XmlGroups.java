@@ -3,6 +3,7 @@ package org.testng.xml;
 import static org.testng.collections.CollectionUtils.hasElements;
 
 import org.testng.reporters.XMLStringBuffer;
+import org.testng.xml.dom.Tag;
 
 import java.util.List;
 
@@ -16,6 +17,11 @@ public class XmlGroups {
 
   public List<XmlDefine> getDefines() {
     return m_defines;
+  }
+
+  @Tag(name = "define")
+  public void addDefine(XmlDefine define) {
+    getDefines().add(define);
   }
 
   public void setDefines(List<XmlDefine> defines) {
