@@ -14,6 +14,10 @@ public class XmlMethodSelectors {
   public XmlMethodSelectors() {
   }
 
+  public List<XmlMethodSelector> getMethodSelectors() {
+    return m_methodSelectors;
+  }
+
   public void setMethodSelector(XmlMethodSelector xms) {
     m_methodSelectors.add(xms);
   }
@@ -23,7 +27,7 @@ public class XmlMethodSelectors {
     if (hasElements(m_methodSelectors)) {
       xsb.push("method-selectors");
       for (XmlMethodSelector selector : m_methodSelectors) {
-        xsb.getStringBuffer().append(selector.toXml("  "));
+        xsb.getStringBuffer().append(selector.toXml(indent + "  "));
       }
   
       xsb.pop("method-selectors");

@@ -12,6 +12,7 @@ public class Wrapper {
   private OnElement m_onElement;
   private OnElementList m_onElementList;
   private Tag m_tag;
+  private TagContent m_tagContent;
   private Object m_bean;
 
   public Wrapper(Annotation a, Object bean) {
@@ -19,6 +20,7 @@ public class Wrapper {
     if (a instanceof OnElement) m_onElement = (OnElement) a;
     else if (a instanceof OnElementList) m_onElementList = (OnElementList) a;
     else if (a instanceof Tag) m_tag = (Tag) a;
+    else if (a instanceof TagContent) m_tagContent = (TagContent) a;
     else throw new RuntimeException("Illegal annotation " + a);
   }
 

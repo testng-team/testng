@@ -248,7 +248,12 @@ public class XmlSuite implements Serializable, Cloneable {
    * @return the method selectors.
    */
   public List<XmlMethodSelector> getMethodSelectors() {
-    return m_methodSelectors;
+    if (m_xmlMethodSelectors != null) {
+      return m_xmlMethodSelectors.getMethodSelectors();
+    } else {
+      // deprecated
+      return m_methodSelectors;
+    }
   }
 
   /**
@@ -997,6 +1002,10 @@ public class XmlSuite implements Serializable, Cloneable {
 
   public XmlGroups getGroups() {
     return m_xmlGroups;
+  }
+
+  public void addTest(XmlTest test) {
+    getTests().add(test);
   }
 
   public Collection<String> getPackageNames() {

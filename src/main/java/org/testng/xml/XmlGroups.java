@@ -2,12 +2,12 @@ package org.testng.xml;
 
 import static org.testng.collections.CollectionUtils.hasElements;
 
+import com.google.inject.internal.Lists;
+
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.dom.Tag;
 
 import java.util.List;
-
-import com.google.inject.internal.Lists;
 
 public class XmlGroups {
 
@@ -42,6 +42,11 @@ public class XmlGroups {
 
   public void setDependencies(List<XmlDependencies> dependencies) {
     m_dependencies = dependencies;
+  }
+
+  @Tag(name = "dependencies")
+  public void setXmlDependencies(XmlDependencies dependencies) {
+    m_dependencies.add(dependencies);
   }
 
   public String toXml(String indent) {

@@ -19,50 +19,55 @@ public class XmlMethodSelector {
   private int m_priority;
 
   // Or that:
-  private String m_language;
-  private String m_expression;
+  private XmlScript m_script = new XmlScript();
 
   public String getClassName() {
     return m_className;
   }
 
   // For YAML
-  @OnElement(tag = "selector-class", attributes = "name")
-  public void setClassName(String name) {
+  @OnElement(tag = "selector-class", attributes = { "name", "priority" })
+  public void setElement(String name, String priority) {
     setName(name);
+    setPriority(Integer.parseInt(priority));
   }
 
   public void setName(String name) {
     m_className = name;
   }
 
+  public void setScript(XmlScript script) {
+    m_script = script;
+  }
+
   /**
    * @return Returns the expression.
    */
   public String getExpression() {
-    return m_expression;
+    return m_script.getScript();
   }
 
   /**
    * @param expression The expression to set.
    */
   public void setExpression(String expression) {
-    m_expression = expression;
+    m_script.setScript(expression);
   }
 
   /**
    * @return Returns the language.
    */
   public String getLanguage() {
-    return m_language;
+    return m_script.getLanguage();
   }
 
   /**
    * @param language The language to set.
    */
-  @OnElement(tag = "script", attributes = "language")
+//  @OnElement(tag = "script", attributes = "language")
   public void setLanguage(String language) {
-    m_language = language;
+    m_script.setLanguage(language);
+//    m_language = language;
   }
 
   public int getPriority() {
@@ -113,9 +118,9 @@ public class XmlMethodSelector {
     result = prime * result
         + ((m_className == null) ? 0 : m_className.hashCode());
     result = prime * result
-        + ((m_expression == null) ? 0 : m_expression.hashCode());
+        + ((getExpression() == null) ? 0 : getExpression().hashCode());
     result = prime * result
-        + ((m_language == null) ? 0 : m_language.hashCode());
+        + ((getLanguage() == null) ? 0 : getLanguage().hashCode());
     result = prime * result + m_priority;
     return result;
   }
@@ -134,15 +139,15 @@ public class XmlMethodSelector {
         return XmlSuite.f();
     } else if (!m_className.equals(other.m_className))
       return XmlSuite.f();
-    if (m_expression == null) {
-      if (other.m_expression != null)
+    if (getExpression() == null) {
+      if (other.getExpression() != null)
         return XmlSuite.f();
-    } else if (!m_expression.equals(other.m_expression))
+    } else if (!getExpression().equals(other.getExpression()))
       return XmlSuite.f();
-    if (m_language == null) {
-      if (other.m_language != null)
+    if (getLanguage() == null) {
+      if (other.getLanguage() != null)
         return XmlSuite.f();
-    } else if (!m_language.equals(other.m_language))
+    } else if (!getLanguage().equals(other.getLanguage()))
       return XmlSuite.f();
     if (m_priority != other.m_priority)
       return XmlSuite.f();

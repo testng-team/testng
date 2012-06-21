@@ -8,11 +8,18 @@ import org.testng.xml.XmlDefine;
 import org.testng.xml.XmlGroups;
 import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlSuite;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,11 +30,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
 
 public class XDom {
 //  private static Map<String, Class<?>> m_map = Maps.newHashMap();
@@ -93,6 +95,7 @@ public class XDom {
           } else {
             children.put(nodeName, object);
             populateAttributes(item, object);
+            populateContent(item, object);
           }
           boolean foundSetter = invokeOnSetter(result, (Element) item, nodeName, object);
 //          setProperty(result, nodeName, object);
@@ -125,20 +128,42 @@ public class XDom {
 //    return result;
 //  }
 
+  private void populateContent(Node item, Object object) {
+    for (int i = 0; i < item.getChildNodes().getLength(); i++) {
+      Node child = item.getChildNodes().item(i);
+      if (child instanceof Text) {
+        setText(object, (Text) child);
+      }
+    }
+  }
+
+  private void setText(Object bean, Text child) {
+    List<Pair<Method, Wrapper>> pairs =
+        Reflect.findMethodsWithAnnotation(bean.getClass(), TagContent.class, bean);
+    for (Pair<Method, Wrapper> pair : pairs) {
+      try {
+        pair.first().invoke(bean, child.getTextContent());
+      } catch (IllegalArgumentException e) {
+        e.printStackTrace();
+      } catch (DOMException e) {
+        e.printStackTrace();
+      } catch (IllegalAccessException e) {
+        e.printStackTrace();
+      } catch (InvocationTargetException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
   private boolean invokeOnSetter(Object object, Element element, String nodeName,
       Object bean) {
     Pair<Method, Wrapper> pair =
        Reflect.findSetterForTag(object.getClass(), nodeName, bean);
 
+    List<Object[]> allParameters = null;
     if (pair != null) {
       Method m = pair.first();
-//      OnElement onElement = (OnElement) pair.second();
-//      List<String> parameters = Lists.newArrayList();
-//      for (String attributeName : onElement.attributes()) {
-//        parameters.add(element.getAttribute(attributeName));
-//      }
       try {
-        List<Object[]> allParameters;
         if (pair.second() != null) {
           allParameters = pair.second().getParameters(element);
         } else {
@@ -150,9 +175,8 @@ public class XDom {
           m.invoke(object, p);
         }
         return true;
-      } catch(NullPointerException ex) {
-        System.out.println("NPE");
       } catch (IllegalArgumentException e) {
+        System.out.println("Parameters: " + allParameters);
         e.printStackTrace();
       } catch (IllegalAccessException e) {
         e.printStackTrace();
@@ -206,7 +230,6 @@ public class XDom {
   private void populateAttributes(Node node, Object object) throws XPathExpressionException {
     for (int j = 0; j < node.getAttributes().getLength(); j++) {
       Node item = node.getAttributes().item(j);
-//      p(node.getAttributes().item(j).toString());
       setProperty(object, item.getLocalName(), item.getNodeValue());
     }
   }
@@ -318,8 +341,15 @@ public class XDom {
     {
       // method-selectors
       List<XmlMethodSelector> selectors = s.getMethodSelectors();
-      System.out.println("Selectors: " + selectors.size());
+      Assert.assertEquals(selectors.size(), 2);
+      XmlMethodSelector s1 = selectors.get(0);
+      Assert.assertEquals(s1.getLanguage(), "javascript");
+      Assert.assertEquals(s1.getExpression(), "foo()");
+      XmlMethodSelector s2 = selectors.get(1);
+      Assert.assertEquals(s2.getClassName(), "SelectorClass");
+      Assert.assertEquals(s2.getPriority(), 3);
     }
+
     {
       // child-suites
       List<String> suiteFiles = s.getSuiteFiles();

@@ -1,8 +1,5 @@
 package test.methodselectors;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
@@ -18,6 +15,9 @@ import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
 import testhelper.OutputDirectoryPatch;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class MethodSelectorInSuiteTest  extends SimpleBaseTest{
 
   private TestListenerAdapter m_tla;
@@ -32,7 +32,7 @@ public class MethodSelectorInSuiteTest  extends SimpleBaseTest{
     TestNG tng = create();
     XmlSuite suite = new XmlSuite();
     XmlMethodSelector methodSelector = new XmlMethodSelector();
-    methodSelector.setClassName("test.methodselectors.Test2MethodSelector");
+    methodSelector.setName("test.methodselectors.Test2MethodSelector");
     methodSelector.setPriority(-1);
     List<XmlMethodSelector> methodSelectors = Lists.newArrayList();
     methodSelectors.add(methodSelector);

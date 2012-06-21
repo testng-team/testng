@@ -38,18 +38,21 @@ public class Reflect {
       }
     }
 
-    for (Method m : c.getDeclaredMethods()) {
-      String methodName = toCamelCaseSetter(tagName);
-      if (m.getName().equals(methodName)) {
-        return Pair.of(m, null);
+    // try fo find an adder or a setter
+    for (String prefix : new String[] { "add", "set" }) {
+      for (Method m : c.getDeclaredMethods()) {
+        String methodName = toCamelCase(tagName, prefix);
+        if (m.getName().equals(methodName)) {
+          return Pair.of(m, null);
+        }
       }
     }
 
     return null;
   }
 
-  private static String toCamelCaseSetter(String name) {
-    return "set" + toCapitalizedCamelCase(name);
+  private static String toCamelCase(String name, String prefix) {
+    return prefix + toCapitalizedCamelCase(name);
   }
 
   public static String toCapitalizedCamelCase(String name) {
