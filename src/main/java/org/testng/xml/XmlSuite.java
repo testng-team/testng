@@ -473,7 +473,19 @@ public class XmlSuite implements Serializable, Cloneable {
       xsb.pop("packages");
     }
 
-    xsb.getStringBuffer().append(getXmlMethodSelectors().toXml("  "));
+    if (getXmlMethodSelectors() != null) {
+      xsb.getStringBuffer().append(getXmlMethodSelectors().toXml("  "));
+    } else {
+      // deprecated
+      if (hasElements(getMethodSelectors())) {
+        xsb.push("method-selectors");
+        for (XmlMethodSelector selector : getMethodSelectors()) {
+          xsb.getStringBuffer().append(selector.toXml("  "));
+        }
+
+        xsb.pop("method-selectors");
+      }
+    }
 
     List<String> suiteFiles = getSuiteFiles();
     if (suiteFiles.size() > 0) {
