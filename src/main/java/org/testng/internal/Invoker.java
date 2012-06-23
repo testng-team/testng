@@ -79,9 +79,9 @@ public class Invoker implements IInvoker {
   private IConfiguration m_configuration;
 
   /** Predicate to filter methods */
-  private static Predicate CAN_RUN_FROM_CLASS = new CanRunFromClassPredicate();
+  private static Predicate<ITestNGMethod, IClass> CAN_RUN_FROM_CLASS = new CanRunFromClassPredicate();
   /** Predicate to filter methods */
-  private static final Predicate SAME_CLASS = new SameClassNamePredicate();
+  private static final Predicate<ITestNGMethod, IClass> SAME_CLASS = new SameClassNamePredicate();
 
   private void setClassInvocationFailure(Class<?> clazz, Object instance) {
     Set<Object> instances = m_classInvocationResults.get( clazz );
@@ -1217,9 +1217,12 @@ public class Invoker implements IInvoker {
               // testng387: increment the param index in the bag.
               parametersIndex++;
             }
-            PoolService ps = PoolService.getInstance();
-            List<ITestResult> r = ps.submitTasksAndWait(testMethod, workers);
-            result.addAll(r);
+            PoolService<List<ITestResult>> ps =
+                new PoolService<List<ITestResult>>(suite.getDataProviderThreadCount());
+            List<List<ITestResult>> r = ps.submitTasksAndWait(workers);
+            for (List<ITestResult> l2 : r) {
+              result.addAll(l2);
+            }
 
           } else {
             while (allParameterValues.hasNext()) {

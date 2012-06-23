@@ -1,7 +1,6 @@
 package org.testng;
 
 import org.testng.collections.Lists;
-import org.testng.internal.PoolService;
 import org.testng.internal.SuiteRunnerMap;
 import org.testng.internal.Utils;
 import org.testng.internal.thread.graph.IWorker;
@@ -48,7 +47,6 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
       Utils.log("TestNG", 0, "Running:\n" + allFiles.toString());
     }
 
-    PoolService.initialize(xmlSuite.getDataProviderThreadCount());
     SuiteRunner suiteRunner = (SuiteRunner) suiteRunnerMap.get(xmlSuite);
     suiteRunner.run();
 

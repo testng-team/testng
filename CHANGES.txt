@@ -3,6 +3,7 @@ Current
 Added: Big performance improvement when generating the reports (Frank Pavageau)
 Added: <dependencies> allows you to specify group dependencies in testng.xml
 Added: Blow up early if trying to include/exclude an unknown method
+Fixed: dataProvider(parallel = true) was not killing its threads properly
 Fixed: XmlSuite#toXml wasn't outputting the <groups> tag correctly
 Fixed: testng-failed.xml was not carrying over the parameters from the original testng.xml
 Fixed: BeforeClass failing in parent failed to skip methods in sub classes
