@@ -1089,7 +1089,9 @@ public class TestRunner
     }
 
     // Preserve order
-    if (! hasDependencies && "true".equalsIgnoreCase(getCurrentXmlTest().getPreserveOrder())) {
+    if (! hasDependencies
+        && ! XmlSuite.isParallel(getCurrentXmlTest().getParallel())
+        && "true".equalsIgnoreCase(getCurrentXmlTest().getPreserveOrder())) {
       // If preserve-order was specified and the class order is A, B
       // create a new set of dependencies where each method of B depends
       // on all the methods of A

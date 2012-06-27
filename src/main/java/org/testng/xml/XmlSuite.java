@@ -1015,5 +1015,10 @@ public class XmlSuite implements Serializable, Cloneable {
     }
     return result;
   }
+
+  public static boolean isParallel(String parallel) {
+    return PARALLEL_MODES.contains(parallel)
+        && ! "false".equals(parallel);
+  }
 }
 
