@@ -55,6 +55,9 @@ public class Reporter {
   }
 
   private static synchronized void log(String s, ITestResult m) {
+    // Escape for the HTML reports
+    s = s.replace("<", "[").replace(">", "]") + "<br>";
+
     // synchronization needed to ensure the line number and m_output are updated atomically
     int n = getOutput().size();
     List<Integer> lines = m_methodOutputMap.get(m);
