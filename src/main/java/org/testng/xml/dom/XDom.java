@@ -1,5 +1,10 @@
 package org.testng.xml.dom;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+
 import org.testng.Assert;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
@@ -8,6 +13,7 @@ import org.testng.xml.XmlDefine;
 import org.testng.xml.XmlGroups;
 import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlTest;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -16,18 +22,13 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -43,8 +44,10 @@ public class XDom {
     m_document = document;
   }
 
-  public Object parse() throws XPathExpressionException, InstantiationException,
-      IllegalAccessException {
+  public Object parse() throws XPathExpressionException,
+      InstantiationException, IllegalAccessException, SecurityException,
+      IllegalArgumentException, NoSuchMethodException,
+      InvocationTargetException {
     Object result = null;
     NodeList nodes = m_document.getChildNodes();
     for (int i = 0; i < nodes.getLength(); i++) {
@@ -70,7 +73,7 @@ public class XDom {
   }
 
   public void populateChildren(Node root, Object result) throws InstantiationException,
-      IllegalAccessException, XPathExpressionException {
+      IllegalAccessException, XPathExpressionException, SecurityException, IllegalArgumentException, NoSuchMethodException, InvocationTargetException {
     p("populateChildren: " + root.getLocalName());
     NodeList childNodes = root.getChildNodes();
     ListMultiMap<String, Object> children = ListMultiMap.create();
@@ -88,7 +91,7 @@ public class XDom {
           boolean foundSetter = invokeOnSetter(result, (Element) item, nodeName, null);
           System.out.println("  found setter:" + foundSetter);
         } else {
-          Object object = c.newInstance();
+          Object object = instantiateElement(c, result);
           if (ITagSetter.class.isAssignableFrom(object.getClass())) {
             System.out.println("Tag setter:"  + result);
             ((ITagSetter) object).setProperty(nodeName, result, item);
@@ -116,6 +119,30 @@ public class XDom {
 //    }
   }
 
+  /**
+   * Try to find a @ParentSetter. If this fails, try to find a constructor that takes the parent as a parameter.
+   * If this fails, use the default constructor.
+   */
+  private Object instantiateElement(Class<?> c, Object parent)
+      throws SecurityException, NoSuchMethodException,
+      IllegalArgumentException, InstantiationException, IllegalAccessException,
+      InvocationTargetException {
+    Object result = null;
+    Method m = findMethodAnnotatedWith(c, ParentSetter.class);
+    if (m != null) {
+        result = c.newInstance();
+    	m.invoke(result, parent);
+    } else {
+	    try {
+	      result = c.getConstructor(parent.getClass()).newInstance(parent);
+	    } catch(NoSuchMethodException ex) {
+	      result = c.newInstance();
+	    }
+    }
+
+    return result;
+  }
+
 //  private List<Pair<Method, ? extends Annotation>>
 //      findMethodsWithAnnotation(Class<?> c, Class<? extends Annotation> ac) {
 //    List<Pair<Method, ? extends Annotation>> result = Lists.newArrayList();
@@ -128,7 +155,16 @@ public class XDom {
 //    return result;
 //  }
 
-  private void populateContent(Node item, Object object) {
+  private Method findMethodAnnotatedWith(Class<?> c, Class<? extends Annotation> annotation) {
+	  for (Method m : c.getMethods()) {
+		  if (m.getAnnotation(annotation) != null) {
+			  return m;
+		  }
+	  }
+	  return null;
+  }
+
+private void populateContent(Node item, Object object) {
     for (int i = 0; i < item.getChildNodes().getLength(); i++) {
       Node child = item.getChildNodes().item(i);
       if (child instanceof Text) {
@@ -188,88 +224,12 @@ public class XDom {
     return false;
   }
 
-  private boolean invokeOnListSetter(Object object, String tagName, Node node,
-      Object bean) {
-    Pair<Method, Wrapper> pair =
-        Reflect.findSetterForTag(object.getClass(), tagName, bean);
-
-    if (pair != null) {
-      OnElementList onElement = (OnElementList) pair.second();
-      if (onElement != null && tagName.equals(onElement.tag())) {
-        List<List<Object>> parameterList = Lists.newArrayList();
-        String[] attributeNames = onElement.attributes();
-        for (int i = 0; i < node.getChildNodes().getLength(); i++) {
-          Node item = node.getChildNodes().item(i);
-          if (item.hasAttributes()) {
-            List<Object> l = Lists.newArrayList();
-            for (int j = 0; j < attributeNames.length; j++) {
-              l.add(((Element) item).getAttribute(attributeNames[j]));
-            }
-            parameterList.add(l);
-          }
-        }
-        try {
-//          System.out.println("Invoking");
-          for (List<Object> parameters : parameterList) {
-            pair.first().invoke(object, parameters.toArray());
-          }
-          return true;
-        } catch (IllegalArgumentException e) {
-          e.printStackTrace();
-        } catch (IllegalAccessException e) {
-          e.printStackTrace();
-        } catch (InvocationTargetException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-
-    return false;
-  }
-
   private void populateAttributes(Node node, Object object) throws XPathExpressionException {
     for (int j = 0; j < node.getAttributes().getLength(); j++) {
       Node item = node.getAttributes().item(j);
       setProperty(object, item.getLocalName(), item.getNodeValue());
     }
   }
-
-  private void setCollectionProperty(Object object, String property, List<Object> list,
-      Object bean) {
-    Pair<Method, Wrapper> setter = Reflect.findSetterForTag(object.getClass(),
-        property + "s", bean);
-    if (setter == null) {
-      setter = Reflect.findSetterForTag(object.getClass(), property, bean);
-    }
-
-    if (setter != null) {
-      Method method = setter.first();
-      try {
-        if (Collection.class.isAssignableFrom(method.getParameterTypes()[0])) {
-          method.invoke(object, list);
-        } else {
-          method.invoke(object, list.get(0));
-        }
-      } catch (IllegalArgumentException e) {
-        e.printStackTrace();
-      } catch (IllegalAccessException e) {
-        e.printStackTrace();
-      } catch (InvocationTargetException e) {
-        e.printStackTrace();
-      }
-    } else {
-      p("Warning: couldn't set property for " + property);
-    }
-  }
-
-//  private Method findMethodTaggedWith(Class<?> c, String tagName) {
-//    Pair<Method, ? extends Annotation> pair = findMethodWithAnnotation(c, Tag.class);
-//    if (pair != null && ((Tag) pair.second()).name().equals(tagName)) {
-//      return pair.first();
-//    } else {
-//      return null;
-//    }
-//  }
 
   private void setProperty(Object object, String name, Object value) {
     Pair<Method, Wrapper> setter = Reflect.findSetterForTag(object.getClass(), name,
@@ -319,13 +279,16 @@ public class XDom {
   }
 
   public static void main(String[] args) throws SAXException, IOException,
-      ParserConfigurationException, XPathExpressionException, InstantiationException,
-      IllegalAccessException {
+      ParserConfigurationException, XPathExpressionException,
+      InstantiationException, IllegalAccessException, SecurityException,
+      IllegalArgumentException, NoSuchMethodException,
+      InvocationTargetException {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     factory.setNamespaceAware(true); // never forget this!
     DocumentBuilder builder = factory.newDocumentBuilder();
     FileInputStream inputStream =
-        new FileInputStream(new File("/Users/cedric/java/testng/src/test/resources/testng-all.xml"));
+        new FileInputStream(new File(System.getProperty("user.home")
+            + "/java/testng/src/test/resources/testng-all.xml"));
     Document doc = builder.parse(inputStream);
     XmlSuite result = (XmlSuite) new XDom(new TestNGTagFactory(), doc).parse();
 
@@ -390,6 +353,18 @@ public class XDom {
     {
       // tests
       Assert.assertEquals(s.getTests().size(), 3);
+      for (int i = 0; i < s.getTests().size(); i++) {
+        if ("Nopackage".equals(s.getTests().get(i).getName())) {
+          testNoPackage(s.getTests().get(i));
+        }
+      }
     }
+  }
+
+  private static void testNoPackage(XmlTest t) {
+    Assert.assertEquals(t.getThreadCount(), 42);
+    Assert.assertTrue(t.getAllowReturnValues());
+    Assert.assertEquals(t.getIncludedGroups(), Arrays.asList("includeThisGroup"));
+    Assert.assertEquals(t.getExcludedGroups(), Arrays.asList("excludeThisGroup"));
   }
 }

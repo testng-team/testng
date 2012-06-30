@@ -44,7 +44,7 @@
     <package name="com.example2" />
   </packages>
 
-  <test name="Nopackage">
+  <test name="Nopackage" allow-return-values="true" thread-count="42">
     <groups>
       <run>
         <include name="nopackage"/>

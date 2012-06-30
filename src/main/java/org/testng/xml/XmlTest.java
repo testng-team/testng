@@ -1,17 +1,18 @@
 package org.testng.xml;
 
-import org.testng.TestNG;
-import org.testng.TestNGException;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.reporters.XMLStringBuffer;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+
+import org.testng.TestNG;
+import org.testng.TestNGException;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
+import org.testng.reporters.XMLStringBuffer;
+import org.testng.xml.dom.ParentSetter;
 
 /**
  * This class describes the tag &lt;test&gt;  in testng.xml.
@@ -20,9 +21,6 @@ import java.util.UUID;
  * @author <a href = 'mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class XmlTest implements Serializable, Cloneable {
-  /**
-   *
-   */
   private static final long serialVersionUID = 6533504325942417606L;
 
   public static int DEFAULT_TIMEOUT_MS = Integer.MAX_VALUE;
@@ -846,5 +844,10 @@ public class XmlTest implements Serializable, Cloneable {
 
   public Map<String, String> getXmlDependencyGroups() {
     return m_xmlDependencyGroups;
+  }
+
+  @ParentSetter
+  public void setXmlSuite(XmlSuite suite) {
+	  m_suite = suite;
   }
 }
