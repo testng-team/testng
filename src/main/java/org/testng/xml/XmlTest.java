@@ -125,7 +125,7 @@ public class XmlTest implements Serializable, Cloneable {
    * Note: do not modify the returned value, use {@link #addIncludedGroup(String)}.
    */
   public List<String> getIncludedGroups() {
-    List<String> result = new ArrayList(m_includedGroups);
+    List<String> result = Lists.newArrayList(m_includedGroups);
     result.addAll(m_suite.getIncludedGroups());
     return result;
   }
