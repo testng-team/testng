@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TimeZone;
 
 /**
  * The main entry for the XML generation operation
@@ -177,6 +178,8 @@ public class XMLReporter implements IReporter {
   public static void addDurationAttributes(XMLReporterConfig config, Properties attributes,
       Date minStartDate, Date maxEndDate) {
     SimpleDateFormat format = new SimpleDateFormat(XMLReporterConfig.getTimestampFormat());
+    TimeZone utc = TimeZone.getTimeZone("UTC");
+    format.setTimeZone(utc);
     String startTime = format.format(minStartDate);
     String endTime = format.format(maxEndDate);
     long duration = maxEndDate.getTime() - minStartDate.getTime();
