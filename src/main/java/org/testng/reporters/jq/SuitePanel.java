@@ -2,6 +2,7 @@ package org.testng.reporters.jq;
 
 import org.testng.ISuite;
 import org.testng.ITestResult;
+import org.testng.reporters.HtmlHelper;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.util.List;
@@ -83,7 +84,7 @@ public class SuitePanel extends BasePanel {
     if (tr.getStatus() != ITestResult.SUCCESS && tr.getThrowable() != null) {
       StringBuilder stackTrace = new StringBuilder();
       stackTrace.append("<b>\"")
-              .append(tr.getThrowable().getMessage())
+              .append(HtmlHelper.escapeCDATA(tr.getThrowable().getMessage()))
               .append("\"</b>")
               .append("<br>");
       for (StackTraceElement str : tr.getThrowable().getStackTrace()) {

@@ -26,4 +26,11 @@ public class HtmlHelper {
     }
     return stylesheetFile;
   }
+
+  public static String escapeCDATA(String cdata) {
+    return cdata.replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace("'", "&apos;")
+            .replace("\"", "&quot;");
+  }
 }
