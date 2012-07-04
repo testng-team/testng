@@ -474,7 +474,7 @@ public class Assert {
     if(message != null) {
       formatted = message + " ";
     }
-    fail(formatted + "expected not same with:<" + expected +"> but was same:<" + actual + ">");
+    fail(formatted + "expected not same [" + expected +"] but found [" + actual + "]");
   }
 
   static private void failNotSame(Object actual, Object expected, String message) {
@@ -482,7 +482,7 @@ public class Assert {
     if(message != null) {
       formatted = message + " ";
     }
-    fail(formatted + "expected:<" + expected + "> but was:<" + actual + ">");
+    fail(formatted + "expected: [" + expected + "] but found [" + actual + "]");
   }
 
   static private void failNotEquals(Object actual , Object expected, String message ) {
@@ -495,7 +495,7 @@ public class Assert {
       formatted = message + " ";
     }
 
-    return formatted + "expected:<" + expected + "> but was:<" + actual + ">";
+    return formatted + "expected [" + expected + "] but found [" + actual + "]";
   }
 
   /**
