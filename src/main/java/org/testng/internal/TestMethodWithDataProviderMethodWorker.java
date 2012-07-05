@@ -24,6 +24,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
   private ConfigurationGroupMethods m_groupMethods;
   private Invoker m_invoker;
   private ExpectedExceptionsHolder m_expectedExceptionHolder;
+  private SkippingExceptionsHolder m_skippingExceptionHolder;
   private ITestContext m_testContext;
   private int m_parameterIndex;
   private boolean m_skipFailedInvocationCounts;
@@ -39,6 +40,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
       Map<String, String> parameters, ITestClass testClass,
       ITestNGMethod[] beforeMethods, ITestNGMethod[] afterMethods,
       ConfigurationGroupMethods groupMethods, ExpectedExceptionsHolder expectedExceptionHolder,
+      SkippingExceptionsHolder skippingExceptionHolder,
       ITestContext testContext, boolean skipFailedInvocationCounts,
       int invocationCount, int failureCount, ITestResultNotifier notifier) {
     m_invoker = invoker;
@@ -53,6 +55,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
     m_afterMethods = afterMethods;
     m_groupMethods = groupMethods;
     m_expectedExceptionHolder = expectedExceptionHolder;
+    m_skippingExceptionHolder = skippingExceptionHolder;
     m_skipFailedInvocationCounts = skipFailedInvocationCounts;
     m_testContext = testContext;
     m_invocationCount = invocationCount;
@@ -85,8 +88,8 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
       List<Object> failedInstances = Lists.newArrayList();
 
       m_failureCount = m_invoker.handleInvocationResults(m_testMethod, tmpResults,
-          failedInstances, m_failureCount, m_expectedExceptionHolder, true,
-          false /* don't collect results */);
+          failedInstances, m_failureCount, m_expectedExceptionHolder, m_skippingExceptionHolder,
+          true, false /* don't collect results */);
       if (failedInstances.isEmpty()) {
         m_testResults.addAll(tmpResults);
       } else {
@@ -98,6 +101,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
                  i, m_testMethod, m_xmlSuite, m_testClass, m_beforeMethods,
                  m_afterMethods, m_groupMethods, retryResults,
                  m_failureCount, m_expectedExceptionHolder,
+                 m_skippingExceptionHolder,
                  m_testContext, m_parameters, m_parameterIndex);
           m_testResults.addAll(retryResults);
         }

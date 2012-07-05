@@ -405,6 +405,7 @@ public class JDK15TagFactory {
         findInherited(test.description(), cls, Test.class, "description", DEFAULT_STRING));
     result.setExpectedExceptions(test.expectedExceptions());
     result.setExpectedExceptionsMessageRegExp(test.expectedExceptionsMessageRegExp());
+    result.setSkippingExceptions(test.skippingExceptions());
     result.setSuiteName(test.suiteName());
     result.setTestName(test.testName());
     result.setSequential(test.sequential());

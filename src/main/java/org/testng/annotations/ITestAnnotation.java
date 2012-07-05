@@ -45,6 +45,9 @@ public interface ITestAnnotation extends ITestOrConfiguration, IDataProvidable {
   public String getExpectedExceptionsMessageRegExp();
   public void setExpectedExceptionsMessageRegExp(String e);
 
+  public Class<?>[] getSkippingExceptions();
+  public void setSkippingExceptions(Class<?>[] e);
+
   public String getSuiteName();
   public void setSuiteName(String s);
 
