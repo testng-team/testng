@@ -4,6 +4,7 @@ import org.testng.IMethodSelector;
 import org.testng.IMethodSelectorContext;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
+import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.xml.XmlClass;
@@ -35,7 +36,7 @@ public class XmlMethodSelector implements IMethodSelector {
   // The BeanShell expression for this test, if any
   private String m_expression = null;
   // List of methods included implicitly
-  private Set<String> m_includedMethods = new HashSet<String>();
+  private ListMultiMap<String, XmlInclude> m_includedMethods = Maps.newListMultiMap();
   private IBsh m_bsh = Dynamic.hasBsh() ? new Bsh() : new BshMock();
 
   @Override
@@ -66,6 +67,8 @@ public class XmlMethodSelector implements IMethodSelector {
     String[] groups = tm.getGroups();
     Map<String, String> includedGroups = m_includedGroups;
     Map<String, String> excludedGroups = m_excludedGroups;
+    List<XmlInclude> includeList =
+        m_includedMethods.get(MethodHelper.calculateMethodCanonicalName(tm));
 
     //
     // No groups were specified:
@@ -89,7 +92,7 @@ public class XmlMethodSelector implements IMethodSelector {
     //
     // Is this method included implicitly?
     //
-    else if (m_includedMethods.contains(MethodHelper.calculateMethodCanonicalName(tm))) {
+    else if (includeList != null) {
       result = true;
     }
 
@@ -258,7 +261,8 @@ public class XmlMethodSelector implements IMethodSelector {
     for (XmlClass c : classes) {
       for (XmlInclude m : c.getIncludedMethods()) {
         checkMethod(c.getName(), m.getName());
-        m_includedMethods.add(makeMethodName(c.getName(), m.getName()));
+        String methodName = makeMethodName(c.getName(), m.getName());
+        m_includedMethods.put(methodName, m);
       }
     }
   }
@@ -379,7 +383,11 @@ public class XmlMethodSelector implements IMethodSelector {
       for (ITestNGMethod m : methodClosure) {
         String methodName =
          m.getMethod().getDeclaringClass().getName() + "." + m.getMethodName();
-        m_includedMethods.add(methodName);
+//        m_includedMethods.add(methodName);
+        List<XmlInclude> includeList = m_includedMethods.get(methodName);
+        XmlInclude xi = new XmlInclude(methodName);
+        // TODO: set the XmlClass on this xi or we won't get inheritance of parameters
+        m_includedMethods.put(methodName, xi);
         logInclusion("Including", "method ", methodName);
       }
     }

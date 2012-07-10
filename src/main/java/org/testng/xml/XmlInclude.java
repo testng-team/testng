@@ -79,6 +79,7 @@ public class XmlInclude implements Serializable {
     result = prime * result + m_index;
     result = prime * result
         + ((m_invocationNumbers == null) ? 0 : m_invocationNumbers.hashCode());
+    result = prime * result + (m_parameters == null ? 0 : m_parameters.hashCode());
     result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
     return result;
   }
@@ -104,6 +105,13 @@ public class XmlInclude implements Serializable {
         return XmlSuite.f();
     } else if (!m_name.equals(other.m_name))
       return XmlSuite.f();
+    if (m_parameters == null) {
+      if (other.m_parameters != null) {
+        return XmlSuite.f();
+      }
+    } else if (!m_parameters.equals(other.m_parameters)) {
+      return XmlSuite.f();
+    }
     return true;
   }
 
@@ -112,10 +120,11 @@ public class XmlInclude implements Serializable {
   }
 
   public Map<String, String> getParameters() {
-    Map<String, String> result = Maps.newHashMap(m_parameters);
+    Map<String, String> result = Maps.newHashMap();
     if (m_xmlClass != null) {
       result.putAll(m_xmlClass.getParameters());
     }
+    result.putAll(m_parameters);
     return result;
   }
 

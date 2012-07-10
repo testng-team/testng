@@ -642,7 +642,7 @@ public class TestNGContentHandler extends DefaultHandler {
         m_currentPackage.getInclude().add(name);
       }
 
-      m_locations.pop();
+      popLocation(Location.INCLUDE);
       m_currentInclude = null;
     }
   }
