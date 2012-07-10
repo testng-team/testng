@@ -9,6 +9,7 @@ import org.testng.collections.Maps;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.collections.Pair;
+import org.testng.xml.XmlInclude;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -69,7 +70,16 @@ public class MethodGroupsHelper {
         }
       }
       if (in) {
-        outIncludedMethods.add(tm);
+        List<XmlInclude> xmlIncludeList = tm.getXmlIncludeList();
+        if (xmlIncludeList != null && xmlIncludeList.size() > 0) {
+          for (XmlInclude xmlInclude : xmlIncludeList) {
+            ITestNGMethod clone = tm.clone();
+            clone.setXmlInclude(xmlInclude);
+            outIncludedMethods.add(clone);
+          }
+        } else {
+          outIncludedMethods.add(tm);
+        }
       }
       else {
         outExcludedMethods.add(tm);

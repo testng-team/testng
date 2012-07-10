@@ -5,6 +5,7 @@ import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
+import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Method;
@@ -367,5 +368,27 @@ public class ClonedMethod implements ITestNGMethod {
   @Override
   public Map<String, String> findMethodParameters(XmlTest test) {
     return Collections.emptyMap();
+  }
+
+  @Override
+  public void setXmlInclude(XmlInclude xmlInclude) {
+    // ignore
+  }
+
+  @Override
+  public XmlInclude getXmlInclude() {
+    // ignore
+    return null;
+  }
+
+  @Override
+  public void setXmlIncludeList(List<XmlInclude> xmlIncludeList) {
+    // ignore
+  }
+
+  @Override
+  public List<XmlInclude> getXmlIncludeList() {
+    // ignore
+    return null;
   }
 }

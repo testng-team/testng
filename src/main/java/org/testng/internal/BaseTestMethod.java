@@ -1,5 +1,15 @@
 package org.testng.internal;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
@@ -14,16 +24,6 @@ import org.testng.internal.thread.ThreadUtil;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
-
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * Superclass to represent both &#64;Test and &#64;Configuration methods.
@@ -74,6 +74,8 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   private XmlTest m_xmlTest;
   private Object m_instance;
+  private XmlInclude m_xmlInclude;
+  private List<XmlInclude> m_xmlIncludeList;
 
   /**
    * Constructs a <code>BaseTestMethod</code> TODO cquezel JavaDoc.
@@ -418,7 +420,8 @@ public abstract class BaseTestMethod implements ITestNGMethod {
           m_testClass.getRealClass().equals(other.m_testClass.getRealClass())
           && m_instance == other.getInstance();
 
-    return isEqual && getConstructorOrMethod().equals(other.getConstructorOrMethod());
+    return isEqual && getConstructorOrMethod().equals(other.getConstructorOrMethod())
+        && (m_xmlInclude == null ? other.getXmlInclude() == null : m_xmlInclude.equals(other.getXmlInclude()));
   }
 
   /**
@@ -802,12 +805,33 @@ public abstract class BaseTestMethod implements ITestNGMethod {
       if (xmlClass.getName().equals(getTestClass().getName())) {
         for (XmlInclude include : xmlClass.getIncludedMethods()) {
           if (include.getName().equals(getMethodName())) {
-            return include.getParameters();
+            Map<String, String> parameters = Maps.newHashMap();
+            parameters.putAll(xmlClass.getParameters());
+            if (m_xmlInclude != null) {
+              parameters.putAll(m_xmlInclude.getParameters());
+            }
+            return parameters;
           }
         }
       }
     }
 
     return Collections.emptyMap();
+  }
+  
+  public void setXmlInclude(XmlInclude xmlInclude) {
+    this.m_xmlInclude = xmlInclude;
+  }
+  
+  public XmlInclude getXmlInclude() {
+      return m_xmlInclude;
+  }
+  
+  public void setXmlIncludeList(List<XmlInclude> xmlIncludeList) {
+    this.m_xmlIncludeList = xmlIncludeList;
+  }
+  
+  public List<XmlInclude> getXmlIncludeList() {
+    return this.m_xmlIncludeList;
   }
 }
