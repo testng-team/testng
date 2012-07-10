@@ -1,18 +1,18 @@
 package org.testng.xml;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.UUID;
-
 import org.testng.TestNG;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.dom.ParentSetter;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
 
 /**
  * This class describes the tag &lt;test&gt;  in testng.xml.
@@ -125,8 +125,15 @@ public class XmlTest implements Serializable, Cloneable {
    * Note: do not modify the returned value, use {@link #addIncludedGroup(String)}.
    */
   public List<String> getIncludedGroups() {
-    List<String> result = Lists.newArrayList(m_includedGroups);
-    result.addAll(m_suite.getIncludedGroups());
+    List<String> result;
+    if (m_xmlGroups != null) {
+      result = m_xmlGroups.getRun().getIncludes();
+      result.addAll(m_suite.getIncludedGroups());
+    } else {
+      // deprecated
+      result = Lists.newArrayList(m_includedGroups);
+      result.addAll(m_suite.getIncludedGroups());
+    }
     return result;
   }
 
@@ -849,5 +856,11 @@ public class XmlTest implements Serializable, Cloneable {
   @ParentSetter
   public void setXmlSuite(XmlSuite suite) {
 	  m_suite = suite;
+  }
+
+  private XmlGroups m_xmlGroups;
+
+  public void setGroups(XmlGroups xmlGroups) {
+    m_xmlGroups = xmlGroups;
   }
 }

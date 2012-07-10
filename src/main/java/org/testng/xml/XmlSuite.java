@@ -911,6 +911,7 @@ public class XmlSuite implements Serializable, Cloneable {
     if (m_xmlGroups != null) {
       return m_xmlGroups.getRun().getIncludes();
     } else {
+      // deprecated
       return m_includedGroups;
     }
   }

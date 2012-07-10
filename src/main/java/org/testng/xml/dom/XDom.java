@@ -364,7 +364,7 @@ private void populateContent(Node item, Object object) {
   private static void testNoPackage(XmlTest t) {
     Assert.assertEquals(t.getThreadCount(), 42);
     Assert.assertTrue(t.getAllowReturnValues());
-    Assert.assertEquals(t.getIncludedGroups(), Arrays.asList("includeThisGroup"));
+    Assert.assertEquals(t.getIncludedGroups(), Arrays.asList("nopackage", "includeThisGroup"));
     Assert.assertEquals(t.getExcludedGroups(), Arrays.asList("excludeThisGroup"));
   }
 }
