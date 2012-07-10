@@ -181,7 +181,7 @@ Defines additional groups ("groups of groups") and also which groups to include 
     depends-on CDATA #REQUIRED>
 
 <!-- The list of classes to include in this test                            -->
-<!ELEMENT classes (class*) >
+<!ELEMENT classes (class*,parameter*) >
 <!ELEMENT class (methods*) >
 <!ATTLIST class
     name CDATA #REQUIRED >

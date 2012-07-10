@@ -1,11 +1,13 @@
 package org.testng.xml;
 
 import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 public class XmlInclude implements Serializable {
@@ -15,7 +17,9 @@ public class XmlInclude implements Serializable {
   private List<Integer> m_invocationNumbers = Lists.newArrayList();
   private int m_index;
   private String m_description;
-//  private Map<String, String> m_parameters = Maps.newHashMap();
+  private Map<String, String> m_parameters = Maps.newHashMap();
+
+  private XmlClass m_xmlClass;
 
   public XmlInclude() {
   }
@@ -101,6 +105,22 @@ public class XmlInclude implements Serializable {
     } else if (!m_name.equals(other.m_name))
       return XmlSuite.f();
     return true;
+  }
+
+  public void addParameter(String name, String value) {
+    m_parameters.put(name, value);
+  }
+
+  public Map<String, String> getParameters() {
+    Map<String, String> result = Maps.newHashMap(m_parameters);
+    if (m_xmlClass != null) {
+      result.putAll(m_xmlClass.getParameters());
+    }
+    return result;
+  }
+
+  public void setXmlClass(XmlClass xmlClass) {
+    m_xmlClass = xmlClass;
   }
 
 }

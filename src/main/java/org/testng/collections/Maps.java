@@ -27,4 +27,8 @@ public class Maps {
   public static <K, V> Map<K, V> newLinkedHashMap() {
     return new LinkedHashMap<K, V>();
   }
+
+  public static <K, V> Map<K, V> newHashMap(Map<K, V> parameters) {
+    return new HashMap<K, V>(parameters);
+  }
 }

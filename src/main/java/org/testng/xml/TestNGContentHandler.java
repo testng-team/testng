@@ -50,7 +50,8 @@ public class TestNGContentHandler extends DefaultHandler {
   enum Location {
     SUITE,
     TEST,
-    CLASS
+    CLASS,
+    INCLUDE
   }
   private Stack<Location> m_locations = new Stack<Location>();
 
@@ -589,6 +590,10 @@ public class TestNGContentHandler extends DefaultHandler {
           break;
         case CLASS:
           m_currentClassParameters.put(name, value);
+          break;
+        case INCLUDE:
+          m_currentInclude.parameters.put(name, value);
+          break;
       }
     }
   }
@@ -597,15 +602,19 @@ public class TestNGContentHandler extends DefaultHandler {
     String name;
     String invocationNumbers;
     String description;
-    Map<String, String> parameters;
+    Map<String, String> parameters = Maps.newHashMap();
+
+    public Include(String name, String numbers) {
+      this.name = name;
+      this.invocationNumbers = numbers;
+    }
   }
 
   private void xmlInclude(boolean start, Attributes attributes) {
     if (start) {
-      m_currentInclude = new Include();
-      m_currentInclude.name = attributes.getValue("name");
-      m_currentInclude.parameters = Maps.newHashMap();
-      m_currentInclude.invocationNumbers = attributes.getValue("invocation-numbers");
+      m_locations.push(Location.INCLUDE);
+      m_currentInclude = new Include(attributes.getValue("name"),
+          attributes.getValue("invocation-numbers"));
     } else {
       String name = m_currentInclude.name;
       if (null != m_currentIncludedMethods) {
@@ -616,7 +625,10 @@ public class TestNGContentHandler extends DefaultHandler {
         } else {
           include = new XmlInclude(name, m_currentIncludeIndex++);
         }
-//        include.setParameters(m_currentMethodParameters);
+        for (Map.Entry<String, String> entry : m_currentInclude.parameters.entrySet()) {
+          include.addParameter(entry.getKey(), entry.getValue());
+        }
+
         include.setDescription(m_currentInclude.description);
         m_currentIncludedMethods.add(include);
       }
@@ -629,6 +641,8 @@ public class TestNGContentHandler extends DefaultHandler {
       else if (null != m_currentPackage) {
         m_currentPackage.getInclude().add(name);
       }
+
+      m_locations.pop();
       m_currentInclude = null;
     }
   }

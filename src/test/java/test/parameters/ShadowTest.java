@@ -22,6 +22,7 @@ public class ShadowTest extends SimpleBaseTest {
     {
       XmlClass c1 = new XmlClass(Shadow1SampleTest.class.getName());
       XmlInclude include1 = new XmlInclude("test1");
+      include1.setXmlClass(c1);
       c1.getParameters().put("a", "First");
       c1.getIncludedMethods().add(include1);
       t.getXmlClasses().add(c1);
@@ -30,6 +31,7 @@ public class ShadowTest extends SimpleBaseTest {
     {
       XmlClass c2 = new XmlClass(Shadow2SampleTest.class.getName());
       XmlInclude include2 = new XmlInclude("test2");
+      include2.setXmlClass(c2);
       c2.getParameters().put("a", "Second");
       c2.getIncludedMethods().add(include2);
       t.getXmlClasses().add(c2);
