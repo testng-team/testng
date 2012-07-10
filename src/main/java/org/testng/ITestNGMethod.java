@@ -1,13 +1,14 @@
 package org.testng;
 
 
-import org.testng.internal.ConstructorOrMethod;
-import org.testng.xml.XmlTest;
-
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+
+import org.testng.internal.ConstructorOrMethod;
+import org.testng.xml.XmlInclude;
+import org.testng.xml.XmlTest;
 
 /**
  * Describes a TestNG annotated method and the instance on which it will be invoked.
@@ -256,4 +257,28 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
    * @param test
    */
   Map<String, String> findMethodParameters(XmlTest test);
+  
+  /**
+   * Set associated XmlInclude
+   * @param xmlInclude The associated XmlInclude
+   */
+  void setXmlInclude(XmlInclude xmlInclude);
+  
+  /**
+  *
+  * @return The associated XmlInclude, if there is no associated XmlInclude, return null
+  */
+  XmlInclude getXmlInclude();
+  
+  /**
+   * Set associated XmlInclude list.
+   * @param xmlIncludeList The associated XmlInclude list
+   */
+  void setXmlIncludeList(List<XmlInclude> xmlIncludeList);
+  
+  /**
+  *
+  * @return The associated XmlInclude list, if there is no associated XmlInclude, return null
+  */
+  List<XmlInclude> getXmlIncludeList();
 }

@@ -1,5 +1,14 @@
 package org.testng.internal;
 
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 import org.testng.IMethodSelector;
 import org.testng.IMethodSelectorContext;
 import org.testng.ITestNGMethod;
@@ -8,14 +17,6 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
-
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * This class is the default method selector used by TestNG to determine
@@ -35,7 +36,7 @@ public class XmlMethodSelector implements IMethodSelector {
   // The BeanShell expression for this test, if any
   private String m_expression = null;
   // List of methods included implicitly
-  private Set<String> m_includedMethods = new HashSet<String>();
+  private Map<String, List<XmlInclude>> m_includedMethods = new HashMap<String, List<XmlInclude>>();
   private IBsh m_bsh = Dynamic.hasBsh() ? new Bsh() : new BshMock();
 
   @Override
@@ -66,6 +67,7 @@ public class XmlMethodSelector implements IMethodSelector {
     String[] groups = tm.getGroups();
     Map<String, String> includedGroups = m_includedGroups;
     Map<String, String> excludedGroups = m_excludedGroups;
+    List<XmlInclude> includeList = m_includedMethods.get(MethodHelper.calculateMethodCanonicalName(tm));
 
     //
     // No groups were specified:
@@ -89,8 +91,9 @@ public class XmlMethodSelector implements IMethodSelector {
     //
     // Is this method included implicitly?
     //
-    else if (m_includedMethods.contains(MethodHelper.calculateMethodCanonicalName(tm))) {
+    else if (includeList != null) {
       result = true;
+      tm.setXmlIncludeList(includeList);
     }
 
     //
@@ -258,7 +261,13 @@ public class XmlMethodSelector implements IMethodSelector {
     for (XmlClass c : classes) {
       for (XmlInclude m : c.getIncludedMethods()) {
         checkMethod(c.getName(), m.getName());
-        m_includedMethods.add(makeMethodName(c.getName(), m.getName()));
+        String methodName = makeMethodName(c.getName(), m.getName());
+        List<XmlInclude> includeList = m_includedMethods.get(methodName);
+        if (includeList == null) {
+          includeList = Lists.newArrayList();
+          m_includedMethods.put(methodName, includeList);
+        }
+        includeList.add(m);
       }
     }
   }
@@ -379,7 +388,14 @@ public class XmlMethodSelector implements IMethodSelector {
       for (ITestNGMethod m : methodClosure) {
         String methodName =
          m.getMethod().getDeclaringClass().getName() + "." + m.getMethodName();
-        m_includedMethods.add(methodName);
+        List<XmlInclude> includeList = m_includedMethods.get(methodName);
+        if (includeList == null) {
+          includeList = Lists.newArrayList();
+          m_includedMethods.put(methodName, includeList);
+        }
+        if (m.getXmlInclude() != null) {
+          includeList.add(m.getXmlInclude());
+        }
         logInclusion("Including", "method ", methodName);
       }
     }
