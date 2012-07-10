@@ -135,5 +135,8 @@ public class XmlInclude implements Serializable {
   public void setXmlClass(XmlClass xmlClass) {
     m_xmlClass = xmlClass;
   }
-
+  
+  public void clearParameters() {
+    m_parameters.clear();
+  }
 }

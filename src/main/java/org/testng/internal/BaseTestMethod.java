@@ -73,6 +73,8 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   private XmlTest m_xmlTest;
   private Object m_instance;
+  private XmlInclude m_xmlInclude;
+  private List<XmlInclude> m_xmlIncludeList;
 
   /**
    * Constructs a <code>BaseTestMethod</code> TODO cquezel JavaDoc.
@@ -417,7 +419,8 @@ public abstract class BaseTestMethod implements ITestNGMethod {
           m_testClass.getRealClass().equals(other.m_testClass.getRealClass())
           && m_instance == other.getInstance();
 
-    return isEqual && getConstructorOrMethod().equals(other.getConstructorOrMethod());
+    return isEqual && getConstructorOrMethod().equals(other.getConstructorOrMethod())
+        && (m_xmlInclude == null ? other.getXmlInclude() == null : m_xmlInclude.equals(other.getXmlInclude()));
   }
 
   /**
@@ -802,15 +805,32 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     for (XmlClass xmlClass: test.getXmlClasses()) {
       if (xmlClass.getName().equals(getTestClass().getName())) {
         result.putAll(xmlClass.getParameters());
-        for (XmlInclude include : xmlClass.getIncludedMethods()) {
-          if (include.getName().equals(getMethodName())) {
-            result.putAll(include.getParameters());
-            break;
-          }
+        
+        //If use xmlclass.getIncludMethods, it maybe find a wrong xmlInclude, 
+        //due to two include could have the same name, but different parameters
+        if (m_xmlInclude != null) {
+          result.putAll(m_xmlInclude.getParameters());
         }
+        return result;
       }
     }
 
     return result;
+  }
+  
+  public void setXmlInclude(XmlInclude xmlInclude) {
+    this.m_xmlInclude = xmlInclude;
+  }
+  
+  public XmlInclude getXmlInclude() {
+      return m_xmlInclude;
+  }
+  
+  public void setXmlIncludeList(List<XmlInclude> xmlIncludeList) {
+    this.m_xmlIncludeList = xmlIncludeList;
+  }
+  
+  public List<XmlInclude> getXmlIncludeList() {
+    return this.m_xmlIncludeList;
   }
 }
