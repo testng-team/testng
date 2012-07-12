@@ -17,15 +17,17 @@ public class ParameterOverrideTest extends SimpleBaseTest {
     PASS_TEST,
     FAIL_TEST,
     PASS_CLASS,
-    FAIL_CLASS
+    FAIL_CLASS,
+    PASS_INCLUDE,
+    FAIL_INCLUDE
   };
 
-//  @Test
+  @Test
   public void testOverrideSuite() {
     privateTestOverrideSuite(S.PASS_TEST);
   }
 
-//  @Test(expectedExceptions = AssertionError.class)
+  @Test(expectedExceptions = AssertionError.class)
   public void testOverrideSuiteNegative() {
     privateTestOverrideSuite(S.FAIL_TEST);
   }
@@ -35,9 +37,19 @@ public class ParameterOverrideTest extends SimpleBaseTest {
     privateTestOverrideSuite(S.PASS_CLASS);
   }
 
-//  @Test(expectedExceptions = AssertionError.class)
+  @Test(expectedExceptions = AssertionError.class)
   public void classOverrideSuiteNegative() {
     privateTestOverrideSuite(S.FAIL_CLASS);
+  }
+
+  @Test
+  public void includeOverrideClass() {
+    privateTestOverrideSuite(S.PASS_INCLUDE);
+  }
+
+  @Test(expectedExceptions = AssertionError.class)
+  public void includeOverrideClassNegative() {
+    privateTestOverrideSuite(S.FAIL_INCLUDE);
   }
 
   public void privateTestOverrideSuite(S status) {
@@ -58,6 +70,9 @@ public class ParameterOverrideTest extends SimpleBaseTest {
 
       for (String method : new String[] { "f", "g" }) {
         XmlInclude include1 = new XmlInclude(method);
+        if (status == S.PASS_INCLUDE) {
+          include1.getParameters().put("a", "Correct");
+        }
         include1.setXmlClass(c1);
         c1.getIncludedMethods().add(include1);
       }
@@ -69,7 +84,7 @@ public class ParameterOverrideTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
     System.out.println(s.toXml());
-    tng.setVerbose(10);
+//    tng.setVerbose(10);
     tng.run();
 
     assertTestResultsEqual(tla.getPassedTests(), Arrays.asList("f", "g"));

@@ -120,9 +120,13 @@ public class XmlInclude implements Serializable {
   }
 
   public Map<String, String> getParameters() {
+    return m_parameters;
+  }
+
+  public Map<String, String> getAllParameters() {
     Map<String, String> result = Maps.newHashMap();
     if (m_xmlClass != null) {
-      result.putAll(m_xmlClass.getParameters());
+      result.putAll(m_xmlClass.getAllParameters());
     }
     result.putAll(m_parameters);
     return result;

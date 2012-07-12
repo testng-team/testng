@@ -28,6 +28,7 @@ public class XmlClass implements Serializable, Cloneable {
   /** True if the classes need to be loaded */
   private boolean m_loadClasses = true;
   private Map<String, String> m_parameters = Maps.newHashMap();
+  private XmlTest m_xmlTest;
 
   public XmlClass() {
     init("", null, 0, false /* load classes */);
@@ -289,11 +290,27 @@ public class XmlClass implements Serializable, Cloneable {
     m_parameters.putAll(parameters);
   }
 
+  public Map<String, String> getAllParameters() {
+    Map<String, String> result = Maps.newHashMap();
+    Map<String, String> parameters = m_xmlTest.getParameters();
+    for (Map.Entry<String, String> parameter : parameters.entrySet()) {
+      result.put(parameter.getKey(), parameter.getValue());
+    }
+    for (String key : m_parameters.keySet()) {
+      result.put(key, m_parameters.get(key));
+    }
+    return result;
+  }
+
   public Map<String, String> getParameters() {
     return m_parameters;
   }
 
   public String getParameter(String string) {
     return m_parameters.get(string);
+  }
+
+  public void setXmlTest(XmlTest test) {
+    m_xmlTest = test;
   }
 }

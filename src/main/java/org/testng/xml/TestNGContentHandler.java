@@ -537,6 +537,7 @@ public class TestNGContentHandler extends DefaultHandler {
       // can finish parsing the file.
       if (null != m_currentClasses) {
         m_currentClass = new XmlClass(name, m_currentClassIndex++, m_loadClasses);
+        m_currentClass.setXmlTest(m_currentTest);
         m_currentClassParameters = Maps.newHashMap();
         m_currentClasses.add(m_currentClass);
         pushLocation(Location.CLASS);
