@@ -14,12 +14,10 @@ import java.util.Arrays;
 
 public class ParameterOverrideTest extends SimpleBaseTest {
   enum S {
+    FAIL,
     PASS_TEST,
-    FAIL_TEST,
     PASS_CLASS,
-    FAIL_CLASS,
     PASS_INCLUDE,
-    FAIL_INCLUDE
   };
 
   @Test
@@ -29,7 +27,7 @@ public class ParameterOverrideTest extends SimpleBaseTest {
 
   @Test(expectedExceptions = AssertionError.class)
   public void testOverrideSuiteNegative() {
-    privateTestOverrideSuite(S.FAIL_TEST);
+    privateTestOverrideSuite(S.FAIL);
   }
 
   @Test
@@ -39,7 +37,7 @@ public class ParameterOverrideTest extends SimpleBaseTest {
 
   @Test(expectedExceptions = AssertionError.class)
   public void classOverrideSuiteNegative() {
-    privateTestOverrideSuite(S.FAIL_CLASS);
+    privateTestOverrideSuite(S.FAIL);
   }
 
   @Test
@@ -49,7 +47,7 @@ public class ParameterOverrideTest extends SimpleBaseTest {
 
   @Test(expectedExceptions = AssertionError.class)
   public void includeOverrideClassNegative() {
-    privateTestOverrideSuite(S.FAIL_INCLUDE);
+    privateTestOverrideSuite(S.FAIL);
   }
 
   public void privateTestOverrideSuite(S status) {
@@ -57,12 +55,14 @@ public class ParameterOverrideTest extends SimpleBaseTest {
     s.getParameters().put("a", "Incorrect");
     s.getParameters().put("InheritedFromSuite", "InheritedFromSuite");
     XmlTest t = createXmlTest(s, "t");
+    t.getParameters().put("InheritedFromTest", "InheritedFromTest");
     if (status == S.PASS_TEST) {
       t.getParameters().put("a", "Correct");
     }
 
     {
       XmlClass c1 = new XmlClass(Override1Sample.class.getName());
+      c1.getParameters().put("InheritedFromClass", "InheritedFromClass");
       if (status == S.PASS_CLASS) {
         c1.getParameters().put("a", "Correct");
       }
@@ -83,7 +83,7 @@ public class ParameterOverrideTest extends SimpleBaseTest {
     tng.setXmlSuites(Arrays.asList(s));
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
-    System.out.println(s.toXml());
+//    System.out.println(s.toXml());
 //    tng.setVerbose(10);
     tng.run();
 

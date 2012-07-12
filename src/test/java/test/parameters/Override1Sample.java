@@ -7,9 +7,11 @@ import org.testng.annotations.Test;
 @Test
 public class Override1Sample {
 
-  @Parameters("InheritedFromSuite")
-  public void g(String p) {
-    Assert.assertEquals(p, "InheritedFromSuite");
+  @Parameters({"InheritedFromSuite", "InheritedFromTest", "InheritedFromClass"})
+  public void g(String suite, String test, String cls) {
+    Assert.assertEquals(suite, "InheritedFromSuite");
+    Assert.assertEquals(test, "InheritedFromTest");
+    Assert.assertEquals(cls, "InheritedFromClass");
   }
 
   public void h() {
