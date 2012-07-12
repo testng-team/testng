@@ -18,7 +18,6 @@ import org.testng.xml.XmlTest;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -798,16 +797,20 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   @Override
   public Map<String, String> findMethodParameters(XmlTest test) {
+    // Get the test+suite parameters
+    Map<String, String> result = test.getAllParameters();
     for (XmlClass xmlClass: test.getXmlClasses()) {
       if (xmlClass.getName().equals(getTestClass().getName())) {
+        result.putAll(xmlClass.getParameters());
         for (XmlInclude include : xmlClass.getIncludedMethods()) {
           if (include.getName().equals(getMethodName())) {
-            return include.getParameters();
+            result.putAll(include.getParameters());
+            break;
           }
         }
       }
     }
 
-    return Collections.emptyMap();
+    return result;
   }
 }

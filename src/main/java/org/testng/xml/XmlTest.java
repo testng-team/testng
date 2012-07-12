@@ -347,7 +347,7 @@ public class XmlTest implements Serializable, Cloneable {
    *
    * @return a merge of the the test parameters and its parent suite parameters.
    */
-  public Map<String, String> getParameters() {
+  public Map<String, String> getAllParameters() {
     Map<String, String> result = Maps.newHashMap();
     Map<String, String> parameters = getSuite().getParameters();
     for (Map.Entry<String, String> parameter : parameters.entrySet()) {
@@ -357,6 +357,10 @@ public class XmlTest implements Serializable, Cloneable {
       result.put(key, m_parameters.get(key));
     }
     return result;
+  }
+
+  public Map<String, String> getParameters() {
+    return m_parameters;
   }
 
   /**

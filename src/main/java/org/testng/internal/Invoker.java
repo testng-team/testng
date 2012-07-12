@@ -1106,7 +1106,7 @@ public class Invoker implements IInvoker {
                                              ITestNGMethod[] allTestMethods,
                                              int testMethodIndex,
                                              XmlSuite suite,
-                                             Map<String, String> parameters,
+                                             Map<String, String> testParameters,
                                              ConfigurationGroupMethods groupMethods,
                                              Object[] instances,
                                              ITestContext testContext)
@@ -1167,6 +1167,8 @@ public class Invoker implements IInvoker {
       //
       // If threadPoolSize specified, run this method in its own pool thread.
       //
+      Map<String, String> parameters =
+          testMethod.findMethodParameters(testContext.getCurrentXmlTest());
       if (testMethod.getThreadPoolSize() > 1 && testMethod.getInvocationCount() > 1) {
           return invokePooledTestMethods(testMethod, allTestMethods, suite,
               parameters, groupMethods, testContext);

@@ -331,7 +331,7 @@ public final class ClassHelper {
                                                           "@Parameters",
                                                           finder,
                                                           parameterNames,
-                                                          xmlTest.getParameters(),
+                                                          xmlTest.getAllParameters(),
                                                           xmlTest.getSuite());
         result = objectFactory.newInstance(constructor, parameters);
       }

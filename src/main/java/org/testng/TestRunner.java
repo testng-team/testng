@@ -641,7 +641,7 @@ public class TestRunner
       m_invoker.invokeConfigurations(null,
                                      testConfigurationMethods,
                                      m_xmlTest.getSuite(),
-                                     m_xmlTest.getParameters(),
+                                     m_xmlTest.getAllParameters(),
                                      null, /* no parameter values */
                                      null /* instance */);
     }
@@ -844,7 +844,7 @@ public class TestRunner
     // Finally, sort the parallel methods by classes
     //
     methodInstances = m_methodInterceptor.intercept(methodInstances, this);
-    Map<String, String> params = m_xmlTest.getParameters();
+    Map<String, String> params = m_xmlTest.getAllParameters();
 
     Set<Class<?>> processedClasses = Sets.newHashSet();
     for (IMethodInstance im : methodInstances) {
@@ -897,7 +897,7 @@ public class TestRunner
       TestMethodWorker tmw = new TestMethodWorker(m_invoker,
           methodInstances.toArray(new IMethodInstance[methodInstances.size()]),
           m_xmlTest.getSuite(),
-          m_xmlTest.getParameters(),
+          m_xmlTest.getAllParameters(),
           m_allTestMethods,
           m_groupMethods,
           m_classMethodMap,
@@ -1021,7 +1021,7 @@ public class TestRunner
       m_invoker.invokeConfigurations(null,
                                      testConfigurationMethods,
                                      m_xmlTest.getSuite(),
-                                     m_xmlTest.getParameters(),
+                                     m_xmlTest.getAllParameters(),
                                      null, /* no parameter values */
                                      null /* instance */);
     }
@@ -1586,21 +1586,25 @@ public class TestRunner
 
   private ListMultiMap<Class<? extends Module>, Module> m_guiceModules = Maps.newListMultiMap();
 
+  @Override
   public List<Module> getGuiceModules(Class<? extends Module> cls) {
     List<Module> result = m_guiceModules.get(cls);
     return result;
   }
 
+  @Override
   public void addGuiceModule(Class<? extends Module> cls, Module module) {
     m_guiceModules.put(cls, module);
   }
 
   private Map<List<Module>, Injector> m_injectors = Maps.newHashMap();
 
+  @Override
   public Injector getInjector(List<Module> moduleInstances) {
     return m_injectors .get(moduleInstances);
   }
 
+  @Override
   public void addInjector(List<Module> moduleInstances, Injector injector) {
     m_injectors.put(moduleInstances, injector);
   }
