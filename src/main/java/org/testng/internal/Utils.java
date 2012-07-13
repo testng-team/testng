@@ -28,6 +28,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -721,6 +722,10 @@ public final class Utils {
       sb.append(iterator.next());
     }
     return sb.toString();
+  }
+
+  public static String join(String[] s, String separator) {
+    return joinStrings(Arrays.asList(s), separator + " ");
   }
 
   public static String join(List<String> s, String separator) {
