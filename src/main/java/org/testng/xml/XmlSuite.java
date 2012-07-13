@@ -450,13 +450,7 @@ public class XmlSuite implements Serializable, Cloneable {
         DEFAULT_ALLOW_RETURN_VALUES.toString());
     xsb.push("suite", p);
 
-    for (String paramName : m_parameters.keySet()) {
-      Properties paramProps = new Properties();
-      paramProps.setProperty("name", paramName);
-      paramProps.setProperty("value", m_parameters.get(paramName));
-
-      xsb.addEmptyElement("parameter", paramProps);
-    }
+    XmlUtils.dumpParameters(xsb, m_parameters);
 
     if (hasElements(m_listeners)) {
       xsb.push("listeners");
@@ -1018,8 +1012,7 @@ public class XmlSuite implements Serializable, Cloneable {
   }
 
   public static boolean isParallel(String parallel) {
-    return PARALLEL_MODES.contains(parallel)
-        && ! "false".equals(parallel);
+    return PARALLEL_MODES.contains(parallel) && ! "false".equals(parallel);
   }
 }
 

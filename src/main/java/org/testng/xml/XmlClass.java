@@ -159,14 +159,7 @@ public class XmlClass implements Serializable, Cloneable {
     boolean hasParameters = !m_parameters.isEmpty();
     if (hasParameters || hasMethods) {
       xsb.push("class", prop);
-      if (!m_parameters.isEmpty()) {
-        for(Map.Entry<String, String> para: m_parameters.entrySet()) {
-          Properties paramProps= new Properties();
-          paramProps.setProperty("name", para.getKey());
-          paramProps.setProperty("value", para.getValue());
-          xsb.addEmptyElement("parameter", paramProps); // BUGFIX: TESTNG-27
-        }
-      }
+      XmlUtils.dumpParameters(xsb, m_parameters);
 
       if (hasMethods) {
         xsb.push("methods");

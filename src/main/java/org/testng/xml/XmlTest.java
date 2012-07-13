@@ -471,15 +471,7 @@ public class XmlTest implements Serializable, Cloneable {
       xsb.pop("method-selectors");
     }
 
-    // parameters
-    if (!m_parameters.isEmpty()) {
-      for(Map.Entry<String, String> para: m_parameters.entrySet()) {
-        Properties paramProps= new Properties();
-        paramProps.setProperty("name", para.getKey());
-        paramProps.setProperty("value", para.getValue());
-        xsb.addEmptyElement("parameter", paramProps); // BUGFIX: TESTNG-27
-      }
-    }
+    XmlUtils.dumpParameters(xsb, m_parameters);
 
     // groups
     if (!m_metaGroups.isEmpty() || !m_includedGroups.isEmpty() || !m_excludedGroups.isEmpty()
