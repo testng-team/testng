@@ -5,6 +5,7 @@ Added: <dependencies> allows you to specify group dependencies in testng.xml
 Added: Blow up early if trying to include/exclude an unknown method
 Added: <parameters> can now be specified under <include> (Storm Qi)
 Added: GITHUB-243: Add Reporter Output per Test in XMLReporter (dunse) 
+Fixed: Better HTML escaping of the stack traces
 Fixed: The failed assertions now use [] as delimiters instead of <> (better for the HTML reports)
 Fixed: GITHUB-237: Wrong time format in XML reporter
 Fixed: Threads were started sequentially instead of being interleaved
