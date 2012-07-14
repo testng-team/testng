@@ -19,6 +19,7 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   private boolean m_alwaysRun = false;
   private Class<?>[] m_expectedExceptions = {};
   private String m_expectedExceptionsMessageRegExp = ".*";
+  private Class<?>[] m_skippingExceptions = {};
   private String m_suiteName = "";
   private String m_testName = "";
   private boolean m_singleThreaded = false;
@@ -53,6 +54,22 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   public void setExpectedExceptionsMessageRegExp(
       String expectedExceptionsMessageRegExp) {
     m_expectedExceptionsMessageRegExp = expectedExceptionsMessageRegExp;
+  }
+
+  /**
+   * @return the skippingExceptions
+   */
+  @Override
+  public Class<?>[] getSkippingExceptions() {
+    return m_skippingExceptions;
+  }
+
+  /**
+   * @param skippingExceptions the skippingExceptions to set
+   */
+  @Override
+  public void setSkippingExceptions(Class<?>[] skippingExceptions) {
+      m_skippingExceptions = skippingExceptions;
   }
 
   @Override

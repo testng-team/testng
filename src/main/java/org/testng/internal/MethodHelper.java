@@ -184,6 +184,18 @@ public class MethodHelper {
 
     return result;
   }
+  
+  protected static SkippingExceptionsHolder findSkippingExceptions(IAnnotationFinder finder,
+          Method method) {
+    ITestAnnotation testAnnotation = (ITestAnnotation) finder.findAnnotation(method, ITestAnnotation.class);
+    if (testAnnotation != null) {
+      Class<?>[] ee = testAnnotation.getSkippingExceptions();
+      if (ee.length > 0) {
+        return new SkippingExceptionsHolder(ee);
+      }
+    }
+    return null;
+  }
 
   protected static boolean isEnabled(Class<?> objectClass, IAnnotationFinder finder) {
     ITestAnnotation testClassAnnotation = AnnotationHelper.findTest(finder, objectClass);

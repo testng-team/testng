@@ -129,6 +129,11 @@ public @interface Test {
   public String expectedExceptionsMessageRegExp() default ".*";
 
   /**
+   * The list of exceptions that will mark the test as skipped if thrown.
+   */
+  public Class[] skippingExceptions() default {};
+
+  /**
    * The name of the suite this test class should be placed in.  This
    * attribute is ignore if @Test is not at the class level.
    */

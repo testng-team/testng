@@ -759,10 +759,12 @@ public class Invoker implements IInvoker {
     finally {
       ExpectedExceptionsHolder expectedExceptionClasses
           = MethodHelper.findExpectedExceptions(m_annotationFinder, tm.getMethod());
+      SkippingExceptionsHolder skippingExceptionsClasses
+          = MethodHelper.findSkippingExceptions(m_annotationFinder, tm.getMethod());
       List<ITestResult> results = Lists.newArrayList();
       results.add(testResult);
-      handleInvocationResults(tm, results, null, 0, expectedExceptionClasses, false,
-          false /* collect results */);
+      handleInvocationResults(tm, results, null, 0, expectedExceptionClasses, skippingExceptionsClasses,
+          false, false /* collect results */);
 
       // If this method has a data provider and just failed, memorize the number
       // at which it failed.
@@ -1035,6 +1037,7 @@ public class Invoker implements IInvoker {
                            List<ITestResult> result,
                            int failureCount,
                            ExpectedExceptionsHolder expectedExceptionHolder,
+                           SkippingExceptionsHolder skippingExceptionsHolder,
                            ITestContext testContext,
                            Map<String, String> parameters,
                            int parametersIndex) {
@@ -1055,7 +1058,7 @@ public class Invoker implements IInvoker {
       result.add(invokeMethod(instances, instanceIndex, tm, parameterValues,parametersIndex, suite,
           allParameters, testClass, beforeMethods, afterMethods, groupMethods));
       failureCount = handleInvocationResults(tm, result, failedInstances,
-          failureCount, expectedExceptionHolder, true, true /* collect results */);
+          failureCount, expectedExceptionHolder, skippingExceptionsHolder, true, true /* collect results */);
     }
     while (!failedInstances.isEmpty());
     return failureCount;
@@ -1138,6 +1141,8 @@ public class Invoker implements IInvoker {
 
     ExpectedExceptionsHolder expectedExceptionHolder =
         MethodHelper.findExpectedExceptions(m_annotationFinder, testMethod.getMethod());
+    SkippingExceptionsHolder skippingExceptionsHolder =
+        MethodHelper.findSkippingExceptions(m_annotationFinder, testMethod.getMethod());
     while(invocationCount-- > 0) {
       boolean okToProceed = checkDependencies(testMethod, allTestMethods);
 
@@ -1189,8 +1194,8 @@ public class Invoker implements IInvoker {
 
         if (bag.hasErrors()) {
           failureCount = handleInvocationResults(testMethod,
-              bag.errorResults, null, failureCount, expectedExceptionHolder, true,
-              true /* collect results */);
+              bag.errorResults, null, failureCount, expectedExceptionHolder, skippingExceptionsHolder,
+              true, true /* collect results */);
           ITestResult tr = registerSkippedTestResult(testMethod, instances[0], start,
               bag.errorResults.get(0).getThrowable());
           result.add(tr);
@@ -1213,7 +1218,8 @@ public class Invoker implements IInvoker {
                     testMethod, parametersIndex,
                     parameterValues, instances, suite, parameters, testClass,
                     beforeMethods, afterMethods, groupMethods,
-                    expectedExceptionHolder, testContext, m_skipFailedInvocationCounts,
+                    expectedExceptionHolder, skippingExceptionsHolder,
+                    testContext, m_skipFailedInvocationCounts,
                     invocationCount, failureCount, m_notifier);
               workers.add(w);
               // testng387: increment the param index in the bag.
@@ -1249,8 +1255,8 @@ public class Invoker implements IInvoker {
                 List<Object> failedInstances = Lists.newArrayList();
 
                 failureCount = handleInvocationResults(testMethod, tmpResults,
-                    failedInstances, failureCount, expectedExceptionHolder, true,
-                    false /* don't collect results */);
+                    failedInstances, failureCount, expectedExceptionHolder, skippingExceptionsHolder,
+                    true, false /* don't collect results */);
                 if (failedInstances.isEmpty()) {
                   result.addAll(tmpResults);
                 } else {
@@ -1262,6 +1268,7 @@ public class Invoker implements IInvoker {
                      i, testMethod, suite, testClass, beforeMethods,
                      afterMethods, groupMethods, retryResults,
                      failureCount, expectedExceptionHolder,
+                     skippingExceptionsHolder,
                      testContext, parameters, parametersIndex);
                   result.addAll(retryResults);
                   }
@@ -1461,6 +1468,7 @@ public class Invoker implements IInvoker {
                                       List<Object> failedInstances,
                                       int failureCount,
                                       ExpectedExceptionsHolder expectedExceptionsHolder,
+                                      SkippingExceptionsHolder skippingExceptionsHolder,
                                       boolean triggerListeners,
                                       boolean collectResults)
   {
@@ -1468,7 +1476,7 @@ public class Invoker implements IInvoker {
     // Go through all the results and create a TestResult for each of them
     //
     List<ITestResult> resultsToRetry = Lists.newArrayList();
-
+    
     for (int i = 0; i < result.size(); i++) {
       ITestResult testResult = result.get(i);
       Throwable ite= testResult.getThrowable();
@@ -1490,7 +1498,7 @@ public class Invoker implements IInvoker {
                     " but got \"" + ite.getMessage() + "\"", ite));
             status= ITestResult.FAILURE;
           }
-        } else if (SkipException.class.isAssignableFrom(ite.getClass())){
+        } else if (SkipException.class.isAssignableFrom(ite.getClass())) {
           SkipException skipEx= (SkipException) ite;
           if(skipEx.isSkip()) {
             status = ITestResult.SKIP;
@@ -1499,6 +1507,8 @@ public class Invoker implements IInvoker {
             handleException(ite, testMethod, testResult, failureCount++);
             status = ITestResult.FAILURE;
           }
+        } else if (isSkippingException(ite, skippingExceptionsHolder)) {
+            status = ITestResult.SKIP;
         } else if (ite != null && expectedExceptionsHolder != null) {
           testResult.setThrowable(
               new TestException("Expected exception "
@@ -1789,6 +1799,36 @@ public class Invoker implements IInvoker {
     }
 
     Class<?>[] exceptions = exceptionHolder.expectedClasses;
+    Class<?> realExceptionClass= ite.getClass();
+
+    for (Class<?> exception : exceptions) {
+      if (exception.isAssignableFrom(realExceptionClass)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * @param ite The exception that was just thrown
+   * @param exceptionHolder The list of skipping exceptions for this
+   * test method
+   * @return true if the exception that was just thrown is part of the
+   * expected exceptions
+   */
+  private boolean isSkippingException(Throwable ite, SkippingExceptionsHolder exceptionHolder) {
+    if (exceptionHolder == null) {
+      return false;
+    }
+
+    // TestException is the wrapper exception that TestNG will be throwing when an exception was
+    // expected but not thrown
+    if (ite.getClass() == TestException.class) {
+      return false;
+    }
+
+    Class<?>[] exceptions = exceptionHolder.skippingClasses;
     Class<?> realExceptionClass= ite.getClass();
 
     for (Class<?> exception : exceptions) {
