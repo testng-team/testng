@@ -21,6 +21,11 @@ public class XmlMethodSelector {
   // Or that:
   private XmlScript m_script = new XmlScript();
 
+  // For YAML
+  public void setClassName(String s) {
+    m_className = s;
+  }
+
   public String getClassName() {
     return m_className;
   }
