@@ -113,6 +113,7 @@
       <class name="test.ReturnValueTest" />
       <class name="test.groupbug.GroupBugTest" />
       <class name="test.parameters.ShadowTest" />
+      <class name="test.parameters.MultiIncludeParameterTest" />
       <class name="test.parameters.ParameterOverrideTest" />
       <class name="test.testng234.PolymorphicFailureTest" />
       <class name="test.reports.FailedReporterTest" />

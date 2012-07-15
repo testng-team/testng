@@ -1,13 +1,12 @@
 package org.testng.internal;
 
+import java.util.Comparator;
+
 import org.testng.IMethodInstance;
 import org.testng.ITestNGMethod;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
-
-import java.util.Comparator;
-import java.util.List;
 
 public class MethodInstance implements IMethodInstance {
   private ITestNGMethod m_method;
@@ -67,25 +66,14 @@ public class MethodInstance implements IMethodInstance {
         result = index1 - index2;
       }
       else {
-        XmlInclude include1 =
-            findXmlInclude(class1.getIncludedMethods(), o1.getMethod().getMethodName());
-        XmlInclude include2 =
-          findXmlInclude(class2.getIncludedMethods(), o2.getMethod().getMethodName());
+        XmlInclude include1 = o1.getMethod().getXmlInclude();
+        XmlInclude include2 = o2.getMethod().getXmlInclude();
         if (include1 != null && include2 != null) {
           result = include1.getIndex() - include2.getIndex();
         }
       }
 
       return result;
-    }
-
-    private XmlInclude findXmlInclude(List<XmlInclude> includedMethods, String methodName) {
-      for (XmlInclude xi : includedMethods) {
-        if (xi.getName().equals(methodName)) {
-          return xi;
-        }
-      }
-      return null;
     }
   };
 

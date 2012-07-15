@@ -15,12 +15,18 @@ public class ListMultiMap<K, V> {
   private Map<K, List<V>> m_objects = Maps.newHashMap();
 
   public void put(K key, V method) {
+    put(key, method, true);
+  }
+  
+  public void put(K key, V method, boolean addNull) {
     List<V> l = m_objects.get(key);
     if (l == null) {
       l = Lists.newArrayList();
       m_objects.put(key, l);
     }
-    l.add(method);
+    if (method != null || addNull) {
+      l.add(method);
+    }
   }
 
   public List<V> get(K key) {

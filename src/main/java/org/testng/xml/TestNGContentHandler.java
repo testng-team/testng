@@ -2,6 +2,13 @@ package org.testng.xml;
 
 import static org.testng.internal.Utils.isStringBlank;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
@@ -12,13 +19,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
 
 /**
  * Suite definition parser utility.
@@ -617,6 +617,7 @@ public class TestNGContentHandler extends DefaultHandler {
       m_currentInclude = new Include(attributes.getValue("name"),
           attributes.getValue("invocation-numbers"));
     } else {
+      popLocation(Location.INCLUDE);
       String name = m_currentInclude.name;
       if (null != m_currentIncludedMethods) {
         String in = m_currentInclude.invocationNumbers;
@@ -629,7 +630,6 @@ public class TestNGContentHandler extends DefaultHandler {
         for (Map.Entry<String, String> entry : m_currentInclude.parameters.entrySet()) {
           include.addParameter(entry.getKey(), entry.getValue());
         }
-
         include.setDescription(m_currentInclude.description);
         m_currentIncludedMethods.add(include);
       }
@@ -642,8 +642,6 @@ public class TestNGContentHandler extends DefaultHandler {
       else if (null != m_currentPackage) {
         m_currentPackage.getInclude().add(name);
       }
-
-      popLocation(Location.INCLUDE);
       m_currentInclude = null;
     }
   }

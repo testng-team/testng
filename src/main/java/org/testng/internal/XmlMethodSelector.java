@@ -1,5 +1,13 @@
 package org.testng.internal;
 
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 import org.testng.IMethodSelector;
 import org.testng.IMethodSelectorContext;
 import org.testng.ITestNGMethod;
@@ -9,14 +17,6 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
-
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * This class is the default method selector used by TestNG to determine
@@ -94,6 +94,13 @@ public class XmlMethodSelector implements IMethodSelector {
     //
     else if (includeList != null) {
       result = true;
+      
+      // Set the method releated xmlInclude list which defined in the xml file.
+      // The xmlInclude List will be used at MethodGroupsHelper.collectMethodsByGroup()
+      
+      // TODO Now, the releated xmlInclude List is temporary store in the ITestNGMethod instance.
+      // I think it is not a good design, however I have no other good solution. Need to improve it in the feature.
+      tm.setXmlIncludeList(includeList);
     }
 
     //
@@ -383,11 +390,13 @@ public class XmlMethodSelector implements IMethodSelector {
       for (ITestNGMethod m : methodClosure) {
         String methodName =
          m.getMethod().getDeclaringClass().getName() + "." + m.getMethodName();
-//        m_includedMethods.add(methodName);
-        List<XmlInclude> includeList = m_includedMethods.get(methodName);
-        XmlInclude xi = new XmlInclude(methodName);
+        // XmlInclude xi = new XmlInclude(methodName);
         // TODO: set the XmlClass on this xi or we won't get inheritance of parameters
-        m_includedMethods.put(methodName, xi);
+        // Comments: We did not need to create a new XmlInclude, the ITestNGMethod related XmlInclude 
+        // is which defined in xml file. If the XmlInclude is not defined in the xml file, the releated
+        // XmlInclude will be null.
+        m_includedMethods.put(methodName, m.getXmlInclude(), false);
+
         logInclusion("Including", "method ", methodName);
       }
     }
