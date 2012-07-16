@@ -67,9 +67,10 @@ public class XmlInclude implements Serializable {
       p.setProperty("invocation-numbers",
           XmlClass.listToString(invocationNumbers).toString());
     }
-    xsb.addEmptyElement("include", p);
 
+    xsb.push("include", p);
     XmlUtils.dumpParameters(xsb, m_parameters);
+    xsb.pop("include");
 
     return xsb.toXML();
   }
