@@ -1,5 +1,9 @@
 Current
 
+===========================================================================
+6.7
+2012/07/15
+
 Added: Big performance improvement when generating the reports (Frank Pavageau)
 Added: <dependencies> allows you to specify group dependencies in testng.xml
 Added: Blow up early if trying to include/exclude an unknown method
@@ -24,7 +28,7 @@ Fixed: Rerunning failed tests will preserve the environment of the original laun
 
 ===========================================================================
 
-6.5.1:
+6.5.1
 04/10/2012
 
 Added: <suite allow-return-values="true"> (and in <test> as well)
