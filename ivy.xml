@@ -7,7 +7,7 @@
     <dependency org="org.beanshell" name="bsh" rev="2.0b4" />
     <dependency org="com.google.inject" name="guice" rev="2.0" />
     <dependency org="org.yaml" name="snakeyaml" rev="1.6" />
-    <dependency org="com.beust" name="jcommander" rev="1.13" />
+    <dependency org="com.beust" name="jcommander" rev="1.27" />
   </dependencies>
 </ivy-module>
 
