@@ -317,7 +317,7 @@ public class XmlSuite implements Serializable, Cloneable {
     }
 
     for (XmlTest test : getTests()) {
-      Map<String, String> tp = test.getParameters();
+      Map<String, String> tp = test.getLocalParameters();
       for (Map.Entry<String, String> entry : tp.entrySet()) {
         result.put(entry.getKey(), entry.getValue());
       }

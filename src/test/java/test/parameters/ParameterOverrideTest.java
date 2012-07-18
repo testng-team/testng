@@ -55,23 +55,23 @@ public class ParameterOverrideTest extends SimpleBaseTest {
     s.getParameters().put("a", "Incorrect");
     s.getParameters().put("InheritedFromSuite", "InheritedFromSuite");
     XmlTest t = createXmlTest(s, "t");
-    t.getParameters().put("InheritedFromTest", "InheritedFromTest");
+    t.getLocalParameters().put("InheritedFromTest", "InheritedFromTest");
     if (status == S.PASS_TEST) {
-      t.getParameters().put("a", "Correct");
+      t.getLocalParameters().put("a", "Correct");
     }
 
     {
       XmlClass c1 = new XmlClass(Override1Sample.class.getName());
-      c1.getParameters().put("InheritedFromClass", "InheritedFromClass");
+      c1.getLocalParameters().put("InheritedFromClass", "InheritedFromClass");
       if (status == S.PASS_CLASS) {
-        c1.getParameters().put("a", "Correct");
+        c1.getLocalParameters().put("a", "Correct");
       }
       t.getXmlClasses().add(c1);
 
       for (String method : new String[] { "f", "g" }) {
         XmlInclude include1 = new XmlInclude(method);
         if (status == S.PASS_INCLUDE) {
-          include1.getParameters().put("a", "Correct");
+          include1.getLocalParameters().put("a", "Correct");
         }
         include1.setXmlClass(c1);
         c1.getIncludedMethods().add(include1);

@@ -127,10 +127,18 @@ public class XmlInclude implements Serializable {
   }
 
   /**
+   * @deprecated Use {@code getLocalParameters()} or {@code getAllParameters()}
+   */
+  @Deprecated
+  public Map<String, String> getParameters() {
+    return getAllParameters();
+  }
+
+  /**
    * @return the parameters defined in this test tag, and only this test tag. To retrieve
    * the inherited parameters as well, call {@code getAllParameters()}.
    */
-  public Map<String, String> getParameters() {
+  public Map<String, String> getLocalParameters() {
     return m_parameters;
   }
 

@@ -128,7 +128,7 @@ public class SuiteDispatcher
 						tmpTest.setMethodSelectors(test.getMethodSelectors());
 						tmpTest.setName(test.getName());
 						tmpTest.setParallel(test.getParallel());
-						tmpTest.setParameters(test.getParameters());
+						tmpTest.setParameters(test.getLocalParameters());
 						tmpTest.setVerbose(test.getVerbose());
 						tmpTest.setXmlClasses(test.getXmlClasses());
 						tmpTest.setXmlPackages(test.getXmlPackages());

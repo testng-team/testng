@@ -360,8 +360,16 @@ public class XmlTest implements Serializable, Cloneable {
    * @return the parameters defined in this tag, and only this test tag. To retrieve
    * the inherited parameters as well, call {@code getAllParameters()}.
    */
-  public Map<String, String> getParameters() {
+  public Map<String, String> getLocalParameters() {
     return m_parameters;
+  }
+
+  /**
+   * @deprecated Use {@code getLocalParameters()} or {@code getAllParameters()}
+   */
+  @Deprecated
+  public Map<String, String> getParameters() {
+    return getAllParameters();
   }
 
   /**
@@ -627,7 +635,7 @@ public class XmlTest implements Serializable, Cloneable {
     result.setJUnit(isJUnit());
     result.setParallel(getParallel());
     result.setVerbose(getVerbose());
-    result.setParameters(getParameters());
+    result.setParameters(getLocalParameters());
     result.setXmlPackages(getXmlPackages());
 
     Map<String, List<String>> metagroups = getMetaGroups();

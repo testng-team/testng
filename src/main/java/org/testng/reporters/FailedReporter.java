@@ -169,7 +169,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     xmlTest.setIncludedGroups(srcXmlTest.getIncludedGroups());
     xmlTest.setExcludedGroups(srcXmlTest.getExcludedGroups());
     xmlTest.setParallel(srcXmlTest.getParallel());
-    xmlTest.setParameters(srcXmlTest.getParameters());
+    xmlTest.setParameters(srcXmlTest.getLocalParameters());
     xmlTest.setJUnit(srcXmlTest.isJUnit());
     List<XmlClass> xmlClasses = createXmlClasses(methods, srcXmlTest);
     xmlTest.setXmlClasses(xmlClasses);
@@ -202,7 +202,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     // all in the same bag for now
     Map<String, String> parameters = Maps.newHashMap();
     for (XmlClass c : srcXmlTest.getClasses()) {
-      parameters.putAll(c.getParameters());
+      parameters.putAll(c.getLocalParameters());
     }
 
     int index = 0;

@@ -284,11 +284,11 @@ public class XmlClass implements Serializable, Cloneable {
   }
 
   /**
-   * @return the parameters defined in this test tag and the tags above it.
+   * @return The parameters defined in this test tag and the tags above it.
    */
   public Map<String, String> getAllParameters() {
     Map<String, String> result = Maps.newHashMap();
-    Map<String, String> parameters = m_xmlTest.getParameters();
+    Map<String, String> parameters = m_xmlTest.getLocalParameters();
     for (Map.Entry<String, String> parameter : parameters.entrySet()) {
       result.put(parameter.getKey(), parameter.getValue());
     }
@@ -299,15 +299,19 @@ public class XmlClass implements Serializable, Cloneable {
   }
 
   /**
-   * @return the parameters defined in this tag, and only this test tag. To retrieve
+   * @return The parameters defined in this tag, and only this test tag. To retrieve
    * the inherited parameters as well, call {@code getAllParameters()}.
    */
-  public Map<String, String> getParameters() {
+  public Map<String, String> getLocalParameters() {
     return m_parameters;
   }
 
-  public String getParameter(String string) {
-    return m_parameters.get(string);
+  /**
+   * @deprecated Use {@code getLocalParameters()} or {@code getAllParameters()}
+   */
+  @Deprecated
+  public Map<String, String> getParameters() {
+    return getAllParameters();
   }
 
   public void setXmlTest(XmlTest test) {

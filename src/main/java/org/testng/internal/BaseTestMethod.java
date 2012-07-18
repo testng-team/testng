@@ -801,10 +801,10 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     Map<String, String> result = test.getAllParameters();
     for (XmlClass xmlClass: test.getXmlClasses()) {
       if (xmlClass.getName().equals(getTestClass().getName())) {
-        result.putAll(xmlClass.getParameters());
+        result.putAll(xmlClass.getLocalParameters());
         for (XmlInclude include : xmlClass.getIncludedMethods()) {
           if (include.getName().equals(getMethodName())) {
-            result.putAll(include.getParameters());
+            result.putAll(include.getLocalParameters());
             break;
           }
         }

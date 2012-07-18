@@ -1,5 +1,7 @@
 package test.reports;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.testng.Assert;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -13,8 +15,6 @@ import org.testng.xml.XmlTest;
 import org.xml.sax.SAXException;
 
 import test.SimpleBaseTest;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -56,6 +56,6 @@ public class FailedReporterTest extends SimpleBaseTest {
     Assert.assertEquals("43", test.getParameter("o"));
 
     XmlClass c = test.getClasses().get(0);
-    Assert.assertEquals("44", c.getParameter("p"));
+    Assert.assertEquals("44", c.getAllParameters().get("p"));
   }
 }
