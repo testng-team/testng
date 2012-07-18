@@ -23,10 +23,13 @@ public class PoolService<FutureType> {
 
   public PoolService(int threadPoolSize) {
     m_threadFactory = new ThreadFactory() {
+      private int m_threadIndex = 0;
+
       @Override
       public Thread newThread(Runnable r) {
         Thread result = new Thread(r);
-        result.setName("PoolService");
+        result.setName("PoolService-" + m_threadIndex);
+        m_threadIndex++;
         return result;
       }
     };
