@@ -295,6 +295,10 @@ public class XmlClass implements Serializable, Cloneable {
     return result;
   }
 
+  /**
+   * @return the parameters defined in this test tag, and only this test tag. To retrieve
+   * the inherited parameters as well, call @code{getAllParameters}.
+   */
   public Map<String, String> getParameters() {
     return m_parameters;
   }
