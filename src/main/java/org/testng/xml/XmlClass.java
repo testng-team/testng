@@ -283,6 +283,9 @@ public class XmlClass implements Serializable, Cloneable {
     m_parameters.putAll(parameters);
   }
 
+  /**
+   * @return the parameters defined in this test tag and the tags above it.
+   */
   public Map<String, String> getAllParameters() {
     Map<String, String> result = Maps.newHashMap();
     Map<String, String> parameters = m_xmlTest.getParameters();
@@ -296,8 +299,8 @@ public class XmlClass implements Serializable, Cloneable {
   }
 
   /**
-   * @return the parameters defined in this test tag, and only this test tag. To retrieve
-   * the inherited parameters as well, call @code{getAllParameters}.
+   * @return the parameters defined in this tag, and only this test tag. To retrieve
+   * the inherited parameters as well, call {@code getAllParameters()}.
    */
   public Map<String, String> getParameters() {
     return m_parameters;

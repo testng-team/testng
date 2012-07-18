@@ -342,10 +342,7 @@ public class XmlTest implements Serializable, Cloneable {
   }
 
   /**
-   * Returns a merge of the the test parameters and its parent suite parameters. Test parameters
-   * have precedence over suite parameters.
-   *
-   * @return a merge of the the test parameters and its parent suite parameters.
+   * @return the parameters defined in this test tag and the tags above it.
    */
   public Map<String, String> getAllParameters() {
     Map<String, String> result = Maps.newHashMap();
@@ -360,8 +357,8 @@ public class XmlTest implements Serializable, Cloneable {
   }
 
   /**
-   * @return the parameters defined in this test tag, and only this test tag. To retrieve
-   * the inherited parameters as well, call @code{getAllParameters}.
+   * @return the parameters defined in this tag, and only this test tag. To retrieve
+   * the inherited parameters as well, call {@code getAllParameters()}.
    */
   public Map<String, String> getParameters() {
     return m_parameters;
