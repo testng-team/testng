@@ -25,6 +25,14 @@ public abstract class RetryAnalyzerCount implements IRetryAnalyzer {
   }
 
   /**
+   * Return the current counter value
+   * @return
+   */
+  protected int getCount(){
+      return this.count.get();
+  }
+
+  /**
    * Retries the test if count is not 0.
    * @param result The result of the test.
    */
