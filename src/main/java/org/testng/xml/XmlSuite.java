@@ -336,8 +336,7 @@ public class XmlSuite implements Serializable, Cloneable {
   }
 
   /**
-   * Returns the threadCount.
-   * @return the threadCount.
+   * @return The threadCount.
    */
   public int getThreadCount() {
     return m_threadCount;
@@ -352,8 +351,7 @@ public class XmlSuite implements Serializable, Cloneable {
   }
 
   /**
-   * Returns the JUnit compatibility flag.
-   * @return the JUnit compatibility flag.
+   * @return The JUnit compatibility flag.
    */
   public Boolean isJUnit() {
     return m_isJUnit;
@@ -416,9 +414,7 @@ public class XmlSuite implements Serializable, Cloneable {
   }
 
   /**
-   * Returns a String representation of this XML suite.
-   *
-   * @return a String representation of this XML suite.
+   * @return A String representation of this XML suite.
    */
   public String toXml() {
     XMLStringBuffer xsb = new XMLStringBuffer();
