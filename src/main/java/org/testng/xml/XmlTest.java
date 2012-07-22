@@ -461,7 +461,7 @@ public class XmlTest implements Serializable, Cloneable {
     if (null != m_timeOut) {
       p.setProperty("time-out", m_timeOut.toString());
     }
-    if (m_preserveOrder != null) {
+    if (m_preserveOrder != null && ! XmlSuite.DEFAULT_PRESERVE_ORDER.equals(m_preserveOrder)) {
       p.setProperty("preserve-order", m_preserveOrder.toString());
     }
     if (m_threadCount != -1) {
