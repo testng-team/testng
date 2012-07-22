@@ -1089,6 +1089,10 @@ public class TestRunner
     }
 
     // Preserve order
+    // Don't preserve the ordering if we're running in parallel, otherwise the suite will
+    // create multiple threads but these threads will be created one after the other,
+    // giving the impression of parallelism (multiple thread id's) while still running
+    // sequentially.
     if (! hasDependencies
         && ! XmlSuite.isParallel(getCurrentXmlTest().getParallel())
         && "true".equalsIgnoreCase(getCurrentXmlTest().getPreserveOrder())) {

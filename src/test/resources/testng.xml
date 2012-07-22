@@ -72,6 +72,7 @@
       <class name="test.thread.ParallelTestTest" />
       <class name="test.thread.DataProviderThreadPoolSizeTest" />
       <class name="test.thread.MultiThreadedDependentTest" />
+      <class name="test.thread.TrueParallelTest" />
 <!--
       <class name="test.thread.ParallelSuiteTest"/>
 -->
