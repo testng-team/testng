@@ -5,7 +5,8 @@ import org.testng.collections.Maps;
 import java.util.Map;
 
 public class SoftAssert extends FlexibleAssert {
-  private Map<AssertionError, IAssert> m_errors = Maps.newHashMap();
+  // LinkedHashMap to preserve the order
+  private Map<AssertionError, IAssert> m_errors = Maps.newLinkedHashMap();
 
   @Override
   public void executeAssert(IAssert a) {
@@ -26,6 +27,8 @@ public class SoftAssert extends FlexibleAssert {
         } else {
           sb.append(", ");
         }
+        // TODO(cbeust): consider including the stack trace for each failure instead
+        // of just the exception message
         sb.append(ae.getValue().getMessage());
       }
       throw new AssertionError(sb.toString());
