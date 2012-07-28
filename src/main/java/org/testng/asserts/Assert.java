@@ -8,7 +8,7 @@ import java.util.Set;
  * An assert class with various hooks allowing its behavior to be modified
  * by subclasses.
  */
-public class Assert {
+public class Assert implements IAssertLifecycle {
   protected void doAssert(IAssert assertCommand) {
     onBeforeAssert(assertCommand);
     try {
@@ -23,36 +23,37 @@ public class Assert {
   /**
    * Run the assert command in parameter. Meant to be overridden by subclasses.
    */
-  protected void executeAssert(IAssert assertCommand) {
+  @Override
+  public void executeAssert(IAssert assertCommand) {
     assertCommand.doAssert();
   }
 
   /**
    * Invoked when an assert succeeds. Meant to be overridden by subclasses.
    */
-  @SuppressWarnings("unused")
-  protected void onAssertSuccess(IAssert assertCommand) {
+  @Override
+  public void onAssertSuccess(IAssert assertCommand) {
   }
 
   /**
    * Invoked when an assert fails. Meant to be overridden by subclasses.
    */
-  @SuppressWarnings("unused")
-  protected void onAssertFailure(IAssert assertCommand) {
+  @Override
+  public void onAssertFailure(IAssert assertCommand) {
   }
 
   /**
    * Invoked before an assert is run. Meant to be overridden by subclasses.
    */
-  @SuppressWarnings("unused")
-  protected void onBeforeAssert(IAssert assertCommand) {
+  @Override
+  public void onBeforeAssert(IAssert assertCommand) {
   }
 
   /**
    * Invoked after an assert is run. Meant to be overridden by subclasses.
    */
-  @SuppressWarnings("unused")
-  protected void onAfterAssert(IAssert assertCommand) {
+  @Override
+  public void onAfterAssert(IAssert assertCommand) {
   }
 
   abstract private static class SimpleAssert implements IAssert {
