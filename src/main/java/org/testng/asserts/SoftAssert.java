@@ -1,10 +1,10 @@
-package org.testng;
+package org.testng.asserts;
 
 import org.testng.collections.Maps;
 
 import java.util.Map;
 
-public class SoftAssert extends FlexibleAssert {
+public class SoftAssert extends Assert {
   // LinkedHashMap to preserve the order
   private Map<AssertionError, IAssert> m_errors = Maps.newLinkedHashMap();
 

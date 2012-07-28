@@ -1,4 +1,4 @@
-package org.testng;
+package org.testng.asserts;
 
 public interface IAssert {
 

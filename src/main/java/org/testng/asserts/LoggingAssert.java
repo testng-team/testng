@@ -1,10 +1,11 @@
-package org.testng;
+package org.testng.asserts;
 
 import com.google.inject.internal.Lists;
 
+
 import java.util.List;
 
-public class LoggingAssert extends FlexibleAssert {
+public class LoggingAssert extends Assert {
 
   private List<String> m_messages = Lists.newArrayList();
 

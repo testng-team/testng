@@ -1,4 +1,4 @@
-package org.testng;
+package org.testng.asserts;
 
 import java.util.Collection;
 import java.util.Map;
@@ -8,7 +8,7 @@ import java.util.Set;
  * An assert class with various hooks allowing its behavior to be modified
  * by subclasses.
  */
-public class FlexibleAssert {
+public class Assert {
   protected void doAssert(IAssert assertCommand) {
     onBeforeAssert(assertCommand);
     try {
@@ -75,7 +75,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertTrue(condition, message);
+        org.testng.Assert.assertTrue(condition, message);
       }
     });
   }
@@ -84,7 +84,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertFalse(condition, message);
+        org.testng.Assert.assertFalse(condition, message);
       }
     });
   }
@@ -93,7 +93,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertFalse(condition);
+        org.testng.Assert.assertFalse(condition);
       }
     });
   }
@@ -102,7 +102,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.fail(message, realCause);
+        org.testng.Assert.fail(message, realCause);
       }
     });
   }
@@ -111,7 +111,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.fail(message);
+        org.testng.Assert.fail(message);
       }
     });
   }
@@ -120,7 +120,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.fail();
+        org.testng.Assert.fail();
       }
     });
   }
@@ -129,7 +129,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected, message);
+        org.testng.Assert.assertEquals(actual, expected, message);
       }
     });
   }
@@ -138,7 +138,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected);
+        org.testng.Assert.assertEquals(actual, expected);
       }
     });
   }
@@ -147,7 +147,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected, message);
+        org.testng.Assert.assertEquals(actual, expected, message);
       }
     });
   }
@@ -155,7 +155,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected);
+        org.testng.Assert.assertEquals(actual, expected);
       }
     });
   }
@@ -165,7 +165,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected, delta, message);
+        org.testng.Assert.assertEquals(actual, expected, delta, message);
       }
     });
   }
@@ -174,7 +174,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected, delta);
+        org.testng.Assert.assertEquals(actual, expected, delta);
       }
     });
   }
@@ -184,7 +184,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected, delta, message);
+        org.testng.Assert.assertEquals(actual, expected, delta, message);
       }
     });
   }
@@ -193,7 +193,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected, delta);
+        org.testng.Assert.assertEquals(actual, expected, delta);
       }
     });
   }
@@ -202,7 +202,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected, message);
+        org.testng.Assert.assertEquals(actual, expected, message);
       }
     });
   }
@@ -211,7 +211,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected);
+        org.testng.Assert.assertEquals(actual, expected);
       }
     });
   }
@@ -220,7 +220,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected, message);
+        org.testng.Assert.assertEquals(actual, expected, message);
       }
     });
   }
@@ -229,7 +229,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected);
+        org.testng.Assert.assertEquals(actual, expected);
       }
     });
   }
@@ -238,7 +238,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected, message);
+        org.testng.Assert.assertEquals(actual, expected, message);
       }
     });
   }
@@ -247,7 +247,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected);
+        org.testng.Assert.assertEquals(actual, expected);
       }
     });
   }
@@ -256,7 +256,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected, message);
+        org.testng.Assert.assertEquals(actual, expected, message);
       }
     });
   }
@@ -265,7 +265,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected);
+        org.testng.Assert.assertEquals(actual, expected);
       }
     });
   }
@@ -274,7 +274,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected, message);
+        org.testng.Assert.assertEquals(actual, expected, message);
       }
     });
   }
@@ -283,7 +283,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected);
+        org.testng.Assert.assertEquals(actual, expected);
       }
     });
   }
@@ -292,7 +292,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected, message);
+        org.testng.Assert.assertEquals(actual, expected, message);
       }
     });
   }
@@ -301,7 +301,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected);
+        org.testng.Assert.assertEquals(actual, expected);
       }
     });
   }
@@ -310,7 +310,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertNotNull(object);
+        org.testng.Assert.assertNotNull(object);
       }
     });
   }
@@ -319,7 +319,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertNotNull(object, message);
+        org.testng.Assert.assertNotNull(object, message);
       }
     });
   }
@@ -328,7 +328,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertNull(object);
+        org.testng.Assert.assertNull(object);
       }
     });
   }
@@ -337,7 +337,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertNull(object, message);
+        org.testng.Assert.assertNull(object, message);
       }
     });
   }
@@ -346,7 +346,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertSame(actual, expected, message);
+        org.testng.Assert.assertSame(actual, expected, message);
       }
     });
   }
@@ -355,7 +355,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertSame(actual, expected);
+        org.testng.Assert.assertSame(actual, expected);
       }
     });
   }
@@ -364,7 +364,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertNotSame(actual, expected, message);
+        org.testng.Assert.assertNotSame(actual, expected, message);
       }
     });
   }
@@ -373,7 +373,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertNotSame(actual, expected);
+        org.testng.Assert.assertNotSame(actual, expected);
       }
     });
   }
@@ -382,7 +382,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected);
+        org.testng.Assert.assertEquals(actual, expected);
       }
     });
   }
@@ -392,7 +392,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected, message);
+        org.testng.Assert.assertEquals(actual, expected, message);
       }
     });
   }
@@ -401,7 +401,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected, message);
+        org.testng.Assert.assertEquals(actual, expected, message);
       }
     });
   }
@@ -411,7 +411,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertEqualsNoOrder(actual, expected, message);
+        org.testng.Assert.assertEqualsNoOrder(actual, expected, message);
       }
     });
   }
@@ -420,7 +420,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected);
+        org.testng.Assert.assertEquals(actual, expected);
       }
     });
   }
@@ -429,7 +429,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertEqualsNoOrder(actual, expected);
+        org.testng.Assert.assertEqualsNoOrder(actual, expected);
       }
     });
   }
@@ -438,7 +438,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected);
+        org.testng.Assert.assertEquals(actual, expected);
       }
     });
   }
@@ -448,7 +448,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected, message);
+        org.testng.Assert.assertEquals(actual, expected, message);
       }
     });
   }
@@ -457,7 +457,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected);
+        org.testng.Assert.assertEquals(actual, expected);
       }
     });
   }
@@ -466,7 +466,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected, message);
+        org.testng.Assert.assertEquals(actual, expected, message);
       }
     });
   }
@@ -475,7 +475,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertEquals(actual, expected);
+        org.testng.Assert.assertEquals(actual, expected);
       }
     });
   }
@@ -484,7 +484,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertNotEquals(actual1, actual2, message);
+        org.testng.Assert.assertNotEquals(actual1, actual2, message);
       }
     });
   }
@@ -493,7 +493,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertNotEquals(actual1, actual2);
+        org.testng.Assert.assertNotEquals(actual1, actual2);
       }
     });
   }
@@ -502,7 +502,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertNotEquals(actual1, actual2, message);
+        org.testng.Assert.assertNotEquals(actual1, actual2, message);
       }
     });
   }
@@ -511,7 +511,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertNotEquals(actual1, actual2);
+        org.testng.Assert.assertNotEquals(actual1, actual2);
       }
     });
   }
@@ -520,7 +520,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertNotEquals(actual1, actual2, message);
+        org.testng.Assert.assertNotEquals(actual1, actual2, message);
       }
     });
   }
@@ -529,7 +529,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertNotEquals(actual1, actual2);
+        org.testng.Assert.assertNotEquals(actual1, actual2);
       }
     });
   }
@@ -538,7 +538,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertNotEquals(actual1, actual2, message);
+        org.testng.Assert.assertNotEquals(actual1, actual2, message);
       }
     });
   }
@@ -547,7 +547,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertNotEquals(actual1, actual2);
+        org.testng.Assert.assertNotEquals(actual1, actual2);
       }
     });
   }
@@ -556,7 +556,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertNotEquals(actual1, actual2, message);
+        org.testng.Assert.assertNotEquals(actual1, actual2, message);
       }
     });
   }
@@ -565,7 +565,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertNotEquals(actual1, actual2);
+        org.testng.Assert.assertNotEquals(actual1, actual2);
       }
     });
   }
@@ -574,7 +574,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertNotEquals(actual1, actual2, message);
+        org.testng.Assert.assertNotEquals(actual1, actual2, message);
       }
     });
   }
@@ -583,7 +583,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertNotEquals(actual1, actual2);
+        org.testng.Assert.assertNotEquals(actual1, actual2);
       }
     });
   }
@@ -592,7 +592,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertNotEquals(actual1, actual2, message);
+        org.testng.Assert.assertNotEquals(actual1, actual2, message);
       }
     });
   }
@@ -601,7 +601,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertNotEquals(actual1, actual2);
+        org.testng.Assert.assertNotEquals(actual1, actual2);
       }
     });
   }
@@ -610,7 +610,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertNotEquals(actual1, actual2, message);
+        org.testng.Assert.assertNotEquals(actual1, actual2, message);
       }
     });
   }
@@ -619,7 +619,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertNotEquals(actual1, actual2);
+        org.testng.Assert.assertNotEquals(actual1, actual2);
       }
     });
   }
@@ -629,7 +629,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertNotEquals(actual1, actual2, delta, message);
+        org.testng.Assert.assertNotEquals(actual1, actual2, delta, message);
       }
     });
   }
@@ -638,7 +638,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertNotEquals(actual1, actual2, delta);
+        org.testng.Assert.assertNotEquals(actual1, actual2, delta);
       }
     });
   }
@@ -648,7 +648,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        Assert.assertNotEquals(actual1, actual2, delta, message);
+        org.testng.Assert.assertNotEquals(actual1, actual2, delta, message);
       }
     });
   }
@@ -657,7 +657,7 @@ public class FlexibleAssert {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        Assert.assertNotEquals(actual1, actual2, delta);
+        org.testng.Assert.assertNotEquals(actual1, actual2, delta);
       }
     });
   }
