@@ -2,10 +2,12 @@ package org.testng.asserts;
 
 import com.google.inject.internal.Lists;
 
-
 import java.util.List;
 
-public class LoggingAssert extends Assert {
+/**
+ * Log the messages of all the assertions that get run.
+ */
+public class LoggingAssert extends Assertion {
 
   private List<String> m_messages = Lists.newArrayList();
 

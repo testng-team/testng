@@ -1,5 +1,8 @@
 package org.testng.asserts;
 
+/**
+ * Life cycle methods for the assertion class.
+ */
 public interface IAssertLifecycle {
   /**
    * Run the assert command in parameter.

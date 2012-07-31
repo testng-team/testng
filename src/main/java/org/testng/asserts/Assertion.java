@@ -8,7 +8,7 @@ import java.util.Set;
  * An assert class with various hooks allowing its behavior to be modified
  * by subclasses.
  */
-public class Assert implements IAssertLifecycle {
+public class Assertion implements IAssertLifecycle {
   protected void doAssert(IAssert assertCommand) {
     onBeforeAssert(assertCommand);
     try {

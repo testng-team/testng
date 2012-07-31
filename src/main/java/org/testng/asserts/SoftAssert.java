@@ -4,7 +4,12 @@ import org.testng.collections.Maps;
 
 import java.util.Map;
 
-public class SoftAssert extends Assert {
+/**
+ * When an assertion fails, don't throw an exception but record the failure.
+ * Calling {@code assertAll()} will cause an exception to be thrown if at
+ * least one assertion failed.
+ */
+public class SoftAssert extends Assertion {
   // LinkedHashMap to preserve the order
   private Map<AssertionError, IAssert> m_errors = Maps.newLinkedHashMap();
 
@@ -27,8 +32,6 @@ public class SoftAssert extends Assert {
         } else {
           sb.append(", ");
         }
-        // TODO(cbeust): consider including the stack trace for each failure instead
-        // of just the exception message
         sb.append(ae.getValue().getMessage());
       }
       throw new AssertionError(sb.toString());
