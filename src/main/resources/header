@@ -2,7 +2,7 @@
 
 <html>
   <head>
-  <title>TestNG new reports</title>
+  <title>TestNG reports</title>
 
     <link type="text/css" href="testng-reports.css" rel="stylesheet" />  
     <script type="text/javascript" src="jquery-1.7.1.min.js"></script>
