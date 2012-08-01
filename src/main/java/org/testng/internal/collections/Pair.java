@@ -1,5 +1,7 @@
 package org.testng.internal.collections;
 
+import org.testng.collections.Objects;
+
 
 
 
@@ -71,6 +73,9 @@ public class Pair<A, B> {
 
   @Override
   public String toString() {
-    return "[Pair " + first() + ", " + second() + "]";
+    return Objects.toStringHelper(getClass())
+        .add("first", first())
+        .add("second", second())
+        .toString();
   }
 }

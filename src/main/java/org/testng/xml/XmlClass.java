@@ -3,6 +3,7 @@ package org.testng.xml;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.collections.Objects;
 import org.testng.internal.ClassHelper;
 import org.testng.reporters.XMLStringBuffer;
 
@@ -147,7 +148,9 @@ public class XmlClass implements Serializable, Cloneable {
 
   @Override
   public String toString() {
-    return "[Class: " + m_name + "]";
+    return Objects.toStringHelper(getClass())
+        .add("class", m_name)
+        .toString();
   }
 
   public String toXml(String indent) {

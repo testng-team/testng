@@ -11,6 +11,7 @@ import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.annotations.Guice;
 import org.testng.collections.Lists;
+import org.testng.collections.Objects;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
@@ -208,7 +209,9 @@ public class ClassImpl implements IClass {
 
   @Override
   public String toString() {
-    return "[ClassImpl " + m_class.getName() + "]";
+    return Objects.toStringHelper(getClass())
+        .add("class", m_class.getName())
+        .toString();
   }
 
   @Override

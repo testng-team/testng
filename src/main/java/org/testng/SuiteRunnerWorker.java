@@ -1,6 +1,7 @@
 package org.testng;
 
 import org.testng.collections.Lists;
+import org.testng.collections.Objects;
 import org.testng.internal.SuiteRunnerMap;
 import org.testng.internal.Utils;
 import org.testng.internal.thread.graph.IWorker;
@@ -105,7 +106,9 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
 
   @Override
   public String toString() {
-    return "SuiteRunnerWorker(" + m_suiteRunner.getName() + ")";
+    return Objects.toStringHelper(getClass())
+        .add("name", m_suiteRunner.getName())
+        .toString();
   }
 
   @Override

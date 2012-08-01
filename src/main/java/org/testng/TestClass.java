@@ -1,6 +1,7 @@
 package org.testng;
 
 import org.testng.collections.Lists;
+import org.testng.collections.Objects;
 import org.testng.internal.ConfigurationMethod;
 import org.testng.internal.NoOpTestClass;
 import org.testng.internal.RunInfo;
@@ -238,7 +239,9 @@ class TestClass extends NoOpTestClass implements ITestClass {
 
   @Override
   public String toString() {
-    return "[TestClass " + m_testClass + "]";
+    return Objects.toStringHelper(getClass())
+        .add("name", m_testClass)
+        .toString();
   }
 
 }

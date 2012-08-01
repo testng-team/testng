@@ -7,6 +7,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
+import org.testng.collections.Objects;
 
 import java.util.List;
 import java.util.Set;
@@ -222,13 +223,16 @@ public class TestResult implements ITestResult {
   @Override
   public String toString() {
     List<String> output = Reporter.getOutput(this);
-    String result = "[TestResult: " + getName()
-        + " STATUS:" + toString(m_status)
-        + " METHOD:" + m_method;
-    result += output != null && output.size() > 0 ? output.get(0) : ""
-        + "]\n";
+    String result = Objects.toStringHelper(getClass())
+        .omitNulls()
+        .omitEmptyStrings()
+        .add("name", getName())
+        .add("status", toString(m_status))
+        .add("method", m_method)
+        .add("output", output != null && output.size() > 0 ? output.get(0) : null)
+        .toString();
 
-      return result;
+    return result;
   }
 
   private String toString(int status) {
@@ -288,6 +292,7 @@ public class TestResult implements ITestResult {
     return m_attributes.removeAttribute(name);
   }
   
+  @Override
   public ITestContext getTestContext() {
 	  return m_context;
   }
