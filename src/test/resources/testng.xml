@@ -117,6 +117,7 @@
       <class name="test.parameters.ParameterOverrideTest" />
       <class name="test.testng234.PolymorphicFailureTest" />
       <class name="test.reports.FailedReporterTest" />
+      <class name="test.reports.ReporterLogTest" />
     </classes>
   </test>
 

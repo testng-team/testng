@@ -1,5 +1,7 @@
 Current
 
+Fixed: Reporter.log() invoked from listeners were being discarded
+
 ===========================================================================
 6.7
 2012/07/15

@@ -696,42 +696,32 @@ public class Invoker implements IInvoker {
 
         // If no timeOut, just invoke the method
         if (MethodHelper.calculateTimeOut(tm) <= 0) {
-          try {
-            Reporter.setCurrentTestResult(testResult);
-            //
-            // If this method is a IHookable, invoke its run() method
-            //
-            IHookable hookableInstance =
-              IHookable.class.isAssignableFrom(thisMethod.getDeclaringClass()) ?
-              (IHookable) instance : m_configuration.getHookable();
-            if (hookableInstance != null) {
-              MethodInvocationHelper.invokeHookable(instance,
-                  parameterValues, hookableInstance, thisMethod, testResult);
-            }
-            //
-            // Not a IHookable, invoke directly
-            //
-            else {
-              MethodInvocationHelper.invokeMethod(thisMethod, instance,
-                  parameterValues);
-            }
-            testResult.setStatus(ITestResult.SUCCESS);
+          Reporter.setCurrentTestResult(testResult);
+          //
+          // If this method is a IHookable, invoke its run() method
+          //
+          IHookable hookableInstance =
+            IHookable.class.isAssignableFrom(thisMethod.getDeclaringClass()) ?
+            (IHookable) instance : m_configuration.getHookable();
+          if (hookableInstance != null) {
+            MethodInvocationHelper.invokeHookable(instance,
+                parameterValues, hookableInstance, thisMethod, testResult);
           }
-          finally {
-            Reporter.setCurrentTestResult(null);
+          //
+          // Not a IHookable, invoke directly
+          //
+          else {
+            MethodInvocationHelper.invokeMethod(thisMethod, instance,
+                parameterValues);
           }
+          testResult.setStatus(ITestResult.SUCCESS);
         }
         else {
           //
           // Method with a timeout
           //
-          try {
-            Reporter.setCurrentTestResult(testResult);
-            MethodInvocationHelper.invokeWithTimeout(tm, instance, parameterValues, testResult);
-          }
-          finally {
-            Reporter.setCurrentTestResult(null);
-          }
+          Reporter.setCurrentTestResult(testResult);
+          MethodInvocationHelper.invokeWithTimeout(tm, instance, parameterValues, testResult);
         }
       }
       else {
@@ -804,6 +794,10 @@ public class Invoker implements IInvoker {
       //
       invokeAfterGroupsConfigurations(testClass, tm, groupMethods, suite,
           params, instance);
+
+      // Reset the test result last. If we do this too early, Reporter.log()
+      // invocations from listeners will be discarded
+      Reporter.setCurrentTestResult(null);
     }
 
     return testResult;
