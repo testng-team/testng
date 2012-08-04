@@ -18,6 +18,10 @@ public class XmlDependencies {
     m_xmlDependencyGroups.put(name, dependsOn);
   }
 
+  public Map<String, String> getDependencies() {
+    return m_xmlDependencyGroups;
+  }
+
   public String toXml(String indent) {
     XMLStringBuffer xsb = new XMLStringBuffer(indent);
     boolean hasElements = hasElements(m_xmlDependencyGroups);

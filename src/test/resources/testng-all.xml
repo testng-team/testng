@@ -28,11 +28,13 @@
       <exclude name="excludeThisGroup" />
       <include name="includeThisGroup" />
     </run>
+<!-- 
     <dependencies>
       <group name="a" depends-on="b" />
       <group name="c" depends-on="d" />
     </dependencies>
-  </groups>
+ -->
+   </groups>
 
   <listeners>
     <listener class-name="com.beust.Listener1" />
@@ -46,9 +48,17 @@
 
   <test name="Nopackage" allow-return-values="true" thread-count="42">
     <groups>
+      <define name="evenodd">
+        <include name="even" />
+        <include name="odd" />
+      </define>
       <run>
         <include name="nopackage"/>
       </run>
+	    <dependencies>
+	      <group name="e" depends-on="f" />
+	      <group name="g" depends-on="h" />
+	    </dependencies>
     </groups>
     <classes>
       <class name="NoPackageTest" />

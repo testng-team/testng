@@ -364,7 +364,19 @@ private void populateContent(Node item, Object object) {
   private static void testNoPackage(XmlTest t) {
     Assert.assertEquals(t.getThreadCount(), 42);
     Assert.assertTrue(t.getAllowReturnValues());
+
+    // define
+    Map<String, List<String>> metaGroups = t.getMetaGroups();
+    Assert.assertEquals(metaGroups.get("evenodd"), Arrays.asList("even", "odd"));
+
+    // run
     Assert.assertEquals(t.getIncludedGroups(), Arrays.asList("nopackage", "includeThisGroup"));
     Assert.assertEquals(t.getExcludedGroups(), Arrays.asList("excludeThisGroup"));
+
+    // dependencies
+    Map<String, String> dg = t.getXmlDependencyGroups();
+    Assert.assertEquals(dg.size(), 2);
+    Assert.assertEquals(dg.get("e"), "f");
+    Assert.assertEquals(dg.get("g"), "h");
   }
 }

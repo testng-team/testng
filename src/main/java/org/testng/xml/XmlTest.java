@@ -318,7 +318,17 @@ public class XmlTest implements Serializable, Cloneable {
    * @return Returns the metaGroups.
    */
   public Map<String, List<String>> getMetaGroups() {
-    return m_metaGroups;
+    if (m_xmlGroups != null) {
+      Map<String, List<String>> result = Maps.newHashMap();
+      List<XmlDefine> defines = m_xmlGroups.getDefines();
+      for (XmlDefine xd : defines) {
+        result.put(xd.getName(), xd.getIncludes());
+      }
+      return result;
+    } else {
+      // deprecated
+      return m_metaGroups;
+    }
   }
 
   /**
@@ -855,7 +865,17 @@ public class XmlTest implements Serializable, Cloneable {
   }
 
   public Map<String, String> getXmlDependencyGroups() {
-    return m_xmlDependencyGroups;
+    if (m_xmlGroups != null) {
+      Map<String, String> result = Maps.newHashMap();
+      List<XmlDependencies> deps = m_xmlGroups.getDependencies();
+      for (XmlDependencies d : deps) {
+        result.putAll(d.getDependencies());
+      }
+      return result;
+    } else {
+      // deprecated
+      return m_xmlDependencyGroups;
+    }
   }
 
   @ParentSetter

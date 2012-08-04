@@ -40,9 +40,9 @@ public class XmlGroups {
     return m_dependencies;
   }
 
-  public void setDependencies(List<XmlDependencies> dependencies) {
-    m_dependencies = dependencies;
-  }
+//  public void setDependencies(List<XmlDependencies> dependencies) {
+//    m_dependencies = dependencies;
+//  }
 
   @Tag(name = "dependencies")
   public void setXmlDependencies(XmlDependencies dependencies) {
