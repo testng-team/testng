@@ -1,6 +1,6 @@
 package org.testng.asserts;
 
-import com.google.inject.internal.Lists;
+import org.testng.collections.Lists;
 
 import java.util.List;
 
