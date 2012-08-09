@@ -993,9 +993,6 @@ public class TestNGAntTask extends Task {
   private List<String> getFiles(List<ResourceCollection> resources) throws BuildException {
     List<String> files= Lists.newArrayList();
     for (ResourceCollection rc : resources) {
-      if (rc instanceof FileSet) {
-          files.addAll(fileset((FileSet) rc));
-      } else {
         for (Iterator i = rc.iterator(); i.hasNext();) {
           Object o = i.next();
           if (o instanceof FileResource) {
@@ -1011,7 +1008,6 @@ public class TestNGAntTask extends Task {
               log("Unsupported Resource type: " + o.toString(), Project.MSG_VERBOSE);
           }
         }
-      }
     }
     return files;
   }
