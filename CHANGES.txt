@@ -2,6 +2,9 @@ Current
 
 Fixed: Reporter.log() invoked from listeners were being discarded
 
+Eclipse:
+Added: Predefined listeners (Tim Wu)
+
 ===========================================================================
 6.7
 2012/07/15
