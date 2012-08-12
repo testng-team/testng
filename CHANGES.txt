@@ -1,5 +1,6 @@
 Current
 
+Added: Descriptions in the HTML reports
 Fixed: Reporter.log() invoked from listeners were being discarded
 
 Eclipse:

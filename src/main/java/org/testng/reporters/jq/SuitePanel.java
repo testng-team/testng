@@ -4,6 +4,7 @@ import org.testng.ISuite;
 import org.testng.ITestResult;
 import org.testng.internal.Utils;
 import org.testng.reporters.XMLStringBuffer;
+import org.testng.util.Strings;
 
 import java.util.List;
 
@@ -96,6 +97,13 @@ public class SuitePanel extends BasePanel {
           C, "stack-trace");
     }
 
+    // Description?
+    String description = tr.getMethod().getDescription();
+    if (! Strings.isNullOrEmpty(description)) {
+        xsb.push("em");
+        xsb.addString("(" + description + ")");
+        xsb.pop("em");
+    }
 //    long time = tr.getEndMillis() - tr.getStartMillis();
 //    xsb.addOptional(S, " " + Long.toString(time) + " ms", C, "method-time");
     xsb.pop(D);
