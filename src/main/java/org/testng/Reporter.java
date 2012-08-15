@@ -55,8 +55,13 @@ public class Reporter {
   }
 
   private static synchronized void log(String s, ITestResult m) {
+    log(s, m, true);
+  }
+
+  private static synchronized void log(String s, ITestResult m, boolean escapeHTML) {
     // Escape for the HTML reports
-    s = s.replace("<", "[").replace(">", "]") + "<br>";
+    if (escapeHTML)
+      s = s.replace("<", "[").replace(">", "]") + "<br>";
 
     // synchronization needed to ensure the line number and m_output are updated atomically
     int n = getOutput().size();
@@ -93,6 +98,23 @@ public class Reporter {
       if (logToStandardOut) {
         System.out.println(s);
       }
+    }
+  }
+
+  /**
+   * Log the passed string to the HTML reports.  If logToStandardOut
+   * is true, the string will also be printed on standard out.
+   * If escapeHTML is false, do not escape HTML tags in the string.
+   *
+   * @param s The message to log
+   * @param logToStandardOut Whether to print this string on standard
+   * out too
+   * @param escapeHTML whether to change &lt; and &gt; tags to [ and ]
+   */
+  public static void log(String s, boolean logToStandardOut, boolean escapeHTML) {
+    log(s, getCurrentTestResult(), escapeHTML);
+    if (logToStandardOut) {
+      System.out.println(s);
     }
   }
 
