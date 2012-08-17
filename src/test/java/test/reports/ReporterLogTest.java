@@ -27,6 +27,6 @@ public class ReporterLogTest extends SimpleBaseTest {
       }
     }
     Assert.assertTrue(success);
-    System.out.println(output);
+//    System.out.println(output);
   }
 }
