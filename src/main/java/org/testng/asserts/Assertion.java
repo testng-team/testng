@@ -69,6 +69,16 @@ public class Assertion implements IAssertLifecycle {
     }
 
     @Override
+    public Object getActual() {
+        return null;
+    }
+
+    @Override
+    public Object getExpected() {
+        return null;
+    }
+
+    @Override
     abstract public void doAssert();
   }
 
@@ -132,6 +142,16 @@ public class Assertion implements IAssertLifecycle {
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected, message);
       }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
+      }
     });
   }
 
@@ -140,6 +160,16 @@ public class Assertion implements IAssertLifecycle {
       @Override
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
@@ -150,6 +180,16 @@ public class Assertion implements IAssertLifecycle {
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected, message);
       }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
+      }
     });
   }
   public void assertEquals(final String actual, final String expected) {
@@ -157,6 +197,16 @@ public class Assertion implements IAssertLifecycle {
       @Override
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
@@ -168,6 +218,16 @@ public class Assertion implements IAssertLifecycle {
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected, delta, message);
       }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
+      }
     });
   }
 
@@ -176,6 +236,16 @@ public class Assertion implements IAssertLifecycle {
       @Override
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected, delta);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
@@ -187,6 +257,16 @@ public class Assertion implements IAssertLifecycle {
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected, delta, message);
       }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
+      }
     });
   }
 
@@ -195,6 +275,16 @@ public class Assertion implements IAssertLifecycle {
       @Override
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected, delta);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
@@ -205,6 +295,16 @@ public class Assertion implements IAssertLifecycle {
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected, message);
       }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
+      }
     });
   }
 
@@ -213,6 +313,16 @@ public class Assertion implements IAssertLifecycle {
       @Override
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
@@ -223,6 +333,16 @@ public class Assertion implements IAssertLifecycle {
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected, message);
       }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
+      }
     });
   }
 
@@ -231,6 +351,16 @@ public class Assertion implements IAssertLifecycle {
       @Override
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
@@ -241,6 +371,16 @@ public class Assertion implements IAssertLifecycle {
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected, message);
       }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
+      }
     });
   }
 
@@ -249,6 +389,16 @@ public class Assertion implements IAssertLifecycle {
       @Override
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
@@ -259,6 +409,16 @@ public class Assertion implements IAssertLifecycle {
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected, message);
       }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
+      }
     });
   }
 
@@ -267,6 +427,16 @@ public class Assertion implements IAssertLifecycle {
       @Override
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
@@ -277,6 +447,16 @@ public class Assertion implements IAssertLifecycle {
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected, message);
       }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
+      }
     });
   }
 
@@ -285,6 +465,16 @@ public class Assertion implements IAssertLifecycle {
       @Override
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
@@ -295,6 +485,16 @@ public class Assertion implements IAssertLifecycle {
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected, message);
       }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
+      }
     });
   }
 
@@ -303,6 +503,16 @@ public class Assertion implements IAssertLifecycle {
       @Override
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
@@ -349,6 +559,16 @@ public class Assertion implements IAssertLifecycle {
       public void doAssert() {
         org.testng.Assert.assertSame(actual, expected, message);
       }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
+      }
     });
   }
 
@@ -357,6 +577,16 @@ public class Assertion implements IAssertLifecycle {
       @Override
       public void doAssert() {
         org.testng.Assert.assertSame(actual, expected);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
@@ -367,6 +597,16 @@ public class Assertion implements IAssertLifecycle {
       public void doAssert() {
         org.testng.Assert.assertNotSame(actual, expected, message);
       }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
+      }
     });
   }
 
@@ -376,6 +616,16 @@ public class Assertion implements IAssertLifecycle {
       public void doAssert() {
         org.testng.Assert.assertNotSame(actual, expected);
       }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
+      }
     });
   }
 
@@ -384,6 +634,16 @@ public class Assertion implements IAssertLifecycle {
       @Override
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
@@ -395,6 +655,16 @@ public class Assertion implements IAssertLifecycle {
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected, message);
       }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
+      }
     });
   }
 
@@ -403,6 +673,16 @@ public class Assertion implements IAssertLifecycle {
       @Override
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected, message);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
@@ -414,6 +694,16 @@ public class Assertion implements IAssertLifecycle {
       public void doAssert() {
         org.testng.Assert.assertEqualsNoOrder(actual, expected, message);
       }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
+      }
     });
   }
 
@@ -422,6 +712,16 @@ public class Assertion implements IAssertLifecycle {
       @Override
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
@@ -432,6 +732,16 @@ public class Assertion implements IAssertLifecycle {
       public void doAssert() {
         org.testng.Assert.assertEqualsNoOrder(actual, expected);
       }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
+      }
     });
   }
 
@@ -440,6 +750,16 @@ public class Assertion implements IAssertLifecycle {
       @Override
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
@@ -451,6 +771,16 @@ public class Assertion implements IAssertLifecycle {
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected, message);
       }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
+      }
     });
   }
 
@@ -459,6 +789,16 @@ public class Assertion implements IAssertLifecycle {
       @Override
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
@@ -469,6 +809,16 @@ public class Assertion implements IAssertLifecycle {
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected, message);
       }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
+      }
     });
   }
 
@@ -478,187 +828,397 @@ public class Assertion implements IAssertLifecycle {
       public void doAssert() {
         org.testng.Assert.assertEquals(actual, expected);
       }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
+      }
     });
   }
 
-  public  void assertNotEquals(final Object actual1, final Object actual2, final String message) {
+  public  void assertNotEquals(final Object actual, final Object expected, final String message) {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        org.testng.Assert.assertNotEquals(actual1, actual2, message);
+        org.testng.Assert.assertNotEquals(actual, expected, message);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
 
-  public void assertNotEquals(final Object actual1, final Object actual2) {
+  public void assertNotEquals(final Object actual, final Object expected) {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        org.testng.Assert.assertNotEquals(actual1, actual2);
+        org.testng.Assert.assertNotEquals(actual, expected);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
 
-  void assertNotEquals(final String actual1, final String actual2, final String message) {
+  void assertNotEquals(final String actual, final String expected, final String message) {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        org.testng.Assert.assertNotEquals(actual1, actual2, message);
+        org.testng.Assert.assertNotEquals(actual, expected, message);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
 
-  void assertNotEquals(final String actual1, final String actual2) {
+  void assertNotEquals(final String actual, final String expected) {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        org.testng.Assert.assertNotEquals(actual1, actual2);
+        org.testng.Assert.assertNotEquals(actual, expected);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
 
-  void assertNotEquals(final long actual1, final long actual2, final String message) {
+  void assertNotEquals(final long actual, final long expected, final String message) {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        org.testng.Assert.assertNotEquals(actual1, actual2, message);
+        org.testng.Assert.assertNotEquals(actual, expected, message);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
 
-  void assertNotEquals(final long actual1, final long actual2) {
+  void assertNotEquals(final long actual, final long expected) {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        org.testng.Assert.assertNotEquals(actual1, actual2);
+        org.testng.Assert.assertNotEquals(actual, expected);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
 
-  void assertNotEquals(final boolean actual1, final boolean actual2, final String message) {
+  void assertNotEquals(final boolean actual, final boolean expected, final String message) {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        org.testng.Assert.assertNotEquals(actual1, actual2, message);
+        org.testng.Assert.assertNotEquals(actual, expected, message);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
 
-  void assertNotEquals(final boolean actual1, final boolean actual2) {
+  void assertNotEquals(final boolean actual, final boolean expected) {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        org.testng.Assert.assertNotEquals(actual1, actual2);
+        org.testng.Assert.assertNotEquals(actual, expected);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
 
-  void assertNotEquals(final byte actual1, final byte actual2, final String message) {
+  void assertNotEquals(final byte actual, final byte expected, final String message) {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        org.testng.Assert.assertNotEquals(actual1, actual2, message);
+        org.testng.Assert.assertNotEquals(actual, expected, message);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
 
-  void assertNotEquals(final byte actual1, final byte actual2) {
+  void assertNotEquals(final byte actual, final byte expected) {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        org.testng.Assert.assertNotEquals(actual1, actual2);
+        org.testng.Assert.assertNotEquals(actual, expected);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
 
-  void assertNotEquals(final char actual1, final char actual2, final String message) {
+  void assertNotEquals(final char actual, final char expected, final String message) {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        org.testng.Assert.assertNotEquals(actual1, actual2, message);
+        org.testng.Assert.assertNotEquals(actual, expected, message);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
 
-  void assertNotEquals(final char actual1, final char actual2) {
+  void assertNotEquals(final char actual, final char expected) {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        org.testng.Assert.assertNotEquals(actual1, actual2);
+        org.testng.Assert.assertNotEquals(actual, expected);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
 
-  void assertNotEquals(final short actual1, final short actual2, final String message) {
+  void assertNotEquals(final short actual, final short expected, final String message) {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        org.testng.Assert.assertNotEquals(actual1, actual2, message);
+        org.testng.Assert.assertNotEquals(actual, expected, message);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
 
-  void assertNotEquals(final short actual1, final short actual2) {
+  void assertNotEquals(final short actual, final short expected) {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        org.testng.Assert.assertNotEquals(actual1, actual2);
+        org.testng.Assert.assertNotEquals(actual, expected);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
 
-  void assertNotEquals(final int actual1, final int actual2, final String message) {
+  void assertNotEquals(final int actual, final int expected, final String message) {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        org.testng.Assert.assertNotEquals(actual1, actual2, message);
+        org.testng.Assert.assertNotEquals(actual, expected, message);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
 
-  void assertNotEquals(final int actual1, final int actual2) {
+  void assertNotEquals(final int actual, final int expected) {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        org.testng.Assert.assertNotEquals(actual1, actual2);
+        org.testng.Assert.assertNotEquals(actual, expected);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
 
-  public void assertNotEquals(final float actual1, final float actual2, final float delta,
+  public void assertNotEquals(final float actual, final float expected, final float delta,
       final String message) {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        org.testng.Assert.assertNotEquals(actual1, actual2, delta, message);
+        org.testng.Assert.assertNotEquals(actual, expected, delta, message);
       }
-    });
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
+      }
+   });
   }
 
-  public void assertNotEquals(final float actual1, final float actual2, final float delta) {
+  public void assertNotEquals(final float actual, final float expected, final float delta) {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        org.testng.Assert.assertNotEquals(actual1, actual2, delta);
+        org.testng.Assert.assertNotEquals(actual, expected, delta);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
 
-  public void assertNotEquals(final double actual1, final double actual2, final double delta,
+  public void assertNotEquals(final double actual, final double expected, final double delta,
       final String message) {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
-        org.testng.Assert.assertNotEquals(actual1, actual2, delta, message);
+        org.testng.Assert.assertNotEquals(actual, expected, delta, message);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
 
-  public void assertNotEquals(final double actual1, final double actual2, final double delta) {
+  public void assertNotEquals(final double actual, final double expected, final double delta) {
     doAssert(new SimpleAssert(null) {
       @Override
       public void doAssert() {
-        org.testng.Assert.assertNotEquals(actual1, actual2, delta);
+        org.testng.Assert.assertNotEquals(actual, expected, delta);
+      }
+
+      @Override
+      public Object getActual() {
+          return actual;
+      }
+
+      @Override
+      public Object getExpected() {
+          return expected;
       }
     });
   }
