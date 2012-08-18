@@ -14,6 +14,14 @@ public class Lists {
     return new ArrayList<K>(c);
   }
 
+  public static <K> List<K> newArrayList(K... elements) {
+    List<K> result = new ArrayList<K>();
+    for (K e : elements) {
+      result.add(e);
+    }
+    return result;
+  }
+
   public static <K> List<K> newArrayList(int size) {
     return new ArrayList<K>(size);
   }
