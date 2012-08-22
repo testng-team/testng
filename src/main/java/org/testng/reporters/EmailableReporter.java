@@ -232,22 +232,18 @@ public class EmailableReporter implements IReporter {
   }
 
   private void generateForResult(ITestResult ans, ITestNGMethod method, int resultSetSize) {
-    int rq = 0;
-    rq += 1;
     Object[] parameters = ans.getParameters();
     boolean hasParameters = parameters != null && parameters.length > 0;
     if (hasParameters) {
-      if (rq == 1) {
-        tableStart("param", null);
-        m_out.print("<tr>");
-        for (int x = 1; x <= parameters.length; x++) {
-          m_out
-              .print("<th style=\"padding-left:1em;padding-right:1em\">Parameter #"
-                  + x + "</th>");
-        }
-        m_out.println("</tr>");
+      tableStart("param", null);
+      m_out.print("<tr>");
+      for (int x = 1; x <= parameters.length; x++) {
+        m_out
+            .print("<th style=\"padding-left:1em;padding-right:1em\">Parameter #"
+                + x + "</th>");
       }
-      m_out.print("<tr" + (rq % 2 == 0 ? " class=\"stripe\"" : "") + ">");
+      m_out.println("</tr>");
+      m_out.print("<tr class=\"stripe\">");
       for (Object p : parameters) {
         m_out.println("<td style=\"padding-left:.5em;padding-right:2em\">"
             + (p != null ? Utils.escapeHtml(p.toString()) : "null") + "</td>");
@@ -261,8 +257,7 @@ public class EmailableReporter implements IReporter {
     if (hasReporterOutput||hasThrowable) {
       String indent = " style=\"padding-left:3em\"";
       if (hasParameters) {
-        m_out.println("<tr" + (rq % 2 == 0 ? " class=\"stripe\"" : "")
-            + "><td" + indent + " colspan=\"" + parameters.length + "\">");
+        m_out.println("<tr><td" + indent + " colspan=\"" + parameters.length + "\">");
       }
       else {
         m_out.println("<div" + indent + ">");
@@ -292,9 +287,7 @@ public class EmailableReporter implements IReporter {
       }
     }
     if (hasParameters) {
-      if (rq == resultSetSize) {
-        m_out.println("</table>");
-      }
+      m_out.println("</table>");
     }
   }
 
