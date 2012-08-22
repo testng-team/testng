@@ -12,12 +12,12 @@ public class Strings {
   }
 
   private static List<String> ESCAPE_HTML_LIST = Lists.newArrayList(
+    "&", "&amp;",
     "<", "&lt;",
-    ">", "&gt;",
-    "&", "&amp;"
+    ">", "&gt;"
   );
   
-  private static final Map<String, String> ESCAPE_HTML_MAP = Maps.newHashMap();
+  private static final Map<String, String> ESCAPE_HTML_MAP = Maps.newLinkedHashMap();
 
   static {
     for (int i = 0; i < ESCAPE_HTML_LIST.size(); i += 2) {
