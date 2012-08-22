@@ -73,6 +73,7 @@ a:hover {
     border-top-left-radius: 10px 10px;
     border-style: solid;
     border-width: 1px;
+    overflow: auto;
 }
 
 .light-rounded-window-top {
@@ -85,6 +86,7 @@ a:hover {
     border-width: 0px 1px 1px 1px;
     border-bottom-right-radius: 10px 10px;
     border-bottom-left-radius: 10px 10px;
+    overflow: auto;
 }
 
 .method-name {
