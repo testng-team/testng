@@ -246,7 +246,7 @@ public class EmailableReporter implements IReporter {
       m_out.print("<tr class=\"stripe\">");
       for (Object p : parameters) {
         m_out.println("<td style=\"padding-left:.5em;padding-right:2em\">"
-            + (p != null ? Utils.escapeHtml(p.toString()) : "null") + "</td>");
+            + toString(p) + "</td>");
       }
       m_out.println("</tr>");
     }
@@ -446,6 +446,45 @@ public class EmailableReporter implements IReporter {
   private void titleRow(String label, int cq) {
     m_out.println("<tr><th colspan=\"" + cq + "\">" + label + "</th></tr>");
     m_row = 0;
+  }
+  
+  String toString(Object obj) {
+    String result;
+    if (obj != null) {
+      if( obj instanceof boolean[] ) {
+        result = Arrays.toString((boolean[])obj);
+      }
+      else if( obj instanceof byte[] ) {
+        result = Arrays.toString((byte[])obj);
+      }
+      else if( obj instanceof char[] ) {
+        result = Arrays.toString((char[])obj);
+      }
+      else if( obj instanceof double[] ) {
+        result = Arrays.toString((double[])obj);
+      }
+      else if( obj instanceof float[] ) {
+        result = Arrays.toString((float[])obj);
+      }
+      else if( obj instanceof int[] ) {
+        result = Arrays.toString((int[])obj);
+      }
+      else if( obj instanceof long[] ) {
+        result = Arrays.toString((long[])obj);
+      }
+      else if( obj instanceof Object[] ) {
+        result = Arrays.deepToString((Object[])obj);
+      }
+      else if( obj instanceof short[] ) {
+        result = Arrays.toString((short[])obj);
+      }
+      else {
+        result = obj.toString();
+      }
+    } else {
+      result = "null";
+    }
+    return Utils.escapeHtml(result);
   }
 
   protected void writeStyle(String[] formats,String[] targets) {
