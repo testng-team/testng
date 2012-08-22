@@ -81,7 +81,6 @@ public class EmailableReporter implements IReporter {
   /** Creates a table showing the highlights of each test method with links to the method details */
   protected void generateMethodSummaryReport(List<ISuite> suites) {
     m_methodIndex = 0;
-    m_out.println("<a id=\"summary\"></a>");
     startResultSummaryTable("passed");
     for (ISuite suite : suites) {
       if(suites.size()>1) {
@@ -194,7 +193,7 @@ public class EmailableReporter implements IReporter {
 
   /** Starts and defines columns result summary table */
   private void startResultSummaryTable(String style) {
-    tableStart(style);
+    tableStart(style, "summary");
     m_out.println("<tr><th>Class</th>"
             + "<th>Method</th><th># of<br/>Scenarios</th><th>Start</th><th>Time<br/>(ms)</th></tr>");
     m_row = 0;
@@ -223,7 +222,7 @@ public class EmailableReporter implements IReporter {
       ITestNGMethod method = result.getMethod();
         m_methodIndex++;
         String cname = method.getTestClass().getName();
-        m_out.println("<a id=\"m" + m_methodIndex + "\"></a><h2>" + cname + ":"
+        m_out.println("<h2 id=\"m" + m_methodIndex + "\">" + cname + ":"
             + method.getMethodName() + "</h2>");
         Set<ITestResult> resultSet = tests.getResults(method);
         generateForResult(result, method, resultSet.size());
@@ -239,7 +238,7 @@ public class EmailableReporter implements IReporter {
     boolean hasParameters = parameters != null && parameters.length > 0;
     if (hasParameters) {
       if (rq == 1) {
-        tableStart("param");
+        tableStart("param", null);
         m_out.print("<tr>");
         for (int x = 1; x <= parameters.length; x++) {
           m_out
@@ -353,7 +352,7 @@ public class EmailableReporter implements IReporter {
   }
 
   public void generateSuiteSummaryReport(List<ISuite> suites) {
-    tableStart("param");
+    tableStart("param", null);
     m_out.print("<tr><th>Test</th>");
     tableColumnStart("Methods<br/>Passed");
     tableColumnStart("Scenarios<br/>Passed");
@@ -438,13 +437,12 @@ public class EmailableReporter implements IReporter {
     m_rowTotal += v;
   }
 
-  /**
-   *
-   */
-  private void tableStart(String cssclass) {
+  private void tableStart(String cssclass, String id) {
     m_out.println("<table cellspacing=\"0\" cellpadding=\"0\""
         + (cssclass != null ? " class=\"" + cssclass + "\""
-            : " style=\"padding-bottom:2em\"") + ">");
+            : " style=\"padding-bottom:2em\"")
+        + (id != null ? " id=\"" + id + "\"" : "")
+        + ">");
     m_row = 0;
   }
 
