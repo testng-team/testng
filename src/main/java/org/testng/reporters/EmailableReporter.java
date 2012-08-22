@@ -442,7 +442,7 @@ public class EmailableReporter implements IReporter {
    *
    */
   private void tableStart(String cssclass) {
-    m_out.println("<table cellspacing=0 cellpadding=0"
+    m_out.println("<table cellspacing=\"0\" cellpadding=\"0\""
         + (cssclass != null ? " class=\"" + cssclass + "\""
             : " style=\"padding-bottom:2em\"") + ">");
     m_row = 0;
