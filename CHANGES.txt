@@ -1,6 +1,7 @@
 Current
 
 Added: Descriptions in the HTML reports
+Added: Various improvements to EmailableReporter (Abraham Lin) 
 Fixed: Reporter.log() invoked from listeners were being discarded
 
 Eclipse:
