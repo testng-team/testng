@@ -1,8 +1,7 @@
 package org.testng.util;
 
-import com.google.inject.internal.Maps;
-
 import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 
 import java.util.List;
 import java.util.Map;
