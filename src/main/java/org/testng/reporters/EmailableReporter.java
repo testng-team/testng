@@ -147,7 +147,7 @@ public class EmailableReporter implements IReporter {
             cq += 1;
             m_out.println("<tr class=\"" + style
                 + (cq % 2 == 0 ? "even" : "odd") + "\">" + "<td rowspan=\""
-                + mq + "\">" + lastClassName + buff);
+                + mq + "\">" + lastClassName + "</td>" + buff);
           }
           mq = 0;
           buff.setLength(0);
@@ -186,7 +186,7 @@ public class EmailableReporter implements IReporter {
       if (mq > 0) {
         cq += 1;
         m_out.println("<tr class=\"" + style + (cq % 2 == 0 ? "even" : "odd")
-            + "\">" + "<td rowspan=\"" + mq + "\">" + lastClassName + buff);
+            + "\">" + "<td rowspan=\"" + mq + "\">" + lastClassName + "</td>" + buff);
       }
     }
   }
