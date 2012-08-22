@@ -235,18 +235,15 @@ public class EmailableReporter implements IReporter {
     Object[] parameters = ans.getParameters();
     boolean hasParameters = parameters != null && parameters.length > 0;
     if (hasParameters) {
-      tableStart("param", null);
-      m_out.print("<tr>");
+      tableStart("result", null);
+      m_out.print("<tr class=\"param\">");
       for (int x = 1; x <= parameters.length; x++) {
-        m_out
-            .print("<th style=\"padding-left:1em;padding-right:1em\">Parameter #"
-                + x + "</th>");
+        m_out.print("<th>Parameter #" + x + "</th>");
       }
       m_out.println("</tr>");
-      m_out.print("<tr class=\"stripe\">");
+      m_out.print("<tr class=\"param stripe\">");
       for (Object p : parameters) {
-        m_out.println("<td style=\"padding-left:.5em;padding-right:2em\">"
-            + toString(p) + "</td>");
+        m_out.println("<td>" + toString(p) + "</td>");
       }
       m_out.println("</tr>");
     }
@@ -345,7 +342,7 @@ public class EmailableReporter implements IReporter {
   }
 
   public void generateSuiteSummaryReport(List<ISuite> suites) {
-    tableStart("param", null);
+    tableStart("result", null);
     m_out.print("<tr><th>Test</th>");
     tableColumnStart("Methods<br/>Passed");
     tableColumnStart("Scenarios<br/>Passed");
@@ -498,11 +495,13 @@ public class EmailableReporter implements IReporter {
     out.println("<head>");
     out.println("<title>TestNG:  Unit Test</title>");
     out.println("<style type=\"text/css\">");
-    out.println("table caption,table.info_table,table.param,table.passed,table.failed {margin-bottom:10px;border:1px solid #000099;border-collapse:collapse;empty-cells:show;}");
-    out.println("table.info_table td,table.info_table th,table.param td,table.param th,table.passed td,table.passed th,table.failed td,table.failed th {");
+    out.println("table caption,table.info_table,table.result,table.passed,table.failed {margin-bottom:10px;border:1px solid #000099;border-collapse:collapse;empty-cells:show;}");
+    out.println("table.info_table td,table.info_table th,table.result td,table.result th,table.passed td,table.passed th,table.failed td,table.failed th {");
     out.println("border:1px solid #000099;padding:.25em .5em .25em .5em");
     out.println("}");
-    out.println("table.param th {vertical-align:bottom}");
+    out.println("table.result th {vertical-align:bottom}");
+    out.println("tr.param th {padding-left:1em;padding-right:1em}");
+    out.println("tr.param td {padding-left:.5em;padding-right:2em}");
     out.println("td.numi,th.numi,td.numi_attn {");
     out.println("text-align:right");
     out.println("}");
@@ -514,8 +513,8 @@ public class EmailableReporter implements IReporter {
     out.println("table.passed td,table tr.passedeven td {background-color: #33FF33;}");
     out.println("table.passed tr.stripe td,table tr.skippedodd td {background-color: #cccccc;}");
     out.println("table.passed td,table tr.skippedodd td {background-color: #dddddd;}");
-    out.println("table.failed tr.stripe td,table tr.failedodd td,table.param td.numi_attn {background-color: #FF3333;}");
-    out.println("table.failed td,table tr.failedeven td,table.param tr.stripe td.numi_attn {background-color: #DD0000;}");
+    out.println("table.failed tr.stripe td,table tr.failedodd td,table.result td.numi_attn {background-color: #FF3333;}");
+    out.println("table.failed td,table tr.failedeven td,table.result tr.stripe td.numi_attn {background-color: #DD0000;}");
     out.println("tr.stripe td,tr.stripe th {background-color: #E6EBF9;}");
     out.println("p.totop {font-size:85%;text-align:center;border-bottom:2px black solid}");
     out.println("div.shootout {padding:2em;border:3px #4854A8 solid}");
