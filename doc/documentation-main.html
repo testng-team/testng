@@ -1938,7 +1938,7 @@ For example, here is a Method Interceptor that will reorder the methods so that 
 public List&lt;IMethodInstance&gt; intercept(List&lt;IMethodInstance&gt; methods, ITestContext context) {
   List&lt;IMethodInstance&gt; result = new ArrayList&lt;IMethodInstance&gt;();
   for (IMethodInstance m : methods) {
-    Test test = m.getMethod().getMethod().getAnnotation(Test.class);
+    Test test = m.getMethod().getConstructorOrMethod().getAnnotation(Test.class);
     Set&lt;String&gt; groups = new HashSet&lt;String&gt;();
     for (String group : test.groups()) {
       groups.add(group);
