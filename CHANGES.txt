@@ -6,6 +6,7 @@ Fixed: Reporter.log() invoked from listeners were being discarded
 
 Eclipse:
 Added: Predefined listeners (Tim Wu)
+Fixed: Compare dialog
 
 ===========================================================================
 6.7

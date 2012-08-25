@@ -1,5 +1,10 @@
 package org.testng;
 
+import static org.testng.internal.EclipseInterface.ASSERT_LEFT;
+import static org.testng.internal.EclipseInterface.ASSERT_LEFT2;
+import static org.testng.internal.EclipseInterface.ASSERT_MIDDLE;
+import static org.testng.internal.EclipseInterface.ASSERT_RIGHT;
+
 import org.testng.collections.Lists;
 
 import java.lang.reflect.Array;
@@ -474,7 +479,7 @@ public class Assert {
     if(message != null) {
       formatted = message + " ";
     }
-    fail(formatted + "expected not same [" + expected +"] but found [" + actual + "]");
+    fail(formatted + ASSERT_LEFT2 + expected + ASSERT_MIDDLE + actual + ASSERT_RIGHT);
   }
 
   static private void failNotSame(Object actual, Object expected, String message) {
@@ -482,7 +487,7 @@ public class Assert {
     if(message != null) {
       formatted = message + " ";
     }
-    fail(formatted + "expected: [" + expected + "] but found [" + actual + "]");
+    fail(formatted + ASSERT_LEFT + expected + ASSERT_MIDDLE + actual + ASSERT_RIGHT);
   }
 
   static private void failNotEquals(Object actual , Object expected, String message ) {
@@ -495,7 +500,7 @@ public class Assert {
       formatted = message + " ";
     }
 
-    return formatted + "expected [" + expected + "] but found [" + actual + "]";
+    return formatted + ASSERT_LEFT + expected + ASSERT_MIDDLE + actual + ASSERT_RIGHT;
   }
 
   /**
