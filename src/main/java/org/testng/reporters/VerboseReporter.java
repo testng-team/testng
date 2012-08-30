@@ -250,7 +250,7 @@ public class VerboseReporter extends TestListenerAdapter {
         log(sb.toString());
     }
 
-    private void log(String message) {
+    protected void log(String message) {
         //prefix all output lines
         System.out.println(message.replaceAll("(?m)^", prefix));
     }
