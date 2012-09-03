@@ -708,16 +708,16 @@ public class TestNG {
         setAnnotationTransformer((IAnnotationTransformer) listener);
       }
       if (listener instanceof IMethodInterceptor) {
-        m_methodInterceptor = (IMethodInterceptor) listener;
+        setMethodInterceptor((IMethodInterceptor) listener);
       }
       if (listener instanceof IInvokedMethodListener) {
         addInvokedMethodListener((IInvokedMethodListener) listener);
       }
       if (listener instanceof IHookable) {
-        m_hookable = (IHookable) listener;
+        setHookable((IHookable) listener);
       }
       if (listener instanceof IConfigurable) {
-        m_configurable = (IConfigurable) listener;
+        setConfigurable((IConfigurable) listener);
       }
       if (listener instanceof IExecutionListener) {
         addExecutionListener((IExecutionListener) listener);
@@ -769,7 +769,8 @@ public class TestNG {
   /** If m_verbose gets set, it will override the verbose setting in testng.xml */
   private Integer m_verbose = null;
 
-  private IAnnotationTransformer m_annotationTransformer = new DefaultAnnotationTransformer();
+  private final IAnnotationTransformer defaultAnnoProcessor = new DefaultAnnotationTransformer();
+  private IAnnotationTransformer m_annotationTransformer = defaultAnnoProcessor;
 
   private Boolean m_skipFailedInvocationCounts = false;
 
@@ -1744,6 +1745,10 @@ public class TestNG {
   }
 
   public void setAnnotationTransformer(IAnnotationTransformer t) {
+	// compare by reference!
+    if (m_annotationTransformer != defaultAnnoProcessor && m_annotationTransformer != t) {
+    	LOGGER.warn("AnnotationTransformer already set");
+    }
     m_annotationTransformer = t;
   }
 
@@ -1906,8 +1911,28 @@ public class TestNG {
     }
   }
 
-  public void setMethodInterceptor(IMethodInterceptor methodInterceptor) {
-    m_methodInterceptor = methodInterceptor;
+  private void setConfigurable(IConfigurable c) {
+	// compare by reference!
+    if (m_configurable != null && m_configurable != c) {
+    	LOGGER.warn("Configurable already set");
+	}
+    m_configurable = c;
+  }
+
+  private void setHookable(IHookable h) {
+	// compare by reference!
+    if (m_hookable != null && m_hookable != h) {
+    	LOGGER.warn("Hookable already set");
+    }
+    m_hookable = h;
+  }
+
+  public void setMethodInterceptor(IMethodInterceptor i) {
+	// compare by reference!
+    if (m_methodInterceptor != null && m_methodInterceptor != i) {
+    	LOGGER.warn("MethodInterceptor already set");
+    }
+    m_methodInterceptor = i;
   }
 
   public void setDataProviderThreadCount(int count) {
