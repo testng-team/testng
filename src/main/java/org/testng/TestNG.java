@@ -769,8 +769,8 @@ public class TestNG {
   /** If m_verbose gets set, it will override the verbose setting in testng.xml */
   private Integer m_verbose = null;
 
-  private final IAnnotationTransformer defaultAnnoProcessor = new DefaultAnnotationTransformer();
-  private IAnnotationTransformer m_annotationTransformer = defaultAnnoProcessor;
+  private final IAnnotationTransformer m_defaultAnnoProcessor = new DefaultAnnotationTransformer();
+  private IAnnotationTransformer m_annotationTransformer = m_defaultAnnoProcessor;
 
   private Boolean m_skipFailedInvocationCounts = false;
 
@@ -1746,7 +1746,7 @@ public class TestNG {
 
   public void setAnnotationTransformer(IAnnotationTransformer t) {
 	// compare by reference!
-    if (m_annotationTransformer != defaultAnnoProcessor && m_annotationTransformer != t) {
+    if (m_annotationTransformer != m_defaultAnnoProcessor && m_annotationTransformer != t) {
     	LOGGER.warn("AnnotationTransformer already set");
     }
     m_annotationTransformer = t;
