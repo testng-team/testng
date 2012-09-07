@@ -11,5 +11,7 @@
 	<classpathentry kind="lib" path="lib/bsh-2.0b4.jar"/>
 	<classpathentry kind="lib" path="lib/snakeyaml-1.6.jar" sourcepath="/Users/cbeust/.m2/repository/org/yaml/snakeyaml/1.6/snakeyaml-1.6-sources.jar"/>
 	<classpathentry kind="lib" path="lib/junit-4.10.jar"/>
+	<classpathentry kind="con" path="org.testng.TESTNG_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/aopalliance-1.0.jar"/>
 	<classpathentry kind="output" path="eclipse-build"/>
 </classpath>
