@@ -1,9 +1,6 @@
 package org.testng.log4testng;
 
 
-import org.testng.Assert;
-import org.testng.collections.Maps;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +9,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+
+import org.testng.Assert;
+import org.testng.collections.Maps;
 
 /**
  * TestNG support logging via a custom logging framework similar to
@@ -94,12 +94,12 @@ public class Logger {
   private static final String[] levelNames= new String[LEVEL_COUNT];
 
   static {
-    levelNames[TRACE]= "TRACE";
-    levelNames[DEBUG]= "DEBUG";
-    levelNames[INFO]= "INFO";
-    levelNames[WARN]= "WARN";
-    levelNames[ERROR]= "ERROR";
-    levelNames[FATAL]= "FATAL";
+    levelNames[TRACE]= "Trace";
+    levelNames[DEBUG]= "Debug";
+    levelNames[INFO] = "Info";
+    levelNames[WARN] = "Warn";
+    levelNames[ERROR] = "Error";
+    levelNames[FATAL] = "Fatal";
   }
 
   /** A map from level name to level integer index (TRACE->0, DEBUG->1 ...) */
