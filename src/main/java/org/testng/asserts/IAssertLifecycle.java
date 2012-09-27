@@ -16,8 +16,16 @@ public interface IAssertLifecycle {
 
   /**
    * Invoked when an assert fails.
+   * 
+   * @deprecated use onAssertFailure(IAssert assertCommand, AssertionError ex) instead of.
    */
   void onAssertFailure(IAssert assertCommand);
+  
+  /**
+   * Invoked when an assert fails.
+   * 
+   */
+  void onAssertFailure(IAssert assertCommand, AssertionError ex);
 
   /**
    * Invoked before an assert is run.

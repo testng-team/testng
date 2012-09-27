@@ -15,9 +15,10 @@ public class Assertion implements IAssertLifecycle {
       executeAssert(assertCommand);
       onAssertSuccess(assertCommand);
     } catch(AssertionError ex) {
-      onAssertFailure(assertCommand);
+      onAssertFailure(assertCommand, ex);
+    } finally {
+      onAfterAssert(assertCommand);
     }
-    onAfterAssert(assertCommand);
   }
 
   /**
@@ -37,9 +38,16 @@ public class Assertion implements IAssertLifecycle {
 
   /**
    * Invoked when an assert fails. Meant to be overridden by subclasses.
+   * 
+   * @deprecated use onAssertFailure(IAssert assertCommand, AssertionError ex) instead of.
    */
   @Override
   public void onAssertFailure(IAssert assertCommand) {
+  }
+  
+  @Override
+  public void onAssertFailure(IAssert assertCommand, AssertionError ex) {
+      onAssertFailure(assertCommand);
   }
 
   /**
