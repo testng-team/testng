@@ -49,8 +49,6 @@ public class EmailableReporter implements IReporter {
 
   private int m_methodIndex;
 
-  private int m_rowTotal;
-
   // ~ Methods --------------------------------------------------------------
 
   /** Creates summary of the run */
@@ -81,7 +79,7 @@ public class EmailableReporter implements IReporter {
   /** Creates a table showing the highlights of each test method with links to the method details */
   protected void generateMethodSummaryReport(List<ISuite> suites) {
     m_methodIndex = 0;
-    startResultSummaryTable("passed");
+    startResultSummaryTable("methodOverview");
     for (ISuite suite : suites) {
       if(suites.size()>1) {
         titleRow(suite.getName(), 5);
@@ -342,7 +340,7 @@ public class EmailableReporter implements IReporter {
   }
 
   public void generateSuiteSummaryReport(List<ISuite> suites) {
-    tableStart("overview", null);
+    tableStart("testOverview", null);
     m_out.print("<tr>");
     tableColumnStart("Test");
     tableColumnStart("Methods<br/>Passed");
@@ -425,7 +423,6 @@ public class EmailableReporter implements IReporter {
 
   private void summaryCell(int v,int maxexpected) {
     summaryCell(String.valueOf(v),v<=maxexpected);
-    m_rowTotal += v;
   }
 
   private void tableStart(String cssclass, String id) {
@@ -446,40 +443,28 @@ public class EmailableReporter implements IReporter {
     m_row = 0;
   }
 
-  protected void writeStyle(String[] formats,String[] targets) {
-
-  }
-
   /** Starts HTML stream */
   protected void startHtml(PrintWriter out) {
     out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">");
     out.println("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
     out.println("<head>");
-    out.println("<title>TestNG:  Unit Test</title>");
+    out.println("<title>TestNG Report</title>");
     out.println("<style type=\"text/css\">");
-    out.println("table caption,table.info_table,table.overview,table.result,table.passed,table.failed {margin-bottom:10px;border:1px solid #000099;border-collapse:collapse;empty-cells:show;}");
-    out.println("table.info_table td,table.info_table th,table.overview td,table.overview th,table.result td,table.result th,table.passed td,table.passed th,table.failed td,table.failed th {");
-    out.println("border:1px solid #000099;padding:.25em .5em .25em .5em");
-    out.println("}");
-    out.println("table.result th {vertical-align:bottom}");
-    out.println("tr.param th {padding-left:1em;padding-right:1em}");
-    out.println("tr.param td {padding-left:.5em;padding-right:2em}");
-    out.println("td.numi,th.numi,td.numi_attn {");
-    out.println("text-align:right");
-    out.println("}");
-    out.println("tr.total td {font-weight:bold}");
-    out.println("table caption {");
-    out.println("text-align:center;font-weight:bold;");
-    out.println("}");
-    out.println("table.passed tr.stripe td,table tr.passedodd td {background-color: #00AA00;}");
-    out.println("table.passed td,table tr.passedeven td {background-color: #33FF33;}");
-    out.println("table.passed tr.stripe td,table tr.skippedodd td {background-color: #cccccc;}");
-    out.println("table.passed td,table tr.skippedodd td {background-color: #dddddd;}");
-    out.println("table.failed tr.stripe td,table tr.failedodd td,table.overview td.numi_attn,table.result td.numi_attn {background-color: #FF3333;}");
-    out.println("table.failed td,table tr.failedeven td,table.overview tr.stripe td.numi_attn,table.result tr.stripe td.numi_attn {background-color: #DD0000;}");
-    out.println("tr.stripe td,tr.stripe th {background-color: #E6EBF9;}");
-    out.println("p.totop {font-size:85%;text-align:center;border-bottom:2px black solid}");
-    out.println("div.shootout {padding:2em;border:3px #4854A8 solid}");
+    out.println("table {margin-bottom:10px;border-collapse:collapse;empty-cells:show}");
+    out.println("td,th {border:1px solid #009;padding:.25em .5em}");
+    out.println(".result th {vertical-align:bottom}");
+    out.println(".param th {padding-left:1em;padding-right:1em}");
+    out.println(".param td {padding-left:.5em;padding-right:2em}");
+    out.println(".stripe td,.stripe th {background-color: #E6EBF9}");
+    out.println(".numi,.numi_attn {text-align:right}");
+    out.println(".total td {font-weight:bold}");
+    out.println(".passedodd td {background-color: #0A0}");
+    out.println(".passedeven td {background-color: #3F3}");
+    out.println(".skippedodd td {background-color: #CCC}");
+    out.println(".skippedodd td {background-color: #DDD}");
+    out.println(".failedodd td,.numi_attn {background-color: #F33}");
+    out.println(".failedeven td,.stripe .numi_attn {background-color: #D00}");
+    out.println(".totop {font-size:85%;text-align:center;border-bottom:2px solid #000}");
     out.println("</style>");
     out.println("</head>");
     out.println("<body>");
