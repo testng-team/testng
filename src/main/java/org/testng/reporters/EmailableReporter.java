@@ -84,7 +84,7 @@ public class EmailableReporter implements IReporter {
     startResultSummaryTable("passed");
     for (ISuite suite : suites) {
       if(suites.size()>1) {
-        titleRow(suite.getName(), 4);
+        titleRow(suite.getName(), 5);
       }
       Map<String, ISuiteResult> r = suite.getResults();
       for (ISuiteResult r2 : r.values()) {
@@ -140,7 +140,7 @@ public class EmailableReporter implements IReporter {
         ITestClass testClass = method.getTestClass();
         String className = testClass.getName();
         if (mq == 0) {
-          titleRow(testname + " &#8212; " + style + details, 4);
+          titleRow(testname + " &#8212; " + style + details, 5);
         }
         if (!className.equalsIgnoreCase(lastClassName)) {
           if (mq > 0) {
@@ -342,8 +342,9 @@ public class EmailableReporter implements IReporter {
   }
 
   public void generateSuiteSummaryReport(List<ISuite> suites) {
-    tableStart("result", null);
-    m_out.print("<tr><th>Test</th>");
+    tableStart("overview", null);
+    m_out.print("<tr>");
+    tableColumnStart("Test");
     tableColumnStart("Methods<br/>Passed");
     tableColumnStart("Scenarios<br/>Passed");
     tableColumnStart("# skipped");
@@ -362,7 +363,7 @@ public class EmailableReporter implements IReporter {
     long time_end = Long.MIN_VALUE;
     for (ISuite suite : suites) {
       if (suites.size() > 1) {
-        titleRow(suite.getName(), 7);
+        titleRow(suite.getName(), 8);
       }
       Map<String, ISuiteResult> tests = suite.getResults();
       for (ISuiteResult r : tests.values()) {
@@ -437,7 +438,7 @@ public class EmailableReporter implements IReporter {
   }
 
   private void tableColumnStart(String label) {
-    m_out.print("<th class=\"numi\">" + label + "</th>");
+    m_out.print("<th>" + label + "</th>");
   }
 
   private void titleRow(String label, int cq) {
@@ -456,8 +457,8 @@ public class EmailableReporter implements IReporter {
     out.println("<head>");
     out.println("<title>TestNG:  Unit Test</title>");
     out.println("<style type=\"text/css\">");
-    out.println("table caption,table.info_table,table.result,table.passed,table.failed {margin-bottom:10px;border:1px solid #000099;border-collapse:collapse;empty-cells:show;}");
-    out.println("table.info_table td,table.info_table th,table.result td,table.result th,table.passed td,table.passed th,table.failed td,table.failed th {");
+    out.println("table caption,table.info_table,table.overview,table.result,table.passed,table.failed {margin-bottom:10px;border:1px solid #000099;border-collapse:collapse;empty-cells:show;}");
+    out.println("table.info_table td,table.info_table th,table.overview td,table.overview th,table.result td,table.result th,table.passed td,table.passed th,table.failed td,table.failed th {");
     out.println("border:1px solid #000099;padding:.25em .5em .25em .5em");
     out.println("}");
     out.println("table.result th {vertical-align:bottom}");
@@ -474,8 +475,8 @@ public class EmailableReporter implements IReporter {
     out.println("table.passed td,table tr.passedeven td {background-color: #33FF33;}");
     out.println("table.passed tr.stripe td,table tr.skippedodd td {background-color: #cccccc;}");
     out.println("table.passed td,table tr.skippedodd td {background-color: #dddddd;}");
-    out.println("table.failed tr.stripe td,table tr.failedodd td,table.result td.numi_attn {background-color: #FF3333;}");
-    out.println("table.failed td,table tr.failedeven td,table.result tr.stripe td.numi_attn {background-color: #DD0000;}");
+    out.println("table.failed tr.stripe td,table tr.failedodd td,table.overview td.numi_attn,table.result td.numi_attn {background-color: #FF3333;}");
+    out.println("table.failed td,table tr.failedeven td,table.overview tr.stripe td.numi_attn,table.result tr.stripe td.numi_attn {background-color: #DD0000;}");
     out.println("tr.stripe td,tr.stripe th {background-color: #E6EBF9;}");
     out.println("p.totop {font-size:85%;text-align:center;border-bottom:2px black solid}");
     out.println("div.shootout {padding:2em;border:3px #4854A8 solid}");
