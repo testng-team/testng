@@ -47,6 +47,8 @@ public class EmailableReporter implements IReporter {
 
   private int m_row;
 
+  private Integer m_testIndex;
+
   private int m_methodIndex;
 
   // ~ Methods --------------------------------------------------------------
@@ -80,6 +82,7 @@ public class EmailableReporter implements IReporter {
   protected void generateMethodSummaryReport(List<ISuite> suites) {
     m_methodIndex = 0;
     startResultSummaryTable("methodOverview");
+    int testIndex = 1;
     for (ISuite suite : suites) {
       if(suites.size()>1) {
         titleRow(suite.getName(), 5);
@@ -88,6 +91,7 @@ public class EmailableReporter implements IReporter {
       for (ISuiteResult r2 : r.values()) {
         ITestContext testContext = r2.getTestContext();
         String testName = testContext.getName();
+        m_testIndex = testIndex;
         resultSummary(suite, testContext.getFailedConfigurations(), testName,
             "failed", " (configuration methods)");
         resultSummary(suite, testContext.getFailedTests(), testName, "failed",
@@ -98,6 +102,7 @@ public class EmailableReporter implements IReporter {
             "skipped", "");
         resultSummary(suite, testContext.getPassedTests(), testName, "passed",
             "");
+        testIndex++;
       }
     }
     m_out.println("</table>");
@@ -138,7 +143,9 @@ public class EmailableReporter implements IReporter {
         ITestClass testClass = method.getTestClass();
         String className = testClass.getName();
         if (mq == 0) {
-          titleRow(testname + " &#8212; " + style + details, 5);
+          String id = (m_testIndex == null ? null : "t" + Integer.toString(m_testIndex));
+          titleRow(testname + " &#8212; " + style + details, 5, id);
+          m_testIndex = null;
         }
         if (!className.equalsIgnoreCase(lastClassName)) {
           if (mq > 0) {
@@ -359,6 +366,7 @@ public class EmailableReporter implements IReporter {
     int qty_fail = 0;
     long time_start = Long.MAX_VALUE;
     long time_end = Long.MIN_VALUE;
+    m_testIndex = 1;
     for (ISuite suite : suites) {
       if (suites.size() > 1) {
         titleRow(suite.getName(), 8);
@@ -388,6 +396,7 @@ public class EmailableReporter implements IReporter {
         summaryCell(overview.getIncludedGroups());
         summaryCell(overview.getExcludedGroups());
         m_out.println("</tr>");
+        m_testIndex++;
       }
     }
     if (qty_tests > 1) {
@@ -417,7 +426,8 @@ public class EmailableReporter implements IReporter {
   private void startSummaryRow(String label) {
     m_row += 1;
     m_out.print("<tr" + (m_row % 2 == 0 ? " class=\"stripe\"" : "")
-            + "><td style=\"text-align:left;padding-right:2em\">" + label
+            + "><td style=\"text-align:left;padding-right:2em\"><a href=\"#t"
+            + m_testIndex + "\">" + label + "</a>"
             + "</td>");
   }
 
@@ -439,7 +449,15 @@ public class EmailableReporter implements IReporter {
   }
 
   private void titleRow(String label, int cq) {
-    m_out.println("<tr><th colspan=\"" + cq + "\">" + label + "</th></tr>");
+    titleRow(label, cq, null);
+  }
+
+  private void titleRow(String label, int cq, String id) {
+    m_out.print("<tr");
+    if (id != null) {
+      m_out.print(" id=\"" + id + "\"");
+    }
+    m_out.println( "><th colspan=\"" + cq + "\">" + label + "</th></tr>");
     m_row = 0;
   }
 
