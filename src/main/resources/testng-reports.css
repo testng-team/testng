@@ -111,6 +111,7 @@ a:hover {
     white-space: pre;
     font-family: monospace;
     font-size: 12px;
+    font-weight: bold;
     margin-top: 0px;
     margin-left: 20px;
 }

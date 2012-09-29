@@ -84,11 +84,7 @@ public class SuitePanel extends BasePanel {
     // Exception?
     if (tr.getStatus() != ITestResult.SUCCESS && tr.getThrowable() != null) {
       StringBuilder stackTrace = new StringBuilder();
-      stackTrace.append("<b>\"")
-              .append(
-                  Utils.stackTrace(tr.getThrowable(), true /* to html */)[0]
-                  )
-              .append("\"</b>");
+      stackTrace.append(Utils.stackTrace(tr.getThrowable(), true)[0]);
       xsb.addOptional(D, stackTrace.toString() + "\n",
           C, "stack-trace");
     }
