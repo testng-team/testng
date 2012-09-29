@@ -76,7 +76,7 @@ public class SuitePanel extends BasePanel {
       for (Object p : tr.getParameters()) {
         if (!first) sb.append(", ");
         first = false;
-        sb.append(p != null ? p.toString() : "<NULL>");
+        sb.append(Utils.toString(p));
       }
       xsb.addOptional(S, "(" + sb.toString() + ")", C, "parameters");
     }
