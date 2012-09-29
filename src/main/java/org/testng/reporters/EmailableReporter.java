@@ -13,7 +13,6 @@ import org.testng.Reporter;
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
-import org.testng.reporters.util.StackTraceTools;
 import org.testng.xml.XmlSuite;
 
 import java.io.BufferedWriter;
@@ -257,12 +256,11 @@ public class EmailableReporter implements IReporter {
     Throwable exception=ans.getThrowable();
     boolean hasThrowable = exception!=null;
     if (hasReporterOutput||hasThrowable) {
-      String indent = " style=\"padding-left:3em\"";
       if (hasParameters) {
-        m_out.println("<tr><td" + indent + " colspan=\"" + parameters.length + "\">");
+        m_out.println("<tr><td colspan=\"" + parameters.length + "\">");
       }
       else {
-        m_out.println("<div" + indent + ">");
+        m_out.println("<div>");
       }
       if (hasReporterOutput) {
         if(hasThrowable) {
@@ -294,26 +292,9 @@ public class EmailableReporter implements IReporter {
   }
 
   protected void generateExceptionReport(Throwable exception,ITestNGMethod method) {
-    generateExceptionReport(exception, method, exception.getLocalizedMessage());
-  }
-
-  private void generateExceptionReport(Throwable exception,ITestNGMethod method,String title) {
-    m_out.println("<p>" + Utils.escapeHtml(title) + "</p>");
-    StackTraceElement[] s1= exception.getStackTrace();
-    Throwable t2= exception.getCause();
-    if(t2 == exception) {
-      t2= null;
-    }
-    int maxlines= Math.min(100,StackTraceTools.getTestRoot(s1, method));
-    for(int x= 0; x <= maxlines; x++) {
-      m_out.println((x>0 ? "<br/>at " : "") + Utils.escapeHtml(s1[x].toString()));
-    }
-    if(maxlines < s1.length) {
-      m_out.println("<br/>" + (s1.length-maxlines) + " lines not shown");
-    }
-    if(t2 != null) {
-      generateExceptionReport(t2, method, "Caused by " + t2.getLocalizedMessage());
-    }
+    m_out.print("<div class=\"stacktrace\">");
+    m_out.print(Utils.stackTrace(exception, true)[0]);
+    m_out.println("</div>");
   }
 
   /**
@@ -482,6 +463,7 @@ public class EmailableReporter implements IReporter {
     out.println(".skippedodd td {background-color: #DDD}");
     out.println(".failedodd td,.numi_attn {background-color: #F33}");
     out.println(".failedeven td,.stripe .numi_attn {background-color: #D00}");
+    out.println(".stacktrace {white-space:pre;font-family:monospace}");
     out.println(".totop {font-size:85%;text-align:center;border-bottom:2px solid #000}");
     out.println("</style>");
     out.println("</head>");
