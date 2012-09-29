@@ -149,9 +149,12 @@ public class EmailableReporter implements IReporter {
         if (!className.equalsIgnoreCase(lastClassName)) {
           if (mq > 0) {
             cq += 1;
-            m_out.println("<tr class=\"" + style
-                + (cq % 2 == 0 ? "even" : "odd") + "\">" + "<td rowspan=\""
-                + mq + "\">" + lastClassName + "</td>" + buff);
+            m_out.print("<tr class=\"" + style
+                + (cq % 2 == 0 ? "even" : "odd") + "\">" + "<td");
+            if (mq > 1) {
+              m_out.print(" rowspan=\"" + mq + "\"");
+            }
+            m_out.println(">" + lastClassName + "</td>" + buff);
           }
           mq = 0;
           buff.setLength(0);
@@ -189,8 +192,12 @@ public class EmailableReporter implements IReporter {
       }
       if (mq > 0) {
         cq += 1;
-        m_out.println("<tr class=\"" + style + (cq % 2 == 0 ? "even" : "odd")
-            + "\">" + "<td rowspan=\"" + mq + "\">" + lastClassName + "</td>" + buff);
+        m_out.print("<tr class=\"" + style + (cq % 2 == 0 ? "even" : "odd")
+            + "\">" + "<td");
+        if (mq > 1) {
+          m_out.print(" rowspan=\"" + mq + "\"");
+        }
+        m_out.println(">" + lastClassName + "</td>" + buff);
       }
     }
   }
@@ -257,7 +264,11 @@ public class EmailableReporter implements IReporter {
     boolean hasThrowable = exception!=null;
     if (hasReporterOutput||hasThrowable) {
       if (hasParameters) {
-        m_out.println("<tr><td colspan=\"" + parameters.length + "\">");
+        m_out.print("<tr><td");
+        if (parameters.length > 1) {
+          m_out.print(" colspan=\"" + parameters.length + "\"");
+        }
+        m_out.println(">");
       }
       else {
         m_out.println("<div>");
