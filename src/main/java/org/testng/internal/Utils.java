@@ -588,7 +588,8 @@ public final class Utils {
       //
       String[] excludedStrings = new String[] {
           "org.testng",
-          "reflect"
+          "reflect",
+          "org.apache.maven.surefire"
       };
 
       int excludedCount = 0;
