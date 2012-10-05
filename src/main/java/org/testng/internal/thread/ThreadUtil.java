@@ -76,6 +76,8 @@ public class ThreadUtil {
     } catch (InterruptedException handled) {
       handled.printStackTrace();
       Thread.currentThread().interrupt();
+    } finally {
+      pooledExecutor.shutdown();
     }
   }
 
