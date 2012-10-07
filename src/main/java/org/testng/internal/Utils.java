@@ -588,7 +588,8 @@ public final class Utils {
       //
       String[] excludedStrings = new String[] {
           "org.testng",
-          "reflect"
+          "reflect",
+          "org.apache.maven.surefire"
       };
 
       int excludedCount = 0;
@@ -803,5 +804,43 @@ public final class Utils {
       throw new TestNGException("Can't invoke " + method + ": either make it static or add "
           + "a no-args constructor to your class");
     }
+  }
+
+  /**
+   * Returns the string representation of the specified object, transparently
+   * handling null references and arrays.
+   * 
+   * @param obj
+   *            the object
+   * @return the string representation
+   */
+  public static String toString(Object obj) {
+    String result;
+    if (obj != null) {
+      if (obj instanceof boolean[]) {
+        result = Arrays.toString((boolean[]) obj);
+      } else if (obj instanceof byte[]) {
+        result = Arrays.toString((byte[]) obj);
+      } else if (obj instanceof char[]) {
+        result = Arrays.toString((char[]) obj);
+      } else if (obj instanceof double[]) {
+        result = Arrays.toString((double[]) obj);
+      } else if (obj instanceof float[]) {
+        result = Arrays.toString((float[]) obj);
+      } else if (obj instanceof int[]) {
+        result = Arrays.toString((int[]) obj);
+      } else if (obj instanceof long[]) {
+        result = Arrays.toString((long[]) obj);
+      } else if (obj instanceof Object[]) {
+        result = Arrays.deepToString((Object[]) obj);
+      } else if (obj instanceof short[]) {
+        result = Arrays.toString((short[]) obj);
+      } else {
+        result = obj.toString();
+      }
+    } else {
+      result = "null";
+    }
+    return result;
   }
 }

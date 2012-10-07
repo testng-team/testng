@@ -9,6 +9,7 @@ import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.SetMultiMap;
+import org.testng.internal.Utils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -142,7 +143,7 @@ public class Model {
       StringBuilder p = new StringBuilder();
       for (int i = 0; i < parameters.length; i++) {
         if (i > 0) p.append(", ");
-        p.append(parameters[i] != null ? parameters[i].toString() : "null");
+        p.append(Utils.toString(parameters[i]));
       }
       if (p.length() > 100) {
         String s = p.toString().substring(0, 100);
