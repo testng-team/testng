@@ -27,12 +27,6 @@ public class UtilsTest {
 	}
 
 	@Test
-	public void joinTwoStringsWithJoin() throws Exception {
-		List<String> twoStrings = asList("one", "two");
-		assertEquals("one, two", join(twoStrings, ","));
-	}
-
-	@Test
 	public void createEmptyStringWhenJoiningEmptyListWithJoin() throws Exception {
 		List<String> emptyList = emptyList();
 		assertEquals("", join(emptyList, ","));
