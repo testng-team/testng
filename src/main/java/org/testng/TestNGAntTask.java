@@ -1,10 +1,21 @@
 package org.testng;
 
 
-import static java.lang.Boolean.TRUE;
-
-import static org.testng.internal.Utils.isStringNotBlank;
-import static org.testng.internal.Utils.joinStrings;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
@@ -29,21 +40,8 @@ import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.reporters.VerboseReporter;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.StringTokenizer;
+import static java.lang.Boolean.TRUE;
+import static org.testng.internal.Utils.isStringNotBlank;
 
 /**
  * TestNG settings:
@@ -615,9 +613,9 @@ public class TestNGAntTask extends Task {
   private void addArgumentsIfNotEmpty(List<String> argv, String name, List<String> arguments, String separator) {
 	if (arguments != null && !arguments.isEmpty()) {
       argv.add(name);
-      String value= joinStrings(arguments, separator);
-	  argv.add(value);
-	}
+      String value= Utils.join(arguments, separator);
+	    argv.add(value);
+  	}
   }
 
   private void addFileIfFile(List<String> argv, String name, File file) {
