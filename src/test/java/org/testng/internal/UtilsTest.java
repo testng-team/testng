@@ -1,13 +1,13 @@
 package org.testng.internal;
 
+import java.util.List;
+
+import org.testng.annotations.Test;
+
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.internal.Utils.join;
-import static org.testng.internal.Utils.joinStrings;
-
-import java.util.List;
-import org.testng.annotations.Test;
 
 /**
  * Unit tests for {@link Utils}.
@@ -27,12 +27,6 @@ public class UtilsTest {
 	}
 
 	@Test
-	public void joinTwoStringsWithJoin() throws Exception {
-		List<String> twoStrings = asList("one", "two");
-		assertEquals("one, two", join(twoStrings, ","));
-	}
-
-	@Test
 	public void createEmptyStringWhenJoiningEmptyListWithJoin() throws Exception {
 		List<String> emptyList = emptyList();
 		assertEquals("", join(emptyList, ","));
@@ -41,12 +35,12 @@ public class UtilsTest {
 	@Test
 	public void joinTwoStringsWithJoinStrings() throws Exception {
 		List<String> twoStrings = asList("one", "two");
-		assertEquals("one,two", joinStrings(twoStrings, ","));
+		assertEquals("one,two", Utils.join(twoStrings, ","));
 	}
 
 	@Test
 	public void createEmptyStringWhenJoiningEmptyListWithJoinStrings() throws Exception {
 		List<String> emptyList = emptyList();
-		assertEquals("", joinStrings(emptyList, ","));
+		assertEquals("", Utils.join(emptyList, ","));
 	}
 }

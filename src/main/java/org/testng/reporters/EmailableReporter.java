@@ -13,7 +13,6 @@ import org.testng.Reporter;
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
-import org.testng.reporters.util.StackTraceTools;
 import org.testng.xml.XmlSuite;
 
 import java.io.BufferedWriter;
@@ -47,9 +46,9 @@ public class EmailableReporter implements IReporter {
 
   private int m_row;
 
-  private int m_methodIndex;
+  private Integer m_testIndex;
 
-  private int m_rowTotal;
+  private int m_methodIndex;
 
   // ~ Methods --------------------------------------------------------------
 
@@ -81,15 +80,17 @@ public class EmailableReporter implements IReporter {
   /** Creates a table showing the highlights of each test method with links to the method details */
   protected void generateMethodSummaryReport(List<ISuite> suites) {
     m_methodIndex = 0;
-    startResultSummaryTable("passed");
+    startResultSummaryTable("methodOverview");
+    int testIndex = 1;
     for (ISuite suite : suites) {
       if(suites.size()>1) {
-        titleRow(suite.getName(), 4);
+        titleRow(suite.getName(), 5);
       }
       Map<String, ISuiteResult> r = suite.getResults();
       for (ISuiteResult r2 : r.values()) {
         ITestContext testContext = r2.getTestContext();
         String testName = testContext.getName();
+        m_testIndex = testIndex;
         resultSummary(suite, testContext.getFailedConfigurations(), testName,
             "failed", " (configuration methods)");
         resultSummary(suite, testContext.getFailedTests(), testName, "failed",
@@ -100,6 +101,7 @@ public class EmailableReporter implements IReporter {
             "skipped", "");
         resultSummary(suite, testContext.getPassedTests(), testName, "passed",
             "");
+        testIndex++;
       }
     }
     m_out.println("</table>");
@@ -140,14 +142,19 @@ public class EmailableReporter implements IReporter {
         ITestClass testClass = method.getTestClass();
         String className = testClass.getName();
         if (mq == 0) {
-          titleRow(testname + " &#8212; " + style + details, 4);
+          String id = (m_testIndex == null ? null : "t" + Integer.toString(m_testIndex));
+          titleRow(testname + " &#8212; " + style + details, 5, id);
+          m_testIndex = null;
         }
         if (!className.equalsIgnoreCase(lastClassName)) {
           if (mq > 0) {
             cq += 1;
-            m_out.println("<tr class=\"" + style
-                + (cq % 2 == 0 ? "even" : "odd") + "\">" + "<td rowspan=\""
-                + mq + "\">" + lastClassName + "</td>" + buff);
+            m_out.print("<tr class=\"" + style
+                + (cq % 2 == 0 ? "even" : "odd") + "\">" + "<td");
+            if (mq > 1) {
+              m_out.print(" rowspan=\"" + mq + "\"");
+            }
+            m_out.println(">" + lastClassName + "</td>" + buff);
           }
           mq = 0;
           buff.setLength(0);
@@ -185,8 +192,12 @@ public class EmailableReporter implements IReporter {
       }
       if (mq > 0) {
         cq += 1;
-        m_out.println("<tr class=\"" + style + (cq % 2 == 0 ? "even" : "odd")
-            + "\">" + "<td rowspan=\"" + mq + "\">" + lastClassName + "</td>" + buff);
+        m_out.print("<tr class=\"" + style + (cq % 2 == 0 ? "even" : "odd")
+            + "\">" + "<td");
+        if (mq > 1) {
+          m_out.print(" rowspan=\"" + mq + "\"");
+        }
+        m_out.println(">" + lastClassName + "</td>" + buff);
       }
     }
   }
@@ -243,7 +254,7 @@ public class EmailableReporter implements IReporter {
       m_out.println("</tr>");
       m_out.print("<tr class=\"param stripe\">");
       for (Object p : parameters) {
-        m_out.println("<td>" + toString(p) + "</td>");
+        m_out.println("<td>" + Utils.escapeHtml(Utils.toString(p)) + "</td>");
       }
       m_out.println("</tr>");
     }
@@ -252,12 +263,15 @@ public class EmailableReporter implements IReporter {
     Throwable exception=ans.getThrowable();
     boolean hasThrowable = exception!=null;
     if (hasReporterOutput||hasThrowable) {
-      String indent = " style=\"padding-left:3em\"";
       if (hasParameters) {
-        m_out.println("<tr><td" + indent + " colspan=\"" + parameters.length + "\">");
+        m_out.print("<tr><td");
+        if (parameters.length > 1) {
+          m_out.print(" colspan=\"" + parameters.length + "\"");
+        }
+        m_out.println(">");
       }
       else {
-        m_out.println("<div" + indent + ">");
+        m_out.println("<div>");
       }
       if (hasReporterOutput) {
         if(hasThrowable) {
@@ -289,26 +303,9 @@ public class EmailableReporter implements IReporter {
   }
 
   protected void generateExceptionReport(Throwable exception,ITestNGMethod method) {
-    generateExceptionReport(exception, method, exception.getLocalizedMessage());
-  }
-
-  private void generateExceptionReport(Throwable exception,ITestNGMethod method,String title) {
-    m_out.println("<p>" + Utils.escapeHtml(title) + "</p>");
-    StackTraceElement[] s1= exception.getStackTrace();
-    Throwable t2= exception.getCause();
-    if(t2 == exception) {
-      t2= null;
-    }
-    int maxlines= Math.min(100,StackTraceTools.getTestRoot(s1, method));
-    for(int x= 0; x <= maxlines; x++) {
-      m_out.println((x>0 ? "<br/>at " : "") + Utils.escapeHtml(s1[x].toString()));
-    }
-    if(maxlines < s1.length) {
-      m_out.println("<br/>" + (s1.length-maxlines) + " lines not shown");
-    }
-    if(t2 != null) {
-      generateExceptionReport(t2, method, "Caused by " + t2.getLocalizedMessage());
-    }
+    m_out.print("<div class=\"stacktrace\">");
+    m_out.print(Utils.stackTrace(exception, true)[0]);
+    m_out.println("</div>");
   }
 
   /**
@@ -342,8 +339,9 @@ public class EmailableReporter implements IReporter {
   }
 
   public void generateSuiteSummaryReport(List<ISuite> suites) {
-    tableStart("result", null);
-    m_out.print("<tr><th>Test</th>");
+    tableStart("testOverview", null);
+    m_out.print("<tr>");
+    tableColumnStart("Test");
     tableColumnStart("Methods<br/>Passed");
     tableColumnStart("Scenarios<br/>Passed");
     tableColumnStart("# skipped");
@@ -360,9 +358,10 @@ public class EmailableReporter implements IReporter {
     int qty_fail = 0;
     long time_start = Long.MAX_VALUE;
     long time_end = Long.MIN_VALUE;
+    m_testIndex = 1;
     for (ISuite suite : suites) {
       if (suites.size() > 1) {
-        titleRow(suite.getName(), 7);
+        titleRow(suite.getName(), 8);
       }
       Map<String, ISuiteResult> tests = suite.getResults();
       for (ISuiteResult r : tests.values()) {
@@ -389,6 +388,7 @@ public class EmailableReporter implements IReporter {
         summaryCell(overview.getIncludedGroups());
         summaryCell(overview.getExcludedGroups());
         m_out.println("</tr>");
+        m_testIndex++;
       }
     }
     if (qty_tests > 1) {
@@ -418,13 +418,13 @@ public class EmailableReporter implements IReporter {
   private void startSummaryRow(String label) {
     m_row += 1;
     m_out.print("<tr" + (m_row % 2 == 0 ? " class=\"stripe\"" : "")
-            + "><td style=\"text-align:left;padding-right:2em\">" + label
+            + "><td style=\"text-align:left;padding-right:2em\"><a href=\"#t"
+            + m_testIndex + "\">" + label + "</a>"
             + "</td>");
   }
 
   private void summaryCell(int v,int maxexpected) {
     summaryCell(String.valueOf(v),v<=maxexpected);
-    m_rowTotal += v;
   }
 
   private void tableStart(String cssclass, String id) {
@@ -437,55 +437,20 @@ public class EmailableReporter implements IReporter {
   }
 
   private void tableColumnStart(String label) {
-    m_out.print("<th class=\"numi\">" + label + "</th>");
+    m_out.print("<th>" + label + "</th>");
   }
 
   private void titleRow(String label, int cq) {
-    m_out.println("<tr><th colspan=\"" + cq + "\">" + label + "</th></tr>");
-    m_row = 0;
+    titleRow(label, cq, null);
   }
-  
-  String toString(Object obj) {
-    String result;
-    if (obj != null) {
-      if( obj instanceof boolean[] ) {
-        result = Arrays.toString((boolean[])obj);
-      }
-      else if( obj instanceof byte[] ) {
-        result = Arrays.toString((byte[])obj);
-      }
-      else if( obj instanceof char[] ) {
-        result = Arrays.toString((char[])obj);
-      }
-      else if( obj instanceof double[] ) {
-        result = Arrays.toString((double[])obj);
-      }
-      else if( obj instanceof float[] ) {
-        result = Arrays.toString((float[])obj);
-      }
-      else if( obj instanceof int[] ) {
-        result = Arrays.toString((int[])obj);
-      }
-      else if( obj instanceof long[] ) {
-        result = Arrays.toString((long[])obj);
-      }
-      else if( obj instanceof Object[] ) {
-        result = Arrays.deepToString((Object[])obj);
-      }
-      else if( obj instanceof short[] ) {
-        result = Arrays.toString((short[])obj);
-      }
-      else {
-        result = obj.toString();
-      }
-    } else {
-      result = "null";
+
+  private void titleRow(String label, int cq, String id) {
+    m_out.print("<tr");
+    if (id != null) {
+      m_out.print(" id=\"" + id + "\"");
     }
-    return Utils.escapeHtml(result);
-  }
-
-  protected void writeStyle(String[] formats,String[] targets) {
-
+    m_out.println( "><th colspan=\"" + cq + "\">" + label + "</th></tr>");
+    m_row = 0;
   }
 
   /** Starts HTML stream */
@@ -493,31 +458,24 @@ public class EmailableReporter implements IReporter {
     out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">");
     out.println("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
     out.println("<head>");
-    out.println("<title>TestNG:  Unit Test</title>");
+    out.println("<title>TestNG Report</title>");
     out.println("<style type=\"text/css\">");
-    out.println("table caption,table.info_table,table.result,table.passed,table.failed {margin-bottom:10px;border:1px solid #000099;border-collapse:collapse;empty-cells:show;}");
-    out.println("table.info_table td,table.info_table th,table.result td,table.result th,table.passed td,table.passed th,table.failed td,table.failed th {");
-    out.println("border:1px solid #000099;padding:.25em .5em .25em .5em");
-    out.println("}");
-    out.println("table.result th {vertical-align:bottom}");
-    out.println("tr.param th {padding-left:1em;padding-right:1em}");
-    out.println("tr.param td {padding-left:.5em;padding-right:2em}");
-    out.println("td.numi,th.numi,td.numi_attn {");
-    out.println("text-align:right");
-    out.println("}");
-    out.println("tr.total td {font-weight:bold}");
-    out.println("table caption {");
-    out.println("text-align:center;font-weight:bold;");
-    out.println("}");
-    out.println("table.passed tr.stripe td,table tr.passedodd td {background-color: #00AA00;}");
-    out.println("table.passed td,table tr.passedeven td {background-color: #33FF33;}");
-    out.println("table.passed tr.stripe td,table tr.skippedodd td {background-color: #cccccc;}");
-    out.println("table.passed td,table tr.skippedodd td {background-color: #dddddd;}");
-    out.println("table.failed tr.stripe td,table tr.failedodd td,table.result td.numi_attn {background-color: #FF3333;}");
-    out.println("table.failed td,table tr.failedeven td,table.result tr.stripe td.numi_attn {background-color: #DD0000;}");
-    out.println("tr.stripe td,tr.stripe th {background-color: #E6EBF9;}");
-    out.println("p.totop {font-size:85%;text-align:center;border-bottom:2px black solid}");
-    out.println("div.shootout {padding:2em;border:3px #4854A8 solid}");
+    out.println("table {margin-bottom:10px;border-collapse:collapse;empty-cells:show}");
+    out.println("td,th {border:1px solid #009;padding:.25em .5em}");
+    out.println(".result th {vertical-align:bottom}");
+    out.println(".param th {padding-left:1em;padding-right:1em}");
+    out.println(".param td {padding-left:.5em;padding-right:2em}");
+    out.println(".stripe td,.stripe th {background-color: #E6EBF9}");
+    out.println(".numi,.numi_attn {text-align:right}");
+    out.println(".total td {font-weight:bold}");
+    out.println(".passedodd td {background-color: #0A0}");
+    out.println(".passedeven td {background-color: #3F3}");
+    out.println(".skippedodd td {background-color: #CCC}");
+    out.println(".skippedodd td {background-color: #DDD}");
+    out.println(".failedodd td,.numi_attn {background-color: #F33}");
+    out.println(".failedeven td,.stripe .numi_attn {background-color: #D00}");
+    out.println(".stacktrace {white-space:pre;font-family:monospace}");
+    out.println(".totop {font-size:85%;text-align:center;border-bottom:2px solid #000}");
     out.println("</style>");
     out.println("</head>");
     out.println("<body>");

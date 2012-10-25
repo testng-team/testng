@@ -1,11 +1,25 @@
 package org.testng;
 
-import static org.testng.internal.Utils.defaultIfStringEmpty;
-import static org.testng.internal.Utils.isStringEmpty;
-import static org.testng.internal.Utils.isStringNotEmpty;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterException;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
@@ -45,26 +59,12 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
+import static org.testng.internal.Utils.defaultIfStringEmpty;
+import static org.testng.internal.Utils.isStringEmpty;
+import static org.testng.internal.Utils.isStringNotEmpty;
 
 /**
  * This class is the main entry point for running tests in the TestNG framework.
@@ -1563,7 +1563,7 @@ public class TestNG {
 
     Object listeners = cmdLineArgs.get(CommandLineArgs.LISTENER);
     if (listeners instanceof List) {
-      result.listener = Utils.joinClasses((List<Class>) listeners, ",");
+      result.listener = Utils.join((List<?>) listeners, ",");
     } else {
       result.listener = (String) listeners;
     }

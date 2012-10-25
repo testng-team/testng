@@ -94,12 +94,12 @@ public class Logger {
   private static final String[] levelNames= new String[LEVEL_COUNT];
 
   static {
-    levelNames[TRACE]= "Trace";
-    levelNames[DEBUG]= "Debug";
-    levelNames[INFO] = "Info";
-    levelNames[WARN] = "Warn";
-    levelNames[ERROR] = "Error";
-    levelNames[FATAL] = "Fatal";
+    levelNames[TRACE]= "TRACE";
+    levelNames[DEBUG]= "DEBUG";
+    levelNames[INFO] = "INFO";
+    levelNames[WARN] = "WARN";
+    levelNames[ERROR] = "ERROR";
+    levelNames[FATAL] = "FATAL";
   }
 
   /** A map from level name to level integer index (TRACE->0, DEBUG->1 ...) */

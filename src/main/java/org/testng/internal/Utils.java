@@ -1,17 +1,5 @@
 package org.testng.internal;
 
-import org.testng.ITestNGMethod;
-import org.testng.TestNG;
-import org.testng.TestNGException;
-import org.testng.TestRunner;
-import org.testng.annotations.IConfigurationAnnotation;
-import org.testng.annotations.ITestAnnotation;
-import org.testng.collections.Lists;
-import org.testng.internal.annotations.AnnotationHelper;
-import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.log.TextFormatter;
-import org.testng.xml.XmlClass;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -30,13 +18,24 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.testng.ITestNGMethod;
+import org.testng.TestNG;
+import org.testng.TestNGException;
+import org.testng.TestRunner;
+import org.testng.annotations.IConfigurationAnnotation;
+import org.testng.annotations.ITestAnnotation;
+import org.testng.collections.Lists;
+import org.testng.internal.annotations.AnnotationHelper;
+import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.log.TextFormatter;
+import org.testng.xml.XmlClass;
 
 /**
  * Helper methods to parse annotations.
@@ -588,7 +587,8 @@ public final class Utils {
       //
       String[] excludedStrings = new String[] {
           "org.testng",
-          "reflect"
+          "reflect",
+          "org.apache.maven.surefire"
       };
 
       int excludedCount = 0;
@@ -712,38 +712,15 @@ public final class Utils {
    return fileName;
   }
 
-  public static String joinStrings(Iterable<String> iterable, String separator) {
-    StringBuilder sb = new StringBuilder();
-    Iterator<String> iterator = iterable.iterator();
-    if (iterator.hasNext()) {
-      sb.append(iterator.next());
-    }
-    while (iterator.hasNext()) {
-      sb.append(separator);
-      sb.append(iterator.next());
-    }
-    return sb.toString();
-  }
-
-  public static String join(String[] s, String separator) {
-    return joinStrings(Arrays.asList(s), separator + " ");
-  }
-
-  public static String join(List<String> s, String separator) {
-    return joinStrings(s, separator + " ");
-  }
-
-  public static String joinClasses(List<Class> classes, String separator) {
-    StringBuilder sb = new StringBuilder();
-    int i = 0;
-    for (Class s : classes) {
-      if (i++ > 0) {
-        sb.append(separator);
+  public static <T> String join(List<T> objects, String separator) {
+    StringBuilder result = new StringBuilder();
+    for (int i = 0; i < objects.size(); i++) {
+      if (i > 0) {
+        result.append(separator);
       }
-      sb.append(s.getName());
+      result.append(objects.get(i).toString());
     }
-
-    return sb.toString();
+    return result.toString();
   }
 
   public static void copyFile(File from, File to) {
@@ -803,5 +780,43 @@ public final class Utils {
       throw new TestNGException("Can't invoke " + method + ": either make it static or add "
           + "a no-args constructor to your class");
     }
+  }
+
+  /**
+   * Returns the string representation of the specified object, transparently
+   * handling null references and arrays.
+   * 
+   * @param obj
+   *            the object
+   * @return the string representation
+   */
+  public static String toString(Object obj) {
+    String result;
+    if (obj != null) {
+      if (obj instanceof boolean[]) {
+        result = Arrays.toString((boolean[]) obj);
+      } else if (obj instanceof byte[]) {
+        result = Arrays.toString((byte[]) obj);
+      } else if (obj instanceof char[]) {
+        result = Arrays.toString((char[]) obj);
+      } else if (obj instanceof double[]) {
+        result = Arrays.toString((double[]) obj);
+      } else if (obj instanceof float[]) {
+        result = Arrays.toString((float[]) obj);
+      } else if (obj instanceof int[]) {
+        result = Arrays.toString((int[]) obj);
+      } else if (obj instanceof long[]) {
+        result = Arrays.toString((long[]) obj);
+      } else if (obj instanceof Object[]) {
+        result = Arrays.deepToString((Object[]) obj);
+      } else if (obj instanceof short[]) {
+        result = Arrays.toString((short[]) obj);
+      } else {
+        result = obj.toString();
+      }
+    } else {
+      result = "null";
+    }
+    return result;
   }
 }

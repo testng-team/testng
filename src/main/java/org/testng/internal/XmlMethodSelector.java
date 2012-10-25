@@ -1,5 +1,13 @@
 package org.testng.internal;
 
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 import org.testng.IMethodSelector;
 import org.testng.IMethodSelectorContext;
 import org.testng.ITestNGMethod;
@@ -9,14 +17,6 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
-
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * This class is the default method selector used by TestNG to determine
@@ -138,11 +138,7 @@ public class XmlMethodSelector implements IMethodSelector {
         for (XmlClass xmlClass : m_classes) {
           // Only consider included/excluded methods that belong to the same class
           // we are looking at
-          Class cls = ClassHelper.forName(xmlClass.getName());
-          if(null == cls) {
-            Utils.log("XmlMethodSelector", 1, "Cannot find class in classpath " + xmlClass.getName());
-            continue;
-          }
+          Class cls = xmlClass.getSupportClass();
           if(!assignable(methodClass, cls)) {
             continue;
           }
