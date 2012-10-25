@@ -874,7 +874,9 @@ public class TestNG {
       addReporter(Main.class);
       addReporter(FailedReporter.class);
       addReporter(XMLReporter.class);
-      addReporter(EmailableReporter.class);
+      if (System.getProperty("testngEmailableReporter") != null) {
+          addReporter(EmailableReporter.class);
+      }
       addReporter(JUnitReportReporter.class);
       if (m_verbose != null && m_verbose > 4) {
         addListener(new VerboseReporter("[TestNG] "));
