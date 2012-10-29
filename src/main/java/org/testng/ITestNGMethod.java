@@ -256,4 +256,11 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
    * @param test
    */
   Map<String, String> findMethodParameters(XmlTest test);
+  
+  /**
+   * Support multi include tags
+   * 
+   * @return the parameters found in the include tag
+   */
+  List<Map<String, String>> getMethodParameters();
 }
