@@ -73,7 +73,9 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   private XmlTest m_xmlTest;
   private Object m_instance;
-
+  
+  private List<Map<String, String>> realMethodParameters = Lists.newArrayList();
+  
   /**
    * Constructs a <code>BaseTestMethod</code> TODO cquezel JavaDoc.
    *
@@ -798,19 +800,34 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   @Override
   public Map<String, String> findMethodParameters(XmlTest test) {
     // Get the test+suite parameters
-    Map<String, String> result = test.getAllParameters();
-    for (XmlClass xmlClass: test.getXmlClasses()) {
-      if (xmlClass.getName().equals(getTestClass().getName())) {
-        result.putAll(xmlClass.getLocalParameters());
-        for (XmlInclude include : xmlClass.getIncludedMethods()) {
-          if (include.getName().equals(getMethodName())) {
-            result.putAll(include.getLocalParameters());
-            break;
-          }
-        }
-      }
-    }
+  	if (realMethodParameters.isEmpty()) {
+  		
+  		Map<String, String> otherParameters = test.getAllParameters();
+  		for (XmlClass xmlClass: test.getXmlClasses()) {
+  			if (xmlClass.getName().equals(getTestClass().getName())) {
+  				otherParameters.putAll(xmlClass.getLocalParameters());
+  				for (XmlInclude include : xmlClass.getIncludedMethods()) {
+  					if (include.getName().equals(getMethodName())) {
+  						Map<String, String> methodParameters = Maps.newHashMap();
+  						methodParameters.putAll(otherParameters);
+  						methodParameters.putAll(include.getLocalParameters());
+  						realMethodParameters.add(methodParameters);
+  					}
+  				}
+  				break;
+  			}
+  		}
+  		
+  		if (realMethodParameters.isEmpty()) {
+  			realMethodParameters.add(otherParameters);
+  		}
+  	}
 
-    return result;
+    return realMethodParameters.get(0);
+  }
+  
+  @Override
+  public List<Map<String, String>> getMethodParameters() {
+  	return realMethodParameters;
   }
 }
