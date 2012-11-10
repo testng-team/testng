@@ -18,7 +18,7 @@ public class XMLStringBuffer {
   private static final String DEFAULT_INDENT_INCREMENT = "  ";
 
   /** The buffer to hold the xml document */
-  private StringBuffer m_buffer;
+  private IBuffer m_buffer;
 
   /** The stack of tags to make sure XML document is well formed. */
   private final Stack<Tag> m_tagStack = new Stack<Tag>();
@@ -32,7 +32,7 @@ public class XMLStringBuffer {
    * an <?xml prologue with a default encoding
    */
   public XMLStringBuffer() {
-    init(new StringBuffer(), "", "1.0", "UTF-8");
+    init(Buffer.create(), "", "1.0", "UTF-8");
   }
 
   /**
@@ -41,7 +41,7 @@ public class XMLStringBuffer {
    * prologue.
    */
   public XMLStringBuffer(String start) {
-    init(new StringBuffer(), start);
+    init(Buffer.create(), start);
   }
 
   /**
@@ -50,11 +50,11 @@ public class XMLStringBuffer {
    * @param start A string of spaces indicating the indentation at which
    * to start the generation.
    */
-  public XMLStringBuffer(StringBuffer buffer, String start) {
+  public XMLStringBuffer(IBuffer buffer, String start) {
     init(buffer, start);
   }
 
-  private void init(StringBuffer buffer, String start) {
+  private void init(IBuffer buffer, String start) {
     init(buffer, start, null, null);
   }
 
@@ -63,7 +63,7 @@ public class XMLStringBuffer {
   * @param start A string of spaces indicating the indentation at which
   * to start the generation.
   */
-  private void init(StringBuffer buffer, String start, String version, String encoding) {
+  private void init(IBuffer buffer, String start, String version, String encoding) {
     m_buffer = buffer;
     m_currentIndent = start;
     if (version != null) {
@@ -313,7 +313,7 @@ public class XMLStringBuffer {
    *
    * @return The StringBuffer used to create the document.
    */
-  public StringBuffer getStringBuffer() {
+  public IBuffer getStringBuffer() {
     return m_buffer;
   }
 
@@ -328,7 +328,7 @@ public class XMLStringBuffer {
   }
 
   public static void main(String[] argv) {
-    StringBuffer result = new StringBuffer();
+    IBuffer result = Buffer.create();
     XMLStringBuffer sb = new XMLStringBuffer(result, "");
 
     sb.push("family");

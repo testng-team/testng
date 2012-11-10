@@ -1,14 +1,14 @@
 package org.testng.xml;
 
-import org.testng.collections.Lists;
-import org.testng.internal.PackageUtils;
-import org.testng.internal.Utils;
-import org.testng.reporters.XMLStringBuffer;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Properties;
+
+import org.testng.collections.Lists;
+import org.testng.internal.PackageUtils;
+import org.testng.internal.Utils;
+import org.testng.reporters.XMLStringBuffer;
 
 /**
  * This class describes the tag <package>  in testng.xml.
@@ -101,7 +101,7 @@ public class XmlPackage implements Serializable {
     return result;
   }
 
-  public Object toXml(String indent) {
+  public String toXml(String indent) {
     XMLStringBuffer xsb = new XMLStringBuffer(indent);
     Properties p = new Properties();
     p.setProperty("name", getName());

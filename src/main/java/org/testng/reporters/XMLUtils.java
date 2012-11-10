@@ -22,7 +22,7 @@ public final class XMLUtils {
 
   static public String xml(String indent, String elementName, String content,
       Properties attributes) {
-    StringBuffer result = new StringBuffer();
+    IBuffer result = Buffer.create();
     xmlOpen(result, indent, elementName, attributes, true /* no newline */);
     result.append(content);
     xmlClose(result, "", elementName, XMLUtils.extractComment(elementName, attributes));
@@ -44,26 +44,26 @@ public final class XMLUtils {
     return null;
   }
 
-  public static void xmlOptional(StringBuffer result, String sp,
+  public static void xmlOptional(IBuffer result, String sp,
       String elementName, Boolean value, Properties attributes) {
     if (null != value) {
       xmlRequired(result, sp, elementName, value.toString(), attributes);
     }
   }
 
-  public static void xmlOptional(StringBuffer result, String sp,
+  public static void xmlOptional(IBuffer result, String sp,
       String elementName, String value, Properties attributes) {
     if (null != value) {
       xmlRequired(result, sp, elementName, value, attributes);
     }
   }
 
-  public static void xmlRequired(StringBuffer result, String sp,
+  public static void xmlRequired(IBuffer result, String sp,
       String elementName, String value, Properties attributes) {
     result.append(xml(sp, elementName, value, attributes));
   }
 
-  public static void xmlOpen(StringBuffer result, String indent, String tag,
+  public static void xmlOpen(IBuffer result, String indent, String tag,
       Properties attributes) {
     xmlOpen(result, indent, tag, attributes, false /* no newline */);
   }
@@ -77,7 +77,7 @@ public final class XMLUtils {
    * @param attributes
    *          the attributes to append (may be null).
    */
-  public static void appendAttributes(StringBuffer result, Properties attributes) {
+  public static void appendAttributes(IBuffer result, Properties attributes) {
     if (null != attributes) {
       for (Object element : attributes.entrySet()) {
         Entry entry = (Entry) element;
@@ -88,7 +88,7 @@ public final class XMLUtils {
     }
   }
 
-  public static void xmlOpen(StringBuffer result, String indent, String tag,
+  public static void xmlOpen(IBuffer result, String indent, String tag,
       Properties attributes, boolean noNewLine) {
     result.append(indent).append("<").append(tag);
     appendAttributes(result, attributes);
@@ -98,7 +98,7 @@ public final class XMLUtils {
     }
   }
 
-  public static void xmlClose(StringBuffer result, String indent, String tag, String comment) {
+  public static void xmlClose(IBuffer result, String indent, String tag, String comment) {
     result.append(indent).append("</").append(tag).append(">")
         .append(comment != null ? comment : "")
         .append(EOL);

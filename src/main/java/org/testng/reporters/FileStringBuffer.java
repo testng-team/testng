@@ -7,9 +7,19 @@ import java.util.Random;
 
 import org.testng.Assert;
 
-public class FileStringBuffer {
-  private static int MAX = 10000;
+/**
+ * A string buffer that flushes its content to a temporary file if the internal
+ * string buffer becomes larger than MAX.
+ *
+ * @author Cedric Beust <cedric@beust.com>
+ *
+ * @since Nov 9, 2012
+ */
+public class FileStringBuffer implements IBuffer {
+  private static int MAX = 100000;
+  private static final boolean VERBOSE = System.getProperty("fileStringBuffer") != null;
 
+  private boolean m_fileCreated = false;
   private File m_file;
   private StringBuilder m_sb = new StringBuilder();
   private final int m_maxCharacters;
@@ -20,29 +30,34 @@ public class FileStringBuffer {
 
   public FileStringBuffer(int maxCharacters) {
     m_maxCharacters = maxCharacters;
-
-    try {
-      m_file = File.createTempFile("testng", "fileStringBuffer");
-      m_file.deleteOnExit();
-      p("Created temp file " + m_file);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
   }
 
-  public void append(String s) {
+  @Override
+  public FileStringBuffer append(CharSequence s) {
     if (m_sb.length() > m_maxCharacters) {
       flushToFile();
     }
     m_sb.append(s);
+    return this;
   }
 
   private void flushToFile() {
     if (m_sb.length() == 0) return;
 
-    p("Size " + m_sb.length() + ", flushing to " + m_file);
+    if (! m_fileCreated) {
+      try {
+        m_file = File.createTempFile("testng", "fileStringBuffer");
+        m_file.deleteOnExit();
+        p("Created temp file " + m_file);
+        m_fileCreated = true;
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
     FileWriter fw;
     try {
+      p("Size " + m_sb.length() + ", flushing to " + m_file);
       fw = new FileWriter(m_file, true /* append */);
       fw.append(m_sb);
       fw.close();
@@ -53,17 +68,23 @@ public class FileStringBuffer {
   }
 
   private static void p(String s) {
-    System.out.println("[FileStringBuffer] " + s);
+    if (VERBOSE) {
+      System.out.println("[FileStringBuffer] " + s);
+    }
   }
 
   @Override
   public String toString() {
-    flushToFile();
     String result = null;
-    try {
-      result = Files.readFile(m_file);
-    } catch (IOException e) {
-      e.printStackTrace();
+    if (m_fileCreated) {
+      flushToFile();
+      try {
+        result = Files.readFile(m_file);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    } else {
+      result = m_sb.toString();
     }
     return result;
   }
@@ -85,4 +106,5 @@ public class FileStringBuffer {
 
     Assert.assertEquals(fsb.toString(), control.toString());
   }
+
 }

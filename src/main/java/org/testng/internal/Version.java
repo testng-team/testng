@@ -1,9 +1,9 @@
 package org.testng.internal;
 
 public class Version {
-  public static final String VERSION = "6.8beta 20120825_1010";
+  public static final String VERSION = "6.9beta 20121109_2221";
 
   public static void displayBanner() {
-    System.out.println("...\n... TestNG " + VERSION + " by CŽdric Beust (cedric@beust.com)\n...\n");
+    System.out.println("...\n... TestNG " + VERSION + " by Cï¿½dric Beust (cedric@beust.com)\n...\n");
   }
 }
