@@ -1,5 +1,9 @@
 package org.testng;
 
+import static org.testng.internal.Utils.defaultIfStringEmpty;
+import static org.testng.internal.Utils.isStringEmpty;
+import static org.testng.internal.Utils.isStringNotEmpty;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -45,6 +49,7 @@ import org.testng.log4testng.Logger;
 import org.testng.remote.SuiteDispatcher;
 import org.testng.remote.SuiteSlave;
 import org.testng.reporters.EmailableReporter;
+import org.testng.reporters.EmailableReporter2;
 import org.testng.reporters.FailedReporter;
 import org.testng.reporters.JUnitReportReporter;
 import org.testng.reporters.SuiteHTMLReporter;
@@ -61,10 +66,6 @@ import org.xml.sax.SAXException;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-
-import static org.testng.internal.Utils.defaultIfStringEmpty;
-import static org.testng.internal.Utils.isStringEmpty;
-import static org.testng.internal.Utils.isStringNotEmpty;
 
 /**
  * This class is the main entry point for running tests in the TestNG framework.
@@ -874,8 +875,10 @@ public class TestNG {
       addReporter(Main.class);
       addReporter(FailedReporter.class);
       addReporter(XMLReporter.class);
-      if (System.getProperty("testngEmailableReporter") != null) {
-          addReporter(EmailableReporter.class);
+      if (System.getProperty("oldDestngEmailableReporter") != null) {
+        addReporter(EmailableReporter.class);
+      } else {
+        addReporter(EmailableReporter2.class);
       }
       addReporter(JUnitReportReporter.class);
       if (m_verbose != null && m_verbose > 4) {
