@@ -1,15 +1,22 @@
 package org.testng.reporters;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.Random;
 
-import org.testng.Assert;
-
 /**
- * A string buffer that flushes its content to a temporary file if the internal
- * string buffer becomes larger than MAX.
+ * A string buffer that flushes its content to a temporary file whenever the internal
+ * string buffer becomes larger than MAX. If the buffer never reaches that size, no file
+ * is ever created and everything happens in memory, so the overhead compared to
+ * StringBuffer/StringBuilder is minimal.
+ *
+ * Note: calling toString() will force the entire string to be loaded in memory, use
+ * toWriter() if you need to avoid this.
  *
  * @author Cedric Beust <cedric@beust.com>
  *
@@ -19,7 +26,6 @@ public class FileStringBuffer implements IBuffer {
   private static int MAX = 100000;
   private static final boolean VERBOSE = System.getProperty("fileStringBuffer") != null;
 
-  private boolean m_fileCreated = false;
   private File m_file;
   private StringBuilder m_sb = new StringBuilder();
   private final int m_maxCharacters;
@@ -41,15 +47,49 @@ public class FileStringBuffer implements IBuffer {
     return this;
   }
 
+  @Override
+  public void toWriter(Writer fw) {
+    try {
+      BufferedWriter bw = new BufferedWriter(fw);
+      if (m_file == null) {
+        bw.write(m_sb.toString());
+        bw.close();
+      } else {
+        flushToFile();
+        copy(new FileReader(m_file), bw);
+      }
+    } catch(IOException ex) {
+      ex.printStackTrace();
+    }
+  }
+
+  private static void copy(Reader input, Writer output)
+      throws IOException {
+    char[] buf = new char[MAX];
+    while (true) {
+      int length = input.read(buf);
+      if (length < 0) break;
+      output.write(buf, 0, length);
+    }
+
+    try {
+      input.close();
+    } catch (IOException ignore) {
+    }
+    try {
+      output.close();
+    } catch (IOException ignore) {
+    }
+  }
+
   private void flushToFile() {
     if (m_sb.length() == 0) return;
 
-    if (! m_fileCreated) {
+    if (m_file == null) {
       try {
         m_file = File.createTempFile("testng", "fileStringBuffer");
         m_file.deleteOnExit();
         p("Created temp file " + m_file);
-        m_fileCreated = true;
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -76,7 +116,7 @@ public class FileStringBuffer implements IBuffer {
   @Override
   public String toString() {
     String result = null;
-    if (m_fileCreated) {
+    if (m_file != null) {
       flushToFile();
       try {
         result = Files.readFile(m_file);
@@ -89,22 +129,39 @@ public class FileStringBuffer implements IBuffer {
     return result;
   }
 
-  public static void main(String[] args) {
+  private static void save(File expected, String s) throws IOException {
+    expected.delete();
+    FileWriter expectedWriter = new FileWriter(expected);
+    expectedWriter.append(s);
+    expectedWriter.close();
+  }
+
+  public static void main(String[] args) throws IOException {
     String s = "abcdefghijklmnopqrstuvwxyz";
     FileStringBuffer fsb = new FileStringBuffer(10);
     StringBuilder control = new StringBuilder();
     Random r = new Random();
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 1000; i++) {
       int start = Math.abs(r.nextInt() % 26);
       int length = Math.abs(r.nextInt() % (26 - start));
       String fragment = s.substring(start, start + length);
-      fragment = "abc";
       p("... Appending " + fragment);
       fsb.append(fragment);
       control.append(fragment);
     }
 
-    Assert.assertEquals(fsb.toString(), control.toString());
+    File expected = new File("/tmp/expected");
+    expected.delete();
+    FileWriter expectedWriter = new FileWriter(expected);
+    expectedWriter.append(control);
+    expectedWriter.close();
+
+    File actual = new File("/tmp/actual");
+    actual.delete();
+    FileWriter actualWriter = new FileWriter(actual);
+    fsb.toWriter(actualWriter);
+    actualWriter.close();
+//    Assert.assertEquals(fsb.toString(), control.toString());
   }
 
 }

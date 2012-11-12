@@ -83,7 +83,7 @@ public class Main implements IReporter {
           Files.copyFile(is, new File(m_outputDirectory, fileName));
         }
         all = Files.readFile(header);
-        Utils.writeFile(m_outputDirectory, "index.html", all + xsb.toXML());
+        Utils.writeUtf8File(m_outputDirectory, "index.html", xsb, all); 
       }
     } catch (IOException e) {
       // TODO Auto-generated catch block

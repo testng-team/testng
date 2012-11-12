@@ -1,5 +1,6 @@
 package org.testng.reporters;
 
+import java.io.Writer;
 import java.util.Properties;
 import java.util.Stack;
 import java.util.regex.Pattern;
@@ -348,6 +349,10 @@ public class XMLStringBuffer {
 
   public String getCurrentIndent() {
     return m_currentIndent;
+  }
+
+  public void toWriter(Writer fw) {
+    m_buffer.toWriter(fw);
   }
 }
 

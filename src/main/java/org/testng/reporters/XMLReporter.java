@@ -63,7 +63,7 @@ public class XMLReporter implements IReporter {
       writeSuite(suites.get(i).getXmlSuite(), suites.get(i));
     }
     rootBuffer.pop();
-    Utils.writeUtf8File(config.getOutputDirectory(), FILE_NAME, rootBuffer.toXML());
+    Utils.writeUtf8File(config.getOutputDirectory(), FILE_NAME, rootBuffer, null /* no prefix */);
   }
 
   private void writeReporterOutput(XMLStringBuffer xmlBuffer) {

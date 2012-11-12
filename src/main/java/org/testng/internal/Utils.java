@@ -35,6 +35,7 @@ import org.testng.collections.Lists;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.log.TextFormatter;
+import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.XmlClass;
 
 /**
@@ -98,6 +99,20 @@ public final class Utils {
     }
 
     return vResult.toArray(new String[vResult.size()]);
+  }
+
+  public static void writeUtf8File(String outputDir, String fileName, XMLStringBuffer xsb,
+      String prefix) {
+    try {
+      FileWriter fw = new FileWriter(new File(outputDir, fileName));
+      if (prefix != null) {
+        fw.append(prefix);
+      }
+      xsb.toWriter(fw);
+      fw.close();
+    } catch(IOException ex) {
+      ex.printStackTrace();
+    }
   }
 
   /**
