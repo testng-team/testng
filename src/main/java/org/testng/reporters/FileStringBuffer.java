@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.Writer;
 import java.util.Random;
 
@@ -17,6 +18,8 @@ import java.util.Random;
  *
  * Note: calling toString() will force the entire string to be loaded in memory, use
  * toWriter() if you need to avoid this.
+ *
+ * This class is not multi thread safe.
  *
  * @author Cedric Beust <cedric@beust.com>
  *
@@ -43,7 +46,18 @@ public class FileStringBuffer implements IBuffer {
     if (m_sb.length() > m_maxCharacters) {
       flushToFile();
     }
-    m_sb.append(s);
+    if (s.length() < MAX) {
+      // Small string, add it to our internal buffer
+      m_sb.append(s);
+    } else {
+      // Big string, add it to the temporary file directly
+      flushToFile();
+      try {
+        copy(new StringReader(s.toString()), new FileWriter(m_file));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
     return this;
   }
 
