@@ -665,25 +665,31 @@ public class EmailableReporter2 implements IReporter {
                 while (resultsIterator.hasNext()) {
                     result = resultsIterator.next();
 
-                    String methodName = result.getMethod().getMethodName();
-                    if (!previousMethodName.equals(methodName)) {
+                    String className = result.getTestClass().getName();
+                    if (!previousClassName.equals(className)) {
+                        // Different class implies different method
                         assert !resultsPerMethod.isEmpty();
                         resultsPerClass.add(new MethodResult(resultsPerMethod));
                         resultsPerMethod = Lists.newArrayList();
 
-                        previousMethodName = methodName;
-                    }
-                    resultsPerMethod.add(result);
-
-                    String className = result.getTestClass().getName();
-                    if (!previousClassName.equals(className)) {
                         assert !resultsPerClass.isEmpty();
                         classResults.add(new ClassResult(previousClassName,
                                 resultsPerClass));
                         resultsPerClass = Lists.newArrayList();
 
                         previousClassName = className;
+                        previousMethodName = result.getMethod().getMethodName();
+                    } else {
+                        String methodName = result.getMethod().getMethodName();
+                        if (!previousMethodName.equals(methodName)) {
+                            assert !resultsPerMethod.isEmpty();
+                            resultsPerClass.add(new MethodResult(resultsPerMethod));
+                            resultsPerMethod = Lists.newArrayList();
+
+                            previousMethodName = methodName;
+                        }
                     }
+                    resultsPerMethod.add(result);
                 }
                 assert !resultsPerMethod.isEmpty();
                 resultsPerClass.add(new MethodResult(resultsPerMethod));
