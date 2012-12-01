@@ -12,7 +12,6 @@ public class DataProviderHolder {
   IDataProviderAnnotation annotation;
 
   public DataProviderHolder(IDataProviderAnnotation annotation, Method method) {
-    super();
     this.annotation = annotation;
     this.method = method;
   }

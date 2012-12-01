@@ -1,6 +1,7 @@
 package org.testng.junit;
 
 
+import java.lang.reflect.Constructor;
 import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -22,6 +23,7 @@ import junit.framework.Test;
 import junit.framework.TestListener;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
+import org.testng.*;
 
 /**
  * A JUnit TestRunner that records/triggers all information/events necessary to TestNG.
@@ -35,6 +37,7 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
 
   private Map<Test, TestRunInfo> m_tests= new WeakHashMap<Test, TestRunInfo>();
   private List<ITestNGMethod> m_methods= Lists.newArrayList();
+  private List<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
 
   public JUnitTestRunner() {
   }
@@ -105,16 +108,22 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
     runTestListeners(tr, m_parentRunner.getTestListeners());
   }
 
+    public void setInvokedMethodListeners(List<IInvokedMethodListener> listeners) {
+        m_invokedMethodListeners = listeners;
+    }
+
+
   private org.testng.internal.TestResult recordResults(Test test, TestRunInfo tri)  {
-    JUnitUtils.JUnitTestClass tc= new JUnitUtils.JUnitTestClass(test);
-    JUnitUtils.JUnitTestMethod tm= new JUnitUtils.JUnitTestMethod(test, tc);
+    JUnitTestClass tc= new JUnit3TestClass(test);
+    JUnitTestMethod tm= new JUnit3TestMethod(tc, test);
 
     org.testng.internal.TestResult tr= new org.testng.internal.TestResult(tc,
                                                                           test,
                                                                           tm,
                                                                           tri.m_failure,
                                                                           tri.m_start,
-                                                                          Calendar.getInstance().getTimeInMillis());
+                                                                          Calendar.getInstance().getTimeInMillis(),
+                                                                          null);
 
     if(tri.isFailure()) {
       tr.setStatus(ITestResult.FAILURE);
@@ -124,8 +133,12 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
       m_parentRunner.addPassedTest(tm, tr);
     }
 
-    m_parentRunner.addInvokedMethod(new InvokedMethod(test, tm, new Object[0], true, false, tri.m_start));
+    InvokedMethod im = new InvokedMethod(test, tm, new Object[0], true, false, tri.m_start, tr);
+    m_parentRunner.addInvokedMethod(im);
     m_methods.add(tm);
+    for (IInvokedMethodListener l: m_invokedMethodListeners) {
+        l.beforeInvocation(im, tr);
+    }
 
     return tr;
   }
@@ -166,7 +179,31 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
    * Returns the Test corresponding to the given suite. This is
    * a template method, subclasses override runFailed(), clearStatus().
    */
-  protected Test getTest(Class testClass) {
+  protected Test getTest(Class testClass, String... methods) {
+    if (methods.length > 0) {
+      TestSuite ts = new TestSuite();
+      try {
+        Constructor c = testClass.getConstructor(String.class);
+        for (String m: methods) {
+          try {
+            ts.addTest((Test) c.newInstance(m));
+          } catch (InstantiationException ex) {
+            runFailed(testClass, "abstract class " + ex);
+          } catch (IllegalAccessException ex) {
+            runFailed(testClass, "constructor is not public " + ex);
+          } catch (IllegalArgumentException ex) {
+            runFailed(testClass, "actual and formal parameters differ " + ex);
+          } catch (InvocationTargetException ex) {
+            runFailed(testClass, "exception while instatiating test for method '" + m + "' " + ex);
+          }
+        }
+      } catch (NoSuchMethodException ex) {
+        runFailed(testClass, "no constructor accepting String argument found " + ex);
+      } catch (SecurityException ex) {
+        runFailed(testClass, "security exception " + ex);
+      }
+      return ts;
+    }
     Method suiteMethod = null;
     try {
       suiteMethod = testClass.getMethod(SUITE_METHODNAME, new Class[0]);
@@ -207,17 +244,17 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
    * @param testClass the JUnit test class
    */
   @Override
-  public void run(Class testClass) {
-    start(testClass);
+  public void run(Class testClass, String... methods) {
+    start(testClass, methods);
   }
 
   /**
    * Starts a test run. Analyzes the command line arguments and runs the given
    * test suite.
    */
-  public TestResult start(Class testCase) {
+  public TestResult start(Class testCase, String... methods) {
     try {
-      Test suite = getTest(testCase);
+      Test suite = getTest(testCase, methods);
 
       if(null != suite) {
         return doRun(suite);

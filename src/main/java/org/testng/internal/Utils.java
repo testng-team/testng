@@ -1,17 +1,5 @@
 package org.testng.internal;
 
-import org.testng.ITestNGMethod;
-import org.testng.TestNG;
-import org.testng.TestNGException;
-import org.testng.TestRunner;
-import org.testng.annotations.IConfigurationAnnotation;
-import org.testng.annotations.ITestAnnotation;
-import org.testng.collections.Lists;
-import org.testng.internal.annotations.AnnotationHelper;
-import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.log.TextFormatter;
-import org.testng.xml.XmlClass;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -28,14 +16,27 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.testng.ITestNGMethod;
+import org.testng.TestNG;
+import org.testng.TestNGException;
+import org.testng.TestRunner;
+import org.testng.annotations.IConfigurationAnnotation;
+import org.testng.annotations.ITestAnnotation;
+import org.testng.collections.Lists;
+import org.testng.internal.annotations.AnnotationHelper;
+import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.log.TextFormatter;
+import org.testng.reporters.XMLStringBuffer;
+import org.testng.xml.XmlClass;
 
 /**
  * Helper methods to parse annotations.
@@ -98,6 +99,20 @@ public final class Utils {
     }
 
     return vResult.toArray(new String[vResult.size()]);
+  }
+
+  public static void writeUtf8File(String outputDir, String fileName, XMLStringBuffer xsb,
+      String prefix) {
+    try {
+      FileWriter fw = new FileWriter(new File(outputDir, fileName));
+      if (prefix != null) {
+        fw.append(prefix);
+      }
+      xsb.toWriter(fw);
+      fw.close();
+    } catch(IOException ex) {
+      ex.printStackTrace();
+    }
   }
 
   /**
@@ -494,7 +509,10 @@ public final class Utils {
     return !isStringEmpty(s);
   }
 
-  public static String[] stackTrace(Throwable t, boolean tohtml) {
+  /**
+   * @return an array of two strings: the short stack trace and the long stack trace.
+   */
+  public static String[] stackTrace(Throwable t, boolean toHtml) {
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw);
     t.printStackTrace(pw);
@@ -505,14 +523,13 @@ public final class Utils {
 
     if (Boolean.getBoolean(TestNG.SHOW_TESTNG_STACK_FRAMES) || TestRunner.getVerbose() >= 2) {
       shortStackTrace = fullStackTrace;
-    }
-    else {
+    } else {
       shortStackTrace = filterTrace(sw.getBuffer().toString());
     }
 
-    if (tohtml) {
+    if (toHtml) {
       shortStackTrace = escapeHtml(shortStackTrace);
-      fullStackTrace = fullStackTrace.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+      fullStackTrace = escapeHtml(fullStackTrace);
     }
 
     return new String[] {
@@ -520,9 +537,7 @@ public final class Utils {
     };
   }
 
-  private static final Map<Character, String> ESCAPES = new HashMap<Character, String>() {/**
-     *
-     */
+  private static final Map<Character, String> ESCAPES = new HashMap<Character, String>() {
     private static final long serialVersionUID = 1285607660247157523L;
 
   {
@@ -530,6 +545,7 @@ public final class Utils {
     put('>', "&gt;");
     put('\'', "&apos;");
     put('"', "&quot;");
+    put('&', "&amp;");
   }};
 
   public static String escapeHtml(String s) {
@@ -586,7 +602,8 @@ public final class Utils {
       //
       String[] excludedStrings = new String[] {
           "org.testng",
-          "reflect"
+          "reflect",
+          "org.apache.maven.surefire"
       };
 
       int excludedCount = 0;
@@ -710,34 +727,15 @@ public final class Utils {
    return fileName;
   }
 
-  public static String joinStrings(Iterable<String> iterable, String separator) {
-    StringBuilder sb = new StringBuilder();
-    Iterator<String> iterator = iterable.iterator();
-    if (iterator.hasNext()) {
-      sb.append(iterator.next());
-    }
-    while (iterator.hasNext()) {
-      sb.append(separator);
-      sb.append(iterator.next());
-    }
-    return sb.toString();
-  }
-
-  public static String join(List<String> s, String separator) {
-    return joinStrings(s, separator + " ");
-  }
-
-  public static String joinClasses(List<Class> classes, String separator) {
-    StringBuilder sb = new StringBuilder();
-    int i = 0;
-    for (Class s : classes) {
-      if (i++ > 0) {
-        sb.append(separator);
+  public static <T> String join(List<T> objects, String separator) {
+    StringBuilder result = new StringBuilder();
+    for (int i = 0; i < objects.size(); i++) {
+      if (i > 0) {
+        result.append(separator);
       }
-      sb.append(s.getName());
+      result.append(objects.get(i).toString());
     }
-
-    return sb.toString();
+    return result.toString();
   }
 
   public static void copyFile(File from, File to) {
@@ -797,5 +795,43 @@ public final class Utils {
       throw new TestNGException("Can't invoke " + method + ": either make it static or add "
           + "a no-args constructor to your class");
     }
+  }
+
+  /**
+   * Returns the string representation of the specified object, transparently
+   * handling null references and arrays.
+   * 
+   * @param obj
+   *            the object
+   * @return the string representation
+   */
+  public static String toString(Object obj) {
+    String result;
+    if (obj != null) {
+      if (obj instanceof boolean[]) {
+        result = Arrays.toString((boolean[]) obj);
+      } else if (obj instanceof byte[]) {
+        result = Arrays.toString((byte[]) obj);
+      } else if (obj instanceof char[]) {
+        result = Arrays.toString((char[]) obj);
+      } else if (obj instanceof double[]) {
+        result = Arrays.toString((double[]) obj);
+      } else if (obj instanceof float[]) {
+        result = Arrays.toString((float[]) obj);
+      } else if (obj instanceof int[]) {
+        result = Arrays.toString((int[]) obj);
+      } else if (obj instanceof long[]) {
+        result = Arrays.toString((long[]) obj);
+      } else if (obj instanceof Object[]) {
+        result = Arrays.deepToString((Object[]) obj);
+      } else if (obj instanceof short[]) {
+        result = Arrays.toString((short[]) obj);
+      } else {
+        result = obj.toString();
+      }
+    } else {
+      result = "null";
+    }
+    return result;
   }
 }

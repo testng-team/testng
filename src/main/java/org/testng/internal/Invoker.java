@@ -79,9 +79,9 @@ public class Invoker implements IInvoker {
   private IConfiguration m_configuration;
 
   /** Predicate to filter methods */
-  private static Predicate CAN_RUN_FROM_CLASS = new CanRunFromClassPredicate();
+  private static Predicate<ITestNGMethod, IClass> CAN_RUN_FROM_CLASS = new CanRunFromClassPredicate();
   /** Predicate to filter methods */
-  private static final Predicate SAME_CLASS = new SameClassNamePredicate();
+  private static final Predicate<ITestNGMethod, IClass> SAME_CLASS = new SameClassNamePredicate();
 
   private void setClassInvocationFailure(Class<?> clazz, Object instance) {
     Set<Object> instances = m_classInvocationResults.get( clazz );
@@ -98,7 +98,7 @@ public class Invoker implements IInvoker {
       instances = Sets.newHashSet();
       m_methodInvocationResults.put(method, instances);
     }
-    instances.add(instance);
+    instances.add(getMethodInvocationToken(method, instance));
   }
 
   public Invoker(IConfiguration configuration,
@@ -166,7 +166,8 @@ public class Invoker implements IInvoker {
                                              tm,
                                              null,
                                              System.currentTimeMillis(),
-                                             System.currentTimeMillis());
+                                             System.currentTimeMillis(),
+                                             m_testContext);
 
       IConfigurationAnnotation configurationAnnotation= null;
       try {
@@ -424,10 +425,23 @@ public class Invoker implements IInvoker {
   }
 
   /**
+   * @return true if this class or a parent class failed to initialize.
+   */
+  private boolean classConfigurationFailed(Class<?> cls) {
+    for (Class<?> c : m_classInvocationResults.keySet()) {
+      if (c == cls || cls.isAssignableFrom(c)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
    * @return true if this class has successfully run all its @Configuration
    * method or false if at least one of these methods failed.
    */
-  private boolean confInvocationPassed(ITestNGMethod method, ITestNGMethod currentTestMethod, IClass testClass, Object instance) {
+  private boolean confInvocationPassed(ITestNGMethod method, ITestNGMethod currentTestMethod,
+      IClass testClass, Object instance) {
     boolean result= true;
 
     // If continuing on config failure, check invocation results for the class
@@ -439,9 +453,9 @@ public class Invoker implements IInvoker {
       result= false;
     }
     else {
-      if (m_classInvocationResults.containsKey(cls)) {
+      if (classConfigurationFailed(cls)) {
         if (! m_continueOnFailedConfiguration) {
-          result = !m_classInvocationResults.containsKey(cls);
+          result = !classConfigurationFailed(cls);
         } else {
           result = !m_classInvocationResults.get(cls).contains(instance);
         }
@@ -450,7 +464,7 @@ public class Invoker implements IInvoker {
       else if (m_continueOnFailedConfiguration &&
               currentTestMethod != null &&
               m_methodInvocationResults.containsKey(currentTestMethod)) {
-        result = !m_methodInvocationResults.get(currentTestMethod).contains(instance);
+        result = !m_methodInvocationResults.get(currentTestMethod).contains(getMethodInvocationToken(currentTestMethod, instance));
       }
       else if (! m_continueOnFailedConfiguration) {
         for(Class<?> clazz: m_classInvocationResults.keySet()) {
@@ -474,6 +488,12 @@ public class Invoker implements IInvoker {
       }
     }
     return result;
+  }
+
+   // Creates a token for tracking a unique invocation of a method on an instance.
+   // Is used when configFailurePolicy=continue.
+  private Object getMethodInvocationToken(ITestNGMethod method, Object instance) {
+    return String.format("%s+%d", instance.toString(), method.getCurrentInvocationCount());
   }
 
   /**
@@ -514,7 +534,8 @@ public class Invoker implements IInvoker {
                                           params,
                                           false, /* isTest */
                                           isClass, /* ??? */
-                                          System.currentTimeMillis());
+                                          System.currentTimeMillis(),
+                                          testResult);
 
       runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
       m_notifier.addInvokedMethod(invokedMethod);
@@ -575,6 +596,7 @@ public class Invoker implements IInvoker {
       finally {
         Reporter.setCurrentTestResult(testResult);
         runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
+        Reporter.setCurrentTestResult(null);
       }
     }
   }
@@ -642,7 +664,8 @@ public class Invoker implements IInvoker {
                                  tm,
                                  null,
                                  System.currentTimeMillis(),
-                                 0);
+                                 0,
+                                 m_testContext);
       testResult.setParameters(parameterValues);
       testResult.setHost(m_testContext.getHost());
       testResult.setStatus(ITestResult.STARTED);
@@ -652,7 +675,8 @@ public class Invoker implements IInvoker {
           parameterValues,
           true /* isTest */,
           false /* isConfiguration */,
-          System.currentTimeMillis());
+          System.currentTimeMillis(),
+          testResult);
 
       // Fix from ansgarkonermann
       // invokedMethod is used in the finally, which can be invoked if
@@ -672,42 +696,32 @@ public class Invoker implements IInvoker {
 
         // If no timeOut, just invoke the method
         if (MethodHelper.calculateTimeOut(tm) <= 0) {
-          try {
-            Reporter.setCurrentTestResult(testResult);
-            //
-            // If this method is a IHookable, invoke its run() method
-            //
-            IHookable hookableInstance =
-              IHookable.class.isAssignableFrom(thisMethod.getDeclaringClass()) ?
-              (IHookable) instance : m_configuration.getHookable();
-            if (hookableInstance != null) {
-              MethodInvocationHelper.invokeHookable(instance,
-                  parameterValues, hookableInstance, thisMethod, testResult);
-            }
-            //
-            // Not a IHookable, invoke directly
-            //
-            else {
-              MethodInvocationHelper.invokeMethod(thisMethod, instance,
-                  parameterValues);
-            }
-            testResult.setStatus(ITestResult.SUCCESS);
+          Reporter.setCurrentTestResult(testResult);
+          //
+          // If this method is a IHookable, invoke its run() method
+          //
+          IHookable hookableInstance =
+            IHookable.class.isAssignableFrom(thisMethod.getDeclaringClass()) ?
+            (IHookable) instance : m_configuration.getHookable();
+          if (hookableInstance != null) {
+            MethodInvocationHelper.invokeHookable(instance,
+                parameterValues, hookableInstance, thisMethod, testResult);
           }
-          finally {
-            Reporter.setCurrentTestResult(null);
+          //
+          // Not a IHookable, invoke directly
+          //
+          else {
+            MethodInvocationHelper.invokeMethod(thisMethod, instance,
+                parameterValues);
           }
+          testResult.setStatus(ITestResult.SUCCESS);
         }
         else {
           //
           // Method with a timeout
           //
-          try {
-            Reporter.setCurrentTestResult(testResult);
-            MethodInvocationHelper.invokeWithTimeout(tm, instance, parameterValues, testResult);
-          }
-          finally {
-            Reporter.setCurrentTestResult(null);
-          }
+          Reporter.setCurrentTestResult(testResult);
+          MethodInvocationHelper.invokeWithTimeout(tm, instance, parameterValues, testResult);
         }
       }
       else {
@@ -780,6 +794,10 @@ public class Invoker implements IInvoker {
       //
       invokeAfterGroupsConfigurations(testClass, tm, groupMethods, suite,
           params, instance);
+
+      // Reset the test result last. If we do this too early, Reporter.log()
+      // invocations from listeners will be discarded
+      Reporter.setCurrentTestResult(null);
     }
 
     return testResult;
@@ -1023,7 +1041,7 @@ public class Invoker implements IInvoker {
        * TODO: This recreates all the parameters every time when we only need
        * one specific set. Should optimize it by only recreating the set needed.
        */
-      ParameterBag bag = createParameters(testClass, tm, parameters,
+      ParameterBag bag = createParameters(tm, parameters,
           allParameters, null, suite, testContext, null /* fedInstance */, null /* testResult */);
       Object[] parameterValues =
           getParametersFromIndex(bag.parameterHolder.parameters, parametersIndex);
@@ -1037,8 +1055,7 @@ public class Invoker implements IInvoker {
     return failureCount;
   }
 
-  private ParameterBag createParameters(ITestClass testClass,
-                                        ITestNGMethod testMethod,
+  private ParameterBag createParameters(ITestNGMethod testMethod,
                                         Map<String, String> parameters,
                                         Map<String, String> allParameterNames,
                                         Object[] parameterValues,
@@ -1083,7 +1100,7 @@ public class Invoker implements IInvoker {
                                              ITestNGMethod[] allTestMethods,
                                              int testMethodIndex,
                                              XmlSuite suite,
-                                             Map<String, String> parameters,
+                                             Map<String, String> testParameters,
                                              ConfigurationGroupMethods groupMethods,
                                              Object[] instances,
                                              ITestContext testContext)
@@ -1126,7 +1143,8 @@ public class Invoker implements IInvoker {
                                                testMethod,
                                                null /* cause */,
                                                start,
-                                               System.currentTimeMillis());
+                                               System.currentTimeMillis(),
+                                               m_testContext);
         String missingGroup = testMethod.getMissingGroup();
         if (missingGroup != null) {
           testResult.setThrowable(new Throwable("Method " + testMethod
@@ -1143,6 +1161,8 @@ public class Invoker implements IInvoker {
       //
       // If threadPoolSize specified, run this method in its own pool thread.
       //
+      Map<String, String> parameters =
+          testMethod.findMethodParameters(testContext.getCurrentXmlTest());
       if (testMethod.getThreadPoolSize() > 1 && testMethod.getInvocationCount() > 1) {
           return invokePooledTestMethods(testMethod, allTestMethods, suite,
               parameters, groupMethods, testContext);
@@ -1157,7 +1177,7 @@ public class Invoker implements IInvoker {
             CAN_RUN_FROM_CLASS);
 
         Map<String, String> allParameterNames = Maps.newHashMap();
-        ParameterBag bag = createParameters(testClass, testMethod,
+        ParameterBag bag = createParameters(testMethod,
             parameters, allParameterNames, null, suite, testContext, instances[0],
             null);
 
@@ -1193,9 +1213,12 @@ public class Invoker implements IInvoker {
               // testng387: increment the param index in the bag.
               parametersIndex++;
             }
-            PoolService ps = PoolService.getInstance();
-            List<ITestResult> r = ps.submitTasksAndWait(testMethod, workers);
-            result.addAll(r);
+            PoolService<List<ITestResult>> ps =
+                new PoolService<List<ITestResult>>(suite.getDataProviderThreadCount());
+            List<List<ITestResult>> r = ps.submitTasksAndWait(workers);
+            for (List<ITestResult> l2 : r) {
+              result.addAll(l2);
+            }
 
           } else {
             while (allParameterValues.hasNext()) {
@@ -1262,7 +1285,8 @@ public class Invoker implements IInvoker {
                 testMethod,
                 cause,
                 start,
-                System.currentTimeMillis());
+                System.currentTimeMillis(),
+                m_testContext);
             r.setStatus(TestResult.FAILURE);
             result.add(r);
             runTestListeners(r);
@@ -1283,7 +1307,8 @@ public class Invoker implements IInvoker {
         testMethod,
         throwable,
         start,
-        System.currentTimeMillis());
+        System.currentTimeMillis(),
+        m_testContext);
     result.setStatus(TestResult.SKIP);
     runTestListeners(result);
 
@@ -1359,7 +1384,9 @@ public class Invoker implements IInvoker {
           Parameters.handleParameters(testMethod,
             allParameterNames,
             instance,
-            new Parameters.MethodParameters(parameters, parameterValues,
+            new Parameters.MethodParameters(parameters,
+                testMethod.findMethodParameters(testContext.getCurrentXmlTest()),
+                parameterValues,
                 testMethod.getMethod(), testContext, testResult),
             suite,
             m_annotationFinder,
@@ -1377,7 +1404,8 @@ public class Invoker implements IInvoker {
               testMethod,
               cause,
               System.currentTimeMillis(),
-              System.currentTimeMillis()));
+              System.currentTimeMillis(),
+              m_testContext));
     }
   }
 
@@ -1456,14 +1484,7 @@ public class Invoker implements IInvoker {
                     " but got \"" + ite.getMessage() + "\"", ite));
             status= ITestResult.FAILURE;
           }
-        } else if (ite != null && expectedExceptionsHolder != null) {
-          testResult.setThrowable(
-              new TestException("Expected exception "
-                 + expectedExceptionsHolder.expectedClasses[0].getName()
-                 + " but got " + ite, ite));
-          status= ITestResult.FAILURE;
-        }
-        else if (SkipException.class.isAssignableFrom(ite.getClass())){
+        } else if (SkipException.class.isAssignableFrom(ite.getClass())){
           SkipException skipEx= (SkipException) ite;
           if(skipEx.isSkip()) {
             status = ITestResult.SKIP;
@@ -1472,8 +1493,13 @@ public class Invoker implements IInvoker {
             handleException(ite, testMethod, testResult, failureCount++);
             status = ITestResult.FAILURE;
           }
-        }
-        else {
+        } else if (ite != null && expectedExceptionsHolder != null) {
+          testResult.setThrowable(
+              new TestException("Expected exception "
+                 + expectedExceptionsHolder.expectedClasses[0].getName()
+                 + " but got " + ite, ite));
+          status= ITestResult.FAILURE;
+        } else {
           handleException(ite, testMethod, testResult, failureCount++);
           status= testResult.getStatus();
         }

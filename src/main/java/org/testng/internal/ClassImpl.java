@@ -11,13 +11,13 @@ import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.annotations.Guice;
 import org.testng.collections.Lists;
+import org.testng.collections.Objects;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -126,16 +126,7 @@ public class ClassImpl implements IClass {
     if (annotation == null) return null;
 
     Guice guice = (Guice) annotation;
-    Module[] modules = getModules(guice, m_class);
-
-    if (modules.length == 0) {
-      throw new TestNGException("Couldn't find any Guice module for class " + m_class);
-    }
-
-    List<Module> moduleInstances = new ArrayList<Module>();
-    for (Module module : modules) {
-      moduleInstances.add(module);
-    }
+    List<Module> moduleInstances = Lists.newArrayList(getModules(guice, m_class));
 
     // Reuse the previous injector, if any
     Injector injector = m_testContext.getInjector(moduleInstances);
@@ -208,7 +199,9 @@ public class ClassImpl implements IClass {
 
   @Override
   public String toString() {
-    return "[ClassImpl " + m_class.getName() + "]";
+    return Objects.toStringHelper(getClass())
+        .add("class", m_class.getName())
+        .toString();
   }
 
   @Override

@@ -1,7 +1,9 @@
 package org.testng.reporters;
 
+import java.io.Writer;
 import java.util.Properties;
 import java.util.Stack;
+import java.util.regex.Pattern;
 
 /**
  * This class allows you to generate an XML text document by pushing
@@ -17,7 +19,7 @@ public class XMLStringBuffer {
   private static final String DEFAULT_INDENT_INCREMENT = "  ";
 
   /** The buffer to hold the xml document */
-  private StringBuffer m_buffer;
+  private IBuffer m_buffer;
 
   /** The stack of tags to make sure XML document is well formed. */
   private final Stack<Tag> m_tagStack = new Stack<Tag>();
@@ -31,7 +33,7 @@ public class XMLStringBuffer {
    * an <?xml prologue with a default encoding
    */
   public XMLStringBuffer() {
-    init(new StringBuffer(), "", "1.0", "UTF-8");
+    init(Buffer.create(), "", "1.0", "UTF-8");
   }
 
   /**
@@ -40,7 +42,7 @@ public class XMLStringBuffer {
    * prologue.
    */
   public XMLStringBuffer(String start) {
-    init(new StringBuffer(), start);
+    init(Buffer.create(), start);
   }
 
   /**
@@ -49,11 +51,11 @@ public class XMLStringBuffer {
    * @param start A string of spaces indicating the indentation at which
    * to start the generation.
    */
-  public XMLStringBuffer(StringBuffer buffer, String start) {
+  public XMLStringBuffer(IBuffer buffer, String start) {
     init(buffer, start);
   }
 
-  private void init(StringBuffer buffer, String start) {
+  private void init(IBuffer buffer, String start) {
     init(buffer, start, null, null);
   }
 
@@ -62,7 +64,7 @@ public class XMLStringBuffer {
   * @param start A string of spaces indicating the indentation at which
   * to start the generation.
   */
-  private void init(StringBuffer buffer, String start, String version, String encoding) {
+  private void init(IBuffer buffer, String start, String version, String encoding) {
     m_buffer = buffer;
     m_currentIndent = start;
     if (version != null) {
@@ -102,7 +104,7 @@ public class XMLStringBuffer {
    */
   public void push(String tagName, String schema, Properties attributes) {
     XMLUtils.xmlOpen(m_buffer, m_currentIndent, tagName + schema, attributes);
-    m_tagStack.push(new Tag(m_currentIndent, tagName));
+    m_tagStack.push(new Tag(m_currentIndent, tagName, attributes));
     m_currentIndent += DEFAULT_INDENT_INCREMENT;
   }
 
@@ -126,6 +128,18 @@ public class XMLStringBuffer {
    */
   public void push(String tagName, Properties attributes) {
     push(tagName, "", attributes);
+  }
+
+  public void push(String tagName, String... attributes) {
+    push(tagName, createProperties(attributes));
+  }
+
+  private Properties createProperties(String[] attributes) {
+    Properties result = new Properties();
+    for (int i = 0; i < attributes.length; i += 2) {
+      result.put(attributes[i], attributes[i + 1]);
+    }
+    return result;
   }
 
   /**
@@ -162,7 +176,8 @@ public class XMLStringBuffer {
             "Popping the wrong tag: " + t.tagName + " but expected " + tagName);
       }
     }
-    XMLUtils.xmlClose(m_buffer, m_currentIndent, t.tagName);
+    XMLUtils.xmlClose(m_buffer, m_currentIndent, t.tagName,
+        XMLUtils.extractComment(tagName, t.properties));
   }
 
   /**
@@ -172,7 +187,7 @@ public class XMLStringBuffer {
    * @param value The value for this tag
    */
   public void addRequired(String tagName, String value) {
-    addRequired(tagName, value, null);
+    addRequired(tagName, value, (Properties) null);
   }
 
   /**
@@ -184,6 +199,9 @@ public class XMLStringBuffer {
    */
   public void addRequired(String tagName, String value, Properties attributes) {
     XMLUtils.xmlRequired(m_buffer, m_currentIndent, tagName, value, attributes);
+  }
+  public void addRequired(String tagName, String value, String... attributes) {
+    addRequired(tagName, value, createProperties(attributes));
   }
 
   /**
@@ -197,6 +215,10 @@ public class XMLStringBuffer {
     XMLUtils.xmlOptional(m_buffer, m_currentIndent, tagName, value, attributes);
   }
 
+  public void addOptional(String tagName, String value, String... attributes) {
+    XMLUtils.xmlOptional(m_buffer, m_currentIndent, tagName, value, createProperties(attributes));
+  }
+
   /**
    * Add an optional String element to the current tag.  If value is null, nothing is
    * added.
@@ -204,7 +226,7 @@ public class XMLStringBuffer {
    * @param value The value for this tag
    */
   public void addOptional(String tagName, String value) {
-    addOptional(tagName, value, null);
+    addOptional(tagName, value, (Properties) null);
   }
 
   /**
@@ -238,7 +260,7 @@ public class XMLStringBuffer {
    *
    */
   public void addEmptyElement(String tagName) {
-    addEmptyElement(tagName, null);
+    addEmptyElement(tagName, (Properties) null);
   }
 
   /**
@@ -252,8 +274,16 @@ public class XMLStringBuffer {
     m_buffer.append("/>").append(EOL);
   }
 
+  public void addEmptyElement(String tagName, String... attributes) {
+    addEmptyElement(tagName, createProperties(attributes));
+  }
+
   public void addComment(String comment) {
-    m_buffer.append(m_currentIndent).append("<!-- " + comment + " -->\n");
+    m_buffer.append(m_currentIndent).append("<!-- " + comment.replaceAll("[-]{2,}", "-") + " -->\n");
+  }
+
+  public void addString(String s) {
+    m_buffer.append(s);
   }
 
   private static void ppp(String s) {
@@ -284,20 +314,22 @@ public class XMLStringBuffer {
    *
    * @return The StringBuffer used to create the document.
    */
-  public StringBuffer getStringBuffer() {
+  public IBuffer getStringBuffer() {
     return m_buffer;
   }
 
+  private static final Pattern INVALID_XML_CHARS =
+      Pattern.compile("[^\\u0009\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\uD800\uDC00-\uDBFF\uDFFF]");
+
   /**
-   *
    * @return The String representation of the XML for this XMLStringBuffer.
    */
   public String toXML() {
-    return m_buffer.toString();
+    return INVALID_XML_CHARS.matcher(m_buffer.toString()).replaceAll("");
   }
 
   public static void main(String[] argv) {
-    StringBuffer result = new StringBuffer();
+    IBuffer result = Buffer.create();
     XMLStringBuffer sb = new XMLStringBuffer(result, "");
 
     sb.push("family");
@@ -314,6 +346,14 @@ public class XMLStringBuffer {
     assert ("<family>" + EOL + "<cedric>true</cedric>" + EOL + "<alois>true</alois>" + EOL + "</family>"  + EOL)
       .equals(result.toString());
   }
+
+  public String getCurrentIndent() {
+    return m_currentIndent;
+  }
+
+  public void toWriter(Writer fw) {
+    m_buffer.toWriter(fw);
+  }
 }
 
 
@@ -322,9 +362,16 @@ public class XMLStringBuffer {
 class Tag {
   public final String tagName;
   public final String indent;
+  public final Properties properties;
 
-  public Tag(String ind, String n) {
+  public Tag(String ind, String n, Properties p) {
     tagName = n;
     indent = ind;
+    properties = p;
+  }
+
+  @Override
+  public String toString() {
+    return tagName;
   }
 }

@@ -1,8 +1,6 @@
 package test.thread;
 
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
 
 public class ThreadPoolSizeTest extends ThreadPoolSizeBase {
   @Test(invocationCount = 5, threadPoolSize = 3)

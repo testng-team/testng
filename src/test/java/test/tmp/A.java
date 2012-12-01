@@ -1,73 +1,33 @@
 package test.tmp;
 
-import org.testng.Assert;
-import org.testng.ITestContext;
-import org.testng.SkipException;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 
-//@Test(sequential = true)
-//@Listeners(C2.class)
+@Test
 public class A {
+//  private FlexibleAssert m_assert = new FlexibleAssert();
+  private SoftAssert m_assert = new SoftAssert();
+//  private LoggingAssert m_assert = new LoggingAssert();
 
-//  @Factory
-  public Object[] f() {
-    return new Object[] {
-        new A(),
-        new A()
-    };
+  public void test1() {
+    m_assert.assertTrue(true, "test1()");
   }
 
-//  @BeforeClass(groups = "pre", dependsOnMethods = "bc2")
-//  public void bc1() {
-//    System.out.println("Before class 1");
-//  }
-//
-//  @BeforeClass(groups = "pre") // , dependsOnMethods = "bc1")
-//  public void bc2() {
-//    System.out.println("Before class 2");
-//  }
-
-//  @AfterMethod
-//  public void am() {
-//    System.out.println("After method");
-//  }
-
-//  @BeforeClass(timeOut = 1000)
-//  public void bc() throws InterruptedException {
-//    System.out.println("bc");
-//    Thread.sleep(2000);
-//  }
-
-//  @Test(timeOut = 1000)
-//  public void a1() throws InterruptedException {
-//    Thread.sleep(2000);
-//    throw new SkipException("skipped");
-//  }
-
-//  @BeforeMethod
-  public void bm() {
-    throw new RuntimeException("Ex");
-//    System.out.println("@BeforeMethod");
+  public void test2() {
+    m_assert.assertTrue(true, "test2()");
   }
 
-  @Test
-  public void a1(ITestContext context) {
-//    throw new RuntimeException();
-    System.out.println("Context:" + context.getSuite().getXmlSuite().getFileName());
-    Assert.assertTrue(true);
-//    System.out.println("test1");
-  }
+//  @AfterClass
+//  public void ac() {
+//    System.out.println("Tests run in this class:" + m_assert.getMessages());
+//  }
 
-  @Test(dependsOnMethods = "a1")
-  public void a2() {
-//    System.out.println("test2");
-//    throw new RuntimeException("We have a problem");
-//    System.out.println("a2 " + Thread.currentThread().getId());
-  }
-
-  @Test(enabled = false, description = "This test is disabled")
-  public void a3() {
-    throw new SkipException("Skipped");
+  public void multiple() {
+    m_assert.assertTrue(true, "Success 1");
+    m_assert.assertTrue(true, "Success 2");
+    m_assert.assertTrue(false, "Failure 1");
+    m_assert.assertTrue(true, "Success 3");
+    m_assert.assertTrue(false, "Failure 2");
+    m_assert.assertAll();
   }
 }
-

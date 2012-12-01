@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import org.testng.IMethodInstance;
 import org.testng.ITestNGMethod;
+import org.testng.collections.Objects;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
@@ -33,7 +34,10 @@ public class MethodInstance implements IMethodInstance {
 
   @Override
   public String toString() {
-    return "[MethodInstance m:" + m_method + " i:" + getInstance();
+    return Objects.toStringHelper(getClass())
+        .add("method", m_method)
+        .add("instance", getInstance())
+        .toString();
   }
 
 

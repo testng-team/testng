@@ -21,6 +21,7 @@ import org.testng.internal.annotations.IBeforeSuite;
 import org.testng.internal.annotations.IBeforeTest;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -413,7 +414,7 @@ public class ConfigurationMethod extends BaseTestMethod {
     clone.m_testClass= getTestClass();
     clone.setDate(getDate());
     clone.setGroups(getGroups());
-    clone.setGroupsDependedUpon(getGroupsDependedUpon());
+    clone.setGroupsDependedUpon(getGroupsDependedUpon(), Collections.<String>emptyList());
     clone.setMethodsDependedUpon(getMethodsDependedUpon());
     clone.setAlwaysRun(isAlwaysRun());
     clone.setMissingGroup(getMissingGroup());

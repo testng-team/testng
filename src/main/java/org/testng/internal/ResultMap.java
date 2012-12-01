@@ -3,6 +3,7 @@ package org.testng.internal;
 import org.testng.IResultMap;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.collections.Objects;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -63,6 +64,8 @@ public class ResultMap implements IResultMap {
 
   @Override
   public String toString() {
-    return "[ResultMap " + m_map + "]";
+    return Objects.toStringHelper(getClass())
+        .add("map", m_map)
+        .toString();
   }
 }

@@ -2,11 +2,14 @@ package org.testng.xml;
 
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
+import org.testng.collections.Maps;
+import org.testng.collections.Objects;
 import org.testng.internal.ClassHelper;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -25,6 +28,8 @@ public class XmlClass implements Serializable, Cloneable {
   private int m_index;
   /** True if the classes need to be loaded */
   private boolean m_loadClasses = true;
+  private Map<String, String> m_parameters = Maps.newHashMap();
+  private XmlTest m_xmlTest;
 
   public XmlClass() {
     init("", null, 0, false /* load classes */);
@@ -143,7 +148,9 @@ public class XmlClass implements Serializable, Cloneable {
 
   @Override
   public String toString() {
-    return "[Class: " + m_name + "]";
+    return Objects.toStringHelper(getClass())
+        .add("class", m_name)
+        .toString();
   }
 
   public String toXml(String indent) {
@@ -151,21 +158,28 @@ public class XmlClass implements Serializable, Cloneable {
     Properties prop = new Properties();
     prop.setProperty("name", getName());
 
-    if (!m_includedMethods.isEmpty() || !m_excludedMethods.isEmpty()) {
+    boolean hasMethods = !m_includedMethods.isEmpty() || !m_excludedMethods.isEmpty();
+    boolean hasParameters = !m_parameters.isEmpty();
+    if (hasParameters || hasMethods) {
       xsb.push("class", prop);
-      xsb.push("methods");
+      XmlUtils.dumpParameters(xsb, m_parameters);
 
-      for (XmlInclude m : getIncludedMethods()) {
-        xsb.getStringBuffer().append(m.toXml(indent + "    "));
+      if (hasMethods) {
+        xsb.push("methods");
+  
+        for (XmlInclude m : getIncludedMethods()) {
+          xsb.getStringBuffer().append(m.toXml(indent + "    "));
+        }
+  
+        for (String m: getExcludedMethods()) {
+          Properties p= new Properties();
+          p.setProperty("name", m);
+          xsb.addEmptyElement("exclude", p);
+        }
+  
+        xsb.pop("methods");
       }
 
-      for (String m: getExcludedMethods()) {
-        Properties p= new Properties();
-        p.setProperty("name", m);
-        xsb.addEmptyElement("exclude", p);
-      }
-
-      xsb.pop("methods");
       xsb.pop("class");
     }
     else {
@@ -267,4 +281,43 @@ public class XmlClass implements Serializable, Cloneable {
     return true;
   }
 
+  public void setParameters(Map<String, String> parameters) {
+    m_parameters.clear();
+    m_parameters.putAll(parameters);
+  }
+
+  /**
+   * @return The parameters defined in this test tag and the tags above it.
+   */
+  public Map<String, String> getAllParameters() {
+    Map<String, String> result = Maps.newHashMap();
+    Map<String, String> parameters = m_xmlTest.getLocalParameters();
+    for (Map.Entry<String, String> parameter : parameters.entrySet()) {
+      result.put(parameter.getKey(), parameter.getValue());
+    }
+    for (String key : m_parameters.keySet()) {
+      result.put(key, m_parameters.get(key));
+    }
+    return result;
+  }
+
+  /**
+   * @return The parameters defined in this tag, and only this test tag. To retrieve
+   * the inherited parameters as well, call {@code getAllParameters()}.
+   */
+  public Map<String, String> getLocalParameters() {
+    return m_parameters;
+  }
+
+  /**
+   * @deprecated Use {@code getLocalParameters()} or {@code getAllParameters()}
+   */
+  @Deprecated
+  public Map<String, String> getParameters() {
+    return getAllParameters();
+  }
+
+  public void setXmlTest(XmlTest test) {
+    m_xmlTest = test;
+  }
 }

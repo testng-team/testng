@@ -9,12 +9,15 @@ import org.testng.collections.Lists;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.Sets;
+import org.testng.internal.collections.Pair;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 /**
@@ -24,6 +27,11 @@ import java.util.regex.Pattern;
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class MethodHelper {
+  private static final Map<ITestNGMethod[], Graph<ITestNGMethod>> GRAPH_CACHE =
+      new ConcurrentHashMap<ITestNGMethod[], Graph<ITestNGMethod>>();
+  private static final Map<Method, String> CANONICAL_NAME_CACHE = new ConcurrentHashMap<Method, String>();
+  private static final Map<Pair<String, String>, Boolean> MATCH_CACHE =
+      new ConcurrentHashMap<Pair<String, String>, Boolean>();
 
   /**
    * Collects and orders test or configuration methods
@@ -67,8 +75,10 @@ public class MethodHelper {
       boolean foundAtLeastAMethod = false;
 
       if (null != fullyQualifiedRegexp) {
-        regexp = escapeRegexp(fullyQualifiedRegexp);
+        // Escapes $ in regexps as it is not meant for end - line matching, but inner class matches.
+        regexp = fullyQualifiedRegexp.replace("$", "\\$");
         boolean usePackage = regexp.indexOf('.') != -1;
+        Pattern pattern = Pattern.compile(regexp);
 
         for (ITestNGMethod method : methods) {
           Method thisMethod = method.getMethod();
@@ -76,7 +86,13 @@ public class MethodHelper {
           String methodName = usePackage ?
               calculateMethodCanonicalName(thisMethod)
               : thisMethodName;
-          if (Pattern.matches(regexp, methodName)) {
+          Pair<String, String> cacheKey = Pair.create(regexp, methodName);
+          Boolean match = MATCH_CACHE.get(cacheKey);
+          if (match == null) {
+              match = pattern.matcher(methodName).matches();
+              MATCH_CACHE.put(cacheKey, match);
+          }
+          if (match) {
             vResult.add(method);
             foundAtLeastAMethod = true;
           }
@@ -93,7 +109,7 @@ public class MethodHelper {
         Method maybeReferringTo = findMethodByName(m, regexp);
         if (maybeReferringTo != null) {
           throw new TestNGException(canonicalMethodName + "() is depending on method "
-              + maybeReferringTo + ", which is not annotated with @Test");
+              + maybeReferringTo + ", which is not annotated with @Test or not included.");
         }
         throw new TestNGException(canonicalMethodName
             + "() depends on nonexistent method " + regexp);
@@ -140,27 +156,6 @@ public class MethodHelper {
   }
 
   /**
-   * Escapes $ in regexps as it is not meant for end-line matching, but inner class matches.
-   * Impl.is weird as the String methods are not available in 1.4
-   */
-  private static String escapeRegexp(String regex) {
-    if (regex.indexOf('$') == -1) {
-      return regex;
-    }
-    String[] fragments = regex.split("\\$");
-    StringBuffer result = new StringBuffer();
-    for (int i = 0; i < fragments.length - 1; i++) {
-      result.append(fragments[i]).append("\\$");
-    }
-    result.append(fragments[fragments.length - 1]);
-    if (regex.endsWith("$")) {
-      result.append("\\$");
-    }
-
-    return result.toString();
-  }
-
-  /**
    * Read the expected exceptions, if any (need to handle both the old and new
    * syntax)
    */
@@ -180,7 +175,7 @@ public class MethodHelper {
         (ITestAnnotation) finder.findAnnotation(method, ITestAnnotation.class);
       if (testAnnotation != null) {
         Class<?>[] ee = testAnnotation.getExpectedExceptions();
-        if (testAnnotation != null && ee.length > 0) {
+        if (ee.length > 0) {
           result = new ExpectedExceptionsHolder(ee,
               testAnnotation.getExpectedExceptionsMessageRegExp());
         }
@@ -207,7 +202,7 @@ public class MethodHelper {
   }
 
   protected static boolean isEnabled(ITestOrConfiguration test) {
-    return null == test || (null != test && test.getEnabled());
+    return null == test || test.getEnabled();
   }
 
   /**
@@ -275,6 +270,11 @@ public class MethodHelper {
   }
 
   private static String calculateMethodCanonicalName(Method m) {
+    String result = CANONICAL_NAME_CACHE.get(m);
+    if (result != null) {
+      return result;
+    }
+
     String packageName = m.getDeclaringClass().getName() + "." + m.getName();
 
     // Try to find the method on this class or parents
@@ -292,7 +292,8 @@ public class MethodHelper {
       cls = cls.getSuperclass();
     }
 
-    String result = packageName + "." + m.getName();
+    result = packageName + "." + m.getName();
+    CANONICAL_NAME_CACHE.put(m, result);
     return result;
   }
 
@@ -327,9 +328,13 @@ public class MethodHelper {
    * @return A sorted array containing all the methods 'method' depends on
    */
   public static List<ITestNGMethod> getMethodsDependedUpon(ITestNGMethod method, ITestNGMethod[] methods) {
-    List<ITestNGMethod> parallelList = Lists.newArrayList();
-    List<ITestNGMethod> sequentialList = Lists.newArrayList();
-    Graph<ITestNGMethod> g = topologicalSort(methods, sequentialList, parallelList);
+    Graph<ITestNGMethod> g = GRAPH_CACHE.get(methods);
+    if (g == null) {
+      List<ITestNGMethod> parallelList = Lists.newArrayList();
+      List<ITestNGMethod> sequentialList = Lists.newArrayList();
+      g = topologicalSort(methods, sequentialList, parallelList);
+      GRAPH_CACHE.put(methods, g);
+    }
 
     List<ITestNGMethod> result = g.findPredecessors(method);
     return result;

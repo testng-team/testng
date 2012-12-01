@@ -37,6 +37,7 @@ import org.testng.internal.thread.graph.IThreadWorkerFactory;
 import org.testng.internal.thread.graph.IWorker;
 import org.testng.junit.IJUnitTestRunner;
 import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -79,6 +80,8 @@ public class TestRunner
 
   transient private IConfigurationListener m_confListener= new ConfigurationListener();
   transient private boolean m_skipFailedInvocationCounts;
+
+  transient private List<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
 
   /**
    * All the test methods we found, associated with their respective classes.
@@ -188,6 +191,7 @@ public class TestRunner
     }
 
     m_annotationFinder= annotationFinder;
+    m_invokedMethodListeners = invokedMethodListeners;
     m_invoker = new Invoker(m_configuration, this, this, m_suite.getSuiteState(),
         m_skipFailedInvocationCounts, invokedMethodListeners);
 
@@ -637,14 +641,14 @@ public class TestRunner
       m_invoker.invokeConfigurations(null,
                                      testConfigurationMethods,
                                      m_xmlTest.getSuite(),
-                                     m_xmlTest.getParameters(),
+                                     m_xmlTest.getAllParameters(),
                                      null, /* no parameter values */
                                      null /* instance */);
     }
   }
 
   private void privateRunJUnit(XmlTest xmlTest) {
-    ClassInfoMap cim = new ClassInfoMap(m_testClassesFromXml);
+    final ClassInfoMap cim = new ClassInfoMap(m_testClassesFromXml, false);
     final Set<Class<?>> classes = cim.getClasses();
     final List<ITestNGMethod> runMethods = Lists.newArrayList();
     List<IWorker<ITestNGMethod>> workers = Lists.newArrayList();
@@ -667,9 +671,15 @@ public class TestRunner
       @Override
       public void run() {
         for(Class<?> tc: classes) {
+          List<XmlInclude> includedMethods = cim.getXmlClass(tc).getIncludedMethods();
+          List<String> methods = Lists.newArrayList();
+          for (XmlInclude inc: includedMethods) {
+              methods.add(inc.getName());
+          }
           IJUnitTestRunner tr= ClassHelper.createTestRunner(TestRunner.this);
+          tr.setInvokedMethodListeners(m_invokedMethodListeners);
           try {
-            tr.run(tc);
+            tr.run(tc, methods.toArray(new String[methods.size()]));
           }
           catch(Exception ex) {
             ex.printStackTrace();
@@ -729,17 +739,16 @@ public class TestRunner
                   threadCount, threadCount, 0, TimeUnit.MILLISECONDS,
                   new LinkedBlockingQueue<Runnable>());
           executor.run();
-//          if (parallel) {
-            try {
-              long timeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
-              Utils.log("TestRunner", 2, "Starting executor for test " + m_xmlTest.getName()
-                  + " with time out:" + timeOut + " milliseconds.");
-              executor.awaitTermination(timeOut, TimeUnit.MILLISECONDS);
-              executor.shutdownNow();
-            } catch (InterruptedException e) {
-              e.printStackTrace();
-            }
-//          }
+          try {
+            long timeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
+            Utils.log("TestRunner", 2, "Starting executor for test " + m_xmlTest.getName()
+                + " with time out:" + timeOut + " milliseconds.");
+            executor.awaitTermination(timeOut, TimeUnit.MILLISECONDS);
+            executor.shutdownNow();
+          } catch (InterruptedException handled) {
+            handled.printStackTrace();
+            Thread.currentThread().interrupt();
+          }
         }
       } else {
         boolean debug = false;
@@ -835,7 +844,7 @@ public class TestRunner
     // Finally, sort the parallel methods by classes
     //
     methodInstances = m_methodInterceptor.intercept(methodInstances, this);
-    Map<String, String> params = m_xmlTest.getParameters();
+    Map<String, String> params = m_xmlTest.getAllParameters();
 
     Set<Class<?>> processedClasses = Sets.newHashSet();
     for (IMethodInstance im : methodInstances) {
@@ -888,7 +897,7 @@ public class TestRunner
       TestMethodWorker tmw = new TestMethodWorker(m_invoker,
           methodInstances.toArray(new IMethodInstance[methodInstances.size()]),
           m_xmlTest.getSuite(),
-          m_xmlTest.getParameters(),
+          m_xmlTest.getAllParameters(),
           m_allTestMethods,
           m_groupMethods,
           m_classMethodMap,
@@ -1012,7 +1021,7 @@ public class TestRunner
       m_invoker.invokeConfigurations(null,
                                      testConfigurationMethods,
                                      m_xmlTest.getSuite(),
-                                     m_xmlTest.getParameters(),
+                                     m_xmlTest.getAllParameters(),
                                      null, /* no parameter values */
                                      null /* instance */);
     }
@@ -1056,8 +1065,7 @@ public class TestRunner
         String[] dependentMethods = m.getMethodsDependedUpon();
         if (dependentMethods != null) {
           for (String d : dependentMethods) {
-            String shortMethodName = d.substring(d.lastIndexOf(".") + 1);
-            ITestNGMethod dm = dependencyMap.getMethodDependingOn(shortMethodName, m);
+            ITestNGMethod dm = dependencyMap.getMethodDependingOn(d, m);
             result.addEdge(m, dm);
           }
         }
@@ -1081,7 +1089,13 @@ public class TestRunner
     }
 
     // Preserve order
-    if (! hasDependencies && "true".equalsIgnoreCase(getCurrentXmlTest().getPreserveOrder())) {
+    // Don't preserve the ordering if we're running in parallel, otherwise the suite will
+    // create multiple threads but these threads will be created one after the other,
+    // giving the impression of parallelism (multiple thread id's) while still running
+    // sequentially.
+    if (! hasDependencies
+        && ! XmlSuite.isParallel(getCurrentXmlTest().getParallel())
+        && "true".equalsIgnoreCase(getCurrentXmlTest().getPreserveOrder())) {
       // If preserve-order was specified and the class order is A, B
       // create a new set of dependencies where each method of B depends
       // on all the methods of A
@@ -1576,21 +1590,25 @@ public class TestRunner
 
   private ListMultiMap<Class<? extends Module>, Module> m_guiceModules = Maps.newListMultiMap();
 
+  @Override
   public List<Module> getGuiceModules(Class<? extends Module> cls) {
     List<Module> result = m_guiceModules.get(cls);
     return result;
   }
 
+  @Override
   public void addGuiceModule(Class<? extends Module> cls, Module module) {
     m_guiceModules.put(cls, module);
   }
 
   private Map<List<Module>, Injector> m_injectors = Maps.newHashMap();
 
+  @Override
   public Injector getInjector(List<Module> moduleInstances) {
     return m_injectors .get(moduleInstances);
   }
 
+  @Override
   public void addInjector(List<Module> moduleInstances, Injector injector) {
     m_injectors.put(moduleInstances, injector);
   }

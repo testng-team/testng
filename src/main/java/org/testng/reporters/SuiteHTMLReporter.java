@@ -43,8 +43,9 @@ public class SuiteHTMLReporter implements IReporter {
   private Map<String, ITestClass> m_classes = Maps.newHashMap();
   private String m_outputDirectory;
 
+  @Override
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
-    m_outputDirectory = generateOutputDirectoryName(outputDirectory);
+    m_outputDirectory = generateOutputDirectoryName(outputDirectory + File.separator + "old");
 
     try {
       HtmlHelper.generateStylesheet(outputDirectory);
@@ -361,6 +362,7 @@ public class SuiteHTMLReporter implements IReporter {
     if (alphabetical) {
       @SuppressWarnings({"unchecked"})
       Comparator<? super ITestNGMethod>  alphabeticalComparator = new Comparator(){
+        @Override
         public int compare(Object o1, Object o2) {
           IInvokedMethod m1 = (IInvokedMethod) o1;
           IInvokedMethod m2 = (IInvokedMethod) o2;

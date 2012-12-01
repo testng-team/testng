@@ -37,9 +37,8 @@ public class EndMillisShouldNotBeZeroTest {
   {
     try {
       Thread.sleep(1);
-    } catch (InterruptedException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    } catch (InterruptedException handled) {
+      Thread.currentThread().interrupt();
     }
   }
 

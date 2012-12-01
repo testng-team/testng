@@ -10,8 +10,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -33,7 +33,8 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
 
   public GraphThreadPoolExecutor(DynamicGraph<T> graph, IThreadWorkerFactory<T> factory, int corePoolSize,
       int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
-    super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
+    super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue
+        /* , new TestNGThreadPoolFactory() */);
     ppp("Initializing executor with " + corePoolSize + " threads and following graph " + graph);
     m_threadCount = maximumPoolSize;
     m_graph = graph;
@@ -139,4 +140,15 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
     }
   }
 
+}
+
+class TestNGThreadPoolFactory implements ThreadFactory {
+  private int m_count = 0;
+
+  @Override
+  public Thread newThread(Runnable r) {
+    Thread result = new Thread(r);
+    result.setName("TestNG-" + m_count++);
+    return result;
+  }
 }

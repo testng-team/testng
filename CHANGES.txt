@@ -1,10 +1,85 @@
 Current
 
+Added: Descriptions in the HTML reports
+Added: Various improvements to EmailableReporter (Abraham Lin) 
+Fixed: GITHUB-300: OutOfMemoryException from reporters when there are a lot of tests
+Fixed: GITHUB-137: Main parameters with a default value should be overridden if a main parameter is specified 
+Fixed: GITHUB-107: Allow enum values without converting them to uppercase.
+Fixed: @Guice with no modules specified is now supported
+Fixed: Reporter.log() invoked from listeners were being discarded
 
+Eclipse:
+Added: Predefined listeners (Tim Wu)
+Fixed: Compare dialog
+
+===========================================================================
+6.7
+2012/07/15
+
+Added: Big performance improvement when generating the reports (Frank Pavageau)
+Added: <dependencies> allows you to specify group dependencies in testng.xml
+Added: Blow up early if trying to include/exclude an unknown method
+Added: <parameters> can now be specified under <include> (Storm Qi)
+Added: GITHUB-243: Add Reporter Output per Test in XMLReporter (dunse) 
+Fixed: Better HTML escaping of the stack traces
+Fixed: The failed assertions now use [] as delimiters instead of <> (better for the HTML reports)
+Fixed: GITHUB-237: Wrong time format in XML reporter
+Fixed: Threads were started sequentially instead of being interleaved
+Fixed: dataProvider(parallel = true) was not killing its threads properly
+Fixed: XmlSuite#toXml wasn't outputting the <groups> tag correctly
+Fixed: testng-failed.xml was not carrying over the parameters from the original testng.xml
+Fixed: BeforeClass failing in parent failed to skip methods in sub classes
+Fixed: Better error message if <suite name=""> is missing
+Fixed: GITHUB-221: Honor excludeGroups on testng tests when run in mixed mode (criccio)
+Fixed: dependsOnGroups = {regexp} wasn't working properly (Alistair Ward)
+Fixed: GITHUB-205: white-space was spelled whitespace in testng.css (carlin-scott)
+
+Eclipse:
+Fixed: Environment is not transferred when rerunning failed tests.
+Fixed: Rerunning failed tests will preserve the environment of the original launch
+
+===========================================================================
+
+6.5.1
+04/10/2012
+
+Added: <suite allow-return-values="true"> (and in <test> as well)
+Added: data-provider attribute to testng-results.xml
+Added: Reporter display the results in the same order as test methods (Libor Zoubek)
+Added: Support for running JUnit 4 tests (Lukas Jungmann)
+Added: Ability to auto-detect JUnit tests ('-mixed' mode) (Lukas Jungmann)
+Added: Support for ResourceCollections in an Ant tasks (requires Ant >= 1.7.0) (Lukas Jungmann)
+Fixed: GITHUB-198: JUnitReportsReporter use commas in certain locales, which JUnitReports doesn't like
+Fixed: GITHUB-173: Dependent methods executed out-of-order if method names match across classes (jjedMoriAnktah)
+Fixed: ThreadLocal<ITestResult> leak (aslakknutsen)
+Fixed: In the HTML reports, only show the first 100 characters of the parameters
+Fixed: SkippedException are considered as real exception with @Test(expectedExceptions)
+
+Eclipse:
+Fixed: Java constants are properly resolved if they are used as group names (susanin)
+Fixed: @Test(groups = Foo.CONSTANT) (susanin)
+Fixed: Failed tests with allow-return-values="true" were not rerun
+Added: <suite allow-return-values="true"> (and in <test> as well)
+
+===========================================================================
+
+6.4:
+02/15/2012
+
+Added: @DataProvider(indices) to return specific indices of a data provider
+Added: New HTML reports
+Added: configfailurepolicy=continue with DataProviders (toddq)
+Added: ITestResult#getTestContext (bpedman)
+Fixed: invocationCount > 1 + timeOut wasn't timing out properly
+Fixed: When running TestNG programmatically, child xml suites are not run (when added using setSuiteFIles()) (Gaurav Gupta)
+Fixed: GITHUB-145: Excessive test method execution (githubCast)
+Fixed: GITHUB-149: reversed arguments in failAssertEqualsNoOrder().
 Fixed: EmailableReporter: methods are now *really* sorted chronologically.
 
 Eclipse:
 
+Added: You can now add the testng.jar sources as a library (Nick Tan)
+Added: Upgraded the plug-in to 3.4+ (Nick Tan)
 Added: dependsOnGroups now fully supported
 Fixed: @Parameters now works with both ("foo") and ({"foo"}) (davekerber)
 
@@ -177,7 +252,7 @@ Fixed: IDEA-59073: exceptions that don't match don't have stack trace printed in
 Fixed: IDEA's plug-in was not honoring ITest (fixed in TestResultMessage)
 Fixed: Methods depending on a group they belong were skipped instead of throwing a cycle exception
 Fixed: TESTNG-401: ClassCastException when using a listener from Maven
-Fixed: TESTNG-186: Rename IWorkerApadter to IWorkerAdapter (Tomás Pollak)
+Fixed: TESTNG-186: Rename IWorkerApadter to IWorkerAdapter (Tomas Pollak)
 Fixed: TESTNG-415: Assert.assertEquals() for sets and maps fails with 'null' as arguments
 Fixed: typo -testRunFactory
 Fixed: NPE while printing results for an empty suite (Nalin Makar)
@@ -292,7 +367,7 @@ Fixed: XML test results contained skipfailedinvocationCounts instead of skipfail
 Fixed: Issue4 assertEquals for primitive arrays, Issue34 assertNull javadoc updated
 Fixed: Issue78 NPE with non-public class. Now throws TestNG exception
 Fixed: NPE with @Optional null parameters (Yves Dessertine)
-Fixed: TESTNG-387 TestNG not rerunning test method with the right data set from Data Provider (François Reynaud)
+Fixed: TESTNG-387 TestNG not rerunning test method with the right data set from Data Provider (Francois Reynaud)
 Fixed: Show correct number of pass/failed numbers for tests using @DataProvider
 Fixed: Return correct method status and exception (if any) in InvokedMethodListener.afterInvocation() 
 Fixed: Trivial fixes: TESTNG-241 (log message at Info), Issue2 (throw SAXException and not NPE for invalid testng xml) 

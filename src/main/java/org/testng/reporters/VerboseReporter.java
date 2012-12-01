@@ -155,7 +155,7 @@ public class VerboseReporter extends TestListenerAdapter {
     /**
      * Log meaningful message for passed in arguments.
      * Message itself is of form:
-     * $status: "$suiteName" - $methodDeclaration ($actualArguments) finished in $x ms
+     * $status: "$suiteName" - $methodDeclaration ($actualArguments) finished in $x ms ($run of $totalRuns)
      *
      * @param st status of passed in itr
      * @param itr test result to be described
@@ -163,6 +163,7 @@ public class VerboseReporter extends TestListenerAdapter {
      */
     private void logTestResult(Status st, ITestResult itr, boolean isConfMethod) {
         StringBuilder sb = new StringBuilder();
+        StringBuilder succRate = null;
         String stackTrace = "";
         switch (st) {
             case STARTED:
@@ -229,14 +230,27 @@ public class VerboseReporter extends TestListenerAdapter {
                 }
                 sb.append(tm.getDescription());
             }
+            if (tm.getInvocationCount() > 1) {
+                sb.append(" (");
+                sb.append(tm.getCurrentInvocationCount());
+                sb.append(" of ");
+                sb.append(tm.getInvocationCount());
+                sb.append(")");
+            }
             if (!Utils.isStringEmpty(stackTrace)) {
                 sb.append("\n").append(stackTrace.substring(0, stackTrace.lastIndexOf(System.getProperty("line.separator"))));
+            }
+        } else {
+            if (!isConfMethod && tm.getInvocationCount() > 1) {
+                sb.append(" success: ");
+                sb.append(tm.getSuccessPercentage());
+                sb.append("%");
             }
         }
         log(sb.toString());
     }
 
-    private void log(String message) {
+    protected void log(String message) {
         //prefix all output lines
         System.out.println(message.replaceAll("(?m)^", prefix));
     }

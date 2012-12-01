@@ -3,9 +3,11 @@ package org.testng.internal;
 import org.testng.IAttributes;
 import org.testng.IClass;
 import org.testng.ITest;
+import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
+import org.testng.collections.Objects;
 
 import java.util.List;
 import java.util.Set;
@@ -30,6 +32,7 @@ public class TestResult implements ITestResult {
   transient private Object[] m_parameters = {};
   transient private Object m_instance;
   private String m_instanceName;
+  private ITestContext m_context;
 
   public TestResult() {
 
@@ -40,9 +43,10 @@ public class TestResult implements ITestResult {
       ITestNGMethod method,
       Throwable throwable,
       long start,
-      long end)
+      long end,
+      ITestContext context)
   {
-    init(testClass, instance, method, throwable, start, end);
+    init(testClass, instance, method, throwable, start, end, context);
   }
 
   /**
@@ -59,7 +63,8 @@ public class TestResult implements ITestResult {
       ITestNGMethod method,
       Throwable throwable,
       long start,
-      long end)
+      long end,
+      ITestContext context)
   {
     m_testClass = testClass;
     m_throwable = throwable;
@@ -70,6 +75,7 @@ public class TestResult implements ITestResult {
     m_startMillis = start;
     m_endMillis = end;
     m_method = method;
+    m_context = context;
 
     m_instance = instance;
 
@@ -217,13 +223,16 @@ public class TestResult implements ITestResult {
   @Override
   public String toString() {
     List<String> output = Reporter.getOutput(this);
-    String result = "[TestResult: " + getName()
-        + " STATUS:" + toString(m_status)
-        + " METHOD:" + m_method;
-    result += output != null && output.size() > 0 ? output.get(0) : ""
-        + "]\n";
+    String result = Objects.toStringHelper(getClass())
+        .omitNulls()
+        .omitEmptyStrings()
+        .add("name", getName())
+        .add("status", toString(m_status))
+        .add("method", m_method)
+        .add("output", output != null && output.size() > 0 ? output.get(0) : null)
+        .toString();
 
-      return result;
+    return result;
   }
 
   private String toString(int status) {
@@ -281,6 +290,15 @@ public class TestResult implements ITestResult {
   @Override
   public Object removeAttribute(String name) {
     return m_attributes.removeAttribute(name);
+  }
+  
+  @Override
+  public ITestContext getTestContext() {
+	  return m_context;
+  }
+  
+  public void setContext(ITestContext context) {
+	  m_context = context;
   }
 
   @Override

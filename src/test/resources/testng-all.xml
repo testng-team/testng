@@ -1,0 +1,99 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="TestNG" verbose="1" parallel="false" thread-count="2"
+    data-provider-thread-count="3">
+
+  <method-selectors>
+    <method-selector>
+      <script language="javascript">foo()</script>
+    </method-selector>
+    <method-selector>
+      <selector-class name="SelectorClass" priority="3" />
+    </method-selector>
+  </method-selectors>
+
+  <parameter name="first-name" value="Cedric" />
+  <parameter name="suiteParameter" value="suiteParameterValue" />
+
+  <suite-files>
+    <suite-file path="./junit-suite.xml" />
+  </suite-files>
+
+  <groups>
+    <define name="bigSuite">
+      <include name="suite1" />
+      <include name="suite2" />
+    </define>
+    <run>
+      <exclude name="excludeThisGroup" />
+      <include name="includeThisGroup" />
+    </run>
+<!-- 
+    <dependencies>
+      <group name="a" depends-on="b" />
+      <group name="c" depends-on="d" />
+    </dependencies>
+ -->
+   </groups>
+
+  <listeners>
+    <listener class-name="com.beust.Listener1" />
+    <listener class-name="com.beust.Listener2" />
+  </listeners>
+
+  <packages>
+    <package name="com.example1" />
+    <package name="com.example2" />
+  </packages>
+
+  <test name="Nopackage" allow-return-values="true" thread-count="42">
+    <groups>
+      <define name="evenodd">
+        <include name="even" />
+        <include name="odd" />
+      </define>
+      <run>
+        <include name="nopackage"/>
+      </run>
+	    <dependencies>
+	      <group name="e" depends-on="f" />
+	      <group name="g" depends-on="h" />
+	    </dependencies>
+    </groups>
+    <classes>
+      <class name="NoPackageTest" />
+    </classes>
+  </test>
+
+  <test name="Regression1" >
+    <groups>
+      <define name="evenodd">
+        <include name="even" />
+        <include name="odd" />
+      </define>
+      <run>
+        <exclude name="excludeThisGroup" />
+      </run>
+    </groups>
+
+    <classes>
+      <class name="test.parameters.ParameterSample" />
+      <class name="test.parameters.ParameterTest" />
+      <class name="test.Test1" />
+      <class name="test.Test2" />
+      <class name="test.CtorCalledOnce" />
+      <class name="test.expectedexceptions.ExpectedExceptionsTest" />
+      <class name="test.access.PrivateAccessConfigurationMethods" />
+      <class name="test.expectedexceptions.WrappedExpectedExceptionTest" />
+      <class name="test.parameters.OptionalParameterTest"/>
+      <class name="test.parameters.ParamInheritanceTest"/>
+    </classes>
+  </test>
+
+  <test name="Bug173">
+    <classes>
+      <class name="test.testng173.TestNG173Test" />
+    </classes>
+  </test>
+
+</suite>

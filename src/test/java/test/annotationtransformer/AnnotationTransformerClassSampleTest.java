@@ -17,7 +17,8 @@ public class AnnotationTransformerClassSampleTest {
       Thread.sleep(2000);
 //      ppp("FINISHED SLEEPING");
     }
-    catch (InterruptedException e) {
+    catch (InterruptedException handled) {
+      Thread.currentThread().interrupt();
 //      ppp("WAS INTERRUPTED");
       // ignore
     }

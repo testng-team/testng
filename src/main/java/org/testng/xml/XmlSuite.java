@@ -1,5 +1,6 @@
 package org.testng.xml;
 
+import static org.testng.collections.CollectionUtils.hasElements;
 import static org.testng.internal.Utils.isStringNotEmpty;
 
 import org.testng.ITestObjectFactory;
@@ -7,8 +8,12 @@ import org.testng.TestNG;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
+import org.testng.xml.dom.OnElement;
+import org.testng.xml.dom.OnElementList;
+import org.testng.xml.dom.Tag;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +70,10 @@ public class XmlSuite implements Serializable, Cloneable {
   public static Boolean DEFAULT_JUNIT = Boolean.FALSE;
   private Boolean m_isJUnit = DEFAULT_JUNIT;
 
+  /** mixed mode flag. */
+  public static Boolean DEFAULT_MIXED = Boolean.FALSE;
+  private Boolean m_isMixed = DEFAULT_MIXED;
+
   public static Boolean DEFAULT_SKIP_FAILED_INVOCATION_COUNTS = Boolean.FALSE;
   private Boolean m_skipFailedInvocationCounts = DEFAULT_SKIP_FAILED_INVOCATION_COUNTS;
 
@@ -79,6 +88,9 @@ public class XmlSuite implements Serializable, Cloneable {
   /** By default, a method failing will cause all instances of that class to skip */
   public static final Boolean DEFAULT_GROUP_BY_INSTANCES = false;
   private Boolean m_groupByInstances = DEFAULT_GROUP_BY_INSTANCES;
+
+  public static Boolean DEFAULT_ALLOW_RETURN_VALUES = Boolean.FALSE;
+  private Boolean m_allowReturnValues = DEFAULT_ALLOW_RETURN_VALUES;
 
   /** The packages containing test classes. */
   private List<XmlPackage> m_xmlPackages = Lists.newArrayList();
@@ -120,6 +132,7 @@ public class XmlSuite implements Serializable, Cloneable {
 
   private List<String> m_includedGroups = Lists.newArrayList();
   private List<String> m_excludedGroups = Lists.newArrayList();
+  private XmlMethodSelectors m_xmlMethodSelectors;
 
   /**
    * @return the fileName
@@ -235,7 +248,12 @@ public class XmlSuite implements Serializable, Cloneable {
    * @return the method selectors.
    */
   public List<XmlMethodSelector> getMethodSelectors() {
-    return m_methodSelectors;
+    if (m_xmlMethodSelectors != null) {
+      return m_xmlMethodSelectors.getMethodSelectors();
+    } else {
+      // deprecated
+      return m_methodSelectors;
+    }
   }
 
   /**
@@ -244,7 +262,7 @@ public class XmlSuite implements Serializable, Cloneable {
    * @param methodSelectors the method selectors.
    */
   public void setMethodSelectors(List<XmlMethodSelector> methodSelectors) {
-    m_methodSelectors = methodSelectors;
+    m_methodSelectors = Lists.newArrayList(methodSelectors);
   }
 
   /**
@@ -284,7 +302,6 @@ public class XmlSuite implements Serializable, Cloneable {
    * Set of parameters for a suite is appended with parameters from parent suite.
    * Also, parameters from this suite override the same named parameters from
    * parent suite.
-   * @return
    */
   public Map<String, String> getParameters() {
     return m_parameters;
@@ -300,7 +317,7 @@ public class XmlSuite implements Serializable, Cloneable {
     }
 
     for (XmlTest test : getTests()) {
-      Map<String, String> tp = test.getParameters();
+      Map<String, String> tp = test.getLocalParameters();
       for (Map.Entry<String, String> entry : tp.entrySet()) {
         result.put(entry.getKey(), entry.getValue());
       }
@@ -319,8 +336,7 @@ public class XmlSuite implements Serializable, Cloneable {
   }
 
   /**
-   * Returns the threadCount.
-   * @return the threadCount.
+   * @return The threadCount.
    */
   public int getThreadCount() {
     return m_threadCount;
@@ -335,8 +351,7 @@ public class XmlSuite implements Serializable, Cloneable {
   }
 
   /**
-   * Returns the JUnit compatibility flag.
-   * @return the JUnit compatibility flag.
+   * @return The JUnit compatibility flag.
    */
   public Boolean isJUnit() {
     return m_isJUnit;
@@ -370,7 +385,7 @@ public class XmlSuite implements Serializable, Cloneable {
    * @param packages the XML packages.
    */
   public void setXmlPackages(List<XmlPackage> packages) {
-    m_xmlPackages = packages;
+    m_xmlPackages = Lists.newArrayList(packages);
   }
 
   /**
@@ -388,15 +403,18 @@ public class XmlSuite implements Serializable, Cloneable {
     return getXmlPackages();
   }
 
+  @Tag(name = "method-selectors")
+  public void setMethodSelectors(XmlMethodSelectors xms) {
+    m_xmlMethodSelectors = xms;
+  }
+
   // For YAML
   public void setPackages(List<XmlPackage> packages) {
     setXmlPackages(packages);
   }
 
   /**
-   * Returns a String representation of this XML suite.
-   *
-   * @return a String representation of this XML suite.
+   * @return A String representation of this XML suite.
    */
   public String toXml() {
     XMLStringBuffer xsb = new XMLStringBuffer();
@@ -424,17 +442,13 @@ public class XmlSuite implements Serializable, Cloneable {
     if(null != m_objectFactory) {
       p.setProperty("object-factory", m_objectFactory.getClass().getName());
     }
+    XmlUtils.setProperty(p, "allow-return-values", String.valueOf(getAllowReturnValues()),
+        DEFAULT_ALLOW_RETURN_VALUES.toString());
     xsb.push("suite", p);
 
-    for (String paramName : m_parameters.keySet()) {
-      Properties paramProps = new Properties();
-      paramProps.setProperty("name", paramName);
-      paramProps.setProperty("value", m_parameters.get(paramName));
+    XmlUtils.dumpParameters(xsb, m_parameters);
 
-      xsb.addEmptyElement("parameter", paramProps);
-    }
-
-    if (null != m_listeners && !m_listeners.isEmpty()) {
+    if (hasElements(m_listeners)) {
       xsb.push("listeners");
       for (String listenerName: m_listeners) {
         Properties listenerProps = new Properties();
@@ -444,7 +458,7 @@ public class XmlSuite implements Serializable, Cloneable {
       xsb.pop("listeners");
     }
 
-    if (null != getXmlPackages() && !getXmlPackages().isEmpty()) {
+    if (hasElements(getXmlPackages())) {
       xsb.push("packages");
 
       for (XmlPackage pack : getXmlPackages()) {
@@ -454,13 +468,18 @@ public class XmlSuite implements Serializable, Cloneable {
       xsb.pop("packages");
     }
 
-    if (null != getMethodSelectors() && !getMethodSelectors().isEmpty()) {
-      xsb.push("method-selectors");
-      for (XmlMethodSelector selector : getMethodSelectors()) {
-        xsb.getStringBuffer().append(selector.toXml("  "));
-      }
+    if (getXmlMethodSelectors() != null) {
+      xsb.getStringBuffer().append(getXmlMethodSelectors().toXml("  "));
+    } else {
+      // deprecated
+      if (hasElements(getMethodSelectors())) {
+        xsb.push("method-selectors");
+        for (XmlMethodSelector selector : getMethodSelectors()) {
+          xsb.getStringBuffer().append(selector.toXml("  "));
+        }
 
-      xsb.pop("method-selectors");
+        xsb.pop("method-selectors");
+      }
     }
 
     List<String> suiteFiles = getSuiteFiles();
@@ -474,6 +493,25 @@ public class XmlSuite implements Serializable, Cloneable {
       xsb.pop("suite-files");
     }
 
+    List<String> included = getIncludedGroups();
+    List<String> excluded = getExcludedGroups();
+    if (hasElements(included) || hasElements(excluded)) {
+      xsb.push("groups");
+      xsb.push("run");
+      for (String g : included) {
+        xsb.addEmptyElement("include", "name", g);
+      }
+      for (String g : excluded) {
+        xsb.addEmptyElement("exclude", "name", g);
+      }
+      xsb.pop("run");
+      xsb.pop("groups");
+    }
+
+    if (m_xmlGroups != null) {
+      xsb.getStringBuffer().append(m_xmlGroups.toXml("  "));
+    }
+
     for (XmlTest test : getTests()) {
       xsb.getStringBuffer().append(test.toXml("  "));
     }
@@ -481,6 +519,15 @@ public class XmlSuite implements Serializable, Cloneable {
     xsb.pop("suite");
 
     return xsb.toXML();
+  }
+
+  @Tag(name = "method-selectors")
+  public void setXmlMethodSelectors(XmlMethodSelectors xms) {
+    m_xmlMethodSelectors = xms;
+  }
+
+  private XmlMethodSelectors getXmlMethodSelectors() {
+    return m_xmlMethodSelectors;
   }
 
   /**
@@ -492,6 +539,10 @@ public class XmlSuite implements Serializable, Cloneable {
 
     for (XmlTest t : m_tests) {
       result.append("  ").append( t.toString()).append(' ');
+    }
+
+    for (XmlMethodSelector ms : m_methodSelectors) {
+      result.append(" methodSelector:" + ms);
     }
 
     result.append(']');
@@ -530,6 +581,7 @@ public class XmlSuite implements Serializable, Cloneable {
     result.setJUnit(isJUnit()); // TESTNG-141
     result.setSkipFailedInvocationCounts(skipFailedInvocationCounts());
     result.setObjectFactory(getObjectFactory());
+    result.setAllowReturnValues(getAllowReturnValues());
     return result;
   }
 
@@ -680,6 +732,9 @@ public class XmlSuite implements Serializable, Cloneable {
     return result;
   }
 
+  /**
+   * Used to debug equals() bugs.
+   */
   static boolean f() {
     return false;
   }
@@ -843,7 +898,12 @@ public class XmlSuite implements Serializable, Cloneable {
    * Note: do not modify the returned value, use {@link #addIncludedGroup(String)}.
    */
   public List<String> getIncludedGroups() {
-    return m_includedGroups;
+    if (m_xmlGroups != null) {
+      return m_xmlGroups.getRun().getIncludes();
+    } else {
+      // deprecated
+      return m_includedGroups;
+    }
   }
 
   public void addIncludedGroup(String g) {
@@ -869,7 +929,11 @@ public class XmlSuite implements Serializable, Cloneable {
    * Note: do not modify the returned value, use {@link #addExcludedGroup(String)}.
    */
   public List<String> getExcludedGroups() {
-    return m_excludedGroups;
+    if (m_xmlGroups != null) {
+      return m_xmlGroups.getRun().getExcludes();
+    } else {
+      return m_excludedGroups;
+    }
   }
 
   public void addExcludedGroup(String g) {
@@ -887,4 +951,64 @@ public class XmlSuite implements Serializable, Cloneable {
   public void addListener(String listener) {
     m_listeners.add(listener);
   }
+
+  public Boolean getAllowReturnValues() {
+    return m_allowReturnValues;
+  }
+
+  public void setAllowReturnValues(Boolean allowReturnValues) {
+    m_allowReturnValues = allowReturnValues;
+  }
+
+  private XmlGroups m_xmlGroups;
+
+  public void setGroups(XmlGroups xmlGroups) {
+    m_xmlGroups = xmlGroups;
+  }
+
+  @OnElement(tag = "parameter", attributes = { "name", "value" })
+  public void onParameterElement(String name, String value) {
+    getParameters().put(name, value);
+  }
+
+  @OnElementList(tag = "listeners", attributes = { "class-name" })
+  public void onListenerElement(String className) {
+    addListener(className);
+  }
+
+  @OnElementList(tag = "suite-files", attributes = { "path" })
+  public void onSuiteFilesElement(String path) {
+    getSuiteFiles().add(path);
+  }
+
+  @OnElementList(tag = "packages", attributes = { "name" })
+  public void onPackagesElement(String name) {
+    getPackages().add(new XmlPackage(name));
+  }
+
+//  @OnElementList(tag = "method-selectors", attributes = { "language", "name", "priority" })
+  public void onMethodSelectorElement(String language, String name, String priority) {
+    System.out.println("Language:" + language);
+  }
+
+  public XmlGroups getGroups() {
+    return m_xmlGroups;
+  }
+
+  public void addTest(XmlTest test) {
+    getTests().add(test);
+  }
+
+  public Collection<String> getPackageNames() {
+    List<String> result = Lists.newArrayList();
+    for (XmlPackage p : getPackages()) {
+      result.add(p.getName());
+    }
+    return result;
+  }
+
+  public static boolean isParallel(String parallel) {
+    return PARALLEL_MODES.contains(parallel) && ! "false".equals(parallel);
+  }
 }
+

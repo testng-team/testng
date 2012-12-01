@@ -18,10 +18,11 @@ public class TimeOutTest extends BaseTest {
     m_id = Long.valueOf(System.currentTimeMillis());
   }
 
-  @Test
-  public void timeOutInParallel() {
+  private void privateTimeOutTest(boolean parallel) {
     addClass("test.timeout.TimeOutSampleTest");
-    setParallel(XmlSuite.PARALLEL_METHODS);
+    if (parallel) {
+      setParallel(XmlSuite.PARALLEL_METHODS);
+    }
     run();
     String[] passed = {
         "timeoutShouldPass",
@@ -37,17 +38,13 @@ public class TimeOutTest extends BaseTest {
   }
 
   @Test
+  public void timeOutInParallel() {
+    privateTimeOutTest(true);
+  }
+
+  @Test
   public void timeOutInNonParallel() {
-    addClass("test.timeout.TimeOutSampleTest");
-    run();
-    String[] passed = {
-        "timeoutShouldPass",
-      };
-      String[] failed = {
-          "timeoutShouldFailByException", "timeoutShouldFailByTimeOut"
-      };
-      verifyTests("Passed", passed, getPassedTests());
-      verifyTests("Failed", failed, getFailedTests());
+    privateTimeOutTest(false);
   }
 
   @Test

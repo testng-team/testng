@@ -33,9 +33,11 @@ public class Parser {
   /** The default file name for the TestNG test suite if none is specified (testng.xml). */
   public static final String DEFAULT_FILENAME = "testng.xml";
 
-  private static final IFileParser XML_PARSER = new SuiteXmlParser();
-  private static final IFileParser YAML_PARSER = new YamlParser();
-  private static final IFileParser DEFAULT_FILE_PARSER = XML_PARSER;
+  private static final IFileParser<XmlSuite> XML_PARSER =
+//      new DomXmlParser();
+      new SuiteXmlParser();
+  private static final IFileParser<XmlSuite> YAML_PARSER = new YamlParser();
+  private static final IFileParser<XmlSuite> DEFAULT_FILE_PARSER = XML_PARSER;
   
   /** The file name of the xml suite being parsed. This may be null if the Parser
    * has not been initialized with a file name. TODO CQ This member is never used. */

@@ -2,6 +2,7 @@ package org.testng;
 
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.util.Strings;
 
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,8 @@ public class Reporter {
 
   private static Map<ITestResult, List<Integer>> m_methodOutputMap = Maps.newHashMap();
 
+  private static boolean m_escapeHtml = false;
+
   public static void setCurrentTestResult(ITestResult m) {
     m_currentTestResult.set(m);
   }
@@ -54,7 +57,19 @@ public class Reporter {
     m_output.clear();
   }
 
+  /**
+   * @param escapeHtml If true, use HTML entities for special HTML characters (<, >, &, ...).
+   */
+  public static void setEscapeHtml(boolean escapeHtml) {
+    m_escapeHtml = escapeHtml;
+  }
+
   private static synchronized void log(String s, ITestResult m) {
+    // Escape for the HTML reports
+    if (m_escapeHtml) {
+      s = Strings.escapeHtml(s);
+    }
+
     // synchronization needed to ensure the line number and m_output are updated atomically
     int n = getOutput().size();
     List<Integer> lines = m_methodOutputMap.get(m);

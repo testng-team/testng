@@ -17,14 +17,14 @@
     </package>
   </packages>
   <method-selectors>
-  <method-selector>
-    <selector-class name="org.testng.internal.XmlMethodSelector" priority="1"/>
-  </method-selector>
-  <method-selector>
-    <script language="beanshell">
-      <![CDATA[groups.containsKey("test1")]]>
-    </script>
-  </method-selector>
+	  <method-selector>
+	    <selector-class name="org.testng.internal.XmlMethodSelector" priority="1"/>
+	  </method-selector>
+	  <method-selector>
+	    <script language="beanshell">
+	      <![CDATA[groups.containsKey("test1")]]>
+	    </script>
+	  </method-selector>
   </method-selectors>
   <test verbose="1" name="Test3" junit="false" preserve-order="false">
     <method-selectors>

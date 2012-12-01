@@ -1,0 +1,10 @@
+Check list for releases:
+
+pom.xml
+pom-test.xml
+Version.java
+build.properties
+
+doc/index.html
+doc/documentation-main.html
+doc/maven.html

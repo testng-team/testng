@@ -32,7 +32,7 @@ public class SimpleBaseTest {
     return result;
   }
 
-  protected TestNG create(Class<?>[] testClasses) {
+  protected TestNG create(Class<?>... testClasses) {
     TestNG result = create();
     result.setTestClasses(testClasses);
     return result;

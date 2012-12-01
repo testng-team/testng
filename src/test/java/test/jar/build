@@ -1,9 +1,0 @@
-v=5.9beta
-
-javac -cp ~/java/TestNG/testng-${v}-jdk15.jar:$CLASSPATH A.java B.java -d .
-jar cvf withtestngxml.jar testng.xml test
-jar cvf withouttestngxml.jar test
-
-java -cp ~/java/TestNG/testng-${v}-jdk15.jar:$CLASSPATH org.testng.TestNG -testjar withtestngxml.jar
-java -cp ~/java/TestNG/testng-${v}-jdk15.jar:$CLASSPATH org.testng.TestNG -testjar withouttestngxml.jar
-

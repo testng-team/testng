@@ -9,9 +9,8 @@ public class Sample {
   public void t1() {
     try {
       Thread.sleep(100);
-    } catch (InterruptedException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    } catch (InterruptedException handled) {
+      Thread.currentThread().interrupt();
     }
   }
 
@@ -19,9 +18,8 @@ public class Sample {
   public void t2() {
     try {
       Thread.sleep(100);
-    } catch (InterruptedException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    } catch (InterruptedException handled) {
+      Thread.currentThread().interrupt();
     }
   }
 

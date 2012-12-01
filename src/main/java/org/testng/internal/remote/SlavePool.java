@@ -45,8 +45,9 @@ public class SlavePool {
       host = m_hosts.take();
       result = m_connectionInfos.get(host);
     }
-    catch (InterruptedException e) {
-      e.printStackTrace();
+    catch (InterruptedException handled) {
+      handled.printStackTrace();
+      Thread.currentThread().interrupt();
     }
 
     return result;

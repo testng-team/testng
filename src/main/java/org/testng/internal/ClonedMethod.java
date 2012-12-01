@@ -8,7 +8,9 @@ import org.testng.collections.Lists;
 import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class ClonedMethod implements ITestNGMethod {
   private static final long serialVersionUID = 1L;
@@ -360,5 +362,10 @@ public class ClonedMethod implements ITestNGMethod {
   @Override
   public ConstructorOrMethod getConstructorOrMethod() {
     return null;
+  }
+
+  @Override
+  public Map<String, String> findMethodParameters(XmlTest test) {
+    return Collections.emptyMap();
   }
 }

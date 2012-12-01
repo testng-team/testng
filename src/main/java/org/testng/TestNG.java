@@ -4,52 +4,12 @@ import static org.testng.internal.Utils.defaultIfStringEmpty;
 import static org.testng.internal.Utils.isStringEmpty;
 import static org.testng.internal.Utils.isStringNotEmpty;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterException;
-
-import org.testng.annotations.ITestAnnotation;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.internal.ClassHelper;
-import org.testng.internal.Configuration;
-import org.testng.internal.DynamicGraph;
-import org.testng.internal.IConfiguration;
-import org.testng.internal.IResultListener2;
-import org.testng.internal.OverrideProcessor;
-import org.testng.internal.SuiteRunnerMap;
-import org.testng.internal.Utils;
-import org.testng.internal.annotations.DefaultAnnotationTransformer;
-import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.JDK15AnnotationFinder;
-import org.testng.internal.annotations.Sets;
-import org.testng.internal.thread.graph.GraphThreadPoolExecutor;
-import org.testng.internal.thread.graph.IThreadWorkerFactory;
-import org.testng.internal.thread.graph.SuiteWorkerFactory;
-import org.testng.log4testng.Logger;
-import org.testng.remote.SuiteDispatcher;
-import org.testng.remote.SuiteSlave;
-import org.testng.reporters.EmailableReporter;
-import org.testng.reporters.FailedReporter;
-import org.testng.reporters.JUnitReportReporter;
-import org.testng.reporters.SuiteHTMLReporter;
-import org.testng.reporters.XMLReporter;
-import org.testng.xml.Parser;
-import org.testng.xml.XmlClass;
-import org.testng.xml.XmlInclude;
-import org.testng.xml.XmlMethodSelector;
-import org.testng.xml.XmlSuite;
-import org.testng.xml.XmlTest;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,7 +22,50 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import org.testng.reporters.*;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.testng.annotations.ITestAnnotation;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
+import org.testng.internal.ClassHelper;
+import org.testng.internal.Configuration;
+import org.testng.internal.DynamicGraph;
+import org.testng.internal.IConfiguration;
+import org.testng.internal.IResultListener2;
+import org.testng.internal.OverrideProcessor;
+import org.testng.internal.SuiteRunnerMap;
+import org.testng.internal.Utils;
+import org.testng.internal.Version;
+import org.testng.internal.annotations.DefaultAnnotationTransformer;
+import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.JDK15AnnotationFinder;
+import org.testng.internal.annotations.Sets;
+import org.testng.internal.thread.graph.GraphThreadPoolExecutor;
+import org.testng.internal.thread.graph.IThreadWorkerFactory;
+import org.testng.internal.thread.graph.SuiteWorkerFactory;
+import org.testng.junit.JUnitTestFinder;
+import org.testng.log4testng.Logger;
+import org.testng.remote.SuiteDispatcher;
+import org.testng.remote.SuiteSlave;
+import org.testng.reporters.EmailableReporter;
+import org.testng.reporters.EmailableReporter2;
+import org.testng.reporters.FailedReporter;
+import org.testng.reporters.JUnitReportReporter;
+import org.testng.reporters.SuiteHTMLReporter;
+import org.testng.reporters.VerboseReporter;
+import org.testng.reporters.XMLReporter;
+import org.testng.reporters.jq.Main;
+import org.testng.xml.Parser;
+import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
+import org.testng.xml.XmlMethodSelector;
+import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlTest;
+import org.xml.sax.SAXException;
+
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 
 /**
  * This class is the main entry point for running tests in the TestNG framework.
@@ -128,6 +131,7 @@ public class TestNG {
   private String[] m_excludedGroups;
 
   private Boolean m_isJUnit = XmlSuite.DEFAULT_JUNIT;
+  private Boolean m_isMixed = XmlSuite.DEFAULT_MIXED;
   protected boolean m_useDefaultListeners = true;
 
   private ITestRunnerFactory m_testRunnerFactory;
@@ -182,6 +186,8 @@ public class TestNG {
   protected long m_start;
 
   private List<IExecutionListener> m_executionListeners = Lists.newArrayList();
+
+  private boolean m_isInitialized = false;
 
   /**
    * Default constructor. Setting also usage of default listeners/reporters.
@@ -261,7 +267,36 @@ public class TestNG {
   public void initializeSuitesAndJarFile() {
     // The Eclipse plug-in (RemoteTestNG) might have invoked this method already
     // so don't initialize suites twice.
+    if (m_isInitialized) {
+      return;
+    }
+
+    m_isInitialized = true;
     if (m_suites.size() > 0) {
+    	//to parse the suite files (<suite-file>), if any
+    	for (XmlSuite s: m_suites) {
+	      List<String> suiteFiles = s.getSuiteFiles();
+  			for (int i = 0; i < suiteFiles.size(); i++) {
+  				try {
+  					Collection<XmlSuite> childSuites = getParser(suiteFiles.get(i)).parse();
+  					for (XmlSuite cSuite : childSuites){
+  						cSuite.setParentSuite(s);
+  						s.getChildSuites().add(cSuite);
+  					}
+  				}
+  				catch(FileNotFoundException e) {
+  					e.printStackTrace(System.out);
+  				}
+  				catch (ParserConfigurationException e) {
+  					e.printStackTrace(System.out);
+  				} catch (SAXException e) {
+  					e.printStackTrace(System.out);
+  				} catch (IOException e) {
+  					e.printStackTrace(System.out);
+  				}
+  			}
+
+    	}
       return;
     }
 
@@ -329,10 +364,7 @@ public class TestNG {
     File jarFile = new File(m_jarPath);
 
     try {
-      URL jarfileUrl = jarFile.getCanonicalFile().toURI().toURL();
-      URLClassLoader jarLoader = new URLClassLoader(new URL[] { jarfileUrl });
-      Thread.currentThread().setContextClassLoader(jarLoader);
-
+ 
       Utils.log("TestNG", 2, "Trying to open jar file:" + jarFile);
 
       JarFile jf = new JarFile(jarFile);
@@ -469,10 +501,11 @@ public class TestNG {
   private String[] splitMethod(String m) {
     int index = m.lastIndexOf(".");
     if (index < 0) {
-      throw new TestNGException("Bad format for command line method:" + m);
+      throw new TestNGException("Bad format for command line method:" + m
+          + ", expected <class>.<method>");
     }
 
-    return new String[] { m.substring(0, index), m.substring(index + 1) };
+    return new String[] { m.substring(0, index), m.substring(index + 1).replaceAll("\\*", "\\.\\*") };
   }
 
   /**
@@ -487,7 +520,10 @@ public class TestNG {
     //
     Set<Class> classes = Sets.newHashSet();
     for (String m : commandLineMethods) {
-      classes.add(ClassHelper.forName(splitMethod(m)[0]));
+      Class c = ClassHelper.forName(splitMethod(m)[0]);
+      if (c != null) {
+          classes.add(c);
+      }
     }
 
     List<XmlSuite> result = createCommandLineSuitesForClasses(classes.toArray(new Class[0]));
@@ -495,7 +531,13 @@ public class TestNG {
     //
     // Add the method tags
     //
-    List<XmlClass> xmlClasses = result.get(0).getTests().get(0).getXmlClasses();
+    List<XmlClass> xmlClasses = Lists.newArrayList();
+    for (XmlSuite s : result) {
+        for (XmlTest t : s.getTests()) {
+            xmlClasses.addAll(t.getClasses());
+        }
+    }
+
     for (XmlClass xc : xmlClasses) {
       for (String m : commandLineMethods) {
         String[] split = splitMethod(m);
@@ -525,9 +567,15 @@ public class TestNG {
       ITestAnnotation test = (ITestAnnotation) finder.findAnnotation(c, ITestAnnotation.class);
       String suiteName = getDefaultSuiteName();
       String testName = getDefaultTestName();
+      boolean isJUnit = false;
       if (test != null) {
         suiteName = defaultIfStringEmpty(test.getSuiteName(), suiteName);
         testName = defaultIfStringEmpty(test.getTestName(), testName);
+      } else {
+        if (m_isMixed && JUnitTestFinder.isJUnitTest(c)) {
+          isJUnit = true;
+          testName = c.getName();
+        }
       }
       XmlSuite xmlSuite = suites.get(suiteName);
       if (xmlSuite == null) {
@@ -550,6 +598,7 @@ public class TestNG {
       if (xmlTest == null) {
         xmlTest = new XmlTest(xmlSuite);
         xmlTest.setName(testName);
+        xmlTest.setJUnit(isJUnit);
       }
 
       xmlTest.getXmlClasses().add(xmlClasses[i]);
@@ -660,16 +709,16 @@ public class TestNG {
         setAnnotationTransformer((IAnnotationTransformer) listener);
       }
       if (listener instanceof IMethodInterceptor) {
-        m_methodInterceptor = (IMethodInterceptor) listener;
+        setMethodInterceptor((IMethodInterceptor) listener);
       }
       if (listener instanceof IInvokedMethodListener) {
         addInvokedMethodListener((IInvokedMethodListener) listener);
       }
       if (listener instanceof IHookable) {
-        m_hookable = (IHookable) listener;
+        setHookable((IHookable) listener);
       }
       if (listener instanceof IConfigurable) {
-        m_configurable = (IConfigurable) listener;
+        setConfigurable((IConfigurable) listener);
       }
       if (listener instanceof IExecutionListener) {
         addExecutionListener((IExecutionListener) listener);
@@ -721,7 +770,8 @@ public class TestNG {
   /** If m_verbose gets set, it will override the verbose setting in testng.xml */
   private Integer m_verbose = null;
 
-  private IAnnotationTransformer m_annotationTransformer = new DefaultAnnotationTransformer();
+  private final IAnnotationTransformer m_defaultAnnoProcessor = new DefaultAnnotationTransformer();
+  private IAnnotationTransformer m_annotationTransformer = m_defaultAnnoProcessor;
 
   private Boolean m_skipFailedInvocationCounts = false;
 
@@ -799,11 +849,14 @@ public class TestNG {
     List<XmlSuite> suites = m_cmdlineSuites != null ? m_cmdlineSuites : m_suites;
     if (hasIncludedGroups || hasExcludedGroups) {
       for (XmlSuite s : suites) {
-        if(hasIncludedGroups) {
-          s.getTests().get(0).setIncludedGroups(Arrays.asList(m_includedGroups));
-        }
-        if(hasExcludedGroups) {
-          s.getTests().get(0).setExcludedGroups(Arrays.asList(m_excludedGroups));
+        //set on each test, instead of just the first one of the suite
+        for (XmlTest t : s.getTests()) {
+          if(hasIncludedGroups) {
+            t.setIncludedGroups(Arrays.asList(m_includedGroups));
+          }
+          if(hasExcludedGroups) {
+            t.setExcludedGroups(Arrays.asList(m_excludedGroups));
+          }
         }
       }
     }
@@ -819,9 +872,14 @@ public class TestNG {
 
     if (m_useDefaultListeners) {
       addReporter(SuiteHTMLReporter.class);
+      addReporter(Main.class);
       addReporter(FailedReporter.class);
       addReporter(XMLReporter.class);
-      addReporter(EmailableReporter.class);
+      if (System.getProperty("oldDestngEmailableReporter") != null) {
+        addReporter(EmailableReporter.class);
+      } else {
+        addReporter(EmailableReporter2.class);
+      }
       addReporter(JUnitReportReporter.class);
       if (m_verbose != null && m_verbose > 4) {
         addListener(new VerboseReporter("[TestNG] "));
@@ -1051,8 +1109,12 @@ public class TestNG {
   public List<ISuite> runSuitesLocally() {
     SuiteRunnerMap suiteRunnerMap = new SuiteRunnerMap();
     if (m_suites.size() > 0) {
-       // First initialize the suite runners to ensure there are no configuration issues.
-       // Create a map with XmlSuite as key and corresponding SuiteRunner as value
+      if (m_suites.get(0).getVerbose() >= 2) {
+        Version.displayBanner();
+      }
+
+      // First initialize the suite runners to ensure there are no configuration issues.
+      // Create a map with XmlSuite as key and corresponding SuiteRunner as value
       for (XmlSuite xmlSuite : m_suites) {
         createSuiteRunners(suiteRunnerMap, xmlSuite);
       }
@@ -1089,9 +1151,9 @@ public class TestNG {
           pooledExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
           pooledExecutor.shutdownNow();
         }
-        catch (InterruptedException e) {
+        catch (InterruptedException handled) {
           Thread.currentThread().interrupt();
-          error("Error waiting for concurrent executors to finish " + e.getMessage());
+          error("Error waiting for concurrent executors to finish " + handled.getMessage());
         }
       }
     }
@@ -1253,11 +1315,6 @@ public class TestNG {
 
   /**
    * <B>Note</B>: this method is not part of the public API and is meant for internal usage only.
-   * TODO  JavaDoc.
-   *
-   * @param argv
-   * @param listener
-   * @return
    */
   public static TestNG privateMain(String[] argv, ITestListener listener) {
     TestNG result = new TestNG();
@@ -1340,6 +1397,7 @@ public class TestNG {
     setTestJar(cla.testJar);
     setXmlPathInJar(cla.xmlPathInJar);
     setJUnit(cla.junit);
+    setMixed(cla.mixed);
     setMaster(cla.master);
     setSlave(cla.slave);
     setSkipFailedInvocationCounts(cla.skipFailedInvocationCounts);
@@ -1476,6 +1534,7 @@ public class TestNG {
     result.testJar = (String) cmdLineArgs.get(CommandLineArgs.TEST_JAR);
     result.xmlPathInJar = (String) cmdLineArgs.get(CommandLineArgs.XML_PATH_IN_JAR);
     result.junit = (Boolean) cmdLineArgs.get(CommandLineArgs.JUNIT);
+    result.mixed = (Boolean) cmdLineArgs.get(CommandLineArgs.MIXED);
     result.master = (String) cmdLineArgs.get(CommandLineArgs.MASTER);
     result.slave = (String) cmdLineArgs.get(CommandLineArgs.SLAVE);
     result.skipFailedInvocationCounts = (Boolean) cmdLineArgs.get(
@@ -1507,7 +1566,7 @@ public class TestNG {
 
     Object listeners = cmdLineArgs.get(CommandLineArgs.LISTENER);
     if (listeners instanceof List) {
-      result.listener = Utils.joinClasses((List<Class>) listeners, ",");
+      result.listener = Utils.join((List<?>) listeners, ",");
     } else {
       result.listener = (String) listeners;
     }
@@ -1588,6 +1647,16 @@ public class TestNG {
   }
 
   /**
+   * Specify if this run should be made in mixed mode
+   */
+  public void setMixed(Boolean isMixed) {
+      if(isMixed==null){
+          return;
+      }
+    m_isMixed = isMixed;
+  }
+
+  /**
    * @deprecated The TestNG version is now established at load time. This
    * method is not required anymore and is now a no-op.
    */
@@ -1636,6 +1705,13 @@ public class TestNG {
      throw new ParameterException(CommandLineArgs.SLAVE + " can't be combined with "
          + CommandLineArgs.MASTER);
     }
+
+    Boolean junit = args.junit;
+    Boolean mixed = args.mixed;
+    if (junit && mixed) {
+     throw new ParameterException(CommandLineArgs.MIXED + " can't be combined with "
+         + CommandLineArgs.JUNIT);
+    }
   }
 
   /**
@@ -1674,6 +1750,10 @@ public class TestNG {
   }
 
   public void setAnnotationTransformer(IAnnotationTransformer t) {
+	// compare by reference!
+    if (m_annotationTransformer != m_defaultAnnoProcessor && m_annotationTransformer != t) {
+    	LOGGER.warn("AnnotationTransformer already set");
+    }
     m_annotationTransformer = t;
   }
 
@@ -1836,8 +1916,28 @@ public class TestNG {
     }
   }
 
-  public void setMethodInterceptor(IMethodInterceptor methodInterceptor) {
-    m_methodInterceptor = methodInterceptor;
+  private void setConfigurable(IConfigurable c) {
+	// compare by reference!
+    if (m_configurable != null && m_configurable != c) {
+    	LOGGER.warn("Configurable already set");
+	}
+    m_configurable = c;
+  }
+
+  private void setHookable(IHookable h) {
+	// compare by reference!
+    if (m_hookable != null && m_hookable != h) {
+    	LOGGER.warn("Hookable already set");
+    }
+    m_hookable = h;
+  }
+
+  public void setMethodInterceptor(IMethodInterceptor i) {
+	// compare by reference!
+    if (m_methodInterceptor != null && m_methodInterceptor != i) {
+    	LOGGER.warn("MethodInterceptor already set");
+    }
+    m_methodInterceptor = i;
   }
 
   public void setDataProviderThreadCount(int count) {

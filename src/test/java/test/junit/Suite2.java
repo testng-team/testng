@@ -8,7 +8,7 @@ public class Suite2 {
     TestSuite suite = new TestSuite("Suite2");
     suite.addTestSuite(TestAc.class);
     suite.addTestSuite(TestAd.class);
-    suite.addTestSuite(Suite3.class);
+    suite.addTest(Suite3.suite());
     return suite;
   }
 }

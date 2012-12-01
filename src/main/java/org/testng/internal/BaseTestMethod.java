@@ -7,21 +7,30 @@ import org.testng.ITestNGMethod;
 import org.testng.annotations.ITestOrConfiguration;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.collections.Sets;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.thread.IAtomicInteger;
 import org.testng.internal.thread.ThreadUtil;
+import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Superclass to represent both &#64;Test and &#64;Configuration methods.
  */
 public abstract class BaseTestMethod implements ITestNGMethod {
   private static final long serialVersionUID = -2666032602580652173L;
+  private static final Pattern SPACE_SEPARATOR_PATTERN = Pattern.compile(" +");
+
   /**
    * The test class on which the test method was found. Note that this is not
    * necessarily the declaring class.
@@ -30,6 +39,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   protected final transient Class<?> m_methodClass;
   protected final transient ConstructorOrMethod m_method;
+  private final transient String m_signature;
   protected String m_id = "";
   protected long m_date = -1;
   protected final transient IAnnotationFinder m_annotationFinder;
@@ -82,6 +92,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     m_methodName = com.getName();
     m_annotationFinder = annotationFinder;
     m_instance = instance;
+    m_signature = computeSignature();
   }
 
   /**
@@ -418,11 +429,6 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return m_method.hashCode();
   }
 
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @param annotationClass
-   */
   protected void initGroups(Class<?> annotationClass) {
     //
     // Init groups
@@ -450,9 +456,18 @@ public abstract class BaseTestMethod implements ITestNGMethod {
         (ITestOrConfiguration) getAnnotationFinder().findAnnotation(getMethod().getDeclaringClass(),
           annotationClass);
 
+      Map<String, Set<String>> xgd = calculateXmlGroupDependencies(m_xmlTest);
+      List<String> xmlGroupDependencies = Lists.newArrayList();
+      for (String g : getGroups()) {
+        Set<String> gdu = xgd.get(g);
+        if (gdu != null) {
+          xmlGroupDependencies.addAll(gdu);
+        }
+      }
       setGroupsDependedUpon(
           getStringArray(null != annotation ? annotation.getDependsOnGroups() : null,
-          null != classAnnotation ? classAnnotation.getDependsOnGroups() : null));
+          null != classAnnotation ? classAnnotation.getDependsOnGroups() : null),
+          xmlGroupDependencies);
 
       String[] methodsDependedUpon =
         getStringArray(null != annotation ? annotation.getDependsOnMethods() : null,
@@ -469,33 +484,39 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     }
   }
 
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @return
-   */
+
+  private static Map<String, Set<String>> calculateXmlGroupDependencies(XmlTest xmlTest) {
+    Map<String, Set<String>> result = Maps.newHashMap();
+    if (xmlTest == null) {
+      return result;
+    }
+
+    for (Map.Entry<String, String> e : xmlTest.getXmlDependencyGroups().entrySet()) {
+      String name = e.getKey();
+      String dependsOn = e.getValue();
+      Set<String> set = result.get(name);
+      if (set == null) {
+        set = Sets.newHashSet();
+        result.put(name, set);
+      }
+      set.addAll(Arrays.asList(SPACE_SEPARATOR_PATTERN.split(dependsOn)));
+    }
+
+    return result;
+  }
+
   protected IAnnotationFinder getAnnotationFinder() {
     return m_annotationFinder;
   }
 
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @return
-   */
   protected IClass getIClass() {
     return m_testClass;
   }
 
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @return
-   */
-  protected String getSignature() {
+  private String computeSignature() {
     String classLong = m_method.getDeclaringClass().getName();
     String cls = classLong.substring(classLong.lastIndexOf(".") + 1);
-    StringBuffer result = new StringBuffer(cls + "." + m_method.getName() + "(");
+    StringBuilder result = new StringBuilder(cls).append(".").append(m_method.getName()).append("(");
     int i = 0;
     for (Class<?> p : m_method.getParameterTypes()) {
       if (i++ > 0) {
@@ -504,9 +525,18 @@ public abstract class BaseTestMethod implements ITestNGMethod {
       result.append(p.getName());
     }
     result.append(")");
-    result.append("[pri:" + getPriority() + ", instance:" + m_instance + "]");
+    result.append("[pri:").append(getPriority()).append(", instance:").append(m_instance).append("]");
 
     return result.toString();
+  }
+
+  /**
+   * TODO cquezel JavaDoc.
+   *
+   * @return
+   */
+  protected String getSignature() {
+    return m_signature;
   }
 
   /**
@@ -544,8 +574,11 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     m_groups = groups;
   }
 
-  protected void setGroupsDependedUpon(String[] groups) {
-    m_groupsDependedUpon = groups;
+  protected void setGroupsDependedUpon(String[] groups, Collection<String> xmlGroupDependencies) {
+    List<String> l = Lists.newArrayList();
+    l.addAll(Arrays.asList(groups));
+    l.addAll(xmlGroupDependencies);
+    m_groupsDependedUpon = l.toArray(new String[l.size()]);
   }
 
   protected void setMethodsDependedUpon(String[] methods) {
@@ -559,9 +592,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   public void addMethodDependedUpon(String method) {
     String[] newMethods = new String[m_methodsDependedUpon.length + 1];
     newMethods[0] = method;
-    for (int i =1; i < newMethods.length; i++) {
-      newMethods[i] = m_methodsDependedUpon[i - 1];
-    }
+    System.arraycopy(m_methodsDependedUpon, 0, newMethods, 1, m_methodsDependedUpon.length);
     m_methodsDependedUpon = newMethods;
   }
 
@@ -764,4 +795,22 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return m_method;
   }
 
+  @Override
+  public Map<String, String> findMethodParameters(XmlTest test) {
+    // Get the test+suite parameters
+    Map<String, String> result = test.getAllParameters();
+    for (XmlClass xmlClass: test.getXmlClasses()) {
+      if (xmlClass.getName().equals(getTestClass().getName())) {
+        result.putAll(xmlClass.getLocalParameters());
+        for (XmlInclude include : xmlClass.getIncludedMethods()) {
+          if (include.getName().equals(getMethodName())) {
+            result.putAll(include.getLocalParameters());
+            break;
+          }
+        }
+      }
+    }
+
+    return result;
+  }
 }

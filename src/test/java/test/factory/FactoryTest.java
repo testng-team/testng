@@ -2,6 +2,7 @@ package test.factory;
 
 import static org.testng.Assert.assertFalse;
 
+import org.testng.Assert;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Parameters;
@@ -11,10 +12,8 @@ public class FactoryTest {
 
   @Parameters({ "factory-param" })
   @Factory
-  public Object[] createObjects(String param)
-  {
-    assert "FactoryParam".equals(param) : "Incorrect param: " + param;
-
+  public Object[] createObjects(String param) {
+    Assert.assertEquals(param, "FactoryParam");
     assertFalse(m_invoked, "Should only be invoked once");
     m_invoked = true;
 
@@ -22,10 +21,6 @@ public class FactoryTest {
         new FactoryTest2(42),
         new FactoryTest2(43)
     };
-  }
-
-  private static void ppp(String s) {
-    System.out.println("[FactoryTest] " + s);
   }
 
   @AfterSuite

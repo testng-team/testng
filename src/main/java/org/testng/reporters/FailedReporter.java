@@ -169,18 +169,19 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     xmlTest.setIncludedGroups(srcXmlTest.getIncludedGroups());
     xmlTest.setExcludedGroups(srcXmlTest.getExcludedGroups());
     xmlTest.setParallel(srcXmlTest.getParallel());
-    xmlTest.setParameters(srcXmlTest.getParameters());
+    xmlTest.setParameters(srcXmlTest.getLocalParameters());
     xmlTest.setJUnit(srcXmlTest.isJUnit());
-    List<XmlClass> xmlClasses = createXmlClasses(methods);
+    List<XmlClass> xmlClasses = createXmlClasses(methods, srcXmlTest);
     xmlTest.setXmlClasses(xmlClasses);
   }
 
   /**
    * @param methods The methods we want to represent
+   * @param srcXmlTest 
    * @return A list of XmlClass objects (each representing a <class> tag) based
    * on the parameter methods
    */
-  private List<XmlClass> createXmlClasses(List<ITestNGMethod> methods) {
+  private List<XmlClass> createXmlClasses(List<ITestNGMethod> methods, XmlTest srcXmlTest) {
     List<XmlClass> result = Lists.newArrayList();
     Map<Class, Set<ITestNGMethod>> methodsMap= Maps.newHashMap();
 
@@ -197,6 +198,13 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       methodList.add(m);
     }
 
+    // Ideally, we should preserve each parameter in each class but putting them
+    // all in the same bag for now
+    Map<String, String> parameters = Maps.newHashMap();
+    for (XmlClass c : srcXmlTest.getClasses()) {
+      parameters.putAll(c.getLocalParameters());
+    }
+
     int index = 0;
     for(Map.Entry<Class, Set<ITestNGMethod>> entry: methodsMap.entrySet()) {
       Class clazz= entry.getKey();
@@ -211,6 +219,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
             ind++));
       }
       xmlClass.setIncludedMethods(methodNames);
+      xmlClass.setParameters(parameters);
       result.add(xmlClass);
 
     }

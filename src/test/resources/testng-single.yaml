@@ -1,11 +1,12 @@
 name: SingleSuite
-verbose: 10
+verbose: 2
 
 tests:
   - name: Test1
     excludedGroups: [ excludeThisGroup ]
     classes:
-#      - test.tmp.A
-      - test.Test2
+      - name: test.dependent.xml.GroupDependencyTest
+#        includedMethods: [ a ]
+#      - test.Test2
 #      - name: test.CommandLineTest
 #        includedMethods: [ junitParsing ]

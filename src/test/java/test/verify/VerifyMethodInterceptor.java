@@ -14,7 +14,7 @@ public class VerifyMethodInterceptor implements IMethodInterceptor {
     List<IMethodInstance> result = Lists.newArrayList();
     IMethodInstance verifier = null;
 
-    // Doing a na�ve approach here: we run through the list of methods
+    // Doing a naive approach here: we run through the list of methods
     // twice, once to find the verifier and once more to actually create
     // the result. Obviously, this can be done with just one loop
     for (IMethodInstance m : methods) {

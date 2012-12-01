@@ -1,5 +1,6 @@
 package org.testng;
 
+import org.testng.collections.Objects;
 import org.testng.xml.XmlSuite;
 
 /**
@@ -66,7 +67,9 @@ class SuiteResult implements ISuiteResult, Comparable {
    */
   @Override
   public String toString() {
-    return "[SuiteResult " + getTestContext().getName() + "]";
+    return Objects.toStringHelper(getClass())
+        .add("context", getTestContext().getName())
+        .toString();
   }
 
 }

@@ -29,6 +29,7 @@ import java.util.Vector;
  */
 public final class ClassHelper {
   private static final String JUNIT_TESTRUNNER= "org.testng.junit.JUnitTestRunner";
+  private static final String JUNIT_4_TESTRUNNER = "org.testng.junit.JUnit4TestRunner";
 
   /** The additional class loaders to find classes in. */
   private static final List<ClassLoader> m_classLoaders = new Vector<ClassLoader>();
@@ -195,15 +196,27 @@ public final class ClassHelper {
    * @return
    */
   public static IJUnitTestRunner createTestRunner(TestRunner runner) {
-    try {
-      IJUnitTestRunner tr= (IJUnitTestRunner) ClassHelper.forName(JUNIT_TESTRUNNER).newInstance();
-      tr.setTestResultNotifier(runner);
+      try {
+          //try to get runner for JUnit 4 first
+          Class.forName("org.junit.Test");
+          IJUnitTestRunner tr = (IJUnitTestRunner) ClassHelper.forName(JUNIT_4_TESTRUNNER).newInstance();
+          tr.setTestResultNotifier(runner);
+          return tr;
+      } catch (Throwable t) {
+          Utils.log("ClassHelper", 2, "JUnit 4 was not found on the classpath");
+          try {
+              //fallback to JUnit 3
+              Class.forName("junit.framework.Test");
+              IJUnitTestRunner tr = (IJUnitTestRunner) ClassHelper.forName(JUNIT_TESTRUNNER).newInstance();
+              tr.setTestResultNotifier(runner);
 
-      return tr;
-    }
-    catch(Exception ex) {
-      throw new TestNGException("Cannot create JUnit runner " + JUNIT_TESTRUNNER, ex);
-    }
+              return tr;
+          } catch (Exception ex) {
+              Utils.log("ClassHelper", 2, "JUnit 3 was not found on the classpath");
+              //there's no JUnit on the classpath
+              throw new TestNGException("Cannot create JUnit runner", ex);
+          }
+      }
   }
 
   private static Set<Method> extractMethods(Class<?> childClass, Class<?> clazz,
@@ -318,7 +331,7 @@ public final class ClassHelper {
                                                           "@Parameters",
                                                           finder,
                                                           parameterNames,
-                                                          xmlTest.getParameters(),
+                                                          xmlTest.getAllParameters(),
                                                           xmlTest.getSuite());
         result = objectFactory.newInstance(constructor, parameters);
       }

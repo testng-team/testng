@@ -41,7 +41,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
   private static final String DEFAULT_OUTPUT_DIR = "test-output";
 
-  private Map<String, ISuiteResult> m_suiteResults = Maps.newHashMap();
+  private Map<String, ISuiteResult> m_suiteResults = Maps.newLinkedHashMap();
   transient private List<TestRunner> m_testRunners = Lists.newArrayList();
   transient private List<ISuiteListener> m_listeners = Lists.newArrayList();
   transient private TestListenerAdapter m_textReporter = new TestListenerAdapter();
@@ -481,7 +481,6 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
   /**
    * Returns the annotation finder for the given annotation type.
-   * @param pAnnotationType the annotation type
    * @return the annotation finder for the given annotation type.
    */
   @Override
@@ -624,14 +623,14 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
   @Override
   public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-    if (method == null) {
-      throw new NullPointerException("Method should not be null");
-    }
-    m_invokedMethods.add(method);
   }
 
   @Override
   public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
+    if (method == null) {
+      throw new NullPointerException("Method should not be null");
+    }
+    m_invokedMethods.add(method);
   }
 
   //

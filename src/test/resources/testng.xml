@@ -72,13 +72,18 @@
       <class name="test.thread.ParallelTestTest" />
       <class name="test.thread.DataProviderThreadPoolSizeTest" />
       <class name="test.thread.MultiThreadedDependentTest" />
+      <class name="test.thread.TrueParallelTest" />
 <!--
       <class name="test.thread.ParallelSuiteTest"/>
 -->
       <class name="test.simple.IncludedExcludedTest" />
+<!-- 
       <class name="test.reports.ReportTest" />
+-->
       <class name="test.annotationtransformer.AnnotationTransformerTest" />
+<!-- 
       <class name="test.jar.JarTest" />
+ -->
       <class name="test.xml.XmlVerifyTest" />
       <class name="test.invokedmethodlistener.InvokedMethodListenerTest" />
       <class name="test.testng249.VerifyTest"/>
@@ -108,13 +113,26 @@
       <class name="test.jason.MainTest" />
       <class name="test.bug90.Bug90Test" />
       <class name="test.bug92.Bug92Test" />
+      <class name="test.ReturnValueTest" />
+      <class name="test.groupbug.GroupBugTest" />
+      <class name="test.parameters.ShadowTest" />
+      <class name="test.parameters.ParameterOverrideTest" />
+      <class name="test.testng234.PolymorphicFailureTest" />
+      <class name="test.reports.FailedReporterTest" />
+      <class name="test.reports.ReporterLogTest" />
     </classes>
   </test>
 
   <test name="Threads">
+    <groups>
+      <run>
+        <exclude name="broken" />
+      </run>
+    </groups>
     <classes>
       <class name="test.thread.ThreadPoolSizeTest" />
       <class name="test.thread.ThreadPoolSizeWithTimeOutTest" />
+      <class name="test.thread.ThreadTest" />
     </classes>
   </test>
 
@@ -191,6 +209,7 @@
       <class name="test.dependent.DependsOnProtectedMethodTest" />
       <class name="test.dependsongroup.DependsOnGroupsTest" />
       <class name="test.dependent.GroupByInstancesTest" />
+      <class name="test.dependent.xml.GroupDependencyTest" />
     </classes>
   </test>
 
@@ -455,6 +474,7 @@
       <class name="test.dataprovider.InheritedDataProviderTest" />
       <class name="test.dataprovider.TestNG411Test" />
       <class name="test.dataprovider.VarArgsDataProviderTest" />
+      <class name="test.dataprovider.IndicesTest" />
     </classes>
   </test>
 
@@ -543,6 +563,7 @@
     <classes>
       <class name="test.JUnitTest1" />
       <class name="test.CommandLineTest"/>
+      <class name="test.JUnit4Test" />
     </classes>
   </test>
 
@@ -589,6 +610,7 @@
   <test name="SkipExceptions">
     <classes>
       <class name="test.skipex.SkippedExceptionTest" />
+      <class name="test.skipex.SkipAndExpectedTest" />
     </classes>
   </test>
 
@@ -676,4 +698,23 @@
       <class name="test.configuration.BeforeClassWithDisabledTest" />
     </classes>
   </test>
+  
+  <test name="Bug173">
+    <classes>
+      <class name="test.testng173.TestNG173Test" />
+    </classes>
+  </test>
+
+  <test name="Mustache">
+    <classes>
+      <class name="test.mustache.MustacheTest" />
+    </classes>
+  </test>
+
+  <test name="Mixed">
+    <classes>
+      <class name="test.mixed.MixedTest" />
+    </classes>
+  </test>
+
 </suite>

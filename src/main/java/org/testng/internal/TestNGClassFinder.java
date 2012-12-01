@@ -2,7 +2,6 @@ package org.testng.internal;
 
 import org.testng.IClass;
 import org.testng.IInstanceInfo;
-import org.testng.IObjectFactory;
 import org.testng.ITestContext;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
@@ -74,7 +73,8 @@ public class TestNGClassFinder extends BaseClassFinder {
                   break outer;
                 }
                 catch (Exception ex) {
-                  throw new TestNGException("Error creating object factory", ex);
+                  throw new TestNGException("Error creating object factory: " + cls,
+                      ex);
                 }
               }
             }

@@ -1,29 +1,6 @@
 package org.testng;
 
 
-import static java.lang.Boolean.TRUE;
-import static org.testng.internal.Utils.isStringNotBlank;
-import static org.testng.internal.Utils.joinStrings;
-
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.DirectoryScanner;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Target;
-import org.apache.tools.ant.Task;
-import org.apache.tools.ant.taskdefs.Execute;
-import org.apache.tools.ant.taskdefs.ExecuteWatchdog;
-import org.apache.tools.ant.types.Commandline;
-import org.apache.tools.ant.types.CommandlineJava;
-import org.apache.tools.ant.types.Environment;
-import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.types.PropertySet;
-import org.apache.tools.ant.types.Reference;
-import org.apache.tools.ant.types.selectors.FilenameSelector;
-import org.testng.collections.Lists;
-import org.testng.internal.Utils;
-import org.testng.reporters.VerboseReporter;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -35,10 +12,36 @@ import java.net.URL;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import org.apache.tools.ant.taskdefs.*;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Target;
+import org.apache.tools.ant.Task;
+import org.apache.tools.ant.taskdefs.Execute;
+import org.apache.tools.ant.taskdefs.ExecuteWatchdog;
+import org.apache.tools.ant.taskdefs.LogOutputStream;
+import org.apache.tools.ant.taskdefs.PumpStreamHandler;
+import org.apache.tools.ant.types.Commandline;
+import org.apache.tools.ant.types.CommandlineJava;
+import org.apache.tools.ant.types.Environment;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.PropertySet;
+import org.apache.tools.ant.types.Reference;
+import org.apache.tools.ant.types.ResourceCollection;
+import org.apache.tools.ant.types.resources.FileResource;
+import org.apache.tools.ant.types.selectors.FilenameSelector;
+import org.testng.collections.Lists;
+import org.testng.internal.Utils;
+import org.testng.reporters.VerboseReporter;
+
+import static java.lang.Boolean.TRUE;
+import static org.testng.internal.Utils.isStringNotBlank;
 
 /**
  * TestNG settings:
@@ -107,13 +110,12 @@ public class TestNGAntTask extends Task {
 
   protected CommandlineJava m_javaCommand;
 
-  protected List<FileSet> m_xmlFilesets= Lists.newArrayList();
-  protected List<FileSet> m_classFilesets= Lists.newArrayList();
+  protected List<ResourceCollection> m_xmlFilesets= Lists.newArrayList();
+  protected List<ResourceCollection> m_classFilesets= Lists.newArrayList();
   protected File m_outputDir;
   protected File m_testjar;
   protected File m_workingDir;
   private Integer m_timeout;
-  protected Boolean m_isJUnit;
   private List<String> m_listeners= Lists.newArrayList();
   private List<String> m_methodselectors= Lists.newArrayList();
   private String m_objectFactory;
@@ -151,7 +153,13 @@ public class TestNGAntTask extends Task {
   private String m_testName="Ant test";
   private Boolean m_skipFailedInvocationCounts;
   private String m_methods;
+  private Mode mode = Mode.testng;
 
+  public enum Mode {
+      //lower-case to better look in build scripts
+      testng, junit, mixed;
+  }
+  
   /**
    * The list of report listeners added via &lt;reporter&gt; sub-element of the Ant task
    */
@@ -326,7 +334,7 @@ public class TestNGAntTask extends Task {
   }
 
   public void setXmlfilesetRef(Reference ref) {
-    m_xmlFilesets.add(createFileSet(ref));
+    m_xmlFilesets.add(createResourceCollection(ref));
   }
 
   public void addClassfileset(FileSet fs) {
@@ -334,7 +342,7 @@ public class TestNGAntTask extends Task {
   }
 
   public void setClassfilesetRef(Reference ref) {
-    m_classFilesets.add(createFileSet(ref));
+    m_classFilesets.add(createResourceCollection(ref));
   }
 
   public void setTestNames(String testNames) {
@@ -367,7 +375,12 @@ public class TestNGAntTask extends Task {
 
   // TestNG settings
   public void setJUnit(boolean value) {
-    m_isJUnit= Boolean.valueOf(value);
+    mode = value ? Mode.junit : Mode.testng;
+  }
+
+  // TestNG settings
+  public void setMode(Mode mode) {
+    this.mode = mode;
   }
 
   /**
@@ -471,7 +484,6 @@ public class TestNGAntTask extends Task {
     if (m_delegateCommandSystemProperties) {
       delegateCommandSystemProperties();
     }
-    setListeners(VerboseReporter.class.getName());
     List<String> argv = createArguments();
 
     String fileName= "";
@@ -528,7 +540,8 @@ public class TestNGAntTask extends Task {
 
   private List<String> createArguments() {
 	List<String> argv= Lists.newArrayList();
-    addBooleanIfTrue(argv, CommandLineArgs.JUNIT, m_isJUnit);
+    addBooleanIfTrue(argv, CommandLineArgs.JUNIT, mode == Mode.junit);
+    addBooleanIfTrue(argv, CommandLineArgs.MIXED, mode == Mode.mixed);
     addBooleanIfTrue(argv, CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS, m_skipFailedInvocationCounts);
     addIntegerIfNotNull(argv, CommandLineArgs.LOG, m_verbose);
     addDefaultListeners(argv);
@@ -536,7 +549,7 @@ public class TestNGAntTask extends Task {
     addFileIfFile(argv, CommandLineArgs.TEST_JAR, m_testjar);
     addStringIfNotBlank(argv, CommandLineArgs.GROUPS, m_includedGroups);
     addStringIfNotBlank(argv, CommandLineArgs.EXCLUDED_GROUPS, m_excludedGroups);
-    addFilesOfFilesets(argv, CommandLineArgs.TEST_CLASS, m_classFilesets);
+    addFilesOfRCollection(argv, CommandLineArgs.TEST_CLASS, m_classFilesets);
     addListOfStringIfNotEmpty(argv, CommandLineArgs.LISTENER, m_listeners);
     addListOfStringIfNotEmpty(argv, CommandLineArgs.METHOD_SELECTORS, m_methodselectors);
     addStringIfNotNull(argv, CommandLineArgs.OBJECT_FACTORY, m_objectFactory);
@@ -589,8 +602,8 @@ public class TestNGAntTask extends Task {
     }
   }
 
-  private void addFilesOfFilesets(List<String> argv, String name, List<FileSet> fileSets) {
-	addArgumentsIfNotEmpty(argv, name, fileset(fileSets), ",");
+  private void addFilesOfRCollection(List<String> argv, String name, List<ResourceCollection> resources) {
+	addArgumentsIfNotEmpty(argv, name, getFiles(resources), ",");
   }
 
   private void addListOfStringIfNotEmpty(List<String> argv, String name, List<String> arguments) {
@@ -600,9 +613,9 @@ public class TestNGAntTask extends Task {
   private void addArgumentsIfNotEmpty(List<String> argv, String name, List<String> arguments, String separator) {
 	if (arguments != null && !arguments.isEmpty()) {
       argv.add(name);
-      String value= joinStrings(arguments, separator);
-	  argv.add(value);
-	}
+      String value= Utils.join(arguments, separator);
+	    argv.add(value);
+  	}
   }
 
   private void addFileIfFile(List<String> argv, String name, File file) {
@@ -651,7 +664,7 @@ public class TestNGAntTask extends Task {
   protected List<String> getSuiteFileNames() {
     List<String> result = Lists.newArrayList();
 
-    for(String file : fileset(m_xmlFilesets)) {
+    for(String file : getFiles(m_xmlFilesets)) {
       result.add(file);
     }
 
@@ -874,12 +887,16 @@ public class TestNGAntTask extends Task {
 
   }
 
-  private FileSet createFileSet(Reference ref) {
-    FileSet fs= new FileSet();
-    fs.setRefid(ref);
-    fs.setProject(getProject());
-
-    return fs;
+  private ResourceCollection createResourceCollection(Reference ref) {
+    Object o = ref.getReferencedObject();
+    if (!(o instanceof ResourceCollection)) {
+        throw new BuildException("Only File based ResourceCollections are supported.");
+    }
+    ResourceCollection rc = (ResourceCollection) o;
+    if (!rc.isFilesystemOnly()) {
+        throw new BuildException("Only ResourceCollections from local file system are supported.");
+    }
+    return rc;
   }
 
   private FileSet appendClassSelector(FileSet fs) {
@@ -965,22 +982,49 @@ public class TestNGAntTask extends Task {
   }
 
   /**
-   * Returns the list of files corresponding to the filesets
+   * Returns the list of files corresponding to the resource collection
    *
-   * @param filesets
-   * @return the list of files corresponding to the filesets
+   * @param resources
+   * @return the list of files corresponding to the resource collection
    * @throws BuildException
    */
-  private List<String> fileset(List<FileSet> filesets) throws BuildException {
+  private List<String> getFiles(List<ResourceCollection> resources) throws BuildException {
+    List<String> files= Lists.newArrayList();
+    for (ResourceCollection rc : resources) {
+        for (Iterator i = rc.iterator(); i.hasNext();) {
+          Object o = i.next();
+          if (o instanceof FileResource) {
+            FileResource fr = ((FileResource) o);
+            if (fr.isDirectory()) {
+              throw new BuildException("Directory based FileResources are not supported.");
+            }
+            if (fr.isExists()) {
+              log("'" + fr.toLongString() + "' does not exist", Project.MSG_VERBOSE);
+            }
+            files.add(fr.getFile().getAbsolutePath());
+          } else {
+              log("Unsupported Resource type: " + o.toString(), Project.MSG_VERBOSE);
+          }
+        }
+    }
+    return files;
+  }
+
+  /**
+   * Returns the list of files corresponding to the fileset
+   *
+   * @param filesets
+   * @return the list of files corresponding to the fileset
+   * @throws BuildException
+   */
+  private List<String> fileset(FileSet fileset) throws BuildException {
     List<String> files= Lists.newArrayList();
 
-    for (FileSet fileset : filesets) {
       DirectoryScanner ds= fileset.getDirectoryScanner(getProject());
 
       for(String file : ds.getIncludedFiles()) {
         files.add(ds.getBasedir() + File.separator + file);
       }
-    }
 
     return files;
   }

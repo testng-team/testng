@@ -41,7 +41,7 @@ public class ExecutorAdapter extends ThreadPoolExecutor implements IExecutor {
      try {
       result= super.awaitTermination(timeout, TimeUnit.MILLISECONDS);
      }
-     catch(InterruptedException iex) {
+     catch(InterruptedException handled) {
        System.out.println("[WARN] ThreadPoolExecutor has been interrupted while awaiting termination");
        Thread.currentThread().interrupt();
      }

@@ -83,8 +83,8 @@ abstract public class BaseMessageSender implements IMessageSender {
         try {
           Thread.sleep(4000);
         }
-        catch(InterruptedException e) {
-          ;
+        catch(InterruptedException handled) {
+          Thread.currentThread().interrupt();
         }
       }
     }
@@ -100,7 +100,13 @@ abstract public class BaseMessageSender implements IMessageSender {
   @Override
   public void sendAck() {
     p("Sending ACK " + m_serial);
-    sendAdminMessage(MessageHelper.ACK_MSG + m_serial++);
+    // Note: adding the serial at the end of this message causes a lock up if interacting
+    // with TestNG 5.14 and older (reported by JetBrains). The following git commit:
+    // 5730bdfb33ec7a8bf4104852cd4a5f2875ba8267
+    // changed equals() to startsWith().
+    // It's ok to add this serial back for debugging, but don't commit it until JetBrains
+    // confirms they no longer need backward compatibility with 5.14.
+    sendAdminMessage(MessageHelper.ACK_MSG); // + m_serial++);
   }
 
   @Override
@@ -113,33 +119,24 @@ abstract public class BaseMessageSender implements IMessageSender {
     if (m_inStream != null) {
       p("Receiver already initialized");
     }
-    ServerSocket serverSocket;
+    ServerSocket serverSocket = null;
     try {
       p("initReceiver on port " + m_port);
       serverSocket = new ServerSocket(m_port);
       serverSocket.setSoTimeout(5000);
 
-      while (true) {
-        try {
-          Socket socket = serverSocket.accept();
-          m_inStream = socket.getInputStream();
-          m_inReader = new BufferedReader(new InputStreamReader(m_inStream));
-          m_outStream = socket.getOutputStream();
-          m_outWriter = new PrintWriter(new OutputStreamWriter(m_outStream));
-
-          break;
-        }
-        catch (IOException ioe) {
-          try {
-            Thread.sleep(100L);
-          }
-          catch (InterruptedException ie) {
-            // Do nothing.
-          }
-        }
-      }
+	  Socket socket = serverSocket.accept();
+	  m_inStream = socket.getInputStream();
+	  m_inReader = new BufferedReader(new InputStreamReader(m_inStream));
+	  m_outStream = socket.getOutputStream();
+	  m_outWriter = new PrintWriter(new OutputStreamWriter(m_outStream));
     }
     catch(SocketTimeoutException ste) {
+      try {
+		serverSocket.close();
+	  } catch (IOException e) {
+		  // ignore
+	  }
       throw ste;
     }
     catch (IOException ioe) {
@@ -198,7 +195,8 @@ abstract public class BaseMessageSender implements IMessageSender {
         }
         p("... ACK received:" + m_latestAck);
       }
-      catch(InterruptedException e) {
+      catch(InterruptedException handled) {
+        Thread.currentThread().interrupt();
       }
     }
   }

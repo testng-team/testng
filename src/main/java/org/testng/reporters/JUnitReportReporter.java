@@ -19,9 +19,9 @@ import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -215,7 +215,10 @@ public class JUnitReportReporter implements IReporter {
   }
 
   private String formatTime(float time) {
-    DecimalFormat format = new DecimalFormat("#.###");
+    DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+    // JUnitReports wants points here, regardless of the locale
+    symbols.setDecimalSeparator('.');
+    DecimalFormat format = new DecimalFormat("#.###", symbols);
     format.setMinimumFractionDigits(3);
     return format.format(time / 1000.0f);
   }

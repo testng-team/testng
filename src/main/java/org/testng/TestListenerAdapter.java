@@ -1,6 +1,7 @@
 package org.testng;
 
 import org.testng.collections.Lists;
+import org.testng.collections.Objects;
 import org.testng.internal.IResultListener2;
 
 import java.util.ArrayList;
@@ -178,9 +179,10 @@ public class TestListenerAdapter implements IResultListener2 {
 
   @Override
   public String toString() {
-    return "[TestListenerAdapter] Passed:" + getPassedTests().size()
-        + " Failed:" + getFailedTests().size()
-        + " Skipped:" + getSkippedTests().size()
-        + "]";
+    return Objects.toStringHelper(getClass())
+        .add("passed", getPassedTests().size())
+        .add("failed", getFailedTests().size())
+        .add("skipped", getSkippedTests().size())
+        .toString();
   }
 }

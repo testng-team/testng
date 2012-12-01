@@ -1,13 +1,5 @@
 package org.testng.internal;
 
-import org.testng.IMethodSelector;
-import org.testng.IMethodSelectorContext;
-import org.testng.ITestNGMethod;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.xml.XmlClass;
-import org.testng.xml.XmlInclude;
-
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
@@ -15,6 +7,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import org.testng.IMethodSelector;
+import org.testng.IMethodSelectorContext;
+import org.testng.ITestNGMethod;
+import org.testng.TestNGException;
+import org.testng.collections.ListMultiMap;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
+import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
 
 /**
  * This class is the default method selector used by TestNG to determine
@@ -34,11 +36,11 @@ public class XmlMethodSelector implements IMethodSelector {
   // The BeanShell expression for this test, if any
   private String m_expression = null;
   // List of methods included implicitly
-  private Set<String> m_includedMethods = new HashSet<String>();
+  private ListMultiMap<String, XmlInclude> m_includedMethods = Maps.newListMultiMap();
   private IBsh m_bsh = Dynamic.hasBsh() ? new Bsh() : new BshMock();
 
   @Override
-  public boolean  includeMethod(IMethodSelectorContext context,
+  public boolean includeMethod(IMethodSelectorContext context,
       ITestNGMethod tm, boolean isTestMethod)
   {
 //    ppp("XML METHOD SELECTOR " + tm + " " + m_isInitialized);
@@ -65,6 +67,8 @@ public class XmlMethodSelector implements IMethodSelector {
     String[] groups = tm.getGroups();
     Map<String, String> includedGroups = m_includedGroups;
     Map<String, String> excludedGroups = m_excludedGroups;
+    List<XmlInclude> includeList =
+        m_includedMethods.get(MethodHelper.calculateMethodCanonicalName(tm));
 
     //
     // No groups were specified:
@@ -88,7 +92,7 @@ public class XmlMethodSelector implements IMethodSelector {
     //
     // Is this method included implicitly?
     //
-    else if (m_includedMethods.contains(MethodHelper.calculateMethodCanonicalName(tm))) {
+    else if (includeList != null) {
       result = true;
     }
 
@@ -134,11 +138,7 @@ public class XmlMethodSelector implements IMethodSelector {
         for (XmlClass xmlClass : m_classes) {
           // Only consider included/excluded methods that belong to the same class
           // we are looking at
-          Class cls = ClassHelper.forName(xmlClass.getName());
-          if(null == cls) {
-            Utils.log("XmlMethodSelector", 1, "Cannot find class in classpath " + xmlClass.getName());
-            continue;
-          }
+          Class cls = xmlClass.getSupportClass();
           if(!assignable(methodClass, cls)) {
             continue;
           }
@@ -235,11 +235,30 @@ public class XmlMethodSelector implements IMethodSelector {
     return className + "." + methodName;
   }
 
+  private void checkMethod(String className, String methodName) {
+    Pattern p = Pattern.compile(methodName);
+    try {
+      Class<?> c = Class.forName(className);
+      for (Method m : c.getMethods()) {
+        if (p.matcher(m.getName()).matches()) {
+          return;
+        }
+      }
+    } catch (ClassNotFoundException e) {
+      throw new TestNGException(e);
+    }
+
+    Utils.log("Warning", 2, "The regular exception \"" + methodName + "\" didn't match any" +
+    		" method in class " + className);
+  }
+
   public void setXmlClasses(List<XmlClass> classes) {
     m_classes = classes;
     for (XmlClass c : classes) {
       for (XmlInclude m : c.getIncludedMethods()) {
-        m_includedMethods.add(makeMethodName(c.getName(), m.getName()));
+        checkMethod(c.getName(), m.getName());
+        String methodName = makeMethodName(c.getName(), m.getName());
+        m_includedMethods.put(methodName, m);
       }
     }
   }
@@ -360,7 +379,11 @@ public class XmlMethodSelector implements IMethodSelector {
       for (ITestNGMethod m : methodClosure) {
         String methodName =
          m.getMethod().getDeclaringClass().getName() + "." + m.getMethodName();
-        m_includedMethods.add(methodName);
+//        m_includedMethods.add(methodName);
+        List<XmlInclude> includeList = m_includedMethods.get(methodName);
+        XmlInclude xi = new XmlInclude(methodName);
+        // TODO: set the XmlClass on this xi or we won't get inheritance of parameters
+        m_includedMethods.put(methodName, xi);
         logInclusion("Including", "method ", methodName);
       }
     }
