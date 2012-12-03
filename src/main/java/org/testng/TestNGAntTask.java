@@ -998,7 +998,7 @@ public class TestNGAntTask extends Task {
             if (fr.isDirectory()) {
               throw new BuildException("Directory based FileResources are not supported.");
             }
-            if (fr.isExists()) {
+            if (!fr.isExists()) {
               log("'" + fr.toLongString() + "' does not exist", Project.MSG_VERBOSE);
             }
             files.add(fr.getFile().getAbsolutePath());
