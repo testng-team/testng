@@ -74,7 +74,7 @@ public class CheckTestNamesTest extends SimpleBaseTest {
     tng.setTestSuites(Arrays.asList(testngXmlPath));
     tng.addListener(tla);
     tng.run();
-    Assert.assertEquals(tla.getPassedTests().size(), 6);
+    Assert.assertEquals(tla.getPassedTests().size(), 4);
   }
 
   /**
