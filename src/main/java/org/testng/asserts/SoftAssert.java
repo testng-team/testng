@@ -1,8 +1,8 @@
 package org.testng.asserts;
 
-import org.testng.collections.Maps;
-
 import java.util.Map;
+
+import org.testng.collections.Maps;
 
 /**
  * When an assertion fails, don't throw an exception but record the failure.
@@ -18,6 +18,7 @@ public class SoftAssert extends Assertion {
     try {
       a.doAssert();
     } catch(AssertionError ex) {
+      onAssertFailure(a, ex);
       m_errors.put(ex, a);
     }
   }
