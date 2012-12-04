@@ -982,6 +982,7 @@ public class TestNG {
    */
   private void sanityCheck() {
     checkTestNames(m_suites);
+    checkSuiteNames(m_suites);
   }
 
   /**
@@ -999,6 +1000,26 @@ public class TestNG {
         }
       }
       checkTestNames(suite.getChildSuites());
+    }
+  }
+
+  /**
+   * Ensure that two XmlSuite don't have the same name
+   * Otherwise will be clash in SuiteRunnerMap
+   * See issue #302
+   */
+  private void checkSuiteNames(List<XmlSuite> suites) {
+    checkSuiteNamesInternal(suites, Sets.<String>newHashSet());
+  }
+
+  private void checkSuiteNamesInternal(List<XmlSuite> suites, Set<String> names) {
+    for (XmlSuite suite : suites) {
+      final String name = suite.getName();
+      if (names.contains(name)) {
+        throw new TestNGException("Two suites cannot have the same name: " + name);
+      }
+      names.add(name);
+      checkSuiteNamesInternal(suite.getChildSuites(), names);
     }
   }
 
