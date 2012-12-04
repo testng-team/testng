@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="SanityCheck suites 3">
+  <test name="SanityCheck:Tests" preserve-order="true">
+    <classes>
+      <class name="test.sanitycheck.SampleTest1"/>
+    </classes>
+  </test>
+  <test name="SanityCheck:Tests:Another" preserve-order="true">
+    <classes>
+      <class name="test.sanitycheck.SampleTest3"/>
+    </classes>
+  </test>
+</suite>
