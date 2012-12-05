@@ -1,34 +1,19 @@
 package test.issue107;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.testng.IExecutionListener;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
+import org.testng.xml.XmlSuite;
 
-public class MySuiteListener implements IExecutionListener, ISuiteListener {
-  public void onFinish(ISuite arg0) {
+import java.util.Map;
+
+public class MySuiteListener implements ISuiteListener {
+  public void onFinish(ISuite suite) {
   }
 
-  public void onStart(ISuite arg0) {
-    Map<String, String> xmlPropertiesAfter = new HashMap<String, String>();
-
-    /*In our real case we will :
-     *   1. get all the parameters in xml suite file "suiteFileParam"
-     *   2. get all jvm parameters "jvmParam"
-     *   3. merge them by overwriting the "suiteFileParam" with "jvmParam"
-     *   4. set it back to argo
-     *  Here we just set sth into argo to make it simple
-     */
-    xmlPropertiesAfter.put("hello", "abc");
-    arg0.getXmlSuite().setParameters(xmlPropertiesAfter);
+  public void onStart(ISuite suite) {
+    final XmlSuite xmlSuite = suite.getXmlSuite();
+    final Map<String, String> parameters = xmlSuite.getParameters();
+    parameters.put(TestTestngCounter.PARAMETER_NAME, TestTestngCounter.EXPECTED_VALUE);
+    xmlSuite.setParameters(parameters);
   }
-
-  public void onExecutionFinish() {
-  }
-
-  public void onExecutionStart() {
-  }
-
 }
