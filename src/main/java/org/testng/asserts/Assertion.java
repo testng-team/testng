@@ -90,20 +90,60 @@ public class Assertion implements IAssertLifecycle {
     abstract public void doAssert();
   }
 
+
   public void assertTrue(final boolean condition, final String message) {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
         org.testng.Assert.assertTrue(condition, message);
       }
+
+      @Override
+      public Object getActual() {
+        return condition;
+      }
+
+      @Override
+      public Object getExpected() {
+        return true;
+      }
     });
   }
+  
+	public void assertTrue(final boolean condition) {
+		doAssert(new SimpleAssert(null) {
+			@Override
+			public void doAssert() {
+				org.testng.Assert.assertTrue(condition);
+			}
+
+			@Override
+			public Object getActual() {
+				return condition;
+			}
+
+			@Override
+			public Object getExpected() {
+				return true;
+			}
+		});
+	}
 
   public void assertFalse(final boolean condition, final String message) {
     doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
         org.testng.Assert.assertFalse(condition, message);
+      }
+
+      @Override
+      public Object getActual() {
+        return condition;
+      }
+
+      @Override
+      public Object getExpected() {
+        return false;
       }
     });
   }
@@ -113,6 +153,16 @@ public class Assertion implements IAssertLifecycle {
       @Override
       public void doAssert() {
         org.testng.Assert.assertFalse(condition);
+      }
+
+      @Override
+      public Object getActual() {
+        return condition;
+      }
+
+      @Override
+      public Object getExpected() {
+        return false;
       }
     });
   }
@@ -531,6 +581,11 @@ public class Assertion implements IAssertLifecycle {
       public void doAssert() {
         org.testng.Assert.assertNotNull(object);
       }
+
+      @Override
+      public Object getActual() {
+        return object;
+      }
     });
   }
 
@@ -539,6 +594,11 @@ public class Assertion implements IAssertLifecycle {
       @Override
       public void doAssert() {
         org.testng.Assert.assertNotNull(object, message);
+      }
+
+      @Override
+      public Object getActual() {
+        return object;
       }
     });
   }
@@ -549,6 +609,11 @@ public class Assertion implements IAssertLifecycle {
       public void doAssert() {
         org.testng.Assert.assertNull(object);
       }
+
+      @Override
+      public Object getActual() {
+        return object;
+      }
     });
   }
 
@@ -557,6 +622,11 @@ public class Assertion implements IAssertLifecycle {
       @Override
       public void doAssert() {
         org.testng.Assert.assertNull(object, message);
+      }
+
+      @Override
+      public Object getActual() {
+        return object;
       }
     });
   }
