@@ -689,7 +689,7 @@ public class XmlTest implements Serializable, Cloneable {
 
   public String getPreserveOrder() {
     String result = m_preserveOrder;
-    if (result == null || XmlSuite.DEFAULT_PRESERVE_ORDER.equals(m_verbose)) {
+    if (result == null || XmlSuite.DEFAULT_PRESERVE_ORDER.equals(m_preserveOrder)) {
       result = m_suite.getPreserveOrder();
     }
 
