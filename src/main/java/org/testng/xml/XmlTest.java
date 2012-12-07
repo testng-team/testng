@@ -96,7 +96,7 @@ public class XmlTest implements Serializable, Cloneable {
 
   // For YAML
   public List<XmlPackage> getPackages() {
-    return getPackages();
+    return getXmlPackages();
   }
 
   // For YAML
