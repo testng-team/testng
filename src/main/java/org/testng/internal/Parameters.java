@@ -242,6 +242,9 @@ public class Parameters {
     else if(type == short.class || type == Short.class) {
       result = Short.valueOf(Short.parseShort(value));
     }
+    else if (type.isEnum()) {
+    	result = Enum.valueOf(type, value);
+    }
     else {
       assert false : "Unsupported type parameter : " + type;
     }
