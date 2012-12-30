@@ -219,7 +219,8 @@ public class AnnotationHelper {
               isAnnotationPresent(annotationFinder, m, ITestAnnotation.class) ||
               isAnnotationPresent(annotationFinder, m, CONFIGURATION_CLASSES);
             boolean isPublic = Modifier.isPublic(m.getModifiers());
-            if ((isPublic && hasClassAnnotation && (! hasTestNGAnnotation)) || hasMethodAnnotation) {
+            boolean isSynthetic = m.isSynthetic();            
+            if ((isPublic && hasClassAnnotation && !isSynthetic && (! hasTestNGAnnotation)) || hasMethodAnnotation) {
 
               // Small hack to allow users to specify @Configuration classes even though
               // a class-level @Test annotation is present.  In this case, don't count
