@@ -136,7 +136,7 @@ public final class ClassHelper {
       IFactoryAnnotation f = (IFactoryAnnotation) finder.findAnnotation(method,
           IFactoryAnnotation.class);
 
-      if (null != f) {
+      if (null != f && f.getEnabled()) {
         if (result != null) {
           throw new TestNGException(cls.getName() + ":  only one @Factory method allowed");
         }
@@ -147,9 +147,9 @@ public final class ClassHelper {
     }
 
     if (result == null) {
-      for (Constructor constructor : cls.getDeclaredConstructors()) {
-        IAnnotation f = finder.findAnnotation(constructor, IFactoryAnnotation.class);
-        if (f != null) {
+      for (Constructor<?> constructor : cls.getDeclaredConstructors()) {
+    	  IFactoryAnnotation f = (IFactoryAnnotation) finder.findAnnotation(constructor, IFactoryAnnotation.class);
+        if (f != null && f.getEnabled()) {
           result = new ConstructorOrMethod(constructor);
         }
       }

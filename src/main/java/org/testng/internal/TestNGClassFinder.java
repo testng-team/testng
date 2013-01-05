@@ -27,16 +27,19 @@ import java.util.Set;
  */
 public class TestNGClassFinder extends BaseClassFinder {
   private ITestContext m_testContext = null;
-  private Map<Class, List<Object>> m_instanceMap = Maps.newHashMap();
-
+  private Map<Class<?>, List<Object>> m_instanceMap = Maps.newHashMap();
+  private boolean m_discoveryMode = false;
+  
   public TestNGClassFinder(ClassInfoMap cim,
-                           Map<Class, List<Object>> instanceMap,
+                           Map<Class<?>, List<Object>> instanceMap,
                            XmlTest xmlTest,
                            IConfiguration configuration,
-                           ITestContext testContext)
+                           ITestContext testContext,
+                           boolean discoveryMode)
   {
     m_testContext = testContext;
-
+    m_discoveryMode = discoveryMode;
+    
     if(null == instanceMap) {
       instanceMap= Maps.newHashMap();
     }
@@ -52,13 +55,14 @@ public class TestNGClassFinder extends BaseClassFinder {
     //very first pass is to find ObjectFactory, can't create anything else until then
     if(objectFactory == null) {
       objectFactory = new ObjectFactoryImpl();
-      outer:
-      for (Class cls : allClasses) {
+
+outer:
+      for (Class<?> cls : allClasses) {
         try {
           if (null != cls) {
             for (Method m : cls.getMethods()) {
-              IAnnotation a = annotationFinder.findAnnotation(m,
-                  org.testng.annotations.IObjectFactoryAnnotation.class);
+              IAnnotation a = annotationFinder.findAnnotation(m, org.testng.annotations.IObjectFactoryAnnotation.class);
+              
               if (null != a) {
                 if (!ITestObjectFactory.class.isAssignableFrom(m.getReturnType())) {
                   throw new TestNGException("Return type of " + m + " is not IObjectFactory");
@@ -73,14 +77,13 @@ public class TestNGClassFinder extends BaseClassFinder {
                   break outer;
                 }
                 catch (Exception ex) {
-                  throw new TestNGException("Error creating object factory: " + cls,
-                      ex);
+                  throw new TestNGException("Error creating object factory: " + cls, ex);
                 }
               }
             }
           }
         } catch (NoClassDefFoundError e) {
-          Utils.log("[TestNGClassFinder]", 1, "Unable to read methods on class " + cls.getName()
+          Utils.log("[TestNGClassFinder]", 5, "Unable to read methods on class " + cls.getName()
               + " - unable to resolve class reference " + e.getMessage());
 
           for (XmlClass xmlClass : xmlTest.getXmlClasses()) {
@@ -93,29 +96,31 @@ public class TestNGClassFinder extends BaseClassFinder {
       }
     }
 
-    for(Class cls : allClasses) {
+    for(Class<?> cls : allClasses) {
+
       if((null == cls)) {
         ppp("FOUND NULL CLASS IN FOLLOWING ARRAY:");
+        
         int i= 0;
-        for(Class c : allClasses) {
+        for(Class<?> c : allClasses) {
           ppp("  " + i + ": " + c);
         }
-
         continue;
       }
-
+  	
       if(isTestNGClass(cls, annotationFinder)) {
-        List allInstances= instanceMap.get(cls);
+        List<Object> allInstances= instanceMap.get(cls);
         Object thisInstance= (null != allInstances) ? allInstances.get(0) : null;
 
         // If annotation class and instances are abstract, skip them
         if ((null == thisInstance) && Modifier.isAbstract(cls.getModifiers())) {
-          Utils.log("", 5, "[WARN] Found an abstract class with no valid instance attached: " + cls);
+          Utils.log("", 1, "[WARN] Found an abstract class with no valid instance attached: " + cls);
           continue;
         }
 
         IClass ic= findOrCreateIClass(m_testContext, cls, cim.getXmlClass(cls), thisInstance,
             xmlTest, annotationFinder, objectFactory);
+        
         if(null != ic) {
           Object[] theseInstances = ic.getInstances(false);
           if (theseInstances.length == 0) {
@@ -126,13 +131,18 @@ public class TestNGClassFinder extends BaseClassFinder {
 
           ConstructorOrMethod factoryMethod =
             ClassHelper.findDeclaredFactoryMethod(cls, annotationFinder);
-          if (factoryMethod != null && factoryMethod.getEnabled()) {
+          
+          //  Don't use the factory if if it is a constructor, AND we're in discovery mode.  Non-constructor
+          //  factories still need to be called directly.
+          if (factoryMethod != null && factoryMethod.getEnabled() && (m_discoveryMode == false || factoryMethod.getConstructor() == null)) {
+          
             FactoryMethod fm = new FactoryMethod( /* cls, */
               factoryMethod,
               instance,
               xmlTest,
               annotationFinder,
               m_testContext);
+            
             ClassInfoMap moreClasses = new ClassInfoMap();
 
             {
@@ -145,7 +155,7 @@ public class TestNGClassFinder extends BaseClassFinder {
               //
               if (instances.length > 0) {
                 if (instances[0] != null) {
-                  Class elementClass = instances[0].getClass();
+                  Class<?> elementClass = instances[0].getClass();
                   if(IInstanceInfo.class.isAssignableFrom(elementClass)) {
                     for(Object o : instances) {
                       IInstanceInfo ii = (IInstanceInfo) o;
@@ -177,7 +187,8 @@ public class TestNGClassFinder extends BaseClassFinder {
                     m_instanceMap,
                     xmlTest,
                     configuration,
-                    m_testContext);
+                    m_testContext,
+                    m_discoveryMode);
 
               IClass[] moreIClasses= finder.findTestClasses();
               for(IClass ic2 : moreIClasses) {
@@ -195,7 +206,7 @@ public class TestNGClassFinder extends BaseClassFinder {
     //
     // Add all the instances we found to their respective IClasses
     //
-    for(Class c : m_instanceMap.keySet()) {
+    for(Class<?> c : m_instanceMap.keySet()) {
       List<Object> instances= m_instanceMap.get(c);
       for(Object instance : instances) {
         IClass ic= getIClass(c);
@@ -210,12 +221,12 @@ public class TestNGClassFinder extends BaseClassFinder {
    * @returns true if this class contains TestNG annotations (either on itself
    * or on a superclass).
    */
-  public static boolean isTestNGClass(Class c, IAnnotationFinder annotationFinder) {
-    Class[] allAnnotations= AnnotationHelper.getAllAnnotations();
-    Class cls = c;
+  public static boolean isTestNGClass(Class<?> c, IAnnotationFinder annotationFinder) {
+    Class<?>[] allAnnotations= AnnotationHelper.getAllAnnotations();
+    Class<?> cls = c;
 
     try {
-      for(Class annotation : allAnnotations) {
+      for(Class<?> annotation : allAnnotations) {
 
         for (cls = c; cls != null; cls = cls.getSuperclass()) {
           // Try on the methods
@@ -233,7 +244,7 @@ public class TestNGClassFinder extends BaseClassFinder {
           }
 
           // Try on the constructors
-          for (Constructor ctor : cls.getConstructors()) {
+          for (Constructor<?> ctor : cls.getConstructors()) {
             IAnnotation ca= annotationFinder.findAnnotation(ctor, annotation);
             if(null != ca) {
               return true;
@@ -252,7 +263,7 @@ public class TestNGClassFinder extends BaseClassFinder {
     }
   }
 
-  private void addInstance(Class clazz, Object o) {
+  private void addInstance(Class<?> clazz, Object o) {
     List<Object> list= m_instanceMap.get(clazz);
 
     if(null == list) {

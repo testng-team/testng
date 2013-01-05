@@ -394,6 +394,32 @@ public class TestRunner
 
   private void initMethods() {
 
+    //  1st pass: find all TestNG methods from all test classes.
+    ClassInfoMap classMap = new ClassInfoMap(m_testClassesFromXml);
+    scanForTestNGMethods(classMap, true);
+    
+    //  From the list of test methods, generate a new XmlClass list of classes that
+    //  will actually be executed, and run make the full initMethods call.
+    List<XmlClass> filteredClasses = new ArrayList<XmlClass>();
+    String testClassName;
+    
+    for (ITestNGMethod method : m_allTestMethods){
+      testClassName = method.getTestClass().getName();
+
+      for (XmlClass clazz : m_testClassesFromXml) {
+        if (filteredClasses.contains(clazz) == false && clazz.getName().equals(testClassName)) {
+          filteredClasses.add(clazz);
+          break;
+        }
+      }
+    }
+
+    //  2nd pass: initialize all test classes that have included test methods.
+    classMap = new ClassInfoMap(filteredClasses);
+    scanForTestNGMethods(classMap, false);
+  }
+  
+  private void scanForTestNGMethods(ClassInfoMap classMap, boolean discoveryMode) {
     //
     // Calculate all the methods we need to invoke
     //
@@ -405,12 +431,12 @@ public class TestRunner
     List<ITestNGMethod> beforeXmlTestMethods = Lists.newArrayList();
     List<ITestNGMethod> afterXmlTestMethods = Lists.newArrayList();
 
-    ClassInfoMap classMap = new ClassInfoMap(m_testClassesFromXml);
     m_testClassFinder= new TestNGClassFinder(classMap,
                                              null,
                                              m_xmlTest,
                                              m_configuration,
-                                             this);
+                                             this,
+                                             discoveryMode);
     ITestMethodFinder testMethodFinder
       = new TestNGMethodFinder<ITestNGMethod>(m_runInfo, m_annotationFinder);
 
@@ -501,8 +527,6 @@ public class TestRunner
                                                               m_excludedMethods);
     // shared group methods
     m_groupMethods = new ConfigurationGroupMethods(m_allTestMethods, beforeGroupMethods, afterGroupMethods);
-
-
   }
 
   private void fixMethodsWithClass(ITestNGMethod[] methods,
