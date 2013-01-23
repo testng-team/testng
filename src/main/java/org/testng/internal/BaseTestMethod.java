@@ -16,12 +16,7 @@ import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -555,19 +550,14 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    * @return
    */
   protected String[] getStringArray(String[] methodArray, String[] classArray) {
-    Map<String, String> vResult = Maps.newHashMap();
+    final Set<String> vResult = Sets.newHashSet();
     if (null != methodArray) {
-      for (String m : methodArray) {
-        vResult.put(m, m);
-      }
+      Collections.addAll(vResult, methodArray);
     }
     if (null != classArray) {
-      for (String m : classArray) {
-        vResult.put(m, m);
-      }
+      Collections.addAll(vResult, classArray);
     }
-
-    return vResult.values().toArray(new String[vResult.size()]);
+    return vResult.toArray(new String[vResult.size()]);
   }
 
   protected void setGroups(String[] groups) {
