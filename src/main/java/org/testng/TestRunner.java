@@ -380,7 +380,7 @@ public class TestRunner
                                              m_configuration,
                                              this);
     ITestMethodFinder testMethodFinder
-      = new TestNGMethodFinder<ITestNGMethod>(m_runInfo, m_annotationFinder);
+      = new TestNGMethodFinder(m_runInfo, m_annotationFinder);
 
     m_runInfo.setTestMethods(testMethods);
 
@@ -819,7 +819,7 @@ public class TestRunner
         if (!processedClasses.contains(c)) {
           processedClasses.add(c);
           if (System.getProperty("experimental") != null) {
-            List<IMethodInstance>[] instances = createInstances(methodInstances);
+            List<List<IMethodInstance>> instances = createInstances(methodInstances);
             for (List<IMethodInstance> inst : instances) {
               TestMethodWorker worker = createTestMethodWorker(inst, params, c);
               result.add(worker);
@@ -874,7 +874,7 @@ public class TestRunner
     return result;
   }
 
-  private List<IMethodInstance>[] createInstances(List<IMethodInstance> methodInstances) {
+  private List<List<IMethodInstance>> createInstances(List<IMethodInstance> methodInstances) {
     Map<Object, List<IMethodInstance>> map = Maps.newHashMap();
 //    MapList<IMethodInstance[], Object> map = new MapList<IMethodInstance[], Object>();
     for (IMethodInstance imi : methodInstances) {
@@ -893,12 +893,7 @@ public class TestRunner
     }
 //    return map.getKeys();
 //    System.out.println(map);
-    List<IMethodInstance>[] result = new List[map.size()];
-    int i = 0;
-    for (List<IMethodInstance> imi : map.values()) {
-      result[i++] = imi;
-    }
-    return result;
+    return new ArrayList<List<IMethodInstance>>(map.values());
   }
 
   private TestMethodWorker createTestMethodWorker(
@@ -1466,7 +1461,7 @@ public class TestRunner
   // Listeners
   /////
 
-  private List<InvokedMethod> m_invokedMethods = Lists.newArrayList();
+  private final List<InvokedMethod> m_invokedMethods = Lists.newArrayList();
 
   private void dumpInvokedMethods() {
     System.out.println("===== Invoked methods");
