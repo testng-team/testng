@@ -1,12 +1,41 @@
 package org.testng;
 
-import com.google.inject.Injector;
-import com.google.inject.Module;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.*;
+import org.testng.internal.Attributes;
+import org.testng.internal.ClassHelper;
+import org.testng.internal.ClassInfoMap;
+import org.testng.internal.ConfigurationGroupMethods;
+import org.testng.internal.Constants;
+import org.testng.internal.DynamicGraph;
 import org.testng.internal.DynamicGraph.Status;
+import org.testng.internal.IConfiguration;
+import org.testng.internal.IInvoker;
+import org.testng.internal.ITestResultNotifier;
+import org.testng.internal.InvokedMethod;
+import org.testng.internal.Invoker;
+import org.testng.internal.MethodGroupsHelper;
+import org.testng.internal.MethodHelper;
+import org.testng.internal.MethodInstance;
+import org.testng.internal.ResultMap;
+import org.testng.internal.RunInfo;
+import org.testng.internal.TestMethodWorker;
+import org.testng.internal.TestNGClassFinder;
+import org.testng.internal.TestNGMethodFinder;
+import org.testng.internal.Utils;
 import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IListeners;
@@ -16,11 +45,14 @@ import org.testng.internal.thread.graph.GraphThreadPoolExecutor;
 import org.testng.internal.thread.graph.IThreadWorkerFactory;
 import org.testng.internal.thread.graph.IWorker;
 import org.testng.junit.IJUnitTestRunner;
-import org.testng.xml.*;
+import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
+import org.testng.xml.XmlPackage;
+import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlTest;
 
-import java.util.*;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import com.google.inject.Injector;
+import com.google.inject.Module;
 
 /**
  * This class takes care of running one Test.

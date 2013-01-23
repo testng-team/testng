@@ -1,14 +1,38 @@
 package org.testng.internal.annotations;
 
-import org.testng.IAnnotationTransformer;
-import org.testng.TestNGException;
-import org.testng.annotations.*;
-import org.testng.collections.Maps;
-import org.testng.internal.Utils;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Map;
+
+import org.testng.IAnnotationTransformer;
+import org.testng.TestNGException;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterGroups;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeGroups;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Configuration;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.ExpectedExceptions;
+import org.testng.annotations.Factory;
+import org.testng.annotations.IAnnotation;
+import org.testng.annotations.IConfigurationAnnotation;
+import org.testng.annotations.IDataProviderAnnotation;
+import org.testng.annotations.IExpectedExceptionsAnnotation;
+import org.testng.annotations.IFactoryAnnotation;
+import org.testng.annotations.IObjectFactoryAnnotation;
+import org.testng.annotations.IParametersAnnotation;
+import org.testng.annotations.ITestAnnotation;
+import org.testng.annotations.Listeners;
+import org.testng.annotations.Parameters;
+import org.testng.annotations.Test;
+import org.testng.collections.Maps;
+import org.testng.internal.Utils;
 
 /**
  * This class creates implementations of IAnnotations based on the JDK5
