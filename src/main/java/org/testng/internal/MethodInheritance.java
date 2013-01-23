@@ -112,8 +112,7 @@ public class MethodInheritance {
   }
 
   private static boolean dependencyExists(ITestNGMethod m1, ITestNGMethod m2, ITestNGMethod[] methods) {
-    return true == internalDependencyExists(m1, m2, methods)
-       ? true : internalDependencyExists(m2, m1, methods);
+    return internalDependencyExists(m1, m2, methods) || internalDependencyExists(m2, m1, methods);
   }
 
   private static boolean internalDependencyExists(ITestNGMethod m1, ITestNGMethod m2, ITestNGMethod[] methods) {

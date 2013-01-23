@@ -74,7 +74,6 @@ public class SuiteSlave
 	 * Invoked in client mode.  In this case, wait for a connection
 	 * on the given port, run the XmlSuite we received and return the SuiteRunner
 	 * created to run it.
-	 * @throws IOException
 	 */
 	public void waitForSuites() {
 		try {
