@@ -119,7 +119,7 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
     if (result == null) {
       List<XmlClass> classes = xmlTest.getXmlClasses();
       for (XmlClass c : classes) {
-        if (c.getName().equals(m_method.getMethod().getDeclaringClass().getName())); {
+        if (c.getName().equals(m_method.getMethod().getDeclaringClass().getName())) {
           for (XmlInclude include : c.getIncludedMethods()) {
             if (include.getName().equals(m_method.getName())) {
               result = include.getDescription();
