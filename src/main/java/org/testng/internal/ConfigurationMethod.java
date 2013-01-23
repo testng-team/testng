@@ -369,8 +369,7 @@ public class ConfigurationMethod extends BaseTestMethod {
     // If this configuration method has inherit-groups=true, add the groups
     // defined in the @Test class
     if (inheritGroupsFromTestClass()) {
-      ITestAnnotation classAnnotation =
-        (ITestAnnotation) m_annotationFinder.findAnnotation(m_methodClass, ITestAnnotation.class);
+      ITestAnnotation classAnnotation = m_annotationFinder.findAnnotation(m_methodClass, ITestAnnotation.class);
       if (classAnnotation != null) {
         String[] groups = classAnnotation.getGroups();
         Map<String, String> newGroups = Maps.newHashMap();
