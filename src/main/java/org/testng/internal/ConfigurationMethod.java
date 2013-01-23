@@ -1,17 +1,29 @@
 package org.testng.internal;
 
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import org.testng.ITestNGMethod;
 import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.annotations.*;
-
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import org.testng.internal.annotations.AnnotationHelper;
+import org.testng.internal.annotations.ConfigurationAnnotation;
+import org.testng.internal.annotations.IAfterClass;
+import org.testng.internal.annotations.IAfterGroups;
+import org.testng.internal.annotations.IAfterMethod;
+import org.testng.internal.annotations.IAfterSuite;
+import org.testng.internal.annotations.IAfterTest;
+import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.IBeforeClass;
+import org.testng.internal.annotations.IBeforeGroups;
+import org.testng.internal.annotations.IBeforeMethod;
+import org.testng.internal.annotations.IBeforeSuite;
+import org.testng.internal.annotations.IBeforeTest;
 
 public class ConfigurationMethod extends BaseTestMethod {
   /**
@@ -72,6 +84,7 @@ public class ConfigurationMethod extends BaseTestMethod {
   /**
    * @deprecated use #ConfigurationMethod(ConstructorOrMethod,...) instead.
    */
+  @Deprecated
   public ConfigurationMethod(Method method,
                              IAnnotationFinder annotationFinder,
                              boolean isBeforeSuite,
