@@ -429,17 +429,13 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return m_method.hashCode();
   }
 
-  protected void initGroups(Class<?> annotationClass) {
+  protected void initGroups(Class<? extends ITestOrConfiguration> annotationClass) {
     //
     // Init groups
     //
     {
-      ITestOrConfiguration annotation =
-        (ITestOrConfiguration) getAnnotationFinder().findAnnotation(getMethod(),
-          annotationClass);
-      ITestOrConfiguration classAnnotation =
-        (ITestOrConfiguration) getAnnotationFinder().findAnnotation(getMethod().getDeclaringClass(),
-          annotationClass);
+      ITestOrConfiguration annotation = getAnnotationFinder().findAnnotation(getMethod(), annotationClass);
+      ITestOrConfiguration classAnnotation = getAnnotationFinder().findAnnotation(getMethod().getDeclaringClass(), annotationClass);
 
       setGroups(getStringArray(null != annotation ? annotation.getGroups() : null,
           null != classAnnotation ? classAnnotation.getGroups() : null));
@@ -449,12 +445,8 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     // Init groups depended upon
     //
     {
-      ITestOrConfiguration annotation =
-        (ITestOrConfiguration) getAnnotationFinder().findAnnotation(getMethod(),
-          annotationClass);
-      ITestOrConfiguration classAnnotation =
-        (ITestOrConfiguration) getAnnotationFinder().findAnnotation(getMethod().getDeclaringClass(),
-          annotationClass);
+      ITestOrConfiguration annotation = getAnnotationFinder().findAnnotation(getMethod(), annotationClass);
+      ITestOrConfiguration classAnnotation = getAnnotationFinder().findAnnotation(getMethod().getDeclaringClass(), annotationClass);
 
       Map<String, Set<String>> xgd = calculateXmlGroupDependencies(m_xmlTest);
       List<String> xmlGroupDependencies = Lists.newArrayList();

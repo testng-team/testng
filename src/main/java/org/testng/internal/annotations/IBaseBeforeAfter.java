@@ -1,12 +1,14 @@
 package org.testng.internal.annotations;
 
+import org.testng.annotations.ITestOrConfiguration;
+
 /**
  * Base interface for IBeforeSuite, IAfterSuite, etc...
  *
  * @author cbeust
  * @date Jun 22, 2006
  */
-public interface IBaseBeforeAfter {
+public interface IBaseBeforeAfter extends ITestOrConfiguration {
   /**
    * Whether methods on this class/method are enabled.
    */

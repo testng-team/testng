@@ -9,7 +9,12 @@ import org.testng.annotations.IConfigurationAnnotation;
  * Created on Dec 16, 2005
  * @author cbeust
  */
-public class ConfigurationAnnotation extends TestOrConfiguration implements IConfigurationAnnotation {
+public class ConfigurationAnnotation extends TestOrConfiguration implements IConfigurationAnnotation,
+    IBeforeSuite, IAfterSuite,
+    IBeforeTest, IAfterTest,
+    IBeforeGroups, IAfterGroups,
+    IBeforeClass, IAfterClass,
+    IBeforeMethod, IAfterMethod {
   private boolean m_beforeTestClass = false;
   private boolean m_afterTestClass = false;
   private boolean m_beforeTestMethod = false;

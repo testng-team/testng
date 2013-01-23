@@ -564,7 +564,7 @@ public class TestNG {
 
     for (int i = 0; i < classes.length; i++) {
       Class c = classes[i];
-      ITestAnnotation test = (ITestAnnotation) finder.findAnnotation(c, ITestAnnotation.class);
+      ITestAnnotation test = finder.findAnnotation(c, ITestAnnotation.class);
       String suiteName = getDefaultSuiteName();
       String testName = getDefaultTestName();
       boolean isJUnit = false;
