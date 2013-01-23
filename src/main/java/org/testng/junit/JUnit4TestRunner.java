@@ -91,7 +91,9 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
                     }
                     for (String m: methods) {
                         Pattern p = Pattern.compile(m);
-                        return p.matcher(description.getMethodName()).matches();
+                        if (p.matcher(description.getMethodName()).matches()) {
+                            return true;
+                        }
                     }
                     return false;
                 }
