@@ -192,7 +192,7 @@ public class Assert {
    * value is infinity then the delta value is ignored.
    * @param actual the actual value
    * @param expected the expected value
-   * @param delta the absolute tolerate value value between the actual and expected value
+   * @param delta the absolute tolerable difference between the actual and expected values
    * @param message the assertion error message
    */
   static public void assertEquals(double actual, double expected, double delta, String message) {
@@ -214,7 +214,7 @@ public class Assert {
    * delta value is ignored.
    * @param actual the actual value
    * @param expected the expected value
-   * @param delta the absolute tolerate value value between the actual and expected value
+   * @param delta the absolute tolerable difference between the actual and expected values
    */
   static public void assertEquals(double actual, double expected, double delta) {
     assertEquals(actual, expected, delta, null);
@@ -226,7 +226,7 @@ public class Assert {
    * value is infinity then the delta value is ignored.
    * @param actual the actual value
    * @param expected the expected value
-   * @param delta the absolute tolerate value value between the actual and expected value
+   * @param delta the absolute tolerable difference between the actual and expected values
    * @param message the assertion error message
    */
   static public void assertEquals(float actual, float expected, float delta, String message) {
@@ -248,7 +248,7 @@ public class Assert {
    * value is infinity then the delta value is ignored.
    * @param actual the actual value
    * @param expected the expected value
-   * @param delta the absolute tolerate value value between the actual and expected value
+   * @param delta the absolute tolerable difference between the actual and expected values
    */
   static public void assertEquals(float actual, float expected, float delta) {
     assertEquals(actual, expected, delta, null);
