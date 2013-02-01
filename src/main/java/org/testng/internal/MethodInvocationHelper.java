@@ -9,15 +9,19 @@ import org.testng.TestNGException;
 import org.testng.annotations.DataProvider;
 import org.testng.collections.Lists;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.collections.Pair;
 import org.testng.internal.thread.IExecutor;
 import org.testng.internal.thread.IFutureResult;
 import org.testng.internal.thread.ThreadExecutionException;
 import org.testng.internal.thread.ThreadTimeoutException;
 import org.testng.internal.thread.ThreadUtil;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -84,7 +88,7 @@ public class MethodInvocationHelper {
       ITestNGMethod method, ITestContext testContext, Object fedInstance,
       IAnnotationFinder annotationFinder) {
     Iterator<Object[]> result = null;
-    Method testMethod = method.getMethod();
+    final ConstructorOrMethod com = method.getConstructorOrMethod();
 
     // If it returns an Object[][], convert it to an Iterable<Object[]>
     try {
@@ -94,22 +98,36 @@ public class MethodInvocationHelper {
       // make sure we have at most one Method and one ITestContext.
       // Anything else is an error
       Class<?>[] parameterTypes = dataProvider.getParameterTypes();
-      if (parameterTypes.length > 2) {
-        throw new TestNGException("DataProvider " + dataProvider
-            + " cannot have more than two parameters");
-      }
 
+      final Collection<Pair<Integer, Class<?>>> unresolved = new ArrayList<Pair<Integer, Class<?>>>(parameterTypes.length);
       int i = 0;
       for (Class<?> cls : parameterTypes) {
         boolean isTestInstance = annotationFinder.hasTestInstance(dataProvider, i++);
         if (cls.equals(Method.class)) {
-          lParameters.add(testMethod);
+          lParameters.add(com.getMethod());
+        } else if (cls.equals(Constructor.class)) {
+          lParameters.add(com.getConstructor());
+        } else if (cls.equals(ConstructorOrMethod.class)) {
+          lParameters.add(com);
+        } else if (cls.equals(ITestNGMethod.class)) {
+          lParameters.add(method);
         } else if (cls.equals(ITestContext.class)) {
           lParameters.add(testContext);
         } else if (isTestInstance) {
           lParameters.add(fedInstance);
+        } else {
+          unresolved.add(new Pair<Integer, Class<?>>(i, cls));
         }
       }
+      if (!unresolved.isEmpty()) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("Some DataProvider ").append(dataProvider).append(" parameters unresolved: ");
+        for (Pair<Integer, Class<?>> pair : unresolved) {
+          sb.append(" at ").append(pair.first()).append(" type ").append(pair.second()).append("\n");
+        }
+        throw new TestNGException(sb.toString());
+      }
+
       Object[] parameters = lParameters.toArray(new Object[lParameters.size()]);
 
       Class<?> returnType = dataProvider.getReturnType();
