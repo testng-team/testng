@@ -603,7 +603,7 @@ public class Invoker implements IInvoker {
 
   private void throwConfigurationFailure(ITestResult testResult, Throwable ex)
   {
-    testResult.setStatus(ITestResult.FAILURE);;
+    testResult.setStatus(ITestResult.FAILURE);
     testResult.setThrowable(ex.getCause() == null ? ex : ex.getCause());
   }
 
@@ -621,7 +621,7 @@ public class Invoker implements IInvoker {
   }
 
   private boolean noListenersPresent() {
-    return (m_invokedMethodListeners == null) || (m_invokedMethodListeners.size() == 0);
+    return (m_invokedMethodListeners == null) || (m_invokedMethodListeners.isEmpty());
   }
 
   // pass both paramValues and paramIndex to be thread safe in case parallel=true + dataprovider.

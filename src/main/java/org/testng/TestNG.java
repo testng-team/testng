@@ -276,7 +276,8 @@ public class TestNG {
     	//to parse the suite files (<suite-file>), if any
     	for (XmlSuite s: m_suites) {
 	      List<String> suiteFiles = s.getSuiteFiles();
-  			for (int i = 0; i < suiteFiles.size(); i++) {
+  			int suiteFilesSize = suiteFiles.size();
+			for (int i = 0; i < suiteFilesSize; i++) {
   				try {
   					Collection<XmlSuite> childSuites = getParser(suiteFiles.get(i)).parse();
   					for (XmlSuite cSuite : childSuites){
@@ -443,7 +444,7 @@ public class TestNG {
       }
     }
 
-    if (tests.size() == 0) {
+    if (tests.isEmpty()) {
       return s;
     }
     else {

@@ -88,7 +88,7 @@ abstract public class XMLParser<T> implements IFileParser<T> {
     try {
       return spf.getFeature("http://xml.org/sax/features/validation");
     }
-    catch(Exception ex) { ; }
+    catch(Exception ex) { }
 
     return false;
   }

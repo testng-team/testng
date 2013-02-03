@@ -192,7 +192,7 @@ public class PackageUtils {
       fileName= URLDecoder.decode(url.getFile(), "UTF-8");
     }
     catch(UnsupportedEncodingException ueex) {
-      ; // ignore. should never happen
+       // ignore. should never happen
     }
 
     for(String classpathFrag: classpathFragments) {
@@ -278,7 +278,7 @@ public class PackageUtils {
     //
     // If no includes nor excludes were specified, return true.
     //
-    if (included.size() == 0 && excluded.size() == 0) {
+    if (included.isEmpty() && excluded.isEmpty()) {
       result = true;
     }
     else {
@@ -291,7 +291,7 @@ public class PackageUtils {
         result = false;
       }
       else {
-        result = included.size() == 0;
+        result = included.isEmpty();
       }
     }
     return result;

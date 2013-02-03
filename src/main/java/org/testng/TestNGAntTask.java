@@ -869,7 +869,7 @@ public class TestNGAntTask extends Task {
   protected void validateOptions() throws BuildException {
     int suiteCount = getSuiteFileNames().size();
     if (suiteCount == 0
-      && m_classFilesets.size() == 0
+      && m_classFilesets.isEmpty()
       && Utils.isStringEmpty(m_methods)
       && ((null == m_testjar) || !m_testjar.isFile())) {
       throw new BuildException("No suites, classes, methods or jar file was specified.");

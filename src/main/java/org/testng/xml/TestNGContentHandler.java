@@ -56,9 +56,9 @@ public class TestNGContentHandler extends DefaultHandler {
   private Stack<Location> m_locations = new Stack<Location>();
 
   private XmlClass m_currentClass = null;
-  private ArrayList<XmlInclude> m_currentIncludedMethods = null;
+  private List<XmlInclude> m_currentIncludedMethods = null;
   private List<String> m_currentExcludedMethods = null;
-  private ArrayList<XmlMethodSelector> m_currentSelectors = null;
+  private List<XmlMethodSelector> m_currentSelectors = null;
   private XmlMethodSelector m_currentSelector = null;
   private String m_currentLanguage = null;
   private String m_currentExpression = null;

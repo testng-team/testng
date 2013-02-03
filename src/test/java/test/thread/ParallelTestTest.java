@@ -81,7 +81,7 @@ public class ParallelTestTest extends BaseTest {
     List<Map<Long, Long>> maps = Lists.newArrayList();
     for (String c : classNames) {
       maps.add(Helper.getMap(c));
-    };
+    }
 
     Map<Long, Long> mergedMap = new HashMap<Long, Long>();
     for (Map<Long, Long>m : maps) {
