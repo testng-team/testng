@@ -3,7 +3,6 @@ package org.testng.xml;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 public class XmlUtils {

@@ -11,24 +11,9 @@ import org.testng.xml.XmlTest;
 
 import test.SimpleBaseTest;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.Arrays;
 
 public class XmlVerifyTest extends SimpleBaseTest {
-
-//  private String getFinalPath(String file) {
-//    File currentDir = new File(".");
-//    String path = currentDir.getAbsolutePath();
-//    char s = File.separatorChar;
-//    String testDir = System.getProperty("test.dir");
-//    System.out.println("[XmlVerifyTest] test.dir:" + testDir);
-//    Assert.assertNotNull(testDir);
-//    path = path + s + testDir + s;
-//    return path + file;
-//  }
 
   @Test
   public void simple() {

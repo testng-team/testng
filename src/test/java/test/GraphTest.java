@@ -49,7 +49,7 @@ public class GraphTest {
     Assert.assertTrue(1 == g.getIndependentNodes().size());
   }
 
-  @Test(expectedExceptions = org.testng.TestNGException.class)
+  @Test(expectedExceptions = TestNGException.class)
   public void cycleShouldFail() {
     Graph<String> g = createCyclicGraph();
     g.topologicalSort();

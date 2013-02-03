@@ -3,7 +3,6 @@ package test.dataprovider;
 import org.testng.Assert;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
-import org.testng.TestNGException;
 import org.testng.annotations.Test;
 
 import test.SimpleBaseTest;

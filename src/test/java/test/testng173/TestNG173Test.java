@@ -2,8 +2,6 @@ package test.testng173;
 
 import java.util.Arrays;
 
-import org.testng.Assert;
-import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;

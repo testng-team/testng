@@ -2,14 +2,6 @@ package org.testng.junit;
 
 
 import java.lang.reflect.Constructor;
-import org.testng.ITestListener;
-import org.testng.ITestNGMethod;
-import org.testng.ITestResult;
-import org.testng.TestNGException;
-import org.testng.collections.Lists;
-import org.testng.internal.ITestResultNotifier;
-import org.testng.internal.InvokedMethod;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -23,7 +15,16 @@ import junit.framework.Test;
 import junit.framework.TestListener;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
-import org.testng.*;
+
+import org.testng.IInvokedMethodListener;
+import org.testng.ITestListener;
+import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
+import org.testng.TestNGException;
+import org.testng.collections.Lists;
+import org.testng.internal.ITestResultNotifier;
+import org.testng.internal.InvokedMethod;
+
 
 /**
  * A JUnit TestRunner that records/triggers all information/events necessary to TestNG.

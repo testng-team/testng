@@ -3,7 +3,6 @@ package test;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
-import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
@@ -121,8 +120,8 @@ public class CommandLineTest {
     TestNG.privateMain(argv, tla);
 
     List<ITestResult> passed = tla.getPassedTests();
-    Assert.assertEquals(passed.size(), 2);
-    Assert.assertTrue((passed.get(0).getName().equals("method1") &&
+    assertEquals(passed.size(), 2);
+    assertTrue((passed.get(0).getName().equals("method1") &&
         passed.get(1).getName().equals("method3"))
         ||
         (passed.get(1).getName().equals("method1") &&

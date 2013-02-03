@@ -10,7 +10,6 @@ import org.testng.remote.adapter.DefaultWorkerAdapter;
 import org.testng.remote.adapter.IWorkerAdapter;
 import org.testng.xml.XmlSuite;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 

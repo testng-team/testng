@@ -3,7 +3,6 @@ package test.priority;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 
 import java.util.List;
 

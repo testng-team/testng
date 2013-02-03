@@ -1,7 +1,6 @@
 package org.testng.remote.strprotocol;
 
 
-import org.testng.TestNGException;
 import org.testng.remote.RemoteTestNG;
 
 import java.io.IOException;
@@ -26,7 +25,7 @@ public class MessageHub {
    * Starts the connection.
    *
    * @return <TT>true</TT> if the connection was successful, <TT>false</TT> otherwise
-   * @throws TestNGException if an exception occurred while establishing the connection
+   * @throws IOException if an exception occurred while establishing the connection
    */
   public void connect() throws IOException {
     m_messageSender.connect();
@@ -53,7 +52,6 @@ public class MessageHub {
       result = m_messageSender.receiveMessage();
       m_messageSender.sendAck();
     } catch (Exception e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     return result;

@@ -1,6 +1,5 @@
 package org.testng.remote.strprotocol;
 
-import org.testng.TestNGException;
 import org.testng.remote.RemoteTestNG;
 
 import java.io.BufferedReader;
@@ -48,7 +47,7 @@ abstract public class BaseMessageSender implements IMessageSender {
    * Starts the connection.
    *
    * @return <TT>true</TT> if the connection was successful, <TT>false</TT> otherwise
-   * @throws TestNGException if an exception occurred while establishing the connection
+   * @throws IOException if an exception occurred while establishing the connection
    */
   @Override
   public void connect() throws IOException {
