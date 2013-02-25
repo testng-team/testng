@@ -1059,7 +1059,9 @@ public class TestRunner
         if (dependentMethods != null) {
           for (String d : dependentMethods) {
             ITestNGMethod dm = dependencyMap.getMethodDependingOn(d, m);
-            result.addEdge(m, dm);
+            if (m != dm){
+            	result.addEdge(m, dm);
+            }
           }
         }
       }
