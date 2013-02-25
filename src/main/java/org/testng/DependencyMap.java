@@ -5,6 +5,7 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -41,7 +42,7 @@ public class DependencyMap {
       }
     }
 
-    if (result.isEmpty()) {
+    if (result.isEmpty() && !fromMethod.ignoreMissingDependencies()) {
       throw new TestNGException("DependencyMap::Method \"" + fromMethod
           + "\" depends on nonexistent group \"" + group + "\"");
     } else {
@@ -51,6 +52,9 @@ public class DependencyMap {
 
   public ITestNGMethod getMethodDependingOn(String methodName, ITestNGMethod fromMethod) {
     List<ITestNGMethod> l = m_dependencies.get(methodName);
+    if (l == null && fromMethod.ignoreMissingDependencies()){
+    	return fromMethod;
+    }
     for (ITestNGMethod m : l) {
       // If they are in the same class hierarchy, they must belong to the same instance,
       // otherwise, it's a method depending on a method in a different class so we
