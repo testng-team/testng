@@ -3,6 +3,7 @@ Current
 Added: Descriptions in the HTML reports
 Added: Various improvements to EmailableReporter (Abraham Lin)
 Added: Allow injection of java.lang.reflect.Constructor and org.testng.ITestNGMethod into DataProvide (Vladislav Rassokhin)
+Fixed: Fix NPE for dependency methods/groups (Krishnan Mahadevan)
 Fixed: preserve-order bug (found by VladSarrokhin). 
 Fixed: GITHUB-300: OutOfMemoryException from reporters when there are a lot of tests
 Fixed: GITHUB-137: Main parameters with a default value should be overridden if a main parameter is specified 
