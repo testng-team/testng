@@ -422,7 +422,8 @@ public class ConfigurationMethod extends BaseTestMethod {
         isAfterMethodConfiguration(),
         getBeforeGroups(),
         getAfterGroups(),
-        false /* do not call init() */
+        false /* do not call init() */,
+        getInstance()
         );
     clone.m_testClass= getTestClass();
     clone.setDate(getDate());
