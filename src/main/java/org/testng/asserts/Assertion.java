@@ -177,7 +177,7 @@ public class Assertion implements IAssertLifecycle {
   }
 
   public void fail(final String message) {
-    doAssert(new SimpleAssert(null) {
+    doAssert(new SimpleAssert(message) {
       @Override
       public void doAssert() {
         org.testng.Assert.fail(message);
