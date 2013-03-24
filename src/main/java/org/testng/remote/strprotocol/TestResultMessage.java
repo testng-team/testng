@@ -309,6 +309,20 @@ public class TestResultMessage implements IStringMessage {
       if(null == o) {
         result.add("null");
       }
+      else if (o.getClass().isArray()) {
+        String[] strArray = toString((Object[]) o, null);
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < strArray.length; i++)
+        {
+          sb.append(strArray[i]);
+          if (i + 1 < strArray.length)
+          {
+            sb.append(",");
+          }
+        }
+        sb.append("]");
+        result.add(sb.toString());
+      }
       else {
         String tostring= o.toString();
         if(isStringEmpty(tostring)) {
