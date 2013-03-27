@@ -18,7 +18,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Stack;
+import java.util.Properties;
+import java.util.HashMap;
+import java.util.Set;
 
 /**
  * Suite definition parser utility.
@@ -581,7 +585,7 @@ public class TestNGContentHandler extends DefaultHandler {
       }
     }
     else if ("parameter".equals(qName)) {
-      String value = attributes.getValue("value");
+      String value = expandValue(attributes.getValue("value"));
       switch(m_locations.peek()) {
         case TEST:
           m_currentTestParameters.put(name, value);
@@ -746,4 +750,38 @@ public class TestNGContentHandler extends DefaultHandler {
     return m_currentSuite;
   }
 
+  private static String expandValue(String value)
+  {
+    StringBuffer result = null;
+    int startIndex = 0;
+    int endIndex = 0;
+    int startPosition = 0;
+    String property = null;
+    while ((startIndex = value.indexOf("${", startPosition)) > -1 && (endIndex = value.indexOf("}", startIndex + 3)) > -1) {
+      property = value.substring(startIndex + 2, endIndex);
+      if (result == null) {
+        result = new StringBuffer(value.substring(startPosition, startIndex));
+      } else {
+        result.append(value.substring(startPosition, startIndex));
+      }
+      String propertyValue = System.getProperty(property);
+      if (propertyValue == null) {
+        propertyValue = System.getenv(property);
+      }
+      if (propertyValue != null) {
+        result.append(propertyValue);
+      } else {
+        result.append("${");
+        result.append(property);
+        result.append("}");
+      }
+      startPosition = startIndex + 3 + property.length();
+    }
+    if (result != null) {
+      result.append(value.substring(startPosition));
+      return result.toString();
+    } else {
+      return value;
+    }
+  }
 }
