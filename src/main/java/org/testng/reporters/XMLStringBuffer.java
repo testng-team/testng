@@ -294,6 +294,9 @@ public class XMLStringBuffer {
    * Add a CDATA tag.
    */
   public void addCDATA(String content) {
+    if (content == null) {
+      content = "null";
+    }
     if (content.indexOf("]]>") > -1) {
       String[] subStrings = content.split("]]>");
       m_buffer.append(m_currentIndent).append("<![CDATA[").append(subStrings[0]).append("]]]]>");
