@@ -14,7 +14,7 @@ public class SuiteXmlParser extends XMLParser<XmlSuite> {
     TestNGContentHandler contentHandler = new TestNGContentHandler(currentFile, loadClasses);
 
     try {
-      m_saxParser.parse(inputStream, contentHandler);
+      parse(inputStream, contentHandler);
 
       return contentHandler.getSuite();
     }
