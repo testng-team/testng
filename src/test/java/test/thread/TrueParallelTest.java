@@ -20,7 +20,7 @@ public class TrueParallelTest extends SimpleBaseTest {
   @Test
   public void shouldRunInParallel() {
     boolean success = false;
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0, count = Runtime.getRuntime().availableProcessors() * 4; i < count; i++) {
       XmlSuite s = createXmlSuite("TrueParallel");
       createXmlTest(s, "Test", TrueParallelSampleTest.class.getName());
       TestNG tng = create();
