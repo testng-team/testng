@@ -2,11 +2,19 @@ package test.thread;
 
 import org.testng.annotations.Test;
 
+import java.util.Random;
+
 @Test
 public class TrueParallelSampleTest extends BaseThreadTest {
+  static Random random = new Random(System.currentTimeMillis());
+
   private void log(String s) {
     logString(s);
-    Thread.yield();
+    try {
+      Thread.sleep(random.nextInt(10));
+    } catch (InterruptedException ex) {
+      Thread.yield();
+    }
     logString(s);
     logCurrentThread();
   }
@@ -14,7 +22,7 @@ public class TrueParallelSampleTest extends BaseThreadTest {
   public void m1() {
     log("m1");
   }
-  
+
   public void m2() {
     log("m2");
   }
