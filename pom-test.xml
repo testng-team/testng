@@ -95,10 +95,12 @@
             <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
           </suiteXmlFiles>
           <properties>
+<!-- 
             <property>
               <name>listener</name>
               <value>test.invokedmethodlistener.MyListener</value>
             </property>
+-->
           </properties>
         </configuration>
       </plugin>
