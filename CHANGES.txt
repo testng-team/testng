@@ -2,6 +2,12 @@ Current
 
 Fixed: GITHUB-376: Some results can be lost (Konstantin Savin)
 
+6.8.5:
+2013/05/13
+
+Fixed: the OutOfMemoryException in reports
+Fixed: Surefire + listeners "Can't load class" problem
+
 ===========================================================================
 6.8.1
 2013/03/30
