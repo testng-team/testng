@@ -248,7 +248,7 @@ public class XmlMethodSelector implements IMethodSelector {
       throw new TestNGException(e);
     }
 
-    Utils.log("Warning", 2, "The regular exception \"" + methodName + "\" didn't match any" +
+    Utils.log("Warning", 2, "The regular expression \"" + methodName + "\" didn't match any" +
     		" method in class " + className);
   }
 
