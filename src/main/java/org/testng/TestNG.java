@@ -875,9 +875,9 @@ public class TestNG {
       addReporter(Main.class);
       addReporter(FailedReporter.class);
       addReporter(XMLReporter.class);
-      if (System.getProperty("oldDestngEmailableReporter") != null) {
+      if (System.getProperty("oldTestngEmailableReporter") != null) {
         addReporter(EmailableReporter.class);
-      } else {
+      } else if (System.getProperty("noEmailableReporter") == null) {
         addReporter(EmailableReporter2.class);
       }
       addReporter(JUnitReportReporter.class);
