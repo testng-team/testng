@@ -142,7 +142,7 @@ public class Assert {
                assertEquals(_actual, _expected);
             } catch (AssertionError ae) {
                failNotEquals(actual, expected, message == null ? "" : message
-                        + " (values as index " + i + " are not the same)");
+                        + " (values at index " + i + " are not the same)");
             }
          }
          //array values matched
