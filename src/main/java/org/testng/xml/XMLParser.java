@@ -3,15 +3,18 @@ package org.testng.xml;
 import org.testng.TestNGException;
 import org.testng.internal.ClassHelper;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import java.io.IOException;
+import java.io.InputStream;
 
 abstract public class XMLParser<T> implements IFileParser<T> {
 
-  protected static SAXParser m_saxParser;
+  private final static SAXParser m_saxParser;
 
   static {
     SAXParserFactory spf = loadSAXParserFactory();
@@ -20,12 +23,20 @@ abstract public class XMLParser<T> implements IFileParser<T> {
       spf.setValidating(true);
     }
 
+    SAXParser parser = null;
     try {
-      m_saxParser = spf.newSAXParser();
+      parser = spf.newSAXParser();
     } catch (ParserConfigurationException e) {
       e.printStackTrace();
     } catch (SAXException e) {
       e.printStackTrace();
+    }
+    m_saxParser = parser;
+  }
+
+  public void parse(InputStream is, DefaultHandler dh) throws SAXException, IOException {
+    synchronized (m_saxParser) {
+      m_saxParser.parse(is, dh);
     }
   }
 
