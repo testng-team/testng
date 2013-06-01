@@ -43,6 +43,7 @@ public class FileStringBuffer implements IBuffer {
 
   @Override
   public FileStringBuffer append(CharSequence s) {
+//    m_sb.append(s);
     if (m_sb.length() > m_maxCharacters) {
       flushToFile();
     }
@@ -53,7 +54,7 @@ public class FileStringBuffer implements IBuffer {
       // Big string, add it to the temporary file directly
       flushToFile();
       try {
-        copy(new StringReader(s.toString()), new FileWriter(m_file));
+        copy(new StringReader(s.toString()), new FileWriter(m_file, true /* append */));
       } catch (IOException e) {
         e.printStackTrace();
       }

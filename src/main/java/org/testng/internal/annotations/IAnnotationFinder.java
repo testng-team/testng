@@ -17,28 +17,28 @@ public interface IAnnotationFinder {
 
   /**
    * @param cls
-   * @param annotationName
+   * @param annotationClass
    * @return The annotation on the class or null if none found.
    */
-  public IAnnotation findAnnotation(Class cls, Class annotationClass);
+  public <A extends IAnnotation> A findAnnotation(Class cls, Class<A> annotationClass);
 
   /**
    * @param m
-   * @param annotationName
+   * @param annotationClass
    * @return The annotation on the method.
    * If not found, return the annotation on the declaring class.
    * If not found, return null.
    */
-  public IAnnotation findAnnotation(Method m, Class annotationClass);
+  public <A extends IAnnotation> A findAnnotation(Method m, Class<A> annotationClass);
 
   /**
-   * @param m
-   * @param annotationName
+   * @param cons
+   * @param annotationClass
    * @return The annotation on the method.
    * If not found, return the annotation on the declaring class.
    * If not found, return null.
    */
-  public IAnnotation findAnnotation(Constructor m, Class annotationClass);
+  public <A extends IAnnotation> A findAnnotation(Constructor cons, Class<A> annotationClass);
 
   /**
    * @return true if the ith parameter of the given method has the annotation @TestInstance.

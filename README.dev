@@ -6,7 +6,12 @@ build-with-maven
 gpg --list-keys
 Send the public key:
   gpg --keyserver hkp://pool.sks-keyservers.net --send-keys <public_key>
+  or wwwkeys.at.pgp.net
+
+
   instructions at https://docs.sonatype.org/display/Repository/How+To+Generate+PGP+Signatures+With+Maven
+
+
 Configure ~/.m2/settings.xml with Nexus user/password:
   <settings>
     <servers>

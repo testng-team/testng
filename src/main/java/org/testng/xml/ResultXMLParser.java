@@ -40,7 +40,7 @@ public class ResultXMLParser extends XMLParser<Object> {
         loadClasses);
 
     try {
-      m_saxParser.parse(inputStream, handler);
+      parse(inputStream, handler);
 
       return null;
     }

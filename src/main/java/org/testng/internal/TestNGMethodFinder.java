@@ -20,9 +20,8 @@ import java.util.Set;
  *
  * @author Cedric Beust, May 3, 2004
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
- * @param <ITestNGMetthod>
  */
-public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
+public class TestNGMethodFinder implements ITestMethodFinder {
   private static final int BEFORE_SUITE = 1;
   private static final int AFTER_SUITE = 2;
   private static final int BEFORE_TEST = 3;
@@ -215,7 +214,7 @@ public class TestNGMethodFinder<ITestNGMetthod> implements ITestMethodFinder {
                                       Object instance)
   {
     if(method.getDeclaringClass().isAssignableFrom(clazz)) {
-      ITestNGMethod confMethod = new ConfigurationMethod(method,
+      ITestNGMethod confMethod = new ConfigurationMethod(new ConstructorOrMethod(method),
                                                          m_annotationFinder,
                                                          isBeforeSuite,
                                                          isAfterSuite,

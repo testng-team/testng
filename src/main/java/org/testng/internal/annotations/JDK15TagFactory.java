@@ -1,5 +1,9 @@
 package org.testng.internal.annotations;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.Map;
+
 import org.testng.IAnnotationTransformer;
 import org.testng.TestNGException;
 import org.testng.annotations.AfterClass;
@@ -30,10 +34,6 @@ import org.testng.annotations.Test;
 import org.testng.collections.Maps;
 import org.testng.internal.Utils;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.Map;
-
 /**
  * This class creates implementations of IAnnotations based on the JDK5
  * annotation that was found on the Java element.
@@ -43,10 +43,8 @@ import java.util.Map;
  */
 public class JDK15TagFactory {
 
-  public IAnnotation createTag(Class<?> cls, Annotation a,
-      Class<?> annotationClass,
-      IAnnotationTransformer transformer)
-  {
+  public <A extends IAnnotation> A createTag(Class<?> cls, Annotation a,
+                                             Class<A> annotationClass, IAnnotationTransformer transformer) {
     IAnnotation result = null;
 
     if (a != null) {
@@ -88,7 +86,8 @@ public class JDK15TagFactory {
       }
     }
 
-    return result;
+    //noinspection unchecked
+    return (A) result;
   }
 
   private IAnnotation maybeCreateNewConfigurationTag(Class<?> cls, Annotation a,
@@ -253,7 +252,7 @@ public class JDK15TagFactory {
   }
 
   @SuppressWarnings({"deprecation"})
-  private IAnnotation createConfigurationTag(Class<?> cls, Annotation a) {
+  private ConfigurationAnnotation createConfigurationTag(Class<?> cls, Annotation a) {
     ConfigurationAnnotation result = new ConfigurationAnnotation();
     Configuration c = (Configuration) a;
     result.setBeforeTestClass(c.beforeTestClass());

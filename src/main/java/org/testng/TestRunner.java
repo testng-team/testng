@@ -1,7 +1,16 @@
 package org.testng;
 
-import com.google.inject.Injector;
-import com.google.inject.Module;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
@@ -42,17 +51,8 @@ import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import com.google.inject.Injector;
+import com.google.inject.Module;
 
 /**
  * This class takes care of running one Test.
@@ -253,7 +253,7 @@ public class TestRunner
     result.listenerClasses = Lists.newArrayList();
 
     do {
-      IListeners l = (IListeners) m_annotationFinder.findAnnotation(cls, IListeners.class);
+      IListeners l = m_annotationFinder.findAnnotation(cls, IListeners.class);
       if (l != null) {
         Class<? extends ITestNGListener>[] classes = l.getValue();
         for (Class<? extends ITestNGListener> c : classes) {
@@ -412,7 +412,7 @@ public class TestRunner
                                              m_configuration,
                                              this);
     ITestMethodFinder testMethodFinder
-      = new TestNGMethodFinder<ITestNGMethod>(m_runInfo, m_annotationFinder);
+      = new TestNGMethodFinder(m_runInfo, m_annotationFinder);
 
     m_runInfo.setTestMethods(testMethods);
 
@@ -824,9 +824,7 @@ public class TestRunner
     for (ITestNGMethod m : methods) {
       Class<? extends ITestClass> cls = m.getRealClass();
       org.testng.annotations.ITestAnnotation test =
-        (org.testng.annotations.ITestAnnotation) m_annotationFinder.
-          findAnnotation(cls,
-              org.testng.annotations.ITestAnnotation.class);
+          m_annotationFinder.findAnnotation(cls, org.testng.annotations.ITestAnnotation.class);
 
       // If either sequential=true or parallel=classes, mark this class sequential
       if (test != null && (test.getSequential() || test.getSingleThreaded()) ||
@@ -853,7 +851,7 @@ public class TestRunner
         if (!processedClasses.contains(c)) {
           processedClasses.add(c);
           if (System.getProperty("experimental") != null) {
-            List<IMethodInstance>[] instances = createInstances(methodInstances);
+            List<List<IMethodInstance>> instances = createInstances(methodInstances);
             for (List<IMethodInstance> inst : instances) {
               TestMethodWorker worker = createTestMethodWorker(inst, params, c);
               result.add(worker);
@@ -908,7 +906,7 @@ public class TestRunner
     return result;
   }
 
-  private List<IMethodInstance>[] createInstances(List<IMethodInstance> methodInstances) {
+  private List<List<IMethodInstance>> createInstances(List<IMethodInstance> methodInstances) {
     Map<Object, List<IMethodInstance>> map = Maps.newHashMap();
 //    MapList<IMethodInstance[], Object> map = new MapList<IMethodInstance[], Object>();
     for (IMethodInstance imi : methodInstances) {
@@ -927,12 +925,7 @@ public class TestRunner
     }
 //    return map.getKeys();
 //    System.out.println(map);
-    List<IMethodInstance>[] result = new List[map.size()];
-    int i = 0;
-    for (List<IMethodInstance> imi : map.values()) {
-      result[i++] = imi;
-    }
-    return result;
+    return new ArrayList<List<IMethodInstance>>(map.values());
   }
 
   private TestMethodWorker createTestMethodWorker(
@@ -1066,7 +1059,9 @@ public class TestRunner
         if (dependentMethods != null) {
           for (String d : dependentMethods) {
             ITestNGMethod dm = dependencyMap.getMethodDependingOn(d, m);
-            result.addEdge(m, dm);
+            if (m != dm){
+            	result.addEdge(m, dm);
+            }
           }
         }
       }
@@ -1500,7 +1495,7 @@ public class TestRunner
   // Listeners
   /////
 
-  private List<InvokedMethod> m_invokedMethods = Lists.newArrayList();
+  private final List<InvokedMethod> m_invokedMethods = Lists.newArrayList();
 
   private void dumpInvokedMethods() {
     System.out.println("===== Invoked methods");

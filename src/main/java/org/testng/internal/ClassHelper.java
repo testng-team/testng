@@ -516,6 +516,11 @@ public final class ClassHelper {
 
     if(!file.endsWith(".class") && !file.endsWith(".java")) {
       // Doesn't end in .java or .class, assume it's a class name
+
+      if (file.startsWith("class ")) {
+        file = file.substring("class ".length());
+      }
+
       result = ClassHelper.forName(file);
 
       if (null == result) {

@@ -1624,6 +1624,10 @@ The <i>parallel</i> attribute on the &lt;suite&gt; tag can take one of following
 &lt;suite name="My suite" parallel="classes" thread-count="5"&gt;
 </pre>
 
+<pre class="brush: xml">
+&lt;suite name="My suite" parallel="instances" thread-count="5"&gt;
+</pre>
+
 <ul>
 <li>
 <b><tt>parallel="methods"</tt></b>:  TestNG will run all your test methods in separate threads. Dependent methods will also run in separate threads but they will respect the order that you specified.
@@ -1641,6 +1645,11 @@ The <i>parallel</i> attribute on the &lt;suite&gt; tag can take one of following
 <b><tt>parallel="classes"</tt></b>:  TestNG will run all the methods in the same class in the same thread, but each class will be run in a separate thread.
 </li>
 
+<br/>
+
+<li>
+<b><tt>parallel="instances"</tt></b>:  TestNG will run all the methods in the same instance in the same thread, but two methods on two different instances will be running in different threads.
+</li>
 
 </ul>
 

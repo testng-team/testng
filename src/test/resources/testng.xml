@@ -210,6 +210,7 @@
       <class name="test.dependsongroup.DependsOnGroupsTest" />
       <class name="test.dependent.GroupByInstancesTest" />
       <class name="test.dependent.xml.GroupDependencyTest" />
+      <class name="test.dependent.DependencyFixTest"/>
     </classes>
   </test>
 
@@ -714,6 +715,18 @@
   <test name="Mixed">
     <classes>
       <class name="test.mixed.MixedTest" />
+    </classes>
+  </test>
+
+  <test name="Issue 107">
+    <classes>
+      <class name="test.issue107.Issue107Test"/>
+    </classes>
+  </test>
+
+  <test name="Assertion">
+    <classes>
+      <class name="test.assertion.AssertionTest"/>
     </classes>
   </test>
 

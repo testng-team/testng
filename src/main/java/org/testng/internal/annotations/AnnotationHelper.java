@@ -28,27 +28,27 @@ import java.util.Map;
 public class AnnotationHelper {
 
   public static ITestAnnotation findTest(IAnnotationFinder finder, Class cls) {
-    return (ITestAnnotation) finder.findAnnotation(cls, ITestAnnotation.class);
+    return finder.findAnnotation(cls, ITestAnnotation.class);
   }
 
   public static ITestAnnotation findTest(IAnnotationFinder finder, Method m) {
-    return (ITestAnnotation) finder.findAnnotation(m, ITestAnnotation.class);
+    return finder.findAnnotation(m, ITestAnnotation.class);
   }
 
   public static IFactoryAnnotation findFactory(IAnnotationFinder finder, Method m) {
-    return (IFactoryAnnotation) finder.findAnnotation(m, IFactoryAnnotation.class);
+    return finder.findAnnotation(m, IFactoryAnnotation.class);
   }
 
   public static IFactoryAnnotation findFactory(IAnnotationFinder finder, Constructor c) {
-    return (IFactoryAnnotation) finder.findAnnotation(c, IFactoryAnnotation.class);
+    return finder.findAnnotation(c, IFactoryAnnotation.class);
   }
 
   public static ITestAnnotation findTest(IAnnotationFinder finder, Constructor ctor) {
-    return (ITestAnnotation) finder.findAnnotation(ctor, ITestAnnotation.class);
+    return finder.findAnnotation(ctor, ITestAnnotation.class);
   }
 
   public static IConfigurationAnnotation findConfiguration(IAnnotationFinder finder, Constructor ctor) {
-    IConfigurationAnnotation result = (IConfigurationAnnotation) finder.findAnnotation(ctor, IConfigurationAnnotation.class);
+    IConfigurationAnnotation result = finder.findAnnotation(ctor, IConfigurationAnnotation.class);
     if (result == null) {
       IConfigurationAnnotation bs = (IConfigurationAnnotation) finder.findAnnotation(ctor, IBeforeSuite.class);
       IConfigurationAnnotation as = (IConfigurationAnnotation) finder.findAnnotation(ctor, IAfterSuite.class);
@@ -219,7 +219,8 @@ public class AnnotationHelper {
               isAnnotationPresent(annotationFinder, m, ITestAnnotation.class) ||
               isAnnotationPresent(annotationFinder, m, CONFIGURATION_CLASSES);
             boolean isPublic = Modifier.isPublic(m.getModifiers());
-            if ((isPublic && hasClassAnnotation && (! hasTestNGAnnotation)) || hasMethodAnnotation) {
+            boolean isSynthetic = m.isSynthetic();            
+            if ((isPublic && hasClassAnnotation && !isSynthetic && (! hasTestNGAnnotation)) || hasMethodAnnotation) {
 
               // Small hack to allow users to specify @Configuration classes even though
               // a class-level @Test annotation is present.  In this case, don't count

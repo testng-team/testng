@@ -1,7 +1,24 @@
 Current
 
+Fixed: GITHUB-376: Some results can be lost (Konstantin Savin)
+
+6.8.5:
+2013/05/13
+
+Fixed: the OutOfMemoryException in reports
+Fixed: Surefire + listeners "Can't load class" problem
+
+===========================================================================
+6.8.1
+2013/03/30
+
 Added: Descriptions in the HTML reports
-Added: Various improvements to EmailableReporter (Abraham Lin) 
+Added: Various improvements to EmailableReporter (Abraham Lin)
+Added: Allow injection of java.lang.reflect.Constructor and org.testng.ITestNGMethod into DataProvide (Vladislav Rassokhin)
+Fixed: Assertions in the Assertions class were not failing properly.
+Fixed: GITHUB-337: ConfigurationMethod#m_instance set to Boolean.FALSE due to incorrect constructor call in clone() + auto-boxing (davidely)
+Fixed: Fix NPE for dependency methods/groups (Krishnan Mahadevan)
+Fixed: preserve-order bug (found by VladSarrokhin). 
 Fixed: GITHUB-300: OutOfMemoryException from reporters when there are a lot of tests
 Fixed: GITHUB-137: Main parameters with a default value should be overridden if a main parameter is specified 
 Fixed: GITHUB-107: Allow enum values without converting them to uppercase.
