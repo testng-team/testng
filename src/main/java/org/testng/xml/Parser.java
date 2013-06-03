@@ -38,7 +38,7 @@ public class Parser {
       new SuiteXmlParser();
   private static final IFileParser<XmlSuite> YAML_PARSER = new YamlParser();
   private static final IFileParser<XmlSuite> DEFAULT_FILE_PARSER = XML_PARSER;
-  
+
   /** The file name of the xml suite being parsed. This may be null if the Parser
    * has not been initialized with a file name. TODO CQ This member is never used. */
   private String m_fileName;
@@ -51,9 +51,8 @@ public class Parser {
   /**
    * Constructs a <code>Parser</code> to use the inputStream as the source of
    * the xml test suite to parse.
-   * @param filename the filename corresponding to the inputStream or null if
+   * @param fileName the filename corresponding to the inputStream or null if
    * unknown.
-   * @param inputStream the xml test suite input stream.
    */
   public Parser(String fileName) {
     init(fileName, null, null);
@@ -135,7 +134,7 @@ public class Parser {
    * if the default testng.xml file is not found.
    */
   public Collection<XmlSuite> parse()
-    throws ParserConfigurationException, SAXException, IOException 
+    throws ParserConfigurationException, SAXException, IOException
   {
     // Each suite found is put in this list, using their canonical
     // path to make sure we don't add a same file twice
@@ -143,19 +142,14 @@ public class Parser {
     List<String> processedSuites = Lists.newArrayList();
     XmlSuite resultSuite = null;
 
-    File parentFile = null;
-    String mainFilePath = null;
-
-    if (m_fileName != null) {
-        File mainFile = new File(m_fileName);
-        mainFilePath = mainFile.getCanonicalPath();
-        parentFile = mainFile.getParentFile();
-    }
-
     List<String> toBeParsed = Lists.newArrayList();
     List<String> toBeAdded = Lists.newArrayList();
     List<String> toBeRemoved = Lists.newArrayList();
-    toBeParsed.add(mainFilePath);
+
+    if (m_fileName != null) {
+      File mainFile = new File(m_fileName);
+      toBeParsed.add(mainFile.getCanonicalPath());
+    }
 
     /*
      * Keeps a track of parent XmlSuite for each child suite
@@ -164,13 +158,14 @@ public class Parser {
     while (toBeParsed.size() > 0) {
 
       for (String currentFile : toBeParsed) {
+        File currFile = new File(currentFile);
+        File parentFile = currFile.getParentFile();
         InputStream inputStream = m_inputStream != null
             ? m_inputStream
             : new FileInputStream(currentFile);
 
         IFileParser<XmlSuite> fileParser = getParser(currentFile);
-        XmlSuite result = fileParser.parse(currentFile, inputStream, m_loadClasses);
-        XmlSuite currentXmlSuite = result;
+        XmlSuite currentXmlSuite = fileParser.parse(currentFile, inputStream, m_loadClasses);
         processedSuites.add(currentFile);
         toBeRemoved.add(currentFile);
 
