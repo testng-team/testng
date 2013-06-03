@@ -12,3 +12,5 @@ maven-testng-plugin-1.2.jar
 src/test/java/test/ignore
 .classpath
 .project
+.idea
+testng.iml

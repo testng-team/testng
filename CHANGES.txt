@@ -1,6 +1,7 @@
 Current
 
 Fixed: GITHUB-376: Some results can be lost (Konstantin Savin)
+Fixed: Handle relative paths of Suite XML files properly (Nalin Makar)
 
 6.8.5:
 2013/05/13

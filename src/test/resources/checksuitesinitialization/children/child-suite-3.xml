@@ -1,0 +1,8 @@
+<suite name="Child Suite 3">
+  <parameter name="foo" value="bar"/>
+  <suite-files>
+    <suite-file path="../child-suite2.xml" />
+    <suite-file path="child-suite-4.xml" />
+    <suite-file path="morechildren/child-suite-5.xml" />
+  </suite-files>
+</suite>
