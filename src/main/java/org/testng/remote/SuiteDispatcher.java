@@ -114,6 +114,7 @@ public class SuiteDispatcher
             tmpSuite.setSkipFailedInvocationCounts(suite.skipFailedInvocationCounts());
 						tmpSuite.setName("Temporary suite for " + test.getName());
 						tmpSuite.setParallel(suite.getParallel());
+						tmpSuite.setParentModule(suite.getParentModule());
 						tmpSuite.setParameters(suite.getParameters());
 						tmpSuite.setThreadCount(suite.getThreadCount());
             tmpSuite.setDataProviderThreadCount(suite.getDataProviderThreadCount());

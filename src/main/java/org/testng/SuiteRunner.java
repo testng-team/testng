@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import com.google.inject.Injector;
 
 /**
  * <CODE>SuiteRunner</CODE> is responsible for running all the tests included in one
@@ -48,6 +49,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
   private String m_outputDir; // DEFAULT_OUTPUT_DIR;
   private XmlSuite m_suite;
+  private Injector m_parentInjector;
 
   transient private List<ITestListener> m_testListeners = Lists.newArrayList();
   transient private ITestRunnerFactory m_tmpRunnerFactory;
@@ -231,6 +233,18 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   @Override
   public String getParallel() {
     return m_suite.getParallel();
+  }
+
+  public String getParentModule() {
+    return m_suite.getParentModule();
+  }
+
+  public Injector getParentInjector() {
+    return m_parentInjector;
+  }
+
+  public void setParentInjector(Injector injector) {
+    m_parentInjector = injector;
   }
 
   @Override

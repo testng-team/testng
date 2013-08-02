@@ -2226,7 +2226,16 @@ public interface IModuleFactory {
 
 Your factory will be passed an instance of the test context and the test class that TestNG needs to instantiate. Your <tt>createModule</tt> method should return a Guice Module that will know how to instantiate this test class. You can use the test context to find out more information about your environment, such as parameters specified in <tt>testng.xml</tt>, etc...
 
+You will get even more flexibility and Guice power with parent-module siute parameter. Here is how you can define parent-module in your test.xml file:
 
+<pre class="brush: xml">
+<suite parent-module="com.example.SuiteParenModule">
+</suite>
+</pre>
+
+TestNG will create this module only once for given suite. Will also use this module for obtaining instances of test specific Guice modules and module factories, then will create child injector for each test class.
+
+With such approach you can declare all common bindings in parent-module also you can inject binding declared in parent-module in module and module factory.
 
 <!-------------------------------------
   INVOKED METHOD LISTENERS

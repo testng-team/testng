@@ -62,6 +62,8 @@ public class XmlSuite implements Serializable, Cloneable {
   public static String DEFAULT_PARALLEL = "false";
   private String m_parallel = DEFAULT_PARALLEL;
 
+  private String m_parentModule = "";
+
   /** Whether to SKIP or CONTINUE to re-attempt failed configuration methods. */
   public static String DEFAULT_CONFIG_FAILURE_POLICY = SKIP;
   private String m_configFailurePolicy = DEFAULT_CONFIG_FAILURE_POLICY;
@@ -156,6 +158,11 @@ public class XmlSuite implements Serializable, Cloneable {
     return m_parallel;
   }
 
+
+  public String getParentModule() {
+    return m_parentModule;
+  }
+
   public ITestObjectFactory getObjectFactory() {
     return m_objectFactory;
   }
@@ -170,6 +177,10 @@ public class XmlSuite implements Serializable, Cloneable {
    */
   public void setParallel(String parallel) {
     m_parallel = parallel;
+  }
+
+  public void setParentModule(String parentModule) {
+    m_parentModule = parentModule;
   }
 
   /**
@@ -442,6 +453,9 @@ public class XmlSuite implements Serializable, Cloneable {
     if(null != m_objectFactory) {
       p.setProperty("object-factory", m_objectFactory.getClass().getName());
     }
+    if (isStringNotEmpty(m_parentModule)) {
+      p.setProperty("parent-module", getParentModule());
+    }
     XmlUtils.setProperty(p, "allow-return-values", String.valueOf(getAllowReturnValues()),
         DEFAULT_ALLOW_RETURN_VALUES.toString());
     xsb.push("suite", p);
@@ -570,6 +584,7 @@ public class XmlSuite implements Serializable, Cloneable {
     result.setName(getName());
     result.setListeners(getListeners());
     result.setParallel(getParallel());
+    result.setParentModule(getParentModule());
     result.setConfigFailurePolicy(getConfigFailurePolicy());
     result.setThreadCount(getThreadCount());
     result.setDataProviderThreadCount(getDataProviderThreadCount());
