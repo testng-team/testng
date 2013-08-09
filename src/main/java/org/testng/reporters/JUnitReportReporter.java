@@ -171,7 +171,7 @@ public class JUnitReportReporter implements IReporter {
       xsb.pop("testsuite");
 
       String outputDirectory = defaultOutputDirectory + File.separator + "junitreports";
-      Utils.writeFile(outputDirectory, getFileName(cls), xsb.toXML());
+      Utils.writeUtf8File(outputDirectory, getFileName(cls), xsb.toXML());
     }
 
 //    System.out.println(xsb.toXML());

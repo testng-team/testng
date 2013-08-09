@@ -724,4 +724,10 @@
     </classes>
   </test>
 
+  <test name="Assertion">
+    <classes>
+      <class name="test.assertion.AssertionTest"/>
+    </classes>
+  </test>
+
 </suite>

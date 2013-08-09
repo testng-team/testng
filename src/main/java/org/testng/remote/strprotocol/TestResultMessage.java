@@ -18,8 +18,6 @@ import java.util.List;
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class TestResultMessage implements IStringMessage {
-  private static final Object[] EMPTY_PARAMS= new Object[0];
-  private static final Class[] EMPTY_TYPES= new Class[0];
 
   protected int    m_messageType;
   protected String m_suiteName;
@@ -300,7 +298,7 @@ public class TestResultMessage implements IStringMessage {
     return result;
   }
 
-  private String[] toString(Object[] objects, Class[] objectClasses) {
+  String[] toString(Object[] objects, Class<?>[] objectClasses) {
     if(null == objects) {
       return new String[0];
     }
@@ -308,6 +306,25 @@ public class TestResultMessage implements IStringMessage {
     for(Object o: objects) {
       if(null == o) {
         result.add("null");
+      }
+      else if (o.getClass().isArray()) {
+        String[] strArray;
+        if (o.getClass().getComponentType().isPrimitive()){
+          strArray = primitiveArrayToString(o);
+        } else {
+          strArray = toString((Object[]) o, null);
+        }
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < strArray.length; i++)
+        {
+          sb.append(strArray[i]);
+          if (i + 1 < strArray.length)
+          {
+            sb.append(",");
+          }
+        }
+        sb.append("]");
+        result.add(sb.toString());
       }
       else {
         String tostring= o.toString();
@@ -323,12 +340,58 @@ public class TestResultMessage implements IStringMessage {
     return result.toArray(new String[result.size()]);
   }
 
-  private String[] toString(Class[] classes) {
+  private String[] primitiveArrayToString(Object o) {
+    List<String> results = Lists.newArrayList();
+    if (o instanceof byte[]) {
+      byte[] array = (byte[]) o;
+      for (int i = 0; i < array.length; i++) {
+        results.add(String.valueOf(array[i]));
+      }
+    } else if (o instanceof boolean[]) {
+      boolean[] array = (boolean[]) o;
+      for (int i = 0; i < array.length; i++) {
+        results.add(String.valueOf(array[i]));
+      }
+    } else if (o instanceof char[]) {
+      char[] array = (char[]) o;
+      for (int i = 0; i < array.length; i++) {
+        results.add(String.valueOf(array[i]));
+      }
+    } else if (o instanceof double[]) {
+      double[] array = (double[]) o;
+      for (int i = 0; i < array.length; i++) {
+        results.add(String.valueOf(array[i]));
+      }
+    } else if (o instanceof float[]) {
+      float[] array = (float[]) o;
+      for (int i = 0; i < array.length; i++) {
+        results.add(String.valueOf(array[i]));
+      }
+    } else if (o instanceof short[]) {
+      short[] array = (short[]) o;
+      for (int i = 0; i < array.length; i++) {
+        results.add(String.valueOf(array[i]));
+      }
+    } else if (o instanceof int[]) {
+      int[] array = (int[]) o;
+      for (int i = 0; i < array.length; i++) {
+        results.add(String.valueOf(array[i]));
+      }
+    } else if (o instanceof long[]) {
+      long[] array = (long[]) o;
+      for (int i = 0; i < array.length; i++) {
+        results.add(String.valueOf(array[i]));
+      }
+    }
+    return results.toArray(new String[results.size()]);
+  }
+
+  private String[] toString(Class<?>[] classes) {
     if(null == classes) {
       return new String[0];
     }
     List<String> result= Lists.newArrayList(classes.length);
-    for(Class cls: classes) {
+    for(Class<?> cls: classes) {
       result.add(cls.getName());
     }
 

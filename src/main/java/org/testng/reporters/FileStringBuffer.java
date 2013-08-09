@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.Writer;
 import java.util.Random;
 
@@ -42,22 +43,22 @@ public class FileStringBuffer implements IBuffer {
 
   @Override
   public FileStringBuffer append(CharSequence s) {
-    m_sb.append(s);
-//    if (m_sb.length() > m_maxCharacters) {
-//      flushToFile();
-//    }
-//    if (s.length() < MAX) {
-//      // Small string, add it to our internal buffer
-//      m_sb.append(s);
-//    } else {
-//      // Big string, add it to the temporary file directly
-//      flushToFile();
-//      try {
-//        copy(new StringReader(s.toString()), new FileWriter(m_file));
-//      } catch (IOException e) {
-//        e.printStackTrace();
-//      }
-//    }
+//    m_sb.append(s);
+    if (m_sb.length() > m_maxCharacters) {
+      flushToFile();
+    }
+    if (s.length() < MAX) {
+      // Small string, add it to our internal buffer
+      m_sb.append(s);
+    } else {
+      // Big string, add it to the temporary file directly
+      flushToFile();
+      try {
+        copy(new StringReader(s.toString()), new FileWriter(m_file, true /* append */));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
     return this;
   }
 
