@@ -7,7 +7,6 @@
 
   <property file="build.properties" />
   <property name="optimize" value="false" />
-  <property name="build.compiler" value="javac1.5" />
 
   <!-- ====================================================================== -->
   <!-- PREPARE                                                                -->
@@ -34,7 +33,7 @@
     <!-- java greater than 1.5 required to build -->
     <condition property="requiredJavaVersion">
       <or>
-        <equals arg1="${ant.java.version}" arg2="1.5" />
+        <equals arg1="${ant.java.version}" arg2="1.7" />
         <equals arg1="${ant.java.version}" arg2="1.6" />
       </or>
     </condition>
