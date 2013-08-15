@@ -235,28 +235,22 @@ public class XmlMethodSelector implements IMethodSelector {
     return className + "." + methodName;
   }
 
-  private void checkMethod(String className, String methodName) {
+  private void checkMethod(Class<?> c, String methodName) {
     Pattern p = Pattern.compile(methodName);
-    try {
-      Class<?> c = Class.forName(className);
-      for (Method m : c.getMethods()) {
-        if (p.matcher(m.getName()).matches()) {
-          return;
-        }
+    for (Method m : c.getMethods()) {
+      if (p.matcher(m.getName()).matches()) {
+        return;
       }
-    } catch (ClassNotFoundException e) {
-      throw new TestNGException(e);
     }
-
     Utils.log("Warning", 2, "The regular expression \"" + methodName + "\" didn't match any" +
-    		" method in class " + className);
+              " method in class " + c.getName());
   }
 
   public void setXmlClasses(List<XmlClass> classes) {
     m_classes = classes;
     for (XmlClass c : classes) {
       for (XmlInclude m : c.getIncludedMethods()) {
-        checkMethod(c.getName(), m.getName());
+        checkMethod(c.getSupportClass(), m.getName());
         String methodName = makeMethodName(c.getName(), m.getName());
         m_includedMethods.put(methodName, m);
       }
