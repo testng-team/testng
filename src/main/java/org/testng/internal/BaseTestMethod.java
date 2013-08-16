@@ -345,6 +345,22 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   }
 
   /**
+   * {@inheritDoc}
+   * @return the number of times this method or one of its clones must be invoked.
+  */
+  @Override
+  public int getTotalInvocationCount() {
+    return 1;
+  }
+
+  /**
+   * No-op.
+   */
+  @Override
+  public void setTotalInvocationCount(int count) {
+  }
+
+    /**
    * {@inheritDoc} Default value for successPercentage.
    */
   @Override

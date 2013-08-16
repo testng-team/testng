@@ -19,6 +19,7 @@ public class ClonedMethod implements ITestNGMethod {
   transient private Method m_javaMethod;
   private String m_id;
   private int m_currentInvocationCount;
+  private int m_totalInvocationCount;
   private long m_date;
 
   private List<Integer> m_invocationNumbers = Lists.newArrayList();
@@ -102,6 +103,11 @@ public class ClonedMethod implements ITestNGMethod {
   @Override
   public int getInvocationCount() {
     return 1;
+  }
+
+  @Override
+  public int getTotalInvocationCount() {
+    return m_totalInvocationCount;
   }
 
   @Override
@@ -258,6 +264,11 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
+  public void setTotalInvocationCount(int count) {
+      m_totalInvocationCount = count;
+  }
+
+    @Override
   public void setMissingGroup(String group) {
   }
 
