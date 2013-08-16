@@ -490,11 +490,24 @@ public class Assert {
     fail(formatted + ASSERT_LEFT + expected + ASSERT_MIDDLE + actual + ASSERT_RIGHT);
   }
 
-  static private void failNotEquals(Object actual , Object expected, String message ) {
-    fail(format(actual, expected, message));
+  static private void failEquals(Object actual , String message ) {
+    fail(formatEquals(actual, message));
   }
 
-  static String format(Object actual, Object expected, String message) {
+  static private void failNotEquals(Object actual , Object expected, String message ) {
+	fail(formatNotEquals(actual, expected, message));
+  }
+  
+  static String formatEquals(Object actual, String message) {
+    String formatted = "";
+    if (null != message) {
+      formatted = message + " ";
+    }
+
+    return formatted + "both should not have the same value " + ASSERT_LEFT + actual + ASSERT_RIGHT;
+  }
+  
+  static String formatNotEquals(Object actual, Object expected, String message) {
     String formatted = "";
     if (null != message) {
       formatted = message + " ";
@@ -851,7 +864,7 @@ public class Assert {
     }
 
     if (fail) {
-      Assert.fail(message);
+      failEquals(actual1, message);
     }
   }
 
@@ -925,7 +938,7 @@ public class Assert {
     }
 
     if (fail) {
-      Assert.fail(message);
+      failEquals(actual1, message);
     }
   }
 
@@ -943,7 +956,7 @@ public class Assert {
     }
 
     if (fail) {
-      Assert.fail(message);
+      failEquals(actual1, message);
     }
   }
 
