@@ -850,7 +850,7 @@ public class Invoker implements IInvoker {
         // If we have parameters, set the boolean if we are about to run
         // the last invocation
         if (tm.getParameterInvocationCount() > 0) {
-          isLast = current == tm.getParameterInvocationCount();
+          isLast = current == tm.getParameterInvocationCount() * tm.getInvocationCount();
         }
         // If we have invocationCount > 1, set the boolean if we are about to
         // run the last invocation
