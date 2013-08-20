@@ -1,13 +1,12 @@
 package org.testng.xml;
 
-import static org.testng.collections.CollectionUtils.hasElements;
+import java.util.List;
 
-import com.google.inject.internal.Lists;
-
+import org.testng.collections.Lists;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.dom.Tag;
 
-import java.util.List;
+import static org.testng.collections.CollectionUtils.hasElements;
 
 public class XmlGroups {
 

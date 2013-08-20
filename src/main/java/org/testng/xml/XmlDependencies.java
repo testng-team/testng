@@ -1,13 +1,12 @@
 package org.testng.xml;
 
-import static org.testng.collections.CollectionUtils.hasElements;
+import java.util.Map;
 
-import com.google.inject.internal.Maps;
-
+import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.dom.OnElement;
 
-import java.util.Map;
+import static org.testng.collections.CollectionUtils.hasElements;
 
 public class XmlDependencies {
 

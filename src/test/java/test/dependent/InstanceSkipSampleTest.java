@@ -1,12 +1,11 @@
 package test.dependent;
 
-import com.google.inject.internal.Lists;
+import java.util.List;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
-
-import java.util.List;
+import org.testng.collections.Lists;
 
 /**
  * Verify that only instances that fail cause dependency failures. In other words,

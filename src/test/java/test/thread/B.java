@@ -1,11 +1,10 @@
 package test.thread;
 
-import com.google.inject.internal.Maps;
-
-import org.testng.annotations.Test;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.testng.annotations.Test;
+import org.testng.collections.Maps;
 
 public class B {
   public static Map<Long, Long> m_threadIds = Maps.newHashMap();

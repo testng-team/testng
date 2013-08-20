@@ -1,18 +1,17 @@
 package test.mustache;
 
-import com.google.inject.internal.Maps;
-
-import org.testng.Assert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-import org.testng.mustache.Mustache;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import org.testng.Assert;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+import org.testng.collections.Maps;
+import org.testng.mustache.Mustache;
 
 @Test
 public class MustacheTest {

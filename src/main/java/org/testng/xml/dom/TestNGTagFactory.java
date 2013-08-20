@@ -2,7 +2,7 @@ package org.testng.xml.dom;
 
 import java.util.Map;
 
-import com.google.inject.internal.Maps;
+import org.testng.collections.Maps;
 
 public class TestNGTagFactory implements ITagFactory {
 
