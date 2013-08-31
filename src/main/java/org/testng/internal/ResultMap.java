@@ -48,6 +48,11 @@ public class ResultMap implements IResultMap {
   }
 
   @Override
+  public void removeResult(ITestResult r) {
+    m_map.remove(r);
+  }
+
+  @Override
   public Set<ITestResult> getAllResults() {
     return m_map.keySet();
   }
@@ -68,4 +73,5 @@ public class ResultMap implements IResultMap {
         .add("map", m_map)
         .toString();
   }
+
 }
