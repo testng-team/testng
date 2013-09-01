@@ -5,6 +5,7 @@
 
   <suite-files>
     <suite-file path="./junit-suite.xml" />
+    <suite-file path="./parent-module-suite.xml" />
   </suite-files>
 
   <test name="Nopackage">
@@ -731,3 +732,4 @@
   </test>
 
 </suite>
+
