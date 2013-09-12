@@ -95,7 +95,7 @@ public class XmlSuite implements Serializable, Cloneable {
   /** The packages containing test classes. */
   private List<XmlPackage> m_xmlPackages = Lists.newArrayList();
 
-  /** BeanShell expression. */
+    /** BeanShell expression. */ //TODO: delete this - it's not used
   private String m_expression = null;
 
   /** Suite level method selectors. */
@@ -219,6 +219,39 @@ public class XmlSuite implements Serializable, Cloneable {
    */
   public void setName(String name) {
     m_name = name;
+  }
+
+  /**
+   * Returns the bean shell expression.
+   * @return the bean shell expression.
+   */
+  public String getExpression() {
+    List<XmlMethodSelector> selectors = getMethodSelectors();
+    if (selectors.size() > 0) {
+      return selectors.get(0).getExpression();
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Sets the bean shell expression.
+   * @param m_expression The bean shell expression to set.
+   */
+  public void setExpression(String m_expression) {
+    setBeanShellExpression(m_expression);
+  }
+
+  public void setBeanShellExpression(String expression) {
+      List<XmlMethodSelector> selectors = getMethodSelectors();
+      if (selectors.size() > 0) {
+          selectors.get(0).setExpression(expression);
+      } else if (expression != null) {
+          XmlMethodSelector xms = new XmlMethodSelector();
+          xms.setExpression(expression);
+          xms.setLanguage("BeanShell");
+          getMethodSelectors().add(xms);
+      }
   }
 
   /**
@@ -576,7 +609,7 @@ public class XmlSuite implements Serializable, Cloneable {
     result.setParameters(getAllParameters());
     result.setVerbose(getVerbose());
     result.setXmlPackages(getXmlPackages());
-//    result.setBeanShellExpression(getExpression());
+    //result.setBeanShellExpression(getExpression());
     result.setMethodSelectors(getMethodSelectors());
     result.setJUnit(isJUnit()); // TESTNG-141
     result.setSkipFailedInvocationCounts(skipFailedInvocationCounts());
