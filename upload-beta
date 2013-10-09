@@ -1,4 +1,4 @@
 #scp `ls -tr *beta.zip|tail -1` cedric@beust.com:w/testng
-scp `ls -tr target/*beta.zip|tail -1` beust.com@beust.com:domains/testng.org/html
-ssh beust.com@beust.com cat testng/beta/index.html
+scp `ls -tr target/*beta.zip|tail -1` beust:domains/testng.org/html
+ssh beust cat testng/beta/index.html
 
