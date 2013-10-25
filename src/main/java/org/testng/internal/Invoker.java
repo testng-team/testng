@@ -1341,7 +1341,8 @@ public class Invoker implements IInvoker {
     }
 
     // beyond this, numValues <= numParams
-    for (Class<?> cls : method.getParameterTypes()) {
+    for (int paramIndex = 0; paramIndex < numParams; ++paramIndex) {
+      Class<?> cls = method.getParameterTypes()[paramIndex];
       Annotation[] annotations = method.getParameterAnnotations()[i];
       boolean noInjection = false;
       for (Annotation a : annotations) {
@@ -1355,7 +1356,9 @@ public class Invoker implements IInvoker {
         vResult.add(injected);
       } else {
         try {
-          if (method.isVarArgs()) vResult.add(parameterValues);
+          if (paramIndex + 1 == numParams && method.isVarArgs()) {
+              vResult.add(Arrays.copyOfRange(parameterValues, i, parameterValues.length));
+          }
           else vResult.add(parameterValues[i++]);
         } catch (ArrayIndexOutOfBoundsException ex) {
           throw new TestNGException("The data provider is trying to pass " + numValues
