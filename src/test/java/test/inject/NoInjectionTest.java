@@ -13,25 +13,43 @@ import java.lang.reflect.Method;
  * @author cbeust
  */
 public class NoInjectionTest {
-
-  @DataProvider(name = "provider")
-  public Object[][] provide() throws Exception {
-      return new Object[][] { { CC.class.getMethod("f") } };
+  public void f() {
   }
 
-  @Test(dataProvider = "provider")
+  @DataProvider(name = "singleValueProvider")
+  public Object[][] provide() throws Exception {
+      return new Object[][] { { NoInjectionTest.class.getMethod("f") } };
+  }
+
+  @Test(dataProvider = "singleValueProvider")
   public void withoutInjection(@NoInjection Method m) {
       Assert.assertEquals(m.getName(), "f");
   }
 
-  @Test(dataProvider = "provider")
+  @Test(dataProvider = "singleValueProvider")
   public void withInjection(Method m) {
       Assert.assertEquals(m.getName(), "withInjection");
   }
-}
 
-class CC {
+  // Multi-injection test
+  @DataProvider
+  public Object[][] multiValuedProvider() throws NoSuchMethodException {
+    return new Object[][] {
+      { null, "some_data" }
+    };
+  }
 
-  public void f() {
+  @Test(dataProvider = "multiValuedProvider")
+  public void multiValuedTest1(@NoInjection Method providedMethod, Method thisMethod, String data) {
+    Assert.assertNull(providedMethod);
+    Assert.assertEquals(thisMethod.getName(), "multiValuedTest1");
+    Assert.assertEquals(data, "some_data");
+  }
+
+  @Test(dataProvider = "multiValuedProvider")
+  public void multiValuedTest2(Method thisMethod, @NoInjection Method providedMethod, String data) {
+    Assert.assertNull(providedMethod);
+    Assert.assertEquals(thisMethod.getName(), "multiValuedTest2");
+    Assert.assertEquals(data, "some_data");
   }
 }
