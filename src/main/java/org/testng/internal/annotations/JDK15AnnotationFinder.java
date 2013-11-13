@@ -3,6 +3,7 @@ package org.testng.internal.annotations;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.Map;
 
 import org.testng.IAnnotationTransformer;
@@ -46,7 +47,7 @@ import org.testng.internal.collections.Pair;
  */
 public class JDK15AnnotationFinder implements IAnnotationFinder {
   private JDK15TagFactory m_tagFactory = new JDK15TagFactory();
-  private Map<Class<? extends IAnnotation>, Class<? extends Annotation>> m_annotationMap = Maps.newHashMap();
+  private Map<Class<? extends IAnnotation>, Class<? extends Annotation>> m_annotationMap = Collections.synchronizedMap(Maps.<Class<? extends IAnnotation>, Class<? extends Annotation>>newHashMap());
   private IAnnotationTransformer m_transformer = null;
 
   @SuppressWarnings({"deprecation"})
