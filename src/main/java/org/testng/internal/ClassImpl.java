@@ -1,10 +1,13 @@
 package org.testng.internal;
 
+import static org.testng.internal.Utils.isStringNotEmpty;
+
 import com.google.inject.Injector;
 import com.google.inject.Module;
 
 import org.testng.IClass;
 import org.testng.IModuleFactory;
+import org.testng.ISuite;
 import org.testng.ITest;
 import org.testng.ITestContext;
 import org.testng.ITestObjectFactory;
@@ -41,6 +44,7 @@ public class ClassImpl implements IClass {
   private String m_testName = null;
   private XmlClass m_xmlClass;
   private ITestContext m_testContext;
+  private final boolean m_hasParentModule;
 
   public ClassImpl(ITestContext context, Class cls, XmlClass xmlClass, Object instance,
       Map<Class, IClass> classes, XmlTest xmlTest, IAnnotationFinder annotationFinder,
@@ -56,6 +60,7 @@ public class ClassImpl implements IClass {
     if (instance instanceof ITest) {
       m_testName = ((ITest) instance).getTestName();
     }
+    m_hasParentModule = isStringNotEmpty(m_testContext.getSuite().getParentModule());
   }
 
   private static void ppp(String s) {
@@ -124,49 +129,58 @@ public class ClassImpl implements IClass {
   private Object getInstanceFromGuice() {
     Annotation annotation = AnnotationHelper.findAnnotationSuperClasses(Guice.class, m_class);
     if (annotation == null) return null;
+    Injector parentInjector = getParentInjector();
 
     Guice guice = (Guice) annotation;
-    List<Module> moduleInstances = Lists.newArrayList(getModules(guice, m_class));
+    List<Module> moduleInstances = Lists.newArrayList(getModules(guice, parentInjector, m_class));
 
     // Reuse the previous injector, if any
     Injector injector = m_testContext.getInjector(moduleInstances);
     if (injector == null) {
-      injector = com.google.inject.Guice.createInjector(moduleInstances);
+      injector = parentInjector.createChildInjector(moduleInstances);
       m_testContext.addInjector(moduleInstances, injector);
     }
     return injector.getInstance(m_class);
   }
 
-  private Module[] getModules(Guice guice, Class<?> testClass) {
+  public Injector getParentInjector() {
+    ISuite suite = m_testContext.getSuite();
+    // Reuse the previous parent injector, if any
+    Injector injector = suite.getParentInjector();
+    if (injector == null) {
+      if (m_hasParentModule) {
+        Class<?> parentModule = ClassHelper.forName(suite.getParentModule());
+        if (parentModule == null) {
+          throw new TestNGException("Cannot load parent Guice module class: " + parentModule);
+        }
+        Module module = (Module) ClassHelper.newInstance(parentModule);
+        injector = com.google.inject.Guice.createInjector(module);
+      } else {
+        injector = com.google.inject.Guice.createInjector();
+      }
+      suite.setParentInjector(injector);
+    }
+    return injector;
+  }
+
+  private Module[] getModules(Guice guice, Injector parentInejctor, Class<?> testClass) {
     List<Module> result = Lists.newArrayList();
     for (Class<? extends Module> moduleClass : guice.modules()) {
-      try {
-        List<Module> modules = m_testContext.getGuiceModules(moduleClass);
-        if (modules != null && modules.size() > 0) {
-          result.addAll(modules);
-        } else {
-          Module instance = moduleClass.newInstance();
-          result.add(instance);
-          m_testContext.addGuiceModule(moduleClass, instance);
-        }
-      } catch (InstantiationException e) {
-        throw new TestNGException(e);
-      } catch (IllegalAccessException e) {
-        throw new TestNGException(e);
+      List<Module> modules = m_testContext.getGuiceModules(moduleClass);
+      if (modules != null && modules.size() > 0) {
+        result.addAll(modules);
+      } else {
+        Module instance = parentInejctor.getInstance(moduleClass);
+        result.add(instance);
+        m_testContext.addGuiceModule(moduleClass, instance);
       }
     }
     Class<? extends IModuleFactory> factory = guice.moduleFactory();
     if (factory != IModuleFactory.class) {
-      try {
-        IModuleFactory factoryInstance = factory.newInstance();
-        Module moduleClass = factoryInstance.createModule(m_testContext, testClass);
-        if (moduleClass != null) {
-          result.add(moduleClass);
-        }
-      } catch (InstantiationException e) {
-        throw new TestNGException(e);
-      } catch (IllegalAccessException e) {
-        throw new TestNGException(e);
+      IModuleFactory factoryInstance = parentInejctor.getInstance(factory);
+      Module moduleClass = factoryInstance.createModule(m_testContext, testClass);
+      if (moduleClass != null) {
+        result.add(moduleClass);
       }
     }
 

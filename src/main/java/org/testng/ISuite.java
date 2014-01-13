@@ -1,12 +1,14 @@
 package org.testng;
 
 
-import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.xml.XmlSuite;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.xml.XmlSuite;
+
+import com.google.inject.Injector;
 
 /**
  * Interface defining a Test Suite.
@@ -41,6 +43,8 @@ public interface ISuite extends IAttributes {
    * @return true if the tests must be run in parallel.
    */
   public String getParallel();
+
+  public String getParentModule();
 
   /**
    * @return The value of this parameter, or null if none was specified.
@@ -102,6 +106,10 @@ public interface ISuite extends IAttributes {
   public XmlSuite getXmlSuite();
 
   public void addListener(ITestNGListener listener);
+
+  public Injector getParentInjector();
+
+  public void setParentInjector(Injector injector);
 
   /**
    * @return the total number of methods found in this suite. The presence of

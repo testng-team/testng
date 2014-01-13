@@ -163,6 +163,10 @@ public class TestNGContentHandler extends DefaultHandler {
           Utils.log("Parser", 1, "[WARN] Unknown value of attribute 'parallel' at suite level: '" + parallel + "'.");
         }
       }
+      String parentModule = attributes.getValue("parent-module");
+      if (parentModule != null) {
+        m_currentSuite.setParentModule(parentModule);
+      }
       String configFailurePolicy = attributes.getValue("configfailurepolicy");
       if (null != configFailurePolicy) {
         if (XmlSuite.SKIP.equals(configFailurePolicy) || XmlSuite.CONTINUE.equals(configFailurePolicy)) {

@@ -2226,7 +2226,73 @@ public interface IModuleFactory {
 
 Your factory will be passed an instance of the test context and the test class that TestNG needs to instantiate. Your <tt>createModule</tt> method should return a Guice Module that will know how to instantiate this test class. You can use the test context to find out more information about your environment, such as parameters specified in <tt>testng.xml</tt>, etc...
 
+You will get even more flexibility and Guice power with parent-module suite parameter. Here is how you can define parent-module in your test.xml file:
 
+<pre class="brush: xml">
+<suite parent-module="com.example.SuiteParenModule">
+</suite>
+</pre>
+
+TestNG will create this module only once for given suite. Will also use this module for obtaining instances of test specific Guice modules and module factories, then will create child injector for each test class.
+
+With such approach you can declare all common bindings in parent-module also you can inject binding declared in parent-module in module and module factory. Here is an example of this functionality:
+
+<pre class="brush: java">
+package com.example;
+
+public class ParentModule extends AbstractModule {
+  @Override
+  protected void conigure() {
+    bind(MyService.class).toProvider(MyServiceProvider.class);
+    bind(MyContext.class).to(MyContextImpl.class).in(Singleton.class);
+  }
+}
+</pre>
+
+<pre class="brush: java">
+package com.example;
+
+public class TestModule extends AbstractModule {
+  private final MyContext myContext;
+
+  @Inject
+  TestModule(MyContext myContext) {
+    this.myContext = myContext
+  }
+  
+  @Override
+  protected void configure() {
+    bind(MySession.class).toInstance(myContext.getSession());
+  }
+}
+</pre>
+
+<pre class="brush: xml">
+<suite parent-module="com.example.ParentModule">
+</suite>
+</pre>
+
+<pre class="brush: java">
+package com.example;
+
+@Test
+@Guice(modules = TestModule.class)
+public class TestClass {
+  @Inject
+  MyService myService;
+  @Inject
+  MySession mySession;
+  
+  public void testServiceWithSession() {
+    myService.serve(mySession);
+  }
+}
+</pre>
+
+As you see ParentModule declares binding for MyService and MyContext classes. Then MyContext is injected using constructor injection into TestModule class, which also declare binding for MySession. Then parent-module in test XML file is set to ParentModule class, this enables injection in TestModule. Later in TestClass you see two injections:
+ * MyService - binding taken from ParentModule
+ * MySession - binding taken from TestModule
+This configuration ensures you that all tests in this suite will be run with same session instance, the MyContextImpl object is only created once per suite, this give you possibility to configure common environment state for all tests in suite. 
 
 <!-------------------------------------
   INVOKED METHOD LISTENERS
