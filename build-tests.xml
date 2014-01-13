@@ -15,6 +15,7 @@
     <pathelement location="${testng.jar}" />
     <fileset dir="${lib.dir}" includes="${guice2.jar}" />
     <fileset dir="${lib.dir}" includes="${junit.jar}" />
+    <fileset dir="${lib.dir}" includes="aopalliance-1.0.jar" />
   </path>
 
   <target name="env:info">
