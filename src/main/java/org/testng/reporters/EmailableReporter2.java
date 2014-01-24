@@ -28,7 +28,7 @@ import org.testng.xml.XmlSuite;
  * <p>
  * Based on an earlier implementation by Paul Mendelson.
  * </p>
- * 
+ *
  * @author Abraham Lin
  */
 public class EmailableReporter2 implements IReporter {
@@ -75,6 +75,7 @@ public class EmailableReporter2 implements IReporter {
 
     protected void writeHead() {
         writer.print("<head>");
+        writer.print("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"/>");
         writer.print("<title>TestNG Report</title>");
         writeStylesheet();
         writer.print("</head>");
@@ -490,7 +491,7 @@ public class EmailableReporter2 implements IReporter {
 
     /**
      * Writes a TH element with the specified contents and CSS class names.
-     * 
+     *
      * @param html
      *            the HTML contents
      * @param cssClasses
@@ -503,7 +504,7 @@ public class EmailableReporter2 implements IReporter {
 
     /**
      * Writes a TD element with the specified contents.
-     * 
+     *
      * @param html
      *            the HTML contents
      */
@@ -513,7 +514,7 @@ public class EmailableReporter2 implements IReporter {
 
     /**
      * Writes a TD element with the specified contents and CSS class names.
-     * 
+     *
      * @param html
      *            the HTML contents
      * @param cssClasses
@@ -527,7 +528,7 @@ public class EmailableReporter2 implements IReporter {
     /**
      * Writes an arbitrary HTML element with the specified contents and CSS
      * class names.
-     * 
+     *
      * @param tag
      *            the tag name
      * @param html
