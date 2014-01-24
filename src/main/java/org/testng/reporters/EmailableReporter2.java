@@ -98,6 +98,7 @@ public class EmailableReporter2 implements IReporter {
         writer.print(".failedeven td,.stripe .attn {background-color: #D00}");
         writer.print(".stacktrace {white-space:pre;font-family:monospace}");
         writer.print(".totop {font-size:85%;text-align:center;border-bottom:2px solid #000}");
+        writer.print(".invisible {display:none}");
         writer.print("</style>");
     }
 
@@ -207,17 +208,16 @@ public class EmailableReporter2 implements IReporter {
         writer.print("</tr>");
         writer.print("</thead>");
 
+        writer.print("<tbody>");
+
         int testIndex = 0;
         int scenarioIndex = 0;
         for (SuiteResult suiteResult : suiteResults) {
-            writer.print("<tbody><tr><th colspan=\"4\">");
-            writer.print(Utils.escapeHtml(suiteResult.getSuiteName()));
-            writer.print("</th></tr></tbody>");
+            writer.printf("<tr><th colspan=\"4\">%s</th></tr>",
+                    Utils.escapeHtml(suiteResult.getSuiteName()));
 
             for (TestResult testResult : suiteResult.getTestResults()) {
-                writer.print("<tbody id=\"t");
-                writer.print(testIndex);
-                writer.print("\">");
+                writer.printf("<tr id=\"t%d\"><th colspan=\"4\" class=\"invisible\"/></tr>", testIndex);
 
                 String testName = Utils.escapeHtml(testResult.getTestName());
 
@@ -240,13 +240,11 @@ public class EmailableReporter2 implements IReporter {
                         + " &#8212; passed", testResult.getPassedTestResults(),
                         "passed", scenarioIndex);
 
-                writer.print("</tbody>");
-
                 testIndex++;
             }
         }
 
-        writer.print("</table>");
+        writer.print("</tbody></table>");
     }
 
     /**
