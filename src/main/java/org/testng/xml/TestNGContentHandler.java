@@ -18,11 +18,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Stack;
-import java.util.Properties;
-import java.util.HashMap;
-import java.util.Set;
 
 /**
  * Suite definition parser utility.
@@ -55,7 +51,8 @@ public class TestNGContentHandler extends DefaultHandler {
     SUITE,
     TEST,
     CLASS,
-    INCLUDE
+    INCLUDE,
+    EXCLUDE
   }
   private Stack<Location> m_locations = new Stack<Location>();
 
@@ -578,15 +575,7 @@ public class TestNGContentHandler extends DefaultHandler {
       xmlInclude(true, attributes);
     }
     else if ("exclude".equals(qName)) {
-      if (null != m_currentExcludedMethods) {
-        m_currentExcludedMethods.add(name);
-      }
-      else if (null != m_currentRuns) {
-        m_currentExcludedGroups.add(name);
-      }
-      else if (null != m_currentPackage) {
-        m_currentPackage.getExclude().add(name);
-      }
+      xmlExclude(true, attributes);
     }
     else if ("parameter".equals(qName)) {
       String value = expandValue(attributes.getValue("value"));
@@ -653,6 +642,24 @@ public class TestNGContentHandler extends DefaultHandler {
 
       popLocation(Location.INCLUDE);
       m_currentInclude = null;
+    }
+  }
+
+  private void xmlExclude(boolean start, Attributes attributes) {
+    if (start) {
+      m_locations.push(Location.EXCLUDE);
+      String name = attributes.getValue("name");
+      if (null != m_currentExcludedMethods) {
+        m_currentExcludedMethods.add(name);
+      }
+      else if (null != m_currentRuns) {
+        m_currentExcludedGroups.add(name);
+      }
+      else if (null != m_currentPackage) {
+        m_currentPackage.getExclude().add(name);
+      }
+    } else {
+      popLocation(Location.EXCLUDE);
     }
   }
 
@@ -724,6 +731,8 @@ public class TestNGContentHandler extends DefaultHandler {
     }
     else if ("include".equals(qName)) {
       xmlInclude(false, null);
+    } else if ("exclude".equals(qName)){
+      xmlExclude(false, null);
     }
   }
 
