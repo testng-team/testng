@@ -405,6 +405,8 @@ public class EmailableReporter2 implements IReporter {
 
         writer.print("<table class=\"result\">");
 
+        boolean hasRows = false;
+
         // Write test parameters (if any)
         Object[] parameters = result.getParameters();
         int parameterCount = (parameters == null ? 0 : parameters.length);
@@ -422,6 +424,7 @@ public class EmailableReporter2 implements IReporter {
                 writer.print("</td>");
             }
             writer.print("</tr>");
+            hasRows = true;
         }
 
         // Write reporter messages (if any)
@@ -429,21 +432,18 @@ public class EmailableReporter2 implements IReporter {
         if (!reporterMessages.isEmpty()) {
             writer.print("<tr><th");
             if (parameterCount > 1) {
-                writer.print(" colspan=\"");
-                writer.print(parameterCount);
-                writer.print("\"");
+                writer.printf(" colspan=\"%d\"", parameterCount);
             }
             writer.print(">Messages</th></tr>");
 
             writer.print("<tr><td");
             if (parameterCount > 1) {
-                writer.print(" colspan=\"");
-                writer.print(parameterCount);
-                writer.print("\"");
+                writer.printf(" colspan=\"%d\"", parameterCount);
             }
             writer.print(">");
             writeReporterMessages(reporterMessages);
             writer.print("</td></tr>");
+            hasRows = true;
         }
 
         // Write exception (if any)
@@ -451,9 +451,7 @@ public class EmailableReporter2 implements IReporter {
         if (throwable != null) {
             writer.print("<tr><th");
             if (parameterCount > 1) {
-                writer.print(" colspan=\"");
-                writer.print(parameterCount);
-                writer.print("\"");
+                writer.printf(" colspan=\"%d\"", parameterCount);
             }
             writer.print(">");
             writer.print((result.getStatus() == ITestResult.SUCCESS ? "Expected Exception"
@@ -462,13 +460,20 @@ public class EmailableReporter2 implements IReporter {
 
             writer.print("<tr><td");
             if (parameterCount > 1) {
-                writer.print(" colspan=\"");
-                writer.print(parameterCount);
-                writer.print("\"");
+                writer.printf(" colspan=\"%d\"", parameterCount);
             }
             writer.print(">");
             writeStackTrace(throwable);
             writer.print("</td></tr>");
+            hasRows = true;
+        }
+
+        if (!hasRows) {
+            writer.print("<tr><th");
+            if (parameterCount > 1) {
+                writer.printf(" colspan=\"%d\"", parameterCount);
+            }
+            writer.print(" class=\"invisible\"/></tr>");
         }
 
         writer.print("</table>");
