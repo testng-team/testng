@@ -28,7 +28,7 @@ import org.testng.xml.XmlSuite;
  * <p>
  * Based on an earlier implementation by Paul Mendelson.
  * </p>
- * 
+ *
  * @author Abraham Lin
  */
 public class EmailableReporter2 implements IReporter {
@@ -196,7 +196,7 @@ public class EmailableReporter2 implements IReporter {
      * Writes a summary of all the test scenarios.
      */
     protected void writeScenarioSummary() {
-        writer.print("<table>");
+        writer.print("<table id=\"summary\">");
         writer.print("<thead>");
         writer.print("<tr>");
         writer.print("<th>Class</th>");
@@ -490,7 +490,7 @@ public class EmailableReporter2 implements IReporter {
 
     /**
      * Writes a TH element with the specified contents and CSS class names.
-     * 
+     *
      * @param html
      *            the HTML contents
      * @param cssClasses
@@ -503,7 +503,7 @@ public class EmailableReporter2 implements IReporter {
 
     /**
      * Writes a TD element with the specified contents.
-     * 
+     *
      * @param html
      *            the HTML contents
      */
@@ -513,7 +513,7 @@ public class EmailableReporter2 implements IReporter {
 
     /**
      * Writes a TD element with the specified contents and CSS class names.
-     * 
+     *
      * @param html
      *            the HTML contents
      * @param cssClasses
@@ -527,7 +527,7 @@ public class EmailableReporter2 implements IReporter {
     /**
      * Writes an arbitrary HTML element with the specified contents and CSS
      * class names.
-     * 
+     *
      * @param tag
      *            the tag name
      * @param html
