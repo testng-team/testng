@@ -98,6 +98,7 @@ public class EmailableReporter2 implements IReporter {
         writer.print(".failedeven td,.stripe .attn {background-color: #D00}");
         writer.print(".stacktrace {white-space:pre;font-family:monospace}");
         writer.print(".totop {font-size:85%;text-align:center;border-bottom:2px solid #000}");
+        writer.print(".invisible {display:none}");
         writer.print("</style>");
     }
 
@@ -215,11 +216,10 @@ public class EmailableReporter2 implements IReporter {
             writer.print("</th></tr></tbody>");
 
             for (TestResult testResult : suiteResult.getTestResults()) {
-                writer.print("<tbody id=\"t");
-                writer.print(testIndex);
-                writer.print("\">");
+                writer.printf("<tbody id=\"t%d\">", testIndex);
 
                 String testName = Utils.escapeHtml(testResult.getTestName());
+                int startIndex = scenarioIndex;
 
                 scenarioIndex += writeScenarioSummary(testName
                         + " &#8212; failed (configuration methods)",
@@ -239,6 +239,10 @@ public class EmailableReporter2 implements IReporter {
                 scenarioIndex += writeScenarioSummary(testName
                         + " &#8212; passed", testResult.getPassedTestResults(),
                         "passed", scenarioIndex);
+
+                if (scenarioIndex == startIndex) {
+                    writer.print("<tr><th colspan=\"4\" class=\"invisible\"/></tr>");
+                }
 
                 writer.print("</tbody>");
 
