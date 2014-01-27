@@ -79,14 +79,15 @@ public class EmailableReporter2 implements IReporter {
 
     protected void writeDocumentStart() {
         writer.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">");
-        writer.print("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+        writer.println("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
     }
 
     protected void writeHead() {
-        writer.print("<head>");
-        writer.print("<title>TestNG Report</title>");
+        writer.println("<head>");
+        writer.println("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"/>");
+        writer.println("<title>TestNG Report</title>");
         writeStylesheet();
-        writer.print("</head>");
+        writer.println("</head>");
     }
 
     protected void writeStylesheet() {
@@ -106,19 +107,20 @@ public class EmailableReporter2 implements IReporter {
         writer.print(".failedeven td,.stripe .attn {background-color: #D00}");
         writer.print(".stacktrace {white-space:pre;font-family:monospace}");
         writer.print(".totop {font-size:85%;text-align:center;border-bottom:2px solid #000}");
-        writer.print("</style>");
+        writer.print(".invisible {display:none}");
+        writer.println("</style>");
     }
 
     protected void writeBody() {
-        writer.print("<body>");
+        writer.println("<body>");
         writeSuiteSummary();
         writeScenarioSummary();
         writeScenarioDetails();
-        writer.print("</body>");
+        writer.println("</body>");
     }
 
     protected void writeDocumentEnd() {
-        writer.print("</html>");
+        writer.println("</html>");
     }
 
     protected void writeSuiteSummary() {
@@ -130,7 +132,7 @@ public class EmailableReporter2 implements IReporter {
         int totalFailedTests = 0;
         long totalDuration = 0;
 
-        writer.print("<table>");
+        writer.println("<table>");
         writer.print("<tr>");
         writer.print("<th>Test</th>");
         writer.print("<th># Passed</th>");
@@ -139,13 +141,13 @@ public class EmailableReporter2 implements IReporter {
         writer.print("<th>Time (ms)</th>");
         writer.print("<th>Included Groups</th>");
         writer.print("<th>Excluded Groups</th>");
-        writer.print("</tr>");
+        writer.println("</tr>");
 
         int testIndex = 0;
         for (SuiteResult suiteResult : suiteResults) {
             writer.print("<tr><th colspan=\"7\">");
             writer.print(Utils.escapeHtml(suiteResult.getSuiteName()));
-            writer.print("</th></tr>");
+            writer.println("</th></tr>");
 
             for (TestResult testResult : suiteResult.getTestResults()) {
                 int passedTests = testResult.getPassedTestCount();
@@ -173,7 +175,7 @@ public class EmailableReporter2 implements IReporter {
                 writeTableData(testResult.getIncludedGroups());
                 writeTableData(testResult.getExcludedGroups());
 
-                writer.print("</tr>");
+                writer.println("</tr>");
 
                 totalPassedTests += passedTests;
                 totalSkippedTests += skippedTests;
@@ -195,10 +197,10 @@ public class EmailableReporter2 implements IReporter {
                     (totalFailedTests > 0 ? "num attn" : "num"));
             writeTableHeader(decimalFormat.format(totalDuration), "num");
             writer.print("<th colspan=\"2\"></th>");
-            writer.print("</tr>");
+            writer.println("</tr>");
         }
 
-        writer.print("</table>");
+        writer.println("</table>");
     }
 
     /**
@@ -223,11 +225,10 @@ public class EmailableReporter2 implements IReporter {
             writer.print("</th></tr></tbody>");
 
             for (TestResult testResult : suiteResult.getTestResults()) {
-                writer.print("<tbody id=\"t");
-                writer.print(testIndex);
-                writer.print("\">");
+                writer.printf("<tbody id=\"t%d\">", testIndex);
 
                 String testName = Utils.escapeHtml(testResult.getTestName());
+                int startIndex = scenarioIndex;
 
                 scenarioIndex += writeScenarioSummary(testName
                         + " &#8212; failed (configuration methods)",
@@ -248,13 +249,17 @@ public class EmailableReporter2 implements IReporter {
                         + " &#8212; passed", testResult.getPassedTestResults(),
                         "passed", scenarioIndex);
 
-                writer.print("</tbody>");
+                if (scenarioIndex == startIndex) {
+                    writer.print("<tr><th colspan=\"4\" class=\"invisible\"/></tr>");
+                }
+
+                writer.println("</tbody>");
 
                 testIndex++;
             }
         }
 
-        writer.print("</table>");
+        writer.println("</table>");
     }
 
     /**
@@ -409,6 +414,8 @@ public class EmailableReporter2 implements IReporter {
 
         writer.print("<table class=\"result\">");
 
+        boolean hasRows = false;
+
         // Write test parameters (if any)
         Object[] parameters = result.getParameters();
         int parameterCount = (parameters == null ? 0 : parameters.length);
@@ -426,6 +433,7 @@ public class EmailableReporter2 implements IReporter {
                 writer.print("</td>");
             }
             writer.print("</tr>");
+            hasRows = true;
         }
 
         // Write reporter messages (if any)
@@ -433,21 +441,18 @@ public class EmailableReporter2 implements IReporter {
         if (!reporterMessages.isEmpty()) {
             writer.print("<tr><th");
             if (parameterCount > 1) {
-                writer.print(" colspan=\"");
-                writer.print(parameterCount);
-                writer.print("\"");
+                writer.printf(" colspan=\"%d\"", parameterCount);
             }
             writer.print(">Messages</th></tr>");
 
             writer.print("<tr><td");
             if (parameterCount > 1) {
-                writer.print(" colspan=\"");
-                writer.print(parameterCount);
-                writer.print("\"");
+                writer.printf(" colspan=\"%d\"", parameterCount);
             }
             writer.print(">");
             writeReporterMessages(reporterMessages);
             writer.print("</td></tr>");
+            hasRows = true;
         }
 
         // Write exception (if any)
@@ -455,9 +460,7 @@ public class EmailableReporter2 implements IReporter {
         if (throwable != null) {
             writer.print("<tr><th");
             if (parameterCount > 1) {
-                writer.print(" colspan=\"");
-                writer.print(parameterCount);
-                writer.print("\"");
+                writer.printf(" colspan=\"%d\"", parameterCount);
             }
             writer.print(">");
             writer.print((result.getStatus() == ITestResult.SUCCESS ? "Expected Exception"
@@ -466,17 +469,24 @@ public class EmailableReporter2 implements IReporter {
 
             writer.print("<tr><td");
             if (parameterCount > 1) {
-                writer.print(" colspan=\"");
-                writer.print(parameterCount);
-                writer.print("\"");
+                writer.printf(" colspan=\"%d\"", parameterCount);
             }
             writer.print(">");
             writeStackTrace(throwable);
             writer.print("</td></tr>");
+            hasRows = true;
+        }
+
+        if (!hasRows) {
+            writer.print("<tr><th");
+            if (parameterCount > 1) {
+                writer.printf(" colspan=\"%d\"", parameterCount);
+            }
+            writer.print(" class=\"invisible\"/></tr>");
         }
 
         writer.print("</table>");
-        writer.print("<p class=\"totop\"><a href=\"#summary\">back to summary</a></p>");
+        writer.println("<p class=\"totop\"><a href=\"#summary\">back to summary</a></p>");
     }
 
     protected void writeReporterMessages(List<String> reporterMessages) {
