@@ -162,7 +162,7 @@ public class Invoker implements IInvoker {
       }
 
       ITestResult testResult= new TestResult(testClass,
-                                             instance,
+                                             (instance != null)? instance : tm.getInstance(),
                                              tm,
                                              null,
                                              System.currentTimeMillis(),
