@@ -7,11 +7,16 @@ import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
 import org.testng.collections.Maps;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-public class Bsh implements IBsh {
-  private static Interpreter s_interpreter;
+public class Bsh implements IBsh,Serializable{
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 3806012657019085774L;
+private static Interpreter s_interpreter;
 
   @Override
   public boolean includeMethodFromExpression(String expression, ITestNGMethod tm) {

@@ -1,6 +1,7 @@
 package org.testng.collections;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -11,8 +12,13 @@ import java.util.Set;
 /**
  * A container to hold lists indexed by a key.
  */
-public class ListMultiMap<K, V> {
-  private Map<K, List<V>> m_objects = Maps.newHashMap();
+public class ListMultiMap<K, V> implements Serializable {
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 8206876219044801244L;
+	
+private Map<K, List<V>> m_objects = Maps.newHashMap();
 
   public void put(K key, V method) {
     List<V> l = m_objects.get(key);
