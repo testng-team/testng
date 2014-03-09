@@ -14,3 +14,4 @@ src/test/java/test/ignore
 .project
 .idea
 testng.iml
+.ant-targets*
