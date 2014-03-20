@@ -113,11 +113,11 @@
     <ant inheritall="no" antfile="examples/build.xml" />
   </target>
 
-  <target name="tests" depends="compile" description="runs all JDK5 tests with JDK5 distro">
+  <target name="tests" depends="build" description="runs all JDK5 tests with JDK5 distro">
     <ant inheritall="no" antfile="build-tests.xml" />
   </target>
   
-  <target name="test-ant">
+  <target name="test-ant" depends="build">
     <echo message="                                 -- Testing ant testng task functionality --" />
     <ant inheritall="no" antfile="build-ant.xml" />
   </target>
@@ -126,7 +126,7 @@
   <!-- Documentation                                                        -->
   <!-- ==================================================================== -->
 
-  <target name="javadocs" depends="javadocs-current" />
+  <target name="javadocs" depends="build,javadocs-current" />
 
   <target name="doclava">
     <javadoc
@@ -248,7 +248,8 @@
     </zip>
   </target>
 
-  <target name="create-jar" description="Create a jar file with the Testng classes and nothing else" >
+  <target name="create-jar" description="Create a jar file with the Testng classes and nothing else" 
+          depends="compile">
     <delete file="${jar.file}" />
     <jar destfile="${jar.file}" >
       <manifest>
