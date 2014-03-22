@@ -19,7 +19,7 @@ import java.util.Set;
  */
 public class Graph<T> {
   private static boolean m_verbose = false;
-  private Map<T, Node<T>> m_nodes = Maps.newHashMap();
+  private Map<T, Node<T>> m_nodes = Maps.newLinkedHashMap();
   private List<T> m_strictlySortedNodes = null;
 
   //  A map of nodes that are not the predecessors of any node
