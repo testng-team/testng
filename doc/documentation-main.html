@@ -1096,10 +1096,10 @@ pass you the correct parameters with the <tt>@Parameters</tt> annotation.</p><p>
 
 
 There are two ways to set these parameters:&nbsp; with <tt>testng.xml</tt> or 
-programmatically.</p><p>
+programmatically.</p>
 
 
-<em><a class="section" indent="..." name="parameters-testng-xml">Parameters from <tt>testng.xml</tt></a></em></p>
+<h5><a class="section" indent="..." name="parameters-testng-xml">Parameters from <tt>testng.xml</tt></a></h5>
 
 
 If you are using simple values for your parameters, you can specify them in your 
@@ -1181,7 +1181,7 @@ tests. </i>
 </blockquote>
 
 
-<em><a class="section" indent="..." name="parameters-dataproviders">Parameters with DataProviders</a></em>
+<h5><a class="section" indent="..." name="parameters-dataproviders">Parameters with DataProviders</a></h5>
 
 
 <p>Specifying parameters in <tt>testng.xml</tt> might not be sufficient if you need to pass complex parameters, or parameters that need to be created  from Java (complex objects, objects read from a property file or a database, etc...). In this case, you can use a Data Provider to supply the values you need to test.&nbsp; A Data Provider is a method on your class that returns an array of array of objects.&nbsp; This method is annotated with <tt>@DataProvider</tt>:
@@ -1302,7 +1302,7 @@ If you want to run a few specific data providers in a different thread pool, you
 
 <p>
 
-<em><a class="section" indent="..." name="parameters-reports">Parameters in reports</a></em>
+<h5><a class="section" indent="..." name="parameters-reports">Parameters in reports</a></h5>
 
 <p>
 
@@ -1995,7 +1995,7 @@ When you implement one of these interfaces, you can let TestNG know about it wit
   <li>Using <tt>ServiceLoader</tt>.
 </ul>
 
-<h3><a class="section" indent="..." name="listeners-testng-xml">Specifying listeners with <tt>testng.xml</tt> or in Java</a></h3>
+<h5><a class="section" indent="..." name="listeners-testng-xml">Specifying listeners with <tt>testng.xml</tt> or in Java</a></h5>
 
 Here is how you can define listeners in your <tt>testng.xml</tt> file:
 
@@ -2026,7 +2026,7 @@ The <tt>@Listeners</tt> annotation can contain any class that extends <tt>org.te
 
 Note that the <tt>@Listeners</tt> annotation will apply to your entire suite file, just as if you had specified it in a <tt>testng.xml</tt> file. If you want to restrict its scope (for example, only running on the current class), the code in your listener could first check the test method that's about to run and decide what to do then.
 
-<h3><a class="section" indent="..." name="listeners-service-loader">Specifying listeners with <tt>ServiceLoader</tt></a></h3>
+<h5><a class="section" indent="..." name="listeners-service-loader">Specifying listeners with <tt>ServiceLoader</tt></a></h5>
 
 Finally, the JDK offers a very elegant mechanism to specify implementations of interfaces on the class path via the <tt><a href="http://download.oracle.com/javase/6/docs/api/java/util/ServiceLoader.html">ServiceLoader</a></tt> class.
 
@@ -2394,9 +2394,9 @@ public void verify() {
   ------------------------------------>
 </p>
 
-<h3><a class="section" indent=".." name="logging">Logging and results</a>
+<h4><a class="section" indent=".." name="logging">Logging and results</a></h4>
 
-</h3>The results of the test run are created in a file called <tt>index.html</tt> in the 
+The results of the test run are created in a file called <tt>index.html</tt> in the 
 directory specified when launching SuiteRunner.&nbsp; This file points to 
 various other HTML and text files that contain the result of the entire test 
 run.&nbsp; You can see a typical example
@@ -2408,10 +2408,7 @@ It's very easy to generate your own reports with TestNG with Listeners and Repor
 <ul>
 <li><b>Listeners</b> implement the interface <a href="../javadocs/org/testng/ITestListener.html"><tt>org.testng.ITestListener</tt></a> and are notified in real time of when a test starts, passes, fails, etc...</li><li><b>Reporters</b> implement the interface <a href="../javadocs/org/testng/IReporter.html"><tt>org.testng.IReporter</tt></a> and are notified when all the suites have been run by TestNG.  The IReporter instance receives a list of objects that describe the entire test run.</li></ul>For example, if you want to generate a PDF report of your test run, you don't need to be notified in real time of the test run so you should probably use an <tt>IReporter</tt>.  If you'd like to write a real-time reporting of your tests, such as a GUI with a progress bar or a text reporter displaying dots (".") as each test is invoked (as is explained below), <tt>ITestListener</tt> is your best choice.
 
-<p>
-
-<a class="section" indent="..." name="logging-listeners">Logging Listeners</a>
-<p>
+<h5><a class="section" indent="..." name="logging-listeners">Logging Listeners</a></h5>
 
 Here is a listener that displays a "." for each passed test, a "F" for each failure and a "S" for each skip:
 
@@ -2473,11 +2470,7 @@ Total tests run: 226, Failures: 0, Skips: 0
 
 Note that when you use <tt>-listener</tt>, TestNG will automatically determine the type of listener you want to use.
 
-<p>
-
-<a class="section" indent="..." name="logging-reporters">Logging Reporters</a>
-
-<p>
+<h5><a class="section" indent="..." name="logging-reporters">Logging Reporters</a></h5>
 
 The <a href="../javadocs/org/testng/IReporter.html"><tt>org.testng.IReporter</tt></a> interface only has one method:
 
@@ -2489,7 +2482,7 @@ This method will be invoked by TestNG when all the suites have been run and you 
 
 <p>
 
-<a class="section" indent="..." name="logging-junitreports">JUnitReports</a>
+<h5><a class="section" indent="..." name="logging-junitreports">JUnitReports</a></h5>
 
 <p>
 
@@ -2516,7 +2509,7 @@ prevents the frame version from working, so you need to specify &quot;noframes&q
 get this to work for now.</em>
 	</blockquote>
 
-<a class="section" indent="..." name="logging-reporter-api">Reporter API</a>
+<h5><a class="section" indent="..." name="logging-reporter-api">Reporter API</a></h5>
 
 <p>
 If you need to log messages that should appear in the generated HTML reports, you can use the class <tt><a href="../javadocs/org/testng/Reporter.html">org.testng.Reporter</a></tt>:
@@ -2533,7 +2526,8 @@ If you need to log messages that should appear in the generated HTML reports, yo
 
 </p>
 
-<a class="section" indent="..." name="logging-xml-reports">XML Reports</a>
+<h5><a class="section" indent="..." name="logging-xml-reports">XML Reports</a></h5>
+
 <p>
 TestNG offers an XML reporter capturing TestNG specific information that is not available in JUnit reports. This is particulary useful when the user's test environment needs to consume XML results with TestNG-specific data that the JUnit format can't provide.  Below is a sample of the output of such a reporter:
 </p>
