@@ -39,7 +39,7 @@ public class JUnit4Test extends BaseTest {
 
         run();
         String[] passed = JUnit4SampleSuite.EXPECTED;
-        String[] failed = JUnit4Sample2.FAILED;
+        String[] failed = JUnit4SampleSuite.FAILED;
         String[] skipped = JUnit4SampleSuite.SKIPPED;
 
         verifyTests("Passed", passed, getPassedTests());
