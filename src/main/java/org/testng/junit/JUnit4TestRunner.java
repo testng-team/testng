@@ -111,25 +111,28 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
     private class RL extends RunListener {
 
         private Map<Description, ITestResult> runs = new WeakHashMap<Description, ITestResult>();
-        private List<Description> failures = new LinkedList<Description>();
+        private List<Description> notified = new LinkedList<Description>();
 
         @Override
         public void testAssumptionFailure(Failure failure) {
-            super.testAssumptionFailure(failure);
+            notified.add(failure.getDescription());
             ITestResult tr = runs.get(failure.getDescription());
-            tr.setStatus(TestResult.FAILURE);
+            tr.setStatus(TestResult.SKIP);
             tr.setEndMillis(Calendar.getInstance().getTimeInMillis());
             tr.setThrowable(failure.getException());
-            m_parentRunner.addFailedTest(tr.getMethod(), tr);
+            m_parentRunner.addSkippedTest(tr.getMethod(), tr);
             for (ITestListener l : m_listeners) {
-                l.onTestFailure(tr);
+                l.onTestSkipped(tr);
             }
         }
 
         @Override
         public void testFailure(Failure failure) throws Exception {
-            super.testFailure(failure);
-            failures.add(failure.getDescription());
+            if (isAssumptionFailed(failure)) {
+                this.testAssumptionFailure(failure);
+                return;
+            }
+            notified.add(failure.getDescription());
             ITestResult tr = runs.get(failure.getDescription());
             tr.setStatus(TestResult.FAILURE);
             tr.setEndMillis(Calendar.getInstance().getTimeInMillis());
@@ -142,9 +145,8 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
 
         @Override
         public void testFinished(Description description) throws Exception {
-            super.testFinished(description);
             ITestResult tr = runs.get(description);
-            if (!failures.contains(description)) {
+            if (!notified.contains(description)) {
                 tr.setStatus(TestResult.SUCCESS);
                 tr.setEndMillis(Calendar.getInstance().getTimeInMillis());
                 m_parentRunner.addPassedTest(tr.getMethod(), tr);
@@ -157,7 +159,6 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
 
         @Override
         public void testIgnored(Description description) throws Exception {
-            super.testIgnored(description);
             ITestResult tr = createTestResult(description);
             tr.setStatus(TestResult.SKIP);
             tr.setEndMillis(tr.getStartMillis());
@@ -170,17 +171,14 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
 
         @Override
         public void testRunFinished(Result result) throws Exception {
-            super.testRunFinished(result);
         }
 
         @Override
         public void testRunStarted(Description description) throws Exception {
-            super.testRunStarted(description);
         }
 
         @Override
         public void testStarted(Description description) throws Exception {
-            super.testStarted(description);
             ITestResult tr = createTestResult(description);
             runs.put(description, tr);
             for (ITestListener l : m_listeners) {
@@ -207,5 +205,18 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
             }
             return tr;
         }
+    }
+
+    private static boolean isAssumptionFailed(Failure failure) {
+        if (failure == null) {
+            return false;
+        }
+        //noinspection ThrowableResultOfMethodCallIgnored
+        final Throwable exception = failure.getException();
+        //noinspection SimplifiableIfStatement
+        if (exception == null) {
+            return false;
+        }
+        return "org.junit.internal.AssumptionViolatedException".equals(exception.getClass().getCanonicalName());
     }
 }
