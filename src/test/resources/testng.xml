@@ -729,6 +729,7 @@
   <test name="Assertion">
     <classes>
       <class name="test.assertion.AssertionTest"/>
+      <class name="test.assertion.SoftAssertTest"/>
     </classes>
   </test>
 
