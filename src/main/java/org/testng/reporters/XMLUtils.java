@@ -4,6 +4,7 @@ import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.TreeMap;
 
 /**
  * Static helpers for XML.
@@ -79,7 +80,7 @@ public final class XMLUtils {
    */
   public static void appendAttributes(IBuffer result, Properties attributes) {
     if (null != attributes) {
-      for (Object element : attributes.entrySet()) {
+      for (Object element : new TreeMap(attributes).entrySet()) {
         Entry entry = (Entry) element;
         String key = entry.getKey().toString();
         String value = escape(entry.getValue().toString());

@@ -6,6 +6,7 @@ import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.SkipException;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -91,6 +92,7 @@ public class JUnitReportReporter implements IReporter {
       List<TestTag> testCases = Lists.newArrayList();
       int failures = 0;
       int errors = 0;
+      int skipped = 0;
       int testCount = 0;
       float totalTime = 0;
 
@@ -99,8 +101,11 @@ public class JUnitReportReporter implements IReporter {
 
         boolean isSuccess = tr.getStatus() == ITestResult.SUCCESS;
         if (! isSuccess) {
-          if (tr.getThrowable() instanceof AssertionError) {
+          Throwable throwable = tr.getThrowable();
+          if (throwable instanceof AssertionError) {
             errors++;
+          } else if (throwable instanceof SkipException) {
+            skipped++;
           } else {
             failures++;
           }
@@ -116,7 +121,10 @@ public class JUnitReportReporter implements IReporter {
 
         p2.setProperty("time", "" + formatTime(time));
         Throwable t = getThrowable(tr, failedConfigurations);
-        if (! isSuccess && t != null) {
+        if (tr.getStatus() == ITestResult.SKIP) {
+          testTag.message = t == null ? null : t.getMessage();
+          testTag.errorTag = "skipped";
+        } else if (! isSuccess && t != null) {
           StringWriter sw = new StringWriter();
           PrintWriter pw = new PrintWriter(sw);
           t.printStackTrace(pw);
@@ -133,6 +141,7 @@ public class JUnitReportReporter implements IReporter {
 
       p1.setProperty("failures", "" + failures);
       p1.setProperty("errors", "" + errors);
+      p1.setProperty("skipped", "" + skipped);
       p1.setProperty("name", cls.getName());
       p1.setProperty("tests", "" + testCount);
       p1.setProperty("time", "" + formatTime(totalTime));
@@ -150,22 +159,28 @@ public class JUnitReportReporter implements IReporter {
 
       xsb.push("testsuite", p1);
       for (TestTag testTag : testCases) {
-        if (testTag.stackTrace == null) {
-          xsb.addEmptyElement("testcase", testTag.properties);
-        }
-        else {
+        if (testTag.errorTag != null) {
+          // error, failure or skip (with no stacktrace)
           xsb.push("testcase", testTag.properties);
 
           Properties p = new Properties();
           if (testTag.message != null) {
             p.setProperty("message", testTag.message);
           }
-          p.setProperty("type", testTag.type);
-          xsb.push(testTag.errorTag, p);
-          xsb.addCDATA(testTag.stackTrace);
-          xsb.pop(testTag.errorTag);
+          if (testTag.type != null) {
+            p.setProperty("type", testTag.type);
+          }
+          if (testTag.stackTrace == null) {
+            xsb.addEmptyElement(testTag.errorTag, p);
+          } else {
+            xsb.push(testTag.errorTag, p);
+            xsb.addCDATA(testTag.stackTrace);
+            xsb.pop(testTag.errorTag);
+          }
 
           xsb.pop("testcase");
+        } else {
+          xsb.addEmptyElement("testcase", testTag.properties);
         }
       }
       xsb.pop("testsuite");
