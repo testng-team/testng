@@ -1274,13 +1274,21 @@ public class TestNG {
       xmlSuite.setConfigFailurePolicy(m_configFailurePolicy);
     }
 
+    //Add methodselectors for tests
     for (XmlTest t : xmlSuite.getTests()) {
+      List<XmlMethodSelector> methodSelectorsForTest = t.getMethodSelectors();
+      //add methodselectors from root suite
       for (Map.Entry<String, Integer> ms : m_methodDescriptors.entrySet()) {
         XmlMethodSelector xms = new XmlMethodSelector();
         xms.setName(ms.getKey());
         xms.setPriority(ms.getValue());
-        t.getMethodSelectors().add(xms);
+        methodSelectorsForTest.add(xms);
       }
+      //add methodselectors from mintor suites
+      for (XmlMethodSelector suiteMethodSelector : xmlSuite.getMethodSelectors()){
+          methodSelectorsForTest.add(suiteMethodSelector);
+      }
+
     }
 
     suiteRunnerMap.put(xmlSuite, createSuiteRunner(xmlSuite));

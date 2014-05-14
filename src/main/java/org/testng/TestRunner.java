@@ -368,11 +368,41 @@ public class TestRunner
     }
   }
 
+
+  private String getBeanShellExpression(XmlTest xmlTest){
+    String beanShellExpression = xmlTest.getExpression();
+    if (beanShellExpression != null){
+      return beanShellExpression;
+    }
+    else{
+      XmlSuite parentSuite = xmlTest.getSuite();
+      if (parentSuite != null){
+        beanShellExpression = parentSuite.getExpression();
+        if (beanShellExpression != null){
+          return beanShellExpression;
+        }
+        else{
+          while (beanShellExpression == null && parentSuite != null){
+            parentSuite = parentSuite.getParentSuite();
+            if (parentSuite != null){
+              beanShellExpression = parentSuite.getExpression();
+              if (beanShellExpression != null){
+                return beanShellExpression;
+              }
+            }
+          }
+        }
+      }
+    }
+    return null;
+  }
+
   private void initRunInfo(final XmlTest xmlTest) {
     // Groups
     m_xmlMethodSelector.setIncludedGroups(createGroups(m_xmlTest.getIncludedGroups()));
     m_xmlMethodSelector.setExcludedGroups(createGroups(m_xmlTest.getExcludedGroups()));
-    m_xmlMethodSelector.setExpression(m_xmlTest.getExpression());
+    String expr = getBeanShellExpression(m_xmlTest);
+    m_xmlMethodSelector.setExpression(expr);
 
     // Methods
     m_xmlMethodSelector.setXmlClasses(m_xmlTest.getXmlClasses());

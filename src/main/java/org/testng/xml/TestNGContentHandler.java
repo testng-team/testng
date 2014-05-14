@@ -248,6 +248,9 @@ public class TestNGContentHandler extends DefaultHandler {
       if (m_locations.peek() == Location.TEST) {
         m_currentTest.setBeanShellExpression(m_currentExpression);
       }
+      if (m_locations.peek() == Location.SUITE) {
+        m_currentSuite.setBeanShellExpression(m_currentExpression);
+      }
       m_currentLanguage = null;
       m_currentExpression = null;
     }
