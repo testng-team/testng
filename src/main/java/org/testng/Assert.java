@@ -534,7 +534,7 @@ public class Assert {
       }
     }
 
-    assertEquals(actual.size(), expected.size(), message + ": lists don't have the same size");
+    assertEquals(actual.size(), expected.size(), (message == null ? "" : message + ": ") + "lists don't have the same size");
 
     Iterator<?> actIt = actual.iterator();
     Iterator<?> expIt = expected.iterator();
