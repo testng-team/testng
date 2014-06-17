@@ -28,7 +28,9 @@ public class ClassMethodMap {
       // Only add to the class map methods that are included in the
       // method selector. We can pass a null context here since the selector
       // should already have been initialized
-      if (! xmlMethodSelector.includeMethod(null, m, true)) continue;
+      if (xmlMethodSelector != null){
+    	  if (! xmlMethodSelector.includeMethod(null, m, true)) continue;
+      }
 
       Object instance = m.getInstance();
       List<ITestNGMethod> l = m_classMap.get(instance);

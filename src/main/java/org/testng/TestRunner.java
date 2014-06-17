@@ -790,7 +790,10 @@ public class TestRunner
     for (IMethodInstance imi : resultInstances) {
       result.add(imi.getMethod());
     }
-
+    //Since an interceptor is involved, we would need to ensure that the ClassMethodMap object is in sync with the 
+    //output of the interceptor, else @AfterClass doesn't get executed at all when interceptors are involved.
+    //so let's update the current classMethodMap object with the list of methods obtained from the interceptor.
+    this.m_classMethodMap = new ClassMethodMap(result, null);
     return result.toArray(new ITestNGMethod[result.size()]);
   }
 
