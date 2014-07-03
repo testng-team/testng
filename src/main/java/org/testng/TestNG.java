@@ -376,7 +376,16 @@ public class TestNG {
         JarEntry je = entries.nextElement();
         if (je.getName().equals(m_xmlPathInJar)) {
           Parser parser = getParser(jf.getInputStream(je));
-          m_suites.addAll(parser.parse());
+          Collection<XmlSuite> suites = parser.parse();
+          for (XmlSuite suite : suites) {
+            // If test names were specified, only run these test names
+            if (m_testNames != null) {
+              m_suites.add(extractTestNames(suite, m_testNames));
+            } else {
+              m_suites.add(suite);
+            }
+          }
+
           foundTestngXml = true;
           break;
         }
