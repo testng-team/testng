@@ -104,7 +104,11 @@ public final class Utils {
   public static void writeUtf8File(String outputDir, String fileName, XMLStringBuffer xsb,
       String prefix) {
     try {
-      FileWriter fw = new FileWriter(new File(outputDir, fileName));
+      File parentDir = new File(outputDir);
+      if (!parentDir.exists()) {
+        parentDir.mkdirs();
+      }
+      FileWriter fw = new FileWriter(new File(parentDir, fileName));
       if (prefix != null) {
         fw.append(prefix);
       }
