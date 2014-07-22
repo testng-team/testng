@@ -10,7 +10,6 @@ import org.testng.ITestNGMethod;
  * @version $Revision: 173 $
  */
 public class StackTraceTools {
-  // ~ Methods --------------------------------------------------------------
 
   /** Finds topmost position of the test method in the stack, or top of stack if <code>method</code> is not in it. */
   public static int getTestRoot(StackTraceElement[] stack,ITestNGMethod method) {
@@ -33,9 +32,7 @@ public class StackTraceTools {
     int slot=StackTraceTools.getTestRoot(stack, method);
     if(slot>=0) {
       StackTraceElement[] r=new StackTraceElement[stack.length-slot];
-      for(int x=0; x<r.length; x++) {
-        r[x]=stack[x+slot];
-      }
+      System.arraycopy(stack, slot, r, 0, r.length);
       return r;
     } else {
       return new StackTraceElement[0];
