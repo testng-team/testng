@@ -33,7 +33,7 @@ public class SoftAssert extends Assertion {
         } else {
           sb.append(", ");
         }
-        sb.append(ae.getValue().getMessage());
+        sb.append(ae.getKey().getMessage());
       }
       throw new AssertionError(sb.toString());
     }
