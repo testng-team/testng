@@ -334,6 +334,10 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     m_reporters.add(listener);
   }
 
+  void addConfigurationListener(IConfigurationListener listener) {
+    m_configuration.addConfigurationListener(listener);
+  }
+
   public List<IReporter> getReporters() {
     return m_reporters;
   }
@@ -405,7 +409,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       addReporter((IReporter) listener);
     }
     if (listener instanceof IConfigurationListener) {
-      m_configuration.addConfigurationListener((IConfigurationListener) listener);
+      addConfigurationListener((IConfigurationListener) listener);
     }
   }
 
