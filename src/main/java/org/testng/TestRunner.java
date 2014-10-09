@@ -762,11 +762,15 @@ public class TestRunner
         }
 
         while (! freeNodes.isEmpty()) {
-          List<IWorker<ITestNGMethod>> runnables = createWorkers(freeNodes);
-          for (IWorker<ITestNGMethod> r : runnables) {
-            r.run();
-          }
-          graph.setStatus(freeNodes, Status.FINISHED);
+          // We should process nodes one-by-one in sequential mode, otherwise we will
+          // break the order (see issue #288)
+          List<ITestNGMethod> firstNodeList = Collections.singletonList(freeNodes.get(0));
+
+          IWorker<ITestNGMethod> runnable = createWorkers(firstNodeList).get(0);
+          runnable.run();
+
+          graph.setStatus(firstNodeList, Status.FINISHED);
+
           freeNodes = graph.getFreeNodes();
           if (debug) {
             System.out.println("Free nodes:" + freeNodes);
