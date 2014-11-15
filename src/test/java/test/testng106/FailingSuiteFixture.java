@@ -1,7 +1,5 @@
 package test.testng106;
 
-import org.testng.Assert;
-import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 
 
@@ -13,11 +11,6 @@ public class FailingSuiteFixture {
 
   @BeforeSuite
   public void failingBeforeSuite() {
-  }
-
-  @AfterSuite(alwaysRun=true)
-  public void afterSuite() {
-    System.out.println("Invocations:" + s_invocations + " must be 0");
-    Assert.assertEquals(s_invocations, 0, "@BeforeSuite has failed. All tests should be skipped.");
+    throw new RuntimeException();
   }
 }

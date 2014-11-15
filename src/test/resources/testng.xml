@@ -731,5 +731,11 @@
     </classes>
   </test>
 
+  <test name="TESTNG-106">
+    <classes>
+      <class name="test.testng106.TestNG106"/>
+    </classes>
+  </test>
+
 </suite>
 
