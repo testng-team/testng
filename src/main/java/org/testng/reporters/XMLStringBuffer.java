@@ -1,5 +1,7 @@
 package org.testng.reporters;
 
+import org.testng.internal.Nullable;
+
 import java.io.Writer;
 import java.util.Properties;
 import java.util.Stack;
@@ -64,7 +66,7 @@ public class XMLStringBuffer {
   * @param start A string of spaces indicating the indentation at which
   * to start the generation.
   */
-  private void init(IBuffer buffer, String start, String version, String encoding) {
+  private void init(IBuffer buffer, String start, @Nullable String version, @Nullable String encoding) {
     m_buffer = buffer;
     m_currentIndent = start;
     if (version != null) {
@@ -80,7 +82,7 @@ public class XMLStringBuffer {
    */
   public void setXmlDetails(String v, String enc) {
     if (m_buffer.toString().length() != 0) {
-      throw new RuntimeException("Buffer should be empty: '" + m_buffer.toString() + "'");
+      throw new IllegalStateException("Buffer should be empty: '" + m_buffer.toString() + "'");
     }
     m_buffer.append("<?xml version=\"" + v + "\" encoding=\"" + enc + "\"?>").append(EOL);
   }
@@ -102,7 +104,7 @@ public class XMLStringBuffer {
    * @param schema The schema to use (can be null or an empty string).
    * @param attributes A Properties file representing the attributes (or null)
    */
-  public void push(String tagName, String schema, Properties attributes) {
+  public void push(String tagName, @Nullable String schema, @Nullable Properties attributes) {
     XMLUtils.xmlOpen(m_buffer, m_currentIndent, tagName + schema, attributes);
     m_tagStack.push(new Tag(m_currentIndent, tagName, attributes));
     m_currentIndent += DEFAULT_INDENT_INCREMENT;
@@ -115,7 +117,7 @@ public class XMLStringBuffer {
    * @param tagName The name of the tag.
    * @param schema The schema to use (can be null or an empty string).
    */
-  public void push(String tagName, String schema) {
+  public void push(String tagName, @Nullable String schema) {
     push(tagName, schema, null);
   }
 
@@ -126,7 +128,7 @@ public class XMLStringBuffer {
    * @param tagName The name of the tag.
    * @param attributes A Properties file representing the attributes (or null)
    */
-  public void push(String tagName, Properties attributes) {
+  public void push(String tagName, @Nullable Properties attributes) {
     push(tagName, "", attributes);
   }
 
@@ -136,6 +138,12 @@ public class XMLStringBuffer {
 
   private Properties createProperties(String[] attributes) {
     Properties result = new Properties();
+    if (attributes == null) {
+      return result;
+    }
+    if (attributes.length % 2 != 0) {
+      throw new IllegalArgumentException("Arguments 'attributes' length must be even. Actual: " + attributes.length);
+    }
     for (int i = 0; i < attributes.length; i += 2) {
       result.put(attributes[i], attributes[i + 1]);
     }
@@ -186,7 +194,7 @@ public class XMLStringBuffer {
    * @param tagName The name of the tag
    * @param value The value for this tag
    */
-  public void addRequired(String tagName, String value) {
+  public void addRequired(String tagName, @Nullable String value) {
     addRequired(tagName, value, (Properties) null);
   }
 
@@ -197,10 +205,10 @@ public class XMLStringBuffer {
    * @param value The value for this tag
    * @param attributes A Properties file containing the attributes (or null)
    */
-  public void addRequired(String tagName, String value, Properties attributes) {
+  public void addRequired(String tagName, @Nullable String value, @Nullable Properties attributes) {
     XMLUtils.xmlRequired(m_buffer, m_currentIndent, tagName, value, attributes);
   }
-  public void addRequired(String tagName, String value, String... attributes) {
+  public void addRequired(String tagName, @Nullable String value, String... attributes) {
     addRequired(tagName, value, createProperties(attributes));
   }
 
@@ -211,12 +219,16 @@ public class XMLStringBuffer {
    * @param value The value for this tag
    * @param attributes A Properties file containing the attributes (or null)
    */
-  public void addOptional(String tagName, String value, Properties attributes) {
-    XMLUtils.xmlOptional(m_buffer, m_currentIndent, tagName, value, attributes);
+  public void addOptional(String tagName, @Nullable String value, @Nullable Properties attributes) {
+    if (value != null) {
+      XMLUtils.xmlOptional(m_buffer, m_currentIndent, tagName, value, attributes);
+    }
   }
 
-  public void addOptional(String tagName, String value, String... attributes) {
-    XMLUtils.xmlOptional(m_buffer, m_currentIndent, tagName, value, createProperties(attributes));
+  public void addOptional(String tagName, @Nullable String value, String... attributes) {
+    if (value != null) {
+      XMLUtils.xmlOptional(m_buffer, m_currentIndent, tagName, value, createProperties(attributes));
+    }
   }
 
   /**
@@ -225,7 +237,7 @@ public class XMLStringBuffer {
    * @param tagName The name of the tag
    * @param value The value for this tag
    */
-  public void addOptional(String tagName, String value) {
+  public void addOptional(String tagName, @Nullable String value) {
     addOptional(tagName, value, (Properties) null);
   }
 
@@ -236,7 +248,7 @@ public class XMLStringBuffer {
    * @param value The value for this tag
    * @param attributes A Properties file containing the attributes (or null)
    */
-  public void addOptional(String tagName, Boolean value, Properties attributes) {
+  public void addOptional(String tagName, @Nullable Boolean value, @Nullable Properties attributes) {
     if (null != value) {
       XMLUtils.xmlOptional(m_buffer, m_currentIndent, tagName, value.toString(), attributes);
     }
@@ -247,9 +259,8 @@ public class XMLStringBuffer {
    * added.
    * @param tagName The name of the tag
    * @param value The value for this tag
-   * @param attributes A Properties file containing the attributes (or null)
    */
-  public void addOptional(String tagName, Boolean value) {
+  public void addOptional(String tagName, @Nullable Boolean value) {
     addOptional(tagName, value, null);
   }
 
@@ -268,7 +279,7 @@ public class XMLStringBuffer {
    * @param tagName The name of the tag
    * @param attributes A Properties file containing the attributes (or null)
    */
-  public void addEmptyElement(String tagName, Properties attributes) {
+  public void addEmptyElement(String tagName, @Nullable Properties attributes) {
     m_buffer.append(m_currentIndent).append("<").append(tagName);
     XMLUtils.appendAttributes(m_buffer, attributes);
     m_buffer.append("/>").append(EOL);

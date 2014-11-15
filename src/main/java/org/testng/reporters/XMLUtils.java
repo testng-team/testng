@@ -1,5 +1,7 @@
 package org.testng.reporters;
 
+import org.testng.internal.Nullable;
+
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.Map.Entry;
@@ -20,12 +22,23 @@ public final class XMLUtils {
     // Hide constructor
   }
 
-  static public String xml(String indent, String elementName, String content,
-      Properties attributes) {
+  /**
+   * Generate tag.
+   * An opening and closing tag will be generated even if value is null.
+   * @param name name of the tag
+   * @param content content for this tag (or null)
+   * @param attributes tag attributes (or null)
+   */
+  static public String xml(String indent,
+                           String name,
+                           @Nullable String content,
+                           @Nullable Properties attributes) {
     IBuffer result = Buffer.create();
-    xmlOpen(result, indent, elementName, attributes, true /* no newline */);
-    result.append(content);
-    xmlClose(result, "", elementName, XMLUtils.extractComment(elementName, attributes));
+    xmlOpen(result, indent, name, attributes, true /* no newline */);
+    if (content != null) {
+      result.append(content);
+    }
+    xmlClose(result, "", name, XMLUtils.extractComment(name, attributes));
 
     return result.toString();
   }
@@ -52,14 +65,14 @@ public final class XMLUtils {
   }
 
   public static void xmlOptional(IBuffer result, String sp,
-      String elementName, String value, Properties attributes) {
+      String elementName, @Nullable String value, Properties attributes) {
     if (null != value) {
       xmlRequired(result, sp, elementName, value, attributes);
     }
   }
 
   public static void xmlRequired(IBuffer result, String sp,
-      String elementName, String value, Properties attributes) {
+      String elementName, @Nullable String value, @Nullable Properties attributes) {
     result.append(xml(sp, elementName, value, attributes));
   }
 
