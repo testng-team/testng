@@ -121,6 +121,7 @@
       <class name="test.testng234.PolymorphicFailureTest" />
       <class name="test.reports.FailedReporterTest" />
       <class name="test.reports.ReporterLogTest" />
+      <class name="test.testng387.TestNG387"/>
     </classes>
   </test>
 
