@@ -100,7 +100,7 @@ public class Graph<T> {
     return m_strictlySortedNodes;
   }
 
-  public void topologicalSort() {
+  public void topologicalSort() throws CycleFoundException {
     ppp("================ SORTING");
     m_strictlySortedNodes = Lists.newArrayList();
     if (null == m_independentNodes) {
@@ -145,7 +145,7 @@ public class Graph<T> {
         for (T m : cycle) {
           sb.append(m).append("\n");
         }
-        throw new TestNGException(sb.toString());
+        throw new CycleFoundException(sb.toString(), cycle);
       }
       else {
         m_strictlySortedNodes.add(node.getObject());
@@ -156,6 +156,19 @@ public class Graph<T> {
     ppp("=============== DONE SORTING");
     if (m_verbose) {
       dumpSortedNodes();
+    }
+  }
+
+  public static class CycleFoundException extends TestNGException {
+    private final List m_cycle;
+
+    public CycleFoundException(String string, List cycle) {
+      super(string);
+      this.m_cycle = cycle;
+    }
+
+    public List getCycle() {
+      return m_cycle;
     }
   }
 
