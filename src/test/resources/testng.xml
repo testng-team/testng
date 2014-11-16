@@ -159,6 +159,7 @@
       <class name="test.testng1396.ParallelByInstancesInterceptorTest"/>
       <class name="test.github1417.TestParamsInjectionInBeforeClass"/>
       <class name="test.order.OrderTest" />
+      <class name="test.issue565.Issue565Test"/>
     </classes>
   </test>
 
@@ -830,5 +831,6 @@
       <class name="test.github799.EnsureInstancesAreOrderedViaFactories"/>
     </classes>
   </test>
+
 </suite>
 
