@@ -1082,34 +1082,24 @@ public class Invoker implements IInvoker {
     assert null != testMethod.getTestClass()
         : "COULDN'T FIND TESTCLASS FOR " + testMethod.getRealClass();
 
-    List<ITestResult> result = Lists.newArrayList();
-
     if (!MethodHelper.isEnabled(testMethod.getMethod(), m_annotationFinder)) {
       // return if the method is not enabled. No need to do any more calculations
       return Collections.emptyList();
     }
 
-    ITestClass testClass= testMethod.getTestClass();
-    long start = System.currentTimeMillis();
-
-    String okToProceed = checkDependencies(testMethod, testContext.getAllTestMethods());
+    // By the time this testMethod to be invoked,
+    // all dependencies should be already run or we need to skip this method,
+    // so invocation count should not affect dependencies check
+    final String okToProceed = checkDependencies(testMethod, testContext.getAllTestMethods());
 
     if (okToProceed != null) {
       //
       // Not okToProceed. Test is being skipped
       //
-      ITestResult testResult = new TestResult(testClass, null /* instance */,
-          testMethod,
-          null /* cause */,
-          start,
-          System.currentTimeMillis(),
-          m_testContext);
-      testResult.setThrowable(new Throwable(okToProceed));
-      testResult.setStatus(ITestResult.SKIP);
-      result.add(testResult);
-      m_notifier.addSkippedTest(testMethod, testResult);
-      runTestListeners(testResult);
-      return result;
+      ITestResult result = registerSkippedTestResult(testMethod, null, System.currentTimeMillis(),
+          new Throwable(okToProceed));
+      m_notifier.addSkippedTest(testMethod, result);
+      return Collections.singletonList(result);
     }
 
 
@@ -1130,7 +1120,11 @@ public class Invoker implements IInvoker {
 
     ExpectedExceptionsHolder expectedExceptionHolder =
         MethodHelper.findExpectedExceptions(m_annotationFinder, testMethod.getMethod());
+    final ITestClass testClass= testMethod.getTestClass();
+    final List<ITestResult> result = Lists.newArrayList();
     final FailureContext failure = new FailureContext();
+    final ITestNGMethod[] beforeMethods = filterMethods(testClass, testClass.getBeforeTestMethods(), CAN_RUN_FROM_CLASS);
+    final ITestNGMethod[] afterMethods = filterMethods(testClass, testClass.getAfterTestMethods(), CAN_RUN_FROM_CLASS);
     while(invocationCount-- > 0) {
       if(false) {
         // Prevent code formatting
@@ -1139,10 +1133,8 @@ public class Invoker implements IInvoker {
       // No threads, regular invocation
       //
       else {
-        ITestNGMethod[] beforeMethods = filterMethods(testClass, testClass.getBeforeTestMethods(),
-            CAN_RUN_FROM_CLASS);
-        ITestNGMethod[] afterMethods = filterMethods(testClass, testClass.getAfterTestMethods(),
-            CAN_RUN_FROM_CLASS);
+        // Used in catch statement
+        long start = System.currentTimeMillis();
 
         Map<String, String> allParameterNames = Maps.newHashMap();
         ParameterBag bag = createParameters(testMethod,
@@ -1152,7 +1144,8 @@ public class Invoker implements IInvoker {
           handleInvocationResults(testMethod,
               Lists.newArrayList(bag.errorResult), expectedExceptionHolder, true,
               true /* collect results */, failure);
-          ITestResult tr = registerSkippedTestResult(testMethod, instance, start,
+          ITestResult tr = registerSkippedTestResult(testMethod, instance,
+              System.currentTimeMillis(),
               bag.errorResult.getThrowable());
           result.add(tr);
           continue;
