@@ -206,11 +206,11 @@ public class Invoker implements IInvoker {
                 testMethodResult);
             testResult.setParameters(parameters);
 
-            Object[] newInstances= new Object[]{ null != instance ? instance: inst };
+            Object newInstance = null != instance ? instance: inst;
 
             runConfigurationListeners(testResult, true /* before */);
 
-            invokeConfigurationMethod(newInstances, tm,
+            invokeConfigurationMethod(newInstance, tm,
               parameters, isClassConfiguration, isSuiteConfiguration, testResult);
 
             // TODO: probably we should trigger the event for each instance???
@@ -501,7 +501,7 @@ public class Invoker implements IInvoker {
    * TODO: Should change this method to be more like invokeMethod() so that we can
    * handle calls to {@code IInvokedMethodListener} better.
    *
-   * @param instances the instances to invoke the configuration method on
+   * @param targetInstance the instance to invoke the configuration method on
    * @param tm the configuration method
    * @param params the parameters needed for method invocation
    * @param isClass flag if the configuration method is a class level method // FIXME: this looks like a missusage
@@ -509,7 +509,7 @@ public class Invoker implements IInvoker {
    * @throws InvocationTargetException
    * @throws IllegalAccessException
    */
-  private void invokeConfigurationMethod(Object[] instances,
+  private void invokeConfigurationMethod(Object targetInstance,
                                          ITestNGMethod tm,
                                          Object[] params,
                                          boolean isClass,
@@ -520,15 +520,7 @@ public class Invoker implements IInvoker {
     // Mark this method with the current thread id
     tm.setId(ThreadUtil.currentThreadInfo());
 
-    // Only a @BeforeMethod/@AfterMethod needs to be run before each instance, all the other
-    // configuration methods only need to be run once
-    List<Object> actualInstances = Lists.newArrayList();
-    if (tm.isBeforeMethodConfiguration() || tm.isAfterMethodConfiguration()) {
-      actualInstances.addAll(Arrays.asList(instances));
-    } else {
-      actualInstances.add(instances[0]);
-    }
-    for(Object targetInstance : actualInstances) {
+    {
       InvokedMethod invokedMethod= new InvokedMethod(targetInstance,
                                           tm,
                                           params,
@@ -544,15 +536,12 @@ public class Invoker implements IInvoker {
         Method method = tm.getMethod();
 
         //
-        // If this method is a IHookable, invoke its run() method
+        // If this method is a IConfigurable, invoke its run() method
         //
         IConfigurable configurableInstance =
           IConfigurable.class.isAssignableFrom(tm.getMethod().getDeclaringClass()) ?
           (IConfigurable) targetInstance : m_configuration.getConfigurable();
         if (configurableInstance != null) {
-          //
-          // If this method is a IConfigurable, invoke its run() method
-          //
           MethodInvocationHelper.invokeConfigurable(targetInstance, params, configurableInstance, method,
               testResult);
         }
@@ -571,10 +560,6 @@ public class Invoker implements IInvoker {
               throw testResult.getThrowable();
             }
           }
-        }
-        // Only run the method once if it's @BeforeSuite or @AfterSuite
-        if (isSuite) {
-          break;
         }
       }
       catch (InvocationTargetException ex) {
