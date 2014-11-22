@@ -1476,39 +1476,17 @@ public class Invoker implements IInvoker {
 
       testResult.setStatus(status);
 
-      boolean retry = false;
-
       if (testResult.getStatus() == ITestResult.FAILURE) {
         IRetryAnalyzer retryAnalyzer = testMethod.getRetryAnalyzer();
 
-        if (retryAnalyzer != null && failedInstances != null) {
-          retry = retryAnalyzer.retry(testResult);
-        }
-
-        if (retry) {
+        if (retryAnalyzer != null && failedInstances != null && retryAnalyzer.retry(testResult)) {
           resultsToRetry.add(testResult);
-          if (failedInstances != null) {
-            failedInstances.add(testResult.getInstance());
-          }
+          failedInstances.add(testResult.getInstance());
         }
       }
       if (collectResults) {
         // Collect the results
-        if(ITestResult.SUCCESS == status) {
-          m_notifier.addPassedTest(testMethod, testResult);
-        }
-        else if(ITestResult.SKIP == status) {
-          m_notifier.addSkippedTest(testMethod, testResult);
-        }
-        else if(ITestResult.FAILURE == status) {
-          m_notifier.addFailedTest(testMethod, testResult);
-        }
-        else if(ITestResult.SUCCESS_PERCENTAGE_FAILURE == status) {
-          m_notifier.addFailedButWithinSuccessPercentageTest(testMethod, testResult);
-        }
-        else {
-          assert false : "UNKNOWN STATUS:" + status;
-        }
+        collectResults(testMethod, Collections.singleton(testResult));
 //        if (triggerListeners && status != ITestResult.SUCCESS) {
 //          runTestListeners(testResult);
 //        }
