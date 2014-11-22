@@ -70,7 +70,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
     long start = System.currentTimeMillis();
 
     try {
-      tmpResults.addAll(m_invoker.invokeTestMethod(m_instance,
+      tmpResults.add(m_invoker.invokeTestMethod(m_instance,
           m_testMethod,
           m_parameterValues,
           m_parameterIndex,

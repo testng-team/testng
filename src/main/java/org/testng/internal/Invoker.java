@@ -42,6 +42,8 @@ import org.testng.xml.XmlTest;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -667,11 +669,10 @@ public class Invoker implements IInvoker {
 
       m_notifier.addInvokedMethod(invokedMethod);
 
-      Method thisMethod= tm.getMethod();
+      Method thisMethod = tm.getConstructorOrMethod().getMethod();
 
       if(confInvocationPassed(tm, tm, testClass, instance)) {
-        log(3, "Invoking " + thisMethod.getDeclaringClass().getName() + "." +
-            thisMethod.getName());
+        log(3, "Invoking " + tm.getRealClass().getName() + "." + tm.getMethodName());
 
         // If no timeOut, just invoke the method
         if (MethodHelper.calculateTimeOut(tm) <= 0) {
@@ -680,7 +681,7 @@ public class Invoker implements IInvoker {
           // If this method is a IHookable, invoke its run() method
           //
           IHookable hookableInstance =
-            IHookable.class.isAssignableFrom(thisMethod.getDeclaringClass()) ?
+              IHookable.class.isAssignableFrom(tm.getRealClass()) ?
             (IHookable) instance : m_configuration.getHookable();
           if (hookableInstance != null) {
             MethodInvocationHelper.invokeHookable(instance,
@@ -726,10 +727,12 @@ public class Invoker implements IInvoker {
       testResult.setStatus(ITestResult.FAILURE);
     }
     finally {
+      // Set end time ASAP
+      testResult.setEndMillis(System.currentTimeMillis());
+
       ExpectedExceptionsHolder expectedExceptionClasses
           = MethodHelper.findExpectedExceptions(m_annotationFinder, tm.getMethod());
-      List<ITestResult> results = Lists.newArrayList();
-      results.add(testResult);
+      List<ITestResult> results = Lists.<ITestResult>newArrayList(testResult);
       handleInvocationResults(tm, results, null, 0, expectedExceptionClasses, false,
           false /* collect results */);
 
@@ -748,14 +751,13 @@ public class Invoker implements IInvoker {
       //
       tm.incrementCurrentInvocationCount();
 
-      if (testResult != null) {
-        testResult.setEndMillis(System.currentTimeMillis());
-      }
-
       // Run invokedMethodListeners after updating TestResult
       runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
       runTestListeners(testResult);
-      collectResults(tm, results, testResult);
+      // Do not notify if will retry.
+      if (!results.isEmpty()) {
+        collectResults(tm, Collections.<ITestResult>singleton(testResult));
+      }
 
       //
       // Invoke afterMethods only if
@@ -782,21 +784,21 @@ public class Invoker implements IInvoker {
     return testResult;
   }
 
-  private void collectResults(ITestNGMethod testMethod, List<ITestResult> results, TestResult testResult) {
-    for (int i = 0; i < results.size(); i++) {
+  void collectResults(ITestNGMethod testMethod, Collection<ITestResult> results) {
+    for (ITestResult result : results) {
       // Collect the results
-      int status = results.get(i).getStatus();
+      final int status = result.getStatus();
       if(ITestResult.SUCCESS == status) {
-        m_notifier.addPassedTest(testMethod, testResult);
+        m_notifier.addPassedTest(testMethod, result);
       }
       else if(ITestResult.SKIP == status) {
-        m_notifier.addSkippedTest(testMethod, testResult);
+        m_notifier.addSkippedTest(testMethod, result);
       }
       else if(ITestResult.FAILURE == status) {
-        m_notifier.addFailedTest(testMethod, testResult);
+        m_notifier.addFailedTest(testMethod, result);
       }
       else if(ITestResult.SUCCESS_PERCENTAGE_FAILURE == status) {
-        m_notifier.addFailedButWithinSuccessPercentageTest(testMethod, testResult);
+        m_notifier.addFailedButWithinSuccessPercentageTest(testMethod, result);
       }
       else {
         assert false : "UNKNOWN STATUS:" + status;
@@ -857,10 +859,10 @@ public class Invoker implements IInvoker {
    * </ul>
    *
    * <p/>
-   * This method is also reponsible for invoking @BeforeGroup, @BeforeMethod, @AfterMethod, @AfterGroup
+   * This method is also responsible for invoking @BeforeGroup, @BeforeMethod, @AfterMethod, @AfterGroup
    * if it is the case for the passed in @Test method.
    */
-  protected List<ITestResult> invokeTestMethod(Object instance,
+  protected ITestResult invokeTestMethod(Object instance,
                                              final ITestNGMethod tm,
                                              Object[] parameterValues,
                                              int parametersIndex,
@@ -871,15 +873,13 @@ public class Invoker implements IInvoker {
                                              ITestNGMethod[] afterMethods,
                                              ConfigurationGroupMethods groupMethods)
   {
-    List<ITestResult> results = Lists.newArrayList();
-
     // Mark this method with the current thread id
     tm.setId(ThreadUtil.currentThreadInfo());
 
-    results.add(invokeMethod(instance, tm, parameterValues, parametersIndex, suite, params,
-          testClass, beforeMethods, afterMethods, groupMethods));
+    ITestResult result = invokeMethod(instance, tm, parameterValues, parametersIndex, suite, params,
+          testClass, beforeMethods, afterMethods, groupMethods);
 
-    return results;
+    return result;
   }
 
   /**
@@ -1081,15 +1081,13 @@ public class Invoker implements IInvoker {
   {
     // Potential bug here if the test method was declared on a parent class
     assert null != testMethod.getTestClass()
-    : "COULDN'T FIND TESTCLASS FOR " + testMethod.getMethod().getDeclaringClass();
+        : "COULDN'T FIND TESTCLASS FOR " + testMethod.getRealClass();
 
     List<ITestResult> result = Lists.newArrayList();
 
     if (!MethodHelper.isEnabled(testMethod.getMethod(), m_annotationFinder)) {
-      /*
-       * return if the method is not enabled. No need to do any more calculations
-       */
-      return result;
+      // return if the method is not enabled. No need to do any more calculations
+      return Collections.emptyList();
     }
 
     ITestClass testClass= testMethod.getTestClass();
@@ -1202,16 +1200,16 @@ public class Invoker implements IInvoker {
               List<ITestResult> tmpResults = Lists.newArrayList();
 
               try {
-                tmpResults.addAll(invokeTestMethod(instance,
-                                                   testMethod,
-                                                   parameterValues,
-                                                   parametersIndex,
-                                                   suite,
-                                                   parameters,
-                                                   testClass,
-                                                   beforeMethods,
-                                                   afterMethods,
-                                                   groupMethods));
+                tmpResults.add(invokeTestMethod(instance,
+                    testMethod,
+                    parameterValues,
+                    parametersIndex,
+                    suite,
+                    parameters,
+                    testClass,
+                    beforeMethods,
+                    afterMethods,
+                    groupMethods));
               }
               finally {
                 List<Object> failedInstances = Lists.newArrayList();
@@ -1713,7 +1711,9 @@ public class Invoker implements IInvoker {
                                ITestNGMethod testMethod,
                                ITestResult testResult,
                                int failureCount) {
-    testResult.setThrowable(throwable);
+    if (throwable != null) {
+      testResult.setThrowable(throwable);
+    }
     int successPercentage= testMethod.getSuccessPercentage();
     int invocationCount= testMethod.getInvocationCount();
     float numberOfTestsThatCanFail= ((100 - successPercentage) * invocationCount) / 100f;
@@ -1729,13 +1729,13 @@ public class Invoker implements IInvoker {
 
   /**
    * @param ite The exception that was just thrown
-   * @param expectedExceptions The list of expected exceptions for this
+   * @param exceptionHolder Expected exceptions holder for this
    * test method
    * @return true if the exception that was just thrown is part of the
    * expected exceptions
    */
   private boolean isExpectedException(Throwable ite, ExpectedExceptionsHolder exceptionHolder) {
-    if (exceptionHolder == null) {
+    if (exceptionHolder == null || exceptionHolder.expectedClasses == null) {
       return false;
     }
 
