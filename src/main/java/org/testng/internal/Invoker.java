@@ -1018,7 +1018,7 @@ public class Invoker implements IInvoker {
        * one specific set. Should optimize it by only recreating the set needed.
        */
       ParameterBag bag = createParameters(tm, parameters,
-          allParameters, null, suite, testContext, null /* fedInstance */, null /* testResult */);
+          allParameters, suite, testContext, null /* fedInstance */);
       Object[] parameterValues =
           getParametersFromIndex(bag.parameterHolder.parameters, parametersIndex);
 
@@ -1034,11 +1034,9 @@ public class Invoker implements IInvoker {
   private ParameterBag createParameters(ITestNGMethod testMethod,
                                         Map<String, String> parameters,
                                         Map<String, String> allParameterNames,
-                                        Object[] parameterValues,
                                         XmlSuite suite,
                                         ITestContext testContext,
-                                        Object fedInstance,
-                                        ITestResult testResult)
+                                        Object fedInstance)
   {
     Object instance;
     if (fedInstance != null) {
@@ -1048,9 +1046,8 @@ public class Invoker implements IInvoker {
       instance = testMethod.getInstance();
     }
 
-    ParameterBag bag= handleParameters(testMethod,
-        instance, allParameterNames, parameters, parameterValues, suite, testContext, fedInstance,
-        testResult);
+    ParameterBag bag = handleParameters(testMethod,
+        instance, allParameterNames, parameters, null, suite, testContext, fedInstance, null);
 
     return bag;
   }
@@ -1150,15 +1147,14 @@ public class Invoker implements IInvoker {
 
         Map<String, String> allParameterNames = Maps.newHashMap();
         ParameterBag bag = createParameters(testMethod,
-            parameters, allParameterNames, null, suite, testContext, instance,
-            null);
+            parameters, allParameterNames, suite, testContext, instance);
 
         if (bag.hasErrors()) {
           failureCount = handleInvocationResults(testMethod,
-              bag.errorResults, null, failureCount, expectedExceptionHolder, true,
+              Lists.newArrayList(bag.errorResult), null, failureCount, expectedExceptionHolder, true,
               true /* collect results */);
           ITestResult tr = registerSkippedTestResult(testMethod, instance, start,
-              bag.errorResults.get(0).getThrowable());
+              bag.errorResult.getThrowable());
           result.add(tr);
           continue;
         }
@@ -1362,14 +1358,13 @@ public class Invoker implements IInvoker {
                 testMethod.getMethod(), testContext, testResult),
             suite,
             m_annotationFinder,
-            fedInstance),
-          null /* TestResult */);
+            fedInstance));
     }
 //    catch(TestNGException ex) {
 //      throw ex;
 //    }
     catch(Throwable cause) {
-      return new ParameterBag(null /* ParameterHolder */,
+      return new ParameterBag(
           new TestResult(
               testMethod.getTestClass(),
               instance,
@@ -1525,6 +1520,7 @@ public class Invoker implements IInvoker {
   private boolean isSkipExceptionAndSkip(Throwable ite) {
     return SkipException.class.isAssignableFrom(ite.getClass()) && ((SkipException) ite).isSkip();
   }
+
   /**
    *   message / regEx  .*      other
    *   null             true    false
@@ -1878,22 +1874,25 @@ public class Invoker implements IInvoker {
   }
 
   /**
-   * This class holds a {@code ParameterHolder} and in case of an error, a non-null
+   * This class holds a {@code ParameterHolder} or in case of an error, a non-null
    * {@code TestResult} containing the cause
    */
   private static class ParameterBag {
     final ParameterHolder parameterHolder;
-    final List<ITestResult> errorResults = Lists.newArrayList();
+    final ITestResult errorResult;
 
-    public ParameterBag(ParameterHolder params, TestResult tr) {
-      parameterHolder = params;
-      if (tr != null) {
-        errorResults.add(tr);
-      }
+    public ParameterBag(ParameterHolder parameterHolder) {
+      this.parameterHolder = parameterHolder;
+      this.errorResult = null;
+    }
+
+    public ParameterBag(ITestResult errorResult) {
+      this.parameterHolder = null;
+      this.errorResult = errorResult;
     }
 
     public boolean hasErrors() {
-      return !errorResults.isEmpty();
+      return errorResult != null;
     }
   }
 
