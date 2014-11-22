@@ -219,28 +219,28 @@ public class Parameters {
       result = value;
     }
     else if(type == int.class || type == Integer.class) {
-      result = Integer.valueOf(Integer.parseInt(value));
+      result = Integer.parseInt(value);
     }
     else if(type == boolean.class || type == Boolean.class) {
       result = Boolean.valueOf(value);
     }
     else if(type == byte.class || type == Byte.class) {
-      result = Byte.valueOf(Byte.parseByte(value));
+      result = Byte.parseByte(value);
     }
     else if(type == char.class || type == Character.class) {
-      result = Character.valueOf(value.charAt(0));
+      result = value.charAt(0);
     }
     else if(type == double.class || type == Double.class) {
-      result = Double.valueOf(Double.parseDouble(value));
+      result = Double.parseDouble(value);
     }
     else if(type == float.class || type == Float.class) {
-      result = Float.valueOf(Float.parseFloat(value));
+      result = Float.parseFloat(value);
     }
     else if(type == long.class || type == Long.class) {
-      result = Long.valueOf(Long.parseLong(value));
+      result = Long.parseLong(value);
     }
     else if(type == short.class || type == Short.class) {
-      result = Short.valueOf(Short.parseShort(value));
+      result = Short.parseShort(value);
     }
     else if (type.isEnum()) {
     	result = Enum.valueOf(type, value);
@@ -281,7 +281,7 @@ public class Parameters {
    */
   private static IDataProvidable findDataProviderInfo(Class clazz, ConstructorOrMethod m,
       IAnnotationFinder finder) {
-    IDataProvidable result = null;
+    IDataProvidable result;
 
     if (m.getMethod() != null) {
       //
@@ -324,8 +324,7 @@ public class Parameters {
     }
 
     for (Method m : ClassHelper.getAvailableMethods(cls)) {
-      IDataProviderAnnotation dp = (IDataProviderAnnotation)
-          finder.findAnnotation(m, IDataProviderAnnotation.class);
+      IDataProviderAnnotation dp = finder.findAnnotation(m, IDataProviderAnnotation.class);
       if (null != dp && (name.equals(dp.getName()) || name.equals(m.getName()))) {
         if (shouldBeStatic && (m.getModifiers() & Modifier.STATIC) == 0) {
           throw new TestNGException("DataProvider should be static: " + m);
@@ -347,11 +346,11 @@ public class Parameters {
   {
     List<Object> result = Lists.newArrayList();
 
-    Object[] extraParameters = new Object[0];
+    Object[] extraParameters;
     //
     // Try to find an @Parameters annotation
     //
-    IParametersAnnotation annotation = (IParametersAnnotation) finder.findAnnotation(m, IParametersAnnotation.class);
+    IParametersAnnotation annotation = finder.findAnnotation(m, IParametersAnnotation.class);
     Class<?>[] types = m.getParameterTypes();
     if(null != annotation) {
       String[] parameterNames = annotation.getValue();
@@ -378,9 +377,7 @@ public class Parameters {
     //
     // Add the extra parameters we found
     //
-    for (Object p : extraParameters) {
-      result.add(p);
-    }
+    Collections.addAll(result, extraParameters);
 
     // If the method declared an Object[] parameter and we have parameter values, inject them
     for (int i = 0; i < types.length; i++) {
@@ -408,7 +405,7 @@ public class Parameters {
       Object fedInstance)
   {
     ParameterHolder result;
-    Iterator<Object[]> parameters = null;
+    Iterator<Object[]> parameters;
 
     /*
      * Do we have a @DataProvider? If yes, then we have several
@@ -457,8 +454,7 @@ public class Parameters {
       // Turn it into an Iterable
       parameters = MethodHelper.createArrayIterator(allParameterValuesArray);
 
-      result = new ParameterHolder(parameters, ParameterOrigin.ORIGIN_XML,
-          dataProviderHolder);
+      result = new ParameterHolder(parameters, ParameterOrigin.ORIGIN_XML, null);
     }
 
     return result;
