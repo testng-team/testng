@@ -1067,7 +1067,7 @@ public class Invoker implements IInvoker {
    *
    * Note (alex): this method can be refactored to use a SingleTestMethodWorker that
    * directly invokes
-   * {@link #invokeTestMethod(Object[], ITestNGMethod, Object[], XmlSuite, Map, ITestClass, ITestNGMethod[], ITestNGMethod[], ConfigurationGroupMethods)}
+   * {@link #invokeTestMethod(Object, ITestNGMethod, Object[], int, XmlSuite, Map, ITestClass, ITestNGMethod[], ITestNGMethod[], ConfigurationGroupMethods, FailureContext)}
    * and this would simplify the implementation (see how DataTestMethodWorker is used)
    */
   @Override
@@ -1141,12 +1141,10 @@ public class Invoker implements IInvoker {
             parameters, allParameterNames, suite, testContext, instance);
 
         if (bag.hasErrors()) {
-          handleInvocationResults(testMethod,
-              Lists.newArrayList(bag.errorResult), expectedExceptionHolder, true,
-              true /* collect results */, failure);
-          ITestResult tr = registerSkippedTestResult(testMethod, instance,
-              System.currentTimeMillis(),
-              bag.errorResult.getThrowable());
+          final ITestResult tr = bag.errorResult;
+          tr.setStatus(ITestResult.SKIP);
+          runTestListeners(tr);
+          m_notifier.addSkippedTest(testMethod, tr);
           result.add(tr);
           continue;
         }
