@@ -86,9 +86,7 @@ public final class ClassHelper {
       allClassLoaders.addAll(m_classLoaders);
     }
 
-    int count = 0;
     for (ClassLoader classLoader : allClassLoaders) {
-      ++count;
       if (null == classLoader) {
         continue;
       }
@@ -133,13 +131,9 @@ public final class ClassHelper {
     ConstructorOrMethod result = null;
 
     for (Method method : cls.getMethods()) {
-      IFactoryAnnotation f = (IFactoryAnnotation) finder.findAnnotation(method,
-          IFactoryAnnotation.class);
+      IFactoryAnnotation f = finder.findAnnotation(method, IFactoryAnnotation.class);
 
       if (null != f) {
-        if (result != null) {
-          throw new TestNGException(cls.getName() + ":  only one @Factory method allowed");
-        }
         result = new ConstructorOrMethod(method);
         result.setEnabled(f.getEnabled());
         break;
@@ -323,8 +317,7 @@ public final class ClassHelper {
       //
       Constructor<?> constructor = findAnnotatedConstructor(finder, declaringClass);
       if (null != constructor) {
-        IParametersAnnotation annotation = (IParametersAnnotation) finder.findAnnotation(constructor,
-                                                                     IParametersAnnotation.class);
+        IParametersAnnotation annotation = finder.findAnnotation(constructor, IParametersAnnotation.class);
 
         String[] parameterNames = annotation.getValue();
         Object[] parameters = Parameters.createInstantiationParameters(constructor,
@@ -374,12 +367,12 @@ public final class ClassHelper {
           parameters = new Object[] { enclosingClassInstance };
         } // isStatic
 
-        Constructor<?> ct = null;
+        Constructor<?> ct;
         try {
           ct = declaringClass.getDeclaredConstructor(parameterTypes);
         }
         catch (NoSuchMethodException ex) {
-          ct = declaringClass.getDeclaredConstructor(new Class[] {String.class});
+          ct = declaringClass.getDeclaredConstructor(String.class);
           parameters = new Object[] { "Default test name" };
           // If ct == null here, we'll pass a null
           // constructor to the factory and hope it can deal with it
@@ -442,8 +435,7 @@ public final class ClassHelper {
     Constructor<?>[] constructors = declaringClass.getDeclaredConstructors();
 
     for (Constructor<?> result : constructors) {
-      IParametersAnnotation annotation = (IParametersAnnotation)
-          finder.findAnnotation(result, IParametersAnnotation.class);
+      IParametersAnnotation annotation = finder.findAnnotation(result, IParametersAnnotation.class);
 
       if (null != annotation) {
         String[] parameters = annotation.getValue();
@@ -471,8 +463,8 @@ public final class ClassHelper {
         return null;
       }
 
-      Constructor<T> ctor = declaringClass.getConstructor(new Class[] { String.class });
-      result = ctor.newInstance(new Object[] { "Default test name" });
+      Constructor<T> ctor = declaringClass.getConstructor(String.class);
+      result = ctor.newInstance("Default test name");
     }
     catch (Exception e) {
       String message = e.getMessage();
