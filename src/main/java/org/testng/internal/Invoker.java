@@ -1077,8 +1077,6 @@ public class Invoker implements IInvoker {
    */
   @Override
   public List<ITestResult> invokeTestMethods(ITestNGMethod testMethod,
-                                             ITestNGMethod[] allTestMethods,
-                                             int testMethodIndex,
                                              XmlSuite suite,
                                              Map<String, String> testParameters,
                                              ConfigurationGroupMethods groupMethods,
@@ -1113,7 +1111,7 @@ public class Invoker implements IInvoker {
     ExpectedExceptionsHolder expectedExceptionHolder =
         MethodHelper.findExpectedExceptions(m_annotationFinder, testMethod.getMethod());
     while(invocationCount-- > 0) {
-      boolean okToProceed = checkDependencies(testMethod, allTestMethods);
+      boolean okToProceed = checkDependencies(testMethod, testContext.getAllTestMethods());
 
       if (!okToProceed) {
         //
@@ -1144,7 +1142,7 @@ public class Invoker implements IInvoker {
       Map<String, String> parameters =
           testMethod.findMethodParameters(testContext.getCurrentXmlTest());
       if (testMethod.getThreadPoolSize() > 1 && testMethod.getInvocationCount() > 1) {
-          return invokePooledTestMethods(testMethod, allTestMethods, suite,
+          return invokePooledTestMethods(testMethod, suite,
               parameters, groupMethods, testContext);
       }
       //
@@ -1393,7 +1391,6 @@ public class Invoker implements IInvoker {
    * Invokes a method that has a specified threadPoolSize.
    */
   private List<ITestResult> invokePooledTestMethods(ITestNGMethod testMethod,
-                                                    ITestNGMethod[] allTestMethods,
                                                     XmlSuite suite,
                                                     Map<String, String> parameters,
                                                     ConfigurationGroupMethods groupMethods,
@@ -1416,7 +1413,6 @@ public class Invoker implements IInvoker {
           mi,
           suite,
           parameters,
-          allTestMethods,
           testContext));
     }
 

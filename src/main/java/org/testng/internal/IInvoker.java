@@ -37,8 +37,6 @@ public interface IInvoker {
    * Invoke the given method
    *
    * @param testMethod
-   * @param allTestMethods The list of all the test methods
-   * @param methodIndex The index of testMethod in the allTestMethods array
    * @param suite
    * @param parameters
    * @param groupMethods
@@ -46,8 +44,6 @@ public interface IInvoker {
    * @return a list containing the results of the test methods invocations
    */
   public List<ITestResult> invokeTestMethods(ITestNGMethod testMethod,
-                                             ITestNGMethod[] allTestMethods,
-                                             int methodIndex,
                                              XmlSuite suite,
                                              Map<String, String> parameters,
                                              ConfigurationGroupMethods groupMethods,
