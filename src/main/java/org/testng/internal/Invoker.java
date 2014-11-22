@@ -42,6 +42,7 @@ import org.testng.xml.XmlTest;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -1450,15 +1451,15 @@ public class Invoker implements IInvoker {
           }
         } else if (isSkipExceptionAndSkip(ite)){
           status = ITestResult.SKIP;
-        } else if (ite != null && expectedExceptionsHolder != null) {
+        } else if (expectedExceptionsHolder != null) {
           testResult.setThrowable(
-              new TestException("Expected exception "
-                 + expectedExceptionsHolder.expectedClasses[0].getName()
-                 + " but got " + ite, ite));
+              new TestException("Expected exception of " +
+                  getExpectedExceptionsPluralize(expectedExceptionsHolder)
+                  + " but got " + ite, ite));
           status= ITestResult.FAILURE;
         } else {
           handleException(ite, testMethod, testResult, failureCount++);
-          status= testResult.getStatus();
+          status = testResult.getStatus();
         }
       }
 
@@ -1468,7 +1469,7 @@ public class Invoker implements IInvoker {
         if (classes != null && classes.length > 0) {
           testResult.setThrowable(
               new TestException("Method " + testMethod + " should have thrown an exception of "
-                  + expectedExceptionsHolder.expectedClasses[0]));
+                  + getExpectedExceptionsPluralize(expectedExceptionsHolder)));
           status= ITestResult.FAILURE;
         }
       }
@@ -1515,6 +1516,18 @@ public class Invoker implements IInvoker {
     } // for results
 
     return removeResultsToRetryFromResult(resultsToRetry, result, failureCount);
+  }
+
+  private String getExpectedExceptionsPluralize(final ExpectedExceptionsHolder holder) {
+    StringBuilder sb = new StringBuilder();
+    if (holder.expectedClasses.length > 1) {
+      sb.append("any of types ");
+      sb.append(Arrays.toString(holder.expectedClasses));
+    } else {
+      sb.append("type ");
+      sb.append(holder.expectedClasses[0]);
+    }
+    return sb.toString();
   }
 
   private boolean isSkipExceptionAndSkip(Throwable ite) {
