@@ -618,7 +618,8 @@ public class Invoker implements IInvoker {
                                    ITestClass testClass,
                                    ITestNGMethod[] beforeMethods,
                                    ITestNGMethod[] afterMethods,
-                                   ConfigurationGroupMethods groupMethods) {
+                                   ConfigurationGroupMethods groupMethods,
+                                   FailureContext failureContext) {
     TestResult testResult = new TestResult();
 
     //
@@ -734,8 +735,8 @@ public class Invoker implements IInvoker {
       ExpectedExceptionsHolder expectedExceptionClasses
           = MethodHelper.findExpectedExceptions(m_annotationFinder, tm.getMethod());
       List<ITestResult> results = Lists.<ITestResult>newArrayList(testResult);
-      handleInvocationResults(tm, results, null, 0, expectedExceptionClasses, false,
-          false /* collect results */);
+      handleInvocationResults(tm, results, expectedExceptionClasses, false,
+          false /* collect results */, failureContext);
 
       // If this method has a data provider and just failed, memorize the number
       // at which it failed.
@@ -872,13 +873,14 @@ public class Invoker implements IInvoker {
                                              ITestClass testClass,
                                              ITestNGMethod[] beforeMethods,
                                              ITestNGMethod[] afterMethods,
-                                             ConfigurationGroupMethods groupMethods)
+                                             ConfigurationGroupMethods groupMethods,
+                                             FailureContext failureContext)
   {
     // Mark this method with the current thread id
     tm.setId(ThreadUtil.currentThreadInfo());
 
     ITestResult result = invokeMethod(instance, tm, parameterValues, parametersIndex, suite, params,
-          testClass, beforeMethods, afterMethods, groupMethods);
+        testClass, beforeMethods, afterMethods, groupMethods, failureContext);
 
     return result;
   }
@@ -1009,10 +1011,9 @@ public class Invoker implements IInvoker {
                            ITestContext testContext,
                            Map<String, String> parameters,
                            int parametersIndex) {
-    List<Object> failedInstances;
-
+    final FailureContext failure = new FailureContext();
+    failure.count = failureCount;
     do {
-      failedInstances = Lists.newArrayList();
       Map<String, String> allParameters = Maps.newHashMap();
       /**
        * TODO: This recreates all the parameters every time when we only need
@@ -1023,13 +1024,13 @@ public class Invoker implements IInvoker {
       Object[] parameterValues =
           getParametersFromIndex(bag.parameterHolder.parameters, parametersIndex);
 
-      result.add(invokeMethod(instance, tm, parameterValues,parametersIndex, suite,
-          allParameters, testClass, beforeMethods, afterMethods, groupMethods));
-      failureCount = handleInvocationResults(tm, result, failedInstances,
-          failureCount, expectedExceptionHolder, true, true /* collect results */);
+      result.add(invokeMethod(instance, tm, parameterValues, parametersIndex, suite,
+          allParameters, testClass, beforeMethods, afterMethods, groupMethods, failure));
+      // It's already handled inside 'invokeMethod' but results not collected
+      handleInvocationResults(tm, result, expectedExceptionHolder, true, true/* collect results */, failure);
     }
-    while (!failedInstances.isEmpty());
-    return failureCount;
+    while (!failure.instances.isEmpty());
+    return failure.count;
   }
 
   private ParameterBag createParameters(ITestNGMethod testMethod,
@@ -1098,10 +1099,10 @@ public class Invoker implements IInvoker {
       timeOutInvocationCount > 0;
 
     int invocationCount = onlyOne ? 1 : testMethod.getInvocationCount();
-    int failureCount = 0;
 
     ExpectedExceptionsHolder expectedExceptionHolder =
         MethodHelper.findExpectedExceptions(m_annotationFinder, testMethod.getMethod());
+    final FailureContext failure = new FailureContext();
     while(invocationCount-- > 0) {
       boolean okToProceed = checkDependencies(testMethod, testContext.getAllTestMethods());
 
@@ -1151,9 +1152,9 @@ public class Invoker implements IInvoker {
             parameters, allParameterNames, suite, testContext, instance);
 
         if (bag.hasErrors()) {
-          failureCount = handleInvocationResults(testMethod,
-              Lists.newArrayList(bag.errorResult), null, failureCount, expectedExceptionHolder, true,
-              true /* collect results */);
+          handleInvocationResults(testMethod,
+              Lists.newArrayList(bag.errorResult), expectedExceptionHolder, true,
+              true /* collect results */, failure);
           ITestResult tr = registerSkippedTestResult(testMethod, instance, start,
               bag.errorResult.getThrowable());
           result.add(tr);
@@ -1177,7 +1178,7 @@ public class Invoker implements IInvoker {
                     parameterValues, instance, suite, parameters, testClass,
                     beforeMethods, afterMethods, groupMethods,
                     expectedExceptionHolder, testContext, m_skipFailedInvocationCounts,
-                    invocationCount, failureCount, m_notifier);
+                    invocationCount, failure.count, m_notifier);
               workers.add(w);
               // testng387: increment the param index in the bag.
               parametersIndex++;
@@ -1206,25 +1207,19 @@ public class Invoker implements IInvoker {
                     testClass,
                     beforeMethods,
                     afterMethods,
-                    groupMethods));
+                    groupMethods, failure));
               }
               finally {
-                List<Object> failedInstances = Lists.newArrayList();
-
-                failureCount = handleInvocationResults(testMethod, tmpResults,
-                    failedInstances, failureCount, expectedExceptionHolder, true,
-                    false /* don't collect results */);
-                if (failedInstances.isEmpty()) {
+                if (failure.instances.isEmpty()) {
                   result.addAll(tmpResults);
                 } else {
-                  for (Object failedInstance : failedInstances) {
+                  for (Object failedInstance : failure.instances) {
                     List<ITestResult> retryResults = Lists.newArrayList();
 
-                    failureCount =
-                     retryFailed(failedInstance,
-                     testMethod, suite, testClass, beforeMethods,
+                    failure.count = retryFailed(
+                            failedInstance, testMethod, suite, testClass, beforeMethods,
                      afterMethods, groupMethods, retryResults,
-                     failureCount, expectedExceptionHolder,
+                     failure.count, expectedExceptionHolder,
                      testContext, parameters, parametersIndex);
                   result.addAll(retryResults);
                   }
@@ -1234,11 +1229,11 @@ public class Invoker implements IInvoker {
                 // If we have a failure, skip all the
                 // other invocationCounts
                 //
-                if (failureCount > 0
+                if (failure.count > 0
                       && (m_skipFailedInvocationCounts
                             || testMethod.skipFailedInvocations())) {
                   while (invocationCount-- > 0) {
-                    result.add(registerSkippedTestResult(testMethod, instance, start, null));
+                    result.add(registerSkippedTestResult(testMethod, instance, System.currentTimeMillis(), null));
                   }
                   break;
                 }
@@ -1409,20 +1404,24 @@ public class Invoker implements IInvoker {
     return runWorkers(testMethod, workers, testMethod.getThreadPoolSize(), groupMethods, suite, parameters);
   }
 
+  static class FailureContext {
+    int count = 0;
+    List<Object> instances = Lists.newArrayList();
+  }
+
   /**
    * @param testMethod
    * @param result
-   * @param failureCount
    * @param expectedExceptionsHolder
+   * @param failure
    * @return
    */
-  int handleInvocationResults(ITestNGMethod testMethod,
-                                      List<ITestResult> result,
-                                      List<Object> failedInstances,
-                                      int failureCount,
-                                      ExpectedExceptionsHolder expectedExceptionsHolder,
-                                      boolean triggerListeners,
-                                      boolean collectResults)
+  void handleInvocationResults(ITestNGMethod testMethod,
+                               List<ITestResult> result,
+                               ExpectedExceptionsHolder expectedExceptionsHolder,
+                               boolean triggerListeners,
+                               boolean collectResults,
+                               FailureContext failure)
   {
     //
     // Go through all the results and create a TestResult for each of them
@@ -1432,6 +1431,8 @@ public class Invoker implements IInvoker {
     for (ITestResult testResult : result) {
       Throwable ite= testResult.getThrowable();
       int status= testResult.getStatus();
+
+      boolean handled = false;
 
       // Exception thrown?
       if (ite != null) {
@@ -1458,7 +1459,8 @@ public class Invoker implements IInvoker {
                   + " but got " + ite, ite));
           status= ITestResult.FAILURE;
         } else {
-          handleException(ite, testMethod, testResult, failureCount++);
+          handleException(ite, testMethod, testResult, failure.count++);
+          handled = true;
           status = testResult.getStatus();
         }
       }
@@ -1476,12 +1478,17 @@ public class Invoker implements IInvoker {
 
       testResult.setStatus(status);
 
-      if (testResult.getStatus() == ITestResult.FAILURE) {
+      if (status == ITestResult.FAILURE && !handled) {
+        handleException(ite, testMethod, testResult, failure.count++);
+        status = testResult.getStatus();
+      }
+
+      if (status == ITestResult.FAILURE) {
         IRetryAnalyzer retryAnalyzer = testMethod.getRetryAnalyzer();
 
-        if (retryAnalyzer != null && failedInstances != null && retryAnalyzer.retry(testResult)) {
+        if (retryAnalyzer != null &&  failure.instances != null && retryAnalyzer.retry(testResult)) {
           resultsToRetry.add(testResult);
-          failedInstances.add(testResult.getInstance());
+          failure.instances.add(testResult.getInstance());
         }
       }
       if (collectResults) {
@@ -1493,7 +1500,7 @@ public class Invoker implements IInvoker {
       }
     } // for results
 
-    return removeResultsToRetryFromResult(resultsToRetry, result, failureCount);
+    removeResultsToRetryFromResult(resultsToRetry, result, failure);
   }
 
   private String getExpectedExceptionsPluralize(final ExpectedExceptionsHolder holder) {
@@ -1526,15 +1533,14 @@ public class Invoker implements IInvoker {
     }
   }
 
-  private int removeResultsToRetryFromResult(List<ITestResult> resultsToRetry,
-      List<ITestResult> result, int failureCount) {
+  private void removeResultsToRetryFromResult(List<ITestResult> resultsToRetry,
+                                              List<ITestResult> result, FailureContext failure) {
     if (resultsToRetry != null) {
       for (ITestResult res : resultsToRetry) {
         result.remove(res);
-        failureCount--;
+        failure.count--;
       }
     }
-    return failureCount;
   }
 
   /**

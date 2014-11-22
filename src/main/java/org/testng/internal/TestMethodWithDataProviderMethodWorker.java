@@ -69,6 +69,8 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
     List<ITestResult> tmpResults = Lists.newArrayList();
     long start = System.currentTimeMillis();
 
+    final Invoker.FailureContext failure = new Invoker.FailureContext();
+    failure.count = m_failureCount;
     try {
       tmpResults.add(m_invoker.invokeTestMethod(m_instance,
           m_testMethod,
@@ -79,23 +81,20 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
           m_testClass,
           m_beforeMethods,
           m_afterMethods,
-          m_groupMethods));
+          m_groupMethods,
+          failure));
     }
     finally {
-      List<Object> failedInstances = Lists.newArrayList();
-
-      m_failureCount = m_invoker.handleInvocationResults(m_testMethod, tmpResults,
-          failedInstances, m_failureCount, m_expectedExceptionHolder, true,
-          false /* don't collect results */);
-      if (failedInstances.isEmpty()) {
+      m_failureCount = failure.count;
+      if (failure.instances.isEmpty()) {
         m_testResults.addAll(tmpResults);
       } else {
-        for (int i = 0; i < failedInstances.size(); i++) {
+        for (Object instance : failure.instances) {
           List<ITestResult> retryResults = Lists.newArrayList();
 
           m_failureCount =
-             m_invoker.retryFailed(failedInstances.get(i),
-                 m_testMethod, m_xmlSuite, m_testClass, m_beforeMethods,
+             m_invoker.retryFailed(
+                 instance, m_testMethod, m_xmlSuite, m_testClass, m_beforeMethods,
                  m_afterMethods, m_groupMethods, retryResults,
                  m_failureCount, m_expectedExceptionHolder,
                  m_testContext, m_parameters, m_parameterIndex);
