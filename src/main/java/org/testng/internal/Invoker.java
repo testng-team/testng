@@ -42,7 +42,6 @@ import org.testng.xml.XmlTest;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -320,13 +319,10 @@ public class Invoker implements IInvoker {
   {
     Throwable cause= ite.getCause() != null ? ite.getCause() : ite;
 
-    if(SkipException.class.isAssignableFrom(cause.getClass())) {
-      SkipException skipEx= (SkipException) cause;
-      if(skipEx.isSkip()) {
-        testResult.setThrowable(skipEx);
-        handleConfigurationSkip(tm, testResult, annotation, currentTestMethod, instance, suite);
-        return;
-      }
+    if(isSkipExceptionAndSkip(cause)) {
+      testResult.setThrowable(cause);
+      handleConfigurationSkip(tm, testResult, annotation, currentTestMethod, instance, suite);
+      return;
     }
     Utils.log("", 3, "Failed to invoke configuration method "
         + tm.getRealClass().getName() + "." + tm.getMethodName() + ":" + cause.getMessage());
@@ -1459,15 +1455,8 @@ public class Invoker implements IInvoker {
                     " but got \"" + ite.getMessage() + "\"", ite));
             status= ITestResult.FAILURE;
           }
-        } else if (SkipException.class.isAssignableFrom(ite.getClass())){
-          SkipException skipEx= (SkipException) ite;
-          if(skipEx.isSkip()) {
-            status = ITestResult.SKIP;
-          }
-          else {
-            handleException(ite, testMethod, testResult, failureCount++);
-            status = ITestResult.FAILURE;
-          }
+        } else if (isSkipExceptionAndSkip(ite)){
+          status = ITestResult.SKIP;
         } else if (ite != null && expectedExceptionsHolder != null) {
           testResult.setThrowable(
               new TestException("Expected exception "
@@ -1535,6 +1524,9 @@ public class Invoker implements IInvoker {
     return removeResultsToRetryFromResult(resultsToRetry, result, failureCount);
   }
 
+  private boolean isSkipExceptionAndSkip(Throwable ite) {
+    return SkipException.class.isAssignableFrom(ite.getClass()) && ((SkipException) ite).isSkip();
+  }
   /**
    *   message / regEx  .*      other
    *   null             true    false
@@ -1544,11 +1536,8 @@ public class Invoker implements IInvoker {
     if (".*".equals(messageRegExp)) {
       return true;
     } else {
-      if (ite.getMessage() == null) {
-        return false;
-      } else {
-        return Pattern.matches(messageRegExp, ite.getMessage());
-      }
+      final String message = ite.getMessage();
+      return message != null && Pattern.matches(messageRegExp, message);
     }
   }
 
@@ -1812,17 +1801,15 @@ public class Invoker implements IInvoker {
    */
   private boolean dependsOnGroups(ITestNGMethod tm) {
     String[] groups = tm.getGroupsDependedUpon();
-    boolean result = (null != groups) && (groups.length > 0);
-    return result;
+    return null != groups && groups.length > 0;
   }
 
   /**
-   * @return true if this method depends on certain groups.
+   * @return true if this method depends on certain methods.
    */
   private boolean dependsOnMethods(ITestNGMethod tm) {
     String[] methods = tm.getMethodsDependedUpon();
-    boolean result = (null != methods) && (methods.length > 0);
-    return result;
+    return null != methods && methods.length > 0;
   }
 
   private void runConfigurationListeners(ITestResult tr, boolean before) {
