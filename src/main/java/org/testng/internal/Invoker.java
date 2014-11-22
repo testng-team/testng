@@ -1092,7 +1092,35 @@ public class Invoker implements IInvoker {
     ITestClass testClass= testMethod.getTestClass();
     long start = System.currentTimeMillis();
 
-    // For invocationCount > 1 and threadPoolSize > 1 the method will be invoked on a thread pool
+    String okToProceed = checkDependencies(testMethod, testContext.getAllTestMethods());
+
+    if (okToProceed != null) {
+      //
+      // Not okToProceed. Test is being skipped
+      //
+      ITestResult testResult = new TestResult(testClass, null /* instance */,
+          testMethod,
+          null /* cause */,
+          start,
+          System.currentTimeMillis(),
+          m_testContext);
+      testResult.setThrowable(new Throwable(okToProceed));
+      testResult.setStatus(ITestResult.SKIP);
+      result.add(testResult);
+      m_notifier.addSkippedTest(testMethod, testResult);
+      runTestListeners(testResult);
+      return result;
+    }
+
+
+    final Map<String, String> parameters =
+        testMethod.findMethodParameters(testContext.getCurrentXmlTest());
+
+    // For invocationCount > 1 and threadPoolSize > 1 run this method in its own pool thread.
+    if (testMethod.getInvocationCount() > 1 && testMethod.getThreadPoolSize() > 1) {
+      return invokePooledTestMethods(testMethod, suite, parameters, groupMethods, testContext);
+    }
+
     long timeOutInvocationCount = testMethod.getInvocationTimeOut();
     //FIXME: Is this correct?
     boolean onlyOne = testMethod.getThreadPoolSize() > 1 ||
@@ -1104,34 +1132,8 @@ public class Invoker implements IInvoker {
         MethodHelper.findExpectedExceptions(m_annotationFinder, testMethod.getMethod());
     final FailureContext failure = new FailureContext();
     while(invocationCount-- > 0) {
-      String okToProceed = checkDependencies(testMethod, testContext.getAllTestMethods());
-
-      if (okToProceed != null) {
-        //
-        // Not okToProceed. Test is being skipped
-        //
-        ITestResult testResult = new TestResult(testClass, null /* instance */,
-                                               testMethod,
-                                               null /* cause */,
-                                               start,
-                                               System.currentTimeMillis(),
-                                               m_testContext);
-        testResult.setThrowable(new Throwable(okToProceed));
-        testResult.setStatus(ITestResult.SKIP);
-        result.add(testResult);
-        m_notifier.addSkippedTest(testMethod, testResult);
-        runTestListeners(testResult);
-        return result;
-      }
-
-      //
-      // If threadPoolSize specified, run this method in its own pool thread.
-      //
-      Map<String, String> parameters =
-          testMethod.findMethodParameters(testContext.getCurrentXmlTest());
-      if (testMethod.getThreadPoolSize() > 1 && testMethod.getInvocationCount() > 1) {
-          return invokePooledTestMethods(testMethod, suite,
-              parameters, groupMethods, testContext);
+      if(false) {
+        // Prevent code formatting
       }
       //
       // No threads, regular invocation
