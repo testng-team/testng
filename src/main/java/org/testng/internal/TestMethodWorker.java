@@ -108,7 +108,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
       // Invoke test method
       try {
-        invokeTestMethods(testMethod, testMthdInst.getInstances(), m_testContext);
+        invokeTestMethods(testMethod, testMthdInst.getInstance(), m_testContext);
       }
       finally {
         invokeAfterClassMethods(testClass, testMthdInst);
@@ -116,7 +116,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     }
   }
 
-  protected void invokeTestMethods(ITestNGMethod tm, Object[] instances,
+  protected void invokeTestMethods(ITestNGMethod tm, Object instance,
       ITestContext testContext)
   {
     // Potential bug here:  we look up the method index of tm among all
@@ -131,7 +131,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
             m_suite,
             m_parameters,
             m_groupMethods,
-            instances,
+            instance,
             testContext);
 
     if (testResults != null) {

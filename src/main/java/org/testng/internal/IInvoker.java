@@ -51,7 +51,7 @@ public interface IInvoker {
                                              XmlSuite suite,
                                              Map<String, String> parameters,
                                              ConfigurationGroupMethods groupMethods,
-                                             Object[] instances,
+                                             Object instance,
                                              ITestContext testContext);
 
 }

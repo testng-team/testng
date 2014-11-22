@@ -15,7 +15,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
 
   private ITestNGMethod m_testMethod;
   private Object[] m_parameterValues;
-  private Object[] m_instances;
+  private Object m_instance;
   private XmlSuite m_xmlSuite;
   private Map<String, String> m_parameters;
   private ITestClass m_testClass;
@@ -35,7 +35,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
 
   public TestMethodWithDataProviderMethodWorker(Invoker invoker, ITestNGMethod testMethod,
       int parameterIndex,
-      Object[] parameterValues, Object[] instances, XmlSuite suite,
+      Object[] parameterValues, Object instance, XmlSuite suite,
       Map<String, String> parameters, ITestClass testClass,
       ITestNGMethod[] beforeMethods, ITestNGMethod[] afterMethods,
       ConfigurationGroupMethods groupMethods, ExpectedExceptionsHolder expectedExceptionHolder,
@@ -45,7 +45,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
     m_testMethod = testMethod;
     m_parameterIndex = parameterIndex;
     m_parameterValues = parameterValues;
-    m_instances = instances;
+    m_instance = instance;
     m_xmlSuite = suite;
     m_parameters = parameters;
     m_testClass = testClass;
@@ -70,16 +70,16 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
     long start = System.currentTimeMillis();
 
     try {
-      tmpResults.addAll(m_invoker.invokeTestMethod(m_instances,
-           m_testMethod,
-           m_parameterValues,
-           m_parameterIndex,
-           m_xmlSuite,
-           m_parameters,
-           m_testClass,
-           m_beforeMethods,
-           m_afterMethods,
-           m_groupMethods));
+      tmpResults.addAll(m_invoker.invokeTestMethod(m_instance,
+          m_testMethod,
+          m_parameterValues,
+          m_parameterIndex,
+          m_xmlSuite,
+          m_parameters,
+          m_testClass,
+          m_beforeMethods,
+          m_afterMethods,
+          m_groupMethods));
     }
     finally {
       List<Object> failedInstances = Lists.newArrayList();
@@ -94,8 +94,8 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
           List<ITestResult> retryResults = Lists.newArrayList();
 
           m_failureCount =
-             m_invoker.retryFailed(failedInstances.toArray(),
-                 i, m_testMethod, m_xmlSuite, m_testClass, m_beforeMethods,
+             m_invoker.retryFailed(failedInstances.get(i),
+                 m_testMethod, m_xmlSuite, m_testClass, m_beforeMethods,
                  m_afterMethods, m_groupMethods, retryResults,
                  m_failureCount, m_expectedExceptionHolder,
                  m_testContext, m_parameters, m_parameterIndex);
@@ -118,7 +118,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
         while (m_invocationCount-- > 0) {
           ITestResult r =
             new TestResult(m_testMethod.getTestClass(),
-              m_instances[0],
+              m_instance,
               m_testMethod,
               null,
               start,
