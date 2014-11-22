@@ -1104,9 +1104,9 @@ public class Invoker implements IInvoker {
         MethodHelper.findExpectedExceptions(m_annotationFinder, testMethod.getMethod());
     final FailureContext failure = new FailureContext();
     while(invocationCount-- > 0) {
-      boolean okToProceed = checkDependencies(testMethod, testContext.getAllTestMethods());
+      String okToProceed = checkDependencies(testMethod, testContext.getAllTestMethods());
 
-      if (!okToProceed) {
+      if (okToProceed != null) {
         //
         // Not okToProceed. Test is being skipped
         //
@@ -1116,12 +1116,7 @@ public class Invoker implements IInvoker {
                                                start,
                                                System.currentTimeMillis(),
                                                m_testContext);
-        String missingGroup = testMethod.getMissingGroup();
-        if (missingGroup != null) {
-          testResult.setThrowable(new Throwable("Method " + testMethod
-              + " depends on nonexistent group \"" + missingGroup + "\""));
-        }
-
+        testResult.setThrowable(new Throwable(okToProceed));
         testResult.setStatus(ITestResult.SKIP);
         result.add(testResult);
         m_notifier.addSkippedTest(testMethod, testResult);
@@ -1595,51 +1590,55 @@ public class Invoker implements IInvoker {
    * Checks to see of the test method has certain dependencies that prevents
    * TestNG from executing it
    * @param testMethod test method being checked for
-   * @param testClass
-   * @return dependencies have been run successfully
+   * @return error message or null if dependencies have been run successfully
    */
-  private boolean checkDependencies(ITestNGMethod testMethod,
-      ITestNGMethod[] allTestMethods)
+  private String checkDependencies(ITestNGMethod testMethod,
+                                   ITestNGMethod[] allTestMethods)
   {
-    boolean result = true;
-
     // If this method is marked alwaysRun, no need to check for its dependencies
     if (testMethod.isAlwaysRun()) {
-      return true;
+      return null;
     }
 
     // Any missing group?
     if (testMethod.getMissingGroup() != null
-          && !testMethod.ignoreMissingDependencies()) {
-      return false;
+        && !testMethod.ignoreMissingDependencies()) {
+      return "Method " + testMethod + " depends on nonexistent group \"" + testMethod.getMissingGroup() + "\"";
     }
 
     // If this method depends on groups, collect all the methods that
     // belong to these groups and make sure they have been run successfully
-    if (dependsOnGroups(testMethod)) {
-      String[] groupsDependedUpon = testMethod.getGroupsDependedUpon();
-
+    final String[] groups = testMethod.getGroupsDependedUpon();
+    if (null != groups && groups.length > 0) {
       // Get all the methods that belong to the group depended upon
-      for (String element : groupsDependedUpon) {
+      for (String element : groups) {
         ITestNGMethod[] methods =
-          MethodGroupsHelper.findMethodsThatBelongToGroup(testMethod,
-              m_testContext.getAllTestMethods(),
-              element);
-
-        result = result && haveBeenRunSuccessfully(testMethod, methods);
+            MethodGroupsHelper.findMethodsThatBelongToGroup(testMethod,
+                m_testContext.getAllTestMethods(),
+                element);
+        if (methods.length == 0 && !testMethod.ignoreMissingDependencies()) {
+          // Group is missing
+          return "Method " + testMethod + " depends on nonexistent group \"" + element + "\"";
+        }
+        if (!haveBeenRunSuccessfully(testMethod, methods)) {
+          return "Method " + testMethod +
+              " depends on not successfully finished methods in group \"" + element + "\"";
+        }
       }
     } // depends on groups
 
     // If this method depends on other methods, make sure all these other
     // methods have been run successfully
-    if (result && dependsOnMethods(testMethod)) {
+    if (dependsOnMethods(testMethod)) {
       ITestNGMethod[] methods =
-        MethodHelper.findDependedUponMethods(testMethod, allTestMethods);
+          MethodHelper.findDependedUponMethods(testMethod, allTestMethods);
 
-      result = result && haveBeenRunSuccessfully(testMethod, methods);
+      if (!haveBeenRunSuccessfully(testMethod, methods)) {
+        return "Method " + testMethod + " depends on not successfully finished methods";
+      }
     }
 
-    return result;
+    return null;
   }
 
   /**
@@ -1787,14 +1786,6 @@ public class Invoker implements IInvoker {
     ITestNGMethod[] result= vResult.toArray(new ITestNGMethod[vResult.size()]);
 
     return result;
-  }
-
-  /**
-   * @return true if this method depends on certain groups.
-   */
-  private boolean dependsOnGroups(ITestNGMethod tm) {
-    String[] groups = tm.getGroupsDependedUpon();
-    return null != groups && groups.length > 0;
   }
 
   /**
