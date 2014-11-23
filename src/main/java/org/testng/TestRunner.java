@@ -25,7 +25,10 @@ import org.testng.internal.ClassImpl;
 import org.testng.internal.ClassInfoMap;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.DynamicGraph;
+import org.testng.internal.DynamicGraph.Edge;
 import org.testng.internal.DynamicGraph.Status;
+import org.testng.internal.Graph;
+import org.testng.internal.Graph.Node;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IInvoker;
 import org.testng.internal.ITestResultNotifier;
@@ -1107,7 +1110,9 @@ public class TestRunner
 
     // Group by instances
     if (getCurrentXmlTest().getGroupByInstances()) {
-      ListMultiMap<ITestNGMethod, ITestNGMethod> instanceDependencies = createInstanceDependencies(methods);
+      ListMultiMap<ITestNGMethod, ITestNGMethod> instanceDependencies
+          = createInstanceDependencies(methods, result);
+
       for (Map.Entry<ITestNGMethod, List<ITestNGMethod>> es : instanceDependencies.entrySet()) {
         result.addEdge(PriorityWeight.groupByInstance.ordinal(), es.getKey(), es.getValue());
       }
@@ -1116,32 +1121,60 @@ public class TestRunner
     return result;
   }
 
-  private ListMultiMap<ITestNGMethod, ITestNGMethod> createInstanceDependencies(ITestNGMethod[] methods) {
-    ListMultiMap<Object, ITestNGMethod> instanceMap = Maps.newSortedListMultiMap();
+  private ListMultiMap<ITestNGMethod, ITestNGMethod> createInstanceDependencies(
+      ITestNGMethod[] methods, DynamicGraph<ITestNGMethod> graph) {
+    ListMultiMap<Object, ITestNGMethod> map = Maps.newListMultiMap();
     for (ITestNGMethod m : methods) {
-      instanceMap.put(m.getInstance(), m);
+      map.put(m.getInstance(), m);
     }
 
-    ListMultiMap<ITestNGMethod, ITestNGMethod> result = Maps.newListMultiMap();
+    final Graph<Object> dag = new Graph<>(new Comparator<Node<Object>>() {
+      @Override
+      public int compare(Node<Object> o1, Node<Object> o2) {
+        return 0;
+      }
+    });
+    for (Object instance : map.keySet()) {
+      dag.addNode(instance);
+    }
+    for (Map.Entry<ITestNGMethod, List<Edge<ITestNGMethod>>> entry : graph.getEdges().entrySet()) {
+      final ITestNGMethod from = entry.getKey();
+      final Object fromInstance = from.getInstance();
+      for (Edge<ITestNGMethod> edge : entry.getValue()) {
+        // Inverted because in DynamicGraph 'is required for' relation used.
+        final Object toInstance = edge.getTo().getInstance();
+        if (toInstance != fromInstance && !toInstance.equals(fromInstance)) {
+          dag.addPredecessor(toInstance, fromInstance);
+        }
+      }
+    }
+    dag.topologicalSort();
+
+    // Now we have instances graph like methods graph.
+    ArrayList<Object> toposorted = new ArrayList<>(map.size());
+    toposorted.addAll(dag.getIndependentNodes());
+    toposorted.addAll(dag.getStrictlySortedNodes());
+
+    ListMultiMap<ITestNGMethod, ITestNGMethod> result = new ListMultiMap<>(true);
     Object previousInstance = null;
-    for (Map.Entry<Object, List<ITestNGMethod>> es : instanceMap.entrySet()) {
+    for (Object instance : toposorted) {
       if (previousInstance == null) {
-        previousInstance = es.getKey();
+        previousInstance = instance;
       } else {
-        List<ITestNGMethod> previousMethods = instanceMap.get(previousInstance);
-        Object currentInstance = es.getKey();
-        List<ITestNGMethod> currentMethods = instanceMap.get(currentInstance);
+        List<ITestNGMethod> previousMethods = map.get(previousInstance);
+        List<ITestNGMethod> currentMethods = map.get(instance);
         // Make all the methods from the current instance depend on the methods of
         // the previous instance
         for (ITestNGMethod cm : currentMethods) {
           for (ITestNGMethod pm : previousMethods) {
-            result.put(cm, pm);
+            // 'Is required for'
+            result.put(pm, cm);
           }
         }
-        previousInstance = currentInstance;
+        previousInstance = instance;
       }
     }
-
+    // TODO: check for cycles?
     return result;
   }
 

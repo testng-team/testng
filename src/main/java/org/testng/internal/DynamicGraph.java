@@ -28,7 +28,7 @@ public class DynamicGraph<T> {
     READY, RUNNING, FINISHED
   }
 
-  private static class Edge<T> {
+  public static class Edge<T> {
     private final T from;
     private final T to;
     private final int weight;
@@ -37,6 +37,14 @@ public class DynamicGraph<T> {
       this.from = from;
       this.to = to;
       this.weight = weight;
+    }
+
+    public T getFrom() {
+      return from;
+    }
+
+    public T getTo() {
+      return to;
     }
   }
 
