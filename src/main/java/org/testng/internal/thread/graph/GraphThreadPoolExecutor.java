@@ -33,8 +33,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
 
   public GraphThreadPoolExecutor(DynamicGraph<T> graph, IThreadWorkerFactory<T> factory, int corePoolSize,
       int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
-    super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue
-        /* , new TestNGThreadPoolFactory() */);
+    super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, new TestNGThreadPoolFactory());
     ppp("Initializing executor with " + corePoolSize + " threads and following graph " + graph);
     m_threadCount = maximumPoolSize;
     m_graph = graph;
@@ -148,7 +147,9 @@ class TestNGThreadPoolFactory implements ThreadFactory {
   @Override
   public Thread newThread(Runnable r) {
     Thread result = new Thread(r);
-    result.setName("TestNG-" + m_count++);
+    // using 'TestNG' may have caveats here because of ThreadUtil#isTestNGThread()
+    // inside MethodInvocationHelper#invokeWithTimeout()
+    result.setName("TestNG-Worker-" + m_count++);
     return result;
   }
 }
