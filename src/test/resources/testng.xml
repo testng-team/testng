@@ -463,6 +463,7 @@
       <class name="test.dataprovider.IterableTest" />
       <class name="test.dataprovider.ConfigurationAndDataProvidersTest" />
       <class name="test.dataprovider.BooleanTest" />
+      <class name="test.dataprovider.ExplicitDataProviderNameTest" />
       <class name="test.dataprovider.MethodTest"/>
       <class name="test.dataprovider.StaticDataProviderSampleTest" />
       <class name="test.dataprovider.UnnamedDataProviderTest" />
