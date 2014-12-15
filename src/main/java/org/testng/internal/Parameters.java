@@ -15,6 +15,7 @@ import org.testng.internal.ParameterHolder.ParameterOrigin;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IDataProvidable;
+import org.testng.util.Strings;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
@@ -326,7 +327,7 @@ public class Parameters {
     for (Method m : ClassHelper.getAvailableMethods(cls)) {
       IDataProviderAnnotation dp = (IDataProviderAnnotation)
           finder.findAnnotation(m, IDataProviderAnnotation.class);
-      if (null != dp && (name.equals(dp.getName()) || name.equals(m.getName()))) {
+      if (null != dp && name.equals(getDataProviderName(dp, m))) {
         if (shouldBeStatic && (m.getModifiers() & Modifier.STATIC) == 0) {
           throw new TestNGException("DataProvider should be static: " + m);
         }
@@ -341,6 +342,10 @@ public class Parameters {
     return result;
   }
 
+  private static String getDataProviderName(IDataProviderAnnotation dp, Method m) {
+	  return Strings.isNullOrEmpty(dp.getName()) ? m.getName() : dp.getName();
+  }
+  
   @SuppressWarnings({"deprecation"})
   private static Object[] createParameters(Method m, MethodParameters params,
       IAnnotationFinder finder, XmlSuite xmlSuite, Class annotationClass, String atName)
