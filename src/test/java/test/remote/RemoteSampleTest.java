@@ -1,5 +1,7 @@
 package test.remote;
 
+import java.io.Serializable;
+
 import org.testng.annotations.Test;
 
 /**
@@ -8,9 +10,14 @@ import org.testng.annotations.Test;
  * @author Cedric Beust <cedric@beust.com>
  *
  */
-public class RemoteSampleTest {
+public class RemoteSampleTest implements Serializable{
 
-  @Test
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3179613214871596418L;
+
+@Test
   public void f1() {}
 
   @Test
