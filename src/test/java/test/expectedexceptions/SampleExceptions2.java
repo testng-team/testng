@@ -39,6 +39,11 @@ public class SampleExceptions2 {
   public void shouldPass3() {
     throw new NumberFormatException(null);
   }
+  
+  @Test(expectedExceptions = NumberFormatException.class, expectedExceptionsMessageRegExp = "Multiline.*")
+  public void shouldPass4() {
+      throw new NumberFormatException("Multiline\nException");
+  }
 
   @Test(expectedExceptions = RuntimeException.class)
   public void shouldFail4() {

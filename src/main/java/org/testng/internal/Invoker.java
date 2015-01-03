@@ -1572,7 +1572,7 @@ public class Invoker implements IInvoker {
       if (ite.getMessage() == null) {
         return false;
       } else {
-        return Pattern.matches(messageRegExp, ite.getMessage());
+        return Pattern.compile(messageRegExp, Pattern.DOTALL).matcher(ite.getMessage()).matches();
       }
     }
   }
