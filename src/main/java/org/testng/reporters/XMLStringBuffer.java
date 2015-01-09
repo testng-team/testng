@@ -14,8 +14,8 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a> Jul 21, 2003
  */
 public class XMLStringBuffer {
-  /** End of line */
-  private static final String EOL = System.getProperty("line.separator");
+  /** End of line, value of 'line.separator' system property or '\n' */
+  private static final String EOL = System.getProperty("line.separator", "\n");
 
   /** Tab space indent for XML document */
   private static final String DEFAULT_INDENT_INCREMENT = "  ";
