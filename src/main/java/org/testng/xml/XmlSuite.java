@@ -1,7 +1,12 @@
 package org.testng.xml;
 
-import static org.testng.collections.CollectionUtils.hasElements;
-import static org.testng.internal.Utils.isStringNotEmpty;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 import org.testng.ITestObjectFactory;
 import org.testng.TestNG;
@@ -12,13 +17,8 @@ import org.testng.xml.dom.OnElement;
 import org.testng.xml.dom.OnElementList;
 import org.testng.xml.dom.Tag;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import static org.testng.collections.CollectionUtils.hasElements;
+import static org.testng.internal.Utils.isStringNotEmpty;
 
 /**
  * This class describes the tag &lt;suite&gt; in testng.xml.
@@ -439,6 +439,8 @@ public class XmlSuite implements Serializable, Cloneable {
     if(isStringNotEmpty(parallel) && !DEFAULT_PARALLEL.equals(parallel)) {
       p.setProperty("parallel", parallel);
     }
+    XmlUtils.setProperty(p, "group-by-instances", String.valueOf(getGroupByInstances()),
+        DEFAULT_GROUP_BY_INSTANCES.toString());
     XmlUtils.setProperty(p, "configfailurepolicy", getConfigFailurePolicy(),
         DEFAULT_CONFIG_FAILURE_POLICY);
     XmlUtils.setProperty(p, "thread-count", String.valueOf(getThreadCount()),
