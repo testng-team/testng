@@ -33,9 +33,8 @@ import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
+import org.testng.collections.Lists;
 import org.testng.internal.Utils;
-
-import com.google.inject.internal.Lists;
 
 /**
  * This class creates implementations of IAnnotations based on the JDK5
