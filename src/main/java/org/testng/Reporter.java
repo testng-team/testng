@@ -1,11 +1,13 @@
 package org.testng;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.internal.TestResult;
 import org.testng.util.Strings;
 
 /**
@@ -19,7 +21,7 @@ import org.testng.util.Strings;
  * The reporter keeps a combined output of strings (in m_output) and also
  * a record of which method output which line.  In order to do this, callers
  * specify what the current method is with setCurrentTestResult() and the
- * Reporter maintaing a mapping of each test result with a list of integers.
+ * Reporter maintains a mapping of each test result with a list of integers.
  * These integers are indices in the combined output (avoids duplicating
  * the output).
  *
@@ -41,6 +43,9 @@ public class Reporter {
   private static Map<Integer, List<Integer>> m_methodOutputMap = Maps.newHashMap();
 
   private static boolean m_escapeHtml = false;
+  //This variable is responsible for persisting all output that is yet to be associated with any
+  //valid TestResult objects.
+  private static ThreadLocal<List<String>> orphanedOutput = new InheritableThreadLocal<List<String>>();
 
   public static void setCurrentTestResult(ITestResult m) {
     m_currentTestResult.set(m);
@@ -71,12 +76,29 @@ public class Reporter {
       s = Strings.escapeHtml(s);
     }
 
+    if (m == null) {
+      //Persist the output temporarily into a Threadlocal String list.
+      if (orphanedOutput.get() == null) {
+        orphanedOutput.set(new ArrayList<String>());
+      }
+      orphanedOutput.get().add(s);
+      return;
+    }
+
     // synchronization needed to ensure the line number and m_output are updated atomically
     int n = getOutput().size();
+
     List<Integer> lines = m_methodOutputMap.get(m.hashCode());
     if (lines == null) {
       lines = Lists.newArrayList();
       m_methodOutputMap.put(m.hashCode(), lines);
+    }
+    //Lets check if there were already some orphaned output for the current Thread.
+    if (orphanedOutput.get() != null) {
+      n = n + orphanedOutput.get().size();
+      getOutput().addAll(orphanedOutput.get());
+      //since we have already added all of the orphaned output to the current TestResult, lets clear it off
+      orphanedOutput.remove();
     }
     lines.add(n);
     getOutput().add(s);
