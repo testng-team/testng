@@ -11,7 +11,7 @@ import org.testng.internal.Utils;
 public class JUnit4TestMethod extends JUnitTestMethod {
 
     public JUnit4TestMethod(JUnitTestClass owner, Description desc) {
-        super(owner, getMethod(desc), desc);
+        super(owner, desc.getMethodName(), getMethod(desc), desc);
     }
 
     @Override
@@ -22,6 +22,10 @@ public class JUnit4TestMethod extends JUnitTestMethod {
     private static Method getMethod(Description desc) {
         Class<?> c = desc.getTestClass();
         String method = desc.getMethodName();
+        int idx = method.indexOf('[');
+        if (idx != -1) {
+            method = method.substring(0, idx);
+        }
         try {
             return c.getMethod(method);
         } catch (Throwable t) {

@@ -12,7 +12,11 @@ import org.testng.internal.BaseTestMethod;
 public abstract class JUnitTestMethod extends BaseTestMethod {
 
     protected JUnitTestMethod(JUnitTestClass owner, Method method, Object instance) {
-        super(method, null, instance);
+        this(owner, method.getName(), method, instance);
+    }
+
+    protected JUnitTestMethod(JUnitTestClass owner, String methodName, Method method, Object instance) {
+        super(methodName, method, null, instance);
         setTestClass(owner);
         owner.getTestMethodList().add(this);
     }

@@ -59,7 +59,7 @@ public class ConfigurationMethod extends BaseTestMethod {
                               boolean initialize,
                               Object instance)
   {
-    super(com, annotationFinder, instance);
+    super(com.getName(), com, annotationFinder, instance);
     if(initialize) {
       init();
     }

@@ -82,15 +82,15 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    * @param annotationFinder
    * @param instance 
    */
-  public BaseTestMethod(Method method, IAnnotationFinder annotationFinder, Object instance) {
-    this(new ConstructorOrMethod(method), annotationFinder, instance);
+  public BaseTestMethod(String methodName, Method method, IAnnotationFinder annotationFinder, Object instance) {
+    this(methodName, new ConstructorOrMethod(method), annotationFinder, instance);
   }
 
-  public BaseTestMethod(ConstructorOrMethod com, IAnnotationFinder annotationFinder,
+  public BaseTestMethod(String methodName, ConstructorOrMethod com, IAnnotationFinder annotationFinder,
       Object instance) {
     m_methodClass = com.getDeclaringClass();
     m_method = com;
-    m_methodName = com.getName();
+    m_methodName = methodName;
     m_annotationFinder = annotationFinder;
     m_instance = instance;
     m_signature = computeSignature();
