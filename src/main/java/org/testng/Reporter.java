@@ -7,7 +7,6 @@ import java.util.Vector;
 
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.TestResult;
 import org.testng.util.Strings;
 
 /**
@@ -45,7 +44,7 @@ public class Reporter {
   private static boolean m_escapeHtml = false;
   //This variable is responsible for persisting all output that is yet to be associated with any
   //valid TestResult objects.
-  private static ThreadLocal<List<String>> orphanedOutput = new InheritableThreadLocal<List<String>>();
+  private static ThreadLocal<List<String>> m_orphanedOutput = new InheritableThreadLocal<List<String>>();
 
   public static void setCurrentTestResult(ITestResult m) {
     m_currentTestResult.set(m);
@@ -78,10 +77,10 @@ public class Reporter {
 
     if (m == null) {
       //Persist the output temporarily into a Threadlocal String list.
-      if (orphanedOutput.get() == null) {
-        orphanedOutput.set(new ArrayList<String>());
+      if (m_orphanedOutput.get() == null) {
+        m_orphanedOutput.set(new ArrayList<String>());
       }
-      orphanedOutput.get().add(s);
+      m_orphanedOutput.get().add(s);
       return;
     }
 
@@ -93,12 +92,14 @@ public class Reporter {
       lines = Lists.newArrayList();
       m_methodOutputMap.put(m.hashCode(), lines);
     }
-    //Lets check if there were already some orphaned output for the current Thread.
-    if (orphanedOutput.get() != null) {
-      n = n + orphanedOutput.get().size();
-      getOutput().addAll(orphanedOutput.get());
-      //since we have already added all of the orphaned output to the current TestResult, lets clear it off
-      orphanedOutput.remove();
+
+    // Check if there was already some orphaned output for the current thread.
+    if (m_orphanedOutput.get() != null) {
+      n = n + m_orphanedOutput.get().size();
+      getOutput().addAll(m_orphanedOutput.get());
+      // Since we have already added all of the orphaned output to the current
+      // TestResult, lets clear it off
+      m_orphanedOutput.remove();
     }
     lines.add(n);
     getOutput().add(s);
