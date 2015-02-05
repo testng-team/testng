@@ -56,7 +56,15 @@ public class TestNGClassFinder extends BaseClassFinder {
       for (Class cls : allClasses) {
         try {
           if (null != cls) {
-            for (Method m : cls.getMethods()) {
+            Method[] ms;
+            try {
+              ms = cls.getMethods();
+            } catch (NoClassDefFoundError e) {
+              // https://github.com/cbeust/testng/issues/602
+              ppp("Warning: Can't link and determine methods of " + cls);
+              ms = new Method[0];
+            }
+            for (Method m : ms) {
               IAnnotation a = annotationFinder.findAnnotation(m,
                   org.testng.annotations.IObjectFactoryAnnotation.class);
               if (null != a) {
