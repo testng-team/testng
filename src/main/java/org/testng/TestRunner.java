@@ -899,7 +899,6 @@ public class TestRunner
           methodInstances.toArray(new IMethodInstance[methodInstances.size()]),
           m_xmlTest.getSuite(),
           m_xmlTest.getAllParameters(),
-          m_allTestMethods,
           m_groupMethods,
           m_classMethodMap,
           this);
@@ -938,7 +937,6 @@ public class TestRunner
         findClasses(methodInstances, c),
         m_xmlTest.getSuite(),
         params,
-        m_allTestMethods,
         m_groupMethods,
         m_classMethodMap,
         this);

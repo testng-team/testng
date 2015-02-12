@@ -2,6 +2,7 @@ package org.testng.collections;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class Lists {
@@ -16,9 +17,7 @@ public class Lists {
 
   public static <K> List<K> newArrayList(K... elements) {
     List<K> result = new ArrayList<K>();
-    for (K e : elements) {
-      result.add(e);
-    }
+    Collections.addAll(result, elements);
     return result;
   }
 

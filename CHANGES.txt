@@ -1,6 +1,11 @@
 Current
 
-Fixed: GITHUB-376: Some results can be lost (Konstantin Savin)
+6.8.15:
+
+Fixed: OutOfMemoryException while generating reports.
+Fixed: GITHUB-566: Build does not fail when successPercentage for @Test is not met
+Fixed: XmlTest#setGroupInstances was not being shown in toXml().
+Fixed: GITHUB-376: Some results can be lost (Konstantin Savin).
 Fixed: Handle relative paths of Suite XML files properly (Nalin Makar)
 
 6.8.5:

@@ -1,18 +1,18 @@
 package org.testng.xml;
 
-import org.testng.TestNG;
-import org.testng.TestNGException;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.reporters.XMLStringBuffer;
-import org.testng.xml.dom.ParentSetter;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+
+import org.testng.TestNG;
+import org.testng.TestNGException;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
+import org.testng.reporters.XMLStringBuffer;
+import org.testng.xml.dom.ParentSetter;
 
 /**
  * This class describes the tag &lt;test&gt;  in testng.xml.
@@ -476,6 +476,10 @@ public class XmlTest implements Serializable, Cloneable {
     }
     if (m_threadCount != -1) {
       p.setProperty("thread-count", Integer.toString(m_threadCount));
+    }
+    if (m_groupByInstances != null) {
+      XmlUtils.setProperty(p, "group-by-instances", String.valueOf(getGroupByInstances()),
+          XmlSuite.DEFAULT_GROUP_BY_INSTANCES.toString());
     }
 
     xsb.push("test", p);
