@@ -1014,6 +1014,7 @@ public class Invoker implements IInvoker {
     final FailureContext failure = new FailureContext();
     failure.count = failureCount;
     do {
+      failure.instances = Lists.newArrayList ();
       Map<String, String> allParameters = Maps.newHashMap();
       /**
        * TODO: This recreates all the parameters every time when we only need
