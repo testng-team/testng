@@ -1,4 +1,5 @@
 Current
+Fixed: RetryAnalyzer loops endlessly. (Krishnan Mahadevan)
 
 6.8.15:
 
