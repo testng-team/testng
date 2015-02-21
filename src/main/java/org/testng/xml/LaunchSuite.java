@@ -10,8 +10,10 @@ import org.testng.remote.RemoteTestNG;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -205,7 +207,7 @@ public abstract class LaunchSuite {
     protected void saveSuiteContent(final File file, final XMLStringBuffer content) {
 
       try {
-        FileWriter fw = new FileWriter(file);
+        OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8"));
         try {
           fw.write(content.getStringBuffer().toString());
         }
