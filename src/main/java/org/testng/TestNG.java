@@ -1313,7 +1313,7 @@ public class TestNG {
     }
 
     for (IConfigurationListener cl : m_configuration.getConfigurationListeners()) {
-      result.addListener(cl);
+      result.addConfigurationListener(cl);
     }
 
     return result;
