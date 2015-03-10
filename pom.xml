@@ -131,9 +131,26 @@
       <optional>true</optional>
 	  </dependency>
 
-  </dependencies>    
-    
+  </dependencies>     
+  
+  <properties>
+  	<version.build.directory>${project.build.directory}/generated-sources/version</version.build.directory>
+  </properties>
+  
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>**/Version.java</include>
+        </includes>
+        <filtering>true</filtering>
+        <targetPath>${version.build.directory}</targetPath>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
     <plugins>
 
       <!-- Bundle sources -->
@@ -171,6 +188,28 @@
         <configuration>
           <encoding>UTF-8</encoding>
         </configuration>
+        <executions>
+          <execution>
+            <phase>process-sources</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${version.build.directory}</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
 
       <!-- OSGi manifest creation -->
