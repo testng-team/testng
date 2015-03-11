@@ -16,6 +16,7 @@ import org.testng.junit.IJUnitTestRunner;
 import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -63,6 +64,18 @@ public final class ClassHelper {
     }
     catch(SecurityException se) {
       throw new TestNGException(se);
+    }
+  }
+
+  public static <T> T newInstance(Constructor<T> constructor, Object... parameters) {
+    try {
+      return constructor.newInstance(parameters);
+    } catch (InstantiationException e) {
+      throw new TestNGException("Cannot instantiate class " + constructor.getDeclaringClass().getName(), e);
+    } catch (IllegalAccessException e) {
+      throw new TestNGException("Cannot instantiate class " + constructor.getDeclaringClass().getName(), e);
+    } catch (InvocationTargetException e) {
+      throw new TestNGException("Cannot instantiate class " + constructor.getDeclaringClass().getName(), e);
     }
   }
 

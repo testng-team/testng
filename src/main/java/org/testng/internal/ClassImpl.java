@@ -21,6 +21,7 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Map;
 
@@ -149,11 +150,11 @@ public class ClassImpl implements IClass {
     Injector injector = suite.getParentInjector();
     if (injector == null) {
       if (m_hasParentModule) {
-        Class<?> parentModule = ClassHelper.forName(suite.getParentModule());
+        Class<Module> parentModule = (Class<Module>) ClassHelper.forName(suite.getParentModule());
         if (parentModule == null) {
           throw new TestNGException("Cannot load parent Guice module class: " + parentModule);
         }
-        Module module = (Module) ClassHelper.newInstance(parentModule);
+        Module module = getModuleConstructor(parentModule);
         injector = com.google.inject.Guice.createInjector(module);
       } else {
         injector = com.google.inject.Guice.createInjector();
@@ -161,6 +162,15 @@ public class ClassImpl implements IClass {
       suite.setParentInjector(injector);
     }
     return injector;
+  }
+
+  private Module getModuleConstructor(Class<Module> module) {
+    try {
+      Constructor<Module> moduleConstructor = module.getDeclaredConstructor(ITestContext.class);
+      return ClassHelper.newInstance(moduleConstructor, m_testContext);
+    } catch (NoSuchMethodException e) {
+      return ClassHelper.newInstance(module);
+    }
   }
 
   private Module[] getModules(Guice guice, Injector parentInejctor, Class<?> testClass) {
