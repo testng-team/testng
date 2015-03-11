@@ -154,7 +154,7 @@ public class ClassImpl implements IClass {
         if (parentModule == null) {
           throw new TestNGException("Cannot load parent Guice module class: " + parentModule);
         }
-        Module module = getModuleConstructor(parentModule);
+        Module module = newModule(parentModule);
         injector = com.google.inject.Guice.createInjector(module);
       } else {
         injector = com.google.inject.Guice.createInjector();
@@ -164,7 +164,7 @@ public class ClassImpl implements IClass {
     return injector;
   }
 
-  private Module getModuleConstructor(Class<Module> module) {
+  private Module newModule(Class<Module> module) {
     try {
       Constructor<Module> moduleConstructor = module.getDeclaredConstructor(ITestContext.class);
       return ClassHelper.newInstance(moduleConstructor, m_testContext);
