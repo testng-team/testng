@@ -1,4 +1,6 @@
 Current
+Added: Drop support of Java6 and previous.
+Added: GITHUB-617: Allow injection of org.testng.ITestContext into the guice parent module. (Julien Herr)
 Fixed: RetryAnalyzer loops endlessly. (Krishnan Mahadevan)
 
 6.8.15:

@@ -34,7 +34,7 @@ TESTNG.REPORT.DIR=${testng.report.dir}
 
     <property name="build.compiler" value="modern"/>
     <javac debug="true"
-           source="1.5"
+           source="1.7"
            classpathref="compile.cp"
            srcdir="${test.dir}"
            destdir="${test.build.dir}"

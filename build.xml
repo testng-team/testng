@@ -30,16 +30,16 @@
   <!-- ====================================================================== -->
 
   <target name="validate" description="Validates the build environment.">
-    <!-- java greater than 1.5 required to build -->
+    <!-- java greater than 1.6 required to build -->
     <condition property="requiredJavaVersion">
       <or>
+        <equals arg1="${ant.java.version}" arg2="1.9" />
         <equals arg1="${ant.java.version}" arg2="1.8" />
         <equals arg1="${ant.java.version}" arg2="1.7" />
-        <equals arg1="${ant.java.version}" arg2="1.6" />
       </or>
     </condition>
     <fail unless="requiredJavaVersion"
-          message="Java version 1.5 required." />
+          message="Java version 1.7 required." />
     <!-- validate ant version too ... -->
   </target>
 
@@ -100,7 +100,7 @@
     <echo>Src:${src.dir}</echo>
     <javac classpathref="compile2.cp"
            verbose="false"
-           target="1.5"
+           target="1.7"
            debug="true"
            optimize="${optimize}"
            destdir="${build.dir}">
@@ -168,7 +168,7 @@
   </target>
 
   <target name="javadocs-current">
-    <javadoc additionalparam="-quiet" destdir="javadocs" source="1.5" windowtitle="TestNG"
+    <javadoc additionalparam="-quiet" destdir="javadocs" source="1.7" windowtitle="TestNG"
       classpath="${testng.jar}" classpathref="compile2.cp" verbose="false">
       <fileset dir="${src.dir}" defaultexcludes="yes">
         <include name="org/testng/*.java" />
