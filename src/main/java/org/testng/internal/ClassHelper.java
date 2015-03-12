@@ -70,11 +70,7 @@ public final class ClassHelper {
   public static <T> T newInstance(Constructor<T> constructor, Object... parameters) {
     try {
       return constructor.newInstance(parameters);
-    } catch (InstantiationException e) {
-      throw new TestNGException("Cannot instantiate class " + constructor.getDeclaringClass().getName(), e);
-    } catch (IllegalAccessException e) {
-      throw new TestNGException("Cannot instantiate class " + constructor.getDeclaringClass().getName(), e);
-    } catch (InvocationTargetException e) {
+    } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
       throw new TestNGException("Cannot instantiate class " + constructor.getDeclaringClass().getName(), e);
     }
   }
