@@ -15,3 +15,4 @@ src/test/java/test/ignore
 .idea
 testng.iml
 .ant-targets*
+nb-configuration.xml
