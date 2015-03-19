@@ -30,7 +30,7 @@ public class PackageUtils {
   private static String[] s_testClassPaths;
 
   /** The additional class loaders to find classes in. */
-  private static final List<ClassLoader> m_classLoaders = new Vector<ClassLoader>();
+  private static final List<ClassLoader> m_classLoaders = new Vector<>();
 
   /** Add a class loader to the searchable loaders. */
   public static void addClassLoader(final ClassLoader loader) {
@@ -58,9 +58,9 @@ public class PackageUtils {
     String packageDirName = packageOnly.replace('.', '/') + (packageOnly.length() > 0 ? "/" : "");
 
 
-    Vector<URL> dirs = new Vector<URL>();
+    Vector<URL> dirs = new Vector<>();
     // go through additional class loaders
-    Vector<ClassLoader> allClassLoaders = new Vector<ClassLoader>();
+    Vector<ClassLoader> allClassLoaders = new Vector<>();
     ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
     if (contextClassLoader != null) {
       allClassLoaders.add(contextClassLoader);
@@ -111,9 +111,9 @@ public class PackageUtils {
               packageName = name.substring(0, idx).replace('/', '.');
             }
 
-            Utils.log("PackageUtils", 4, "Package name is " + packageName);
-            if ((idx != -1) || recursive) {
+            if (recursive || packageName.equals(packageOnly)) {
               //it's not inside a deeper dir
+              Utils.log("PackageUtils", 4, "Package name is " + packageName);
               if (name.endsWith(".class") && !entry.isDirectory()) {
                 String className = name.substring(packageName.length() + 1, name.length() - 6);
                 Utils.log("PackageUtils", 4, "Found class " + className + ", seeing it if it's included or excluded");
