@@ -2,6 +2,7 @@ Current
 Added: Drop support of Java6 and previous.
 Added: GITHUB-617: Allow injection of org.testng.ITestContext into the guice parent module. (Julien Herr)
 Fixed: RetryAnalyzer loops endlessly. (Krishnan Mahadevan)
+Fixed: Start TestNG from jar cause recursive run of tests from packages in Suite XML without ".*" on the end (Stas Gromov)
 
 6.8.15:
 
