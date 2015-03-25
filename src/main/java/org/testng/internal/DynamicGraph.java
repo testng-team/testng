@@ -53,8 +53,14 @@ public class DynamicGraph<T> {
   public void addEdge(T from, T to) {
     addNode(from);
     addNode(to);
-    m_dependingOn.put(to, from);
-    m_dependedUpon.put(from, to);
+    final List<T> on = m_dependingOn.get(to);
+    if (on == null || !on.contains(from)) {
+      m_dependingOn.put(to, from);
+    }
+    final List<T> upon = m_dependedUpon.get(from);
+    if (upon == null || !upon.contains(to)) {
+      m_dependedUpon.put(from, to);
+    }
   }
 
   /**

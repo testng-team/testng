@@ -1,9 +1,11 @@
 package org.testng.internal.thread.graph;
 
 import org.testng.TestNGException;
+import org.testng.TestRunner;
 import org.testng.collections.Lists;
 import org.testng.internal.DynamicGraph;
 import org.testng.internal.DynamicGraph.Status;
+import org.testng.internal.Utils;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -21,38 +23,50 @@ import java.util.concurrent.TimeUnit;
  * {@code Runnable} wrappers around those tasks
  */
 public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
-  private static final boolean DEBUG = false;
-  /** Set to true if you want to generate GraphViz graphs */
-  private static final boolean DOT_FILES = false;
+  /**
+   * Set suite verbosity level to at least VERBOSE_LEVEL_FOR_DEBUG (8) if you want to generate GraphViz graphs
+   */
+  private static final int VERBOSE_LEVEL_FOR_DEBUG = 8;
 
-  private DynamicGraph<T> m_graph;
-  private List<Runnable> m_activeRunnables = Lists.newArrayList();
-  private IThreadWorkerFactory<T> m_factory;
-  private List<String> m_dotFiles = Lists.newArrayList();
-  private int m_threadCount;
+  private final DynamicGraph<T> m_graph;
+  private final IThreadWorkerFactory<T> m_factory;
+  private final List<String> m_dotFiles = Lists.newArrayList();
 
   public GraphThreadPoolExecutor(DynamicGraph<T> graph, IThreadWorkerFactory<T> factory, int corePoolSize,
       int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
-    super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue
-        /* , new TestNGThreadPoolFactory() */);
-    ppp("Initializing executor with " + corePoolSize + " threads and following graph " + graph);
-    m_threadCount = maximumPoolSize;
+    super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, new TestNGThreadPoolFactory());
+    debug("Initializing executor with " + corePoolSize + " threads and following graph " + graph);
     m_graph = graph;
     m_factory = factory;
 
+    if (isDebug()) {
+      try {
+        final File file = File.createTempFile("TestNG-Graph-Before-Run", ".dot");
+        final BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+        bw.append(m_graph.toDot());
+        bw.close();
+        debug("Created before run graph file: " + file);
+      } catch (IOException ex) {
+        ex.printStackTrace();
+      } catch (SecurityException ex) {
+        ex.printStackTrace();
+      }
+    }
+
     if (m_graph.getFreeNodes().isEmpty()) {
-      throw new TestNGException("The graph of methods contains a cycle:" + graph.getEdges());
+      final StringBuilder sb = new StringBuilder("The methods dependency graph contains a cycle.");
+      if (!isDebug()) {
+        sb.append("\nSet verbose level to at least ").append(VERBOSE_LEVEL_FOR_DEBUG).append(" to generate .dot file for graph");
+        sb.append("\nGraph:").append(graph.getEdges());
+      } else {
+        sb.append(" See graph .dot file path above");
+      }
+      throw new TestNGException(sb.toString());
     }
   }
 
   public void run() {
-    synchronized(m_graph) {
-      if (DOT_FILES) {
-        m_dotFiles.add(m_graph.toDot());
-      }
-      List<T> freeNodes = m_graph.getFreeNodes();
-      runNodes(freeNodes);
-    }
+    checkAndScheduleNext();
   }
 
   /**
@@ -61,14 +75,11 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
   private void runNodes(List<T> freeNodes) {
     List<IWorker<T>> runnables = m_factory.createWorkers(freeNodes);
     for (IWorker<T> r : runnables) {
-      m_activeRunnables.add(r);
-      ppp("Added to active runnable");
+      debug("Added to active runnable");
       setStatus(r, Status.RUNNING);
-      ppp("Executing: " + r);
+      debug("Executing: " + r);
       try {
         execute(r);
-//        if (m_threadCount > 1) execute(r);
-//        else r.run();
       }
       catch(Exception ex) {
         ex.printStackTrace();
@@ -77,10 +88,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
   }
 
   private void setStatus(IWorker<T> worker, Status status) {
-    ppp("Set status:" + worker + " status:" + status);
-    if (status == Status.FINISHED) {
-      m_activeRunnables.remove(worker);
-    }
+    debug("Set status:" + worker + " status:" + status);
     synchronized(m_graph) {
       for (T m : worker.getTasks()) {
         m_graph.setStatus(m, status);
@@ -90,28 +98,48 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
 
   @Override
   public void afterExecute(Runnable r, Throwable t) {
-    ppp("Finished runnable:" + r);
+    debug("Finished runnable:" + r);
+    //noinspection unchecked
     setStatus((IWorker<T>) r, Status.FINISHED);
-    synchronized(m_graph) {
-      ppp("Node count:" + m_graph.getNodeCount() + " and "
-          + m_graph.getNodeCountWithStatus(Status.FINISHED) + " finished");
-      if (m_graph.getNodeCount() == m_graph.getNodeCountWithStatus(Status.FINISHED)) {
-        ppp("Shutting down executor " + this);
-        if (DOT_FILES) {
-          generateFiles(m_dotFiles);
-        }
+    checkAndScheduleNext();
+  }
+
+  private void checkAndScheduleNext() {
+    synchronized (m_graph) {
+      final int total = m_graph.getNodeCount();
+      final int finished = m_graph.getNodeCountWithStatus(Status.FINISHED);
+      final int running = m_graph.getNodeCountWithStatus(Status.RUNNING);
+
+      debug("Nodes total: " + total + "; finished: " + finished + "; running: " + running);
+      if (total == finished) {
+        debug("All tasks finished. Shutting down executor " + this);
         shutdown();
+      } else if (total == finished + running) {
+        debug("All tasks finished or running.");
+        // Last worker will shutdown executor, not now.
       } else {
-        if (DOT_FILES) {
+        // Some nodes are ready to start or cycle exists
+        // Lets save graph state
+        if (isDebug()) {
           m_dotFiles.add(m_graph.toDot());
         }
-        List<T> freeNodes = m_graph.getFreeNodes();
+        final List<T> freeNodes = m_graph.getFreeNodes();
+        debug("Free nodes: " + freeNodes.size());
+        if (running == 0 && freeNodes.isEmpty()) {
+          shutdown();
+          throw new IllegalStateException("The graph of methods contains a cycle: " + m_graph.getEdges());
+        }
         runNodes(freeNodes);
       }
     }
-//    if (m_activeRunnables.isEmpty() && m_index < m_runnables.getSize()) {
-//      runNodes(m_index++);
-//    }
+  }
+
+  @Override
+  public void shutdown() {
+    if (isDebug() && !isShutdown()) {
+      generateFiles(m_dotFiles);
+    }
+    super.shutdown();
   }
 
   private void generateFiles(List<String> files) {
@@ -125,19 +153,22 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
         bw.append(files.get(i));
         bw.close();
       }
-      if (DOT_FILES) {
-        System.out.println("Created graph files in " + dir);
+      if (isDebug()) {
+        debug("Created graph files in " + dir);
       }
     } catch(IOException ex) {
       ex.printStackTrace();
     }
   }
 
-  private void ppp(String string) {
-    if (DEBUG) {
-      System.out.println("============ [GraphThreadPoolExecutor] " + Thread.currentThread().getId() + " "
-          + string);
+  private void debug(String string) {
+    if (isDebug()) {
+      Utils.log("GraphThreadPoolExecutor", VERBOSE_LEVEL_FOR_DEBUG, Thread.currentThread().getId() + " " + string);
     }
+  }
+
+  boolean isDebug() {
+    return TestRunner.getVerbose() >= VERBOSE_LEVEL_FOR_DEBUG;
   }
 
 }
@@ -148,7 +179,9 @@ class TestNGThreadPoolFactory implements ThreadFactory {
   @Override
   public Thread newThread(Runnable r) {
     Thread result = new Thread(r);
-    result.setName("TestNG-" + m_count++);
+    // using 'TestNG' may have caveats here because of ThreadUtil#isTestNGThread()
+    // inside MethodInvocationHelper#invokeWithTimeout()
+    result.setName("TestNG-Worker-" + m_count++);
     return result;
   }
 }

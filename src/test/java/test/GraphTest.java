@@ -62,9 +62,10 @@ public class GraphTest {
       g = createCyclicGraph();
       g.topologicalSort();
     }
-    catch(TestNGException ex) {
+    catch(Graph.CycleFoundException ex) {
       Tarjan<String> t = new Tarjan<String>(g, "1");
       Assert.assertEquals(t.getCycle().size(), 3);
+      Assert.assertEquals(ex.getCycle().size(), 3);
     }
 
   }

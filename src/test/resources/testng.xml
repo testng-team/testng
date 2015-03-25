@@ -740,5 +740,11 @@
     </classes>
   </test>
 
+  <test name="Issue 565">
+    <classes>
+      <class name="test.issue565.Issue565Test"/>
+    </classes>
+  </test>
+
 </suite>
 
