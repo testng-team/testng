@@ -49,51 +49,43 @@ public class TestNGClassFinder extends BaseClassFinder {
     //
     Set<Class<?>> allClasses= cim.getClasses();
 
-    //very first pass is to find ObjectFactory, can't create anything else until then
-    if(objectFactory == null) {
-      objectFactory = new ObjectFactoryImpl();
-      outer:
-      for (Class cls : allClasses) {
-        try {
-          if (null != cls) {
-            for (Method m : cls.getMethods()) {
-              IAnnotation a = annotationFinder.findAnnotation(m,
-                  org.testng.annotations.IObjectFactoryAnnotation.class);
-              if (null != a) {
-                if (!ITestObjectFactory.class.isAssignableFrom(m.getReturnType())) {
-                  throw new TestNGException("Return type of " + m + " is not IObjectFactory");
+    for (Class cls : allClasses) {
+      try {
+        if (null != cls) {
+          for (Method m : cls.getMethods()) {
+            IAnnotation a = annotationFinder.findAnnotation(m,
+              org.testng.annotations.IObjectFactoryAnnotation.class);
+            if (null != a) {
+              if (!ITestObjectFactory.class.isAssignableFrom(m.getReturnType())) {
+                throw new TestNGException("Return type of " + m + " is not IObjectFactory");
+              }
+              try {
+                Object instance = cls.newInstance();
+                if (m.getParameterTypes().length > 0 && m.getParameterTypes()[0].equals(ITestContext.class)) {
+                  objectFactory = (ITestObjectFactory) m.invoke(instance, testContext);
+                } else {
+                  objectFactory = (ITestObjectFactory) m.invoke(instance);
                 }
-                try {
-                  Object instance = cls.newInstance();
-                  if (m.getParameterTypes().length > 0 && m.getParameterTypes()[0].equals(ITestContext.class)) {
-                    objectFactory = (ITestObjectFactory) m.invoke(instance, testContext);
-                  } else {
-                    objectFactory = (ITestObjectFactory) m.invoke(instance);
-                  }
-                  break outer;
-                }
-                catch (Exception ex) {
-                  throw new TestNGException("Error creating object factory: " + cls,
-                      ex);
-                }
+              }
+              catch (Exception ex) {
+                throw new TestNGException("Error creating object factory: " + cls,
+                    ex);
               }
             }
           }
-        } catch (NoClassDefFoundError e) {
-          Utils.log("[TestNGClassFinder]", 1, "Unable to read methods on class " + cls.getName()
-              + " - unable to resolve class reference " + e.getMessage());
-
-          for (XmlClass xmlClass : xmlTest.getXmlClasses()) {
-            if (xmlClass.loadClasses() && xmlClass.getName().equals(cls.getName())) {
-              throw e;
-            }
-          }
-
         }
-      }
-    }
+      } catch (NoClassDefFoundError e) {
+        Utils.log("[TestNGClassFinder]", 1, "Unable to read methods on class " + cls.getName()
+            + " - unable to resolve class reference " + e.getMessage());
 
-    for(Class cls : allClasses) {
+        for (XmlClass xmlClass : xmlTest.getXmlClasses()) {
+          if (xmlClass.loadClasses() && xmlClass.getName().equals(cls.getName())) {
+            throw e;
+          }
+        }
+
+      }
+
       if((null == cls)) {
         ppp("FOUND NULL CLASS IN FOLLOWING ARRAY:");
         int i= 0;

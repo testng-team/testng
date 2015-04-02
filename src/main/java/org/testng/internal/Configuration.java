@@ -31,6 +31,7 @@ public class Configuration implements IConfiguration {
 
   private void init(IAnnotationFinder finder) {
     m_annotationFinder = finder;
+    m_objectFactory = new ObjectFactoryImpl();
   }
 
   @Override
