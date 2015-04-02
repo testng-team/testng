@@ -33,6 +33,7 @@ import org.testng.internal.Configuration;
 import org.testng.internal.DynamicGraph;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IResultListener2;
+import org.testng.internal.ObjectFactoryImpl;
 import org.testng.internal.OverrideProcessor;
 import org.testng.internal.SuiteRunnerMap;
 import org.testng.internal.Utils;
@@ -934,7 +935,10 @@ public class TestNG {
     m_configuration.setAnnotationFinder(new JDK15AnnotationFinder(getAnnotationTransformer()));
     m_configuration.setHookable(m_hookable);
     m_configuration.setConfigurable(m_configurable);
-    m_configuration.setObjectFactory(factory);
+    if(factory != null)
+      m_configuration.setObjectFactory(factory);
+    else 
+      m_configuration.setObjectFactory(new ObjectFactoryImpl());
   }
 
   /**
