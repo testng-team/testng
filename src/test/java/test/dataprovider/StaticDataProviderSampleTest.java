@@ -9,4 +9,9 @@ public class StaticDataProviderSampleTest {
   public void verifyStatic(String s) {
     Assert.assertEquals(s, "Cedric");
   }
+
+  @Test(dataProvider = "external", dataProviderClass = NonStaticProvider.class)
+  public void verifyExternal(String s) {
+    Assert.assertEquals(s, "Cedric");
+  }
 }

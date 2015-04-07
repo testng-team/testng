@@ -253,8 +253,9 @@ public class Parameters {
     return result;
   }
 
-  private static DataProviderHolder findDataProvider(Class clazz, ConstructorOrMethod m,
-      IAnnotationFinder finder) {
+  private static DataProviderHolder findDataProvider(Object instance, Class clazz,
+                                                     ConstructorOrMethod m,
+                                                     IAnnotationFinder finder) {
     DataProviderHolder result = null;
 
     IDataProvidable dp = findDataProviderInfo(clazz, m, finder);
@@ -263,7 +264,7 @@ public class Parameters {
       Class dataProviderClass = dp.getDataProviderClass();
 
       if (! Utils.isStringEmpty(dataProviderName)) {
-        result = findDataProvider(clazz, finder, dataProviderName, dataProviderClass);
+        result = findDataProvider(instance, clazz, finder, dataProviderName, dataProviderClass);
 
         if(null == result) {
           throw new TestNGException("Method " + m + " requires a @DataProvider named : "
@@ -313,8 +314,9 @@ public class Parameters {
   /**
    * Find a method that has a @DataProvider(name=name)
    */
-  private static DataProviderHolder findDataProvider(Class cls, IAnnotationFinder finder,
-      String name, Class dataProviderClass)
+  private static DataProviderHolder findDataProvider(Object instance, Class cls,
+                                                     IAnnotationFinder finder,
+                                                     String name, Class dataProviderClass)
   {
     DataProviderHolder result = null;
 
@@ -328,13 +330,13 @@ public class Parameters {
       IDataProviderAnnotation dp = finder.findAnnotation(m, IDataProviderAnnotation.class);
       if (null != dp && name.equals(getDataProviderName(dp, m))) {
         if (shouldBeStatic && (m.getModifiers() & Modifier.STATIC) == 0) {
-          throw new TestNGException("DataProvider should be static: " + m);
+          instance = ClassHelper.newInstance(dataProviderClass);
         }
 
         if (result != null) {
           throw new TestNGException("Found two providers called '" + name + "' on " + cls);
         }
-        result = new DataProviderHolder(dp, m);
+        result = new DataProviderHolder(dp, m, instance);
       }
     }
 
@@ -417,7 +419,7 @@ public class Parameters {
      * sets of parameters for this method
      */
     DataProviderHolder dataProviderHolder =
-        findDataProvider(testMethod.getTestClass().getRealClass(),
+        findDataProvider(instance, testMethod.getTestClass().getRealClass(),
             testMethod.getConstructorOrMethod(), annotationFinder);
 
     if (null != dataProviderHolder) {
@@ -429,7 +431,7 @@ public class Parameters {
       }
 
       parameters = MethodInvocationHelper.invokeDataProvider(
-          instance, /* a test instance or null if the dataprovider is static*/
+          dataProviderHolder.instance, /* a test instance or null if the dataprovider is static*/
           dataProviderHolder.method,
           testMethod,
           methodParams.context,
