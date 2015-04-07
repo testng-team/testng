@@ -1,4 +1,6 @@
 Current
+Added: GITHUB-631: Avoid the static limitation of external DataProvider. (Julien Herr)
+Added: GITHUB-631: Allow to use Guice injection in DataProvider. (Julien Herr)
 Added: Drop support of Java6 and previous.
 Added: GITHUB-617: Allow injection of org.testng.ITestContext into the guice parent module. (Julien Herr)
 Fixed: RetryAnalyzer loops endlessly. (Krishnan Mahadevan)
