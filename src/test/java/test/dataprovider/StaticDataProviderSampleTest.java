@@ -20,8 +20,13 @@ public class StaticDataProviderSampleTest {
     Assert.assertEquals(s, "Cedric");
   }
 
-  @Test(dataProvider = "injection", dataProviderClass = InjectionProvider.class)
-  public void verifyInjection(String s) {
+  @Test(dataProvider = "injection", dataProviderClass = FieldInjectionProvider.class)
+  public void verifyFieldInjection(String s) {
+    Assert.assertEquals(s, "Cedric");
+  }
+
+  @Test(dataProvider = "injection", dataProviderClass = ConstructorInjectionProvider.class)
+  public void verifyConstructorInjection(String s) {
     Assert.assertEquals(s, "Cedric");
   }
 

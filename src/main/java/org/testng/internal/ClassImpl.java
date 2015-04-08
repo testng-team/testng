@@ -128,10 +128,8 @@ public class ClassImpl implements IClass {
    */
   @SuppressWarnings("unchecked")
   private Object getInstanceFromGuice() {
-    Annotation annotation = AnnotationHelper.findAnnotationSuperClasses(Guice.class, m_class);
-    if (annotation == null) return null;
-
     Injector injector = m_testContext.getInjector(this);
+    if (injector == null) return null;
     return injector.getInstance(m_class);
   }
 

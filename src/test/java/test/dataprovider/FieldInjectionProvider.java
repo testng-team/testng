@@ -5,7 +5,7 @@ import com.google.inject.name.Named;
 
 import org.testng.annotations.DataProvider;
 
-public class InjectionProvider {
+public class FieldInjectionProvider {
 
   @Inject @Named("test")
   private String value;

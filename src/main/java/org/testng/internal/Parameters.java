@@ -324,8 +324,6 @@ public class Parameters {
   {
     DataProviderHolder result = null;
 
-    Injector injector = context.getInjector(clazz);
-
     Class cls = clazz.getRealClass();
     boolean shouldBeStatic = false;
     if (dataProviderClass != null) {
@@ -337,9 +335,9 @@ public class Parameters {
       IDataProviderAnnotation dp = finder.findAnnotation(m, IDataProviderAnnotation.class);
       if (null != dp && name.equals(getDataProviderName(dp, m))) {
         if (shouldBeStatic && (m.getModifiers() & Modifier.STATIC) == 0) {
-          instance = ClassHelper.newInstance(dataProviderClass);
+          Injector injector = context.getInjector(clazz);
           if (injector != null) {
-            injector.injectMembers(instance);
+            instance = injector.getInstance(dataProviderClass);
           }
         }
 
