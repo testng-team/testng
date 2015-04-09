@@ -2,6 +2,7 @@ package org.testng.internal.annotations;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -420,7 +421,7 @@ public class JDK15TagFactory {
 
   private String[] join(String[] strings, String[] strings2) {
     List<String> result = Lists.newArrayList(strings);
-    Set<String> seen = new HashSet<String>(Lists.newArrayList(strings));
+    Set<String> seen = new HashSet<>(Lists.newArrayList(strings));
     for (String s : strings2) {
       if (! seen.contains(s)) {
         result.add(s);
@@ -496,7 +497,7 @@ public class JDK15TagFactory {
       return new String[0];
     }
 
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
 
     while (cls != null && cls != Object.class) {
       Annotation annotation = cls.getAnnotation(annotationClass);

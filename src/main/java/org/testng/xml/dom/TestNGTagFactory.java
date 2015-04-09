@@ -1,12 +1,11 @@
 package org.testng.xml.dom;
 
+import java.util.HashMap;
 import java.util.Map;
-
-import org.testng.collections.Maps;
 
 public class TestNGTagFactory implements ITagFactory {
 
-  private Map<String, Class<?>> m_map = Maps.newHashMap();
+  private Map<String, Class<?>> m_map = new HashMap<>();
 
   public TestNGTagFactory() {
 //    m_map.put("suite-files", XDom.ChildSuite.class);

@@ -1,7 +1,6 @@
 package org.testng.internal.thread.graph;
 
 import org.testng.TestNGException;
-import org.testng.collections.Lists;
 import org.testng.internal.DynamicGraph;
 import org.testng.internal.DynamicGraph.Status;
 
@@ -9,6 +8,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -26,9 +26,9 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
   private static final boolean DOT_FILES = false;
 
   private DynamicGraph<T> m_graph;
-  private List<Runnable> m_activeRunnables = Lists.newArrayList();
+  private List<Runnable> m_activeRunnables = new ArrayList<>();
   private IThreadWorkerFactory<T> m_factory;
-  private List<String> m_dotFiles = Lists.newArrayList();
+  private List<String> m_dotFiles = new ArrayList<>();
   private int m_threadCount;
 
   public GraphThreadPoolExecutor(DynamicGraph<T> graph, IThreadWorkerFactory<T> factory, int corePoolSize,

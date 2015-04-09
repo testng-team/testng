@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.collections.Maps;
 import org.testng.mustache.Mustache;
 
 @Test
@@ -30,10 +30,10 @@ public class MustacheTest {
     }
   }
 
-  private static final List<Person> PEOPLE = new ArrayList<Person>(
+  private static final List<Person> PEOPLE = new ArrayList<>(
       Arrays.asList(new Person("Carl"), new Person("Christopher")));
 
-  private static final List<Age> AGES = new ArrayList<Age>(
+  private static final List<Age> AGES = new ArrayList<>(
       Arrays.asList(new Age(42), new Age(43)));
 
   @DataProvider
@@ -85,7 +85,7 @@ public class MustacheTest {
   }
 
   private Map<String, Object> create(Object... objects) {
-    Map<String, Object> result = Maps.newHashMap();
+    Map<String, Object> result = new HashMap<>();
     for (int i = 0; i < objects.length; i += 2) {
       result.put((String) objects[i], objects[i + 1]);
     }

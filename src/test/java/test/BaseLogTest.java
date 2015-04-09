@@ -1,8 +1,8 @@
 package test;
 
 import org.testng.annotations.BeforeSuite;
-import org.testng.collections.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,7 +15,7 @@ public class BaseLogTest {
 
   @BeforeSuite
   public void bc() {
-    m_log = Lists.newArrayList();
+    m_log = new ArrayList<>();
   }
 
   public static void log(String s) {

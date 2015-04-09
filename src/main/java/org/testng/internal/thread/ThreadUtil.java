@@ -1,8 +1,8 @@
 package org.testng.internal.thread;
 
-import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
@@ -55,7 +55,7 @@ public class ThreadUtil {
           }
         });
 
-    List<Callable<Object>> callables = Lists.newArrayList();
+    List<Callable<Object>> callables = new ArrayList<>();
     for (final Runnable task : tasks) {
       callables.add(new Callable<Object>() {
 
@@ -115,7 +115,7 @@ public class ThreadUtil {
 
   public static class ThreadFactoryImpl implements IThreadFactory, ThreadFactory {
     private String m_methodName;
-    private List<Thread> m_threads = Lists.newArrayList();
+    private List<Thread> m_threads = new ArrayList<>();
 
     public ThreadFactoryImpl(String name) {
       m_methodName= name;

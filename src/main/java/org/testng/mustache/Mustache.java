@@ -1,8 +1,7 @@
 package org.testng.mustache;
 
-import org.testng.collections.Lists;
-
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +14,7 @@ public class Mustache {
   String run(String template, Model model) throws IOException {
     int lineNumber = 0;
 
-    List<BaseChunk> chunks = Lists.newArrayList();
+    List<BaseChunk> chunks = new ArrayList<>();
     int ti = 0;
     while (ti < template.length()) {
       int start;

@@ -2,7 +2,6 @@ package test.remote;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 import org.testng.remote.RemoteTestNG;
 import org.testng.remote.strprotocol.IMessage;
 import org.testng.remote.strprotocol.IMessageSender;
@@ -65,7 +64,7 @@ public class RemoteTest extends SimpleBaseTest {
     p("Launching RemoteTestNG on port " + portValue);
     launchRemoteTestNG(arg, portValue);
     MessageHub mh = new MessageHub(sms);
-    List<String> received = Lists.newArrayList();
+    List<String> received = new ArrayList<>();
     try {
       mh.initReceiver();
       IMessage message = mh.receiveMessage();

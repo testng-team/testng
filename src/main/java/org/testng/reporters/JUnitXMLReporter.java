@@ -4,17 +4,17 @@ package org.testng.reporters;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.internal.IResultListener2;
 import org.testng.internal.Utils;
-import org.testng.internal.annotations.Sets;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -33,7 +33,7 @@ public class JUnitXMLReporter implements IResultListener2 {
   private static final Pattern GREATER= Pattern.compile(">");
   private static final Pattern SINGLE_QUOTE = Pattern.compile("'");
   private static final Pattern QUOTE = Pattern.compile("\"");
-  private static final Map<String, Pattern> ATTR_ESCAPES= Maps.newHashMap();
+  private static final Map<String, Pattern> ATTR_ESCAPES= new HashMap<>();
 
   static {
     ATTR_ESCAPES.put("&lt;", LESS);
@@ -51,10 +51,10 @@ public class JUnitXMLReporter implements IResultListener2 {
   private int m_numSkipped= 0;
   private int m_numFailedButIgnored= 0;
   private List<ITestResult> m_allTests =
-      Collections.synchronizedList(Lists.<ITestResult>newArrayList());
+      Collections.synchronizedList(new ArrayList<ITestResult>());
   private List<ITestResult> m_configIssues =
-      Collections.synchronizedList(Lists.<ITestResult>newArrayList());
-  private Map<String, String> m_fileNameMap = Maps.newHashMap();
+      Collections.synchronizedList(new ArrayList<ITestResult>());
+  private Map<String, String> m_fileNameMap = new HashMap<>();
   private int m_fileNameIncrementer = 0;
 
   @Override
@@ -186,7 +186,7 @@ public class JUnitXMLReporter implements IResultListener2 {
   }
 
   private Set<String> getPackages(ITestContext context) {
-    Set<String> result = Sets.newHashSet();
+    Set<String> result = new HashSet<>();
     for (ITestNGMethod m : context.getAllTestMethods()) {
       Package pkg = m.getMethod().getDeclaringClass().getPackage();
       if (pkg != null) {
@@ -281,8 +281,8 @@ public class JUnitXMLReporter implements IResultListener2 {
 	 * Reset all member variables for next test.
 	 * */
 	private void resetAll() {
-		m_allTests = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
-		m_configIssues = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
+		m_allTests = Collections.synchronizedList(new ArrayList<ITestResult>());
+		m_configIssues = Collections.synchronizedList(new ArrayList<ITestResult>());
 		m_numFailed = 0;
 		m_numFailedButIgnored = 0;
 		m_numPassed = 0;

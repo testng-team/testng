@@ -3,13 +3,13 @@ package test.invokedmethodlistener;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
-import org.testng.collections.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class InvokedMethodListener implements IInvokedMethodListener {
 
-  public static List<IInvokedMethod> m_methods = Lists.newArrayList();
+  public static List<IInvokedMethod> m_methods = new ArrayList<>();
 
   @Override
   public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {

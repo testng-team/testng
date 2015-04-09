@@ -4,9 +4,9 @@ import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
-import org.testng.collections.Lists;
 import org.testng.reporters.XMLStringBuffer;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -158,7 +158,7 @@ public class NavigatorPanel extends BasePanel {
   }
 
   private List<ITestResult> getMethodsByStatus(ISuite suite, int status) {
-    List<ITestResult> result = Lists.newArrayList();
+    List<ITestResult> result = new ArrayList<>();
     List<ITestResult> testResults = getModel().getTestResults(suite);
     for (ITestResult tr : testResults) {
       if (tr.getStatus() == status) {

@@ -7,17 +7,16 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.Utils;
-import org.testng.internal.annotations.Sets;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +52,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     failedSuite.setName("Failed suite [" + xmlSuite.getName() + "]");
     m_xmlSuite= failedSuite;
 
-    Map<String, XmlTest> xmlTests= Maps.newHashMap();
+    Map<String, XmlTest> xmlTests= new HashMap<>();
     for(XmlTest xmlT: xmlSuite.getTests()) {
       xmlTests.put(xmlT.getName(), xmlT);
     }
@@ -104,7 +103,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     // Note:  we can have skipped tests and no failed tests
     // if a method depends on nonexistent groups
     if (skippedTests.size() > 0 || failedTests.size() > 0) {
-      Set<ITestNGMethod> methodsToReRun = Sets.newHashSet();
+      Set<ITestNGMethod> methodsToReRun = new HashSet<>();
 
       // Get the transitive closure of all the failed methods and the methods
       // they depend on
@@ -139,7 +138,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       // in the methodToReRun map.  Since the methods are already
       // sorted, we don't need to sort them again.
       //
-      List<ITestNGMethod> result = Lists.newArrayList();
+      List<ITestNGMethod> result = new ArrayList<>();
       for (ITestNGMethod m : context.getAllTestMethods()) {
         if (methodsToReRun.contains(m)) {
           result.add(m);
@@ -182,8 +181,8 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
    * on the parameter methods
    */
   private List<XmlClass> createXmlClasses(List<ITestNGMethod> methods, XmlTest srcXmlTest) {
-    List<XmlClass> result = Lists.newArrayList();
-    Map<Class, Set<ITestNGMethod>> methodsMap= Maps.newHashMap();
+    List<XmlClass> result = new ArrayList<>();
+    Map<Class, Set<ITestNGMethod>> methodsMap= new HashMap<>();
 
     for (ITestNGMethod m : methods) {
       Object[] instances= m.getInstances();
@@ -192,7 +191,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
           : instances[0].getClass();
       Set<ITestNGMethod> methodList= methodsMap.get(clazz);
       if(null == methodList) {
-        methodList= new HashSet<ITestNGMethod>();
+        methodList= new HashSet<>();
         methodsMap.put(clazz, methodList);
       }
       methodList.add(m);
@@ -200,7 +199,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
 
     // Ideally, we should preserve each parameter in each class but putting them
     // all in the same bag for now
-    Map<String, String> parameters = Maps.newHashMap();
+    Map<String, String> parameters = new HashMap<>();
     for (XmlClass c : srcXmlTest.getClasses()) {
       parameters.putAll(c.getLocalParameters());
     }
@@ -212,7 +211,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       // @author Borojevic
       // Need to check all the methods, not just @Test ones.
       XmlClass xmlClass= new XmlClass(clazz.getName(), index++, false /* don't load classes */);
-      List<XmlInclude> methodNames= Lists.newArrayList(methodList.size());
+      List<XmlInclude> methodNames= new ArrayList<>(methodList.size());
       int ind = 0;
       for(ITestNGMethod m: methodList) {
         methodNames.add(new XmlInclude(m.getMethod().getName(), m.getFailedInvocationNumbers(),

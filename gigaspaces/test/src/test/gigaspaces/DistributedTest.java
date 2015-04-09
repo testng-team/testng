@@ -28,7 +28,7 @@ import testhelper.OutputDirectoryPatch;
 
 public class DistributedTest extends BaseDistributedTest {
   
-  private List<Thread> m_hostThreads = new ArrayList<Thread>();
+  private List<Thread> m_hostThreads = new ArrayList<>();
 
   protected Thread startSlave(final String filename) {
     Thread result = new Thread(new Runnable() {

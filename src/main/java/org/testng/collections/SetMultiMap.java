@@ -1,6 +1,7 @@
 package org.testng.collections;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -10,12 +11,12 @@ import java.util.Set;
  * A container to hold sets indexed by a key.
  */
 public class SetMultiMap<K, V> {
-  private Map<K, Set<V>> m_objects = Maps.newHashMap();
+  private Map<K, Set<V>> m_objects = new HashMap<>();
 
   public void put(K key, V method) {
     Set<V> l = m_objects.get(key);
     if (l == null) {
-      l = Sets.newHashSet();
+      l = new HashSet<>();
       m_objects.put(key, l);
     }
     l.add(method);

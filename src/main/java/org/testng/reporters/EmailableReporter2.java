@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -18,7 +19,6 @@ import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.Reporter;
-import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
@@ -36,7 +36,7 @@ public class EmailableReporter2 implements IReporter {
 
     protected PrintWriter writer;
 
-    protected List<SuiteResult> suiteResults = Lists.newArrayList();
+    protected List<SuiteResult> suiteResults = new ArrayList<>();
 
     // Reusable buffer
     private StringBuilder buffer = new StringBuilder();
@@ -556,7 +556,7 @@ public class EmailableReporter2 implements IReporter {
      */
     protected static class SuiteResult {
         private final String suiteName;
-        private final List<TestResult> testResults = Lists.newArrayList();
+        private final List<TestResult> testResults = new ArrayList<>();
 
         public SuiteResult(ISuite suite) {
             suiteName = suite.getName();
@@ -647,12 +647,12 @@ public class EmailableReporter2 implements IReporter {
          * Groups test results by method and then by class.
          */
         protected List<ClassResult> groupResults(Set<ITestResult> results) {
-            List<ClassResult> classResults = Lists.newArrayList();
+            List<ClassResult> classResults = new ArrayList<>();
             if (!results.isEmpty()) {
-                List<MethodResult> resultsPerClass = Lists.newArrayList();
-                List<ITestResult> resultsPerMethod = Lists.newArrayList();
+                List<MethodResult> resultsPerClass = new ArrayList<>();
+                List<ITestResult> resultsPerMethod = new ArrayList<>();
 
-                List<ITestResult> resultsList = Lists.newArrayList(results);
+                List<ITestResult> resultsList = new ArrayList<>(results);
                 Collections.sort(resultsList, RESULT_COMPARATOR);
                 Iterator<ITestResult> resultsIterator = resultsList.iterator();
                 assert resultsIterator.hasNext();
@@ -670,12 +670,12 @@ public class EmailableReporter2 implements IReporter {
                         // Different class implies different method
                         assert !resultsPerMethod.isEmpty();
                         resultsPerClass.add(new MethodResult(resultsPerMethod));
-                        resultsPerMethod = Lists.newArrayList();
+                        resultsPerMethod = new ArrayList<>();
 
                         assert !resultsPerClass.isEmpty();
                         classResults.add(new ClassResult(previousClassName,
                                 resultsPerClass));
-                        resultsPerClass = Lists.newArrayList();
+                        resultsPerClass = new ArrayList<>();
 
                         previousClassName = className;
                         previousMethodName = result.getMethod().getMethodName();
@@ -684,7 +684,7 @@ public class EmailableReporter2 implements IReporter {
                         if (!previousMethodName.equals(methodName)) {
                             assert !resultsPerMethod.isEmpty();
                             resultsPerClass.add(new MethodResult(resultsPerMethod));
-                            resultsPerMethod = Lists.newArrayList();
+                            resultsPerMethod = new ArrayList<>();
 
                             previousMethodName = methodName;
                         }

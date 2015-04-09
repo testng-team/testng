@@ -165,7 +165,7 @@ public class CommandLineTest extends SimpleBaseTest {
   }
 
   private void verifyTests(String title, String[] expected, List<ITestResult> found) {
-    List<String> resultMethods = new ArrayList<String>();
+    List<String> resultMethods = new ArrayList<>();
     for( ITestResult result : found ) {
       resultMethods.add( result.getName() );
     }

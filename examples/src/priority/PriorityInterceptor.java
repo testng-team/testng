@@ -14,7 +14,7 @@ public class PriorityInterceptor implements IMethodInterceptor {
   public List<IMethodInstance> intercept(List<IMethodInstance> methods,
       ITestContext context)
   {
-    Comparator<IMethodInstance> comparator = new Comparator<IMethodInstance>() {
+    Comparator<IMethodInstance> comparator = new Comparator<>() {
       
       private int getPriority(IMethodInstance mi) {
         int result = 0;

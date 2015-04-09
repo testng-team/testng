@@ -3,16 +3,15 @@ package test.factory;
 import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 
 import test.SimpleBaseTest;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FactoryInterleavingTest extends SimpleBaseTest {
 
-  public static List<Integer> LOG = Lists.newArrayList();
+  public static List<Integer> LOG = new ArrayList<>();
 
   @Test
   public void methodsShouldBeInterleaved() {

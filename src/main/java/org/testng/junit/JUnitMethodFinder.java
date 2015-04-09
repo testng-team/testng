@@ -2,7 +2,6 @@ package org.testng.junit;
 
 import org.testng.ITestMethodFinder;
 import org.testng.ITestNGMethod;
-import org.testng.collections.Lists;
 import org.testng.internal.TestNGMethod;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
@@ -10,6 +9,7 @@ import org.testng.xml.XmlTest;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -69,13 +69,13 @@ public class JUnitMethodFinder implements ITestMethodFinder {
   }
 
   private ITestNGMethod[] privateFindTestMethods(INameFilter filter, Class cls) {
-    List<ITestNGMethod> vResult = Lists.newArrayList();
+    List<ITestNGMethod> vResult = new ArrayList<>();
 
     // We do not want to walk up the class hierarchy and accept the
     // same method twice (e.g. setUp) which would lead to double-invocation.
     // All relevant JUnit methods are parameter-less so we store accepted
     // method names in a Set to filter out duplicates.
-    Set<String> acceptedMethodNames = new HashSet<String>();
+    Set<String> acceptedMethodNames = new HashSet<>();
 
     //
     // Collect all methods that start with test

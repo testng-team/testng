@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SD2 {
-  public static List<String> m_log = new ArrayList<String>();
+  public static List<String> m_log = new ArrayList<>();
 
   @Test(groups = { "one" })
   public void oneA() {

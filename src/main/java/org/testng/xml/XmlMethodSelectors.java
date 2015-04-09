@@ -2,14 +2,14 @@ package org.testng.xml;
 
 import static org.testng.collections.CollectionUtils.hasElements;
 
-import org.testng.collections.Lists;
 import org.testng.reporters.XMLStringBuffer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class XmlMethodSelectors {
 
-  private List<XmlMethodSelector> m_methodSelectors = Lists.newArrayList();
+  private List<XmlMethodSelector> m_methodSelectors = new ArrayList<>();
 
   public XmlMethodSelectors() {
   }

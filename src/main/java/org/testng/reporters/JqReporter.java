@@ -7,12 +7,12 @@ import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.collections.ListMultiMap;
-import org.testng.collections.Maps;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlSuite;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +23,7 @@ public class JqReporter implements IReporter {
 
   private int m_testCount = 0;
   private String m_outputDirectory;
-  private Map<String, String> m_testMap = Maps.newHashMap();
+  private Map<String, String> m_testMap = new HashMap<>();
 
   @Override
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
@@ -132,7 +132,7 @@ public class JqReporter implements IReporter {
     if (tests.getAllMethods().isEmpty()) return;
 
     xsb.push(D, C, "test" + (tagClass != null ? " " + tagClass : ""));
-    ListMultiMap<Class<?>, ITestResult> map = Maps.newListMultiMap();
+    ListMultiMap<Class<?>, ITestResult> map = new ListMultiMap<>();
     for (ITestResult m : tests.getAllResults()) {
       map.put(m.getTestClass().getRealClass(), m);
     }

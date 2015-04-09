@@ -4,14 +4,14 @@ import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.ITestOrConfiguration;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.collections.Pair;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,9 +27,9 @@ import java.util.regex.Pattern;
  */
 public class MethodGroupsHelper {
 
-  private static final Map<String, Pattern> PATTERN_CACHE = new ConcurrentHashMap<String, Pattern>();
+  private static final Map<String, Pattern> PATTERN_CACHE = new ConcurrentHashMap<>();
   private static final Map<Pair<String, String>, Boolean> MATCH_CACHE =
-      new ConcurrentHashMap<Pair<String, String>, Boolean>();
+      new ConcurrentHashMap<>();
 
     /**
    * Collect all the methods that belong to the included groups and exclude all
@@ -126,14 +126,14 @@ public class MethodGroupsHelper {
    * Extracts the map of groups and their corresponding methods from the <code>classes</code>.
    */
   public static Map<String, List<ITestNGMethod>> findGroupsMethods(Collection<ITestClass> classes, boolean before) {
-    Map<String, List<ITestNGMethod>> result = Maps.newHashMap();
+    Map<String, List<ITestNGMethod>> result = new HashMap<>();
     for (ITestClass cls : classes) {
       ITestNGMethod[] methods = before ? cls.getBeforeGroupsMethods() : cls.getAfterGroupsMethods();
       for (ITestNGMethod method : methods) {
         for (String group : before ? method.getBeforeGroups() : method.getAfterGroups()) {
           List<ITestNGMethod> methodList = result.get(group);
           if (methodList == null) {
-            methodList = Lists.newArrayList();
+            methodList = new ArrayList<>();
             result.put(group, methodList);
           }
           // NOTE(cbeust, 2007/01/23)
@@ -159,19 +159,19 @@ public class MethodGroupsHelper {
       String[] includedGroups,
       Set<String> outGroups, Set<ITestNGMethod> outMethods)
   {
-    Map<ITestNGMethod, ITestNGMethod> runningMethods = Maps.newHashMap();
+    Map<ITestNGMethod, ITestNGMethod> runningMethods = new HashMap<>();
     for (ITestNGMethod m : includedMethods) {
       runningMethods.put(m, m);
     }
 
-    Map<String, String> runningGroups = Maps.newHashMap();
+    Map<String, String> runningGroups = new HashMap<>();
     for (String thisGroup : includedGroups) {
       runningGroups.put(thisGroup, thisGroup);
     }
 
     boolean keepGoing = true;
 
-    Map<ITestNGMethod, ITestNGMethod> newMethods = Maps.newHashMap();
+    Map<ITestNGMethod, ITestNGMethod> newMethods = new HashMap<>();
     while (keepGoing) {
       for (ITestNGMethod m : includedMethods) {
 
@@ -216,9 +216,9 @@ public class MethodGroupsHelper {
       // Only keep going if new methods have been added
       //
       keepGoing = newMethods.size() > 0;
-      includedMethods = Lists.newArrayList();
+      includedMethods = new ArrayList<>();
       includedMethods.addAll(newMethods.keySet());
-      newMethods = Maps.newHashMap();
+      newMethods = new HashMap<>();
     } // while keepGoing
 
     outMethods.addAll(runningMethods.keySet());
@@ -273,7 +273,7 @@ public class MethodGroupsHelper {
    */
   protected static ITestNGMethod[] findMethodsThatBelongToGroup(ITestNGMethod[] methods, String groupRegexp)
   {
-    List<ITestNGMethod> vResult = Lists.newArrayList();
+    List<ITestNGMethod> vResult = new ArrayList<>();
     final Pattern pattern = getPattern(groupRegexp);
     for (ITestNGMethod tm : methods) {
       String[] groups = tm.getGroups();

@@ -1,7 +1,6 @@
 package org.testng.internal;
 
 import org.testng.TestNG;
-import org.testng.collections.Lists;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -12,6 +11,7 @@ import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -54,7 +54,7 @@ public class PackageUtils {
       recursive = true;
     }
 
-    List<String> vResult = Lists.newArrayList();
+    List<String> vResult = new ArrayList<>();
     String packageDirName = packageOnly.replace('.', '/') + (packageOnly.length() > 0 ? "/" : "");
 
 
@@ -192,7 +192,7 @@ public class PackageUtils {
       fileName= URLDecoder.decode(url.getFile(), "UTF-8");
     }
     catch(UnsupportedEncodingException ueex) {
-      ; // ignore. should never happen
+      // ignore. should never happen
     }
 
     for(String classpathFrag: classpathFragments) {

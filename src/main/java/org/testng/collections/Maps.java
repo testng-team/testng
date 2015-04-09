@@ -6,29 +6,37 @@ import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class Maps {
+public final class Maps {
 
+  private Maps() {}
+
+  @Deprecated
   public static <K, V> Map<K,V> newHashMap() {
-    return new HashMap<K, V>();
+    return new HashMap<>();
   }
 
+  @Deprecated
   public static <K, V> Map<K,V> newHashtable() {
-    return new Hashtable<K, V>();
+    return new Hashtable<>();
   }
 
+  @Deprecated
   public static <K, V> ListMultiMap<K, V> newListMultiMap() {
-    return new ListMultiMap<K, V>();
+    return new ListMultiMap<>();
   }
 
+  @Deprecated
   public static <K, V> SetMultiMap<K, V> newSetMultiMap() {
-    return new SetMultiMap<K, V>();
+    return new SetMultiMap<>();
   }
 
+  @Deprecated
   public static <K, V> Map<K, V> newLinkedHashMap() {
-    return new LinkedHashMap<K, V>();
+    return new LinkedHashMap<>();
   }
 
+  @Deprecated
   public static <K, V> Map<K, V> newHashMap(Map<K, V> parameters) {
-    return new HashMap<K, V>(parameters);
+    return new HashMap<>(parameters);
   }
 }

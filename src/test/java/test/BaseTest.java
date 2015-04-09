@@ -10,7 +10,6 @@ import org.testng.SuiteRunner;
 import org.testng.TestListenerAdapter;
 import org.testng.TestRunner;
 import org.testng.annotations.BeforeMethod;
-import org.testng.collections.Lists;
 import org.testng.internal.Configuration;
 import org.testng.internal.IConfiguration;
 import org.testng.reporters.JUnitXMLReporter;
@@ -89,20 +88,20 @@ public class BaseTest extends BaseDistributedTest {
     getTest().getSuite().setThreadCount(count);
   }
 
-  private Map<Long, XmlTest> m_tests= new HashMap<Long, XmlTest>();
-  private Map<Long, Map> m_passedTests= new HashMap<Long, Map>();
-  private Map<Long, Map> m_failedTests= new HashMap<Long, Map>();
-  private Map<Long, Map> m_skippedTests= new HashMap<Long, Map>();
-  private Map<Long, XmlTest> m_testConfigs= new HashMap<Long, XmlTest>();
-  private Map<Long, Map> m_passedConfigs= new HashMap<Long, Map>();
-  private Map<Long, Map> m_failedConfigs= new HashMap<Long, Map>();
-  private Map<Long, Map> m_skippedConfigs= new HashMap<Long, Map>();
-  private Map<Long, Map> m_failedButWithinSuccessPercentageTests= new HashMap<Long, Map>();
+  private Map<Long, XmlTest> m_tests= new HashMap<>();
+  private Map<Long, Map> m_passedTests= new HashMap();
+  private Map<Long, Map> m_failedTests= new HashMap<>();
+  private Map<Long, Map> m_skippedTests= new HashMap<>();
+  private Map<Long, XmlTest> m_testConfigs= new HashMap<>();
+  private Map<Long, Map> m_passedConfigs= new HashMap<>();
+  private Map<Long, Map> m_failedConfigs= new HashMap<>();
+  private Map<Long, Map> m_skippedConfigs= new HashMap<>();
+  private Map<Long, Map> m_failedButWithinSuccessPercentageTests= new HashMap<>();
 
   protected Map<String, List<ITestResult>> getTests(Map<Long, Map> map) {
     Map<String, List<ITestResult>> result= map.get(getId());
     if(null == result) {
-      result= new HashMap<String, List<ITestResult>>();
+      result= new HashMap<>();
       map.put(getId(), result);
     }
 
@@ -258,7 +257,7 @@ public class BaseTest extends BaseDistributedTest {
   }
 
   public void addMetaGroup(String mg, String n) {
-    List<String> l= new ArrayList<String>();
+    List<String> l= new ArrayList<>();
     l.add(n);
     addMetaGroup(mg, l);
   }
@@ -290,7 +289,7 @@ public class BaseTest extends BaseDistributedTest {
   private void addTest(Map<String, List<ITestResult>> tests, ITestResult t) {
     List<ITestResult> l= tests.get(t.getMethod().getMethodName());
     if(null == l) {
-      l= new ArrayList<ITestResult>();
+      l= new ArrayList<>();
       tests.put(t.getMethod().getMethodName(), l);
     }
     l.add(t);
@@ -373,7 +372,7 @@ public class BaseTest extends BaseDistributedTest {
   protected static void verifyInstanceNames(String title, Map<String, List<ITestResult>> actual,
       String[] expected)
   {
-    List<String> actualNames = Lists.newArrayList();
+    List<String> actualNames = new ArrayList<>();
     for (Map.Entry<String, List<ITestResult>> es : actual.entrySet()) {
       for (ITestResult tr : es.getValue()) {
         Object instance = tr.getInstance();
@@ -395,7 +394,7 @@ public class BaseTest extends BaseDistributedTest {
      * result.size() at the end of this function.
      */
     public static List<Integer> grep(File fileName, String regexp, List<String> resultLines) {
-      List<Integer> resultLineNumbers = new ArrayList<Integer>();
+      List<Integer> resultLineNumbers = new ArrayList<>();
       BufferedReader fr = null;
       try {
         fr = new BufferedReader(new FileReader(fileName));

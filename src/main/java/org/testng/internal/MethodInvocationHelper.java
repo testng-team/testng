@@ -9,7 +9,6 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
 import org.testng.annotations.DataProvider;
-import org.testng.collections.Lists;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.collections.Pair;
 import org.testng.internal.thread.IExecutor;
@@ -93,14 +92,14 @@ public class MethodInvocationHelper {
 
     // If it returns an Object[][], convert it to an Iterable<Object[]>
     try {
-      List<Object> lParameters = Lists.newArrayList();
+      List<Object> lParameters = new ArrayList<>();
 
       // Go through all the parameters declared on this Data Provider and
       // make sure we have at most one Method and one ITestContext.
       // Anything else is an error
       Class<?>[] parameterTypes = dataProvider.getParameterTypes();
 
-      final Collection<Pair<Integer, Class<?>>> unresolved = new ArrayList<Pair<Integer, Class<?>>>(parameterTypes.length);
+      final Collection<Pair<Integer, Class<?>>> unresolved = new ArrayList<>(parameterTypes.length);
       int i = 0;
       for (Class<?> cls : parameterTypes) {
         boolean isTestInstance = annotationFinder.hasTestInstance(dataProvider, i++);

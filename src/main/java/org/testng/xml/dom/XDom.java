@@ -7,7 +7,6 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.testng.Assert;
 import org.testng.collections.ListMultiMap;
-import org.testng.collections.Lists;
 import org.testng.internal.collections.Pair;
 import org.testng.xml.XmlDefine;
 import org.testng.xml.XmlGroups;
@@ -28,6 +27,7 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -76,7 +76,7 @@ public class XDom {
       IllegalAccessException, XPathExpressionException, SecurityException, IllegalArgumentException, NoSuchMethodException, InvocationTargetException {
     p("populateChildren: " + root.getLocalName());
     NodeList childNodes = root.getChildNodes();
-    ListMultiMap<String, Object> children = ListMultiMap.create();
+    ListMultiMap<String, Object> children = new ListMultiMap<>();
     for (int i = 0; i < childNodes.getLength(); i++) {
       Node item = childNodes.item(i);
       if (item.getAttributes() != null) {
@@ -203,7 +203,7 @@ private void populateContent(Node item, Object object) {
         if (pair.second() != null) {
           allParameters = pair.second().getParameters(element);
         } else {
-          allParameters = Lists.newArrayList();
+          allParameters = new ArrayList<>();
           allParameters.add(new Object[] { bean });
         }
 

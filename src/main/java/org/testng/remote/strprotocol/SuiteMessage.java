@@ -2,10 +2,10 @@ package org.testng.remote.strprotocol;
 
 import org.testng.ISuite;
 import org.testng.ITestNGMethod;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +19,7 @@ public class SuiteMessage implements IStringMessage {
   protected final String m_suiteName;
   protected final int m_testMethodCount;
   protected final boolean m_startSuite;
-  private List<String> m_excludedMethods = Lists.newArrayList();
+  private List<String> m_excludedMethods = new ArrayList<>();
   private Map<String, String> m_descriptions;
 
   public SuiteMessage(final String suiteName, final boolean startSuiteRun, final int methodCount) {
@@ -34,8 +34,8 @@ public class SuiteMessage implements IStringMessage {
     m_startSuite = startSuiteRun;
     Collection<ITestNGMethod> excludedMethods = suite.getExcludedMethods();
     if (excludedMethods != null && excludedMethods.size() > 0) {
-      m_excludedMethods = Lists.newArrayList();
-      m_descriptions = Maps.newHashMap();
+      m_excludedMethods = new ArrayList<>();
+      m_descriptions = new HashMap<>();
       for (ITestNGMethod m : excludedMethods) {
         String methodName = m.getTestClass().getName() + "." + m.getMethodName();
         m_excludedMethods.add(methodName);
@@ -45,7 +45,7 @@ public class SuiteMessage implements IStringMessage {
   }
 
   public void setExcludedMethods(List<String> methods) {
-    m_excludedMethods = Lists.newArrayList();
+    m_excludedMethods = new ArrayList<>();
     m_excludedMethods.addAll(methods);
   }
 

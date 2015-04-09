@@ -5,12 +5,12 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MultiThreadedDependentSampleTest {
-  public static List<String> m_methods = Lists.newArrayList();
+  public static List<String> m_methods = new ArrayList<>();
 
   @BeforeClass
   public void bc() {

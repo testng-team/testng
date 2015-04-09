@@ -5,10 +5,10 @@ import static org.testng.internal.Utils.isStringEmpty;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.SkipException;
-import org.testng.collections.Lists;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -302,7 +302,7 @@ public class TestResultMessage implements IStringMessage {
     if(null == objects) {
       return new String[0];
     }
-    List<String> result= Lists.newArrayList(objects.length);
+    List<String> result= new ArrayList<>(objects.length);
     for(Object o: objects) {
       if(null == o) {
         result.add("null");
@@ -341,7 +341,7 @@ public class TestResultMessage implements IStringMessage {
   }
 
   private String[] primitiveArrayToString(Object o) {
-    List<String> results = Lists.newArrayList();
+    List<String> results = new ArrayList<>();
     if (o instanceof byte[]) {
       byte[] array = (byte[]) o;
       for (int i = 0; i < array.length; i++) {
@@ -390,7 +390,7 @@ public class TestResultMessage implements IStringMessage {
     if(null == classes) {
       return new String[0];
     }
-    List<String> result= Lists.newArrayList(classes.length);
+    List<String> result= new ArrayList<>(classes.length);
     for(Class<?> cls: classes) {
       result.add(cls.getName());
     }
@@ -403,7 +403,7 @@ public class TestResultMessage implements IStringMessage {
    * @return
    */
   private String[] extractParamTypes(String[] params) {
-    List<String> result= Lists.newArrayList(params.length);
+    List<String> result= new ArrayList<>(params.length);
     for(String s: params) {
       result.add(s.substring(0, s.indexOf(':')));
     }
@@ -412,7 +412,7 @@ public class TestResultMessage implements IStringMessage {
   }
 
   private String[] extractParams(String[] params) {
-    List<String> result= Lists.newArrayList(params.length);
+    List<String> result= new ArrayList<>(params.length);
     for(String s: params) {
       result.add(MessageHelper.replaceNewLineReplacer(s.substring(s.indexOf(':') + 1)));
     }

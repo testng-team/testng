@@ -1,12 +1,13 @@
 package org.testng.internal;
 
 import org.testng.TestNGException;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,7 @@ import java.util.Set;
  */
 public class Graph<T> {
   private static boolean m_verbose = false;
-  private Map<T, Node<T>> m_nodes = Maps.newLinkedHashMap();
+  private Map<T, Node<T>> m_nodes = new LinkedHashMap<>();
   private List<T> m_strictlySortedNodes = null;
 
   //  A map of nodes that are not the predecessors of any node
@@ -29,7 +30,7 @@ public class Graph<T> {
 
   public void addNode(T tm) {
     ppp("ADDING NODE " + tm + " " + tm.hashCode());
-    m_nodes.put(tm, new Node<T>(tm));
+    m_nodes.put(tm, new Node<>(tm));
     // Initially, all the nodes are put in the independent list as well
   }
 
@@ -55,7 +56,7 @@ public class Graph<T> {
       addNeighbor(tm, predecessor);
       // Remove these two nodes from the independent list
       if (null == m_independentNodes) {
-        m_independentNodes = Maps.newHashMap();
+        m_independentNodes = new HashMap<>();
         m_independentNodes.putAll(m_nodes);
       }
       m_independentNodes.remove(predecessor);
@@ -69,7 +70,7 @@ public class Graph<T> {
   }
 
   public Set<T> getNeighbors(T t) {
-    Set<T> result = new HashSet<T>();
+    Set<T> result = new HashSet<>();
     for (Node<T> n : findNode(t).getNeighbors()) {
       result.add(n.getObject());
     }
@@ -102,16 +103,16 @@ public class Graph<T> {
 
   public void topologicalSort() {
     ppp("================ SORTING");
-    m_strictlySortedNodes = Lists.newArrayList();
+    m_strictlySortedNodes = new ArrayList<>();
     if (null == m_independentNodes) {
-      m_independentNodes = Maps.newHashMap();
+      m_independentNodes = new HashMap<>();
     }
 
     //
     // Clone the list of nodes but only keep those that are
     // not independent.
     //
-    List<Node<T>> nodes2 = Lists.newArrayList();
+    List<Node<T>> nodes2 = new ArrayList<>();
     for (Node<T> n : getNodes()) {
       if (! isIndependent(n.getObject())) {
         ppp("ADDING FOR SORT: " + n.getObject());
@@ -139,7 +140,7 @@ public class Graph<T> {
       //
       Node<T> node = findNodeWithNoPredecessors(nodes2);
       if (null == node) {
-        List<T> cycle = new Tarjan<T>(this, nodes2.get(0).getObject()).getCycle();
+        List<T> cycle = new Tarjan<>(this, nodes2.get(0).getObject()).getCycle();
         StringBuilder sb = new StringBuilder();
         sb.append("The following methods have cyclic dependencies:\n");
         for (T m : cycle) {
@@ -203,7 +204,7 @@ public class Graph<T> {
     Node<T> node = findNode(o);
     if (null == node) {
       // This can happen if an interceptor returned new methods
-      return Lists.newArrayList();
+      return new ArrayList<>();
     }
 
     // If we found the node, use breadth first search to find all
@@ -212,9 +213,9 @@ public class Graph<T> {
     // already encountered.  "queue" is the queue of items whose
     // predecessors we haven't yet explored.
 
-    LinkedList<T> result = new LinkedList<T>();
-    Set<T> visited = new HashSet<T>();
-    LinkedList<T> queue = new LinkedList<T>();
+    LinkedList<T> result = new LinkedList<>();
+    Set<T> visited = new HashSet<>();
+    LinkedList<T> queue = new LinkedList<>();
     visited.add(o);
     queue.addLast(o);
 
@@ -248,13 +249,13 @@ public class Graph<T> {
   //
   public static class Node<T> implements Comparable<Node<T>> {
     private T m_object = null;
-    private Map<T, T> m_predecessors = Maps.newHashMap();
+    private Map<T, T> m_predecessors = new HashMap<>();
 
     public Node(T tm) {
       m_object = tm;
     }
 
-    private Set<Node<T>> m_neighbors = new HashSet<Node<T>>();
+    private Set<Node<T>> m_neighbors = new HashSet<>();
     public void addNeighbor(Node<T> neighbor) {
       m_neighbors.add(neighbor);
     }
@@ -265,7 +266,7 @@ public class Graph<T> {
 
     @Override
     public Node<T> clone() {
-      Node<T> result = new Node<T>(m_object);
+      Node<T> result = new Node<>(m_object);
       for (T pred : m_predecessors.values()) {
         result.addPredecessor(pred);
       }

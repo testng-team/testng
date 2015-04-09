@@ -3,9 +3,9 @@ package org.testng.internal;
 import org.testng.IMethodSelector;
 import org.testng.IMethodSelectorContext;
 import org.testng.ITestNGMethod;
-import org.testng.collections.Lists;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,7 +20,7 @@ import java.util.List;
 public class RunInfo implements Serializable {
   private static final long serialVersionUID = -9085221672822562888L;
   transient private List<MethodSelectorDescriptor>
-    m_methodSelectors = Lists.newArrayList();
+    m_methodSelectors = new ArrayList<>();
 
   public void addMethodSelector(IMethodSelector selector, int priority) {
     Utils.log("RunInfo", 3, "Adding method selector: " + selector + " priority: " + priority);

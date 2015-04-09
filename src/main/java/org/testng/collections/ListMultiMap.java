@@ -3,6 +3,7 @@ package org.testng.collections;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,12 +13,12 @@ import java.util.Set;
  * A container to hold lists indexed by a key.
  */
 public class ListMultiMap<K, V> {
-  private Map<K, List<V>> m_objects = Maps.newHashMap();
+  private Map<K, List<V>> m_objects = new HashMap<>();
 
   public void put(K key, V method) {
     List<V> l = m_objects.get(key);
     if (l == null) {
-      l = Lists.newArrayList();
+      l = new ArrayList<>();
       m_objects.put(key, l);
     }
     l.add(method);
@@ -28,7 +29,7 @@ public class ListMultiMap<K, V> {
   }
 
   public List<K> getKeys() {
-    return new ArrayList(m_objects.keySet());
+    return new ArrayList<>(m_objects.keySet());
 //    List<K> result = new ArrayList<K>();
 //    for (K k : m_objects.keySet()) {
 //      result.add(k);
@@ -79,9 +80,5 @@ public class ListMultiMap<K, V> {
     for (V v : values) {
       put(k, v);
     }
-  }
-
-  public static <K, V> ListMultiMap<K, V> create() {
-    return new ListMultiMap<K, V>();
   }
 }

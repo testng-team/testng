@@ -1,12 +1,12 @@
 package test.thread;
 
 import org.testng.Assert;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.internal.annotations.Sets;
 
 import test.SimpleBaseTest;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,9 +17,9 @@ public class BaseThreadTest extends SimpleBaseTest {
   static private List<String> m_strings;
 
   static void initThreadLog() {
-    m_threadIds = Sets.newHashSet();
-    m_suitesMap = Maps.newHashMap();
-    m_strings = Lists.newArrayList();
+    m_threadIds = new HashSet<>();
+    m_suitesMap = new HashMap<>();
+    m_strings = new ArrayList<>();
   }
 
   protected void logString(String s) {

@@ -1,8 +1,7 @@
 package org.testng;
 
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,8 +22,8 @@ class InstanceOrderingMethodInterceptor implements IMethodInterceptor {
    * The default method interceptor which sorts methods by instances (i.e. by class).
    */
   private List<IMethodInstance> groupMethodsByInstance(List<IMethodInstance> methods) {
-    List<Object> instanceList = Lists.newArrayList();
-    Map<Object, List<IMethodInstance>> map = Maps.newHashMap();
+    List<Object> instanceList = new ArrayList<>();
+    Map<Object, List<IMethodInstance>> map = new HashMap<>();
     for (IMethodInstance mi : methods) {
       Object[] methodInstances = mi.getInstances();
       for (Object instance : methodInstances) {
@@ -33,14 +32,14 @@ class InstanceOrderingMethodInterceptor implements IMethodInterceptor {
         }
         List<IMethodInstance> l = map.get(instance);
         if (l == null) {
-          l = Lists.newArrayList();
+          l = new ArrayList<>();
           map.put(instance, l);
         }
         l.add(mi);
       }
     }
 
-    List<IMethodInstance> result = Lists.newArrayList();
+    List<IMethodInstance> result = new ArrayList<>();
     for (Object instance : instanceList) {
       result.addAll(map.get(instance));
     }

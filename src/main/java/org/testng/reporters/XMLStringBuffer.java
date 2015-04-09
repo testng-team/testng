@@ -24,7 +24,7 @@ public class XMLStringBuffer {
   private IBuffer m_buffer;
 
   /** The stack of tags to make sure XML document is well formed. */
-  private final Stack<Tag> m_tagStack = new Stack<Tag>();
+  private final Stack<Tag> m_tagStack = new Stack<>();
 
   /** A string of space character representing the current indentation. */
   private String m_currentIndent = "";

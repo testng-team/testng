@@ -1,7 +1,5 @@
 package org.testng.xml.dom;
 
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -16,6 +14,8 @@ import javax.xml.xpath.XPathFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -33,11 +33,11 @@ public class DomUtil {
 
   public void populate(final XmlSuite xmlSuite) throws XPathExpressionException {
     NodeList nodes = m_document.getChildNodes();
-    final Map<String, String> parameters = Maps.newHashMap();
+    final Map<String, String> parameters = new HashMap<>();
     for (int i = 0; i < nodes.getLength(); i++) {
       Node item1 = nodes.item(i);
 
-      Map<String, NodeProcessor> map = Maps.newHashMap();
+      Map<String, NodeProcessor> map = new HashMap<>();
       map.put("parameter", new NodeProcessor() {
         @Override
         public void process(Node node) {
@@ -56,7 +56,7 @@ public class DomUtil {
         @Override
         public void process(Node node) {
           NodeList item2Children = node.getChildNodes();
-          List<String> suiteFiles = Lists.newArrayList();
+          List<String> suiteFiles = new ArrayList<>();
           for (int k = 0; k < item2Children.getLength(); k++) {
             Node item3 = item2Children.item(k);
             if (item3 instanceof Element) {
@@ -136,7 +136,7 @@ public class DomUtil {
   }
 
     public static Iterator<Node> findChildren(Node node, String name) {
-    List<Node> result = Lists.newArrayList();
+    List<Node> result = new ArrayList<>();
     NodeList children = node.getChildNodes();
     for (int i = 0; i < children.getLength(); i++) {
       Node n = children.item(i);
@@ -148,7 +148,7 @@ public class DomUtil {
   }
 
   private void populateTest(XmlTest xmlTest, Node item) {
-    Map<String, String> testParameters = Maps.newHashMap();
+    Map<String, String> testParameters = new HashMap<>();
     populateAttributes(item, xmlTest);
     NodeList itemChildren = item.getChildNodes();
     for (int k = 0; k < itemChildren.getLength(); k++) {
@@ -170,8 +170,8 @@ public class DomUtil {
         }
       } else if ("groups".equals(item2.getNodeName())) {
         NodeList item2Children = item2.getChildNodes();
-        List<String> includes = Lists.newArrayList();
-        List<String> excludes = Lists.newArrayList();
+        List<String> includes = new ArrayList<>();
+        List<String> excludes = new ArrayList<>();
         for (int l = 0; l < item2Children.getLength(); l++) {
           Node item3 = item2Children.item(l);
           if ("run".equals(item3.getNodeName())) {
@@ -210,7 +210,7 @@ public class DomUtil {
    */
   private void xmlDefine(XmlTest xmlTest, Node item) {
     NodeList item3Children = item.getChildNodes();
-    List<String> groups = Lists.newArrayList();
+    List<String> groups = new ArrayList<>();
     for (int m = 0; m < item3Children.getLength(); m++) {
       Node item4 = item3Children.item(m);
       if ("include".equals(item4.getNodeName())) {

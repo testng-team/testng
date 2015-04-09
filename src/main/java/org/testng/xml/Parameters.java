@@ -10,8 +10,8 @@ import java.util.List;
  */
 public class Parameters {
 
-  private ListMultiMap<String, String> m_localParameters = ListMultiMap.create();
-  private ListMultiMap<String, String> m_allParameters = ListMultiMap.create();
+  private ListMultiMap<String, String> m_localParameters = new ListMultiMap<>();
+  private ListMultiMap<String, String> m_allParameters = new ListMultiMap<>();
 
   public List<String> getLocalParameter(String name) {
     return m_localParameters.get(name);

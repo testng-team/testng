@@ -3,14 +3,13 @@ package org.testng.remote;
 import org.testng.ISuite;
 import org.testng.TestNG;
 import org.testng.TestNGException;
-import org.testng.collections.Lists;
 import org.testng.internal.PropertiesFile;
 import org.testng.internal.Utils;
 import org.testng.remote.adapter.DefaultWorkerAdapter;
 import org.testng.remote.adapter.IWorkerAdapter;
 import org.testng.xml.XmlSuite;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -84,7 +83,7 @@ public class SuiteSlave
           continue;
         }
 				log("Processing " + s.getName());
-				List<XmlSuite> suites = Lists.newArrayList();
+				List<XmlSuite> suites = new ArrayList<>();
 				suites.add(s);
 				m_testng.setXmlSuites(suites);
 				List<ISuite> suiteRunners = m_testng.runSuitesLocally();

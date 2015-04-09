@@ -1,10 +1,13 @@
 package org.testng.internal;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,9 +18,6 @@ import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.ITestOrConfiguration;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.collections.Sets;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.thread.IAtomicInteger;
 import org.testng.internal.thread.ThreadUtil;
@@ -62,8 +62,8 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   private boolean m_skipFailedInvocations = true;
   private long m_invocationTimeOut = 0L;
 
-  private List<Integer> m_invocationNumbers = Lists.newArrayList();
-  private List<Integer> m_failedInvocationNumbers = Lists.newArrayList();
+  private List<Integer> m_invocationNumbers = new ArrayList<>();
+  private List<Integer> m_failedInvocationNumbers = new ArrayList<>();
   /**
    * {@inheritDoc}
    */
@@ -452,7 +452,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
       ITestOrConfiguration classAnnotation = getAnnotationFinder().findAnnotation(getMethod().getDeclaringClass(), annotationClass);
 
       Map<String, Set<String>> xgd = calculateXmlGroupDependencies(m_xmlTest);
-      List<String> xmlGroupDependencies = Lists.newArrayList();
+      List<String> xmlGroupDependencies = new ArrayList<>();
       for (String g : getGroups()) {
         Set<String> gdu = xgd.get(g);
         if (gdu != null) {
@@ -481,7 +481,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
 
   private static Map<String, Set<String>> calculateXmlGroupDependencies(XmlTest xmlTest) {
-    Map<String, Set<String>> result = Maps.newHashMap();
+    Map<String, Set<String>> result = new HashMap<>();
     if (xmlTest == null) {
       return result;
     }
@@ -491,7 +491,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
       String dependsOn = e.getValue();
       Set<String> set = result.get(name);
       if (set == null) {
-        set = Sets.newHashSet();
+        set = new HashSet<>();
         result.put(name, set);
       }
       set.addAll(Arrays.asList(SPACE_SEPARATOR_PATTERN.split(dependsOn)));
@@ -550,7 +550,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    * @return
    */
   protected String[] getStringArray(String[] methodArray, String[] classArray) {
-    final Set<String> vResult = Sets.newHashSet();
+    final Set<String> vResult = new HashSet<>();
     if (null != methodArray) {
       Collections.addAll(vResult, methodArray);
     }
@@ -565,7 +565,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   }
 
   protected void setGroupsDependedUpon(String[] groups, Collection<String> xmlGroupDependencies) {
-    List<String> l = Lists.newArrayList();
+    List<String> l = new ArrayList<>();
     l.addAll(Arrays.asList(groups));
     l.addAll(xmlGroupDependencies);
     m_groupsDependedUpon = l.toArray(new String[l.size()]);

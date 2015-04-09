@@ -2,14 +2,13 @@ package test.priority;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 public class BaseSample {
-  public static List<String> m_methods = Lists.newArrayList();
+  public static List<String> m_methods = new ArrayList<>();
 
   protected void add(String m) {
     String s = m;
@@ -21,7 +20,7 @@ public class BaseSample {
 
   @BeforeClass
   public void bc() {
-    m_methods = Lists.newArrayList();
+    m_methods = new ArrayList<>();
   }
 
   @Test

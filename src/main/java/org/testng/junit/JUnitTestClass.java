@@ -1,9 +1,9 @@
 package org.testng.junit;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
-import org.testng.collections.Lists;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
@@ -15,11 +15,11 @@ import org.testng.xml.XmlTest;
 public abstract class JUnitTestClass implements ITestClass {
 
     private static final long serialVersionUID = 405598615794850925L;
-    private List<ITestNGMethod> m_testMethods = Lists.newArrayList();
-    private List<ITestNGMethod> m_beforeClass = Lists.newArrayList();
-    private List<ITestNGMethod> m_afterClass = Lists.newArrayList();
-    private List<ITestNGMethod> m_beforeTest = Lists.newArrayList();
-    private List<ITestNGMethod> m_afterTest = Lists.newArrayList();
+    private List<ITestNGMethod> m_testMethods = new ArrayList<>();
+    private List<ITestNGMethod> m_beforeClass = new ArrayList<>();
+    private List<ITestNGMethod> m_afterClass = new ArrayList<>();
+    private List<ITestNGMethod> m_beforeTest = new ArrayList<>();
+    private List<ITestNGMethod> m_afterTest = new ArrayList<>();
     private Class m_realClass;
     private Object[] m_instances;
     private long[] m_instanceHashes;

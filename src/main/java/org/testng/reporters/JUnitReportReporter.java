@@ -7,10 +7,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.ListMultiMap;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.internal.Utils;
-import org.testng.internal.annotations.Sets;
 import org.testng.xml.XmlSuite;
 
 import java.io.File;
@@ -20,8 +17,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -33,10 +33,10 @@ public class JUnitReportReporter implements IReporter {
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
       String defaultOutputDirectory) {
 
-    Map<Class<?>, Set<ITestResult>> results = Maps.newHashMap();
-    Map<Class<?>, Set<ITestResult>> failedConfigurations = Maps.newHashMap();
-    ListMultiMap<Object, ITestResult> befores = Maps.newListMultiMap();
-    ListMultiMap<Object, ITestResult> afters = Maps.newListMultiMap();
+    Map<Class<?>, Set<ITestResult>> results = new HashMap<>();
+    Map<Class<?>, Set<ITestResult>> failedConfigurations = new HashMap<>();
+    ListMultiMap<Object, ITestResult> befores = new ListMultiMap<>();
+    ListMultiMap<Object, ITestResult> afters = new ListMultiMap<>();
     for (ISuite suite : suites) {
       Map<String, ISuiteResult> suiteResults = suite.getResults();
       for (ISuiteResult sr : suiteResults.values()) {
@@ -88,7 +88,7 @@ public class JUnitReportReporter implements IReporter {
       Date timeStamp = Calendar.getInstance().getTime();
       p1.setProperty(XMLConstants.ATTR_TIMESTAMP, timeStamp.toGMTString());
 
-      List<TestTag> testCases = Lists.newArrayList();
+      List<TestTag> testCases = new ArrayList<>();
       int failures = 0;
       int errors = 0;
       int testCount = 0;
@@ -192,7 +192,7 @@ public class JUnitReportReporter implements IReporter {
     long result = 0;
 
     List<ITestResult> confResults = configurations.get(tr.getInstance());
-    Map<ITestNGMethod, ITestResult> seen = Maps.newHashMap();
+    Map<ITestNGMethod, ITestResult> seen = new HashMap<>();
     if (confResults != null) {
       for (ITestResult r : confResults) {
         if (! seen.containsKey(r.getMethod())) {
@@ -257,7 +257,7 @@ public class JUnitReportReporter implements IReporter {
       Class<?> cls = tr.getMethod().getTestClass().getRealClass();
       Set<ITestResult> l = out.get(cls);
       if (l == null) {
-        l = Sets.newHashSet();
+        l = new HashSet<>();
         out.put(cls, l);
       }
       l.add(tr);

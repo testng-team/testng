@@ -5,8 +5,8 @@ import org.testng.IInvokedMethodListener;
 import org.testng.IInvokedMethodListener2;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
-import org.testng.collections.Maps;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.testng.internal.invokers.InvokedMethodListenerMethod.AFTER_INVOCATION;
@@ -110,11 +110,11 @@ public class InvokedMethodListenerInvoker {
   }
 
   private static final Map<InvokedMethodListenerSubtype, Map<InvokedMethodListenerMethod,
-      InvocationStrategy>> strategies = Maps.newHashMap();
+      InvocationStrategy>> strategies = new HashMap<>();
   private static final Map<InvokedMethodListenerMethod, InvocationStrategy>
-      INVOKE_WITH_CONTEXT_STRATEGIES = Maps.newHashMap();
+      INVOKE_WITH_CONTEXT_STRATEGIES = new HashMap<>();
   private static final Map<InvokedMethodListenerMethod, InvocationStrategy>
-      INVOKE_WITHOUT_CONTEXT_STRATEGIES = Maps.newHashMap();
+      INVOKE_WITHOUT_CONTEXT_STRATEGIES = new HashMap<>();
 
   static {
     INVOKE_WITH_CONTEXT_STRATEGIES.put(BEFORE_INVOCATION,

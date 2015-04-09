@@ -1,7 +1,5 @@
 package org.testng.xml;
 
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.internal.YamlParser;
 import org.xml.sax.SAXException;
 
@@ -12,7 +10,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -139,12 +139,12 @@ public class Parser {
     // Each suite found is put in this list, using their canonical
     // path to make sure we don't add a same file twice
     // (e.g. "testng.xml" and "./testng.xml")
-    List<String> processedSuites = Lists.newArrayList();
+    List<String> processedSuites = new ArrayList<>();
     XmlSuite resultSuite = null;
 
-    List<String> toBeParsed = Lists.newArrayList();
-    List<String> toBeAdded = Lists.newArrayList();
-    List<String> toBeRemoved = Lists.newArrayList();
+    List<String> toBeParsed = new ArrayList<>();
+    List<String> toBeAdded = new ArrayList<>();
+    List<String> toBeRemoved = new ArrayList<>();
 
     if (m_fileName != null) {
       File mainFile = new File(m_fileName);
@@ -154,7 +154,7 @@ public class Parser {
     /*
      * Keeps a track of parent XmlSuite for each child suite
      */
-    Map<String, XmlSuite> childToParentMap = Maps.newHashMap();
+    Map<String, XmlSuite> childToParentMap = new HashMap<>();
     while (toBeParsed.size() > 0) {
 
       for (String currentFile : toBeParsed) {
@@ -204,17 +204,17 @@ public class Parser {
       for (String s : toBeRemoved) {
         toBeParsed.remove(s);
       }
-      toBeRemoved = Lists.newArrayList();
+      toBeRemoved = new ArrayList<>();
 
       for (String s : toBeAdded) {
         toBeParsed.add(s);
       }
-      toBeAdded = Lists.newArrayList();
+      toBeAdded = new ArrayList<>();
 
     }
 
     //returning a list of single suite to keep changes minimum
-    List<XmlSuite> resultList = Lists.newArrayList();
+    List<XmlSuite> resultList = new ArrayList<>();
     resultList.add(resultSuite);
 
     boolean postProcess = true;
@@ -230,7 +230,7 @@ public class Parser {
   public List<XmlSuite> parseToList()
     throws ParserConfigurationException, SAXException, IOException
   {
-    List<XmlSuite> result = Lists.newArrayList();
+    List<XmlSuite> result = new ArrayList<>();
     Collection<XmlSuite> suites = parse();
     for (XmlSuite suite : suites) {
       result.add(suite);

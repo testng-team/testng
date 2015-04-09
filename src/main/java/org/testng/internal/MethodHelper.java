@@ -5,14 +5,14 @@ import org.testng.TestNGException;
 import org.testng.annotations.IExpectedExceptionsAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.ITestOrConfiguration;
-import org.testng.collections.Lists;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.Sets;
 import org.testng.internal.collections.Pair;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -28,10 +28,10 @@ import java.util.regex.Pattern;
  */
 public class MethodHelper {
   private static final Map<ITestNGMethod[], Graph<ITestNGMethod>> GRAPH_CACHE =
-      new ConcurrentHashMap<ITestNGMethod[], Graph<ITestNGMethod>>();
-  private static final Map<Method, String> CANONICAL_NAME_CACHE = new ConcurrentHashMap<Method, String>();
+      new ConcurrentHashMap<>();
+  private static final Map<Method, String> CANONICAL_NAME_CACHE = new ConcurrentHashMap<>();
   private static final Map<Pair<String, String>, Boolean> MATCH_CACHE =
-      new ConcurrentHashMap<Pair<String, String>, Boolean>();
+      new ConcurrentHashMap<>();
 
   /**
    * Collects and orders test or configuration methods
@@ -47,7 +47,7 @@ public class MethodHelper {
       boolean forTests, RunInfo runInfo, IAnnotationFinder finder,
       boolean unique, List<ITestNGMethod> outExcludedMethods)
   {
-    List<ITestNGMethod> includedMethods = Lists.newArrayList();
+    List<ITestNGMethod> includedMethods = new ArrayList<>();
     MethodGroupsHelper.collectMethodsByGroup(methods.toArray(new ITestNGMethod[methods.size()]),
         forTests,
         includedMethods,
@@ -69,7 +69,7 @@ public class MethodHelper {
       ITestNGMethod[] methods)
   {
     String canonicalMethodName = calculateMethodCanonicalName(m);
-    List<ITestNGMethod> vResult = Lists.newArrayList();
+    List<ITestNGMethod> vResult = new ArrayList<>();
     String regexp = null;
     for (String fullyQualifiedRegexp : m.getMethodsDependedUpon()) {
       boolean foundAtLeastAMethod = false;
@@ -163,7 +163,7 @@ public class MethodHelper {
       Method method) {
     ExpectedExceptionsHolder result = null;
     IExpectedExceptionsAnnotation expectedExceptions =
-      (IExpectedExceptionsAnnotation) finder.findAnnotation(method,
+       finder.findAnnotation(method,
         IExpectedExceptionsAnnotation.class);
     // Old syntax
     if (expectedExceptions != null) {
@@ -172,7 +172,7 @@ public class MethodHelper {
     else {
       // New syntax
       ITestAnnotation testAnnotation =
-        (ITestAnnotation) finder.findAnnotation(method, ITestAnnotation.class);
+         finder.findAnnotation(method, ITestAnnotation.class);
       if (testAnnotation != null) {
         Class<?>[] ee = testAnnotation.getExpectedExceptions();
         if (ee.length > 0) {
@@ -209,18 +209,18 @@ public class MethodHelper {
    * Extracts the unique list of <code>ITestNGMethod</code>s.
    */
   public static List<ITestNGMethod> uniqueMethodList(Collection<List<ITestNGMethod>> methods) {
-    Set<ITestNGMethod> resultSet = Sets.newHashSet();
+    Set<ITestNGMethod> resultSet = new HashSet<>();
 
     for (List<ITestNGMethod> l : methods) {
       resultSet.addAll(l);
     }
 
-    return Lists.newArrayList(resultSet);
+    return new ArrayList<>(resultSet);
   }
 
   private static Graph<ITestNGMethod> topologicalSort(ITestNGMethod[] methods,
       List<ITestNGMethod> sequentialList, List<ITestNGMethod> parallelList) {
-    Graph<ITestNGMethod> result = new Graph<ITestNGMethod>();
+    Graph<ITestNGMethod> result = new Graph<>();
 
     if (methods.length == 0) {
       return result;
@@ -232,7 +232,7 @@ public class MethodHelper {
     for (ITestNGMethod m : methods) {
       result.addNode(m);
 
-      List<ITestNGMethod> predecessors = Lists.newArrayList();
+      List<ITestNGMethod> predecessors = new ArrayList<>();
 
       String[] methodsDependedUpon = m.getMethodsDependedUpon();
       String[] groupsDependedUpon = m.getGroupsDependedUpon();
@@ -299,8 +299,8 @@ public class MethodHelper {
 
   private static List<ITestNGMethod> sortMethods(boolean forTests,
       List<ITestNGMethod> allMethods, IAnnotationFinder finder) {
-    List<ITestNGMethod> sl = Lists.newArrayList();
-    List<ITestNGMethod> pl = Lists.newArrayList();
+    List<ITestNGMethod> sl = new ArrayList<>();
+    List<ITestNGMethod> pl = new ArrayList<>();
     ITestNGMethod[] allMethodsArray = allMethods.toArray(new ITestNGMethod[allMethods.size()]);
 
     // Fix the method inheritance if these are @Configuration methods to make
@@ -316,7 +316,7 @@ public class MethodHelper {
 
     topologicalSort(allMethodsArray, sl, pl);
 
-    List<ITestNGMethod> result = Lists.newArrayList();
+    List<ITestNGMethod> result = new ArrayList<>();
     result.addAll(sl);
     result.addAll(pl);
     return result;
@@ -330,8 +330,8 @@ public class MethodHelper {
   public static List<ITestNGMethod> getMethodsDependedUpon(ITestNGMethod method, ITestNGMethod[] methods) {
     Graph<ITestNGMethod> g = GRAPH_CACHE.get(methods);
     if (g == null) {
-      List<ITestNGMethod> parallelList = Lists.newArrayList();
-      List<ITestNGMethod> sequentialList = Lists.newArrayList();
+      List<ITestNGMethod> parallelList = new ArrayList<>();
+      List<ITestNGMethod> sequentialList = new ArrayList<>();
       g = topologicalSort(methods, sequentialList, parallelList);
       GRAPH_CACHE.put(methods, g);
     }

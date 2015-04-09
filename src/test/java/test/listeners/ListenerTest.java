@@ -4,17 +4,17 @@ import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 
 import test.SimpleBaseTest;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class ListenerTest extends SimpleBaseTest {
 
   @BeforeMethod
   public void bm() {
-    SimpleListener.m_list = Lists.newArrayList();
+    SimpleListener.m_list = new ArrayList<>();
   }
 
   @Test(description = "Ensure that if a listener is present, we get test(), onSuccess()," +

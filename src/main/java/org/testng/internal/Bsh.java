@@ -5,9 +5,9 @@ import bsh.Interpreter;
 
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
-import org.testng.collections.Maps;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Bsh implements IBsh {
@@ -19,7 +19,7 @@ public class Bsh implements IBsh {
 
     Interpreter interpreter = getInterpreter();
     try {
-      Map<String, String> groups = Maps.newHashMap();
+      Map<String, String> groups = new HashMap<>();
       for (String group : tm.getGroups()) {
         groups.put(group, group);
       }

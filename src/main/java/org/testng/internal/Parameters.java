@@ -3,7 +3,9 @@ package org.testng.internal;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -19,8 +21,6 @@ import org.testng.annotations.IDataProviderAnnotation;
 import org.testng.annotations.IParameterizable;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.internal.ParameterHolder.ParameterOrigin;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -130,7 +130,7 @@ public class Parameters {
   {
     Object[] result = new Object[0];
     if(parameterTypes.length > 0) {
-      List<Object> vResult = Lists.newArrayList();
+      List<Object> vResult = new ArrayList<>();
 
       checkParameterTypes(methodName, parameterTypes, methodAnnotation, parameterNames);
 
@@ -349,7 +349,7 @@ public class Parameters {
   private static Object[] createParameters(Method m, MethodParameters params,
       IAnnotationFinder finder, XmlSuite xmlSuite, Class annotationClass, String atName)
   {
-    List<Object> result = Lists.newArrayList();
+    List<Object> result = new ArrayList<>();
 
     Object[] extraParameters;
     //
@@ -474,7 +474,7 @@ public class Parameters {
     if (list.isEmpty()) {
       return parameters;
     } else {
-      List<Object[]> result = Lists.newArrayList();
+      List<Object[]> result = new ArrayList<>();
       int i = 0;
       while (parameters.hasNext()) {
         Object[] next = parameters.next();
@@ -520,7 +520,7 @@ public class Parameters {
         Map<String, String> methodParams,
         Object[] pv, Method m, ITestContext ctx,
         ITestResult tr) {
-      Map<String, String> allParams = Maps.newHashMap();
+      Map<String, String> allParams = new HashMap<>();
       allParams.putAll(params);
       allParams.putAll(methodParams);
       xmlParameters = allParams;

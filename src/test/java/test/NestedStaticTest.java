@@ -5,7 +5,6 @@ import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.collections.Sets;
 
 import java.util.HashSet;
 import java.util.List;
@@ -24,7 +23,7 @@ public class NestedStaticTest extends SimpleBaseTest {
       add("nested");
       add("f");
     }};
-    Set<String> actual = Sets.newHashSet();
+    Set<String> actual = new HashSet<>();
     List<ITestResult> passedTests = tla.getPassedTests();
     for (ITestResult t : passedTests) {
       actual.add(t.getMethod().getMethodName());

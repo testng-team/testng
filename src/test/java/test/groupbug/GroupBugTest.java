@@ -2,16 +2,16 @@ package test.groupbug;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 
 import test.BaseTest;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class GroupBugTest extends BaseTest {
 
-  static List<String> passed = Lists.newArrayList();
+  static List<String> passed = new ArrayList<>();
 
   @Test(groups = "broken",
       description = "Comment out dependsOnGroups in ITCaseOne will fix the ordering, that's the bug")

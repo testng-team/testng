@@ -11,7 +11,7 @@ import java.util.Map;
  * @author cbeust
  */
 public class FactoryTest2 {
-  private static Map<Integer, Integer> m_numbers = new HashMap<Integer, Integer>();
+  private static Map<Integer, Integer> m_numbers = new HashMap<>();
   private int m_number;
 
   public FactoryTest2() {

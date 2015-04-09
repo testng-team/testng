@@ -6,8 +6,6 @@ import org.testng.ITestContext;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.annotations.IAnnotation;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
@@ -16,6 +14,8 @@ import org.testng.xml.XmlTest;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,7 +27,7 @@ import java.util.Set;
  */
 public class TestNGClassFinder extends BaseClassFinder {
   private ITestContext m_testContext = null;
-  private Map<Class, List<Object>> m_instanceMap = Maps.newHashMap();
+  private Map<Class, List<Object>> m_instanceMap = new HashMap<>();
 
   public TestNGClassFinder(ClassInfoMap cim,
                            Map<Class, List<Object>> instanceMap,
@@ -38,7 +38,7 @@ public class TestNGClassFinder extends BaseClassFinder {
     m_testContext = testContext;
 
     if(null == instanceMap) {
-      instanceMap= Maps.newHashMap();
+      instanceMap= new HashMap<>();
     }
 
     IAnnotationFinder annotationFinder = configuration.getAnnotationFinder();
@@ -256,7 +256,7 @@ public class TestNGClassFinder extends BaseClassFinder {
     List<Object> list= m_instanceMap.get(clazz);
 
     if(null == list) {
-      list= Lists.newArrayList();
+      list= new ArrayList<>();
       m_instanceMap.put(clazz, list);
     }
 

@@ -3,7 +3,6 @@ package org.testng.xml;
 
 import static org.testng.internal.Utils.isStringNotBlank;
 
-import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 import org.testng.remote.RemoteTestNG;
@@ -14,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -350,7 +350,7 @@ public abstract class LaunchSuite {
         return null;
       }
 
-      List<String> result= Lists.newArrayList();
+      List<String> result= new ArrayList<>();
       for(String name: source) {
         if(isStringNotBlank(name)) {
           result.add(name);

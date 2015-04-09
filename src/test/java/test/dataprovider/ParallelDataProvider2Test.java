@@ -2,8 +2,8 @@ package test.dataprovider;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -16,7 +16,7 @@ public class ParallelDataProvider2Test {
   @DataProvider(parallel = true)
   Iterator<Integer[]> provide()
   {
-    final List<Integer[]> ret = Lists.newArrayList();
+    final List<Integer[]> ret = new ArrayList<>();
     for (int i = 0; i < 1000; i++)
     {
       ret.add(new Integer[] { i });

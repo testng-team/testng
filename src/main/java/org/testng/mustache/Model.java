@@ -6,7 +6,7 @@ import java.util.Stack;
 
 public class Model {
   private Map<String, Object> m_model;
-  private Stack<SubModel> m_subModels = new Stack<SubModel>();
+  private Stack<SubModel> m_subModels = new Stack<>();
   private static class SubModel {
     String variable;
     Object subModel;

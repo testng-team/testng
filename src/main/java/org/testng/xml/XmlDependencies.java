@@ -1,8 +1,8 @@
 package org.testng.xml;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.dom.OnElement;
 
@@ -10,7 +10,7 @@ import static org.testng.collections.CollectionUtils.hasElements;
 
 public class XmlDependencies {
 
-  private Map<String, String> m_xmlDependencyGroups = Maps.newHashMap();
+  private Map<String, String> m_xmlDependencyGroups = new HashMap<>();
 
   @OnElement(tag = "group", attributes = { "name", "depends-on" })
   public void onGroup(String name, String dependsOn) {

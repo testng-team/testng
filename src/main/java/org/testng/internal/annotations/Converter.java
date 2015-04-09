@@ -1,9 +1,9 @@
 package org.testng.internal.annotations;
 
-import org.testng.collections.Lists;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -58,20 +58,20 @@ public class Converter {
 
   public static Class[] getClassArray(String tagValue, Class[] def) {
     Class[] result = def;
-    List vResult = Lists.newArrayList();
+    List<Class<?>> vResult = new ArrayList<>();
     if (tagValue != null) {
       StringTokenizer st = new StringTokenizer(tagValue, " ,");
       while (st.hasMoreElements()) {
         String className = (String) st.nextElement();
         try {
-          Class cls = Class.forName(className);
+          Class<?> cls = Class.forName(className);
           vResult.add(cls);
         }
         catch (ClassNotFoundException e) {
           e.printStackTrace();
         }
       }
-      result = (Class[]) vResult.toArray(new Class[vResult.size()]);
+      result = vResult.toArray(new Class[vResult.size()]);
     }
 
     return result;

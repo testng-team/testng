@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,8 +28,6 @@ import java.util.jar.JarFile;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.testng.annotations.ITestAnnotation;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Configuration;
 import org.testng.internal.DynamicGraph;
@@ -40,7 +40,6 @@ import org.testng.internal.Version;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
-import org.testng.internal.annotations.Sets;
 import org.testng.internal.thread.graph.GraphThreadPoolExecutor;
 import org.testng.internal.thread.graph.IThreadWorkerFactory;
 import org.testng.internal.thread.graph.SuiteWorkerFactory;
@@ -123,7 +122,7 @@ public class TestNG {
   private static JCommander m_jCommander;
 
   private List<String> m_commandLineMethods;
-  protected List<XmlSuite> m_suites = Lists.newArrayList();
+  protected List<XmlSuite> m_suites = new ArrayList<>();
   private List<XmlSuite> m_cmdlineSuites;
   private String m_outputDir = DEFAULT_OUTPUTDIR;
 
@@ -137,9 +136,9 @@ public class TestNG {
   private ITestRunnerFactory m_testRunnerFactory;
 
   // These listeners can be overridden from the command line
-  private List<ITestListener> m_testListeners = Lists.newArrayList();
-  private List<ISuiteListener> m_suiteListeners = Lists.newArrayList();
-  private Set<IReporter> m_reporters = Sets.newHashSet();
+  private List<ITestListener> m_testListeners = new ArrayList<>();
+  private List<ISuiteListener> m_suiteListeners = new ArrayList<>();
+  private Set<IReporter> m_reporters = new HashSet<>();
 
   protected static final int HAS_FAILURE = 1;
   protected static final int HAS_SKIPPED = 2;
@@ -165,11 +164,11 @@ public class TestNG {
   private String m_defaultSuiteName=DEFAULT_COMMAND_LINE_SUITE_NAME;
   private String m_defaultTestName=DEFAULT_COMMAND_LINE_TEST_NAME;
 
-  private Map<String, Integer> m_methodDescriptors = Maps.newHashMap();
+  private Map<String, Integer> m_methodDescriptors = new HashMap<>();
 
   private ITestObjectFactory m_objectFactory;
 
-  private List<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
+  private List<IInvokedMethodListener> m_invokedMethodListeners = new ArrayList<>();
 
   private Integer m_dataProviderThreadCount = null;
 
@@ -177,7 +176,7 @@ public class TestNG {
   /** The path of the testng.xml file inside the jar file */
   private String m_xmlPathInJar = CommandLineArgs.XML_PATH_IN_JAR_DEFAULT;
 
-  private List<String> m_stringSuites = Lists.newArrayList();
+  private List<String> m_stringSuites = new ArrayList<>();
 
   private IHookable m_hookable;
   private IConfigurable m_configurable;
@@ -185,7 +184,7 @@ public class TestNG {
   protected long m_end;
   protected long m_start;
 
-  private List<IExecutionListener> m_executionListeners = Lists.newArrayList();
+  private List<IExecutionListener> m_executionListeners = new ArrayList<>();
 
   private boolean m_isInitialized = false;
 
@@ -370,7 +369,7 @@ public class TestNG {
       JarFile jf = new JarFile(jarFile);
 //      System.out.println("   result: " + jf);
       Enumeration<JarEntry> entries = jf.entries();
-      List<String> classes = Lists.newArrayList();
+      List<String> classes = new ArrayList<>();
       boolean foundTestngXml = false;
       while (entries.hasMoreElements()) {
         JarEntry je = entries.nextElement();
@@ -392,7 +391,7 @@ public class TestNG {
         xmlSuite.setVerbose(0);
         xmlSuite.setName("Jar suite");
         XmlTest xmlTest = new XmlTest(xmlSuite);
-        List<XmlClass> xmlClasses = Lists.newArrayList();
+        List<XmlClass> xmlClasses = new ArrayList<>();
         for (String cls : classes) {
           XmlClass xmlClass = new XmlClass(cls);
           xmlClasses.add(xmlClass);
@@ -434,7 +433,7 @@ public class TestNG {
    * original suite.
    */
   private static XmlSuite extractTestNames(XmlSuite s, List<String> testNames) {
-    List<XmlTest> tests = Lists.newArrayList();
+    List<XmlTest> tests = new ArrayList<>();
     for (XmlTest xt : s.getTests()) {
       for (String tn : testNames) {
         if (xt.getName().equals(tn)) {
@@ -475,7 +474,7 @@ public class TestNG {
   }
 
   public void setCommandLineSuite(XmlSuite suite) {
-    m_cmdlineSuites = Lists.newArrayList();
+    m_cmdlineSuites = new ArrayList<>();
     m_cmdlineSuites.add(suite);
     m_suites.add(suite);
   }
@@ -518,7 +517,7 @@ public class TestNG {
     //
     // Create the <classes> tag
     //
-    Set<Class> classes = Sets.newHashSet();
+    Set<Class> classes = new HashSet<>();
     for (String m : commandLineMethods) {
       Class c = ClassHelper.forName(splitMethod(m)[0]);
       if (c != null) {
@@ -531,7 +530,7 @@ public class TestNG {
     //
     // Add the method tags
     //
-    List<XmlClass> xmlClasses = Lists.newArrayList();
+    List<XmlClass> xmlClasses = new ArrayList<>();
     for (XmlSuite s : result) {
         for (XmlTest t : s.getTests()) {
             xmlClasses.addAll(t.getClasses());
@@ -559,7 +558,7 @@ public class TestNG {
     // the default one
     //
     XmlClass[] xmlClasses = Utils.classesToXmlClasses(classes);
-    Map<String, XmlSuite> suites = Maps.newHashMap();
+    Map<String, XmlSuite> suites = new HashMap<>();
     IAnnotationFinder finder = m_configuration.getAnnotationFinder();
 
     for (int i = 0; i < classes.length; i++) {
@@ -604,7 +603,7 @@ public class TestNG {
       xmlTest.getXmlClasses().add(xmlClasses[i]);
     }
 
-    return new ArrayList<XmlSuite>(suites.values());
+    return new ArrayList<>(suites.values());
   }
 
   public void addMethodSelector(String className, int priority) {
@@ -943,7 +942,7 @@ public class TestNG {
   private void addServiceLoaderListeners() {
     try {
       Class c = Class.forName("java.util.ServiceLoader");
-      List<Object> parameters = Lists.newArrayList();
+      List<Object> parameters = new ArrayList<>();
       parameters.add(ITestNGListener.class);
       Method loadMethod;
       if (m_serviceLoaderClassLoader != null) {
@@ -990,7 +989,7 @@ public class TestNG {
    */
   private void checkTestNames(List<XmlSuite> suites) {
     for (XmlSuite suite : suites) {
-      Set<String> testNames = Sets.newHashSet();
+      Set<String> testNames = new HashSet<>();
       for (XmlTest test : suite.getTests()) {
         if (testNames.contains(test.getName())) {
           throw new TestNGException("Two tests in the same suite "
@@ -1009,7 +1008,7 @@ public class TestNG {
    * See issue #302
    */
   private void checkSuiteNames(List<XmlSuite> suites) {
-    checkSuiteNamesInternal(suites, Sets.<String>newHashSet());
+    checkSuiteNamesInternal(suites, new HashSet<String>());
   }
 
   private void checkSuiteNamesInternal(List<XmlSuite> suites, Set<String> names) {
@@ -1153,7 +1152,7 @@ public class TestNG {
         // Multithreaded: generate a dynamic graph that stores the suite hierarchy. This is then
         // used to run related suites in specific order. Parent suites are run only
         // once all the child suites have completed execution
-        DynamicGraph<ISuite> suiteGraph = new DynamicGraph<ISuite>();
+        DynamicGraph<ISuite> suiteGraph = new DynamicGraph<>();
         for (XmlSuite xmlSuite : m_suites) {
           populateSuiteGraph(suiteGraph, suiteRunnerMap, xmlSuite);
         }
@@ -1161,7 +1160,7 @@ public class TestNG {
         IThreadWorkerFactory<ISuite> factory = new SuiteWorkerFactory(suiteRunnerMap,
           0 /* verbose hasn't been set yet */, getDefaultSuiteName());
         GraphThreadPoolExecutor<ISuite> pooledExecutor =
-          new GraphThreadPoolExecutor<ISuite>(suiteGraph, factory, m_suiteThreadPoolSize,
+          new GraphThreadPoolExecutor<>(suiteGraph, factory, m_suiteThreadPoolSize,
           m_suiteThreadPoolSize, Integer.MAX_VALUE, TimeUnit.MILLISECONDS,
           new LinkedBlockingQueue<Runnable>());
 
@@ -1187,7 +1186,7 @@ public class TestNG {
     //
     // Generate the suites report
     //
-    return Lists.newArrayList(suiteRunnerMap.values());
+    return new ArrayList<>(suiteRunnerMap.values());
   }
 
   private static void error(String s) {
@@ -1388,7 +1387,7 @@ public class TestNG {
     String testClasses = cla.testClass;
     if (null != testClasses) {
       String[] strClasses = testClasses.split(",");
-      List<Class> classes = Lists.newArrayList();
+      List<Class> classes = new ArrayList<>();
       for (String c : strClasses) {
         classes.add(ClassHelper.fileToClass(c));
       }
@@ -1446,7 +1445,7 @@ public class TestNG {
         sep = ",";
       }
       String[] strs = Utils.split(cla.listener, sep);
-      List<Class> classes = Lists.newArrayList();
+      List<Class> classes = new ArrayList<>();
 
       for (String cls : strs) {
         classes.add(ClassHelper.fileToClass(cls));
@@ -1993,7 +1992,7 @@ public class TestNG {
   //
 
   private URLClassLoader m_serviceLoaderClassLoader;
-  private List<ITestNGListener> m_serviceLoaderListeners = Lists.newArrayList();
+  private List<ITestNGListener> m_serviceLoaderListeners = new ArrayList<>();
 
   /*
    * Used to test ServiceClassLoader

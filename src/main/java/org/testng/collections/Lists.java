@@ -5,23 +5,18 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class Lists {
+public final class Lists {
 
+  private Lists() {}
+
+  @Deprecated
   public static <K> List<K> newArrayList() {
-    return new ArrayList<K>();
-  }
-
-  public static <K> List<K> newArrayList(Collection<K> c) {
-    return new ArrayList<K>(c);
+    return new ArrayList<>();
   }
 
   public static <K> List<K> newArrayList(K... elements) {
-    List<K> result = new ArrayList<K>();
+    List<K> result = new ArrayList<>();
     Collections.addAll(result, elements);
     return result;
-  }
-
-  public static <K> List<K> newArrayList(int size) {
-    return new ArrayList<K>(size);
   }
 }

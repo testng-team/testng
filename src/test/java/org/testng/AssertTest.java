@@ -1,11 +1,10 @@
 package org.testng;
 
 import org.testng.annotations.Test;
-import org.testng.collections.Maps;
-import org.testng.internal.annotations.Sets;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -51,8 +50,8 @@ public class AssertTest {
 
   @Test
   public void setAssertEquals() {
-    Set expected = Sets.newHashSet();
-    Set actual = Sets.newHashSet();
+    Set<Object> expected = new HashSet<>();
+    Set<Object> actual = new HashSet<>();
 
     expected.add(1);
     expected.add("a");
@@ -64,8 +63,8 @@ public class AssertTest {
 
   @Test
   public void mapAssertEquals() {
-    Map expected = Maps.newHashMap();
-    Map actual = Maps.newHashMap();
+    Map<String, String> expected = new HashMap<>();
+    Map<String, String> actual = new HashMap<>();
 
     expected.put(null, "a");
     expected.put("a", "a");
@@ -79,8 +78,8 @@ public class AssertTest {
 
   @Test
   public void oneNullMapAssertEquals() {
-    Map expected = Maps.newHashMap();
-    Map actual = null;
+    Map<?, ?> expected = new HashMap<>();
+    Map<?, ?> actual = null;
     try {
       Assert.assertEquals(actual, expected);
       Assert.fail("AssertEquals didn't fail");
@@ -92,8 +91,8 @@ public class AssertTest {
 
   @Test
   public void oneNullSetAssertEquals() {
-    Set expected = null;
-    Set actual = Sets.newHashSet();
+    Set<?> expected = null;
+    Set<?> actual = new HashSet<>();
     try {
       Assert.assertEquals(actual, expected);
       Assert.fail("AssertEquals didn't fail");

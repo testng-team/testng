@@ -1,8 +1,7 @@
 package org.testng.asserts;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
-
-import org.testng.collections.Maps;
 
 /**
  * When an assertion fails, don't throw an exception but record the failure.
@@ -11,7 +10,7 @@ import org.testng.collections.Maps;
  */
 public class SoftAssert extends Assertion {
   // LinkedHashMap to preserve the order
-  private Map<AssertionError, IAssert> m_errors = Maps.newLinkedHashMap();
+  private Map<AssertionError, IAssert> m_errors = new LinkedHashMap<>();
 
   @Override
   public void executeAssert(IAssert a) {

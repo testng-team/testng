@@ -5,13 +5,13 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DependentWithDataProviderSampleTest
 {
-  public static List<String> m_log = Lists.newArrayList();
+  public static List<String> m_log = new ArrayList<>();
   private String param;
 
   @Factory( dataProvider = "prov" )

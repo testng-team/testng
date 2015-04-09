@@ -6,9 +6,6 @@ import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.collections.Sets;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.Utils;
 import org.testng.util.Strings;
@@ -18,6 +15,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -62,7 +61,7 @@ public class XMLSuiteResultWriter {
 
   private void writeAllToBuffer(XMLStringBuffer xmlBuffer, ISuiteResult suiteResult) {
     xmlBuffer.push(XMLReporterConfig.TAG_TEST, getSuiteResultAttributes(suiteResult));
-    Set<ITestResult> testResults = Sets.newHashSet();
+    Set<ITestResult> testResults = new HashSet<>();
     ITestContext testContext = suiteResult.getTestContext();
     addAllTestResults(testResults, testContext.getPassedTests());
     addAllTestResults(testResults, testContext.getFailedTests());
@@ -79,7 +78,7 @@ public class XMLSuiteResultWriter {
   private void addAllTestResults(Set<ITestResult> testResults, IResultMap resultMap) {
     if (resultMap != null) {
       // Sort the results chronologically before adding them
-      List<ITestResult> allResults = new ArrayList<ITestResult>();
+      List<ITestResult> allResults = new ArrayList<>();
       allResults.addAll(resultMap.getAllResults());
 
       Collections.sort(new ArrayList(allResults), new Comparator<ITestResult>() {
@@ -134,12 +133,12 @@ public class XMLSuiteResultWriter {
   }
 
   private Map<String, List<ITestResult>> buildTestClassGroups(Set<ITestResult> testResults) {
-    Map<String, List<ITestResult>> map = Maps.newHashMap();
+    Map<String, List<ITestResult>> map = new HashMap<>();
     for (ITestResult result : testResults) {
       String className = result.getTestClass().getName();
       List<ITestResult> list = map.get(className);
       if (list == null) {
-        list = Lists.newArrayList();
+        list = new ArrayList<>();
         map.put(className, list);
       }
       list.add(result);
