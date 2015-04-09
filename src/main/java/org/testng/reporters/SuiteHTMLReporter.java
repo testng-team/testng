@@ -10,7 +10,6 @@ import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.Reporter;
-import org.testng.collections.Maps;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlSuite;
 
@@ -22,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +40,7 @@ public class SuiteHTMLReporter implements IReporter {
   public static final String METHODS_NOT_RUN = "methods-not-run.html";
   public static final String TESTNG_XML = "testng.xml.html";
 
-  private Map<String, ITestClass> m_classes = Maps.newHashMap();
+  private Map<String, ITestClass> m_classes = new HashMap<>();
   private String m_outputDirectory;
 
   @Override
@@ -522,7 +522,7 @@ public class SuiteHTMLReporter implements IReporter {
         Collection<ITestNGMethod> methods = groups.get(group);
         sb.append("<tr><td>").append(group).append("</td>");
         StringBuffer methodNames = new StringBuffer();
-        Map<ITestNGMethod, ITestNGMethod> uniqueMethods = Maps.newHashMap();
+        Map<ITestNGMethod, ITestNGMethod> uniqueMethods = new HashMap<>();
         for (ITestNGMethod tm : methods) {
           uniqueMethods.put(tm, tm);
         }
@@ -628,9 +628,9 @@ public class SuiteHTMLReporter implements IReporter {
 
       // Order the results so we can show the failures first, then the skip and
       // finally the successes
-      Map<String, ISuiteResult> redResults = Maps.newHashMap();
-      Map<String, ISuiteResult> yellowResults = Maps.newHashMap();
-      Map<String, ISuiteResult> greenResults = Maps.newHashMap();
+      Map<String, ISuiteResult> redResults = new HashMap<>();
+      Map<String, ISuiteResult> yellowResults = new HashMap<>();
+      Map<String, ISuiteResult> greenResults = new HashMap<>();
 
       for (Map.Entry<String, ISuiteResult> entry : suiteResults.entrySet()) {
         String suiteName = entry.getKey();

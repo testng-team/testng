@@ -10,7 +10,6 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
-import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
@@ -22,6 +21,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -313,7 +313,7 @@ public class EmailableReporter implements IReporter {
    * the ITestNGMethod from the invoked methods.
    */
   private Collection<ITestNGMethod> getMethodSet(IResultMap tests, ISuite suite) {
-    List<IInvokedMethod> r = Lists.newArrayList();
+    List<IInvokedMethod> r = new ArrayList<>();
     List<IInvokedMethod> invokedMethods = suite.getAllInvokedMethods();
     for (IInvokedMethod im : invokedMethods) {
       if (tests.getAllMethods().contains(im.getTestMethod())) {
@@ -321,7 +321,7 @@ public class EmailableReporter implements IReporter {
       }
     }
     Arrays.sort(r.toArray(new IInvokedMethod[r.size()]), new TestSorter());
-    List<ITestNGMethod> result = Lists.newArrayList();
+    List<ITestNGMethod> result = new ArrayList<>();
 
     // Add all the invoked methods
     for (IInvokedMethod m : r) {

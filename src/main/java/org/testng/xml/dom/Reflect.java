@@ -1,17 +1,17 @@
 package org.testng.xml.dom;
 
-import org.testng.collections.Lists;
 import org.testng.internal.collections.Pair;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class Reflect {
   public static List<Pair<Method, Wrapper>> findMethodsWithAnnotation(
       Class<?> c, Class<? extends Annotation> ac, Object bean) {
-    List<Pair<Method, Wrapper>> result = Lists.newArrayList();
+    List<Pair<Method, Wrapper>> result = new ArrayList<>();
     for (Method m : c.getMethods()) {
       Annotation a = m.getAnnotation(ac);
       if (a != null) {

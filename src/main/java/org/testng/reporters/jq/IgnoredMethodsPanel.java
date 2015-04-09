@@ -2,7 +2,6 @@ package org.testng.reporters.jq;
 
 import org.testng.ISuite;
 import org.testng.ITestNGMethod;
-import org.testng.collections.Maps;
 import org.testng.collections.SetMultiMap;
 import org.testng.reporters.XMLStringBuffer;
 
@@ -26,7 +25,7 @@ public class IgnoredMethodsPanel extends BaseMultiSuitePanel {
   @Override
   public String getContent(ISuite suite, XMLStringBuffer main) {
     XMLStringBuffer xsb = new XMLStringBuffer(main.getCurrentIndent());
-    SetMultiMap<Class<?>, ITestNGMethod> map = Maps.newSetMultiMap();
+    SetMultiMap<Class<?>, ITestNGMethod> map = new SetMultiMap<>();
 
     for (ITestNGMethod method : suite.getExcludedMethods()) {
       map.put(method.getTestClass().getRealClass(), method);

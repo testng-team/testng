@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,8 +15,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.testng.collections.ListMultiMap;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.internal.Attributes;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.ClassInfoMap;
@@ -39,7 +39,6 @@ import org.testng.internal.Utils;
 import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IListeners;
-import org.testng.internal.annotations.Sets;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.internal.thread.graph.GraphThreadPoolExecutor;
 import org.testng.internal.thread.graph.IThreadWorkerFactory;
@@ -75,13 +74,13 @@ public class TestRunner
   transient private IAnnotationFinder m_annotationFinder= null;
 
   /** ITestListeners support. */
-  transient private List<ITestListener> m_testListeners = Lists.newArrayList();
-  transient private Set<IConfigurationListener> m_configurationListeners = Sets.newHashSet();
+  transient private List<ITestListener> m_testListeners = new ArrayList<>();
+  transient private Set<IConfigurationListener> m_configurationListeners = new HashSet<>();
 
   transient private IConfigurationListener m_confListener= new ConfigurationListener();
   transient private boolean m_skipFailedInvocationCounts;
 
-  transient private List<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
+  transient private List<IInvokedMethodListener> m_invokedMethodListeners = new ArrayList<>();
 
   /**
    * All the test methods we found, associated with their respective classes.
@@ -96,7 +95,7 @@ public class TestRunner
   private Date m_endDate = null;
 
   /** A map to keep track of Class <-> IClass. */
-  transient private Map<Class<?>, ITestClass> m_classMap = Maps.newHashMap();
+  transient private Map<Class<?>, ITestClass> m_classMap = new HashMap<>();
 
   /** Where the reports will be created. */
   private String m_outputDirectory= Constants.getDefaultValueFor(Constants.PROP_OUTPUT_DIR);
@@ -118,11 +117,11 @@ public class TestRunner
   private ITestNGMethod[] m_afterSuiteMethods = {};
   private ITestNGMethod[] m_beforeXmlTestMethods = {};
   private ITestNGMethod[] m_afterXmlTestMethods = {};
-  private List<ITestNGMethod> m_excludedMethods = Lists.newArrayList();
+  private List<ITestNGMethod> m_excludedMethods = new ArrayList<>();
   private ConfigurationGroupMethods m_groupMethods = null;
 
   // Meta groups
-  private Map<String, List<String>> m_metaGroups = Maps.newHashMap();
+  private Map<String, List<String>> m_metaGroups = new HashMap<>();
 
   // All the tests that were run along with their result
   private IResultMap m_passedTests = new ResultMap();
@@ -250,7 +249,7 @@ public class TestRunner
    */
   private ListenerHolder findAllListeners(Class<?> cls) {
     ListenerHolder result = new ListenerHolder();
-    result.listenerClasses = Lists.newArrayList();
+    result.listenerClasses = new ArrayList<>();
 
     do {
       IListeners l = m_annotationFinder.findAnnotation(cls, IListeners.class);
@@ -281,7 +280,7 @@ public class TestRunner
     // Find all the listener factories and collect all the listeners requested in a
     // @Listeners annotation.
     //
-    Set<Class<? extends ITestNGListener>> listenerClasses = Sets.newHashSet();
+    Set<Class<? extends ITestNGListener>> listenerClasses = new HashSet<>();
     Class<? extends ITestNGListenerFactory> listenerFactoryClass = null;
 
     for (IClass cls : getTestClasses()) {
@@ -397,13 +396,13 @@ public class TestRunner
     //
     // Calculate all the methods we need to invoke
     //
-    List<ITestNGMethod> beforeClassMethods = Lists.newArrayList();
-    List<ITestNGMethod> testMethods = Lists.newArrayList();
-    List<ITestNGMethod> afterClassMethods = Lists.newArrayList();
-    List<ITestNGMethod> beforeSuiteMethods = Lists.newArrayList();
-    List<ITestNGMethod> afterSuiteMethods = Lists.newArrayList();
-    List<ITestNGMethod> beforeXmlTestMethods = Lists.newArrayList();
-    List<ITestNGMethod> afterXmlTestMethods = Lists.newArrayList();
+    List<ITestNGMethod> beforeClassMethods = new ArrayList<>();
+    List<ITestNGMethod> testMethods = new ArrayList<>();
+    List<ITestNGMethod> afterClassMethods = new ArrayList<>();
+    List<ITestNGMethod> beforeSuiteMethods = new ArrayList<>();
+    List<ITestNGMethod> afterSuiteMethods = new ArrayList<>();
+    List<ITestNGMethod> beforeXmlTestMethods = new ArrayList<>();
+    List<ITestNGMethod> afterXmlTestMethods = new ArrayList<>();
 
     ClassInfoMap classMap = new ClassInfoMap(m_testClassesFromXml);
     m_testClassFinder= new TestNGClassFinder(classMap,
@@ -567,7 +566,7 @@ public class TestRunner
   }
 
   private Map<String, String> createGroups(String[] groups) {
-    Map<String, String> result = Maps.newHashMap();
+    Map<String, String> result = new HashMap<>();
 
     // Groups that were passed on the command line
     for (String group : groups) {
@@ -577,7 +576,7 @@ public class TestRunner
     // See if we have any MetaGroups and
     // expand them if they match one of the groups
     // we have just been passed
-    List<String> unfinishedGroups = Lists.newArrayList();
+    List<String> unfinishedGroups = new ArrayList<>();
 
     if (m_metaGroups.size() > 0) {
       collectGroups(groups, unfinishedGroups, result);
@@ -585,7 +584,7 @@ public class TestRunner
       // Do we need to loop over unfinished groups?
       while (unfinishedGroups.size() > 0) {
         String[] uGroups = unfinishedGroups.toArray(new String[unfinishedGroups.size()]);
-        unfinishedGroups = Lists.newArrayList();
+        unfinishedGroups = new ArrayList<>();
         collectGroups(uGroups, unfinishedGroups, result);
       }
     }
@@ -650,8 +649,8 @@ public class TestRunner
   private void privateRunJUnit(XmlTest xmlTest) {
     final ClassInfoMap cim = new ClassInfoMap(m_testClassesFromXml, false);
     final Set<Class<?>> classes = cim.getClasses();
-    final List<ITestNGMethod> runMethods = Lists.newArrayList();
-    List<IWorker<ITestNGMethod>> workers = Lists.newArrayList();
+    final List<ITestNGMethod> runMethods = new ArrayList<>();
+    List<IWorker<ITestNGMethod>> workers = new ArrayList<>();
     // FIXME: directly referencing JUnitTestRunner which uses JUnit classes
     // may result in an class resolution exception under different JVMs
     // The resolution process is not specified in the JVM spec with a specific implementation,
@@ -672,7 +671,7 @@ public class TestRunner
       public void run() {
         for(Class<?> tc: classes) {
           List<XmlInclude> includedMethods = cim.getXmlClass(tc).getIncludedMethods();
-          List<String> methods = Lists.newArrayList();
+          List<String> methods = new ArrayList<>();
           for (XmlInclude inc: includedMethods) {
               methods.add(inc.getName());
           }
@@ -735,7 +734,7 @@ public class TestRunner
       if (parallel) {
         if (graph.getNodeCount() > 0) {
           GraphThreadPoolExecutor<ITestNGMethod> executor =
-              new GraphThreadPoolExecutor<ITestNGMethod>(graph, this,
+              new GraphThreadPoolExecutor<>(graph, this,
                   threadCount, threadCount, 0, TimeUnit.MILLISECONDS,
                   new LinkedBlockingQueue<Runnable>());
           executor.run();
@@ -786,7 +785,7 @@ public class TestRunner
 
     List<IMethodInstance> resultInstances =
         m_methodInterceptor.intercept(Arrays.asList(instances), this);
-    List<ITestNGMethod> result = Lists.newArrayList();
+    List<ITestNGMethod> result = new ArrayList<>();
     for (IMethodInstance imi : resultInstances) {
       result.add(imi.getMethod());
     }
@@ -820,10 +819,10 @@ public class TestRunner
    * Create workers for parallel="classes" and similar cases.
    */
   private List<IWorker<ITestNGMethod>> createClassBasedParallelWorkers(List<ITestNGMethod> methods) {
-    List<IWorker<ITestNGMethod>> result = Lists.newArrayList();
+    List<IWorker<ITestNGMethod>> result = new ArrayList<>();
     // Methods that belong to classes with a sequential=true or parallel=classes
     // attribute must all be run in the same worker
-    Set<Class> sequentialClasses = Sets.newHashSet();
+    Set<Class> sequentialClasses = new HashSet<>();
     for (ITestNGMethod m : methods) {
       Class<? extends ITestClass> cls = m.getRealClass();
       org.testng.annotations.ITestAnnotation test =
@@ -836,7 +835,7 @@ public class TestRunner
       }
     }
 
-    List<IMethodInstance> methodInstances = Lists.newArrayList();
+    List<IMethodInstance> methodInstances = new ArrayList<>();
     for (ITestNGMethod tm : methods) {
       methodInstances.addAll(methodsToMultipleMethodInstances(tm));
     }
@@ -847,7 +846,7 @@ public class TestRunner
     methodInstances = m_methodInterceptor.intercept(methodInstances, this);
     Map<String, String> params = m_xmlTest.getAllParameters();
 
-    Set<Class<?>> processedClasses = Sets.newHashSet();
+    Set<Class<?>> processedClasses = new HashSet<>();
     for (IMethodInstance im : methodInstances) {
       Class<?> c = im.getMethod().getTestClass().getRealClass();
       if (sequentialClasses.contains(c)) {
@@ -885,13 +884,13 @@ public class TestRunner
    */
   private List<IWorker<ITestNGMethod>>
       createInstanceBasedParallelWorkers(List<ITestNGMethod> methods) {
-    List<IWorker<ITestNGMethod>> result = Lists.newArrayList();
-    ListMultiMap<Object, ITestNGMethod> lmm = Maps.newListMultiMap();
+    List<IWorker<ITestNGMethod>> result = new ArrayList<>();
+    ListMultiMap<Object, ITestNGMethod> lmm = new ListMultiMap<>();
     for (ITestNGMethod m : methods) {
       lmm.put(m.getInstance(), m);
     }
     for (Map.Entry<Object, List<ITestNGMethod>> es : lmm.getEntrySet()) {
-      List<IMethodInstance> methodInstances = Lists.newArrayList();
+      List<IMethodInstance> methodInstances = new ArrayList<>();
       for (ITestNGMethod m : es.getValue()) {
         methodInstances.add(new MethodInstance(m));
       }
@@ -909,14 +908,14 @@ public class TestRunner
   }
 
   private List<List<IMethodInstance>> createInstances(List<IMethodInstance> methodInstances) {
-    Map<Object, List<IMethodInstance>> map = Maps.newHashMap();
+    Map<Object, List<IMethodInstance>> map = new HashMap<>();
 //    MapList<IMethodInstance[], Object> map = new MapList<IMethodInstance[], Object>();
     for (IMethodInstance imi : methodInstances) {
       for (Object o : imi.getInstances()) {
         System.out.println(o);
         List<IMethodInstance> l = map.get(o);
         if (l == null) {
-          l = Lists.newArrayList();
+          l = new ArrayList<>();
           map.put(o, l);
         }
         l.add(imi);
@@ -927,7 +926,7 @@ public class TestRunner
     }
 //    return map.getKeys();
 //    System.out.println(map);
-    return new ArrayList<List<IMethodInstance>>(map.values());
+    return new ArrayList<>(map.values());
   }
 
   private TestMethodWorker createTestMethodWorker(
@@ -943,7 +942,7 @@ public class TestRunner
   }
 
   private IMethodInstance[] findClasses(List<IMethodInstance> methodInstances, Class<?> c) {
-    List<IMethodInstance> result = Lists.newArrayList();
+    List<IMethodInstance> result = new ArrayList<>();
     for (IMethodInstance mi : methodInstances) {
       if (mi.getMethod().getTestClass().getRealClass() == c) {
         result.add(mi);
@@ -956,7 +955,7 @@ public class TestRunner
    * @@@ remove this
    */
   private List<MethodInstance> methodsToMultipleMethodInstances(ITestNGMethod... sl) {
-    List<MethodInstance> vResult = Lists.newArrayList();
+    List<MethodInstance> vResult = new ArrayList<>();
     for (ITestNGMethod m : sl) {
       vResult.add(new MethodInstance(m));
     }
@@ -1037,7 +1036,7 @@ public class TestRunner
   }
 
   private DynamicGraph<ITestNGMethod> createDynamicGraph(ITestNGMethod[] methods) {
-    DynamicGraph<ITestNGMethod> result = new DynamicGraph<ITestNGMethod>();
+    DynamicGraph<ITestNGMethod> result = new DynamicGraph<>();
     result.setComparator(new Comparator<ITestNGMethod>() {
       @Override
       public int compare(ITestNGMethod o1, ITestNGMethod o2) {
@@ -1124,12 +1123,12 @@ public class TestRunner
   private ListMultiMap<ITestNGMethod, ITestNGMethod> createInstanceDependencies(
       ITestNGMethod[] methods, XmlTest currentXmlTest)
   {
-    ListMultiMap<Object, ITestNGMethod> instanceMap = Maps.newListMultiMap();
+    ListMultiMap<Object, ITestNGMethod> instanceMap = new ListMultiMap<>();
     for (ITestNGMethod m : methods) {
       instanceMap.put(m.getInstance(), m);
     }
 
-    ListMultiMap<ITestNGMethod, ITestNGMethod> result = Maps.newListMultiMap();
+    ListMultiMap<ITestNGMethod, ITestNGMethod> result = new ListMultiMap<>();
     Object previousInstance = null;
     for (Map.Entry<Object, List<ITestNGMethod>> es : instanceMap.getEntrySet()) {
       if (previousInstance == null) {
@@ -1155,10 +1154,10 @@ public class TestRunner
   private ListMultiMap<ITestNGMethod, ITestNGMethod> createClassDependencies(
       ITestNGMethod[] methods, XmlTest test)
   {
-    Map<String, List<ITestNGMethod>> classes = Maps.newHashMap();
+    Map<String, List<ITestNGMethod>> classes = new HashMap<>();
     // Note: use a List here to preserve the ordering but make sure
     // we don't add the same class twice
-    List<XmlClass> sortedClasses = Lists.newArrayList();
+    List<XmlClass> sortedClasses = new ArrayList<>();
 
     for (XmlClass c : test.getXmlClasses()) {
       classes.put(c.getName(), new ArrayList<ITestNGMethod>());
@@ -1173,8 +1172,8 @@ public class TestRunner
       }
     });
 
-    Map<String, Integer> indexedClasses1 = Maps.newHashMap();
-    Map<Integer, String> indexedClasses2 = Maps.newHashMap();
+    Map<String, Integer> indexedClasses1 = new HashMap<>();
+    Map<Integer, String> indexedClasses2 = new HashMap<>();
     int i = 0;
     for (XmlClass c : sortedClasses) {
       indexedClasses1.put(c.getName(), i);
@@ -1182,12 +1181,12 @@ public class TestRunner
       i++;
     }
 
-    ListMultiMap<String, ITestNGMethod> methodsFromClass = Maps.newListMultiMap();
+    ListMultiMap<String, ITestNGMethod> methodsFromClass = new ListMultiMap<>();
     for (ITestNGMethod m : methods) {
       methodsFromClass.put(m.getTestClass().getName(), m);
     }
 
-    ListMultiMap<ITestNGMethod, ITestNGMethod> result = Maps.newListMultiMap();
+    ListMultiMap<ITestNGMethod, ITestNGMethod> result = new ListMultiMap<>();
     for (ITestNGMethod m : methods) {
       String name = m.getTestClass().getName();
       Integer index = indexedClasses1.get(name);
@@ -1330,7 +1329,7 @@ public class TestRunner
 
   @Override
   public Collection<ITestNGMethod> getExcludedMethods() {
-    Map<ITestNGMethod, ITestNGMethod> vResult = Maps.newHashMap();
+    Map<ITestNGMethod, ITestNGMethod> vResult = new HashMap<>();
 
     for (ITestNGMethod m : m_excludedMethods) {
       vResult.put(m, m);
@@ -1426,7 +1425,7 @@ public class TestRunner
 
   @Override
   public List<IConfigurationListener> getConfigurationListeners() {
-    return Lists.<IConfigurationListener>newArrayList(m_configurationListeners);
+    return new ArrayList<>(m_configurationListeners);
   }
   //
   // ITestResultNotifier
@@ -1496,7 +1495,7 @@ public class TestRunner
   // Listeners
   /////
 
-  private final List<InvokedMethod> m_invokedMethods = Lists.newArrayList();
+  private final List<InvokedMethod> m_invokedMethods = new ArrayList<>();
 
   private void dumpInvokedMethods() {
     System.out.println("===== Invoked methods");
@@ -1516,7 +1515,7 @@ public class TestRunner
   }
 
   public List<ITestNGMethod> getInvokedMethods() {
-    List<ITestNGMethod> result= Lists.newArrayList();
+    List<ITestNGMethod> result= new ArrayList<>();
     synchronized(m_invokedMethods) {
       for (IInvokedMethod im : m_invokedMethods) {
         ITestNGMethod tm= im.getTestMethod();
@@ -1584,7 +1583,7 @@ public class TestRunner
     return m_attributes.removeAttribute(name);
   }
 
-  private ListMultiMap<Class<? extends Module>, Module> m_guiceModules = Maps.newListMultiMap();
+  private ListMultiMap<Class<? extends Module>, Module> m_guiceModules = new ListMultiMap<>();
 
   @Override
   public List<Module> getGuiceModules(Class<? extends Module> cls) {
@@ -1597,7 +1596,7 @@ public class TestRunner
     m_guiceModules.put(cls, module);
   }
 
-  private Map<List<Module>, Injector> m_injectors = Maps.newHashMap();
+  private Map<List<Module>, Injector> m_injectors = new HashMap<>();
 
   @Override
   public Injector getInjector(List<Module> moduleInstances) {

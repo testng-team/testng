@@ -3,11 +3,11 @@ package org.testng.internal;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -57,9 +57,9 @@ public class FactoryMethod extends BaseTestMethod {
   }
 
   public Object[] invoke() {
-    List<Object> result = Lists.newArrayList();
+    List<Object> result = new ArrayList<>();
 
-    Map<String, String> allParameterNames = Maps.newHashMap();
+    Map<String, String> allParameterNames = new HashMap<>();
     Iterator<Object[]> parameterIterator =
       Parameters.handleParameters(this,
           allParameterNames,

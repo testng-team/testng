@@ -2,8 +2,8 @@ package test.asserttests;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.testng.internal.annotations.Sets;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class AssertTest {
@@ -58,8 +58,8 @@ public class AssertTest {
 
   @Test
   public void setsSuccess() {
-    Set<Integer> set1 = Sets.newHashSet();
-    Set<Integer> set2 = Sets.newHashSet();
+    Set<Integer> set1 = new HashSet<>();
+    Set<Integer> set2 = new HashSet<>();
 
     set1.add(1);
     set2.add(1);

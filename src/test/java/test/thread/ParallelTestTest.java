@@ -3,13 +3,13 @@ package test.thread;
 import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 import test.BaseTest;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -78,12 +78,12 @@ public class ParallelTestTest extends BaseTest {
 
     tng.run();
 
-    List<Map<Long, Long>> maps = Lists.newArrayList();
+    List<Map<Long, Long>> maps = new ArrayList<>();
     for (String c : classNames) {
       maps.add(Helper.getMap(c));
-    };
+    }
 
-    Map<Long, Long> mergedMap = new HashMap<Long, Long>();
+    Map<Long, Long> mergedMap = new HashMap<>();
     for (Map<Long, Long>m : maps) {
       mergedMap.putAll(m);
     }

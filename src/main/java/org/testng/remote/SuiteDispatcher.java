@@ -6,7 +6,6 @@ import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.SuiteRunner;
 import org.testng.TestNGException;
-import org.testng.collections.Lists;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.Invoker;
 import org.testng.internal.PropertiesFile;
@@ -16,6 +15,7 @@ import org.testng.remote.adapter.RemoteResultListener;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
@@ -95,7 +95,7 @@ public class SuiteDispatcher
 	 */
 	public List<ISuite> dispatch(IConfiguration configuration,
 	    List<XmlSuite> suites, String outputDir, List<ITestListener> testListeners){
-		List<ISuite> result = Lists.newArrayList();
+		List<ISuite> result = new ArrayList<>();
 		try
 		{
 			//

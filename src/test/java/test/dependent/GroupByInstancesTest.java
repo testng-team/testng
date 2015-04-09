@@ -3,10 +3,10 @@ package test.dependent;
 import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 
 import test.SimpleBaseTest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GroupByInstancesTest extends SimpleBaseTest {
@@ -23,7 +23,7 @@ public class GroupByInstancesTest extends SimpleBaseTest {
 
   private void runTest(boolean group) {
     TestNG tng = create(GroupByInstancesSampleTest.class);
-    GroupByInstancesSampleTest.m_log = Lists.newArrayList();
+    GroupByInstancesSampleTest.m_log = new ArrayList<>();
     tng.setGroupByInstances(group);
     tng.run();
 

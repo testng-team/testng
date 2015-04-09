@@ -4,7 +4,6 @@ import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
-import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
@@ -12,6 +11,7 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -90,7 +90,7 @@ public class SimpleBaseTest {
    * Compare a list of ITestResult with a list of String method names,
    */
   public static void assertTestResultsEqual(List<ITestResult> results, List<String> methods) {
-    List<String> resultMethods = Lists.newArrayList();
+    List<String> resultMethods = new ArrayList<>();
     for (ITestResult r : results) {
       resultMethods.add(r.getMethod().getMethodName());
     }

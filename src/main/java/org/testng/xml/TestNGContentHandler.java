@@ -4,8 +4,6 @@ import static org.testng.internal.Utils.isStringBlank;
 
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.internal.Utils;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -16,6 +14,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -37,7 +36,7 @@ public class TestNGContentHandler extends DefaultHandler {
   private int m_currentIncludeIndex = 0;
   private List<XmlPackage> m_currentPackages = null;
   private XmlPackage m_currentPackage = null;
-  private List<XmlSuite> m_suites = Lists.newArrayList();
+  private List<XmlSuite> m_suites = new ArrayList<>();
   private List<String> m_currentIncludedGroups = null;
   private List<String> m_currentExcludedGroups = null;
   private Map<String, String> m_currentTestParameters = null;
@@ -54,7 +53,7 @@ public class TestNGContentHandler extends DefaultHandler {
     INCLUDE,
     EXCLUDE
   }
-  private Stack<Location> m_locations = new Stack<Location>();
+  private Stack<Location> m_locations = new Stack<>();
 
   private XmlClass m_currentClass = null;
   private ArrayList<XmlInclude> m_currentIncludedMethods = null;
@@ -63,7 +62,7 @@ public class TestNGContentHandler extends DefaultHandler {
   private XmlMethodSelector m_currentSelector = null;
   private String m_currentLanguage = null;
   private String m_currentExpression = null;
-  private List<String> m_suiteFiles = Lists.newArrayList();
+  private List<String> m_suiteFiles = new ArrayList<>();
   private boolean m_enabledTest;
   private List<String> m_listeners;
 
@@ -142,7 +141,7 @@ public class TestNGContentHandler extends DefaultHandler {
       m_currentSuite = new XmlSuite();
       m_currentSuite.setFileName(m_fileName);
       m_currentSuite.setName(name);
-      m_currentSuiteParameters = Maps.newHashMap();
+      m_currentSuiteParameters = new HashMap<>();
 
       String verbose = attributes.getValue("verbose");
       if (null != verbose) {
@@ -222,8 +221,8 @@ public class TestNGContentHandler extends DefaultHandler {
   private void xmlDefine(boolean start, Attributes attributes) {
     if (start) {
       String name = attributes.getValue("name");
-      m_currentDefines = Lists.newArrayList();
-      m_currentMetaGroup = Lists.newArrayList();
+      m_currentDefines = new ArrayList<>();
+      m_currentMetaGroup = new ArrayList<>();
       m_currentMetaGroupName = name;
     }
     else {
@@ -260,7 +259,7 @@ public class TestNGContentHandler extends DefaultHandler {
     if (start) {
       m_currentTest = new XmlTest(m_currentSuite, m_currentTestIndex++);
       pushLocation(Location.TEST);
-      m_currentTestParameters = Maps.newHashMap();
+      m_currentTestParameters = new HashMap<>();
       final String testName= attributes.getValue("name");
       if(isStringBlank(testName)) {
         throw new TestNGException("The <test> tag must define the name attribute");
@@ -336,7 +335,7 @@ public class TestNGContentHandler extends DefaultHandler {
    */
   public void xmlClasses(boolean start, Attributes attributes) {
     if (start) {
-      m_currentClasses = Lists.newArrayList();
+      m_currentClasses = new ArrayList<>();
       m_currentClassIndex = 0;
     }
     else {
@@ -350,7 +349,7 @@ public class TestNGContentHandler extends DefaultHandler {
    */
   public void xmlListeners(boolean start, Attributes attributes) {
     if (start) {
-      m_listeners = Lists.newArrayList();
+      m_listeners = new ArrayList<>();
     }
     else {
       if (null != m_listeners) {
@@ -375,7 +374,7 @@ public class TestNGContentHandler extends DefaultHandler {
    */
   public void xmlPackages(boolean start, Attributes attributes) {
     if (start) {
-      m_currentPackages = Lists.newArrayList();
+      m_currentPackages = new ArrayList<>();
     }
     else {
       if (null != m_currentPackages) {
@@ -401,7 +400,7 @@ public class TestNGContentHandler extends DefaultHandler {
    */
   public void xmlMethodSelectors(boolean start, Attributes attributes) {
     if (start) {
-      m_currentSelectors = new ArrayList<XmlMethodSelector>();
+      m_currentSelectors = new ArrayList<>();
     }
     else {
       switch(m_locations.peek()) {
@@ -449,8 +448,8 @@ public class TestNGContentHandler extends DefaultHandler {
 
   private void xmlMethod(boolean start, Attributes attributes) {
     if (start) {
-      m_currentIncludedMethods = new ArrayList<XmlInclude>();
-      m_currentExcludedMethods = Lists.newArrayList();
+      m_currentIncludedMethods = new ArrayList<>();
+      m_currentExcludedMethods = new ArrayList<>();
       m_currentIncludeIndex = 0;
     }
     else {
@@ -466,7 +465,7 @@ public class TestNGContentHandler extends DefaultHandler {
    */
   public void xmlRun(boolean start, Attributes attributes) throws SAXException {
     if (start) {
-      m_currentRuns = Lists.newArrayList();
+      m_currentRuns = new ArrayList<>();
     }
     else {
       if (m_currentTest != null) {
@@ -543,7 +542,7 @@ public class TestNGContentHandler extends DefaultHandler {
       if (null != m_currentClasses) {
         m_currentClass = new XmlClass(name, m_currentClassIndex++, m_loadClasses);
         m_currentClass.setXmlTest(m_currentTest);
-        m_currentClassParameters = Maps.newHashMap();
+        m_currentClassParameters = new HashMap<>();
         m_currentClasses.add(m_currentClass);
         pushLocation(Location.CLASS);
       }
@@ -565,8 +564,8 @@ public class TestNGContentHandler extends DefaultHandler {
       xmlGroup(true, attributes);
     }
     else if ("groups".equals(qName)) {
-      m_currentIncludedGroups = Lists.newArrayList();
-      m_currentExcludedGroups = Lists.newArrayList();
+      m_currentIncludedGroups = new ArrayList<>();
+      m_currentExcludedGroups = new ArrayList<>();
     }
     else if ("methods".equals(qName)) {
       xmlMethod(true, attributes);
@@ -600,7 +599,7 @@ public class TestNGContentHandler extends DefaultHandler {
     String name;
     String invocationNumbers;
     String description;
-    Map<String, String> parameters = Maps.newHashMap();
+    Map<String, String> parameters = new HashMap<>();
 
     public Include(String name, String numbers) {
       this.name = name;
@@ -673,7 +672,7 @@ public class TestNGContentHandler extends DefaultHandler {
 
   private List<Integer> stringToList(String in) {
     String[] numbers = in.split(" ");
-    List<Integer> result = Lists.newArrayList();
+    List<Integer> result = new ArrayList<>();
     for (String n : numbers) {
       result.add(Integer.parseInt(n));
     }

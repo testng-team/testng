@@ -1,7 +1,9 @@
 package org.testng.xml;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +12,6 @@ import java.util.Set;
 
 import org.testng.ITestObjectFactory;
 import org.testng.TestNG;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.dom.OnElement;
 import org.testng.xml.dom.OnElementList;
@@ -95,19 +95,19 @@ public class XmlSuite implements Serializable, Cloneable {
   private Boolean m_allowReturnValues = DEFAULT_ALLOW_RETURN_VALUES;
 
   /** The packages containing test classes. */
-  private List<XmlPackage> m_xmlPackages = Lists.newArrayList();
+  private List<XmlPackage> m_xmlPackages = new ArrayList<>();
 
   /** BeanShell expression. */
   private String m_expression = null;
 
   /** Suite level method selectors. */
-  private List<XmlMethodSelector> m_methodSelectors = Lists.newArrayList();
+  private List<XmlMethodSelector> m_methodSelectors = new ArrayList<>();
 
   /** Tests in suite. */
-  private List<XmlTest> m_tests = Lists.newArrayList();
+  private List<XmlTest> m_tests = new ArrayList<>();
 
   /** Suite level parameters. */
-  private Map<String, String> m_parameters = Maps.newHashMap();
+  private Map<String, String> m_parameters = new HashMap<>();
 
   /** Name of the XML file */
   private String m_fileName;
@@ -116,24 +116,24 @@ public class XmlSuite implements Serializable, Cloneable {
   private String m_timeOut;
 
   /** List of child XML suite specified using <suite-file> tags */
-  private List<XmlSuite> m_childSuites = Lists.newArrayList();
+  private List<XmlSuite> m_childSuites = new ArrayList<>();
 
   /** Parent XML Suite if this suite was specified in another suite using <suite-file> tag */
   private XmlSuite m_parentSuite;
 
-  private List<String> m_suiteFiles = Lists.newArrayList();
+  private List<String> m_suiteFiles = new ArrayList<>();
 
   private ITestObjectFactory m_objectFactory;
 
-  private List<String> m_listeners = Lists.newArrayList();
+  private List<String> m_listeners = new ArrayList<>();
 
   private static final long serialVersionUID = 4999962288272750226L;
 
   public static String DEFAULT_PRESERVE_ORDER = "true";
   private String m_preserveOrder = DEFAULT_PRESERVE_ORDER;
 
-  private List<String> m_includedGroups = Lists.newArrayList();
-  private List<String> m_excludedGroups = Lists.newArrayList();
+  private List<String> m_includedGroups = new ArrayList<>();
+  private List<String> m_excludedGroups = new ArrayList<>();
   private XmlMethodSelectors m_xmlMethodSelectors;
 
   /**
@@ -273,7 +273,7 @@ public class XmlSuite implements Serializable, Cloneable {
    * @param methodSelectors the method selectors.
    */
   public void setMethodSelectors(List<XmlMethodSelector> methodSelectors) {
-    m_methodSelectors = Lists.newArrayList(methodSelectors);
+    m_methodSelectors = new ArrayList<>(methodSelectors);
   }
 
   /**
@@ -322,7 +322,7 @@ public class XmlSuite implements Serializable, Cloneable {
    * @return The parameters defined in this suite and all its XmlTests.
    */
   public Map<String, String> getAllParameters() {
-    Map<String, String> result = Maps.newHashMap();
+    Map<String, String> result = new HashMap<>();
     for (Map.Entry<String, String> entry : m_parameters.entrySet()) {
       result.put(entry.getKey(), entry.getValue());
     }
@@ -396,7 +396,7 @@ public class XmlSuite implements Serializable, Cloneable {
    * @param packages the XML packages.
    */
   public void setXmlPackages(List<XmlPackage> packages) {
-    m_xmlPackages = Lists.newArrayList(packages);
+    m_xmlPackages = new ArrayList<>(packages);
   }
 
   /**
@@ -1017,7 +1017,7 @@ public class XmlSuite implements Serializable, Cloneable {
   }
 
   public Collection<String> getPackageNames() {
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
     for (XmlPackage p : getPackages()) {
       result.add(p.getName());
     }

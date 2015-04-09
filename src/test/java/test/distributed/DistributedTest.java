@@ -26,7 +26,7 @@ import java.util.Random;
 
 public class DistributedTest extends BaseDistributedTest {
 
-  private List<Thread> m_hostThreads = new ArrayList<Thread>();
+  private List<Thread> m_hostThreads = new ArrayList<>();
 
   protected Thread startSlave(final String filename) {
     Thread result = new Thread(new Runnable() {
@@ -160,7 +160,7 @@ public class DistributedTest extends BaseDistributedTest {
   }
 
   private Map<String, ITestResult> toMap(List<ITestResult> results) {
-    Map<String, ITestResult> result = new HashMap<String, ITestResult>();
+    Map<String, ITestResult> result = new HashMap<>();
     for (ITestResult tr : results) {
       result.put(tr.getName(), tr);
     }

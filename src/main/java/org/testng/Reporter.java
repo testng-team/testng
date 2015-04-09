@@ -1,12 +1,11 @@
 package org.testng;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.util.Strings;
 
 /**
@@ -31,20 +30,20 @@ public class Reporter {
   // when tests are run in parallel, each thread may be working with different
   // 'current test result'. Also, this value should be inherited if the test code
   // spawns its own thread.
-  private static ThreadLocal<ITestResult> m_currentTestResult = new InheritableThreadLocal<ITestResult>();
+  private static ThreadLocal<ITestResult> m_currentTestResult = new InheritableThreadLocal<>();
 
   /**
    * All output logged in a sequential order.
    */
-  private static List<String> m_output = new Vector<String>();
+  private static List<String> m_output = new Vector<>();
 
   /** The key is the hashCode of the ITestResult */
-  private static Map<Integer, List<Integer>> m_methodOutputMap = Maps.newHashMap();
+  private static Map<Integer, List<Integer>> m_methodOutputMap = new HashMap<>();
 
   private static boolean m_escapeHtml = false;
   //This variable is responsible for persisting all output that is yet to be associated with any
   //valid TestResult objects.
-  private static ThreadLocal<List<String>> m_orphanedOutput = new InheritableThreadLocal<List<String>>();
+  private static ThreadLocal<List<String>> m_orphanedOutput = new InheritableThreadLocal<>();
 
   public static void setCurrentTestResult(ITestResult m) {
     m_currentTestResult.set(m);
@@ -89,7 +88,7 @@ public class Reporter {
 
     List<Integer> lines = m_methodOutputMap.get(m.hashCode());
     if (lines == null) {
-      lines = Lists.newArrayList();
+      lines = new ArrayList<>();
       m_methodOutputMap.put(m.hashCode(), lines);
     }
 
@@ -167,7 +166,7 @@ public class Reporter {
   }
 
   public static synchronized List<String> getOutput(ITestResult tr) {
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
     if (tr == null) {
       //guard against a possible NPE in scenarios wherein the test result object itself could be a null value.
       return result;

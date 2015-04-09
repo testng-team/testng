@@ -1,10 +1,10 @@
 package org.testng;
 
-import org.testng.collections.Lists;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.PropertyUtils;
 import org.testng.internal.Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,7 +25,7 @@ public class ReporterConfig {
   /**
    * The properties of the reporter listener
    */
-  private List<Property> m_properties = Lists.newArrayList();
+  private List<Property> m_properties = new ArrayList<>();
 
   public void addProperty(Property property) {
     m_properties.add(property);

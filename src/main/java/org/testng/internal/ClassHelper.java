@@ -11,7 +11,6 @@ import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.Sets;
 import org.testng.junit.IJUnitTestRunner;
 import org.testng.xml.XmlTest;
 
@@ -20,6 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +33,7 @@ public final class ClassHelper {
   private static final String JUNIT_4_TESTRUNNER = "org.testng.junit.JUnit4TestRunner";
 
   /** The additional class loaders to find classes in. */
-  private static final List<ClassLoader> m_classLoaders = new Vector<ClassLoader>();
+  private static final List<ClassLoader> m_classLoaders = new Vector<>();
 
   /** Add a class loader to the searchable loaders. */
   public static void addClassLoader(final ClassLoader loader) {
@@ -86,7 +86,7 @@ public final class ClassHelper {
    * @return the class or null if the class is not found.
    */
   public static Class<?> forName(final String className) {
-    Vector<ClassLoader> allClassLoaders = new Vector<ClassLoader>();
+    Vector<ClassLoader> allClassLoaders = new Vector<>();
     ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
     if (contextClassLoader != null) {
       allClassLoaders.add(contextClassLoader);
@@ -182,7 +182,7 @@ public final class ClassHelper {
    * @return
    */
   public static Set<Method> getAvailableMethods(Class<?> clazz) {
-    Set<Method> methods = Sets.newHashSet();
+    Set<Method> methods = new HashSet<>();
     methods.addAll(Arrays.asList(clazz.getDeclaredMethods()));
 
     Class<?> parent = clazz.getSuperclass();
@@ -224,7 +224,7 @@ public final class ClassHelper {
 
   private static Set<Method> extractMethods(Class<?> childClass, Class<?> clazz,
       Set<Method> collected) {
-    Set<Method> methods = Sets.newHashSet();
+    Set<Method> methods = new HashSet<>();
 
     Method[] declaredMethods = clazz.getDeclaredMethods();
 

@@ -9,11 +9,11 @@ import java.util.List;
 
 public class ZBase_0 {
   protected static boolean m_verbose = false;
-  protected static List<String> m_methodList = new ArrayList<String>();
+  protected static List<String> m_methodList = new ArrayList<>();
 
   @BeforeTest
   public void beforeTest() {
-    m_methodList = new ArrayList<String>();
+    m_methodList = new ArrayList<>();
   }
 
   @BeforeMethod

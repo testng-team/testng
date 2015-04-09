@@ -2,6 +2,7 @@ package org.testng.xml;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -9,8 +10,6 @@ import java.util.UUID;
 
 import org.testng.TestNG;
 import org.testng.TestNGException;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.dom.ParentSetter;
 
@@ -31,18 +30,18 @@ public class XmlTest implements Serializable, Cloneable {
   private Boolean m_isJUnit = XmlSuite.DEFAULT_JUNIT;
   private int m_threadCount= -1;
 
-  private List<XmlClass> m_xmlClasses = Lists.newArrayList();
+  private List<XmlClass> m_xmlClasses = new ArrayList<>();
 
-  private List<String> m_includedGroups = Lists.newArrayList();
-  private List<String> m_excludedGroups = Lists.newArrayList();
+  private List<String> m_includedGroups = new ArrayList<>();
+  private List<String> m_excludedGroups = new ArrayList<>();
 
-  private Map<String, List<String>> m_metaGroups = Maps.newHashMap();
-  private Map<String, String> m_parameters = Maps.newHashMap();
+  private Map<String, List<String>> m_metaGroups = new HashMap<>();
+  private Map<String, String> m_parameters = new HashMap<>();
   private String m_parallel;
 
-  private List<XmlMethodSelector> m_methodSelectors = Lists.newArrayList();
+  private List<XmlMethodSelector> m_methodSelectors = new ArrayList<>();
   // test level packages
-  private List<XmlPackage> m_xmlPackages = Lists.newArrayList();
+  private List<XmlPackage> m_xmlPackages = new ArrayList<>();
 
   private String m_timeOut;
   private Boolean m_skipFailedInvocationCounts = XmlSuite.DEFAULT_SKIP_FAILED_INVOCATION_COUNTS;
@@ -56,7 +55,7 @@ public class XmlTest implements Serializable, Cloneable {
 
   private Boolean m_allowReturnValues = null;
 
-  private Map<String, String> m_xmlDependencyGroups = Maps.newHashMap();
+  private Map<String, String> m_xmlDependencyGroups = new HashMap<>();
 
   /**
    * Constructs a <code>XmlTest</code> and adds it to suite's list of tests.
@@ -87,7 +86,7 @@ public class XmlTest implements Serializable, Cloneable {
   }
 
   public void setXmlPackages(List<XmlPackage> packages) {
-    m_xmlPackages = Lists.newArrayList(packages);
+    m_xmlPackages = new ArrayList<>(packages);
   }
 
   public List<XmlPackage> getXmlPackages() {
@@ -109,7 +108,7 @@ public class XmlTest implements Serializable, Cloneable {
   }
 
   public void setMethodSelectors(List<XmlMethodSelector> methodSelectors) {
-    m_methodSelectors = Lists.newArrayList(methodSelectors);
+    m_methodSelectors = new ArrayList<>(methodSelectors);
   }
 
   /**
@@ -131,7 +130,7 @@ public class XmlTest implements Serializable, Cloneable {
       result.addAll(m_suite.getIncludedGroups());
     } else {
       // deprecated
-      result = Lists.newArrayList(m_includedGroups);
+      result = new ArrayList<>(m_includedGroups);
       result.addAll(m_suite.getIncludedGroups());
     }
     return result;
@@ -319,7 +318,7 @@ public class XmlTest implements Serializable, Cloneable {
    */
   public Map<String, List<String>> getMetaGroups() {
     if (m_xmlGroups != null) {
-      Map<String, List<String>> result = Maps.newHashMap();
+      Map<String, List<String>> result = new HashMap<>();
       List<XmlDefine> defines = m_xmlGroups.getDefines();
       for (XmlDefine xd : defines) {
         result.put(xd.getName(), xd.getIncludes());
@@ -355,7 +354,7 @@ public class XmlTest implements Serializable, Cloneable {
    * @return the parameters defined in this test tag and the tags above it.
    */
   public Map<String, String> getAllParameters() {
-    Map<String, String> result = Maps.newHashMap();
+    Map<String, String> result = new HashMap<>();
     Map<String, String> parameters = getSuite().getParameters();
     for (Map.Entry<String, String> parameter : parameters.entrySet()) {
       result.put(parameter.getKey(), parameter.getValue());
@@ -665,7 +664,7 @@ public class XmlTest implements Serializable, Cloneable {
    */
   public List<Integer> getInvocationNumbers(String method) {
     if (m_failedInvocationNumbers == null) {
-      m_failedInvocationNumbers = Maps.newHashMap();
+      m_failedInvocationNumbers = new HashMap<>();
       for (XmlClass c : getXmlClasses()) {
         for (XmlInclude xi : c.getIncludedMethods()) {
           List<Integer> invocationNumbers = xi.getInvocationNumbers();
@@ -681,7 +680,7 @@ public class XmlTest implements Serializable, Cloneable {
     if (result == null) {
       // Don't use emptyList here since this list might end up receiving values if
       // the test run fails.
-      return Lists.newArrayList();
+      return new ArrayList<>();
     } else {
       return result;
     }
@@ -870,7 +869,7 @@ public class XmlTest implements Serializable, Cloneable {
 
   public Map<String, String> getXmlDependencyGroups() {
     if (m_xmlGroups != null) {
-      Map<String, String> result = Maps.newHashMap();
+      Map<String, String> result = new HashMap<>();
       List<XmlDependencies> deps = m_xmlGroups.getDependencies();
       for (XmlDependencies d : deps) {
         result.putAll(d.getDependencies());

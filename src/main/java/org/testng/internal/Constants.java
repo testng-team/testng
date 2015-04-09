@@ -1,8 +1,8 @@
 package org.testng.internal;
 
 import org.testng.ITestResult;
-import org.testng.collections.Maps;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -34,7 +34,7 @@ public class Constants {
     new TestNGProperty("-d", PROP_OUTPUT_DIR, "Directory where the result files will be created.", "test-output"),
   };
 
-  private static final Map<String, TestNGProperty> m_propertiesByName = Maps.newHashMap();
+  private static final Map<String, TestNGProperty> m_propertiesByName = new HashMap<>();
 
   static {
 //    for (int i = 0; i < PROPERTIES.length; i++) {

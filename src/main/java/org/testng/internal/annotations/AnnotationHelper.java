@@ -7,7 +7,6 @@ import org.testng.annotations.IExpectedExceptionsAnnotation;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
-import org.testng.collections.Maps;
 import org.testng.internal.TestNGMethod;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlTest;
@@ -16,6 +15,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -72,7 +72,7 @@ public class AnnotationHelper {
   }
 
   public static IConfigurationAnnotation findConfiguration(IAnnotationFinder finder, Method m) {
-    IConfigurationAnnotation result = (IConfigurationAnnotation) finder.findAnnotation(m, IConfigurationAnnotation.class);
+    IConfigurationAnnotation result = finder.findAnnotation(m, IConfigurationAnnotation.class);
     if (result == null) {
       IConfigurationAnnotation bs = (IConfigurationAnnotation) finder.findAnnotation(m, IBeforeSuite.class);
       IConfigurationAnnotation as = (IConfigurationAnnotation) finder.findAnnotation(m, IAfterSuite.class);
@@ -192,10 +192,10 @@ public class AnnotationHelper {
   {
     // Keep a map of the methods we saw so that we ignore a method in a superclass if it's
     // already been seen in a child class
-    Map<String, ITestNGMethod> vResult = Maps.newHashMap();
+    Map<String, ITestNGMethod> vResult = new HashMap<>();
 
     try {
-      vResult = Maps.newHashMap();
+      vResult = new HashMap<>();
 //    Class[] classes = rootClass.getTestClasses();
       Class cls = rootClass;
 

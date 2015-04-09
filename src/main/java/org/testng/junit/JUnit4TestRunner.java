@@ -10,7 +10,6 @@ import org.junit.runner.manipulation.Filter;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 import org.testng.*;
-import org.testng.collections.Lists;
 import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.InvokedMethod;
 import org.testng.internal.TestResult;
@@ -24,9 +23,9 @@ import org.testng.internal.TestResult;
 public class JUnit4TestRunner implements IJUnitTestRunner {
 
     private ITestResultNotifier m_parentRunner;
-    private List<ITestNGMethod> m_methods = Lists.newArrayList();
-    private List<ITestListener> m_listeners = Lists.newArrayList();
-    private List<IInvokedMethodListener> m_invokeListeners = Lists.newArrayList();
+    private List<ITestNGMethod> m_methods = new ArrayList<>();
+    private List<ITestListener> m_listeners = new ArrayList<>();
+    private List<IInvokedMethodListener> m_invokeListeners = new ArrayList<>();
 
     public JUnit4TestRunner() {
     }
@@ -110,8 +109,8 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
 
     private class RL extends RunListener {
 
-        private Map<Description, ITestResult> runs = new WeakHashMap<Description, ITestResult>();
-        private List<Description> notified = new LinkedList<Description>();
+        private Map<Description, ITestResult> runs = new WeakHashMap<>();
+        private List<Description> notified = new LinkedList<>();
 
         @Override
         public void testAssumptionFailure(Failure failure) {

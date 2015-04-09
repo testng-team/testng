@@ -3,15 +3,15 @@ package test.verify;
 import org.testng.IMethodInstance;
 import org.testng.IMethodInterceptor;
 import org.testng.ITestContext;
-import org.testng.collections.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class VerifyMethodInterceptor implements IMethodInterceptor {
   @Override
   public List<IMethodInstance> intercept(List<IMethodInstance> methods,
       ITestContext context) {
-    List<IMethodInstance> result = Lists.newArrayList();
+    List<IMethodInstance> result = new ArrayList<>();
     IMethodInstance verifier = null;
 
     // Doing a naive approach here: we run through the list of methods

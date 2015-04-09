@@ -190,7 +190,7 @@ public class XMLReporter implements IReporter {
   }
 
   private Set<ITestNGMethod> getUniqueMethodSet(Collection<ITestNGMethod> methods) {
-    Set<ITestNGMethod> result = new LinkedHashSet<ITestNGMethod>();
+    Set<ITestNGMethod> result = new LinkedHashSet<>();
     for (ITestNGMethod method : methods) {
       result.add(method);
     }

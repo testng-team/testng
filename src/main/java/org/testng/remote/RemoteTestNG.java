@@ -13,7 +13,6 @@ import org.testng.ITestRunnerFactory;
 import org.testng.TestNG;
 import org.testng.TestNGException;
 import org.testng.TestRunner;
-import org.testng.collections.Lists;
 import org.testng.remote.strprotocol.GenericMessage;
 import org.testng.remote.strprotocol.IMessageSender;
 import org.testng.remote.strprotocol.MessageHelper;
@@ -27,6 +26,7 @@ import org.testng.reporters.TestHTMLReporter;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -87,7 +87,7 @@ public class RemoteTestNG extends TestNG {
       // file so we can proceed with the initialization
       initializeSuitesAndJarFile();
 
-      List<XmlSuite> suites = Lists.newArrayList();
+      List<XmlSuite> suites = new ArrayList<>();
       calculateAllSuites(m_suites, suites);
 //      System.out.println("Suites: " + m_suites.get(0).getChildSuites().size()
 //          + " and:" + suites.get(0).getChildSuites().size());

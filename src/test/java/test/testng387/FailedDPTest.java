@@ -18,7 +18,7 @@ import org.testng.annotations.Test;
 public class FailedDPTest {
 
 	// prime numbers < 10
-	static List<Integer> primes = new ArrayList<Integer>();
+	static List<Integer> primes = new ArrayList<>();
 	public FailedDPTest(){
 		primes.add(2);
 		primes.add(3);
@@ -32,7 +32,7 @@ public class FailedDPTest {
 	 * */
 	@DataProvider(name = "DP", parallel = true)
 	public Iterator<Integer[]> getData() {
-		List<Integer[]> list = new ArrayList<Integer[]>();
+		List<Integer[]> list = new ArrayList<>();
 		for (int i = 0; i < 10; i++) {
 			list.add(new Integer[] { i });
 		}

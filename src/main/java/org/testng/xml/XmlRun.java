@@ -2,10 +2,10 @@ package org.testng.xml;
 
 import static org.testng.collections.CollectionUtils.hasElements;
 
-import org.testng.collections.Lists;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.dom.OnElement;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class XmlRun {
@@ -29,7 +29,7 @@ public class XmlRun {
     return xsb.toXML();
   }
 
-  private List<String> m_excludes = Lists.newArrayList();
+  private List<String> m_excludes = new ArrayList<>();
 
   public List<String> getExcludes() {
     return m_excludes;
@@ -40,7 +40,7 @@ public class XmlRun {
     m_excludes.add(name);
   }
 
-  private List<String> m_includes = Lists.newArrayList();
+  private List<String> m_includes = new ArrayList<>();
 
   public List<String> getIncludes() {
     return m_includes;

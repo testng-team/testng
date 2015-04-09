@@ -5,13 +5,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.testng.Assert;
-import org.testng.collections.Maps;
 
 /**
  * TestNG support logging via a custom logging framework similar to
@@ -103,7 +103,7 @@ public class Logger {
   }
 
   /** A map from level name to level integer index (TRACE->0, DEBUG->1 ...) */
-  private static final Map<String, Integer> levelMap= Maps.newHashMap();
+  private static final Map<String, Integer> levelMap= new HashMap<>();
 
   static {
     for(i= 0; i < LEVEL_COUNT; ++i) {
@@ -115,10 +115,10 @@ public class Logger {
   private static boolean initialized;
 
   /** Map from Logger names to level index (as specified in log4testng.properties) */
-  private static final Map<String, Integer> loggerLevels = Maps.newHashMap();
+  private static final Map<String, Integer> loggerLevels = new HashMap<>();
 
   /** Map of all known loggers. */
-  private static final Map<Class, Logger> loggers = Maps.newHashMap();
+  private static final Map<Class, Logger> loggers = new HashMap<>();
 
   /** The logging level of the root logger (defaults to warn). */
   private static int rootLoggerLevel= WARN;

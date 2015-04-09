@@ -1,8 +1,8 @@
 package org.testng.internal;
 
 import org.testng.IExtraOutput;
-import org.testng.collections.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,7 +19,7 @@ public class ExtraOutput implements IExtraOutput {
    *
    */
   private static final long serialVersionUID = 8195388419611912192L;
-  private List<String> m_parameterOutput = Lists.newArrayList();
+  private List<String> m_parameterOutput = new ArrayList<>();
 
   @Override
   public List<String> getParameterOutput() {

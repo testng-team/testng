@@ -1,8 +1,8 @@
 package org.testng.internal;
 
 import org.testng.TestNGException;
-import org.testng.collections.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -34,11 +34,11 @@ public class PoolService<FutureType> {
       }
     };
     m_executor = Executors.newFixedThreadPool(threadPoolSize, m_threadFactory);
-    m_completionService = new ExecutorCompletionService<FutureType>(m_executor);
+    m_completionService = new ExecutorCompletionService<>(m_executor);
   }
 
   public List<FutureType> submitTasksAndWait(List<? extends Callable<FutureType>> tasks) {
-    List<FutureType> result = Lists.newArrayList();
+    List<FutureType> result = new ArrayList<>();
 
     for (Callable<FutureType> callable : tasks) {
       m_completionService.submit(callable);

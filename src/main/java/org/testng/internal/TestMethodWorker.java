@@ -6,11 +6,11 @@ import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.collections.Lists;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.internal.thread.graph.IWorker;
 import org.testng.xml.XmlSuite;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -36,7 +36,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   private final IInvoker m_invoker;
   private final Map<String, String> m_parameters;
   private final XmlSuite m_suite;
-  private List<ITestResult> m_testResults = Lists.newArrayList();
+  private List<ITestResult> m_testResults = new ArrayList<>();
   private final ConfigurationGroupMethods m_groupMethods;
   private final ClassMethodMap m_classMethodMap;
   private final ITestContext m_testContext;
@@ -161,7 +161,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     synchronized(testClass) {
       Set<Object> instances= invokedBeforeClassMethods.get(testClass);
       if(null == instances) {
-        instances= new HashSet<Object>();
+        instances= new HashSet<>();
         invokedBeforeClassMethods.put(testClass, instances);
       }
       for(Object instance: mi.getInstances()) {
@@ -198,7 +198,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     //
     // Invoke after class methods if this test method is the last one
     //
-    List<Object> invokeInstances= Lists.newArrayList();
+    List<Object> invokeInstances= new ArrayList<>();
     ITestNGMethod tm= mi.getMethod();
     if (m_classMethodMap.removeAndCheckIfLast(tm, mi.getInstance())) {
       Map<ITestClass, Set<Object>> invokedAfterClassMethods
@@ -206,7 +206,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       synchronized(invokedAfterClassMethods) {
         Set<Object> instances = invokedAfterClassMethods.get(testClass);
         if(null == instances) {
-          instances= new HashSet<Object>();
+          instances= new HashSet<>();
           invokedAfterClassMethods.put(testClass, instances);
         }
         for(Object inst: mi.getInstances()) {
@@ -247,7 +247,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   @Override
   public List<ITestNGMethod> getTasks()
   {
-    List<ITestNGMethod> result = Lists.newArrayList();
+    List<ITestNGMethod> result = new ArrayList<>();
     for (IMethodInstance m : m_methodInstances) {
       result.add(m.getMethod());
     }

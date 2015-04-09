@@ -1,10 +1,10 @@
 package org.testng.xml.dom;
 
-import org.testng.collections.Lists;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Wrapper {
@@ -31,15 +31,15 @@ public class Wrapper {
   }
 
   public List<Object[]> getParameters(Element element) {
-    List<Object[]> allParameters = Lists.newArrayList();
+    List<Object[]> allParameters = new ArrayList<>();
     if (m_onElement != null) {
-      List<Object> result = Lists.newArrayList();
+      List<Object> result = new ArrayList<>();
       for (String attributeName : m_onElement.attributes()) {
         result.add(element.getAttribute(attributeName));
       }
       allParameters.add(result.toArray());
     } else if (m_tag != null) {
-      List<Object> result = Lists.newArrayList();
+      List<Object> result = new ArrayList<>();
       result.add(m_bean);
       allParameters.add(result.toArray());
     } else {
@@ -47,7 +47,7 @@ public class Wrapper {
       for (int i = 0; i < childNodes.getLength(); i++) {
         if (childNodes.item(i).hasAttributes()) {
           Element item = (Element) childNodes.item(i);
-          List<Object> result = Lists.newArrayList();
+          List<Object> result = new ArrayList<>();
           for (String attributeName : m_onElementList.attributes()) {
             result.add(item.getAttribute(attributeName));
           }

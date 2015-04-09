@@ -11,7 +11,6 @@ import static org.testng.reporters.XMLReporterConfig.TAG_TEST;
 import static org.testng.reporters.XMLReporterConfig.TAG_TEST_METHOD;
 
 import org.testng.ITestResult;
-import org.testng.collections.Lists;
 import org.testng.remote.strprotocol.GenericMessage;
 import org.testng.remote.strprotocol.IRemoteSuiteListener;
 import org.testng.remote.strprotocol.IRemoteTestListener;
@@ -23,6 +22,7 @@ import org.testng.reporters.XMLReporterConfig;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -87,7 +87,7 @@ public class ResultContentHandler extends DefaultHandler {
       else if (status == ITestResult.FAILURE) m_failed++;
       else if (status == ITestResult.SKIP) m_skipped++;
     } else if (TAG_PARAMS.equals(qName)) {
-      m_params = Lists.newArrayList();
+      m_params = new ArrayList<>();
     }
   }
 

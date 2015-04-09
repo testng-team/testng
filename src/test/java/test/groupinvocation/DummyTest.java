@@ -12,7 +12,7 @@ import java.util.Map;
  * This class/interface
  */
 public class DummyTest {
-  private static Map<String, Integer> s_externalClassGroups= new HashMap<String, Integer>();
+  private static Map<String, Integer> s_externalClassGroups= new HashMap<>();
 
   @Test(groups={"a"})
   public void testA() {

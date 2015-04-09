@@ -9,7 +9,7 @@ import java.util.List;
 
 @Test
 public class DepBugSampleTest {
-  private static List<String> m_log = new ArrayList<String>();
+  private static List<String> m_log = new ArrayList<>();
 
   private static void log(String s) {
 //    ppp(s);

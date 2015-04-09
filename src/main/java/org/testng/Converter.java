@@ -4,7 +4,6 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 
-import org.testng.collections.Sets;
 import org.testng.internal.Yaml;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
@@ -17,6 +16,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -57,7 +57,7 @@ public class Converter {
       if (! f.exists()) f.mkdir();
 
       for (String file : m_files) {
-        Set<XmlSuite> allSuites = Sets.newHashSet();
+        Set<XmlSuite> allSuites = new HashSet<>();
         Parser parser = new Parser(file);
         parser.setLoadClasses(false);  // we might not have these classes on the classpath
         findAllSuites(parser.parse(), allSuites);

@@ -5,12 +5,12 @@ import org.testng.TestNG;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 
 import test.BaseTest;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FailedReporterTest extends BaseTest {
@@ -49,7 +49,7 @@ public class FailedReporterTest extends BaseTest {
 
     File failed = new File(mTempDirectory, "testng-failed.xml");
     for (String s : expectedMethods) {
-      List<String> resultLines = Lists.newArrayList();
+      List<String> resultLines = new ArrayList<>();
       grep(failed, expectedLine.format(s), resultLines);
       Assert.assertEquals(1, resultLines.size());
     }

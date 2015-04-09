@@ -1,11 +1,9 @@
 package org.testng;
 
 import org.testng.collections.ListMultiMap;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.collections.Sets;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -16,8 +14,8 @@ import java.util.regex.Pattern;
  * @author Cedric Beust <cedric@beust.com>
  */
 public class DependencyMap {
-  private ListMultiMap<String, ITestNGMethod> m_dependencies = Maps.newListMultiMap();
-  private ListMultiMap<String, ITestNGMethod> m_groups = Maps.newListMultiMap();
+  private ListMultiMap<String, ITestNGMethod> m_dependencies = new ListMultiMap<>();
+  private ListMultiMap<String, ITestNGMethod> m_groups = new ListMultiMap<>();
 
   public DependencyMap(ITestNGMethod[] methods) {
     for (ITestNGMethod m : methods) {
@@ -30,9 +28,9 @@ public class DependencyMap {
 
   public List<ITestNGMethod> getMethodsThatBelongTo(String group, ITestNGMethod fromMethod) {
     List<String> keys = m_groups.getKeys();
-    Set<String> uniqueKeys = Sets.newHashSet(keys);
+    Set<String> uniqueKeys = new HashSet<>(keys);
 
-    List<ITestNGMethod> result = Lists.newArrayList();
+    List<ITestNGMethod> result = new ArrayList();
 
     for (String k : uniqueKeys) {
       if (Pattern.matches(group, k)) {

@@ -1,9 +1,9 @@
 package org.testng;
 
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.internal.XmlMethodSelector;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,11 +17,11 @@ import java.util.Set;
  * @author <a href='mailto:the[dot]mindstorm[at]gmail[dot]com'>Alex Popescu</a>
  */
 public class ClassMethodMap {
-  private Map<Object, List<ITestNGMethod>> m_classMap = Maps.newHashMap();
+  private Map<Object, List<ITestNGMethod>> m_classMap = new HashMap<>();
   // These two variables are used throughout the workers to keep track
   // of what beforeClass/afterClass methods have been invoked
-  private Map<ITestClass, Set<Object>> m_beforeClassMethods = Maps.newHashMap();
-  private Map<ITestClass, Set<Object>> m_afterClassMethods = Maps.newHashMap();
+  private Map<ITestClass, Set<Object>> m_beforeClassMethods = new HashMap<>();
+  private Map<ITestClass, Set<Object>> m_afterClassMethods = new HashMap<>();
 
   public ClassMethodMap(List<ITestNGMethod> methods, XmlMethodSelector xmlMethodSelector) {
     for (ITestNGMethod m : methods) {
@@ -35,7 +35,7 @@ public class ClassMethodMap {
       Object instance = m.getInstance();
       List<ITestNGMethod> l = m_classMap.get(instance);
       if (l == null) {
-        l = Lists.newArrayList();
+        l = new ArrayList<>();
         m_classMap.put(instance, l);
       }
       l.add(m);

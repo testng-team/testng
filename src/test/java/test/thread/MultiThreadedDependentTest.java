@@ -3,12 +3,12 @@ package test.thread;
 import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 
 import test.SimpleBaseTest;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +32,7 @@ public class MultiThreadedDependentTest extends SimpleBaseTest {
     for (String em : expectedMethods) {
       Assert.assertTrue(methods.contains(em));
     }
-    Map<String, Boolean> map = Maps.newHashMap();
+    Map<String, Boolean> map = new HashMap<>();
     for (String m : methods) {
       map.put(m, Boolean.TRUE);
       if ("b1".equals(m) || "b2".equals(m) || "b3".equals(m) || "b4".equals(m) || "b5".equals(m)) {
@@ -67,7 +67,7 @@ public class MultiThreadedDependentTest extends SimpleBaseTest {
 
   private void test(int threadCount) {
     Helper.reset();
-    MultiThreadedDependentSampleTest.m_methods = Lists.newArrayList();
+    MultiThreadedDependentSampleTest.m_methods = new ArrayList<>();
     TestNG tng = create(MultiThreadedDependentSampleTest.class);
     tng.setThreadCount(threadCount);
     tng.setParallel("methods");

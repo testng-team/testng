@@ -1,7 +1,6 @@
 package test;
 
 import org.testng.TestNG;
-import org.testng.collections.Lists;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -19,7 +18,7 @@ public class TestHelper {
 
     XmlTest test = new XmlTest(result);
     test.setName("TmpTest");
-    List<XmlClass> classes = new ArrayList<XmlClass>();
+    List<XmlClass> classes = new ArrayList<>();
     classes.add(new XmlClass(cls));
     test.setXmlClasses(classes);
 
@@ -41,7 +40,7 @@ public class TestHelper {
   public static TestNG createTestNG(XmlSuite suite, String outputDir) {
     TestNG result = new TestNG();
     if (suite != null) {
-      List<XmlSuite> suites = Lists.newArrayList();
+      List<XmlSuite> suites = new ArrayList<>();
       suites.add(suite);
       result.setXmlSuites(suites);
     }

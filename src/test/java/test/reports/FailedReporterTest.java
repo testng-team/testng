@@ -6,7 +6,6 @@ import org.testng.Assert;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 import org.testng.reporters.FailedReporter;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlClass;
@@ -19,6 +18,7 @@ import test.SimpleBaseTest;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class FailedReporterTest extends SimpleBaseTest {
@@ -40,7 +40,7 @@ public class FailedReporterTest extends SimpleBaseTest {
     tng.setVerbose(0);
     Collection<XmlSuite> suites = 
         new Parser(new ByteArrayInputStream(XML.getBytes())).parse();
-    tng.setXmlSuites(Lists.newArrayList(suites));
+    tng.setXmlSuites(new ArrayList<>(suites));
     TestListenerAdapter tla = new TestListenerAdapter();
     File f = new File("/tmp");
     tng.setOutputDirectory(f.getAbsolutePath());

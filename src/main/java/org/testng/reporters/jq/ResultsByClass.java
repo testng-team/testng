@@ -2,7 +2,6 @@ package org.testng.reporters.jq;
 
 import org.testng.ITestResult;
 import org.testng.collections.ListMultiMap;
-import org.testng.collections.Maps;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,7 +19,7 @@ public class ResultsByClass {
 
   };
 
-  private ListMultiMap<Class<?>, ITestResult> m_results = Maps.newListMultiMap();
+  private ListMultiMap<Class<?>, ITestResult> m_results = new ListMultiMap<>();
 
   public void addResult(Class<?> c, ITestResult tr) {
     m_results.put(c, tr);

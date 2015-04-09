@@ -1,6 +1,5 @@
 package org.testng;
 
-import org.testng.collections.Lists;
 import org.testng.collections.Objects;
 import org.testng.internal.IResultListener2;
 
@@ -26,15 +25,15 @@ import java.util.List;
  */
 public class TestListenerAdapter implements IResultListener2 {
   private List<ITestNGMethod> m_allTestMethods =
-      Collections.synchronizedList(Lists.<ITestNGMethod>newArrayList());
-  private List<ITestResult> m_passedTests = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
-  private List<ITestResult> m_failedTests = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
-  private List<ITestResult> m_skippedTests = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
-  private List<ITestResult> m_failedButWSPerTests = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
+      Collections.synchronizedList(new ArrayList<ITestNGMethod>());
+  private List<ITestResult> m_passedTests = Collections.synchronizedList(new ArrayList<ITestResult>());
+  private List<ITestResult> m_failedTests = Collections.synchronizedList(new ArrayList<ITestResult>());
+  private List<ITestResult> m_skippedTests = Collections.synchronizedList(new ArrayList<ITestResult>());
+  private List<ITestResult> m_failedButWSPerTests = Collections.synchronizedList(new ArrayList<ITestResult>());
   private List<ITestContext> m_testContexts= Collections.synchronizedList(new ArrayList<ITestContext>());
-  private List<ITestResult> m_failedConfs= Collections.synchronizedList(Lists.<ITestResult>newArrayList());
-  private List<ITestResult> m_skippedConfs= Collections.synchronizedList(Lists.<ITestResult>newArrayList());
-  private List<ITestResult> m_passedConfs= Collections.synchronizedList(Lists.<ITestResult>newArrayList());
+  private List<ITestResult> m_failedConfs= Collections.synchronizedList(new ArrayList<ITestResult>());
+  private List<ITestResult> m_skippedConfs= Collections.synchronizedList(new ArrayList<ITestResult>());
+  private List<ITestResult> m_passedConfs= Collections.synchronizedList(new ArrayList<ITestResult>());
 
   @Override
   public void onTestSuccess(ITestResult tr) {

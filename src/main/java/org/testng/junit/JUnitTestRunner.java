@@ -6,13 +6,13 @@ import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
-import org.testng.collections.Lists;
 import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.InvokedMethod;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -35,9 +35,9 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
 
   private ITestResultNotifier m_parentRunner;
 
-  private Map<Test, TestRunInfo> m_tests= new WeakHashMap<Test, TestRunInfo>();
-  private List<ITestNGMethod> m_methods= Lists.newArrayList();
-  private List<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
+  private Map<Test, TestRunInfo> m_tests= new WeakHashMap<>();
+  private List<ITestNGMethod> m_methods= new ArrayList<>();
+  private List<IInvokedMethodListener> m_invokedMethodListeners = new ArrayList<>();
 
   public JUnitTestRunner() {
   }

@@ -1,8 +1,7 @@
 package org.testng.internal;
 
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -14,12 +13,12 @@ import java.util.Stack;
 public class Tarjan<T> {
   int m_index = 0;
   private Stack<T> m_s;
-  Map<T, Integer> m_indices = Maps.newHashMap();
-  Map<T, Integer> m_lowlinks = Maps.newHashMap();
+  Map<T, Integer> m_indices = new HashMap<>();
+  Map<T, Integer> m_lowlinks = new HashMap<>();
   private List<T> m_cycle;
 
   public Tarjan(Graph<T> graph, T start) {
-    m_s = new Stack<T>();
+    m_s = new Stack<>();
     run(graph, start);
   }
 
@@ -41,7 +40,7 @@ public class Tarjan<T> {
     }
 
     if (m_lowlinks.get(v) == m_indices.get(v)) {
-      m_cycle = Lists.newArrayList();
+      m_cycle = new ArrayList<>();
       T n;
       do {
         n = m_s.pop();
@@ -52,7 +51,7 @@ public class Tarjan<T> {
   }
 
   public static void main(String[] args) {
-    Graph<String> g = new Graph<String>();
+    Graph<String> g = new Graph<>();
     g.addNode("a");
     g.addNode("b");
     g.addNode("c");
@@ -70,7 +69,7 @@ public class Tarjan<T> {
       g.addPredecessor(edges[i], edges[i+1]);
     }
 
-    new Tarjan<String>(g, "a");
+    new Tarjan<>(g, "a");
   }
 
   public List<T> getCycle() {

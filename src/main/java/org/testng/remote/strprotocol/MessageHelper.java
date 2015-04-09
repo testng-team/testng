@@ -2,8 +2,8 @@ package org.testng.remote.strprotocol;
 
 
 import org.testng.ITestResult;
-import org.testng.collections.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -76,7 +76,7 @@ public class MessageHelper {
     if (messageParts.length > 3) {
       int count = Integer.parseInt(messageParts[3]);
       if (count > 0) {
-        List<String> methods = Lists.newArrayList();
+        List<String> methods = new ArrayList<>();
         int i = 4;
         while (count-- > 0) {
           methods.add(messageParts[i++]);
@@ -209,7 +209,7 @@ public class MessageHelper {
       return new String[0];
     }
 
-    List<String> tokens = Lists.newArrayList();
+    List<String> tokens = new ArrayList<>();
     int start = 0;
     for(int i = 0; i < message.length(); i++) {
       if(separator == message.charAt(i)) {

@@ -5,9 +5,8 @@ import static org.testng.internal.EclipseInterface.ASSERT_LEFT2;
 import static org.testng.internal.EclipseInterface.ASSERT_MIDDLE;
 import static org.testng.internal.EclipseInterface.ASSERT_RIGHT;
 
-import org.testng.collections.Lists;
-
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -692,7 +691,7 @@ public class Assert {
           message);
     }
 
-    List<Object> actualCollection = Lists.newArrayList();
+    List<Object> actualCollection = new ArrayList<>();
     for (Object a : actual) {
       actualCollection.add(a);
     }

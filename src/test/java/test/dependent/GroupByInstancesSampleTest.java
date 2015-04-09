@@ -3,13 +3,13 @@ package test.dependent;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GroupByInstancesSampleTest {
   private String m_country;
-  public static List<String> m_log = Lists.newArrayList();
+  public static List<String> m_log = new ArrayList<>();
 
   private static void log(String method, String country) {
 //    System.out.println("LOG:" + method + "#" + country + " " + Thread.currentThread().getId());

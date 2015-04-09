@@ -22,6 +22,7 @@ import org.testng.xml.XmlTest;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +37,7 @@ public class ClassImpl implements IClass {
   transient private Object m_defaultInstance = null;
   private XmlTest m_xmlTest = null;
   transient private IAnnotationFinder m_annotationFinder = null;
-  transient private List<Object> m_instances = Lists.newArrayList();
+  transient private List<Object> m_instances = new ArrayList<>();
   transient private Map<Class, IClass> m_classes = null;
   private int m_instanceCount;
   private long[] m_instanceHashCodes;
@@ -174,7 +175,7 @@ public class ClassImpl implements IClass {
   }
 
   private Module[] getModules(Guice guice, Injector parentInejctor, Class<?> testClass) {
-    List<Module> result = Lists.newArrayList();
+    List<Module> result = new ArrayList<>();
     for (Class<? extends Module> moduleClass : guice.modules()) {
       List<Module> modules = m_testContext.getGuiceModules(moduleClass);
       if (modules != null && modules.size() > 0) {

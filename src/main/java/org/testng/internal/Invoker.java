@@ -24,12 +24,10 @@ import org.testng.TestNGException;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.NoInjection;
 import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.internal.InvokeMethodRunnable.TestNGRuntimeException;
 import org.testng.internal.ParameterHolder.ParameterOrigin;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.Sets;
 import org.testng.internal.invokers.InvokedMethodListenerInvoker;
 import org.testng.internal.invokers.InvokedMethodListenerMethod;
 import org.testng.internal.thread.ThreadExecutionException;
@@ -42,9 +40,13 @@ import org.testng.xml.XmlTest;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -71,13 +73,13 @@ public class Invoker implements IInvoker {
   private final boolean m_continueOnFailedConfiguration;
 
   /** Group failures must be synced as the Invoker is accessed concurrently */
-  private Map<String, Boolean> m_beforegroupsFailures = Maps.newHashtable();
+  private Map<String, Boolean> m_beforegroupsFailures = new Hashtable<>();
 
   /** Class failures must be synced as the Invoker is accessed concurrently */
-  private Map<Class<?>, Set<Object>> m_classInvocationResults = Maps.newHashtable();
+  private Map<Class<?>, Set<Object>> m_classInvocationResults = new Hashtable<>();
 
   /** Test methods whose configuration methods have failed. */
-  private Map<ITestNGMethod, Set<Object>> m_methodInvocationResults = Maps.newHashtable();
+  private Map<ITestNGMethod, Set<Object>> m_methodInvocationResults = new Hashtable<>();
   private IConfiguration m_configuration;
 
   /** Predicate to filter methods */
@@ -88,7 +90,7 @@ public class Invoker implements IInvoker {
   private void setClassInvocationFailure(Class<?> clazz, Object instance) {
     Set<Object> instances = m_classInvocationResults.get( clazz );
     if (instances == null) {
-      instances = Sets.newHashSet();
+      instances = new HashSet<>();
       m_classInvocationResults.put(clazz, instances);
     }
     instances.add(instance);
@@ -97,7 +99,7 @@ public class Invoker implements IInvoker {
   private void setMethodInvocationFailure(ITestNGMethod method, Object instance) {
     Set<Object> instances = m_methodInvocationResults.get(method);
     if (instances == null) {
-      instances = Sets.newHashSet();
+      instances = new HashSet<>();
       m_methodInvocationResults.put(method, instances);
     }
     instances.add(getMethodInvocationToken(method, instance));
@@ -345,7 +347,7 @@ public class Invoker implements IInvoker {
    * @return All the classes that belong to the same <test> tag as @param cls
    */
   private XmlClass[] findClassesInSameTest(Class<?> cls, XmlSuite suite) {
-    Map<String, XmlClass> vResult= Maps.newHashMap();
+    Map<String, XmlClass> vResult= new HashMap<>();
     String className= cls.getName();
     for(XmlTest test : suite.getTests()) {
       for(XmlClass testClass : test.getXmlClasses()) {
@@ -587,7 +589,7 @@ public class Invoker implements IInvoker {
 
   private void throwConfigurationFailure(ITestResult testResult, Throwable ex)
   {
-    testResult.setStatus(ITestResult.FAILURE);;
+    testResult.setStatus(ITestResult.FAILURE);
     testResult.setThrowable(ex.getCause() == null ? ex : ex.getCause());
   }
 
@@ -817,7 +819,7 @@ public class Invoker implements IInvoker {
   private ITestNGMethod[] filterConfigurationMethods(ITestNGMethod tm,
       ITestNGMethod[] methods, boolean isBefore)
   {
-    List<ITestNGMethod> result = Lists.newArrayList();
+    List<ITestNGMethod> result = new ArrayList<>();
     for (ITestNGMethod m : methods) {
       ConfigurationMethod cm = (ConfigurationMethod) m;
       if (isBefore) {
@@ -897,7 +899,7 @@ public class Invoker implements IInvoker {
                                                 Object instance)
   {
     synchronized(groupMethods) {
-      List<ITestNGMethod> filteredMethods = Lists.newArrayList();
+      List<ITestNGMethod> filteredMethods = new ArrayList<>();
       String[] groups = currentTestMethod.getGroups();
       Map<String, List<ITestNGMethod>> beforeGroupMap = groupMethods.getBeforeGroupsMap();
 
@@ -943,7 +945,7 @@ public class Invoker implements IInvoker {
 
     // See if the currentMethod is the last method in any of the groups
     // it belongs to
-    Map<String, String> filteredGroups = Maps.newHashMap();
+    Map<String, String> filteredGroups = new HashMap<>();
     String[] groups = currentTestMethod.getGroups();
     synchronized(groupMethods) {
       for (String group : groups) {
@@ -957,7 +959,7 @@ public class Invoker implements IInvoker {
       }
 
       // The list of afterMethods to run
-      Map<ITestNGMethod, ITestNGMethod> afterMethods = Maps.newHashMap();
+      Map<ITestNGMethod, ITestNGMethod> afterMethods = new HashMap<>();
 
       // Now filteredGroups contains all the groups for which we need to run the afterGroups
       // method.  Find all the methods that correspond to these groups and invoke them.
@@ -1014,8 +1016,8 @@ public class Invoker implements IInvoker {
     final FailureContext failure = new FailureContext();
     failure.count = failureCount;
     do {
-      failure.instances = Lists.newArrayList ();
-      Map<String, String> allParameters = Maps.newHashMap();
+      failure.instances = new ArrayList<>();
+      Map<String, String> allParameters = new HashMap<>();
       /**
        * TODO: This recreates all the parameters every time when we only need
        * one specific set. Should optimize it by only recreating the set needed.
@@ -1122,7 +1124,7 @@ public class Invoker implements IInvoker {
     ExpectedExceptionsHolder expectedExceptionHolder =
         MethodHelper.findExpectedExceptions(m_annotationFinder, testMethod.getMethod());
     final ITestClass testClass= testMethod.getTestClass();
-    final List<ITestResult> result = Lists.newArrayList();
+    final List<ITestResult> result = new ArrayList<>();
     final FailureContext failure = new FailureContext();
     final ITestNGMethod[] beforeMethods = filterMethods(testClass, testClass.getBeforeTestMethods(), CAN_RUN_FROM_CLASS);
     final ITestNGMethod[] afterMethods = filterMethods(testClass, testClass.getAfterTestMethods(), CAN_RUN_FROM_CLASS);
@@ -1137,7 +1139,7 @@ public class Invoker implements IInvoker {
         // Used in catch statement
         long start = System.currentTimeMillis();
 
-        Map<String, String> allParameterNames = Maps.newHashMap();
+        Map<String, String> allParameterNames = new HashMap<>();
         ParameterBag bag = createParameters(testMethod,
             parameters, allParameterNames, suite, testContext, instance);
 
@@ -1154,7 +1156,7 @@ public class Invoker implements IInvoker {
         int parametersIndex = 0;
 
         try {
-          List<TestMethodWithDataProviderMethodWorker> workers = Lists.newArrayList();
+          List<TestMethodWithDataProviderMethodWorker> workers = new ArrayList<>();
 
           if (bag.parameterHolder.origin == ParameterOrigin.ORIGIN_DATA_PROVIDER &&
               bag.parameterHolder.dataProviderHolder.annotation.isParallel()) {
@@ -1173,7 +1175,7 @@ public class Invoker implements IInvoker {
               parametersIndex++;
             }
             PoolService<List<ITestResult>> ps =
-                new PoolService<List<ITestResult>>(suite.getDataProviderThreadCount());
+                new PoolService<>(suite.getDataProviderThreadCount());
             List<List<ITestResult>> r = ps.submitTasksAndWait(workers);
             for (List<ITestResult> l2 : r) {
               result.addAll(l2);
@@ -1184,7 +1186,7 @@ public class Invoker implements IInvoker {
               Object[] parameterValues = injectParameters(allParameterValues.next(),
                   testMethod.getMethod(), testContext, null /* test result */);
 
-              List<ITestResult> tmpResults = Lists.newArrayList();
+              List<ITestResult> tmpResults = new ArrayList<>();
 
               try {
                 tmpResults.add(invokeTestMethod(instance,
@@ -1203,7 +1205,7 @@ public class Invoker implements IInvoker {
                   result.addAll(tmpResults);
                 } else {
                   for (Object failedInstance : failure.instances) {
-                    List<ITestResult> retryResults = Lists.newArrayList();
+                    List<ITestResult> retryResults = new ArrayList<>();
 
                     failure.count = retryFailed(
                             failedInstance, testMethod, suite, testClass, beforeMethods,
@@ -1281,7 +1283,7 @@ public class Invoker implements IInvoker {
   private Object[] injectParameters(Object[] parameterValues, Method method,
       ITestContext context, ITestResult testResult)
     throws TestNGException {
-    List<Object> vResult = Lists.newArrayList();
+    List<Object> vResult = new ArrayList<>();
     int i = 0;
     int numValues = parameterValues.length;
     int numParams = method.getParameterTypes().length;
@@ -1373,7 +1375,7 @@ public class Invoker implements IInvoker {
     //
     // Create the workers
     //
-    List<IWorker<ITestNGMethod>> workers = Lists.newArrayList();
+    List<IWorker<ITestNGMethod>> workers = new ArrayList<>();
 
     // Create one worker per invocationCount
     for (int i = 0; i < testMethod.getInvocationCount(); i++) {
@@ -1395,7 +1397,7 @@ public class Invoker implements IInvoker {
 
   static class FailureContext {
     int count = 0;
-    List<Object> instances = Lists.newArrayList();
+    List<Object> instances = new ArrayList<>();
   }
 
   /**
@@ -1415,7 +1417,7 @@ public class Invoker implements IInvoker {
     //
     // Go through all the results and create a TestResult for each of them
     //
-    List<ITestResult> resultsToRetry = Lists.newArrayList();
+    List<ITestResult> resultsToRetry = new ArrayList<>();
 
     for (ITestResult testResult : result) {
       Throwable ite= testResult.getThrowable();
@@ -1566,7 +1568,7 @@ public class Invoker implements IInvoker {
     //
     // Collect all the TestResults
     //
-    List<ITestResult> result = Lists.newArrayList();
+    List<ITestResult> result = new ArrayList<>();
     for (IWorker<ITestNGMethod> tmw : workers) {
       if (tmw instanceof TestMethodWorker) {
         result.addAll(((TestMethodWorker)tmw).getTestResults());
@@ -1639,7 +1641,7 @@ public class Invoker implements IInvoker {
    * @return the test results that apply to one of the instances of the testMethod.
    */
   private Set<ITestResult> keepSameInstances(ITestNGMethod method, Set<ITestResult> results) {
-    Set<ITestResult> result = Sets.newHashSet();
+    Set<ITestResult> result = new HashSet<>();
     for (ITestResult r : results) {
       final Object o = method.getInstance();
         // Keep this instance if 1) It's on a different class or 2) It's on the same class
@@ -1658,7 +1660,7 @@ public class Invoker implements IInvoker {
     // Make sure the method has been run successfully
     for (ITestNGMethod method : methods) {
       Set<ITestResult> results = keepSameInstances(testMethod, m_notifier.getPassedTests(method));
-      Set<ITestResult> failedAndSkippedMethods = Sets.newHashSet();
+      Set<ITestResult> failedAndSkippedMethods = new HashSet<>();
       failedAndSkippedMethods.addAll(m_notifier.getFailedTests(method));
       failedAndSkippedMethods.addAll(m_notifier.getSkippedTests(method));
       Set<ITestResult> failedresults = keepSameInstances(testMethod, failedAndSkippedMethods);
@@ -1766,7 +1768,7 @@ public class Invoker implements IInvoker {
    */
   private ITestNGMethod[] filterMethods(IClass testClass, ITestNGMethod[] methods,
       Predicate<ITestNGMethod, IClass> predicate) {
-    List<ITestNGMethod> vResult= Lists.newArrayList();
+    List<ITestNGMethod> vResult= new ArrayList<>();
 
     for(ITestNGMethod tm : methods) {
       if (predicate.isTrue(tm, testClass)) {

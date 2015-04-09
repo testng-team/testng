@@ -17,7 +17,7 @@ public class ResultMap implements IResultMap {
    *
    */
   private static final long serialVersionUID = 80134376515999093L;
-  private Map<ITestResult, ITestNGMethod> m_map = new ConcurrentHashMap<ITestResult, ITestNGMethod>();
+  private Map<ITestResult, ITestNGMethod> m_map = new ConcurrentHashMap<>();
 
   @Override
   public void addResult(ITestResult result, ITestNGMethod method) {
@@ -26,7 +26,7 @@ public class ResultMap implements IResultMap {
 
   @Override
   public Set<ITestResult> getResults(ITestNGMethod method) {
-    Set<ITestResult> result = new HashSet<ITestResult>();
+    Set<ITestResult> result = new HashSet<>();
 
     for (ITestResult tr : m_map.keySet()) {
       if (m_map.get(tr).equals(method)) {

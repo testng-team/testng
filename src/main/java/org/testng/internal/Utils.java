@@ -16,6 +16,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +32,6 @@ import org.testng.TestNGException;
 import org.testng.TestRunner;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.ITestAnnotation;
-import org.testng.collections.Lists;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.log.TextFormatter;
@@ -78,7 +78,7 @@ public final class Utils {
   }
 
   public static XmlClass[] classesToXmlClasses(Class<?>[] classes) {
-    List<XmlClass> result = Lists.newArrayList();
+    List<XmlClass> result = new ArrayList<>();
 
     for (Class<?> cls : classes) {
       result.add(new XmlClass(cls, true /* load classes */));
@@ -88,7 +88,7 @@ public final class Utils {
   }
 
   public static String[] parseMultiLine(String line) {
-    List<String> vResult = Lists.newArrayList();
+    List<String> vResult = new ArrayList<>();
     if (isStringNotBlank(line)) {
       StringTokenizer st = new StringTokenizer(line, " ");
       while (st.hasMoreTokens()) {
@@ -257,7 +257,7 @@ public final class Utils {
    * class groups
    */
   public static String[] dependentGroupsForThisMethodForTest(Method m, IAnnotationFinder finder) {
-    List<String> vResult = Lists.newArrayList();
+    List<String> vResult = new ArrayList<>();
     Class<?> cls = m.getDeclaringClass();
 
     // Collect groups on the class
@@ -287,7 +287,7 @@ public final class Utils {
    * class groups
    */
   public static String[] groupsForThisMethodForTest(Method m, IAnnotationFinder finder) {
-    List<String> vResult = Lists.newArrayList();
+    List<String> vResult = new ArrayList<>();
     Class<?> cls = m.getDeclaringClass();
 
     // Collect groups on the class
@@ -416,7 +416,7 @@ public final class Utils {
     int start = 0;
     int idx = string.indexOf(sep, start);
     int len = sep.length();
-    List<String> strings = Lists.newArrayList();
+    List<String> strings = new ArrayList<>();
 
     while (idx != -1) {
       strings.add(string.substring(start, idx).trim());

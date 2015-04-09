@@ -1,13 +1,13 @@
 package org.testng.internal;
 
 import org.testng.collections.ListMultiMap;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.internal.annotations.Sets;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,16 +18,16 @@ import java.util.Set;
 public class DynamicGraph<T> {
   private static final boolean DEBUG = false;
 
-  private Set<T> m_nodesReady = Sets.newLinkedHashSet();
-  private Set<T> m_nodesRunning = Sets.newLinkedHashSet();
-  private Set<T> m_nodesFinished = Sets.newLinkedHashSet();
+  private Set<T> m_nodesReady = new LinkedHashSet<>();
+  private Set<T> m_nodesRunning = new LinkedHashSet<>();
+  private Set<T> m_nodesFinished = new LinkedHashSet<>();
 
   private Comparator<? super T> m_nodeComparator = null;
 
-  private ListMultiMap<T, T> m_dependedUpon = Maps.newListMultiMap();
-  private ListMultiMap<T, T> m_dependingOn = Maps.newListMultiMap();
+  private ListMultiMap<T, T> m_dependedUpon = new ListMultiMap<>();
+  private ListMultiMap<T, T> m_dependingOn = new ListMultiMap<>();
 
-  public static enum Status {
+  public enum Status {
     READY, RUNNING, FINISHED
   }
 
@@ -61,7 +61,7 @@ public class DynamicGraph<T> {
    * @return a set of all the nodes that don't depend on any other nodes.
    */
   public List<T> getFreeNodes() {
-    List<T> result = Lists.newArrayList();
+    List<T> result = new ArrayList<>();
     for (T m : m_nodesReady) {
       // A node is free if...
 
@@ -89,7 +89,7 @@ public class DynamicGraph<T> {
    * @return a list of all the nodes that have a status other than FINISHED.
    */
   private Collection<? extends T> getUnfinishedNodes(List<T> nodes) {
-    Set<T> result = Sets.newHashSet();
+    Set<T> result = new HashSet<>();
     for (T node : nodes) {
       if (m_nodesReady.contains(node) || m_nodesRunning.contains(node)) {
         result.add(node);

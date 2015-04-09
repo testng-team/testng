@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -36,7 +37,6 @@ import org.apache.tools.ant.types.Reference;
 import org.apache.tools.ant.types.ResourceCollection;
 import org.apache.tools.ant.types.resources.FileResource;
 import org.apache.tools.ant.types.selectors.FilenameSelector;
-import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.reporters.VerboseReporter;
 
@@ -110,14 +110,14 @@ public class TestNGAntTask extends Task {
 
   protected CommandlineJava m_javaCommand;
 
-  protected List<ResourceCollection> m_xmlFilesets= Lists.newArrayList();
-  protected List<ResourceCollection> m_classFilesets= Lists.newArrayList();
+  protected List<ResourceCollection> m_xmlFilesets= new ArrayList<>();
+  protected List<ResourceCollection> m_classFilesets= new ArrayList<>();
   protected File m_outputDir;
   protected File m_testjar;
   protected File m_workingDir;
   private Integer m_timeout;
-  private List<String> m_listeners= Lists.newArrayList();
-  private List<String> m_methodselectors= Lists.newArrayList();
+  private List<String> m_listeners= new ArrayList<>();
+  private List<String> m_methodselectors= new ArrayList<>();
   private String m_objectFactory;
   protected String m_testRunnerFactory;
   private boolean m_delegateCommandSystemProperties = false;
@@ -163,7 +163,7 @@ public class TestNGAntTask extends Task {
   /**
    * The list of report listeners added via &lt;reporter&gt; sub-element of the Ant task
    */
-  private List<ReporterConfig> reporterConfigs = Lists.newArrayList();
+  private List<ReporterConfig> reporterConfigs = new ArrayList<>();
 
   private String m_testNames = "";
 
@@ -539,7 +539,7 @@ public class TestNGAntTask extends Task {
   }
 
   private List<String> createArguments() {
-	List<String> argv= Lists.newArrayList();
+	List<String> argv= new ArrayList<>();
     addBooleanIfTrue(argv, CommandLineArgs.JUNIT, mode == Mode.junit);
     addBooleanIfTrue(argv, CommandLineArgs.MIXED, mode == Mode.mixed);
     addBooleanIfTrue(argv, CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS, m_skipFailedInvocationCounts);
@@ -662,7 +662,7 @@ public class TestNGAntTask extends Task {
    * @return the list of the XML file names. This method can be overridden by subclasses.
    */
   protected List<String> getSuiteFileNames() {
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
 
     for(String file : getFiles(m_xmlFilesets)) {
       result.add(file);
@@ -989,7 +989,7 @@ public class TestNGAntTask extends Task {
    * @throws BuildException
    */
   private List<String> getFiles(List<ResourceCollection> resources) throws BuildException {
-    List<String> files= Lists.newArrayList();
+    List<String> files= new ArrayList<>();
     for (ResourceCollection rc : resources) {
         for (Iterator i = rc.iterator(); i.hasNext();) {
           Object o = i.next();
@@ -1018,7 +1018,7 @@ public class TestNGAntTask extends Task {
    * @throws BuildException
    */
   private List<String> fileset(FileSet fileset) throws BuildException {
-    List<String> files= Lists.newArrayList();
+    List<String> files= new ArrayList<>();
 
       DirectoryScanner ds= fileset.getDirectoryScanner(getProject());
 

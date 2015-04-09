@@ -1,7 +1,9 @@
 package org.testng.internal;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -11,10 +13,7 @@ import java.util.regex.Pattern;
 import org.testng.IMethodSelector;
 import org.testng.IMethodSelectorContext;
 import org.testng.ITestNGMethod;
-import org.testng.TestNGException;
 import org.testng.collections.ListMultiMap;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 
@@ -30,13 +29,13 @@ public class XmlMethodSelector implements IMethodSelector {
   private static final long serialVersionUID = -9030548178025605629L;
 
   // Groups included and excluded for this run
-  private Map<String, String> m_includedGroups = Maps.newHashMap();
-  private Map<String, String> m_excludedGroups = Maps.newHashMap();
+  private Map<String, String> m_includedGroups = new HashMap<>();
+  private Map<String, String> m_excludedGroups = new HashMap<>();
   private List<XmlClass> m_classes = null;
   // The BeanShell expression for this test, if any
   private String m_expression = null;
   // List of methods included implicitly
-  private ListMultiMap<String, XmlInclude> m_includedMethods = Maps.newListMultiMap();
+  private ListMultiMap<String, XmlInclude> m_includedMethods = new ListMultiMap<>();
   private IBsh m_bsh = Dynamic.hasBsh() ? new Bsh() : new BshMock();
 
   @Override
@@ -173,7 +172,7 @@ public class XmlMethodSelector implements IMethodSelector {
     return sourceClass.isAssignableFrom(targetClass) || targetClass.isAssignableFrom(sourceClass);
   }
 
-  private Map<String, String> m_logged = Maps.newHashMap();
+  private Map<String, String> m_logged = new HashMap<>();
   private void logInclusion(String including, String type, String name) {
     if (! m_logged.containsKey(name)) {
       log(4, including + " " + type + " " + name);
@@ -202,7 +201,7 @@ public class XmlMethodSelector implements IMethodSelector {
   }
 
   private List<String> toStringList(List<XmlInclude> methods) {
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
     for (XmlInclude m : methods) {
       result.add(m.getName());
     }
@@ -211,7 +210,7 @@ public class XmlMethodSelector implements IMethodSelector {
 
   private List<String> createQualifiedMethodNames(XmlClass xmlClass,
       List<String> methods) {
-    List<String> vResult = Lists.newArrayList();
+    List<String> vResult = new ArrayList<>();
     Class cls = xmlClass.getSupportClass();
 
     while (null != cls) {
@@ -341,10 +340,10 @@ public class XmlMethodSelector implements IMethodSelector {
 
   private void init(IMethodSelectorContext context) {
     String[] groups = m_includedGroups.keySet().toArray(new String[m_includedGroups.size()]);
-    Set<String> groupClosure = new HashSet<String>();
-    Set<ITestNGMethod> methodClosure = new HashSet<ITestNGMethod>();
+    Set<String> groupClosure = new HashSet<>();
+    Set<ITestNGMethod> methodClosure = new HashSet<>();
 
-    List<ITestNGMethod> includedMethods = Lists.newArrayList();
+    List<ITestNGMethod> includedMethods = new ArrayList<>();
     for (ITestNGMethod m : m_testMethods) {
       if (includeMethod(context, m, true)) {
         includedMethods.add(m);

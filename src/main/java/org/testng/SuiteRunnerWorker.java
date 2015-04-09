@@ -1,12 +1,12 @@
 package org.testng;
 
-import org.testng.collections.Lists;
 import org.testng.collections.Objects;
 import org.testng.internal.SuiteRunnerMap;
 import org.testng.internal.Utils;
 import org.testng.internal.thread.graph.IWorker;
 import org.testng.xml.XmlSuite;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -99,7 +99,7 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
 
   @Override
   public List<ISuite> getTasks() {
-    List<ISuite> suiteRunnerList = Lists.newArrayList();
+    List<ISuite> suiteRunnerList = new ArrayList<>();
     suiteRunnerList.add(m_suiteRunner);
     return suiteRunnerList;
   }

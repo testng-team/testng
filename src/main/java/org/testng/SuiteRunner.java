@@ -2,8 +2,6 @@ package org.testng;
 
 import static org.testng.internal.Utils.isStringBlank;
 
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.internal.Attributes;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IInvoker;
@@ -19,10 +17,12 @@ import org.testng.xml.XmlTest;
 import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,16 +42,16 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
   private static final String DEFAULT_OUTPUT_DIR = "test-output";
 
-  private Map<String, ISuiteResult> m_suiteResults = Collections.synchronizedMap(Maps.<String, ISuiteResult>newLinkedHashMap());
-  transient private List<TestRunner> m_testRunners = Lists.newArrayList();
-  transient private List<ISuiteListener> m_listeners = Lists.newArrayList();
+  private Map<String, ISuiteResult> m_suiteResults = Collections.synchronizedMap(new LinkedHashMap<String, ISuiteResult>());
+  transient private List<TestRunner> m_testRunners = new ArrayList<>();
+  transient private List<ISuiteListener> m_listeners = new ArrayList<>();
   transient private TestListenerAdapter m_textReporter = new TestListenerAdapter();
 
   private String m_outputDir; // DEFAULT_OUTPUT_DIR;
   private XmlSuite m_suite;
   private Injector m_parentInjector;
 
-  transient private List<ITestListener> m_testListeners = Lists.newArrayList();
+  transient private List<ITestListener> m_testListeners = new ArrayList<>();
   transient private ITestRunnerFactory m_tmpRunnerFactory;
 
   transient private ITestRunnerFactory m_runnerFactory;
@@ -71,9 +71,9 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
   /** The list of all the methods invoked during this run */
   private List<IInvokedMethod> m_invokedMethods =
-      Collections.synchronizedList(Lists.<IInvokedMethod>newArrayList());
+      Collections.synchronizedList(new ArrayList<IInvokedMethod>());
 
-  private List<ITestNGMethod> m_allTestMethods = Lists.newArrayList();
+  private List<ITestNGMethod> m_allTestMethods = new ArrayList<>();
 
 //  transient private IAnnotationTransformer m_annotationTransformer = null;
 
@@ -136,7 +136,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     m_invokedMethodListeners = invokedMethodListener;
     // Add our own IInvokedMethodListener
     if (m_invokedMethodListeners == null) {
-      m_invokedMethodListeners = Lists.newArrayList();
+      m_invokedMethodListeners = new ArrayList<>();
     }
     m_invokedMethodListeners.add(this);
 
@@ -261,8 +261,8 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   private void privateRun() {
 
     // Map for unicity, Linked for guaranteed order
-    Map<Method, ITestNGMethod> beforeSuiteMethods= new LinkedHashMap<Method, ITestNGMethod>();
-    Map<Method, ITestNGMethod> afterSuiteMethods = new LinkedHashMap<Method, ITestNGMethod>();
+    Map<Method, ITestNGMethod> beforeSuiteMethods= new LinkedHashMap<>();
+    Map<Method, ITestNGMethod> afterSuiteMethods = new LinkedHashMap<>();
 
     IInvoker invoker = null;
 
@@ -328,7 +328,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     }
   }
 
-  private List<IReporter> m_reporters = Lists.newArrayList();
+  private List<IReporter> m_reporters = new ArrayList<>();
 
   private void addReporter(IReporter listener) {
     m_reporters.add(listener);
@@ -363,7 +363,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
    * tag, it can't implement <suite parallel="tests">, which is why we're doing it here).
    */
   private void runInParallelTestMode() {
-    List<Runnable> tasks= Lists.newArrayList(m_testRunners.size());
+    List<Runnable> tasks= new ArrayList<>(m_testRunners.size());
     for(TestRunner tr: m_testRunners) {
       tasks.add(new SuiteWorker(tr));
     }
@@ -438,7 +438,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
    */
   @Override
   public Map<String, Collection<ITestNGMethod>> getMethodsByGroups() {
-    Map<String, Collection<ITestNGMethod>> result = Maps.newHashMap();
+    Map<String, Collection<ITestNGMethod>> result = new HashMap<>();
 
     for (TestRunner tr : m_testRunners) {
       ITestNGMethod[] methods = tr.getAllTestMethods();
@@ -447,7 +447,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
         for (String groupName : groups) {
           Collection<ITestNGMethod> testMethods = result.get(groupName);
           if (null == testMethods) {
-            testMethods = Lists.newArrayList();
+            testMethods = new ArrayList<>();
             result.put(groupName, testMethods);
           }
           testMethods.add(m);
@@ -475,7 +475,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   }
 
   private Collection<ITestNGMethod> getIncludedOrExcludedMethods(boolean included) {
-    List<ITestNGMethod> result= Lists.newArrayList();
+    List<ITestNGMethod> result= new ArrayList<>();
 
     for (TestRunner tr : m_testRunners) {
       Collection<ITestNGMethod> methods = included ? tr.getInvokedMethods() : tr.getExcludedMethods();

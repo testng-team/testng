@@ -1,8 +1,8 @@
 package org.testng.internal;
 
 import org.testng.IAttributes;
-import org.testng.collections.Maps;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,7 +16,7 @@ public class Attributes implements IAttributes {
    *
    */
   private static final long serialVersionUID = 6701159979281335152L;
-  private Map<String, Object> m_attributes = Maps.newHashMap();
+  private Map<String, Object> m_attributes = new HashMap<>();
 
   @Override
   public Object getAttribute(String name) {
