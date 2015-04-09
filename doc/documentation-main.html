@@ -1227,7 +1227,7 @@ This name must correspond to a method on the same class annotated with <tt>@Data
 with a matching name.
 
 <p>
-By default, the data provider will be looked for in the current test class or one of its base classes.  If you want to put your data provider in a different class, it needs to be a static method and you specify the class where it can be found in the <tt>dataProviderClass</tt> attribute:
+By default, the data provider will be looked for in the current test class or one of its base classes.  If you want to put your data provider in a different class, it needs to be a static method or a class with a non-arg constructor, and you specify the class where it can be found in the <tt>dataProviderClass</tt> attribute:
 
 <h3 class="sourcetitle">StaticProvider.java</h3>
 <pre class="brush: java">
@@ -1247,6 +1247,8 @@ public class MyTest {
   }
 }
 </pre>
+
+The data provider supports injection too. TestNG will use the test context for the injection.
 
 The Data Provider method can return one of the following two types:
 

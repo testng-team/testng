@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import com.google.inject.Injector;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -253,8 +256,9 @@ public class Parameters {
     return result;
   }
 
-  private static DataProviderHolder findDataProvider(Class clazz, ConstructorOrMethod m,
-      IAnnotationFinder finder) {
+  private static DataProviderHolder findDataProvider(Object instance, ITestClass clazz,
+                                                     ConstructorOrMethod m,
+                                                     IAnnotationFinder finder, ITestContext context) {
     DataProviderHolder result = null;
 
     IDataProvidable dp = findDataProviderInfo(clazz, m, finder);
@@ -263,7 +267,7 @@ public class Parameters {
       Class dataProviderClass = dp.getDataProviderClass();
 
       if (! Utils.isStringEmpty(dataProviderName)) {
-        result = findDataProvider(clazz, finder, dataProviderName, dataProviderClass);
+        result = findDataProvider(instance, clazz, finder, dataProviderName, dataProviderClass, context);
 
         if(null == result) {
           throw new TestNGException("Method " + m + " requires a @DataProvider named : "
@@ -280,7 +284,7 @@ public class Parameters {
    * Find the data provider info (data provider name and class) on either @Test(dataProvider),
    * @Factory(dataProvider) on a method or @Factory(dataProvider) on a constructor.
    */
-  private static IDataProvidable findDataProviderInfo(Class clazz, ConstructorOrMethod m,
+  private static IDataProvidable findDataProviderInfo(ITestClass clazz, ConstructorOrMethod m,
       IAnnotationFinder finder) {
     IDataProvidable result;
 
@@ -298,7 +302,7 @@ public class Parameters {
       if (result == null) {
         //
         // @Test(dataProvider) on a class
-        result = AnnotationHelper.findTest(finder, clazz);
+        result = AnnotationHelper.findTest(finder, clazz.getRealClass());
       }
     } else {
       //
@@ -313,11 +317,14 @@ public class Parameters {
   /**
    * Find a method that has a @DataProvider(name=name)
    */
-  private static DataProviderHolder findDataProvider(Class cls, IAnnotationFinder finder,
-      String name, Class dataProviderClass)
+  private static DataProviderHolder findDataProvider(Object instance, ITestClass clazz,
+                                                     IAnnotationFinder finder,
+                                                     String name, Class dataProviderClass,
+                                                     ITestContext context)
   {
     DataProviderHolder result = null;
 
+    Class cls = clazz.getRealClass();
     boolean shouldBeStatic = false;
     if (dataProviderClass != null) {
       cls = dataProviderClass;
@@ -328,13 +335,16 @@ public class Parameters {
       IDataProviderAnnotation dp = finder.findAnnotation(m, IDataProviderAnnotation.class);
       if (null != dp && name.equals(getDataProviderName(dp, m))) {
         if (shouldBeStatic && (m.getModifiers() & Modifier.STATIC) == 0) {
-          throw new TestNGException("DataProvider should be static: " + m);
+          Injector injector = context.getInjector(clazz);
+          if (injector != null) {
+            instance = injector.getInstance(dataProviderClass);
+          }
         }
 
         if (result != null) {
           throw new TestNGException("Found two providers called '" + name + "' on " + cls);
         }
-        result = new DataProviderHolder(dp, m);
+        result = new DataProviderHolder(dp, m, instance);
       }
     }
 
@@ -417,8 +427,8 @@ public class Parameters {
      * sets of parameters for this method
      */
     DataProviderHolder dataProviderHolder =
-        findDataProvider(testMethod.getTestClass().getRealClass(),
-            testMethod.getConstructorOrMethod(), annotationFinder);
+        findDataProvider(instance, testMethod.getTestClass(),
+            testMethod.getConstructorOrMethod(), annotationFinder, methodParams.context);
 
     if (null != dataProviderHolder) {
       int parameterCount = testMethod.getConstructorOrMethod().getParameterTypes().length;
@@ -429,7 +439,7 @@ public class Parameters {
       }
 
       parameters = MethodInvocationHelper.invokeDataProvider(
-          instance, /* a test instance or null if the dataprovider is static*/
+          dataProviderHolder.instance, /* a test instance or null if the dataprovider is static*/
           dataProviderHolder.method,
           testMethod,
           methodParams.context,

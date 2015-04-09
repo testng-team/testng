@@ -244,4 +244,7 @@ class TestClass extends NoOpTestClass implements ITestClass {
         .toString();
   }
 
+  public IClass getIClass() {
+    return m_iClass;
+  }
 }

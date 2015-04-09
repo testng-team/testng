@@ -1,5 +1,6 @@
 package org.testng;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,11 +13,13 @@ import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.testng.annotations.Guice;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.Attributes;
 import org.testng.internal.ClassHelper;
+import org.testng.internal.ClassImpl;
 import org.testng.internal.ClassInfoMap;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.Constants;
@@ -37,6 +40,7 @@ import org.testng.internal.TestNGClassFinder;
 import org.testng.internal.TestNGMethodFinder;
 import org.testng.internal.Utils;
 import org.testng.internal.XmlMethodSelector;
+import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IListeners;
 import org.testng.internal.annotations.Sets;
@@ -1592,8 +1596,7 @@ public class TestRunner
     return result;
   }
 
-  @Override
-  public void addGuiceModule(Class<? extends Module> cls, Module module) {
+  private void addGuiceModule(Class<? extends Module> cls, Module module) {
     m_guiceModules.put(cls, module);
   }
 
@@ -1602,6 +1605,52 @@ public class TestRunner
   @Override
   public Injector getInjector(List<Module> moduleInstances) {
     return m_injectors .get(moduleInstances);
+  }
+
+  @Override
+  public Injector getInjector(IClass iClass) {
+    Annotation annotation = AnnotationHelper.findAnnotationSuperClasses(Guice.class, iClass.getRealClass());
+    if (annotation == null) return null;
+    if (iClass instanceof TestClass) {
+      iClass = ((TestClass)iClass).getIClass();
+    }
+    if (!(iClass instanceof ClassImpl)) return null;
+    Injector parentInjector = ((ClassImpl)iClass).getParentInjector();
+
+    Guice guice = (Guice) annotation;
+    List<Module> moduleInstances = Lists.newArrayList(getModules(guice, parentInjector, iClass.getRealClass()));
+
+    // Reuse the previous injector, if any
+    Injector injector = getInjector(moduleInstances);
+    if (injector == null) {
+      injector = parentInjector.createChildInjector(moduleInstances);
+      addInjector(moduleInstances, injector);
+    }
+    return injector;
+  }
+
+  private Module[] getModules(Guice guice, Injector parentInjector, Class<?> testClass) {
+    List<Module> result = Lists.newArrayList();
+    for (Class<? extends Module> moduleClass : guice.modules()) {
+      List<Module> modules = getGuiceModules(moduleClass);
+      if (modules != null && modules.size() > 0) {
+        result.addAll(modules);
+      } else {
+        Module instance = parentInjector.getInstance(moduleClass);
+        result.add(instance);
+        addGuiceModule(moduleClass, instance);
+      }
+    }
+    Class<? extends IModuleFactory> factory = guice.moduleFactory();
+    if (factory != IModuleFactory.class) {
+      IModuleFactory factoryInstance = parentInjector.getInstance(factory);
+      Module moduleClass = factoryInstance.createModule(this, testClass);
+      if (moduleClass != null) {
+        result.add(moduleClass);
+      }
+    }
+
+    return result.toArray(new Module[result.size()]);
   }
 
   @Override

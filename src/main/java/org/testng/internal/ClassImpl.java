@@ -128,19 +128,8 @@ public class ClassImpl implements IClass {
    */
   @SuppressWarnings("unchecked")
   private Object getInstanceFromGuice() {
-    Annotation annotation = AnnotationHelper.findAnnotationSuperClasses(Guice.class, m_class);
-    if (annotation == null) return null;
-    Injector parentInjector = getParentInjector();
-
-    Guice guice = (Guice) annotation;
-    List<Module> moduleInstances = Lists.newArrayList(getModules(guice, parentInjector, m_class));
-
-    // Reuse the previous injector, if any
-    Injector injector = m_testContext.getInjector(moduleInstances);
-    if (injector == null) {
-      injector = parentInjector.createChildInjector(moduleInstances);
-      m_testContext.addInjector(moduleInstances, injector);
-    }
+    Injector injector = m_testContext.getInjector(this);
+    if (injector == null) return null;
     return injector.getInstance(m_class);
   }
 
@@ -171,30 +160,6 @@ public class ClassImpl implements IClass {
     } catch (NoSuchMethodException e) {
       return ClassHelper.newInstance(module);
     }
-  }
-
-  private Module[] getModules(Guice guice, Injector parentInejctor, Class<?> testClass) {
-    List<Module> result = Lists.newArrayList();
-    for (Class<? extends Module> moduleClass : guice.modules()) {
-      List<Module> modules = m_testContext.getGuiceModules(moduleClass);
-      if (modules != null && modules.size() > 0) {
-        result.addAll(modules);
-      } else {
-        Module instance = parentInejctor.getInstance(moduleClass);
-        result.add(instance);
-        m_testContext.addGuiceModule(moduleClass, instance);
-      }
-    }
-    Class<? extends IModuleFactory> factory = guice.moduleFactory();
-    if (factory != IModuleFactory.class) {
-      IModuleFactory factoryInstance = parentInejctor.getInstance(factory);
-      Module moduleClass = factoryInstance.createModule(m_testContext, testClass);
-      if (moduleClass != null) {
-        result.add(moduleClass);
-      }
-    }
-
-    return result.toArray(new Module[result.size()]);
   }
 
   @Override
