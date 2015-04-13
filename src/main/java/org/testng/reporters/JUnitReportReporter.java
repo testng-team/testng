@@ -9,8 +9,8 @@ import org.testng.ITestResult;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.collections.Sets;
 import org.testng.internal.Utils;
-import org.testng.internal.annotations.Sets;
 import org.testng.xml.XmlSuite;
 
 import java.io.File;

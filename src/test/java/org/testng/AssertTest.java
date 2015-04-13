@@ -2,7 +2,7 @@ package org.testng;
 
 import org.testng.annotations.Test;
 import org.testng.collections.Maps;
-import org.testng.internal.annotations.Sets;
+import org.testng.collections.Sets;
 
 import java.util.Collection;
 import java.util.HashMap;
