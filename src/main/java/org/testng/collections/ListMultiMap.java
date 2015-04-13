@@ -112,7 +112,8 @@ public class ListMultiMap<K, V> {
     return result;
   }
 
+  @Deprecated
   public static <K, V> ListMultiMap<K, V> create() {
-    return new ListMultiMap<>();
+    return Maps.newListMultiMap();
   }
 }
