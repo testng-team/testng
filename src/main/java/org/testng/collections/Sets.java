@@ -5,7 +5,9 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class Sets {
+public final class Sets {
+
+  private Sets() {}
 
   public static <V> Set<V> newHashSet() {
     return new HashSet<>();
