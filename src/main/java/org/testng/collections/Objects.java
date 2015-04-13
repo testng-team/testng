@@ -64,7 +64,7 @@ public final class Objects {
 
     private String s(Object o) {
       return o != null
-          ? ("".equals(o.toString()) ? "\"\"" : o.toString())
+          ? (o.toString().isEmpty() ? "\"\"" : o.toString())
           : "{null}";
     }
 
