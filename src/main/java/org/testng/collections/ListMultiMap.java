@@ -29,12 +29,6 @@ public class ListMultiMap<K, V> {
 
   public List<K> getKeys() {
     return new ArrayList(m_objects.keySet());
-//    List<K> result = new ArrayList<K>();
-//    for (K k : m_objects.keySet()) {
-//      result.add(k);
-//    }
-//    Collections.sort(result);
-//    return result;
   }
 
   public boolean containsKey(K k) {
@@ -45,7 +39,6 @@ public class ListMultiMap<K, V> {
   public String toString() {
     StringBuilder result = new StringBuilder();
     List<K> indices = getKeys();
-//    Collections.sort(indices);
     for (K i : indices) {
       result.append("\n    ").append(i).append(" <-- ");
       for (Object o : m_objects.get(i)) {

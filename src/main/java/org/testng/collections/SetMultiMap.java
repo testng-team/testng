@@ -27,12 +27,6 @@ public class SetMultiMap<K, V> {
 
   public Set<K> getKeys() {
     return new HashSet(m_objects.keySet());
-//    Set<K> result = new ArraySet<K>();
-//    for (K k : m_objects.keySet()) {
-//      result.add(k);
-//    }
-//    Collections.sort(result);
-//    return result;
   }
 
   public boolean containsKey(K k) {
@@ -43,7 +37,6 @@ public class SetMultiMap<K, V> {
   public String toString() {
     StringBuilder result = new StringBuilder();
     Set<K> indices = getKeys();
-//    Collections.sort(indices);
     for (K i : indices) {
       result.append("\n    ").append(i).append(" <-- ");
       for (Object o : m_objects.get(i)) {
