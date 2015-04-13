@@ -8,14 +8,14 @@ import java.util.Set;
 public class Sets {
 
   public static <V> Set<V> newHashSet() {
-    return new HashSet<V>();
+    return new HashSet<>();
   }
 
   public static <V> Set<V> newHashSet(Collection<V> c) {
-    return new HashSet<V>(c);
+    return new HashSet<>(c);
   }
 
   public static <V> Set<V> newLinkedHashSet() {
-    return new LinkedHashSet<V>();
+    return new LinkedHashSet<>();
   }
 }

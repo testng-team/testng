@@ -82,6 +82,6 @@ public class ListMultiMap<K, V> {
   }
 
   public static <K, V> ListMultiMap<K, V> create() {
-    return new ListMultiMap<K, V>();
+    return new ListMultiMap<>();
   }
 }
