@@ -2,7 +2,7 @@ package test.asserttests;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.testng.internal.annotations.Sets;
+import org.testng.collections.Sets;
 
 import java.util.Set;
 

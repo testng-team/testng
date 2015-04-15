@@ -10,8 +10,8 @@ import org.testng.TestRunner;
 import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
+import org.testng.collections.Sets;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.Sets;
 import org.testng.junit.IJUnitTestRunner;
 import org.testng.xml.XmlTest;
 

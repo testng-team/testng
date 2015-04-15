@@ -17,6 +17,7 @@ import org.testng.annotations.Guice;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.collections.Sets;
 import org.testng.internal.Attributes;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.ClassImpl;
@@ -43,7 +44,6 @@ import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IListeners;
-import org.testng.internal.annotations.Sets;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.internal.thread.graph.GraphThreadPoolExecutor;
 import org.testng.internal.thread.graph.IThreadWorkerFactory;
@@ -894,7 +894,7 @@ public class TestRunner
     for (ITestNGMethod m : methods) {
       lmm.put(m.getInstance(), m);
     }
-    for (Map.Entry<Object, List<ITestNGMethod>> es : lmm.getEntrySet()) {
+    for (Map.Entry<Object, List<ITestNGMethod>> es : lmm.entrySet()) {
       List<IMethodInstance> methodInstances = Lists.newArrayList();
       for (ITestNGMethod m : es.getValue()) {
         methodInstances.add(new MethodInstance(m));
@@ -1102,7 +1102,7 @@ public class TestRunner
       ListMultiMap<ITestNGMethod, ITestNGMethod> classDependencies
           = createClassDependencies(methods, getCurrentXmlTest());
 
-      for (Map.Entry<ITestNGMethod, List<ITestNGMethod>> es : classDependencies.getEntrySet()) {
+      for (Map.Entry<ITestNGMethod, List<ITestNGMethod>> es : classDependencies.entrySet()) {
         for (ITestNGMethod dm : es.getValue()) {
           result.addEdge(dm, es.getKey());
         }
@@ -1114,7 +1114,7 @@ public class TestRunner
       ListMultiMap<ITestNGMethod, ITestNGMethod> instanceDependencies
           = createInstanceDependencies(methods, getCurrentXmlTest());
 
-      for (Map.Entry<ITestNGMethod, List<ITestNGMethod>> es : instanceDependencies.getEntrySet()) {
+      for (Map.Entry<ITestNGMethod, List<ITestNGMethod>> es : instanceDependencies.entrySet()) {
         for (ITestNGMethod dm : es.getValue()) {
           result.addEdge(dm, es.getKey());
         }
@@ -1135,7 +1135,7 @@ public class TestRunner
 
     ListMultiMap<ITestNGMethod, ITestNGMethod> result = Maps.newListMultiMap();
     Object previousInstance = null;
-    for (Map.Entry<Object, List<ITestNGMethod>> es : instanceMap.getEntrySet()) {
+    for (Map.Entry<Object, List<ITestNGMethod>> es : instanceMap.entrySet()) {
       if (previousInstance == null) {
         previousInstance = es.getKey();
       } else {

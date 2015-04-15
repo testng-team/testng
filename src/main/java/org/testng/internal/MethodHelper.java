@@ -6,9 +6,9 @@ import org.testng.annotations.IExpectedExceptionsAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.ITestOrConfiguration;
 import org.testng.collections.Lists;
+import org.testng.collections.Sets;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.Sets;
 import org.testng.internal.collections.Pair;
 
 import java.lang.reflect.Method;

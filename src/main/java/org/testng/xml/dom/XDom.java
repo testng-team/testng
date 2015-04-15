@@ -8,6 +8,7 @@ import javax.xml.xpath.XPathExpressionException;
 import org.testng.Assert;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 import org.testng.internal.collections.Pair;
 import org.testng.xml.XmlDefine;
 import org.testng.xml.XmlGroups;
@@ -76,7 +77,7 @@ public class XDom {
       IllegalAccessException, XPathExpressionException, SecurityException, IllegalArgumentException, NoSuchMethodException, InvocationTargetException {
     p("populateChildren: " + root.getLocalName());
     NodeList childNodes = root.getChildNodes();
-    ListMultiMap<String, Object> children = ListMultiMap.create();
+    ListMultiMap<String, Object> children = Maps.newListMultiMap();
     for (int i = 0; i < childNodes.getLength(); i++) {
       Node item = childNodes.item(i);
       if (item.getAttributes() != null) {
