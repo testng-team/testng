@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/juherr/testng.svg?branch=travis-ci)](https://travis-ci.org/juherr/testng)
+[![Build Status](https://travis-ci.org/cbeust/testng.svg)](https://travis-ci.org/cbeust/testng)
 
 Welcome to TestNG 6.8beta
 
