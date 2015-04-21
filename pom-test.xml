@@ -35,6 +35,10 @@
     <version>3</version>
   </parent>
 
+  <properties>
+    <testng.version>6.8.13</testng.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.ant</groupId>
@@ -72,7 +76,7 @@
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
-      <version>6.8.13</version>
+      <version>${testng.version}</version>
       <scope>test</scope>
     </dependency>
    </dependencies>
@@ -110,4 +114,16 @@
 
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <activation>
+        <property>
+          <name>env.TESTNG_VERSION</name>
+        </property>
+      </activation>
+      <properties>
+        <testng.version>${env.TESTNG_VERSION}</testng.version>
+      </properties>
+    </profile>
+  </profiles>
 </project>
