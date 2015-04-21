@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/cbeust/testng.svg)](https://travis-ci.org/cbeust/testng)
+
 Welcome to TestNG 6.8beta
 
 Please note that even though the .zip distribution contains the TestNG sources,

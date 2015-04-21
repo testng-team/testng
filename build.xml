@@ -327,8 +327,8 @@
   </target>
 
   <target name="update-readme">
-    <copy file="README.template" tofile="README" />
-    <replace file="README" token="${version}" value="${testng.version}" />
+    <copy file="README.template" tofile="README.md" />
+    <replace file="README.md" token="${version}" value="${testng.version}" />
     <touch file="TESTNG-${testng.version}" />
   </target>
       
