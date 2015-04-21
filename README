@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/juherr/testng.svg?branch=travis-ci)](https://travis-ci.org/juherr/testng)
+
 Welcome to TestNG 6.8beta
 
 Please note that even though the .zip distribution contains the TestNG sources,
