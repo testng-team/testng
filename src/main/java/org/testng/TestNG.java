@@ -812,7 +812,7 @@ public class TestNG {
 
       for (XmlSuite s : m_cmdlineSuites) {
         for (XmlTest t : s.getTests()) {
-          t.setPreserveOrder(m_preserveOrder ? "true " : "false");
+          t.setPreserveOrder(String.valueOf(m_preserveOrder));
         }
         m_suites.add(s);
         if (m_groupByInstances != null) {
