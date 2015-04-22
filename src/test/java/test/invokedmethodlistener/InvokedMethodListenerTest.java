@@ -69,7 +69,7 @@ public class InvokedMethodListenerTest extends SimpleBaseTest {
   }
 
   @Test(description = "Test methods with expected exceptions should show up as pass" +
-  		" in IInvokedMethodListener's afterInvocaiton method")
+  		" in IInvokedMethodListener's afterInvocation method")
   public void testMethodsWithExpectedExceptionsShouldShowUpAsPass() {
     TestNG tng = create(Sample2.class);
     Sample2.Sample2InvokedMethodListener l = new Sample2().new Sample2InvokedMethodListener();
