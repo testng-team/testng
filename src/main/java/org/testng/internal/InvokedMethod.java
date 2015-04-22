@@ -11,8 +11,6 @@ public class InvokedMethod implements Serializable, IInvokedMethod {
   transient private Object m_instance;
   private ITestNGMethod m_testMethod;
   private Object[] m_parameters;
-  private boolean m_isTest = true;
-  private boolean m_isConfigurationMethod = false;
   private long m_date = System.currentTimeMillis();
   private ITestResult m_testResult;
 
@@ -24,15 +22,11 @@ public class InvokedMethod implements Serializable, IInvokedMethod {
   public InvokedMethod(Object instance,
                        ITestNGMethod method,
                        Object[] parameters,
-                       boolean isTest,
-                       boolean isConfiguration,
                        long date,
                        ITestResult testResult) {
     m_instance = instance;
     m_testMethod = method;
     m_parameters = parameters;
-    m_isTest = isTest;
-    m_isConfigurationMethod = isConfiguration;
     m_date = date;
     m_testResult = testResult;
   }
