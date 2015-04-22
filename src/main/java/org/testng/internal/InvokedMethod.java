@@ -42,7 +42,7 @@ public class InvokedMethod implements Serializable, IInvokedMethod {
    */
   @Override
   public boolean isTestMethod() {
-    return m_isTest;
+    return m_testMethod.isTest();
   }
 
   @Override
@@ -61,7 +61,14 @@ public class InvokedMethod implements Serializable, IInvokedMethod {
    */
   @Override
   public boolean isConfigurationMethod() {
-    return m_isConfigurationMethod;
+    return m_testMethod.isBeforeMethodConfiguration() ||
+           m_testMethod.isAfterMethodConfiguration() ||
+           m_testMethod.isBeforeTestConfiguration() ||
+           m_testMethod.isAfterTestConfiguration() ||
+           m_testMethod.isBeforeClassConfiguration() ||
+           m_testMethod.isAfterClassConfiguration() ||
+           m_testMethod.isBeforeSuiteConfiguration() ||
+           m_testMethod.isAfterSuiteConfiguration();
   }
 
   /* (non-Javadoc)
