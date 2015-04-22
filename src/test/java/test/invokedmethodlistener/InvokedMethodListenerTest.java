@@ -2,6 +2,7 @@ package test.invokedmethodlistener;
 
 import org.testng.Assert;
 import org.testng.IInvokedMethod;
+import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -12,13 +13,15 @@ import java.util.List;
 
 public class InvokedMethodListenerTest extends SimpleBaseTest {
 
-  private void run(Class[] classes, MyListener l) {
+  private static void run(Class[] classes, IInvokedMethodListener l) {
     TestNG tng = create();
     tng.setTestClasses(classes);
 
     tng.addInvokedMethodListener(l);
     tng.run();
+  }
 
+  private static void assertMethodCount(MyListener l) {
     Assert.assertEquals(l.getBeforeCount(), 9);
     Assert.assertEquals(l.getAfterCount(), 9);
   }
@@ -26,13 +29,15 @@ public class InvokedMethodListenerTest extends SimpleBaseTest {
   @Test
   public void withSuccess() {
     MyListener l = new MyListener();
-    run(new Class[] { Success.class }, l);
+    run(new Class[]{Success.class}, l);
+    assertMethodCount(l);
   }
 
   @Test
   public void withFailure() {
     MyListener l = new MyListener();
     run(new Class[] { Failure.class }, l);
+    assertMethodCount(l);
     Assert.assertEquals(l.getSuiteStatus(), ITestResult.FAILURE);
     Assert.assertTrue(null != l.getSuiteThrowable());
     Assert.assertTrue(l.getSuiteThrowable().getClass() == RuntimeException.class);
@@ -72,5 +77,37 @@ public class InvokedMethodListenerTest extends SimpleBaseTest {
     tng.run();
 
     Assert.assertTrue(l.isSuccess);
+  }
+
+  @Test(description = "Invoked method does not recognize configuration method")
+  public void issue629_InvokedMethodDoesNotRecognizeConfigurationMethod() {
+    InvokedMethodNameListener l = new InvokedMethodNameListener();
+    run(new Class[]{Success.class}, l);
+
+    Assert.assertEquals(l.testMethods.size(), 1);
+    Assert.assertTrue(l.testMethods.contains("a"));
+
+    Assert.assertEquals(l.testMethodsFromTM.size(), 1);
+    Assert.assertTrue(l.testMethodsFromTM.contains("a"));
+
+    Assert.assertEquals(l.configurationMethods.size(), 8);
+    Assert.assertTrue(l.configurationMethods.contains("beforeMethod"));
+    Assert.assertTrue(l.configurationMethods.contains("afterMethod"));
+    Assert.assertTrue(l.configurationMethods.contains("beforeTest"));
+    Assert.assertTrue(l.configurationMethods.contains("afterTest"));
+    Assert.assertTrue(l.configurationMethods.contains("beforeClass"));
+    Assert.assertTrue(l.configurationMethods.contains("afterClass"));
+    Assert.assertTrue(l.configurationMethods.contains("beforeSuite"));
+    Assert.assertTrue(l.configurationMethods.contains("afterSuite"));
+
+    Assert.assertEquals(l.configurationMethodsFromTM.size(), 8);
+    Assert.assertTrue(l.configurationMethodsFromTM.contains("beforeMethod"));
+    Assert.assertTrue(l.configurationMethodsFromTM.contains("afterMethod"));
+    Assert.assertTrue(l.configurationMethodsFromTM.contains("beforeTest"));
+    Assert.assertTrue(l.configurationMethodsFromTM.contains("afterTest"));
+    Assert.assertTrue(l.configurationMethodsFromTM.contains("beforeClass"));
+    Assert.assertTrue(l.configurationMethodsFromTM.contains("afterClass"));
+    Assert.assertTrue(l.configurationMethodsFromTM.contains("beforeSuite"));
+    Assert.assertTrue(l.configurationMethodsFromTM.contains("afterSuite"));
   }
 }
