@@ -187,8 +187,6 @@ public class Invoker implements IInvoker {
           configurationAnnotation = AnnotationHelper.findConfiguration(m_annotationFinder, method);
 
           if (MethodHelper.isEnabled(configurationAnnotation)) {
-            boolean isClassConfiguration = isClassConfiguration(configurationAnnotation);
-            boolean isSuiteConfiguration = isSuiteConfiguration(configurationAnnotation);
             boolean alwaysRun= isAlwaysRun(configurationAnnotation);
 
             if (!confInvocationPassed(tm, currentTestMethod, testClass, instance) && !alwaysRun) {
@@ -213,7 +211,7 @@ public class Invoker implements IInvoker {
             runConfigurationListeners(testResult, true /* before */);
 
             invokeConfigurationMethod(newInstance, tm,
-              parameters, isClassConfiguration, isSuiteConfiguration, testResult);
+              parameters, testResult);
 
             // TODO: probably we should trigger the event for each instance???
             testResult.setEndMillis(System.currentTimeMillis());
@@ -261,34 +259,6 @@ public class Invoker implements IInvoker {
     recordConfigurationInvocationFailed(tm, testResult.getTestClass(), annotation, currentTestMethod, instance, suite);
     testResult.setStatus(ITestResult.SKIP);
     runConfigurationListeners(testResult, false /* after */);
-  }
-
-  /**
-   * Is the current <code>IConfiguration</code> a class-level method.
-   */
-  private  boolean isClassConfiguration(IConfigurationAnnotation configurationAnnotation) {
-    if (null == configurationAnnotation) {
-      return false;
-    }
-
-    boolean before = configurationAnnotation.getBeforeTestClass();
-    boolean after = configurationAnnotation.getAfterTestClass();
-
-    return before || after;
-  }
-
-  /**
-   * Is the current <code>IConfiguration</code> a suite level method.
-   */
-  private  boolean isSuiteConfiguration(IConfigurationAnnotation configurationAnnotation) {
-    if (null == configurationAnnotation) {
-      return false;
-    }
-
-    boolean before = configurationAnnotation.getBeforeSuite();
-    boolean after = configurationAnnotation.getAfterSuite();
-
-    return before || after;
   }
 
   /**
@@ -503,7 +473,6 @@ public class Invoker implements IInvoker {
    * @param targetInstance the instance to invoke the configuration method on
    * @param tm the configuration method
    * @param params the parameters needed for method invocation
-   * @param isClass flag if the configuration method is a class level method // FIXME: this looks like a missusage
    * @param testResult
    * @throws InvocationTargetException
    * @throws IllegalAccessException
@@ -511,8 +480,6 @@ public class Invoker implements IInvoker {
   private void invokeConfigurationMethod(Object targetInstance,
                                          ITestNGMethod tm,
                                          Object[] params,
-                                         boolean isClass,
-                                         boolean isSuite,
                                          ITestResult testResult)
     throws InvocationTargetException, IllegalAccessException
   {
@@ -523,8 +490,6 @@ public class Invoker implements IInvoker {
       InvokedMethod invokedMethod= new InvokedMethod(targetInstance,
                                           tm,
                                           params,
-                                          false, /* isTest */
-                                          isClass, /* ??? */
                                           System.currentTimeMillis(),
                                           testResult);
 
@@ -656,8 +621,6 @@ public class Invoker implements IInvoker {
       invokedMethod= new InvokedMethod(instance,
           tm,
           parameterValues,
-          true /* isTest */,
-          false /* isConfiguration */,
           System.currentTimeMillis(),
           testResult);
 

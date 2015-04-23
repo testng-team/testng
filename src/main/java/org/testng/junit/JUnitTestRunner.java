@@ -133,7 +133,7 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
       m_parentRunner.addPassedTest(tm, tr);
     }
 
-    InvokedMethod im = new InvokedMethod(test, tm, new Object[0], true, false, tri.m_start, tr);
+    InvokedMethod im = new InvokedMethod(test, tm, new Object[0], tri.m_start, tr);
     m_parentRunner.addInvokedMethod(im);
     m_methods.add(tm);
     for (IInvokedMethodListener l: m_invokedMethodListeners) {
