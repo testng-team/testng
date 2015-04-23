@@ -135,6 +135,28 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     Assert.assertEquals(tla.getPassedTests().size(), 1);
   }
 
+  @Test(description = "Test for issue #605")
+  public void verifyInvocationCountTransformer() {
+    TestNG tng = create();
+    tng.setTestClasses(new Class[] { AnnotationTransformerInvocationCountTest.class });
+    TestListenerAdapter tla = new TestListenerAdapter();
+    tng.addListener(tla);
+
+    tng.run();
+
+    Assert.assertEquals(tla.getPassedTests().size(), 3);
+
+    tng = create();
+    tng.setAnnotationTransformer(new AnnotationTransformerInvocationCountTest.InvocationCountTransformer(5));
+    tng.setTestClasses(new Class[]{AnnotationTransformerInvocationCountTest.class});
+    tla = new TestListenerAdapter();
+    tng.addListener(tla);
+
+    tng.run();
+
+    Assert.assertEquals(tla.getPassedTests().size(), 5);
+  }
+
   @Test
   public void annotationTransformerInXmlShouldBeRun() throws Exception {
     String xml = "<suite name=\"SingleSuite\" >" +
