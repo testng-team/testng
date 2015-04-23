@@ -430,6 +430,10 @@ public class XmlTest implements Serializable, Cloneable {
       m_timeOut = Long.toString(timeOut);
   }
 
+  private void setTimeOut(String timeOut) {
+      m_timeOut = timeOut;
+  }
+
   public void setExpression(String expression) {
     setBeanShellExpression(expression);
   }
@@ -651,6 +655,7 @@ public class XmlTest implements Serializable, Cloneable {
     result.setVerbose(getVerbose());
     result.setParameters(getLocalParameters());
     result.setXmlPackages(getXmlPackages());
+    result.setTimeOut(getTimeOut());
 
     Map<String, List<String>> metagroups = getMetaGroups();
     for (Map.Entry<String, List<String>> group: metagroups.entrySet()) {
