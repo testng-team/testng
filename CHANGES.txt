@@ -3,10 +3,26 @@ Added: GITHUB-631: Avoid the static limitation of external DataProvider. (Julien
 Added: GITHUB-631: Allow to use Guice injection in DataProvider. (Julien Herr)
 Added: Drop support of Java6 and previous.
 Added: GITHUB-617: Allow injection of org.testng.ITestContext into the guice parent module. (Julien Herr)
-Fixed: RetryAnalyzer loops endlessly. (Krishnan Mahadevan)
-Fixed: Start TestNG from jar cause recursive run of tests from packages in Suite XML without ".*" on the end (Stas Gromov)
+Fixed: GITHUB-606: RetryAnalyzer loops endlessly. (Krishnan Mahadevan)
+Fixed: GITHUB-618: Start TestNG from jar cause recursive run of tests from packages in Suite XML without ".*" on the end (Stas Gromov)
+Fixed: GITHUB-639: Typo on preserveOrder (tabei-k & Julien Herr)
+Fixed: GITHUB-632: Typo in doc (Pétur Ingi Egilsson & Julien Herr)
+Fixed: GITHUB-629: InvokedMethod doesn't recognize configuration method (Jan Mewes & Julien Herr)
+Fixed: GITHUB-615: XmlSuite, XmlTest: Time-out tag not preserved (jphollingworth & Julien Herr)
+New: GITHUB-638: Travis CI is used for continuous integration (Julien Herr)
+New: GITHUB-647: SonarQube is used to follow technical debt (Julien Herr)
+Added: GITHUB-616: org.testng.internal.Version will be always up-to-date (Julien Herr)
+Fixed: GITHUB-634: Review of the collections package (Julien Herr)
+Fixed: GITHUB-624: Fixed failure/error inversion in JUnitReportReporter (Jerome Jacob)
+Fixed: GITHUB-545: TestNG running JUnit tests but not reporting all results for parameterized tests (Jonathan Leitschuh & jdillet)
+Fixed: GITHUB-610: CustomizedSuites must be saved using utf-8 encoding (Juha Heljoranta)
+Fixed: GITHUB-602: NoClassDefFoundError in TestNGClassFinder.<init> (aanno)
+
+6.8.21:
+2015/02/02
 
 6.8.15:
+2015/01/14
 
 Fixed: OutOfMemoryException while generating reports.
 Fixed: GITHUB-566: Build does not fail when successPercentage for @Test is not met
