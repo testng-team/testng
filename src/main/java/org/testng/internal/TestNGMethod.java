@@ -43,7 +43,7 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
 
   private TestNGMethod(Method method, IAnnotationFinder finder, boolean initialize,
       XmlTest xmlTest, Object instance) {
-    super(method, finder, instance);
+    super(method.getName(), method, finder, instance);
 
     if(initialize) {
       init(xmlTest);
