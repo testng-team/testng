@@ -66,7 +66,7 @@
     <dependency>
       <groupId>com.beust</groupId>
       <artifactId>jcommander</artifactId>
-      <version>1.27</version>
+      <version>1.48</version>
     </dependency>
     <dependency>
         <groupId>org.yaml</groupId>
