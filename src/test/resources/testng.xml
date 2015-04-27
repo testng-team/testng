@@ -630,6 +630,7 @@
   <test name="MethodInterceptor">
     <classes>
       <class name="test.methodinterceptors.MethodInterceptorTest" />
+      <class name="test.methodinterceptors.multipleinterceptors.MultipleInterceptorsTest" />
     </classes>
   </test>
 

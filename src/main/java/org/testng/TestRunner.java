@@ -1,6 +1,7 @@
 package org.testng;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -140,11 +141,12 @@ public class TestRunner
   private String m_host;
 
   // Defined dynamically depending on <test preserve-order="true/false">
-  private transient IMethodInterceptor m_methodInterceptor;
+  transient private List<IMethodInterceptor> m_methodInterceptors;
 
   private transient ClassMethodMap m_classMethodMap;
   private transient TestNGClassFinder m_testClassFinder;
   private transient IConfiguration m_configuration;
+  private IMethodInterceptor builtinInterceptor;
 
   protected TestRunner(IConfiguration configuration,
                     ISuite suite,
@@ -183,9 +185,10 @@ public class TestRunner
     m_skipFailedInvocationCounts = skipFailedInvocationCounts;
     setVerbose(test.getVerbose());
 
+
     boolean preserveOrder = "true".equalsIgnoreCase(test.getPreserveOrder());
-    m_methodInterceptor = preserveOrder ? new PreserveOrderMethodInterceptor()
-        : new InstanceOrderingMethodInterceptor();
+    m_methodInterceptors = new ArrayList<IMethodInterceptor>();
+    builtinInterceptor = preserveOrder ? new PreserveOrderMethodInterceptor() : new InstanceOrderingMethodInterceptor();
 
     m_packageNamesFromXml= test.getXmlPackages();
     if(null != m_packageNamesFromXml) {
@@ -329,7 +332,7 @@ public class TestRunner
       }
 
       if (listener instanceof IMethodInterceptor) {
-        setMethodInterceptor((IMethodInterceptor) listener);
+        m_methodInterceptors.add((IMethodInterceptor) listener);
       }
       if (listener instanceof ISuiteListener) {
         m_suite.addListener((ISuiteListener) listener);
@@ -784,20 +787,24 @@ public class TestRunner
    * Apply the method interceptor (if applicable) to the list of methods.
    */
   private ITestNGMethod[] intercept(ITestNGMethod[] methods) {
-    if (m_methodInterceptor == null) return methods;
+    List<IMethodInstance> methodInstances = methodsToMethodInstances(Arrays.asList(methods));
 
-    IMethodInstance[] instances = methodsToMethodInstances(Arrays.asList(methods));
+    // add built-in interceptor (PreserveOrderMethodInterceptor or InstanceOrderingMethodInterceptor at the end of the list
+    m_methodInterceptors.add(builtinInterceptor);
+    for (IMethodInterceptor m_methodInterceptor : m_methodInterceptors) {
+      methodInstances = m_methodInterceptor.intercept(methodInstances, this);
+    }
 
-    List<IMethodInstance> resultInstances =
-        m_methodInterceptor.intercept(Arrays.asList(instances), this);
     List<ITestNGMethod> result = Lists.newArrayList();
-    for (IMethodInstance imi : resultInstances) {
+    for (IMethodInstance imi : methodInstances) {
       result.add(imi.getMethod());
     }
+    
     //Since an interceptor is involved, we would need to ensure that the ClassMethodMap object is in sync with the 
     //output of the interceptor, else @AfterClass doesn't get executed at all when interceptors are involved.
     //so let's update the current classMethodMap object with the list of methods obtained from the interceptor.
     this.m_classMethodMap = new ClassMethodMap(result, null);
+    
     return result.toArray(new ITestNGMethod[result.size()]);
   }
 
@@ -848,7 +855,10 @@ public class TestRunner
     //
     // Finally, sort the parallel methods by classes
     //
-    methodInstances = m_methodInterceptor.intercept(methodInstances, this);
+    for (IMethodInterceptor m_methodInterceptor : m_methodInterceptors) {
+      methodInstances = m_methodInterceptor.intercept(methodInstances, this);
+    }
+
     Map<String, String> params = m_xmlTest.getAllParameters();
 
     Set<Class<?>> processedClasses = Sets.newHashSet();
@@ -968,12 +978,11 @@ public class TestRunner
     return vResult;
   }
 
-  private MethodInstance[] methodsToMethodInstances(List<ITestNGMethod> sl) {
-    MethodInstance[] result = new MethodInstance[sl.size()];
-    for (int i = 0; i < result.length; i++) {
-      result[i] = new MethodInstance(sl.get(i));
-    }
-
+  private List<IMethodInstance> methodsToMethodInstances(List<ITestNGMethod> sl) {
+    List<IMethodInstance> result = new ArrayList<>();
+      for (ITestNGMethod iTestNGMethod : sl) {
+        result.add(new MethodInstance(iTestNGMethod));
+      }
     return result;
   }
 
@@ -1557,8 +1566,13 @@ public class TestRunner
     }
   }
 
-  public void setMethodInterceptor(IMethodInterceptor methodInterceptor) {
-    m_methodInterceptor = methodInterceptor;
+  @Deprecated
+  public void setMethodInterceptor(IMethodInterceptor methodInterceptor){
+    m_methodInterceptors.add(methodInterceptor);
+  }
+
+  public void addMethodInterceptor(IMethodInterceptor methodInterceptor){
+    m_methodInterceptors.add(methodInterceptor);
   }
 
   @Override
