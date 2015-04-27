@@ -181,7 +181,11 @@ public class TimeBombSkipException extends SkipException {
 
   private void initExpireDate(String date) {
     try {
-      Date d= m_inFormat.parse(date);
+      // SimpleDateFormat is not thread-safe, and m_inFormat 
+      // is, by default, connected to the static SDF variable
+      synchronized( m_inFormat ){
+        Date d= m_inFormat.parse(date);
+      }
       initExpireDate(d);
     }
     catch(ParseException pex) {
