@@ -184,9 +184,9 @@ public class TimeBombSkipException extends SkipException {
       // SimpleDateFormat is not thread-safe, and m_inFormat 
       // is, by default, connected to the static SDF variable
       synchronized( m_inFormat ){
-        Date d= m_inFormat.parse(date);
+        Date d = m_inFormat.parse(date);
+        initExpireDate(d);
       }
-      initExpireDate(d);
     }
     catch(ParseException pex) {
       throw new TestNGException("Cannot parse date:" + date + " using pattern: " + m_inFormat, pex);
