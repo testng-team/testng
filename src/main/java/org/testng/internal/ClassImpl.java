@@ -4,6 +4,7 @@ import static org.testng.internal.Utils.isStringNotEmpty;
 
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.google.inject.Stage;
 
 import org.testng.IClass;
 import org.testng.IModuleFactory;
@@ -144,9 +145,9 @@ public class ClassImpl implements IClass {
           throw new TestNGException("Cannot load parent Guice module class: " + parentModule);
         }
         Module module = newModule(parentModule);
-        injector = com.google.inject.Guice.createInjector(module);
+        injector = com.google.inject.Guice.createInjector(Stage.DEVELOPMENT, module);
       } else {
-        injector = com.google.inject.Guice.createInjector();
+        injector = com.google.inject.Guice.createInjector(Stage.DEVELOPMENT);
       }
       suite.setParentInjector(injector);
     }
