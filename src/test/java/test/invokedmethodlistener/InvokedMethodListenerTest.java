@@ -49,8 +49,9 @@ public class InvokedMethodListenerTest extends SimpleBaseTest {
 
   /**
    * Fix for:
-   * http://code.google.com/p/testng/issues/detail?id=7
-   * http://code.google.com/p/testng/issues/detail?id=86
+   * https://github.com/juherr/testng-googlecode/issues/7
+   * https://github.com/juherr/testng-googlecode/issues/86
+   * https://github.com/cbeust/testng/issues/93
    */
   @Test
   public void sameMethodInvokedMultipleTimesShouldHaveDifferentTimeStamps() {
@@ -58,13 +59,15 @@ public class InvokedMethodListenerTest extends SimpleBaseTest {
     tng.addListener(new InvokedMethodListener());
     tng.run();
     List<IInvokedMethod> m = InvokedMethodListener.m_methods;
-//    for (IInvokedMethod mm : m) {
-//      System.out.println(mm.getTestMethod().getMethodName() + " " + mm.getDate());
-//    }
-    IInvokedMethod after1 = m.get(1);
+    IInvokedMethod beforeSuite = m.get(0);
+    Assert.assertFalse(beforeSuite.getTestMethod().isAfterMethodConfiguration());
+    Assert.assertTrue(beforeSuite.isConfigurationMethod());
+    IInvokedMethod after1 = m.get(2);
     Assert.assertTrue(after1.getTestMethod().isAfterMethodConfiguration());
-    IInvokedMethod after2 = m.get(3);
+    Assert.assertTrue(after1.isConfigurationMethod());
+    IInvokedMethod after2 = m.get(4);
     Assert.assertTrue(after2.getTestMethod().isAfterMethodConfiguration());
+    Assert.assertTrue(after2.isConfigurationMethod());
     Assert.assertTrue(after1.getDate() != after2.getDate());
   }
 
