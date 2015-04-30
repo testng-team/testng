@@ -35,6 +35,10 @@ public class AnnotationHelper {
     return finder.findAnnotation(m, ITestAnnotation.class);
   }
 
+  public static ITestAnnotation findTest(IAnnotationFinder finder, ITestNGMethod m) {
+    return finder.findAnnotation(m, ITestAnnotation.class);
+  }
+
   public static IFactoryAnnotation findFactory(IAnnotationFinder finder, Method m) {
     return finder.findAnnotation(m, IFactoryAnnotation.class);
   }
