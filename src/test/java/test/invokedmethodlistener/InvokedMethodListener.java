@@ -9,7 +9,7 @@ import java.util.List;
 
 public class InvokedMethodListener implements IInvokedMethodListener {
 
-  public static List<IInvokedMethod> m_methods = Lists.newArrayList();
+  private final List<IInvokedMethod> m_methods = Lists.newArrayList();
 
   @Override
   public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
@@ -20,4 +20,7 @@ public class InvokedMethodListener implements IInvokedMethodListener {
   public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
   }
 
+  public List<IInvokedMethod> getInvokedMethods() {
+    return m_methods;
+  }
 }

@@ -17,7 +17,7 @@ import java.util.Map;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 abstract public class BaseClassFinder implements ITestClassFinder {
-  private Map<Class, IClass> m_classes = Maps.newHashMap();
+  private Map<Class, IClass> m_classes = Maps.newLinkedHashMap(); // Changed to reproduce issue #87 (order is important)
 
   @Override
   public IClass getIClass(Class cls) {
