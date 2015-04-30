@@ -1,7 +1,6 @@
 package test.enable;
 
 import org.testng.Assert;
-import org.testng.IInvokedMethod;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
