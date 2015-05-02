@@ -36,7 +36,7 @@
   </parent>
 
   <properties>
-    <testng.version>6.8.13</testng.version>
+    <testng.version>6.8.22-SNAPSHOT</testng.version>
   </properties>
 
   <dependencies>
