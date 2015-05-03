@@ -60,7 +60,6 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
   public void verifyAnnotationTransformerMethod() {
     TestNG tng = create(AnnotationTransformerSampleTest.class);
     tng.setPreserveOrder(true);
-    tng.setVerbose(10);
 
     MyTransformer transformer = new MyTransformer();
     tng.setAnnotationTransformer(transformer);
