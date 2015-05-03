@@ -124,7 +124,6 @@ public class InvokedMethodListenerTest extends SimpleBaseTest {
 
   private void assertIssue87(Class<?>... tests) {
     TestNG tng = create(tests);
-    tng.setVerbose(10);
     tng.setParallel("false");
     tng.setPreserveOrder(true);
     InvokedMethodListener listener = new InvokedMethodListener();
