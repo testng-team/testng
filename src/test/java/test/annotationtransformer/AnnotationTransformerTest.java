@@ -1,5 +1,6 @@
 package test.annotationtransformer;
 
+import org.assertj.core.api.iterable.Extractor;
 import org.testng.Assert;
 import org.testng.IAnnotationTransformer;
 import org.testng.ITestResult;
@@ -16,7 +17,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class AnnotationTransformerTest extends SimpleBaseTest {
+
+  private static final Extractor NAME_EXTRACTOR = new Extractor<ITestResult, String>() {
+    @Override
+    public String extract(ITestResult input) {
+      return input.getName();
+    }
+  };
 
   /**
    * Make sure that without a transformer in place, a class-level
@@ -24,16 +34,23 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
    */
   @Test
   public void verifyAnnotationWithoutTransformer() {
-    TestNG tng = new TestNG();
-    tng.setVerbose(0);
-    tng.setTestClasses(new Class[] { AnnotationTransformerClassInvocationSampleTest.class});
+    TestNG tng = create(AnnotationTransformerSampleTest.class);
+    tng.setPreserveOrder(true);
+
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
 
     tng.run();
 
-    List passed = tla.getPassedTests();
-    Assert.assertEquals(passed.size(), 6);
+    assertThat(tla.getPassedTests()).extracting(NAME_EXTRACTOR)
+        .containsExactly(
+            "five",
+            "four", "four", "four", "four", "four",
+            "three", "three", "three", "three", "three",
+            "two", "two"
+        );
+    assertThat(tla.getFailedTests()).extracting(NAME_EXTRACTOR)
+        .containsExactly("verify");
   }
 
   /**
@@ -41,17 +58,29 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
    */
   @Test
   public void verifyAnnotationTransformerMethod() {
-    TestNG tng = new TestNG();
-    tng.setVerbose(0);
-    tng.setAnnotationTransformer(new MyTransformer());
-    tng.setTestClasses(new Class[] { AnnotationTransformerSampleTest.class});
+    TestNG tng = create(AnnotationTransformerSampleTest.class);
+    tng.setPreserveOrder(true);
+    tng.setVerbose(10);
+
+    MyTransformer transformer = new MyTransformer();
+    tng.setAnnotationTransformer(transformer);
+
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
 
     tng.run();
 
-    List passed = tla.getPassedTests();
-    Assert.assertEquals(passed.size(), 15);
+    assertThat(transformer.getMethodNames()).contains("two", "three", "four", "five", "verify");
+
+    assertThat(tla.getPassedTests()).extracting(NAME_EXTRACTOR)
+        .containsExactly(
+            "five", "five", "five", "five", "five",
+            "four", "four", "four", "four",
+            "three", "three", "three",
+            "two", "two",
+            "verify"
+        );
+    assertThat(tla.getFailedTests()).isEmpty();
   }
 
   /**
