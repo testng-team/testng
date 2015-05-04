@@ -1,6 +1,13 @@
 package org.testng.internal.annotations;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Map;
+
 import org.testng.ITestNGMethod;
+import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
 import org.testng.annotations.IExpectedExceptionsAnnotation;
@@ -12,12 +19,6 @@ import org.testng.internal.TestNGMethod;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlTest;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Map;
-
 /**
  * Helper methods to find @Test and @Configuration tags.  They minimize
  * the amount of casting we need to do.
@@ -27,7 +28,7 @@ import java.util.Map;
  */
 public class AnnotationHelper {
 
-  public static ITestAnnotation findTest(IAnnotationFinder finder, Class cls) {
+  public static ITestAnnotation findTest(IAnnotationFinder finder, Class<?> cls) {
     return finder.findAnnotation(cls, ITestAnnotation.class);
   }
 
@@ -76,7 +77,7 @@ public class AnnotationHelper {
   }
 
   public static IConfigurationAnnotation findConfiguration(IAnnotationFinder finder, Method m) {
-    IConfigurationAnnotation result = (IConfigurationAnnotation) finder.findAnnotation(m, IConfigurationAnnotation.class);
+    IConfigurationAnnotation result = finder.findAnnotation(m, IConfigurationAnnotation.class);
     if (result == null) {
       IConfigurationAnnotation bs = (IConfigurationAnnotation) finder.findAnnotation(m, IBeforeSuite.class);
       IConfigurationAnnotation as = (IConfigurationAnnotation) finder.findAnnotation(m, IAfterSuite.class);
@@ -191,8 +192,9 @@ public class AnnotationHelper {
    * Delegation method for creating the list of <CODE>ITestMethod</CODE>s to be
    * analysed.
    */
-  public static ITestNGMethod[] findMethodsWithAnnotation(Class rootClass, Class annotationClass,
-        IAnnotationFinder annotationFinder, XmlTest xmlTest)
+  public static ITestNGMethod[] findMethodsWithAnnotation(Class<?> rootClass,
+      Class<? extends IAnnotation> annotationClass, IAnnotationFinder annotationFinder,
+      XmlTest xmlTest)
   {
     // Keep a map of the methods we saw so that we ignore a method in a superclass if it's
     // already been seen in a child class
@@ -201,7 +203,7 @@ public class AnnotationHelper {
     try {
       vResult = Maps.newHashMap();
 //    Class[] classes = rootClass.getTestClasses();
-      Class cls = rootClass;
+      Class<?> cls = rootClass;
 
       //
       // If the annotation is on the class or superclass, it applies to all public methods
@@ -212,7 +214,7 @@ public class AnnotationHelper {
       // Otherwise walk through all the methods and keep those
       // that have the annotation
       //
-//    for (Class cls : classes) {
+//    for (Class<?> cls : classes) {
         while (null != cls) {
           boolean hasClassAnnotation = isAnnotationPresent(annotationFinder, cls, annotationClass);
           Method[] methods = cls.getDeclaredMethods();
@@ -272,7 +274,7 @@ public class AnnotationHelper {
       return result;
     }
 
-  public static Annotation findAnnotationSuperClasses(Class annotationClass, Class c) {
+  public static Annotation findAnnotationSuperClasses(Class<?> annotationClass, Class c) {
     while (c != null) {
       Annotation result = c.getAnnotation(annotationClass);
       if (result != null) return result;
@@ -293,11 +295,13 @@ public class AnnotationHelper {
     return false;
   }
 
-  private static boolean isAnnotationPresent(IAnnotationFinder annotationFinder, Method m, Class annotationClass) {
+  private static boolean isAnnotationPresent(IAnnotationFinder annotationFinder, Method m,
+      Class<? extends IAnnotation> annotationClass) {
     return annotationFinder.findAnnotation(m, annotationClass) != null;
   }
 
-  private static boolean isAnnotationPresent(IAnnotationFinder annotationFinder, Class cls, Class annotationClass) {
+  private static boolean isAnnotationPresent(IAnnotationFinder annotationFinder, Class<?> cls,
+      Class<? extends IAnnotation> annotationClass) {
     return annotationFinder.findAnnotation(cls, annotationClass) != null;
   }
 
