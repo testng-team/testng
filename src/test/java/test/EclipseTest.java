@@ -14,6 +14,7 @@ public class EclipseTest {
 
   @Test
   public void xmlFileShouldBeRunAtItsPlaceAndNotCopied(ITestContext ctx) {
-    Assert.assertTrue(ctx.getSuite().getXmlSuite().getFileName().contains("src/test/resources"));
+    String fileName = ctx.getSuite().getXmlSuite().getFileName().replace("\\", "/");
+    Assert.assertTrue(fileName.contains("src/test/resources"));
   }
 }
