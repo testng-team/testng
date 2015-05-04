@@ -48,7 +48,9 @@ import org.testng.internal.collections.Pair;
  */
 public class JDK15AnnotationFinder implements IAnnotationFinder {
   private JDK15TagFactory m_tagFactory = new JDK15TagFactory();
-  private Map<Class<? extends IAnnotation>, Class<? extends Annotation>> m_annotationMap = Collections.synchronizedMap(Maps.<Class<? extends IAnnotation>, Class<? extends Annotation>>newHashMap());
+  private Map<Class<? extends IAnnotation>, Class<? extends Annotation>> m_annotationMap =
+      Collections.synchronizedMap(Maps.<Class<? extends IAnnotation>,
+          Class<? extends Annotation>>newHashMap());
   private IAnnotationTransformer m_transformer = null;
 
   @SuppressWarnings({"deprecation"})
@@ -74,16 +76,16 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     m_annotationMap.put(IListeners.class, Listeners.class);
   }
 
-  private <A extends Annotation> A findAnnotationInSuperClasses(Class cls, Class<A> a) {
+  private <A extends Annotation> A findAnnotationInSuperClasses(Class<?> cls, Class<A> a) {
     // Hack for @Listeners: we don't look in superclasses for this annotation
     // because inheritance of this annotation causes aggregation instead of
     // overriding
     if (a.equals(org.testng.annotations.Listeners.class)) {
-      return (A) cls.getAnnotation(a);
+      return cls.getAnnotation(a);
     }
     else {
       while (cls != null) {
-        A result = (A) cls.getAnnotation(a);
+        A result = cls.getAnnotation(a);
         if (result != null) {
           return result;
         } else {
