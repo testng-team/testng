@@ -1,10 +1,10 @@
 package org.testng.internal.annotations;
 
-import org.testng.ITestNGMethod;
-import org.testng.annotations.IAnnotation;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+
+import org.testng.ITestNGMethod;
+import org.testng.annotations.IAnnotation;
 
 
 /**
@@ -21,7 +21,7 @@ public interface IAnnotationFinder {
    * @param annotationClass
    * @return The annotation on the class or null if none found.
    */
-  public <A extends IAnnotation> A findAnnotation(Class cls, Class<A> annotationClass);
+  public <A extends IAnnotation> A findAnnotation(Class<?> cls, Class<A> annotationClass);
 
   /**
    * @param m
@@ -40,7 +40,7 @@ public interface IAnnotationFinder {
    * If not found, return the annotation on the declaring class.
    * If not found, return null.
    */
-  public <A extends IAnnotation> A findAnnotation(Constructor cons, Class<A> annotationClass);
+  public <A extends IAnnotation> A findAnnotation(Constructor<?> cons, Class<A> annotationClass);
 
   /**
    * @return true if the ith parameter of the given method has the annotation @TestInstance.
