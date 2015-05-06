@@ -28,6 +28,7 @@ Fixed: GITHUB-656: Upgrade to JCommander 1.48 (Ryan Schmitt)
 Fixed: GITHUB-582: TestNG tests don't pass reliably on JDK8 (Ryan Schmitt)
 New: GITHUB-645: TestNG project on Google Code redirect to GitHub
 Fixed: GITHUB-310: Upgrade Guice (kronar & Julien Herr)
+Fixed: GITHUB-87: @BeforeSuite/@BeforeTest methods happens to be disabled by mistake (romlom & Julien Herr)
 
 6.8.21:
 2015/02/02
