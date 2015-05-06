@@ -29,6 +29,7 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
   private static final long serialVersionUID = -1742868891986775307L;
   private int m_threadPoolSize = 0;
   private int m_invocationCount = 1;
+  private int m_totalInvocationCount = m_invocationCount;
   private int m_successPercentage = 100;
 
   /**
@@ -56,6 +57,11 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
   @Override
   public int getInvocationCount() {
     return m_invocationCount;
+  }
+
+  @Override
+  public int getTotalInvocationCount() {
+    return m_totalInvocationCount;
   }
 
   /**
@@ -96,6 +102,7 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
         m_successPercentage = testAnnotation.getSuccessPercentage();
 
         setInvocationCount(testAnnotation.getInvocationCount());
+        setTotalInvocationCount(testAnnotation.getInvocationCount());
         setThreadPoolSize(testAnnotation.getThreadPoolSize());
         setAlwaysRun(testAnnotation.getAlwaysRun());
         setDescription(findDescription(testAnnotation, xmlTest));
@@ -158,7 +165,12 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
     m_invocationCount= counter;
   }
 
-  /**
+  @Override
+  public void setTotalInvocationCount(int count) {
+    m_totalInvocationCount = count;
+  }
+
+    /**
    * Clones the current <code>TestNGMethod</code> and its @BeforeMethod and @AfterMethod methods.
    * @see org.testng.internal.BaseTestMethod#clone()
    */
@@ -185,6 +197,7 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
     clone.setEnabled(getEnabled());
     clone.setParameterInvocationCount(getParameterInvocationCount());
     clone.setInvocationCount(getInvocationCount());
+    clone.setTotalInvocationCount(getTotalInvocationCount());
     clone.m_successPercentage = getSuccessPercentage();
     clone.setTimeOut(getTimeOut());
     clone.setRetryAnalyzer(getRetryAnalyzer());
