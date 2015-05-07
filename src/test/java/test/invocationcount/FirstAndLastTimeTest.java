@@ -1,11 +1,14 @@
 package test.invocationcount;
 
-import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.util.List;
+
+import test.InvokedMethodNameListener;
+import test.SimpleBaseTest;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test various combination of @BeforeMethod(firstTimeOnly = true/false) and
@@ -14,72 +17,103 @@ import java.lang.reflect.Method;
  * @author cbeust@google.com
  *
  */
-public class FirstAndLastTimeTest {
+public class FirstAndLastTimeTest extends SimpleBaseTest {
   @Test
   public void verifyDataProviderFalseFalse() {
-    run(DataProviderFalseFalseTest.class, 3, 3);
+    List<String> invokedMethodNames = run(DataProviderFalseFalseTest.class);
+
+    assertThat(invokedMethodNames).containsExactly(
+        "beforeMethod", "f", "afterMethod",
+        "beforeMethod", "f", "afterMethod",
+        "beforeMethod", "f", "afterMethod"
+    );
   }
 
   @Test
   public void verifyDataProviderTrueFalse() {
-    run(DataProviderTrueFalseTest.class, 1, 3);
+    List<String> invokedMethodNames = run(DataProviderTrueFalseTest.class);
+
+    assertThat(invokedMethodNames).containsExactly(
+        "beforeMethod", "f", "afterMethod",
+        "f", "afterMethod",
+        "f", "afterMethod"
+    );
   }
 
   @Test
   public void verifyDataProviderFalseTrue() {
-    run(DataProviderFalseTrueTest.class, 3, 1);
+    List<String> invokedMethodNames = run(DataProviderFalseTrueTest.class);
+
+    assertThat(invokedMethodNames).containsExactly(
+        "beforeMethod", "f",
+        "beforeMethod", "f",
+        "beforeMethod", "f", "afterMethod"
+    );
   }
 
   @Test
   public void verifyDataProviderTrueTrue() {
-    run(DataProviderTrueTrueTest.class, 1, 1);
+    List<String> invokedMethodNames = run(DataProviderTrueTrueTest.class);
+
+    assertThat(invokedMethodNames).containsExactly(
+        "beforeMethod", "f",
+        "f",
+        "f", "afterMethod"
+    );
   }
 
   @Test
   public void verifyInvocationCountFalseFalse() {
-    run(InvocationCountFalseFalseTest.class, 3, 3);
+    List<String> invokedMethodNames = run(InvocationCountFalseFalseTest.class);
+
+    assertThat(invokedMethodNames).containsExactly(
+        "beforeMethod", "f", "afterMethod",
+        "beforeMethod", "f", "afterMethod",
+        "beforeMethod", "f", "afterMethod"
+    );
   }
 
   @Test
   public void verifyInvocationCountTrueFalse() {
-    run(InvocationCountTrueFalseTest.class, 1, 3);
+    List<String> invokedMethodNames = run(InvocationCountTrueFalseTest.class);
+
+    assertThat(invokedMethodNames).containsExactly(
+        "beforeMethod", "f", "afterMethod",
+        "f", "afterMethod",
+        "f", "afterMethod"
+    );
   }
 
   @Test
   public void verifyInvocationCountFalseTrue() {
-    run(InvocationCountFalseTrueTest.class, 3, 1);
+    List<String> invokedMethodNames = run(InvocationCountFalseTrueTest.class);
+
+    assertThat(invokedMethodNames).containsExactly(
+        "beforeMethod", "f",
+        "beforeMethod", "f",
+        "beforeMethod", "f", "afterMethod"
+    );
   }
 
   @Test
   public void verifyInvocationCountTrueTrue() {
-    run(InvocationCountTrueTrueTest.class, 1, 1);
+    List<String> invokedMethodNames = run(InvocationCountTrueTrueTest.class);
+
+    assertThat(invokedMethodNames).containsExactly(
+        "beforeMethod", "f",
+        "f",
+        "f", "afterMethod"
+    );
   }
 
-  private void run(Class cls, int expectedBefore, int expectedAfter) {
-    TestNG tng = new TestNG();
-    tng.setVerbose(0);
-    tng.setTestClasses(new Class[] { cls });
+  private static List<String> run(Class<?> cls) {
+    TestNG tng = create(cls);
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener(listener);
+
     tng.run();
 
-    try {
-      Method before = cls.getMethod("getBeforeCount", new Class[0]);
-      Integer beforeCount = (Integer) before.invoke(null, (Object[]) null);
-      Assert.assertEquals(beforeCount.intValue(), expectedBefore);
-
-      Method after = cls.getMethod("getAfterCount", new Class[0]);
-      Integer afterCount = (Integer) after.invoke(null, (Object[]) null);
-      Assert.assertEquals(afterCount.intValue(), expectedAfter);
-    } catch (SecurityException e) {
-      e.printStackTrace();
-    } catch (NoSuchMethodException e) {
-      e.printStackTrace();
-    } catch (IllegalArgumentException e) {
-      e.printStackTrace();
-    } catch (IllegalAccessException e) {
-      e.printStackTrace();
-    } catch (InvocationTargetException e) {
-      e.printStackTrace();
-    }
+    return listener.getInvokedMethodNames();
   }
 
 }
