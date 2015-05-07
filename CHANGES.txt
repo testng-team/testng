@@ -30,6 +30,7 @@ New: GITHUB-645: TestNG project on Google Code redirect to GitHub
 Fixed: GITHUB-310: Upgrade Guice (kronar & Julien Herr)
 Fixed: GITHUB-87: @BeforeSuite/@BeforeTest methods happens to be disabled by mistake (romlom & Julien Herr)
 Fixed: GITHUB-425: Wrong invocation order with lastTimeOnly (Rafael Winterhalter & Julien Herr)
+Fixed: GITHUB-465: assertEquals(Collection, Collection) prints "null" when collections are different sizes (Michael Diamond)
 
 6.8.21:
 2015/02/02
