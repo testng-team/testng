@@ -105,6 +105,11 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
+  public int getTotalInvocationCount() {
+    return 1;
+  }
+
+  @Override
   public long getInvocationTimeOut() {
     return m_method.getInvocationTimeOut();
   }
