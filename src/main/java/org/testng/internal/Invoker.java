@@ -1481,7 +1481,7 @@ public class Invoker implements IInvoker {
       return true;
     } else {
       final String message = ite.getMessage();
-      return message != null && Pattern.matches(messageRegExp, message);
+      return message != null && Pattern.compile(messageRegExp, Pattern.DOTALL).matcher(ite.getMessage()).matches();
     }
   }
 
