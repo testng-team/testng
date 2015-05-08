@@ -112,13 +112,15 @@ public class Assert {
     if((expected == null) && (actual == null)) {
       return;
     }
-    if(expected != null) {
-      if (expected.getClass().isArray()) {
-        assertArrayEquals(actual, expected, message);
-        return;
-      } else if (expected.equals(actual)) {
-        return;
-      }
+    if(expected == null ^ actual == null) {
+      failNotEquals(actual, expected, message);
+    }
+    if (expected.getClass().isArray()) {
+       assertArrayEquals(actual, expected, message);
+       return;
+    }
+    if (expected.equals(actual) && actual.equals(expected)) {
+       return;
     }
     failNotEquals(actual, expected, message);
   }
