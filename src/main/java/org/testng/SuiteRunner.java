@@ -239,6 +239,11 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     return m_suite.getParentModule();
   }
 
+  @Override
+  public String getGuiceStage() {
+    return m_suite.getGuiceStage();
+  }
+
   public Injector getParentInjector() {
     return m_parentInjector;
   }
