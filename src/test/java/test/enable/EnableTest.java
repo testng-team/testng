@@ -8,6 +8,8 @@ import java.util.List;
 
 import test.SimpleBaseTest;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class EnableTest extends SimpleBaseTest {
 
   @Test
@@ -39,5 +41,17 @@ public class EnableTest extends SimpleBaseTest {
     Assert.assertEquals(invokedMethods.get(17), "testC2");
     Assert.assertEquals(invokedMethods.get(18), "testC3");
     Assert.assertEquals(invokedMethods.size(), 19);
+  }
+
+  @Test(description = "https://github.com/cbeust/testng/issues/420")
+  public void issue420() {
+    TestNG tng = create(Issue420FirstSample.class, Issue420SecondSample.class);
+    InvokedMethodListener listener = new InvokedMethodListener();
+    tng.addListener(listener);
+    tng.run();
+
+    assertThat(listener.getInvokedMethods()).containsExactly(
+        "initEnvironment", "verifySomethingFirstSample", "verifySomethingSecondSample"
+    );
   }
 }
