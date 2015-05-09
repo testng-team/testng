@@ -16,3 +16,4 @@ src/test/java/test/ignore
 testng.iml
 .ant-targets*
 nb-configuration.xml
+/_eclipse/
