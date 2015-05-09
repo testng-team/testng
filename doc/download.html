@@ -3,8 +3,13 @@
         <title>TestNG - Download Current Release and Beta Versions</title>
         <script type="text/javascript" src="banner.js"></script>
         <link rel="stylesheet" href="testng.css" type="text/css" />
+		<script type="text/javascript" src="http://beust.com/prettify.js"></script>
+		<script type="text/javascript" src="http://beust.com/scripts/shCore.js"></script>
+		<script type="text/javascript" src="http://beust.com/scripts/shBrushPlain.js"></script>
+		<script type="text/javascript" src="http://beust.com/scripts/shBrushXml.js"></script>
+		<script type="text/javascript" src="http://beust.com/scripts/shBrushJava.js"></script>
       </head>
-<body>
+<body onload="prettyPrint()">
 
 <script type="text/javascript">
     displayMenu("download.html")
@@ -17,15 +22,13 @@
 
 <h4>Maven</h4>
 
-<pre class="brush:xml">
-
+<pre class="brush: xml">
     &lt;repositories&gt;
       &lt;repository&gt;
         &lt;id&gt;central&lt;/id&gt;
         &lt;name&gt;bintray&lt;/name&gt;
         &lt;url&gt;http://jcenter.bintray.com&lt;/url&gt;
-        &lt;/repository&gt;
-      &lt;/repositories&gt;
+      &lt;/repository&gt;
     &lt;/repositories&gt;
 
     &lt;dependency&gt;
@@ -38,7 +41,7 @@
 
 <h4>Gradle</h4>
 
-<pre class="brush:xml">
+<pre class="brush: java">
 repositories {
     jcenter()
 }
@@ -52,7 +55,7 @@ dependencies {
 <h4>Eclipse plug-in</h4>
 <p>You can use either the Eclipse Market Place or the update site:</p>
 <ul>
-	<li>Select<i> Help / Software updates / Find and Install.</i> 
+	<li>Select<i> Help / Install new software.</i> 
 	</li>
 	<li><i>Search for new features to install.</i> 
 	</li>
