@@ -36,7 +36,7 @@
   </parent>
 
   <properties>
-    <testng.version>6.8.13</testng.version>
+    <testng.version>6.8.22-SNAPSHOT</testng.version>
   </properties>
 
   <dependencies>
@@ -78,6 +78,12 @@
       <artifactId>testng</artifactId>
       <version>${testng.version}</version>
       <scope>test</scope>
+    </dependency>
+      <dependency>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>2.0.0</version>
+        <scope>test</scope>
     </dependency>
    </dependencies>
     

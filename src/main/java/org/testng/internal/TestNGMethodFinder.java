@@ -1,6 +1,10 @@
 package org.testng.internal;
 
 
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Set;
+
 import org.testng.ITestMethodFinder;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.IConfigurationAnnotation;
@@ -9,10 +13,6 @@ import org.testng.collections.Lists;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
-
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Set;
 
 /**
  * The default strategy for finding test methods:  look up
@@ -36,15 +36,14 @@ public class TestNGMethodFinder implements ITestMethodFinder {
   private RunInfo m_runInfo = null;
   private IAnnotationFinder m_annotationFinder = null;
 
-  public TestNGMethodFinder(RunInfo runInfo,
-                            IAnnotationFinder annotationFinder)
+  public TestNGMethodFinder(RunInfo runInfo, IAnnotationFinder annotationFinder)
   {
     m_runInfo = runInfo;
     m_annotationFinder = annotationFinder;
   }
 
   @Override
-  public ITestNGMethod[] getTestMethods(Class clazz, XmlTest xmlTest) {
+  public ITestNGMethod[] getTestMethods(Class<?> clazz, XmlTest xmlTest) {
     return AnnotationHelper.findMethodsWithAnnotation(
         clazz, ITestAnnotation.class, m_annotationFinder, xmlTest);
   }

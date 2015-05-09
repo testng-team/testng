@@ -17,7 +17,7 @@ public class ExpectedExceptionsTest extends BaseTest {
   @Test
   public void expectedExceptions() {
     runTest("test.expectedexceptions.SampleExceptions2",
-        new String[] { "shouldPass", "shouldPass2", "shouldPass3" },
+        new String[] { "shouldPass", "shouldPass2", "shouldPass3", "shouldPass4" },
         new String[] { "shouldFail1", "shouldFail2", "shouldFail3", "shouldFail4" },
         new String[] {});
   }

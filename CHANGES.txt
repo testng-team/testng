@@ -27,6 +27,10 @@ Fixed: GITHUB-353: Typo in documentation (Jan Święcki)
 Fixed: GITHUB-656: Upgrade to JCommander 1.48 (Ryan Schmitt)
 Fixed: GITHUB-582: TestNG tests don't pass reliably on JDK8 (Ryan Schmitt)
 New: GITHUB-645: TestNG project on Google Code redirect to GitHub
+Fixed: GITHUB-310: Upgrade Guice (kronar & Julien Herr)
+Fixed: GITHUB-87: @BeforeSuite/@BeforeTest methods happens to be disabled by mistake (romlom & Julien Herr)
+Fixed: GITHUB-425: Wrong invocation order with lastTimeOnly (Rafael Winterhalter & Julien Herr)
+Fixed: GITHUB-417: Expected Exceptions Message fails to match multi-line messages (Michael Diamond)
 New: GITHUB-663: Add Guice Stage configuration for a suite (Clément Guillaume)
 
 6.8.21:

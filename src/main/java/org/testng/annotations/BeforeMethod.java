@@ -59,12 +59,12 @@ public @interface BeforeMethod {
 
   /**
    * The description for this method.  The string used will appear in the
-   * HTML report and also on standard output if verbose >= 2.
+   * HTML report and also on standard output if verbose &gt;= 2.
    */
   public String description() default "";
 
   /**
-   * If true and the @Test method about to be run has an invocationCount > 1, this
+   * If true and the @Test method about to be run has an invocationCount &gt; 1, this
    * BeforeMethod will only be invoked once (before the first test invocation).
    */
   public boolean firstTimeOnly() default false;

@@ -630,6 +630,7 @@
   <test name="MethodInterceptor">
     <classes>
       <class name="test.methodinterceptors.MethodInterceptorTest" />
+      <class name="test.methodinterceptors.Issue392Test" />
     </classes>
   </test>
 
@@ -740,5 +741,10 @@
     </classes>
   </test>
 
+  <test name="@Test(enable)">
+    <classes>
+      <class name="test.enable.EnableTest"/>
+    </classes>
+  </test>
 </suite>
 

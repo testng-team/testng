@@ -406,6 +406,11 @@ public class MethodInstanceTest {
     }
 
     @Override
+    public int getTotalInvocationCount() {
+      return 0;
+    }
+
+    @Override
     public void setInvocationCount(int count) {
     }
 

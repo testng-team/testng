@@ -64,7 +64,7 @@ public class MethodGroupsHelper {
         	}
         }
         else {
-          in = MethodGroupsHelper.includeMethod(AnnotationHelper.findTest(finder, m),
+          in = MethodGroupsHelper.includeMethod(AnnotationHelper.findTest(finder, tm),
               runInfo, tm, forTests, unique, outIncludedMethods);
         }
       }
