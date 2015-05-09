@@ -146,7 +146,6 @@ public class ClassImpl implements IClass {
       } else {
         stage = Stage.DEVELOPMENT;
       }
-      System.out.println(stage);
       if (m_hasParentModule) {
         Class<Module> parentModule = (Class<Module>) ClassHelper.forName(suite.getParentModule());
         if (parentModule == null) {
