@@ -70,7 +70,16 @@
         <version>2.7</version>
         <configuration>
           <excludePackageNames>*.internal</excludePackageNames>
+          <failOnError>false</failOnError>
         </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 <!-- 
           <plugin>
