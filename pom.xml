@@ -45,107 +45,6 @@
     </repository>
   </distributionManagement>
 
-  <profiles>
-
-    <!-- bintray profile -->
-
-    <profile>
-      <id>bintray</id>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-source-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>attach-sources</id>
-                <goals>
-                  <goal>jar</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.7</version>
-        <configuration>
-          <excludePackageNames>*.internal</excludePackageNames>
-          <failOnError>false</failOnError>
-        </configuration>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-<!-- 
-          <plugin>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>attach-javadocs</id>
-                <goals>
-                  <goal>jar</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
- -->
-          </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <!-- When activated, download dependencies from the snapshot repo -->
-      <id>snapshot</id>
-
-      <repositories>
-        <repository>
-          <id>nexus-snapshot-repository</id>
-          <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </repository>
-      </repositories>
-
-      <dependencies>
-        <dependency>
-            <groupId>org.apache.ant</groupId>
-            <artifactId>ant</artifactId>
-            <version>1.7.0</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.beanshell</groupId>
-            <artifactId>bsh</artifactId>
-            <version>2.0b4</version>
-<!--
-            <scope>provided</scope>
--->
-        </dependency>
-        <dependency>
-          <groupId>com.google.inject</groupId>
-           <artifactId>guice</artifactId>
-           <version>2.0</version>
-           <scope>provided</scope>
-        </dependency>
-        <dependency>
-          <groupId>com.beust</groupId>
-          <artifactId>jcommander</artifactId>
-          <version>1.48</version>
-        </dependency>
-      </dependencies>
-      
-    </profile>
-  </profiles>
-
   <dependencies>
     <dependency>
       <groupId>org.apache.ant</groupId>
@@ -228,6 +127,25 @@
           <releaseProfiles>release</releaseProfiles>
           <autoVersionSubmodules>true</autoVersionSubmodules>
         </configuration>
+      </plugin>
+
+      <!-- Generating Javadoc -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.10.3</version>
+        <configuration>
+          <failOnError>false</failOnError>
+          <excludePackageNames>*internal</excludePackageNames>
+         </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+        </executions>
       </plugin>
 
       <!-- Bundle sources -->
@@ -336,16 +254,6 @@
         </configuration>
       </plugin>
 
-      <!-- Generating Javadoc -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.7</version>
-        <configuration>
-          <excludePackageNames>*.internal</excludePackageNames>
-        </configuration>
-      </plugin>
-
       <!-- Tests (skipping) -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -375,4 +283,107 @@
     </plugins>
 
   </build>
+
+
+  <profiles>
+
+    <!-- bintray profile -->
+
+    <profile>
+      <id>bintray</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>2.10.3</version>
+            <configuration>
+              <failOnError>false</failOnError>
+              <excludePackageNames>*internal</excludePackageNames>
+             </configuration>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                  <goals>
+                    <goal>jar</goal>
+                  </goals>
+                </execution>
+            </executions>
+          </plugin>
+<!-- 
+          <plugin>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+ -->
+          </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <!-- When activated, download dependencies from the snapshot repo -->
+      <id>snapshot</id>
+
+      <repositories>
+        <repository>
+          <id>nexus-snapshot-repository</id>
+          <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+      </repositories>
+
+      <dependencies>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.7.0</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.beanshell</groupId>
+            <artifactId>bsh</artifactId>
+            <version>2.0b4</version>
+<!--
+            <scope>provided</scope>
+-->
+        </dependency>
+        <dependency>
+          <groupId>com.google.inject</groupId>
+           <artifactId>guice</artifactId>
+           <version>2.0</version>
+           <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>com.beust</groupId>
+          <artifactId>jcommander</artifactId>
+          <version>1.48</version>
+        </dependency>
+      </dependencies>
+      
+    </profile>
+  </profiles>
+
 </project>
