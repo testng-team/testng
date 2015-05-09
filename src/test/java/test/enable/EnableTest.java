@@ -48,6 +48,7 @@ public class EnableTest extends SimpleBaseTest {
     TestNG tng = create(Issue420FirstSample.class, Issue420SecondSample.class);
     InvokedMethodListener listener = new InvokedMethodListener();
     tng.addListener(listener);
+    tng.setVerbose(10);
     tng.run();
 
     assertThat(listener.getInvokedMethods()).containsExactly(
