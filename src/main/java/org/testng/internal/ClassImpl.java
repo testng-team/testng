@@ -139,15 +139,23 @@ public class ClassImpl implements IClass {
     // Reuse the previous parent injector, if any
     Injector injector = suite.getParentInjector();
     if (injector == null) {
+      String stageString = suite.getGuiceStage();
+      Stage stage;
+      if (isStringNotEmpty(stageString)) {
+        stage = Stage.valueOf(stageString);
+      } else {
+        stage = Stage.DEVELOPMENT;
+      }
+      System.out.println(stage);
       if (m_hasParentModule) {
         Class<Module> parentModule = (Class<Module>) ClassHelper.forName(suite.getParentModule());
         if (parentModule == null) {
           throw new TestNGException("Cannot load parent Guice module class: " + parentModule);
         }
         Module module = newModule(parentModule);
-        injector = com.google.inject.Guice.createInjector(Stage.DEVELOPMENT, module);
+        injector = com.google.inject.Guice.createInjector(stage, module);
       } else {
-        injector = com.google.inject.Guice.createInjector(Stage.DEVELOPMENT);
+        injector = com.google.inject.Guice.createInjector(stage);
       }
       suite.setParentInjector(injector);
     }
