@@ -164,6 +164,10 @@ public class TestNGContentHandler extends DefaultHandler {
       if (parentModule != null) {
         m_currentSuite.setParentModule(parentModule);
       }
+      String guiceStage = attributes.getValue("guice-stage");
+      if (guiceStage != null) {
+        m_currentSuite.setGuiceStage(guiceStage);
+      }
       String configFailurePolicy = attributes.getValue("configfailurepolicy");
       if (null != configFailurePolicy) {
         if (XmlSuite.SKIP.equals(configFailurePolicy) || XmlSuite.CONTINUE.equals(configFailurePolicy)) {

@@ -115,6 +115,7 @@ public class SuiteDispatcher
 						tmpSuite.setName("Temporary suite for " + test.getName());
 						tmpSuite.setParallel(suite.getParallel());
 						tmpSuite.setParentModule(suite.getParentModule());
+						tmpSuite.setGuiceStage(suite.getGuiceStage());
 						tmpSuite.setParameters(suite.getParameters());
 						tmpSuite.setThreadCount(suite.getThreadCount());
             tmpSuite.setDataProviderThreadCount(suite.getDataProviderThreadCount());
