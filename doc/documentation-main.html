@@ -2229,7 +2229,7 @@ Your factory will be passed an instance of the test context and the test class t
 
 You will get even more flexibility and Guice power with <tt>parent-module</tt> and <tt>guice-stage</tt> suite parameters.
 <tt>guice-stage</tt> allow you to chose the <a href="https://github.com/google/guice/wiki/Bootstrap"><tt>Stage</tt></a> used to create the parent injector.
-The default one is <tt>DEVELOPMENT</tt>.
+The default one is <tt>DEVELOPMENT</tt>. Other allowed values are <tt>PRODUCTION</tt> and <tt>TOOL</tt>.
 Here is how you can define parent-module in your test.xml file:
 
 <pre class="brush: xml">
