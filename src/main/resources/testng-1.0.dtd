@@ -65,7 +65,7 @@ Cedric Beust & Alexandru Popescu
     verbose CDATA #IMPLIED
     parallel (false | methods | tests | classes | instances) "false"
     parent-module CDATA #IMPLIED
-    guice-stage (DEVELOPMENT | PRODUCTION | TOOL) #IMPLIED
+    guice-stage (DEVELOPMENT | PRODUCTION | TOOL) "DEVELOPMENT"
     configfailurepolicy (skip | continue) "skip"
     thread-count CDATA "5"
     annotations CDATA #IMPLIED
