@@ -1,8 +1,8 @@
 package org.testng.asserts;
 
-public interface IAssert {
+public interface IAssert<T> {
   String getMessage();
   void doAssert();
-  Object getActual();
-  Object getExpected();
+  T getActual();
+  T getExpected();
 }
