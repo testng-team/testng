@@ -12,7 +12,7 @@ plugins {
     id "com.jfrog.bintray" version "1.1"
 }
 
-version = '6.9.48-SNAPSHOT'
+version = '6.9.5-SNAPSHOT'
 
 apply plugin: 'java'
 apply from: 'gradle/publishing.gradle'
@@ -45,14 +45,20 @@ task sourceJar(type: Jar) {
 }
 
 artifacts {
-//    file('build/libs/klaxon.jar')
     sourceJar
 }
 
 import org.apache.tools.ant.filters.ReplaceTokens
 
+def generatedSourcesFolder = projectDir.toString() + '/src/generated/java'
+
+def dirFrom = projectDir.toString() + '/src/main/resources/org/testng/internal'
+def dirTo = generatedSourcesFolder + "/org/testng/internal"
+def fileFrom = 'VersionTemplateJava'
+def fileTo = 'Version.java'
+
 task removeVersion {
-    delete 'src/main/java/org/testng/internal/Version.java'
+    delete dirTo + fileTo
 }
 
 sourceSets {
@@ -73,36 +79,21 @@ sourceSets {
     }
 }
 
-sourceSets.each { s ->
-    println("Source set: ${s}")
-}
-
-def generatedSourcesFolder = projectDir.toString() + '/src/generated/java'
-
-def dirFrom = projectDir.toString() + '/src/main/resources/org/testng/internal'
-def dirTo = generatedSourcesFolder + "/org/testng/internal"
-def fileTemplate = 'VersionTemplateJava'
-
 gradle.projectsEvaluated {
     compileJava.dependsOn(myDir)
 }
 
 task myDir {
-    delete dirTo + "/Version.java"
-//    doLast {
-        println("@@@ MKDIR " + dirTo)
-        mkdir(dirTo)
-//    }
+    delete dirTo + "/" + fileTo
+    mkdir(dirTo)
 }
 
 task createVersion(type: Copy, dependsOn: myDir) {
     println("Creating Version file: ${version} in ${dirTo}")
-    println("FROM " + dirFrom + "/" + fileTemplate)
-    println("TO " + dirTo + "/Version.java")
     from dirFrom
-    include fileTemplate
+    include fileFrom
     into(dirTo)
-    rename(fileTemplate, 'Version.java')
+    rename(fileFrom, fileTo)
     filter(ReplaceTokens, tokens: [version: version])
 }
 
