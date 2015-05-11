@@ -17,3 +17,7 @@ testng.iml
 .ant-targets*
 nb-configuration.xml
 /_eclipse/
+.gitignore
+.gradle
+src/generated
+

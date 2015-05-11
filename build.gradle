@@ -12,7 +12,7 @@ plugins {
     id "com.jfrog.bintray" version "1.1"
 }
 
-version = '6.9.47-SNAPSHOT'
+version = '6.9.48-SNAPSHOT'
 
 apply plugin: 'java'
 apply from: 'gradle/publishing.gradle'
@@ -55,18 +55,23 @@ task removeVersion {
     delete 'src/main/java/org/testng/internal/Version.java'
 }
 
+sourceSets {
+    generated {
+        java {
+            srcDir 'src/generated/java'
+        }
+        resources {
+            srcDir 'src/generated/resources'
+        }
+    }
+}
 
-//sourceSets {
-//    generated
-//}
-//
-//sourceSets {
-//    generated {
-//        java {
-//            srcDir 'src/generated/java'
-//        }
-//    }
-//}
+sourceSets {
+    main {
+        compileClasspath += generated.output
+        runtimeClasspath += generated.output
+    }
+}
 
 sourceSets.each { s ->
     println("Source set: ${s}")
@@ -77,6 +82,10 @@ def generatedSourcesFolder = projectDir.toString() + '/src/generated/java'
 def dirFrom = projectDir.toString() + '/src/main/resources/org/testng/internal'
 def dirTo = generatedSourcesFolder + "/org/testng/internal"
 def fileTemplate = 'VersionTemplateJava'
+
+gradle.projectsEvaluated {
+    compileJava.dependsOn(myDir)
+}
 
 task myDir {
     delete dirTo + "/Version.java"
@@ -95,7 +104,12 @@ task createVersion(type: Copy, dependsOn: myDir) {
     into(dirTo)
     rename(fileTemplate, 'Version.java')
     filter(ReplaceTokens, tokens: [version: version])
-//    expand project.properties
-//    filter(FixCrLfFilter)
-//    filter()
+}
+
+compileJava.dependsOn(createVersion)
+
+test {
+    useTestNG() {
+        suites 'src/test/resources/testng.xml'
+    }
 }
