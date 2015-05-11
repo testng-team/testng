@@ -1,0 +1,101 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven {
+            url 'http://dl.bintray.com/cbeust/maven'
+        }        
+    }
+}
+
+plugins {
+    id "com.jfrog.bintray" version "1.1"
+}
+
+version = '6.9.47-SNAPSHOT'
+
+apply plugin: 'java'
+apply from: 'gradle/publishing.gradle'
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven {
+        url 'http://dl.bintray.com/cbeust/maven'
+    }
+}
+
+dependencies {
+    compile 'org.apache.ant:ant:1.7.0'
+    compile 'junit:junit:4.10'
+    compile 'org.beanshell:bsh:2.0b4'
+    compile 'com.google.inject:guice:4.0:no_aop'
+    compile 'com.beust:jcommander:1.48'
+    compile 'org.yaml:snakeyaml:1.12'
+
+    testCompile 'org.assertj:assertj-core:2.0.0'
+    testCompile 'org.testng:testng:6.9.4'
+}
+
+task sourceJar(type: Jar) {
+    group 'Build'
+    description 'An archive of the source code'
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+//    file('build/libs/klaxon.jar')
+    sourceJar
+}
+
+import org.apache.tools.ant.filters.ReplaceTokens
+
+task removeVersion {
+    delete 'src/main/java/org/testng/internal/Version.java'
+}
+
+
+//sourceSets {
+//    generated
+//}
+//
+//sourceSets {
+//    generated {
+//        java {
+//            srcDir 'src/generated/java'
+//        }
+//    }
+//}
+
+sourceSets.each { s ->
+    println("Source set: ${s}")
+}
+
+def generatedSourcesFolder = projectDir.toString() + '/src/generated/java'
+
+def dirFrom = projectDir.toString() + '/src/main/resources/org/testng/internal'
+def dirTo = generatedSourcesFolder + "/org/testng/internal"
+def fileTemplate = 'VersionTemplateJava'
+
+task myDir {
+    delete dirTo + "/Version.java"
+//    doLast {
+        println("@@@ MKDIR " + dirTo)
+        mkdir(dirTo)
+//    }
+}
+
+task createVersion(type: Copy, dependsOn: myDir) {
+    println("Creating Version file: ${version} in ${dirTo}")
+    println("FROM " + dirFrom + "/" + fileTemplate)
+    println("TO " + dirTo + "/Version.java")
+    from dirFrom
+    include fileTemplate
+    into(dirTo)
+    rename(fileTemplate, 'Version.java')
+    filter(ReplaceTokens, tokens: [version: version])
+//    expand project.properties
+//    filter(FixCrLfFilter)
+//    filter()
+}
