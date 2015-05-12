@@ -27,20 +27,22 @@ public class EnableTest extends SimpleBaseTest {
     Assert.assertEquals(invokedMethods.get(3), "beforeSuiteNoRunA2");
     Assert.assertEquals(invokedMethods.get(4), "beforeSuiteRunA");
     Assert.assertEquals(invokedMethods.get(5), "beforeSuiteRunA2");
-    Assert.assertEquals(invokedMethods.get(6), "beforeSuiteC");
-    Assert.assertEquals(invokedMethods.get(7), "beforeSuiteC2");
-    Assert.assertEquals(invokedMethods.get(8), "beforeSuiteNoRunC");
-    Assert.assertEquals(invokedMethods.get(9), "beforeSuiteNoRunC2");
-    Assert.assertEquals(invokedMethods.get(10), "beforeSuiteRunC");
-    Assert.assertEquals(invokedMethods.get(11), "beforeSuiteRunC2");
-    Assert.assertEquals(invokedMethods.get(12), "testA2");
-    Assert.assertEquals(invokedMethods.get(13), "testA3");
-    Assert.assertEquals(invokedMethods.get(14), "testB2");
-    Assert.assertEquals(invokedMethods.get(15), "testB3");
-    Assert.assertEquals(invokedMethods.get(16), "testC");
-    Assert.assertEquals(invokedMethods.get(17), "testC2");
-    Assert.assertEquals(invokedMethods.get(18), "testC3");
-    Assert.assertEquals(invokedMethods.size(), 19);
+    Assert.assertEquals(invokedMethods.get(6), "beforeSuiteRunB");
+    Assert.assertEquals(invokedMethods.get(7), "beforeSuiteRunB2");
+    Assert.assertEquals(invokedMethods.get(8), "beforeSuiteC");
+    Assert.assertEquals(invokedMethods.get(9), "beforeSuiteC2");
+    Assert.assertEquals(invokedMethods.get(10), "beforeSuiteNoRunC");
+    Assert.assertEquals(invokedMethods.get(11), "beforeSuiteNoRunC2");
+    Assert.assertEquals(invokedMethods.get(12), "beforeSuiteRunC");
+    Assert.assertEquals(invokedMethods.get(13), "beforeSuiteRunC2");
+    Assert.assertEquals(invokedMethods.get(14), "testA2");
+    Assert.assertEquals(invokedMethods.get(15), "testA3");
+    Assert.assertEquals(invokedMethods.get(16), "testB2");
+    Assert.assertEquals(invokedMethods.get(17), "testB3");
+    Assert.assertEquals(invokedMethods.get(18), "testC");
+    Assert.assertEquals(invokedMethods.get(19), "testC2");
+    Assert.assertEquals(invokedMethods.get(20), "testC3");
+    Assert.assertEquals(invokedMethods.size(), 21);
   }
 
   @Test(description = "https://github.com/cbeust/testng/issues/420")
@@ -48,11 +50,11 @@ public class EnableTest extends SimpleBaseTest {
     TestNG tng = create(Issue420FirstSample.class, Issue420SecondSample.class);
     InvokedMethodListener listener = new InvokedMethodListener();
     tng.addListener(listener);
-    tng.setVerbose(10);
     tng.run();
 
     assertThat(listener.getInvokedMethods()).containsExactly(
-        "initEnvironment", "verifySomethingFirstSample", "verifySomethingSecondSample"
+        "initEnvironment",
+        "verifySomethingFirstSample", "verifySomethingSecondSample"
     );
   }
 }
