@@ -1,1 +1,1 @@
-./gradlew clean build cleanTest test
+./gradlew --stacktrace clean build cleanTest test
