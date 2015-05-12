@@ -5,24 +5,26 @@ import org.testng.annotations.ITestAnnotation;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MyParamTransformer implements IAnnotationTransformer {
 
-  private boolean checkNull = true;
+  private boolean success = true;
 
   @Override
   public void transform(ITestAnnotation annotation, Class testClass,
       Constructor testConstructor, Method testMethod) {
-    if ((testClass == null && testConstructor != null && testMethod != null) ||
-        (testClass != null && testConstructor == null && testMethod != null) ||
-        (testClass != null && testConstructor != null && testMethod == null)) {
-      checkNull = false;
+    if (!onlyOneNonNull(testClass, testConstructor, testMethod)) {
+      success = false;
     }
   }
 
-  public boolean isCheckNull() {
-    return checkNull;
+  public static boolean onlyOneNonNull(Class testClass, Constructor testConstructor, Method testMethod) {
+    return ((testClass != null && testConstructor == null && testMethod == null) ||
+            (testClass == null && testConstructor != null && testMethod == null) ||
+            (testClass == null && testConstructor == null && testMethod != null) );
+  }
+
+  public boolean isSuccess() {
+    return success;
   }
 }

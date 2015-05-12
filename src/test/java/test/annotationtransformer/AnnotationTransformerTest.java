@@ -91,7 +91,15 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
 
     tng.run();
 
-    assertThat(transformer.isCheckNull()).isTrue();
+    assertThat(transformer.isSuccess()).isTrue();
+  }
+
+  @Test
+  public void verifyMyParamTransformerOnlyOneNonNull() {
+    assertThat(MyParamTransformer.onlyOneNonNull(null, null, null)).isFalse();
+    assertThat(MyParamTransformer.onlyOneNonNull(
+        MyParamTransformer.class, MyParamTransformer.class.getConstructors()[0], null)).isFalse();
+    assertThat(MyParamTransformer.onlyOneNonNull(MyParamTransformer.class, null, null)).isTrue();
   }
 
   /**
