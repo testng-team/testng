@@ -103,4 +103,6 @@ test {
     useTestNG() {
         suites 'src/test/resources/testng.xml'
     }
+    systemProperties = System.getProperties()
+    systemProperties['test.resources.dir'] = 'build/resources/test/'
 }
