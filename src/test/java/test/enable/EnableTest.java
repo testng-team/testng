@@ -21,7 +21,10 @@ public class EnableTest extends SimpleBaseTest {
         "beforeSuiteA", "beforeSuiteA2", "beforeSuiteNoRunA", "beforeSuiteNoRunA2", "beforeSuiteRunA", "beforeSuiteRunA2",
         "beforeSuiteRunB", "beforeSuiteRunB2",
         "beforeSuiteC", "beforeSuiteC2", "beforeSuiteNoRunC", "beforeSuiteNoRunC2", "beforeSuiteRunC", "beforeSuiteRunC2",
-        "testA2", "testA3", "testB2", "testB3", "testC", "testC2", "testC3"
+        "testA2", "testA3", "testB2", "testB3", "testC", "testC2", "testC3",
+        "afterSuiteA", "afterSuiteA2", "afterSuiteNoRunA", "afterSuiteNoRunA2", "afterSuiteRunA", "afterSuiteRunA2",
+        "afterSuiteRunB", "afterSuiteRunB2",
+        "afterSuiteC", "afterSuiteC2", "afterSuiteNoRunC", "afterSuiteNoRunC2", "afterSuiteRunC", "afterSuiteRunC2"
     );
   }
 
@@ -33,8 +36,9 @@ public class EnableTest extends SimpleBaseTest {
     tng.run();
 
     assertThat(listener.getInvokedMethods()).containsExactly(
-        "initEnvironment",
-        "verifySomethingFirstSample", "verifySomethingSecondSample"
+        "alwaysBeforeSuite", "beforeSuite",
+        "verifySomethingFirstSample", "verifySomethingSecondSample",
+        "afterSuite", "alwaysAfterSuite"
     );
   }
 }
