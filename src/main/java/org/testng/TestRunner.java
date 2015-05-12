@@ -100,7 +100,7 @@ public class TestRunner
   private Date m_endDate = null;
 
   /** A map to keep track of Class <-> IClass. */
-  transient private Map<Class<?>, ITestClass> m_classMap = Maps.newHashMap();
+  transient private Map<Class<?>, ITestClass> m_classMap = Maps.newLinkedHashMap();
 
   /** Where the reports will be created. */
   private String m_outputDirectory= Constants.getDefaultValueFor(Constants.PROP_OUTPUT_DIR);
