@@ -1,4 +1,11 @@
 Current
+
+Fixed: GITHUB-420: Before/AfterSuite methods may not run, when use inheritance, and enabled=false (Jakub Tokaj & Julien Herr)
+
+===========================================================================
+6.9.4:
+2015/05/09
+
 Added: GITHUB-631: Avoid the static limitation of external DataProvider. (Julien Herr)
 Added: GITHUB-631: Allow to use Guice injection in DataProvider. (Julien Herr)
 Added: Drop support of Java6 and previous.
