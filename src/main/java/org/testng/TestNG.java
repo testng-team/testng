@@ -940,8 +940,9 @@ public class TestNG {
    * Using reflection to remain Java 5 compliant.
    */
   private void addServiceLoaderListeners() {
-      Iterable<ITestNGListener> loader =
-          ServiceLoader.load(ITestNGListener.class, m_serviceLoaderClassLoader);
+      Iterable<ITestNGListener> loader = m_serviceLoaderClassLoader != null ?
+          ServiceLoader.load(ITestNGListener.class, m_serviceLoaderClassLoader)
+          : ServiceLoader.load(ITestNGListener.class);
       for (ITestNGListener l : loader) {
         Utils.log("[TestNG]", 2, "Adding ServiceLoader listener:" + l);
         addListener(l);
