@@ -1,5 +1,6 @@
 Current
 
+Fixed: The ServiceLoaderTest on Windows (Mathieu Sebire)
 Fixed: GITHUB-691: Fix classloading issue when using TestNG 6.9.4 and JMockit. (Mathieu Sebire)
 
 6.9.4:
