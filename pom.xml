@@ -107,7 +107,7 @@
       <resource>
         <directory>src/main/resources</directory>
         <includes>
-          <include>**/Version.java</include>
+          <include>**/VersionTemplateJava</include>
         </includes>
         <filtering>true</filtering>
         <targetPath>${version.build.directory}</targetPath>
@@ -118,8 +118,27 @@
     </resources>
     <plugins>
 
+      <!-- Rename Version.java -->
+      <plugin>
+        <groupId>com.coderplus.maven.plugins</groupId>
+        <artifactId>copy-rename-maven-plugin</artifactId>
+        <version>1.0.1</version>
+        <executions>
+          <execution>
+		    <id>rename-file</id>
+			<phase>process-resources</phase>
+			<goals>
+			  <goal>rename</goal>
+			</goals>
+			<configuration>
+			  <sourceFile>${version.build.directory}/org/testng/internal/VersionTemplateJava</sourceFile>
+			  <destinationFile>${version.build.directory}/org/testng/internal/Version.java</destinationFile>
+			</configuration>
+		  </execution>
+        </executions>
+      </plugin>
+      
       <!-- Release for bintray -->
-
       <plugin>
         <artifactId>maven-release-plugin</artifactId>
         <configuration>
