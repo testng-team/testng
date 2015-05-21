@@ -2,6 +2,7 @@ Current
 
 Fixed: The ServiceLoaderTest on Windows (Mathieu Sebire)
 Fixed: GITHUB-691: Fix classloading issue when using TestNG 6.9.4 and JMockit. (Mathieu Sebire)
+Fixed: GITHUB-686: IAnnotationTransformer.transform is called for methods with testClass populated. (Łukasz Rekucki & Julien Herr)
 Fixed: GITHUB-420: Before/AfterSuite methods may not run, when use inheritance, and enabled=false (Jakub Tokaj & Julien Herr)
 
 ===========================================================================
@@ -40,6 +41,7 @@ Fixed: GITHUB-310: Upgrade Guice (kronar & Julien Herr)
 Fixed: GITHUB-87: @BeforeSuite/@BeforeTest methods happens to be disabled by mistake (romlom & Julien Herr)
 Fixed: GITHUB-425: Wrong invocation order with lastTimeOnly (Rafael Winterhalter & Julien Herr)
 Fixed: GITHUB-417: Expected Exceptions Message fails to match multi-line messages (Michael Diamond)
+New: GITHUB-663: Add Guice Stage configuration for a suite (Clément Guillaume)
 
 6.8.21:
 2015/02/02
