@@ -1,5 +1,7 @@
 Current
 
+Fixed: The ServiceLoaderTest on Windows (Mathieu Sebire)
+Fixed: GITHUB-691: Fix classloading issue when using TestNG 6.9.4 and JMockit. (Mathieu Sebire)
 Fixed: GITHUB-420: Before/AfterSuite methods may not run, when use inheritance, and enabled=false (Jakub Tokaj & Julien Herr)
 
 ===========================================================================

@@ -1,0 +1,58 @@
+import java.text.SimpleDateFormat
+
+Date buildTimeAndDate = new Date()
+ext {
+    buildTime = new SimpleDateFormat('yyyy-MM-dd').format(buildTimeAndDate)
+    buildDate = new SimpleDateFormat('HH:mm:ss.SSSZ').format(buildTimeAndDate)
+}
+
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+jar {
+    manifest {
+        attributes(
+            'Built-By': System.properties['user.name'],
+            'Created-By': System.properties['java.version'] + " (" + System.properties['java.vendor'] + " " + System.getProperty("java.vm.version") + ")",
+            'Build-Date': project.buildTime,
+            'Build-Time': project.buildDate,
+            'Specification-Title': project.name,
+            'Specification-Version': project.version,
+        )
+    }
+}
+
+publishing {
+    publications {
+        mavenCustom(MavenPublication) {
+            from components.java
+            artifact sourceJar
+
+            groupId 'com.beust'
+            artifactId 'klaxon'
+            version project.version
+        }
+    }
+}
+
+task install(dependsOn: publishToMavenLocal)
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+    publications = ['mavenCustom']
+    pkg {
+        repo = 'maven'
+        name = 'klaxon'
+        desc = 'JSON parsing for Kotlin'
+        licenses = ['Apache-2.0']
+        labels = ['kotlin']
+
+        version {
+            name = project.version //Bintray logical version name
+        }
+    }
+}
