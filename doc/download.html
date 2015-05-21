@@ -3,8 +3,13 @@
         <title>TestNG - Download Current Release and Beta Versions</title>
         <script type="text/javascript" src="banner.js"></script>
         <link rel="stylesheet" href="testng.css" type="text/css" />
+		<script type="text/javascript" src="http://beust.com/prettify.js"></script>
+		<script type="text/javascript" src="http://beust.com/scripts/shCore.js"></script>
+		<script type="text/javascript" src="http://beust.com/scripts/shBrushPlain.js"></script>
+		<script type="text/javascript" src="http://beust.com/scripts/shBrushXml.js"></script>
+		<script type="text/javascript" src="http://beust.com/scripts/shBrushJava.js"></script>
       </head>
-<body>
+<body onload="prettyPrint()">
 
 <script type="text/javascript">
     displayMenu("download.html")
@@ -15,10 +20,42 @@
 
 <h3>Current Release Version</h3>
 
-<p> The latest version of TestNG can be downloaded from <a href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22testng%22">Maven Central</a>. </p>
-<p>For the Eclipse plug-in, we suggest using the update site:</p>
+<h4>Maven</h4>
+
+<pre class="brush: xml">
+    &lt;repositories&gt;
+      &lt;repository&gt;
+        &lt;id&gt;central&lt;/id&gt;
+        &lt;name&gt;bintray&lt;/name&gt;
+        &lt;url&gt;http://jcenter.bintray.com&lt;/url&gt;
+      &lt;/repository&gt;
+    &lt;/repositories&gt;
+
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.testng&lt;/groupId&gt;
+      &lt;artifactId&gt;testng&lt;/artifactId&gt;
+      &lt;version&gt;6.9.4&lt;/version&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+</pre>
+
+<h4>Gradle</h4>
+
+<pre class="brush: java">
+repositories {
+    jcenter()
+}
+
+dependencies {
+    testCompile 'org.testng:testng:6.9.4'
+}
+</pre>
+
+
+<h4>Eclipse plug-in</h4>
+<p>You can use either the Eclipse Market Place or the update site:</p>
 <ul>
-	<li>Select<i> Help / Software updates / Find and Install.</i> 
+	<li>Select<i> Help / Install new software.</i> 
 	</li>
 	<li><i>Search for new features to install.</i> 
 	</li>
@@ -43,12 +80,6 @@ $ mvn package
 </pre>
 
 <p>You will then find the jar file in the <tt>target</tt> directory</p>
-
-<h3>Beta Version</h3>
-
-<p>The beta version contains changes that have been committed to the repo since the current release.</p>
-<p>Take a look at <a href="https://github.com/cbeust/testng/blob/master/CHANGES.txt">CHANGES.txt</a> to see if the change you want is included in the beta (listed under "Current").</p>
-<p>You can <a href="/beta">download the beta version here</a>.</p>
 
 <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
 </script>
