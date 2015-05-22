@@ -1,5 +1,6 @@
 package test.enable;
 
+import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
@@ -42,4 +43,31 @@ public class A {
 
   @BeforeSuite(enabled = false, alwaysRun = true)
   public void disabledBeforeSuiteRunA() {}
+
+  @AfterSuite
+  public void afterSuiteA() {}
+
+  @AfterSuite(enabled = true)
+  public void afterSuiteA2() {}
+
+  @AfterSuite(enabled = false)
+  public void disabledAfterSuiteA() {}
+
+  @AfterSuite(alwaysRun = false)
+  public void afterSuiteNoRunA() {}
+
+  @AfterSuite(enabled = true, alwaysRun = false)
+  public void afterSuiteNoRunA2() {}
+
+  @AfterSuite(enabled = false, alwaysRun = false)
+  public void disabledAfterSuiteNoRunA() {}
+
+  @AfterSuite(alwaysRun = true)
+  public void afterSuiteRunA() {}
+
+  @AfterSuite(enabled = true, alwaysRun = true)
+  public void afterSuiteRunA2() {}
+
+  @AfterSuite(enabled = false, alwaysRun = true)
+  public void disabledAfterSuiteRunA() {}
 }

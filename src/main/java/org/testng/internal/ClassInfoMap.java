@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class ClassInfoMap {
-  private Map<Class<?>, XmlClass> m_map = Maps.newHashMap();
+  private Map<Class<?>, XmlClass> m_map = Maps.newLinkedHashMap();
   private boolean includeNestedClasses;
 
   public ClassInfoMap() {
