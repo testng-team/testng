@@ -3,6 +3,10 @@ Current
 Fixed: The ServiceLoaderTest on Windows (Mathieu Sebire)
 Fixed: GITHUB-691: Fix classloading issue when using TestNG 6.9.4 and JMockit. (Mathieu Sebire)
 
+Eclipse:
+
+Fixed: The 57% freeze bug (Patrick Hensley and @denyska)
+
 6.9.4:
 2015/05/09
 
