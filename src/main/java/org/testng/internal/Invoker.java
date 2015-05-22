@@ -183,11 +183,11 @@ public class Invoker implements IInvoker {
         // Only run the configuration if
         // - the test is enabled and
         // - the Configuration method belongs to the same class or a parent
-        if(MethodHelper.isEnabled(objectClass, m_annotationFinder)) {
-          configurationAnnotation = AnnotationHelper.findConfiguration(m_annotationFinder, method);
+        configurationAnnotation = AnnotationHelper.findConfiguration(m_annotationFinder, method);
+        boolean alwaysRun= isAlwaysRun(configurationAnnotation);
+        if(MethodHelper.isEnabled(objectClass, m_annotationFinder) || alwaysRun) {
 
           if (MethodHelper.isEnabled(configurationAnnotation)) {
-            boolean alwaysRun= isAlwaysRun(configurationAnnotation);
 
             if (!confInvocationPassed(tm, currentTestMethod, testClass, instance) && !alwaysRun) {
               handleConfigurationSkip(tm, testResult, configurationAnnotation, currentTestMethod, instance, suite);
@@ -273,7 +273,11 @@ public class Invoker implements IInvoker {
     if ((configurationAnnotation.getAfterSuite()
         || configurationAnnotation.getAfterTest()
         || configurationAnnotation.getAfterTestClass()
-        || configurationAnnotation.getAfterTestMethod())
+        || configurationAnnotation.getAfterTestMethod()
+        || configurationAnnotation.getBeforeTestMethod()
+        || configurationAnnotation.getBeforeTestClass()
+        || configurationAnnotation.getBeforeTest()
+        || configurationAnnotation.getBeforeSuite())
         && configurationAnnotation.getAlwaysRun())
     {
         alwaysRun= true;
