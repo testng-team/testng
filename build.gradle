@@ -88,6 +88,11 @@ task myDir {
     mkdir(dirTo)
 }
 
+// Include the generated Version.class in the jar
+jar {
+    from "$buildDir/classes/generated"
+}
+
 task createVersion(type: Copy, dependsOn: myDir) {
     println("Creating Version file: ${version} in ${dirTo}")
     from dirFrom
