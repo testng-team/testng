@@ -1,0 +1,467 @@
+<project name="testng" default="dev" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+  
+  <!-- ====================================================================== -->
+  <!-- TestNG build file                                                      -->
+  <!-- Created cbeust, April 26th, 2004                                       -->
+  <!-- ====================================================================== -->
+
+  <property file="build.properties" />
+  <property name="optimize" value="false" />
+
+  <!-- ====================================================================== -->
+  <!-- PREPARE                                                                -->
+  <!-- ====================================================================== -->
+  <target name="prepare" depends="retrieve-dependencies"
+          description="Performs all preparations required to build.">
+    <tstamp />
+    <mkdir dir="${build.dir}" />
+    <mkdir dir="${other.jars.dir}" />
+  </target>
+
+  <!-- ====================================================================== -->
+  <!-- DUMP                                                                   -->
+  <!-- ====================================================================== -->
+  <target name="dump" description="Dumps all properties." depends="prepare">
+    <echoproperties />
+  </target>
+
+	<!-- ====================================================================== -->
+  <!-- VALIDATE                                                               -->
+  <!-- ====================================================================== -->
+
+  <target name="validate" description="Validates the build environment.">
+    <!-- java greater than 1.6 required to build -->
+    <condition property="requiredJavaVersion">
+      <or>
+        <equals arg1="${ant.java.version}" arg2="1.9" />
+        <equals arg1="${ant.java.version}" arg2="1.8" />
+        <equals arg1="${ant.java.version}" arg2="1.7" />
+      </or>
+    </condition>
+    <fail unless="requiredJavaVersion"
+          message="Java version 1.7 required." />
+    <!-- validate ant version too ... -->
+  </target>
+
+  <!-- ==================================================================== -->
+  <!-- COPY-RESOURCES                                                       -->
+  <!-- ==================================================================== -->
+
+  <target name="copy-resources" description="Copies resources.">
+    <copy verbose="false"
+          file="${src.resources.dir}/testngtasks"
+          todir="${build.dir}" />
+    <copy todir="${build.dir}">
+      <fileset dir="${src.resources.dir}">
+        <exclude name="**/.*" />
+        <exclude name="**/CVS/*" />
+      </fileset>
+    </copy>
+  </target>
+
+
+  <target name="dev"
+          depends="prepare,validate,copy-resources,build,tests" />
+
+  <target name="all"
+          depends="prepare,validate,copy-resources,build,dist,tests,test-ant,javadocs,dist" />
+
+  <target name="build" depends="prepare,compile,testng-jar-all" />
+
+  <target name="testng-jar-all">
+    <antcall target="create-jar">
+      <param name="jar.file" value="${testng.jar}" />
+    </antcall>
+    <jar jarfile="${testng.jar}" update="true">
+      <zipfileset src="${lib.dir}/${beanshell.jar}" />
+      <zipfileset src="${lib.dir}/${jcommander.jar}" />
+      <zipfileset src="${lib.dir}/${yaml.jar}" />
+    </jar>
+
+  </target>
+
+  <target name="single">
+    <ant antfile="build-tests.xml" target="run:single"/>
+  </target>
+
+  <!-- ==================================================================== -->
+  <!-- Compile                                                              -->
+  <!-- ==================================================================== -->
+
+  <path id="compile2.cp">
+    <fileset dir="${lib.dir}" includes="${all.jar.files}" />
+  </path>
+
+  <target name="compile"
+          depends="prepare,copy-resources"
+          description="Compiles sources">
+    <echo message="                                 -- Compiling sources --" />
+
+    <echo>Src:${src.dir}</echo>
+    <javac classpathref="compile2.cp"
+           verbose="false"
+           target="1.7"
+           debug="true"
+           optimize="${optimize}"
+           destdir="${build.dir}">
+      <src path="${src.dir}" />
+    </javac>
+  </target>
+
+  <target name="compile:all" depends="compile" />
+
+  <target name="examples">
+    <ant inheritall="no" antfile="examples/build.xml" />
+  </target>
+
+  <target name="tests" depends="build" description="runs all JDK5 tests with JDK5 distro">
+    <ant inheritall="no" antfile="build-tests.xml" />
+  </target>
+  
+  <target name="test-ant" depends="build">
+    <echo message="                                 -- Testing ant testng task functionality --" />
+    <ant inheritall="no" antfile="build-ant.xml" />
+  </target>
+
+  <!-- ==================================================================== -->
+  <!-- Documentation                                                        -->
+  <!-- ==================================================================== -->
+
+  <target name="javadocs" depends="build,javadocs-current" />
+
+  <target name="doclava">
+    <javadoc
+      docletpath="3rdparty/doclava-1.0.3.jar"
+      bootclasspath="${javahome}/jre/lib/rt.jar"
+      classpath="${testng.jar}:lib/${ant.jar}:lib/${guice2.jar}:lib/aopalliance-1.0.jar"
+      maxmemory="2048M"
+      additionalparam="-quiet"
+      verbose="false"
+      destdir="javadocs"
+      >
+      <fileset dir="${src.dir}" defaultexcludes="yes">
+        <include name="org/testng/*.java" />
+      </fileset>
+      <fileset dir="${src.dir}" defaultexcludes="yes">
+        <include name="org/testng/xml/Xml*.java" />
+      </fileset>
+      <fileset dir="${src.dir}" defaultexcludes="yes">
+        <include name="org/testng/annotations/**" />
+      </fileset>
+      <doclet name="com.google.doclava.Doclava">
+        <param name="-stubs" value="build/stubs" />
+        <param name="-hdf"/>
+        <param name="project.name" value="TestNG" />
+        <!-- versioning -->
+        <param name="-since"/>
+        <param name="doclava/previous.xml"/>
+        <param name="v1" />
+        <param name="-apiversion" value="v2"/>
+        <!-- federation -->
+        <param name="-federate" />
+        <param name="JDK"/>
+        <param name="http://download.oracle.com/javase/6/docs/api/index.html?"/>
+        <param name="-federationxml"/><param name="JDK"/>
+        <param name="http://doclava.googlecode.com/svn/static/api/openjdk-6.xml"/>
+      </doclet>
+    </javadoc>
+  </target>
+
+  <target name="javadocs-current">
+    <javadoc additionalparam="-quiet" destdir="javadocs" source="1.7" windowtitle="TestNG"
+      classpath="${testng.jar}" classpathref="compile2.cp" verbose="false">
+      <fileset dir="${src.dir}" defaultexcludes="yes">
+        <include name="org/testng/*.java" />
+      </fileset>
+      <fileset dir="${src.dir}" defaultexcludes="yes">
+        <include name="org/testng/xml/Xml*.java" />
+      </fileset>
+      <fileset dir="${src.dir}" defaultexcludes="yes">
+        <include name="org/testng/annotations/**" />
+      </fileset>
+    </javadoc>
+  </target>
+
+  <!-- ==================================================================== -->
+  <!-- Distribution                                                         -->
+  <!-- ==================================================================== -->
+
+  <target name="dist" depends="build,all-jar-flavors,dist-all-zip,eclipse" />
+
+  <target name="all-jar-flavors" depends="dist-junit,dist-nobsh-guice,dist-bsh-noguice,dist-nobsh-noguice,dist-testng-dist,dist-testng-javadoc" />
+
+  <target name="dist-junit">
+    <antcall target="create-jar">
+      <param name="jar.file" value="${other.jars.dir}/${testng.junit.jar}" />
+    </antcall>
+    <jar jarfile="${other.jars.dir}/${testng.junit.jar}" update="true">
+      <zipfileset src="${lib.dir}/${beanshell.jar}" />
+      <zipfileset src="${lib.dir}/${jcommander.jar}" />
+      <zipfileset src="${lib.dir}/${junit.jar}" />
+      <zipfileset src="${lib.dir}/${yaml.jar}" />
+    </jar>
+  </target>
+
+  <target name="dist-nobsh-guice">
+    <antcall target="create-jar">
+      <param name="jar.file" value="${other.jars.dir}/${testng.nobsh.guice.jar}" />
+    </antcall>
+    <jar jarfile="${other.jars.dir}/${testng.nobsh.guice.jar}" update="true">
+      <zipfileset src="${lib.dir}/${guice2.jar}" />
+      <zipfileset src="${lib.dir}/${jcommander.jar}" />
+      <zipfileset src="${lib.dir}/${junit.jar}" />
+    </jar>
+  </target>
+
+  <target name="dist-bsh-noguice">
+    <antcall target="create-jar">
+      <param name="jar.file" value="${other.jars.dir}/${testng.bsh.noguice.jar}" />
+    </antcall>
+    <jar jarfile="${other.jars.dir}/${testng.bsh.noguice.jar}" update="true">
+      <zipfileset src="${lib.dir}/${beanshell.jar}" />
+      <zipfileset src="${lib.dir}/${jcommander.jar}" />
+      <zipfileset src="${lib.dir}/${junit.jar}" />
+    </jar>
+  </target>
+
+  <target name="dist-nobsh-noguice">
+    <antcall target="create-jar">
+      <param name="jar.file" value="${other.jars.dir}/${testng.nobsh.noguice.jar}" />
+    </antcall>
+    <jar jarfile="${other.jars.dir}/${testng.bsh.noguice.jar}" update="true">
+      <zipfileset src="${lib.dir}/${jcommander.jar}" />
+      <zipfileset src="${lib.dir}/${junit.jar}" />
+    </jar>
+  </target>
+
+  <target name="dist-testng-dist">
+    <antcall target="create-jar">
+      <param name="jar.file" value="${other.jars.dir}/${testng.dist.jar}" />
+    </antcall>
+    <jar jarfile="${other.jars.dir}/${testng.dist.jar}" update="true">
+      <zipfileset src="${lib.dir}/${jcommander.jar}" />
+    </jar>
+  </target>
+
+  <target name="dist-testng-javadoc" depends="javadocs">
+    <zip destfile="${other.jars.dir}/${testng.javadoc.zip}">
+        <fileset dir="javadocs"/>
+    </zip>
+  </target>
+
+  <target name="create-jar" description="Create a jar file with the Testng classes and nothing else" 
+          depends="compile">
+    <delete file="${jar.file}" />
+    <jar destfile="${jar.file}" >
+      <manifest>
+        <attribute name="Main-Class" value="org.testng.TestNG" />
+        <attribute name="Implementation-Version" value="${testng.version}-${DSTAMP}${TSTAMP}" />
+      </manifest>
+      <fileset dir="${build.dir}" />
+      <fileset file="TESTNG-${testng.version}" />
+    </jar>
+  </target>
+
+  <target name="dist-all-zip" depends="dist-prepare,javadocs">
+    <property name="zip.dir" value="testng-${testng.version}" />
+    <echo>Adding ${testng.fullname}</echo>
+    <zip zipfile="${testng.zip}">
+      <zipfileset prefix="${zip.dir}" dir="${target}">
+        <include name="${testng.fullname}.jar" />
+      </zipfileset>
+      <zipfileset prefix="${zip.dir}" dir="${basedir}" includesfile="FILES" />
+      <zipfileset dir="${other.jars.dir}" prefix="${zip.dir}/other-jars"/>
+      <zipfileset dir="javadocs" prefix="${zip.dir}/javadocs" />
+      <zipfileset dir="src" prefix="${zip.dir}/src" />
+      <zipfileset dir="spring" prefix="${zip.dir}/spring" />
+      <zipfileset dir="doc" prefix="${zip.dir}/doc" />
+      <zipfileset dir="${src.resources.dir}"
+               prefix="${zip.dir}/resources" 
+            includes="**/*.css"/>
+    </zip>
+  </target>
+  
+<!--
+  <target name="dist-maven-bundle" depends="dist-all-zip">
+    <mkdir dir="${build.maven-bundle.dir}" />
+    <copy file="bundle-pom.xml" tofile="${build.maven-bundle.dir}/pom.xml" overwrite="true">
+      <filterchain>
+        <expandproperties/>
+      </filterchain>
+    </copy>
+    <jar destfile="${build.maven-bundle.dir}/${sources.testng.jar}">
+      <fileset dir="${src.dir}" />
+    </jar>
+
+    <exec executable="gpg">
+      <arg value="- -yes" />
+      <arg value="-ab" />
+      <arg value="${testng.jar}" />
+    </exec>
+
+    <exec executable="gpg">
+      <arg value="- -yes" />
+      <arg value="-ab" />
+      <arg value="${build.maven-bundle.dir}/pom.xml" />
+    </exec>
+
+    <exec executable="gpg">
+      <arg value="- -yes" />
+      <arg value="-ab" />
+      <arg value="${build.maven-bundle.dir}/${sources.testng.jar}" />
+    </exec>
+
+    <jar destfile="${testng.maven-bundle}">
+      <fileset file="${build.maven-bundle.dir}/pom.xml" />
+      <fileset file="${build.maven-bundle.dir}/${sources.testng.jar}" />
+      <fileset file="${build.maven-bundle.dir}/*asc" />
+      <fileset file="${testng.jar}" />
+      <fileset file="${testng.jar}.asc" />
+    </jar>
+  </target>
+-->
+
+  <target name="dist-prepare" depends="update-readme">
+    <delete file="{other.jars.dir}/${testng.nobsh.jar}" />
+    <mkdir dir="${other.jars.dir}" />
+  </target>
+
+  <target name="update-readme">
+    <copy file="README.template" tofile="README.md" />
+    <replace file="README.md" token="${version}" value="${testng.version}" />
+    <touch file="TESTNG-${testng.version}" />
+  </target>
+      
+  <target name="eclipse" description="Used by Cedric to build distributions">
+    <property name="jdk15.jar"
+              value="${testng-eclipse.dir}/lib/testng.jar" />
+
+    <delete file="${jdk15.jar}" />
+    <copy file="${testng.jar}" tofile="${jdk15.jar}" />
+
+    <!-- sources -->
+    <property name="sources" value="${testng-eclipse.dir}/lib/testng-sources.jar"/>
+    <echo>Sources: ${sources}</echo>
+    <jar destfile="${sources}" basedir="src/main/java/" />
+  </target>
+
+  <target name="ftp">
+    <!--
+          <ftp action="put"
+             server="beust.com"
+             remotedir="w/testng/test-output"
+             userid="${userid}"
+             password="${password}">
+              <fileset dir="c:\weblogic\dev\sandbox\cbeust\testng\test\test-output">
+                <include name="index.html" />
+                <include name="main.html" />
+                <include name="toc.html" />
+                <include name="*egression*" />
+             </fileset>
+        </ftp>
+      -->
+    <ftp action="put"
+         server="beust.com"
+         remotedir="w/testng"
+         userid="${userid}"
+         password="${password}">
+      <fileset dir="${root.dir}">
+        <include name="${testng.zip}" />
+        <include name="javadocs/**" />
+        <include name="testng-1.0.dtd" />
+      </fileset>
+      <fileset dir="${root.dir}/doc">
+        <include name="*.html" />
+      </fileset>
+    </ftp>
+
+  </target>
+
+  <target name="ftp2">
+    <ftp action="put"
+         server="beust.com"
+         remotedir="w/testng"
+         userid="${userid}"
+         password="${password}">
+      <fileset dir="${root.dir}/test">
+        <include name="test-output/*" />
+      </fileset>
+      <fileset dir="${root.dir}/test">
+        <include name="test-report/*" />
+      </fileset>
+    </ftp>
+  </target>
+
+  <target name="clean">
+    <delete dir="${build.dir}" />
+    <delete dir="${target}" />
+    <delete dir="${build.maven-bundle.dir}" />
+    <delete failonerror="false">
+      <fileset dir="." includes="testng*.jar,*.zip" />
+    </delete>
+    <delete dir="test-output" failonerror="false" />
+    <delete dir="test-output-tests" failonerror="false" />
+    <ant antfile="build-tests.xml" target="clean" />
+    <ant dir="examples" target="clean" />
+  </target>
+
+  <!-- ==================================================================== -->
+  <!-- Maven1/2 Distribution                                                -->
+  <!-- ==================================================================== -->
+
+<!--
+  <target name="maven-plugin">
+    <jar destfile="maven-testng-plugin-${testng-maven.version}.jar"
+         basedir="./maven/" />
+  </target>
+-->
+
+  <!-- ==================================================================== -->
+  <!-- Ivy                                                                  -->
+  <!-- ==================================================================== -->
+
+  <target name="retrieve-dependencies" description="Retrieve dependencies with ivy">
+    <ivy:retrieve log="quiet" />
+  </target>
+
+  <target name="publish">
+    <ivy:resolve />
+    <mkdir dir="dist/jars" />
+    <copy file="${testng.jar}" todir="dist/jars" />
+    <ivy:publish organisation="org.testng" resolver="local" overwrite="true"/>
+  </target>
+
+  <target name="pom">
+    <ivy:makepom ivyfile="ivy.xml" pomfile="ivy-pom.xml" />
+  </target>
+
+  <!-- ==================================================================== -->
+  <!-- Code coverage                                                        -->
+  <!-- ==================================================================== -->
+
+<!--
+  <property name="cobertura.dir" value="../cobertura-1.9.4.1" />
+
+  <path id="cobertura.classpath">
+      <fileset dir="${cobertura.dir}">
+          <include name="cobertura.jar" />
+          <include name="lib/**/*.jar" />
+      </fileset>
+  </path>
+
+  <taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
+
+  <target name="coverage:create">
+    <cobertura-instrument classpath="cobertura-1.9.4.1/lib/*" todir="target/instrumented-classes">
+      <fileset dir="${build.dir}">
+        <include name="**/*.class" />
+      </fileset>
+    </cobertura-instrument>
+  </target>
+
+  <target name="coverage">
+    <cobertura-report srcdir="${src.dir}" destdir="target/coverage-report"/>
+  </target>
+-->
+
+</project>
