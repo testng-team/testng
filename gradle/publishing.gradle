@@ -123,25 +123,30 @@ allprojects {
 }
 
 artifactory {
-    contextUrl = "${artifactory_contextUrl}"   //The base Artifactory URL if not overridden by the publisher/resolver
+    def a_user = hasProperty('artifactory_user') ? artifactory_user : System.getenv('artifactory_user')
+    def a_password = hasProperty('artifactory_password') ? artifactory_password : System.getenv('artifactory_password')
+    def a_contextUrl = hasProperty('artifactory_contextUrl') ? artifactory_password : System.getenv('artifactory_contextUrl')
+
+    contextUrl = "${a_contextUrl}"
+    //The base Artifactory URL if not overridden by the publisher/resolver
     publish {
         repository {
             repoKey = 'oss-snapshot-local'
-            username = "${artifactory_user}"
-            password = "${artifactory_password}"
+            username = "${a_user}"
+            password = "${a_password}"
             maven = true
 
         }
         defaults {
-            publications ('mavenJava')
+            publications('mavenJava')
         }
 
     }
     resolve {
         repository {
             repoKey = 'libs-snapshot'
-            username = "${artifactory_user}"
-            password = "${artifactory_password}"
+            username = "${a_user}"
+            password = "${a_password}"
             maven = true
 
         }
