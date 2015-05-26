@@ -4,12 +4,25 @@ buildscript {
         jcenter()
         maven {
             url 'http://dl.bintray.com/cbeust/maven'
-        }        
+        }
+        maven {
+            url 'http://oss.jfrog.org/artifactory/plugins-release'
+            credentials {
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
+            }
+        }
+    }
+
+    dependencies {
+        //Check for the latest version here: http://plugins.gradle.org/plugin/com.jfrog.artifactory
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:3.0.3"
     }
 }
 
 plugins {
     id "com.jfrog.bintray" version "1.1"
+    id "com.jfrog.artifactory" version "3.1.0"
 }
 
 version = '6.9.5-SNAPSHOT'
