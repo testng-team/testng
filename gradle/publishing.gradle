@@ -1,0 +1,171 @@
+import java.text.SimpleDateFormat
+
+Date buildTimeAndDate = new Date()
+ext {
+    buildTime = new SimpleDateFormat('yyyy-MM-dd').format(buildTimeAndDate)
+    buildDate = new SimpleDateFormat('HH:mm:ss.SSSZ').format(buildTimeAndDate)
+}
+
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+jar {
+    manifest {
+        attributes(
+            'Built-By': System.properties['user.name'],
+            'Created-By': System.properties['java.version'] + " (" + System.properties['java.vendor'] + " " + System.getProperty("java.vm.version") + ")",
+            'Build-Date': project.buildTime,
+            'Build-Time': project.buildDate,
+            'Specification-Title': project.name,
+            'Specification-Version': project.version,
+        )
+    }
+}
+
+publishing {
+    publications {
+        mavenCustom(MavenPublication) {
+            from components.java
+            artifact sourceJar
+
+            groupId 'org.testng'
+            artifactId 'testng'
+            version project.version
+        }
+    }
+}
+
+//task install(dependsOn: publishToMavenLocal)
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+    publications = ['mavenCustom']
+    pkg {
+        repo = 'maven'
+        name = 'testng'
+        desc = 'Testing framework for Java'
+        licenses = ['Apache-2.0']
+        labels = ['testng']
+
+        version {
+            name = project.version //Bintray logical version name
+        }
+    }
+}
+
+//
+// Upload to Sonatype snapshot
+// ./gradlew upload
+//
+
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+javadoc {
+    failOnError false
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives jar
+    archives javadocJar
+    archives sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
+                authentication(userName: '3rszImfP', password: 'uAOidhWfeyQ6K/48UOuxPPL0EFj5Z99P0lU8zsL/BtgT')
+            }
+            pom.version = project.version
+            pom.artifactId = 'org.testng'
+            pom.groupId = 'testng'
+        }
+    }
+}
+
+//
+// Artifactory
+// ./gradlew artifactoryPublish // bintrayUpload
+//
+
+buildscript {
+    repositories {
+        jcenter()
+
+    }
+    dependencies {
+        //Check for the latest version here: http://plugins.gradle.org/plugin/com.jfrog.artifactory
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:3.0.3"
+    }
+}
+
+allprojects {
+    apply plugin: "com.jfrog.artifactory"
+}
+
+artifactory {
+    def a_user = hasProperty('artifactory_user') ? artifactory_user : System.getenv('artifactory_user')
+    def a_password = hasProperty('artifactory_password') ? artifactory_password : System.getenv('artifactory_password')
+    def a_contextUrl = hasProperty('artifactory_contextUrl') ? artifactory_password : System.getenv('artifactory_contextUrl')
+
+    contextUrl = "${a_contextUrl}"
+    //The base Artifactory URL if not overridden by the publisher/resolver
+    publish {
+        repository {
+            repoKey = 'oss-snapshot-local'
+            username = "${a_user}"
+            password = "${a_password}"
+            maven = true
+
+        }
+        defaults {
+            publications('mavenJava')
+        }
+
+    }
+    resolve {
+        repository {
+            repoKey = 'libs-snapshot'
+            username = "${a_user}"
+            password = "${a_password}"
+            maven = true
+
+        }
+    }
+}
+
+//
+// Publish to maven by default
+//
+
+apply plugin: 'maven-publish'
+
+group = 'org.testng'
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+

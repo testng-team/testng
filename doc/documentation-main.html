@@ -2227,10 +2227,13 @@ public interface IModuleFactory {
 
 Your factory will be passed an instance of the test context and the test class that TestNG needs to instantiate. Your <tt>createModule</tt> method should return a Guice Module that will know how to instantiate this test class. You can use the test context to find out more information about your environment, such as parameters specified in <tt>testng.xml</tt>, etc...
 
-You will get even more flexibility and Guice power with parent-module suite parameter. Here is how you can define parent-module in your test.xml file:
+You will get even more flexibility and Guice power with <tt>parent-module</tt> and <tt>guice-stage</tt> suite parameters.
+<tt>guice-stage</tt> allow you to chose the <a href="https://github.com/google/guice/wiki/Bootstrap"><tt>Stage</tt></a> used to create the parent injector.
+The default one is <tt>DEVELOPMENT</tt>. Other allowed values are <tt>PRODUCTION</tt> and <tt>TOOL</tt>.
+Here is how you can define parent-module in your test.xml file:
 
 <pre class="brush: xml">
-<suite parent-module="com.example.SuiteParenModule">
+<suite parent-module="com.example.SuiteParenModule" guice-stage="PRODUCTION">
 </suite>
 </pre>
 

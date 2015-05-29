@@ -1,12 +1,11 @@
 package test.enable;
 
-import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
-import java.util.List;
-
 import test.SimpleBaseTest;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class EnableTest extends SimpleBaseTest {
 
@@ -18,26 +17,28 @@ public class EnableTest extends SimpleBaseTest {
     tng.setPreserveOrder(true);
     tng.run();
 
-    List<String> invokedMethods = listener.getInvokedMethods();
-    Assert.assertEquals(invokedMethods.get(0), "beforeSuiteA");
-    Assert.assertEquals(invokedMethods.get(1), "beforeSuiteA2");
-    Assert.assertEquals(invokedMethods.get(2), "beforeSuiteNoRunA");
-    Assert.assertEquals(invokedMethods.get(3), "beforeSuiteNoRunA2");
-    Assert.assertEquals(invokedMethods.get(4), "beforeSuiteRunA");
-    Assert.assertEquals(invokedMethods.get(5), "beforeSuiteRunA2");
-    Assert.assertEquals(invokedMethods.get(6), "beforeSuiteC");
-    Assert.assertEquals(invokedMethods.get(7), "beforeSuiteC2");
-    Assert.assertEquals(invokedMethods.get(8), "beforeSuiteNoRunC");
-    Assert.assertEquals(invokedMethods.get(9), "beforeSuiteNoRunC2");
-    Assert.assertEquals(invokedMethods.get(10), "beforeSuiteRunC");
-    Assert.assertEquals(invokedMethods.get(11), "beforeSuiteRunC2");
-    Assert.assertEquals(invokedMethods.get(12), "testA2");
-    Assert.assertEquals(invokedMethods.get(13), "testA3");
-    Assert.assertEquals(invokedMethods.get(14), "testB2");
-    Assert.assertEquals(invokedMethods.get(15), "testB3");
-    Assert.assertEquals(invokedMethods.get(16), "testC");
-    Assert.assertEquals(invokedMethods.get(17), "testC2");
-    Assert.assertEquals(invokedMethods.get(18), "testC3");
-    Assert.assertEquals(invokedMethods.size(), 19);
+    assertThat(listener.getInvokedMethods()).containsExactly(
+        "beforeSuiteA", "beforeSuiteA2", "beforeSuiteNoRunA", "beforeSuiteNoRunA2", "beforeSuiteRunA", "beforeSuiteRunA2",
+        "beforeSuiteRunB", "beforeSuiteRunB2",
+        "beforeSuiteC", "beforeSuiteC2", "beforeSuiteNoRunC", "beforeSuiteNoRunC2", "beforeSuiteRunC", "beforeSuiteRunC2",
+        "testA2", "testA3", "testB2", "testB3", "testC", "testC2", "testC3",
+        "afterSuiteA", "afterSuiteA2", "afterSuiteNoRunA", "afterSuiteNoRunA2", "afterSuiteRunA", "afterSuiteRunA2",
+        "afterSuiteRunB", "afterSuiteRunB2",
+        "afterSuiteC", "afterSuiteC2", "afterSuiteNoRunC", "afterSuiteNoRunC2", "afterSuiteRunC", "afterSuiteRunC2"
+    );
+  }
+
+  @Test(description = "https://github.com/cbeust/testng/issues/420")
+  public void issue420() {
+    TestNG tng = create(Issue420FirstSample.class, Issue420SecondSample.class);
+    InvokedMethodListener listener = new InvokedMethodListener();
+    tng.addListener(listener);
+    tng.run();
+
+    assertThat(listener.getInvokedMethods()).containsExactly(
+        "alwaysBeforeSuite", "beforeSuite",
+        "verifySomethingFirstSample", "verifySomethingSecondSample",
+        "afterSuite", "alwaysAfterSuite"
+    );
   }
 }
