@@ -7,6 +7,7 @@ Fixed: GITHUB-420: Before/AfterSuite methods may not run, when use inheritance, 
 Fixed: GITHUB-697: Make addFailedInvocationNumber thread-safe (Ryan Schmitt)
 Fixed: GITHUB-698: Fix exit code reporting when IRetryAnalyzer is used (Ryan Schmitt)
 Fixed: GITHUB-465: assertEquals(Collection, Collection) prints "null" when collections are different sizes (Michael Diamond)
+New: GITHUB-xxx: AppVeyor is used for continuous integration on Windows (Julien Herr)
 
 Eclipse:
 
