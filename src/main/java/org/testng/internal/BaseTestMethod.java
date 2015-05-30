@@ -63,7 +63,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   private long m_invocationTimeOut = 0L;
 
   private List<Integer> m_invocationNumbers = Lists.newArrayList();
-  private List<Integer> m_failedInvocationNumbers = Lists.newArrayList();
+  private final List<Integer> m_failedInvocationNumbers = Collections.synchronizedList(Lists.<Integer>newArrayList());
   /**
    * {@inheritDoc}
    */
