@@ -1,6 +1,18 @@
 package test;
 
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 import org.testng.Assert;
 import org.testng.IInvokedMethodListener;
 import org.testng.ISuite;
@@ -21,21 +33,6 @@ import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * Base class for tests
@@ -275,16 +272,6 @@ public class BaseTest extends BaseDistributedTest {
     XmlTest xmlTest= new XmlTest(m_suite);
     xmlTest.setName("Internal_test_failures_are_expected");
     m_tests.put(getId(), xmlTest);
-  }
-
-  private Collection computeDifferences(Map m1, Map m2) {
-    List result= new ArrayList();
-
-    for (Object o : m1.keySet()) {
-      o;
-    }
-
-    return result;
   }
 
   private void addTest(Map<String, List<ITestResult>> tests, ITestResult t) {
