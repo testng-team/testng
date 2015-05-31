@@ -39,7 +39,7 @@ public class Assert {
    */
   static public void assertTrue(boolean condition, String message) {
     if(!condition) {
-      failNotEquals( Boolean.valueOf(condition), Boolean.TRUE, message);
+      failNotEquals(condition, Boolean.TRUE, message);
     }
   }
 
@@ -60,7 +60,7 @@ public class Assert {
    */
   static public void assertFalse(boolean condition, String message) {
     if(condition) {
-      failNotEquals( Boolean.valueOf(condition), Boolean.FALSE, message); // TESTNG-81
+      failNotEquals(condition, Boolean.FALSE, message); // TESTNG-81
     }
   }
 
@@ -202,11 +202,11 @@ public class Assert {
     // the following test fails
     if(Double.isInfinite(expected)) {
       if(!(expected == actual)) {
-        failNotEquals(new Double(actual), new Double(expected), message);
+        failNotEquals(actual, expected, message);
       }
     }
     else if(!(Math.abs(expected - actual) <= delta)) { // Because comparison with NaN always returns false
-      failNotEquals(new Double(actual), new Double(expected), message);
+      failNotEquals(actual, expected, message);
     }
   }
 
@@ -236,11 +236,11 @@ public class Assert {
     // the following test fails
     if(Float.isInfinite(expected)) {
       if(!(expected == actual)) {
-        failNotEquals(new Float(actual), new Float(expected), message);
+        failNotEquals(actual, expected, message);
       }
     }
     else if(!(Math.abs(expected - actual) <= delta)) {
-      failNotEquals(new Float(actual), new Float(expected), message);
+      failNotEquals(actual, expected, message);
     }
   }
 

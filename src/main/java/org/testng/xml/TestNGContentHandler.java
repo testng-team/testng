@@ -150,7 +150,7 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       String jUnit = attributes.getValue("junit");
       if (null != jUnit) {
-        m_currentSuite.setJUnit( Boolean.valueOf(jUnit).booleanValue());
+        m_currentSuite.setJUnit(Boolean.valueOf(jUnit));
       }
       String parallel = attributes.getValue("parallel");
       if (parallel != null) {
@@ -176,7 +176,7 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       String groupByInstances = attributes.getValue("group-by-instances");
       if (groupByInstances!= null) {
-        m_currentSuite.setGroupByInstances(Boolean.valueOf(groupByInstances).booleanValue());
+        m_currentSuite.setGroupByInstances(Boolean.valueOf(groupByInstances));
       }
       String skip = attributes.getValue("skipfailedinvocationcounts");
       if (skip != null) {
@@ -276,15 +276,15 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       String jUnit = attributes.getValue("junit");
       if (null != jUnit) {
-        m_currentTest.setJUnit( Boolean.valueOf(jUnit).booleanValue());
+        m_currentTest.setJUnit(Boolean.valueOf(jUnit));
       }
       String skip = attributes.getValue("skipfailedinvocationcounts");
       if (skip != null) {
-        m_currentTest.setSkipFailedInvocationCounts(Boolean.valueOf(skip).booleanValue());
+        m_currentTest.setSkipFailedInvocationCounts(Boolean.valueOf(skip));
       }
       String groupByInstances = attributes.getValue("group-by-instances");
       if (groupByInstances!= null) {
-        m_currentTest.setGroupByInstances(Boolean.valueOf(groupByInstances).booleanValue());
+        m_currentTest.setGroupByInstances(Boolean.valueOf(groupByInstances));
       }
       String preserveOrder = attributes.getValue("preserve-order");
       if (preserveOrder != null) {

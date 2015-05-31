@@ -107,7 +107,7 @@ public class Logger {
 
   static {
     for(i= 0; i < LEVEL_COUNT; ++i) {
-      levelMap.put(levelNames[i], Integer.valueOf(i));
+      levelMap.put(levelNames[i], i);
     }
   }
 
@@ -362,7 +362,7 @@ public class Logger {
           throw new IllegalArgumentException("Unknown level for log4testng.rootLogger "
                                              + rootLevelStr + " in log4testng.properties");
         }
-        rootLoggerLevel= ilevel.intValue();
+        rootLoggerLevel= ilevel;
         loglog4testng("Root level logger set to " + rootLevelStr + " level.");
       }
     }
@@ -421,7 +421,7 @@ public class Logger {
       if(level != null) {
         loglog4testng("Found level " + level + " for logger " + name);
 
-        return level.intValue();
+        return level;
       }
       int dot= name.lastIndexOf('.');
       if(dot == -1) {
