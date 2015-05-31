@@ -5,6 +5,5 @@ jdk:
   - oraclejdk7
   - openjdk7
 
-before_script: export TESTNG_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.4.0:exec)
 script: "./compile-with-gradle.sh"
 
