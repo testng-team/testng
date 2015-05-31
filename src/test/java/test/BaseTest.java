@@ -280,8 +280,8 @@ public class BaseTest extends BaseDistributedTest {
   private Collection computeDifferences(Map m1, Map m2) {
     List result= new ArrayList();
 
-    for(Iterator it= m1.keySet().iterator(); it.hasNext();) {
-      it.next();
+    for (Object o : m1.keySet()) {
+      o;
     }
 
     return result;

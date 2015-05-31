@@ -829,13 +829,13 @@ public class Assert {
     }
 
     Set<?> entrySet = actual.entrySet();
-    for (Iterator<?> iterator = entrySet.iterator(); iterator.hasNext();) {
-      Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iterator.next();
+    for (Object anEntrySet : entrySet) {
+      Map.Entry<?, ?> entry = (Map.Entry<?, ?>) anEntrySet;
       Object key = entry.getKey();
       Object value = entry.getValue();
       Object expectedValue = expected.get(key);
       assertEquals(value, expectedValue, "Maps do not match for key:" + key + " actual:" + value
-          + " expected:" + expectedValue);
+              + " expected:" + expectedValue);
     }
 
   }
