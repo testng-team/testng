@@ -277,16 +277,6 @@ public class BaseTest extends BaseDistributedTest {
     m_tests.put(getId(), xmlTest);
   }
 
-  private Collection computeDifferences(Map m1, Map m2) {
-    List result= new ArrayList();
-
-    for (Object o : m1.keySet()) {
-      o;
-    }
-
-    return result;
-  }
-
   private void addTest(Map<String, List<ITestResult>> tests, ITestResult t) {
     List<ITestResult> l= tests.get(t.getMethod().getMethodName());
     if(null == l) {
