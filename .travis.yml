@@ -4,4 +4,4 @@ jdk:
   - oraclejdk7
   - openjdk7
 
-script: ./gradlew clean cleanTest test
+script: ./gradlew clean test
