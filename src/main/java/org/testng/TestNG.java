@@ -51,6 +51,7 @@ import org.testng.reporters.SuiteHTMLReporter;
 import org.testng.reporters.VerboseReporter;
 import org.testng.reporters.XMLReporter;
 import org.testng.reporters.jq.Main;
+import org.testng.xml.IFileParser;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
@@ -411,6 +412,10 @@ public class TestNG {
     }
   }
 
+  private void addFileParser(String extension, IFileParser<XmlSuite> fileParser) {
+    Parser.addFileParser(extension, fileParser);
+  }
+  
   private Parser getParser(String path) {
     Parser result = new Parser(path);
     initProcessor(result);
@@ -1469,6 +1474,22 @@ public class TestNG {
       setTestSuites(cla.suiteFiles);
     }
 
+    if (cla.parser != null) {
+      String sep1 = ";";
+      String sep2 = ":";
+      String[] parserExtBindings = Utils.split(cla.parser, sep1);
+      for (String parserExtBinding : parserExtBindings) {
+        String[] parserExtPair = Utils.split(parserExtBinding, sep2);
+    	if (parserExtPair.length == 2) {
+    	  String extension = parserExtPair[0];
+    	  String parserFile = parserExtPair[1];
+    	  Class parserClass = ClassHelper.fileToClass(parserFile);
+    	  IFileParser<XmlSuite> parserInstance = ClassHelper.newInstance(parserClass);
+    	  addFileParser(extension, parserInstance);
+    	}
+      }
+    }
+    
     setSuiteThreadPoolSize(cla.suiteThreadPoolSize);
     setRandomizeSuites(cla.randomizeSuites);
   }
