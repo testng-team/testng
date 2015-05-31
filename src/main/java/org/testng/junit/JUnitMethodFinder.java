@@ -75,7 +75,7 @@ public class JUnitMethodFinder implements ITestMethodFinder {
     // same method twice (e.g. setUp) which would lead to double-invocation.
     // All relevant JUnit methods are parameter-less so we store accepted
     // method names in a Set to filter out duplicates.
-    Set<String> acceptedMethodNames = new HashSet<String>();
+    Set<String> acceptedMethodNames = new HashSet<>();
 
     //
     // Collect all methods that start with test

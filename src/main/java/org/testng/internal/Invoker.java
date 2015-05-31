@@ -1140,7 +1140,7 @@ public class Invoker implements IInvoker {
               parametersIndex++;
             }
             PoolService<List<ITestResult>> ps =
-                new PoolService<List<ITestResult>>(suite.getDataProviderThreadCount());
+                    new PoolService<>(suite.getDataProviderThreadCount());
             List<List<ITestResult>> r = ps.submitTasksAndWait(workers);
             for (List<ITestResult> l2 : r) {
               result.addAll(l2);

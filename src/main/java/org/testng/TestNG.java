@@ -603,7 +603,7 @@ public class TestNG {
       xmlTest.getXmlClasses().add(xmlClasses[i]);
     }
 
-    return new ArrayList<XmlSuite>(suites.values());
+    return new ArrayList<>(suites.values());
   }
 
   public void addMethodSelector(String className, int priority) {
@@ -1129,7 +1129,7 @@ public class TestNG {
         // Multithreaded: generate a dynamic graph that stores the suite hierarchy. This is then
         // used to run related suites in specific order. Parent suites are run only
         // once all the child suites have completed execution
-        DynamicGraph<ISuite> suiteGraph = new DynamicGraph<ISuite>();
+        DynamicGraph<ISuite> suiteGraph = new DynamicGraph<>();
         for (XmlSuite xmlSuite : m_suites) {
           populateSuiteGraph(suiteGraph, suiteRunnerMap, xmlSuite);
         }
@@ -1137,9 +1137,9 @@ public class TestNG {
         IThreadWorkerFactory<ISuite> factory = new SuiteWorkerFactory(suiteRunnerMap,
           0 /* verbose hasn't been set yet */, getDefaultSuiteName());
         GraphThreadPoolExecutor<ISuite> pooledExecutor =
-          new GraphThreadPoolExecutor<ISuite>(suiteGraph, factory, m_suiteThreadPoolSize,
-          m_suiteThreadPoolSize, Integer.MAX_VALUE, TimeUnit.MILLISECONDS,
-          new LinkedBlockingQueue<Runnable>());
+                new GraphThreadPoolExecutor<>(suiteGraph, factory, m_suiteThreadPoolSize,
+                        m_suiteThreadPoolSize, Integer.MAX_VALUE, TimeUnit.MILLISECONDS,
+                        new LinkedBlockingQueue<Runnable>());
 
         Utils.log("TestNG", 2, "Starting executor for all suites");
         // Run all suites in parallel

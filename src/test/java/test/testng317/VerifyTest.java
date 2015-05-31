@@ -10,11 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VerifyTest extends SimpleBaseTest {
-  static List<String> m_methods = new ArrayList<String>();
+  static List<String> m_methods = new ArrayList<>();
 
   @BeforeMethod
   public void before() {
-    m_methods = new ArrayList<String>();
+    m_methods = new ArrayList<>();
   }
 
   @Test

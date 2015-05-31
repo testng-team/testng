@@ -54,7 +54,7 @@ public class TestNGContentHandler extends DefaultHandler {
     INCLUDE,
     EXCLUDE
   }
-  private Stack<Location> m_locations = new Stack<Location>();
+  private Stack<Location> m_locations = new Stack<>();
 
   private XmlClass m_currentClass = null;
   private ArrayList<XmlInclude> m_currentIncludedMethods = null;
@@ -405,7 +405,7 @@ public class TestNGContentHandler extends DefaultHandler {
    */
   public void xmlMethodSelectors(boolean start, Attributes attributes) {
     if (start) {
-      m_currentSelectors = new ArrayList<XmlMethodSelector>();
+      m_currentSelectors = new ArrayList<>();
     }
     else {
       switch(m_locations.peek()) {
@@ -453,7 +453,7 @@ public class TestNGContentHandler extends DefaultHandler {
 
   private void xmlMethod(boolean start, Attributes attributes) {
     if (start) {
-      m_currentIncludedMethods = new ArrayList<XmlInclude>();
+      m_currentIncludedMethods = new ArrayList<>();
       m_currentExcludedMethods = Lists.newArrayList();
       m_currentIncludeIndex = 0;
     }

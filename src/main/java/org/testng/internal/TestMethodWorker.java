@@ -161,7 +161,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     synchronized(testClass) {
       Set<Object> instances= invokedBeforeClassMethods.get(testClass);
       if(null == instances) {
-        instances= new HashSet<Object>();
+        instances= new HashSet<>();
         invokedBeforeClassMethods.put(testClass, instances);
       }
       for(Object instance: mi.getInstances()) {
@@ -206,7 +206,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       synchronized(invokedAfterClassMethods) {
         Set<Object> instances = invokedAfterClassMethods.get(testClass);
         if(null == instances) {
-          instances= new HashSet<Object>();
+          instances= new HashSet<>();
           invokedAfterClassMethods.put(testClass, instances);
         }
         for(Object inst: mi.getInstances()) {

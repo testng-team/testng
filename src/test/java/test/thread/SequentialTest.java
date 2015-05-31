@@ -81,7 +81,7 @@ public class SequentialTest extends BaseTest {
         maps[1].keySet().iterator().next().longValue(),
         maps[2].keySet().iterator().next().longValue(),
     };
-    Map<Long, Long> verifyMap = new HashMap<Long, Long>();
+    Map<Long, Long> verifyMap = new HashMap<>();
 
     for (long id : ids) {
       verifyMap.put(id, id);

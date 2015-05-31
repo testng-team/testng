@@ -24,7 +24,7 @@ public class FailedDPTest {
 	 * */
 	@DataProvider(name = "DP", parallel = true)
 	public Iterator<Integer[]> getData() {
-		List<Integer[]> list = new ArrayList<Integer[]>();
+		List<Integer[]> list = new ArrayList<>();
 		for (int i = 0; i < 10; i++) {
 			list.add(new Integer[] { i });
 		}

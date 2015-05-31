@@ -34,7 +34,7 @@ public class PoolService<FutureType> {
       }
     };
     m_executor = Executors.newFixedThreadPool(threadPoolSize, m_threadFactory);
-    m_completionService = new ExecutorCompletionService<FutureType>(m_executor);
+    m_completionService = new ExecutorCompletionService<>(m_executor);
   }
 
   public List<FutureType> submitTasksAndWait(List<? extends Callable<FutureType>> tasks) {

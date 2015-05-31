@@ -18,11 +18,11 @@ import java.util.List;
  * @author cbeust
  */
 public class Sample2 {
-  private static List<String> m_methodList = new ArrayList<String>();
+  private static List<String> m_methodList = new ArrayList<>();
 
   @BeforeSuite
   public void init() {
-    m_methodList = new ArrayList<String>();
+    m_methodList = new ArrayList<>();
   }
 
   @BeforeMethod
@@ -53,7 +53,7 @@ public class Sample2 {
         "testImages",
         "tearDown",
     };
-    List<String> expected = new ArrayList<String>();
+    List<String> expected = new ArrayList<>();
     for (String s : expectedStrings) {
       expected.add(s);
     }
