@@ -1857,7 +1857,9 @@ public class TestNG {
     @Override
     public void onTestSkipped(ITestResult result) {
       setHasRunTests();
-      m_mainRunner.setStatus(HAS_SKIPPED);
+      if ((m_mainRunner.getStatus() & HAS_FAILURE) != 0) {
+        m_mainRunner.setStatus(HAS_SKIPPED);
+      }
     }
 
     @Override
