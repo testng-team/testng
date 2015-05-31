@@ -41,17 +41,17 @@ public class AssertEqualsTest {
     Set set1 = new LinkedHashSet();
     Set set2 = new HashSet();
 
-    set1.add(Integer.valueOf(5));
-    set2.add(Integer.valueOf(5));
+    set1.add(5);
+    set2.add(5);
 
-    set1.add(Integer.valueOf(6));
-    set2.add(Integer.valueOf(6));
+    set1.add(6);
+    set2.add(6);
 
-    set1.add(Integer.valueOf(1));
-    set2.add(Integer.valueOf(1));
+    set1.add(1);
+    set2.add(1);
 
-    set1.add(Integer.valueOf(9));
-    set2.add(Integer.valueOf(9));
+    set1.add(9);
+    set2.add(9);
 
     System.out.println("set1 is:" + set1.toString());
     System.out.println("set2 is:" + set2.toString());

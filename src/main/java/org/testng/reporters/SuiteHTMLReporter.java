@@ -54,12 +54,11 @@ public class SuiteHTMLReporter implements IReporter {
       e.printStackTrace();
     }
 
-    for (int i = 0; i < suites.size(); i++) {
+    for (ISuite suite : suites) {
 
       //
       // Generate the various reports
       //
-      ISuite suite = suites.get(i);
       XmlSuite xmlSuite = suite.getXmlSuite();
       if (xmlSuite.getTests().size() == 0) {
         continue;

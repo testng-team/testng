@@ -15,7 +15,7 @@ public class TimeOutTest extends BaseTest {
   private Long m_id;
 
   public TimeOutTest() {
-    m_id = Long.valueOf(System.currentTimeMillis());
+    m_id = System.currentTimeMillis();
   }
 
   private void privateTimeOutTest(boolean parallel) {

@@ -43,8 +43,8 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
 
   @Override
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
-    for(int i= 0; i < suites.size(); i++) {
-      generateFailureSuite(suites.get(i).getXmlSuite(), suites.get(i), outputDirectory);
+    for (ISuite suite : suites) {
+      generateFailureSuite(suite.getXmlSuite(), suite, outputDirectory);
     }
   }
 
@@ -192,7 +192,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
           : instances[0].getClass();
       Set<ITestNGMethod> methodList= methodsMap.get(clazz);
       if(null == methodList) {
-        methodList= new HashSet<ITestNGMethod>();
+        methodList= new HashSet<>();
         methodsMap.put(clazz, methodList);
       }
       methodList.add(m);

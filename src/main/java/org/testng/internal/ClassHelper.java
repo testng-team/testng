@@ -33,7 +33,7 @@ public final class ClassHelper {
   private static final String JUNIT_4_TESTRUNNER = "org.testng.junit.JUnit4TestRunner";
 
   /** The additional class loaders to find classes in. */
-  private static final List<ClassLoader> m_classLoaders = new Vector<ClassLoader>();
+  private static final List<ClassLoader> m_classLoaders = new Vector<>();
 
   /** Add a class loader to the searchable loaders. */
   public static void addClassLoader(final ClassLoader loader) {
@@ -86,7 +86,7 @@ public final class ClassHelper {
    * @return the class or null if the class is not found.
    */
   public static Class<?> forName(final String className) {
-    Vector<ClassLoader> allClassLoaders = new Vector<ClassLoader>();
+    Vector<ClassLoader> allClassLoaders = new Vector<>();
     ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
     if (contextClassLoader != null) {
       allClassLoaders.add(contextClassLoader);

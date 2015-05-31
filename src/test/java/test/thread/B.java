@@ -10,7 +10,7 @@ public class B {
   public static Map<Long, Long> m_threadIds = Maps.newHashMap();
 
   public static void setUp() {
-    m_threadIds = new HashMap<Long, Long>();
+    m_threadIds = new HashMap<>();
   }
 
   @Test

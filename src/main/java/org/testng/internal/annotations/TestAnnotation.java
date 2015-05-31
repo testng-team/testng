@@ -179,10 +179,7 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
       try {
         m_retryAnalyzer = (IRetryAnalyzer) c.newInstance();
       }
-      catch (InstantiationException e) {
-        // The class will never be called.
-      }
-      catch (IllegalAccessException e) {
+      catch (InstantiationException | IllegalAccessException e) {
         // The class will never be called.
       }
     }

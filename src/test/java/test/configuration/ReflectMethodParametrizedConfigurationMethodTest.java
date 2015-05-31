@@ -15,8 +15,8 @@ import java.util.Map;
  * This class/interface
  */
 public class ReflectMethodParametrizedConfigurationMethodTest {
-  private Map<String, String> m_before= new HashMap<String, String>();
-  private Map<String, String> m_after= new HashMap<String, String>();
+  private Map<String, String> m_before= new HashMap<>();
+  private Map<String, String> m_after= new HashMap<>();
 
   @BeforeMethod
   public void beforeMethod(Method tobeInvokedTestMethod) {

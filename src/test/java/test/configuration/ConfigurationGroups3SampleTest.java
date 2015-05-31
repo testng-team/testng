@@ -39,7 +39,7 @@ public class ConfigurationGroups3SampleTest extends Base3 {
     log("f1");
   }
 
-  private List<String> m_list = new ArrayList<String>();
+  private List<String> m_list = new ArrayList<>();
 
   @Test(dependsOnGroups = {"cg34-a", "cg34-1"})
   public void verify() {

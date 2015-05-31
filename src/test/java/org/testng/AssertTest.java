@@ -123,8 +123,8 @@ public class AssertTest {
 
   @Test(expectedExceptions = AssertionError.class)
   public void assertEqualsSymmetricArrays() {
-    Object[] actual = {new Integer(1), new Asymmetric(42, 'd'), "inDay"};
-    Object[] expected = {new Integer(1), new Contrived(42), "inDay"};
+    Object[] actual = {1, new Asymmetric(42, 'd'), "inDay"};
+    Object[] expected = {1, new Contrived(42), "inDay"};
     Assert.assertEquals(actual, expected);
   }
 

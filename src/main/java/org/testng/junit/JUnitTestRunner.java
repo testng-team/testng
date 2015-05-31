@@ -35,7 +35,7 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
 
   private ITestResultNotifier m_parentRunner;
 
-  private Map<Test, TestRunInfo> m_tests= new WeakHashMap<Test, TestRunInfo>();
+  private Map<Test, TestRunInfo> m_tests= new WeakHashMap<>();
   private List<ITestNGMethod> m_methods= Lists.newArrayList();
   private List<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
 

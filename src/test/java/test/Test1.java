@@ -37,7 +37,7 @@ public class Test1 extends BaseTest {
     assert 1 == getTest().getXmlClasses().size();
     // should match all methods belonging to group "odd" and "even"
     addIncludedGroup("evenodd");
-    List l = new ArrayList<String>();
+    List l = new ArrayList<>();
     l.add("even");
     l.add("odd");
     addMetaGroup("evenodd", l);
@@ -55,11 +55,11 @@ public class Test1 extends BaseTest {
   public void groupsOfGroupsWithIndirections() {
     addClass("test.sample.Sample1");
     addIncludedGroup("all");
-    List l = new ArrayList<String>();
+    List l = new ArrayList<>();
     l.add("methods");
     l.add("broken");
     addMetaGroup("all", l);
-    l = new ArrayList<String>();
+    l = new ArrayList<>();
     l.add("odd");
     l.add("even");
     addMetaGroup("methods", l);

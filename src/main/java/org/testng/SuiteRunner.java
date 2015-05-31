@@ -266,8 +266,8 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   private void privateRun() {
 
     // Map for unicity, Linked for guaranteed order
-    Map<Method, ITestNGMethod> beforeSuiteMethods= new LinkedHashMap<Method, ITestNGMethod>();
-    Map<Method, ITestNGMethod> afterSuiteMethods = new LinkedHashMap<Method, ITestNGMethod>();
+    Map<Method, ITestNGMethod> beforeSuiteMethods= new LinkedHashMap<>();
+    Map<Method, ITestNGMethod> afterSuiteMethods = new LinkedHashMap<>();
 
     IInvoker invoker = null;
 

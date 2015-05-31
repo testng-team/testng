@@ -21,7 +21,7 @@ public class Captor {
 
   public static void reset() {
 //    System.out.println("@@PHOLSER RESETTING CAPTOR");
-    instance().captives = new ArrayList<String>();
+    instance().captives = new ArrayList<>();
   }
 
   public void capture( String aString ) {

@@ -79,7 +79,7 @@ public class XMLSuiteResultWriter {
   private void addAllTestResults(Set<ITestResult> testResults, IResultMap resultMap) {
     if (resultMap != null) {
       // Sort the results chronologically before adding them
-      List<ITestResult> allResults = new ArrayList<ITestResult>();
+      List<ITestResult> allResults = new ArrayList<>();
       allResults.addAll(resultMap.getAllResults());
 
       Collections.sort(new ArrayList(allResults), new Comparator<ITestResult>() {
