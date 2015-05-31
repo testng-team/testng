@@ -5,6 +5,6 @@ jdk:
   - openjdk7
 
 before_install: touch local.properties
-install: ./gradlew assemble clean cleanTest
+script: ./gradlew clean cleanTest
 
 
