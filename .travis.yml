@@ -6,5 +6,5 @@ jdk:
 
 before_install:
   - touch local.properties
-
+script: "./compile-with-gradle.sh"
 
