@@ -40,7 +40,7 @@ public class TestCommandLineArgs
   @Test
   public void testPathResolution()
   {
-    File file = new File("build.xml");
+    File file = new File("pom.xml");
 
     assert file.exists();
 

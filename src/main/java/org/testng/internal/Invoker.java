@@ -1432,19 +1432,18 @@ public class Invoker implements IInvoker {
         }
       }
 
-      testResult.setStatus(status);
+      IRetryAnalyzer retryAnalyzer = testMethod.getRetryAnalyzer();
+      boolean willRetry = retryAnalyzer != null && status == ITestResult.FAILURE && failure.instances != null && retryAnalyzer.retry(testResult);
 
-      if (status == ITestResult.FAILURE && !handled) {
-        handleException(ite, testMethod, testResult, failure.count++);
-        status = testResult.getStatus();
-      }
-
-      if (status == ITestResult.FAILURE) {
-        IRetryAnalyzer retryAnalyzer = testMethod.getRetryAnalyzer();
-
-        if (retryAnalyzer != null &&  failure.instances != null && retryAnalyzer.retry(testResult)) {
-          resultsToRetry.add(testResult);
-          failure.instances.add(testResult.getInstance());
+      if (willRetry) {
+        resultsToRetry.add(testResult);
+        failure.instances.add(testResult.getInstance());
+        testResult.setStatus(ITestResult.SKIP);
+      } else {
+        testResult.setStatus(status);
+        if (status == ITestResult.FAILURE && !handled) {
+          handleException(ite, testMethod, testResult, failure.count++);
+          testResult.setStatus(status);
         }
       }
       if (collectResults) {
