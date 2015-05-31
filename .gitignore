@@ -1,8 +1,6 @@
 .ant-targets*
 .classpath
-.gitignore
 .gradle
-.idea
 .project
 .settings
 /_eclipse/
@@ -19,6 +17,5 @@ src/test/java/test/ignore
 target
 test-output
 test-output-tests
-testng.iml
 z_build
 gradle.properties
