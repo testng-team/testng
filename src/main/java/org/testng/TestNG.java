@@ -1394,7 +1394,7 @@ public class TestNG {
     }
     if (cla.listener != null) {
       String sep = ";";
-      if (cla.listener.indexOf(",") >= 0) {
+      if (cla.listener.contains(",")) {
         sep = ",";
       }
       String[] strs = Utils.split(cla.listener, sep);

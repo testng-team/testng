@@ -610,7 +610,7 @@ public final class Utils {
       while((line = bufferedReader.readLine()) != null) {
         boolean isExcluded = false;
         for (String excluded : excludedStrings) {
-          if(line.indexOf(excluded) != -1) {
+          if(line.contains(excluded)) {
             isExcluded = true;
             excludedCount++;
             break;
