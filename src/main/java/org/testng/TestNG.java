@@ -282,15 +282,7 @@ public class TestNG {
                     cSuite.setParentSuite(s);
                     s.getChildSuites().add(cSuite);
                 }
-            }
-            catch(FileNotFoundException e) {
-                e.printStackTrace(System.out);
-            }
-            catch (ParserConfigurationException e) {
-                e.printStackTrace(System.out);
-            } catch (SAXException e) {
-                e.printStackTrace(System.out);
-            } catch (IOException e) {
+            } catch (ParserConfigurationException | IOException | SAXException e) {
                 e.printStackTrace(System.out);
             }
         }
@@ -319,19 +311,9 @@ public class TestNG {
           }
         }
       }
-      catch(FileNotFoundException e) {
+      catch(SAXException | ParserConfigurationException | IOException e) {
         e.printStackTrace(System.out);
-      }
-      catch(IOException e) {
-        e.printStackTrace(System.out);
-      }
-      catch(ParserConfigurationException e) {
-        e.printStackTrace(System.out);
-      }
-      catch(SAXException e) {
-        e.printStackTrace(System.out);
-      }
-      catch(Exception ex) {
+      } catch(Exception ex) {
         // Probably a Yaml exception, unnest it
         Throwable t = ex;
         while (t.getCause() != null) t = t.getCause();
@@ -400,13 +382,7 @@ public class TestNG {
         m_suites.add(xmlSuite);
       }
     }
-    catch(ParserConfigurationException ex) {
-      ex.printStackTrace();
-    }
-    catch(SAXException ex) {
-      ex.printStackTrace();
-    }
-    catch(IOException ex) {
+    catch(ParserConfigurationException | IOException | SAXException ex) {
       ex.printStackTrace();
     }
   }

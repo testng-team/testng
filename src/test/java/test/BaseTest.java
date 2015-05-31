@@ -413,11 +413,7 @@ public class BaseTest extends BaseDistributedTest {
           line = fr.readLine();
           currentLine++;
         }
-      }
-      catch(FileNotFoundException e) {
-        e.printStackTrace();
-      }
-      catch(IOException e) {
+      } catch(IOException e) {
         e.printStackTrace();
       }
       finally {

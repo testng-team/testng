@@ -235,13 +235,7 @@ public class Invoker implements IInvoker {
       }
       catch(InvocationTargetException ex) {
         handleConfigurationFailure(ex, tm, testResult, configurationAnnotation, currentTestMethod, instance, suite);
-      }
-      catch(TestNGException ex) {
-        // Don't wrap TestNGExceptions, it could be a missing parameter on a
-        // @Configuration method
-        handleConfigurationFailure(ex, tm, testResult, configurationAnnotation, currentTestMethod, instance, suite);
-      }
-      catch(Throwable ex) { // covers the non-wrapper exceptions
+      } catch(Throwable ex) { // covers the non-wrapper exceptions
         handleConfigurationFailure(ex, tm, testResult, configurationAnnotation, currentTestMethod, instance, suite);
       }
     } // for methods
@@ -530,19 +524,10 @@ public class Invoker implements IInvoker {
           }
         }
       }
-      catch (InvocationTargetException ex) {
+      catch (InvocationTargetException | IllegalAccessException ex) {
        throwConfigurationFailure(testResult, ex);
        throw ex;
-      }
-      catch (IllegalAccessException ex) {
-        throwConfigurationFailure(testResult, ex);
-        throw ex;
-      }
-      catch (NoSuchMethodException ex) {
-        throwConfigurationFailure(testResult, ex);
-        throw new TestNGException(ex);
-      }
-      catch (Throwable ex) {
+      } catch (Throwable ex) {
         throwConfigurationFailure(testResult, ex);
         throw new TestNGException(ex);
       }

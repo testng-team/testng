@@ -47,9 +47,7 @@ public class PoolService<FutureType> {
       try {
         Future<FutureType> take = m_completionService.take();
         result.add(take.get());
-      } catch (InterruptedException e) {
-        throw new TestNGException(e);
-      } catch (ExecutionException e) {
+      } catch (InterruptedException | ExecutionException e) {
         throw new TestNGException(e);
       }
     }

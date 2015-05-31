@@ -38,10 +38,7 @@ public class JUnitMethodFinder implements ITestMethodFinder {
     try {
       result = cls.getConstructor(parameters);
     }
-    catch (SecurityException ex) {
-      // ignore
-    }
-    catch (NoSuchMethodException ex) {
+    catch (SecurityException | NoSuchMethodException ex) {
       // ignore
     }
 
@@ -119,23 +116,10 @@ public class JUnitMethodFinder implements ITestMethodFinder {
         result = ctor.newInstance(new Object[0]);
       }
     }
-    catch (IllegalArgumentException ex) {
+    catch (IllegalArgumentException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | SecurityException ex) {
       ex.printStackTrace();
-    }
-    catch (SecurityException ex) {
-      ex.printStackTrace();
-    }
-    catch (InstantiationException ex) {
+    } catch (InstantiationException ex) {
       System.err.println("Couldn't find a constructor with a String parameter on your JUnit test class.");
-      ex.printStackTrace();
-    }
-    catch (IllegalAccessException ex) {
-      ex.printStackTrace();
-    }
-    catch (InvocationTargetException ex) {
-      ex.printStackTrace();
-    }
-    catch (NoSuchMethodException ex) {
       ex.printStackTrace();
     }
 

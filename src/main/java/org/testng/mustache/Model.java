@@ -50,11 +50,7 @@ public class Model {
       try {
         Field f = cls.getField(variable);
         return new Value(f.get(object));
-      } catch (IllegalAccessException e) {
-//        e.printStackTrace();
-      } catch (SecurityException e) {
-//        e.printStackTrace();
-      } catch (NoSuchFieldException e) {
+      } catch (IllegalAccessException | NoSuchFieldException | SecurityException e) {
 //        e.printStackTrace();
       }
 //    }
