@@ -4,7 +4,7 @@ jdk:
   - oraclejdk7
   - openjdk7
 
-before_install:
-  - touch local.properties
-script: "./compile-with-gradle.sh"
+before_install: touch local.properties
+install: ./gradlew assemble clean cleanTest
+
 
