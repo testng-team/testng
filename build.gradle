@@ -128,3 +128,11 @@ test {
     systemProperties = System.getProperties()
     systemProperties['test.resources.dir'] = 'build/resources/test/'
 }
+
+if (JavaVersion.current().isJava8Compatible()) {
+    allprojects {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
+    }
+}

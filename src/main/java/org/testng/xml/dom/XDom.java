@@ -180,13 +180,7 @@ private void populateContent(Node item, Object object) {
     for (Pair<Method, Wrapper> pair : pairs) {
       try {
         pair.first().invoke(bean, child.getTextContent());
-      } catch (IllegalArgumentException e) {
-        e.printStackTrace();
-      } catch (DOMException e) {
-        e.printStackTrace();
-      } catch (IllegalAccessException e) {
-        e.printStackTrace();
-      } catch (InvocationTargetException e) {
+      } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException | DOMException e) {
         e.printStackTrace();
       }
     }
@@ -215,9 +209,7 @@ private void populateContent(Node item, Object object) {
       } catch (IllegalArgumentException e) {
         System.out.println("Parameters: " + allParameters);
         e.printStackTrace();
-      } catch (IllegalAccessException e) {
-        e.printStackTrace();
-      } catch (InvocationTargetException e) {
+      } catch (IllegalAccessException | InvocationTargetException e) {
         e.printStackTrace();
       }
     }
@@ -247,11 +239,7 @@ private void populateContent(Node item, Object object) {
         } else {
           foundMethod.invoke(object, value);
         }
-      } catch (IllegalArgumentException e) {
-        e.printStackTrace();
-      } catch (IllegalAccessException e) {
-        e.printStackTrace();
-      } catch (InvocationTargetException e) {
+      } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
         e.printStackTrace();
       }
     } else {

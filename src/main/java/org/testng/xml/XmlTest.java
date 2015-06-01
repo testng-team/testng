@@ -190,7 +190,7 @@ public class XmlTest implements Serializable, Cloneable {
    * @param v
    */
   public void setVerbose(int v) {
-    m_verbose = Integer.valueOf(v);
+    m_verbose = v;
   }
 
   public int getThreadCount() {
@@ -243,7 +243,7 @@ public class XmlTest implements Serializable, Cloneable {
     }
 
     if (null != result) {
-      return result.intValue();
+      return result;
     } else {
       return 1;
     }
@@ -255,7 +255,7 @@ public class XmlTest implements Serializable, Cloneable {
       result = m_suite.getGroupByInstances();
     }
     if (result != null) {
-      return result.booleanValue();
+      return result;
     } else {
       return XmlSuite.DEFAULT_GROUP_BY_INSTANCES;
     }
@@ -420,7 +420,7 @@ public class XmlTest implements Serializable, Cloneable {
   public long getTimeOut(long def) {
     long result = def;
     if (getTimeOut() != null) {
-        result = new Long(getTimeOut()).longValue();
+        result = new Long(getTimeOut());
     }
 
     return result;

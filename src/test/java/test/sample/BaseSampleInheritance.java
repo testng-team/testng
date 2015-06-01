@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class BaseSampleInheritance {
 
-  protected List<String> m_configurations = new ArrayList<String>();
+  protected List<String> m_configurations = new ArrayList<>();
 
   protected void addConfiguration(String c) {
     m_configurations.add(c);

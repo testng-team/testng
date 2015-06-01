@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Helper {
-  private static Map<String, Map<Long, Long>> m_maps = new HashMap<String, Map<Long, Long>>();
+  private static Map<String, Map<Long, Long>> m_maps = new HashMap<>();
 
   public static Map<Long, Long> getMap(String className) {
     synchronized(m_maps) {
@@ -20,6 +20,6 @@ public class Helper {
   }
 
   public static void reset() {
-    m_maps = new HashMap<String, Map<Long, Long>>();
+    m_maps = new HashMap<>();
   }
 }

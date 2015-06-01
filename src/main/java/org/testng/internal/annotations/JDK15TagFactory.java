@@ -420,7 +420,7 @@ public class JDK15TagFactory {
 
   private String[] join(String[] strings, String[] strings2) {
     List<String> result = Lists.newArrayList(strings);
-    Set<String> seen = new HashSet<String>(Lists.newArrayList(strings));
+    Set<String> seen = new HashSet<>(Lists.newArrayList(strings));
     for (String s : strings2) {
       if (! seen.contains(s)) {
         result.add(s);

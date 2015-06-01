@@ -25,7 +25,7 @@ public class Bsh implements IBsh {
       }
       setContext(interpreter, tm.getMethod(), groups, tm);
       Object evalResult = interpreter.eval(expression);
-      result = ((Boolean) evalResult).booleanValue();
+      result = (Boolean) evalResult;
     }
     catch (EvalError evalError) {
       Utils.log("bsh.Interpreter", 2, "Cannot evaluate expression:"

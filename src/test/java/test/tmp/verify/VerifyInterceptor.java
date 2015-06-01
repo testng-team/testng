@@ -29,7 +29,7 @@ public class VerifyInterceptor implements IMethodInterceptor {
   public List<IMethodInstance> intercept(List<IMethodInstance> methods,
       ITestContext context) {
 
-    List<IMethodInstance> result = new ArrayList<IMethodInstance>();
+    List<IMethodInstance> result = new ArrayList<>();
     Map<Class<?>, List<IMethodInstance>> verifyMethods = Maps.newHashMap();
     for (IMethodInstance mi : methods) {
       ITestNGMethod tm = mi.getMethod();
@@ -48,7 +48,7 @@ public class VerifyInterceptor implements IMethodInterceptor {
    * @return all the @Verify methods found on @code{realClass}
    */
   private List<IMethodInstance> findVerifyMethods(Class realClass, final ITestNGMethod tm) {
-    List<IMethodInstance> result = new ArrayList<IMethodInstance>();
+    List<IMethodInstance> result = new ArrayList<>();
     for (final Method m : realClass.getDeclaredMethods()) {
       Annotation a = m.getAnnotation(Verify.class);
       if (a != null) {

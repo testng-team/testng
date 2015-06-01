@@ -15,10 +15,10 @@ public class FastTestsFirstInterceptor implements IMethodInterceptor {
   public List<IMethodInstance> intercept(List<IMethodInstance> methods,
       ITestContext context)
   {
-    List<IMethodInstance> result = new ArrayList<IMethodInstance>();
+    List<IMethodInstance> result = new ArrayList<>();
     for (IMethodInstance m : methods) {
       Test test = m.getMethod().getMethod().getAnnotation(Test.class);
-      Set<String> groups = new HashSet<String>();
+      Set<String> groups = new HashSet<>();
       for (String group : test.groups()) {
         groups.add(group);
       }

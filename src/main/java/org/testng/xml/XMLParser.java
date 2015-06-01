@@ -26,9 +26,7 @@ abstract public class XMLParser<T> implements IFileParser<T> {
     SAXParser parser = null;
     try {
       parser = spf.newSAXParser();
-    } catch (ParserConfigurationException e) {
-      e.printStackTrace();
-    } catch (SAXException e) {
+    } catch (ParserConfigurationException | SAXException e) {
       e.printStackTrace();
     }
     m_saxParser = parser;

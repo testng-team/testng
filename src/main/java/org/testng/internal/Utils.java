@@ -441,11 +441,8 @@ public final class Utils {
       fh.setLevel(Level.INFO);
       logger.addHandler(fh);
     }
-    catch (SecurityException se) {
+    catch (SecurityException | IOException se) {
       se.printStackTrace();
-    }
-    catch (IOException ioe) {
-      ioe.printStackTrace();
     }
   }
 
@@ -760,11 +757,7 @@ public final class Utils {
       }
       in.close();
       out.close();
-    }
-    catch(FileNotFoundException ex){
-      ex.printStackTrace();
-    }
-    catch(IOException e){
+    } catch(IOException e){
       e.printStackTrace();
     }
   }

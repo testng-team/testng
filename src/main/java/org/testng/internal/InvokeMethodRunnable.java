@@ -45,10 +45,7 @@ public class InvokeMethodRunnable implements Runnable {
         Method m = m_method.getMethod();
         MethodInvocationHelper.invokeMethod(m, m_instance, m_parameters);
       }
-      catch(InvocationTargetException e) {
-        t = new TestNGRuntimeException(e.getCause());
-      }
-      catch(IllegalAccessException e) {
+      catch(InvocationTargetException | IllegalAccessException e) {
         t = new TestNGRuntimeException(e.getCause());
       }
       if(null != t) {

@@ -110,8 +110,8 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
 
     private class RL extends RunListener {
 
-        private Map<Description, ITestResult> runs = new WeakHashMap<Description, ITestResult>();
-        private List<Description> notified = new LinkedList<Description>();
+        private Map<Description, ITestResult> runs = new WeakHashMap<>();
+        private List<Description> notified = new LinkedList<>();
 
         @Override
         public void testAssumptionFailure(Failure failure) {

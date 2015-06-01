@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigurationGroupDataProviderSampleTest {
-  static List<Integer> m_list = new ArrayList<Integer>();
+  static List<Integer> m_list = new ArrayList<>();
 
   @BeforeGroups(groups={"twice"}, value={"twice"})
   public void a(){
