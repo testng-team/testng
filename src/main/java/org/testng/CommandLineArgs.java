@@ -55,6 +55,12 @@ public class CommandLineArgs {
         "names implementing ITestRunnerFactory")
   public String objectFactory;
 
+  public static final String PARSER = "-parser";
+  @Parameter(names = PARSER, description = "Semicolon separated bindings of file extensions to .class files "
+  		+ "or class names implementing IFileParser<XmlSuite>, colon is used as separator for file extension "
+  		+ "and parser implementation (ex: \"extension:fileParserClass\".")
+  public String parser;
+  
   public static final String PARALLEL= "-parallel";
   @Parameter(names = PARALLEL, description = "Parallel mode (methods, tests or classes)")
   public String parallelMode;
