@@ -1,5 +1,6 @@
 package org.testng.collections;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -7,7 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class MultiMap<K, V, C extends Collection<V>> {
+public abstract class MultiMap<K, V, C extends Collection<V>> implements Serializable {
+
+  private static final long serialVersionUID = 8206876219044801244L;
+
   protected final Map<K, C> m_objects = Maps.newHashMap();
 
   protected abstract C createValue();
