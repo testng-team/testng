@@ -1,0 +1,74 @@
+<project name="testng" default="all" basedir=".">
+
+  <property file="build.properties"/>
+  <property name="this.directory" value="${test.dir}" />
+  <property name="test-output" value="${this.directory}/test-output" />
+
+  <taskdef name="testng" classname="org.testng.TestNGAntTask" classpath="${testng.jar}" />
+
+  <target name="all">
+    <echo>This dir: ${this.directory}</echo>
+    <delete failonerror="false" dir="${this.directory}/build" />
+  	<mkdir dir="${this.directory}/build" />
+  	
+  	<javac classpath="${testng.jar}"
+  		  destdir="${this.directory}/build" srcdir="${this.directory}" includes="test/ant/*.java" />
+
+<!--
+    <testng classpath="build;../../testng-5.2beta-jdk15.jar"
+            outputdir="test-output"
+    	      dumpcommand="true">
+        <xmlfileset dir="." includes="testng.xml"/>
+    </testng>
+-->
+	<delete failonerror="false">
+	<fileset dir="${test-output}" includes="**"/></delete>
+  	
+    <testng classpath="${this.directory}/build;${testng.jar}"
+            outputdir="${test-output}"
+  	    parallel="methods"
+  	    threadcount="5"
+    	listeners = "org.testng.reporters.FailedReporter, org.testng.reporters.DotTestListener"
+    	haltonfailure="true"
+    	>
+        <classfileset dir="${this.directory}/build">
+        	<include name="test/ant/NoPackageTest.class" />
+        	<include name="test/ant/MultipleThreadTest.class" />
+        </classfileset>
+    </testng>
+  	
+  	<available file="${test-output}/Ant suite/Ant test.xml" 
+  		type="file" property="test.exists"/>
+  	<fail unless="test.exists" 
+  		message="The appropriately named output should have been created"/>
+  	
+    <testng classpath="${this.directory}/build;${testng.jar}"
+            outputdir="${test-output}"
+	   	listeners = "org.testng.reporters.FailedReporter, org.testng.reporters.DotTestListener"
+    	haltonfailure="true"
+    	suitename="Test Ant Suite"
+    	testname="Test Ant Test"
+    	>
+        <classfileset dir="${this.directory}/build">
+        	<include name="test/ant/DontOverrideSuiteNameTest.class" />
+         </classfileset>
+    </testng>
+  	
+  	<available file="${test-output}/Test Ant Suite/Test Ant Test.xml" 
+  		type="file" property="test2.exists"/>
+  	<fail unless="test2.exists" message="The appropriately named output should have been created"/>
+  	
+  	<!-- Ensure standard tests get run -->
+    <testng classpath="${this.directory}/build;${testng.jar}"
+            outputdir="${test-output}"
+    	listeners = "org.testng.reporters.FailedReporter, org.testng.reporters.DotTestListener"
+    	haltonfailure="true"
+    	>
+        <xmlfileset file="${test.resources.dir}/testng-ant.xml"/>
+    </testng>
+  	<available file="${test-output}/Suitename from xml/TestName.xml" 
+  		type="file" property="test3.exists"/>
+  	<fail unless="test3.exists" message="The appropriately named output should have been created"/>
+
+  </target>
+</project>

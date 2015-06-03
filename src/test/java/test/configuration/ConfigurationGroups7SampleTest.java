@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ConfigurationGroups7SampleTest {
-  private List<String> m_log = new ArrayList<String>();
+  private List<String> m_log = new ArrayList<>();
 
    @BeforeGroups({"A"})
    private void initA() {

@@ -19,7 +19,7 @@ public class Tarjan<T> {
   private List<T> m_cycle;
 
   public Tarjan(Graph<T> graph, T start) {
-    m_s = new Stack<T>();
+    m_s = new Stack<>();
     run(graph, start);
   }
 
@@ -52,7 +52,7 @@ public class Tarjan<T> {
   }
 
   public static void main(String[] args) {
-    Graph<String> g = new Graph<String>();
+    Graph<String> g = new Graph<>();
     g.addNode("a");
     g.addNode("b");
     g.addNode("c");
@@ -70,7 +70,7 @@ public class Tarjan<T> {
       g.addPredecessor(edges[i], edges[i+1]);
     }
 
-    new Tarjan<String>(g, "a");
+    new Tarjan<>(g, "a");
   }
 
   public List<T> getCycle() {

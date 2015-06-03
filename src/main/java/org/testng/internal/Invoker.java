@@ -183,11 +183,11 @@ public class Invoker implements IInvoker {
         // Only run the configuration if
         // - the test is enabled and
         // - the Configuration method belongs to the same class or a parent
-        if(MethodHelper.isEnabled(objectClass, m_annotationFinder)) {
-          configurationAnnotation = AnnotationHelper.findConfiguration(m_annotationFinder, method);
+        configurationAnnotation = AnnotationHelper.findConfiguration(m_annotationFinder, method);
+        boolean alwaysRun= isAlwaysRun(configurationAnnotation);
+        if(MethodHelper.isEnabled(objectClass, m_annotationFinder) || alwaysRun) {
 
           if (MethodHelper.isEnabled(configurationAnnotation)) {
-            boolean alwaysRun= isAlwaysRun(configurationAnnotation);
 
             if (!confInvocationPassed(tm, currentTestMethod, testClass, instance) && !alwaysRun) {
               handleConfigurationSkip(tm, testResult, configurationAnnotation, currentTestMethod, instance, suite);
@@ -235,13 +235,7 @@ public class Invoker implements IInvoker {
       }
       catch(InvocationTargetException ex) {
         handleConfigurationFailure(ex, tm, testResult, configurationAnnotation, currentTestMethod, instance, suite);
-      }
-      catch(TestNGException ex) {
-        // Don't wrap TestNGExceptions, it could be a missing parameter on a
-        // @Configuration method
-        handleConfigurationFailure(ex, tm, testResult, configurationAnnotation, currentTestMethod, instance, suite);
-      }
-      catch(Throwable ex) { // covers the non-wrapper exceptions
+      } catch(Throwable ex) { // covers the non-wrapper exceptions
         handleConfigurationFailure(ex, tm, testResult, configurationAnnotation, currentTestMethod, instance, suite);
       }
     } // for methods
@@ -273,7 +267,11 @@ public class Invoker implements IInvoker {
     if ((configurationAnnotation.getAfterSuite()
         || configurationAnnotation.getAfterTest()
         || configurationAnnotation.getAfterTestClass()
-        || configurationAnnotation.getAfterTestMethod())
+        || configurationAnnotation.getAfterTestMethod()
+        || configurationAnnotation.getBeforeTestMethod()
+        || configurationAnnotation.getBeforeTestClass()
+        || configurationAnnotation.getBeforeTest()
+        || configurationAnnotation.getBeforeSuite())
         && configurationAnnotation.getAlwaysRun())
     {
         alwaysRun= true;
@@ -526,19 +524,10 @@ public class Invoker implements IInvoker {
           }
         }
       }
-      catch (InvocationTargetException ex) {
+      catch (InvocationTargetException | IllegalAccessException ex) {
        throwConfigurationFailure(testResult, ex);
        throw ex;
-      }
-      catch (IllegalAccessException ex) {
-        throwConfigurationFailure(testResult, ex);
-        throw ex;
-      }
-      catch (NoSuchMethodException ex) {
-        throwConfigurationFailure(testResult, ex);
-        throw new TestNGException(ex);
-      }
-      catch (Throwable ex) {
+      } catch (Throwable ex) {
         throwConfigurationFailure(testResult, ex);
         throw new TestNGException(ex);
       }
@@ -1136,7 +1125,7 @@ public class Invoker implements IInvoker {
               parametersIndex++;
             }
             PoolService<List<ITestResult>> ps =
-                new PoolService<List<ITestResult>>(suite.getDataProviderThreadCount());
+                    new PoolService<>(suite.getDataProviderThreadCount());
             List<List<ITestResult>> r = ps.submitTasksAndWait(workers);
             for (List<ITestResult> l2 : r) {
               result.addAll(l2);
@@ -1428,19 +1417,18 @@ public class Invoker implements IInvoker {
         }
       }
 
-      testResult.setStatus(status);
+      IRetryAnalyzer retryAnalyzer = testMethod.getRetryAnalyzer();
+      boolean willRetry = retryAnalyzer != null && status == ITestResult.FAILURE && failure.instances != null && retryAnalyzer.retry(testResult);
 
-      if (status == ITestResult.FAILURE && !handled) {
-        handleException(ite, testMethod, testResult, failure.count++);
-        status = testResult.getStatus();
-      }
-
-      if (status == ITestResult.FAILURE) {
-        IRetryAnalyzer retryAnalyzer = testMethod.getRetryAnalyzer();
-
-        if (retryAnalyzer != null &&  failure.instances != null && retryAnalyzer.retry(testResult)) {
-          resultsToRetry.add(testResult);
-          failure.instances.add(testResult.getInstance());
+      if (willRetry) {
+        resultsToRetry.add(testResult);
+        failure.instances.add(testResult.getInstance());
+        testResult.setStatus(ITestResult.SKIP);
+      } else {
+        testResult.setStatus(status);
+        if (status == ITestResult.FAILURE && !handled) {
+          handleException(ite, testMethod, testResult, failure.count++);
+          testResult.setStatus(status);
         }
       }
       if (collectResults) {

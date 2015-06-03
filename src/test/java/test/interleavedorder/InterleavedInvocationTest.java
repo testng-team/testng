@@ -14,11 +14,11 @@ import java.util.List;
 
 
 public class InterleavedInvocationTest extends BaseTest {
-  public static List<String> LOG = new ArrayList<String>();
+  public static List<String> LOG = new ArrayList<>();
 
   @BeforeTest
   public void beforeTest() {
-    LOG = new ArrayList<String>();
+    LOG = new ArrayList<>();
   }
 
   private void verifyInvocation(int number, List<String> log, int index) {

@@ -10,6 +10,6 @@ import java.util.List;
 public class NullMethodInterceptor implements IMethodInterceptor {
   @Override
   public List<IMethodInstance> intercept(List<IMethodInstance> methods, ITestContext context) {
-    return new ArrayList<IMethodInstance>();
+    return new ArrayList<>();
   }
 }

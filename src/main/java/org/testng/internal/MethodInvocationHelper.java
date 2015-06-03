@@ -100,7 +100,7 @@ public class MethodInvocationHelper {
       // Anything else is an error
       Class<?>[] parameterTypes = dataProvider.getParameterTypes();
 
-      final Collection<Pair<Integer, Class<?>>> unresolved = new ArrayList<Pair<Integer, Class<?>>>(parameterTypes.length);
+      final Collection<Pair<Integer, Class<?>>> unresolved = new ArrayList<>(parameterTypes.length);
       int i = 0;
       for (Class<?> cls : parameterTypes) {
         boolean isTestInstance = annotationFinder.hasTestInstance(dataProvider, i++);
@@ -156,11 +156,7 @@ public class MethodInvocationHelper {
         throw new TestNGException("Data Provider " + dataProvider + " must return"
             + " either Object[][] or Iterator<Object>[], not " + returnType);
       }
-    } catch (InvocationTargetException e) {
-      // Don't throw TestNGException here or this test won't be reported as a
-      // skip or failure
-      throw new RuntimeException(e.getCause());
-    } catch (IllegalAccessException e) {
+    } catch (InvocationTargetException | IllegalAccessException e) {
       // Don't throw TestNGException here or this test won't be reported as a
       // skip or failure
       throw new RuntimeException(e.getCause());

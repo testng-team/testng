@@ -644,7 +644,7 @@ public class XmlSuite implements Serializable, Cloneable {
   public long getTimeOut(long def) {
     long result = def;
     if (m_timeOut != null) {
-        result = new Long(m_timeOut).longValue();
+        result = new Long(m_timeOut);
     }
     
     return result;

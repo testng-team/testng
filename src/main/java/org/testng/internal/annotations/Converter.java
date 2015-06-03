@@ -18,7 +18,7 @@ public class Converter {
   public static boolean  getBoolean(String tagValue, boolean def) {
     boolean result = def;
     if (tagValue != null) {
-      result = Boolean.valueOf(tagValue).booleanValue();
+      result = Boolean.valueOf(tagValue);
     }
     return result;
   }
@@ -26,7 +26,7 @@ public class Converter {
   public static int getInt(String tagValue, int def) {
     int result = def;
     if (tagValue != null) {
-      result = new Integer(tagValue).intValue();
+      result = new Integer(tagValue);
     }
     return result;
   }
@@ -42,7 +42,7 @@ public class Converter {
   public static long getLong(String tagValue, long def) {
     long result = def;
     if (tagValue != null) {
-      result = new Long(tagValue).longValue();
+      result = new Long(tagValue);
     }
     return result;
   }

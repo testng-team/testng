@@ -32,7 +32,7 @@ public class AssertTest {
   @Test
   public void int_Integer_Arrays() {
     int[] intArr = {1, 2};
-    Integer[] integerArr = {1, Integer.valueOf(2)};
+    Integer[] integerArr = {1, 2};
     Assert.assertEquals(intArr, integerArr);
     Assert.assertEquals(integerArr, intArr);
   }
@@ -47,13 +47,13 @@ public class AssertTest {
   @Test(expectedExceptions = AssertionError.class)
   public void arraysFailures_2() {
     int[] intArr = {1, 2};
-    Assert.assertEquals(intArr, Long.valueOf(1));
+    Assert.assertEquals(intArr, (long) 1);
   }
 
   @Test(expectedExceptions = AssertionError.class)
   public void arraysFailures_3() {
     long[] longArr = {1};
-    Assert.assertEquals(Long.valueOf(1), longArr);
+    Assert.assertEquals((long) 1, longArr);
   }
 
   @Test

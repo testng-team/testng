@@ -86,7 +86,7 @@ public class TimeOutFromXmlTest extends BaseTest {
     private XmlTest createXmlTest(XmlSuite suite, String name) {
         XmlTest result = new XmlTest(suite);
         result.setName(name);
-        List<XmlClass> classes = new ArrayList<XmlClass>();
+        List<XmlClass> classes = new ArrayList<>();
         XmlClass cls = new XmlClass(TestTimeOutSampleTest.class);
         cls.setIncludedMethods(
             Arrays.asList(new XmlInclude[] { new XmlInclude("timeoutTest") }));

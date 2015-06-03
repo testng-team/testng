@@ -17,12 +17,7 @@ public class SuiteXmlParser extends XMLParser<XmlSuite> {
       parse(inputStream, contentHandler);
 
       return contentHandler.getSuite();
-    }
-    catch (FileNotFoundException e) {
-      throw new TestNGException(e);
-    } catch (SAXException e) {
-      throw new TestNGException(e);
-    } catch (IOException e) {
+    } catch (SAXException | IOException e) {
       throw new TestNGException(e);
     }
   }

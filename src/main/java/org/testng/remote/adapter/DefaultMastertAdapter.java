@@ -49,13 +49,9 @@ implements IMasterAdapter
 			try {
 				sockets[i] = new Socket(s[0], Integer.parseInt(s[1]));
 			}
-			catch (NumberFormatException e) {
+			catch (NumberFormatException | UnknownHostException e) {
 				e.printStackTrace(System.out);
-			}
-			catch (UnknownHostException e) {
-				e.printStackTrace(System.out);
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				Utils.error("Couldn't connect to " + host + ": " + e.getMessage());
 			}
 		}

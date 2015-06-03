@@ -27,9 +27,9 @@ import java.util.regex.Pattern;
  */
 public class MethodGroupsHelper {
 
-  private static final Map<String, Pattern> PATTERN_CACHE = new ConcurrentHashMap<String, Pattern>();
+  private static final Map<String, Pattern> PATTERN_CACHE = new ConcurrentHashMap<>();
   private static final Map<Pair<String, String>, Boolean> MATCH_CACHE =
-      new ConcurrentHashMap<Pair<String, String>, Boolean>();
+          new ConcurrentHashMap<>();
 
     /**
    * Collect all the methods that belong to the included groups and exclude all

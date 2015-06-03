@@ -28,10 +28,10 @@ import java.util.regex.Pattern;
  */
 public class MethodHelper {
   private static final Map<ITestNGMethod[], Graph<ITestNGMethod>> GRAPH_CACHE =
-      new ConcurrentHashMap<ITestNGMethod[], Graph<ITestNGMethod>>();
-  private static final Map<Method, String> CANONICAL_NAME_CACHE = new ConcurrentHashMap<Method, String>();
+          new ConcurrentHashMap<>();
+  private static final Map<Method, String> CANONICAL_NAME_CACHE = new ConcurrentHashMap<>();
   private static final Map<Pair<String, String>, Boolean> MATCH_CACHE =
-      new ConcurrentHashMap<Pair<String, String>, Boolean>();
+          new ConcurrentHashMap<>();
 
   /**
    * Collects and orders test or configuration methods
@@ -220,7 +220,7 @@ public class MethodHelper {
 
   private static Graph<ITestNGMethod> topologicalSort(ITestNGMethod[] methods,
       List<ITestNGMethod> sequentialList, List<ITestNGMethod> parallelList) {
-    Graph<ITestNGMethod> result = new Graph<ITestNGMethod>();
+    Graph<ITestNGMethod> result = new Graph<>();
 
     if (methods.length == 0) {
       return result;

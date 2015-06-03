@@ -82,6 +82,26 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     assertThat(tla.getFailedTests()).isEmpty();
   }
 
+  @Test
+  public void verifyAnnotationTransformerHasOnlyOneNonNullArgument() {
+    TestNG tng = create(AnnotationTransformerSampleTest.class);
+
+    MyParamTransformer transformer = new MyParamTransformer();
+    tng.setAnnotationTransformer(transformer);
+
+    tng.run();
+
+    assertThat(transformer.isSuccess()).isTrue();
+  }
+
+  @Test
+  public void verifyMyParamTransformerOnlyOneNonNull() {
+    assertThat(MyParamTransformer.onlyOneNonNull(null, null, null)).isFalse();
+    assertThat(MyParamTransformer.onlyOneNonNull(
+        MyParamTransformer.class, MyParamTransformer.class.getConstructors()[0], null)).isFalse();
+    assertThat(MyParamTransformer.onlyOneNonNull(MyParamTransformer.class, null, null)).isTrue();
+  }
+
   /**
    * Without an annotation transformer, we should have zero
    * passed tests and one failed test called "one".

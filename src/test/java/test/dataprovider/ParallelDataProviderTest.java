@@ -20,10 +20,10 @@ public class ParallelDataProviderTest extends SimpleBaseTest {
   @DataProvider(name = "test1", parallel = true)
   public Object[][] createData1() {
    return new Object[][] {
-     { "Cedric", Integer.valueOf(36) },
-     { "Anne", Integer.valueOf(37) },
-     { "A", Integer.valueOf(36) },
-     { "B", Integer.valueOf(37) }
+     { "Cedric", 36},
+     { "Anne", 37},
+     { "A", 36},
+     { "B", 37}
    };
   }
   // This test method declares that its data should be supplied by the Data

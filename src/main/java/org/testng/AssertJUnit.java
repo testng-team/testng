@@ -119,11 +119,11 @@ public class AssertJUnit extends ArrayAsserts {
     // the following test fails
     if(Double.isInfinite(expected)) {
       if(!(expected == actual)) {
-        failNotEquals(message, new Double(expected), new Double(actual));
+        failNotEquals(message, expected, actual);
       }
     }
     else if(!(Math.abs(expected - actual) <= delta)) { // Because comparison with NaN always returns false
-      failNotEquals(message, new Double(expected), new Double(actual));
+      failNotEquals(message, expected, actual);
     }
   }
 
@@ -146,11 +146,11 @@ public class AssertJUnit extends ArrayAsserts {
     // the following test fails
     if(Float.isInfinite(expected)) {
       if(!(expected == actual)) {
-        failNotEquals(message, new Float(expected), new Float(actual));
+        failNotEquals(message, expected, actual);
       }
     }
     else if(!(Math.abs(expected - actual) <= delta)) {
-      failNotEquals(message, new Float(expected), new Float(actual));
+      failNotEquals(message, expected, actual);
     }
   }
 

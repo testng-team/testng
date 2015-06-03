@@ -252,11 +252,7 @@ public class DomUtil {
         } else {
           foundMethod.invoke(object, value.toString());
         }
-      } catch (IllegalArgumentException e) {
-        e.printStackTrace();
-      } catch (IllegalAccessException e) {
-        e.printStackTrace();
-      } catch (InvocationTargetException e) {
+      } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
         e.printStackTrace();
       }
     }

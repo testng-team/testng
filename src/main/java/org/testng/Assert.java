@@ -39,7 +39,7 @@ public class Assert {
    */
   static public void assertTrue(boolean condition, String message) {
     if(!condition) {
-      failNotEquals( Boolean.valueOf(condition), Boolean.TRUE, message);
+      failNotEquals(condition, Boolean.TRUE, message);
     }
   }
 
@@ -60,7 +60,7 @@ public class Assert {
    */
   static public void assertFalse(boolean condition, String message) {
     if(condition) {
-      failNotEquals( Boolean.valueOf(condition), Boolean.FALSE, message); // TESTNG-81
+      failNotEquals(condition, Boolean.FALSE, message); // TESTNG-81
     }
   }
 
@@ -202,11 +202,11 @@ public class Assert {
     // the following test fails
     if(Double.isInfinite(expected)) {
       if(!(expected == actual)) {
-        failNotEquals(new Double(actual), new Double(expected), message);
+        failNotEquals(actual, expected, message);
       }
     }
     else if(!(Math.abs(expected - actual) <= delta)) { // Because comparison with NaN always returns false
-      failNotEquals(new Double(actual), new Double(expected), message);
+      failNotEquals(actual, expected, message);
     }
   }
 
@@ -236,11 +236,11 @@ public class Assert {
     // the following test fails
     if(Float.isInfinite(expected)) {
       if(!(expected == actual)) {
-        failNotEquals(new Float(actual), new Float(expected), message);
+        failNotEquals(actual, expected, message);
       }
     }
     else if(!(Math.abs(expected - actual) <= delta)) {
-      failNotEquals(new Float(actual), new Float(expected), message);
+      failNotEquals(actual, expected, message);
     }
   }
 
@@ -536,7 +536,7 @@ public class Assert {
       }
     }
 
-    assertEquals(actual.size(), expected.size(), message + ": lists don't have the same size");
+    assertEquals(actual.size(), expected.size(), (message == null ? "" : message + ": ") + "lists don't have the same size");
 
     Iterator<?> actIt = actual.iterator();
     Iterator<?> expIt = expected.iterator();
@@ -829,13 +829,13 @@ public class Assert {
     }
 
     Set<?> entrySet = actual.entrySet();
-    for (Iterator<?> iterator = entrySet.iterator(); iterator.hasNext();) {
-      Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iterator.next();
+    for (Object anEntrySet : entrySet) {
+      Map.Entry<?, ?> entry = (Map.Entry<?, ?>) anEntrySet;
       Object key = entry.getKey();
       Object value = entry.getValue();
       Object expectedValue = expected.get(key);
       assertEquals(value, expectedValue, "Maps do not match for key:" + key + " actual:" + value
-          + " expected:" + expectedValue);
+              + " expected:" + expectedValue);
     }
 
   }

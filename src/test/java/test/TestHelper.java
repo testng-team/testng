@@ -19,7 +19,7 @@ public class TestHelper {
 
     XmlTest test = new XmlTest(result);
     test.setName("TmpTest");
-    List<XmlClass> classes = new ArrayList<XmlClass>();
+    List<XmlClass> classes = new ArrayList<>();
     classes.add(new XmlClass(cls));
     test.setXmlClasses(classes);
 

@@ -17,7 +17,7 @@ import java.util.List;
  * @date Mar 9, 2006
  */
 public class ConfigurationGroups8SampleTest {
-  private List<String> m_log = new ArrayList<String>();
+  private List<String> m_log = new ArrayList<>();
 
   @Test
   public void dummy() {

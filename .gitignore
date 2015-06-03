@@ -21,3 +21,4 @@ test-output
 test-output-tests
 testng.iml
 z_build
+gradle.properties

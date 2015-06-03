@@ -38,13 +38,10 @@ public abstract class RetryAnalyzerCount implements IRetryAnalyzer {
    */
   @Override
   public boolean retry(ITestResult result) {
-    boolean retry = false;
-
-    if (count.intValue() > 0) {
-      retry = retryMethod(result);
-      count.decrementAndGet();
+    if (count.getAndDecrement() > 0) {
+      return retryMethod(result);
     }
-    return retry;
+    return false;
   }
 
   /**

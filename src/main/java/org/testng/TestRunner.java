@@ -100,7 +100,7 @@ public class TestRunner
   private Date m_endDate = null;
 
   /** A map to keep track of Class <-> IClass. */
-  transient private Map<Class<?>, ITestClass> m_classMap = Maps.newHashMap();
+  transient private Map<Class<?>, ITestClass> m_classMap = Maps.newLinkedHashMap();
 
   /** Where the reports will be created. */
   private String m_outputDirectory= Constants.getDefaultValueFor(Constants.PROP_OUTPUT_DIR);
@@ -739,9 +739,9 @@ public class TestRunner
       if (parallel) {
         if (graph.getNodeCount() > 0) {
           GraphThreadPoolExecutor<ITestNGMethod> executor =
-              new GraphThreadPoolExecutor<ITestNGMethod>(graph, this,
-                  threadCount, threadCount, 0, TimeUnit.MILLISECONDS,
-                  new LinkedBlockingQueue<Runnable>());
+                  new GraphThreadPoolExecutor<>(graph, this,
+                          threadCount, threadCount, 0, TimeUnit.MILLISECONDS,
+                          new LinkedBlockingQueue<Runnable>());
           executor.run();
           try {
             long timeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
@@ -931,7 +931,7 @@ public class TestRunner
     }
 //    return map.getKeys();
 //    System.out.println(map);
-    return new ArrayList<List<IMethodInstance>>(map.values());
+    return new ArrayList<>(map.values());
   }
 
   private TestMethodWorker createTestMethodWorker(
@@ -1041,7 +1041,7 @@ public class TestRunner
   }
 
   private DynamicGraph<ITestNGMethod> createDynamicGraph(ITestNGMethod[] methods) {
-    DynamicGraph<ITestNGMethod> result = new DynamicGraph<ITestNGMethod>();
+    DynamicGraph<ITestNGMethod> result = new DynamicGraph<>();
     result.setComparator(new Comparator<ITestNGMethod>() {
       @Override
       public int compare(ITestNGMethod o1, ITestNGMethod o2) {

@@ -12,7 +12,7 @@ public class BugBase {
 
   @BeforeClass
   public void setup() {
-    m_threadIds = new HashSet<Long>();
+    m_threadIds = new HashSet<>();
   }
 
   void log(long threadId) {

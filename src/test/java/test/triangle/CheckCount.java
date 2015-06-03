@@ -14,7 +14,7 @@ public class CheckCount {
     try {
 
       //      System.out.println("\n\ntestCheckCount time = " + System.currentTimeMillis());
-      int i = (Integer.valueOf(expectedCalls)).intValue();
+      int i = Integer.valueOf(expectedCalls);
       int numCalls =  CountCalls.getNumCalls();
       assert (numCalls == i)  : "Count calls expected " + i + " but got " + numCalls;
     }
@@ -29,7 +29,7 @@ public class CheckCount {
     try {
 
       //      System.out.println("\n\ntestCheckCount time = " + System.currentTimeMillis());
-      int i = (Integer.valueOf(expectedCalls)).intValue();
+      int i = Integer.valueOf(expectedCalls);
       int numCalls =  CountCalls.getNumCalls();
       assert (numCalls == i)  : "Count calls expected " + i + " but got " + numCalls;
     }
