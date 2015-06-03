@@ -37,9 +37,6 @@ import org.testng.xml.XmlTest;
  * used to invoke methods.
  *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
- * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
- *
- * @@ANNOTATIONS@@
  */
 public class Parameters {
   public static final String NULL_VALUE= "null";
@@ -64,12 +61,9 @@ public class Parameters {
    * Creates the parameters needed for the specified <tt>@Configuration</tt> <code>Method</code>.
    *
    * @param m the configuraton method
-   * @param params
    * @param currentTestMethod the current @Test method or <code>null</code> if no @Test is available (this is not
    *    only in case the configuration method is a @Before/@AfterMethod
    * @param finder the annotation finder
-   * @param xmlSuite
-   * @return
    */
   public static Object[] createConfigurationParameters(Method m,
       Map<String, String> params,
@@ -116,11 +110,6 @@ public class Parameters {
   }
 
   /**
-   * @param optionalValues TODO
-   * @param finder TODO
-   * @param parameterAnnotations TODO
-   * @param m
-   * @param instance
    * @return An array of parameters suitable to invoke this method, possibly
    * picked from the property file
    */

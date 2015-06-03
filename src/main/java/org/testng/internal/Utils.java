@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -632,10 +631,6 @@ public final class Utils {
     return buf.toString();
   }
 
-  /**
-   * @param object
-   * @return
-   */
   public static String toString(Object object, Class<?> objectClass) {
     if(null == object) {
       return "null";
@@ -652,10 +647,6 @@ public final class Utils {
     }
   }
 
-  /**
-   * @param method
-   * @return
-   */
   public static String detailedMethodName(ITestNGMethod method, boolean fqn) {
     StringBuffer buf= new StringBuffer();
     if(method.isBeforeSuiteConfiguration()) {

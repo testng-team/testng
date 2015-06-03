@@ -1,7 +1,16 @@
 package org.testng.internal;
 
-import static org.testng.internal.invokers.InvokedMethodListenerMethod.AFTER_INVOCATION;
-import static org.testng.internal.invokers.InvokedMethodListenerMethod.BEFORE_INVOCATION;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.testng.IClass;
 import org.testng.IConfigurable;
@@ -39,17 +48,8 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
+import static org.testng.internal.invokers.InvokedMethodListenerMethod.AFTER_INVOCATION;
+import static org.testng.internal.invokers.InvokedMethodListenerMethod.BEFORE_INVOCATION;
 
 /**
  * This class is responsible for invoking methods:
@@ -802,7 +802,7 @@ public class Invoker implements IInvoker {
   }
 
   /**
-   * {@link #invokeTestMethods()} eventually converge here to invoke a single @Test method.
+   * invokeTestMethods() eventually converge here to invoke a single @Test method.
    * <p/>
    * This method is responsible for actually invoking the method. It decides if the invocation
    * must be done:
@@ -1228,7 +1228,6 @@ public class Invoker implements IInvoker {
    * @param method method to be invoked
    * @param context test context
    * @param testResult test result
-   * @return
    */
   private Object[] injectParameters(Object[] parameterValues, Method method,
       ITestContext context, ITestResult testResult)
@@ -1350,13 +1349,6 @@ public class Invoker implements IInvoker {
     List<Object> instances = Lists.newArrayList();
   }
 
-  /**
-   * @param testMethod
-   * @param result
-   * @param expectedExceptionsHolder
-   * @param failure
-   * @return
-   */
   void handleInvocationResults(ITestNGMethod testMethod,
                                List<ITestResult> result,
                                ExpectedExceptionsHolder expectedExceptionsHolder,

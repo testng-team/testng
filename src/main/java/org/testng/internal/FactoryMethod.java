@@ -1,5 +1,9 @@
 package org.testng.internal;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
@@ -7,10 +11,6 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class represents a method annotated with @Factory
@@ -26,10 +26,6 @@ public class FactoryMethod extends BaseTestMethod {
   private XmlTest m_xmlTest = null;
   private ITestContext m_testContext = null;
 
-  /**
-   * @param testClass
-   * @param method
-   */
   public FactoryMethod(ConstructorOrMethod com,
                        Object instance,
                        XmlTest xmlTest,

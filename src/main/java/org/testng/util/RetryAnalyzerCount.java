@@ -1,9 +1,9 @@
 package org.testng.util;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestResult;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * An implementation of IRetryAnalyzer that allows you to specify
@@ -18,7 +18,6 @@ public abstract class RetryAnalyzerCount implements IRetryAnalyzer {
 
   /**
    * Set the max number of time the method needs to be retried.
-   * @param count
    */
   protected void setCount(int count) {
     this.count.set(count);
@@ -26,7 +25,6 @@ public abstract class RetryAnalyzerCount implements IRetryAnalyzer {
 
   /**
    * Return the current counter value
-   * @return
    */
   protected int getCount(){
       return this.count.get();

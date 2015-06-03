@@ -1,10 +1,10 @@
 package org.testng.internal;
 
-import org.testng.ITestResult;
-import org.testng.collections.Maps;
-
 import java.util.Map;
 import java.util.Properties;
+
+import org.testng.ITestResult;
+import org.testng.collections.Maps;
 
 
 
@@ -82,10 +82,6 @@ public class Constants {
     return p.getDefault();
   }
 
-  /**
-   * @param status
-   * @return
-   */
   public static String displayStatus(int status) {
     if (ITestResult.SKIP == status) {
       return "SKIP";

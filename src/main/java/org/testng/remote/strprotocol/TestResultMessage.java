@@ -1,15 +1,15 @@
 package org.testng.remote.strprotocol;
 
-import static org.testng.internal.Utils.isStringEmpty;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.List;
 
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.collections.Lists;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.List;
+import static org.testng.internal.Utils.isStringEmpty;
 
 
 /**
@@ -398,10 +398,6 @@ public class TestResultMessage implements IStringMessage {
     return result.toArray(new String[result.size()]);
   }
 
-  /**
-   * @param params
-   * @return
-   */
   private String[] extractParamTypes(String[] params) {
     List<String> result= Lists.newArrayList(params.length);
     for(String s: params) {

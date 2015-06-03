@@ -1,5 +1,15 @@
 package org.testng.internal;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+
 import org.testng.IClass;
 import org.testng.IMethodSelector;
 import org.testng.IObjectFactory;
@@ -14,16 +24,6 @@ import org.testng.collections.Sets;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.junit.IJUnitTestRunner;
 import org.testng.xml.XmlTest;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
 
 /**
  * Utility class for different class manipulations.
@@ -177,9 +177,6 @@ public final class ClassHelper {
   /**
    * Extract all callable methods of a class and all its super (keeping in mind
    * the Java access rules).
-   *
-   * @param clazz
-   * @return
    */
   public static Set<Method> getAvailableMethods(Class<?> clazz) {
     Set<Method> methods = Sets.newHashSet();
@@ -194,10 +191,6 @@ public final class ClassHelper {
     return methods;
   }
 
-  /**
-   * @param runner
-   * @return
-   */
   public static IJUnitTestRunner createTestRunner(TestRunner runner) {
       try {
           //try to get runner for JUnit 4 first

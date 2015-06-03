@@ -1,5 +1,12 @@
 package org.testng.internal;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.testng.IClass;
 import org.testng.IInstanceInfo;
 import org.testng.ITestContext;
@@ -12,13 +19,6 @@ import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * This class creates an ITestClass from a test class.
@@ -215,7 +215,7 @@ public class TestNGClassFinder extends BaseClassFinder {
   }
 
   /**
-   * @returns true if this class contains TestNG annotations (either on itself
+   * @return true if this class contains TestNG annotations (either on itself
    * or on a superclass).
    */
   public static boolean isTestNGClass(Class c, IAnnotationFinder annotationFinder) {

@@ -56,9 +56,6 @@ public class GenericMessage implements IStringMessage {
 //    return (String) m_properties.get(propName);
 //  }
 
-  /**
-   * @see net.noco.testng.runner.IStringMessage#getMessageAsString()
-   */
   @Override
   public String getMessageAsString() {
     StringBuffer buf = new StringBuffer();

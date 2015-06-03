@@ -1,8 +1,5 @@
 package org.testng.internal;
 
-import org.testng.TestNG;
-import org.testng.collections.Lists;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -13,12 +10,15 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
-import java.util.Vector;
-import java.util.Iterator;
+
+import org.testng.TestNG;
+import org.testng.collections.Lists;
 
 /**
  * Utility class that finds all the classes in a given package.
@@ -177,10 +177,6 @@ public class PackageUtils {
     return s_testClassPaths;
   }
 
-  /**
-   * @param url
-   * @return
-   */
   private static boolean matchTestClasspath(URL url, String lastFragment, boolean recursive) {
     String[] classpathFragments= getTestClasspath();
     if(null == classpathFragments) {

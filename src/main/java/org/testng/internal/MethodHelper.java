@@ -1,5 +1,14 @@
 package org.testng.internal;
 
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
+
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
 import org.testng.annotations.IExpectedExceptionsAnnotation;
@@ -10,15 +19,6 @@ import org.testng.collections.Sets;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.collections.Pair;
-
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
 
 /**
  * Collection of helper methods to help sort and arrange methods.
@@ -124,7 +124,6 @@ public class MethodHelper {
    * class name, uses the TestNG method's class name.
    * @param testngMethod TestNG method
    * @param regExp regex representing a method and/or related class name
-   * @return
    */
   private static Method findMethodByName(ITestNGMethod testngMethod, String regExp) {
     if (regExp == null) {
@@ -323,8 +322,6 @@ public class MethodHelper {
   }
 
   /**
-   * @param method
-   * @param allTestMethods
    * @return A sorted array containing all the methods 'method' depends on
    */
   public static List<ITestNGMethod> getMethodsDependedUpon(ITestNGMethod method, ITestNGMethod[] methods) {

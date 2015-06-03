@@ -6,7 +6,7 @@ import org.testng.annotations.ITestOrConfiguration;
  * Base interface for IBeforeSuite, IAfterSuite, etc...
  *
  * @author cbeust
- * @date Jun 22, 2006
+ * @since Jun 22, 2006
  */
 public interface IBaseBeforeAfter extends ITestOrConfiguration {
   /**

@@ -1,11 +1,11 @@
 package org.testng.reporters;
 
-import org.testng.internal.Nullable;
-
 import java.io.Writer;
 import java.util.Properties;
 import java.util.Stack;
 import java.util.regex.Pattern;
+
+import org.testng.internal.Nullable;
 
 /**
  * This class allows you to generate an XML text document by pushing
@@ -29,11 +29,6 @@ public class XMLStringBuffer {
   /** A string of space character representing the current indentation. */
   private String m_currentIndent = "";
 
-  /**
-   * @param start A string of spaces indicating the indentation at which
-   * to start the generation. Note that this constructor will also insert
-   * an <?xml prologue with a default encoding
-   */
   public XMLStringBuffer() {
     init(Buffer.create(), "", "1.0", "UTF-8");
   }

@@ -1,16 +1,17 @@
 package org.testng.xml;
 
-import org.testng.TestNGException;
-import org.testng.internal.ClassHelper;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
+import java.io.IOException;
+import java.io.InputStream;
 
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.io.IOException;
-import java.io.InputStream;
+
+import org.testng.TestNGException;
+import org.testng.internal.ClassHelper;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 abstract public class XMLParser<T> implements IFileParser<T> {
 
@@ -90,8 +91,6 @@ abstract public class XMLParser<T> implements IFileParser<T> {
 
   /**
    * Tests if the current <code>SAXParserFactory</code> supports DTD validation.
-   * @param spf
-   * @return
    */
   private static boolean supportsValidation(SAXParserFactory spf) {
     try {

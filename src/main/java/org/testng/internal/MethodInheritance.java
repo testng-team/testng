@@ -1,19 +1,16 @@
 package org.testng.internal;
 
-import org.testng.ITestNGMethod;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.testng.ITestNGMethod;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
+
 public class MethodInheritance {
   /**
    * Look in map for a class that is a superclass of methodClass
-   * @param map
-   * @param methodClass
-   * @return
    */
   private static List<ITestNGMethod> findMethodListSuperClass(Map<Class, List<ITestNGMethod>> map,
       Class< ? extends ITestNGMethod> methodClass)
@@ -28,9 +25,6 @@ public class MethodInheritance {
 
   /**
    * Look in map for a class that is a subclass of methodClass
-   * @param map
-   * @param methodClass
-   * @return
    */
   private static Class findSubClass(Map<Class, List<ITestNGMethod>> map,
       Class< ? extends ITestNGMethod> methodClass)

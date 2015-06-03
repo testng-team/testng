@@ -1,5 +1,13 @@
 package org.testng.internal;
 
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
+
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.IConfigurationAnnotation;
@@ -9,14 +17,6 @@ import org.testng.collections.Maps;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.collections.Pair;
-
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
 
 /**
  * Collections of helper methods to help deal with test methods
@@ -150,9 +150,6 @@ public class MethodGroupsHelper {
     return result;
   }
 
-  /**
-   * @return The transitive closure of all the groups/methods included.
-   */
   protected static void findGroupTransitiveClosure(XmlMethodSelector xms,
       List<ITestNGMethod> includedMethods,
       List<ITestNGMethod> allMethods,

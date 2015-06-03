@@ -64,9 +64,6 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   private List<Integer> m_invocationNumbers = Lists.newArrayList();
   private final List<Integer> m_failedInvocationNumbers = Collections.synchronizedList(Lists.<Integer>newArrayList());
-  /**
-   * {@inheritDoc}
-   */
   private long m_timeOut = 0;
 
   private boolean m_ignoreMissingDependencies;
@@ -142,12 +139,6 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     m_testClass = tc;
   }
 
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @param o
-   * @return
-   */
   @Override
   public int compareTo(Object o) {
     int result = -2;
@@ -434,7 +425,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   /**
    * {@inheritDoc} This implementation returns the associated Java Method's hash code.
-   * @Return the associated Java Method's hash code.
+   * @return the associated Java Method's hash code.
    */
   @Override
   public int hashCode() {
@@ -534,11 +525,6 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return result.toString();
   }
 
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @return
-   */
   protected String getSignature() {
     return m_signature;
   }
@@ -551,13 +537,6 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return getSignature();
   }
 
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @param methodArray
-   * @param classArray
-   * @return
-   */
   protected String[] getStringArray(String[] methodArray, String[] classArray) {
     final Set<String> vResult = Sets.newHashSet();
     if (null != methodArray) {
@@ -640,17 +619,11 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   /**
    * No-op.
-   * @param threadPoolSize
    */
   @Override
   public void setThreadPoolSize(int threadPoolSize) {
   }
 
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @param description
-   */
   public void setDescription(String description) {
     m_description = description;
   }
