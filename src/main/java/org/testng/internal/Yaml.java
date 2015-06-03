@@ -7,7 +7,6 @@ import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.xml.sax.SAXException;
-import org.yaml.snakeyaml.Loader;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -24,7 +23,7 @@ import java.util.Map;
 
 /**
  * YAML support for TestNG.
- * 
+ *
  * @author Cedric Beust <cedric@beust.com>
  */
 public class Yaml {
@@ -49,9 +48,7 @@ public class Yaml {
       constructor.addTypeDescription(testDescription);
     }
 
-    Loader loader = new Loader(constructor);
-
-    org.yaml.snakeyaml.Yaml y = new org.yaml.snakeyaml.Yaml(loader);
+    org.yaml.snakeyaml.Yaml y = new org.yaml.snakeyaml.Yaml(constructor);
     if (is == null) is = new FileInputStream(new File(filePath));
     XmlSuite result = (XmlSuite) y.load(is);
 
@@ -172,7 +169,7 @@ public class Yaml {
         toYaml(result, sp2 + "  - ", xp);
       }
     }
-    
+
     if (t.getXmlClasses().size() > 0) {
       result.append(sp2).append("classes:\n");
       for (XmlClass xc : t.getXmlClasses())  {
