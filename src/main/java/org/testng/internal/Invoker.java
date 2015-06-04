@@ -1371,16 +1371,18 @@ public class Invoker implements IInvoker {
           status = ITestResult.SKIP;
         }
         //  Invocation caused an exception, see if the method was annotated with @ExpectedException
-        else if (expectedExceptionsHolder != null && !expectedExceptionsHolder.isExpectedException(ite)) {
-          testResult.setThrowable(expectedExceptionsHolder.wrongException(ite));
-          status= ITestResult.FAILURE;
-        } else if (expectedExceptionsHolder == null) {
+        else if (expectedExceptionsHolder != null) {
+          if (expectedExceptionsHolder.isExpectedException(ite)) {
+            testResult.setStatus(ITestResult.SUCCESS);
+            status = ITestResult.SUCCESS;
+          } else {
+            testResult.setThrowable(expectedExceptionsHolder.wrongException(ite));
+            status= ITestResult.FAILURE;
+          }
+        } else {
           handleException(ite, testMethod, testResult, failure.count++);
           handled = true;
           status = testResult.getStatus();
-        } else {
-          testResult.setStatus(ITestResult.SUCCESS);
-          status= ITestResult.SUCCESS;
         }
       }
 
@@ -1404,7 +1406,6 @@ public class Invoker implements IInvoker {
         testResult.setStatus(status);
         if (status == ITestResult.FAILURE && !handled) {
           handleException(ite, testMethod, testResult, failure.count++);
-          testResult.setStatus(status);
         }
       }
       if (collectResults) {
