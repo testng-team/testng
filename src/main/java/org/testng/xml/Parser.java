@@ -2,7 +2,6 @@ package org.testng.xml;
 
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.YamlParser;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -15,6 +14,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 
 /**
  * <code>Parser</code> is a parser for a TestNG XML test suite file.
@@ -34,7 +34,13 @@ public class Parser {
   public static final String DEFAULT_FILENAME = "testng.xml";
 
   private static final SuiteParser DEFAULT_FILE_PARSER = new SuiteXmlParser();
-  private static final List<SuiteParser> PARSERS = Lists.newArrayList(DEFAULT_FILE_PARSER, new YamlParser());
+  private static final List<SuiteParser> PARSERS = Lists.newArrayList(DEFAULT_FILE_PARSER);
+  static {
+    ServiceLoader<SuiteParser> suiteParserLoader = ServiceLoader.load(SuiteParser.class);
+    for (SuiteParser parser : suiteParserLoader) {
+      PARSERS.add(parser);
+    }
+  }
 
   /** The file name of the xml suite being parsed. This may be null if the Parser
    * has not been initialized with a file name. TODO CQ This member is never used. */
