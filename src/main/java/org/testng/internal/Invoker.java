@@ -683,7 +683,7 @@ public class Invoker implements IInvoker {
       testResult.setEndMillis(System.currentTimeMillis());
 
       ExpectedExceptionsHolder expectedExceptionClasses
-          = new ExpectedExceptionsHolder(m_annotationFinder, tm);
+          = new ExpectedExceptionsHolder(m_annotationFinder, tm, new RegexpExpectedExceptionsHolder(m_annotationFinder, tm));
       List<ITestResult> results = Lists.<ITestResult>newArrayList(testResult);
       handleInvocationResults(tm, results, expectedExceptionClasses, false,
           false /* collect results */, failureContext);
@@ -830,7 +830,8 @@ public class Invoker implements IInvoker {
     tm.setId(ThreadUtil.currentThreadInfo());
 
     ITestResult result = invokeMethod(instance, tm, parameterValues, parametersIndex, suite, params,
-        testClass, beforeMethods, afterMethods, groupMethods, failureContext);
+                                      testClass, beforeMethods, afterMethods, groupMethods,
+                                      failureContext);
 
     return result;
   }
@@ -1069,7 +1070,9 @@ public class Invoker implements IInvoker {
 
     int invocationCount = onlyOne ? 1 : testMethod.getInvocationCount();
 
-    ExpectedExceptionsHolder expectedExceptionHolder = new ExpectedExceptionsHolder(m_annotationFinder, testMethod);
+    ExpectedExceptionsHolder expectedExceptionHolder =
+        new ExpectedExceptionsHolder(m_annotationFinder, testMethod,
+                                     new RegexpExpectedExceptionsHolder(m_annotationFinder, testMethod));
     final ITestClass testClass= testMethod.getTestClass();
     final List<ITestResult> result = Lists.newArrayList();
     final FailureContext failure = new FailureContext();
@@ -1338,7 +1341,8 @@ public class Invoker implements IInvoker {
           testContext));
     }
 
-    return runWorkers(testMethod, workers, testMethod.getThreadPoolSize(), groupMethods, suite, parameters);
+    return runWorkers(testMethod, workers, testMethod.getThreadPoolSize(), groupMethods, suite,
+                      parameters);
   }
 
   static class FailureContext {
