@@ -19,4 +19,9 @@ public class YamlParser implements IFileParser<XmlSuite> {
     }
   }
 
+  @Override
+  public boolean accept(String fileName) {
+    return fileName.endsWith(".yaml");
+  }
+
 }
