@@ -43,7 +43,7 @@ public abstract class AbstractExpectedExceptionsHolder {
    * expected exceptions
    */
   public boolean isExpectedException(Throwable ite) {
-    if (!hasExpectectedClasses()) {
+    if (!hasExpectedClasses()) {
       return false;
     }
 
@@ -65,7 +65,7 @@ public abstract class AbstractExpectedExceptionsHolder {
   }
 
   public Throwable wrongException(Throwable ite) {
-    if (!hasExpectectedClasses()) {
+    if (!hasExpectedClasses()) {
       return ite;
     }
 
@@ -81,14 +81,14 @@ public abstract class AbstractExpectedExceptionsHolder {
   protected abstract String getWrongExceptionMessage(Throwable ite);
 
   public TestException noException(ITestNGMethod testMethod) {
-    if (!hasExpectectedClasses()) {
+    if (!hasExpectedClasses()) {
       return null;
     }
     return new TestException("Method " + testMethod + " should have thrown an exception of "
                              + getExpectedExceptionsPluralize());
   }
 
-  private boolean hasExpectectedClasses() {
+  private boolean hasExpectedClasses() {
     return expectedClasses != null && expectedClasses.length > 0;
   }
 
