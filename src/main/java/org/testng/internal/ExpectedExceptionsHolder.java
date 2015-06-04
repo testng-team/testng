@@ -51,7 +51,7 @@ public class ExpectedExceptionsHolder {
    *   null             true    false
    *   non-null         true    match
    */
-  public boolean messageRegExpMatches(Throwable ite) {
+  private boolean messageRegExpMatches(Throwable ite) {
     if (".*".equals(messageRegExp)) {
       return true;
     } else {
