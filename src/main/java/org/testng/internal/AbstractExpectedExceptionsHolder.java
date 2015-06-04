@@ -21,16 +21,19 @@ public abstract class AbstractExpectedExceptionsHolder {
   }
 
   private static Class<?>[] findExpectedClasses(IAnnotationFinder finder, ITestNGMethod method) {
-    IExpectedExceptionsAnnotation expectedExceptions = finder.findAnnotation(method, IExpectedExceptionsAnnotation.class);
+    IExpectedExceptionsAnnotation expectedExceptions =
+        finder.findAnnotation(method, IExpectedExceptionsAnnotation.class);
     // Old syntax
     if (expectedExceptions != null) {
       return expectedExceptions.getValue();
-    } else { // New syntax
-      ITestAnnotation testAnnotation = finder.findAnnotation(method, ITestAnnotation.class);
-      if (testAnnotation != null) {
-        return testAnnotation.getExpectedExceptions();
-      }
     }
+
+    // New syntax
+    ITestAnnotation testAnnotation = finder.findAnnotation(method, ITestAnnotation.class);
+    if (testAnnotation != null) {
+      return testAnnotation.getExpectedExceptions();
+    }
+
     return new Class<?>[0];
   }
 

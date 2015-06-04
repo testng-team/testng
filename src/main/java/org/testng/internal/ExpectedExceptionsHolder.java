@@ -42,21 +42,22 @@ public class ExpectedExceptionsHolder extends AbstractExpectedExceptionsHolder {
   }
 
   private String getRegExp() {
-    String messageRegExp = DEFAULT_REGEXP;
     IExpectedExceptionsAnnotation expectedExceptions =
         finder.findAnnotation(method, IExpectedExceptionsAnnotation.class);
+    if (expectedExceptions != null) {
+      // Old syntax => default value
+      return DEFAULT_REGEXP;
+    }
 
-    if (expectedExceptions == null) {
-      // New syntax
-      ITestAnnotation testAnnotation = finder.findAnnotation(method, ITestAnnotation.class);
-      if (testAnnotation != null) {
-        Class<?>[] ee = testAnnotation.getExpectedExceptions();
-        if (ee.length > 0) {
-          messageRegExp = testAnnotation.getExpectedExceptionsMessageRegExp();
-        }
+    // New syntax
+    ITestAnnotation testAnnotation = finder.findAnnotation(method, ITestAnnotation.class);
+    if (testAnnotation != null) {
+      Class<?>[] ee = testAnnotation.getExpectedExceptions();
+      if (ee.length > 0) {
+        return testAnnotation.getExpectedExceptionsMessageRegExp();
       }
-    } // else: Old syntax => keep default value
+    }
 
-    return messageRegExp;
+    return DEFAULT_REGEXP;
   }
 }
