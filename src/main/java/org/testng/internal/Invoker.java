@@ -3,14 +3,12 @@ package org.testng.internal;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.testng.IClass;
 import org.testng.IConfigurable;
@@ -1371,30 +1369,24 @@ public class Invoker implements IInvoker {
       if (ite != null) {
 
         //  Invocation caused an exception, see if the method was annotated with @ExpectedException
-        if (expectedExceptionsHolder != null && expectedExceptionsHolder.isExpectedException(ite)) {
-          if (expectedExceptionsHolder.messageRegExpMatches(ite)) {
-            testResult.setStatus(ITestResult.SUCCESS);
-            status= ITestResult.SUCCESS;
-          }
-          else {
-            testResult.setThrowable(expectedExceptionsHolder.buildTestException(ite));
-            status= ITestResult.FAILURE;
-          }
+        if (expectedExceptionsHolder != null && !expectedExceptionsHolder.isExpectedException(ite)) {
+          testResult.setThrowable(expectedExceptionsHolder.wrongException(ite));
+          status= ITestResult.FAILURE;
         } else if (isSkipExceptionAndSkip(ite)){
           status = ITestResult.SKIP;
-        } else if (expectedExceptionsHolder != null) {
-          testResult.setThrowable(expectedExceptionsHolder.buildTestExceptionPluralize(ite));
-          status= ITestResult.FAILURE;
-        } else {
+        } else if (expectedExceptionsHolder == null) {
           handleException(ite, testMethod, testResult, failure.count++);
           handled = true;
           status = testResult.getStatus();
+        } else {
+          testResult.setStatus(ITestResult.SUCCESS);
+          status= ITestResult.SUCCESS;
         }
       }
 
       // No exception thrown, make sure we weren't expecting one
       else if(status != ITestResult.SKIP && expectedExceptionsHolder != null) {
-        TestException exception = expectedExceptionsHolder.buildTestExceptionPluralize(testMethod);
+        TestException exception = expectedExceptionsHolder.noException(testMethod);
         if (exception != null) {
           testResult.setThrowable(exception);
           status= ITestResult.FAILURE;

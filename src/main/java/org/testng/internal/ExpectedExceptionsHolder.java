@@ -38,7 +38,7 @@ public class ExpectedExceptionsHolder {
     Class<?> realExceptionClass= ite.getClass();
 
     for (Class<?> exception : expectedClasses) {
-      if (exception.isAssignableFrom(realExceptionClass)) {
+      if (exception.isAssignableFrom(realExceptionClass) && messageRegExpMatches(ite)) {
         return true;
       }
     }
@@ -60,19 +60,19 @@ public class ExpectedExceptionsHolder {
     }
   }
 
-  public TestException buildTestException(Throwable ite) {
-    return new TestException("The exception was thrown with the wrong message:" +
-                      " expected \"" + messageRegExp + "\"" +
-                      " but got \"" + ite.getMessage() + "\"", ite);
+  public TestException wrongException(Throwable ite) {
+    if (messageRegExpMatches(ite)) {
+      return new TestException("Expected exception of " +
+                               getExpectedExceptionsPluralize()
+                               + " but got " + ite, ite);
+    } else {
+      return new TestException("The exception was thrown with the wrong message:" +
+                               " expected \"" + messageRegExp + "\"" +
+                               " but got \"" + ite.getMessage() + "\"", ite);
+    }
   }
 
-  public TestException buildTestExceptionPluralize(Throwable ite) {
-    return new TestException("Expected exception of " +
-                             getExpectedExceptionsPluralize()
-                             + " but got " + ite, ite);
-  }
-
-  public TestException buildTestExceptionPluralize(ITestNGMethod testMethod) {
+  public TestException noException(ITestNGMethod testMethod) {
     if (expectedClasses == null || expectedClasses.length == 0) {
       return null;
     }
