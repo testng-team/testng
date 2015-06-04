@@ -1371,25 +1371,19 @@ public class Invoker implements IInvoker {
       if (ite != null) {
 
         //  Invocation caused an exception, see if the method was annotated with @ExpectedException
-        if (isExpectedException(ite, expectedExceptionsHolder)) {
-          if (messageRegExpMatches(expectedExceptionsHolder.messageRegExp, ite)) {
+        if (expectedExceptionsHolder != null && expectedExceptionsHolder.isExpectedException(ite)) {
+          if (expectedExceptionsHolder.messageRegExpMatches(ite)) {
             testResult.setStatus(ITestResult.SUCCESS);
             status= ITestResult.SUCCESS;
           }
           else {
-            testResult.setThrowable(
-                new TestException("The exception was thrown with the wrong message:" +
-                    " expected \"" + expectedExceptionsHolder.messageRegExp + "\"" +
-                    " but got \"" + ite.getMessage() + "\"", ite));
+            testResult.setThrowable(expectedExceptionsHolder.buildTestException(ite));
             status= ITestResult.FAILURE;
           }
         } else if (isSkipExceptionAndSkip(ite)){
           status = ITestResult.SKIP;
         } else if (expectedExceptionsHolder != null) {
-          testResult.setThrowable(
-              new TestException("Expected exception of " +
-                  getExpectedExceptionsPluralize(expectedExceptionsHolder)
-                  + " but got " + ite, ite));
+          testResult.setThrowable(expectedExceptionsHolder.buildTestExceptionPluralize(ite));
           status= ITestResult.FAILURE;
         } else {
           handleException(ite, testMethod, testResult, failure.count++);
@@ -1400,11 +1394,9 @@ public class Invoker implements IInvoker {
 
       // No exception thrown, make sure we weren't expecting one
       else if(status != ITestResult.SKIP && expectedExceptionsHolder != null) {
-        Class<?>[] classes = expectedExceptionsHolder.expectedClasses;
-        if (classes != null && classes.length > 0) {
-          testResult.setThrowable(
-              new TestException("Method " + testMethod + " should have thrown an exception of "
-                  + getExpectedExceptionsPluralize(expectedExceptionsHolder)));
+        TestException exception = expectedExceptionsHolder.buildTestExceptionPluralize(testMethod);
+        if (exception != null) {
+          testResult.setThrowable(exception);
           status= ITestResult.FAILURE;
         }
       }
@@ -1435,34 +1427,8 @@ public class Invoker implements IInvoker {
     removeResultsToRetryFromResult(resultsToRetry, result, failure);
   }
 
-  private String getExpectedExceptionsPluralize(final ExpectedExceptionsHolder holder) {
-    StringBuilder sb = new StringBuilder();
-    if (holder.expectedClasses.length > 1) {
-      sb.append("any of types ");
-      sb.append(Arrays.toString(holder.expectedClasses));
-    } else {
-      sb.append("type ");
-      sb.append(holder.expectedClasses[0]);
-    }
-    return sb.toString();
-  }
-
   private boolean isSkipExceptionAndSkip(Throwable ite) {
     return SkipException.class.isAssignableFrom(ite.getClass()) && ((SkipException) ite).isSkip();
-  }
-
-  /**
-   *   message / regEx  .*      other
-   *   null             true    false
-   *   non-null         true    match
-   */
-  private boolean messageRegExpMatches(String messageRegExp, Throwable ite) {
-    if (".*".equals(messageRegExp)) {
-      return true;
-    } else {
-      final String message = ite.getMessage();
-      return message != null && Pattern.compile(messageRegExp, Pattern.DOTALL).matcher(ite.getMessage()).matches();
-    }
   }
 
   private void removeResultsToRetryFromResult(List<ITestResult> resultsToRetry,
@@ -1654,36 +1620,6 @@ public class Invoker implements IInvoker {
       testResult.setStatus(ITestResult.FAILURE);
     }
 
-  }
-
-  /**
-   * @param ite The exception that was just thrown
-   * @param exceptionHolder Expected exceptions holder for this
-   * test method
-   * @return true if the exception that was just thrown is part of the
-   * expected exceptions
-   */
-  private boolean isExpectedException(Throwable ite, ExpectedExceptionsHolder exceptionHolder) {
-    if (exceptionHolder == null || exceptionHolder.expectedClasses == null) {
-      return false;
-    }
-
-    // TestException is the wrapper exception that TestNG will be throwing when an exception was
-    // expected but not thrown
-    if (ite.getClass() == TestException.class) {
-      return false;
-    }
-
-    Class<?>[] exceptions = exceptionHolder.expectedClasses;
-    Class<?> realExceptionClass= ite.getClass();
-
-    for (Class<?> exception : exceptions) {
-      if (exception.isAssignableFrom(realExceptionClass)) {
-        return true;
-      }
-    }
-
-    return false;
   }
 
   static interface Predicate<K, T> {
