@@ -52,10 +52,7 @@ public class ExpectedExceptionsHolder extends AbstractExpectedExceptionsHolder {
     // New syntax
     ITestAnnotation testAnnotation = finder.findAnnotation(method, ITestAnnotation.class);
     if (testAnnotation != null) {
-      Class<?>[] ee = testAnnotation.getExpectedExceptions();
-      if (ee.length > 0) {
-        return testAnnotation.getExpectedExceptionsMessageRegExp();
-      }
+      return testAnnotation.getExpectedExceptionsMessageRegExp();
     }
 
     return DEFAULT_REGEXP;
