@@ -470,7 +470,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
       // Qualify these methods if they don't have a package
       for (int i = 0; i < methodsDependedUpon.length; i++) {
         String m = methodsDependedUpon[i];
-        if (m.indexOf(".") < 0) {
+        if (!m.contains(".")) {
           m = MethodHelper.calculateMethodCanonicalName(m_methodClass, methodsDependedUpon[i]);
           methodsDependedUpon[i] = m != null ? m : methodsDependedUpon[i];
         }
