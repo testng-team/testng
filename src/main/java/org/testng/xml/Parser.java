@@ -33,8 +33,8 @@ public class Parser {
   /** The default file name for the TestNG test suite if none is specified (testng.xml). */
   public static final String DEFAULT_FILENAME = "testng.xml";
 
-  private static final IFileParser<XmlSuite> DEFAULT_FILE_PARSER = new SuiteXmlParser();
-  private static final List<IFileParser<XmlSuite>> PARSERS = Lists.newArrayList(DEFAULT_FILE_PARSER, new YamlParser());
+  private static final SuiteParser DEFAULT_FILE_PARSER = new SuiteXmlParser();
+  private static final List<SuiteParser> PARSERS = Lists.newArrayList(DEFAULT_FILE_PARSER, new YamlParser());
 
   /** The file name of the xml suite being parsed. This may be null if the Parser
    * has not been initialized with a file name. TODO CQ This member is never used. */
@@ -110,7 +110,7 @@ public class Parser {
 //  }
 
   private static IFileParser getParser(String fileName) {
-    for (IFileParser<XmlSuite> parser : PARSERS) {
+    for (SuiteParser parser : PARSERS) {
       if (parser.accept(fileName)) {
         return parser;
       }

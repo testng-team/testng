@@ -1,13 +1,13 @@
 package org.testng.internal;
 
 import org.testng.TestNGException;
-import org.testng.xml.IFileParser;
+import org.testng.xml.SuiteParser;
 import org.testng.xml.XmlSuite;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-public class YamlParser implements IFileParser<XmlSuite> {
+public class YamlParser implements SuiteParser {
 
   @Override
   public XmlSuite parse(String filePath, InputStream is, boolean loadClasses)

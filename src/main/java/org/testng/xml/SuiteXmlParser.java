@@ -7,7 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class SuiteXmlParser extends XMLParser<XmlSuite> {
+public class SuiteXmlParser extends XMLParser<XmlSuite> implements SuiteParser {
 
   @Override
   public XmlSuite parse(String currentFile, InputStream inputStream, boolean loadClasses) {
@@ -22,5 +22,8 @@ public class SuiteXmlParser extends XMLParser<XmlSuite> {
     }
   }
 
-
+  @Override
+  public boolean accept(String fileName) {
+    return fileName.endsWith(".xml");
+  }
 }

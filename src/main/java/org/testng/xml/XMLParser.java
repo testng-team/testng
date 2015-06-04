@@ -101,11 +101,6 @@ abstract public class XMLParser<T> implements IFileParser<T> {
     return false;
   }
 
-  @Override
-  public boolean accept(String fileName) {
-    return fileName.endsWith(".xml");
-  }
-
 //  private static void ppp(String s) {
 //    System.out.println("[Parser] " + s);
 //  }
