@@ -1,9 +1,10 @@
 package org.testng.internal;
 
 import org.testng.ITestNGMethod;
-import org.testng.TestException;
+import org.testng.annotations.IExpectedExceptionsAnnotation;
+import org.testng.annotations.ITestAnnotation;
+import org.testng.internal.annotations.IAnnotationFinder;
 
-import java.util.Arrays;
 import java.util.regex.Pattern;
 
 /**
@@ -11,11 +12,10 @@ import java.util.regex.Pattern;
  * @author cbeust
  */
 public class ExpectedExceptionsHolder extends AbstractExpectedExceptionsHolder {
-  private final String messageRegExp;
+  public static final String DEFAULT_REGEXP = ".*";
 
-  public ExpectedExceptionsHolder(Class<?>[] expectedClasses, String messageRegExp) {
-    super(expectedClasses);
-    this.messageRegExp = messageRegExp;
+  public ExpectedExceptionsHolder(IAnnotationFinder finder, ITestNGMethod method) {
+    super(finder, method);
   }
 
   /**
@@ -25,17 +25,38 @@ public class ExpectedExceptionsHolder extends AbstractExpectedExceptionsHolder {
    */
   @Override
   protected boolean isExceptionMatches(Throwable ite) {
-    if (".*".equals(messageRegExp)) {
+    String messageRegExp = getRegExp();
+
+    if (DEFAULT_REGEXP.equals(messageRegExp)) {
       return true;
-    } else {
-      final String message = ite.getMessage();
-      return message != null && Pattern.compile(messageRegExp, Pattern.DOTALL).matcher(ite.getMessage()).matches();
     }
+
+    final String message = ite.getMessage();
+    return message != null && Pattern.compile(messageRegExp, Pattern.DOTALL).matcher(message).matches();
   }
 
   protected String getWrongExceptionMessage(Throwable ite) {
     return "The exception was thrown with the wrong message:" +
-           " expected \"" + messageRegExp + "\"" +
+           " expected \"" + getRegExp() + "\"" +
            " but got \"" + ite.getMessage() + "\"";
+  }
+
+  private String getRegExp() {
+    String messageRegExp = DEFAULT_REGEXP;
+    IExpectedExceptionsAnnotation expectedExceptions =
+        finder.findAnnotation(method, IExpectedExceptionsAnnotation.class);
+
+    if (expectedExceptions == null) {
+      // New syntax
+      ITestAnnotation testAnnotation = finder.findAnnotation(method, ITestAnnotation.class);
+      if (testAnnotation != null) {
+        Class<?>[] ee = testAnnotation.getExpectedExceptions();
+        if (ee.length > 0) {
+          messageRegExp = testAnnotation.getExpectedExceptionsMessageRegExp();
+        }
+      }
+    } // else: Old syntax => keep default value
+
+    return messageRegExp;
   }
 }

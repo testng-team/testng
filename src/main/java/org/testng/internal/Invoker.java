@@ -683,7 +683,7 @@ public class Invoker implements IInvoker {
       testResult.setEndMillis(System.currentTimeMillis());
 
       ExpectedExceptionsHolder expectedExceptionClasses
-          = MethodHelper.findExpectedExceptions(m_annotationFinder, tm.getMethod());
+          = new ExpectedExceptionsHolder(m_annotationFinder, tm);
       List<ITestResult> results = Lists.<ITestResult>newArrayList(testResult);
       handleInvocationResults(tm, results, expectedExceptionClasses, false,
           false /* collect results */, failureContext);
@@ -1069,8 +1069,7 @@ public class Invoker implements IInvoker {
 
     int invocationCount = onlyOne ? 1 : testMethod.getInvocationCount();
 
-    ExpectedExceptionsHolder expectedExceptionHolder =
-        MethodHelper.findExpectedExceptions(m_annotationFinder, testMethod.getMethod());
+    ExpectedExceptionsHolder expectedExceptionHolder = new ExpectedExceptionsHolder(m_annotationFinder, testMethod);
     final ITestClass testClass= testMethod.getTestClass();
     final List<ITestResult> result = Lists.newArrayList();
     final FailureContext failure = new FailureContext();

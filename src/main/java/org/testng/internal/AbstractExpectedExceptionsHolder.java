@@ -2,15 +2,36 @@ package org.testng.internal;
 
 import org.testng.ITestNGMethod;
 import org.testng.TestException;
+import org.testng.annotations.IExpectedExceptionsAnnotation;
+import org.testng.annotations.ITestAnnotation;
+import org.testng.internal.annotations.IAnnotationFinder;
 
 import java.util.Arrays;
 
 public abstract class AbstractExpectedExceptionsHolder {
 
+  protected final IAnnotationFinder finder;
+  protected final ITestNGMethod method;
   private final Class<?>[] expectedClasses;
 
-  protected AbstractExpectedExceptionsHolder(Class<?>[] expectedClasses) {
-    this.expectedClasses = expectedClasses;
+  protected AbstractExpectedExceptionsHolder(IAnnotationFinder finder, ITestNGMethod method) {
+    this.finder = finder;
+    this.method = method;
+    expectedClasses = findExpectedClasses(finder, method);
+  }
+
+  private static Class<?>[] findExpectedClasses(IAnnotationFinder finder, ITestNGMethod method) {
+    IExpectedExceptionsAnnotation expectedExceptions = finder.findAnnotation(method, IExpectedExceptionsAnnotation.class);
+    // Old syntax
+    if (expectedExceptions != null) {
+      return expectedExceptions.getValue();
+    } else { // New syntax
+      ITestAnnotation testAnnotation = finder.findAnnotation(method, ITestAnnotation.class);
+      if (testAnnotation != null) {
+        return testAnnotation.getExpectedExceptions();
+      }
+    }
+    return new Class<?>[0];
   }
 
   /**
