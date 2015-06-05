@@ -952,4 +952,54 @@ public class Assert {
   static public void assertNotEquals(double actual1, double actual2, double delta) {
     assertNotEquals(actual1, actual2, delta, null);
   }
+
+  /**
+   * This interface facilitates the use of {@link #expectThrows} from Java 8. It allows
+   * method references to both void and non-void methods to be passed directly into
+   * expectThrows without wrapping, even if they declare checked exceptions.
+   * <p/>
+   * This interface is not meant to be implemented directly.
+   */
+  public interface ThrowingRunnable {
+    void run() throws Throwable;
+  }
+
+  /**
+   * Asserts that {@code runnable} throws an exception when invoked. If it does not, an
+   * {@link AssertionError} is thrown.
+   *
+   * @param runnable A function that is expected to throw an exception when invoked
+   */
+  public static void assertThrows(ThrowingRunnable runnable) {
+    expectThrows(Throwable.class, runnable);
+  }
+
+  /**
+   * Asserts that {@code runnable} throws an exception of type {@code throwableClass} when
+   * executed. If it does, the exception object is returned. If it does not throw an exception, an
+   * {@link AssertionError} is thrown. If it throws the wrong type of exception, an {@code
+   * AssertionError} is thrown describing the mismatch; the exception that was actually thrown can
+   * be obtained by calling {@link AssertionError#getCause}.
+   *
+   * @param throwableClass the expected type of the exception
+   * @param runnable       A function that is expected to throw an exception when invoked
+   * @return The exception thrown by {@code runnable}
+   */
+  public static <T extends Throwable> T expectThrows(Class<T> throwableClass, ThrowingRunnable runnable) {
+    try {
+      runnable.run();
+    } catch (Throwable t) {
+      if (throwableClass.isInstance(t)) {
+        return throwableClass.cast(t);
+      } else {
+        String mismatchMessage = String.format("Expected %s to be thrown, but %s was thrown",
+                throwableClass.getSimpleName(), t.getClass().getSimpleName());
+
+        throw new AssertionError(mismatchMessage, t);
+      }
+    }
+    String message = String.format("Expected %s to be thrown, but nothing was thrown",
+            throwableClass.getSimpleName());
+    throw new AssertionError(message);
+  }
 }
