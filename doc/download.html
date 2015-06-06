@@ -1,13 +1,31 @@
 <html>
     <head>
         <title>TestNG - Download Current Release and Beta Versions</title>
-        <script type="text/javascript" src="banner.js"></script>
+
         <link rel="stylesheet" href="testng.css" type="text/css" />
-		<script type="text/javascript" src="http://beust.com/prettify.js"></script>
-		<script type="text/javascript" src="http://beust.com/scripts/shCore.js"></script>
-		<script type="text/javascript" src="http://beust.com/scripts/shBrushPlain.js"></script>
-		<script type="text/javascript" src="http://beust.com/scripts/shBrushXml.js"></script>
-		<script type="text/javascript" src="http://beust.com/scripts/shBrushJava.js"></script>
+        <link type="text/css" rel="stylesheet" href="http://beust.com/beust.css"  />
+        <script type="text/javascript" src="banner.js"></script>
+
+      <script type="text/javascript" src="http://beust.com/scripts/shCore.js"></script>
+      <script type="text/javascript" src="http://beust.com/scripts/shBrushJava.js"></script>
+      <script type="text/javascript" src="http://beust.com/scripts/shBrushXml.js"></script>
+      <script type="text/javascript" src="http://beust.com/scripts/shBrushBash.js"></script>
+      <script type="text/javascript" src="http://beust.com/scripts/shBrushPlain.js"></script>
+      <link type="text/css" rel="stylesheet" href="http://beust.com/styles/shCore.css"/>
+      <link type="text/css" rel="stylesheet" href="http://beust.com/styles/shThemeCedric.css"/>
+      <script type="text/javascript">
+        SyntaxHighlighter.config.clipboardSwf = 'scripts/clipboard.swf';
+        SyntaxHighlighter.defaults['gutter'] = false;
+        SyntaxHighlighter.all();
+      </script>
+      <script type="text/javascript" src="http://beust.com/toc.js"></script>
+
+        <style type="text/css">
+            /* Set the command-line table option column width. */
+            #command-line colgroup.option {
+                 width: 7em;
+            }
+        </style
       </head>
 <body onload="prettyPrint()">
 
@@ -51,8 +69,19 @@ dependencies {
 }
 </pre>
 
+<h3>Snapshots</h3>
 
-<h4>Eclipse plug-in</h4>
+TestNG <a href="https://oss.sonatype.org/content/repositories/snapshots/org/testng/testng/">automatically uploads snapshots to Sonatype</a> which you can access by adding the following repository:
+
+<pre class="brush: java">
+repositories {
+    maven {
+        url 'https://oss.sonatype.org/content/repositories/snapshots'
+    }
+}
+</pre>
+
+<h3>Eclipse plug-in</h3>
 <p>You can use either the Eclipse Market Place or the update site:</p>
 <ul>
 	<li>Select<i> Help / Install new software.</i> 
