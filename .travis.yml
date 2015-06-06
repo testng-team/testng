@@ -5,3 +5,4 @@ jdk:
   - openjdk7
 
 script: ./gradlew clean test
+after_success: ./gradlew uploadArchives

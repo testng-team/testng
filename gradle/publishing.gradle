@@ -95,12 +95,14 @@ signing {
 uploadArchives {
     repositories {
         mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
             repository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
-                authentication(userName: '3rszImfP', password: 'uAOidhWfeyQ6K/48UOuxPPL0EFj5Z99P0lU8zsL/BtgT')
+                authentication(userName: System.getenv('SONATYPE_USER'), password: System.getenv('SONATYPE_PASSWORD'))
             }
             pom.version = project.version
-            pom.artifactId = 'org.testng'
-            pom.groupId = 'testng'
+            pom.artifactId = 'testng'
+            pom.groupId = 'org.testng'
         }
     }
 }
