@@ -1,5 +1,8 @@
-if [ $TRAVIS_JDK_HOME == 'jdk7 ]
+if [ $TRAVIS_JDK_HOME == 'oraclejdk7' ]
 then
-   ./gradlew uploadArchives
+  echo "Uploading snapshot"
+  ./gradlew uploadArchives
+else
+  echo "Current JDK is ${TRAVIS_JDK_HOME}, not uploading snapshot"
 fi
 

@@ -5,6 +5,7 @@ jdk:
   - openjdk7
 
 before_install:
-  - echo "Java home:" $TRAVIS_JDK_VERSION
+  - echo "Java home: $TRAVIS_JDK_VERSION"
 script: ./gradlew clean test
-after_success: ./gradlew uploadArchives
+after_success: "script/uploadSnapshot.sh"
+
