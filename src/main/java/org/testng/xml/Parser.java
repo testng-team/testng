@@ -13,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,8 +37,17 @@ public class Parser {
   private static final IFileParser<XmlSuite> XML_PARSER =
 //      new DomXmlParser();
       new SuiteXmlParser();
-  private static final IFileParser<XmlSuite> YAML_PARSER = new YamlParser();
+//  private static final IFileParser<XmlSuite> YAML_PARSER = new YamlParser();
   private static final IFileParser<XmlSuite> DEFAULT_FILE_PARSER = XML_PARSER;
+
+  /** Parsers map, key is file extension, value corresponding file parser implementation instance. */	
+  private static Map<String, IFileParser<XmlSuite>> parsers = new HashMap<>();
+  
+  static {
+	  //default parsers
+	  parsers.put("xml", DEFAULT_FILE_PARSER);
+	  parsers.put("yaml", new YamlParser());
+  }
 
   /** The file name of the xml suite being parsed. This may be null if the Parser
    * has not been initialized with a file name. TODO CQ This member is never used. */
@@ -113,12 +123,18 @@ public class Parser {
 //  }
 
   private IFileParser getParser(String fileName) {
-    IFileParser result = DEFAULT_FILE_PARSER;
-
-    if (fileName.endsWith(".xml")) result = XML_PARSER;
-    else if (fileName.endsWith(".yaml")) result = YAML_PARSER;
-
-    return result;
+//    IFileParser result = DEFAULT_FILE_PARSER;
+//
+//    if (fileName.endsWith(".xml")) result = XML_PARSER;
+//    else if (fileName.endsWith(".yaml")) result = YAML_PARSER;
+//
+//    return result;
+	for (Map.Entry<String, IFileParser<XmlSuite>> entry : parsers.entrySet()) {
+	  if (fileName.endsWith(entry.getKey())) {
+		  return entry.getValue();
+	  }
+	}
+    return DEFAULT_FILE_PARSER;
   }
 
   /**
@@ -240,6 +256,9 @@ public class Parser {
   }
 
 
+  public static void addFileParser(String extension, IFileParser<XmlSuite> fileParser) {
+    parsers.put(extension, fileParser);
+  }
 
 }
 
