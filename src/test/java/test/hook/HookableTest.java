@@ -19,6 +19,9 @@ public class HookableTest extends BaseTest {
     HookSuccessTest.m_hook = false;
     HookSuccessTest.m_testWasRun = false;
     HookSuccessTest.m_parameter = null;
+    HookSuccess599Test.m_hook = false;
+    HookSuccess599Test.m_testWasRun = false;
+    HookSuccess599Test.m_parameter = null;
     HookFailureTest.m_hook = false;
     HookFailureTest.m_testWasRun = false;
     HookListener.m_hook = false;
@@ -43,6 +46,17 @@ public class HookableTest extends BaseTest {
     Assert.assertTrue(HookSuccessTest.m_hook);
     Assert.assertTrue(HookSuccessTest.m_testWasRun);
     Assert.assertEquals(HookSuccessTest.m_parameter, "foo");
+  }
+
+  @Test(description = "https://github.com/cbeust/testng/issues/599")
+  public void issue599() {
+    addClass(HookSuccess599Test.class);
+    run();
+
+    verifyTests("Passed", new String[] { "verify" }, getPassedTests());
+    Assert.assertTrue(HookSuccess599Test.m_hook);
+    Assert.assertTrue(HookSuccess599Test.m_testWasRun);
+    Assert.assertEquals(HookSuccess599Test.m_parameter, "foo");
   }
 
   @Test
