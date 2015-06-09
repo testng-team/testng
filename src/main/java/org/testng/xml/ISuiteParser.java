@@ -1,6 +1,6 @@
 package org.testng.xml;
 
-public interface SuiteParser extends IFileParser<XmlSuite> {
+public interface ISuiteParser extends IFileParser<XmlSuite> {
 
   boolean accept(String fileName);
 }

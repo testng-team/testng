@@ -1,6 +1,6 @@
 package org.testng.xml.dom;
 
-import org.testng.xml.SuiteParser;
+import org.testng.xml.ISuiteParser;
 import org.testng.xml.XMLParser;
 import org.testng.xml.XmlSuite;
 import org.w3c.dom.Document;
@@ -14,7 +14,7 @@ import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class DomXmlParser extends XMLParser<XmlSuite> implements SuiteParser {
+public class DomXmlParser extends XMLParser<XmlSuite> implements ISuiteParser {
   @Override
   public XmlSuite parse(String currentFile, InputStream inputStream, boolean loadClasses) {
     XmlSuite result = null;

@@ -33,11 +33,11 @@ public class Parser {
   /** The default file name for the TestNG test suite if none is specified (testng.xml). */
   public static final String DEFAULT_FILENAME = "testng.xml";
 
-  private static final SuiteParser DEFAULT_FILE_PARSER = new SuiteXmlParser();
-  private static final List<SuiteParser> PARSERS = Lists.newArrayList(DEFAULT_FILE_PARSER);
+  private static final ISuiteParser DEFAULT_FILE_PARSER = new SuiteXmlParser();
+  private static final List<ISuiteParser> PARSERS = Lists.newArrayList(DEFAULT_FILE_PARSER);
   static {
-    ServiceLoader<SuiteParser> suiteParserLoader = ServiceLoader.load(SuiteParser.class);
-    for (SuiteParser parser : suiteParserLoader) {
+    ServiceLoader<ISuiteParser> suiteParserLoader = ServiceLoader.load(ISuiteParser.class);
+    for (ISuiteParser parser : suiteParserLoader) {
       PARSERS.add(parser);
     }
   }
@@ -116,7 +116,7 @@ public class Parser {
 //  }
 
   private static IFileParser getParser(String fileName) {
-    for (SuiteParser parser : PARSERS) {
+    for (ISuiteParser parser : PARSERS) {
       if (parser.accept(fileName)) {
         return parser;
       }
