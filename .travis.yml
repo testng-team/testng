@@ -4,7 +4,7 @@ jdk:
   - oraclejdk7
   - openjdk7
 
-before_install: bash "gradle/uploadSnapshot.sh"
+#before_install: bash "gradle/uploadSnapshot.sh"
 script: ./gradlew clean test
-after_success: bash "gradle/uploadSnapshot.sh"
+after_success: ./gradlew uploadArchives
 
