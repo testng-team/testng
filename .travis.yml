@@ -4,7 +4,7 @@ jdk:
   - oraclejdk7
   - openjdk7
 
-before_install: "script/uploadSnapshot.sh"
+before_install: "gradle/uploadSnapshot.sh"
 script: ./gradlew clean test
-after_success: "script/uploadSnapshot.sh"
+after_success: "gradle/uploadSnapshot.sh"
 
