@@ -109,7 +109,8 @@ uploadArchives {
 
 //
 // Artifactory
-// ./gradlew artifactoryPublish // bintrayUpload
+// ./gradlew artifactoryPublish (upload snapshot)
+// ./gradlew bintrayUpload (upload release)
 //
 
 buildscript {
