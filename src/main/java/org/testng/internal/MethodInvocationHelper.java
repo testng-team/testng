@@ -186,7 +186,7 @@ public class MethodInvocationHelper {
    */
   protected static void invokeHookable(final Object testInstance, final Object[] parameters,
                                        final IHookable hookable, final Method thisMethod,
-                                       final TestResult testResult) throws Throwable {
+                                       final ITestResult testResult) throws Throwable {
     final Throwable[] error = new Throwable[1];
 
     IHookCallBack callback = new IHookCallBack() {
@@ -219,19 +219,25 @@ public class MethodInvocationHelper {
   protected static void invokeWithTimeout(ITestNGMethod tm, Object instance,
       Object[] parameterValues, ITestResult testResult)
       throws InterruptedException, ThreadExecutionException {
+    invokeWithTimeout(tm, instance, parameterValues, testResult, null);
+  }
+
+  protected static void invokeWithTimeout(ITestNGMethod tm, Object instance,
+      Object[] parameterValues, ITestResult testResult, IHookable hookable)
+      throws InterruptedException, ThreadExecutionException {
     if (ThreadUtil.isTestNGThread()) {
       // We are already running in our own executor, don't create another one (or we will
       // lose the time out of the enclosing executor).
-      invokeWithTimeoutWithNoExecutor(tm, instance, parameterValues, testResult);
+      invokeWithTimeoutWithNoExecutor(tm, instance, parameterValues, testResult, hookable);
     } else {
-      invokeWithTimeoutWithNewExecutor(tm, instance, parameterValues, testResult);
+      invokeWithTimeoutWithNewExecutor(tm, instance, parameterValues, testResult, hookable);
     }
   }
 
   private static void invokeWithTimeoutWithNoExecutor(ITestNGMethod tm, Object instance,
-      Object[] parameterValues, ITestResult testResult) {
+      Object[] parameterValues, ITestResult testResult, IHookable hookable) {
 
-    InvokeMethodRunnable imr = new InvokeMethodRunnable(tm, instance, parameterValues);
+    InvokeMethodRunnable imr = new InvokeMethodRunnable(tm, instance, parameterValues, hookable, testResult);
     try {
       imr.run();
       testResult.setStatus(ITestResult.SUCCESS);
@@ -242,11 +248,11 @@ public class MethodInvocationHelper {
   }
 
   private static void invokeWithTimeoutWithNewExecutor(ITestNGMethod tm, Object instance,
-      Object[] parameterValues, ITestResult testResult)
+      Object[] parameterValues, ITestResult testResult, IHookable hookable)
       throws InterruptedException, ThreadExecutionException {
     IExecutor exec = ThreadUtil.createExecutor(1, tm.getMethodName());
 
-    InvokeMethodRunnable imr = new InvokeMethodRunnable(tm, instance, parameterValues);
+    InvokeMethodRunnable imr = new InvokeMethodRunnable(tm, instance, parameterValues, hookable, testResult);
     IFutureResult future = exec.submitRunnable(imr);
     exec.shutdown();
     long realTimeOut = MethodHelper.calculateTimeOut(tm);
