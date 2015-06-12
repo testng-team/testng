@@ -39,6 +39,11 @@ public class TimeOutTest extends BaseTest {
       public Object[] next() {
         return new Object[]{ parallelModes.next() };
       }
+
+      @Override
+      public void remove() {
+        throw new UnsupportedOperationException("remove");
+      }
     };
   }
 
