@@ -1,7 +1,10 @@
 package test.timeout;
 
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
+
+import java.util.Iterator;
 
 import test.BaseTest;
 
@@ -18,10 +21,10 @@ public class TimeOutTest extends BaseTest {
     m_id = System.currentTimeMillis();
   }
 
-  private void privateTimeOutTest(boolean parallel) {
+  private void privateTimeOutTest(String parallel) {
     addClass("test.timeout.TimeOutSampleTest");
-    if (parallel) {
-      setParallel(XmlSuite.PARALLEL_METHODS);
+    if (parallel != null) {
+      setParallel(parallel);
     }
     run();
     String[] passed = {
@@ -37,14 +40,31 @@ public class TimeOutTest extends BaseTest {
       verifyTests("Failed", failed, getFailedTests());
   }
 
-  @Test
-  public void timeOutInParallel() {
-    privateTimeOutTest(true);
+  @DataProvider(name = "parallelModes")
+  public Iterator<Object[]> createData() {
+    final Iterator<String> parallelModes = XmlSuite.PARALLEL_MODES.iterator();
+    return new Iterator<Object[]>() {
+      @Override
+      public boolean hasNext() {
+        return parallelModes.hasNext();
+      }
+
+      @Override
+      public Object[] next() {
+        return new Object[]{ parallelModes.next() };
+      }
+    };
+  }
+
+
+  @Test(dataProvider = "parallelModes")
+  public void timeOutInParallel(String parallelMode) {
+    privateTimeOutTest(parallelMode);
   }
 
   @Test
   public void timeOutInNonParallel() {
-    privateTimeOutTest(false);
+    privateTimeOutTest(null);
   }
 
   @Test
