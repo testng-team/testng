@@ -103,16 +103,16 @@ public final class Utils {
   public static void writeUtf8File(String outputDir, String fileName, XMLStringBuffer xsb,
       String prefix) {
     try {
-      File parentDir = new File(outputDir);
-      if (!parentDir.exists()) {
-        parentDir.mkdirs();
+      final File file = new File(outputDir, fileName);
+      if (!file.exists()) {
+        file.createNewFile();
       }
-      FileWriter fw = new FileWriter(new File(parentDir, fileName));
+      final OutputStreamWriter w = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
       if (prefix != null) {
-        fw.append(prefix);
+        w.append(prefix);
       }
-      xsb.toWriter(fw);
-      fw.close();
+      xsb.toWriter(w);
+      w.close();
     } catch(IOException ex) {
       ex.printStackTrace();
     }
@@ -126,7 +126,7 @@ public final class Utils {
    * @param fileName the filename
    * @param sb the file content
    */
-  public static void writeUtf8File(String outputDir, String fileName, String sb) {
+  public static void writeUtf8File(@Nullable String outputDir, String fileName, String sb) {
     final String outDirPath= outputDir != null ? outputDir : "";
     final File outDir= new File(outDirPath);
     writeFile(outDir, fileName, escapeUnicode(sb), "UTF-8", false /* don't append */);
@@ -140,7 +140,7 @@ public final class Utils {
    * @param fileName the filename
    * @param sb the file content
    */
-  public static void writeFile(String outputDir, String fileName, String sb) {
+  public static void writeFile(@Nullable String outputDir, String fileName, String sb) {
     final String outDirPath= outputDir != null ? outputDir : "";
     final File outDir= new File(outDirPath);
     writeFile(outDir, fileName, sb, null, false /* don't append */);
@@ -153,7 +153,7 @@ public final class Utils {
    * @param fileName file name
    * @param sb string to be appended to file
    */
-  public static void appendToFile(String outputDir, String fileName, String sb) {
+  public static void appendToFile(@Nullable String outputDir, String fileName, String sb) {
      String outDirPath= outputDir != null ? outputDir : "";
      File outDir= new File(outDirPath);
      writeFile(outDir, fileName, sb, null, true /* append */);
@@ -167,8 +167,11 @@ public final class Utils {
    * @param fileName the filename
    * @param sb the file content
    */
-  private static void writeFile(File outDir, String fileName, String sb, String encoding, boolean append) {
+  private static void writeFile(@Nullable File outDir, String fileName, String sb, @Nullable String encoding, boolean append) {
     try {
+      if (outDir == null) {
+        outDir = new File("").getAbsoluteFile();
+      }
       if (!outDir.exists()) {
         outDir.mkdirs();
       }
@@ -191,7 +194,7 @@ public final class Utils {
     }
   }
 
-  private static void writeFile(File outputFile, String sb, String encoding, boolean append) {
+  private static void writeFile(File outputFile, String sb, @Nullable String encoding, boolean append) {
     BufferedWriter fw = null;
     try {
       if (!outputFile.exists()) {
