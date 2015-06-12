@@ -7,10 +7,9 @@ public class TestTimeOutSampleTest {
     @Test
     public void timeoutTest() {
         try {
-            Thread.sleep(2000);
+            Thread.sleep(2_000);
         } catch (InterruptedException handled) {
-          Thread.currentThread().interrupt();
+            Thread.currentThread().interrupt();
         }
-//        System.out.println("Finished normally");
     }
 }

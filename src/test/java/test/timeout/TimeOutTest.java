@@ -2,48 +2,28 @@ package test.timeout;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.xml.SuiteXmlParser;
 import org.testng.xml.XmlSuite;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Iterator;
 
 import test.BaseTest;
 
-
-/**
- * This class
- *
- * @author cbeust
- */
 public class TimeOutTest extends BaseTest {
-  private Long m_id;
+  private final long m_id;
 
   public TimeOutTest() {
     m_id = System.currentTimeMillis();
   }
 
   private void privateTimeOutTest(String parallel) {
-    addClass("test.timeout.TimeOutSampleTest");
+    addClass(TimeOutSampleTest.class);
     if (parallel != null) {
       setParallel(parallel);
     }
-    runAndVerify();
-  }
-
-  private void runAndVerify() {
     run();
-    String[] passed = {
-        "timeoutShouldPass",
-    };
-    String[] failed = {
-        "timeoutShouldFailByException", "timeoutShouldFailByTimeOut"
-    };
 
-    verifyTests("Passed", passed, getPassedTests());
-    verifyTests("Failed", failed, getFailedTests());
+    verifyPassedTests("timeoutShouldPass");
+    verifyFailedTests("timeoutShouldFailByException", "timeoutShouldFailByTimeOut");
   }
 
   @DataProvider(name = "parallelModes")
@@ -69,39 +49,20 @@ public class TimeOutTest extends BaseTest {
   }
 
   @Test
-  public void timeOutInParallelTestsFromXml() throws IOException {
-    String file = "src/test/java/test/timeout/issue575.xml";
-    try (FileInputStream stream = new FileInputStream(file)) {
-      SuiteXmlParser suiteParser = new SuiteXmlParser();
-      XmlSuite suite = suiteParser.parse(file, stream, true);
-      setSuite(suite);
-      runAndVerify();
-    }
-  }
-
-  @Test
   public void timeOutInNonParallel() {
     privateTimeOutTest(null);
   }
 
   @Test
   public void verifyInvocationTimeOut() {
-    addClass("test.timeout.InvocationTimeOutSampleTest");
+    addClass(InvocationTimeOutSampleTest.class);
     run();
-    String[] passed = {
-        "shouldPass",
-      };
-      String[] failed = {
-          "shouldFail"
-      };
-      verifyTests("Passed", passed, getPassedTests());
-      verifyTests("Failed", failed, getFailedTests());
+    verifyPassedTests("shouldPass");
+    verifyFailedTests("shouldFail");
   }
 
   @Override
   public Long getId() {
     return m_id;
   }
-
-
 }

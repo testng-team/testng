@@ -1,9 +1,7 @@
 package test.timeout;
 
-import org.testng.Assert;
-import org.testng.TestListenerAdapter;
-import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.xml.SuiteXmlParser;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
@@ -11,31 +9,25 @@ import org.testng.xml.XmlTest;
 
 import test.BaseTest;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class TimeOutFromXmlTest extends BaseTest {
 
     private void timeOutTest(boolean onSuite) {
-        addClass("test.timeout.TestTimeOutSampleTest");
+        addClass(TestTimeOutSampleTest.class);
         if (onSuite) {
-            setSuiteTimeOut(1000);
+            setSuiteTimeOut(1_000);
         } else {
-            setTestTimeOut(1000);
+            setTestTimeOut(1_000);
         }
         run();
-        String[] passed = {
-          };
-        String[] failed = {
-          "timeoutTest"
-        };
 
-//        dumpResults("Passed", getPassedTests());
-//        dumpResults("Failed", getFailedTests());
-
-        verifyTests("Passed", passed, getPassedTests());
-        verifyTests("Failed", failed, getFailedTests());
+        verifyPassedTests();
+        verifyFailedTests("timeoutTest");
     }
 
     @Test
@@ -50,16 +42,11 @@ public class TimeOutFromXmlTest extends BaseTest {
 
     @Test
     public void noTimeOut() {
-      addClass("test.timeout.TestTimeOutSampleTest");
+      addClass(TestTimeOutSampleTest.class);
       run();
-      String[] passed = {
-          "timeoutTest"
-        };
-        String[] failed = {
-        };
 
-        verifyTests("Passed", passed, getPassedTests());
-        verifyTests("Failed", failed, getFailedTests());
+      verifyPassedTests("timeoutTest");
+      verifyFailedTests();
     }
 
     @Test
@@ -68,19 +55,13 @@ public class TimeOutFromXmlTest extends BaseTest {
       result.setName("Suite");
 
       createXmlTest(result, "WithoutTimeOut");
-      createXmlTest(result, "WithTimeOut").setTimeOut(1000);
+      createXmlTest(result, "WithTimeOut").setTimeOut(1_000);
 
-      TestNG tng = new TestNG();
-      tng.setVerbose(0);
-      tng.setXmlSuites(Arrays.asList(new XmlSuite[] { result }));
-      TestListenerAdapter tla = new TestListenerAdapter();
-      tng.addListener(tla);
-      tng.run();
+      setSuite(result);
+      run();
 
-//      System.out.println("Passed:" + tla.getPassedTests().size()
-//          + " Failed:" + tla.getFailedTests().size());
-      Assert.assertEquals(tla.getPassedTests().size(), 1);
-      Assert.assertEquals(tla.getFailedTests().size(), 1);
+      verifyPassedTests("timeoutTest");
+      verifyFailedTests("timeoutTest");
     }
 
     private XmlTest createXmlTest(XmlSuite suite, String name) {
@@ -89,9 +70,24 @@ public class TimeOutFromXmlTest extends BaseTest {
         List<XmlClass> classes = new ArrayList<>();
         XmlClass cls = new XmlClass(TestTimeOutSampleTest.class);
         cls.setIncludedMethods(
-            Arrays.asList(new XmlInclude[] { new XmlInclude("timeoutTest") }));
+            Collections.singletonList(new XmlInclude("timeoutTest")));
         classes.add(cls);
         result.setXmlClasses(classes);
 
         return result;
-    }}
+    }
+
+    @Test
+    public void timeOutInParallelTestsFromXml() throws IOException {
+      String file = "src/test/java/test/timeout/issue575.xml";
+      try (FileInputStream stream = new FileInputStream(file)) {
+        SuiteXmlParser suiteParser = new SuiteXmlParser();
+        XmlSuite suite = suiteParser.parse(file, stream, true);
+        setSuite(suite);
+        run();
+
+        verifyPassedTests("timeoutShouldPass");
+        verifyFailedTests("timeoutShouldFailByException", "timeoutShouldFailByTimeOut");
+      }
+    }
+}

@@ -374,6 +374,14 @@ public class BaseTest extends BaseDistributedTest {
     Assert.assertEqualsNoOrder(actualNames.toArray(), expected);
   }
 
+  protected void verifyPassedTests(String... expectedPassed) {
+    verifyTests("Passed", expectedPassed, getPassedTests());
+  }
+
+  protected void verifyFailedTests(String... expectedFailed) {
+    verifyTests("Failed", expectedFailed, getFailedTests());
+  }
+
   /**
      *
      * @param fileName The filename to parse
