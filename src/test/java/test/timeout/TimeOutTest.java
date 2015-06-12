@@ -2,8 +2,12 @@ package test.timeout;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.xml.SuiteXmlParser;
 import org.testng.xml.XmlSuite;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Iterator;
 
 import test.BaseTest;
@@ -26,18 +30,20 @@ public class TimeOutTest extends BaseTest {
     if (parallel != null) {
       setParallel(parallel);
     }
+    runAndVerify();
+  }
+
+  private void runAndVerify() {
     run();
     String[] passed = {
         "timeoutShouldPass",
-      };
-      String[] failed = {
+    };
+    String[] failed = {
         "timeoutShouldFailByException", "timeoutShouldFailByTimeOut"
-      };
+    };
 
-//      dumpResults("Passed", getPassedTests());
-
-      verifyTests("Passed", passed, getPassedTests());
-      verifyTests("Failed", failed, getFailedTests());
+    verifyTests("Passed", passed, getPassedTests());
+    verifyTests("Failed", failed, getFailedTests());
   }
 
   @DataProvider(name = "parallelModes")
@@ -60,6 +66,17 @@ public class TimeOutTest extends BaseTest {
   @Test(dataProvider = "parallelModes")
   public void timeOutInParallel(String parallelMode) {
     privateTimeOutTest(parallelMode);
+  }
+
+  @Test
+  public void timeOutInParallelTestsFromXml() throws IOException {
+    String file = "src/test/java/test/timeout/issue575.xml";
+    try (FileInputStream stream = new FileInputStream(file)) {
+      SuiteXmlParser suiteParser = new SuiteXmlParser();
+      XmlSuite suite = suiteParser.parse(file, stream, true);
+      setSuite(suite);
+      runAndVerify();
+    }
   }
 
   @Test
