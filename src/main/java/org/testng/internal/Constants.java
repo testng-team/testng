@@ -1,10 +1,10 @@
 package org.testng.internal;
 
-import org.testng.ITestResult;
-import org.testng.collections.Maps;
-
 import java.util.Map;
 import java.util.Properties;
+
+import org.testng.ITestResult;
+import org.testng.collections.Maps;
 
 
 
@@ -66,7 +66,7 @@ public class Constants {
     String r = properties.getProperty(propertyName, p.getDefault());
     boolean result = "true".equalsIgnoreCase(r);
 
-    return Boolean.valueOf( result).booleanValue();
+    return Boolean.valueOf(result);
   }
 
   public static int getIntegerPropertyValue(Properties properties, String propertyName) {
@@ -82,10 +82,6 @@ public class Constants {
     return p.getDefault();
   }
 
-  /**
-   * @param status
-   * @return
-   */
   public static String displayStatus(int status) {
     if (ITestResult.SKIP == status) {
       return "SKIP";

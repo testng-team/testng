@@ -5,6 +5,8 @@ import java.util.Properties;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
+import org.testng.internal.Nullable;
+
 /**
  * This class allows you to generate an XML text document by pushing
  * and popping tags from a stack maintained internally.
@@ -12,8 +14,8 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a> Jul 21, 2003
  */
 public class XMLStringBuffer {
-  /** End of line */
-  private static final String EOL = System.getProperty("line.separator");
+  /** End of line, value of 'line.separator' system property or '\n' */
+  private static final String EOL = System.getProperty("line.separator", "\n");
 
   /** Tab space indent for XML document */
   private static final String DEFAULT_INDENT_INCREMENT = "  ";
@@ -22,16 +24,11 @@ public class XMLStringBuffer {
   private IBuffer m_buffer;
 
   /** The stack of tags to make sure XML document is well formed. */
-  private final Stack<Tag> m_tagStack = new Stack<Tag>();
+  private final Stack<Tag> m_tagStack = new Stack<>();
 
   /** A string of space character representing the current indentation. */
   private String m_currentIndent = "";
 
-  /**
-   * @param start A string of spaces indicating the indentation at which
-   * to start the generation. Note that this constructor will also insert
-   * an <?xml prologue with a default encoding
-   */
   public XMLStringBuffer() {
     init(Buffer.create(), "", "1.0", "UTF-8");
   }
@@ -64,7 +61,7 @@ public class XMLStringBuffer {
   * @param start A string of spaces indicating the indentation at which
   * to start the generation.
   */
-  private void init(IBuffer buffer, String start, String version, String encoding) {
+  private void init(IBuffer buffer, String start, @Nullable String version, @Nullable String encoding) {
     m_buffer = buffer;
     m_currentIndent = start;
     if (version != null) {
@@ -80,7 +77,7 @@ public class XMLStringBuffer {
    */
   public void setXmlDetails(String v, String enc) {
     if (m_buffer.toString().length() != 0) {
-      throw new RuntimeException("Buffer should be empty: '" + m_buffer.toString() + "'");
+      throw new IllegalStateException("Buffer should be empty: '" + m_buffer.toString() + "'");
     }
     m_buffer.append("<?xml version=\"" + v + "\" encoding=\"" + enc + "\"?>").append(EOL);
   }
@@ -102,7 +99,7 @@ public class XMLStringBuffer {
    * @param schema The schema to use (can be null or an empty string).
    * @param attributes A Properties file representing the attributes (or null)
    */
-  public void push(String tagName, String schema, Properties attributes) {
+  public void push(String tagName, @Nullable String schema, @Nullable Properties attributes) {
     XMLUtils.xmlOpen(m_buffer, m_currentIndent, tagName + schema, attributes);
     m_tagStack.push(new Tag(m_currentIndent, tagName, attributes));
     m_currentIndent += DEFAULT_INDENT_INCREMENT;
@@ -115,7 +112,7 @@ public class XMLStringBuffer {
    * @param tagName The name of the tag.
    * @param schema The schema to use (can be null or an empty string).
    */
-  public void push(String tagName, String schema) {
+  public void push(String tagName, @Nullable String schema) {
     push(tagName, schema, null);
   }
 
@@ -126,7 +123,7 @@ public class XMLStringBuffer {
    * @param tagName The name of the tag.
    * @param attributes A Properties file representing the attributes (or null)
    */
-  public void push(String tagName, Properties attributes) {
+  public void push(String tagName, @Nullable Properties attributes) {
     push(tagName, "", attributes);
   }
 
@@ -136,6 +133,12 @@ public class XMLStringBuffer {
 
   private Properties createProperties(String[] attributes) {
     Properties result = new Properties();
+    if (attributes == null) {
+      return result;
+    }
+    if (attributes.length % 2 != 0) {
+      throw new IllegalArgumentException("Arguments 'attributes' length must be even. Actual: " + attributes.length);
+    }
     for (int i = 0; i < attributes.length; i += 2) {
       result.put(attributes[i], attributes[i + 1]);
     }
@@ -186,7 +189,7 @@ public class XMLStringBuffer {
    * @param tagName The name of the tag
    * @param value The value for this tag
    */
-  public void addRequired(String tagName, String value) {
+  public void addRequired(String tagName, @Nullable String value) {
     addRequired(tagName, value, (Properties) null);
   }
 
@@ -197,10 +200,10 @@ public class XMLStringBuffer {
    * @param value The value for this tag
    * @param attributes A Properties file containing the attributes (or null)
    */
-  public void addRequired(String tagName, String value, Properties attributes) {
+  public void addRequired(String tagName, @Nullable String value, @Nullable Properties attributes) {
     XMLUtils.xmlRequired(m_buffer, m_currentIndent, tagName, value, attributes);
   }
-  public void addRequired(String tagName, String value, String... attributes) {
+  public void addRequired(String tagName, @Nullable String value, String... attributes) {
     addRequired(tagName, value, createProperties(attributes));
   }
 
@@ -211,12 +214,16 @@ public class XMLStringBuffer {
    * @param value The value for this tag
    * @param attributes A Properties file containing the attributes (or null)
    */
-  public void addOptional(String tagName, String value, Properties attributes) {
-    XMLUtils.xmlOptional(m_buffer, m_currentIndent, tagName, value, attributes);
+  public void addOptional(String tagName, @Nullable String value, @Nullable Properties attributes) {
+    if (value != null) {
+      XMLUtils.xmlOptional(m_buffer, m_currentIndent, tagName, value, attributes);
+    }
   }
 
-  public void addOptional(String tagName, String value, String... attributes) {
-    XMLUtils.xmlOptional(m_buffer, m_currentIndent, tagName, value, createProperties(attributes));
+  public void addOptional(String tagName, @Nullable String value, String... attributes) {
+    if (value != null) {
+      XMLUtils.xmlOptional(m_buffer, m_currentIndent, tagName, value, createProperties(attributes));
+    }
   }
 
   /**
@@ -225,7 +232,7 @@ public class XMLStringBuffer {
    * @param tagName The name of the tag
    * @param value The value for this tag
    */
-  public void addOptional(String tagName, String value) {
+  public void addOptional(String tagName, @Nullable String value) {
     addOptional(tagName, value, (Properties) null);
   }
 
@@ -236,7 +243,7 @@ public class XMLStringBuffer {
    * @param value The value for this tag
    * @param attributes A Properties file containing the attributes (or null)
    */
-  public void addOptional(String tagName, Boolean value, Properties attributes) {
+  public void addOptional(String tagName, @Nullable Boolean value, @Nullable Properties attributes) {
     if (null != value) {
       XMLUtils.xmlOptional(m_buffer, m_currentIndent, tagName, value.toString(), attributes);
     }
@@ -247,9 +254,8 @@ public class XMLStringBuffer {
    * added.
    * @param tagName The name of the tag
    * @param value The value for this tag
-   * @param attributes A Properties file containing the attributes (or null)
    */
-  public void addOptional(String tagName, Boolean value) {
+  public void addOptional(String tagName, @Nullable Boolean value) {
     addOptional(tagName, value, null);
   }
 
@@ -268,7 +274,7 @@ public class XMLStringBuffer {
    * @param tagName The name of the tag
    * @param attributes A Properties file containing the attributes (or null)
    */
-  public void addEmptyElement(String tagName, Properties attributes) {
+  public void addEmptyElement(String tagName, @Nullable Properties attributes) {
     m_buffer.append(m_currentIndent).append("<").append(tagName);
     XMLUtils.appendAttributes(m_buffer, attributes);
     m_buffer.append("/>").append(EOL);
@@ -297,7 +303,7 @@ public class XMLStringBuffer {
     if (content == null) {
       content = "null";
     }
-    if (content.indexOf("]]>") > -1) {
+    if (content.contains("]]>")) {
       String[] subStrings = content.split("]]>");
       m_buffer.append(m_currentIndent).append("<![CDATA[").append(subStrings[0]).append("]]]]>");
       for (int i = 1; i < subStrings.length - 1; i++) {

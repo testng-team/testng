@@ -91,11 +91,7 @@ public class StringMessageSender extends BaseMessageSender {
 //        m_outputWriter = new PrintWriter(new OutputStreamWriter(fSocket.getOutputStream()), true);
 //      }
       result = receiveMessage(m_inReader.readLine());
-    }
-    catch(SocketException e) {
-      handleThrowable(e);
-    }
-    catch(IOException e) {
+    } catch(IOException e) {
       handleThrowable(e);
     }
 

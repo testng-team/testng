@@ -18,11 +18,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Stack;
-import java.util.Properties;
-import java.util.HashMap;
-import java.util.Set;
 
 /**
  * Suite definition parser utility.
@@ -55,9 +51,10 @@ public class TestNGContentHandler extends DefaultHandler {
     SUITE,
     TEST,
     CLASS,
-    INCLUDE
+    INCLUDE,
+    EXCLUDE
   }
-  private Stack<Location> m_locations = new Stack<Location>();
+  private Stack<Location> m_locations = new Stack<>();
 
   private XmlClass m_currentClass = null;
   private ArrayList<XmlInclude> m_currentIncludedMethods = null;
@@ -153,7 +150,7 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       String jUnit = attributes.getValue("junit");
       if (null != jUnit) {
-        m_currentSuite.setJUnit( Boolean.valueOf(jUnit).booleanValue());
+        m_currentSuite.setJUnit(Boolean.valueOf(jUnit));
       }
       String parallel = attributes.getValue("parallel");
       if (parallel != null) {
@@ -163,6 +160,14 @@ public class TestNGContentHandler extends DefaultHandler {
           Utils.log("Parser", 1, "[WARN] Unknown value of attribute 'parallel' at suite level: '" + parallel + "'.");
         }
       }
+      String parentModule = attributes.getValue("parent-module");
+      if (parentModule != null) {
+        m_currentSuite.setParentModule(parentModule);
+      }
+      String guiceStage = attributes.getValue("guice-stage");
+      if (guiceStage != null) {
+        m_currentSuite.setGuiceStage(guiceStage);
+      }
       String configFailurePolicy = attributes.getValue("configfailurepolicy");
       if (null != configFailurePolicy) {
         if (XmlSuite.SKIP.equals(configFailurePolicy) || XmlSuite.CONTINUE.equals(configFailurePolicy)) {
@@ -171,7 +176,7 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       String groupByInstances = attributes.getValue("group-by-instances");
       if (groupByInstances!= null) {
-        m_currentSuite.setGroupByInstances(Boolean.valueOf(groupByInstances).booleanValue());
+        m_currentSuite.setGroupByInstances(Boolean.valueOf(groupByInstances));
       }
       String skip = attributes.getValue("skipfailedinvocationcounts");
       if (skip != null) {
@@ -271,15 +276,15 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       String jUnit = attributes.getValue("junit");
       if (null != jUnit) {
-        m_currentTest.setJUnit( Boolean.valueOf(jUnit).booleanValue());
+        m_currentTest.setJUnit(Boolean.valueOf(jUnit));
       }
       String skip = attributes.getValue("skipfailedinvocationcounts");
       if (skip != null) {
-        m_currentTest.setSkipFailedInvocationCounts(Boolean.valueOf(skip).booleanValue());
+        m_currentTest.setSkipFailedInvocationCounts(Boolean.valueOf(skip));
       }
       String groupByInstances = attributes.getValue("group-by-instances");
       if (groupByInstances!= null) {
-        m_currentTest.setGroupByInstances(Boolean.valueOf(groupByInstances).booleanValue());
+        m_currentTest.setGroupByInstances(Boolean.valueOf(groupByInstances));
       }
       String preserveOrder = attributes.getValue("preserve-order");
       if (preserveOrder != null) {
@@ -400,7 +405,7 @@ public class TestNGContentHandler extends DefaultHandler {
    */
   public void xmlMethodSelectors(boolean start, Attributes attributes) {
     if (start) {
-      m_currentSelectors = new ArrayList<XmlMethodSelector>();
+      m_currentSelectors = new ArrayList<>();
     }
     else {
       switch(m_locations.peek()) {
@@ -448,7 +453,7 @@ public class TestNGContentHandler extends DefaultHandler {
 
   private void xmlMethod(boolean start, Attributes attributes) {
     if (start) {
-      m_currentIncludedMethods = new ArrayList<XmlInclude>();
+      m_currentIncludedMethods = new ArrayList<>();
       m_currentExcludedMethods = Lists.newArrayList();
       m_currentIncludeIndex = 0;
     }
@@ -574,15 +579,7 @@ public class TestNGContentHandler extends DefaultHandler {
       xmlInclude(true, attributes);
     }
     else if ("exclude".equals(qName)) {
-      if (null != m_currentExcludedMethods) {
-        m_currentExcludedMethods.add(name);
-      }
-      else if (null != m_currentRuns) {
-        m_currentExcludedGroups.add(name);
-      }
-      else if (null != m_currentPackage) {
-        m_currentPackage.getExclude().add(name);
-      }
+      xmlExclude(true, attributes);
     }
     else if ("parameter".equals(qName)) {
       String value = expandValue(attributes.getValue("value"));
@@ -649,6 +646,24 @@ public class TestNGContentHandler extends DefaultHandler {
 
       popLocation(Location.INCLUDE);
       m_currentInclude = null;
+    }
+  }
+
+  private void xmlExclude(boolean start, Attributes attributes) {
+    if (start) {
+      m_locations.push(Location.EXCLUDE);
+      String name = attributes.getValue("name");
+      if (null != m_currentExcludedMethods) {
+        m_currentExcludedMethods.add(name);
+      }
+      else if (null != m_currentRuns) {
+        m_currentExcludedGroups.add(name);
+      }
+      else if (null != m_currentPackage) {
+        m_currentPackage.getExclude().add(name);
+      }
+    } else {
+      popLocation(Location.EXCLUDE);
     }
   }
 
@@ -720,6 +735,8 @@ public class TestNGContentHandler extends DefaultHandler {
     }
     else if ("include".equals(qName)) {
       xmlInclude(false, null);
+    } else if ("exclude".equals(qName)){
+      xmlExclude(false, null);
     }
   }
 

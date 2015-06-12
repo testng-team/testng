@@ -37,7 +37,7 @@ public class ConfigurationGroups1SampleTest {
     log("f1");
   }
 
-  private List<String> m_list = new ArrayList<String>();
+  private List<String> m_list = new ArrayList<>();
 
   @Test(dependsOnGroups = {"cg1-a", "cg1-1"})
   public void verify() {

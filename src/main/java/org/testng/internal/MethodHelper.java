@@ -1,16 +1,5 @@
 package org.testng.internal;
 
-import org.testng.ITestNGMethod;
-import org.testng.TestNGException;
-import org.testng.annotations.IExpectedExceptionsAnnotation;
-import org.testng.annotations.ITestAnnotation;
-import org.testng.annotations.ITestOrConfiguration;
-import org.testng.collections.Lists;
-import org.testng.internal.annotations.AnnotationHelper;
-import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.Sets;
-import org.testng.internal.collections.Pair;
-
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
@@ -20,6 +9,17 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
+import org.testng.ITestNGMethod;
+import org.testng.TestNGException;
+import org.testng.annotations.IExpectedExceptionsAnnotation;
+import org.testng.annotations.ITestAnnotation;
+import org.testng.annotations.ITestOrConfiguration;
+import org.testng.collections.Lists;
+import org.testng.collections.Sets;
+import org.testng.internal.annotations.AnnotationHelper;
+import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.collections.Pair;
+
 /**
  * Collection of helper methods to help sort and arrange methods.
  *
@@ -28,10 +28,10 @@ import java.util.regex.Pattern;
  */
 public class MethodHelper {
   private static final Map<ITestNGMethod[], Graph<ITestNGMethod>> GRAPH_CACHE =
-      new ConcurrentHashMap<ITestNGMethod[], Graph<ITestNGMethod>>();
-  private static final Map<Method, String> CANONICAL_NAME_CACHE = new ConcurrentHashMap<Method, String>();
+          new ConcurrentHashMap<>();
+  private static final Map<Method, String> CANONICAL_NAME_CACHE = new ConcurrentHashMap<>();
   private static final Map<Pair<String, String>, Boolean> MATCH_CACHE =
-      new ConcurrentHashMap<Pair<String, String>, Boolean>();
+          new ConcurrentHashMap<>();
 
   /**
    * Collects and orders test or configuration methods
@@ -124,7 +124,6 @@ public class MethodHelper {
    * class name, uses the TestNG method's class name.
    * @param testngMethod TestNG method
    * @param regExp regex representing a method and/or related class name
-   * @return
    */
   private static Method findMethodByName(ITestNGMethod testngMethod, String regExp) {
     if (regExp == null) {
@@ -220,7 +219,7 @@ public class MethodHelper {
 
   private static Graph<ITestNGMethod> topologicalSort(ITestNGMethod[] methods,
       List<ITestNGMethod> sequentialList, List<ITestNGMethod> parallelList) {
-    Graph<ITestNGMethod> result = new Graph<ITestNGMethod>();
+    Graph<ITestNGMethod> result = new Graph<>();
 
     if (methods.length == 0) {
       return result;
@@ -323,8 +322,6 @@ public class MethodHelper {
   }
 
   /**
-   * @param method
-   * @param allTestMethods
    * @return A sorted array containing all the methods 'method' depends on
    */
   public static List<ITestNGMethod> getMethodsDependedUpon(ITestNGMethod method, ITestNGMethod[] methods) {

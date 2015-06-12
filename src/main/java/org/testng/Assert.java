@@ -39,7 +39,7 @@ public class Assert {
    */
   static public void assertTrue(boolean condition, String message) {
     if(!condition) {
-      failNotEquals( Boolean.valueOf(condition), Boolean.TRUE, message);
+      failNotEquals(condition, Boolean.TRUE, message);
     }
   }
 
@@ -60,7 +60,7 @@ public class Assert {
    */
   static public void assertFalse(boolean condition, String message) {
     if(condition) {
-      failNotEquals( Boolean.valueOf(condition), Boolean.FALSE, message); // TESTNG-81
+      failNotEquals(condition, Boolean.FALSE, message); // TESTNG-81
     }
   }
 
@@ -112,13 +112,15 @@ public class Assert {
     if((expected == null) && (actual == null)) {
       return;
     }
-    if(expected != null) {
-      if (expected.getClass().isArray()) {
-        assertArrayEquals(actual, expected, message);
-        return;
-      } else if (expected.equals(actual)) {
-        return;
-      }
+    if(expected == null ^ actual == null) {
+      failNotEquals(actual, expected, message);
+    }
+    if (expected.getClass().isArray()) {
+       assertArrayEquals(actual, expected, message);
+       return;
+    }
+    if (expected.equals(actual) && actual.equals(expected)) {
+       return;
     }
     failNotEquals(actual, expected, message);
   }
@@ -200,11 +202,11 @@ public class Assert {
     // the following test fails
     if(Double.isInfinite(expected)) {
       if(!(expected == actual)) {
-        failNotEquals(new Double(actual), new Double(expected), message);
+        failNotEquals(actual, expected, message);
       }
     }
     else if(!(Math.abs(expected - actual) <= delta)) { // Because comparison with NaN always returns false
-      failNotEquals(new Double(actual), new Double(expected), message);
+      failNotEquals(actual, expected, message);
     }
   }
 
@@ -234,11 +236,11 @@ public class Assert {
     // the following test fails
     if(Float.isInfinite(expected)) {
       if(!(expected == actual)) {
-        failNotEquals(new Float(actual), new Float(expected), message);
+        failNotEquals(actual, expected, message);
       }
     }
     else if(!(Math.abs(expected - actual) <= delta)) {
-      failNotEquals(new Float(actual), new Float(expected), message);
+      failNotEquals(actual, expected, message);
     }
   }
 
@@ -534,7 +536,7 @@ public class Assert {
       }
     }
 
-    assertEquals(actual.size(), expected.size(), message + ": lists don't have the same size");
+    assertEquals(actual.size(), expected.size(), (message == null ? "" : message + ": ") + "lists don't have the same size");
 
     Iterator<?> actIt = actual.iterator();
     Iterator<?> expIt = expected.iterator();
@@ -827,13 +829,13 @@ public class Assert {
     }
 
     Set<?> entrySet = actual.entrySet();
-    for (Iterator<?> iterator = entrySet.iterator(); iterator.hasNext();) {
-      Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iterator.next();
+    for (Object anEntrySet : entrySet) {
+      Map.Entry<?, ?> entry = (Map.Entry<?, ?>) anEntrySet;
       Object key = entry.getKey();
       Object value = entry.getValue();
       Object expectedValue = expected.get(key);
       assertEquals(value, expectedValue, "Maps do not match for key:" + key + " actual:" + value
-          + " expected:" + expectedValue);
+              + " expected:" + expectedValue);
     }
 
   }
@@ -949,5 +951,55 @@ public class Assert {
 
   static public void assertNotEquals(double actual1, double actual2, double delta) {
     assertNotEquals(actual1, actual2, delta, null);
+  }
+
+  /**
+   * This interface facilitates the use of {@link #expectThrows} from Java 8. It allows
+   * method references to both void and non-void methods to be passed directly into
+   * expectThrows without wrapping, even if they declare checked exceptions.
+   * <p/>
+   * This interface is not meant to be implemented directly.
+   */
+  public interface ThrowingRunnable {
+    void run() throws Throwable;
+  }
+
+  /**
+   * Asserts that {@code runnable} throws an exception when invoked. If it does not, an
+   * {@link AssertionError} is thrown.
+   *
+   * @param runnable A function that is expected to throw an exception when invoked
+   */
+  public static void assertThrows(ThrowingRunnable runnable) {
+    expectThrows(Throwable.class, runnable);
+  }
+
+  /**
+   * Asserts that {@code runnable} throws an exception of type {@code throwableClass} when
+   * executed. If it does, the exception object is returned. If it does not throw an exception, an
+   * {@link AssertionError} is thrown. If it throws the wrong type of exception, an {@code
+   * AssertionError} is thrown describing the mismatch; the exception that was actually thrown can
+   * be obtained by calling {@link AssertionError#getCause}.
+   *
+   * @param throwableClass the expected type of the exception
+   * @param runnable       A function that is expected to throw an exception when invoked
+   * @return The exception thrown by {@code runnable}
+   */
+  public static <T extends Throwable> T expectThrows(Class<T> throwableClass, ThrowingRunnable runnable) {
+    try {
+      runnable.run();
+    } catch (Throwable t) {
+      if (throwableClass.isInstance(t)) {
+        return throwableClass.cast(t);
+      } else {
+        String mismatchMessage = String.format("Expected %s to be thrown, but %s was thrown",
+                throwableClass.getSimpleName(), t.getClass().getSimpleName());
+
+        throw new AssertionError(mismatchMessage, t);
+      }
+    }
+    String message = String.format("Expected %s to be thrown, but nothing was thrown",
+            throwableClass.getSimpleName());
+    throw new AssertionError(message);
   }
 }

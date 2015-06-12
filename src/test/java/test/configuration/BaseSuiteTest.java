@@ -10,7 +10,7 @@ public class BaseSuiteTest {
 
   @BeforeSuite
   public void beforeSuiteParent(){
-    m_order = new ArrayList<Integer>();
+    m_order = new ArrayList<>();
     m_order.add(1);
   }
 

@@ -3,7 +3,7 @@ package test.thread;
 import org.testng.Assert;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.annotations.Sets;
+import org.testng.collections.Sets;
 
 import test.SimpleBaseTest;
 

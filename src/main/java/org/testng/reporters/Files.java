@@ -2,6 +2,7 @@ package org.testng.reporters;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -17,7 +18,9 @@ import java.io.Writer;
 public class Files {
 
   public static String readFile(File f) throws IOException {
-    return readFile(new FileInputStream(f));
+    try (InputStream is = new FileInputStream(f)) {
+      return readFile(is);
+    }
   }
 
   public static String readFile(InputStream is) throws IOException {
@@ -45,12 +48,13 @@ public class Files {
       to.getParentFile().mkdirs();
     }
 
-    OutputStream os = new FileOutputStream(to);
-    byte[] buffer = new byte[65536];
-    int count = from.read(buffer);
-    while (count > 0) {
-      os.write(buffer, 0, count);
-      count = from.read(buffer);
+    try (OutputStream os = new FileOutputStream(to)) {
+      byte[] buffer = new byte[65536];
+      int count = from.read(buffer);
+      while (count > 0) {
+        os.write(buffer, 0, count);
+        count = from.read(buffer);
+      }
     }
   }
 

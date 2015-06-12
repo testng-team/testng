@@ -152,7 +152,7 @@ public class JqReporter implements IReporter {
     xsb.pop(D);
 
     xsb.push(D, C, "test-content");
-    for (Class<?> c : map.getKeys()) {
+    for (Class<?> c : map.keySet()) {
       xsb.push(D, C, C);
       xsb.push(D, C, "class-header");
 

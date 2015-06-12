@@ -6,9 +6,9 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.collections.Sets;
 import org.testng.internal.IResultListener2;
 import org.testng.internal.Utils;
-import org.testng.internal.annotations.Sets;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

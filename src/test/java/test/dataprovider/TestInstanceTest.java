@@ -24,8 +24,8 @@ public class TestInstanceTest {
     Assert.assertTrue(o0.m_n == 1 || o0.m_n == 2);
     m_instanceCount++;
     return new Object[][] {
-        new Object[] { Integer.valueOf(42) },
-        new Object[] { Integer.valueOf(43) },
+        new Object[] {42},
+        new Object[] {43},
     };
   }
 

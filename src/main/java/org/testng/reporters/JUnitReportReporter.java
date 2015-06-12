@@ -9,8 +9,8 @@ import org.testng.ITestResult;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.collections.Sets;
 import org.testng.internal.Utils;
-import org.testng.internal.annotations.Sets;
 import org.testng.xml.XmlSuite;
 
 import java.io.File;
@@ -100,9 +100,9 @@ public class JUnitReportReporter implements IReporter {
         boolean isSuccess = tr.getStatus() == ITestResult.SUCCESS;
         if (! isSuccess) {
           if (tr.getThrowable() instanceof AssertionError) {
-            errors++;
-          } else {
             failures++;
+          } else {
+            errors++;
           }
         }
 
@@ -123,7 +123,7 @@ public class JUnitReportReporter implements IReporter {
           testTag.message = t.getMessage();
           testTag.type = t.getClass().getName();
           testTag.stackTrace = sw.toString();
-          testTag.errorTag = tr.getThrowable() instanceof AssertionError ? "error" : "failure";
+          testTag.errorTag = tr.getThrowable() instanceof AssertionError ? "failure" : "error";
         }
         totalTime += time;
         testCount++;

@@ -11,7 +11,7 @@ import java.util.Map;
  * @author cbeust
  */
 public class FactoryWithInstanceInfoTest2 {
-  private static Map<Integer, Integer> m_numbers = new HashMap<Integer, Integer>();
+  private static Map<Integer, Integer> m_numbers = new HashMap<>();
   private int m_number;
 
   public FactoryWithInstanceInfoTest2() {
@@ -28,7 +28,7 @@ public class FactoryWithInstanceInfoTest2 {
 
   @Test(groups = { "first" })
   public void testInt() {
-    Integer n = Integer.valueOf(m_number);
+    Integer n = m_number;
     m_numbers.put(n, n);
   }
 

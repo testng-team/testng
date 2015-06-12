@@ -1,6 +1,65 @@
 Current
 
-Fixed: GITHUB-376: Some results can be lost (Konstantin Savin)
+Fixed: The ServiceLoaderTest on Windows (Mathieu Sebire)
+Fixed: GITHUB-691: Fix classloading issue when using TestNG 6.9.4 and JMockit. (Mathieu Sebire)
+Fixed: GITHUB-686: IAnnotationTransformer.transform is called for methods with testClass populated. (Łukasz Rekucki & Julien Herr)
+Fixed: GITHUB-420: Before/AfterSuite methods may not run, when use inheritance, and enabled=false (Jakub Tokaj & Julien Herr)
+Fixed: GITHUB-697: Make addFailedInvocationNumber thread-safe (Ryan Schmitt)
+Fixed: GITHUB-698: Fix exit code reporting when IRetryAnalyzer is used (Ryan Schmitt)
+Fixed: GITHUB-465: assertEquals(Collection, Collection) prints "null" when collections are different sizes (Michael Diamond)
+New: GITHUB-xxx: AppVeyor is used for continuous integration on Windows (Julien Herr)
+
+Eclipse:
+
+Fixed: The 57% freeze bug (Patrick Hensley and @denyska)
+
+6.9.4:
+2015/05/09
+
+Added: GITHUB-631: Avoid the static limitation of external DataProvider. (Julien Herr)
+Added: GITHUB-631: Allow to use Guice injection in DataProvider. (Julien Herr)
+Added: Drop support of Java6 and previous.
+Added: GITHUB-617: Allow injection of org.testng.ITestContext into the guice parent module. (Julien Herr)
+Fixed: GITHUB-606: RetryAnalyzer loops endlessly. (Krishnan Mahadevan)
+Fixed: GITHUB-618: Start TestNG from jar cause recursive run of tests from packages in Suite XML without ".*" on the end (Stas Gromov)
+Fixed: GITHUB-639: Typo on preserveOrder (tabei-k & Julien Herr)
+Fixed: GITHUB-632: Typo in doc (Pétur Ingi Egilsson & Julien Herr)
+Fixed: GITHUB-629: InvokedMethod doesn't recognize configuration method (Jan Mewes & Julien Herr)
+Fixed: GITHUB-615: XmlSuite, XmlTest: Time-out tag not preserved (jphollingworth & Julien Herr)
+New: GITHUB-638: Travis CI is used for continuous integration (Julien Herr)
+New: GITHUB-647: SonarQube is used to follow technical debt (Julien Herr)
+Added: GITHUB-616: org.testng.internal.Version will be always up-to-date (Julien Herr)
+Fixed: GITHUB-634: Review of the collections package (Julien Herr)
+Fixed: GITHUB-624: Fixed failure/error inversion in JUnitReportReporter (Jerome Jacob)
+Fixed: GITHUB-545: TestNG running JUnit tests but not reporting all results for parameterized tests (Jonathan Leitschuh & jdillet)
+Fixed: GITHUB-610: CustomizedSuites must be saved using utf-8 encoding (Juha Heljoranta)
+Fixed: GITHUB-602: NoClassDefFoundError in TestNGClassFinder.<init> (aanno)
+Fixed: GITHUB-529: Close InputStream and OuputStream after use (Andrew Gaul)
+Fixed: GITHUB-532: Create the parent directory if it's missing (Ion Savin)
+Fixed: GITHUB-541: Some OSGi manifest fixes (Evgeny Zhuravlev)
+Fixed: GITHUB-657: Fix OSGI Import-Package to make jUnit4 dependency optional (Xavier Fournet)
+Fixed: GITHUB-523: externally synchronize our use of the static SimpleDateFormat (mcosby)
+Fixed: GITHUB-477: Typo in DTD attribute comment (Kamil Szymański)
+Fixed: GITHUB-353: Typo in documentation (Jan Święcki)
+Fixed: GITHUB-656: Upgrade to JCommander 1.48 (Ryan Schmitt)
+Fixed: GITHUB-582: TestNG tests don't pass reliably on JDK8 (Ryan Schmitt)
+New: GITHUB-645: TestNG project on Google Code redirect to GitHub
+Fixed: GITHUB-310: Upgrade Guice (kronar & Julien Herr)
+Fixed: GITHUB-87: @BeforeSuite/@BeforeTest methods happens to be disabled by mistake (romlom & Julien Herr)
+Fixed: GITHUB-425: Wrong invocation order with lastTimeOnly (Rafael Winterhalter & Julien Herr)
+Fixed: GITHUB-417: Expected Exceptions Message fails to match multi-line messages (Michael Diamond)
+New: GITHUB-663: Add Guice Stage configuration for a suite (Clément Guillaume)
+
+6.8.21:
+2015/02/02
+
+6.8.15:
+2015/01/14
+
+Fixed: OutOfMemoryException while generating reports.
+Fixed: GITHUB-566: Build does not fail when successPercentage for @Test is not met
+Fixed: XmlTest#setGroupInstances was not being shown in toXml().
+Fixed: GITHUB-376: Some results can be lost (Konstantin Savin).
 Fixed: Handle relative paths of Suite XML files properly (Nalin Makar)
 
 6.8.5:

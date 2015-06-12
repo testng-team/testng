@@ -20,7 +20,7 @@ public interface IRemoteSuiteListener {
   /**
    * @see org.testng.ISuiteListener#onStart(org.testng.ISuite)
    *
-   * @param sm the suite message containing the description of the suite to be run.
+   * @param suiteMessage the suite message containing the description of the suite to be run.
    */
   void onStart(SuiteMessage suiteMessage);
 

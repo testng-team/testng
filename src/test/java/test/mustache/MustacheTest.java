@@ -30,11 +30,11 @@ public class MustacheTest {
     }
   }
 
-  private static final List<Person> PEOPLE = new ArrayList<Person>(
-      Arrays.asList(new Person("Carl"), new Person("Christopher")));
+  private static final List<Person> PEOPLE = new ArrayList<>(
+          Arrays.asList(new Person("Carl"), new Person("Christopher")));
 
-  private static final List<Age> AGES = new ArrayList<Age>(
-      Arrays.asList(new Age(42), new Age(43)));
+  private static final List<Age> AGES = new ArrayList<>(
+          Arrays.asList(new Age(42), new Age(43)));
 
   @DataProvider
   public Object[][] dp() {

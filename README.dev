@@ -13,12 +13,24 @@ Send the public key:
 
 
 Configure ~/.m2/settings.xml with Nexus user/password:
+
   <settings>
     <servers>
       <server>
+        <id>sonatype-nexus-snapshots</id>
+        <username>***</username>
+        <password>***</password>
+      </server>
+      <server>
         <id>sonatype-nexus-staging</id>
-        <username>xxx</username>
-        <password>xxx</password>
+        <username>***</username>
+        <password>***</password>
       </server>
     </servers>
   </settings>
+
+Snaphot deploy:
+mvn -Dgpg.passphrase= -Dgpg.keyname=<public_key> deploy
+
+Staging deploy:
+mvn -Dgpg.passphrase= -Dgpg.keyname=<public_key> release:clean release:prepare release:perform

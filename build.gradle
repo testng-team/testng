@@ -1,0 +1,138 @@
+buildscript {
+
+    def a_user = hasProperty('artifactory_user') ? artifactory_user : System.getenv('artifactory_user')
+    def a_password = hasProperty('artifactory_password') ? artifactory_password : System.getenv('artifactory_password')
+
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven {
+            url 'http://dl.bintray.com/cbeust/maven'
+        }
+        maven {
+            url 'http://oss.jfrog.org/artifactory/plugins-release'
+            credentials {
+                username = "${a_user}"
+                password = "${a_password}"
+            }
+        }
+    }
+
+    dependencies {
+        //Check for the latest version here: http://plugins.gradle.org/plugin/com.jfrog.artifactory
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:3.0.3"
+    }
+}
+
+plugins {
+    id "com.jfrog.bintray" version "1.1"
+    id "com.jfrog.artifactory" version "3.1.0"
+}
+
+version = '6.9.5-SNAPSHOT'
+
+apply plugin: 'java'
+apply from: 'gradle/publishing.gradle'
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven {
+        url 'http://dl.bintray.com/cbeust/maven'
+    }
+}
+
+dependencies {
+    compile 'org.apache.ant:ant:1.7.0'
+    compile 'junit:junit:4.10'
+    compile 'org.beanshell:bsh:2.0b4'
+    compile 'com.google.inject:guice:4.0:no_aop'
+    compile 'com.beust:jcommander:1.48'
+    compile 'org.yaml:snakeyaml:1.15'
+
+    testCompile 'org.assertj:assertj-core:2.0.0'
+    testCompile 'org.testng:testng:6.9.4'
+}
+
+task sourceJar(type: Jar) {
+    group 'Build'
+    description 'An archive of the source code'
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    sourceJar
+}
+
+import org.apache.tools.ant.filters.ReplaceTokens
+
+def generatedSourcesFolder = projectDir.toString() + '/src/generated/java'
+
+def dirFrom = projectDir.toString() + '/src/main/resources/org/testng/internal'
+def dirTo = generatedSourcesFolder + "/org/testng/internal"
+def fileFrom = 'VersionTemplateJava'
+def fileTo = 'Version.java'
+
+task removeVersion {
+    delete dirTo + fileTo
+}
+
+sourceSets {
+    generated {
+        java {
+            srcDir 'src/generated/java'
+        }
+        resources {
+            srcDir 'src/generated/resources'
+        }
+    }
+}
+
+sourceSets {
+    main {
+        compileClasspath += generated.output
+        runtimeClasspath += generated.output
+    }
+}
+
+gradle.projectsEvaluated {
+    compileJava.dependsOn(myDir)
+}
+
+task myDir {
+    delete dirTo + "/" + fileTo
+    mkdir(dirTo)
+}
+
+// Include the generated Version.class in the jar
+jar {
+    from "$buildDir/classes/generated"
+}
+
+task createVersion(type: Copy, dependsOn: myDir) {
+    println("Creating Version file: ${version} in ${dirTo}")
+    from dirFrom
+    include fileFrom
+    into(dirTo)
+    rename(fileFrom, fileTo)
+    filter(ReplaceTokens, tokens: [version: version])
+}
+
+compileJava.dependsOn(createVersion)
+
+test {
+    useTestNG() {
+        suites 'src/test/resources/testng.xml'
+    }
+    systemProperties = System.getProperties()
+    systemProperties['test.resources.dir'] = 'build/resources/test/'
+}
+
+if (JavaVersion.current().isJava8Compatible()) {
+    allprojects {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
+    }
+}

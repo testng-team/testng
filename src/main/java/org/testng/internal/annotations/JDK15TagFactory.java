@@ -2,7 +2,9 @@ package org.testng.internal.annotations;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.testng.IAnnotationTransformer;
 import org.testng.TestNGException;
@@ -31,7 +33,7 @@ import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
-import org.testng.collections.Maps;
+import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 
 /**
@@ -417,15 +419,15 @@ public class JDK15TagFactory {
   }
 
   private String[] join(String[] strings, String[] strings2) {
-    Map<String, String> vResult = Maps.newHashMap();
-    for (String s : strings) {
-      vResult.put(s, s);
-    }
+    List<String> result = Lists.newArrayList(strings);
+    Set<String> seen = new HashSet<>(Lists.newArrayList(strings));
     for (String s : strings2) {
-      vResult.put(s, s);
+      if (! seen.contains(s)) {
+        result.add(s);
+      }
     }
 
-    return vResult.keySet().toArray(new String[vResult.size()]);
+    return result.toArray(new String[result.size()]);
   }
 
   /**
@@ -494,21 +496,20 @@ public class JDK15TagFactory {
       return new String[0];
     }
 
-    Map<String, String> vResult = Maps.newHashMap();
+    List<String> result = Lists.newArrayList();
 
     while (cls != null && cls != Object.class) {
       Annotation annotation = cls.getAnnotation(annotationClass);
       if (annotation != null) {
         String[] g = (String[]) invokeMethod(annotation, methodName);
         for (String s : g) {
-          vResult.put(s, s);
+          result.add(s);
         }
       }
       cls = cls.getSuperclass();
     }
 
-    String[] result = vResult.keySet().toArray(new String[vResult.size()]);
-    return result;
+    return result.toArray(new String[result.size()]);
   }
 
   private Object invokeMethod(Annotation test, String methodName) {

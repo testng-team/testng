@@ -63,10 +63,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   private long m_invocationTimeOut = 0L;
 
   private List<Integer> m_invocationNumbers = Lists.newArrayList();
-  private List<Integer> m_failedInvocationNumbers = Lists.newArrayList();
-  /**
-   * {@inheritDoc}
-   */
+  private final List<Integer> m_failedInvocationNumbers = Collections.synchronizedList(Lists.<Integer>newArrayList());
   private long m_timeOut = 0;
 
   private boolean m_ignoreMissingDependencies;
@@ -82,15 +79,15 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    * @param annotationFinder
    * @param instance 
    */
-  public BaseTestMethod(Method method, IAnnotationFinder annotationFinder, Object instance) {
-    this(new ConstructorOrMethod(method), annotationFinder, instance);
+  public BaseTestMethod(String methodName, Method method, IAnnotationFinder annotationFinder, Object instance) {
+    this(methodName, new ConstructorOrMethod(method), annotationFinder, instance);
   }
 
-  public BaseTestMethod(ConstructorOrMethod com, IAnnotationFinder annotationFinder,
+  public BaseTestMethod(String methodName, ConstructorOrMethod com, IAnnotationFinder annotationFinder,
       Object instance) {
     m_methodClass = com.getDeclaringClass();
     m_method = com;
-    m_methodName = com.getName();
+    m_methodName = methodName;
     m_annotationFinder = annotationFinder;
     m_instance = instance;
     m_signature = computeSignature();
@@ -142,18 +139,14 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     m_testClass = tc;
   }
 
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @param o
-   * @return
-   */
   @Override
   public int compareTo(Object o) {
     int result = -2;
     Class<?> thisClass = getRealClass();
     Class<?> otherClass = ((ITestNGMethod) o).getRealClass();
-    if (thisClass.isAssignableFrom(otherClass)) {
+    if (this == o) {
+      result = 0;
+    } else if (thisClass.isAssignableFrom(otherClass)) {
       result = -1;
     } else if (otherClass.isAssignableFrom(thisClass)) {
       result = 1;
@@ -345,6 +338,15 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   }
 
   /**
+   * {@inheritDoc}
+   * @return the number of times this method or one of its clones must be invoked.
+   */
+  @Override
+  public int getTotalInvocationCount() {
+    return 1;
+  }
+
+  /**
    * {@inheritDoc} Default value for successPercentage.
    */
   @Override
@@ -423,7 +425,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   /**
    * {@inheritDoc} This implementation returns the associated Java Method's hash code.
-   * @Return the associated Java Method's hash code.
+   * @return the associated Java Method's hash code.
    */
   @Override
   public int hashCode() {
@@ -468,7 +470,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
       // Qualify these methods if they don't have a package
       for (int i = 0; i < methodsDependedUpon.length; i++) {
         String m = methodsDependedUpon[i];
-        if (m.indexOf(".") < 0) {
+        if (!m.contains(".")) {
           m = MethodHelper.calculateMethodCanonicalName(m_methodClass, methodsDependedUpon[i]);
           methodsDependedUpon[i] = m != null ? m : methodsDependedUpon[i];
         }
@@ -523,11 +525,6 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return result.toString();
   }
 
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @return
-   */
   protected String getSignature() {
     return m_signature;
   }
@@ -540,13 +537,6 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return getSignature();
   }
 
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @param methodArray
-   * @param classArray
-   * @return
-   */
   protected String[] getStringArray(String[] methodArray, String[] classArray) {
     final Set<String> vResult = Sets.newHashSet();
     if (null != methodArray) {
@@ -629,17 +619,11 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   /**
    * No-op.
-   * @param threadPoolSize
    */
   @Override
   public void setThreadPoolSize(int threadPoolSize) {
   }
 
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @param description
-   */
   public void setDescription(String description) {
     m_description = description;
   }

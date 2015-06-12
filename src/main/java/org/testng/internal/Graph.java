@@ -19,7 +19,7 @@ import java.util.Set;
  */
 public class Graph<T> {
   private static boolean m_verbose = false;
-  private Map<T, Node<T>> m_nodes = Maps.newHashMap();
+  private Map<T, Node<T>> m_nodes = Maps.newLinkedHashMap();
   private List<T> m_strictlySortedNodes = null;
 
   //  A map of nodes that are not the predecessors of any node
@@ -29,7 +29,7 @@ public class Graph<T> {
 
   public void addNode(T tm) {
     ppp("ADDING NODE " + tm + " " + tm.hashCode());
-    m_nodes.put(tm, new Node<T>(tm));
+    m_nodes.put(tm, new Node<>(tm));
     // Initially, all the nodes are put in the independent list as well
   }
 
@@ -69,7 +69,7 @@ public class Graph<T> {
   }
 
   public Set<T> getNeighbors(T t) {
-    Set<T> result = new HashSet<T>();
+    Set<T> result = new HashSet<>();
     for (Node<T> n : findNode(t).getNeighbors()) {
       result.add(n.getObject());
     }
@@ -139,7 +139,7 @@ public class Graph<T> {
       //
       Node<T> node = findNodeWithNoPredecessors(nodes2);
       if (null == node) {
-        List<T> cycle = new Tarjan<T>(this, nodes2.get(0).getObject()).getCycle();
+        List<T> cycle = new Tarjan<>(this, nodes2.get(0).getObject()).getCycle();
         StringBuilder sb = new StringBuilder();
         sb.append("The following methods have cyclic dependencies:\n");
         for (T m : cycle) {
@@ -212,9 +212,9 @@ public class Graph<T> {
     // already encountered.  "queue" is the queue of items whose
     // predecessors we haven't yet explored.
 
-    LinkedList<T> result = new LinkedList<T>();
-    Set<T> visited = new HashSet<T>();
-    LinkedList<T> queue = new LinkedList<T>();
+    LinkedList<T> result = new LinkedList<>();
+    Set<T> visited = new HashSet<>();
+    LinkedList<T> queue = new LinkedList<>();
     visited.add(o);
     queue.addLast(o);
 
@@ -254,7 +254,7 @@ public class Graph<T> {
       m_object = tm;
     }
 
-    private Set<Node<T>> m_neighbors = new HashSet<Node<T>>();
+    private Set<Node<T>> m_neighbors = new HashSet<>();
     public void addNeighbor(Node<T> neighbor) {
       m_neighbors.add(neighbor);
     }
@@ -265,7 +265,7 @@ public class Graph<T> {
 
     @Override
     public Node<T> clone() {
-      Node<T> result = new Node<T>(m_object);
+      Node<T> result = new Node<>(m_object);
       for (T pred : m_predecessors.values()) {
         result.addPredecessor(pred);
       }

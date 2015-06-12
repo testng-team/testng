@@ -1,5 +1,13 @@
 package org.testng.internal;
 
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
+
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.IConfigurationAnnotation;
@@ -10,14 +18,6 @@ import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.collections.Pair;
 
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
-
 /**
  * Collections of helper methods to help deal with test methods
  *
@@ -27,9 +27,9 @@ import java.util.regex.Pattern;
  */
 public class MethodGroupsHelper {
 
-  private static final Map<String, Pattern> PATTERN_CACHE = new ConcurrentHashMap<String, Pattern>();
+  private static final Map<String, Pattern> PATTERN_CACHE = new ConcurrentHashMap<>();
   private static final Map<Pair<String, String>, Boolean> MATCH_CACHE =
-      new ConcurrentHashMap<Pair<String, String>, Boolean>();
+          new ConcurrentHashMap<>();
 
     /**
    * Collect all the methods that belong to the included groups and exclude all
@@ -64,7 +64,7 @@ public class MethodGroupsHelper {
         	}
         }
         else {
-          in = MethodGroupsHelper.includeMethod(AnnotationHelper.findTest(finder, m),
+          in = MethodGroupsHelper.includeMethod(AnnotationHelper.findTest(finder, tm),
               runInfo, tm, forTests, unique, outIncludedMethods);
         }
       }
@@ -150,9 +150,6 @@ public class MethodGroupsHelper {
     return result;
   }
 
-  /**
-   * @return The transitive closure of all the groups/methods included.
-   */
   protected static void findGroupTransitiveClosure(XmlMethodSelector xms,
       List<ITestNGMethod> includedMethods,
       List<ITestNGMethod> allMethods,
@@ -254,34 +251,57 @@ public class MethodGroupsHelper {
       ITestNGMethod method,
       ITestNGMethod[] methods, String groupRegexp)
   {
-    boolean foundGroup = false;
+    ITestNGMethod[] found = findMethodsThatBelongToGroup(methods, groupRegexp);
+
+    if (found.length == 0) {
+      method.setMissingGroup(groupRegexp);
+    }
+
+    return found;
+  }
+
+  /**
+   * @param methods list of methods to search
+   * @param groupRegexp regex representing the group
+   *
+   * @return all the methods that belong to the group specified by the regular
+   * expression groupRegExp.  methods[] is the list of all the methods we
+   * are choosing from.
+   */
+  protected static ITestNGMethod[] findMethodsThatBelongToGroup(ITestNGMethod[] methods, String groupRegexp)
+  {
     List<ITestNGMethod> vResult = Lists.newArrayList();
+    final Pattern pattern = getPattern(groupRegexp);
+    for (ITestNGMethod tm : methods) {
+      String[] groups = tm.getGroups();
+      for (String group : groups) {
+        Boolean match = isMatch(pattern, group);
+        if (match) {
+          vResult.add(tm);
+        }
+      }
+    }
+
+    return vResult.toArray(new ITestNGMethod[vResult.size()]);
+  }
+
+  private static Boolean isMatch(Pattern pattern, String group) {
+    Pair<String, String> cacheKey = Pair.create(pattern.pattern(), group);
+    Boolean match = MATCH_CACHE.get(cacheKey);
+    if (match == null) {
+      match = pattern.matcher(group).matches();
+      MATCH_CACHE.put(cacheKey, match);
+    }
+    return match;
+  }
+
+  private static Pattern getPattern(String groupRegexp) {
     Pattern groupPattern = PATTERN_CACHE.get(groupRegexp);
     if (groupPattern == null) {
       groupPattern = Pattern.compile(groupRegexp);
       PATTERN_CACHE.put(groupRegexp, groupPattern);
     }
-    for (ITestNGMethod tm : methods) {
-      String[] groups = tm.getGroups();
-      for (String group : groups) {
-        Pair<String, String> cacheKey = Pair.create(groupRegexp, group);
-        Boolean match = MATCH_CACHE.get(cacheKey);
-        if (match == null) {
-          match = groupPattern.matcher(group).matches();
-          MATCH_CACHE.put(cacheKey, match);
-        }
-        if (match) {
-          vResult.add(tm);
-          foundGroup = true;
-        }
-      }
-    }
-
-    if (!foundGroup) {
-      method.setMissingGroup(groupRegexp);
-    }
-
-    return vResult.toArray(new ITestNGMethod[vResult.size()]);
+    return groupPattern;
   }
 
 

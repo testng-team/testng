@@ -29,8 +29,7 @@ public class DependencyMap {
   }
 
   public List<ITestNGMethod> getMethodsThatBelongTo(String group, ITestNGMethod fromMethod) {
-    List<String> keys = m_groups.getKeys();
-    Set<String> uniqueKeys = Sets.newHashSet(keys);
+    Set<String> uniqueKeys = m_groups.keySet();
 
     List<ITestNGMethod> result = Lists.newArrayList();
 

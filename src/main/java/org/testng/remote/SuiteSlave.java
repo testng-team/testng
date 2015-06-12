@@ -1,5 +1,8 @@
 package org.testng.remote;
 
+import java.util.List;
+import java.util.Properties;
+
 import org.testng.ISuite;
 import org.testng.TestNG;
 import org.testng.TestNGException;
@@ -10,16 +13,12 @@ import org.testng.remote.adapter.DefaultWorkerAdapter;
 import org.testng.remote.adapter.IWorkerAdapter;
 import org.testng.xml.XmlSuite;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
-
 /**
  * Run test suits sent by the dispatcher.
  *
  *
  * @author	Guy Korland
- * @date 	April 20, 2007
+ * @since 	April 20, 2007
  */
 public class SuiteSlave
 {
@@ -37,9 +36,6 @@ public class SuiteSlave
 
 	/**
 	 * Creates a new suite dispatcher.
-	 *
-	 * @param propertiesFile
-	 * @throws Exception
 	 */
 	public SuiteSlave( String propertiesFile, TestNG testng) throws TestNGException
 	{

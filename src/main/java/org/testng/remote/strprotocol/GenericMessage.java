@@ -49,16 +49,13 @@ public class GenericMessage implements IStringMessage {
 //  }
 
   public GenericMessage addProperty(final String propName, final int propValue) {
-    return addProperty(propName, Integer.valueOf(propValue));
+    return addProperty(propName, propValue);
   }
 
 //  public String getProperty(final String propName) {
 //    return (String) m_properties.get(propName);
 //  }
 
-  /**
-   * @see net.noco.testng.runner.IStringMessage#getMessageAsString()
-   */
   @Override
   public String getMessageAsString() {
     StringBuffer buf = new StringBuffer();

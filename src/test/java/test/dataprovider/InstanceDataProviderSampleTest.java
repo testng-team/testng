@@ -11,7 +11,7 @@ public class InstanceDataProviderSampleTest {
   public Object[][] dp() {
     p("DATA PROVIDER");
     return new Object[][] {
-        new Object[] { Integer.valueOf(hashCode()) },
+        new Object[] {hashCode()},
     };
   }
 

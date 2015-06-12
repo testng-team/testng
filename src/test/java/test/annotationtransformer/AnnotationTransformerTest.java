@@ -1,5 +1,6 @@
 package test.annotationtransformer;
 
+import org.assertj.core.api.iterable.Extractor;
 import org.testng.Assert;
 import org.testng.IAnnotationTransformer;
 import org.testng.ITestResult;
@@ -16,7 +17,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class AnnotationTransformerTest extends SimpleBaseTest {
+
+  private static final Extractor NAME_EXTRACTOR = new Extractor<ITestResult, String>() {
+    @Override
+    public String extract(ITestResult input) {
+      return input.getName();
+    }
+  };
 
   /**
    * Make sure that without a transformer in place, a class-level
@@ -24,16 +34,23 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
    */
   @Test
   public void verifyAnnotationWithoutTransformer() {
-    TestNG tng = new TestNG();
-    tng.setVerbose(0);
-    tng.setTestClasses(new Class[] { AnnotationTransformerClassInvocationSampleTest.class});
+    TestNG tng = create(AnnotationTransformerSampleTest.class);
+    tng.setPreserveOrder(true);
+
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
 
     tng.run();
 
-    List passed = tla.getPassedTests();
-    Assert.assertEquals(passed.size(), 6);
+    assertThat(tla.getPassedTests()).extracting(NAME_EXTRACTOR)
+        .containsExactly(
+            "five",
+            "four", "four", "four", "four", "four",
+            "three", "three", "three", "three", "three",
+            "two", "two"
+        );
+    assertThat(tla.getFailedTests()).extracting(NAME_EXTRACTOR)
+        .containsExactly("verify");
   }
 
   /**
@@ -41,17 +58,48 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
    */
   @Test
   public void verifyAnnotationTransformerMethod() {
-    TestNG tng = new TestNG();
-    tng.setVerbose(0);
-    tng.setAnnotationTransformer(new MyTransformer());
-    tng.setTestClasses(new Class[] { AnnotationTransformerSampleTest.class});
+    TestNG tng = create(AnnotationTransformerSampleTest.class);
+    tng.setPreserveOrder(true);
+
+    MyTransformer transformer = new MyTransformer();
+    tng.setAnnotationTransformer(transformer);
+
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
 
     tng.run();
 
-    List passed = tla.getPassedTests();
-    Assert.assertEquals(passed.size(), 15);
+    assertThat(transformer.getMethodNames()).contains("two", "three", "four", "five", "verify");
+
+    assertThat(tla.getPassedTests()).extracting(NAME_EXTRACTOR)
+        .containsExactly(
+            "five", "five", "five", "five", "five",
+            "four", "four", "four", "four",
+            "three", "three", "three",
+            "two", "two",
+            "verify"
+        );
+    assertThat(tla.getFailedTests()).isEmpty();
+  }
+
+  @Test
+  public void verifyAnnotationTransformerHasOnlyOneNonNullArgument() {
+    TestNG tng = create(AnnotationTransformerSampleTest.class);
+
+    MyParamTransformer transformer = new MyParamTransformer();
+    tng.setAnnotationTransformer(transformer);
+
+    tng.run();
+
+    assertThat(transformer.isSuccess()).isTrue();
+  }
+
+  @Test
+  public void verifyMyParamTransformerOnlyOneNonNull() {
+    assertThat(MyParamTransformer.onlyOneNonNull(null, null, null)).isFalse();
+    assertThat(MyParamTransformer.onlyOneNonNull(
+        MyParamTransformer.class, MyParamTransformer.class.getConstructors()[0], null)).isFalse();
+    assertThat(MyParamTransformer.onlyOneNonNull(MyParamTransformer.class, null, null)).isTrue();
   }
 
   /**
@@ -133,6 +181,28 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     tng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), 1);
+  }
+
+  @Test(description = "Test for issue #605")
+  public void verifyInvocationCountTransformer() {
+    TestNG tng = create();
+    tng.setTestClasses(new Class[] { AnnotationTransformerInvocationCountTest.class });
+    TestListenerAdapter tla = new TestListenerAdapter();
+    tng.addListener(tla);
+
+    tng.run();
+
+    Assert.assertEquals(tla.getPassedTests().size(), 3);
+
+    tng = create();
+    tng.setAnnotationTransformer(new AnnotationTransformerInvocationCountTest.InvocationCountTransformer(5));
+    tng.setTestClasses(new Class[]{AnnotationTransformerInvocationCountTest.class});
+    tla = new TestListenerAdapter();
+    tng.addListener(tla);
+
+    tng.run();
+
+    Assert.assertEquals(tla.getPassedTests().size(), 5);
   }
 
   @Test

@@ -36,7 +36,6 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   private final IInvoker m_invoker;
   private final Map<String, String> m_parameters;
   private final XmlSuite m_suite;
-  private final ITestNGMethod[] m_allTestMethods;
   private List<ITestResult> m_testResults = Lists.newArrayList();
   private final ConfigurationGroupMethods m_groupMethods;
   private final ClassMethodMap m_classMethodMap;
@@ -46,7 +45,6 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
                           IMethodInstance[] testMethods,
                           XmlSuite suite,
                           Map<String, String> parameters,
-                          ITestNGMethod[] allTestMethods,
                           ConfigurationGroupMethods groupMethods,
                           ClassMethodMap classMethodMap,
                           ITestContext testContext)
@@ -55,7 +53,6 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     m_methodInstances = testMethods;
     m_suite = suite;
     m_parameters = parameters;
-    m_allTestMethods = allTestMethods;
     m_groupMethods = groupMethods;
     m_classMethodMap = classMethodMap;
     m_testContext = testContext;
@@ -108,7 +105,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
       // Invoke test method
       try {
-        invokeTestMethods(testMethod, testMthdInst.getInstances(), m_testContext);
+        invokeTestMethods(testMethod, testMthdInst.getInstance(), m_testContext);
       }
       finally {
         invokeAfterClassMethods(testClass, testMthdInst);
@@ -116,7 +113,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     }
   }
 
-  protected void invokeTestMethods(ITestNGMethod tm, Object[] instances,
+  protected void invokeTestMethods(ITestNGMethod tm, Object instance,
       ITestContext testContext)
   {
     // Potential bug here:  we look up the method index of tm among all
@@ -126,12 +123,10 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     // more efficient)
     List<ITestResult> testResults =
         m_invoker.invokeTestMethods(tm,
-            m_allTestMethods,
-            indexOf(tm, m_allTestMethods),
             m_suite,
             m_parameters,
             m_groupMethods,
-            instances,
+            instance,
             testContext);
 
     if (testResults != null) {
@@ -166,7 +161,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     synchronized(testClass) {
       Set<Object> instances= invokedBeforeClassMethods.get(testClass);
       if(null == instances) {
-        instances= new HashSet<Object>();
+        instances= new HashSet<>();
         invokedBeforeClassMethods.put(testClass, instances);
       }
       for(Object instance: mi.getInstances()) {
@@ -211,7 +206,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       synchronized(invokedAfterClassMethods) {
         Set<Object> instances = invokedAfterClassMethods.get(testClass);
         if(null == instances) {
-          instances= new HashSet<Object>();
+          instances= new HashSet<>();
           invokedAfterClassMethods.put(testClass, instances);
         }
         for(Object inst: mi.getInstances()) {
@@ -288,14 +283,12 @@ class SingleTestMethodWorker extends TestMethodWorker {
                                 MethodInstance testMethod,
                                 XmlSuite suite,
                                 Map<String, String> parameters,
-                                ITestNGMethod[] allTestMethods,
                                 ITestContext testContext)
   {
     super(invoker,
           new MethodInstance[] {testMethod},
           suite,
           parameters,
-          allTestMethods,
           EMPTY_GROUP_METHODS,
           null,
           testContext);

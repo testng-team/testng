@@ -1,5 +1,12 @@
 package org.testng.internal;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.testng.IClass;
 import org.testng.IInstanceInfo;
 import org.testng.ITestContext;
@@ -12,13 +19,6 @@ import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * This class creates an ITestClass from a test class.
@@ -56,7 +56,15 @@ public class TestNGClassFinder extends BaseClassFinder {
       for (Class cls : allClasses) {
         try {
           if (null != cls) {
-            for (Method m : cls.getMethods()) {
+            Method[] ms;
+            try {
+              ms = cls.getMethods();
+            } catch (NoClassDefFoundError e) {
+              // https://github.com/cbeust/testng/issues/602
+              ppp("Warning: Can't link and determine methods of " + cls);
+              ms = new Method[0];
+            }
+            for (Method m : ms) {
               IAnnotation a = annotationFinder.findAnnotation(m,
                   org.testng.annotations.IObjectFactoryAnnotation.class);
               if (null != a) {
@@ -207,7 +215,7 @@ public class TestNGClassFinder extends BaseClassFinder {
   }
 
   /**
-   * @returns true if this class contains TestNG annotations (either on itself
+   * @return true if this class contains TestNG annotations (either on itself
    * or on a superclass).
    */
   public static boolean isTestNGClass(Class c, IAnnotationFinder annotationFinder) {

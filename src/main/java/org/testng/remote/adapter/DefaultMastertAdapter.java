@@ -1,5 +1,11 @@
 package org.testng.remote.adapter;
 
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.List;
+import java.util.Properties;
+
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.internal.remote.SlavePool;
@@ -7,18 +13,12 @@ import org.testng.internal.thread.ThreadUtil;
 import org.testng.remote.RemoteSuiteWorker;
 import org.testng.xml.XmlSuite;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.List;
-import java.util.Properties;
-
 /**
  * Default Master adapter, provides an adapter based on hosts file.
  *
  *
  * @author	Guy Korland
- * @date 	April 20, 2007
+ * @since 	April 20, 2007
  */
 public class DefaultMastertAdapter
 implements IMasterAdapter
@@ -49,13 +49,9 @@ implements IMasterAdapter
 			try {
 				sockets[i] = new Socket(s[0], Integer.parseInt(s[1]));
 			}
-			catch (NumberFormatException e) {
+			catch (NumberFormatException | UnknownHostException e) {
 				e.printStackTrace(System.out);
-			}
-			catch (UnknownHostException e) {
-				e.printStackTrace(System.out);
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				Utils.error("Couldn't connect to " + host + ": " + e.getMessage());
 			}
 		}

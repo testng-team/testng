@@ -19,7 +19,7 @@ public class DataDrivenTest {
   @DataProvider(name = "provider")
   public Object[][] createData() throws FileNotFoundException, IOException {
     Properties p = new Properties();
-    List<Object> vResult = new ArrayList<Object>();
+    List<Object> vResult = new ArrayList<>();
     p.load(new FileInputStream(new File("c:/t/data.properties")));
     for (Enumeration e = p.keys(); e.hasMoreElements(); ) {
       vResult.add(e.nextElement());

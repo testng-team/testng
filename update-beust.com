@@ -14,7 +14,7 @@ fi
 RSYNC="rsync --verbose --progress --stats"
 
 ${RSYNC} ${TARGET}/testng-${v}.zip ${U}@beust.com:${DEST}
-${RSYNC} -r javadocs doc/*.html doc/*.css src/main/resources/testng-1.0.dtd testng-1.0.dtd.html ${U}@beust.com:${DEST}/doc
+${RSYNC} -r src/main/resources/testng-1.0.dtd testng-1.0.dtd.html ${U}@beust.com:${DEST}/doc
 
 #${RSYNC} testng-${v}.jar testng-${v}-bundle.jar testng-${v}.zip testng-eclipse-${ev}.zip ${U}@beust.com:${DEST}
 #scp -r javadocs doc/*.html doc/*.css src/main/resources/testng-1.0.dtd testng-1.0.dtd.html ${U}@beust.com:${DEST}

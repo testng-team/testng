@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -101,7 +100,8 @@ public final class Utils {
     return vResult.toArray(new String[vResult.size()]);
   }
 
-  public static void writeUtf8File(String outputDir, String fileName, XMLStringBuffer xsb, String prefix) {
+  public static void writeUtf8File(String outputDir, String fileName, XMLStringBuffer xsb,
+      String prefix) {
     try {
       final File file = new File(outputDir, fileName);
       if (!file.exists()) {
@@ -443,11 +443,8 @@ public final class Utils {
       fh.setLevel(Level.INFO);
       logger.addHandler(fh);
     }
-    catch (SecurityException se) {
+    catch (SecurityException | IOException se) {
       se.printStackTrace();
-    }
-    catch (IOException ioe) {
-      ioe.printStackTrace();
     }
   }
 
@@ -616,7 +613,7 @@ public final class Utils {
       while((line = bufferedReader.readLine()) != null) {
         boolean isExcluded = false;
         for (String excluded : excludedStrings) {
-          if(line.indexOf(excluded) != -1) {
+          if(line.contains(excluded)) {
             isExcluded = true;
             excludedCount++;
             break;
@@ -637,10 +634,6 @@ public final class Utils {
     return buf.toString();
   }
 
-  /**
-   * @param object
-   * @return
-   */
   public static String toString(Object object, Class<?> objectClass) {
     if(null == object) {
       return "null";
@@ -657,10 +650,6 @@ public final class Utils {
     }
   }
 
-  /**
-   * @param method
-   * @return
-   */
   public static String detailedMethodName(ITestNGMethod method, boolean fqn) {
     StringBuffer buf= new StringBuffer();
     if(method.isBeforeSuiteConfiguration()) {
@@ -762,11 +751,7 @@ public final class Utils {
       }
       in.close();
       out.close();
-    }
-    catch(FileNotFoundException ex){
-      ex.printStackTrace();
-    }
-    catch(IOException e){
+    } catch(IOException e){
       e.printStackTrace();
     }
   }

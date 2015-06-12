@@ -59,8 +59,8 @@ public class XMLReporter implements IReporter {
     p.put("total", passed + failed + skipped);
     rootBuffer.push(XMLReporterConfig.TAG_TESTNG_RESULTS, p);
     writeReporterOutput(rootBuffer);
-    for (int i = 0; i < suites.size(); i++) {
-      writeSuite(suites.get(i).getXmlSuite(), suites.get(i));
+    for (ISuite suite : suites) {
+      writeSuite(suite.getXmlSuite(), suite);
     }
     rootBuffer.pop();
     Utils.writeUtf8File(config.getOutputDirectory(), FILE_NAME, rootBuffer, null /* no prefix */);
@@ -190,7 +190,7 @@ public class XMLReporter implements IReporter {
   }
 
   private Set<ITestNGMethod> getUniqueMethodSet(Collection<ITestNGMethod> methods) {
-    Set<ITestNGMethod> result = new LinkedHashSet<ITestNGMethod>();
+    Set<ITestNGMethod> result = new LinkedHashSet<>();
     for (ITestNGMethod method : methods) {
       result.add(method);
     }

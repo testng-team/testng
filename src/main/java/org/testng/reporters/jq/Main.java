@@ -71,16 +71,17 @@ public class Main implements IReporter {
 
     String all;
     try {
-      InputStream header = getClass().getResourceAsStream("/header");
-      if (header == null) {
-        throw new RuntimeException("Couldn't find resource header");
-      } else {
+      try (InputStream header = getClass().getResourceAsStream("/header")) {
+        if (header == null) {
+          throw new RuntimeException("Couldn't find resource header");
+        }
         for (String fileName : RESOURCES) {
-          InputStream is = getClass().getResourceAsStream("/" + fileName);
-          if (is == null) {
-            throw new AssertionError("Couldn't find resource: " + fileName);
+          try (InputStream is = getClass().getResourceAsStream("/" + fileName)) {
+            if (is == null) {
+              throw new AssertionError("Couldn't find resource: " + fileName);
+            }
+            Files.copyFile(is, new File(m_outputDirectory, fileName));
           }
-          Files.copyFile(is, new File(m_outputDirectory, fileName));
         }
         all = Files.readFile(header);
         Utils.writeUtf8File(m_outputDirectory, "index.html", xsb, all); 

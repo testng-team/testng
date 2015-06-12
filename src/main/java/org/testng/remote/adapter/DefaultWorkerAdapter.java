@@ -1,14 +1,14 @@
 package org.testng.remote.adapter;
 
-import org.testng.ISuite;
-import org.testng.internal.Utils;
-import org.testng.remote.ConnectionInfo;
-import org.testng.xml.XmlSuite;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Properties;
+
+import org.testng.ISuite;
+import org.testng.internal.Utils;
+import org.testng.remote.ConnectionInfo;
+import org.testng.xml.XmlSuite;
 
 
 /**
@@ -16,7 +16,7 @@ import java.util.Properties;
  *
  *
  * @author	Guy Korland
- * @date 	April 20, 2007
+ * @since 	April 20, 2007
  */
 public class DefaultWorkerAdapter implements IWorkerAdapter
 {

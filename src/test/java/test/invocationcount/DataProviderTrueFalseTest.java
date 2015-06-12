@@ -5,12 +5,8 @@ import org.testng.annotations.BeforeMethod;
 
 public class DataProviderTrueFalseTest extends DataProviderBase {
   @BeforeMethod(firstTimeOnly = true)
-  public void beforeMethod() {
-    incrementBefore();
-  }
+  public void beforeMethod() {}
 
   @AfterMethod(lastTimeOnly = false)
-  public void afterMethod() {
-    incrementAfter();
-  }
+  public void afterMethod() {}
 }

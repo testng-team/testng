@@ -1,15 +1,9 @@
 package org.testng;
 
-import static org.testng.internal.Utils.defaultIfStringEmpty;
-import static org.testng.internal.Utils.isStringEmpty;
-import static org.testng.internal.Utils.isStringNotEmpty;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +11,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +23,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.collections.Sets;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Configuration;
 import org.testng.internal.DynamicGraph;
@@ -40,7 +36,6 @@ import org.testng.internal.Version;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
-import org.testng.internal.annotations.Sets;
 import org.testng.internal.thread.graph.GraphThreadPoolExecutor;
 import org.testng.internal.thread.graph.IThreadWorkerFactory;
 import org.testng.internal.thread.graph.SuiteWorkerFactory;
@@ -66,6 +61,10 @@ import org.xml.sax.SAXException;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+
+import static org.testng.internal.Utils.defaultIfStringEmpty;
+import static org.testng.internal.Utils.isStringEmpty;
+import static org.testng.internal.Utils.isStringNotEmpty;
 
 /**
  * This class is the main entry point for running tests in the TestNG framework.
@@ -283,15 +282,7 @@ public class TestNG {
                     cSuite.setParentSuite(s);
                     s.getChildSuites().add(cSuite);
                 }
-            }
-            catch(FileNotFoundException e) {
-                e.printStackTrace(System.out);
-            }
-            catch (ParserConfigurationException e) {
-                e.printStackTrace(System.out);
-            } catch (SAXException e) {
-                e.printStackTrace(System.out);
-            } catch (IOException e) {
+            } catch (ParserConfigurationException | IOException | SAXException e) {
                 e.printStackTrace(System.out);
             }
         }
@@ -320,19 +311,9 @@ public class TestNG {
           }
         }
       }
-      catch(FileNotFoundException e) {
+      catch(SAXException | ParserConfigurationException | IOException e) {
         e.printStackTrace(System.out);
-      }
-      catch(IOException e) {
-        e.printStackTrace(System.out);
-      }
-      catch(ParserConfigurationException e) {
-        e.printStackTrace(System.out);
-      }
-      catch(SAXException e) {
-        e.printStackTrace(System.out);
-      }
-      catch(Exception ex) {
+      } catch(Exception ex) {
         // Probably a Yaml exception, unnest it
         Throwable t = ex;
         while (t.getCause() != null) t = t.getCause();
@@ -401,13 +382,7 @@ public class TestNG {
         m_suites.add(xmlSuite);
       }
     }
-    catch(ParserConfigurationException ex) {
-      ex.printStackTrace();
-    }
-    catch(SAXException ex) {
-      ex.printStackTrace();
-    }
-    catch(IOException ex) {
+    catch(ParserConfigurationException | IOException | SAXException ex) {
       ex.printStackTrace();
     }
   }
@@ -604,7 +579,7 @@ public class TestNG {
       xmlTest.getXmlClasses().add(xmlClasses[i]);
     }
 
-    return new ArrayList<XmlSuite>(suites.values());
+    return new ArrayList<>(suites.values());
   }
 
   public void addMethodSelector(String className, int priority) {
@@ -812,7 +787,7 @@ public class TestNG {
 
       for (XmlSuite s : m_cmdlineSuites) {
         for (XmlTest t : s.getTests()) {
-          t.setPreserveOrder(m_preserveOrder ? "true " : "false");
+          t.setPreserveOrder(String.valueOf(m_preserveOrder));
         }
         m_suites.add(s);
         if (m_groupByInstances != null) {
@@ -941,37 +916,14 @@ public class TestNG {
    * Using reflection to remain Java 5 compliant.
    */
   private void addServiceLoaderListeners() {
-    try {
-      Class c = Class.forName("java.util.ServiceLoader");
-      List<Object> parameters = Lists.newArrayList();
-      parameters.add(ITestNGListener.class);
-      Method loadMethod;
-      if (m_serviceLoaderClassLoader != null) {
-        parameters.add(m_serviceLoaderClassLoader);
-        loadMethod = c.getMethod("load", Class.class, ClassLoader.class);
-      } else {
-        loadMethod = c.getMethod("load", Class.class);
-      }
-      Iterable<ITestNGListener> loader =
-          (Iterable<ITestNGListener>) loadMethod.invoke(c, parameters.toArray());
-//      Object loader = c.
-//      ServiceLoader<ITestNGListener> loader = m_serviceLoaderClassLoader != null
-//      ? ServiceLoader.load(ITestNGListener.class, m_serviceLoaderClassLoader)
-//          : ServiceLoader.load(ITestNGListener.class);
+      Iterable<ITestNGListener> loader = m_serviceLoaderClassLoader != null ?
+          ServiceLoader.load(ITestNGListener.class, m_serviceLoaderClassLoader)
+          : ServiceLoader.load(ITestNGListener.class);
       for (ITestNGListener l : loader) {
         Utils.log("[TestNG]", 2, "Adding ServiceLoader listener:" + l);
         addListener(l);
         addServiceLoaderListener(l);
       }
-    } catch (ClassNotFoundException ex) {
-      // Ignore
-    } catch(NoSuchMethodException ex) {
-      // Ignore
-    } catch(IllegalAccessException ex) {
-      // Ignore
-    } catch(InvocationTargetException ex) {
-      // Ignore
-    }
   }
 
   /**
@@ -1153,7 +1105,7 @@ public class TestNG {
         // Multithreaded: generate a dynamic graph that stores the suite hierarchy. This is then
         // used to run related suites in specific order. Parent suites are run only
         // once all the child suites have completed execution
-        DynamicGraph<ISuite> suiteGraph = new DynamicGraph<ISuite>();
+        DynamicGraph<ISuite> suiteGraph = new DynamicGraph<>();
         for (XmlSuite xmlSuite : m_suites) {
           populateSuiteGraph(suiteGraph, suiteRunnerMap, xmlSuite);
         }
@@ -1161,9 +1113,9 @@ public class TestNG {
         IThreadWorkerFactory<ISuite> factory = new SuiteWorkerFactory(suiteRunnerMap,
           0 /* verbose hasn't been set yet */, getDefaultSuiteName());
         GraphThreadPoolExecutor<ISuite> pooledExecutor =
-          new GraphThreadPoolExecutor<ISuite>(suiteGraph, factory, m_suiteThreadPoolSize,
-          m_suiteThreadPoolSize, Integer.MAX_VALUE, TimeUnit.MILLISECONDS,
-          new LinkedBlockingQueue<Runnable>());
+                new GraphThreadPoolExecutor<>(suiteGraph, factory, m_suiteThreadPoolSize,
+                        m_suiteThreadPoolSize, Integer.MAX_VALUE, TimeUnit.MILLISECONDS,
+                        new LinkedBlockingQueue<Runnable>());
 
         Utils.log("TestNG", 2, "Starting executor for all suites");
         // Run all suites in parallel
@@ -1313,7 +1265,7 @@ public class TestNG {
     }
 
     for (IConfigurationListener cl : m_configuration.getConfigurationListeners()) {
-      result.addListener(cl);
+      result.addConfigurationListener(cl);
     }
 
     return result;
@@ -1442,7 +1394,7 @@ public class TestNG {
     }
     if (cla.listener != null) {
       String sep = ";";
-      if (cla.listener.indexOf(",") >= 0) {
+      if (cla.listener.contains(",")) {
         sep = ",";
       }
       String[] strs = Utils.split(cla.listener, sep);
@@ -1881,7 +1833,9 @@ public class TestNG {
     @Override
     public void onTestSkipped(ITestResult result) {
       setHasRunTests();
-      m_mainRunner.setStatus(HAS_SKIPPED);
+      if ((m_mainRunner.getStatus() & HAS_FAILURE) != 0) {
+        m_mainRunner.setStatus(HAS_SKIPPED);
+      }
     }
 
     @Override

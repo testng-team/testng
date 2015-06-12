@@ -1,5 +1,6 @@
 package org.testng;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,11 +13,14 @@ import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.testng.annotations.Guice;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.collections.Sets;
 import org.testng.internal.Attributes;
 import org.testng.internal.ClassHelper;
+import org.testng.internal.ClassImpl;
 import org.testng.internal.ClassInfoMap;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.Constants;
@@ -37,9 +41,9 @@ import org.testng.internal.TestNGClassFinder;
 import org.testng.internal.TestNGMethodFinder;
 import org.testng.internal.Utils;
 import org.testng.internal.XmlMethodSelector;
+import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IListeners;
-import org.testng.internal.annotations.Sets;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.internal.thread.graph.GraphThreadPoolExecutor;
 import org.testng.internal.thread.graph.IThreadWorkerFactory;
@@ -96,7 +100,7 @@ public class TestRunner
   private Date m_endDate = null;
 
   /** A map to keep track of Class <-> IClass. */
-  transient private Map<Class<?>, ITestClass> m_classMap = Maps.newHashMap();
+  transient private Map<Class<?>, ITestClass> m_classMap = Maps.newLinkedHashMap();
 
   /** Where the reports will be created. */
   private String m_outputDirectory= Constants.getDefaultValueFor(Constants.PROP_OUTPUT_DIR);
@@ -735,9 +739,9 @@ public class TestRunner
       if (parallel) {
         if (graph.getNodeCount() > 0) {
           GraphThreadPoolExecutor<ITestNGMethod> executor =
-              new GraphThreadPoolExecutor<ITestNGMethod>(graph, this,
-                  threadCount, threadCount, 0, TimeUnit.MILLISECONDS,
-                  new LinkedBlockingQueue<Runnable>());
+                  new GraphThreadPoolExecutor<>(graph, this,
+                          threadCount, threadCount, 0, TimeUnit.MILLISECONDS,
+                          new LinkedBlockingQueue<Runnable>());
           executor.run();
           try {
             long timeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
@@ -790,7 +794,10 @@ public class TestRunner
     for (IMethodInstance imi : resultInstances) {
       result.add(imi.getMethod());
     }
-
+    //Since an interceptor is involved, we would need to ensure that the ClassMethodMap object is in sync with the 
+    //output of the interceptor, else @AfterClass doesn't get executed at all when interceptors are involved.
+    //so let's update the current classMethodMap object with the list of methods obtained from the interceptor.
+    this.m_classMethodMap = new ClassMethodMap(result, null);
     return result.toArray(new ITestNGMethod[result.size()]);
   }
 
@@ -887,7 +894,7 @@ public class TestRunner
     for (ITestNGMethod m : methods) {
       lmm.put(m.getInstance(), m);
     }
-    for (Map.Entry<Object, List<ITestNGMethod>> es : lmm.getEntrySet()) {
+    for (Map.Entry<Object, List<ITestNGMethod>> es : lmm.entrySet()) {
       List<IMethodInstance> methodInstances = Lists.newArrayList();
       for (ITestNGMethod m : es.getValue()) {
         methodInstances.add(new MethodInstance(m));
@@ -896,7 +903,6 @@ public class TestRunner
           methodInstances.toArray(new IMethodInstance[methodInstances.size()]),
           m_xmlTest.getSuite(),
           m_xmlTest.getAllParameters(),
-          m_allTestMethods,
           m_groupMethods,
           m_classMethodMap,
           this);
@@ -925,7 +931,7 @@ public class TestRunner
     }
 //    return map.getKeys();
 //    System.out.println(map);
-    return new ArrayList<List<IMethodInstance>>(map.values());
+    return new ArrayList<>(map.values());
   }
 
   private TestMethodWorker createTestMethodWorker(
@@ -935,7 +941,6 @@ public class TestRunner
         findClasses(methodInstances, c),
         m_xmlTest.getSuite(),
         params,
-        m_allTestMethods,
         m_groupMethods,
         m_classMethodMap,
         this);
@@ -1036,7 +1041,7 @@ public class TestRunner
   }
 
   private DynamicGraph<ITestNGMethod> createDynamicGraph(ITestNGMethod[] methods) {
-    DynamicGraph<ITestNGMethod> result = new DynamicGraph<ITestNGMethod>();
+    DynamicGraph<ITestNGMethod> result = new DynamicGraph<>();
     result.setComparator(new Comparator<ITestNGMethod>() {
       @Override
       public int compare(ITestNGMethod o1, ITestNGMethod o2) {
@@ -1097,7 +1102,7 @@ public class TestRunner
       ListMultiMap<ITestNGMethod, ITestNGMethod> classDependencies
           = createClassDependencies(methods, getCurrentXmlTest());
 
-      for (Map.Entry<ITestNGMethod, List<ITestNGMethod>> es : classDependencies.getEntrySet()) {
+      for (Map.Entry<ITestNGMethod, List<ITestNGMethod>> es : classDependencies.entrySet()) {
         for (ITestNGMethod dm : es.getValue()) {
           result.addEdge(dm, es.getKey());
         }
@@ -1109,7 +1114,7 @@ public class TestRunner
       ListMultiMap<ITestNGMethod, ITestNGMethod> instanceDependencies
           = createInstanceDependencies(methods, getCurrentXmlTest());
 
-      for (Map.Entry<ITestNGMethod, List<ITestNGMethod>> es : instanceDependencies.getEntrySet()) {
+      for (Map.Entry<ITestNGMethod, List<ITestNGMethod>> es : instanceDependencies.entrySet()) {
         for (ITestNGMethod dm : es.getValue()) {
           result.addEdge(dm, es.getKey());
         }
@@ -1130,7 +1135,7 @@ public class TestRunner
 
     ListMultiMap<ITestNGMethod, ITestNGMethod> result = Maps.newListMultiMap();
     Object previousInstance = null;
-    for (Map.Entry<Object, List<ITestNGMethod>> es : instanceMap.getEntrySet()) {
+    for (Map.Entry<Object, List<ITestNGMethod>> es : instanceMap.entrySet()) {
       if (previousInstance == null) {
         previousInstance = es.getKey();
       } else {
@@ -1591,8 +1596,7 @@ public class TestRunner
     return result;
   }
 
-  @Override
-  public void addGuiceModule(Class<? extends Module> cls, Module module) {
+  private void addGuiceModule(Class<? extends Module> cls, Module module) {
     m_guiceModules.put(cls, module);
   }
 
@@ -1601,6 +1605,52 @@ public class TestRunner
   @Override
   public Injector getInjector(List<Module> moduleInstances) {
     return m_injectors .get(moduleInstances);
+  }
+
+  @Override
+  public Injector getInjector(IClass iClass) {
+    Annotation annotation = AnnotationHelper.findAnnotationSuperClasses(Guice.class, iClass.getRealClass());
+    if (annotation == null) return null;
+    if (iClass instanceof TestClass) {
+      iClass = ((TestClass)iClass).getIClass();
+    }
+    if (!(iClass instanceof ClassImpl)) return null;
+    Injector parentInjector = ((ClassImpl)iClass).getParentInjector();
+
+    Guice guice = (Guice) annotation;
+    List<Module> moduleInstances = Lists.newArrayList(getModules(guice, parentInjector, iClass.getRealClass()));
+
+    // Reuse the previous injector, if any
+    Injector injector = getInjector(moduleInstances);
+    if (injector == null) {
+      injector = parentInjector.createChildInjector(moduleInstances);
+      addInjector(moduleInstances, injector);
+    }
+    return injector;
+  }
+
+  private Module[] getModules(Guice guice, Injector parentInjector, Class<?> testClass) {
+    List<Module> result = Lists.newArrayList();
+    for (Class<? extends Module> moduleClass : guice.modules()) {
+      List<Module> modules = getGuiceModules(moduleClass);
+      if (modules != null && modules.size() > 0) {
+        result.addAll(modules);
+      } else {
+        Module instance = parentInjector.getInstance(moduleClass);
+        result.add(instance);
+        addGuiceModule(moduleClass, instance);
+      }
+    }
+    Class<? extends IModuleFactory> factory = guice.moduleFactory();
+    if (factory != IModuleFactory.class) {
+      IModuleFactory factoryInstance = parentInjector.getInstance(factory);
+      Module moduleClass = factoryInstance.createModule(this, testClass);
+      if (moduleClass != null) {
+        result.add(moduleClass);
+      }
+    }
+
+    return result.toArray(new Module[result.size()]);
   }
 
   @Override

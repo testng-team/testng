@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import com.google.inject.Injector;
 
 /**
  * <CODE>SuiteRunner</CODE> is responsible for running all the tests included in one
@@ -48,6 +49,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
   private String m_outputDir; // DEFAULT_OUTPUT_DIR;
   private XmlSuite m_suite;
+  private Injector m_parentInjector;
 
   transient private List<ITestListener> m_testListeners = Lists.newArrayList();
   transient private ITestRunnerFactory m_tmpRunnerFactory;
@@ -233,6 +235,23 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     return m_suite.getParallel();
   }
 
+  public String getParentModule() {
+    return m_suite.getParentModule();
+  }
+
+  @Override
+  public String getGuiceStage() {
+    return m_suite.getGuiceStage();
+  }
+
+  public Injector getParentInjector() {
+    return m_parentInjector;
+  }
+
+  public void setParentInjector(Injector injector) {
+    m_parentInjector = injector;
+  }
+
   @Override
   public void run() {
     invokeListeners(true /* start */);
@@ -247,8 +266,8 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   private void privateRun() {
 
     // Map for unicity, Linked for guaranteed order
-    Map<Method, ITestNGMethod> beforeSuiteMethods= new LinkedHashMap<Method, ITestNGMethod>();
-    Map<Method, ITestNGMethod> afterSuiteMethods = new LinkedHashMap<Method, ITestNGMethod>();
+    Map<Method, ITestNGMethod> beforeSuiteMethods= new LinkedHashMap<>();
+    Map<Method, ITestNGMethod> afterSuiteMethods = new LinkedHashMap<>();
 
     IInvoker invoker = null;
 
@@ -318,6 +337,10 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
   private void addReporter(IReporter listener) {
     m_reporters.add(listener);
+  }
+
+  void addConfigurationListener(IConfigurationListener listener) {
+    m_configuration.addConfigurationListener(listener);
   }
 
   public List<IReporter> getReporters() {
@@ -391,7 +414,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       addReporter((IReporter) listener);
     }
     if (listener instanceof IConfigurationListener) {
-      m_configuration.addConfigurationListener((IConfigurationListener) listener);
+      addConfigurationListener((IConfigurationListener) listener);
     }
   }
 

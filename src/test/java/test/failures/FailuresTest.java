@@ -44,7 +44,7 @@ public class FailuresTest extends BaseFailuresTest {
   @Test(enabled = false)
   public void shouldIncludeParameters() {
     XmlSuite suite = TestHelper.createSuite("test.failures.Child", getSuiteName());
-    Map<String, String> params = new HashMap<String, String>();
+    Map<String, String> params = new HashMap<>();
     params.put("first-name", "Cedric");
     params.put("last-name", "Beust");
     suite.setParameters(params);

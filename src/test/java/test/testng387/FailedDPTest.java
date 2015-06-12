@@ -1,15 +1,12 @@
 package test.testng387;
 
-import org.testng.Assert;
-import org.testng.ITestContext;
-import org.testng.ITestNGMethod;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 /**
  * test for http://jira.opensymphony.com/browse/TESTNG-387
@@ -20,23 +17,14 @@ import java.util.List;
  * @author freynaud
  */
 public class FailedDPTest {
-
-	// prime numbers < 10
-	private List<Integer> primes = new ArrayList<Integer>();
-	public FailedDPTest(){
-		primes.add(2);
-		primes.add(3);
-		primes.add(5);
-		primes.add(7);
-	}
-
+	static final List<Integer> primes = Arrays.asList(2, 3, 5, 7);
 
 	/**
 	 * DP generating all number from 0 to 9.
 	 * */
 	@DataProvider(name = "DP", parallel = true)
 	public Iterator<Integer[]> getData() {
-		List<Integer[]> list = new ArrayList<Integer[]>();
+		List<Integer[]> list = new ArrayList<>();
 		for (int i = 0; i < 10; i++) {
 			list.add(new Integer[] { i });
 		}
@@ -52,37 +40,6 @@ public class FailedDPTest {
 		if (primes.contains(i)){
 			throw new Exception(i+" is prime");
 		}
-	}
-
-	/**
-	 * validates that the failed invoc number are the correct ones, ie the prime numbers.
-	 * @param ctx
-	 */
-	@AfterClass(alwaysRun=true)
-	public void check(ITestContext ctx){
-		ITestNGMethod testMethod = getMethod(ctx, "isNotPrime");
-
-		List<Integer> failed = testMethod.getFailedInvocationNumbers();
-		if (failed.size() != primes.size()){
-			throw new Error();
-		}
-		for (Integer num : primes) {
-			Assert.assertTrue(failed.contains(num),num+" should be present to be retried.It is not.");
-		}
-	}
-
-
-
-	private ITestNGMethod getMethod(ITestContext ctx, String methodName) {
-
-		ITestNGMethod method = null;
-		for (int i = 0; i < ctx.getAllTestMethods().length; i++) {
-			method = ctx.getAllTestMethods()[i];
-			if (method.getMethodName().equals(methodName)) {
-				return method;
-			}
-		}
-		throw new RuntimeException("test case creation bug.");
 	}
 
 }

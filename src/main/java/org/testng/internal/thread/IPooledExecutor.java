@@ -14,8 +14,5 @@ public interface IPooledExecutor {
 
   void awaitTermination(long timeout) throws InterruptedException;
 
-  /**
-   * @return
-   */
   boolean isTerminated();
 }

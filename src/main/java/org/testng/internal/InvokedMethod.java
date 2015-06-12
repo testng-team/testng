@@ -1,38 +1,27 @@
 package org.testng.internal;
 
+import java.io.Serializable;
+
 import org.testng.IInvokedMethod;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-
-import java.io.Serializable;
 
 public class InvokedMethod implements Serializable, IInvokedMethod {
   private static final long serialVersionUID = 2126127194102819222L;
   transient private Object m_instance;
   private ITestNGMethod m_testMethod;
   private Object[] m_parameters;
-  private boolean m_isTest = true;
-  private boolean m_isConfigurationMethod = false;
   private long m_date = System.currentTimeMillis();
   private ITestResult m_testResult;
 
-  /**
-   * @param m_object
-   * @param m_method
-   * @param m_parameters
-   */
   public InvokedMethod(Object instance,
                        ITestNGMethod method,
                        Object[] parameters,
-                       boolean isTest,
-                       boolean isConfiguration,
                        long date,
                        ITestResult testResult) {
     m_instance = instance;
     m_testMethod = method;
     m_parameters = parameters;
-    m_isTest = isTest;
-    m_isConfigurationMethod = isConfiguration;
     m_date = date;
     m_testResult = testResult;
   }
@@ -42,7 +31,7 @@ public class InvokedMethod implements Serializable, IInvokedMethod {
    */
   @Override
   public boolean isTestMethod() {
-    return m_isTest;
+    return m_testMethod.isTest();
   }
 
   @Override
@@ -61,7 +50,14 @@ public class InvokedMethod implements Serializable, IInvokedMethod {
    */
   @Override
   public boolean isConfigurationMethod() {
-    return m_isConfigurationMethod;
+    return m_testMethod.isBeforeMethodConfiguration() ||
+           m_testMethod.isAfterMethodConfiguration() ||
+           m_testMethod.isBeforeTestConfiguration() ||
+           m_testMethod.isAfterTestConfiguration() ||
+           m_testMethod.isBeforeClassConfiguration() ||
+           m_testMethod.isAfterClassConfiguration() ||
+           m_testMethod.isBeforeSuiteConfiguration() ||
+           m_testMethod.isAfterSuiteConfiguration();
   }
 
   /* (non-Javadoc)
