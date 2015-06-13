@@ -10,6 +10,7 @@ Fixed: GITHUB-465: assertEquals(Collection, Collection) prints "null" when colle
 New: GITHUB-710: AppVeyor is used for continuous integration on Windows (Julien Herr)
 Fixed: GITHUB-599: IHookable ignored when a timeout is set (@ryanlevell & Julien Herr)
 New: GITHUB-723: Allow users to add their own suite parser (Julien Herr)
+Fixed: Allow '-testnames' option to work with '-xmlpathinjar'
 
 Eclipse:
 
