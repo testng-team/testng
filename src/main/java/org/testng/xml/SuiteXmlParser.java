@@ -3,11 +3,10 @@ package org.testng.xml;
 import org.testng.TestNGException;
 import org.xml.sax.SAXException;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class SuiteXmlParser extends XMLParser<XmlSuite> {
+public class SuiteXmlParser extends XMLParser<XmlSuite> implements ISuiteParser {
 
   @Override
   public XmlSuite parse(String currentFile, InputStream inputStream, boolean loadClasses) {
@@ -22,5 +21,8 @@ public class SuiteXmlParser extends XMLParser<XmlSuite> {
     }
   }
 
-
+  @Override
+  public boolean accept(String fileName) {
+    return fileName.endsWith(".xml");
+  }
 }

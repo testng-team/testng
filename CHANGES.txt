@@ -9,6 +9,7 @@ Fixed: GITHUB-698: Fix exit code reporting when IRetryAnalyzer is used (Ryan Sch
 Fixed: GITHUB-465: assertEquals(Collection, Collection) prints "null" when collections are different sizes (Michael Diamond)
 New: GITHUB-710: AppVeyor is used for continuous integration on Windows (Julien Herr)
 Fixed: GITHUB-599: IHookable ignored when a timeout is set (@ryanlevell & Julien Herr)
+New: GITHUB-723: Allow users to add their own suite parser (Julien Herr)
 
 Eclipse:
 
