@@ -326,6 +326,10 @@ public class BaseTest extends BaseDistributedTest {
     return m_suite;
   }
 
+  public void setSuite(XmlSuite suite) {
+    m_suite = suite;
+  }
+
   /**
    * Used for instanceCount testing, when we need to look inside the
    * TestResult to count the various SUCCESS/FAIL/FAIL_BUT_OK
@@ -368,6 +372,14 @@ public class BaseTest extends BaseDistributedTest {
       }
     }
     Assert.assertEqualsNoOrder(actualNames.toArray(), expected);
+  }
+
+  protected void verifyPassedTests(String... expectedPassed) {
+    verifyTests("Passed", expectedPassed, getPassedTests());
+  }
+
+  protected void verifyFailedTests(String... expectedFailed) {
+    verifyTests("Failed", expectedFailed, getFailedTests());
   }
 
   /**
