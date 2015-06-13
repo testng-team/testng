@@ -154,36 +154,6 @@ public class MethodHelper {
     return null;
   }
 
-  /**
-   * Read the expected exceptions, if any (need to handle both the old and new
-   * syntax)
-   */
-  protected static ExpectedExceptionsHolder findExpectedExceptions(IAnnotationFinder finder,
-      Method method) {
-    ExpectedExceptionsHolder result = null;
-    IExpectedExceptionsAnnotation expectedExceptions =
-      (IExpectedExceptionsAnnotation) finder.findAnnotation(method,
-        IExpectedExceptionsAnnotation.class);
-    // Old syntax
-    if (expectedExceptions != null) {
-      result = new ExpectedExceptionsHolder(expectedExceptions.getValue(), ".*");
-    }
-    else {
-      // New syntax
-      ITestAnnotation testAnnotation =
-        (ITestAnnotation) finder.findAnnotation(method, ITestAnnotation.class);
-      if (testAnnotation != null) {
-        Class<?>[] ee = testAnnotation.getExpectedExceptions();
-        if (ee.length > 0) {
-          result = new ExpectedExceptionsHolder(ee,
-              testAnnotation.getExpectedExceptionsMessageRegExp());
-        }
-      }
-    }
-
-    return result;
-  }
-
   protected static boolean isEnabled(Class<?> objectClass, IAnnotationFinder finder) {
     ITestAnnotation testClassAnnotation = AnnotationHelper.findTest(finder, objectClass);
     return isEnabled(testClassAnnotation);
