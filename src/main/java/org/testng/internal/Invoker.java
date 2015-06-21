@@ -1052,7 +1052,7 @@ public class Invoker implements IInvoker {
                                      new RegexpExpectedExceptionsHolder(m_annotationFinder, testMethod));
     final ITestClass testClass= testMethod.getTestClass();
     final List<ITestResult> result = Lists.newArrayList();
-    final FailureContext failure = new FailureContext();
+    FailureContext failure = new FailureContext();
     final ITestNGMethod[] beforeMethods = filterMethods(testClass, testClass.getBeforeTestMethods(), CAN_RUN_FROM_CLASS);
     final ITestNGMethod[] afterMethods = filterMethods(testClass, testClass.getAfterTestMethods(), CAN_RUN_FROM_CLASS);
     while(invocationCount-- > 0) {
@@ -1164,6 +1164,8 @@ public class Invoker implements IInvoker {
                     result.add(registerSkippedTestResult(testMethod, instance, System.currentTimeMillis(), null));
                   }
                 }
+                // set next param start without failure
+								failure = new FailureContext();
               }// end finally
               parametersIndex++;
             }
