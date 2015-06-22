@@ -18,6 +18,7 @@ public final class RetryAnalyzerTest extends RetryAnalyzerCount {
   private static int r2 = 1;
   private static int r3 = 1;
   private static int value = 42;
+  private int executionNumber = 0;
 
   public RetryAnalyzerTest() {
     setCount(2);
@@ -41,7 +42,7 @@ public final class RetryAnalyzerTest extends RetryAnalyzerCount {
 
   @DataProvider(name="dataProvider")
   private Object[][] dataProvider() {
-    return new Object[][] { { 1, false }, { 0, true }, { 0, true },
+    return new Object[][] { { 1, false }, { 0, true }, { 1, true },
         { 1, false } };
   }
 
@@ -54,6 +55,7 @@ public final class RetryAnalyzerTest extends RetryAnalyzerCount {
 
   @Test(retryAnalyzer=RetryAnalyzerTest.class, dataProvider="dataProvider")
   public void testAnnotationWithDataProvider(int paf, boolean test) {
+    executionNumber++;
     if (paf == 1 && test == false) {
       if (r2 >= 1) {
         r2--;
@@ -61,10 +63,14 @@ public final class RetryAnalyzerTest extends RetryAnalyzerCount {
       } else if (r2 == 0) {
         Assert.assertTrue(true);
       }
-    }
-    else if (paf == 0 || test == true) {
-      Assert.assertTrue(true);
-    }
+    } else if (paf == 0 && test == true) {
+			Assert.assertTrue(true);
+			Assert.assertEquals(executionNumber, 3);
+		} else if (paf == 1 && test == true) {
+			Assert.assertTrue(true);
+			// Enforce no duplicate correct executions
+			Assert.assertEquals(executionNumber, 4);
+		}
   }
 
   @Test(retryAnalyzer=RetryAnalyzerTest.class, dataProvider="dataProvider2")
