@@ -1,7 +1,9 @@
 package org.testng.internal;
 
+import org.testng.IConfigurable;
 import org.testng.IConfigureCallBack;
 import org.testng.IHookCallBack;
+import org.testng.IHookable;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -36,7 +38,6 @@ public class MethodInvocationHelper {
 
   protected static Object invokeMethod(Method thisMethod, Object instance, Object[] parameters)
       throws InvocationTargetException, IllegalAccessException {
-    Object result = null;
     Utils.checkInstanceOrStatic(instance, thisMethod);
 
     // TESTNG-326, allow IObjectFactory to load from non-standard classloader
@@ -87,7 +88,7 @@ public class MethodInvocationHelper {
   protected static Iterator<Object[]> invokeDataProvider(Object instance, Method dataProvider,
       ITestNGMethod method, ITestContext testContext, Object fedInstance,
       IAnnotationFinder annotationFinder) {
-    Iterator<Object[]> result = null;
+    Iterator<Object[]> result;
     final ConstructorOrMethod com = method.getConstructorOrMethod();
 
     // If it returns an Object[][], convert it to an Iterable<Object[]>
@@ -99,7 +100,7 @@ public class MethodInvocationHelper {
       // Anything else is an error
       Class<?>[] parameterTypes = dataProvider.getParameterTypes();
 
-      final Collection<Pair<Integer, Class<?>>> unresolved = new ArrayList<Pair<Integer, Class<?>>>(parameterTypes.length);
+      final Collection<Pair<Integer, Class<?>>> unresolved = new ArrayList<>(parameterTypes.length);
       int i = 0;
       for (Class<?> cls : parameterTypes) {
         boolean isTestInstance = annotationFinder.hasTestInstance(dataProvider, i++);
@@ -149,17 +150,13 @@ public class MethodInvocationHelper {
         method.setParameterInvocationCount(oResult.length);
         result = MethodHelper.createArrayIterator(oResult);
       } else if (Iterator.class.isAssignableFrom(returnType)) {
-        // Already an Iterable<Object[]>, assign it directly
+        // Already an Iterator<Object[]>, assign it directly
         result = (Iterator<Object[]>) invokeMethod(dataProvider, instance, parameters);
       } else {
         throw new TestNGException("Data Provider " + dataProvider + " must return"
             + " either Object[][] or Iterator<Object>[], not " + returnType);
       }
-    } catch (InvocationTargetException e) {
-      // Don't throw TestNGException here or this test won't be reported as a
-      // skip or failure
-      throw new RuntimeException(e.getCause());
-    } catch (IllegalAccessException e) {
+    } catch (InvocationTargetException | IllegalAccessException e) {
       // Don't throw TestNGException here or this test won't be reported as a
       // skip or failure
       throw new RuntimeException(e.getCause());
@@ -188,9 +185,8 @@ public class MethodInvocationHelper {
    *           <tt>thisMethod</code> results in an exception
    */
   protected static void invokeHookable(final Object testInstance, final Object[] parameters,
-      Object hookableInstance, final Method thisMethod, TestResult testResult) throws Throwable {
-    Method runMethod = hookableInstance.getClass().getMethod("run",
-        new Class[] { IHookCallBack.class, ITestResult.class });
+                                       final IHookable hookable, final Method thisMethod,
+                                       final ITestResult testResult) throws Throwable {
     final Throwable[] error = new Throwable[1];
 
     IHookCallBack callback = new IHookCallBack() {
@@ -209,7 +205,7 @@ public class MethodInvocationHelper {
         return parameters;
       }
     };
-    runMethod.invoke(hookableInstance, new Object[] { callback, testResult });
+    hookable.run(callback, testResult);
     if (error[0] != null) {
       throw error[0];
     }
@@ -223,19 +219,25 @@ public class MethodInvocationHelper {
   protected static void invokeWithTimeout(ITestNGMethod tm, Object instance,
       Object[] parameterValues, ITestResult testResult)
       throws InterruptedException, ThreadExecutionException {
+    invokeWithTimeout(tm, instance, parameterValues, testResult, null);
+  }
+
+  protected static void invokeWithTimeout(ITestNGMethod tm, Object instance,
+      Object[] parameterValues, ITestResult testResult, IHookable hookable)
+      throws InterruptedException, ThreadExecutionException {
     if (ThreadUtil.isTestNGThread()) {
       // We are already running in our own executor, don't create another one (or we will
       // lose the time out of the enclosing executor).
-      invokeWithTimeoutWithNoExecutor(tm, instance, parameterValues, testResult);
+      invokeWithTimeoutWithNoExecutor(tm, instance, parameterValues, testResult, hookable);
     } else {
-      invokeWithTimeoutWithNewExecutor(tm, instance, parameterValues, testResult);
+      invokeWithTimeoutWithNewExecutor(tm, instance, parameterValues, testResult, hookable);
     }
   }
 
   private static void invokeWithTimeoutWithNoExecutor(ITestNGMethod tm, Object instance,
-      Object[] parameterValues, ITestResult testResult) {
+      Object[] parameterValues, ITestResult testResult, IHookable hookable) {
 
-    InvokeMethodRunnable imr = new InvokeMethodRunnable(tm, instance, parameterValues);
+    InvokeMethodRunnable imr = new InvokeMethodRunnable(tm, instance, parameterValues, hookable, testResult);
     try {
       imr.run();
       testResult.setStatus(ITestResult.SUCCESS);
@@ -246,11 +248,11 @@ public class MethodInvocationHelper {
   }
 
   private static void invokeWithTimeoutWithNewExecutor(ITestNGMethod tm, Object instance,
-      Object[] parameterValues, ITestResult testResult)
+      Object[] parameterValues, ITestResult testResult, IHookable hookable)
       throws InterruptedException, ThreadExecutionException {
-    IExecutor exec = ThreadUtil.createExecutor(1, tm.getMethod().getName());
+    IExecutor exec = ThreadUtil.createExecutor(1, tm.getMethodName());
 
-    InvokeMethodRunnable imr = new InvokeMethodRunnable(tm, instance, parameterValues);
+    InvokeMethodRunnable imr = new InvokeMethodRunnable(tm, instance, parameterValues, hookable, testResult);
     IFutureResult future = exec.submitRunnable(imr);
     exec.shutdown();
     long realTimeOut = MethodHelper.calculateTimeOut(tm);
@@ -265,7 +267,7 @@ public class MethodInvocationHelper {
       testResult.setThrowable(exception);
       testResult.setStatus(ITestResult.FAILURE);
     } else {
-      Utils.log("Invoker " + Thread.currentThread().hashCode(), 3, "Method " + tm.getMethod()
+      Utils.log("Invoker " + Thread.currentThread().hashCode(), 3, "Method " + tm.getMethodName()
           + " completed within the time-out " + tm.getTimeOut());
 
       // We don't need the result from the future but invoking get() on it
@@ -279,10 +281,8 @@ public class MethodInvocationHelper {
   }
 
   protected static void invokeConfigurable(final Object instance, final Object[] parameters,
-      Object configurableInstance, final Method thisMethod, ITestResult testResult)
-      throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, Throwable {
-    Method runMethod = configurableInstance.getClass().getMethod("run",
-        new Class[] { IConfigureCallBack.class, ITestResult.class });
+                                           final IConfigurable configurableInstance, final Method thisMethod,
+                                           final ITestResult testResult) throws Throwable {
     final Throwable[] error = new Throwable[1];
 
     IConfigureCallBack callback = new IConfigureCallBack() {
@@ -301,7 +301,7 @@ public class MethodInvocationHelper {
         return parameters;
       }
     };
-    runMethod.invoke(configurableInstance, new Object[] { callback, testResult });
+    configurableInstance.run(callback, testResult);
     if (error[0] != null) {
       throw error[0];
     }

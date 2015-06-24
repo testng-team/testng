@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -101,15 +100,18 @@ public final class Utils {
     return vResult.toArray(new String[vResult.size()]);
   }
 
-  public static void writeUtf8File(String outputDir, String fileName, XMLStringBuffer xsb,
-      String prefix) {
+  public static void writeUtf8File(String outputDir, String fileName, XMLStringBuffer xsb, String prefix) {
     try {
-      FileWriter fw = new FileWriter(new File(outputDir, fileName));
-      if (prefix != null) {
-        fw.append(prefix);
+      final File file = new File(outputDir, fileName);
+      if (!file.exists()) {
+        file.createNewFile();
       }
-      xsb.toWriter(fw);
-      fw.close();
+      final OutputStreamWriter w = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+      if (prefix != null) {
+        w.append(prefix);
+      }
+      xsb.toWriter(w);
+      w.close();
     } catch(IOException ex) {
       ex.printStackTrace();
     }
@@ -123,7 +125,7 @@ public final class Utils {
    * @param fileName the filename
    * @param sb the file content
    */
-  public static void writeUtf8File(String outputDir, String fileName, String sb) {
+  public static void writeUtf8File(@Nullable String outputDir, String fileName, String sb) {
     final String outDirPath= outputDir != null ? outputDir : "";
     final File outDir= new File(outDirPath);
     writeFile(outDir, fileName, escapeUnicode(sb), "UTF-8", false /* don't append */);
@@ -137,7 +139,7 @@ public final class Utils {
    * @param fileName the filename
    * @param sb the file content
    */
-  public static void writeFile(String outputDir, String fileName, String sb) {
+  public static void writeFile(@Nullable String outputDir, String fileName, String sb) {
     final String outDirPath= outputDir != null ? outputDir : "";
     final File outDir= new File(outDirPath);
     writeFile(outDir, fileName, sb, null, false /* don't append */);
@@ -150,7 +152,7 @@ public final class Utils {
    * @param fileName file name
    * @param sb string to be appended to file
    */
-  public static void appendToFile(String outputDir, String fileName, String sb) {
+  public static void appendToFile(@Nullable String outputDir, String fileName, String sb) {
      String outDirPath= outputDir != null ? outputDir : "";
      File outDir= new File(outDirPath);
      writeFile(outDir, fileName, sb, null, true /* append */);
@@ -164,8 +166,11 @@ public final class Utils {
    * @param fileName the filename
    * @param sb the file content
    */
-  private static void writeFile(File outDir, String fileName, String sb, String encoding, boolean append) {
+  private static void writeFile(@Nullable File outDir, String fileName, String sb, @Nullable String encoding, boolean append) {
     try {
+      if (outDir == null) {
+        outDir = new File("").getAbsoluteFile();
+      }
       if (!outDir.exists()) {
         outDir.mkdirs();
       }
@@ -188,7 +193,7 @@ public final class Utils {
     }
   }
 
-  private static void writeFile(File outputFile, String sb, String encoding, boolean append) {
+  private static void writeFile(File outputFile, String sb, @Nullable String encoding, boolean append) {
     BufferedWriter fw = null;
     try {
       if (!outputFile.exists()) {
@@ -437,11 +442,8 @@ public final class Utils {
       fh.setLevel(Level.INFO);
       logger.addHandler(fh);
     }
-    catch (SecurityException se) {
+    catch (SecurityException | IOException se) {
       se.printStackTrace();
-    }
-    catch (IOException ioe) {
-      ioe.printStackTrace();
     }
   }
 
@@ -610,7 +612,7 @@ public final class Utils {
       while((line = bufferedReader.readLine()) != null) {
         boolean isExcluded = false;
         for (String excluded : excludedStrings) {
-          if(line.indexOf(excluded) != -1) {
+          if(line.contains(excluded)) {
             isExcluded = true;
             excludedCount++;
             break;
@@ -631,10 +633,6 @@ public final class Utils {
     return buf.toString();
   }
 
-  /**
-   * @param object
-   * @return
-   */
   public static String toString(Object object, Class<?> objectClass) {
     if(null == object) {
       return "null";
@@ -651,10 +649,6 @@ public final class Utils {
     }
   }
 
-  /**
-   * @param method
-   * @return
-   */
   public static String detailedMethodName(ITestNGMethod method, boolean fqn) {
     StringBuffer buf= new StringBuffer();
     if(method.isBeforeSuiteConfiguration()) {
@@ -756,11 +750,7 @@ public final class Utils {
       }
       in.close();
       out.close();
-    }
-    catch(FileNotFoundException ex){
-      ex.printStackTrace();
-    }
-    catch(IOException e){
+    } catch(IOException e){
       e.printStackTrace();
     }
   }

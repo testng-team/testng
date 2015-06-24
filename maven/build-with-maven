@@ -1,0 +1,25 @@
+# Two different POMs are needed to build TestNG with Maven because it's not
+# allowed to have circular dependencies.
+# - pom.xml defines the project version "n-SNAPSHOT", builds, jars and deploys (but doesn't
+# run the tests).
+# - pom-test.xml declares a test dependency on "n-SNAPSHOT", which it will find
+# in the local repository (~/.m2/repository). All it does then is run the tests.
+
+
+mvn clean install -Dgpg.skip=true
+#or if you want to sign the jar, uncomment this:
+#mvn clean install
+
+mvn -f pom-test.xml test
+
+
+echo
+echo "To run the tests: mvn -f pom-test.xml test"
+echo "To deploy to the snapshot repository: mvn deploy"
+echo "To deploy to the release directory: mvn release:clean release:prepare release:perform"
+echo "Nexus UI:  https://oss.sonatype.org/index.html"
+echo "Wiki: https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide"
+
+# deploy without tagging: mvn deploy -DperformRelease
+
+

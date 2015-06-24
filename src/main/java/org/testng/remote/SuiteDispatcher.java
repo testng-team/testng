@@ -1,5 +1,9 @@
 package org.testng.remote;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Properties;
+
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestListener;
@@ -16,16 +20,12 @@ import org.testng.remote.adapter.RemoteResultListener;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Properties;
-
 /**
  * Dispatches test suits according to the strategy defined.
  *
  *
  * @author	Guy Korland
- * @date 	April 20, 2007
+ * @since 	April 20, 2007
  */
 public class SuiteDispatcher
 {
@@ -50,9 +50,6 @@ public class SuiteDispatcher
 
 	/**
 	 * Creates a new suite dispatcher.
-	 *
-	 * @param propertiesFile
-	 * @throws Exception
 	 */
 	public SuiteDispatcher( String propertiesFile) throws TestNGException
 	{
@@ -86,11 +83,6 @@ public class SuiteDispatcher
 
 	/**
 	 * Dispatch test suites
-	 * @param suites
-	 * @param outputDir
-	 * @param javadocAnnotationFinder
-	 * @param jdkAnnotationFinder
-	 * @param testListeners
 	 * @return suites result
 	 */
 	public List<ISuite> dispatch(IConfiguration configuration,
@@ -115,6 +107,7 @@ public class SuiteDispatcher
 						tmpSuite.setName("Temporary suite for " + test.getName());
 						tmpSuite.setParallel(suite.getParallel());
 						tmpSuite.setParentModule(suite.getParentModule());
+						tmpSuite.setGuiceStage(suite.getGuiceStage());
 						tmpSuite.setParameters(suite.getParameters());
 						tmpSuite.setThreadCount(suite.getThreadCount());
             tmpSuite.setDataProviderThreadCount(suite.getDataProviderThreadCount());

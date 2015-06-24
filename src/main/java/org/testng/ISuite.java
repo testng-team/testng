@@ -46,6 +46,8 @@ public interface ISuite extends IAttributes {
 
   public String getParentModule();
 
+  public String getGuiceStage();
+
   /**
    * @return The value of this parameter, or null if none was specified.
    */

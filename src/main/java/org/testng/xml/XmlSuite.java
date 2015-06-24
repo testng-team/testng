@@ -1,7 +1,12 @@
 package org.testng.xml;
 
-import static org.testng.collections.CollectionUtils.hasElements;
-import static org.testng.internal.Utils.isStringNotEmpty;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 import org.testng.ITestObjectFactory;
 import org.testng.TestNG;
@@ -12,13 +17,8 @@ import org.testng.xml.dom.OnElement;
 import org.testng.xml.dom.OnElementList;
 import org.testng.xml.dom.Tag;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import static org.testng.collections.CollectionUtils.hasElements;
+import static org.testng.internal.Utils.isStringNotEmpty;
 
 /**
  * This class describes the tag &lt;suite&gt; in testng.xml.
@@ -63,6 +63,7 @@ public class XmlSuite implements Serializable, Cloneable {
   private String m_parallel = DEFAULT_PARALLEL;
 
   private String m_parentModule = "";
+  private String m_guiceStage = "";
 
   /** Whether to SKIP or CONTINUE to re-attempt failed configuration methods. */
   public static String DEFAULT_CONFIG_FAILURE_POLICY = SKIP;
@@ -163,6 +164,10 @@ public class XmlSuite implements Serializable, Cloneable {
     return m_parentModule;
   }
 
+  public String getGuiceStage() {
+    return m_guiceStage;
+  }
+
   public ITestObjectFactory getObjectFactory() {
     return m_objectFactory;
   }
@@ -181,6 +186,10 @@ public class XmlSuite implements Serializable, Cloneable {
 
   public void setParentModule(String parentModule) {
     m_parentModule = parentModule;
+  }
+
+  public void setGuiceStage(String guiceStage) {
+    m_guiceStage = guiceStage;
   }
 
   /**
@@ -439,6 +448,8 @@ public class XmlSuite implements Serializable, Cloneable {
     if(isStringNotEmpty(parallel) && !DEFAULT_PARALLEL.equals(parallel)) {
       p.setProperty("parallel", parallel);
     }
+    XmlUtils.setProperty(p, "group-by-instances", String.valueOf(getGroupByInstances()),
+        DEFAULT_GROUP_BY_INSTANCES.toString());
     XmlUtils.setProperty(p, "configfailurepolicy", getConfigFailurePolicy(),
         DEFAULT_CONFIG_FAILURE_POLICY);
     XmlUtils.setProperty(p, "thread-count", String.valueOf(getThreadCount()),
@@ -455,6 +466,9 @@ public class XmlSuite implements Serializable, Cloneable {
     }
     if (isStringNotEmpty(m_parentModule)) {
       p.setProperty("parent-module", getParentModule());
+    }
+    if (isStringNotEmpty(m_guiceStage)) {
+      p.setProperty("guice-stage", getGuiceStage());
     }
     XmlUtils.setProperty(p, "allow-return-values", String.valueOf(getAllowReturnValues()),
         DEFAULT_ALLOW_RETURN_VALUES.toString());
@@ -585,6 +599,7 @@ public class XmlSuite implements Serializable, Cloneable {
     result.setListeners(getListeners());
     result.setParallel(getParallel());
     result.setParentModule(getParentModule());
+    result.setGuiceStage(getGuiceStage());
     result.setConfigFailurePolicy(getConfigFailurePolicy());
     result.setThreadCount(getThreadCount());
     result.setDataProviderThreadCount(getDataProviderThreadCount());
@@ -597,6 +612,7 @@ public class XmlSuite implements Serializable, Cloneable {
     result.setSkipFailedInvocationCounts(skipFailedInvocationCounts());
     result.setObjectFactory(getObjectFactory());
     result.setAllowReturnValues(getAllowReturnValues());
+    result.setTimeOut(getTimeOut());
     return result;
   }
 
@@ -628,7 +644,7 @@ public class XmlSuite implements Serializable, Cloneable {
   public long getTimeOut(long def) {
     long result = def;
     if (m_timeOut != null) {
-        result = new Long(m_timeOut).longValue();
+        result = new Long(m_timeOut);
     }
     
     return result;

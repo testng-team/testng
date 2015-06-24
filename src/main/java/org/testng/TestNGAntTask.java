@@ -1104,7 +1104,7 @@ public class TestNGAntTask extends Task {
   }
 
   public void setSkipFailedInvocationCounts(boolean skip) {
-    m_skipFailedInvocationCounts = Boolean.valueOf(skip);
+    m_skipFailedInvocationCounts = skip;
   }
 
   public void setXmlPathInJar(String path) {

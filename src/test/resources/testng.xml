@@ -144,6 +144,7 @@
       <class name="test.listeners.ResultEndMillisTest" />
       <class name="test.listeners.ListenerTest"/>
       <class name="test.listeners.SuiteAndInvokedMethodListenerTest" />
+      <class name="test.listeners.SuiteAndConfigurationListenerTest" />
       <class name="test.listeners.ListenerInXmlTest" />
       <class name="test.listeners.ExecutionListenerTest" />
       <class name="test.listeners.ConfigurationListenerTest" />
@@ -463,6 +464,7 @@
       <class name="test.dataprovider.IterableTest" />
       <class name="test.dataprovider.ConfigurationAndDataProvidersTest" />
       <class name="test.dataprovider.BooleanTest" />
+      <class name="test.dataprovider.ExplicitDataProviderNameTest" />
       <class name="test.dataprovider.MethodTest"/>
       <class name="test.dataprovider.StaticDataProviderSampleTest" />
       <class name="test.dataprovider.UnnamedDataProviderTest" />
@@ -617,17 +619,17 @@
     </classes>
   </test>
 
-<!--
   <test name="RetryAnalyzer">
     <classes>
-      <class name="test.retryAnalyzer.RetryAnalyzerTest" />
+      <!-- <class name="test.retryAnalyzer.RetryAnalyzerTest" /> -->
+      <class name="test.retryAnalyzer.ExitCodeTest" />
     </classes>
   </test>
--->
 
   <test name="MethodInterceptor">
     <classes>
       <class name="test.methodinterceptors.MethodInterceptorTest" />
+      <class name="test.methodinterceptors.Issue392Test" />
     </classes>
   </test>
 
@@ -739,5 +741,10 @@
     </classes>
   </test>
 
+  <test name="@Test(enable)">
+    <classes>
+      <class name="test.enable.EnableTest"/>
+    </classes>
+  </test>
 </suite>
 

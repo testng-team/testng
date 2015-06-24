@@ -1,6 +1,7 @@
 package test.testng387;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -16,23 +17,14 @@ import org.testng.annotations.Test;
  * @author freynaud
  */
 public class FailedDPTest {
-
-	// prime numbers < 10
-	static List<Integer> primes = new ArrayList<Integer>();
-	public FailedDPTest(){
-		primes.add(2);
-		primes.add(3);
-		primes.add(5);
-		primes.add(7);
-	}
-
+	static final List<Integer> primes = Arrays.asList(2, 3, 5, 7);
 
 	/**
 	 * DP generating all number from 0 to 9.
 	 * */
 	@DataProvider(name = "DP", parallel = true)
 	public Iterator<Integer[]> getData() {
-		List<Integer[]> list = new ArrayList<Integer[]>();
+		List<Integer[]> list = new ArrayList<>();
 		for (int i = 0; i < 10; i++) {
 			list.add(new Integer[] { i });
 		}

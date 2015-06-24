@@ -9,9 +9,9 @@ import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.collections.Sets;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.Utils;
-import org.testng.internal.annotations.Sets;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
@@ -43,8 +43,8 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
 
   @Override
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
-    for(int i= 0; i < suites.size(); i++) {
-      generateFailureSuite(suites.get(i).getXmlSuite(), suites.get(i), outputDirectory);
+    for (ISuite suite : suites) {
+      generateFailureSuite(suite.getXmlSuite(), suite, outputDirectory);
     }
   }
 
@@ -192,7 +192,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
           : instances[0].getClass();
       Set<ITestNGMethod> methodList= methodsMap.get(clazz);
       if(null == methodList) {
-        methodList= new HashSet<ITestNGMethod>();
+        methodList= new HashSet<>();
         methodsMap.put(clazz, methodList);
       }
       methodList.add(m);

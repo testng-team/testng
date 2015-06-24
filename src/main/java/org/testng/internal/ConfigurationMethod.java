@@ -59,7 +59,7 @@ public class ConfigurationMethod extends BaseTestMethod {
                               boolean initialize,
                               Object instance)
   {
-    super(com, annotationFinder, instance);
+    super(com.getName(), com, annotationFinder, instance);
     if(initialize) {
       init();
     }
@@ -135,21 +135,21 @@ public class ConfigurationMethod extends BaseTestMethod {
       Object instance)
   {
     List<ITestNGMethod> result = Lists.newArrayList();
-    for(int i = 0; i < methods.length; i++) {
-      result.add(new ConfigurationMethod(methods[i].getConstructorOrMethod(),
-                                          finder,
-                                          isBeforeSuite,
-                                          isAfterSuite,
-                                          isBeforeTest,
-                                          isAfterTest,
-                                          isBeforeClass,
-                                          isAfterClass,
-                                          isBeforeMethod,
-                                          isAfterMethod,
-                                          new String[0],
-                                          new String[0],
-                                          instance));
-    }
+      for (ITestNGMethod method : methods) {
+          result.add(new ConfigurationMethod(method.getConstructorOrMethod(),
+                  finder,
+                  isBeforeSuite,
+                  isAfterSuite,
+                  isBeforeTest,
+                  isAfterTest,
+                  isBeforeClass,
+                  isAfterClass,
+                  isBeforeMethod,
+                  isAfterMethod,
+                  new String[0],
+                  new String[0],
+                  instance));
+      }
 
     return result.toArray(new ITestNGMethod[result.size()]);
   }

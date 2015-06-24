@@ -1,17 +1,17 @@
 package org.testng.internal;
 
+import java.util.List;
+import java.util.Set;
+
 import org.testng.IConfigurationListener;
 import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.xml.XmlTest;
 
-import java.util.List;
-import java.util.Set;
-
 /**
  * An interface defining the notification for @Test results and also
- * @Configuration results.
+ * \@Configuration results.
  *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>

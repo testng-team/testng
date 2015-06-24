@@ -5,12 +5,8 @@ import org.testng.annotations.BeforeMethod;
 
 public class InvocationCountFalseTrueTest extends InvocationBase {
   @BeforeMethod(firstTimeOnly = false)
-  public void beforeMethod() {
-    incrementBefore();
-  }
+  public void beforeMethod() {}
 
   @AfterMethod(lastTimeOnly = true)
-  public void afterMethod() {
-    incrementAfter();
-  }
+  public void afterMethod() {}
 }

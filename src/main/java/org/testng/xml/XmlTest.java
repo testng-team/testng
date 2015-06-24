@@ -1,18 +1,18 @@
 package org.testng.xml;
 
-import org.testng.TestNG;
-import org.testng.TestNGException;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.reporters.XMLStringBuffer;
-import org.testng.xml.dom.ParentSetter;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+
+import org.testng.TestNG;
+import org.testng.TestNGException;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
+import org.testng.reporters.XMLStringBuffer;
+import org.testng.xml.dom.ParentSetter;
 
 /**
  * This class describes the tag &lt;test&gt;  in testng.xml.
@@ -190,7 +190,7 @@ public class XmlTest implements Serializable, Cloneable {
    * @param v
    */
   public void setVerbose(int v) {
-    m_verbose = Integer.valueOf(v);
+    m_verbose = v;
   }
 
   public int getThreadCount() {
@@ -243,7 +243,7 @@ public class XmlTest implements Serializable, Cloneable {
     }
 
     if (null != result) {
-      return result.intValue();
+      return result;
     } else {
       return 1;
     }
@@ -255,7 +255,7 @@ public class XmlTest implements Serializable, Cloneable {
       result = m_suite.getGroupByInstances();
     }
     if (result != null) {
-      return result.booleanValue();
+      return result;
     } else {
       return XmlSuite.DEFAULT_GROUP_BY_INSTANCES;
     }
@@ -420,7 +420,7 @@ public class XmlTest implements Serializable, Cloneable {
   public long getTimeOut(long def) {
     long result = def;
     if (getTimeOut() != null) {
-        result = new Long(getTimeOut()).longValue();
+        result = new Long(getTimeOut());
     }
 
     return result;
@@ -428,6 +428,10 @@ public class XmlTest implements Serializable, Cloneable {
 
   public void setTimeOut(long timeOut) {
       m_timeOut = Long.toString(timeOut);
+  }
+
+  private void setTimeOut(String timeOut) {
+      m_timeOut = timeOut;
   }
 
   public void setExpression(String expression) {
@@ -476,6 +480,10 @@ public class XmlTest implements Serializable, Cloneable {
     }
     if (m_threadCount != -1) {
       p.setProperty("thread-count", Integer.toString(m_threadCount));
+    }
+    if (m_groupByInstances != null) {
+      XmlUtils.setProperty(p, "group-by-instances", String.valueOf(getGroupByInstances()),
+          XmlSuite.DEFAULT_GROUP_BY_INSTANCES.toString());
     }
 
     xsb.push("test", p);
@@ -647,6 +655,7 @@ public class XmlTest implements Serializable, Cloneable {
     result.setVerbose(getVerbose());
     result.setParameters(getLocalParameters());
     result.setXmlPackages(getXmlPackages());
+    result.setTimeOut(getTimeOut());
 
     Map<String, List<String>> metagroups = getMetaGroups();
     for (Map.Entry<String, List<String>> group: metagroups.entrySet()) {

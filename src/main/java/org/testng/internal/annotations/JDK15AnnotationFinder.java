@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.testng.IAnnotationTransformer;
 import org.testng.IAnnotationTransformer2;
+import org.testng.ITestNGMethod;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterGroups;
 import org.testng.annotations.AfterMethod;
@@ -47,7 +48,9 @@ import org.testng.internal.collections.Pair;
  */
 public class JDK15AnnotationFinder implements IAnnotationFinder {
   private JDK15TagFactory m_tagFactory = new JDK15TagFactory();
-  private Map<Class<? extends IAnnotation>, Class<? extends Annotation>> m_annotationMap = Collections.synchronizedMap(Maps.<Class<? extends IAnnotation>, Class<? extends Annotation>>newHashMap());
+  private Map<Class<? extends IAnnotation>, Class<? extends Annotation>> m_annotationMap =
+      Collections.synchronizedMap(Maps.<Class<? extends IAnnotation>,
+          Class<? extends Annotation>>newHashMap());
   private IAnnotationTransformer m_transformer = null;
 
   @SuppressWarnings({"deprecation"})
@@ -73,16 +76,16 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     m_annotationMap.put(IListeners.class, Listeners.class);
   }
 
-  private <A extends Annotation> A findAnnotationInSuperClasses(Class cls, Class<A> a) {
+  private <A extends Annotation> A findAnnotationInSuperClasses(Class<?> cls, Class<A> a) {
     // Hack for @Listeners: we don't look in superclasses for this annotation
     // because inheritance of this annotation causes aggregation instead of
     // overriding
     if (a.equals(org.testng.annotations.Listeners.class)) {
-      return (A) cls.getAnnotation(a);
+      return cls.getAnnotation(a);
     }
     else {
       while (cls != null) {
-        A result = (A) cls.getAnnotation(a);
+        A result = cls.getAnnotation(a);
         if (result != null) {
           return result;
         } else {
@@ -98,14 +101,38 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   public <A extends IAnnotation> A findAnnotation(Method m, Class<A> annotationClass) {
     final Class<? extends Annotation> a = m_annotationMap.get(annotationClass);
     if (a == null) {
-      throw new IllegalArgumentException("Java @Annotation class for '" + annotationClass + "' not found.");
+      throw new IllegalArgumentException("Java @Annotation class for '"
+          + annotationClass + "' not found.");
     }
-    return findAnnotation(m.getDeclaringClass(), m.getAnnotation(a), annotationClass, null, null, m);
+    Annotation annotation = m.getAnnotation(a);
+    return findAnnotation(m.getDeclaringClass(), annotation, annotationClass, null, null, m,
+        new Pair<>(annotation, m));
   }
 
-  private void transform(IAnnotation a, Class testClass,
-      Constructor testConstructor, Method testMethod)
-  {
+  @Override
+  public <A extends IAnnotation> A findAnnotation(ITestNGMethod tm, Class<A> annotationClass) {
+    final Class<? extends Annotation> a = m_annotationMap.get(annotationClass);
+    if (a == null) {
+      throw new IllegalArgumentException("Java @Annotation class for '"
+            + annotationClass + "' not found.");
+    }
+    Method m = tm.getMethod();
+    Class<?> testClass;
+    if (tm.getInstance() == null) {
+      testClass = m.getDeclaringClass();
+    } else {
+      testClass = tm.getInstance().getClass();
+    }
+    Annotation annotation = m.getAnnotation(a);
+    if (annotation == null) {
+      annotation = testClass.getAnnotation(a);
+    }
+    return findAnnotation(testClass, annotation, annotationClass, null, null, m,
+        new Pair<>(annotation, m));
+  }
+
+  private void transform(IAnnotation a, Class<?> testClass,
+      Constructor<?> testConstructor, Method testMethod)  {
     //
     // Transform @Test
     //
@@ -141,45 +168,42 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   }
 
   @Override
-  public <A extends IAnnotation> A findAnnotation(Class cls, Class<A> annotationClass) {
+  public <A extends IAnnotation> A findAnnotation(Class<?> cls, Class<A> annotationClass) {
     final Class<? extends Annotation> a = m_annotationMap.get(annotationClass);
     if (a == null) {
-      throw new IllegalArgumentException("Java @Annotation class for '" + annotationClass + "' not found.");
+      throw new IllegalArgumentException("Java @Annotation class for '"
+          + annotationClass + "' not found.");
     }
-    return findAnnotation(cls, findAnnotationInSuperClasses(cls, a), annotationClass, cls, null, null);
+    Annotation annotation = findAnnotationInSuperClasses(cls, a);
+    return findAnnotation(cls, annotation, annotationClass, cls, null, null,
+        new Pair<>(annotation, annotationClass));
   }
 
   @Override
-  public <A extends IAnnotation> A findAnnotation(Constructor cons, Class<A> annotationClass) {
+  public <A extends IAnnotation> A findAnnotation(Constructor<?> cons, Class<A> annotationClass) {
     final Class<? extends Annotation> a = m_annotationMap.get(annotationClass);
     if (a == null) {
-      throw new IllegalArgumentException("Java @Annotation class for '" + annotationClass + "' not found.");
+      throw new IllegalArgumentException("Java @Annotation class for '"
+          + annotationClass + "' not found.");
     }
-    return findAnnotation(cons.getDeclaringClass(), cons.getAnnotation(a), annotationClass, null, cons, null);
+    Annotation annotation = cons.getAnnotation(a);
+    return findAnnotation(cons.getDeclaringClass(), annotation, annotationClass, null, cons, null,
+        new Pair<>(annotation, cons));
   }
 
   private Map<Pair<Annotation, ?>, IAnnotation> m_annotations = Maps.newHashMap();
 
   private <A extends IAnnotation> A findAnnotation(Class cls, Annotation a,
-                                                   Class<A> annotationClass,
-                                                   Class testClass, Constructor testConstructor, Method testMethod) {
-    final Pair<Annotation, ?> p;
-    if (testClass != null) {
-      p = new Pair<Annotation, Class>(a, testClass);
-    } else if (testConstructor != null) {
-      p = new Pair<Annotation, Constructor>(a, testConstructor);
-    } else {
-      p = new Pair<Annotation, Method>(a, testMethod);
-    }
-    //noinspection unchecked
-    A result = (A) m_annotations.get(p);
+      Class<A> annotationClass, Class<?> testClass,
+      Constructor<?> testConstructor, Method testMethod, Pair<Annotation, ?> p) {
+    IAnnotation result = m_annotations.get(p);
     if (result == null) {
       result = m_tagFactory.createTag(cls, a, annotationClass, m_transformer);
       m_annotations.put(p, result);
       transform(result, testClass, testConstructor, testMethod);
     }
     //noinspection unchecked
-    return result;
+    return (A) result;
   }
 
   @Override

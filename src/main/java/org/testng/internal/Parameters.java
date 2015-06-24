@@ -1,5 +1,18 @@
 package org.testng.internal;
 
+import com.google.inject.Injector;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -15,27 +28,15 @@ import org.testng.internal.ParameterHolder.ParameterOrigin;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IDataProvidable;
+import org.testng.util.Strings;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Methods that bind parameters declared in testng.xml to actual values
  * used to invoke methods.
  *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
- * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
- *
- * @@ANNOTATIONS@@
  */
 public class Parameters {
   public static final String NULL_VALUE= "null";
@@ -60,12 +61,9 @@ public class Parameters {
    * Creates the parameters needed for the specified <tt>@Configuration</tt> <code>Method</code>.
    *
    * @param m the configuraton method
-   * @param params
    * @param currentTestMethod the current @Test method or <code>null</code> if no @Test is available (this is not
    *    only in case the configuration method is a @Before/@AfterMethod
    * @param finder the annotation finder
-   * @param xmlSuite
-   * @return
    */
   public static Object[] createConfigurationParameters(Method m,
       Map<String, String> params,
@@ -112,11 +110,6 @@ public class Parameters {
   }
 
   /**
-   * @param optionalValues TODO
-   * @param finder TODO
-   * @param parameterAnnotations TODO
-   * @param m
-   * @param instance
    * @return An array of parameters suitable to invoke this method, possibly
    * picked from the property file
    */
@@ -219,28 +212,28 @@ public class Parameters {
       result = value;
     }
     else if(type == int.class || type == Integer.class) {
-      result = Integer.valueOf(Integer.parseInt(value));
+      result = Integer.parseInt(value);
     }
     else if(type == boolean.class || type == Boolean.class) {
       result = Boolean.valueOf(value);
     }
     else if(type == byte.class || type == Byte.class) {
-      result = Byte.valueOf(Byte.parseByte(value));
+      result = Byte.parseByte(value);
     }
     else if(type == char.class || type == Character.class) {
-      result = Character.valueOf(value.charAt(0));
+      result = value.charAt(0);
     }
     else if(type == double.class || type == Double.class) {
-      result = Double.valueOf(Double.parseDouble(value));
+      result = Double.parseDouble(value);
     }
     else if(type == float.class || type == Float.class) {
-      result = Float.valueOf(Float.parseFloat(value));
+      result = Float.parseFloat(value);
     }
     else if(type == long.class || type == Long.class) {
-      result = Long.valueOf(Long.parseLong(value));
+      result = Long.parseLong(value);
     }
     else if(type == short.class || type == Short.class) {
-      result = Short.valueOf(Short.parseShort(value));
+      result = Short.parseShort(value);
     }
     else if (type.isEnum()) {
     	result = Enum.valueOf(type, value);
@@ -252,8 +245,9 @@ public class Parameters {
     return result;
   }
 
-  private static DataProviderHolder findDataProvider(Class clazz, ConstructorOrMethod m,
-      IAnnotationFinder finder) {
+  private static DataProviderHolder findDataProvider(Object instance, ITestClass clazz,
+                                                     ConstructorOrMethod m,
+                                                     IAnnotationFinder finder, ITestContext context) {
     DataProviderHolder result = null;
 
     IDataProvidable dp = findDataProviderInfo(clazz, m, finder);
@@ -262,7 +256,7 @@ public class Parameters {
       Class dataProviderClass = dp.getDataProviderClass();
 
       if (! Utils.isStringEmpty(dataProviderName)) {
-        result = findDataProvider(clazz, finder, dataProviderName, dataProviderClass);
+        result = findDataProvider(instance, clazz, finder, dataProviderName, dataProviderClass, context);
 
         if(null == result) {
           throw new TestNGException("Method " + m + " requires a @DataProvider named : "
@@ -279,9 +273,9 @@ public class Parameters {
    * Find the data provider info (data provider name and class) on either @Test(dataProvider),
    * @Factory(dataProvider) on a method or @Factory(dataProvider) on a constructor.
    */
-  private static IDataProvidable findDataProviderInfo(Class clazz, ConstructorOrMethod m,
+  private static IDataProvidable findDataProviderInfo(ITestClass clazz, ConstructorOrMethod m,
       IAnnotationFinder finder) {
-    IDataProvidable result = null;
+    IDataProvidable result;
 
     if (m.getMethod() != null) {
       //
@@ -297,7 +291,7 @@ public class Parameters {
       if (result == null) {
         //
         // @Test(dataProvider) on a class
-        result = AnnotationHelper.findTest(finder, clazz);
+        result = AnnotationHelper.findTest(finder, clazz.getRealClass());
       }
     } else {
       //
@@ -312,11 +306,14 @@ public class Parameters {
   /**
    * Find a method that has a @DataProvider(name=name)
    */
-  private static DataProviderHolder findDataProvider(Class cls, IAnnotationFinder finder,
-      String name, Class dataProviderClass)
+  private static DataProviderHolder findDataProvider(Object instance, ITestClass clazz,
+                                                     IAnnotationFinder finder,
+                                                     String name, Class dataProviderClass,
+                                                     ITestContext context)
   {
     DataProviderHolder result = null;
 
+    Class cls = clazz.getRealClass();
     boolean shouldBeStatic = false;
     if (dataProviderClass != null) {
       cls = dataProviderClass;
@@ -324,34 +321,40 @@ public class Parameters {
     }
 
     for (Method m : ClassHelper.getAvailableMethods(cls)) {
-      IDataProviderAnnotation dp = (IDataProviderAnnotation)
-          finder.findAnnotation(m, IDataProviderAnnotation.class);
-      if (null != dp && (name.equals(dp.getName()) || name.equals(m.getName()))) {
+      IDataProviderAnnotation dp = finder.findAnnotation(m, IDataProviderAnnotation.class);
+      if (null != dp && name.equals(getDataProviderName(dp, m))) {
         if (shouldBeStatic && (m.getModifiers() & Modifier.STATIC) == 0) {
-          throw new TestNGException("DataProvider should be static: " + m);
+          Injector injector = context.getInjector(clazz);
+          if (injector != null) {
+            instance = injector.getInstance(dataProviderClass);
+          }
         }
 
         if (result != null) {
           throw new TestNGException("Found two providers called '" + name + "' on " + cls);
         }
-        result = new DataProviderHolder(dp, m);
+        result = new DataProviderHolder(dp, m, instance);
       }
     }
 
     return result;
   }
 
+  private static String getDataProviderName(IDataProviderAnnotation dp, Method m) {
+	  return Strings.isNullOrEmpty(dp.getName()) ? m.getName() : dp.getName();
+  }
+  
   @SuppressWarnings({"deprecation"})
   private static Object[] createParameters(Method m, MethodParameters params,
       IAnnotationFinder finder, XmlSuite xmlSuite, Class annotationClass, String atName)
   {
     List<Object> result = Lists.newArrayList();
 
-    Object[] extraParameters = new Object[0];
+    Object[] extraParameters;
     //
     // Try to find an @Parameters annotation
     //
-    IParametersAnnotation annotation = (IParametersAnnotation) finder.findAnnotation(m, IParametersAnnotation.class);
+    IParametersAnnotation annotation = finder.findAnnotation(m, IParametersAnnotation.class);
     Class<?>[] types = m.getParameterTypes();
     if(null != annotation) {
       String[] parameterNames = annotation.getValue();
@@ -378,9 +381,7 @@ public class Parameters {
     //
     // Add the extra parameters we found
     //
-    for (Object p : extraParameters) {
-      result.add(p);
-    }
+    Collections.addAll(result, extraParameters);
 
     // If the method declared an Object[] parameter and we have parameter values, inject them
     for (int i = 0; i < types.length; i++) {
@@ -408,15 +409,15 @@ public class Parameters {
       Object fedInstance)
   {
     ParameterHolder result;
-    Iterator<Object[]> parameters = null;
+    Iterator<Object[]> parameters;
 
     /*
      * Do we have a @DataProvider? If yes, then we have several
      * sets of parameters for this method
      */
     DataProviderHolder dataProviderHolder =
-        findDataProvider(testMethod.getTestClass().getRealClass(),
-            testMethod.getConstructorOrMethod(), annotationFinder);
+        findDataProvider(instance, testMethod.getTestClass(),
+            testMethod.getConstructorOrMethod(), annotationFinder, methodParams.context);
 
     if (null != dataProviderHolder) {
       int parameterCount = testMethod.getConstructorOrMethod().getParameterTypes().length;
@@ -427,7 +428,7 @@ public class Parameters {
       }
 
       parameters = MethodInvocationHelper.invokeDataProvider(
-          instance, /* a test instance or null if the dataprovider is static*/
+          dataProviderHolder.instance, /* a test instance or null if the dataprovider is static*/
           dataProviderHolder.method,
           testMethod,
           methodParams.context,
@@ -457,8 +458,7 @@ public class Parameters {
       // Turn it into an Iterable
       parameters = MethodHelper.createArrayIterator(allParameterValuesArray);
 
-      result = new ParameterHolder(parameters, ParameterOrigin.ORIGIN_XML,
-          dataProviderHolder);
+      result = new ParameterHolder(parameters, ParameterOrigin.ORIGIN_XML, null);
     }
 
     return result;

@@ -3,6 +3,7 @@ package org.testng;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 
+import org.testng.internal.ClassImpl;
 import org.testng.xml.XmlTest;
 
 import java.util.Collection;
@@ -118,8 +119,8 @@ public interface ITestContext extends IAttributes {
   public XmlTest getCurrentXmlTest();
 
   public List<Module> getGuiceModules(Class<? extends Module> cls);
-  public void addGuiceModule(Class<? extends Module> cls, Module module);
 
   public Injector getInjector(List<Module> moduleInstances);
+  Injector getInjector(IClass iClass);
   public void addInjector(List<Module> moduleInstances, Injector injector);
 }

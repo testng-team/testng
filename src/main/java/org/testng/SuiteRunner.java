@@ -239,6 +239,11 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     return m_suite.getParentModule();
   }
 
+  @Override
+  public String getGuiceStage() {
+    return m_suite.getGuiceStage();
+  }
+
   public Injector getParentInjector() {
     return m_parentInjector;
   }
@@ -261,8 +266,8 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   private void privateRun() {
 
     // Map for unicity, Linked for guaranteed order
-    Map<Method, ITestNGMethod> beforeSuiteMethods= new LinkedHashMap<Method, ITestNGMethod>();
-    Map<Method, ITestNGMethod> afterSuiteMethods = new LinkedHashMap<Method, ITestNGMethod>();
+    Map<Method, ITestNGMethod> beforeSuiteMethods= new LinkedHashMap<>();
+    Map<Method, ITestNGMethod> afterSuiteMethods = new LinkedHashMap<>();
 
     IInvoker invoker = null;
 
@@ -332,6 +337,10 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
   private void addReporter(IReporter listener) {
     m_reporters.add(listener);
+  }
+
+  void addConfigurationListener(IConfigurationListener listener) {
+    m_configuration.addConfigurationListener(listener);
   }
 
   public List<IReporter> getReporters() {
@@ -405,7 +414,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       addReporter((IReporter) listener);
     }
     if (listener instanceof IConfigurationListener) {
-      m_configuration.addConfigurationListener((IConfigurationListener) listener);
+      addConfigurationListener((IConfigurationListener) listener);
     }
   }
 

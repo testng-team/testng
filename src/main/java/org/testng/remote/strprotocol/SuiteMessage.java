@@ -1,13 +1,13 @@
 package org.testng.remote.strprotocol;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.testng.ISuite;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -69,9 +69,6 @@ public class SuiteMessage implements IStringMessage {
     return m_testMethodCount;
   }
 
-  /**
-   * @see net.noco.testng.runner.IStringMessage#getMessageAsString()
-   */
   @Override
   public String getMessageAsString() {
     StringBuffer buf = new StringBuffer();

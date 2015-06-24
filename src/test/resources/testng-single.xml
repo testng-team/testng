@@ -9,16 +9,11 @@
     <parameter name="string" value="s"/>
 
     <groups>
-      <dependencies>
-        <group name="c" depends-on="a  b" />
-        <group name="z" depends-on="c" />
-      </dependencies>
     </groups>
 
     <classes>
-      <class name="test.tmp.A">
-       </class>
-     </classes>
+      <class name="test.mannotation.MAnnotationSampleTest" />
+    </classes>
   </test>
 
 </suite>

@@ -1,17 +1,17 @@
 package org.testng.remote.adapter;
 
-import org.testng.ISuite;
-import org.testng.xml.XmlSuite;
-
 import java.io.IOException;
 import java.util.Properties;
+
+import org.testng.ISuite;
+import org.testng.xml.XmlSuite;
 
 /**
  * This interface should be implemented by the Master-Slave transport adapter.
  * This interface is used by the Slave to pull suites and return results.
  *
  * @author	Guy Korland
- * @date April 9, 2007
+ * @since April 9, 2007
  * @see IMasterAdapter
  */
 public interface IWorkerAdapter

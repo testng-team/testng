@@ -51,9 +51,6 @@ public class TestMessage implements IStringMessage {
     return m_testStart;
   }
 
-  /**
-   * @see net.noco.testng.runner.IStringMessage#getMessageAsString()
-   */
   @Override
   public String getMessageAsString() {
     StringBuffer buf = new StringBuffer();

@@ -8,6 +8,7 @@ import javax.xml.xpath.XPathExpressionException;
 import org.testng.Assert;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 import org.testng.internal.collections.Pair;
 import org.testng.xml.XmlDefine;
 import org.testng.xml.XmlGroups;
@@ -76,7 +77,7 @@ public class XDom {
       IllegalAccessException, XPathExpressionException, SecurityException, IllegalArgumentException, NoSuchMethodException, InvocationTargetException {
     p("populateChildren: " + root.getLocalName());
     NodeList childNodes = root.getChildNodes();
-    ListMultiMap<String, Object> children = ListMultiMap.create();
+    ListMultiMap<String, Object> children = Maps.newListMultiMap();
     for (int i = 0; i < childNodes.getLength(); i++) {
       Node item = childNodes.item(i);
       if (item.getAttributes() != null) {
@@ -179,13 +180,7 @@ private void populateContent(Node item, Object object) {
     for (Pair<Method, Wrapper> pair : pairs) {
       try {
         pair.first().invoke(bean, child.getTextContent());
-      } catch (IllegalArgumentException e) {
-        e.printStackTrace();
-      } catch (DOMException e) {
-        e.printStackTrace();
-      } catch (IllegalAccessException e) {
-        e.printStackTrace();
-      } catch (InvocationTargetException e) {
+      } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException | DOMException e) {
         e.printStackTrace();
       }
     }
@@ -214,9 +209,7 @@ private void populateContent(Node item, Object object) {
       } catch (IllegalArgumentException e) {
         System.out.println("Parameters: " + allParameters);
         e.printStackTrace();
-      } catch (IllegalAccessException e) {
-        e.printStackTrace();
-      } catch (InvocationTargetException e) {
+      } catch (IllegalAccessException | InvocationTargetException e) {
         e.printStackTrace();
       }
     }
@@ -246,11 +239,7 @@ private void populateContent(Node item, Object object) {
         } else {
           foundMethod.invoke(object, value);
         }
-      } catch (IllegalArgumentException e) {
-        e.printStackTrace();
-      } catch (IllegalAccessException e) {
-        e.printStackTrace();
-      } catch (InvocationTargetException e) {
+      } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
         e.printStackTrace();
       }
     } else {

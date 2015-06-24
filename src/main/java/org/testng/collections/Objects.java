@@ -5,7 +5,9 @@ import org.testng.util.Strings;
 import java.util.List;
 
 
-public class Objects {
+public final class Objects {
+
+  private Objects() {}
 
   private static class ValueHolder {
     private String m_name;
@@ -62,7 +64,7 @@ public class Objects {
 
     private String s(Object o) {
       return o != null
-          ? ("".equals(o.toString()) ? "\"\"" : o.toString())
+          ? (o.toString().isEmpty() ? "\"\"" : o.toString())
           : "{null}";
     }
 

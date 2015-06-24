@@ -1,15 +1,15 @@
 package org.testng.remote.strprotocol;
 
-import static org.testng.internal.Utils.isStringEmpty;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.List;
 
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.collections.Lists;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.List;
+import static org.testng.internal.Utils.isStringEmpty;
 
 
 /**
@@ -344,44 +344,44 @@ public class TestResultMessage implements IStringMessage {
     List<String> results = Lists.newArrayList();
     if (o instanceof byte[]) {
       byte[] array = (byte[]) o;
-      for (int i = 0; i < array.length; i++) {
-        results.add(String.valueOf(array[i]));
-      }
+        for (byte anArray : array) {
+            results.add(String.valueOf(anArray));
+        }
     } else if (o instanceof boolean[]) {
       boolean[] array = (boolean[]) o;
-      for (int i = 0; i < array.length; i++) {
-        results.add(String.valueOf(array[i]));
-      }
+        for (boolean anArray : array) {
+            results.add(String.valueOf(anArray));
+        }
     } else if (o instanceof char[]) {
       char[] array = (char[]) o;
-      for (int i = 0; i < array.length; i++) {
-        results.add(String.valueOf(array[i]));
-      }
+        for (char anArray : array) {
+            results.add(String.valueOf(anArray));
+        }
     } else if (o instanceof double[]) {
       double[] array = (double[]) o;
-      for (int i = 0; i < array.length; i++) {
-        results.add(String.valueOf(array[i]));
-      }
+        for (double anArray : array) {
+            results.add(String.valueOf(anArray));
+        }
     } else if (o instanceof float[]) {
       float[] array = (float[]) o;
-      for (int i = 0; i < array.length; i++) {
-        results.add(String.valueOf(array[i]));
-      }
+        for (float anArray : array) {
+            results.add(String.valueOf(anArray));
+        }
     } else if (o instanceof short[]) {
       short[] array = (short[]) o;
-      for (int i = 0; i < array.length; i++) {
-        results.add(String.valueOf(array[i]));
-      }
+        for (short anArray : array) {
+            results.add(String.valueOf(anArray));
+        }
     } else if (o instanceof int[]) {
       int[] array = (int[]) o;
-      for (int i = 0; i < array.length; i++) {
-        results.add(String.valueOf(array[i]));
-      }
+        for (int anArray : array) {
+            results.add(String.valueOf(anArray));
+        }
     } else if (o instanceof long[]) {
       long[] array = (long[]) o;
-      for (int i = 0; i < array.length; i++) {
-        results.add(String.valueOf(array[i]));
-      }
+        for (long anArray : array) {
+            results.add(String.valueOf(anArray));
+        }
     }
     return results.toArray(new String[results.size()]);
   }
@@ -398,10 +398,6 @@ public class TestResultMessage implements IStringMessage {
     return result.toArray(new String[result.size()]);
   }
 
-  /**
-   * @param params
-   * @return
-   */
   private String[] extractParamTypes(String[] params) {
     List<String> result= Lists.newArrayList(params.length);
     for(String s: params) {

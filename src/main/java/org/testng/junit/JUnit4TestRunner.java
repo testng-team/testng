@@ -110,8 +110,8 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
 
     private class RL extends RunListener {
 
-        private Map<Description, ITestResult> runs = new WeakHashMap<Description, ITestResult>();
-        private List<Description> notified = new LinkedList<Description>();
+        private Map<Description, ITestResult> runs = new WeakHashMap<>();
+        private List<Description> notified = new LinkedList<>();
 
         @Override
         public void testAssumptionFailure(Failure failure) {
@@ -198,7 +198,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
                     0,
                     null);
 
-            InvokedMethod im = new InvokedMethod(tr.getTestClass(), tr.getMethod(), new Object[0], true, false, tr.getStartMillis(), tr);
+            InvokedMethod im = new InvokedMethod(tr.getTestClass(), tr.getMethod(), new Object[0], tr.getStartMillis(), tr);
             m_parentRunner.addInvokedMethod(im);
             for (IInvokedMethodListener l: m_invokeListeners) {
                 l.beforeInvocation(im, tr);

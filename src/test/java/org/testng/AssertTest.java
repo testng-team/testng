@@ -2,7 +2,7 @@ package org.testng;
 
 import org.testng.annotations.Test;
 import org.testng.collections.Maps;
-import org.testng.internal.annotations.Sets;
+import org.testng.collections.Sets;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -114,5 +114,73 @@ public class AssertTest {
     }};
 
     Assert.assertEquals(mapActual, mapExpected);
+  }
+
+  @Test(expectedExceptions = AssertionError.class)
+  public void assertEqualsSymmetricScalar() {
+    Assert.assertEquals(new Asymmetric(42, 'd'), new Contrived(42));
+  }
+
+  @Test(expectedExceptions = AssertionError.class)
+  public void assertEqualsSymmetricArrays() {
+    Object[] actual = {1, new Asymmetric(42, 'd'), "inDay"};
+    Object[] expected = {1, new Contrived(42), "inDay"};
+    Assert.assertEquals(actual, expected);
+  }
+
+  class Contrived {
+
+    int integer;
+
+    Contrived(int integer){
+      this.integer = integer;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof Contrived)) return false;
+
+      Contrived contrived = (Contrived) o;
+
+      if (integer != contrived.integer) return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return integer;
+    }
+  }
+
+  class Asymmetric extends Contrived {
+
+      char character;
+
+      Asymmetric(int integer, char character) {
+          super(integer);
+          this.character = character;
+      }
+
+      @Override
+      public boolean equals(Object o) {
+          if (this == o) return true;
+          if (!(o instanceof Asymmetric)) return false;
+          if (!super.equals(o)) return false;
+
+          Asymmetric that = (Asymmetric) o;
+
+          if (character != that.character) return false;
+
+          return true;
+      }
+
+      @Override
+      public int hashCode() {
+          int result = super.hashCode();
+          result = 31 * result + (int) character;
+          return result;
+      }
   }
 }

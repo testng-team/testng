@@ -40,6 +40,9 @@ Cedric Beust & Alexandru Popescu
                 This setting has no impact on the HTML reports.
 @attr  parallel   Whether TestNG should use different threads
                 to run your tests (might speed up the process)
+@attr  parent-module A module used to create the parent injector of all guice injectors used
+       in tests of the suite
+@attr  guice-stage The stage with which the parent injector is created
 @attr  configfailurepolicy  Whether to continue attempting Before/After
                 Class/Methods after they've failed once or just skip remaining.
 @attr  thread-count An integer giving the size of the thread pool to use
@@ -50,7 +53,7 @@ Cedric Beust & Alexandru Popescu
 @attr  time-out     The time to wait in milliseconds before aborting the
                 method (if parallel="methods") or the test (parallel="tests")
 @attr  skipfailedinvocationcounts Whether to skip failed invocations.
-@attr  data-provider-thread-count An integer givin the size of the thread pool to use
+@attr  data-provider-thread-count An integer giving the size of the thread pool to use
        for parallel data providers.
 @attr  object-factory A class that implements IObjectFactory that will be used to
        instantiate the test objects.
@@ -62,6 +65,7 @@ Cedric Beust & Alexandru Popescu
     verbose CDATA #IMPLIED
     parallel (false | methods | tests | classes | instances) "false"
     parent-module CDATA #IMPLIED
+    guice-stage (DEVELOPMENT | PRODUCTION | TOOL) "DEVELOPMENT"
     configfailurepolicy (skip | continue) "skip"
     thread-count CDATA "5"
     annotations CDATA #IMPLIED

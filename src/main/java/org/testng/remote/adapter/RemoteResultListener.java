@@ -6,19 +6,19 @@
 
 package org.testng.remote.adapter;
 
+import java.util.Map;
+
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.SuiteRunner;
 import org.testng.reporters.TestHTMLReporter;
 
-import java.util.Map;
-
 /**
  * This listener is called by the {@link IWorkerAdapter} implementation when a remote test result is ready.
  *
  * @author Guy Korland
- * @date April 9, 2007
+ * @since April 9, 2007
  * @see IWorkerAdapter
  */
 public class RemoteResultListener

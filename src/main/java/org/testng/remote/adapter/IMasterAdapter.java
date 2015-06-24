@@ -1,23 +1,23 @@
 package org.testng.remote.adapter;
 
-import org.testng.xml.XmlSuite;
-
 import java.io.IOException;
 import java.util.Properties;
+
+import org.testng.xml.XmlSuite;
 
 /**
  * This interface should be implemented by the Master-Slave transport adapter.
  * This interface is used by the Master to push suites and get results.
  *
  * @author Guy Korland
- * @date April 9, 2007
+ * @since April 9, 2007
  * @see IWorkerAdapter
  */
 public interface IMasterAdapter
 {
 	/**
 	 * Initializes the Master adapter.
-	 * @param properties holds the properties loaded from the remote.properties file.
+	 * @param prop holds the properties loaded from the remote.properties file.
 	 * @throws Exception adapter might throw any exception on initialization, which will abort this adapter.
 	 */
 	void init( Properties prop) throws Exception;

@@ -43,12 +43,7 @@ public class ResultXMLParser extends XMLParser<Object> {
       parse(inputStream, handler);
 
       return null;
-    }
-    catch (FileNotFoundException e) {
-      throw new TestNGException(e);
-    } catch (SAXException e) {
-      throw new TestNGException(e);
-    } catch (IOException e) {
+    } catch (SAXException | IOException e) {
       throw new TestNGException(e);
     }
   }

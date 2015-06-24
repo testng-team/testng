@@ -136,7 +136,7 @@ public class CommandLineArgs {
   public static final String METHODS = "-methods";
   @Parameter(names = METHODS, description = "Comma separated of test methods",
       splitter = CommaParameterSplitter.class)
-  public List<String> commandLineMethods = new ArrayList<String>();
+  public List<String> commandLineMethods = new ArrayList<>();
 
   public static final String SUITE_THREAD_POOL_SIZE = "-suitethreadpoolsize";
   public static final Integer SUITE_THREAD_POOL_SIZE_DEFAULT = 1;

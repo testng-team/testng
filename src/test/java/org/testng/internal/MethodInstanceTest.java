@@ -32,7 +32,7 @@ public class MethodInstanceTest {
 
     // Build a list of entries imposing the same behavior as the live suite, reduced to the
     // minimum to create the same condition.
-    List<MethodInstance> methods = new ArrayList<MethodInstance>();
+    List<MethodInstance> methods = new ArrayList<>();
     methods.add(buildMethodInstance("unittests", "StateTest", 1, "aCategorization"));
     methods.add(buildMethodInstance("unittests", "StateTest", 1, "bCategorization"));
     methods.add(buildMethodInstance("unittests", "StateTest", 1, "cCategorization"));
@@ -402,6 +402,11 @@ public class MethodInstanceTest {
 
     @Override
     public int getInvocationCount() {
+      return 0;
+    }
+
+    @Override
+    public int getTotalInvocationCount() {
       return 0;
     }
 

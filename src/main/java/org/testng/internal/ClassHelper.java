@@ -1,5 +1,15 @@
 package org.testng.internal;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+
 import org.testng.IClass;
 import org.testng.IMethodSelector;
 import org.testng.IObjectFactory;
@@ -10,19 +20,10 @@ import org.testng.TestRunner;
 import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
+import org.testng.collections.Sets;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.Sets;
 import org.testng.junit.IJUnitTestRunner;
 import org.testng.xml.XmlTest;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
 
 /**
  * Utility class for different class manipulations.
@@ -32,7 +33,7 @@ public final class ClassHelper {
   private static final String JUNIT_4_TESTRUNNER = "org.testng.junit.JUnit4TestRunner";
 
   /** The additional class loaders to find classes in. */
-  private static final List<ClassLoader> m_classLoaders = new Vector<ClassLoader>();
+  private static final List<ClassLoader> m_classLoaders = new Vector<>();
 
   /** Add a class loader to the searchable loaders. */
   public static void addClassLoader(final ClassLoader loader) {
@@ -66,6 +67,14 @@ public final class ClassHelper {
     }
   }
 
+  public static <T> T newInstance(Constructor<T> constructor, Object... parameters) {
+    try {
+      return constructor.newInstance(parameters);
+    } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+      throw new TestNGException("Cannot instantiate class " + constructor.getDeclaringClass().getName(), e);
+    }
+  }
+
   /**
    * Tries to load the specified class using the context ClassLoader or if none,
    * than from the default ClassLoader. This method differs from the standard
@@ -77,7 +86,7 @@ public final class ClassHelper {
    * @return the class or null if the class is not found.
    */
   public static Class<?> forName(final String className) {
-    Vector<ClassLoader> allClassLoaders = new Vector<ClassLoader>();
+    Vector<ClassLoader> allClassLoaders = new Vector<>();
     ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
     if (contextClassLoader != null) {
       allClassLoaders.add(contextClassLoader);
@@ -86,9 +95,7 @@ public final class ClassHelper {
       allClassLoaders.addAll(m_classLoaders);
     }
 
-    int count = 0;
     for (ClassLoader classLoader : allClassLoaders) {
-      ++count;
       if (null == classLoader) {
         continue;
       }
@@ -133,13 +140,9 @@ public final class ClassHelper {
     ConstructorOrMethod result = null;
 
     for (Method method : cls.getMethods()) {
-      IFactoryAnnotation f = (IFactoryAnnotation) finder.findAnnotation(method,
-          IFactoryAnnotation.class);
+      IFactoryAnnotation f = finder.findAnnotation(method, IFactoryAnnotation.class);
 
       if (null != f) {
-        if (result != null) {
-          throw new TestNGException(cls.getName() + ":  only one @Factory method allowed");
-        }
         result = new ConstructorOrMethod(method);
         result.setEnabled(f.getEnabled());
         break;
@@ -174,9 +177,6 @@ public final class ClassHelper {
   /**
    * Extract all callable methods of a class and all its super (keeping in mind
    * the Java access rules).
-   *
-   * @param clazz
-   * @return
    */
   public static Set<Method> getAvailableMethods(Class<?> clazz) {
     Set<Method> methods = Sets.newHashSet();
@@ -191,10 +191,6 @@ public final class ClassHelper {
     return methods;
   }
 
-  /**
-   * @param runner
-   * @return
-   */
   public static IJUnitTestRunner createTestRunner(TestRunner runner) {
       try {
           //try to get runner for JUnit 4 first
@@ -323,8 +319,7 @@ public final class ClassHelper {
       //
       Constructor<?> constructor = findAnnotatedConstructor(finder, declaringClass);
       if (null != constructor) {
-        IParametersAnnotation annotation = (IParametersAnnotation) finder.findAnnotation(constructor,
-                                                                     IParametersAnnotation.class);
+        IParametersAnnotation annotation = finder.findAnnotation(constructor, IParametersAnnotation.class);
 
         String[] parameterNames = annotation.getValue();
         Object[] parameters = Parameters.createInstantiationParameters(constructor,
@@ -374,12 +369,12 @@ public final class ClassHelper {
           parameters = new Object[] { enclosingClassInstance };
         } // isStatic
 
-        Constructor<?> ct = null;
+        Constructor<?> ct;
         try {
           ct = declaringClass.getDeclaredConstructor(parameterTypes);
         }
         catch (NoSuchMethodException ex) {
-          ct = declaringClass.getDeclaredConstructor(new Class[] {String.class});
+          ct = declaringClass.getDeclaredConstructor(String.class);
           parameters = new Object[] { "Default test name" };
           // If ct == null here, we'll pass a null
           // constructor to the factory and hope it can deal with it
@@ -442,8 +437,7 @@ public final class ClassHelper {
     Constructor<?>[] constructors = declaringClass.getDeclaredConstructors();
 
     for (Constructor<?> result : constructors) {
-      IParametersAnnotation annotation = (IParametersAnnotation)
-          finder.findAnnotation(result, IParametersAnnotation.class);
+      IParametersAnnotation annotation = finder.findAnnotation(result, IParametersAnnotation.class);
 
       if (null != annotation) {
         String[] parameters = annotation.getValue();
@@ -471,8 +465,8 @@ public final class ClassHelper {
         return null;
       }
 
-      Constructor<T> ctor = declaringClass.getConstructor(new Class[] { String.class });
-      result = ctor.newInstance(new Object[] { "Default test name" });
+      Constructor<T> ctor = declaringClass.getConstructor(String.class);
+      result = ctor.newInstance("Default test name");
     }
     catch (Exception e) {
       String message = e.getMessage();

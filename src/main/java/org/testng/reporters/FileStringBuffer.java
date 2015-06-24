@@ -43,6 +43,9 @@ public class FileStringBuffer implements IBuffer {
 
   @Override
   public FileStringBuffer append(CharSequence s) {
+    if (s == null) {
+      throw new IllegalArgumentException("CharSequence (Argument 0 of FileStringBuffer#append) should not be null");
+    }
 //    m_sb.append(s);
     if (m_sb.length() > m_maxCharacters) {
       flushToFile();
@@ -64,6 +67,9 @@ public class FileStringBuffer implements IBuffer {
 
   @Override
   public void toWriter(Writer fw) {
+    if (fw == null) {
+      throw new IllegalArgumentException("Writer (Argument 0 of FileStringBuffer#toWriter) should not be null");
+    }
     try {
       BufferedWriter bw = new BufferedWriter(fw);
       if (m_file == null) {

@@ -14,7 +14,7 @@ public class RemoveAMethodInterceptor implements IMethodInterceptor {
 
   @Override
   public List<IMethodInstance> intercept(List<IMethodInstance> methods, ITestContext context) {
-    List<IMethodInstance> result = new ArrayList<IMethodInstance>();
+    List<IMethodInstance> result = new ArrayList<>();
 
     for (IMethodInstance method : methods) {
       String name = method.getMethod().getMethodName();
@@ -38,7 +38,7 @@ public class RemoveAMethodInterceptor implements IMethodInterceptor {
   }
 
   public static List<String> getMethodNames(List<IMethodInstance> methods) {
-    List<String> names = new ArrayList<String>();
+    List<String> names = new ArrayList<>();
     for (IMethodInstance m : methods) {
       names.add(m.getMethod().getMethodName());
     }

@@ -5,13 +5,12 @@ import java.util.List;
 
 /**
  * Thrown when two array elements differ
- * @see Assert#assertArrayEquals(String, Object[], Object[])
  */
 public class ArrayComparisonFailure extends AssertionError {
 
     private static final long serialVersionUID= 1L;
     
-    private List<Integer> fIndices= new ArrayList<Integer>();
+    private List<Integer> fIndices= new ArrayList<>();
     private final String fMessage;
     private final AssertionError fCause;
 
@@ -20,7 +19,6 @@ public class ArrayComparisonFailure extends AssertionError {
      * dimension that was not equal
      * @param cause the exception that caused the array's content to fail the assertion test 
      * @param index the array position of the objects that are not equal.
-     * @see Assert#assertArrayEquals(String, Object[], Object[])
      */
     public ArrayComparisonFailure(String message, AssertionError cause, int index) {
         fMessage= message;

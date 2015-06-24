@@ -1,11 +1,11 @@
 package org.testng.remote.strprotocol;
 
 
-import org.testng.TestNGException;
-import org.testng.remote.RemoteTestNG;
-
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+
+import org.testng.TestNGException;
+import org.testng.remote.RemoteTestNG;
 
 /**
  * Central class to connect to the host and send message.
@@ -25,7 +25,6 @@ public class MessageHub {
   /**
    * Starts the connection.
    *
-   * @return <TT>true</TT> if the connection was successful, <TT>false</TT> otherwise
    * @throws TestNGException if an exception occurred while establishing the connection
    */
   public void connect() throws IOException {

@@ -2,7 +2,6 @@ package org.testng.xml;
 
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.YamlParser;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -15,6 +14,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 
 /**
  * <code>Parser</code> is a parser for a TestNG XML test suite file.
@@ -33,11 +33,14 @@ public class Parser {
   /** The default file name for the TestNG test suite if none is specified (testng.xml). */
   public static final String DEFAULT_FILENAME = "testng.xml";
 
-  private static final IFileParser<XmlSuite> XML_PARSER =
-//      new DomXmlParser();
-      new SuiteXmlParser();
-  private static final IFileParser<XmlSuite> YAML_PARSER = new YamlParser();
-  private static final IFileParser<XmlSuite> DEFAULT_FILE_PARSER = XML_PARSER;
+  private static final ISuiteParser DEFAULT_FILE_PARSER = new SuiteXmlParser();
+  private static final List<ISuiteParser> PARSERS = Lists.newArrayList(DEFAULT_FILE_PARSER);
+  static {
+    ServiceLoader<ISuiteParser> suiteParserLoader = ServiceLoader.load(ISuiteParser.class);
+    for (ISuiteParser parser : suiteParserLoader) {
+      PARSERS.add(parser);
+    }
+  }
 
   /** The file name of the xml suite being parsed. This may be null if the Parser
    * has not been initialized with a file name. TODO CQ This member is never used. */
@@ -112,13 +115,14 @@ public class Parser {
 //    return in;
 //  }
 
-  private IFileParser getParser(String fileName) {
-    IFileParser result = DEFAULT_FILE_PARSER;
+  private static IFileParser getParser(String fileName) {
+    for (ISuiteParser parser : PARSERS) {
+      if (parser.accept(fileName)) {
+        return parser;
+      }
+    }
 
-    if (fileName.endsWith(".xml")) result = XML_PARSER;
-    else if (fileName.endsWith(".yaml")) result = YAML_PARSER;
-
-    return result;
+    return DEFAULT_FILE_PARSER;
   }
 
   /**

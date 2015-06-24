@@ -21,7 +21,7 @@ public class BeforeTestOrderingTest {
 
   @BeforeSuite
   public void init() {
-    m_testNames = new ArrayList<String>();
+    m_testNames = new ArrayList<>();
   }
 
   static void addTest(String testName) {

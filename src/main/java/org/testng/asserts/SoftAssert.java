@@ -11,10 +11,10 @@ import org.testng.collections.Maps;
  */
 public class SoftAssert extends Assertion {
   // LinkedHashMap to preserve the order
-  private Map<AssertionError, IAssert> m_errors = Maps.newLinkedHashMap();
+  private Map<AssertionError, IAssert<?>> m_errors = Maps.newLinkedHashMap();
 
   @Override
-  protected void doAssert(IAssert a) {
+  protected void doAssert(IAssert<?> a) {
     onBeforeAssert(a);
     try {
       a.doAssert();
@@ -27,12 +27,11 @@ public class SoftAssert extends Assertion {
     }
   }
 
-
   public void assertAll() {
     if (! m_errors.isEmpty()) {
       StringBuilder sb = new StringBuilder("The following asserts failed:");
       boolean first = true;
-      for (Map.Entry<AssertionError, IAssert> ae : m_errors.entrySet()) {
+      for (Map.Entry<AssertionError, IAssert<?>> ae : m_errors.entrySet()) {
         if (first) {
           first = false;
         } else {

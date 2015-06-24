@@ -1,10 +1,17 @@
 package test.asserttests;
 
 import org.testng.Assert;
+import org.testng.Assert.ThrowingRunnable;
 import org.testng.annotations.Test;
-import org.testng.internal.annotations.Sets;
+import org.testng.collections.Sets;
 
+import java.io.IOException;
 import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+import static org.testng.Assert.expectThrows;
 
 public class AssertTest {
 
@@ -32,7 +39,7 @@ public class AssertTest {
   @Test
   public void int_Integer_Arrays() {
     int[] intArr = {1, 2};
-    Integer[] integerArr = {1, Integer.valueOf(2)};
+    Integer[] integerArr = {1, 2};
     Assert.assertEquals(intArr, integerArr);
     Assert.assertEquals(integerArr, intArr);
   }
@@ -47,13 +54,13 @@ public class AssertTest {
   @Test(expectedExceptions = AssertionError.class)
   public void arraysFailures_2() {
     int[] intArr = {1, 2};
-    Assert.assertEquals(intArr, Long.valueOf(1));
+    Assert.assertEquals(intArr, (long) 1);
   }
 
   @Test(expectedExceptions = AssertionError.class)
   public void arraysFailures_3() {
     long[] longArr = {1};
-    Assert.assertEquals(Long.valueOf(1), longArr);
+    Assert.assertEquals((long) 1, longArr);
   }
 
   @Test
@@ -74,4 +81,79 @@ public class AssertTest {
     Assert.assertEquals(set2, set1);
   }
 
+  @Test(expectedExceptions = AssertionError.class)
+  public void expectThrowsRequiresAnExceptionToBeThrown() {
+    expectThrows(Throwable.class, nonThrowingRunnable());
+  }
+
+  @Test
+  public void expectThrowsIncludesAnInformativeDefaultMessage() {
+    try {
+      expectThrows(Throwable.class, nonThrowingRunnable());
+    } catch (AssertionError ex) {
+      assertEquals("Expected Throwable to be thrown, but nothing was thrown", ex.getMessage());
+      return;
+    }
+    fail();
+  }
+
+  @Test
+  public void expectThrowsReturnsTheSameObjectThrown() {
+    NullPointerException npe = new NullPointerException();
+
+    Throwable throwable = expectThrows(Throwable.class, throwingRunnable(npe));
+
+    assertSame(npe, throwable);
+  }
+
+  @Test(expectedExceptions = AssertionError.class)
+  public void expectThrowsDetectsTypeMismatchesViaExplicitTypeHint() {
+    NullPointerException npe = new NullPointerException();
+
+    expectThrows(IOException.class, throwingRunnable(npe));
+  }
+
+  @Test
+  public void expectThrowsWrapsAndPropagatesUnexpectedExceptions() {
+    NullPointerException npe = new NullPointerException("inner-message");
+
+    try {
+      expectThrows(IOException.class, throwingRunnable(npe));
+    } catch (AssertionError ex) {
+      assertSame(npe, ex.getCause());
+      assertEquals("inner-message", ex.getCause().getMessage());
+      return;
+    }
+    fail();
+  }
+
+  @Test
+  public void expectThrowsSuppliesACoherentErrorMessageUponTypeMismatch() {
+    NullPointerException npe = new NullPointerException();
+
+    try {
+      expectThrows(IOException.class, throwingRunnable(npe));
+    } catch (AssertionError error) {
+      assertEquals("Expected IOException to be thrown, but NullPointerException was thrown",
+              error.getMessage());
+      assertSame(npe, error.getCause());
+      return;
+    }
+    fail();
+  }
+
+  private static ThrowingRunnable nonThrowingRunnable() {
+    return new ThrowingRunnable() {
+      public void run() throws Throwable {
+      }
+    };
+  }
+
+  private static ThrowingRunnable throwingRunnable(final Throwable t) {
+    return new ThrowingRunnable() {
+      public void run() throws Throwable {
+        throw t;
+      }
+    };
+  }
 }

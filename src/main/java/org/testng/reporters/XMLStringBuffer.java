@@ -1,11 +1,11 @@
 package org.testng.reporters;
 
-import org.testng.internal.Nullable;
-
 import java.io.Writer;
 import java.util.Properties;
 import java.util.Stack;
 import java.util.regex.Pattern;
+
+import org.testng.internal.Nullable;
 
 /**
  * This class allows you to generate an XML text document by pushing
@@ -14,8 +14,8 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a> Jul 21, 2003
  */
 public class XMLStringBuffer {
-  /** End of line */
-  private static final String EOL = System.getProperty("line.separator");
+  /** End of line, value of 'line.separator' system property or '\n' */
+  private static final String EOL = System.getProperty("line.separator", "\n");
 
   /** Tab space indent for XML document */
   private static final String DEFAULT_INDENT_INCREMENT = "  ";
@@ -24,16 +24,11 @@ public class XMLStringBuffer {
   private IBuffer m_buffer;
 
   /** The stack of tags to make sure XML document is well formed. */
-  private final Stack<Tag> m_tagStack = new Stack<Tag>();
+  private final Stack<Tag> m_tagStack = new Stack<>();
 
   /** A string of space character representing the current indentation. */
   private String m_currentIndent = "";
 
-  /**
-   * @param start A string of spaces indicating the indentation at which
-   * to start the generation. Note that this constructor will also insert
-   * an <?xml prologue with a default encoding
-   */
   public XMLStringBuffer() {
     init(Buffer.create(), "", "1.0", "UTF-8");
   }
@@ -308,7 +303,7 @@ public class XMLStringBuffer {
     if (content == null) {
       content = "null";
     }
-    if (content.indexOf("]]>") > -1) {
+    if (content.contains("]]>")) {
       String[] subStrings = content.split("]]>");
       m_buffer.append(m_currentIndent).append("<![CDATA[").append(subStrings[0]).append("]]]]>");
       for (int i = 1; i < subStrings.length - 1; i++) {

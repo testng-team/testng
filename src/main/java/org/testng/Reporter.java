@@ -1,12 +1,13 @@
 package org.testng;
 
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.util.Strings;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
+import org.testng.util.Strings;
 
 /**
  * This class is used for test methods to log messages that will be
@@ -18,8 +19,8 @@ import java.util.Vector;
  * <br>
  * The reporter keeps a combined output of strings (in m_output) and also
  * a record of which method output which line.  In order to do this, callers
- * specify what the current method is with setCurrentMethod() and the
- * Reporter maintaing a mapping of each method with a list of integers.
+ * specify what the current method is with setCurrentTestResult() and the
+ * Reporter maintains a mapping of each test result with a list of integers.
  * These integers are indices in the combined output (avoids duplicating
  * the output).
  *
@@ -30,16 +31,20 @@ public class Reporter {
   // when tests are run in parallel, each thread may be working with different
   // 'current test result'. Also, this value should be inherited if the test code
   // spawns its own thread.
-  private static ThreadLocal<ITestResult> m_currentTestResult = new InheritableThreadLocal<ITestResult>();
+  private static ThreadLocal<ITestResult> m_currentTestResult = new InheritableThreadLocal<>();
 
   /**
    * All output logged in a sequential order.
    */
-  private static List<String> m_output = new Vector<String>();
+  private static List<String> m_output = new Vector<>();
 
-  private static Map<ITestResult, List<Integer>> m_methodOutputMap = Maps.newHashMap();
+  /** The key is the hashCode of the ITestResult */
+  private static Map<Integer, List<Integer>> m_methodOutputMap = Maps.newHashMap();
 
   private static boolean m_escapeHtml = false;
+  //This variable is responsible for persisting all output that is yet to be associated with any
+  //valid TestResult objects.
+  private static ThreadLocal<List<String>> m_orphanedOutput = new InheritableThreadLocal<>();
 
   public static void setCurrentTestResult(ITestResult m) {
     m_currentTestResult.set(m);
@@ -70,12 +75,31 @@ public class Reporter {
       s = Strings.escapeHtml(s);
     }
 
+    if (m == null) {
+      //Persist the output temporarily into a Threadlocal String list.
+      if (m_orphanedOutput.get() == null) {
+        m_orphanedOutput.set(new ArrayList<String>());
+      }
+      m_orphanedOutput.get().add(s);
+      return;
+    }
+
     // synchronization needed to ensure the line number and m_output are updated atomically
     int n = getOutput().size();
-    List<Integer> lines = m_methodOutputMap.get(m);
+
+    List<Integer> lines = m_methodOutputMap.get(m.hashCode());
     if (lines == null) {
       lines = Lists.newArrayList();
-      m_methodOutputMap.put(m, lines);
+      m_methodOutputMap.put(m.hashCode(), lines);
+    }
+
+    // Check if there was already some orphaned output for the current thread.
+    if (m_orphanedOutput.get() != null) {
+      n = n + m_orphanedOutput.get().size();
+      getOutput().addAll(m_orphanedOutput.get());
+      // Since we have already added all of the orphaned output to the current
+      // TestResult, lets clear it off
+      m_orphanedOutput.remove();
     }
     lines.add(n);
     getOutput().add(s);
@@ -144,7 +168,11 @@ public class Reporter {
 
   public static synchronized List<String> getOutput(ITestResult tr) {
     List<String> result = Lists.newArrayList();
-    List<Integer> lines = m_methodOutputMap.get(tr);
+    if (tr == null) {
+      //guard against a possible NPE in scenarios wherein the test result object itself could be a null value.
+      return result;
+    }
+    List<Integer> lines = m_methodOutputMap.get(tr.hashCode());
     if (lines != null) {
       for (Integer n : lines) {
         result.add(getOutput().get(n));

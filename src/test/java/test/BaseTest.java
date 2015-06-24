@@ -1,6 +1,18 @@
 package test;
 
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 import org.testng.Assert;
 import org.testng.IInvokedMethodListener;
 import org.testng.ISuite;
@@ -21,21 +33,6 @@ import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * Base class for tests
@@ -89,20 +86,20 @@ public class BaseTest extends BaseDistributedTest {
     getTest().getSuite().setThreadCount(count);
   }
 
-  private Map<Long, XmlTest> m_tests= new HashMap<Long, XmlTest>();
-  private Map<Long, Map> m_passedTests= new HashMap<Long, Map>();
-  private Map<Long, Map> m_failedTests= new HashMap<Long, Map>();
-  private Map<Long, Map> m_skippedTests= new HashMap<Long, Map>();
-  private Map<Long, XmlTest> m_testConfigs= new HashMap<Long, XmlTest>();
-  private Map<Long, Map> m_passedConfigs= new HashMap<Long, Map>();
-  private Map<Long, Map> m_failedConfigs= new HashMap<Long, Map>();
-  private Map<Long, Map> m_skippedConfigs= new HashMap<Long, Map>();
-  private Map<Long, Map> m_failedButWithinSuccessPercentageTests= new HashMap<Long, Map>();
+  private Map<Long, XmlTest> m_tests= new HashMap<>();
+  private Map<Long, Map> m_passedTests= new HashMap<>();
+  private Map<Long, Map> m_failedTests= new HashMap<>();
+  private Map<Long, Map> m_skippedTests= new HashMap<>();
+  private Map<Long, XmlTest> m_testConfigs= new HashMap<>();
+  private Map<Long, Map> m_passedConfigs= new HashMap<>();
+  private Map<Long, Map> m_failedConfigs= new HashMap<>();
+  private Map<Long, Map> m_skippedConfigs= new HashMap<>();
+  private Map<Long, Map> m_failedButWithinSuccessPercentageTests= new HashMap<>();
 
   protected Map<String, List<ITestResult>> getTests(Map<Long, Map> map) {
     Map<String, List<ITestResult>> result= map.get(getId());
     if(null == result) {
-      result= new HashMap<String, List<ITestResult>>();
+      result= new HashMap<>();
       map.put(getId(), result);
     }
 
@@ -258,7 +255,7 @@ public class BaseTest extends BaseDistributedTest {
   }
 
   public void addMetaGroup(String mg, String n) {
-    List<String> l= new ArrayList<String>();
+    List<String> l= new ArrayList<>();
     l.add(n);
     addMetaGroup(mg, l);
   }
@@ -277,20 +274,10 @@ public class BaseTest extends BaseDistributedTest {
     m_tests.put(getId(), xmlTest);
   }
 
-  private Collection computeDifferences(Map m1, Map m2) {
-    List result= new ArrayList();
-
-    for(Iterator it= m1.keySet().iterator(); it.hasNext();) {
-      it.next();
-    }
-
-    return result;
-  }
-
   private void addTest(Map<String, List<ITestResult>> tests, ITestResult t) {
     List<ITestResult> l= tests.get(t.getMethod().getMethodName());
     if(null == l) {
-      l= new ArrayList<ITestResult>();
+      l= new ArrayList<>();
       tests.put(t.getMethod().getMethodName(), l);
     }
     l.add(t);
@@ -339,6 +326,10 @@ public class BaseTest extends BaseDistributedTest {
     return m_suite;
   }
 
+  public void setSuite(XmlSuite suite) {
+    m_suite = suite;
+  }
+
   /**
    * Used for instanceCount testing, when we need to look inside the
    * TestResult to count the various SUCCESS/FAIL/FAIL_BUT_OK
@@ -383,6 +374,14 @@ public class BaseTest extends BaseDistributedTest {
     Assert.assertEqualsNoOrder(actualNames.toArray(), expected);
   }
 
+  protected void verifyPassedTests(String... expectedPassed) {
+    verifyTests("Passed", expectedPassed, getPassedTests());
+  }
+
+  protected void verifyFailedTests(String... expectedFailed) {
+    verifyTests("Failed", expectedFailed, getFailedTests());
+  }
+
   /**
      *
      * @param fileName The filename to parse
@@ -395,7 +394,7 @@ public class BaseTest extends BaseDistributedTest {
      * result.size() at the end of this function.
      */
     public static List<Integer> grep(File fileName, String regexp, List<String> resultLines) {
-      List<Integer> resultLineNumbers = new ArrayList<Integer>();
+      List<Integer> resultLineNumbers = new ArrayList<>();
       BufferedReader fr = null;
       try {
         fr = new BufferedReader(new FileReader(fileName));
@@ -413,11 +412,7 @@ public class BaseTest extends BaseDistributedTest {
           line = fr.readLine();
           currentLine++;
         }
-      }
-      catch(FileNotFoundException e) {
-        e.printStackTrace();
-      }
-      catch(IOException e) {
+      } catch(IOException e) {
         e.printStackTrace();
       }
       finally {

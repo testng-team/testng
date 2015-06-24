@@ -10,7 +10,7 @@ import java.util.Properties;
  *
  * @author cbeust
  * @author Guy Korland
- * @date April 13, 2006
+ * @since April 13, 2006
  */
 public class PropertiesFile {
 

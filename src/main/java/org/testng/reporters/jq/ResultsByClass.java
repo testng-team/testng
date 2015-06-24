@@ -33,6 +33,7 @@ public class ResultsByClass {
   }
 
   public List<Class<?>> getClasses() {
+    // TODO do not use deprecated method
     return m_results.getKeys();
   }
 }

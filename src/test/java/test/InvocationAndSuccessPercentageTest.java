@@ -67,9 +67,9 @@ public class InvocationAndSuccessPercentageTest extends BaseTest {
     * 1 failed but within success percentage
     * 1 failed
     */
-   @Test(enabled = false)
+   @Test
    public void successPercentageThatFails() {
-     addClass("test.sample.InvocationCountTest");
+     addClass(test.sample.InvocationCountTest.class);
      addIncludedGroup("successPercentageThatFailsOnly");
      run();
      String[] passed = {

@@ -32,7 +32,7 @@ public class IgnoredMethodsPanel extends BaseMultiSuitePanel {
       map.put(method.getTestClass().getRealClass(), method);
     }
 
-    for (Class<?> c : map.getKeys()) {
+    for (Class<?> c : map.keySet()) {
       xsb.push(D, C, "ignored-class-div");
       xsb.addRequired(S, c.getName(), C, "ignored-class-name");
       xsb.push(D, C, "ignored-methods-div");

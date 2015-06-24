@@ -18,7 +18,7 @@ public class GraphTest {
 
   @Test
   public void sort() {
-    Graph<String> g = new Graph<String>();
+    Graph<String> g = new Graph<>();
     g.addNode("3");
     g.addNode("1");
     g.addNode("2.2");
@@ -63,14 +63,14 @@ public class GraphTest {
       g.topologicalSort();
     }
     catch(TestNGException ex) {
-      Tarjan<String> t = new Tarjan<String>(g, "1");
+      Tarjan<String> t = new Tarjan<>(g, "1");
       Assert.assertEquals(t.getCycle().size(), 3);
     }
 
   }
 
   private Graph<String> createCyclicGraph() {
-    Graph<String> g = new Graph<String>();
+    Graph<String> g = new Graph<>();
     g.addNode("3");
     g.addNode("2");
     g.addNode("1");
@@ -84,7 +84,7 @@ public class GraphTest {
 
   @Test
   public void findPredecessors() {
-    Graph<String> g = new Graph<String>();
+    Graph<String> g = new Graph<>();
     g.addNode("3");
     g.addNode("1");
     g.addNode("2.2");
@@ -146,7 +146,7 @@ public class GraphTest {
   //
   @Test(timeOut = 5000) // If this takes more than 5 seconds we've definitely regressed.
   public void findPredecessorsTiming() {
-    Graph<String> g = new Graph<String>();
+    Graph<String> g = new Graph<>();
 
     final String rootNode = "myroot";
     final String independentNode = "independent";
