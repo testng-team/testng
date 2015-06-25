@@ -971,12 +971,27 @@ public class Assert {
    * @param runnable A function that is expected to throw an exception when invoked
    */
   public static void assertThrows(ThrowingRunnable runnable) {
-    expectThrows(Throwable.class, runnable);
+    assertThrows(Throwable.class, runnable);
   }
 
   /**
    * Asserts that {@code runnable} throws an exception of type {@code throwableClass} when
-   * executed. If it does, the exception object is returned. If it does not throw an exception, an
+   * executed. If it does not throw an exception, an {@link AssertionError} is thrown. If it
+   * throws the wrong type of exception, an {@code AssertionError} is thrown describing the
+   * mismatch; the exception that was actually thrown can be obtained by calling {@link
+   * AssertionError#getCause}.
+   *
+   * @param throwableClass the expected type of the exception
+   * @param runnable       A function that is expected to throw an exception when invoked
+   */
+  @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
+  public static <T extends Throwable> void assertThrows(Class<T> throwableClass, ThrowingRunnable runnable) {
+    expectThrows(throwableClass, runnable);
+  }
+
+  /**
+   * Asserts that {@code runnable} throws an exception of type {@code throwableClass} when
+   * executed and returns the exception. If {@code runnable} does not throw an exception, an
    * {@link AssertionError} is thrown. If it throws the wrong type of exception, an {@code
    * AssertionError} is thrown describing the mismatch; the exception that was actually thrown can
    * be obtained by calling {@link AssertionError#getCause}.
