@@ -394,7 +394,7 @@ public class Invoker implements IInvoker {
    */
   private boolean classConfigurationFailed(Class<?> cls) {
     for (Class<?> c : m_classInvocationResults.keySet()) {
-      if (c == cls || cls.isAssignableFrom(c)) {
+      if (c == cls || c.isAssignableFrom(cls)) {
         return true;
       }
     }
