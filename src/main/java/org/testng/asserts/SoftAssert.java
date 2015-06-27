@@ -14,18 +14,22 @@ public class SoftAssert extends Assertion {
   private Map<AssertionError, IAssert<?>> m_errors = Maps.newLinkedHashMap();
 
   @Override
-  public void executeAssert(IAssert<?> a) {
+  protected void doAssert(IAssert<?> a) {
+    onBeforeAssert(a);
     try {
       a.doAssert();
-    } catch(AssertionError ex) {
+      onAssertSuccess(a);
+    } catch (AssertionError ex) {
       onAssertFailure(a, ex);
       m_errors.put(ex, a);
+    } finally {
+      onAfterAssert(a);
     }
   }
 
   public void assertAll() {
     if (! m_errors.isEmpty()) {
-      StringBuilder sb = new StringBuilder("The following asserts failed:\n");
+      StringBuilder sb = new StringBuilder("The following asserts failed:");
       boolean first = true;
       for (Map.Entry<AssertionError, IAssert<?>> ae : m_errors.entrySet()) {
         if (first) {
@@ -33,6 +37,12 @@ public class SoftAssert extends Assertion {
         } else {
           sb.append(", ");
         }
+        sb.append("\n\t");
+        final String message = ae.getValue().getMessage();
+        if (message != null) {
+          sb.append(message).append("\t");
+        }
+        //noinspection ThrowableResultOfMethodCallIgnored
         sb.append(ae.getKey().getMessage());
       }
       throw new AssertionError(sb.toString());
