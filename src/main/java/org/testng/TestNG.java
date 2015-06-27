@@ -693,7 +693,7 @@ public class TestNG {
         setAnnotationTransformer((IAnnotationTransformer) listener);
       }
       if (listener instanceof IMethodInterceptor) {
-        setMethodInterceptor((IMethodInterceptor) listener);
+        m_methodInterceptors.add((IMethodInterceptor) listener);
       }
       if (listener instanceof IInvokedMethodListener) {
         addInvokedMethodListener((IInvokedMethodListener) listener);
@@ -759,7 +759,7 @@ public class TestNG {
 
   private Boolean m_skipFailedInvocationCounts = false;
 
-  private IMethodInterceptor m_methodInterceptor = null;
+  private List<IMethodInterceptor> m_methodInterceptors = new ArrayList<IMethodInterceptor>();
 
   /** The list of test names to run from the given suite */
   private List<String> m_testNames;
@@ -1261,7 +1261,7 @@ public class TestNG {
         m_outputDir,
         m_testRunnerFactory,
         m_useDefaultListeners,
-        m_methodInterceptor,
+        m_methodInterceptors,
         m_invokedMethodListeners,
         m_testListeners);
 
@@ -1916,12 +1916,8 @@ public class TestNG {
     m_hookable = h;
   }
 
-  public void setMethodInterceptor(IMethodInterceptor i) {
-	// compare by reference!
-    if (m_methodInterceptor != null && m_methodInterceptor != i) {
-    	LOGGER.warn("MethodInterceptor already set");
-    }
-    m_methodInterceptor = i;
+  public void setMethodInterceptor(IMethodInterceptor methodInterceptor) {
+    m_methodInterceptors.add(methodInterceptor);
   }
 
   public void setDataProviderThreadCount(int count) {

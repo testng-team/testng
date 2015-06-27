@@ -632,6 +632,7 @@
     <classes>
       <class name="test.methodinterceptors.MethodInterceptorTest" />
       <class name="test.methodinterceptors.Issue392Test" />
+      <class name="test.methodinterceptors.multipleinterceptors.MultipleInterceptorsTest" />
     </classes>
   </test>
 
