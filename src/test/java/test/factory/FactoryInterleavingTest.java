@@ -7,7 +7,6 @@ import org.testng.collections.Lists;
 
 import test.SimpleBaseTest;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class FactoryInterleavingTest extends SimpleBaseTest {

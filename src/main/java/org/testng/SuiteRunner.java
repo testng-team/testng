@@ -19,6 +19,7 @@ import org.testng.xml.XmlTest;
 import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -66,7 +67,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   transient private ITestObjectFactory m_objectFactory;
   transient private Boolean m_skipFailedInvocationCounts = Boolean.FALSE;
 
-  transient private IMethodInterceptor m_methodInterceptor;
+  transient private List<IMethodInterceptor> m_methodInterceptors;
   private List<IInvokedMethodListener> m_invokedMethodListeners;
 
   /** The list of all the methods invoked during this run */
@@ -96,7 +97,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       boolean useDefaultListeners)
   {
     this(configuration, suite, outputDir, runnerFactory, useDefaultListeners,
-        null /* method interceptor */,
+        new ArrayList<IMethodInterceptor>() /* method interceptor */,
         null /* invoked method listeners */,
         null /* test listeners */);
   }
@@ -106,12 +107,11 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       String outputDir,
       ITestRunnerFactory runnerFactory,
       boolean useDefaultListeners,
-      IMethodInterceptor methodInterceptor,
+      List<IMethodInterceptor> methodInterceptors,
       List<IInvokedMethodListener> invokedMethodListeners,
       List<ITestListener> testListeners)
   {
-    init(configuration, suite, outputDir, runnerFactory, useDefaultListeners,
-      methodInterceptor, invokedMethodListeners, testListeners);
+    init(configuration, suite, outputDir, runnerFactory, useDefaultListeners, methodInterceptors, invokedMethodListeners, testListeners);
   }
 
   private void init(IConfiguration configuration,
@@ -119,7 +119,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     String outputDir,
     ITestRunnerFactory runnerFactory,
     boolean useDefaultListeners,
-    IMethodInterceptor methodInterceptor,
+    List<IMethodInterceptor> methodInterceptors,
     List<IInvokedMethodListener> invokedMethodListener,
     List<ITestListener> testListeners)
   {
@@ -127,7 +127,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     m_suite = suite;
     m_useDefaultListeners = useDefaultListeners;
     m_tmpRunnerFactory= runnerFactory;
-    m_methodInterceptor = methodInterceptor;
+    m_methodInterceptors = methodInterceptors != null ? methodInterceptors : new ArrayList<IMethodInterceptor>();
     setOutputDir(outputDir);
     m_objectFactory = m_configuration.getObjectFactory();
     if(m_objectFactory == null) {
@@ -161,8 +161,8 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       //
       // Install the method interceptor, if any was passed
       //
-      if (m_methodInterceptor != null) {
-        tr.setMethodInterceptor(m_methodInterceptor);
+      for (IMethodInterceptor methodInterceptor : methodInterceptors) {
+        tr.addMethodInterceptor(methodInterceptor);
       }
 
       // Reuse the same text reporter so we can accumulate all the results
