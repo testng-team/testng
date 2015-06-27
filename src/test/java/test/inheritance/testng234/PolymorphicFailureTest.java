@@ -1,4 +1,4 @@
-package test.testng234;
+package test.inheritance.testng234;
 
 import org.testng.Assert;
 import org.testng.TestListenerAdapter;
