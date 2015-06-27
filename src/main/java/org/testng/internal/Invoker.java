@@ -409,10 +409,7 @@ public class Invoker implements IInvoker {
       IClass testClass, Object instance) {
     boolean result= true;
 
-    // If continuing on config failure, check invocation results for the class
-    // under test, otherwise use the method's declaring class
-    Class<?> cls = m_continueOnFailedConfiguration ?
-            testClass.getRealClass() : method.getMethod().getDeclaringClass();
+    Class<?> cls = testClass.getRealClass();
 
     if(m_suiteState.isFailed()) {
       result= false;
