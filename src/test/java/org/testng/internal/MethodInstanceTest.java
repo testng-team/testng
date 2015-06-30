@@ -467,6 +467,10 @@ public class MethodInstanceTest {
     }
 
     @Override
+    public void setDescription(String description) {
+    }
+
+    @Override
     public void incrementCurrentInvocationCount() {
     }
 

@@ -65,6 +65,11 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
+  public void setDescription(String description) {
+    m_method.setDescription(description);
+  }
+
+  @Override
   public boolean getEnabled() {
     return true;
   }
