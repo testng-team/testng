@@ -125,7 +125,7 @@ test {
     useTestNG() {
         suites 'src/test/resources/testng.xml'
     }
-    testLogging.showStandardStreams = true
+//    testLogging.showStandardStreams = true
     systemProperties = System.getProperties()
     systemProperties['test.resources.dir'] = 'build/resources/test/'
 }
