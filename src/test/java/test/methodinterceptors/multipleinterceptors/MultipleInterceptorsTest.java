@@ -1,11 +1,11 @@
 package test.methodinterceptors.multipleinterceptors;
 
+import java.util.Collections;
+
 import org.testng.Assert;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-
-import java.util.Collections;
 
 import test.SimpleBaseTest;
 
@@ -25,13 +25,14 @@ public class MultipleInterceptorsTest extends SimpleBaseTest {
     }
 
     @Test
-    // FIXME With or without preserve-order, test is working
     public void testMultipleInterceptorsWithPreserveOrder() {
       TestNG tng = create();
-      tng.setTestSuites(Collections.singletonList(getPathToResource("/methodinterceptors/multipleinterceptors/multiple-interceptors.xml")));
+      tng.setTestSuites(Collections.singletonList(
+          getPathToResource("/methodinterceptors/multipleinterceptors/multiple-interceptors.xml")));
       TestListenerAdapter tla = new TestListenerAdapter();
       tng.addListener(tla);
       tng.run();
-      Assert.assertEquals(tla.getPassedTests().get(0).getMethod().getDescription(), "abcabc"); // Interceptor are called twice => GITHUB #154
+      // Interceptor are called twice => GITHUB #154
+      Assert.assertEquals(tla.getPassedTests().get(0).getMethod().getDescription(), "abcabc");
     }
 }
