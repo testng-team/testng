@@ -28,7 +28,7 @@ public class MultipleInterceptorsTest extends SimpleBaseTest {
     // FIXME With or without preserve-order, test is working
     public void testMultipleInterceptorsWithPreserveOrder() {
       TestNG tng = create();
-      tng.setTestSuites(Collections.singletonList("target/test-classes/methodinterceptors/multipleinterceptors/multiple-interceptors.xml"));
+      tng.setTestSuites(Collections.singletonList(getPathToResource("/methodinterceptors/multipleinterceptors/multiple-interceptors.xml")));
       TestListenerAdapter tla = new TestListenerAdapter();
       tng.addListener(tla);
       tng.run();
