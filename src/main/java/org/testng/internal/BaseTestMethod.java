@@ -624,6 +624,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   public void setThreadPoolSize(int threadPoolSize) {
   }
 
+  @Override
   public void setDescription(String description) {
     m_description = description;
   }
