@@ -1357,8 +1357,6 @@ public class TestNG {
       setTestClasses(classes.toArray(new Class[classes.size()]));
     }
 
-    setOutputDirectory(cla.outputDirectory);
-
     if (cla.testNames != null) {
       setTestNames(Arrays.asList(cla.testNames.split(",")));
     }

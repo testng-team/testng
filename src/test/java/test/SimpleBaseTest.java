@@ -12,10 +12,14 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
-public class SimpleBaseTest {
+public class SimpleBaseTest implements Serializable {
+
+  private static final long serialVersionUID = 445256363660810698L;
+
   // System property specifying where the resources (e.g. xml files) can be found
   private static final String TEST_RESOURCES_DIR = "test.resources.dir";
 
