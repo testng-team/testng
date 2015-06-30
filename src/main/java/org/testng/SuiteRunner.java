@@ -161,7 +161,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       //
       // Install the method interceptor, if any was passed
       //
-      for (IMethodInterceptor methodInterceptor : methodInterceptors) {
+      for (IMethodInterceptor methodInterceptor : m_methodInterceptors) {
         tr.addMethodInterceptor(methodInterceptor);
       }
 
