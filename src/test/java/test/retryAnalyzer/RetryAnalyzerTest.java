@@ -64,13 +64,13 @@ public final class RetryAnalyzerTest extends RetryAnalyzerCount {
         Assert.assertTrue(true);
       }
     } else if (paf == 0 && test == true) {
-			Assert.assertTrue(true);
-			Assert.assertEquals(executionNumber, 3);
-		} else if (paf == 1 && test == true) {
-			Assert.assertTrue(true);
-			// Enforce no duplicate correct executions
-			Assert.assertEquals(executionNumber, 4);
-		}
+	Assert.assertTrue(true);
+	Assert.assertEquals(executionNumber, 3);
+    } else if (paf == 1 && test == true) {
+	Assert.assertTrue(true);
+	// Enforce no duplicate correct executions
+	Assert.assertEquals(executionNumber, 4);
+    }
   }
 
   @Test(retryAnalyzer=RetryAnalyzerTest.class, dataProvider="dataProvider2")

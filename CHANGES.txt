@@ -1,5 +1,6 @@
 Current
 
+Fixed: GITHUB-740: Fix "More than one execution even when success" with DataProvider and IRetryAnalyzer. (Sergio Sacristán)
 Fixed: The ServiceLoaderTest on Windows (Mathieu Sebire)
 Fixed: GITHUB-691: Fix classloading issue when using TestNG 6.9.4 and JMockit. (Mathieu Sebire)
 Fixed: GITHUB-686: IAnnotationTransformer.transform is called for methods with testClass populated. (Łukasz Rekucki & Julien Herr)
