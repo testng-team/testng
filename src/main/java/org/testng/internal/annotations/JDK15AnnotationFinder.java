@@ -194,6 +194,10 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   private <A extends IAnnotation> A findAnnotation(Class cls, Annotation a,
       Class<A> annotationClass, Class<?> testClass,
       Constructor<?> testConstructor, Method testMethod, Pair<Annotation, ?> p) {
+    if (a == null) {
+      return null;
+    }
+
     IAnnotation result = m_annotations.get(p);
     if (result == null) {
       result = m_tagFactory.createTag(cls, a, annotationClass, m_transformer);
