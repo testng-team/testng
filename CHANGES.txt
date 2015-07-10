@@ -13,6 +13,7 @@ New: GITHUB-723: Allow users to add their own suite parser (Julien Herr)
 Fixed: Allow '-testnames' option to work with '-xmlpathinjar' (@earthling)
 Fixed: GITHUB-739: TestNG skips all test classes from suite when a @BeforeClass fails (Priyanshu Shekhar & Julien Herr)
 Fixed: GITHUB-471: If @beforeMethod or @afterMethod fails then all children of the same base class will be skipped (Anton Panferov & Julien Herr)
+Fixed: GITHUB-595: testng hang at switching test cases when running test cases with high thread count (vit0rg)
 
 Eclipse:
 
