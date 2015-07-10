@@ -3,8 +3,8 @@ package org.testng.internal.annotations;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.testng.IAnnotationTransformer;
 import org.testng.IAnnotationTransformer2;
@@ -37,7 +37,6 @@ import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.testng.annotations.TestInstance;
-import org.testng.collections.Maps;
 import org.testng.internal.collections.Pair;
 
 /**
@@ -49,8 +48,9 @@ import org.testng.internal.collections.Pair;
 public class JDK15AnnotationFinder implements IAnnotationFinder {
   private JDK15TagFactory m_tagFactory = new JDK15TagFactory();
   private Map<Class<? extends IAnnotation>, Class<? extends Annotation>> m_annotationMap =
-      Collections.synchronizedMap(Maps.<Class<? extends IAnnotation>,
-          Class<? extends Annotation>>newHashMap());
+      new ConcurrentHashMap<>();
+  private Map<Pair<Annotation, ?>, IAnnotation> m_annotations = new ConcurrentHashMap<>();
+
   private IAnnotationTransformer m_transformer = null;
 
   @SuppressWarnings({"deprecation"})
@@ -190,8 +190,6 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     return findAnnotation(cons.getDeclaringClass(), annotation, annotationClass, null, cons, null,
         new Pair<>(annotation, cons));
   }
-
-  private Map<Pair<Annotation, ?>, IAnnotation> m_annotations = Maps.newHashMap();
 
   private <A extends IAnnotation> A findAnnotation(Class cls, Annotation a,
       Class<A> annotationClass, Class<?> testClass,
