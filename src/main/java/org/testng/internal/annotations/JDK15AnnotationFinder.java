@@ -1,44 +1,17 @@
 package org.testng.internal.annotations;
 
+import org.testng.IAnnotationTransformer;
+import org.testng.IAnnotationTransformer2;
+import org.testng.ITestNGMethod;
+import org.testng.annotations.*;
+import org.testng.collections.Maps;
+import org.testng.internal.collections.Pair;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Map;
-
-import org.testng.IAnnotationTransformer;
-import org.testng.IAnnotationTransformer2;
-import org.testng.ITestNGMethod;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterGroups;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeGroups;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Configuration;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.ExpectedExceptions;
-import org.testng.annotations.Factory;
-import org.testng.annotations.IAnnotation;
-import org.testng.annotations.IConfigurationAnnotation;
-import org.testng.annotations.IDataProviderAnnotation;
-import org.testng.annotations.IExpectedExceptionsAnnotation;
-import org.testng.annotations.IFactoryAnnotation;
-import org.testng.annotations.IObjectFactoryAnnotation;
-import org.testng.annotations.IParametersAnnotation;
-import org.testng.annotations.ITestAnnotation;
-import org.testng.annotations.Listeners;
-import org.testng.annotations.ObjectFactory;
-import org.testng.annotations.Optional;
-import org.testng.annotations.Parameters;
-import org.testng.annotations.Test;
-import org.testng.annotations.TestInstance;
-import org.testng.collections.Maps;
-import org.testng.internal.collections.Pair;
 
 /**
  * This class implements IAnnotationFinder with JDK5 annotations
@@ -191,7 +164,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
         new Pair<>(annotation, cons));
   }
 
-  private Map<Pair<Annotation, ?>, IAnnotation> m_annotations = Maps.newHashMap();
+  private Map<Pair<Annotation, ?>, IAnnotation> m_annotations = Collections.synchronizedMap(Maps.<Pair<Annotation, ?>, IAnnotation>newHashMap());
 
   private <A extends IAnnotation> A findAnnotation(Class cls, Annotation a,
       Class<A> annotationClass, Class<?> testClass,
