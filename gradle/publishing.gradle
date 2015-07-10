@@ -68,7 +68,7 @@ bintray {
 
 //
 // Upload to Sonatype snapshot
-// ./gradlew upload
+// ./gradlew uploadArchives
 //
 
 apply plugin: 'maven'
