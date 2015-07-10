@@ -1126,7 +1126,7 @@ public class Invoker implements IInvoker {
                   testMethod.getMethod(), testContext, null /* test result */);
 
               List<ITestResult> tmpResults = Lists.newArrayList();
-
+              int tmpResultsIndex = -1;
               try {
                 tmpResults.add(invokeTestMethod(instance,
                     testMethod,
@@ -1138,9 +1138,14 @@ public class Invoker implements IInvoker {
                     beforeMethods,
                     afterMethods,
                     groupMethods, failure));
+                tmpResultsIndex++;
               }
               finally {
-                if (failure.instances.isEmpty()) {
+              	boolean lastSucces = false;
+                if (tmpResultsIndex >= 0) {
+                  lastSucces = (tmpResults.get(tmpResultsIndex).getStatus() == ITestResult.SUCCESS);
+                }
+                if (failure.instances.isEmpty() || lastSucces) {
                   result.addAll(tmpResults);
                 } else {
                   for (Object failedInstance : failure.instances) {
