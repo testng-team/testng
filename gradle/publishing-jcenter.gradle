@@ -1,0 +1,70 @@
+//
+// Artifactory
+// ./gradlew artifactoryPublish (upload snapshot to jfrog)
+// ./gradlew bintrayUpload (upload release to JCenter)
+//
+
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.jfrog.artifactory'
+
+Properties properties = new Properties()
+try {
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+} catch (FileNotFoundException ignore) {}
+
+group = 'org.testng'
+
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+    publications = ['mavenCustom']
+    // Without this, javadocs don't get uploaded
+    configurations = ['archives']
+    pkg {
+        repo = 'maven'
+        name = 'testng'
+        desc = 'Testing framework for Java'
+        licenses = ['Apache-2.0']
+        labels = ['testng']
+
+        version {
+            name = project.version //Bintray logical version name
+            gpg {
+                // Without this, .asc files don't get generated
+                sign = true
+            }
+
+        }
+    }
+}
+
+artifactory {
+    def a_user = hasProperty('artifactory_user') ? artifactory_user : System.getenv('artifactory_user')
+    def a_password = hasProperty('artifactory_password') ? artifactory_password : System.getenv('artifactory_password')
+    def a_contextUrl = hasProperty('artifactory_contextUrl') ? artifactory_password : System.getenv('artifactory_contextUrl')
+
+    contextUrl = "${a_contextUrl}"
+    //The base Artifactory URL if not overridden by the publisher/resolver
+    publish {
+        repository {
+            repoKey = 'oss-snapshot-local'
+            username = "${a_user}"
+            password = "${a_password}"
+            maven = true
+
+        }
+        defaults {
+            publications('mavenJava')
+        }
+
+    }
+    resolve {
+        repository {
+            repoKey = 'libs-snapshot'
+            username = "${a_user}"
+            password = "${a_password}"
+            maven = true
+
+        }
+    }
+}

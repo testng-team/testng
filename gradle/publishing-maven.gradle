@@ -1,0 +1,50 @@
+//
+// Publish to Maven Central
+//
+
+// ./gradlew publish (to publish to Maven Central)
+
+apply plugin: 'maven-publish'
+apply plugin: 'maven'
+
+javadoc {
+    failOnError false
+}
+
+signing {
+    required { gradle.taskGraph.hasTask("uploadArchives") }
+    sign configurations.archives
+}
+
+publishing {
+    publications {
+        mavenCustom(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+
+            groupId 'org.testng'
+            artifactId 'testng'
+            version project.version
+        }
+    }
+}
+
+// ./gradlew uploadArchives (upload snapshot to Maven Central's snapshot repo)
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
+                authentication(userName: System.getenv('SONATYPE_USER'), password: System.getenv('SONATYPE_PASSWORD'))
+            }
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
+                authentication(userName: System.getenv('SONATYPE_USER'), password: System.getenv('SONATYPE_PASSWORD'))
+            }
+            pom.version = project.version
+            pom.artifactId = 'testng'
+            pom.groupId = 'org.testng'
+        }
+    }
+}
+

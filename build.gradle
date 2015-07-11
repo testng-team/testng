@@ -32,7 +32,6 @@ plugins {
 version = '6.9.5-SNAPSHOT'
 
 apply plugin: 'java'
-apply from: 'gradle/publishing.gradle'
 
 repositories {
     mavenCentral()
@@ -137,3 +136,5 @@ if (JavaVersion.current().isJava8Compatible()) {
         }
     }
 }
+
+apply from: 'gradle/publishing.gradle'
