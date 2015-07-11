@@ -48,3 +48,9 @@ uploadArchives {
     }
 }
 
+uploadArchives.doLast {
+    if (! version.contains("SNAPSHOT")) {
+        println("Now go to https://oss.sonatype.org/index.html#stagingRepositories to close" +
+                " and publish the distribution")
+    }
+}

@@ -29,7 +29,7 @@ plugins {
     id "com.jfrog.artifactory" version "3.1.1"
 }
 
-version = '6.9.5-SNAPSHOT'
+version = '6.9.6-SNAPSHOT'
 
 apply plugin: 'java'
 
