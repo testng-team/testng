@@ -1,0 +1,14 @@
+if [ -z "$SONATYPE_USER" ]
+then
+  echo "Please define SONATYPE_USER"
+  exit 1
+fi
+
+if [ -z "$SONATYPE_PASSWORD" ]
+then
+  echo "Please define SONATYPE_PASSWORD"
+  exit 1
+fi
+
+./gradlew uploadArchives && ./gradlew closeAndPromoteRepository
+

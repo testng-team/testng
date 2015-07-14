@@ -2,10 +2,16 @@
 // Publish to Maven Central
 //
 
-// ./gradlew publish (to publish to Maven Central)
-
 apply plugin: 'maven-publish'
 apply plugin: 'maven'
+
+apply plugin: 'io.codearte.nexus-staging'
+
+nexusStaging {
+    packageGroup 'org.testng'
+    username System.getenv('SONATYPE_USER')
+    password System.getenv('SONATYPE_PASSWORD')
+}
 
 javadoc {
     failOnError false
@@ -41,9 +47,35 @@ uploadArchives {
             snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
                 authentication(userName: System.getenv('SONATYPE_USER'), password: System.getenv('SONATYPE_PASSWORD'))
             }
-            pom.version = project.version
-            pom.artifactId = 'testng'
-            pom.groupId = 'org.testng'
+            pom {
+                version = project.version
+                artifactId = 'testng'
+                groupId = 'org.testng'
+                project {
+                    name project.name
+                    description 'Testing framework for Java'
+                    url 'http://github.com/cbeust/testng'
+                    scm {
+                        connection 'scm:git:https://github.com/cbeust/testng.git'
+                        developerConnection 'scm:git:git@github.com:cbeust/testng.git'
+                        url 'https://github.com/cbeust/testng.git'
+                    }
+                    licenses {
+                        license {
+                            name 'Apache  Version 2.0, January 2004'
+                            distribution 'repo'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'cbeust'
+                            name = 'Cedric Beust'
+                            email = 'cedric@beust.com'
+                        }
+                    }
+                }
+            }
+
         }
     }
 }
