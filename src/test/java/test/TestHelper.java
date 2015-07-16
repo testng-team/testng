@@ -17,7 +17,11 @@ public class TestHelper {
     return createSuite(cls, suiteName, "TmpTest");
   }
 
-  public static XmlSuite createSuite(String cls, String suiteName, String testName) {
+  public static XmlSuite createSuite(Class<?> cls, String suiteName, String testName) {
+    return createSuite(cls.getName(), suiteName, testName);
+  }
+
+  private static XmlSuite createSuite(String cls, String suiteName, String testName) {
     XmlSuite result = new XmlSuite();
     result.setName(suiteName);
 

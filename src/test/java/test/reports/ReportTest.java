@@ -20,66 +20,62 @@ public class ReportTest {
 
   @Test
   public void verifyIndex() {
-    String suiteName = "VerifyIndexSuite";
     File outputDir = TestHelper.createRandomDirectory();
-    XmlSuite suite = TestHelper.createSuite("test.simple.SimpleTest", suiteName, "TmpTest");
 
-    File f = new File(outputDir.getAbsolutePath() + File.separatorChar + suiteName
-        + File.separatorChar + "TmpTest.html");
-    f.delete();
-    Assert.assertFalse(f.exists());
+    String suiteName = "VerifyIndexSuite";
+    String testName = "TmpTest";
+    XmlSuite suite = TestHelper.createSuite(test.simple.SimpleTest.class, suiteName, testName);
 
     TestNG tng = TestHelper.createTestNG(suite, outputDir.getAbsolutePath());
-    tng.run();
-    Assert.assertTrue(f.exists());
 
-    f.deleteOnExit();
+    File f = getHtmlReportFile(outputDir, suiteName, testName);
+
+    tng.run();
+
+    Assert.assertTrue(f.exists());
   }
 
   @Test
   public void directoryShouldBeSuiteName() {
-    String outputDirectory = TestHelper.createRandomDirectory().getAbsolutePath();
-
-    TestNG testng = new TestNG();
-    testng.setVerbose(0);
-    testng.setOutputDirectory(outputDirectory);
+    File outputDirectory = TestHelper.createRandomDirectory();
 
     XmlSuite xmlSuite = new XmlSuite();
     String suiteName = "ReportTestSuite1";
     xmlSuite.setName(suiteName);
 
     XmlTest xmlTest = new XmlTest(xmlSuite);
-    xmlTest.setName("Test1");
+    String testName = "Test1";
+    xmlTest.setName(testName);
 
-    testng.setXmlSuites(Arrays.asList(new XmlSuite[] { xmlSuite }));
+    TestNG testng = new TestNG();
+    testng.setVerbose(0);
+    testng.setOutputDirectory(outputDirectory.getAbsolutePath());
+    testng.setXmlSuites(Arrays.asList(xmlSuite));
 
-    File indexFile =
-      new File(outputDirectory + File.separatorChar + suiteName + File.separatorChar + "Test1.html");
-    indexFile.delete();
-    Assert.assertFalse(indexFile.exists());
+    File f = getHtmlReportFile(outputDirectory, suiteName, testName);
 
     testng.run();
 
-    Assert.assertTrue(indexFile.exists(), "Expected to find file:" + indexFile);
+    Assert.assertTrue(f.exists(), "Expected to find file:" + f);
   }
 
   @Test
   public void oneDirectoryPerSuite() {
-    XmlSuite xmlSuiteA = TestHelper.createSuite("test.reports.A", "ReportSuiteA", "TmpTest");
-    XmlSuite xmlSuiteB = TestHelper.createSuite("test.reports.B", "ReportSuiteB", "TmpTest");
+    File outputDirectory = TestHelper.createRandomDirectory();
+
+    String testName = "TmpTest";
+    String suiteNameA = "ReportSuiteA";
+    XmlSuite xmlSuiteA = TestHelper.createSuite(test.reports.A.class, suiteNameA, testName);
+
+    String suiteNameB = "ReportSuiteB";
+    XmlSuite xmlSuiteB = TestHelper.createSuite(test.reports.B.class, suiteNameB, testName);
+
     TestNG testng = TestHelper.createTestNG();
-    testng.setXmlSuites(Arrays.asList(new XmlSuite[] { xmlSuiteA, xmlSuiteB }));
+    testng.setOutputDirectory(outputDirectory.getAbsolutePath());
+    testng.setXmlSuites(Arrays.asList(xmlSuiteA, xmlSuiteB));
 
-
-    String outputDir = testng.getOutputDirectory();
-    File f1 = new File(outputDir + File.separatorChar + xmlSuiteA.getName()
-        + File.separatorChar + "TmpTest.html");
-
-    File f2 = new File(outputDir + File.separatorChar + xmlSuiteB.getName()
-        + File.separatorChar + "TmpTest.html");
-
-    Assert.assertFalse(f1.exists());
-    Assert.assertFalse(f2.exists());
+    File f1 = getHtmlReportFile(outputDirectory, suiteNameA, testName);
+    File f2 = getHtmlReportFile(outputDirectory, suiteNameB, testName);
 
     testng.run();
 
@@ -87,19 +83,30 @@ public class ReportTest {
     Assert.assertTrue(f2.exists());
   }
 
+  private static File getHtmlReportFile(File outputDir, String suiteName, String testName) {
+    File f = new File(outputDir.getAbsolutePath() + File.separatorChar + suiteName
+                    + File.separatorChar + testName + ".html");
+    if (f.exists()) {
+      f.delete();
+    }
+    return f;
+  }
+
   @Test
   public void shouldHonorSuiteName() {
     TestNG testng = TestHelper.createTestNG();
     testng.setTestClasses(new Class[] { A.class, B.class });
     String outputDir = testng.getOutputDirectory();
+
     String dirA = outputDir + File.separatorChar + "SuiteA-JDK5";
     File fileA = new File(dirA);
     String dirB = outputDir + File.separatorChar + "SuiteB-JDK5";
     File fileB = new File(dirB);
-
     Assert.assertFalse(fileA.exists());
     Assert.assertFalse(fileB.exists());
+
     testng.run();
+
     Assert.assertTrue(fileA.exists(), fileA + " wasn't created");
     Assert.assertTrue(fileB.exists(), fileB + " wasn't created");
   }
@@ -119,16 +126,11 @@ public class ReportTest {
         super.onTestSuccess(tr);
         List<String> output = Reporter.getOutput(tr);
         m_success = output != null && output.size() > 0;
-//        ppp("ON SUCCESS, OUTPUT:" + output + " SUCCESS:" + m_success);
       }
     };
     tng.addListener(listener);
     tng.run();
 
     Assert.assertTrue(m_success);
-  }
-
-  private static void ppp(String s) {
-    System.out.println("[ReporterTest] " + s);
   }
 }
