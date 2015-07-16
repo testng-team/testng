@@ -78,9 +78,7 @@
       <class name="test.thread.ParallelSuiteTest"/>
 -->
       <class name="test.simple.IncludedExcludedTest" />
-<!-- 
       <class name="test.reports.ReportTest" />
--->
       <class name="test.annotationtransformer.AnnotationTransformerTest" />
 <!-- 
       <class name="test.jar.JarTest" />
