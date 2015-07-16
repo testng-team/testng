@@ -22,10 +22,10 @@ public class ReportTest {
   public void verifyIndex() {
     String suiteName = "VerifyIndexSuite";
     File outputDir = TestHelper.createRandomDirectory();
-    XmlSuite suite = TestHelper.createSuite("test.simple.SimpleTest", suiteName);
+    XmlSuite suite = TestHelper.createSuite("test.simple.SimpleTest", suiteName, "TmpTest");
 
     File f = new File(outputDir.getAbsolutePath() + File.separatorChar + suiteName
-        + File.separatorChar + "index.html");
+        + File.separatorChar + "TmpTest.html");
     f.delete();
     Assert.assertFalse(f.exists());
 
@@ -54,7 +54,7 @@ public class ReportTest {
     testng.setXmlSuites(Arrays.asList(new XmlSuite[] { xmlSuite }));
 
     File indexFile =
-      new File(outputDirectory + File.separatorChar + suiteName + File.separatorChar + "index.html");
+      new File(outputDirectory + File.separatorChar + suiteName + File.separatorChar + "Test1.html");
     indexFile.delete();
     Assert.assertFalse(indexFile.exists());
 
@@ -65,18 +65,18 @@ public class ReportTest {
 
   @Test
   public void oneDirectoryPerSuite() {
-    XmlSuite xmlSuiteA = TestHelper.createSuite("test.reports.A", "ReportSuiteA");
-    XmlSuite xmlSuiteB = TestHelper.createSuite("test.reports.B", "ReportSuiteB");
+    XmlSuite xmlSuiteA = TestHelper.createSuite("test.reports.A", "ReportSuiteA", "TmpTest");
+    XmlSuite xmlSuiteB = TestHelper.createSuite("test.reports.B", "ReportSuiteB", "TmpTest");
     TestNG testng = TestHelper.createTestNG();
     testng.setXmlSuites(Arrays.asList(new XmlSuite[] { xmlSuiteA, xmlSuiteB }));
 
 
     String outputDir = testng.getOutputDirectory();
     File f1 = new File(outputDir + File.separatorChar + xmlSuiteA.getName()
-        + File.separatorChar + "index.html");
+        + File.separatorChar + "TmpTest.html");
 
     File f2 = new File(outputDir + File.separatorChar + xmlSuiteB.getName()
-        + File.separatorChar + "index.html");
+        + File.separatorChar + "TmpTest.html");
 
     Assert.assertFalse(f1.exists());
     Assert.assertFalse(f2.exists());

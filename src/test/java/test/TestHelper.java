@@ -14,11 +14,15 @@ import java.util.Random;
 public class TestHelper {
 
   public static XmlSuite createSuite(String cls, String suiteName) {
+    return createSuite(cls, suiteName, "TmpTest");
+  }
+
+  public static XmlSuite createSuite(String cls, String suiteName, String testName) {
     XmlSuite result = new XmlSuite();
     result.setName(suiteName);
 
     XmlTest test = new XmlTest(result);
-    test.setName("TmpTest");
+    test.setName(testName);
     List<XmlClass> classes = new ArrayList<>();
     classes.add(new XmlClass(cls));
     test.setXmlClasses(classes);
