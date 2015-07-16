@@ -623,7 +623,7 @@
 
   <test name="RetryAnalyzer">
     <classes>
-      <!-- <class name="test.retryAnalyzer.RetryAnalyzerTest" /> -->
+      <class name="test.retryAnalyzer.RetryAnalyzerTest" />
       <class name="test.retryAnalyzer.ExitCodeTest" />
     </classes>
   </test>

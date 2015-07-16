@@ -674,8 +674,7 @@ public class Invoker implements IInvoker {
       ExpectedExceptionsHolder expectedExceptionClasses
           = new ExpectedExceptionsHolder(m_annotationFinder, tm, new RegexpExpectedExceptionsHolder(m_annotationFinder, tm));
       List<ITestResult> results = Lists.<ITestResult>newArrayList(testResult);
-      handleInvocationResults(tm, results, expectedExceptionClasses, false,
-          false /* collect results */, failureContext);
+      handleInvocationResults(tm, results, expectedExceptionClasses, failureContext);
 
       // If this method has a data provider and just failed, memorize the number
       // at which it failed.
@@ -695,10 +694,6 @@ public class Invoker implements IInvoker {
       // Run invokedMethodListeners after updating TestResult
       runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
       runTestListeners(testResult);
-      // Do not notify if will retry.
-      if (!results.isEmpty()) {
-        collectResults(tm, Collections.<ITestResult>singleton(testResult));
-      }
 
       //
       // Invoke afterMethods only if
@@ -967,8 +962,6 @@ public class Invoker implements IInvoker {
 
       result.add(invokeMethod(instance, tm, parameterValues, parametersIndex, suite,
           allParameters, testClass, beforeMethods, afterMethods, groupMethods, failure));
-      // It's already handled inside 'invokeMethod' but results not collected
-      handleInvocationResults(tm, result, expectedExceptionHolder, true, true/* collect results */, failure);
     }
     while (!failure.instances.isEmpty());
     return failure.count;
@@ -1342,8 +1335,6 @@ public class Invoker implements IInvoker {
   void handleInvocationResults(ITestNGMethod testMethod,
                                List<ITestResult> result,
                                ExpectedExceptionsHolder expectedExceptionsHolder,
-                               boolean triggerListeners,
-                               boolean collectResults,
                                FailureContext failure)
   {
     //
@@ -1393,6 +1384,7 @@ public class Invoker implements IInvoker {
 
       if (willRetry) {
         resultsToRetry.add(testResult);
+        failure.count++;
         failure.instances.add(testResult.getInstance());
         testResult.setStatus(ITestResult.SKIP);
       } else {
@@ -1401,13 +1393,7 @@ public class Invoker implements IInvoker {
           handleException(ite, testMethod, testResult, failure.count++);
         }
       }
-      if (collectResults) {
-        // Collect the results
-        collectResults(testMethod, Collections.singleton(testResult));
-//        if (triggerListeners && status != ITestResult.SUCCESS) {
-//          runTestListeners(testResult);
-//        }
-      }
+      collectResults(testMethod, Collections.singleton(testResult));
     } // for results
 
     removeResultsToRetryFromResult(resultsToRetry, result, failure);
