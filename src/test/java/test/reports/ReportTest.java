@@ -47,16 +47,22 @@ public class ReportTest {
     String testName = "Test1";
     xmlTest.setName(testName);
 
+    XmlTest xmlTest2 = new XmlTest(xmlSuite);
+    String testName2 = "Test2";
+    xmlTest2.setName(testName2);
+
     TestNG testng = new TestNG();
     testng.setVerbose(0);
     testng.setOutputDirectory(outputDirectory.getAbsolutePath());
     testng.setXmlSuites(Arrays.asList(xmlSuite));
 
     File f = getHtmlReportFile(outputDirectory, suiteName, testName);
+    File f2 = getHtmlReportFile(outputDirectory, suiteName, testName2);
 
     testng.run();
 
     Assert.assertTrue(f.exists(), "Expected to find file:" + f);
+    Assert.assertTrue(f2.exists(), "Expected to find file:" + f2);
   }
 
   @Test
