@@ -2,95 +2,66 @@ package test.retryAnalyzer;
 
 import org.testng.Assert;
 import org.testng.ITestResult;
+import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.util.RetryAnalyzerCount;
+
+import test.SimpleBaseTest;
 
 /**
  * retryAnalyzer parameter unit tests.
  * @author tocman@gmail.com (Jeremie Lenfant-Engelmann)
  *
  */
-public final class RetryAnalyzerTest extends RetryAnalyzerCount {
+public final class RetryAnalyzerTest extends SimpleBaseTest {
 
-  private static int r = 1;
-  private static int r2 = 1;
-  private static int r3 = 1;
-  private static int value = 42;
-
-  public RetryAnalyzerTest() {
-    setCount(2);
-  }
-
-  @Test(retryAnalyzer=RetryAnalyzerTest.class)
+  @Test
   public void testAnnotation() {
-    Assert.assertTrue(true);
+    TestNG tng = create(RetryTestAnalyzer.NoFail.class);
+    TestListenerAdapter tla = new TestListenerAdapter();
+    tng.addListener(tla);
+
+    tng.run();
+
+    Assert.assertEquals(RetryTestAnalyzer.NoFail.COUNT, 1);
+    Assert.assertEquals(tla.getPassedTests().size(), 1);
+    Assert.assertEquals(tla.getFailedTests().size(), 0);
   }
 
-  @Test(retryAnalyzer=RetryAnalyzerTest.class)
+  @Test
   public void testAnnotationWithOneRetry() {
-    if (r == 1) {
-      r--;
-      Assert.assertTrue(false);
-    }
-    if (r == 0) {
-      Assert.assertTrue(true);
-    }
+    TestNG tng = create(RetryTestAnalyzer.FailOnce.class);
+    TestListenerAdapter tla = new TestListenerAdapter();
+    tng.addListener(tla);
+
+    tng.run();
+
+    Assert.assertEquals(RetryTestAnalyzer.FailOnce.COUNT, 2);
+    Assert.assertEquals(tla.getPassedTests().size(), 1);
+    Assert.assertEquals(tla.getFailedTests().size(), 1);
   }
 
-  @DataProvider(name="dataProvider")
-  private Object[][] dataProvider() {
-    return new Object[][] { { 1, false }, { 0, true }, { 0, true },
-        { 1, false } };
-  }
+  @Test
+  public void testAnnotationWithDataProvider() {
+    TestNG tng = create(RetryTestAnalyzer.FourTestsAndSecondFailOnce.class);
+    TestListenerAdapter tla = new TestListenerAdapter();
+    tng.addListener(tla);
 
-  @DataProvider(name="dataProvider2")
-  private Object[][] dataProvider2() {
-    value = 42;
+    tng.run();
 
-    return new Object[][] { { true }, { true } };
-  }
-
-  @Test(retryAnalyzer=RetryAnalyzerTest.class, dataProvider="dataProvider")
-  public void testAnnotationWithDataProvider(int paf, boolean test) {
-    if (paf == 1 && test == false) {
-      if (r2 >= 1) {
-        r2--;
-        Assert.assertTrue(false);
-      } else if (r2 == 0) {
-        Assert.assertTrue(true);
-      }
-    }
-    else if (paf == 0 || test == true) {
-      Assert.assertTrue(true);
-    }
-  }
-
-  @Test(retryAnalyzer=RetryAnalyzerTest.class, dataProvider="dataProvider2")
-  public void testAnnotationWithDataProviderAndRecreateParameters(boolean dummy) {
-    if (r3 == 1) {
-      this.value = 0;
-      r3--;
-      Assert.assertTrue(false);
-    } else if (r3 == 0) {
-      Assert.assertEquals(this.value, 42);
-    }
+    Assert.assertEquals(RetryTestAnalyzer.FourTestsAndSecondFailOnce.COUNT, 5);
+    Assert.assertEquals(RetryTestAnalyzer.FourTestsAndSecondFailOnce.DATA_PROVIDER_COUNT, 2);
+    Assert.assertEquals(tla.getPassedTests().size(), 4);
+    Assert.assertEquals(tla.getFailedTests().size(), 1);
   }
 
   @Test
   public void withFactory() {
-    TestNG tng = new TestNG();
-    tng.setVerbose(0);
-    tng.setTestClasses(new Class[] { MyFactory.class});
-    FactoryTest.m_count = 0;
+    TestNG tng = create(MyFactory.class);
     tng.run();
 
-    Assert.assertEquals(FactoryTest.m_count, 4);
-  }
-
-  @Override
-  public boolean retryMethod(ITestResult result) {
-    return true;
+    Assert.assertEquals(FactoryTest.COUNT, 4);
   }
 }

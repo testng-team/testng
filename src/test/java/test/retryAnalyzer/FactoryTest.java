@@ -2,40 +2,42 @@ package test.retryAnalyzer;
 
 import org.testng.Assert;
 import org.testng.ITest;
+import org.testng.ITestResult;
 import org.testng.annotations.Test;
+import org.testng.util.RetryAnalyzerCount;
 
 public class FactoryTest implements ITest {
 
-  public static int m_count = 0;
+  public static class ThreeTimeRetryer extends RetryAnalyzerCount {
 
-  private String name;
+    public ThreeTimeRetryer() {
+      setCount(3);
+    }
 
-	@Override
+    @Override
+    public boolean retryMethod(ITestResult result) {
+      return true;
+    }
+  }
+
+  public static int COUNT = 0;
+
+  private final String name;
+
+  public FactoryTest(int name) {
+    this.name = "Test" + name;
+  }
+
+  @Override
   public String getTestName() {
-		return  this.name;
-	}
+    return this.name;
+  }
 
-	public FactoryTest(String name){
-
-		this.name = name;
-
-	}
-
-	@Test(retryAnalyzer = MyRetry.class)
-	public void someTest1(){
-		System.out.println("Test Called : "+ this.name);
-		if(this.name.contains("5")){
-//			System.out.println("fail");
-			m_count++;
-			Assert.fail();
-		}else{
-
-		Assert.assertEquals(true, true);
-		}
-	}
-
-
-
-
-
+  @Test(retryAnalyzer = ThreeTimeRetryer.class)
+  public void someTest1() {
+    if ("Test5".equals(name)) {
+      COUNT++;
+      Assert.fail();
+    }
+  }
 }
