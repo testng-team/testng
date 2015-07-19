@@ -1,5 +1,8 @@
 Current
 
+New: GITHUB-717: Add assertThrows and expectThrows (Ryan Schmitt)
+Fixed: GITHUB-755: Fixed reporting of retried tests (Ryan Schmitt)
+
 6.9.5
 
 Fixed: The ServiceLoaderTest on Windows (Mathieu Sebire)
