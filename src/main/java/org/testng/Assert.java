@@ -969,6 +969,7 @@ public class Assert {
    * {@link AssertionError} is thrown.
    *
    * @param runnable A function that is expected to throw an exception when invoked
+   * @since 6.9.5
    */
   public static void assertThrows(ThrowingRunnable runnable) {
     assertThrows(Throwable.class, runnable);
@@ -983,6 +984,7 @@ public class Assert {
    *
    * @param throwableClass the expected type of the exception
    * @param runnable       A function that is expected to throw an exception when invoked
+   * @since 6.9.5
    */
   @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
   public static <T extends Throwable> void assertThrows(Class<T> throwableClass, ThrowingRunnable runnable) {
@@ -999,6 +1001,7 @@ public class Assert {
    * @param throwableClass the expected type of the exception
    * @param runnable       A function that is expected to throw an exception when invoked
    * @return The exception thrown by {@code runnable}
+   * @since 6.9.5
    */
   public static <T extends Throwable> T expectThrows(Class<T> throwableClass, ThrowingRunnable runnable) {
     try {
