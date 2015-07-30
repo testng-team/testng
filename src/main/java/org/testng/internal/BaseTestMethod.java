@@ -40,7 +40,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   protected final transient Class<?> m_methodClass;
   protected final transient ConstructorOrMethod m_method;
-  private final transient String m_signature;
+  private transient String m_signature;
   protected String m_id = "";
   protected long m_date = -1;
   protected final transient IAnnotationFinder m_annotationFinder;
@@ -90,7 +90,6 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     m_methodName = methodName;
     m_annotationFinder = annotationFinder;
     m_instance = instance;
-    m_signature = computeSignature();
   }
 
   /**
@@ -526,6 +525,9 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   }
 
   protected String getSignature() {
+    if (m_signature == null) {
+      m_signature = computeSignature();
+    }
     return m_signature;
   }
 
