@@ -156,8 +156,7 @@ public class TestNG {
   // Command line suite parameters
   private int m_threadCount;
   private boolean m_useThreadCount;
-  private XmlSuite.ParallelMode m_parallelMode;
-  private boolean m_useParallelMode;
+  private XmlSuite.ParallelMode m_parallelMode = XmlSuite.ParallelMode.FALSE;
   private String m_configFailurePolicy;
   private Class[] m_commandLineTestClasses;
 
@@ -456,12 +455,15 @@ public class TestNG {
    */
   @Deprecated
   public void setParallel(String parallel) {
-    setParallel(XmlSuite.ParallelMode.valueOf(parallel.toUpperCase()));
+    if (parallel == null) {
+      setParallel(XmlSuite.ParallelMode.FALSE);
+    } else {
+      setParallel(XmlSuite.ParallelMode.valueOf(parallel.toUpperCase()));
+    }
   }
 
   public void setParallel(XmlSuite.ParallelMode parallel) {
     m_parallelMode = parallel;
-    m_useParallelMode = true;
   }
 
   public void setCommandLineSuite(XmlSuite suite) {
@@ -821,9 +823,7 @@ public class TestNG {
       if(m_useThreadCount) {
         s.setThreadCount(m_threadCount);
       }
-      if(m_useParallelMode) {
-        s.setParallel(m_parallelMode);
-      }
+      s.setParallel(m_parallelMode);
       if(m_configFailurePolicy != null) {
         s.setConfigFailurePolicy(m_configFailurePolicy.toString());
       }
