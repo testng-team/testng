@@ -61,7 +61,7 @@ public class SequentialTest extends BaseTest {
     for (String c : classes) {
       addClass(c);
     }
-    setParallel(XmlSuite.PARALLEL_METHODS);
+    setParallel(XmlSuite.ParallelMode.METHODS);
     setThreadCount(threadCount);
 
     run();

@@ -11,7 +11,7 @@ public class TestNG285Test extends BaseTest {
   @Test
   public void verifyBug() {
     addClass("test.testng285.Derived");
-    setParallel(XmlSuite.PARALLEL_METHODS);
+    setParallel(XmlSuite.ParallelMode.METHODS);
     setThreadCount(5);
 
     run();

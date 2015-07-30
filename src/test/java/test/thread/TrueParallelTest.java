@@ -24,7 +24,7 @@ public class TrueParallelTest extends SimpleBaseTest {
       XmlSuite s = createXmlSuite("TrueParallel");
       createXmlTest(s, "Test", TrueParallelSampleTest.class.getName());
       TestNG tng = create();
-      s.setParallel(XmlSuite.PARALLEL_METHODS);
+      s.setParallel(XmlSuite.ParallelMode.METHODS);
       tng.setXmlSuites(Arrays.asList(s));
       BaseThreadTest.initThreadLog();
       tng.run();

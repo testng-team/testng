@@ -154,9 +154,9 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       String parallel = attributes.getValue("parallel");
       if (parallel != null) {
-        if (isValidParallel(parallel)) {
-          m_currentSuite.setParallel(parallel);
-        } else {
+        try {
+          m_currentSuite.setParallel(XmlSuite.ParallelMode.valueOf(parallel.toUpperCase()));
+        } catch (IllegalArgumentException e) {
           Utils.log("Parser", 1, "[WARN] Unknown value of attribute 'parallel' at suite level: '" + parallel + "'.");
         }
       }
@@ -292,9 +292,9 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       String parallel = attributes.getValue("parallel");
       if (parallel != null) {
-        if (isValidParallel(parallel)) {
-          m_currentTest.setParallel(parallel);
-        } else {
+        try {
+          m_currentTest.setParallel(XmlSuite.ParallelMode.valueOf(parallel.toUpperCase()));
+        } catch (IllegalArgumentException e) {
           Utils.log("Parser", 1, "[WARN] Unknown value of attribute 'parallel' for test '"
             + m_currentTest.getName() + "': '" + parallel + "'");
         }
@@ -329,10 +329,6 @@ public class TestNGContentHandler extends DefaultHandler {
         tests.remove(tests.size() - 1);
       }
     }
-  }
-
-  private boolean isValidParallel(String parallel) {
-    return XmlSuite.PARALLEL_MODES.contains(parallel);
   }
 
   /**

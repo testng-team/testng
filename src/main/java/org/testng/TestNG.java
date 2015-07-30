@@ -156,7 +156,7 @@ public class TestNG {
   // Command line suite parameters
   private int m_threadCount;
   private boolean m_useThreadCount;
-  private String m_parallelMode;
+  private XmlSuite.ParallelMode m_parallelMode;
   private boolean m_useParallelMode;
   private String m_configFailurePolicy;
   private Class[] m_commandLineTestClasses;
@@ -452,8 +452,14 @@ public class TestNG {
 
   /**
    * Define whether this run will be run in parallel mode.
+   * @deprecated Use #setParallel(XmlSuite.ParallelMode) instead
    */
+  @Deprecated
   public void setParallel(String parallel) {
+    setParallel(XmlSuite.ParallelMode.valueOf(parallel.toUpperCase()));
+  }
+
+  public void setParallel(XmlSuite.ParallelMode parallel) {
     m_parallelMode = parallel;
     m_useParallelMode = true;
   }

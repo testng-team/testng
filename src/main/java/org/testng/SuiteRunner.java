@@ -232,7 +232,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
   @Override
   public String getParallel() {
-    return m_suite.getParallel();
+    return m_suite.getParallel().name().toLowerCase();
   }
 
   public String getParentModule() {
@@ -305,7 +305,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       //
       // Run all the test runners
       //
-      boolean testsInParallel = XmlSuite.PARALLEL_TESTS.equals(m_suite.getParallel());
+      boolean testsInParallel = XmlSuite.ParallelMode.TESTS.equals(m_suite.getParallel());
       if (!testsInParallel) {
         runSequentially();
       }
