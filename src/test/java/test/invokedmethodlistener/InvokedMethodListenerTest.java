@@ -6,6 +6,7 @@ import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.xml.XmlSuite;
 
 import test.SimpleBaseTest;
 
@@ -124,7 +125,7 @@ public class InvokedMethodListenerTest extends SimpleBaseTest {
 
   private void assertIssue87(Class<?>... tests) {
     TestNG tng = create(tests);
-    tng.setParallel("false");
+    tng.setParallel(XmlSuite.ParallelMode.FALSE);
     tng.setPreserveOrder(true);
     InvokedMethodListener listener = new InvokedMethodListener();
     tng.addListener(listener);

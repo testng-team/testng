@@ -1529,7 +1529,7 @@ public class TestNG {
         CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS);
     String parallelMode = (String) cmdLineArgs.get(CommandLineArgs.PARALLEL);
     if (parallelMode != null) {
-      result.parallelMode = parallelMode;
+      result.parallelMode = XmlSuite.ParallelMode.valueOf(parallelMode.toUpperCase());
     }
 
     String threadCount = (String) cmdLineArgs.get(CommandLineArgs.THREAD_COUNT);

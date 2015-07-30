@@ -5,6 +5,7 @@ import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.xml.XmlSuite;
 
 import test.SimpleBaseTest;
 
@@ -70,7 +71,7 @@ public class MultiThreadedDependentTest extends SimpleBaseTest {
     MultiThreadedDependentSampleTest.m_methods = Lists.newArrayList();
     TestNG tng = create(MultiThreadedDependentSampleTest.class);
     tng.setThreadCount(threadCount);
-    tng.setParallel("methods");
+    tng.setParallel(XmlSuite.ParallelMode.METHODS);
     Map<Long, Long> map = Helper.getMap(MultiThreadedDependentSampleTest.class.getName());
     synchronized(map) {
       tng.run();

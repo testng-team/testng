@@ -4,6 +4,7 @@ import org.testng.Assert;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.xml.XmlSuite;
 
 public class FactoryTest {
 
@@ -22,17 +23,17 @@ public class FactoryTest {
    */
   @Test
   public void verifyFactoryParallelMethods() {
-    runTest("methods", 2);
+    runTest(XmlSuite.ParallelMode.METHODS, 2);
   }
 
   @Test(groups = "broken",
       description = "Known bug:  when parallel='tests', tests returned" +
         " by a @Factory are run in the same thread")
   public void verifyFactoryParallelTests() {
-    runTest("tests", 2);
+    runTest(XmlSuite.ParallelMode.TESTS, 2);
   }
 
-  private void runTest(String parallelMode, int expectedThreadIdCount) {
+  private void runTest(XmlSuite.ParallelMode parallelMode, int expectedThreadIdCount) {
     TestNG tng = new TestNG();
     tng.setVerbose(0);
     tng.setTestClasses(new Class[] { FactorySampleTest.class});

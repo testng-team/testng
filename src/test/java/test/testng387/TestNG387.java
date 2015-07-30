@@ -2,6 +2,8 @@ package test.testng387;
 
 import org.testng.*;
 import org.testng.annotations.Test;
+import org.testng.xml.XmlSuite;
+
 import test.SimpleBaseTest;
 
 import java.util.List;
@@ -13,7 +15,7 @@ public class TestNG387 extends SimpleBaseTest {
   public void testInvocationCounterIsCorrectForMethodWithDataProvider() throws Exception {
     final TestNG tng = create(FailedDPTest.class);
     tng.setThreadCount(1);
-    tng.setParallel("false");
+    tng.setParallel(XmlSuite.ParallelMode.FALSE);
     tng.setPreserveOrder(true);
     final TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
