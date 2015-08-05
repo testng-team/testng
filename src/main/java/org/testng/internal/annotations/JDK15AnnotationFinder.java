@@ -39,6 +39,8 @@ import org.testng.annotations.Test;
 import org.testng.annotations.TestInstance;
 import org.testng.internal.collections.Pair;
 
+import com.google.common.collect.Maps;
+
 /**
  * This class implements IAnnotationFinder with JDK5 annotations
  *
@@ -97,16 +99,32 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     return null;
   }
 
-  @Override
+  private Map<Pair,IAnnotation> annotationCache = Maps.newConcurrentMap();
+  private final static IAnnotation NULL_CACHE_ENTRY = new IAnnotation() {};
+@Override
   public <A extends IAnnotation> A findAnnotation(Method m, Class<A> annotationClass) {
-    final Class<? extends Annotation> a = m_annotationMap.get(annotationClass);
-    if (a == null) {
-      throw new IllegalArgumentException("Java @Annotation class for '"
-          + annotationClass + "' not found.");
-    }
-    Annotation annotation = m.getAnnotation(a);
-    return findAnnotation(m.getDeclaringClass(), annotation, annotationClass, null, null, m,
-        new Pair<>(annotation, m));
+	  Pair<Method,Class<A>> cacheKey = new Pair<>(m,annotationClass);
+	  IAnnotation cachedValue = annotationCache.get(cacheKey);
+	  if (cachedValue == null) {
+	    final Class<? extends Annotation> a = m_annotationMap.get(annotationClass);
+	    if (a == null) {
+	      throw new IllegalArgumentException("Java @Annotation class for '"
+	          + annotationClass + "' not found.");
+	    }
+	    Annotation annotation = m.getAnnotation(a);
+	    cachedValue = findAnnotation(m.getDeclaringClass(), annotation, annotationClass, null, null, m,
+	        new Pair<>(annotation, m));
+	    if (cachedValue == null) {
+	    	cachedValue = NULL_CACHE_ENTRY;
+	    }
+	    annotationCache.put(cacheKey, cachedValue);
+	  }
+	  
+	  if (cachedValue == NULL_CACHE_ENTRY) {
+		  return null;
+	  } else {
+		  return (A) cachedValue;
+	  }
   }
 
   @Override

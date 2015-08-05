@@ -115,7 +115,7 @@ public class Graph<T> {
     for (Node<T> n : getNodes()) {
       if (! isIndependent(n.getObject())) {
         ppp("ADDING FOR SORT: " + n.getObject());
-        nodes2.add(n.clone());
+        nodes2.add(n);
       }
       else {
         ppp("SKIPPING INDEPENDENT NODE " + n);
@@ -287,15 +287,17 @@ public class Graph<T> {
     public boolean removePredecessor(T o) {
       boolean result = false;
 
-      T pred = m_predecessors.get(o);
-      if (null != pred) {
-        result = null != m_predecessors.remove(o);
-        if (result) {
-          ppp("  REMOVED PRED " + o + " FROM NODE " + m_object);
-        }
-        else {
-          ppp("  FAILED TO REMOVE PRED " + o + " FROM NODE " + m_object);
-        }
+      if (!m_predecessors.isEmpty()) {
+	      T pred = m_predecessors.get(o);
+	      if (null != pred) {
+	        result = null != m_predecessors.remove(o);
+	        if (result) {
+	          ppp("  REMOVED PRED " + o + " FROM NODE " + m_object);
+	        }
+	        else {
+	          ppp("  FAILED TO REMOVE PRED " + o + " FROM NODE " + m_object);
+	        }
+	      }
       }
 
       return result;
