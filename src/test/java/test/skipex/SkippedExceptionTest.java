@@ -36,14 +36,16 @@ public class SkippedExceptionTest {
     TestListenerAdapter listener= new TestListenerAdapter();
     TestNG test= new TestNG(false);
     test.addListener(listener);
-    test.setVerbose(0);
     test.setTestClasses(new Class[] {TestSkippedExceptionTest.class});
     test.run();
     List<ITestResult> skips= listener.getSkippedTests();
     List<ITestResult> failures= listener.getFailedTests();
+    List<ITestResult> passed = listener.getPassedTests();
     Assert.assertEquals(skips.size(), 1);
     Assert.assertEquals(failures.size(), 1);
+    Assert.assertEquals(passed.size(), 1);
     Assert.assertEquals(skips.get(0).getMethod().getMethodName(), "genericSkipException");
     Assert.assertEquals(failures.get(0).getMethod().getMethodName(), "timedSkipException");
+    Assert.assertEquals(passed.get(0).getMethod().getMethodName(), "genericExpectedSkipException");
   }
 }
