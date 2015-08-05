@@ -115,7 +115,7 @@ public class Graph<T> {
     for (Node<T> n : getNodes()) {
       if (! isIndependent(n.getObject())) {
         ppp("ADDING FOR SORT: " + n.getObject());
-        nodes2.add(n);
+        nodes2.add(n.clone());
       }
       else {
         ppp("SKIPPING INDEPENDENT NODE " + n);
