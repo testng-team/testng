@@ -396,40 +396,44 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return m_methodClass.isAssignableFrom(testClass.getRealClass());
   }
 
-  /**
-   * {@inheritDoc} Compares two BaseTestMethod using the test class then the associated
-   * Java Method.
-   */
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
+public boolean equals(Object obj) {
+	if (this == obj)
+		return true;
+	if (obj == null)
+		return false;
+	if (getClass() != obj.getClass())
+		return false;
+	BaseTestMethod other = (BaseTestMethod) obj;
+	if (m_instance == null) {
+		if (other.m_instance != null)
+			return false;
+	} else if (!m_instance.equals(other.m_instance))
+		return false;
+	if (m_method == null) {
+		if (other.m_method != null)
+			return false;
+	} else if (!m_method.equals(other.m_method))
+		return false;
+	if (m_testClass == null) {
+		if (other.m_testClass != null)
+			return false;
+	} else if (!m_testClass.equals(other.m_testClass))
+		return false;
+	return true;
+}
 
-    BaseTestMethod other = (BaseTestMethod) obj;
-
-    boolean isEqual = m_testClass == null ? other.m_testClass == null
-        : other.m_testClass != null &&
-          m_testClass.getRealClass().equals(other.m_testClass.getRealClass())
-          && m_instance == other.getInstance();
-
-    return isEqual && getConstructorOrMethod().equals(other.getConstructorOrMethod());
-  }
-
-  /**
-   * {@inheritDoc} This implementation returns the associated Java Method's hash code.
-   * @return the associated Java Method's hash code.
-   */
   @Override
-  public int hashCode() {
-    return m_method.hashCode();
-  }
+public int hashCode() {
+	final int prime = 31;
+	int result = 1;
+	result = prime * result
+			+ ((m_instance == null) ? 0 : m_instance.hashCode());
+	result = prime * result + ((m_method == null) ? 0 : m_method.hashCode());
+	result = prime * result
+			+ ((m_testClass == null) ? 0 : m_testClass.hashCode());
+	return result;
+}
 
   protected void initGroups(Class<? extends ITestOrConfiguration> annotationClass) {
     //
