@@ -120,11 +120,8 @@ class TestClass extends NoOpTestClass implements ITestClass {
   }
 
   private void initMethods() {
-	long timeToCreateMethods = System.currentTimeMillis();
     ITestNGMethod[] methods = m_testMethodFinder.getTestMethods(m_testClass, m_xmlTest);
     m_testMethods = createTestMethods(methods);
-    System.out.println("Time to create test methods: " + (System.currentTimeMillis() - timeToCreateMethods) + " ms.");
-    long time = System.currentTimeMillis();
     // moving these out of the loops reduces creation time of the methods from 196 seconds to 2 seconds under extreme circumstances
     ITestNGMethod[] beforeSuiteMethods = m_testMethodFinder.getBeforeSuiteMethods(m_testClass);
     ITestNGMethod[] afterSuiteMethods = m_testMethodFinder.getAfterSuiteMethods(m_testClass);
@@ -188,7 +185,6 @@ class TestClass extends NoOpTestClass implements ITestClass {
                                                 false,
                                                 instance);
     }
-    System.out.println("time taken to create everything else " + (System.currentTimeMillis() - time) + " ms.");
   }
 
   /**
