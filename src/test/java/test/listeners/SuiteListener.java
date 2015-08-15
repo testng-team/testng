@@ -4,17 +4,17 @@ import org.testng.ISuite;
 import org.testng.ISuiteListener;
 
 public class SuiteListener implements ISuiteListener {
-  public static boolean start = false;
-  public static boolean finish = false;
+  public static int start = 0;
+  public static int finish = 0;
 
   @Override
   public void onFinish(ISuite suite) {
-    finish = true;
+    finish++;
   }
 
   @Override
   public void onStart(ISuite suite) {
-    start = true;
+    start++;
   }
 
 }

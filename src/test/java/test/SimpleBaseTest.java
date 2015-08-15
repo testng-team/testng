@@ -44,6 +44,20 @@ public class SimpleBaseTest {
     return result;
   }
 
+  protected XmlTest createXmlTest(XmlSuite suite, String name, Class clazz, Class... classes) {
+    XmlTest result = new XmlTest(suite);
+    int index = 0;
+    result.setName(name);
+    XmlClass xc = new XmlClass(clazz.getName(), index++, true /* load classes */);
+    result.getXmlClasses().add(xc);
+    for (Class c : classes) {
+      xc = new XmlClass(c.getName(), index++, true /* load classes */);
+      result.getXmlClasses().add(xc);
+    }
+
+    return result;
+  }
+
   protected XmlTest createXmlTest(XmlSuite suite, String name, String... classes) {
     XmlTest result = new XmlTest(suite);
     int index = 0;

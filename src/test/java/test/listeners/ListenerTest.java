@@ -6,6 +6,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 
+import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 
 import java.util.Arrays;
@@ -51,10 +52,24 @@ public class ListenerTest extends SimpleBaseTest {
   @Test(description = "@Listeners with an ISuiteListener")
   public void suiteListenersShouldWork() {
     TestNG tng = create(SuiteListenerSample.class);
-    SuiteListener.start = false;
-    SuiteListener.finish = false;
+    SuiteListener.start = 0;
+    SuiteListener.finish = 0;
     tng.run();
-    Assert.assertTrue(SuiteListener.start);
-    Assert.assertTrue(SuiteListener.finish);
+    Assert.assertEquals(SuiteListener.start, 1);
+    Assert.assertEquals(SuiteListener.finish, 1);
+  }
+
+  @Test(description = "GITHUB-171")
+  public void suiteListenersShouldBeOnlyRunOnceWithManyTests() {
+    XmlSuite suite = createXmlSuite("suite");
+    createXmlTest(suite, "test1", Derived1.class);
+    createXmlTest(suite, "test2", Derived2.class);
+    TestNG tng = create();
+    tng.setXmlSuites(Arrays.asList(suite));
+    SuiteListener.start = 0;
+    SuiteListener.finish = 0;
+    tng.run();
+    Assert.assertEquals(SuiteListener.start, 1);
+    Assert.assertEquals(SuiteListener.finish, 1);
   }
 }
