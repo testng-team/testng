@@ -26,7 +26,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
     private ITestResultNotifier m_parentRunner;
     private List<ITestNGMethod> m_methods = Lists.newArrayList();
     private List<ITestListener> m_listeners = Lists.newArrayList();
-    private List<IInvokedMethodListener> m_invokeListeners = Lists.newArrayList();
+    private Collection<IInvokedMethodListener> m_invokeListeners = Lists.newArrayList();
 
     public JUnit4TestRunner() {
     }
@@ -53,7 +53,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
         m_listeners = m_parentRunner.getTestListeners();
     }
 
-    public void setInvokedMethodListeners(List<IInvokedMethodListener> listeners) {
+    public void setInvokedMethodListeners(Collection<IInvokedMethodListener> listeners) {
         m_invokeListeners = listeners;
     }
 

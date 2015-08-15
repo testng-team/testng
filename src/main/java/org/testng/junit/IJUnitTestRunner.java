@@ -1,6 +1,8 @@
 package org.testng.junit;
 
+import java.util.Collection;
 import java.util.List;
+
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestNGMethod;
 import org.testng.internal.ITestResultNotifier;
@@ -13,7 +15,7 @@ import org.testng.internal.ITestResultNotifier;
  */
 public interface IJUnitTestRunner {
 
-  void setInvokedMethodListeners(List<IInvokedMethodListener> listener);
+  void setInvokedMethodListeners(Collection<IInvokedMethodListener> listener);
 
   void setTestResultNotifier(ITestResultNotifier notifier);
 

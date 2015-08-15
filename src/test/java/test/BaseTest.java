@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -442,7 +443,7 @@ public class BaseTest extends BaseDistributedTest {
      */
     @Override
     public TestRunner newTestRunner(ISuite suite, XmlTest test,
-        List<IInvokedMethodListener> listeners) {
+        Collection<IInvokedMethodListener> listeners) {
       TestRunner testRunner= new TestRunner(m_baseTest.getConfiguration(), suite, test, false,
           listeners);
 
