@@ -11,6 +11,9 @@ import test.SimpleBaseTest;
 
 import java.util.Arrays;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
+
 public class ListenerTest extends SimpleBaseTest {
 
   @BeforeMethod
@@ -71,5 +74,23 @@ public class ListenerTest extends SimpleBaseTest {
     tng.run();
     Assert.assertEquals(SuiteListener.start, 1);
     Assert.assertEquals(SuiteListener.finish, 1);
+  }
+
+  @Test(description = "GITHUB-169")
+  public void invokedMethodListenersShouldBeOnlyRunOnceWithManyTests() {
+    XmlSuite suite = createXmlSuite("suite");
+    createXmlTest(suite, "test1", Derived1.class);
+    createXmlTest(suite, "test2", Derived2.class);
+    TestNG tng = create();
+    tng.setXmlSuites(Arrays.asList(suite));
+    MyInvokedMethodListener.beforeInvocation.clear();
+    MyInvokedMethodListener.afterInvocation.clear();
+    tng.run();
+    assertThat(MyInvokedMethodListener.beforeInvocation).containsOnly(
+            entry("t", 1), entry("s", 1)
+    );
+    assertThat(MyInvokedMethodListener.afterInvocation).containsOnly(
+            entry("t", 1), entry("s", 1)
+    );
   }
 }
