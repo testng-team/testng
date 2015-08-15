@@ -45,7 +45,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
   private Map<String, ISuiteResult> m_suiteResults = Collections.synchronizedMap(Maps.<String, ISuiteResult>newLinkedHashMap());
   transient private List<TestRunner> m_testRunners = Lists.newArrayList();
-  transient private List<ISuiteListener> m_listeners = Lists.newArrayList();
+  transient private Map<Class<? extends ISuiteListener>, ISuiteListener> m_listeners = Maps.newHashMap();
   transient private TestListenerAdapter m_textReporter = new TestListenerAdapter();
 
   private String m_outputDir; // DEFAULT_OUTPUT_DIR;
@@ -194,7 +194,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   }
 
   private void invokeListeners(boolean start) {
-    for (ISuiteListener sl : m_listeners) {
+    for (ISuiteListener sl : m_listeners.values()) {
       if (start) {
         sl.onStart(this);
       }
@@ -399,7 +399,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
    * @param reporter
    */
   protected void addListener(ISuiteListener reporter) {
-    m_listeners.add(reporter);
+    m_listeners.put(reporter.getClass(), reporter);
   }
 
   @Override
