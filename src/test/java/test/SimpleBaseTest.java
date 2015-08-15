@@ -12,6 +12,7 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,16 +27,24 @@ public class SimpleBaseTest {
     return result;
   }
 
-  public static TestNG create(Class<?> testClass) {
-    TestNG result = create();
-    result.setTestClasses(new Class[] { testClass});
-    return result;
-  }
-
-  protected TestNG create(Class<?>... testClasses) {
+  public static TestNG create(Class<?>... testClasses) {
     TestNG result = create();
     result.setTestClasses(testClasses);
     return result;
+  }
+
+  protected TestNG create(XmlSuite... suites) {
+    TestNG result = create();
+    result.setXmlSuites(Arrays.asList(suites));
+    return result;
+  }
+
+  protected TestNG createTests(String suiteName, Class<?>... testClasses) {
+    XmlSuite suite = createXmlSuite(suiteName);
+    for (Class<?> testClass : testClasses) {
+      createXmlTest(suite, testClass.getName(), testClass);
+    }
+    return create(suite);
   }
 
   protected XmlSuite createXmlSuite(String name) {

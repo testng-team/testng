@@ -46,7 +46,7 @@ public class ListenerTest extends SimpleBaseTest {
 
   @Test(description = "Should attach only one instance of the same @Listener class per test")
   public void shouldAttachOnlyOneInstanceOfTheSameListenerClassPerTest() {
-    TestNG tng = create(new Class [] {Derived1.class, Derived2.class});
+    TestNG tng = create(Derived1.class, Derived2.class);
     BaseWithListener.m_count = 0;
     tng.run();
     Assert.assertEquals(BaseWithListener.m_count, 2);
@@ -64,11 +64,7 @@ public class ListenerTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-171")
   public void suiteListenersShouldBeOnlyRunOnceWithManyTests() {
-    XmlSuite suite = createXmlSuite("suite");
-    createXmlTest(suite, "test1", Derived1.class);
-    createXmlTest(suite, "test2", Derived2.class);
-    TestNG tng = create();
-    tng.setXmlSuites(Arrays.asList(suite));
+    TestNG tng = createTests("suite", Derived1.class, Derived2.class);
     SuiteListener.start = 0;
     SuiteListener.finish = 0;
     tng.run();
@@ -78,11 +74,7 @@ public class ListenerTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-169")
   public void invokedMethodListenersShouldBeOnlyRunOnceWithManyTests() {
-    XmlSuite suite = createXmlSuite("suite");
-    createXmlTest(suite, "test1", Derived1.class);
-    createXmlTest(suite, "test2", Derived2.class);
-    TestNG tng = create();
-    tng.setXmlSuites(Arrays.asList(suite));
+    TestNG tng = createTests("suite", Derived1.class, Derived2.class);
     MyInvokedMethodListener.beforeInvocation.clear();
     MyInvokedMethodListener.afterInvocation.clear();
     tng.run();
