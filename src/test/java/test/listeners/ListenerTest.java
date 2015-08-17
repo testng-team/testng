@@ -6,9 +6,13 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 
+import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 
 import java.util.Arrays;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 public class ListenerTest extends SimpleBaseTest {
 
@@ -42,7 +46,7 @@ public class ListenerTest extends SimpleBaseTest {
 
   @Test(description = "Should attach only one instance of the same @Listener class per test")
   public void shouldAttachOnlyOneInstanceOfTheSameListenerClassPerTest() {
-    TestNG tng = create(new Class [] {Derived1.class, Derived2.class});
+    TestNG tng = create(Derived1.class, Derived2.class);
     BaseWithListener.m_count = 0;
     tng.run();
     Assert.assertEquals(BaseWithListener.m_count, 2);
@@ -51,10 +55,34 @@ public class ListenerTest extends SimpleBaseTest {
   @Test(description = "@Listeners with an ISuiteListener")
   public void suiteListenersShouldWork() {
     TestNG tng = create(SuiteListenerSample.class);
-    SuiteListener.start = false;
-    SuiteListener.finish = false;
+    SuiteListener.start = 0;
+    SuiteListener.finish = 0;
     tng.run();
-    Assert.assertTrue(SuiteListener.start);
-    Assert.assertTrue(SuiteListener.finish);
+    Assert.assertEquals(SuiteListener.start, 1);
+    Assert.assertEquals(SuiteListener.finish, 1);
+  }
+
+  @Test(description = "GITHUB-171")
+  public void suiteListenersShouldBeOnlyRunOnceWithManyTests() {
+    TestNG tng = createTests("suite", Derived1.class, Derived2.class);
+    SuiteListener.start = 0;
+    SuiteListener.finish = 0;
+    tng.run();
+    Assert.assertEquals(SuiteListener.start, 1);
+    Assert.assertEquals(SuiteListener.finish, 1);
+  }
+
+  @Test(description = "GITHUB-169")
+  public void invokedMethodListenersShouldBeOnlyRunOnceWithManyTests() {
+    TestNG tng = createTests("suite", Derived1.class, Derived2.class);
+    MyInvokedMethodListener.beforeInvocation.clear();
+    MyInvokedMethodListener.afterInvocation.clear();
+    tng.run();
+    assertThat(MyInvokedMethodListener.beforeInvocation).containsOnly(
+            entry("t", 1), entry("s", 1)
+    );
+    assertThat(MyInvokedMethodListener.afterInvocation).containsOnly(
+            entry("t", 1), entry("s", 1)
+    );
   }
 }

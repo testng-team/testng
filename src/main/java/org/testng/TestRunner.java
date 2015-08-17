@@ -85,7 +85,7 @@ public class TestRunner
   transient private IConfigurationListener m_confListener= new ConfigurationListener();
   transient private boolean m_skipFailedInvocationCounts;
 
-  transient private List<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
+  transient private Collection<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
 
   /**
    * All the test methods we found, associated with their respective classes.
@@ -153,7 +153,7 @@ public class TestRunner
                     String outputDirectory,
                     IAnnotationFinder finder,
                     boolean skipFailedInvocationCounts,
-                    List<IInvokedMethodListener> invokedMethodListeners)
+                    Collection<IInvokedMethodListener> invokedMethodListeners)
   {
     init(configuration, suite, test, outputDirectory, finder, skipFailedInvocationCounts,
         invokedMethodListeners);
@@ -161,7 +161,7 @@ public class TestRunner
 
   public TestRunner(IConfiguration configuration, ISuite suite, XmlTest test,
       boolean skipFailedInvocationCounts,
-      List<IInvokedMethodListener> listeners) {
+      Collection<IInvokedMethodListener> listeners) {
     init(configuration, suite, test, suite.getOutputDirectory(),
         suite.getAnnotationFinder(),
         skipFailedInvocationCounts, listeners);
@@ -173,7 +173,7 @@ public class TestRunner
                     String outputDirectory,
                     IAnnotationFinder annotationFinder,
                     boolean skipFailedInvocationCounts,
-                    List<IInvokedMethodListener> invokedMethodListeners)
+                    Collection<IInvokedMethodListener> invokedMethodListeners)
   {
     m_configuration = configuration;
     m_xmlTest= test;

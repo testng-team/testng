@@ -65,7 +65,7 @@ public class Invoker implements IInvoker {
   private final IAnnotationFinder m_annotationFinder;
   private final SuiteRunState m_suiteState;
   private final boolean m_skipFailedInvocationCounts;
-  private final List<IInvokedMethodListener> m_invokedMethodListeners;
+  private final Collection<IInvokedMethodListener> m_invokedMethodListeners;
   private final boolean m_continueOnFailedConfiguration;
 
   /** Group failures must be synced as the Invoker is accessed concurrently */
@@ -106,7 +106,7 @@ public class Invoker implements IInvoker {
                  ITestResultNotifier notifier,
                  SuiteRunState state,
                  boolean skipFailedInvocationCounts,
-                 List<IInvokedMethodListener> invokedMethodListeners) {
+                 Collection<IInvokedMethodListener> invokedMethodListeners) {
     m_configuration = configuration;
     m_testContext= testContext;
     m_suiteState= state;

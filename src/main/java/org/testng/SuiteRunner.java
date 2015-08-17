@@ -45,7 +45,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
   private Map<String, ISuiteResult> m_suiteResults = Collections.synchronizedMap(Maps.<String, ISuiteResult>newLinkedHashMap());
   transient private List<TestRunner> m_testRunners = Lists.newArrayList();
-  transient private List<ISuiteListener> m_listeners = Lists.newArrayList();
+  transient private Map<Class<? extends ISuiteListener>, ISuiteListener> m_listeners = Maps.newHashMap();
   transient private TestListenerAdapter m_textReporter = new TestListenerAdapter();
 
   private String m_outputDir; // DEFAULT_OUTPUT_DIR;
@@ -68,7 +68,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   transient private Boolean m_skipFailedInvocationCounts = Boolean.FALSE;
 
   transient private List<IMethodInterceptor> m_methodInterceptors;
-  private List<IInvokedMethodListener> m_invokedMethodListeners;
+  private Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener> m_invokedMethodListeners;
 
   /** The list of all the methods invoked during this run */
   private List<IInvokedMethod> m_invokedMethods =
@@ -133,12 +133,14 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     if(m_objectFactory == null) {
       m_objectFactory = suite.getObjectFactory();
     }
-    m_invokedMethodListeners = invokedMethodListener;
     // Add our own IInvokedMethodListener
-    if (m_invokedMethodListeners == null) {
-      m_invokedMethodListeners = Lists.newArrayList();
+    m_invokedMethodListeners = Maps.newHashMap();
+    if (invokedMethodListener != null) {
+      for (IInvokedMethodListener listener : invokedMethodListener) {
+        m_invokedMethodListeners.put(listener.getClass(), listener);
+      }
     }
-    m_invokedMethodListeners.add(this);
+    m_invokedMethodListeners.put(getClass(), this);
 
     m_skipFailedInvocationCounts = suite.skipFailedInvocationCounts();
     if (null != testListeners) {
@@ -156,7 +158,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     });
 
     for (XmlTest test : xmlTests) {
-      TestRunner tr = m_runnerFactory.newTestRunner(this, test, m_invokedMethodListeners);
+      TestRunner tr = m_runnerFactory.newTestRunner(this, test, m_invokedMethodListeners.values());
 
       //
       // Install the method interceptor, if any was passed
@@ -194,7 +196,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   }
 
   private void invokeListeners(boolean start) {
-    for (ISuiteListener sl : m_listeners) {
+    for (ISuiteListener sl : m_listeners.values()) {
       if (start) {
         sl.onStart(this);
       }
@@ -399,13 +401,14 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
    * @param reporter
    */
   protected void addListener(ISuiteListener reporter) {
-    m_listeners.add(reporter);
+    m_listeners.put(reporter.getClass(), reporter);
   }
 
   @Override
   public void addListener(ITestNGListener listener) {
     if (listener instanceof IInvokedMethodListener) {
-      m_invokedMethodListeners.add((IInvokedMethodListener) listener);
+      IInvokedMethodListener invokedMethodListener = (IInvokedMethodListener) listener;
+      m_invokedMethodListeners.put(invokedMethodListener.getClass(), invokedMethodListener);
     }
     if (listener instanceof ISuiteListener) {
       addListener((ISuiteListener) listener);
@@ -537,7 +540,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
     @Override
     public TestRunner newTestRunner(ISuite suite, XmlTest test,
-        List<IInvokedMethodListener> listeners) {
+        Collection<IInvokedMethodListener> listeners) {
       boolean skip = m_skipFailedInvocationCounts;
       if (! skip) {
         skip = test.skipFailedInvocationCounts();
@@ -580,7 +583,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
     @Override
     public TestRunner newTestRunner(ISuite suite, XmlTest test,
-        List<IInvokedMethodListener> listeners) {
+        Collection<IInvokedMethodListener> listeners) {
       TestRunner testRunner= m_target.newTestRunner(suite, test, listeners);
 
       testRunner.addListener(new TextReporter(testRunner.getName(), TestRunner.getVerbose()));

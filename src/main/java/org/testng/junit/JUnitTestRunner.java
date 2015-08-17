@@ -14,6 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -37,7 +38,7 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
 
   private Map<Test, TestRunInfo> m_tests= new WeakHashMap<>();
   private List<ITestNGMethod> m_methods= Lists.newArrayList();
-  private List<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
+  private Collection<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
 
   public JUnitTestRunner() {
   }
@@ -108,7 +109,7 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
     runTestListeners(tr, m_parentRunner.getTestListeners());
   }
 
-    public void setInvokedMethodListeners(List<IInvokedMethodListener> listeners) {
+    public void setInvokedMethodListeners(Collection<IInvokedMethodListener> listeners) {
         m_invokedMethodListeners = listeners;
     }
 

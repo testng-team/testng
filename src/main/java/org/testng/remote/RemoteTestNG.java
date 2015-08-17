@@ -28,6 +28,7 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -137,7 +138,7 @@ public class RemoteTestNG extends TestNG {
       m_customTestRunnerFactory= new ITestRunnerFactory() {
           @Override
           public TestRunner newTestRunner(ISuite suite, XmlTest xmlTest,
-              List<IInvokedMethodListener> listeners) {
+              Collection<IInvokedMethodListener> listeners) {
             TestRunner runner =
               new TestRunner(getConfiguration(), suite, xmlTest,
                   false /*skipFailedInvocationCounts */,
@@ -267,7 +268,7 @@ public class RemoteTestNG extends TestNG {
 
     @Override
     public TestRunner newTestRunner(ISuite suite, XmlTest test,
-        List<IInvokedMethodListener> listeners) {
+        Collection<IInvokedMethodListener> listeners) {
       TestRunner tr = m_delegateFactory.newTestRunner(suite, test, listeners);
       tr.addListener(new RemoteTestListener(suite, test, m_messageSender));
       return tr;
