@@ -118,24 +118,33 @@ abstract public class BaseMessageSender implements IMessageSender {
     if (m_inStream != null) {
       p("Receiver already initialized");
     }
-    ServerSocket serverSocket = null;
+    ServerSocket serverSocket;
     try {
       p("initReceiver on port " + m_port);
       serverSocket = new ServerSocket(m_port);
       serverSocket.setSoTimeout(5000);
 
-	  Socket socket = serverSocket.accept();
-	  m_inStream = socket.getInputStream();
-	  m_inReader = new BufferedReader(new InputStreamReader(m_inStream));
-	  m_outStream = socket.getOutputStream();
-	  m_outWriter = new PrintWriter(new OutputStreamWriter(m_outStream));
+      while (true) {
+        try {
+          Socket socket = serverSocket.accept();
+          m_inStream = socket.getInputStream();
+          m_inReader = new BufferedReader(new InputStreamReader(m_inStream));
+          m_outStream = socket.getOutputStream();
+          m_outWriter = new PrintWriter(new OutputStreamWriter(m_outStream));
+
+          break;
+        }
+        catch (IOException ioe) {
+          try {
+            Thread.sleep(100L);
+          }
+          catch (InterruptedException ie) {
+            // Do nothing.
+          }
+        }
+      }
     }
     catch(SocketTimeoutException ste) {
-      try {
-		serverSocket.close();
-	  } catch (IOException e) {
-		  // ignore
-	  }
       throw ste;
     }
     catch (IOException ioe) {
