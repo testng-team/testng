@@ -26,7 +26,7 @@ abstract public class BaseMessageSender implements IMessageSender {
   private int m_port;
   protected Object m_ackLock = new Object();
 
-  private boolean m_requstStopReceiver;
+  private boolean m_requestStopReceiver;
   /** Outgoing message stream. */
   protected OutputStream m_outStream;
   /** Used to send ACK and STOP */
@@ -128,7 +128,7 @@ abstract public class BaseMessageSender implements IMessageSender {
       serverSocket.setSoTimeout(5000);
 
       Socket socket = null;
-      while (!m_requstStopReceiver) {
+      while (!m_requestStopReceiver) {
         try {
           if (m_debug) {
             p("polling the client connection");
@@ -162,7 +162,7 @@ abstract public class BaseMessageSender implements IMessageSender {
   }
 
   public void stopReceiver() {
-    m_requstStopReceiver = true;
+    m_requestStopReceiver = true;
   }
 
   @Override
