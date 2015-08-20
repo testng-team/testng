@@ -157,7 +157,7 @@ abstract public class BaseMessageSender implements IMessageSender {
       throw ste;
     }
     catch (IOException ioe) {
-      closeQuitely(serverSocket);
+      closeQuietly(serverSocket);
     }
   }
 
@@ -167,21 +167,21 @@ abstract public class BaseMessageSender implements IMessageSender {
 
   @Override
   public void shutDown() {
-    closeQuitely(m_outStream);
+    closeQuietly(m_outStream);
     m_outStream = null;
 
     if (null != m_readerThread) {
       m_readerThread.interrupt();
     }
 
-    closeQuitely(m_inReader);
+    closeQuietly(m_inReader);
     m_inReader = null;
 
-    closeQuitely(m_clientSocket);
+    closeQuietly(m_clientSocket);
     m_clientSocket = null;
   }
 
-  private void closeQuitely(Closeable c) {
+  private void closeQuietly(Closeable c) {
     if (c != null) {
       try {
         c.close();
