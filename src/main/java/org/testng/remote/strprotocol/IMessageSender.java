@@ -10,12 +10,20 @@ public interface IMessageSender {
 
   /**
    * Initialize the receiver.
+   * the underlying socket server will be polling until a first client connect.
    *
    * @throws SocketException This exception will be thrown if a connection
    * to the remote TestNG instance could not be established after ten
    * seconds.
    */
   void initReceiver() throws SocketTimeoutException;
+
+  /**
+   * Stop the receiver.
+   * it provides a way that allow the API invoker to stop the receiver,
+   * e.g. break from a dead while loop
+   */
+  void stopReceiver();
 
   void sendMessage(IMessage message) throws Exception;
 

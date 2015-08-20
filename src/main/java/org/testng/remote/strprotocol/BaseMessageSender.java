@@ -2,6 +2,7 @@ package org.testng.remote.strprotocol;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,7 +16,8 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 
 import org.testng.TestNGException;
-import org.testng.remote.RemoteTestNG;
+
+import static org.testng.remote.RemoteTestNG.isVerbose;
 
 abstract public class BaseMessageSender implements IMessageSender {
   private boolean m_debug = false;
@@ -24,6 +26,7 @@ abstract public class BaseMessageSender implements IMessageSender {
   private int m_port;
   protected Object m_ackLock = new Object();
 
+  private boolean m_requestStopReceiver;
   /** Outgoing message stream. */
   protected OutputStream m_outStream;
   /** Used to send ACK and STOP */
@@ -124,61 +127,68 @@ abstract public class BaseMessageSender implements IMessageSender {
       serverSocket = new ServerSocket(m_port);
       serverSocket.setSoTimeout(5000);
 
-	  Socket socket = serverSocket.accept();
-	  m_inStream = socket.getInputStream();
-	  m_inReader = new BufferedReader(new InputStreamReader(m_inStream));
-	  m_outStream = socket.getOutputStream();
-	  m_outWriter = new PrintWriter(new OutputStreamWriter(m_outStream));
+      Socket socket = null;
+      while (!m_requestStopReceiver) {
+        try {
+          if (m_debug) {
+            p("polling the client connection");
+          }
+          socket = serverSocket.accept();
+          // break the loop once the first client connected
+          break;
+        }
+        catch (IOException ioe) {
+          try {
+            Thread.sleep(100L);
+          }
+          catch (InterruptedException ie) {
+            // Do nothing.
+          }
+        }
+      }
+      if (socket != null) {
+        m_inStream = socket.getInputStream();
+        m_inReader = new BufferedReader(new InputStreamReader(m_inStream));
+        m_outStream = socket.getOutputStream();
+        m_outWriter = new PrintWriter(new OutputStreamWriter(m_outStream));
+      }
     }
     catch(SocketTimeoutException ste) {
-      try {
-		serverSocket.close();
-	  } catch (IOException e) {
-		  // ignore
-	  }
       throw ste;
     }
     catch (IOException ioe) {
-      // TODO Auto-generated catch block
-      ioe.printStackTrace();
+      closeQuietly(serverSocket);
     }
+  }
+
+  public void stopReceiver() {
+    m_requestStopReceiver = true;
   }
 
   @Override
   public void shutDown() {
-    if(null != m_outStream) {
+    closeQuietly(m_outStream);
+    m_outStream = null;
+
+    if (null != m_readerThread) {
+      m_readerThread.interrupt();
+    }
+
+    closeQuietly(m_inReader);
+    m_inReader = null;
+
+    closeQuietly(m_clientSocket);
+    m_clientSocket = null;
+  }
+
+  private void closeQuietly(Closeable c) {
+    if (c != null) {
       try {
-        m_outStream.close();
-      }
-      catch(IOException ex) {
-        // ignore
-      }
-      m_outStream = null;
-    }
-
-    try {
-      if(null != m_readerThread) {
-        m_readerThread.interrupt();
-      }
-
-      if(null != m_inReader) {
-        m_inReader.close();
-        m_inReader = null;
-      }
-    }
-    catch(IOException e) {
-      e.printStackTrace();
-    }
-
-    try {
-      if(null != m_clientSocket) {
-        m_clientSocket.close();
-        m_clientSocket = null;
-      }
-    }
-    catch(IOException e) {
-      if(m_debug) {
-        e.printStackTrace();
+        c.close();
+      } catch (IOException e) {
+        if (m_debug) {
+          e.printStackTrace();
+        }
       }
     }
   }
@@ -201,7 +211,7 @@ abstract public class BaseMessageSender implements IMessageSender {
   }
 
   private static void p(String msg) {
-    if (RemoteTestNG.isVerbose()) {
+    if (isVerbose()) {
       System.out.println("[BaseMessageSender] " + msg); //$NON-NLS-1$
     }
   }
@@ -260,7 +270,7 @@ abstract public class BaseMessageSender implements IMessageSender {
 //        }
       }
       catch(IOException ioe) {
-        if (RemoteTestNG.isVerbose()) {
+        if (isVerbose()) {
           ioe.printStackTrace();
         }
       }
