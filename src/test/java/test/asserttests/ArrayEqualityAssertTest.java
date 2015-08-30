@@ -148,5 +148,64 @@ public class ArrayEqualityAssertTest {
                 "arrays inside maps which are inside lists themselves aren't compared by value in assertEquals");
     }
 
-    // Test Iterable and assertArrayEquals()
+    @Test
+    public void arrayInsideIterableAssertEquals() {
+        Iterable<int[]> iterable = Arrays.asList(
+            new int[]{ 42 }
+        );
+        Iterable<int[]> iterableCopy = Arrays.asList(
+            new int[]{ 42 }
+        );
+        assertEquals(iterable, iterableCopy,
+                "arrays inside Iterables are compared by value in assertEquals");
+    }
+
+    @Test(expectedExceptions = AssertionError.class)
+    public void arrayDeepInIterablesAssertEquals() {
+        List<List<int[]>> iterable = Collections.singletonList(Arrays.asList(new int[]{ 42 }));
+        List<List<int[]>> iterableCopy = Collections.singletonList(Arrays.asList(new int[]{ 42 }));
+
+        assertEquals(iterable, iterableCopy,
+                "arrays inside Iterables which are inside Iterables themselves aren't compared by value in assertEquals");
+    }
+
+    @Test
+    public void arrayInsideArrayAssertEquals() {
+        int[][] array = new int[][] {
+            new int[]{ 42 }
+        };
+        int[][] arrayCopy = new int[][] {
+            new int[]{ 42 }
+        };
+        assertEquals(array, arrayCopy,
+                "arrays inside arrays are compared by value in assertEquals");
+    }
+
+    @Test
+    public void arrayDeepInArraysAssertEquals() {
+        int[][][] array = new int[][][] {
+            new int[][] { new int[]{ 42 } }
+        };
+        int[][][] arrayCopy = new int[][][] {
+            new int[][] { new int[]{ 42 } }
+        };
+
+        assertEquals(array, arrayCopy,
+                "arrays inside arrays which are inside arrays themselves are compared by value in assertEquals");
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test(expectedExceptions = AssertionError.class)
+    public void arrayDeepInArrayAndListAssertEquals() {
+        List<int[]>[] array = new List[] {
+            Arrays.asList(new int[]{ 42 })
+        };
+        List<int[]>[] arrayCopy = new List[] {
+            Arrays.asList(new int[]{ 42 })
+        };
+
+        assertEquals(array, arrayCopy,
+                "arrays inside arrays which are inside arrays themselves aren't compared by value in assertEquals");
+    }
+
 }
