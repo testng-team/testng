@@ -1,4 +1,4 @@
-package org.testng;
+package test.asserttests;
 
 import org.testng.annotations.Test;
 
@@ -18,7 +18,7 @@ import static org.testng.Assert.assertNotEquals;
  * Tests different equality cases for nested collections
  * and arrays.
  */
-public class AssertCollectionsTest {
+public class ArrayEqualityAssertTest {
     @Test
     public void arrayInsideListAssertEquals() {
         List<int[]> list = Arrays.asList(
@@ -147,4 +147,6 @@ public class AssertCollectionsTest {
         assertEquals(map, mapCopy,
                 "arrays inside maps which are inside lists themselves aren't compared by value in assertEquals");
     }
+
+    // Test Iterable and assertArrayEquals()
 }
