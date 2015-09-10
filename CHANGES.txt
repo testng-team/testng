@@ -8,6 +8,7 @@ Fixed: GITHUB-169: IInvokedMethodListener methods executed several times before/
 
 New: GITHUB-717: Add assertThrows and expectThrows (Ryan Schmitt)
 Fixed: GITHUB-755: Fixed reporting of retried tests (Ryan Schmitt)
+Fixed: GITHUB-773: Test should not be skipped when the exception is expected (@CandyLiuM & Julien Herr)
 
 6.9.5:
 2015/07/12

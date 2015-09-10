@@ -14,6 +14,11 @@ public class TestSkippedExceptionTest {
     throw new SkipException("genericSkipException is skipped for now");
   }
 
+  @Test(expectedExceptions = SkipException.class)
+  public void genericExpectedSkipException() {
+    throw new SkipException("genericExpectedSkipException should not be skipped");
+  }
+
   @Test
   public void timedSkipException() {
     throw new TimeBombSkipException("timedSkipException is time bombed", "2007/04/10");
