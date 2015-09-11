@@ -1,5 +1,6 @@
 Current
 
+Fixed: GITHUB-798: Set suitethreadpoolsize for Maven Surefire (Jan Dundáček)
 Fixed: GITHUB-171: ISuiteListener methods called multiple times if multiple test elements (Daniel Qian & Julien Herr)
 Fixed: GITHUB-169: IInvokedMethodListener methods executed several times before/after each test method (Mario Duarte & Julien Herr)
 
