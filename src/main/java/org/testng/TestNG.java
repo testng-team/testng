@@ -1578,6 +1578,16 @@ public class TestNG {
       result.configFailurePolicy = failurePolicy;
     }
 
+    Object  suiteThreadPoolSize = cmdLineArgs.get(CommandLineArgs.SUITE_THREAD_POOL_SIZE);
+    if (null != suiteThreadPoolSize) {
+        if (suiteThreadPoolSize instanceof String){
+            result.suiteThreadPoolSize=Integer.parseInt((String) suiteThreadPoolSize);
+        }
+        if (suiteThreadPoolSize instanceof Integer){
+            result.suiteThreadPoolSize=(Integer) suiteThreadPoolSize;
+        }
+    }
+    
     configure(result);
   }
 
