@@ -232,7 +232,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
   @Override
   public String getParallel() {
-    return m_suite.getParallel().name().toLowerCase();
+    return m_suite.getParallel().toString();
   }
 
   public String getParentModule() {

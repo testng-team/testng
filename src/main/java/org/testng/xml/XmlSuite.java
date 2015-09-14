@@ -30,6 +30,22 @@ public class XmlSuite implements Serializable, Cloneable {
   /** Parallel modes */
   public enum ParallelMode {
     TESTS, METHODS, CLASSES, INSTANCES, NONE, TRUE, FALSE;
+
+    public static XmlSuite.ParallelMode getValidParallel(String parallel) {
+      if (parallel == null) {
+        return null;
+      }
+      try {
+        return XmlSuite.ParallelMode.valueOf(parallel.toUpperCase());
+      } catch (IllegalArgumentException e) {
+        return null;
+      }
+    }
+
+    @Override
+    public String toString() {
+      return name().toLowerCase();
+    }
   }
 
   /** Configuration failure policy options */
@@ -435,7 +451,7 @@ public class XmlSuite implements Serializable, Cloneable {
     }
     final ParallelMode parallel= getParallel();
     if(parallel != null && !DEFAULT_PARALLEL.equals(parallel)) {
-      p.setProperty("parallel", parallel.name().toLowerCase());
+      p.setProperty("parallel", parallel.toString());
     }
     XmlUtils.setProperty(p, "group-by-instances", String.valueOf(getGroupByInstances()),
         DEFAULT_GROUP_BY_INSTANCES.toString());

@@ -458,7 +458,7 @@ public class TestNG {
     if (parallel == null) {
       setParallel(XmlSuite.ParallelMode.FALSE);
     } else {
-      setParallel(XmlSuite.ParallelMode.valueOf(parallel.toUpperCase()));
+      setParallel(XmlSuite.ParallelMode.getValidParallel(parallel));
     }
   }
 
@@ -1529,7 +1529,7 @@ public class TestNG {
         CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS);
     String parallelMode = (String) cmdLineArgs.get(CommandLineArgs.PARALLEL);
     if (parallelMode != null) {
-      result.parallelMode = XmlSuite.ParallelMode.valueOf(parallelMode.toUpperCase());
+      result.parallelMode = XmlSuite.ParallelMode.getValidParallel(parallelMode);
     }
 
     String threadCount = (String) cmdLineArgs.get(CommandLineArgs.THREAD_COUNT);

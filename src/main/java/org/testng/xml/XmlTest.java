@@ -467,7 +467,7 @@ public class XmlTest implements Serializable, Cloneable {
       XmlUtils.setProperty(p, "junit", m_isJUnit.toString(), XmlSuite.DEFAULT_JUNIT.toString());
     }
     if (m_parallel != null) {
-      XmlUtils.setProperty(p, "parallel", m_parallel.name().toLowerCase(), XmlSuite.DEFAULT_PARALLEL.name().toLowerCase());
+      XmlUtils.setProperty(p, "parallel", m_parallel.toString(), XmlSuite.DEFAULT_PARALLEL.toString());
     }
     if (m_verbose != null) {
       XmlUtils.setProperty(p, "verbose", m_verbose.toString(), XmlSuite.DEFAULT_VERBOSE.toString());

@@ -89,7 +89,7 @@ public class Yaml {
     maybeAdd(result, "dataProviderThreadCount", suite.getDataProviderThreadCount(),
         XmlSuite.DEFAULT_DATA_PROVIDER_THREAD_COUNT);
     maybeAdd(result, "timeOut", suite.getTimeOut(), null);
-    maybeAdd(result, "parallel", suite.getParallel().name().toLowerCase(), XmlSuite.DEFAULT_PARALLEL.name().toLowerCase());
+    maybeAdd(result, "parallel", suite.getParallel(), XmlSuite.DEFAULT_PARALLEL);
     maybeAdd(result, "skipFailedInvocationCounts", suite.skipFailedInvocationCounts(),
         XmlSuite.DEFAULT_SKIP_FAILED_INVOCATION_COUNTS);
 
@@ -127,7 +127,7 @@ public class Yaml {
     maybeAdd(result, sp2, "junit", t.isJUnit(), XmlSuite.DEFAULT_JUNIT);
     maybeAdd(result, sp2, "verbose", t.getVerbose(), XmlSuite.DEFAULT_VERBOSE);
     maybeAdd(result, sp2, "timeOut", t.getTimeOut(), null);
-    maybeAdd(result, sp2, "parallel", t.getParallel().name().toLowerCase(), XmlSuite.DEFAULT_PARALLEL.name().toLowerCase());
+    maybeAdd(result, sp2, "parallel", t.getParallel(), XmlSuite.DEFAULT_PARALLEL);
     maybeAdd(result, sp2, "skipFailedInvocationCounts", t.skipFailedInvocationCounts(),
         XmlSuite.DEFAULT_SKIP_FAILED_INVOCATION_COUNTS);
 
@@ -269,7 +269,7 @@ public class Yaml {
       public Object construct(Node node) {
         if (node.getType().equals(XmlSuite.ParallelMode.class)) {
           String parallel = (String) constructScalar((ScalarNode) node);
-          return XmlSuite.ParallelMode.valueOf(parallel.toUpperCase());
+          return XmlSuite.ParallelMode.getValidParallel(parallel);
         }
         return super.construct(node);
       }
