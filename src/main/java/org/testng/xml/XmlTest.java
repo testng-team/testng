@@ -38,7 +38,7 @@ public class XmlTest implements Serializable, Cloneable {
 
   private Map<String, List<String>> m_metaGroups = Maps.newHashMap();
   private Map<String, String> m_parameters = Maps.newHashMap();
-  private String m_parallel;
+  private XmlSuite.ParallelMode m_parallel;
 
   private List<XmlMethodSelector> m_methodSelectors = Lists.newArrayList();
   // test level packages
@@ -389,12 +389,12 @@ public class XmlTest implements Serializable, Cloneable {
     return m_parameters;
   }
 
-  public void setParallel(String parallel) {
+  public void setParallel(XmlSuite.ParallelMode parallel) {
     m_parallel = parallel;
   }
 
-  public String getParallel() {
-    String result = null;
+  public XmlSuite.ParallelMode getParallel() {
+    XmlSuite.ParallelMode result;
     if (null != m_parallel || XmlSuite.DEFAULT_PARALLEL.equals(m_parallel)) {
       result = m_parallel;
     }
@@ -467,7 +467,7 @@ public class XmlTest implements Serializable, Cloneable {
       XmlUtils.setProperty(p, "junit", m_isJUnit.toString(), XmlSuite.DEFAULT_JUNIT.toString());
     }
     if (m_parallel != null) {
-      XmlUtils.setProperty(p, "parallel", m_parallel, XmlSuite.DEFAULT_PARALLEL);
+      XmlUtils.setProperty(p, "parallel", m_parallel.toString(), XmlSuite.DEFAULT_PARALLEL.toString());
     }
     if (m_verbose != null) {
       XmlUtils.setProperty(p, "verbose", m_verbose.toString(), XmlSuite.DEFAULT_VERBOSE.toString());

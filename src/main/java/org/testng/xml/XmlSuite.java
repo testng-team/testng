@@ -28,20 +28,25 @@ import static org.testng.internal.Utils.isStringNotEmpty;
  */
 public class XmlSuite implements Serializable, Cloneable {
   /** Parallel modes */
-  public static final String PARALLEL_TESTS = "tests";
-  public static final String PARALLEL_METHODS = "methods";
-  public static final String PARALLEL_CLASSES = "classes";
-  public static final String PARALLEL_INSTANCES = "instances";
-  public static final String PARALLEL_NONE = "none";
-  public static Set<String> PARALLEL_MODES = new HashSet<String>() {{
-    add(PARALLEL_TESTS);
-    add(PARALLEL_METHODS);
-    add(PARALLEL_CLASSES);
-    add(PARALLEL_INSTANCES);
-    add(PARALLEL_NONE);
-    add("true");
-    add("false");
-  }};
+  public enum ParallelMode {
+    TESTS, METHODS, CLASSES, INSTANCES, NONE, TRUE, FALSE;
+
+    public static XmlSuite.ParallelMode getValidParallel(String parallel) {
+      if (parallel == null) {
+        return null;
+      }
+      try {
+        return XmlSuite.ParallelMode.valueOf(parallel.toUpperCase());
+      } catch (IllegalArgumentException e) {
+        return null;
+      }
+    }
+
+    @Override
+    public String toString() {
+      return name().toLowerCase();
+    }
+  }
 
   /** Configuration failure policy options */
   public static final String SKIP = "skip";
@@ -59,8 +64,8 @@ public class XmlSuite implements Serializable, Cloneable {
   public static Integer DEFAULT_VERBOSE = 1;
   private Integer m_verbose = null;
 
-  public static String DEFAULT_PARALLEL = "false";
-  private String m_parallel = DEFAULT_PARALLEL;
+  public static ParallelMode DEFAULT_PARALLEL = ParallelMode.FALSE;
+  private ParallelMode m_parallel = DEFAULT_PARALLEL;
 
   private String m_parentModule = "";
   private String m_guiceStage = "";
@@ -155,7 +160,7 @@ public class XmlSuite implements Serializable, Cloneable {
    * Returns the parallel mode.
    * @return the parallel mode.
    */
-  public String getParallel() {
+  public ParallelMode getParallel() {
     return m_parallel;
   }
 
@@ -180,7 +185,7 @@ public class XmlSuite implements Serializable, Cloneable {
    * Sets the parallel mode
    * @param parallel the parallel mode
    */
-  public void setParallel(String parallel) {
+  public void setParallel(ParallelMode parallel) {
     m_parallel = parallel;
   }
 
@@ -444,9 +449,9 @@ public class XmlSuite implements Serializable, Cloneable {
     if (getVerbose() != null) {
       XmlUtils.setProperty(p, "verbose", getVerbose().toString(), DEFAULT_VERBOSE.toString());
     }
-    final String parallel= getParallel();
-    if(isStringNotEmpty(parallel) && !DEFAULT_PARALLEL.equals(parallel)) {
-      p.setProperty("parallel", parallel);
+    final ParallelMode parallel= getParallel();
+    if(parallel != null && !DEFAULT_PARALLEL.equals(parallel)) {
+      p.setProperty("parallel", parallel.toString());
     }
     XmlUtils.setProperty(p, "group-by-instances", String.valueOf(getGroupByInstances()),
         DEFAULT_GROUP_BY_INSTANCES.toString());
@@ -1036,10 +1041,6 @@ public class XmlSuite implements Serializable, Cloneable {
       result.add(p.getName());
     }
     return result;
-  }
-
-  public static boolean isParallel(String parallel) {
-    return PARALLEL_MODES.contains(parallel) && ! "false".equals(parallel);
   }
 }
 

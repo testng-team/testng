@@ -1,23 +1,20 @@
 package org.testng.internal;
 
-import org.testng.xml.Parser;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-import org.xml.sax.SAXException;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.constructor.Constructor;
-
-import javax.xml.parsers.ParserConfigurationException;
+import org.yaml.snakeyaml.nodes.Node;
+import org.yaml.snakeyaml.nodes.NodeId;
+import org.yaml.snakeyaml.nodes.ScalarNode;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +27,7 @@ public class Yaml {
 
   public static XmlSuite parse(String filePath, InputStream is)
       throws FileNotFoundException {
-    Constructor constructor = new Constructor(XmlSuite.class);
+    Constructor constructor = new TestNGConstructor(XmlSuite.class);
     {
       TypeDescription suiteDescription = new TypeDescription(XmlSuite.class);
       suiteDescription.putListPropertyType("packages", XmlPackage.class);
@@ -262,9 +259,20 @@ public class Yaml {
     }
   }
 
-  public static void main(String[] args)
-      throws FileNotFoundException, ParserConfigurationException, SAXException, IOException {
-    Collection<XmlSuite> s = new Parser(args[0]).parse();
-    System.out.println(s.iterator().next().toXml());
+  private static class TestNGConstructor extends Constructor {
+    public TestNGConstructor(Class<? extends Object> theRoot) {
+      super(theRoot);
+      yamlClassConstructors.put(NodeId.scalar, new ConstructParallelMode());
+    }
+
+    private class ConstructParallelMode extends ConstructScalar {
+      public Object construct(Node node) {
+        if (node.getType().equals(XmlSuite.ParallelMode.class)) {
+          String parallel = (String) constructScalar((ScalarNode) node);
+          return XmlSuite.ParallelMode.getValidParallel(parallel);
+        }
+        return super.construct(node);
+      }
+    }
   }
 }

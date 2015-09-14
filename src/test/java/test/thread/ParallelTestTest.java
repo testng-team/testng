@@ -19,32 +19,32 @@ public class ParallelTestTest extends BaseTest {
 
   @Test
   public void verifyParallelNone() {
-    verifyExpected(XmlSuite.PARALLEL_NONE, 1);
+    verifyExpected(XmlSuite.ParallelMode.NONE, 1);
   }
 
   @Test
   public void verifyParallelTests() {
-    verifyExpected(XmlSuite.PARALLEL_TESTS, 2);
+    verifyExpected(XmlSuite.ParallelMode.TESTS, 2);
   }
 
   @Test
   public void verifyParallelMethods() {
-    verifyExpected(XmlSuite.PARALLEL_METHODS, 4);
+    verifyExpected(XmlSuite.ParallelMode.METHODS, 4);
   }
 
   @Test
   public void verifyParallelClasses() {
-    verifyExpected(XmlSuite.PARALLEL_CLASSES, 2);
+    verifyExpected(XmlSuite.ParallelMode.CLASSES, 2);
   }
 
   @Test
   public void verifyParallelClassesWithFactory() {
-    verifyExpected(XmlSuite.PARALLEL_INSTANCES, 2, ParallelWithFactorySampleTest.class.getName());
+    verifyExpected(XmlSuite.ParallelMode.INSTANCES, 2, ParallelWithFactorySampleTest.class.getName());
   }
 
   @Test
   public void verifyNonParallelClassesWithFactory() {
-    verifyExpected(XmlSuite.PARALLEL_NONE, 1, ParallelWithFactorySampleTest.class.getName());
+    verifyExpected(XmlSuite.ParallelMode.NONE, 1, ParallelWithFactorySampleTest.class.getName());
   }
 
   public static final String CLASS1 = "test.thread.Test1Test";
@@ -57,11 +57,11 @@ public class ParallelTestTest extends BaseTest {
     classes.add(xmlClass);
   }
 
-  private void verifyExpected(String parallelMode, int expectedThreadCount) {
+  private void verifyExpected(XmlSuite.ParallelMode parallelMode, int expectedThreadCount) {
     verifyExpected(parallelMode, expectedThreadCount, CLASS1, CLASS2);
   }
 
-  private void verifyExpected(String parallelMode, int expectedThreadCount,
+  private void verifyExpected(XmlSuite.ParallelMode parallelMode, int expectedThreadCount,
       String... classNames) {
     XmlSuite xmlSuite = new XmlSuite();
     xmlSuite.setName("ParallelTestTest");

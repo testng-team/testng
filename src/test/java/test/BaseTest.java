@@ -63,7 +63,7 @@ public class BaseTest extends BaseDistributedTest {
     getTest().setVerbose(9);
   }
 
-  protected void setParallel(String parallel) {
+  protected void setParallel(XmlSuite.ParallelMode parallel) {
     getTest().setParallel(parallel);
   }
 

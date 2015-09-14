@@ -143,7 +143,7 @@ public abstract class LaunchSuite {
       suiteBuffer.setDocType("suite SYSTEM \"" + Parser.TESTNG_DTD_URL + "\"");
 
       Properties attrs = new Properties();
-      attrs.setProperty("parallel", XmlSuite.PARALLEL_NONE);
+      attrs.setProperty("parallel", XmlSuite.ParallelMode.NONE.toString());
       attrs.setProperty("name", m_suiteName);
       suiteBuffer.push("suite", attrs);
 

@@ -4,6 +4,7 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.CommaParameterSplitter;
 
 import org.testng.collections.Lists;
+import org.testng.xml.XmlSuite;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +58,7 @@ public class CommandLineArgs {
 
   public static final String PARALLEL= "-parallel";
   @Parameter(names = PARALLEL, description = "Parallel mode (methods, tests or classes)")
-  public String parallelMode;
+  public XmlSuite.ParallelMode parallelMode;
 
   public static final String CONFIG_FAILURE_POLICY = "-configfailurepolicy";
   @Parameter(names = CONFIG_FAILURE_POLICY , description = "Configuration failure policy (skip or continue)")

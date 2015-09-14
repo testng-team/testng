@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -720,16 +721,16 @@ public class TestRunner
     m_allTestMethods= runMethods.toArray(new ITestNGMethod[runMethods.size()]);
   }
 
+  private static final EnumSet<XmlSuite.ParallelMode> PRIVATE_RUN_PARALLEL_MODES
+      = EnumSet.of(XmlSuite.ParallelMode.METHODS, XmlSuite.ParallelMode.TRUE,
+                   XmlSuite.ParallelMode.CLASSES, XmlSuite.ParallelMode.INSTANCES);
   /**
    * Main method that create a graph of methods and then pass it to the
    * graph executor to run them.
    */
   private void privateRun(XmlTest xmlTest) {
-    String parallelMode = xmlTest.getParallel();
-    boolean parallel = XmlSuite.PARALLEL_METHODS.equals(parallelMode)
-        || "true".equalsIgnoreCase(parallelMode)
-        || XmlSuite.PARALLEL_CLASSES.equals(parallelMode)
-        || XmlSuite.PARALLEL_INSTANCES.equals(parallelMode);
+    XmlSuite.ParallelMode parallelMode = xmlTest.getParallel();
+    boolean parallel = PRIVATE_RUN_PARALLEL_MODES.contains(parallelMode);
 
     {
       // parallel
@@ -818,7 +819,7 @@ public class TestRunner
   @Override
   public List<IWorker<ITestNGMethod>> createWorkers(List<ITestNGMethod> methods) {
     List<IWorker<ITestNGMethod>> result;
-    if (XmlSuite.PARALLEL_INSTANCES.equals(m_xmlTest.getParallel())) {
+    if (XmlSuite.ParallelMode.INSTANCES.equals(m_xmlTest.getParallel())) {
       result = createInstanceBasedParallelWorkers(methods);
     } else {
       result = createClassBasedParallelWorkers(methods);
@@ -841,7 +842,7 @@ public class TestRunner
 
       // If either sequential=true or parallel=classes, mark this class sequential
       if (test != null && (test.getSequential() || test.getSingleThreaded()) ||
-          XmlSuite.PARALLEL_CLASSES.equals(m_xmlTest.getParallel())) {
+          XmlSuite.ParallelMode.CLASSES.equals(m_xmlTest.getParallel())) {
         sequentialClasses.add(cls);
       }
     }
@@ -988,11 +989,12 @@ public class TestRunner
   //
   // Invoke the workers
   //
+  private static final EnumSet<XmlSuite.ParallelMode> WORKERS_PARALLEL_MODES
+      = EnumSet.of(XmlSuite.ParallelMode.METHODS, XmlSuite.ParallelMode.TRUE,
+                   XmlSuite.ParallelMode.CLASSES);
   private void runWorkers(List<? extends IWorker<ITestNGMethod>> workers, String parallelMode,
       ListMultiMap<Integer, TestMethodWorker> sequentialWorkers) {
-    if (XmlSuite.PARALLEL_METHODS.equals(parallelMode)
-        || "true".equalsIgnoreCase(parallelMode)
-        || XmlSuite.PARALLEL_CLASSES.equals(parallelMode))
+    if (WORKERS_PARALLEL_MODES.contains(parallelMode))
     {
       //
       // Parallel run
@@ -1102,7 +1104,7 @@ public class TestRunner
     // giving the impression of parallelism (multiple thread id's) while still running
     // sequentially.
     if (! hasDependencies
-        && ! XmlSuite.isParallel(getCurrentXmlTest().getParallel())
+        && getCurrentXmlTest().getParallel() == XmlSuite.ParallelMode.FALSE
         && "true".equalsIgnoreCase(getCurrentXmlTest().getPreserveOrder())) {
       // If preserve-order was specified and the class order is A, B
       // create a new set of dependencies where each method of B depends

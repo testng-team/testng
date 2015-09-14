@@ -143,11 +143,11 @@ found in the XML file.
     name CDATA #REQUIRED 
     junit (true | false) "false"
     verbose  CDATA #IMPLIED
-    parallel  CDATA #IMPLIED
+    parallel  (false | methods | tests | classes | instances) #IMPLIED
     thread-count CDATA #IMPLIED
     annotations  CDATA #IMPLIED
     time-out CDATA #IMPLIED
-    enabled CDATA #IMPLIED
+    enabled (true | false) #IMPLIED
     skipfailedinvocationcounts (true | false) "false"
     preserve-order (true | false) "true"
     group-by-instances (true | false) "false"
