@@ -3,14 +3,13 @@ package test.serviceloader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.List;
 
 import org.testng.Assert;
-import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
 import test.SimpleBaseTest;
+import test.listeners.ListenerAssert;
 
 public class ServiceLoaderTest extends SimpleBaseTest {
 
@@ -22,7 +21,7 @@ public class ServiceLoaderTest extends SimpleBaseTest {
     tng.setServiceLoaderClassLoader(ucl);
     tng.run();
 
-    assertListenerType(tng.getServiceLoaderListeners(), TmpSuiteListener.class);
+    ListenerAssert.assertListenerType(tng.getServiceLoaderListeners(), TmpSuiteListener.class);
   }
 
   @Test
@@ -36,7 +35,7 @@ public class ServiceLoaderTest extends SimpleBaseTest {
     TestNG tng = create(ServiceLoaderSampleTest.class);
     tng.run();
 
-    assertListenerType(tng.getServiceLoaderListeners(), TmpSuiteListener.class);
+    ListenerAssert.assertListenerType(tng.getServiceLoaderListeners(), TmpSuiteListener.class);
   }
 
   @Test(description = "GITHUB-491")
@@ -45,15 +44,6 @@ public class ServiceLoaderTest extends SimpleBaseTest {
     tng.run();
 
     Assert.assertEquals(1, tng.getServiceLoaderListeners().size());
-    assertListenerType(tng.getServiceLoaderListeners(), MyConfigurationListener.class);
-  }
-
-  private static void assertListenerType(List<ITestNGListener> listeners, Class<? extends ITestNGListener> clazz) {
-    for (ITestNGListener listener : listeners) {
-      if (clazz.isInstance(listener)) {
-        return;
-      }
-    }
-    Assert.fail();
+    ListenerAssert.assertListenerType(tng.getServiceLoaderListeners(), MyConfigurationListener.class);
   }
 }
