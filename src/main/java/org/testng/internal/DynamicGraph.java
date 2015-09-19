@@ -18,9 +18,9 @@ import java.util.Set;
 public class DynamicGraph<T> {
   private static final boolean DEBUG = false;
 
-  private Set<T> m_nodesReady = Sets.newLinkedHashSet();
-  private Set<T> m_nodesRunning = Sets.newLinkedHashSet();
-  private Set<T> m_nodesFinished = Sets.newLinkedHashSet();
+  private List<T> m_nodesReady = Lists.newArrayList();
+  private List<T> m_nodesRunning = Lists.newArrayList();
+  private List<T> m_nodesFinished = Lists.newArrayList();
 
   private Comparator<? super T> m_nodeComparator = null;
 
@@ -47,12 +47,9 @@ public class DynamicGraph<T> {
   }
 
   /**
-   * Add an edge between two nodes, which don't have to already be in the graph
-   * (they will be added by this method).
+   * Add an edge between two nodes.
    */
   public void addEdge(T from, T to) {
-    addNode(from);
-    addNode(to);
     m_dependingOn.put(to, from);
     m_dependedUpon.put(from, to);
   }
