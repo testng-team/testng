@@ -6,10 +6,13 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 
+import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -60,6 +63,16 @@ public class ListenerTest extends SimpleBaseTest {
     tng.run();
     Assert.assertEquals(SuiteListener.start, 1);
     Assert.assertEquals(SuiteListener.finish, 1);
+  }
+
+  @Test(description = "GITHUB-767: ISuiteListener called twice when @Listeners")
+  public void suiteListenerInListernersAnnotationShouldBeRunOnce() {
+    TestNG tng = createTests("Suite", SuiteListenerSample2.class);
+    SuiteListener2.start = 0;
+    SuiteListener2.finish = 0;
+    tng.run();
+    Assert.assertEquals(SuiteListener2.start, 1);
+    Assert.assertEquals(SuiteListener2.finish, 1);
   }
 
   @Test(description = "GITHUB-171")
