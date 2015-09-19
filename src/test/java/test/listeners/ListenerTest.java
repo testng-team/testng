@@ -85,4 +85,13 @@ public class ListenerTest extends SimpleBaseTest {
             entry("t", 1), entry("s", 1)
     );
   }
+
+  @Test(description = "GITHUB-154: MethodInterceptor will be called twice")
+  public void methodInterceptorShouldBeRunOnce() {
+    TestNG tng = create(SuiteListenerSample.class);
+    MyMethodInterceptor interceptor = new MyMethodInterceptor();
+    tng.addListener(interceptor);
+    tng.run();
+    Assert.assertEquals(interceptor.getCount(), 1);
+  }
 }
