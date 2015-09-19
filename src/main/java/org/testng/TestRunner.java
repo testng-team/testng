@@ -852,12 +852,6 @@ public class TestRunner
       methodInstances.addAll(methodsToMultipleMethodInstances(tm));
     }
 
-    //
-    // Finally, sort the parallel methods by classes
-    //
-    for (IMethodInterceptor m_methodInterceptor : m_methodInterceptors) {
-      methodInstances = m_methodInterceptor.intercept(methodInstances, this);
-    }
 
     Map<String, String> params = m_xmlTest.getAllParameters();
 
