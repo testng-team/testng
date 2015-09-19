@@ -72,6 +72,16 @@ public class ListenerTest extends SimpleBaseTest {
     Assert.assertEquals(SuiteListener.finish, 1);
   }
 
+  @Test(description = "GITHUB-795")
+  public void suiteListenersShouldBeOnlyRunOnceWithManyIdenticalTests() {
+    TestNG tng = createTests("suite", Derived1.class, Derived1.class);
+    SuiteListener.start = 0;
+    SuiteListener.finish = 0;
+    tng.run();
+    Assert.assertEquals(SuiteListener.start, 1);
+    Assert.assertEquals(SuiteListener.finish, 1);
+  }
+
   @Test(description = "GITHUB-169")
   public void invokedMethodListenersShouldBeOnlyRunOnceWithManyTests() {
     TestNG tng = createTests("suite", Derived1.class, Derived2.class);
