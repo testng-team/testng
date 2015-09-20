@@ -92,7 +92,7 @@ public class SimpleBaseTest {
     if (result == null) {
       Utils.log("SimpleBaseTest", 2,  "Warning: System property " + TEST_RESOURCES_DIR
           + " was not defined.");
-      return "target/test-classes/" + fileName;
+      return "build/resources/test/" + fileName;
     }
     else {
       return result + File.separatorChar + fileName;

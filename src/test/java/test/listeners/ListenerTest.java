@@ -36,7 +36,7 @@ public class ListenerTest extends SimpleBaseTest {
   public void failureBeforeAfterMethod() {
     TestNG tng = create(FailingSampleTest.class);
     tng.run();
-    Assert.assertEquals( SimpleListener.m_list, Arrays.asList(4, 5, 6));
+    Assert.assertEquals(SimpleListener.m_list, Arrays.asList(4, 5, 6));
   }
 
   @Test(description = "Inherited @Listeners annotations should aggregate")
@@ -97,5 +97,14 @@ public class ListenerTest extends SimpleBaseTest {
     assertThat(MyInvokedMethodListener.afterInvocation).containsOnly(
             entry("t", 1), entry("s", 1)
     );
+  }
+
+  @Test(description = "GITHUB-154: MethodInterceptor will be called twice")
+  public void methodInterceptorShouldBeRunOnce() {
+    TestNG tng = create(SuiteListenerSample.class);
+    MyMethodInterceptor interceptor = new MyMethodInterceptor();
+    tng.addListener(interceptor);
+    tng.run();
+    Assert.assertEquals(interceptor.getCount(), 1);
   }
 }

@@ -32,7 +32,6 @@ public class MultipleInterceptorsTest extends SimpleBaseTest {
       TestListenerAdapter tla = new TestListenerAdapter();
       tng.addListener(tla);
       tng.run();
-      // Interceptor are called twice => GITHUB #154
-      Assert.assertEquals(tla.getPassedTests().get(0).getMethod().getDescription(), "abcabc");
+      Assert.assertEquals(tla.getPassedTests().get(0).getMethod().getDescription(), "abc");
     }
 }

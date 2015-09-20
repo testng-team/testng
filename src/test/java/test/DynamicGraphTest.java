@@ -17,6 +17,11 @@ public class DynamicGraphTest {
   @Test
   public void test8() {
     DynamicGraph<String> dg = new DynamicGraph<>();
+    dg.addNode("a1");
+    dg.addNode("a2");
+    dg.addNode("b1");
+    dg.addNode("b2");
+    dg.addNode("c1");
     dg.addEdge("b1", "a1");
     dg.addEdge("b1", "a2");
     dg.addEdge("b2", "a1");
@@ -46,6 +51,9 @@ public class DynamicGraphTest {
   @Test
   public void test2() {
     DynamicGraph<String> dg = new DynamicGraph<>();
+    dg.addNode("a1");
+    dg.addNode("a2");
+    dg.addNode("b1");
     dg.addEdge("b1", "a1");
     dg.addEdge("b1", "a2");
     dg.addNode("x");
