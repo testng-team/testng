@@ -41,8 +41,10 @@ public class SimpleBaseTest {
 
   protected TestNG createTests(String suiteName, Class<?>... testClasses) {
     XmlSuite suite = createXmlSuite(suiteName);
+    int i=0;
     for (Class<?> testClass : testClasses) {
-      createXmlTest(suite, testClass.getName(), testClass);
+      createXmlTest(suite, testClass.getName() + i, testClass);
+      i++;
     }
     return create(suite);
   }
