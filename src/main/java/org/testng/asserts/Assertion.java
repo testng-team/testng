@@ -106,7 +106,7 @@ public class Assertion implements IAssertLifecycle {
 
 
   public void assertTrue(final boolean condition, final String message) {
-    doAssert(new SimpleAssert<Boolean>(condition, Boolean.TRUE) {
+    doAssert(new SimpleAssert<Boolean>(condition, Boolean.TRUE, message) {
       @Override
       public void doAssert() {
         org.testng.Assert.assertTrue(condition, message);
