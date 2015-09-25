@@ -33,15 +33,18 @@ public class SoftAssertTest {
 
   @Test
   public void testAssertAllCount() throws Exception {
-    final SoftAssert sa = new SoftAssert();
+    String message = "My message";
+    SoftAssert sa = new SoftAssert();
     sa.assertTrue(true);
-    sa.assertTrue(false);
+    sa.assertTrue(false, message);
     try {
       sa.assertAll();
       Assert.fail("Exception expected");
     } catch (AssertionError e) {
-      final String message = e.getMessage();
-      Assert.assertEquals(message.split("\r?\n").length, 2, message);
+      String[] lines = e.getMessage().split("\r?\n");
+      Assert.assertEquals(lines.length, 2);
+      lines[1] = lines[1].replaceFirst(message, "");
+      Assert.assertFalse(lines[1].contains(message));
     }
   }
 }
