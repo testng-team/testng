@@ -38,11 +38,6 @@ public class SoftAssert extends Assertion {
           sb.append(", ");
         }
         sb.append("\n\t");
-        final String message = ae.getValue().getMessage();
-        if (message != null) {
-          sb.append(message).append("\t");
-        }
-        //noinspection ThrowableResultOfMethodCallIgnored
         sb.append(ae.getKey().getMessage());
       }
       throw new AssertionError(sb.toString());
