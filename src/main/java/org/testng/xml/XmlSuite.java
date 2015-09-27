@@ -182,6 +182,14 @@ public class XmlSuite implements Serializable, Cloneable {
   }
 
   /**
+   * @deprecated Use #setParallel(XmlSuite.ParallelMode) instead
+   */
+  @Deprecated
+  public void setParallel(String parallel) {
+    setParallel(XmlSuite.ParallelMode.getValidParallel(parallel));
+  }
+
+  /**
    * Sets the parallel mode
    * @param parallel the parallel mode
    */
