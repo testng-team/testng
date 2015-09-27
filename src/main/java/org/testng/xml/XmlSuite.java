@@ -186,7 +186,11 @@ public class XmlSuite implements Serializable, Cloneable {
    */
   @Deprecated
   public void setParallel(String parallel) {
-    setParallel(XmlSuite.ParallelMode.getValidParallel(parallel));
+    if (parallel == null) {
+      setParallel((ParallelMode)null);
+    } else {
+      setParallel(XmlSuite.ParallelMode.getValidParallel(parallel));
+    }
   }
 
   /**
@@ -194,7 +198,11 @@ public class XmlSuite implements Serializable, Cloneable {
    * @param parallel the parallel mode
    */
   public void setParallel(ParallelMode parallel) {
-    m_parallel = parallel;
+    if (parallel == null) {
+      m_parallel = DEFAULT_PARALLEL;
+    } else {
+      m_parallel = parallel;
+    }
   }
 
   public void setParentModule(String parentModule) {
