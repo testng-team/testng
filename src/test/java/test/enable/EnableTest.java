@@ -1,5 +1,6 @@
 package test.enable;
 
+import org.testng.TestClassDisabler;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
@@ -40,5 +41,17 @@ public class EnableTest extends SimpleBaseTest {
         "verifySomethingFirstSample", "verifySomethingSecondSample",
         "afterSuite", "alwaysAfterSuite"
     );
+  }
+
+  @Test(description = "https://github.com/cbeust/testng/issues/151")
+  public void issue151_disable_all_methods_from_a_disabled_class() {
+    TestNG tng = create(DisabledClass.class);
+    InvokedMethodListener listener = new InvokedMethodListener();
+    tng.addListener(listener);
+    TestClassDisabler testClassDisabler = new TestClassDisabler(); // TODO replace by @Listeners on DisabledClass
+    tng.addListener(testClassDisabler);
+    tng.run();
+
+    assertThat(listener.getInvokedMethods()).isEmpty();
   }
 }
