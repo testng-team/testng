@@ -106,7 +106,7 @@ public final class Utils {
       if (!outDir.exists()) {
         outDir.mkdirs();
       }
-      final File file = new File(outputDir, fileName);
+      final File file = new File(outDir, fileName);
       if (!file.exists()) {
         file.createNewFile();
       }
