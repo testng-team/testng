@@ -102,6 +102,10 @@ public final class Utils {
 
   public static void writeUtf8File(String outputDir, String fileName, XMLStringBuffer xsb, String prefix) {
     try {
+      final File outDir = (outputDir != null) ? new File(outputDir) : new File("").getAbsoluteFile();
+      if (!outDir.exists()) {
+        outDir.mkdirs();
+      }
       final File file = new File(outputDir, fileName);
       if (!file.exists()) {
         file.createNewFile();
