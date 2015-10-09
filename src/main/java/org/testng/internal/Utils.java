@@ -100,9 +100,13 @@ public final class Utils {
     return vResult.toArray(new String[vResult.size()]);
   }
 
-  public static void writeUtf8File(String outputDir, String fileName, XMLStringBuffer xsb, String prefix) {
+  public static void writeUtf8File(@Nullable String outputDir, String fileName, XMLStringBuffer xsb, String prefix) {
     try {
-      final File file = new File(outputDir, fileName);
+      final File outDir = (outputDir != null) ? new File(outputDir) : new File("").getAbsoluteFile();
+      if (!outDir.exists()) {
+        outDir.mkdirs();
+      }
+      final File file = new File(outDir, fileName);
       if (!file.exists()) {
         file.createNewFile();
       }
@@ -790,7 +794,7 @@ public final class Utils {
   /**
    * Returns the string representation of the specified object, transparently
    * handling null references and arrays.
-   * 
+   *
    * @param obj
    *            the object
    * @return the string representation
