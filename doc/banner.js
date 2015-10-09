@@ -43,6 +43,7 @@ function displayMenu(pCurrentPage) {
        writeTD(pCurrentPage,               "ant.html", "Ant")
        writeTD(pCurrentPage,              "misc.html", "Miscellaneous")
        writeTD(pCurrentPage,              "book.html", "Book")
+       writeTD(pCurrentPage,              "http://beust.com/kobalt", "Kobalt")
    document.writeln('            </tr>')
    document.writeln('        </table>')
    document.writeln('    </div>')
