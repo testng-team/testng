@@ -24,10 +24,11 @@ public final class InvocationCountTest implements IRetryAnalyzer {
   private static final AtomicInteger retriesRemaining = new AtomicInteger(100);
 
   private int r1 = 0;
-  private int r2 = 0;
+  private int r2 = 1;
   private int r3 = 0;
   private int r7 = 0;
   private static int value = 42;
+  private int executionNumber = 0;
 
   @Test(retryAnalyzer = InvocationCountTest.class)
   public void testAnnotationWithNoRetries() {
@@ -67,8 +68,8 @@ public final class InvocationCountTest implements IRetryAnalyzer {
 
   @DataProvider(name="dataProvider")
   private Object[][] dataProvider() {
-    return new Object[][] { { 1, false }, { 0, true }, { 0, true },
-        { 1, false } };
+    return new Object[][] { { 1, true }, { 2, false }, { 3, true },
+        { 4, false } };
   }
 
   @DataProvider(name="dataProvider2")
@@ -80,11 +81,15 @@ public final class InvocationCountTest implements IRetryAnalyzer {
 
   @Test(retryAnalyzer = InvocationCountTest.class, dataProvider = "dataProvider")
   public void testAnnotationWithDataProvider(int paf, boolean test) {
-    if (paf == 1 && test == false) {
+	executionNumber++;
+    if (paf == 2 && test == false) {
       if (r2 >= 1) {
         r2--;
         fail();
       }
+    }
+    if (paf == 4){
+      assertEquals(executionNumber,5);
     }
   }
 
