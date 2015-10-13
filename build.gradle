@@ -30,9 +30,13 @@ plugins {
     id "com.jfrog.artifactory" version "3.1.1"
 }
 
-version = '6.9.7-SNAPSHOT'
+version = '6.9.9-SNAPSHOT'
 
 apply plugin: 'java'
+
+targetCompatibility = "1.7"
+sourceCompatibility = "1.7"
+
 apply plugin: 'osgi'
 
 repositories {
