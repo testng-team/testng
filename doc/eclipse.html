@@ -46,7 +46,7 @@ and easily monitor their execution and their output. It has its own <a href="htt
 <br>
 &nbsp;&nbsp;<a class="summary" href="#eclipse-preferences">9 - Preferences and Properties</a>
 <br>
-&nbsp;&nbsp;<a class="summary" href="#eclipse-workbench-preferences">9.1 - Workbean Preferences</a>
+&nbsp;&nbsp;<a class="summary" href="#eclipse-workbench-preferences">9.1 - Workbench Preferences</a>
 <br>
 &nbsp;&nbsp;<a class="summary" href="#eclipse-project-properties">9.2 - Project Properties</a>
 <br>
@@ -64,7 +64,7 @@ Once you have <a href="http://testng.org/doc/download.html">installed the plug-i
 <!--
   Creating
 -->
-<h3><a name="eclipse-creating">2 -Creating a TestNG class</a></h3><p>
+<h3><a name="eclipse-creating">2 - Creating a TestNG class</a></h3><p>
 
 To create a new TestNG class, select the menu File / New / TestNG:
 
@@ -95,15 +95,16 @@ configuration:</p><p align="center">
 <p>You should change the name of this configuration and pick a project, which 
 can be selected by clicking on the <tt>Browse...</tt> button at the top of the window.</p>
 <p>
-<ul>
 Runtime options:
-<li><b>Log Level</b>: specify the value (0-10) for different verbose log level</li>
-<li><b>Verbose</b>: check it to enable the runtime TestNG verbose log</li>
-<li><b>Debug</b>: check it to enable more runtime TestNG debug info</li>
-<li><b>Serialization Protocol</b>: the serialization protocol used for commuincating between TestNG Eclipse Plugin and TestNG runtime.
+<ul>
+<li><b>Log Level</b>: specify the value (0-10) for different verbose log levels</li>
+<li><b>Verbose</b>: enable the runtime TestNG verbose log</li>
+<li><b>Debug</b>: enable more runtime TestNG debug info</li>
+<li><b>Serialization Protocol</b>: the serialization protocol used for communicating between TestNG Eclipse Plugin and TestNG runtime.
 By default it's "Object Serialization", the other option is "String Serializatio" but is deprecated.</li>
-<li><b>Add the POM's JVM Arguments when launch</b>: for maven based project, we normally define maven-surefire-plugin for test phase and maven-failsafe-plugin for integration test phase, there might be having the testing runtime JVM arguments defined in the "argLine" element of the maven plugin configuration. If you check this option, TestNG Eclipse Plugin will try to recognize the JVM arguments in "argLine", add them to TestNG runtime JVM arguments when lauch.<br/>
-Be note that, if there's multiple "argLine" element in the pom.xml, the first presence will be used. If it's not the desired behaviour, you can simply uncheck this option, and type your JVM arguments on the "Arguments" tab next to this "Test" tab.</li>
+<li><b>Add the POM's JVM Arguments when launch</b>: for maven based project, we normally define maven-surefire-plugin for test phase and maven-failsafe-plugin for integration test phase, there might be having the testing runtime JVM arguments defined in the "argLine" element of the maven plugin configuration. If you check this option, TestNG Eclipse Plugin will try to recognize the JVM arguments in "argLine", add them to TestNG runtime JVM arguments when launch.<br/>
+NOTE 1: these JVM arguments are put on front of user defined VM arguments on "Arguments" tab, which means you can overide the POM defined JVM argumetns with the ones on "Arguments" tab.<br/>
+NOTE 2: if there are multiple "argLine" elements in the pom.xml, the first presence will be used. If it's not the desired behaviour, you can simply uncheck this option, and type your JVM arguments on the "Arguments" tab next to this "Test" tab.</li>
 </ul>
 </p>
 <p>Then you choose to launch your TestNG tests in the following ways:</p><h4><a name="eclipse-launch-class">4.2.1 - From a class file</a></h4><p>Make sure the box near <tt>Class</tt> is checked and then pick a class from your 
@@ -288,6 +289,9 @@ Apply a quick fix on an assert method to automatically import it:
 <img border="0" src="http://testng.org/pictures/quickfix-import.png" />
 </p>
 
+<!--
+  Preferences and Properties
+-->
 <h3><a name="eclipse-preferences">9 - Preferences and Properties</a></h3>
 <h4><a name="eclipse-workbench-preferences">9.1 - Workbench Preferences</a></h4>
 TestNG workbench preferences:
