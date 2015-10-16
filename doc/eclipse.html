@@ -44,6 +44,12 @@ and easily monitor their execution and their output. It has its own <a href="htt
 <br>
 &nbsp;&nbsp;<a class="summary" href="#eclipse-quickfixes">8 - Quick fixes</a>
 <br>
+&nbsp;&nbsp;<a class="summary" href="#eclipse-preferences">9 - Preferences and Properties</a>
+<br>
+&nbsp;&nbsp;<a class="summary" href="#eclipse-workbench-preferences">9.1 - Workbean Preferences</a>
+<br>
+&nbsp;&nbsp;<a class="summary" href="#eclipse-project-properties">9.2 - Project Properties</a>
+<br>
 &nbsp;&nbsp;<a class="summary" href="#testng-xml"></a>
 
 <!--
@@ -282,7 +288,45 @@ Apply a quick fix on an assert method to automatically import it:
 <img border="0" src="http://testng.org/pictures/quickfix-import.png" />
 </p>
 
+<h3><a name="eclipse-preferences">9 - Preferences and Properties</a></h3>
+<h4><a name="eclipse-workbench-preferences">9.1 - Workbench Preferences</a></h4>
+TestNG workbench preferences:
+<p align="center">
+<img border="0" src="http://testng.org/pictures/preferences.png" />
+</p>
+<p>
+The preferences here are shared among projects and launch configurations.
+<ul>
+<li><b>Output directory</b>: the path where to store the output including temp files, report files, etc. By default, the path is relative to each project except you check the option <b>Absolute ouput path</b> below.</li>
+<li><b>Disalbe default listeners</b>: disable the default listeners when launch testng runtime</li>
+<li><b>Show view when test complete</b>: active the TestNG result view when the test complete</li>
+<li><b>Use Project TestNG jar</b>: It's default to be checked which means TestNG Eclipse Plugin will use the project TestNG jar (for example, the TestNG version managed with maven) when launch TestNG runtime. Otherwise, the TestNG eclipse plugin embedded TestNG version will be used.<br/>
+When to check this option?
+<ul>
+  <li>you want it behviour as close as running outside IDE, e.g. with maven surefire plugin, since the Plugin embedded version of TestNG most likely different with the version of your project.</li>
+  <li>you don't want the Plugin embedded plugin and it's dependent libs (e.g. snakeyaml, etc.) pollute your TestNG runtime classpath.</li>
+</ul></li>
+<li><b>Template XML file</b>: the absolute path of the template xml file used to genernate the custom test suite xml before launch</li>
+<li><b>Excluded stack traces</b>: </li>
+<li><b>Pre Defined Listeners</b>: </li>
+</ul>
+</p>
 
+<h4><a name="eclipse-project-properties">9.2 - Project Properties</a></h4>
+Project level properties:
+<p align="center">
+<img border="0" src="http://testng.org/pictures/project_properties.png" />
+</p>
+<p>
+Here are properties on each project level, it will override the same properties if defined in <a class="summary" href="#eclipse-workbench-preferences">TestNG workbench preferences</a>
+<ul>
+<li><b>Output directory</b>: for example, in the figure above, I prefer to put the output to maven 'target' directory rather than the default one under project root</li>
+<li><b>Watch testng-result.xml</b>:</li>
+<li><b>Template XML file</b>: see in <a class="summary" href="#eclipse-workbench-preferences">TestNG workbench preferences</a></li>
+<li><b>Use Project TestNG jar</b>: see in <a class="summary" href="#eclipse-workbench-preferences">TestNG workbench preferences</a></li>
+<li><b>Pre Defined Listeners</b>: see in <a class="summary" href="#eclipse-workbench-preferences">TestNG workbench preferences</a></li>
+</ul>
+</p>
 
 <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
 </script>
