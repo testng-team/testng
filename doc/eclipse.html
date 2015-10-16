@@ -87,11 +87,25 @@ configuration:</p><p align="center">
 <img border="0" src="http://testng.org/pictures/launch.png" />
 </p>
 <p>You should change the name of this configuration and pick a project, which 
-can be selected by clicking on the <tt>Browse...</tt> button at the top of the window.</p><p>Then you choose to launch your TestNG tests in the following ways:</p><h4><a name="eclipse-launch-class">4.2.1 - From a class file</a></h4><p>Make sure the box near <tt>Class</tt> is checked and then pick a class from your 
+can be selected by clicking on the <tt>Browse...</tt> button at the top of the window.</p>
+<p>
+<ul>
+Runtime options:
+<li><b>Log Level</b>: specify the value (0-10) for different verbose log level</li>
+<li><b>Verbose</b>: check it to enable the runtime TestNG verbose log</li>
+<li><b>Debug</b>: check it to enable more runtime TestNG debug info</li>
+<li><b>Serialization Protocol</b>: the serialization protocol used for commuincating between TestNG Eclipse Plugin and TestNG runtime.
+By default it's "Object Serialization", the other option is "String Serializatio" but is deprecated.</li>
+<li><b>Add the POM's JVM Arguments when launch</b>: for maven based project, we normally define maven-surefire-plugin for test phase and maven-failsafe-plugin for integration test phase, there might be having the testing runtime JVM arguments defined in the "argLine" element of the maven plugin configuration. If you check this option, TestNG Eclipse Plugin will try to recognize the JVM arguments in "argLine", add them to TestNG runtime JVM arguments when lauch.<br/>
+Be note that, if there's multiple "argLine" element in the pom.xml, the first presence will be used. If it's not the desired behaviour, you can simply uncheck this option, and type your JVM arguments on the "Arguments" tab next to this "Test" tab.</li>
+</ul>
+</p>
+<p>Then you choose to launch your TestNG tests in the following ways:</p><h4><a name="eclipse-launch-class">4.2.1 - From a class file</a></h4><p>Make sure the box near <tt>Class</tt> is checked and then pick a class from your 
 project.&nbsp; You can click on the <tt>Browse...</tt> button and pick it directly from a 
 list.&nbsp; This list only contains classes that contain TestNG annotations:</p><p align="center">
 <img border="0" src="http://testng.org/pictures/classes.png" />
 </p>
+
 
 <h4><a name="eclipse-create-groups">3.2 - From groups</a></h4>
 <p>If you only want to launch one or several groups, you can type them in the 
@@ -109,7 +123,7 @@ in your project:
 <p align="center">
 <img border="0" src="http://testng.org/pictures/suites.png" />
 </p>
-
+You can type the regex on the filter text field to narrow down to suite definition files matching your search from a long list of files.
 
 <h4>
 <a name="eclipse-create-method">3.4 - From a method </a>
