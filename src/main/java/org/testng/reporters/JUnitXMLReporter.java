@@ -174,19 +174,19 @@ public class JUnitXMLReporter implements IResultListener2 {
       document.push(XMLConstants.TESTSUITE, attrs);
 //      document.addEmptyElement(XMLConstants.PROPERTIES);
 
-      synchronized(m_configIssues) {
-          for(ITestResult tr : m_configIssues) {
-              createElement(document, tr);
-          }
-      }
-      synchronized(m_allTests) {
-          for(ITestResult tr : m_allTests) {
-              createElement(document, tr);
-          }
-      }
+      createElementFromTestResults(document, m_configIssues);
+      createElementFromTestResults(document, m_allTests);
 
       document.pop();
       Utils.writeUtf8File(context.getOutputDirectory(),generateFileName(context) + ".xml", document.toXML());
+  }
+
+  private void createElementFromTestResults(XMLStringBuffer document, List<ITestResult> results) {
+    synchronized(results) {
+      for(ITestResult tr : results) {
+        createElement(document, tr);
+      }
+    }
   }
 
   private Set<String> getPackages(ITestContext context) {
