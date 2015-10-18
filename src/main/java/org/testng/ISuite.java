@@ -64,7 +64,7 @@ public interface ISuite extends IAttributes {
   /**
    * Retrieves the list of all the methods that were invoked during this run.
    * @return a collection of ITestNGMethods belonging to all tests included in the suite.
-   * @deprecated Use getAllInvokedMthods().
+   * @deprecated Use getAllInvokedMethods().
    */
   @Deprecated
   public Collection<ITestNGMethod> getInvokedMethods();
