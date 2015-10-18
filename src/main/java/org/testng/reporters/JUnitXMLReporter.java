@@ -174,11 +174,15 @@ public class JUnitXMLReporter implements IResultListener2 {
       document.push(XMLConstants.TESTSUITE, attrs);
 //      document.addEmptyElement(XMLConstants.PROPERTIES);
 
-      for(ITestResult tr : m_configIssues) {
-        createElement(document, tr);
+      synchronized(m_configIssues) {
+          for(ITestResult tr : m_configIssues) {
+              createElement(document, tr);
+          }
       }
-      for(ITestResult tr : m_allTests) {
-        createElement(document, tr);
+      synchronized(m_allTests) {
+          for(ITestResult tr : m_allTests) {
+              createElement(document, tr);
+          }
       }
 
       document.pop();
