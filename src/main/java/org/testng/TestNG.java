@@ -982,9 +982,20 @@ public class TestNG {
   private void checkSuiteNamesInternal(List<XmlSuite> suites, Set<String> names) {
     for (XmlSuite suite : suites) {
       final String name = suite.getName();
-      if (names.contains(name)) {
-        throw new TestNGException("Two suites cannot have the same name: " + name);
+      
+      int count = 0;
+      String tmpName = name;
+      while (names.contains(tmpName)) {
+        tmpName = name + " (" + count++ + ")";
       }
+ 
+      if (count > 0) {
+        suite.setName(tmpName);
+        names.add(tmpName);
+      } else {
+        names.add(name);
+      }
+
       names.add(name);
       checkSuiteNamesInternal(suite.getChildSuites(), names);
     }
