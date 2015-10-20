@@ -1,10 +1,14 @@
 import com.beust.kobalt.*
+import com.beust.kobalt.api.*
+import com.beust.kobalt.api.annotation.Task
 import com.beust.kobalt.internal.test
 import com.beust.kobalt.plugin.java.javaProject
 import com.beust.kobalt.plugin.kotlin.kotlinProject
 import com.beust.kobalt.plugin.packaging.assemble
 import com.beust.kobalt.plugin.kotlin.kotlinCompiler
 import com.beust.kobalt.plugin.publish.jcenter
+
+import java.nio.file.*
 
 val testng = javaProject {
     name = "testng"
