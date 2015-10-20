@@ -104,7 +104,7 @@ Runtime options:
 <li><b>Verbose</b>: enable the runtime TestNG verbose log</li>
 <li><b>Debug</b>: enable more runtime TestNG debug info</li>
 <li><b>Serialization Protocol</b>: the serialization protocol used for communicating between TestNG Eclipse Plugin and TestNG runtime.
-By default it's "Object Serialization", the other option is "String Serializatio" but is deprecated.</li>
+The default is "Object Serialization", the other option ("String Serialization") is deprecated.</li>
 <li><b>Add the POM's JVM Arguments when launch</b>: for maven based project, we normally define maven-surefire-plugin for test phase and maven-failsafe-plugin for integration test phase, there might be having the testing runtime JVM arguments defined in the "argLine" element of the maven plugin configuration. If you check this option, TestNG Eclipse Plugin will try to recognize the JVM arguments in "argLine", add them to TestNG runtime JVM arguments when launch.<br/>
 NOTE 1: these JVM arguments are put on front of user defined VM arguments on "Arguments" tab, which means you can overide the POM defined JVM argumetns with the ones on "Arguments" tab.<br/>
 NOTE 2: if there are multiple "argLine" elements in the pom.xml, the first presence will be used. If it's not the desired behaviour, you can simply uncheck this option, and type your JVM arguments on the "Arguments" tab next to this "Test" tab.</li>
