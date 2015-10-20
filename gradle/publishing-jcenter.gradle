@@ -54,7 +54,7 @@ artifactory {
 
         }
         defaults {
-            publications('mavenJava')
+            publications('mavenCustom')
         }
 
     }
