@@ -44,6 +44,12 @@ and easily monitor their execution and their output. It has its own <a href="htt
 <br>
 &nbsp;&nbsp;<a class="summary" href="#eclipse-quickfixes">8 - Quick fixes</a>
 <br>
+&nbsp;&nbsp;<a class="summary" href="#eclipse-preferences">9 - Preferences and Properties</a>
+<br>
+&nbsp;&nbsp;<a class="summary" href="#eclipse-workbench-preferences">9.1 - Workbench Preferences</a>
+<br>
+&nbsp;&nbsp;<a class="summary" href="#eclipse-project-properties">9.2 - Project Properties</a>
+<br>
 &nbsp;&nbsp;<a class="summary" href="#testng-xml"></a>
 
 <!--
@@ -54,11 +60,14 @@ Once you have <a href="http://testng.org/doc/download.html">installed the plug-i
 / Other...</tt>&nbsp; and you should see the TestNG view listed in the Java category.</p><p align="center">
 <img border="0" src="http://testng.org/pictures/view.png" />
 </p>
+<p>
+NOTE: since TestNG Eclipse Plugin 6.9.8, the minimum required TestNG version is <b>6.5.1</b>
+</p>
 
 <!--
   Creating
 -->
-<h3><a name="eclipse-creating">2 -Creating a TestNG class</a></h3><p>
+<h3><a name="eclipse-creating">2 - Creating a TestNG class</a></h3><p>
 
 To create a new TestNG class, select the menu File / New / TestNG:
 
@@ -87,11 +96,26 @@ configuration:</p><p align="center">
 <img border="0" src="http://testng.org/pictures/launch.png" />
 </p>
 <p>You should change the name of this configuration and pick a project, which 
-can be selected by clicking on the <tt>Browse...</tt> button at the top of the window.</p><p>Then you choose to launch your TestNG tests in the following ways:</p><h4><a name="eclipse-launch-class">4.2.1 - From a class file</a></h4><p>Make sure the box near <tt>Class</tt> is checked and then pick a class from your 
+can be selected by clicking on the <tt>Browse...</tt> button at the top of the window.</p>
+<p>
+Runtime options:
+<ul>
+<li><b>Log Level</b>: specify the value (0-10) for different verbose log levels</li>
+<li><b>Verbose</b>: enable the runtime TestNG verbose log</li>
+<li><b>Debug</b>: enable more runtime TestNG debug info</li>
+<li><b>Serialization Protocol</b>: the serialization protocol used for communicating between TestNG Eclipse Plugin and TestNG runtime.
+The default is "Object Serialization", the other option ("String Serialization") is deprecated.</li>
+<li><b>Add the POM's JVM Arguments when launch</b>: for maven based project, we normally define maven-surefire-plugin for test phase and maven-failsafe-plugin for integration test phase, there might be having the testing runtime JVM arguments defined in the "argLine" element of the maven plugin configuration. If you check this option, TestNG Eclipse Plugin will try to recognize the JVM arguments in "argLine", add them to TestNG runtime JVM arguments when launch.<br/>
+NOTE 1: these JVM arguments are put on front of user defined VM arguments on "Arguments" tab, which means you can overide the POM defined JVM argumetns with the ones on "Arguments" tab.<br/>
+NOTE 2: if there are multiple "argLine" elements in the pom.xml, the first presence will be used. If it's not the desired behaviour, you can simply uncheck this option, and type your JVM arguments on the "Arguments" tab next to this "Test" tab.</li>
+</ul>
+</p>
+<p>Then you choose to launch your TestNG tests in the following ways:</p><h4><a name="eclipse-launch-class">4.2.1 - From a class file</a></h4><p>Make sure the box near <tt>Class</tt> is checked and then pick a class from your 
 project.&nbsp; You can click on the <tt>Browse...</tt> button and pick it directly from a 
 list.&nbsp; This list only contains classes that contain TestNG annotations:</p><p align="center">
 <img border="0" src="http://testng.org/pictures/classes.png" />
 </p>
+
 
 <h4><a name="eclipse-create-groups">3.2 - From groups</a></h4>
 <p>If you only want to launch one or several groups, you can type them in the 
@@ -109,7 +133,7 @@ in your project:
 <p align="center">
 <img border="0" src="http://testng.org/pictures/suites.png" />
 </p>
-
+You can type the regex on the filter text field to narrow down to suite definition files matching your search from a long list of files.
 
 <h4>
 <a name="eclipse-create-method">3.4 - From a method </a>
@@ -268,7 +292,48 @@ Apply a quick fix on an assert method to automatically import it:
 <img border="0" src="http://testng.org/pictures/quickfix-import.png" />
 </p>
 
+<!--
+  Preferences and Properties
+-->
+<h3><a name="eclipse-preferences">9 - Preferences and Properties</a></h3>
+<h4><a name="eclipse-workbench-preferences">9.1 - Workbench Preferences</a></h4>
+TestNG workbench preferences:
+<p align="center">
+<img border="0" src="http://testng.org/pictures/preferences.png" />
+</p>
+<p>
+The preferences here are shared among projects and launch configurations.
+<ul>
+<li><b>Output directory</b>: the path where to store the output including temp files, report files, etc. By default, the path is relative to each project except you check the option <b>Absolute ouput path</b> below.</li>
+<li><b>Disalbe default listeners</b>: disable the default listeners when launch testng runtime</li>
+<li><b>Show view when test complete</b>: active the TestNG result view when the test complete</li>
+<li><b>Use Project TestNG jar</b>: It's default to be checked which means TestNG Eclipse Plugin will use the project TestNG jar (for example, the TestNG version managed with maven) when launch TestNG runtime. Otherwise, the TestNG eclipse plugin embedded TestNG version will be used.<br/>
+When to check this option?
+<ul>
+  <li>you want it behviour as close as running outside IDE, e.g. with maven surefire plugin, since the Plugin embedded version of TestNG most likely different with the version of your project.</li>
+  <li>you don't want the Plugin embedded plugin and it's dependent libs (e.g. snakeyaml, etc.) pollute your TestNG runtime classpath.</li>
+</ul></li>
+<li><b>Template XML file</b>: the absolute path of the template xml file used to genernate the custom test suite xml before launch</li>
+<li><b>Excluded stack traces</b>: </li>
+<li><b>Pre Defined Listeners</b>: </li>
+</ul>
+</p>
 
+<h4><a name="eclipse-project-properties">9.2 - Project Properties</a></h4>
+Project level properties:
+<p align="center">
+<img border="0" src="http://testng.org/pictures/project_properties.png" />
+</p>
+<p>
+Here are properties on each project level, it will override the same properties if defined in <a class="summary" href="#eclipse-workbench-preferences">TestNG workbench preferences</a>
+<ul>
+<li><b>Output directory</b>: for example, in the figure above, I prefer to put the output to maven 'target' directory rather than the default one under project root</li>
+<li><b>Watch testng-result.xml</b>:</li>
+<li><b>Template XML file</b>: see in <a class="summary" href="#eclipse-workbench-preferences">TestNG workbench preferences</a></li>
+<li><b>Use Project TestNG jar</b>: see in <a class="summary" href="#eclipse-workbench-preferences">TestNG workbench preferences</a></li>
+<li><b>Pre Defined Listeners</b>: see in <a class="summary" href="#eclipse-workbench-preferences">TestNG workbench preferences</a></li>
+</ul>
+</p>
 
 <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
 </script>
