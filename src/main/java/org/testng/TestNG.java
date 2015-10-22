@@ -97,7 +97,6 @@ import static org.testng.internal.Utils.isStringNotEmpty;
  * @see #usage()
  *
  * @author <a href = "mailto:cedric&#64;beust.com">Cedric Beust</a>
- * @author <a href = "mailto:the_mindstorm&#64;evolva.ro">Alex Popescu</a>
  */
 public class TestNG {
 
