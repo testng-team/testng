@@ -1,6 +1,16 @@
 ﻿Current
 
-Fixed: Allowing suites to have duplicate names. You can now configure the same suite-file to run multiple times. (Eduardo Born)
+Fixed: GITHUB-829: Allowing suites to have duplicate names. You can now configure the same suite-file to run multiple times. (Eduardo Born)
+Fixed: GITHUB-834: nested suites not supported by 'testnames' (Tibor Digana & Julien Herr)
+
+6.9.8:
+2015/10/12
+
+Replace 6.9.7 that was build with Java8 by error.
+
+6.9.7:
+No official release
+
 Fixed: GITHUB-798: Set suitethreadpoolsize for Maven Surefire (Jan Dundáček)
 Fixed: GITHUB-171: ISuiteListener methods called multiple times if multiple test elements (Daniel Qian & Julien Herr)
 Fixed: GITHUB-169: IInvokedMethodListener methods executed several times before/after each test method (Mario Duarte & Julien Herr)
