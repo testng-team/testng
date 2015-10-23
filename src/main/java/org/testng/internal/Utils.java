@@ -150,19 +150,6 @@ public final class Utils {
   }
 
   /**
-   * Appends contents of the string to the specified file. If output directory/file don't
-   * exist, they are created.
-   * @param outputDir output directory. If <tt>null</tt>, then current directory is used
-   * @param fileName file name
-   * @param sb string to be appended to file
-   */
-  public static void appendToFile(@Nullable String outputDir, String fileName, String sb) {
-     String outDirPath= outputDir != null ? outputDir : "";
-     File outDir= new File(outDirPath);
-     writeFile(outDir, fileName, sb, null, true /* append */);
-  }
-
-  /**
    * Writes the content of the sb string to the file named filename in outDir. If
    * outDir does not exist, it is created.
    *
