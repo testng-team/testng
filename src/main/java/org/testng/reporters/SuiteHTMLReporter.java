@@ -14,6 +14,7 @@ import org.testng.collections.Maps;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlSuite;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -346,101 +347,110 @@ public class SuiteHTMLReporter implements IReporter {
   private void generateMethodsChronologically(XmlSuite xmlSuite, ISuite suite,
       String outputFileName, boolean alphabetical)
   {
-    StringBuffer sb = new StringBuffer();
+    BufferedWriter bw = null;
+    try {
+      bw = Utils.openWriter(getOutputDirectory(xmlSuite), outputFileName);
 
-    sb.append("<h2>Methods run, sorted chronologically</h2>");
-    sb.append("<h3>" + BEFORE + " means before, " + AFTER + " means after</h3><p/>");
+      bw.append("<h2>Methods run, sorted chronologically</h2>");
+      bw.append("<h3>" + BEFORE + " means before, " + AFTER + " means after</h3><p/>");
 
-    long startDate = -1;
-    sb.append("<br/><em>").append(suite.getName()).append("</em><p/>");
-    sb.append("<small><i>(Hover the method name to see the test class name)</i></small><p/>\n");
-    Utils.writeFile(getOutputDirectory(xmlSuite), outputFileName, sb.toString());
-    sb = null; //not needed anymore
+      long startDate = -1;
+      bw.append("<br/><em>").append(suite.getName()).append("</em><p/>");
+      bw.append("<small><i>(Hover the method name to see the test class name)</i></small><p/>\n");
 
-    Collection<IInvokedMethod> invokedMethods = suite.getAllInvokedMethods();
-    if (alphabetical) {
-      @SuppressWarnings({"unchecked"})
-      Comparator<? super ITestNGMethod>  alphabeticalComparator = new Comparator(){
-        @Override
-        public int compare(Object o1, Object o2) {
-          IInvokedMethod m1 = (IInvokedMethod) o1;
-          IInvokedMethod m2 = (IInvokedMethod) o2;
-          return m1.getTestMethod().getMethodName().compareTo(m2.getTestMethod().getMethodName());
+      Collection<IInvokedMethod> invokedMethods = suite.getAllInvokedMethods();
+      if (alphabetical) {
+	@SuppressWarnings({"unchecked"})
+	Comparator<? super ITestNGMethod>  alphabeticalComparator = new Comparator(){
+	  @Override
+	  public int compare(Object o1, Object o2) {
+	    IInvokedMethod m1 = (IInvokedMethod) o1;
+	    IInvokedMethod m2 = (IInvokedMethod) o2;
+	    return m1.getTestMethod().getMethodName().compareTo(m2.getTestMethod().getMethodName());
+	  }
+	};
+	Collections.sort((List) invokedMethods, alphabeticalComparator);
+      }
+
+      SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
+      boolean addedHeader = false;
+      for (IInvokedMethod iim : invokedMethods) {
+	ITestNGMethod tm = iim.getTestMethod();
+	if (!addedHeader) {
+	  bw.append("<table border=\"1\">\n")
+	    .append("<tr>")
+	    .append("<th>Time</th>")
+	    .append("<th>Delta (ms)</th>")
+	    .append("<th>Suite<br>configuration</th>")
+	    .append("<th>Test<br>configuration</th>")
+	    .append("<th>Class<br>configuration</th>")
+	    .append("<th>Groups<br>configuration</th>")
+	    .append("<th>Method<br>configuration</th>")
+	    .append("<th>Test<br>method</th>")
+	    .append("<th>Thread</th>")
+	    .append("<th>Instances</th>")
+	    .append("</tr>\n");
+	  addedHeader = true;
+	}
+	String methodName = tm.toString();
+	boolean bc = tm.isBeforeClassConfiguration();
+	boolean ac = tm.isAfterClassConfiguration();
+	boolean bt = tm.isBeforeTestConfiguration();
+	boolean at = tm.isAfterTestConfiguration();
+	boolean bs = tm.isBeforeSuiteConfiguration();
+	boolean as = tm.isAfterSuiteConfiguration();
+	boolean bg = tm.isBeforeGroupsConfiguration();
+	boolean ag = tm.isAfterGroupsConfiguration();
+	boolean setUp = tm.isBeforeMethodConfiguration();
+	boolean tearDown = tm.isAfterMethodConfiguration();
+	boolean isClassConfiguration = bc || ac;
+	boolean isGroupsConfiguration = bg || ag;
+	boolean isTestConfiguration = bt || at;
+	boolean isSuiteConfiguration = bs || as;
+	boolean isSetupOrTearDown = setUp || tearDown;
+	String configurationClassMethod = isClassConfiguration ? (bc ? BEFORE : AFTER) + methodName : SP;
+	String configurationTestMethod = isTestConfiguration ? (bt ? BEFORE : AFTER) + methodName : SP;
+	String configurationGroupsMethod = isGroupsConfiguration ? (bg ? BEFORE : AFTER) + methodName : SP;
+	String configurationSuiteMethod = isSuiteConfiguration ? (bs ? BEFORE : AFTER) + methodName : SP;
+	String setUpOrTearDownMethod = isSetupOrTearDown ? (setUp ? BEFORE : AFTER) + methodName : SP;
+	String testMethod = tm.isTest() ? methodName : SP;
+
+	StringBuffer instances = new StringBuffer();
+	for (long o : tm.getInstanceHashCodes()) {
+	  instances.append(o).append(" ");
+	}
+
+	if (startDate == -1) {
+	  startDate = iim.getDate();
+	}
+	String date = format.format(iim.getDate());
+	bw.append("<tr bgcolor=\"" + createColor(tm) + "\">")
+	  .append("  <td>").append(date).append("</td> ")
+	  .append("  <td>").append(Long.toString(iim.getDate() - startDate)).append("</td> ")
+	  .append(td(configurationSuiteMethod))
+	  .append(td(configurationTestMethod))
+	  .append(td(configurationClassMethod))
+	  .append(td(configurationGroupsMethod))
+	  .append(td(setUpOrTearDownMethod))
+	  .append(td(testMethod))
+	  .append("  <td>").append(tm.getId()).append("</td> ")
+	  .append("  <td>").append(instances).append("</td> ")
+	  .append("</tr>\n")
+	  ;
+      }
+      bw.append("</table>\n");
+    } catch (IOException e) {
+      Utils.log("[SuiteHTMLReporter]", 1, "Error writing to " + outputFileName + ": " + e.getMessage());
+    } finally {
+      try {
+        if (bw != null) {
+          bw.close();
         }
-      };
-      Collections.sort((List) invokedMethods, alphabeticalComparator);
+      }
+      catch (IOException e) {
+        ; // ignore
+      }
     }
-
-    SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
-    StringBuffer table = new StringBuffer();
-    boolean addedHeader = false;
-    for (IInvokedMethod iim : invokedMethods) {
-      ITestNGMethod tm = iim.getTestMethod();
-      table.setLength(0);
-      if (!addedHeader) {
-        table.append("<table border=\"1\">\n")
-          .append("<tr>")
-          .append("<th>Time</th>")
-          .append("<th>Delta (ms)</th>")
-          .append("<th>Suite<br>configuration</th>")
-          .append("<th>Test<br>configuration</th>")
-          .append("<th>Class<br>configuration</th>")
-          .append("<th>Groups<br>configuration</th>")
-          .append("<th>Method<br>configuration</th>")
-          .append("<th>Test<br>method</th>")
-          .append("<th>Thread</th>")
-          .append("<th>Instances</th>")
-          .append("</tr>\n");
-        addedHeader = true;
-      }
-      String methodName = tm.toString();
-      boolean bc = tm.isBeforeClassConfiguration();
-      boolean ac = tm.isAfterClassConfiguration();
-      boolean bt = tm.isBeforeTestConfiguration();
-      boolean at = tm.isAfterTestConfiguration();
-      boolean bs = tm.isBeforeSuiteConfiguration();
-      boolean as = tm.isAfterSuiteConfiguration();
-      boolean bg = tm.isBeforeGroupsConfiguration();
-      boolean ag = tm.isAfterGroupsConfiguration();
-      boolean setUp = tm.isBeforeMethodConfiguration();
-      boolean tearDown = tm.isAfterMethodConfiguration();
-      boolean isClassConfiguration = bc || ac;
-      boolean isGroupsConfiguration = bg || ag;
-      boolean isTestConfiguration = bt || at;
-      boolean isSuiteConfiguration = bs || as;
-      boolean isSetupOrTearDown = setUp || tearDown;
-      String configurationClassMethod = isClassConfiguration ? (bc ? BEFORE : AFTER) + methodName : SP;
-      String configurationTestMethod = isTestConfiguration ? (bt ? BEFORE : AFTER) + methodName : SP;
-      String configurationGroupsMethod = isGroupsConfiguration ? (bg ? BEFORE : AFTER) + methodName : SP;
-      String configurationSuiteMethod = isSuiteConfiguration ? (bs ? BEFORE : AFTER) + methodName : SP;
-      String setUpOrTearDownMethod = isSetupOrTearDown ? (setUp ? BEFORE : AFTER) + methodName : SP;
-      String testMethod = tm.isTest() ? methodName : SP;
-
-      StringBuffer instances = new StringBuffer();
-      for (long o : tm.getInstanceHashCodes()) {
-        instances.append(o).append(" ");
-      }
-
-      if (startDate == -1) {
-        startDate = iim.getDate();
-      }
-      String date = format.format(iim.getDate());
-      table.append("<tr bgcolor=\"" + createColor(tm) + "\">")
-        .append("  <td>").append(date).append("</td> ")
-        .append("  <td>").append(iim.getDate() - startDate).append("</td> ")
-        .append(td(configurationSuiteMethod))
-        .append(td(configurationTestMethod))
-        .append(td(configurationClassMethod))
-        .append(td(configurationGroupsMethod))
-        .append(td(setUpOrTearDownMethod))
-        .append(td(testMethod))
-        .append("  <td>").append(tm.getId()).append("</td> ")
-        .append("  <td>").append(instances).append("</td> ")
-        .append("</tr>\n")
-        ;
-      Utils.appendToFile(getOutputDirectory(xmlSuite), outputFileName, table.toString());
-    }
-    Utils.appendToFile(getOutputDirectory(xmlSuite), outputFileName, "</table>\n");
   }
 
   /**
