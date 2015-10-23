@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Surefire debug suite">
+    <test name="testGroup1">
+        <classes>
+            <class name="test.testnames.TestNamesFeature">
+                <methods>
+                    <include name="sampleOutputTest1"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+    <test name="testGroup2">
+        <classes>
+            <class name="test.testnames.TestNamesFeature">
+                <methods>
+                    <include name="sampleOutputTest2"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>
