@@ -416,6 +416,8 @@ public class TestNG {
    * original suite.
    */
   private static XmlSuite extractTestNames(XmlSuite s, List<String> testNames) {
+    extractTestNamesFromChildSuites(s, testNames);
+
     List<XmlTest> tests = Lists.newArrayList();
     for (XmlTest xt : s.getTests()) {
       for (String tn : testNames) {
@@ -433,6 +435,18 @@ public class TestNG {
       result.getTests().clear();
       result.getTests().addAll(tests);
       return result;
+    }
+  }
+
+  private static void extractTestNamesFromChildSuites(XmlSuite s, List<String> testNames) {
+    List<XmlSuite> childSuites = s.getChildSuites();
+    for (int i = 0; i < childSuites.size(); i++) {
+      XmlSuite child = childSuites.get(i);
+      XmlSuite extracted = extractTestNames(child, testNames);
+      // if a new xml suite is created, which means some tests was extracted, then we replace the child
+      if (extracted != child) {
+        childSuites.set(i, extracted);
+      }
     }
   }
 
@@ -981,13 +995,13 @@ public class TestNG {
   private void checkSuiteNamesInternal(List<XmlSuite> suites, Set<String> names) {
     for (XmlSuite suite : suites) {
       final String name = suite.getName();
-      
+
       int count = 0;
       String tmpName = name;
       while (names.contains(tmpName)) {
         tmpName = name + " (" + count++ + ")";
       }
- 
+
       if (count > 0) {
         suite.setName(tmpName);
         names.add(tmpName);
@@ -1603,7 +1617,7 @@ public class TestNG {
             result.suiteThreadPoolSize=(Integer) suiteThreadPoolSize;
         }
     }
-    
+
     configure(result);
   }
 
