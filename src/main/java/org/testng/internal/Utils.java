@@ -200,17 +200,7 @@ public final class Utils {
   private static void writeFile(File outputFile, String sb, @Nullable String encoding, boolean append) {
     BufferedWriter fw = null;
     try {
-      if (!outputFile.exists()) {
-        outputFile.createNewFile();
-      }
-      OutputStreamWriter osw= null;
-      if (null != encoding) {
-        osw = new OutputStreamWriter(new FileOutputStream(outputFile, append), encoding);
-      }
-      else {
-        osw = new OutputStreamWriter(new FileOutputStream(outputFile, append));
-      }
-      fw = new BufferedWriter(osw);
+      fw = openWriter(outputFile, encoding, append);
       fw.write(sb);
 
       Utils.log("", 3, "Creating " + outputFile.getAbsolutePath());
@@ -234,6 +224,40 @@ public final class Utils {
         ; // ignore
       }
     }
+  }
+
+  /**
+   * Open a BufferedWriter for the specified file. If output directory doesn't
+   * exist, it is created. If the output file exists, it is deleted. The output file is
+   * created in any case.
+   * @param outputDir output directory. If <tt>null</tt>, then current directory is used
+   * @param fileName file name
+   * @throws IOException if anything goes wrong while creating files.
+   */
+  public static BufferedWriter openWriter(@Nullable String outputDir, String fileName) throws IOException {
+    String outDirPath= outputDir != null ? outputDir : "";
+    File outDir= new File(outDirPath);
+    if (outDir.exists()) {
+      outDir.mkdirs();
+    }
+    fileName = replaceSpecialCharacters(fileName);
+    File outputFile = new File(outDir, fileName);
+    outputFile.delete();
+    return openWriter(outputFile, null, false);
+  }
+
+  private static BufferedWriter openWriter(File outputFile, @Nullable String encoding, boolean append) throws IOException {
+    if (!outputFile.exists()) {
+      outputFile.createNewFile();
+    }
+    OutputStreamWriter osw= null;
+    if (null != encoding) {
+      osw = new OutputStreamWriter(new FileOutputStream(outputFile, append), encoding);
+    }
+    else {
+      osw = new OutputStreamWriter(new FileOutputStream(outputFile, append));
+    }
+    return new BufferedWriter(osw);
   }
 
   private static void ppp(String s) {
