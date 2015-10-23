@@ -31,18 +31,24 @@ public class CheckSuiteNamesTest extends SimpleBaseTest {
   /**
    * Child suites have same names
    */
-  @Test(expectedExceptions = TestNGException.class, expectedExceptionsMessageRegExp = "\\s*Two suites cannot have the same name.*")
+  @Test
   public void checkChildSuitesFails() {
+    TestListenerAdapter tla = new TestListenerAdapter();
     TestNG tng = create();
     String testngXmlPath = getPathToResource("sanitycheck/test-s-a.xml");
     tng.setTestSuites(Arrays.asList(testngXmlPath));
+    tng.addListener(tla);
     tng.run();
+    Assert.assertEquals(tla.getTestContexts().get(0).getSuite().getName(), "SanityCheck suites");
+    Assert.assertEquals(tla.getTestContexts().get(1).getSuite().getName(), "SanityCheck suites");
+    Assert.assertEquals(tla.getTestContexts().get(2).getSuite().getName(), "SanityCheck suites (0)");
+    Assert.assertEquals(tla.getTestContexts().get(3).getSuite().getName(), "SanityCheck suites (0)");
   }
 
   /**
-   * Checks that suites created programmatically also fails as expected
+   * Checks that suites created programmatically also works as expected
    */
-  @Test(expectedExceptions = TestNGException.class, expectedExceptionsMessageRegExp = "\\s*Two suites cannot have the same name.*")
+  @Test
   public void checkProgrammaticSuitesFails() {
     XmlSuite xmlSuite1 = new XmlSuite();
     xmlSuite1.setName("SanityCheckSuite");
@@ -61,5 +67,7 @@ public class CheckSuiteNamesTest extends SimpleBaseTest {
     TestNG tng = create();
     tng.setXmlSuites(Arrays.asList(xmlSuite1, xmlSuite2));
     tng.run();
+    Assert.assertEquals(xmlSuite1.getName(), "SanityCheckSuite");
+    Assert.assertEquals(xmlSuite2.getName(), "SanityCheckSuite (0)");
   }
 }
