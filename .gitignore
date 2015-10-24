@@ -6,14 +6,18 @@
 .project
 .settings
 /_eclipse/
+/local.properties
 TESTNG-*
 build
 eclipse-build
+gradle.properties
 ivy*
 javadocs
+kobaltBuild
 lib
 maven-testng-plugin-1.2.jar
 nb-configuration.xml
+out
 src/generated
 src/test/java/test/ignore
 target
@@ -21,6 +25,3 @@ test-output
 test-output-tests
 testng.iml
 z_build
-gradle.properties
-/local.properties
-kobaltBuild
