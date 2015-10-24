@@ -8,16 +8,18 @@ import com.beust.kobalt.plugin.kotlin.kotlinProject
 import com.beust.kobalt.plugin.packaging.assemble
 import com.beust.kobalt.plugin.kotlin.kotlinCompiler
 import com.beust.kobalt.plugin.publish.jcenter
+import java.io.File
 
 import java.nio.file.*
 
 val GENERATED_DIR = "src/generated/java"
+val VERSION = "6.9.9-SNAPSHOT"
 
 val testng = javaProject {
     name = "testng"
     group = "org.testng"
     artifactId = name
-    version = "6.9.9-SNAPSHOT"
+    version = VERSION
     directory = homeDir("java/testng")
     buildDirectory = "kobaltBuild"
 
@@ -43,12 +45,16 @@ val a = assemble(testng) {
 
 @Task(name = "generateVersionFile", description = "Generate the Version.java file", runBefore = arrayOf("compile"))
 fun generateVersionFile(@Suppress("UNUSED_PARAMETER") project: Project) : TaskResult {
-    val dirFrom = testng.directory + "/src/main/resources/org/testng/internal/"
-    val dirTo = testng.directory + "/$GENERATED_DIR/org/testng/internal/"
-    println("Copying version file to $dirTo")
-    Files.copy(Paths.get(dirFrom + "VersionTemplateJava"), Paths.get(dirTo + "Version.java"),
-            StandardCopyOption.REPLACE_EXISTING)
-    return com.beust.kobalt.internal.TaskResult()
+    val fileFrom = File(testng.directory + "/src/main/resources/org/testng/internal/VersionTemplateJava")
+    val fileTo = File(testng.directory + "/$GENERATED_DIR/org/testng/internal/Version.java")
+    println("Generating version file to $fileTo")
+
+    val text = StringBuilder()
+    fileFrom.forEachLine() { line ->
+        text.append(line.replace("@version@", VERSION)).append("\n")
+    }
+    fileTo.writeText(text.toString())
+    return TaskResult()
 }
 
 
