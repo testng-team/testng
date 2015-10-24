@@ -28,6 +28,7 @@ buildscript {
 plugins {
     id "com.jfrog.bintray" version "1.2"
     id "com.jfrog.artifactory" version "3.1.1"
+    id "org.sonarqube" version "1.0"
 }
 
 version = '6.9.9-SNAPSHOT'
@@ -156,6 +157,15 @@ if (JavaVersion.current().isJava8Compatible()) {
         tasks.withType(Javadoc) {
             options.addStringOption('Xdoclint:none', '-quiet')
         }
+    }
+}
+
+sonarqube {
+    properties {
+        property "sonar.host.url", "http://nemo.sonarqube.org"
+        property "sonar.analysis.mode", "preview"
+        property "sonar.github.repository", "cbeust/testng"
+        property "sonar.github.login", "testng-bot"
     }
 }
 
