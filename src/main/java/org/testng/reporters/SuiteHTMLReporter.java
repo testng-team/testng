@@ -347,10 +347,7 @@ public class SuiteHTMLReporter implements IReporter {
   private void generateMethodsChronologically(XmlSuite xmlSuite, ISuite suite,
       String outputFileName, boolean alphabetical)
   {
-    BufferedWriter bw = null;
-    try {
-      bw = Utils.openWriter(getOutputDirectory(xmlSuite), outputFileName);
-
+    try (BufferedWriter bw = Utils.openWriter(getOutputDirectory(xmlSuite), outputFileName)) {
       bw.append("<h2>Methods run, sorted chronologically</h2>");
       bw.append("<h3>" + BEFORE + " means before, " + AFTER + " means after</h3><p/>");
 
@@ -441,15 +438,6 @@ public class SuiteHTMLReporter implements IReporter {
       bw.append("</table>\n");
     } catch (IOException e) {
       Utils.log("[SuiteHTMLReporter]", 1, "Error writing to " + outputFileName + ": " + e.getMessage());
-    } finally {
-      try {
-        if (bw != null) {
-          bw.close();
-        }
-      }
-      catch (IOException e) {
-        ; // ignore
-      }
     }
   }
 
