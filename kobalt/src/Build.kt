@@ -13,7 +13,7 @@ import java.io.File
 import java.nio.file.*
 
 val GENERATED_DIR = "src/generated/java"
-val VERSION = "6.9.9-SNAPSHOT"
+val VERSION = "6.9.10-SNAPSHOT"
 
 val testng = javaProject {
     name = "testng"
