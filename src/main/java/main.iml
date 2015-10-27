@@ -11,7 +11,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Kobalt (Compile)" level="project" />
-    <orderEntry type="library" name="kobalt-0.198" level="project" />
+    <orderEntry type="library" name="kobalt.jar" level="project" />
+    <orderEntry type="library" scope="TEST" name="kobalt (Test)" level="project" />
+    <orderEntry type="library" name="kobalt (Compile)" level="project" />
   </component>
 </module>
