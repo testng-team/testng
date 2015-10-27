@@ -1,5 +1,7 @@
 ﻿Current
 
+6.9.9:
+
 Fixed: GITHUB-829: Allowing suites to have duplicate names. You can now configure the same suite-file to run multiple times. (Eduardo Born)
 Fixed: GITHUB-834: nested suites not supported by 'testnames' (Tibor Digana & Julien Herr)
 
