@@ -36,10 +36,10 @@ val testng = javaProject {
     dependenciesTest {
         compile("org.testng:testng:6.9.8", "org.assertj:assertj-core:3.2.0")
     }
-}
 
-val a = assemble(testng) {
-    mavenJars {
+    assemble {
+        mavenJars {
+        }
     }
 }
 
