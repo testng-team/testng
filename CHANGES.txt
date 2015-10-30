@@ -1,5 +1,5 @@
 ﻿Current
-Fixed: testName from @Test is now used and available from ITestResult#getName()
+Fixed: testName from @Test is now used and available from ITestResult#getName() and ITestResult#getTestName()
 
 6.9.9:
 2015/10/27

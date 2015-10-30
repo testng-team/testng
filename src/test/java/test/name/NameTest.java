@@ -41,6 +41,6 @@ public class NameTest extends SimpleBaseTest {
     ITestResult result = adapter.getPassedTests().get(0);
     Assert.assertEquals(result.getMethod().getMethodName(), "test");
     Assert.assertEquals(result.getName(), "NAME");
-    Assert.assertEquals(result.getTestName(), null); // TODO should it be NAME too?
+    Assert.assertEquals(result.getTestName(), "NAME");
   }
 }
