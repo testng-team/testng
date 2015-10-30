@@ -748,5 +748,11 @@
       <class name="test.enable.EnableTest"/>
     </classes>
   </test>
+
+  <test name="Name">
+    <classes>
+      <class name="test.name.NameTest" />
+    </classes>
+  </test>
 </suite>
 

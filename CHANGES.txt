@@ -1,6 +1,8 @@
 ﻿Current
+Fixed: testName from @Test is now used and available from ITestResult#getName()
 
 6.9.9:
+2015/10/27
 
 Fixed: GITHUB-829: Allowing suites to have duplicate names. You can now configure the same suite-file to run multiple times. (Eduardo Born)
 Fixed: GITHUB-834: nested suites not supported by 'testnames' (Tibor Digana & Julien Herr)

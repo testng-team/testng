@@ -87,6 +87,9 @@ public class TestResult implements ITestResult {
       if (m_instance instanceof ITest) {
         m_name = ((ITest) m_instance).getTestName();
       }
+      else if (context.getName() != null) {
+        m_name = context.getName();
+      }
       else {
         String string = m_instance.toString();
         // Only display toString() if it's been overridden by the user
