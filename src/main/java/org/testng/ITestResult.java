@@ -84,7 +84,7 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
   public Object getInstance();
 
   /**
-   * If this result's related instance implements ITest, returns its test name, otherwise returns null.
+   * If this result's related instance implements ITest or use @Test(testName=...), returns its test name, otherwise returns null.
    */
   public String getTestName();
 

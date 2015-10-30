@@ -120,13 +120,16 @@ public class TestResult implements ITestResult {
   }
 
   /**
-   * If this result's related instance implements ITest, returns its test name,
+   * If this result's related instance implements ITest or use @Test(testName=...), returns its test name,
    * otherwise returns null.
    */
   @Override
   public String getTestName() {
     if (m_instance instanceof ITest) {
       return ((ITest) m_instance).getTestName();
+    }
+    if (m_context.getName() != null) {
+      return m_context.getName();
     }
     return null;
   }
