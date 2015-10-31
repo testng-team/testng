@@ -75,9 +75,6 @@ uploadArchives {
                     }
                 }
             }
-            pom.whenConfigured { pom ->
-                pom.dependencies.findAll { dependency -> dependency.groupId == 'com.google.inject'  && dependency.artifactId == 'guice' }*.scope = 'provided'
-            }
         }
     }
 }
