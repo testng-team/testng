@@ -16,7 +16,7 @@ import test.SimpleBaseTest;
 public class NameTest extends SimpleBaseTest {
 
   @Test
-  public void itest_test() {
+  public void itestTest() {
     TestNG tng = create(SimpleITestSample.class);
     TestListenerAdapter adapter = new TestListenerAdapter();
     tng.addListener(adapter);
@@ -33,7 +33,7 @@ public class NameTest extends SimpleBaseTest {
   }
 
   @Test
-  public void testName_test() {
+  public void testNameTest() {
     TestNG tng = create(NameSample.class);
     TestListenerAdapter adapter = new TestListenerAdapter();
     tng.addListener(adapter);
@@ -50,7 +50,7 @@ public class NameTest extends SimpleBaseTest {
   }
 
   @Test
-  public void complex_ittest_test() {
+  public void complexITestTest() {
     TestNG tng = create(ITestSample.class);
     TestListenerAdapter adapter = new TestListenerAdapter();
     tng.addListener(adapter);
