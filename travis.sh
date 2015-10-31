@@ -1,6 +1,5 @@
 #!/bin/bash
 
-./gradlew clean test
 if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
   if [ -n "$SONAR_GITHUB_OAUTH" ]; then
     ./gradlew sonarqube \
