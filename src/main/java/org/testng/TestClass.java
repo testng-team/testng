@@ -97,6 +97,9 @@ class TestClass extends NoOpTestClass implements ITestClass {
         break;
       }
     }
+    if (m_testName == null) {
+      m_testName = m_iClass.getTestName();
+    }
   }
 
   @Override
