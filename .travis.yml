@@ -5,6 +5,8 @@ jdk:
   - openjdk7
 
 #before_install: bash "gradle/uploadSnapshot.sh"
-script: ./travis.sh
+script:
+  - ./gradlew clean test
+  - ./travis.sh
 after_success: test "${TRAVIS_PULL_REQUEST}" == "false" && test "${TRAVIS_JDK_VERSION}" == "oraclejdk7" && ./gradlew uploadArchives
 
