@@ -1,5 +1,6 @@
 package test.thread;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,7 +11,7 @@ public class Helper {
     synchronized(m_maps) {
       Map<Long, Long> result = m_maps.get(className);
       if (result == null) {
-        result = new HashMap();
+        result = Collections.synchronizedMap(new HashMap<Long, Long>());
         m_maps.put(className, result);
       }
       return result;
