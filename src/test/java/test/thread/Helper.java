@@ -1,6 +1,5 @@
 package test.thread;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +10,10 @@ public class Helper {
     synchronized(m_maps) {
       Map<Long, Long> result = m_maps.get(className);
       if (result == null) {
-        result = Collections.synchronizedMap(new HashMap<Long, Long>());
+        // TODO a synchronizedMap will break MultiThreadedDependentSampleTest
+        // a not synchronizedMap will __sometimes__ break ParallelITestTest
+        //result = Collections.synchronizedMap(new HashMap<Long, Long>());
+        result = new HashMap<>();
         m_maps.put(className, result);
       }
       return result;
