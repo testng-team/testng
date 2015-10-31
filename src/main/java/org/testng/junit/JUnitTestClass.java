@@ -23,8 +23,6 @@ public abstract class JUnitTestClass implements ITestClass {
     private Class m_realClass;
     private Object[] m_instances;
     private long[] m_instanceHashes;
-    private XmlTest m_xmlTest;
-    private XmlClass m_xmlClass;
 
     public JUnitTestClass(Class test) {
         m_realClass = test;
@@ -62,17 +60,17 @@ public abstract class JUnitTestClass implements ITestClass {
 
     @Override
     public String getTestName() {
-        return m_xmlTest.getName();
+        return null;
     }
 
     @Override
     public XmlTest getXmlTest() {
-        return m_xmlTest;
+        return null;
     }
 
     @Override
     public XmlClass getXmlClass() {
-        return m_xmlClass;
+        return null;
     }
 
     /**

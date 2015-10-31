@@ -14,6 +14,7 @@ import org.testng.ITestContext;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.annotations.Guice;
+import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Objects;
 import org.testng.internal.annotations.AnnotationHelper;
@@ -61,6 +62,12 @@ public class ClassImpl implements IClass {
     m_objectFactory = objectFactory;
     if (instance instanceof ITest) {
       m_testName = ((ITest) instance).getTestName();
+    }
+    if (m_testName == null) {
+      ITestAnnotation annotation = m_annotationFinder.findAnnotation(cls, ITestAnnotation.class);
+      if (annotation != null) {
+        m_testName = annotation.getTestName();
+      }
     }
     m_hasParentModule = isStringNotEmpty(m_testContext.getSuite().getParentModule());
   }

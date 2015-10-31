@@ -10,7 +10,10 @@ public class Helper {
     synchronized(m_maps) {
       Map<Long, Long> result = m_maps.get(className);
       if (result == null) {
-        result = new HashMap();
+        // TODO a synchronizedMap will break MultiThreadedDependentSampleTest
+        // a not synchronizedMap will __sometimes__ break ParallelITestTest
+        //result = Collections.synchronizedMap(new HashMap<Long, Long>());
+        result = new HashMap<>();
         m_maps.put(className, result);
       }
       return result;

@@ -87,8 +87,8 @@ public class TestResult implements ITestResult {
       if (m_instance instanceof ITest) {
         m_name = ((ITest) m_instance).getTestName();
       }
-      else if (context.getName() != null) {
-        m_name = context.getName();
+      else if (testClass.getTestName() != null) {
+        m_name = testClass.getTestName();
       }
       else {
         String string = m_instance.toString();
@@ -128,8 +128,8 @@ public class TestResult implements ITestResult {
     if (m_instance instanceof ITest) {
       return ((ITest) m_instance).getTestName();
     }
-    if (m_context.getName() != null) {
-      return m_context.getName();
+    if (m_testClass.getTestName() != null) {
+      return m_testClass.getTestName();
     }
     return null;
   }
