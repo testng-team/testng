@@ -84,6 +84,40 @@ public class NameTest extends SimpleBaseTest {
   }
 
   @Test
+  public void noNameTest() {
+    TestNG tng = create(NoNameSample.class);
+    TestListenerAdapter adapter = new TestListenerAdapter();
+    tng.addListener(adapter);
+
+    tng.run();
+
+    Assert.assertTrue(adapter.getFailedTests().isEmpty());
+    Assert.assertTrue(adapter.getSkippedTests().isEmpty());
+    Assert.assertEquals(adapter.getPassedTests().size(), 1);
+    ITestResult result = adapter.getPassedTests().get(0);
+    Assert.assertEquals(result.getMethod().getMethodName(), "test");
+    Assert.assertEquals(result.getName(), "test");
+    Assert.assertEquals(result.getTestName(), null);
+  }
+
+  @Test
+  public void noNameTestWithXml() {
+    TestNG tng = createTests("suite", NoNameSample.class);
+    TestListenerAdapter adapter = new TestListenerAdapter();
+    tng.addListener(adapter);
+
+    tng.run();
+
+    Assert.assertTrue(adapter.getFailedTests().isEmpty());
+    Assert.assertTrue(adapter.getSkippedTests().isEmpty());
+    Assert.assertEquals(adapter.getPassedTests().size(), 1);
+    ITestResult result = adapter.getPassedTests().get(0);
+    Assert.assertEquals(result.getMethod().getMethodName(), "test");
+    Assert.assertEquals(result.getName(), "test");
+    Assert.assertEquals(result.getTestName(), null);
+  }
+
+  @Test
   public void complexITestTest() {
     TestNG tng = create(ITestSample.class);
     TestListenerAdapter adapter = new TestListenerAdapter();
