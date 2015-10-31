@@ -52,12 +52,14 @@ repositories {
 }
 
 dependencies {
+    compile 'org.beanshell:bsh:2.0b4'
+    compile 'com.beust:jcommander:1.48'
+
     compile 'org.apache.ant:ant:1.7.0', optional
     compile 'junit:junit:4.10', optional
-    compile 'org.beanshell:bsh:2.0b4'
-    provided 'com.google.inject:guice:4.0:no_aop'
-    compile 'com.beust:jcommander:1.48'
     compile 'org.yaml:snakeyaml:1.15', optional
+
+    provided 'com.google.inject:guice:4.0:no_aop'
 
     testCompile 'org.assertj:assertj-core:2.0.0'
     testCompile 'org.testng:testng:6.9.4'
