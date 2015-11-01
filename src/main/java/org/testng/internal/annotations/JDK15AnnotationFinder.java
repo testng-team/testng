@@ -3,6 +3,7 @@ package org.testng.internal.annotations;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -46,10 +47,20 @@ import org.testng.internal.collections.Pair;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class JDK15AnnotationFinder implements IAnnotationFinder {
+
+  private static final IAnnotation NULL_MARKER = new IAnnotation() {
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+      return super.clone();
+    }
+  };
+
   private JDK15TagFactory m_tagFactory = new JDK15TagFactory();
-  private Map<Class<? extends IAnnotation>, Class<? extends Annotation>> m_annotationMap =
-      new ConcurrentHashMap<>();
-  private Map<Pair<Annotation, ?>, IAnnotation> m_annotations = new ConcurrentHashMap<>();
+  // readonly map. does not need ConcurrentHashMap
+  private final Map<Class<? extends IAnnotation>, Class<? extends Annotation>> m_annotationMap =
+      new HashMap<>();
+
+  private Map<Pair<AnnotationWrapper, ?>, IAnnotation> m_annotations = new ConcurrentHashMap<>();
 
   private IAnnotationTransformer m_transformer = null;
 
@@ -106,7 +117,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     }
     Annotation annotation = m.getAnnotation(a);
     return findAnnotation(m.getDeclaringClass(), annotation, annotationClass, null, null, m,
-        new Pair<>(annotation, m));
+        new Pair<>(new AnnotationWrapper(annotation), m));
   }
 
   @Override
@@ -128,7 +139,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
       annotation = testClass.getAnnotation(a);
     }
     return findAnnotation(testClass, annotation, annotationClass, null, null, m,
-        new Pair<>(annotation, m));
+        new Pair<>(new AnnotationWrapper(annotation), m));
   }
 
   private void transform(IAnnotation a, Class<?> testClass,
@@ -176,7 +187,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     }
     Annotation annotation = findAnnotationInSuperClasses(cls, a);
     return findAnnotation(cls, annotation, annotationClass, cls, null, null,
-        new Pair<>(annotation, annotationClass));
+        new Pair<>(new AnnotationWrapper(annotation), annotationClass));
   }
 
   @Override
@@ -188,12 +199,12 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     }
     Annotation annotation = cons.getAnnotation(a);
     return findAnnotation(cons.getDeclaringClass(), annotation, annotationClass, null, cons, null,
-        new Pair<>(annotation, cons));
+        new Pair<>(new AnnotationWrapper(annotation), cons));
   }
 
   private <A extends IAnnotation> A findAnnotation(Class cls, Annotation a,
       Class<A> annotationClass, Class<?> testClass,
-      Constructor<?> testConstructor, Method testMethod, Pair<Annotation, ?> p) {
+      Constructor<?> testConstructor, Method testMethod, Pair<AnnotationWrapper, ?> p) {
     if (a == null) {
       return null;
     }
@@ -201,8 +212,10 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     IAnnotation result = m_annotations.get(p);
     if (result == null) {
       result = m_tagFactory.createTag(cls, a, annotationClass, m_transformer);
-      m_annotations.put(p, result);
+      m_annotations.put(p, result != null ? result : NULL_MARKER);
       transform(result, testClass, testConstructor, testMethod);
+    } else if (result == NULL_MARKER) {
+      result = null;
     }
     //noinspection unchecked
     return (A) result;
@@ -243,5 +256,27 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
       }
     }
     return result;
+  }
+
+  /**
+   * Wrapper class to override {@link Annotation#hashCode()} and {@link Annotation#equals(Object)}
+   * for performance improvement.
+   */
+  private final static class AnnotationWrapper {
+    private final Annotation annotation;
+
+    public AnnotationWrapper(Annotation annotation) {
+      this.annotation = annotation;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      return obj instanceof AnnotationWrapper && annotation == ((AnnotationWrapper) obj).annotation;
+    }
+
+    @Override
+    public int hashCode() {
+      return System.identityHashCode(annotation);
+    }
   }
 }
