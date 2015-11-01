@@ -54,10 +54,7 @@ public class Graph<T> {
       node.addPredecessor(predecessor);
       addNeighbor(tm, predecessor);
       // Remove these two nodes from the independent list
-      if (null == m_independentNodes) {
-        m_independentNodes = Maps.newHashMap();
-        m_independentNodes.putAll(m_nodes);
-      }
+      initializeIndependentNodes();
       m_independentNodes.remove(predecessor);
       m_independentNodes.remove(tm);
       ppp("  REMOVED " + predecessor + " FROM INDEPENDENT OBJECTS");
@@ -103,9 +100,7 @@ public class Graph<T> {
   public void topologicalSort() {
     ppp("================ SORTING");
     m_strictlySortedNodes = Lists.newArrayList();
-    if (null == m_independentNodes) {
-      m_independentNodes = Maps.newHashMap();
-    }
+    initializeIndependentNodes();
 
     //
     // Clone the list of nodes but only keep those that are
@@ -156,6 +151,20 @@ public class Graph<T> {
     ppp("=============== DONE SORTING");
     if (m_verbose) {
       dumpSortedNodes();
+    }
+  }
+
+  private void initializeIndependentNodes() {
+    if (null == m_independentNodes) {
+      List<Node<T>> list = Lists.newArrayList(m_nodes.values());
+      // Ideally, we should not have to sort this. However, due to a bug where it treats all the methods as
+      // dependent nodes. Therefore, all the nodes were mostly sorted alphabetically. So we need to keep
+      // the behavior for now.
+      Collections.sort(list);
+      m_independentNodes = Maps.newLinkedHashMap();
+      for (Node<T> node : list) {
+        m_independentNodes.put(node.getObject(), node);
+      }
     }
   }
 
