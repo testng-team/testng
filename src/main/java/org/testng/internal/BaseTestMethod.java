@@ -70,7 +70,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   private int m_priority;
 
   private XmlTest m_xmlTest;
-  private Object m_instance;
+  private final Object m_instance;
 
   /**
    * Constructs a <code>BaseTestMethod</code> TODO cquezel JavaDoc.
@@ -428,7 +428,11 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    */
   @Override
   public int hashCode() {
-    return m_method.hashCode();
+    int hash = m_method.hashCode();
+    if (m_instance != null) {
+      hash = hash * 31 + m_instance.hashCode();
+    }
+    return hash;
   }
 
   protected void initGroups(Class<? extends ITestOrConfiguration> annotationClass) {
