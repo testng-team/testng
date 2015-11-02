@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,24 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
 public class MethodInheritance {
+
+  private static final Comparator<ITestNGMethod> COMPARATOR = new Comparator<ITestNGMethod>() {
+    @Override
+    public int compare(ITestNGMethod o1, ITestNGMethod o2) {
+      int result = -2;
+      Class<?> thisClass = o1.getRealClass();
+      Class<?> otherClass = o2.getRealClass();
+      if (thisClass.isAssignableFrom(otherClass)) {
+        result = -1;
+      } else if (otherClass.isAssignableFrom(thisClass)) {
+        result = 1;
+      } else if (o1.equals(o2)) {
+        result = 0;
+      }
+      return result;
+    }
+  };
+
   /**
    * Look in map for a class that is a superclass of methodClass
    */
@@ -153,7 +172,7 @@ public class MethodInheritance {
   private static void sortMethodsByInheritance(List<ITestNGMethod> methods,
       boolean baseClassToChild)
   {
-    Collections.sort(methods);
+    Collections.sort(methods, COMPARATOR);
     if (! baseClassToChild) {
       Collections.reverse(methods);
     }
