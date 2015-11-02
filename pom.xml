@@ -288,6 +288,9 @@
               <value>test.invokedmethodlistener.MyListener</value>
             </property>
           </properties>
+          <systemPropertyVariables>
+            <test.resources.dir>${project.build.testOutputDirectory}</test.resources.dir>
+          </systemPropertyVariables>
         </configuration>
       </plugin>
 
