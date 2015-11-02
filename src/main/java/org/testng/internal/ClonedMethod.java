@@ -297,22 +297,6 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
-  public int compareTo(Object o) {
-    int result = -2;
-    Class<?> thisClass = getRealClass();
-    Class<?> otherClass = ((ITestNGMethod) o).getRealClass();
-    if (thisClass.isAssignableFrom(otherClass)) {
-      result = -1;
-    } else if (otherClass.isAssignableFrom(thisClass)) {
-      result = 1;
-    } else if (equals(o)) {
-      result = 0;
-    }
-
-    return result;
-  }
-
-  @Override
   public ClonedMethod clone() {
     return new ClonedMethod(m_method, m_javaMethod);
   }

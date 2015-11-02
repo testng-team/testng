@@ -253,11 +253,6 @@ public class MethodInstanceTest {
       return (TestNGMethodStub) this;
     };
 
-    @Override
-    public int compareTo(Object o) {
-      return 0;
-    }
-
     @SuppressWarnings("rawtypes")
     @Override
     public Class getRealClass() {
