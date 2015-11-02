@@ -638,6 +638,7 @@
     <classes>
       <class name="org.testng.AssertTest" />
       <class name="test.asserttests.AssertTest" />
+      <class name="test.asserttests.ArrayEqualityAssertTest" />
     </classes>
   </test>
 
