@@ -92,13 +92,9 @@ public class SimpleBaseTest {
   protected String getPathToResource(String fileName) {
     String result = System.getProperty(TEST_RESOURCES_DIR);
     if (result == null) {
-      Utils.log("SimpleBaseTest", 2,  "Warning: System property " + TEST_RESOURCES_DIR
-          + " was not defined.");
-      return "build/resources/test/" + fileName;
+      throw new IllegalArgumentException("System property " + TEST_RESOURCES_DIR + " was not defined.");
     }
-    else {
-      return result + File.separatorChar + fileName;
-    }
+    return result + File.separatorChar + fileName;
   }
 
   protected void verifyPassedTests(TestListenerAdapter tla, String... methodNames) {
