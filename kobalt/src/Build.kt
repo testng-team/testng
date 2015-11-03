@@ -20,7 +20,6 @@ val testng = javaProject {
     group = "org.testng"
     artifactId = name
     version = VERSION
-    directory = homeDir("java/testng")
     buildDirectory = "kobaltBuild"
 
     sourceDirectories = arrayListOf("src/main/java", GENERATED_DIR)
