@@ -117,4 +117,26 @@ public class ListenerTest extends SimpleBaseTest {
     tng.run();
     Assert.assertEquals(interceptor.getCount(), 1);
   }
+
+  @Test(description = "GITHUB-356: Add listeners for @BeforeClass/@AfterClass")
+  public void classListenerShouldWork() {
+    MyClassListener.beforeNames.clear();
+    MyClassListener.afterNames.clear();
+    TestNG tng = create(Derived1.class, Derived2.class);
+    MyClassListener listener = new MyClassListener();
+    tng.addListener(listener);
+    tng.run();
+    assertThat(MyClassListener.beforeNames).containsExactly("Derived1", "Derived2");
+    assertThat(MyClassListener.afterNames).containsExactly("Derived1", "Derived2");
+  }
+
+  @Test(description = "GITHUB-356: Add listeners for @BeforeClass/@AfterClass")
+  public void classListenerShouldWorkFromAnnotation() {
+    MyClassListener.beforeNames.clear();
+    MyClassListener.afterNames.clear();
+    TestNG tng = create(ClassListenerSample.class);
+    tng.run();
+    assertThat(MyClassListener.beforeNames).containsExactly("ClassListenerSample");
+    assertThat(MyClassListener.afterNames).containsExactly("ClassListenerSample");
+  }
 }

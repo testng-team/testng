@@ -135,6 +135,7 @@ public class TestNG {
   private ITestRunnerFactory m_testRunnerFactory;
 
   // These listeners can be overridden from the command line
+  private List<IClassListener> m_classListeners = Lists.newArrayList();
   private List<ITestListener> m_testListeners = Lists.newArrayList();
   private List<ISuiteListener> m_suiteListeners = Lists.newArrayList();
   private Set<IReporter> m_reporters = Sets.newHashSet();
@@ -707,6 +708,9 @@ public class TestNG {
       if (listener instanceof ITestListener) {
         addListener((ITestListener) listener);
       }
+      if (listener instanceof IClassListener) {
+        addListener((IClassListener) listener);
+      }
       if (listener instanceof IReporter) {
         addListener((IReporter) listener);
       }
@@ -747,6 +751,12 @@ public class TestNG {
   public void addListener(ITestListener listener) {
     if (null != listener) {
       m_testListeners.add(listener);
+    }
+  }
+
+  public void addListener(IClassListener listener) {
+    if (null != listener) {
+      m_classListeners.add(listener);
     }
   }
 
@@ -1293,7 +1303,8 @@ public class TestNG {
         m_useDefaultListeners,
         m_methodInterceptors,
         m_invokedMethodListeners,
-        m_testListeners);
+        m_testListeners,
+        m_classListeners);
 
     for (ISuiteListener isl : m_suiteListeners) {
       result.addListener(isl);

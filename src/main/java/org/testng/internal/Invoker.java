@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.testng.IClass;
+import org.testng.IClassListener;
 import org.testng.IConfigurable;
 import org.testng.IConfigurationListener;
 import org.testng.IConfigurationListener2;
@@ -67,6 +68,7 @@ public class Invoker implements IInvoker {
   private final boolean m_skipFailedInvocationCounts;
   private final Collection<IInvokedMethodListener> m_invokedMethodListeners;
   private final boolean m_continueOnFailedConfiguration;
+  private final List<IClassListener> m_classListeners;
 
   /** Group failures must be synced as the Invoker is accessed concurrently */
   private Map<String, Boolean> m_beforegroupsFailures = Maps.newHashtable();
@@ -106,7 +108,8 @@ public class Invoker implements IInvoker {
                  ITestResultNotifier notifier,
                  SuiteRunState state,
                  boolean skipFailedInvocationCounts,
-                 Collection<IInvokedMethodListener> invokedMethodListeners) {
+                 Collection<IInvokedMethodListener> invokedMethodListeners,
+                 List<IClassListener> classListeners) {
     m_configuration = configuration;
     m_testContext= testContext;
     m_suiteState= state;
@@ -115,6 +118,7 @@ public class Invoker implements IInvoker {
     m_skipFailedInvocationCounts = skipFailedInvocationCounts;
     m_invokedMethodListeners = invokedMethodListeners;
     m_continueOnFailedConfiguration = XmlSuite.CONTINUE.equals(testContext.getSuite().getXmlSuite().getConfigFailurePolicy());
+    m_classListeners = classListeners;
   }
 
   /**
@@ -1320,7 +1324,8 @@ public class Invoker implements IInvoker {
           mi,
           suite,
           parameters,
-          testContext));
+          testContext,
+          m_classListeners));
     }
 
     return runWorkers(testMethod, workers, testMethod.getThreadPoolSize(), groupMethods, suite,

@@ -53,6 +53,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   private Injector m_parentInjector;
 
   transient private List<ITestListener> m_testListeners = Lists.newArrayList();
+  transient private List<IClassListener> m_classListeners = Lists.newArrayList();
   transient private ITestRunnerFactory m_tmpRunnerFactory;
 
   transient private ITestRunnerFactory m_runnerFactory;
@@ -99,7 +100,8 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     this(configuration, suite, outputDir, runnerFactory, useDefaultListeners,
         new ArrayList<IMethodInterceptor>() /* method interceptor */,
         null /* invoked method listeners */,
-        null /* test listeners */);
+        null /* test listeners */,
+        null /* class listeners */);
   }
 
   protected SuiteRunner(IConfiguration configuration,
@@ -109,9 +111,10 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       boolean useDefaultListeners,
       List<IMethodInterceptor> methodInterceptors,
       List<IInvokedMethodListener> invokedMethodListeners,
-      List<ITestListener> testListeners)
+      List<ITestListener> testListeners,
+      List<IClassListener> classListeners)
   {
-    init(configuration, suite, outputDir, runnerFactory, useDefaultListeners, methodInterceptors, invokedMethodListeners, testListeners);
+    init(configuration, suite, outputDir, runnerFactory, useDefaultListeners, methodInterceptors, invokedMethodListeners, testListeners, classListeners);
   }
 
   private void init(IConfiguration configuration,
@@ -121,7 +124,8 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     boolean useDefaultListeners,
     List<IMethodInterceptor> methodInterceptors,
     List<IInvokedMethodListener> invokedMethodListener,
-    List<ITestListener> testListeners)
+    List<ITestListener> testListeners,
+    List<IClassListener> classListeners)
   {
     m_configuration = configuration;
     m_suite = suite;
@@ -146,6 +150,9 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     if (null != testListeners) {
       m_testListeners.addAll(testListeners);
     }
+    if (null != classListeners) {
+      m_classListeners.addAll(classListeners);
+    }
     m_runnerFactory = buildRunnerFactory();
 
     // Order the <test> tags based on their order of appearance in testng.xml
@@ -158,7 +165,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     });
 
     for (XmlTest test : xmlTests) {
-      TestRunner tr = m_runnerFactory.newTestRunner(this, test, m_invokedMethodListeners.values());
+      TestRunner tr = m_runnerFactory.newTestRunner(this, test, m_invokedMethodListeners.values(), m_classListeners);
 
       //
       // Install the method interceptor, if any was passed
@@ -540,14 +547,14 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
     @Override
     public TestRunner newTestRunner(ISuite suite, XmlTest test,
-        Collection<IInvokedMethodListener> listeners) {
+        Collection<IInvokedMethodListener> listeners, List<IClassListener> classListeners) {
       boolean skip = m_skipFailedInvocationCounts;
       if (! skip) {
         skip = test.skipFailedInvocationCounts();
       }
       TestRunner testRunner = new TestRunner(m_configuration, suite, test,
           suite.getOutputDirectory(), suite.getAnnotationFinder(), skip,
-          listeners);
+          listeners, classListeners);
 
       if (m_useDefaultListeners) {
         testRunner.addListener(new TestHTMLReporter());
@@ -583,8 +590,8 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
 
     @Override
     public TestRunner newTestRunner(ISuite suite, XmlTest test,
-        Collection<IInvokedMethodListener> listeners) {
-      TestRunner testRunner= m_target.newTestRunner(suite, test, listeners);
+        Collection<IInvokedMethodListener> listeners, List<IClassListener> classListeners) {
+      TestRunner testRunner= m_target.newTestRunner(suite, test, listeners, classListeners);
 
       testRunner.addListener(new TextReporter(testRunner.getName(), TestRunner.getVerbose()));
 
