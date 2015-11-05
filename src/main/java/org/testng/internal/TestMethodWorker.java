@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import org.testng.ClassMethodMap;
+import org.testng.IClassListener;
 import org.testng.IMethodInstance;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
@@ -40,6 +41,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   private final ConfigurationGroupMethods m_groupMethods;
   private final ClassMethodMap m_classMethodMap;
   private final ITestContext m_testContext;
+  private final List<IClassListener> m_listeners;
 
   public TestMethodWorker(IInvoker invoker,
                           IMethodInstance[] testMethods,
@@ -47,7 +49,8 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
                           Map<String, String> parameters,
                           ConfigurationGroupMethods groupMethods,
                           ClassMethodMap classMethodMap,
-                          ITestContext testContext)
+                          ITestContext testContext,
+                          List<IClassListener> listeners)
   {
     m_invoker = invoker;
     m_methodInstances = testMethods;
@@ -56,6 +59,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     m_groupMethods = groupMethods;
     m_classMethodMap = classMethodMap;
     m_testContext = testContext;
+    m_listeners = listeners;
   }
 
   /**
@@ -140,6 +144,10 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
    * @param mi
    */
   protected void invokeBeforeClassMethods(ITestClass testClass, IMethodInstance mi) {
+    for (IClassListener listener : m_listeners) {
+      listener.onBeforeClass(testClass, mi);
+    }
+
     // if no BeforeClass than return immediately
     // used for parallel case when BeforeClass were already invoked
     if( (null == m_classMethodMap) || (null == m_classMethodMap.getInvokedBeforeClassMethods())) {
@@ -184,6 +192,10 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
    * @param mi
    */
   protected void invokeAfterClassMethods(ITestClass testClass, IMethodInstance mi) {
+    for (IClassListener listener : m_listeners) {
+      listener.onAfterClass(testClass, mi);
+    }
+
     // if no BeforeClass than return immediately
     // used for parallel case when BeforeClass were already invoked
     if( (null == m_classMethodMap) || (null == m_classMethodMap.getInvokedAfterClassMethods()) ) {
@@ -283,7 +295,8 @@ class SingleTestMethodWorker extends TestMethodWorker {
                                 MethodInstance testMethod,
                                 XmlSuite suite,
                                 Map<String, String> parameters,
-                                ITestContext testContext)
+                                ITestContext testContext,
+                                List<IClassListener> listeners)
   {
     super(invoker,
           new MethodInstance[] {testMethod},
@@ -291,6 +304,7 @@ class SingleTestMethodWorker extends TestMethodWorker {
           parameters,
           EMPTY_GROUP_METHODS,
           null,
-          testContext);
+          testContext,
+          listeners);
   }
 }

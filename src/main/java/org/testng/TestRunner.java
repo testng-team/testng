@@ -87,6 +87,7 @@ public class TestRunner
   transient private boolean m_skipFailedInvocationCounts;
 
   transient private Collection<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
+  transient private List<IClassListener> m_classListeners = Lists.newArrayList();
 
   /**
    * All the test methods we found, associated with their respective classes.
@@ -154,18 +155,20 @@ public class TestRunner
                     String outputDirectory,
                     IAnnotationFinder finder,
                     boolean skipFailedInvocationCounts,
-                    Collection<IInvokedMethodListener> invokedMethodListeners)
+                    Collection<IInvokedMethodListener> invokedMethodListeners,
+                    List<IClassListener> classListeners)
   {
     init(configuration, suite, test, outputDirectory, finder, skipFailedInvocationCounts,
-        invokedMethodListeners);
+        invokedMethodListeners, classListeners);
   }
 
   public TestRunner(IConfiguration configuration, ISuite suite, XmlTest test,
       boolean skipFailedInvocationCounts,
-      Collection<IInvokedMethodListener> listeners) {
+      Collection<IInvokedMethodListener> invokedMethodListeners,
+      List<IClassListener> classListeners) {
     init(configuration, suite, test, suite.getOutputDirectory(),
         suite.getAnnotationFinder(),
-        skipFailedInvocationCounts, listeners);
+        skipFailedInvocationCounts, invokedMethodListeners, classListeners);
   }
 
   private void init(IConfiguration configuration,
@@ -174,7 +177,8 @@ public class TestRunner
                     String outputDirectory,
                     IAnnotationFinder annotationFinder,
                     boolean skipFailedInvocationCounts,
-                    Collection<IInvokedMethodListener> invokedMethodListeners)
+                    Collection<IInvokedMethodListener> invokedMethodListeners,
+                    List<IClassListener> classListeners)
   {
     m_configuration = configuration;
     m_xmlTest= test;
@@ -199,8 +203,9 @@ public class TestRunner
 
     m_annotationFinder= annotationFinder;
     m_invokedMethodListeners = invokedMethodListeners;
+    m_classListeners = classListeners;
     m_invoker = new Invoker(m_configuration, this, this, m_suite.getSuiteState(),
-        m_skipFailedInvocationCounts, invokedMethodListeners);
+        m_skipFailedInvocationCounts, invokedMethodListeners, classListeners);
 
     if (suite.getParallel() != null) {
       log(3, "Running the tests in '" + test.getName() + "' with parallel mode:" + suite.getParallel());
@@ -343,6 +348,9 @@ public class TestRunner
       if (listener instanceof ITestListener) {
         // At this point, the field m_testListeners has already been used in the creation
         addTestListener((ITestListener) listener);
+      }
+      if (listener instanceof IClassListener) {
+        m_classListeners.add((IClassListener) listener);
       }
       if (listener instanceof IConfigurationListener) {
         addConfigurationListener((IConfigurationListener) listener);
@@ -909,7 +917,8 @@ public class TestRunner
           m_xmlTest.getAllParameters(),
           m_groupMethods,
           m_classMethodMap,
-          this);
+          this,
+          m_classListeners);
       result.add(tmw);
     }
 
@@ -947,7 +956,8 @@ public class TestRunner
         params,
         m_groupMethods,
         m_classMethodMap,
-        this);
+        this,
+        m_classListeners);
   }
 
   private IMethodInstance[] findClasses(List<IMethodInstance> methodInstances, Class<?> c) {
@@ -1491,10 +1501,17 @@ public class TestRunner
     if(listener instanceof IConfigurationListener) {
       addConfigurationListener((IConfigurationListener) listener);
     }
+    if(listener instanceof IClassListener) {
+      addClassListener((IClassListener) listener);
+    }
   }
 
   public void addTestListener(ITestListener il) {
     m_testListeners.add(il);
+  }
+
+  public void addClassListener(IClassListener cl) {
+    m_classListeners.add(cl);
   }
 
   void addConfigurationListener(IConfigurationListener icl) {

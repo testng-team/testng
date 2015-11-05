@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.testng.Assert;
+import org.testng.IClassListener;
 import org.testng.IInvokedMethodListener;
 import org.testng.ISuite;
 import org.testng.ITestResult;
@@ -443,9 +444,9 @@ public class BaseTest extends BaseDistributedTest {
      */
     @Override
     public TestRunner newTestRunner(ISuite suite, XmlTest test,
-        Collection<IInvokedMethodListener> listeners) {
+        Collection<IInvokedMethodListener> listeners, List<IClassListener> classListeners) {
       TestRunner testRunner= new TestRunner(m_baseTest.getConfiguration(), suite, test, false,
-          listeners);
+          listeners, classListeners);
 
       testRunner.addTestListener(new TestHTMLReporter());
       testRunner.addTestListener(new JUnitXMLReporter());

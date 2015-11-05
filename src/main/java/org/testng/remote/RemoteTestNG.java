@@ -6,6 +6,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
 import org.testng.CommandLineArgs;
+import org.testng.IClassListener;
 import org.testng.IInvokedMethodListener;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
@@ -138,11 +139,11 @@ public class RemoteTestNG extends TestNG {
       m_customTestRunnerFactory= new ITestRunnerFactory() {
           @Override
           public TestRunner newTestRunner(ISuite suite, XmlTest xmlTest,
-              Collection<IInvokedMethodListener> listeners) {
+              Collection<IInvokedMethodListener> listeners, List<IClassListener> classListeners) {
             TestRunner runner =
               new TestRunner(getConfiguration(), suite, xmlTest,
                   false /*skipFailedInvocationCounts */,
-                  listeners);
+                  listeners, classListeners);
             if (m_useDefaultListeners) {
               runner.addListener(new TestHTMLReporter());
               runner.addListener(new JUnitXMLReporter());
@@ -268,8 +269,8 @@ public class RemoteTestNG extends TestNG {
 
     @Override
     public TestRunner newTestRunner(ISuite suite, XmlTest test,
-        Collection<IInvokedMethodListener> listeners) {
-      TestRunner tr = m_delegateFactory.newTestRunner(suite, test, listeners);
+        Collection<IInvokedMethodListener> listeners, List<IClassListener> classListeners) {
+      TestRunner tr = m_delegateFactory.newTestRunner(suite, test, listeners, classListeners);
       tr.addListener(new RemoteTestListener(suite, test, m_messageSender));
       return tr;
     }
