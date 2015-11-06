@@ -30,11 +30,13 @@ public class GitHub857Listener extends TestListenerAdapter {
 
   @Override
   public void onTestFailure(ITestResult result) {
+    System.out.println("FAILURE");
     failedTests.add(result);
   }
 
   @Override
   public void onTestSkipped(ITestResult result) {
+    System.out.println("SKIPPED");
     skippedTests.add(result);
   }
 
@@ -44,7 +46,9 @@ public class GitHub857Listener extends TestListenerAdapter {
   }
 
   @Override
-  public void onTestStart(ITestResult result) {}
+  public void onTestStart(ITestResult result) {
+    System.out.println("START");
+  }
 
   @Override
   public void onStart(ITestContext context) {}
