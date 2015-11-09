@@ -1,6 +1,7 @@
 ﻿Current
 Fixed: testName from @Test is now used and available from ITestResult#getName() and ITestResult#getTestName()
 New: GITHUB-776: Add BeforeClass/AfterClass like on ITestListener (@vguna & Julien Herr)
+Fixed: GITHUB-872: Enable end-users of TestNG to alter XmlSuite and XmlTest (Krishnan Mahadevan)
 
 6.9.9:
 2015/10/27
