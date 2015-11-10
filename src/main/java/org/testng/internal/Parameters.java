@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import com.google.inject.Injector;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -19,9 +20,11 @@ import org.testng.ITestResult;
 import org.testng.TestNGException;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
+import org.testng.annotations.IParameterRenderAnnotation;
 import org.testng.annotations.IParameterizable;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
+import org.testng.annotations.ParameterOverride;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.ParameterHolder.ParameterOrigin;
@@ -340,6 +343,52 @@ public class Parameters {
     return result;
   }
 
+  /**
+   * Find a method that has a @ParameterRender(name=name)
+   * Keep interface consistent with @see #findDataProvider
+   */
+  private static ParameterRenderHolder findParameterRender(Object instance, ITestClass clazz,
+                                                           IAnnotationFinder finder, String name,
+                                                           Class parameterRenderClass,
+                                                           ITestContext context) {
+      if (Strings.isNullOrEmpty(name)) {
+          throw new TestNGException("ParameterRender name not defined");
+      }
+
+      ParameterRenderHolder result = null;
+
+      Class cls = clazz.getRealClass();
+      boolean shouldBeStatic = false;
+      if (parameterRenderClass != null) {
+          cls = parameterRenderClass;
+          shouldBeStatic = true;
+      }
+
+      for (Method m : ClassHelper.getAvailableMethods(cls)) {
+          IParameterRenderAnnotation pr = finder.findAnnotation(m,
+              IParameterRenderAnnotation.class);
+          if (null != pr && name.equals(getParameterRenderName(pr, m))) {
+              if (shouldBeStatic && (m.getModifiers() & Modifier.STATIC) == 0) {
+                  Injector injector = context.getInjector(clazz);
+                  if (injector != null) {
+                      instance = injector.getInstance(parameterRenderClass);
+                  }
+              }
+
+              if (result != null) {
+                  throw new TestNGException("Found two renders called '" + name + "' on " + cls);
+              }
+              result = new ParameterRenderHolder(pr, m, instance);
+          }
+      }
+
+      return result;
+  }
+  
+  private static String getParameterRenderName(IParameterRenderAnnotation dp, Method m) {
+      return Strings.isNullOrEmpty(dp.getName()) ? m.getName() : dp.getName();
+  }
+  
   private static String getDataProviderName(IDataProviderAnnotation dp, Method m) {
 	  return Strings.isNullOrEmpty(dp.getName()) ? m.getName() : dp.getName();
   }
@@ -435,6 +484,15 @@ public class Parameters {
           fedInstance,
           annotationFinder);
 
+      /*
+       * update parameter value if it's annotated with @ParameterOverride
+       * do not support render on varargs
+       * put the render here means ParameterRender should work with DataProvider
+       * maybe adjusted if also need render the xml parameters, 
+       * but i think it's not necessary 
+       * */
+      parameters = renderParameters(parameters, testMethod, instance, annotationFinder);
+      
       Iterator<Object[]> filteredParameters = filterParameters(parameters,
           testMethod.getInvocationNumbers());
 
@@ -464,6 +522,62 @@ public class Parameters {
     return result;
   }
 
+  /**
+   * find the render method, then render parameters
+   * 
+   */
+  static private Iterator<Object[]> renderParameters(Iterator<Object[]> parameters,
+                                                     ITestNGMethod testMethod, Object instance,
+                                                     IAnnotationFinder annotationFinder) {
+      int parameterCount = testMethod.getConstructorOrMethod().getParameterTypes().length;
+      //turn iterable parameters into ArrayList, then update the parameter by render
+      List<Object[]> parametersList = Lists.newArrayList(parameters);
+      Annotation[][] annotations = testMethod.getConstructorOrMethod().getParameterAnnotations();
+      if (annotations == null) {
+          return parameters;
+      }
+
+      for (int i = 0; i < parameterCount; i++) {
+          for (Annotation a : annotations[i]) {
+              if (a instanceof ParameterOverride) {
+                  String render = ((ParameterOverride) a).parameterRender();
+                  //for now do not support define the render in another class
+                  //you can only define the render in the testcase class or super
+                  //maybe we can enhance here later, but that need change the @Test definition
+                  ParameterRenderHolder parameterRenderHolder = findParameterRender(instance,
+                      testMethod.getTestClass(), annotationFinder, render, null, null);
+                  renderParameterByIndex(parametersList, parameterRenderHolder, i);
+
+              }
+          }
+      }
+
+      //turn ArrayList into iterable parameters back
+      parameters = parametersList.iterator();
+      return parameters;
+  }
+
+  /**
+   * render the parameter by index, 
+   * the index is parameter's position in method
+   * 
+   */
+  static private void renderParameterByIndex(List<Object[]> parametersList,
+                                             ParameterRenderHolder parameterRenderHolder,
+                                             int paramIndex) {
+      try {
+          for (Object[] paramArray : parametersList) {
+              if (paramArray != null && paramArray.length >= paramIndex) {
+                  paramArray[paramIndex] = MethodInvocationHelper.invokeMethod(
+                      parameterRenderHolder.method, parameterRenderHolder.instance,
+                      new Object[] { paramArray[paramIndex] });
+              }
+          }
+      } catch (Exception e) {
+          throw new TestNGException(e);
+      }
+  }
+  
   /**
    * If numbers is empty, return parameters, otherwise, return a subset of parameters
    * whose ordinal number match these found in numbers.

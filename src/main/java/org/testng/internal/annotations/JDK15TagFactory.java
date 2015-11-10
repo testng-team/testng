@@ -28,9 +28,11 @@ import org.testng.annotations.IDataProviderAnnotation;
 import org.testng.annotations.IExpectedExceptionsAnnotation;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IObjectFactoryAnnotation;
+import org.testng.annotations.IParameterRenderAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Listeners;
+import org.testng.annotations.ParameterRender;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
@@ -55,6 +57,9 @@ public class JDK15TagFactory {
       }
       else if (annotationClass == IDataProviderAnnotation.class) {
         result = createDataProviderTag(a);
+      }
+      else if (annotationClass == IParameterRenderAnnotation.class) {
+        result = createPrameterRenderTag(a);
       }
       else if (annotationClass == IExpectedExceptionsAnnotation.class) {
         result = createExpectedExceptionsTag(a);
@@ -330,6 +335,13 @@ public class JDK15TagFactory {
     return result;
   }
 
+  private IAnnotation createPrameterRenderTag(Annotation a) {
+    ParameterRenderAnnotation result = new ParameterRenderAnnotation();
+    ParameterRender c = (ParameterRender) a;
+    result.setName(c.name());
+    return result;
+  }
+  
   @SuppressWarnings({"deprecation"})
   private IAnnotation createExpectedExceptionsTag(Annotation a) {
     ExpectedExceptionsAnnotation result = new ExpectedExceptionsAnnotation ();

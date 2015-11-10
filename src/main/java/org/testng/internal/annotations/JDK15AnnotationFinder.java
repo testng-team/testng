@@ -29,11 +29,13 @@ import org.testng.annotations.IDataProviderAnnotation;
 import org.testng.annotations.IExpectedExceptionsAnnotation;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IObjectFactoryAnnotation;
+import org.testng.annotations.IParameterRenderAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Optional;
+import org.testng.annotations.ParameterRender;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.testng.annotations.TestInstance;
@@ -74,6 +76,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     m_annotationMap.put(IBeforeMethod.class, BeforeMethod.class);
     m_annotationMap.put(IAfterMethod.class, AfterMethod.class);
     m_annotationMap.put(IListeners.class, Listeners.class);
+    m_annotationMap.put(IParameterRenderAnnotation.class, ParameterRender.class);
   }
 
   private <A extends Annotation> A findAnnotationInSuperClasses(Class<?> cls, Class<A> a) {
