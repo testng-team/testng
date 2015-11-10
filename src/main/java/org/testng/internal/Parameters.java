@@ -6,6 +6,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -530,31 +531,33 @@ public class Parameters {
                                                      ITestNGMethod testMethod, Object instance,
                                                      IAnnotationFinder annotationFinder) {
       int parameterCount = testMethod.getConstructorOrMethod().getParameterTypes().length;
-      //turn iterable parameters into ArrayList, then update the parameter by render
-      List<Object[]> parametersList = Lists.newArrayList(parameters);
+      
       Annotation[][] annotations = testMethod.getConstructorOrMethod().getParameterAnnotations();
       if (annotations == null) {
           return parameters;
       }
-
+      
+      List<Object[]> parametersList = null;
       for (int i = 0; i < parameterCount; i++) {
           for (Annotation a : annotations[i]) {
               if (a instanceof ParameterOverride) {
                   String render = ((ParameterOverride) a).parameterRender();
+                  //turn iterable parameters into ArrayList, then update the parameter by render
+                  if(parametersList==null){
+                      parametersList=Lists.newArrayList(parameters);
+                  }
                   //for now do not support define the render in another class
                   //you can only define the render in the testcase class or super
                   //maybe we can enhance here later, but that need change the @Test definition
                   ParameterRenderHolder parameterRenderHolder = findParameterRender(instance,
                       testMethod.getTestClass(), annotationFinder, render, null, null);
                   renderParameterByIndex(parametersList, parameterRenderHolder, i);
-
               }
           }
       }
 
       //turn ArrayList into iterable parameters back
-      parameters = parametersList.iterator();
-      return parameters;
+      return parametersList==null?parameters: parametersList.iterator();
   }
 
   /**
