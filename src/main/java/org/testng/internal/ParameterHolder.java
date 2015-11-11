@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * A simple holder for parameters that contains the parameters and where these came from
@@ -17,15 +18,15 @@ public class ParameterHolder {
     ORIGIN_XML // TestNG XML suite
   };
 
-  public DataProviderHolder dataProviderHolder;
+  public List<DataProviderHolder> dataProviderHolders;
   public Iterator<Object[]> parameters;
   public ParameterOrigin origin;
 
-  public ParameterHolder(Iterator<Object[]> parameters, ParameterOrigin origin, DataProviderHolder dph) {
+  public ParameterHolder(Iterator<Object[]> parameters, ParameterOrigin origin, List<DataProviderHolder> dphs) {
     super();
     this.parameters = parameters;
     this.origin = origin;
-    this.dataProviderHolder = dph;
+    this.dataProviderHolders = dphs;
   }
 
 }

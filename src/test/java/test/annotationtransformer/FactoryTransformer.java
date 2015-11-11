@@ -29,6 +29,6 @@ public class FactoryTransformer implements IAnnotationTransformer2 {
 
   @Override
   public void transform(IFactoryAnnotation annotation, Method testMethod) {
-    annotation.setDataProvider("dataProvider");
+    annotation.setDataProvider(new String[] {"dataProvider"});
   }
 }

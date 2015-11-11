@@ -1095,7 +1095,7 @@ public class Invoker implements IInvoker {
           List<TestMethodWithDataProviderMethodWorker> workers = Lists.newArrayList();
 
           if (bag.parameterHolder.origin == ParameterOrigin.ORIGIN_DATA_PROVIDER &&
-              bag.parameterHolder.dataProviderHolder.annotation.isParallel()) {
+              hasParallelDataProvider(bag.parameterHolder)) {
             while (allParameterValues.hasNext()) {
               Object[] parameterValues = injectParameters(allParameterValues.next(),
                   testMethod.getMethod(), testContext, null /* test result */);
@@ -1189,6 +1189,15 @@ public class Invoker implements IInvoker {
     return result;
 
   } // invokeTestMethod
+
+  private boolean hasParallelDataProvider(ParameterHolder parameterHolder) {
+    for (DataProviderHolder holder : parameterHolder.dataProviderHolders) {
+      if (holder.annotation.isParallel()) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   private ITestResult registerSkippedTestResult(ITestNGMethod testMethod, Object instance,
       long start, Throwable throwable) {

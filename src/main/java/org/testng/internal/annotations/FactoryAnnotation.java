@@ -13,17 +13,17 @@ public class FactoryAnnotation
   implements IFactoryAnnotation
 {
   private String[] m_parameters = {};
-  private String m_dataProvider = null;
+  private String[] m_dataProvider = null;
   private Class<?> m_dataProviderClass;
   private boolean m_enabled = true;
 
   @Override
-  public String getDataProvider() {
+  public String[] getDataProvider() {
     return m_dataProvider;
   }
 
   @Override
-  public void setDataProvider(String dataProvider) {
+  public void setDataProvider(String[] dataProvider) {
     m_dataProvider = dataProvider;
   }
 

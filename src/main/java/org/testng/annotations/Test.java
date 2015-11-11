@@ -91,7 +91,7 @@ public @interface Test {
    * The name of the data provider for this test method.
    * @see org.testng.annotations.DataProvider
    */
-  public String dataProvider() default "";
+  public String[] dataProvider() default {};
 
   /**
    * The class where to look for the data provider.  If not

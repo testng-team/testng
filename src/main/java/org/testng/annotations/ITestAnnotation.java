@@ -57,8 +57,8 @@ public interface ITestAnnotation extends ITestOrConfiguration, IDataProvidable {
   public boolean getSingleThreaded();
   public void setSingleThreaded(boolean f);
 
-  public String getDataProvider();
-  public void setDataProvider(String v);
+  public String[] getDataProvider();
+  public void setDataProvider(String[] v);
 
   public Class<?> getDataProviderClass();
   public void setDataProviderClass(Class<?> v);
