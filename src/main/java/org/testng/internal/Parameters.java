@@ -304,8 +304,6 @@ public class Parameters {
   private static List<DataProviderHolder> findDataProvider(ConstructorOrMethod annotated, Object instance,
       ITestClass clazz, IAnnotationFinder finder, String[] names, Class dataProviderClass, ITestContext context)
   {
-    DataProviderHolder result = null;
-
     Class cls = clazz.getRealClass();
     boolean shouldBeStatic = false;
     if (dataProviderClass != null) {
@@ -315,6 +313,7 @@ public class Parameters {
 
     List<DataProviderHolder> providers = new ArrayList<>();
     for (String name : names) {
+      DataProviderHolder result = null;
       for (Method m : ClassHelper.getAvailableMethods(cls)) {
         IDataProviderAnnotation dp = finder.findAnnotation(m, IDataProviderAnnotation.class);
         if (null != dp && name.equals(getDataProviderName(dp, m))) {
@@ -480,11 +479,13 @@ public class Parameters {
     List<Object[]> result = new ArrayList<>();
 
     Iterator<Object[]> left = cartesianParameters.get(0);
-    Iterator<Object[]> right = cartesianParameters.get(1);
+    List<Object[]> right = new ArrayList<>();
+    while (cartesianParameters.get(1).hasNext()) {
+      right.add(cartesianParameters.get(1).next());
+    }
     while (left.hasNext()) {
       Object[] leftRow = left.next();
-      while (right.hasNext()) {
-        Object[] rightRow = right.next();
+      for (Object[] rightRow : right) {
         Object[] row = new Object[leftRow.length + rightRow.length];
         System.arraycopy(leftRow, 0, row, 0, leftRow.length);
         System.arraycopy(rightRow, 0, row, leftRow.length, rightRow.length);
