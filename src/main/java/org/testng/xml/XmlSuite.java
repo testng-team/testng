@@ -615,7 +615,18 @@ public class XmlSuite implements Serializable, Cloneable {
   @Override
   public Object clone() {
     XmlSuite result = new XmlSuite();
-
+    
+    result.setExcludedGroups(getExcludedGroups());
+    result.setIncludedGroups(getIncludedGroups());
+    result.setGroupByInstances(getGroupByInstances());
+    result.setGroups(getGroups());
+    result.setMethodSelectors(getXmlMethodSelectors());
+    result.setPackages(getPackages());
+    result.setParentSuite(getParentSuite());
+    result.setPreserveOrder(getPreserveOrder());
+    result.setSuiteFiles(getSuiteFiles());
+    result.setTests(getTests());
+    result.setXmlMethodSelectors(getXmlMethodSelectors());
     result.setName(getName());
     result.setFileName(getFileName());
     result.setListeners(getListeners());
