@@ -20,6 +20,18 @@ import static org.testng.Assert.assertNotEquals;
  */
 public class ArrayEqualityAssertTest {
     @Test
+    public void arrayAssertEquals() {
+        assertEquals(new int[]{ 42 }, new int[] { 42 },
+                "arrays are compared by value in assertEquals");
+    }
+
+    @Test(expectedExceptions = AssertionError.class)
+    public void arrayAssertNotEquals() {
+        assertNotEquals(new int[]{ 42 }, new int[] { 42 },
+                "arrays are compared by value in assertNotEquals");
+    }
+
+    @Test
     public void arrayInsideListAssertEquals() {
         List<int[]> list = Arrays.asList(
             new int[]{ 42 }
