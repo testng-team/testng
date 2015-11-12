@@ -31,7 +31,7 @@ public class ArrayEqualityAssertTest {
                 "arrays are compared by value in assertNotEquals");
     }
 
-    @Test
+    @Test(expectedExceptions = AssertionError.class)
     public void arrayInsideListAssertEquals() {
         List<int[]> list = Arrays.asList(
             new int[]{ 42 }
@@ -40,7 +40,7 @@ public class ArrayEqualityAssertTest {
             new int[]{ 42 }
         );
         assertEquals(list, listCopy,
-                "arrays inside lists are compared by value in assertEquals");
+                "arrays inside lists aren't compared by value in assertEquals");
     }
 
     @Test
@@ -55,14 +55,14 @@ public class ArrayEqualityAssertTest {
                 "arrays inside lists aren't compared by value in assertNotEquals");
     }
 
-    @Test
+    @Test(expectedExceptions = AssertionError.class)
     public void arrayInsideMapAssertEquals() {
         Map<String, int[]> map = new HashMap<>();
         map.put("array", new int[]{ 42 });
         Map<String, int[]> mapCopy = new HashMap<>();
         mapCopy.put("array", new int[]{ 42 });
 
-        // arrays inside maps are compared by value in assertEquals(Map,Map)
+        // arrays inside maps aren't compared by value in assertEquals(Map,Map)
         assertEquals(map, mapCopy);
     }
 
@@ -160,7 +160,7 @@ public class ArrayEqualityAssertTest {
                 "arrays inside maps which are inside lists themselves aren't compared by value in assertEquals");
     }
 
-    @Test
+    @Test(expectedExceptions = AssertionError.class)
     public void arrayInsideIterableAssertEquals() {
         Iterable<int[]> iterable = Arrays.asList(
             new int[]{ 42 }
@@ -169,7 +169,7 @@ public class ArrayEqualityAssertTest {
             new int[]{ 42 }
         );
         assertEquals(iterable, iterableCopy,
-                "arrays inside Iterables are compared by value in assertEquals");
+                "arrays inside Iterables aren't compared by value in assertEquals");
     }
 
     @Test(expectedExceptions = AssertionError.class)
@@ -181,7 +181,7 @@ public class ArrayEqualityAssertTest {
                 "arrays inside Iterables which are inside Iterables themselves aren't compared by value in assertEquals");
     }
 
-    @Test
+    @Test(expectedExceptions = AssertionError.class)
     public void arrayInsideArrayAssertEquals() {
         int[][] array = new int[][] {
             new int[]{ 42 }
@@ -190,10 +190,10 @@ public class ArrayEqualityAssertTest {
             new int[]{ 42 }
         };
         assertEquals(array, arrayCopy,
-                "arrays inside arrays are compared by value in assertEquals");
+                "arrays inside arrays aren't compared by value in assertEquals");
     }
 
-    @Test
+    @Test(expectedExceptions = AssertionError.class)
     public void arrayDeepInArraysAssertEquals() {
         int[][][] array = new int[][][] {
             new int[][] { new int[]{ 42 } }
@@ -203,7 +203,7 @@ public class ArrayEqualityAssertTest {
         };
 
         assertEquals(array, arrayCopy,
-                "arrays inside arrays which are inside arrays themselves are compared by value in assertEquals");
+                "arrays inside arrays which are inside arrays themselves aren't compared by value in assertEquals");
     }
 
     @SuppressWarnings("unchecked")

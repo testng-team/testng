@@ -36,14 +36,6 @@ public class AssertTest {
     Assert.assertEquals(intArr00, intArr01);
   }
 
-  @Test
-  public void int_Integer_Arrays() {
-    int[] intArr = {1, 2};
-    Integer[] integerArr = {1, 2};
-    Assert.assertEquals(intArr, integerArr);
-    Assert.assertEquals(integerArr, intArr);
-  }
-
   @Test(expectedExceptions = AssertionError.class)
   public void arraysFailures_1() {
     int[] intArr = {1, 2};
