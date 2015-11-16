@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 import org.testng.IClass;
@@ -19,8 +20,6 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.thread.IAtomicInteger;
-import org.testng.internal.thread.ThreadUtil;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
@@ -56,7 +55,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   // If a depended group is not found
   private String m_missingGroup;
   private String m_description = null;
-  protected IAtomicInteger m_currentInvocationCount = ThreadUtil.createAtomicInteger(0);
+  protected AtomicInteger m_currentInvocationCount = new AtomicInteger(0);
   private int m_parameterInvocationCount = 1;
   private IRetryAnalyzer m_retryAnalyzer = null;
   private boolean m_skipFailedInvocations = true;
