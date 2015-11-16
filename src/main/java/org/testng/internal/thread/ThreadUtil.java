@@ -93,10 +93,6 @@ public class ThreadUtil {
     return new ExecutorAdapter(threadCount, createFactory(threadFactoryName));
   }
 
-  public static final IAtomicInteger createAtomicInteger(int initialValue) {
-    return new AtomicIntegerAdapter(initialValue);
-  }
-
   private static final IThreadFactory createFactory(String name) {
     return new ThreadFactoryImpl(name);
   }
