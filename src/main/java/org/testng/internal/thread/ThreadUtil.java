@@ -97,17 +97,9 @@ public class ThreadUtil {
     return new ThreadFactoryImpl(name);
   }
 
-  /*private static final ICountDown createCountDown(int count) {
-    return new CountDownAdapter(count);
-  }*/
-
   private static void log(int level, String msg) {
     Utils.log("ThreadUtil:" + ThreadUtil.currentThreadInfo(), level, msg);
   }
-
-  /*private static final IPooledExecutor createPooledExecutor(int size) {
-    return new PooledExecutorAdapter(size);
-  }*/
 
   public static class ThreadFactoryImpl implements IThreadFactory, ThreadFactory {
     private String m_methodName;
@@ -134,43 +126,4 @@ public class ThreadUtil {
       return m_threads;
     }
   }
-
-  /**
-   * A special <code>Runnable</code> that uses <code>CountDownLatch</code>-s to
-   * sync on start and to acknowledge its finish.
-   */
-  private static class CountDownLatchedRunnable implements Runnable {
-    private final Runnable m_task;
-    private final CountDownLatch m_startGate;
-    private final CountDownLatch m_endGate;
-
-    public CountDownLatchedRunnable(Runnable task, CountDownLatch endGate, CountDownLatch startGate) {
-      m_task= task;
-      m_startGate= startGate;
-      m_endGate= endGate;
-    }
-
-    @Override
-    public void run() {
-      if(null != m_startGate) {
-        try {
-          m_startGate.await();
-        }
-        catch(InterruptedException handled) {
-          log(2, "Cannot wait for startup gate when executing "
-              + m_task + "; thread was already interrupted " + handled.getMessage());
-          Thread.currentThread().interrupt();
-          return;
-        }
-      }
-
-      try {
-        m_task.run();
-      }
-      finally {
-        m_endGate.countDown();
-      }
-    }
-  }
-
 }
