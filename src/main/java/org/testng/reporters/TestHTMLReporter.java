@@ -5,14 +5,18 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.TestListenerAdapter;
+import org.testng.TestRunner;
 import org.testng.internal.Utils;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -55,10 +59,10 @@ public class TestHTMLReporter extends TestListenerAdapter {
     return context.getName() + ".html";
   }
 
-  public static void generateTable(StringBuffer sb, String title,
+  public static void generateTable(PrintWriter pw, String title,
       Collection<ITestResult> tests, String cssClass, Comparator<ITestResult> comparator)
   {
-    sb.append("<table width='100%' border='1' class='invocation-").append(cssClass).append("'>\n")
+    pw.append("<table width='100%' border='1' class='invocation-").append(cssClass).append("'>\n")
       .append("<tr><td colspan='4' align='center'><b>").append(title).append("</b></td></tr>\n")
       .append("<tr>")
       .append("<td><b>Test method</b></td>\n")
@@ -72,17 +76,17 @@ public class TestHTMLReporter extends TestListenerAdapter {
     }
 
     // User output?
-    String id = "";
-    Throwable tw = null;
+    String id;
+    Throwable tw;
 
     for (ITestResult tr : tests) {
-      sb.append("<tr>\n");
+      pw.append("<tr>\n");
 
       // Test method
       ITestNGMethod method = tr.getMethod();
 
       String name = method.getMethodName();
-      sb.append("<td title='").append(tr.getTestClass().getName()).append(".")
+      pw.append("<td title='").append(tr.getTestClass().getName()).append(".")
         .append(name)
         .append("()'>")
         .append("<b>").append(name).append("</b>");
@@ -90,28 +94,28 @@ public class TestHTMLReporter extends TestListenerAdapter {
       // Test class
       String testClass = tr.getTestClass().getName();
       if (testClass != null) {
-        sb.append("<br>").append("Test class: " + testClass);
+        pw.append("<br>").append("Test class: ").append(testClass);
 
         // Test name
         String testName = tr.getTestName();
         if (testName != null) {
-          sb.append(" (").append(testName).append(")");
+          pw.append(" (").append(testName).append(")");
         }
       }
 
       // Method description
       if (! Utils.isStringEmpty(method.getDescription())) {
-        sb.append("<br>").append("Test method: ").append(method.getDescription());
+        pw.append("<br>").append("Test method: ").append(method.getDescription());
       }
 
       Object[] parameters = tr.getParameters();
       if (parameters != null && parameters.length > 0) {
-        sb.append("<br>Parameters: ");
+        pw.append("<br>Parameters: ");
         for (int j = 0; j < parameters.length; j++) {
           if (j > 0) {
-            sb.append(", ");
+            pw.append(", ");
           }
-          sb.append(parameters[j] == null ? "null" : parameters[j].toString());
+          pw.append(parameters[j] == null ? "null" : parameters[j].toString());
         }
       }
 
@@ -121,10 +125,10 @@ public class TestHTMLReporter extends TestListenerAdapter {
       {
         List<String> output = Reporter.getOutput(tr);
         if (null != output && output.size() > 0) {
-          sb.append("<br/>");
+          pw.append("<br/>");
           // Method name
           String divId = "Output-" + tr.hashCode();
-          sb.append("\n<a href=\"#").append(divId).append("\"")
+          pw.append("\n<a href=\"#").append(divId).append("\"")
             .append(" onClick='toggleBox(\"").append(divId).append("\", this, \"Show output\", \"Hide output\");'>")
             .append("Show output</a>\n")
             .append("\n<a href=\"#").append(divId).append("\"")
@@ -132,61 +136,61 @@ public class TestHTMLReporter extends TestListenerAdapter {
             ;
 
           // Method output
-          sb.append("<div class='log' id=\"").append(divId).append("\">\n");
+          pw.append("<div class='log' id=\"").append(divId).append("\">\n");
           for (String s : output) {
-            sb.append(s).append("<br/>\n");
+            pw.append(s).append("<br/>\n");
           }
-          sb.append("</div>\n");
+          pw.append("</div>\n");
         }
       }
 
-      sb.append("</td>\n");
+      pw.append("</td>\n");
 
 
       // Exception
       tw = tr.getThrowable();
-      String stackTrace = "";
-      String fullStackTrace = "";
+      String stackTrace;
+      String fullStackTrace;
 
       id = "stack-trace" + tr.hashCode();
-      sb.append("<td>");
+      pw.append("<td>");
 
       if (null != tw) {
         String[] stackTraces = Utils.stackTrace(tw, true);
         fullStackTrace = stackTraces[1];
         stackTrace = "<div><pre>" + stackTraces[0]  + "</pre></div>";
 
-        sb.append(stackTrace);
+        pw.append(stackTrace);
         // JavaScript link
-        sb.append("<a href='#' onClick='toggleBox(\"")
+        pw.append("<a href='#' onClick='toggleBox(\"")
         .append(id).append("\", this, \"Click to show all stack frames\", \"Click to hide stack frames\")'>")
         .append("Click to show all stack frames").append("</a>\n")
-        .append("<div class='stack-trace' id='" + id + "'>")
-        .append("<pre>" + fullStackTrace + "</pre>")
+        .append("<div class='stack-trace' id='").append(id).append("'>")
+        .append("<pre>").append(fullStackTrace).append("</pre>")
         .append("</div>")
         ;
       }
 
-      sb.append("</td>\n");
+      pw.append("</td>\n");
 
       // Time
       long time = (tr.getEndMillis() - tr.getStartMillis()) / 1000;
       String strTime = Long.toString(time);
-      sb.append("<td>").append(strTime).append("</td>\n");
+      pw.append("<td>").append(strTime).append("</td>\n");
 
       // Instance
       Object instance = tr.getInstance();
-      sb.append("<td>").append(instance).append("</td>");
+      pw.append("<td>").append(Objects.toString(instance)).append("</td>");
 
-      sb.append("</tr>\n");
+      pw.append("</tr>\n");
     }
 
-    sb.append("</table><p>\n");
+    pw.append("</table><p>\n");
 
   }
 
   private static String arrayToString(String[] array) {
-    StringBuffer result = new StringBuffer("");
+    StringBuilder result = new StringBuilder();
     for (String element : array) {
       result.append(element).append(" ");
     }
@@ -194,7 +198,7 @@ public class TestHTMLReporter extends TestListenerAdapter {
     return result.toString();
   }
 
-  private static String HEAD =
+  private static final String HEAD =
     "\n<style type=\"text/css\">\n" +
     ".log { display: none;} \n" +
     ".stack-trace { display: none;} \n" +
@@ -254,70 +258,76 @@ public class TestHTMLReporter extends TestListenerAdapter {
       Collection<ITestResult> skippedTests,
       Collection<ITestResult> percentageTests)
   {
-    StringBuffer sb = new StringBuffer();
-    sb.append("<html>\n<head>\n")
-      .append("<title>TestNG:  ").append(testContext.getName()).append("</title>\n")
-      .append(HtmlHelper.getCssString())
-      .append(HEAD)
-      .append("</head>\n")
-      .append("<body>\n");
+    try (PrintWriter writer = new PrintWriter(Utils.openWriter(outputDirectory, getOutputFile(testContext)))) {
 
-    Date startDate = testContext.getStartDate();
-    Date endDate = testContext.getEndDate();
-    long duration = (endDate.getTime() - startDate.getTime()) / 1000;
-    int passed =
-      testContext.getPassedTests().size() +
-      testContext.getFailedButWithinSuccessPercentageTests().size();
-    int failed = testContext.getFailedTests().size();
-    int skipped = testContext.getSkippedTests().size();
-    String hostLine = Utils.isStringEmpty(host) ? "" : "<tr><td>Remote host:</td><td>" + host
-        + "</td>\n</tr>";
+      writer.append("<html>\n<head>\n")
+              .append("<title>TestNG:  ").append(testContext.getName()).append("</title>\n")
+              .append(HtmlHelper.getCssString())
+              .append(HEAD)
+              .append("</head>\n")
+              .append("<body>\n");
 
-    sb
-    .append("<h2 align='center'>").append(testContext.getName()).append("</h2>")
-    .append("<table border='1' align=\"center\">\n")
-    .append("<tr>\n")
+      Date startDate = testContext.getStartDate();
+      Date endDate = testContext.getEndDate();
+      long duration = (endDate.getTime() - startDate.getTime()) / 1000;
+      int passed =
+              testContext.getPassedTests().size() +
+                      testContext.getFailedButWithinSuccessPercentageTests().size();
+      int failed = testContext.getFailedTests().size();
+      int skipped = testContext.getSkippedTests().size();
+      String hostLine = Utils.isStringEmpty(host) ? "" : "<tr><td>Remote host:</td><td>" + host
+              + "</td>\n</tr>";
+
+      writer
+              .append("<h2 align='center'>").append(testContext.getName()).append("</h2>")
+              .append("<table border='1' align=\"center\">\n")
+              .append("<tr>\n")
 //    .append("<td>Property file:</td><td>").append(m_testRunner.getPropertyFileName()).append("</td>\n")
 //    .append("</tr><tr>\n")
-    .append("<td>Tests passed/Failed/Skipped:</td><td>").append(passed).append("/").append(failed).append("/").append(skipped).append("</td>\n")
-    .append("</tr><tr>\n")
-    .append("<td>Started on:</td><td>").append(testContext.getStartDate().toString()).append("</td>\n")
-    .append("</tr>\n")
-    .append(hostLine)
-    .append("<tr><td>Total time:</td><td>").append(duration).append(" seconds (").append(endDate.getTime() - startDate.getTime())
-      .append(" ms)</td>\n")
-    .append("</tr><tr>\n")
-    .append("<td>Included groups:</td><td>").append(arrayToString(testContext.getIncludedGroups())).append("</td>\n")
-    .append("</tr><tr>\n")
-    .append("<td>Excluded groups:</td><td>").append(arrayToString(testContext.getExcludedGroups())).append("</td>\n")
-    .append("</tr>\n")
-    .append("</table><p/>\n")
-    ;
+              .append("<td>Tests passed/Failed/Skipped:</td><td>").append(Integer.toString(passed)).append("/").append(Integer.toString(failed)).append("/").append(Integer.toString(skipped)).append("</td>\n")
+              .append("</tr><tr>\n")
+              .append("<td>Started on:</td><td>").append(testContext.getStartDate().toString()).append("</td>\n")
+              .append("</tr>\n")
+              .append(hostLine)
+              .append("<tr><td>Total time:</td><td>").append(Long.toString(duration)).append(" seconds (").append(Long.toString(endDate.getTime() - startDate.getTime()))
+              .append(" ms)</td>\n")
+              .append("</tr><tr>\n")
+              .append("<td>Included groups:</td><td>").append(arrayToString(testContext.getIncludedGroups())).append("</td>\n")
+              .append("</tr><tr>\n")
+              .append("<td>Excluded groups:</td><td>").append(arrayToString(testContext.getExcludedGroups())).append("</td>\n")
+              .append("</tr>\n")
+              .append("</table><p/>\n");
 
-    sb.append("<small><i>(Hover the method name to see the test class name)</i></small><p/>\n");
-    if (failedConfs.size() > 0) {
-      generateTable(sb, "FAILED CONFIGURATIONS", failedConfs, "failed", CONFIGURATION_COMPARATOR);
-    }
-    if (skippedConfs.size() > 0) {
-      generateTable(sb, "SKIPPED CONFIGURATIONS", skippedConfs, "skipped", CONFIGURATION_COMPARATOR);
-    }
-    if (failedTests.size() > 0) {
-      generateTable(sb, "FAILED TESTS", failedTests, "failed", NAME_COMPARATOR);
-    }
-    if (percentageTests.size() > 0) {
-      generateTable(sb, "FAILED TESTS BUT WITHIN SUCCESS PERCENTAGE",
-          percentageTests, "percent", NAME_COMPARATOR);
-    }
-    if (passedTests.size() > 0) {
-      generateTable(sb, "PASSED TESTS", passedTests, "passed", NAME_COMPARATOR);
-    }
-    if (skippedTests.size() > 0) {
-      generateTable(sb, "SKIPPED TESTS", skippedTests, "skipped", NAME_COMPARATOR);
-    }
+      writer.append("<small><i>(Hover the method name to see the test class name)</i></small><p/>\n");
+      if (failedConfs.size() > 0) {
+        generateTable(writer, "FAILED CONFIGURATIONS", failedConfs, "failed", CONFIGURATION_COMPARATOR);
+      }
+      if (skippedConfs.size() > 0) {
+        generateTable(writer, "SKIPPED CONFIGURATIONS", skippedConfs, "skipped", CONFIGURATION_COMPARATOR);
+      }
+      if (failedTests.size() > 0) {
+        generateTable(writer, "FAILED TESTS", failedTests, "failed", NAME_COMPARATOR);
+      }
+      if (percentageTests.size() > 0) {
+        generateTable(writer, "FAILED TESTS BUT WITHIN SUCCESS PERCENTAGE",
+                percentageTests, "percent", NAME_COMPARATOR);
+      }
+      if (passedTests.size() > 0) {
+        generateTable(writer, "PASSED TESTS", passedTests, "passed", NAME_COMPARATOR);
+      }
+      if (skippedTests.size() > 0) {
+        generateTable(writer, "SKIPPED TESTS", skippedTests, "skipped", NAME_COMPARATOR);
+      }
 
-    sb.append("</body>\n</html>");
-
-    Utils.writeFile(outputDirectory, getOutputFile(testContext), sb.toString());
+      writer.append("</body>\n</html>");
+    } catch (IOException e) {
+      if (TestRunner.getVerbose() > 1) {
+        e.printStackTrace();
+      }
+      else {
+        ppp(e.getMessage());
+      }
+    }
   }
 
   private static void ppp(String s) {

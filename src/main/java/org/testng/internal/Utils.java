@@ -224,7 +224,7 @@ public final class Utils {
   public static BufferedWriter openWriter(@Nullable String outputDir, String fileName) throws IOException {
     String outDirPath= outputDir != null ? outputDir : "";
     File outDir= new File(outDirPath);
-    if (outDir.exists()) {
+    if (!outDir.exists()) {
       outDir.mkdirs();
     }
     fileName = replaceSpecialCharacters(fileName);
