@@ -288,8 +288,8 @@ public class XmlClass implements Serializable, Cloneable {
     for (Map.Entry<String, String> parameter : parameters.entrySet()) {
       result.put(parameter.getKey(), parameter.getValue());
     }
-    for (String key : m_parameters.keySet()) {
-      result.put(key, m_parameters.get(key));
+    for (Map.Entry<String, String> entry  : m_parameters.entrySet()) {
+      result.put(entry.getKey(), entry.getValue());
     }
     return result;
   }

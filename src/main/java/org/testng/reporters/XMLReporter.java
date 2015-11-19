@@ -177,7 +177,7 @@ public class XMLReporter implements IReporter {
    */
   public static void addDurationAttributes(XMLReporterConfig config, Properties attributes,
       Date minStartDate, Date maxEndDate) {
-    SimpleDateFormat format = new SimpleDateFormat(XMLReporterConfig.getTimestampFormat());
+    SimpleDateFormat format = new SimpleDateFormat(config.getTimestampFormat());
     TimeZone utc = TimeZone.getTimeZone("UTC");
     format.setTimeZone(utc);
     String startTime = format.format(minStartDate);

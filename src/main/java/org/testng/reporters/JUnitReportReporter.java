@@ -20,6 +20,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -81,12 +82,14 @@ public class JUnitReportReporter implements IReporter {
 //      afters.put(es.getKey(), es.getValue().iterator());
 //    }
 
+    SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
     for (Map.Entry<Class<?>, Set<ITestResult>> entry : results.entrySet()) {
       Class<?> cls = entry.getKey();
       Properties p1 = new Properties();
       p1.setProperty("name", cls.getName());
       Date timeStamp = Calendar.getInstance().getTime();
-      p1.setProperty(XMLConstants.ATTR_TIMESTAMP, timeStamp.toGMTString());
+      String timestampStr = df.format(timeStamp) + " GMT";
+      p1.setProperty(XMLConstants.ATTR_TIMESTAMP, timestampStr);
 
       List<TestTag> testCases = Lists.newArrayList();
       int failures = 0;
@@ -244,7 +247,7 @@ public class JUnitReportReporter implements IReporter {
     return result;
   }
 
-  class TestTag {
+  static class TestTag {
     public Properties properties;
     public String message;
     public String type;

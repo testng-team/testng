@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
@@ -351,7 +352,11 @@ class ArrayIterator implements Iterator<Object[]> {
 
   @Override
   public Object[] next() {
-    return m_objects[m_count++];
+    if (m_count < m_objects.length) {
+      return m_objects[m_count++];
+    } else {
+      throw new NoSuchElementException();
+    }
   }
 
   @Override

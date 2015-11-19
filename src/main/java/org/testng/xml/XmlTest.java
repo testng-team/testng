@@ -23,7 +23,7 @@ import org.testng.xml.dom.ParentSetter;
 public class XmlTest implements Serializable, Cloneable {
   private static final long serialVersionUID = 6533504325942417606L;
 
-  public static int DEFAULT_TIMEOUT_MS = Integer.MAX_VALUE;
+  public static final int DEFAULT_TIMEOUT_MS = Integer.MAX_VALUE;
 
   private XmlSuite m_suite;
   private String m_name;
@@ -360,8 +360,8 @@ public class XmlTest implements Serializable, Cloneable {
     for (Map.Entry<String, String> parameter : parameters.entrySet()) {
       result.put(parameter.getKey(), parameter.getValue());
     }
-    for (String key : m_parameters.keySet()) {
-      result.put(key, m_parameters.get(key));
+    for (Map.Entry<String, String> entry  : m_parameters.entrySet()) {
+      result.put(entry.getKey(), entry.getValue());
     }
     return result;
   }
@@ -420,7 +420,7 @@ public class XmlTest implements Serializable, Cloneable {
   public long getTimeOut(long def) {
     long result = def;
     if (getTimeOut() != null) {
-        result = new Long(getTimeOut());
+        result = Long.parseLong(getTimeOut());
     }
 
     return result;
@@ -506,13 +506,16 @@ public class XmlTest implements Serializable, Cloneable {
       xsb.push("groups");
 
       // define
-      for (String metaGroupName: m_metaGroups.keySet()) {
+      for (Map.Entry<String, List<String>> entry: m_metaGroups.entrySet()) {
+        String metaGroupName = entry.getKey();
+        List<String> groupNames = entry.getValue();
+
         Properties metaGroupProp= new Properties();
         metaGroupProp.setProperty("name",  metaGroupName);
 
         xsb.push("define", metaGroupProp);
 
-        for (String groupName: m_metaGroups.get(metaGroupName)) {
+        for (String groupName: groupNames) {
           Properties includeProps = new Properties();
           includeProps.setProperty("name", groupName);
 
@@ -582,21 +585,18 @@ public class XmlTest implements Serializable, Cloneable {
   @Override
   public String toString() {
 //    return toXml("");
-    StringBuffer result = new StringBuffer("[Test: \"" + m_name + "\"")
-      .append(" verbose:" + m_verbose);
+    StringBuilder result = new StringBuilder("[Test: \"" + m_name + "\"").append(" verbose:").append(m_verbose);
 
     result.append("[parameters:");
-    for (String k : m_parameters.keySet()) {
-      String v = m_parameters.get(k);
-      result.append(k + "=>" + v);
+    for (Map.Entry<String, String> entry : m_parameters.entrySet()) {
+      result.append(entry.getKey()).append("=>").append(entry.getValue());
     }
 
     result.append("]");
     result.append("[metagroups:");
-    for (String g : m_metaGroups.keySet()) {
-      List<String> mg = m_metaGroups.get(g);
-      result.append(g).append("=");
-      for (String n : mg) {
+    for (Map.Entry<String, List<String>> entry : m_metaGroups.entrySet()) {
+      result.append(entry.getKey()).append("=");
+      for (String n : entry.getValue()) {
         result.append(n).append(",");
       }
     }

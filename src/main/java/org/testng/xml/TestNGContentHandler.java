@@ -150,7 +150,7 @@ public class TestNGContentHandler extends DefaultHandler {
 
       String verbose = attributes.getValue("verbose");
       if (null != verbose) {
-        m_currentSuite.setVerbose(new Integer(verbose));
+        m_currentSuite.setVerbose(Integer.parseInt(verbose));
       }
       String jUnit = attributes.getValue("junit");
       if (null != jUnit) {
@@ -433,7 +433,7 @@ public class TestNGContentHandler extends DefaultHandler {
       if (priority == null) {
         priority = "0";
       }
-      m_currentSelector.setPriority(new Integer(priority));
+      m_currentSelector.setPriority(Integer.parseInt(priority));
     }
     else {
       // do nothing
@@ -608,7 +608,7 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  private class Include {
+  private static class Include {
     String name;
     String invocationNumbers;
     String description;
