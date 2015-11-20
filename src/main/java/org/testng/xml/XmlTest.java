@@ -356,13 +356,8 @@ public class XmlTest implements Serializable, Cloneable {
    */
   public Map<String, String> getAllParameters() {
     Map<String, String> result = Maps.newHashMap();
-    Map<String, String> parameters = getSuite().getParameters();
-    for (Map.Entry<String, String> parameter : parameters.entrySet()) {
-      result.put(parameter.getKey(), parameter.getValue());
-    }
-    for (Map.Entry<String, String> entry  : m_parameters.entrySet()) {
-      result.put(entry.getKey(), entry.getValue());
-    }
+    result.putAll(getSuite().getParameters());
+    result.putAll(m_parameters);
     return result;
   }
 
@@ -585,7 +580,11 @@ public class XmlTest implements Serializable, Cloneable {
   @Override
   public String toString() {
 //    return toXml("");
-    StringBuilder result = new StringBuilder("[Test: \"" + m_name + "\"").append(" verbose:").append(m_verbose);
+    StringBuilder result = new StringBuilder("[Test: \"")
+            .append(m_name)
+            .append("\"")
+            .append(" verbose:")
+            .append(m_verbose);
 
     result.append("[parameters:");
     for (Map.Entry<String, String> entry : m_parameters.entrySet()) {
@@ -610,7 +609,7 @@ public class XmlTest implements Serializable, Cloneable {
 
     result.append("[excluded: ");
     for (String g : m_excludedGroups) {
-      result.append(g).append("");
+      result.append(g).append(" ");
     }
     result.append("] ");
 

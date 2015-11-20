@@ -352,11 +352,10 @@ class ArrayIterator implements Iterator<Object[]> {
 
   @Override
   public Object[] next() {
-    if (m_count < m_objects.length) {
-      return m_objects[m_count++];
-    } else {
+    if (m_count >= m_objects.length) {
       throw new NoSuchElementException();
     }
+    return m_objects[m_count++];
   }
 
   @Override

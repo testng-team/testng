@@ -724,7 +724,7 @@ public class TestRunner
       }
     });
 
-    runWorkers(workers);
+    runJUnitWorkers(workers);
     m_allTestMethods= runMethods.toArray(new ITestNGMethod[runMethods.size()]);
   }
 
@@ -995,7 +995,7 @@ public class TestRunner
   private static final EnumSet<XmlSuite.ParallelMode> WORKERS_PARALLEL_MODES
       = EnumSet.of(XmlSuite.ParallelMode.METHODS, XmlSuite.ParallelMode.TRUE,
                    XmlSuite.ParallelMode.CLASSES);
-  private void runWorkers(List<? extends IWorker<ITestNGMethod>> workers) {
+  private void runJUnitWorkers(List<? extends IWorker<ITestNGMethod>> workers) {
       //
       // Sequential run
       //

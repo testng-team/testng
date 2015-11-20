@@ -488,7 +488,7 @@ public class EmailableReporter implements IReporter {
 
   // ~ Inner Classes --------------------------------------------------------
   /** Arranges methods by classname and method name */
-  private static class TestSorter implements Comparator<IInvokedMethod> {
+  private static final class TestSorter implements Comparator<IInvokedMethod> {
     // ~ Methods -------------------------------------------------------------
 
     /** Arranges methods by classname and method name */
