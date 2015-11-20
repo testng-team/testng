@@ -1,10 +1,6 @@
 package org.testng.internal;
 
-import org.testng.IConfigurable;
-import org.testng.IConfigurationListener;
-import org.testng.IExecutionListener;
-import org.testng.IHookable;
-import org.testng.ITestObjectFactory;
+import org.testng.*;
 import org.testng.internal.annotations.IAnnotationFinder;
 
 import java.util.List;
@@ -27,4 +23,6 @@ public interface IConfiguration {
 
   List<IConfigurationListener> getConfigurationListeners();
   void addConfigurationListener(IConfigurationListener cl);
+
+  List<IAlterSuiteListener> getAlterSuiteListeners();
 }

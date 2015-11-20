@@ -185,6 +185,8 @@ public class TestNG {
 
   private List<IExecutionListener> m_executionListeners = Lists.newArrayList();
 
+  private List<IAlterSuiteListener> m_alterSuiteListeners= Lists.newArrayList();
+
   private boolean m_isInitialized = false;
 
   /**
@@ -735,6 +737,9 @@ public class TestNG {
       if (listener instanceof IConfigurationListener) {
         getConfiguration().addConfigurationListener((IConfigurationListener) listener);
       }
+      if (listener instanceof IAlterSuiteListener) {
+        addAlterSuiteListener((IAlterSuiteListener) listener);
+      }
     }
   }
 
@@ -1039,6 +1044,7 @@ public class TestNG {
 
     List<ISuite> suiteRunners = null;
 
+    runSuiteAlterationListeners();
     runExecutionListeners(true /* start */);
 
     m_start = System.currentTimeMillis();
@@ -1088,6 +1094,15 @@ public class TestNG {
     System.out.println("[TestNG] " + string);
   }
 
+  private void runSuiteAlterationListeners() {
+    for (List<IAlterSuiteListener> listeners
+        : Arrays.asList(m_alterSuiteListeners, m_configuration.getAlterSuiteListeners())) {
+      for (IAlterSuiteListener l : listeners) {
+        l.alter(m_suites);
+      }
+    }
+  }
+
   private void runExecutionListeners(boolean start) {
     for (List<IExecutionListener> listeners
         : Arrays.asList(m_executionListeners, m_configuration.getExecutionListeners())) {
@@ -1096,6 +1111,10 @@ public class TestNG {
         else l.onExecutionFinish();
       }
     }
+  }
+
+  public void addAlterSuiteListener(IAlterSuiteListener l) {
+    m_alterSuiteListeners.add(l);
   }
 
   public void addExecutionListener(IExecutionListener l) {

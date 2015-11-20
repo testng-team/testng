@@ -1,10 +1,6 @@
 package org.testng.internal;
 
-import org.testng.IConfigurable;
-import org.testng.IConfigurationListener;
-import org.testng.IExecutionListener;
-import org.testng.IHookable;
-import org.testng.ITestObjectFactory;
+import org.testng.*;
 import org.testng.collections.Lists;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -19,6 +15,7 @@ public class Configuration implements IConfiguration {
   IHookable m_hookable;
   IConfigurable m_configurable;
   List<IExecutionListener> m_executionListeners = Lists.newArrayList();
+  List<IAlterSuiteListener> m_alterSuiteListeners = Lists.newArrayList();
   private List<IConfigurationListener> m_configurationListeners = Lists.newArrayList();
 
   public Configuration() {
@@ -94,4 +91,10 @@ public class Configuration implements IConfiguration {
       m_configurationListeners.add(cl);
     }
   }
+
+  @Override
+  public List<IAlterSuiteListener> getAlterSuiteListeners() {
+    return m_alterSuiteListeners;
+  }
+
 }
