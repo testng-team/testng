@@ -796,7 +796,7 @@ public final class Utils {
    * Make sure that either we have an instance or if not, that the method is static
    */
   public static void checkInstanceOrStatic(Object instance, Method method) {
-    if (instance == null && ! Modifier.isStatic(method.getModifiers())) {
+    if (instance == null && method != null && ! Modifier.isStatic(method.getModifiers())) {
       throw new TestNGException("Can't invoke " + method + ": either make it static or add "
           + "a no-args constructor to your class");
     }

@@ -2,6 +2,7 @@ package test.factory;
 
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
+import org.testng.TestNGException;
 import org.testng.annotations.Test;
 import test.SimpleBaseTest;
 
@@ -18,9 +19,9 @@ public class FactoryIntegrationTest extends SimpleBaseTest {
 
         try {
             tng.run();
-            failBecauseExceptionWasNotThrown(IllegalArgumentException.class);
-        } catch (IllegalArgumentException e) {
-            assertThat(e).hasMessage("A factory method MUST be static. But 'createInstances' from 'test.factory.GitHub876Sample' is not.");
+            failBecauseExceptionWasNotThrown(TestNGException.class);
+        } catch (TestNGException e) {
+            assertThat(e).hasMessage("\nCan't invoke public java.lang.Object[] test.factory.GitHub876Sample.createInstances(): either make it static or add a no-args constructor to your class");
         }
     }
 }
