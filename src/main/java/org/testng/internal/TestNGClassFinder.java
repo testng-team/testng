@@ -20,6 +20,8 @@ import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
+import static org.testng.internal.ClassHelper.getAvailableMethods;
+
 /**
  * This class creates an ITestClass from a test class.
  *
@@ -218,16 +220,16 @@ public class TestNGClassFinder extends BaseClassFinder {
    * @return true if this class contains TestNG annotations (either on itself
    * or on a superclass).
    */
-  public static boolean isTestNGClass(Class c, IAnnotationFinder annotationFinder) {
+  public static boolean isTestNGClass(Class<?> c, IAnnotationFinder annotationFinder) {
     Class[] allAnnotations= AnnotationHelper.getAllAnnotations();
-    Class cls = c;
+    Class<?> cls = c;
 
     try {
       for(Class annotation : allAnnotations) {
 
         for (cls = c; cls != null; cls = cls.getSuperclass()) {
           // Try on the methods
-          for (Method m : cls.getMethods()) {
+          for (Method m : getAvailableMethods(cls)) {
             IAnnotation ma= annotationFinder.findAnnotation(m, annotation);
             if(null != ma) {
               return true;

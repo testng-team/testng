@@ -132,14 +132,12 @@ public final class ClassHelper {
    * @param finder The finder (JDK 1.4 or JDK 5.0+) use to search for the annotation.
    *
    * @return the @Factory <CODE>method</CODE> or null
-   *
-   * FIXME: @Factory method must be public!
    */
   public static ConstructorOrMethod findDeclaredFactoryMethod(Class<?> cls,
       IAnnotationFinder finder) {
     ConstructorOrMethod result = null;
 
-    for (Method method : cls.getMethods()) {
+    for (Method method : getAvailableMethods(cls)) {
       IFactoryAnnotation f = finder.findAnnotation(method, IFactoryAnnotation.class);
 
       if (null != f) {
@@ -183,7 +181,7 @@ public final class ClassHelper {
     methods.addAll(Arrays.asList(clazz.getDeclaredMethods()));
 
     Class<?> parent = clazz.getSuperclass();
-    while (Object.class != parent) {
+    while (null != parent) {
       methods.addAll(extractMethods(clazz, parent, methods));
       parent = parent.getSuperclass();
     }
