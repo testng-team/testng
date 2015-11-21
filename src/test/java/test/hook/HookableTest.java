@@ -59,6 +59,14 @@ public class HookableTest extends BaseTest {
     Assert.assertEquals(HookSuccess599Test.m_parameter, "foo");
   }
 
+  @Test(description = "https://github.com/cbeust/testng/pull/862")
+  public void issue862() {
+    addClass(HookSuccess862Test.class);
+    run();
+
+    verifyTests("Passed", new String[] { "verify" }, getPassedTests());
+  }
+
   @Test
   public void hookSuccessWithListener() {
     addClass(HookSuccessWithListenerTest.class);
