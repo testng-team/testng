@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
@@ -34,6 +35,11 @@ public class ConstructorOrMethod {
     return getMethod() != null ? getMethod().getParameterTypes() : getConstructor().getParameterTypes();
   }
 
+  public Annotation[][] getParameterAnnotations() {
+      return getMethod() != null ? 
+          getMethod().getParameterAnnotations() : getConstructor().getParameterAnnotations();
+  }
+  
   public Method getMethod() {
     return m_method;
   }
