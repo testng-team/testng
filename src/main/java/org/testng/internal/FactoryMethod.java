@@ -1,9 +1,11 @@
 package org.testng.internal;
 
+import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.testng.IInstanceInfo;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
@@ -33,11 +35,22 @@ public class FactoryMethod extends BaseTestMethod {
                        ITestContext testContext)
   {
     super(com.getName(), com, annotationFinder, instance);
-//    Utils.checkInstanceOrStatic(instance, method);
+    Utils.checkInstanceOrStatic(instance, com.getMethod());
+    Utils.checkReturnType(com.getMethod(), Object[].class, IInstanceInfo[].class);
     Class<?> declaringClass = com.getDeclaringClass();
     if (instance != null && ! declaringClass.isAssignableFrom(instance.getClass())) {
       throw new TestNGException("Mismatch between instance/method classes:"
           + instance.getClass() + " " + declaringClass);
+    }
+    if (instance == null && com.getMethod() != null && !Modifier.isStatic(com.getMethod().getModifiers())) {
+      throw new TestNGException("An inner factory method MUST be static. But '" + com.getMethod().getName() + "' from '" + declaringClass.getName() + "' is not.");
+    }
+    if (com.getMethod() != null && !Modifier.isPublic(com.getMethod().getModifiers())) {
+      try {
+        com.getMethod().setAccessible(true);
+      } catch (SecurityException e) {
+        throw new TestNGException(e);
+      }
     }
 
     m_instance = instance;
