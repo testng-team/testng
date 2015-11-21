@@ -166,9 +166,6 @@ public final class ClassHelper {
 //      }
 //    }
 
-    // Found the method, verify that it returns an array of objects
-    // TBD
-
     return result;
   }
 

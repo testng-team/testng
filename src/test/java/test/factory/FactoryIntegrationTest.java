@@ -15,9 +15,6 @@ public class FactoryIntegrationTest extends SimpleBaseTest {
     @Test(description = "https://github.com/cbeust/testng/issues/876")
     public void testExceptionWithNonStaticFactoryMethod() {
         TestNG tng = create(GitHub876Sample.class);
-        TestListenerAdapter tla = new TestListenerAdapter();
-        tng.addListener(tla);
-
         try {
             tng.run();
             failBecauseExceptionWasNotThrown(TestNGException.class);
@@ -35,5 +32,16 @@ public class FactoryIntegrationTest extends SimpleBaseTest {
         tng.run();
 
         Assert.assertEquals(tla.getPassedTests().size(), 2);
+    }
+
+    @Test
+    public void testExceptionWithBadFactoryMethodReturnType() {
+        TestNG tng = create(BadFactoryMethodReturnTypeSample.class);
+        try {
+            tng.run();
+            failBecauseExceptionWasNotThrown(TestNGException.class);
+        } catch (TestNGException e) {
+            assertThat(e).hasMessage("\ntest.factory.BadFactoryMethodReturnTypeSample.createInstances MUST return [ java.lang.Object[] or org.testng.IInstanceInfo[] ] but returns java.lang.Object");
+        }
     }
 }

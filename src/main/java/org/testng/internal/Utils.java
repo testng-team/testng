@@ -802,6 +802,36 @@ public final class Utils {
     }
   }
 
+  public static void checkReturnType(Method method, Class<?>... returnTypes) {
+    if (method == null) {
+      return;
+    }
+    for (Class<?> returnType : returnTypes) {
+      if (method.getReturnType() == returnType) {
+        return;
+      }
+    }
+    throw new TestNGException(method.getDeclaringClass().getName() + "."
+              + method.getName() + " MUST return " + toString(returnTypes) + " but returns " + method.getReturnType().getName());
+  }
+
+  private static String toString(Class<?>[] classes) {
+    StringBuilder sb = new StringBuilder("[ ");
+    for (int i=0; i<classes.length;) {
+      Class<?> clazz = classes[i];
+      if (clazz.isArray()) {
+        sb.append(clazz.getComponentType().getName()).append("[]");
+      } else {
+        sb.append(clazz.getName());
+      }
+      if (++i < classes.length) { // increment and compare
+        sb.append(" or ");
+      }
+    }
+    sb.append(" ]");
+    return sb.toString();
+  }
+
   /**
    * Returns the string representation of the specified object, transparently
    * handling null references and arrays.

@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.testng.IInstanceInfo;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
@@ -35,6 +36,7 @@ public class FactoryMethod extends BaseTestMethod {
   {
     super(com.getName(), com, annotationFinder, instance);
     Utils.checkInstanceOrStatic(instance, com.getMethod());
+    Utils.checkReturnType(com.getMethod(), Object[].class, IInstanceInfo[].class);
     Class<?> declaringClass = com.getDeclaringClass();
     if (instance != null && ! declaringClass.isAssignableFrom(instance.getClass())) {
       throw new TestNGException("Mismatch between instance/method classes:"
