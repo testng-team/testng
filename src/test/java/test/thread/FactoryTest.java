@@ -26,11 +26,9 @@ public class FactoryTest {
     runTest(XmlSuite.ParallelMode.METHODS, 2);
   }
 
-  @Test(groups = "broken",
-      description = "Known bug:  when parallel='tests', tests returned" +
-        " by a @Factory are run in the same thread")
+  @Test
   public void verifyFactoryParallelTests() {
-    runTest(XmlSuite.ParallelMode.TESTS, 2);
+    runTest(XmlSuite.ParallelMode.TESTS, 1);
   }
 
   private void runTest(XmlSuite.ParallelMode parallelMode, int expectedThreadIdCount) {
