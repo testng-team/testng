@@ -276,10 +276,16 @@ public class TestNG {
 
         for (String suiteFile : s.getSuiteFiles()) {
             try {
-                Collection<XmlSuite> childSuites = getParser(suiteFile).parse();
+				File parentSuite = new File(s.getFileName());
+				File childSuite = new File(parentSuite.getParent(), suiteFile);
+				String childSuitePath = childSuite.getPath();
+				Collection<XmlSuite> childSuites = getParser(childSuitePath).parse();
                 for (XmlSuite cSuite : childSuites){
-                    cSuite.setParentSuite(s);
-                    s.getChildSuites().add(cSuite);
+                	if(cSuite.getFileName().equals(suiteFile))
+                	{
+	                    cSuite.setParentSuite(s);
+	                    s.getChildSuites().add(cSuite);
+                	}
                 }
             } catch (ParserConfigurationException | IOException | SAXException e) {
                 e.printStackTrace(System.out);
