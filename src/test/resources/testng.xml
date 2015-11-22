@@ -319,6 +319,7 @@
     <classes>
       <class name="test.timeout.TimeOutTest" />
       <class name="test.timeout.TimeOutFromXmlTest"/>
+      <class name="test.timeout.TimeOutIntegrationTest"/>
 <!--
       <class name="test.timeout.TimeOutThreadLocalSampleTest"/>
 -->
