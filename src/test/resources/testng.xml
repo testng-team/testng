@@ -312,6 +312,8 @@
 
       <class name="test.factory.DisabledFactoryTest"/>
       <class name="test.factory.FactoryAndTestMethodTest" />
+
+      <class name="test.factory.FactoryIntegrationTest" />
     </classes>
   </test>
 
