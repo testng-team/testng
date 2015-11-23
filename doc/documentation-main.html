@@ -2349,14 +2349,16 @@ public class MyHook implements IHookable {
   ------------------------------------>
 
 <h4><a class="section" indent=".." name="ialtersuite">Altering suites (or) tests</a></h4>
-Sometimes we may need to just want to alter a suite (or) a test tag in a suite xml in runtime without having to
-change the contents of a suite file.<br>
+Sometimes you may need to just want to alter a suite (or) a test tag in a suite xml in runtime without having to
+change the contents of a suite file.
 
+<p>
 A classic example for this would be to try and leverage your existing suite file and try using it for simulating a load test
 on your "Application under test".
-If you were to do this on your own, at the minimum you would end up duplicating the contents of your &lt;test&gt; tag multiple
+At the minimum you would end up duplicating the contents of your &lt;test&gt; tag multiple
 times and create a new suite xml file and work with. But this doesn't seem to scale a lot.
 
+<p>
 TestNG allows you to alter a suite (or) a test tag in your suite xml file at runtime via listeners.
 You achieve this by providing a listener that implements <a href="../javadocs/org/testng/IAlterSuiteListener.html"><tt>IAlterSuiteListener</tt></a>.
 Please refer to <a href="#testng-listeners">Listeners section</a> to learn about listeners.
@@ -2374,10 +2376,10 @@ public class AlterSuiteNameListener implements IAlterSuiteListener {
 }
 </pre>
 
-This listener can only be added to your execution via the following two ways :
+This listener can only be added with either of the following ways: 
 <ul>
   <li>Through the <tt>&lt;listeners&gt;</tt> tag in the suite xml file.</li>
-  <li>Through the mechanism of <a href="#listeners-service-loader">ServiceLoaders</a></li>
+  <li>Through a <a href="#listeners-service-loader">Service Loader</a></li>
 </ul>
 
 This listener cannot be added to execution using the <tt>@Listeners</tt> annotation.
