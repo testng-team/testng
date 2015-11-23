@@ -17,6 +17,7 @@ import org.testng.internal.thread.IFutureResult;
 import org.testng.internal.thread.ThreadExecutionException;
 import org.testng.internal.thread.ThreadTimeoutException;
 import org.testng.internal.thread.ThreadUtil;
+import org.testng.xml.XmlSuite;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -225,7 +226,7 @@ public class MethodInvocationHelper {
   protected static void invokeWithTimeout(ITestNGMethod tm, Object instance,
       Object[] parameterValues, ITestResult testResult, IHookable hookable)
       throws InterruptedException, ThreadExecutionException {
-    if (ThreadUtil.isTestNGThread()) {
+    if (ThreadUtil.isTestNGThread() && testResult.getTestContext().getCurrentXmlTest().getParallel() != XmlSuite.ParallelMode.TESTS) {
       // We are already running in our own executor, don't create another one (or we will
       // lose the time out of the enclosing executor).
       invokeWithTimeoutWithNoExecutor(tm, instance, parameterValues, testResult, hookable);
