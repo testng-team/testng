@@ -86,24 +86,4 @@ public class CheckSuiteNamesTest extends SimpleBaseTest {
 		tng.setXmlSuites(parser.parseToList());
 		tng.initializeSuitesAndJarFile();		
 	}
-	
-	@Test
-	public void validateDuplicateSuiteAddition() throws ParserConfigurationException, SAXException, IOException
-	{
-		SuiteListner suiteListner = new SuiteListner();
-		TestNG tng = create();
-		String testngXmlPath = getPathToResource("sanitycheck/test-s-b.xml");
-		Parser parser = new Parser(testngXmlPath);
-		tng.setXmlSuites(parser.parseToList());
-		tng.addListener(suiteListner);
-		tng.run();
-		
-		//check the suite file path instead of XmlSuite object for duplicate entry
-		Set<String> allSuite = new HashSet<String>();
-		for(XmlSuite suite : suiteListner.getAllTestSuite())
-		{
-			Assert.assertTrue(allSuite.add(suite.getFileName()), 
-					String.format("No duplicate of suite %s added", suite.getFileName()));
-		}	
-	}
 }
