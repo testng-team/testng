@@ -279,7 +279,7 @@ public class TestNG {
         for (String suiteFile : s.getSuiteFiles()) {
             try {
             	Path rootPath = Paths.get(s.getFileName()).getParent();
-		        Collection<XmlSuite> childSuites = getParser(rootPath.resolve(suiteFile).toString()).parse();
+		Collection<XmlSuite> childSuites = getParser(rootPath.resolve(suiteFile).toString()).parse();
                 for (XmlSuite cSuite : childSuites){
 	             cSuite.setParentSuite(s);
 	             s.getChildSuites().add(cSuite);
