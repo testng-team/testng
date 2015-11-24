@@ -275,10 +275,9 @@ public class TestNG {
     if (m_suites.size() > 0) {
     	//to parse the suite files (<suite-file>), if any
     	for (XmlSuite s: m_suites) {
-
+            Path rootPath = Paths.get(s.getFileName()).getParent();
         for (String suiteFile : s.getSuiteFiles()) {
             try {
-            	 Path rootPath = Paths.get(s.getFileName()).getParent();
 		 Collection<XmlSuite> childSuites = getParser(rootPath.resolve(suiteFile).toString()).parse();
                 for (XmlSuite cSuite : childSuites){
 	             cSuite.setParentSuite(s);
