@@ -69,6 +69,7 @@ public class TestNGContentHandler extends DefaultHandler {
 
   private String m_fileName;
   private boolean m_loadClasses;
+  private boolean m_validate = false;
 
   public TestNGContentHandler(String fileName, boolean loadClasses) {
     m_fileName = fileName;
@@ -91,6 +92,7 @@ public class TestNGContentHandler extends DefaultHandler {
     InputSource result = null;
     if (Parser.DEPRECATED_TESTNG_DTD_URL.equals(publicId)
         || Parser.TESTNG_DTD_URL.equals(publicId)) {
+      m_validate = true;
       InputStream is = getClass().getClassLoader().getResourceAsStream(Parser.TESTNG_DTD);
       if (null == is) {
         is = Thread.currentThread().getContextClassLoader().getResourceAsStream(Parser.TESTNG_DTD);
@@ -740,7 +742,9 @@ public class TestNGContentHandler extends DefaultHandler {
 
   @Override
   public void error(SAXParseException e) throws SAXException {
-    throw e;
+    if (m_validate) {
+      throw e;
+    }
   }
 
   private boolean areWhiteSpaces(char[] ch, int start, int length) {

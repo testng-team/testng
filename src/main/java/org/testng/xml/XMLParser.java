@@ -21,6 +21,7 @@ abstract public class XMLParser<T> implements IFileParser<T> {
     SAXParserFactory spf = loadSAXParserFactory();
 
     if (supportsValidation(spf)) {
+      spf.setNamespaceAware(true);
       spf.setValidating(true);
     }
 
