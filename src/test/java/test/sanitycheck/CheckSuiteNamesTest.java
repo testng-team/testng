@@ -73,8 +73,8 @@ public class CheckSuiteNamesTest extends SimpleBaseTest {
     Assert.assertEquals(xmlSuite2.getName(), "SanityCheckSuite (0)");
   }
   
- @Test
- public void checkXmlSuiteAddition() throws ParserConfigurationException, SAXException, IOException {
+  @Test
+  public void checkXmlSuiteAddition() throws ParserConfigurationException, SAXException, IOException {
     TestNG tng = create();
     String testngXmlPath = getPathToResource("sanitycheck/test-s-b.xml");
     Parser parser = new Parser(testngXmlPath);	
