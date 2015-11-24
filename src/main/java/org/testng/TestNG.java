@@ -281,8 +281,8 @@ public class TestNG {
             	Path rootPath = Paths.get(s.getFileName()).getParent();
 		        Collection<XmlSuite> childSuites = getParser(rootPath.resolve(suiteFile).toString()).parse();
                 for (XmlSuite cSuite : childSuites){
-	                cSuite.setParentSuite(s);
-	                s.getChildSuites().add(cSuite);
+	             cSuite.setParentSuite(s);
+	             s.getChildSuites().add(cSuite);
                 }
             } catch (ParserConfigurationException | IOException | SAXException e) {
                 e.printStackTrace(System.out);
