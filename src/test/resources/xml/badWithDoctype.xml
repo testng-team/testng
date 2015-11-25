@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<Suite name="GitHub809" verbose="3">
+    <test name="Demo 1" preserve-order="true" />
+</Suite>

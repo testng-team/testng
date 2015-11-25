@@ -680,6 +680,11 @@
       <class name="test.yaml.YamlTest" />
     </classes>
   </test>
+  <test name="XML">
+    <classes>
+      <class name="org.testng.xml.SuiteXmlParserTest" />
+    </classes>
+  </test>
 
   <test name="Sanity Check">
     <classes>
