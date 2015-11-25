@@ -7,6 +7,7 @@ import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.Utils;
+import org.testng.log4testng.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -70,6 +71,7 @@ public class TestNGContentHandler extends DefaultHandler {
   private String m_fileName;
   private boolean m_loadClasses;
   private boolean m_validate = false;
+  private boolean m_hasWarn = false;
 
   public TestNGContentHandler(String fileName, boolean loadClasses) {
     m_fileName = fileName;
@@ -503,6 +505,12 @@ public class TestNGContentHandler extends DefaultHandler {
    */
   @Override
   public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+    if (!m_validate && !m_hasWarn) {
+      Logger.getLogger(TestNGContentHandler.class).warn("It is strongly recommended to add " +
+              "\"<!DOCTYPE suite SYSTEM \"http://testng.org/testng-1.0.dtd\" >\" at the top of your file, " +
+              "otherwise, TestNG may fail or not work as expected.");
+      m_hasWarn = true;
+    }
     String name = attributes.getValue("name");
 
     // ppp("START ELEMENT uri:" + uri + " sName:" + localName + " qName:" + qName +
