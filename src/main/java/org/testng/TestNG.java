@@ -269,34 +269,34 @@ public class TestNG {
   public void initializeSuitesAndJarFile() {
     // The Eclipse plug-in (RemoteTestNG) might have invoked this method already
     // so don't initialize suites twice.
-	System.out.println("ENTER");
     if (m_isInitialized) {
       return;
     }
 
     m_isInitialized = true;
     if (m_suites.size() > 0) {
-    //to parse the suite files (<suite-file>), if any
-	for (XmlSuite s: m_suites) {
-		for (String suiteFile : s.getSuiteFiles()) {
-        	Path suitePath = Paths.get(s.getFileName());
-        	Path rootPath = suitePath.getParent();
-        	try {
-        		Collection<XmlSuite> childSuites = getParser(rootPath.resolve(suiteFile).normalize().toString()).parse();
-        		for (XmlSuite cSuite : childSuites){
-        			Path childSuite = Paths.get(cSuite.getFileName()).normalize();
-        			Path parentSuite = Paths.get(suiteFile).normalize();
-        			if(!childSuite.getFileName().equals(parentSuite.getFileName()))
-        			{
-        				cSuite.setParentSuite(s);
-        				s.getChildSuites().add(cSuite);
-        			}
-        		}
-            } catch (ParserConfigurationException | IOException | SAXException e) {
-                e.printStackTrace(System.out);
-            }
-	      }
-      return;
+        //to parse the suite files (<suite-file>), if any
+		for (XmlSuite s: m_suites) {
+	       for (String suiteFile : s.getSuiteFiles()) {
+	        	Path suitePath = Paths.get(s.getFileName());
+	        	Path rootPath = suitePath.getParent();
+	        	try {
+	        		Collection<XmlSuite> childSuites = getParser(rootPath.resolve(suiteFile).normalize().toString()).parse();
+	        		for (XmlSuite cSuite : childSuites){
+	        			Path childSuite = Paths.get(cSuite.getFileName()).normalize();
+	        			Path parentSuite = Paths.get(suiteFile).normalize();
+	        			if(!childSuite.getFileName().equals(parentSuite.getFileName()))
+	        			{
+	        				cSuite.setParentSuite(s);
+	        				s.getChildSuites().add(cSuite);
+	        			}
+	        		}
+	            } catch (ParserConfigurationException | IOException | SAXException e) {
+	                e.printStackTrace(System.out);
+	            }
+		      }
+	      return;
+	    }
     }
 
     //
