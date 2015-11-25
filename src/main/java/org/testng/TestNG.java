@@ -275,9 +275,9 @@ public class TestNG {
 
     m_isInitialized = true;
     if (m_suites.size() > 0) {
-        //to parse the suite files (<suite-file>), if any
+	    //to parse the suite files (<suite-file>), if any
 		for (XmlSuite s: m_suites) {
-	       for (String suiteFile : s.getSuiteFiles()) {
+		   for (String suiteFile : s.getSuiteFiles()) {
 	        	Path suitePath = Paths.get(s.getFileName());
 	        	Path rootPath = suitePath.getParent();
 	        	try {
@@ -295,8 +295,8 @@ public class TestNG {
 	                e.printStackTrace(System.out);
 	            }
 		      }
-	      return;
-	    }
+	    	}
+	    return;
     }
 
     //
