@@ -9,9 +9,16 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.xml.sax.SAXException;
+
 import test.SimpleBaseTest;
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import javax.xml.parsers.ParserConfigurationException;
 
 public class CheckSuiteNamesTest extends SimpleBaseTest {
@@ -73,12 +80,34 @@ public class CheckSuiteNamesTest extends SimpleBaseTest {
     Assert.assertEquals(xmlSuite2.getName(), "SanityCheckSuite (0)");
   }
   
- @Test
- public void checkXmlSuiteAddition() throws ParserConfigurationException, SAXException, IOException {
+  @Test
+  public void checkXmlSuiteAddition() throws ParserConfigurationException, SAXException, IOException {
     TestNG tng = create();
     String testngXmlPath = getPathToResource("sanitycheck/test-s-b.xml");
     Parser parser = new Parser(testngXmlPath);	
     tng.setXmlSuites(parser.parseToList());
     tng.initializeSuitesAndJarFile();		
+  }
+  
+  @Test(description = "Verify that same suite is not added multiple times")
+  public void validateDuplicateSuiteAddition() throws ParserConfigurationException, SAXException, IOException
+  {
+	SuiteListner suiteListner = new SuiteListner();
+	TestNG tng = create();
+	String testngXmlPath = getPathToResource("sanitycheck/test-s-b.xml");
+	Parser parser = new Parser(testngXmlPath);
+	tng.setXmlSuites(parser.parseToList());
+	tng.addListener(suiteListner);
+	tng.run();
+	
+    Set<String> allSuite = new HashSet<String>();
+    List<XmlSuite> ranSuites = suiteListner.getAllTestSuite();
+    
+    Assert.assertEquals(ranSuites.size(), 3, "Correct number of suites ran");
+    for(XmlSuite suite : ranSuites)
+    {
+    	Assert.assertTrue(allSuite.add(suite.getFileName()), 
+    			String.format("No duplicate of suite %s added", suite.getFileName()));
+    }
   }
 }

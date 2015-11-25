@@ -71,7 +71,7 @@ import static org.testng.internal.Utils.isStringNotEmpty;
 /**
  * This class is the main entry point for running tests in the TestNG framework.
  * Users can create their own TestNG object and invoke it in many different
- * ways:
+ * ways
  * <ul>
  * <li>On an existing testng.xml
  * <li>On a synthetic testng.xml, created entirely from Java
@@ -269,6 +269,7 @@ public class TestNG {
   public void initializeSuitesAndJarFile() {
     // The Eclipse plug-in (RemoteTestNG) might have invoked this method already
     // so don't initialize suites twice.
+	System.out.println("ENTER");
     if (m_isInitialized) {
       return;
     }
@@ -277,20 +278,24 @@ public class TestNG {
     if (m_suites.size() > 0) {
     	//to parse the suite files (<suite-file>), if any
     	for (XmlSuite s: m_suites) {
-        for (String suiteFile : s.getSuiteFiles()) {
-            Path rootPath = Paths.get(s.getFileName()).getParent();
-            try {
-                Collection<XmlSuite> childSuites = getParser(rootPath.resolve(suiteFile).normalize().toString()).parse();
-                for (XmlSuite cSuite : childSuites){
-                    cSuite.setParentSuite(s);
-                    s.getChildSuites().add(cSuite);
-                }
-            } catch (ParserConfigurationException | IOException | SAXException e) {
-                e.printStackTrace(System.out);
-            }
-        }
-
-    	}
+	        for (String suiteFile : s.getSuiteFiles()) {
+		            Path suitePath = Paths.get(s.getFileName());
+		            Path rootPath = suitePath.getParent();
+		            try {
+		                Collection<XmlSuite> childSuites = getParser(rootPath.resolve(suiteFile).normalize().toString()).parse();
+		                for (XmlSuite cSuite : childSuites){
+		                	Path childSuite = Paths.get(cSuite.getFileName()).normalize();
+		                	Path parentSuite = Paths.get(suiteFile).normalize();
+		                	if(!childSuite.getFileName().equals(parentSuite.getFileName()))
+		                	{
+		                		cSuite.setParentSuite(s);
+		                		s.getChildSuites().add(cSuite);
+		                	}
+		                }
+		            } catch (ParserConfigurationException | IOException | SAXException e) {
+		                e.printStackTrace(System.out);
+		            }
+		        }
       return;
     }
 
@@ -1012,13 +1017,13 @@ public class TestNG {
   private void checkSuiteNamesInternal(List<XmlSuite> suites, Set<String> names) {
     for (XmlSuite suite : suites) {
       final String name = suite.getName();
-
+   
       int count = 0;
       String tmpName = name;
       while (names.contains(tmpName)) {
         tmpName = name + " (" + count++ + ")";
       }
-
+      
       if (count > 0) {
         suite.setName(tmpName);
         names.add(tmpName);
