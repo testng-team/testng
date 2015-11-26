@@ -20,14 +20,12 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TimeZone;
 
 public class JUnitReportReporter implements IReporter {
 
@@ -83,16 +81,12 @@ public class JUnitReportReporter implements IReporter {
 //      afters.put(es.getKey(), es.getValue().iterator());
 //    }
 
-    SimpleDateFormat df = new SimpleDateFormat("d MMM yyyy HH:mm:ss z");
-    df.setTimeZone(TimeZone.getTimeZone("GMT"));
-
     for (Map.Entry<Class<?>, Set<ITestResult>> entry : results.entrySet()) {
       Class<?> cls = entry.getKey();
       Properties p1 = new Properties();
       p1.setProperty("name", cls.getName());
       Date timeStamp = Calendar.getInstance().getTime();
-      String timestampStr = df.format(timeStamp);
-      p1.setProperty(XMLConstants.ATTR_TIMESTAMP, timestampStr);
+      p1.setProperty(XMLConstants.ATTR_TIMESTAMP, timeStamp.toGMTString());
 
       List<TestTag> testCases = Lists.newArrayList();
       int failures = 0;

@@ -1461,7 +1461,7 @@ public class TestRunner
     return m_verbose;
   }
 
-  public static void setVerbose(int n) {
+  public void setVerbose(int n) {
     m_verbose = n;
   }
 
