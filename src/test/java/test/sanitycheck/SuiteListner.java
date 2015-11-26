@@ -9,7 +9,7 @@ import org.testng.xml.XmlSuite;
 
 public class SuiteListner implements ISuiteListener {
 
-	List<XmlSuite> allSuite = new ArrayList<XmlSuite>();
+	private List<XmlSuite> allSuite = new ArrayList<XmlSuite>();
 	
 	@Override
 	public void onStart(ISuite suite) {
