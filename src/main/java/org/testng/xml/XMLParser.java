@@ -21,6 +21,7 @@ abstract public class XMLParser<T> implements IFileParser<T> {
     SAXParserFactory spf = loadSAXParserFactory();
 
     if (supportsValidation(spf)) {
+      spf.setNamespaceAware(true);
       spf.setValidating(true);
     }
 
@@ -94,11 +95,12 @@ abstract public class XMLParser<T> implements IFileParser<T> {
    */
   private static boolean supportsValidation(SAXParserFactory spf) {
     try {
-      return spf.getFeature("http://xml.org/sax/features/validation");
+      spf.getFeature("http://xml.org/sax/features/validation");
+      return true;
     }
-    catch(Exception ex) { ; }
-
-    return false;
+    catch(Exception ex) {
+      return false;
+    }
   }
 
 //  private static void ppp(String s) {

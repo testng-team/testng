@@ -7,6 +7,7 @@ import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.Utils;
+import org.testng.log4testng.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -69,6 +70,8 @@ public class TestNGContentHandler extends DefaultHandler {
 
   private String m_fileName;
   private boolean m_loadClasses;
+  private boolean m_validate = false;
+  private boolean m_hasWarn = false;
 
   public TestNGContentHandler(String fileName, boolean loadClasses) {
     m_fileName = fileName;
@@ -91,6 +94,7 @@ public class TestNGContentHandler extends DefaultHandler {
     InputSource result = null;
     if (Parser.DEPRECATED_TESTNG_DTD_URL.equals(publicId)
         || Parser.TESTNG_DTD_URL.equals(publicId)) {
+      m_validate = true;
       InputStream is = getClass().getClassLoader().getResourceAsStream(Parser.TESTNG_DTD);
       if (null == is) {
         is = Thread.currentThread().getContextClassLoader().getResourceAsStream(Parser.TESTNG_DTD);
@@ -501,6 +505,12 @@ public class TestNGContentHandler extends DefaultHandler {
    */
   @Override
   public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+    if (!m_validate && !m_hasWarn) {
+      Logger.getLogger(TestNGContentHandler.class).warn("It is strongly recommended to add " +
+              "\"<!DOCTYPE suite SYSTEM \"http://testng.org/testng-1.0.dtd\" >\" at the top of your file, " +
+              "otherwise, TestNG may fail or not work as expected.");
+      m_hasWarn = true;
+    }
     String name = attributes.getValue("name");
 
     // ppp("START ELEMENT uri:" + uri + " sName:" + localName + " qName:" + qName +
@@ -740,7 +750,9 @@ public class TestNGContentHandler extends DefaultHandler {
 
   @Override
   public void error(SAXParseException e) throws SAXException {
-    throw e;
+    if (m_validate) {
+      throw e;
+    }
   }
 
   private boolean areWhiteSpaces(char[] ch, int start, int length) {
