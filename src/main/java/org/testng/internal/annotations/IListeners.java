@@ -1,10 +1,7 @@
 package org.testng.internal.annotations;
 
-import org.testng.ITestNGListener;
-import org.testng.annotations.IAnnotation;
+import org.testng.annotations.IListenersAnnotation;
 
-public interface IListeners extends IAnnotation {
-  Class<? extends ITestNGListener>[] getValue();
+public interface IListeners extends IListenersAnnotation {
 
-  void setValue(Class<? extends ITestNGListener>[] value);
 }

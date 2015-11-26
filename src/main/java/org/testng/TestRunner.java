@@ -15,6 +15,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.testng.annotations.Guice;
+import org.testng.annotations.IListenersAnnotation;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -265,7 +266,7 @@ public class TestRunner
     result.listenerClasses = Lists.newArrayList();
 
     do {
-      IListeners l = m_annotationFinder.findAnnotation(cls, IListeners.class);
+      IListenersAnnotation l = m_annotationFinder.findAnnotation(cls, IListenersAnnotation.class);
       if (l != null) {
         Class<? extends ITestNGListener>[] classes = l.getValue();
         for (Class<? extends ITestNGListener> c : classes) {
