@@ -508,7 +508,7 @@ public class TestNGContentHandler extends DefaultHandler {
     if (!m_validate && !m_hasWarn) {
       Logger.getLogger(TestNGContentHandler.class).warn("It is strongly recommended to add " +
               "\"<!DOCTYPE suite SYSTEM \"http://testng.org/testng-1.0.dtd\" >\" at the top of your file, " +
-              "otherwise, TestNG may fail or not work as expected.");
+              "otherwise TestNG may fail or not work as expected.");
       m_hasWarn = true;
     }
     String name = attributes.getValue("name");
