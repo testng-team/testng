@@ -124,6 +124,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
       String passedName, String failedName)
   {
     MySuiteListener.triggered = false;
+    MySuiteListener2.triggered = false;
     TestNG tng = new TestNG();
     tng.setVerbose(0);
     if (transformer != null) {
@@ -142,11 +143,13 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     Assert.assertEquals(results.size(), 1);
     Assert.assertEquals(name, results.get(0).getMethod().getMethodName());
     Assert.assertTrue(MySuiteListener.triggered);
+    Assert.assertFalse(MySuiteListener2.triggered);
   }
 
   @Test
   public void verifyListenerAnnotationTransformerClass() {
     MySuiteListener.triggered = false;
+    MySuiteListener2.triggered = false;
     TestNG tng = new TestNG();
     tng.setVerbose(0);
     tng.setAnnotationTransformer(new MyListenerTransformer());
@@ -154,6 +157,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
 
     tng.run();
     Assert.assertFalse(MySuiteListener.triggered);
+    Assert.assertTrue(MySuiteListener2.triggered);
   }
 
   @Test

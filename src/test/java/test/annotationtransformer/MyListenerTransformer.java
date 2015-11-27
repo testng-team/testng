@@ -14,7 +14,7 @@ public class MyListenerTransformer implements IAnnotationTransformer3 {
 
   @Override
   public void transform(IListenersAnnotation annotation, Class testClass) {
-    annotation.setValue(new Class[0]);
+    annotation.setValue(new Class[]{MySuiteListener2.class});
   }
 
   @Override
