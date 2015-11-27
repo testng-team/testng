@@ -4,13 +4,14 @@ import com.beust.kobalt.api.Project
 import com.beust.kobalt.api.annotation.Task
 import com.beust.kobalt.plugin.java.javaProject
 import com.beust.kobalt.plugin.packaging.assemble
+import com.beust.kobalt.test
 import java.io.File
 
 val VERSION = "6.9.10-SNAPSHOT"
 
 val p = javaProject {
 
-    name = "testNG"
+    name = "testng"
     group = "org.testng"
     artifactId = name
     version = VERSION
@@ -29,7 +30,11 @@ val p = javaProject {
     }
 
     dependenciesTest {
-        compile("org.assertj:assertj-core:2.0.0")
+        compile("org.assertj:assertj-core:2.0.0", "org.testng:testng:6.9.9")
+    }
+
+    test {
+        jvmArgs("-Dtest.resources.dir=src/test/resources")
     }
 
     assemble {
