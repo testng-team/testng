@@ -46,7 +46,6 @@ import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IListeners;
-import org.testng.internal.thread.ThreadUtil;
 import org.testng.internal.thread.graph.GraphThreadPoolExecutor;
 import org.testng.internal.thread.graph.IThreadWorkerFactory;
 import org.testng.internal.thread.graph.IWorker;
@@ -252,7 +251,7 @@ public class TestRunner
     addConfigurationListener(m_confListener);
   }
 
-  private class ListenerHolder {
+  private static class ListenerHolder {
     private List<Class<? extends ITestNGListener>> listenerClasses;
     private Class<? extends ITestNGListenerFactory> listenerFactoryClass;
   }
@@ -674,7 +673,7 @@ public class TestRunner
     // so it can be eager => failure
     workers.add(new IWorker<ITestNGMethod>() {
       /**
-       * @see org.testng.internal.IMethodWorker#getMaxTimeOut()
+       * @see TestMethodWorker#getTimeOut()
        */
       @Override
       public long getTimeOut() {
@@ -726,7 +725,7 @@ public class TestRunner
       }
     });
 
-    runWorkers(workers, "" /* JUnit does not support parallel */, null);
+    runJUnitWorkers(workers);
     m_allTestMethods= runMethods.toArray(new ITestNGMethod[runMethods.size()]);
   }
 
@@ -997,34 +996,13 @@ public class TestRunner
   private static final EnumSet<XmlSuite.ParallelMode> WORKERS_PARALLEL_MODES
       = EnumSet.of(XmlSuite.ParallelMode.METHODS, XmlSuite.ParallelMode.TRUE,
                    XmlSuite.ParallelMode.CLASSES);
-  private void runWorkers(List<? extends IWorker<ITestNGMethod>> workers, String parallelMode,
-      ListMultiMap<Integer, TestMethodWorker> sequentialWorkers) {
-    if (WORKERS_PARALLEL_MODES.contains(parallelMode))
-    {
-      //
-      // Parallel run
-      //
-      // Default timeout for individual methods:  same as the test global-time-out, but
-      // overridden if a method defines its own.
-      long maxTimeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
-      for (IWorker<ITestNGMethod> tmw : workers) {
-        long mt = tmw.getTimeOut();
-        if (mt > maxTimeOut) {
-          maxTimeOut= mt;
-        }
-      }
-
-      ThreadUtil.execute(workers, m_xmlTest.getThreadCount(), maxTimeOut, false);
-//      ThreadUtil.execute(sequentialWorkers);
-    }
-    else {
+  private void runJUnitWorkers(List<? extends IWorker<ITestNGMethod>> workers) {
       //
       // Sequential run
       //
       for (IWorker<ITestNGMethod> tmw : workers) {
         tmw.run();
       }
-    }
   }
 
   private void afterRun() {

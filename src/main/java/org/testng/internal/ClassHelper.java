@@ -552,13 +552,12 @@ public final class ClassHelper {
     //
     if (-1 != m_lastGoodRootIndex) {
 
-      // TODO use a SringBuffer here
-      String className = segments[m_lastGoodRootIndex];
+      StringBuilder className = new StringBuilder(segments[m_lastGoodRootIndex]);
       for (int i = m_lastGoodRootIndex + 1; i < segments.length; i++) {
-        className += "." + segments[i];
+        className.append(".").append(segments[i]);
       }
 
-      result = ClassHelper.forName(className);
+      result = ClassHelper.forName(className.toString());
 
       if (null != result) {
         return result;

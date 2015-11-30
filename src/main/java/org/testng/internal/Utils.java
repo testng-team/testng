@@ -748,23 +748,13 @@ public final class Utils {
   }
 
   public static void copyFile(File from, File to) {
-    try{
-      InputStream in = new FileInputStream(from);
-
-      //For Append the file.
-//        OutputStream out = new FileOutputStream(f2,true);
-
-      //For Overwrite the file.
-      to.getParentFile().mkdirs();
-      OutputStream out = new FileOutputStream(to);
-
+    to.getParentFile().mkdirs();
+    try (InputStream in = new FileInputStream(from); OutputStream out = new FileOutputStream(to)) {
       byte[] buf = new byte[1024];
       int len;
-      while ((len = in.read(buf)) > 0){
+      while ((len = in.read(buf)) > 0) {
         out.write(buf, 0, len);
       }
-      in.close();
-      out.close();
     } catch(IOException e){
       e.printStackTrace();
     }

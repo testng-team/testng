@@ -61,32 +61,32 @@ public class XmlSuite implements Serializable, Cloneable {
   private String m_name = DEFAULT_SUITE_NAME;
 
   /** The suite verbose flag. (0 to 10)*/
-  public static Integer DEFAULT_VERBOSE = 1;
+  public static final Integer DEFAULT_VERBOSE = 1;
   private Integer m_verbose = null;
 
-  public static ParallelMode DEFAULT_PARALLEL = ParallelMode.FALSE;
+  public static final ParallelMode DEFAULT_PARALLEL = ParallelMode.FALSE;
   private ParallelMode m_parallel = DEFAULT_PARALLEL;
 
   private String m_parentModule = "";
   private String m_guiceStage = "";
 
   /** Whether to SKIP or CONTINUE to re-attempt failed configuration methods. */
-  public static String DEFAULT_CONFIG_FAILURE_POLICY = SKIP;
+  public static final String DEFAULT_CONFIG_FAILURE_POLICY = SKIP;
   private String m_configFailurePolicy = DEFAULT_CONFIG_FAILURE_POLICY;
 
   /** JUnit compatibility flag. */
-  public static Boolean DEFAULT_JUNIT = Boolean.FALSE;
+  public static final Boolean DEFAULT_JUNIT = Boolean.FALSE;
   private Boolean m_isJUnit = DEFAULT_JUNIT;
 
   /** mixed mode flag. */
-  public static Boolean DEFAULT_MIXED = Boolean.FALSE;
+  public static final Boolean DEFAULT_MIXED = Boolean.FALSE;
   private Boolean m_isMixed = DEFAULT_MIXED;
 
-  public static Boolean DEFAULT_SKIP_FAILED_INVOCATION_COUNTS = Boolean.FALSE;
+  public static final Boolean DEFAULT_SKIP_FAILED_INVOCATION_COUNTS = Boolean.FALSE;
   private Boolean m_skipFailedInvocationCounts = DEFAULT_SKIP_FAILED_INVOCATION_COUNTS;
 
   /** The thread count. */
-  public static Integer DEFAULT_THREAD_COUNT = 5;
+  public static final Integer DEFAULT_THREAD_COUNT = 5;
   private int m_threadCount = DEFAULT_THREAD_COUNT;
 
   /** Thread count for the data provider pool */
@@ -97,7 +97,7 @@ public class XmlSuite implements Serializable, Cloneable {
   public static final Boolean DEFAULT_GROUP_BY_INSTANCES = false;
   private Boolean m_groupByInstances = DEFAULT_GROUP_BY_INSTANCES;
 
-  public static Boolean DEFAULT_ALLOW_RETURN_VALUES = Boolean.FALSE;
+  public static final Boolean DEFAULT_ALLOW_RETURN_VALUES = Boolean.FALSE;
   private Boolean m_allowReturnValues = DEFAULT_ALLOW_RETURN_VALUES;
 
   /** The packages containing test classes. */
@@ -135,7 +135,7 @@ public class XmlSuite implements Serializable, Cloneable {
 
   private static final long serialVersionUID = 4999962288272750226L;
 
-  public static String DEFAULT_PRESERVE_ORDER = "true";
+  public static final String DEFAULT_PRESERVE_ORDER = "true";
   private String m_preserveOrder = DEFAULT_PRESERVE_ORDER;
 
   private List<String> m_includedGroups = Lists.newArrayList();
@@ -677,7 +677,7 @@ public class XmlSuite implements Serializable, Cloneable {
   public long getTimeOut(long def) {
     long result = def;
     if (m_timeOut != null) {
-        result = new Long(m_timeOut);
+        result = Long.parseLong(m_timeOut);
     }
     
     return result;

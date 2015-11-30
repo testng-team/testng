@@ -28,9 +28,9 @@ public class ResultMap implements IResultMap {
   public Set<ITestResult> getResults(ITestNGMethod method) {
     Set<ITestResult> result = new HashSet<>();
 
-    for (ITestResult tr : m_map.keySet()) {
-      if (m_map.get(tr).equals(method)) {
-        result.add(tr);
+    for (Map.Entry<ITestResult, ITestNGMethod> entry : m_map.entrySet()) {
+      if (entry.getValue().equals(method)) {
+        result.add(entry.getKey());
       }
     }
 

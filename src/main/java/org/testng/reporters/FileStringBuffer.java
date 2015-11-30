@@ -116,12 +116,9 @@ public class FileStringBuffer implements IBuffer {
       }
     }
 
-    FileWriter fw;
-    try {
-      p("Size " + m_sb.length() + ", flushing to " + m_file);
-      fw = new FileWriter(m_file, true /* append */);
+    p("Size " + m_sb.length() + ", flushing to " + m_file);
+    try (FileWriter fw = new FileWriter(m_file, true /* append */)) {
       fw.append(m_sb);
-      fw.close();
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -152,9 +149,9 @@ public class FileStringBuffer implements IBuffer {
 
   private static void save(File expected, String s) throws IOException {
     expected.delete();
-    FileWriter expectedWriter = new FileWriter(expected);
-    expectedWriter.append(s);
-    expectedWriter.close();
+    try (FileWriter expectedWriter = new FileWriter(expected)) {
+      expectedWriter.append(s);
+    }
   }
 
   public static void main(String[] args) throws IOException {

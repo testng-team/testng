@@ -9,7 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class ResultsByClass {
-  public static Comparator<ITestResult> METHOD_NAME_COMPARATOR =
+  public static final Comparator<ITestResult> METHOD_NAME_COMPARATOR =
       new Comparator<ITestResult>() {
 
     @Override

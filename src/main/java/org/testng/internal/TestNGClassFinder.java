@@ -205,10 +205,10 @@ public class TestNGClassFinder extends BaseClassFinder {
     //
     // Add all the instances we found to their respective IClasses
     //
-    for(Class c : m_instanceMap.keySet()) {
-      List<Object> instances= m_instanceMap.get(c);
-      for(Object instance : instances) {
-        IClass ic= getIClass(c);
+    for(Map.Entry<Class, List<Object>> entry : m_instanceMap.entrySet()) {
+      Class clazz = entry.getKey();
+      for(Object instance : entry.getValue()) {
+        IClass ic= getIClass(clazz);
         if(null != ic) {
           ic.addInstance(instance);
         }

@@ -164,7 +164,7 @@ public class AnnotationHelper {
     result.setTimeOut(bs.getTimeOut());
   }
 
-  private static Class[] ALL_ANNOTATIONS = new Class[] {
+  private static final Class[] ALL_ANNOTATIONS = new Class[] {
     ITestAnnotation.class, IConfigurationAnnotation.class,
     IBeforeClass.class, IAfterClass.class,
     IBeforeMethod.class, IAfterMethod.class,
@@ -175,7 +175,7 @@ public class AnnotationHelper {
     IBeforeGroups.class, IAfterGroups.class
   };
 
-  public static Class[] CONFIGURATION_CLASSES = new Class[] {
+  public static final Class[] CONFIGURATION_CLASSES = new Class[] {
     IConfigurationAnnotation.class,
     IBeforeSuite.class, IAfterSuite.class,
     IBeforeTest.class, IAfterTest.class,
