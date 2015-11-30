@@ -19,16 +19,29 @@ import static org.testng.Assert.assertNotEquals;
  * and arrays.
  */
 public class ArrayEqualityAssertTest {
+
     @Test
     public void arrayAssertEquals() {
         assertEquals(new int[]{ 42 }, new int[] { 42 },
-                "arrays are compared by value in assertEquals");
+                "arrays of primitives are compared by value in assertEquals");
     }
 
     @Test(expectedExceptions = AssertionError.class)
     public void arrayAssertNotEquals() {
         assertNotEquals(new int[]{ 42 }, new int[] { 42 },
-                "arrays are compared by value in assertNotEquals");
+                "arrays of primitives are compared by value in assertNotEquals");
+    }
+
+    @Test
+    public void boxedArrayAssertEquals() {
+        assertEquals(new Integer[]{ 42 }, new int[] { 42 },
+                "arrays of wrapped values are compared by value in assertEquals");
+    }
+
+    @Test(expectedExceptions = AssertionError.class)
+    public void boxedArrayAssertNotEquals() {
+        assertNotEquals(new Integer[]{ 42 }, new int[] { 42 },
+                "arrays of wrapped values are compared by value in assertNotEquals");
     }
 
     @Test(expectedExceptions = AssertionError.class)
