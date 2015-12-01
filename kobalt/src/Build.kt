@@ -21,16 +21,17 @@ val p = javaProject {
     }
 
     dependencies {
-        compile("com.beust:jcommander:1.48")
-        compile("com.google.inject:guice:4.0")
-        compile("junit:junit:4.10")
-        compile("org.apache.ant:ant:1.7.0")
-        compile("org.beanshell:bsh:2.0b4")
-        compile("org.yaml:snakeyaml:1.15")
+        compile("com.beust:jcommander:1.48",
+                "com.google.inject:guice:4.0",
+                "junit:junit:4.10",
+                "org.apache.ant:ant:1.7.0",
+                "org.beanshell:bsh:2.0b4",
+                "org.yaml:snakeyaml:1.15")
     }
 
     dependenciesTest {
-        compile("org.assertj:assertj-core:2.0.0", "org.testng:testng:6.9.9")
+        compile("org.assertj:assertj-core:2.0.0",
+                "org.testng:testng:6.9.9")
     }
 
     test {
