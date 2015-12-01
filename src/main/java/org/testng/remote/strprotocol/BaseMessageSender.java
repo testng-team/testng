@@ -24,7 +24,7 @@ abstract public class BaseMessageSender implements IMessageSender {
   protected Socket m_clientSocket;
   private String m_host;
   private int m_port;
-  protected Object m_ackLock = new Object();
+  protected final Object m_ackLock = new Object();
 
   private boolean m_requestStopReceiver;
   /** Outgoing message stream. */

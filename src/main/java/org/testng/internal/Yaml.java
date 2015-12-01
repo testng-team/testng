@@ -151,10 +151,10 @@ public class Yaml {
     if (mg.size() > 0) {
       result.append(sp2).append("metaGroups: { ");
       boolean first = true;
-      for (String group : mg.keySet()) {
+      for (Map.Entry<String, List<String>> entry : mg.entrySet()) {
         if (! first) result.append(", ");
-        result.append(group).append(": [ ")
-        .append(Utils.join(mg.get(group), ",")).append(" ] ");
+        result.append(entry.getKey()).append(": [ ")
+        .append(Utils.join(entry.getValue(), ",")).append(" ] ");
         first = false;
       }
       result.append(" }\n");

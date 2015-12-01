@@ -105,16 +105,6 @@ public class XMLReporterConfig {
   // intricacies of ISO-8601.
   static final String FMT_DEFAULT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
-  public static long convertDate(String date) {
-    SimpleDateFormat format = new SimpleDateFormat(getTimestampFormat());
-    try {
-      long result = format.parse(date).getTime();
-      return result;
-    } catch (ParseException e) {
-      return -1;
-    }
-  }
-
   /**
    * Indicates the way that the file fragmentation should be performed. Set this
    * property to one of the FF_LEVEL_* values for the desired output structure
@@ -169,7 +159,7 @@ public class XMLReporterConfig {
   /**
    * The output format for timestamps
    */
-  private static String timestampFormat = FMT_DEFAULT;
+  private String timestampFormat = FMT_DEFAULT;
 
   public int getFileFragmentationLevel() {
     return fileFragmentationLevel;
@@ -211,7 +201,7 @@ public class XMLReporterConfig {
     this.splitClassAndPackageNames = splitClassAndPackageNames;
   }
 
-  public static String getTimestampFormat() {
+  public String getTimestampFormat() {
     return timestampFormat;
   }
 

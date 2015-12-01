@@ -244,7 +244,7 @@ public class JUnitReportReporter implements IReporter {
     return result;
   }
 
-  class TestTag {
+  static class TestTag {
     public Properties properties;
     public String message;
     public String type;

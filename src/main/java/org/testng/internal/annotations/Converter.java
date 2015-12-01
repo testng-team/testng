@@ -26,7 +26,7 @@ public class Converter {
   public static int getInt(String tagValue, int def) {
     int result = def;
     if (tagValue != null) {
-      result = new Integer(tagValue);
+      result = Integer.parseInt(tagValue);
     }
     return result;
   }
@@ -42,7 +42,7 @@ public class Converter {
   public static long getLong(String tagValue, long def) {
     long result = def;
     if (tagValue != null) {
-      result = new Long(tagValue);
+      result = Long.parseLong(tagValue);
     }
     return result;
   }

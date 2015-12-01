@@ -1,5 +1,6 @@
 package test.annotationtransformer;
 
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 /**
@@ -10,6 +11,7 @@ import org.testng.annotations.Test;
  *
  */
 @Test(timeOut = 1000)
+@Listeners(MySuiteListener.class)
 public class AnnotationTransformerClassSampleTest {
 
   public void one() {

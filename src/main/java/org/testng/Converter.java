@@ -90,9 +90,9 @@ public class Converter {
   }
 
   private void writeFile(File newFile, String content) throws IOException {
-    FileWriter bw = new FileWriter(newFile);
-    bw.write(content);
-    bw.close();
+    try (FileWriter bw = new FileWriter(newFile)) {
+      bw.write(content);
+    }
     System.out.println("Wrote " + newFile);
   }
 }

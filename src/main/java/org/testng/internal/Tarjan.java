@@ -5,6 +5,7 @@ import org.testng.collections.Maps;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Stack;
 
 /**
@@ -40,7 +41,7 @@ public class Tarjan<T> {
       }
     }
 
-    if (m_lowlinks.get(v) == m_indices.get(v)) {
+    if (Objects.equals(m_lowlinks.get(v), m_indices.get(v))) {
       m_cycle = Lists.newArrayList();
       T n;
       do {

@@ -351,31 +351,31 @@ public class TestNG {
 
       Utils.log("TestNG", 2, "Trying to open jar file:" + jarFile);
 
-      JarFile jf = new JarFile(jarFile);
-//      System.out.println("   result: " + jf);
-      Enumeration<JarEntry> entries = jf.entries();
-      List<String> classes = Lists.newArrayList();
       boolean foundTestngXml = false;
-      while (entries.hasMoreElements()) {
-        JarEntry je = entries.nextElement();
-        if (je.getName().equals(m_xmlPathInJar)) {
-          Parser parser = getParser(jf.getInputStream(je));
-          Collection<XmlSuite> suites = parser.parse();
-          for (XmlSuite suite : suites) {
-            // If test names were specified, only run these test names
-            if (m_testNames != null) {
-              m_suites.add(extractTestNames(suite, m_testNames));
-            } else {
-              m_suites.add(suite);
+      List<String> classes = Lists.newArrayList();
+      try (JarFile jf = new JarFile(jarFile)) {
+//      System.out.println("   result: " + jf);
+        Enumeration<JarEntry> entries = jf.entries();
+        while (entries.hasMoreElements()) {
+          JarEntry je = entries.nextElement();
+          if (je.getName().equals(m_xmlPathInJar)) {
+            Parser parser = getParser(jf.getInputStream(je));
+            Collection<XmlSuite> suites = parser.parse();
+            for (XmlSuite suite : suites) {
+              // If test names were specified, only run these test names
+              if (m_testNames != null) {
+                m_suites.add(extractTestNames(suite, m_testNames));
+              } else {
+                m_suites.add(suite);
+              }
             }
-          }
 
-          foundTestngXml = true;
-          break;
-        }
-        else if (je.getName().endsWith(".class")) {
-          int n = je.getName().length() - ".class".length();
-          classes.add(je.getName().replace("/", ".").substring(0, n));
+            foundTestngXml = true;
+            break;
+          } else if (je.getName().endsWith(".class")) {
+            int n = je.getName().length() - ".class".length();
+            classes.add(je.getName().replace("/", ".").substring(0, n));
+          }
         }
       }
       if (! foundTestngXml) {
@@ -882,9 +882,7 @@ public class TestNG {
     }
   }
   private void addReporter(Class<? extends IReporter> r) {
-    if (! m_reporters.contains(r)) {
-      m_reporters.add(ClassHelper.newInstance(r));
-    }
+    m_reporters.add(ClassHelper.newInstance(r));
   }
 
   private void initializeDefaultListeners() {
@@ -1484,7 +1482,7 @@ public class TestNG {
         String[] sel = Utils.split(cls, ":");
         try {
           if (sel.length == 2) {
-            addMethodSelector(sel[0], Integer.valueOf(sel[1]));
+            addMethodSelector(sel[0], Integer.parseInt(sel[1]));
           } else {
             error("Method selector value was not in the format org.example.Selector:4");
           }

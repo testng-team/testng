@@ -54,14 +54,16 @@ public class DependencyMap {
     if (l == null && fromMethod.ignoreMissingDependencies()){
     	return fromMethod;
     }
-    for (ITestNGMethod m : l) {
-      // If they are in the same class hierarchy, they must belong to the same instance,
-      // otherwise, it's a method depending on a method in a different class so we
-      // don't bother checking the instance
-      if (fromMethod.getRealClass().isAssignableFrom(m.getRealClass())) {
-        if (m.getInstance() == fromMethod.getInstance()) return m;
-      } else {
-        return m;
+    if (l != null) {
+      for (ITestNGMethod m : l) {
+        // If they are in the same class hierarchy, they must belong to the same instance,
+        // otherwise, it's a method depending on a method in a different class so we
+        // don't bother checking the instance
+        if (fromMethod.getRealClass().isAssignableFrom(m.getRealClass())) {
+          if (m.getInstance() == fromMethod.getInstance()) return m;
+        } else {
+          return m;
+        }
       }
     }
     throw new TestNGException("Method \"" + fromMethod

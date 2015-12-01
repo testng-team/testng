@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.testng.IAnnotationTransformer;
 import org.testng.IAnnotationTransformer2;
+import org.testng.IAnnotationTransformer3;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterGroups;
@@ -28,6 +29,7 @@ import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
 import org.testng.annotations.IExpectedExceptionsAnnotation;
 import org.testng.annotations.IFactoryAnnotation;
+import org.testng.annotations.IListenersAnnotation;
 import org.testng.annotations.IObjectFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
@@ -56,6 +58,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   @SuppressWarnings({"deprecation"})
   public JDK15AnnotationFinder(IAnnotationTransformer transformer) {
     m_transformer = transformer;
+    m_annotationMap.put(IListenersAnnotation.class, Listeners.class);
     m_annotationMap.put(IConfigurationAnnotation.class, Configuration.class);
     m_annotationMap.put(IDataProviderAnnotation.class, DataProvider.class);
     m_annotationMap.put(IExpectedExceptionsAnnotation.class, ExpectedExceptions.class);
@@ -63,6 +66,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     m_annotationMap.put(IObjectFactoryAnnotation.class, ObjectFactory.class);
     m_annotationMap.put(IParametersAnnotation.class, Parameters.class);
     m_annotationMap.put(ITestAnnotation.class, Test.class);
+    // internal
     m_annotationMap.put(IBeforeSuite.class, BeforeSuite.class);
     m_annotationMap.put(IAfterSuite.class, AfterSuite.class);
     m_annotationMap.put(IBeforeTest.class, BeforeTest.class);
@@ -73,7 +77,6 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     m_annotationMap.put(IAfterGroups.class, AfterGroups.class);
     m_annotationMap.put(IBeforeMethod.class, BeforeMethod.class);
     m_annotationMap.put(IAfterMethod.class, AfterMethod.class);
-    m_annotationMap.put(IListeners.class, Listeners.class);
   }
 
   private <A extends Annotation> A findAnnotationInSuperClasses(Class<?> cls, Class<A> a) {
@@ -164,7 +167,18 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
       else if (a instanceof IFactoryAnnotation) {
         transformer2.transform((IFactoryAnnotation) a, testMethod);
       }
-    }
+
+      else if (m_transformer instanceof IAnnotationTransformer3) {
+        IAnnotationTransformer3 transformer = (IAnnotationTransformer3) m_transformer;
+
+        //
+        // Transform @Listeners
+        //
+        if (a instanceof IListenersAnnotation) {
+          transformer.transform((IListenersAnnotation)a, testClass);
+        }
+      } // End IAnnotationTransformer3
+    } // End IAnnotationTransformer2
   }
 
   @Override
