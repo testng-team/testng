@@ -109,30 +109,42 @@ public class Assert {
    * @param message the assertion error message
    */
   static public void assertEquals(Object actual, Object expected, String message) {
-    if((expected == null) && (actual == null)) {
-      return;
-    }
-    if(expected == null ^ actual == null) {
-      failNotEquals(actual, expected, message);
-    }
-    if (expected.getClass().isArray()) {
+    if (expected != null && expected.getClass().isArray()) {
        assertArrayEquals(actual, expected, message);
        return;
     }
-    if (expected.equals(actual) && actual.equals(expected)) {
-       return;
-    }
-    failNotEquals(actual, expected, message);
+    assertEqualsImpl(actual, expected, message);
   }
 
   /**
-   * Asserts that two objects are equal. It they are not, an AssertionError,
-   * with given message, is thrown.
-   * @param actual the actual value
-   * @param expected the expected value (should be an non-null array value)
-   * @param message the assertion error message
+   * Differs from {@link #assertEquals(Object, Object, String)} by not taking arrays into
+   * special consideration hence comparing them by reference. Intended to be called directly
+   * to test equality of collections content.
    */
+  private static void assertEqualsImpl(Object actual, Object expected,
+          String message) {
+      if((expected == null) && (actual == null)) {
+        return;
+      }
+      if(expected == null ^ actual == null) {
+        failNotEquals(actual, expected, message);
+      }
+      if (expected.equals(actual) && actual.equals(expected)) {
+        return;
+      }
+      failNotEquals(actual, expected, message);
+    }
+
   private static void assertArrayEquals(Object actual, Object expected, String message) {
+    if (expected == actual) {
+      return;
+    }
+    if (null == expected) {
+      fail("expected a null array, but not null found. " + message);
+    }
+    if (null == actual) {
+      fail("expected not null array, but null found. " + message);
+    }
     //is called only when expected is an array
     if (actual.getClass().isArray()) {
       int expectedLength = Array.getLength(expected);
@@ -157,7 +169,7 @@ public class Assert {
     failNotEquals(actual, expected, message);
   }
 
-/**
+  /**
    * Asserts that two objects are equal. If they are not,
    * an AssertionError is thrown.
    * @param actual the actual value
@@ -548,7 +560,7 @@ public class Assert {
       String explanation = "Lists differ at element [" + i + "]: " + e + " != " + a;
       String errorMessage = message == null ? explanation : message + ": " + explanation;
 
-      assertEquals(a, e, errorMessage);
+      assertEqualsImpl(a, e, errorMessage);
     }
   }
   
@@ -591,7 +603,7 @@ public class Assert {
       String explanation = "Iterators differ at element [" + i + "]: " + e + " != " + a;
       String errorMessage = message == null ? explanation : message + ": " + explanation;
       
-      assertEquals(a, e, errorMessage);
+      assertEqualsImpl(a, e, errorMessage);
       
     }
     
@@ -738,48 +750,6 @@ public class Assert {
   }
 
   /**
-   * Asserts that two arrays contain the same elements in the same order. If they do not,
-   * an AssertionError is thrown.
-   *
-   * @param actual the actual value
-   * @param expected the expected value
-   */
-  static public void assertEquals(final byte[] actual, final byte[] expected) {
-    assertEquals(actual, expected, "");
-  }
-
-  /**
-   * Asserts that two arrays contain the same elements in the same order. If they do not,
-   * an AssertionError, with the given message, is thrown.
-   *
-   * @param actual the actual value
-   * @param expected the expected value
-   * @param message the assertion error message
-   */
-  static public void assertEquals(final byte[] actual, final byte[] expected, final String message) {
-    if(expected == actual) {
-      return;
-    }
-    if(null == expected) {
-      fail("expected a null array, but not null found. " + message);
-    }
-    if(null == actual) {
-      fail("expected not null array, but null found. " + message);
-    }
-
-    assertEquals(actual.length, expected.length, "arrays don't have the same size. " + message);
-
-    for(int i= 0; i < expected.length; i++) {
-      if(expected[i] != actual[i]) {
-        fail("arrays differ firstly at element [" + i +"]; "
-            + "expected value is <" + expected[i] +"> but was <"
-            + actual[i] + ">. "
-            + message);
-      }
-    }
-  }
-
-  /**
    * Asserts that two sets are equal.
    */
   static public void assertEquals(Set<?> actual, Set<?> expected) {
@@ -834,7 +804,7 @@ public class Assert {
       Object key = entry.getKey();
       Object value = entry.getValue();
       Object expectedValue = expected.get(key);
-      assertEquals(value, expectedValue, "Maps do not match for key:" + key + " actual:" + value
+      assertEqualsImpl(value, expectedValue, "Maps do not match for key:" + key + " actual:" + value
               + " expected:" + expectedValue);
     }
 
