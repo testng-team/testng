@@ -148,4 +148,9 @@ public class AssertTest {
       }
     };
   }
+
+  @Test
+  public void doubleNaNAssertion() {
+    Assert.assertEquals(Double.NaN, Double.NaN, 0.0);
+  }
 }

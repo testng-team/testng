@@ -217,7 +217,12 @@ public class Assert {
         failNotEquals(actual, expected, message);
       }
     }
-    else if(!(Math.abs(expected - actual) <= delta)) { // Because comparison with NaN always returns false
+    else if (Double.isNaN(expected)) {
+      if (!Double.isNaN(actual)) {
+        failNotEquals(actual, expected, message);
+      }
+    }
+    else if(!(Math.abs(expected - actual) <= delta)) {
       failNotEquals(actual, expected, message);
     }
   }
