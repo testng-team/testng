@@ -45,7 +45,7 @@ public class FileAssert {
   }
 
   /**
-   * Asserts that a {@code tstvalue} is a proper directory. If it isn't,
+   * Asserts that a {@code tstvalue} is a proper file. If it isn't,
    * an AssertionError, with the given message, is thrown.
    * @param tstvalue the file to evaluate
    * @param message the assertion error message
