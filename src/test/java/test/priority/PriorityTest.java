@@ -42,4 +42,9 @@ public class PriorityTest extends SimpleBaseTest {
   public void priorityInSequential2() {
     runTest(WithPrioritySample2Test.class, false /* sequential */, "second", "first");
   }
+
+  @Test(description = "GITHUB #793: Test suite with tests using dependency and priority has wrong behavior")
+  public void priorityWithDependsOnMethods() {
+    runTest(WithPriorityAndDependsMethodsSample.class, false /* sequential */, "first", "second", "third");
+  }
 }
