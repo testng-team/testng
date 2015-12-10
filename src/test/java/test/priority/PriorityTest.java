@@ -5,18 +5,21 @@ import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 
+import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
 public class PriorityTest extends SimpleBaseTest {
 
   private void runTest(Class<?> cls, boolean parallel, String... methods) {
     TestNG tng = create(cls);
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener(listener);
     if (parallel) {
       tng.setParallel(XmlSuite.ParallelMode.METHODS);
     }
     tng.run();
     for (int i=0; i<methods.length; i++) {
-      Assert.assertEquals(BaseSample.m_methods.get(i), methods[i]);
+      Assert.assertEquals(listener.getInvokedMethodNames().get(i), methods[i]);
     }
   }
 

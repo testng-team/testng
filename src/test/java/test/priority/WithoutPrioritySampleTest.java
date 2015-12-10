@@ -2,15 +2,11 @@ package test.priority;
 
 import org.testng.annotations.Test;
 
-public class WithoutPrioritySampleTest extends BaseSample {
+public class WithoutPrioritySampleTest {
 
   @Test
-  public void first() {
-    add("first");
-  }
+  public void first() {}
 
   @Test
-  public void second() {
-    add("second");
-  }
+  public void second() {}
 }
