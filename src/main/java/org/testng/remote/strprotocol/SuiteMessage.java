@@ -16,6 +16,7 @@ import org.testng.collections.Maps;
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class SuiteMessage implements IStringMessage {
+  private static final long serialVersionUID = -4298528261942620419L;
   protected final String m_suiteName;
   protected final int m_testMethodCount;
   protected final boolean m_startSuite;

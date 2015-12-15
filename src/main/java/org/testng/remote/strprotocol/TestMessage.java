@@ -9,6 +9,7 @@ import org.testng.ITestContext;
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class TestMessage implements IStringMessage {
+  private static final long serialVersionUID = -5039267143570559640L;
   protected final boolean m_testStart;
   protected final String m_suiteName;
   protected final String m_testName;
