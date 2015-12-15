@@ -11,6 +11,7 @@ package org.testng.remote.strprotocol;
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class GenericMessage implements IStringMessage {
+  private static final long serialVersionUID = 1440074281953763545L;
 //  protected Map m_properties;
   protected final int m_messageType;
   private int m_suiteCount;
