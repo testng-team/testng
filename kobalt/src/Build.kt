@@ -4,13 +4,19 @@ import com.beust.kobalt.api.Project
 import com.beust.kobalt.api.annotation.Task
 import com.beust.kobalt.plugin.java.javaProject
 import com.beust.kobalt.plugin.packaging.assemble
+import com.beust.kobalt.plugins
 import com.beust.kobalt.test
 import java.io.File
 
+//import com.beust.kobalt.plugin.linecount.*
+
 val VERSION = "6.9.10-SNAPSHOT"
+
+//val plugins = plugins("com.beust.kobalt:kobalt-line-count:0.17")
 
 val p = javaProject {
 
+//    line
     name = "testng"
     group = "org.testng"
     artifactId = name

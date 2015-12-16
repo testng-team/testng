@@ -18,7 +18,7 @@ import static org.testng.internal.Utils.isStringEmpty;
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class TestResultMessage implements IStringMessage {
-
+  private static final long serialVersionUID = -4157150777889117479L;
   protected int    m_messageType;
   protected String m_suiteName;
   protected String m_testName;
