@@ -1,22 +1,36 @@
-
 import com.beust.kobalt.TaskResult
 import com.beust.kobalt.api.Project
 import com.beust.kobalt.api.annotation.Task
 import com.beust.kobalt.plugin.java.javaProject
 import com.beust.kobalt.plugin.packaging.assemble
-import com.beust.kobalt.plugins
 import com.beust.kobalt.test
 import java.io.File
 
 //import com.beust.kobalt.plugin.linecount.*
 
-val VERSION = "6.9.10-SNAPSHOT"
+val VERSION = "6.9.11-SNAPSHOT"
 
 //val plugins = plugins("com.beust.kobalt:kobalt-line-count:0.17")
 
-val p = javaProject {
+val dummyProject = javaProject {
+    name = "dummy-testng"
+    group = "org.testng"
+    artifactId = name
+    version = VERSION
+    directory = "dummy"
 
-//    line
+    dependencies {
+        compile("org.jsoup:jsoup:1.8.3")
+    }
+
+    dependenciesTest {
+        compile("org.hamcrest:hamcrest-core:1.3")
+    }
+}
+
+val p = javaProject(dummyProject) {
+
+    //    line
     name = "testng"
     group = "org.testng"
     artifactId = name
@@ -51,7 +65,7 @@ val p = javaProject {
 }
 
 @Task(name = "createVersion", runBefore = arrayOf("compile"), runAfter = arrayOf("clean"), description = "")
-fun taskCreateVersion(project: Project) : TaskResult {
+fun taskCreateVersion(project: Project): TaskResult {
     val path = "org/testng/internal"
     with(arrayListOf<String>()) {
         File("src/main/resources/$path/VersionTemplateJava").forEachLine {
