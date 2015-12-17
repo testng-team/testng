@@ -1,5 +1,5 @@
 ﻿Current
-﻿
+Fixed: GITHUB-911: TestListener#onTestStart should be invoked if a suite configuration method fails (Harmin Parra Rueda & Julien Herr)﻿
 ﻿
 ﻿6.9.10:
 2015/12/15

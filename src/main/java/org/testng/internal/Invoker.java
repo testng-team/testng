@@ -616,7 +616,9 @@ public class Invoker implements IInvoker {
       // invokedMethod is used in the finally, which can be invoked if
       // any of the test listeners throws an exception, therefore,
       // invokedMethod must have a value before we get here
-      runTestListeners(testResult);
+      if (!m_suiteState.isFailed()) {
+        runTestListeners(testResult);
+      }
 
       runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
 

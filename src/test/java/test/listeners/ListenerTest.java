@@ -139,4 +139,19 @@ public class ListenerTest extends SimpleBaseTest {
     assertThat(MyClassListener.beforeNames).containsExactly("ClassListenerSample");
     assertThat(MyClassListener.afterNames).containsExactly("ClassListenerSample");
   }
+
+  @Test(description = "GITHUB-911: Should not call method listeners for skipped methods")
+  public void methodListenersShouldNotBeCalledForSkippedMethods() {
+    GitHub911Listener listener = new GitHub911Listener();
+    TestNG tng = create(GitHub911Sample.class);
+    tng.addListener(listener);
+    tng.run();
+    Assert.assertEquals(listener.onStart, 1);
+    Assert.assertEquals(listener.onFinish, 1);
+    Assert.assertEquals(listener.onTestStart, 0);
+    Assert.assertEquals(listener.onTestSuccess, 0);
+    Assert.assertEquals(listener.onTestFailure, 0);
+    Assert.assertEquals(listener.onTestFailedButWithinSuccessPercentage, 0);
+    Assert.assertEquals(listener.onTestSkipped, 2);
+  }
 }
