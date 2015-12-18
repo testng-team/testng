@@ -6,29 +6,9 @@ import com.beust.kobalt.plugin.packaging.assemble
 import com.beust.kobalt.test
 import java.io.File
 
-//import com.beust.kobalt.plugin.linecount.*
-
 val VERSION = "6.9.11-SNAPSHOT"
 
-//val plugins = plugins("com.beust.kobalt:kobalt-line-count:0.17")
-
-val dummyProject = javaProject {
-    name = "dummy-testng"
-    group = "org.testng"
-    artifactId = name
-    version = VERSION
-    directory = "dummy"
-
-    dependencies {
-        compile("org.jsoup:jsoup:1.8.3")
-    }
-
-    dependenciesTest {
-        compile("org.hamcrest:hamcrest-core:1.3")
-    }
-}
-
-val p = javaProject(dummyProject) {
+val p = javaProject {
 
     //    line
     name = "testng"
