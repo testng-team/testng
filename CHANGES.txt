@@ -16,6 +16,8 @@ New: GITHUB-886: Add some checks on factory methods (Julien Herr)
 New: GITHUB-874 / GITHUB-875 / GITHUB-882 / GITHUB-850 : Some code cleanup (Testo Nakada)
 Fixed: GITHUB-866 / GITHUB-869 : Some attributes were not cloned when XmlSuite#clone was used (Virender Singh)
 Fixed: GITHUB-842: Add TestResult#getTestName() support for @Test(testName) (Julien Herr)
+Fixed: GITHUB-908: Fix Double.NaN assertion (Julien Herr)
+Fixed: GITHUB-793: Test suite with tests using dependency and priority has wrong behavior (Martin Hereu & Julien Herr)
 
 6.9.9:
 2015/10/27

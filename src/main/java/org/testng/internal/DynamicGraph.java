@@ -49,9 +49,11 @@ public class DynamicGraph<T> {
   /**
    * Add an edge between two nodes.
    */
-  public void addEdge(T from, T to) {
-    m_dependingOn.put(to, from);
-    m_dependedUpon.put(from, to);
+  public void addEdge(T from, T... tos) {
+    for (T to : tos) {
+      m_dependingOn.put(to, from);
+      m_dependedUpon.put(from, to);
+    }
   }
 
   /**
@@ -71,15 +73,22 @@ public class DynamicGraph<T> {
       }
     }
 
-    // Sort the free nodes if requested (e.g. priorities)
-    if (result != null && ! result.isEmpty()) {
-      if (m_nodeComparator != null) {
-        Collections.sort(result, m_nodeComparator);
-        ppp("Nodes after sorting:" + result.get(0));
-      }
+    if (result.isEmpty() || m_nodeComparator == null) {
+      return  result;
     }
 
-    return result;
+    // Sort the free nodes if requested (e.g. priorities)
+    Collections.sort(result, m_nodeComparator);
+    T node = result.get(0);
+    ppp("Nodes after sorting:" + node);
+    // Filter nodes
+    List<T> filteredNodes = Lists.newArrayList();
+    for (T currentNode : result) {
+      if (m_nodeComparator.compare(node, currentNode) == 0) {
+        filteredNodes.add(currentNode);
+      }
+    }
+    return filteredNodes;
   }
 
   /**
