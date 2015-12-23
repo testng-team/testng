@@ -26,3 +26,5 @@ test-output-tests
 testng.iml
 z_build
 .kobalt
+.DS_Store
+

@@ -1,6 +1,5 @@
 package org.testng.internal;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -30,7 +29,6 @@ import org.testng.SuiteRunState;
 import org.testng.TestException;
 import org.testng.TestNGException;
 import org.testng.annotations.IConfigurationAnnotation;
-import org.testng.annotations.NoInjection;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
@@ -40,6 +38,9 @@ import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.invokers.InvokedMethodListenerInvoker;
 import org.testng.internal.invokers.InvokedMethodListenerMethod;
+import org.testng.internal.reflect.DataProviderMethodMatcher;
+import org.testng.internal.reflect.MethodMatcher;
+import org.testng.internal.reflect.MethodMatcherContext;
 import org.testng.internal.thread.ThreadExecutionException;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.internal.thread.graph.IWorker;
@@ -1212,6 +1213,7 @@ public class Invoker implements IInvoker {
    * Gets an array of parameter values returned by data provider or the ones that
    * are injected based on parameter type. The method also checks for {@code NoInjection}
    * annotation
+   *
    * @param parameterValues parameter values from a data provider
    * @param method method to be invoked
    * @param context test context
@@ -1220,45 +1222,10 @@ public class Invoker implements IInvoker {
   private Object[] injectParameters(Object[] parameterValues, Method method,
       ITestContext context, ITestResult testResult)
     throws TestNGException {
-    List<Object> vResult = Lists.newArrayList();
-    int i = 0;
-    int numValues = parameterValues.length;
-    int numParams = method.getParameterTypes().length;
-
-    if (numValues > numParams && ! method.isVarArgs()) {
-      throw new TestNGException("The data provider is trying to pass " + numValues
-          + " parameters but the method "
-          + method.getDeclaringClass().getName() + "#" + method.getName()
-          + " takes " + numParams);
-    }
-
-    // beyond this, numValues <= numParams
-    for (Class<?> cls : method.getParameterTypes()) {
-      Annotation[] annotations = method.getParameterAnnotations()[i];
-      boolean noInjection = false;
-      for (Annotation a : annotations) {
-        if (a instanceof NoInjection) {
-          noInjection = true;
-          break;
-        }
-      }
-      Object injected = Parameters.getInjectedParameter(cls, method, context, testResult);
-      if (injected != null && ! noInjection) {
-        vResult.add(injected);
-      } else {
-        try {
-          if (method.isVarArgs()) vResult.add(parameterValues);
-          else vResult.add(parameterValues[i++]);
-        } catch (ArrayIndexOutOfBoundsException ex) {
-          throw new TestNGException("The data provider is trying to pass " + numValues
-              + " parameters but the method "
-              + method.getDeclaringClass().getName() + "#" + method.getName()
-              + " takes " + numParams
-              + " and TestNG is unable in inject a suitable object", ex);
-        }
-      }
-    }
-    return vResult.toArray(new Object[vResult.size()]);
+    final MethodMatcher matcher = new DataProviderMethodMatcher(
+      new MethodMatcherContext(method, parameterValues, context, testResult)
+    );
+    return matcher.getConformingArguments();
   }
 
   private ParameterBag handleParameters(ITestNGMethod testMethod,
