@@ -573,14 +573,16 @@ public class SuiteHTMLReporter implements IReporter {
     Map<String, ISuiteResult> suiteResults = suite.getResults();
     int groupCount = suite.getMethodsByGroups().size();
     int methodCount = 0;
-    for (ISuiteResult sr : suiteResults.values()) {
-      ITestNGMethod[] methods = sr.getTestContext().getAllTestMethods();
-      methodCount += Utils.calculateInvokedMethodCount(methods);
+    synchronized(suiteResults) {
+      for (ISuiteResult sr : suiteResults.values()) {
+        ITestNGMethod[] methods = sr.getTestContext().getAllTestMethods();
+        methodCount += Utils.calculateInvokedMethodCount(methods);
 
-      // Collect testClasses
-      for (ITestNGMethod tm : methods) {
-        ITestClass tc = tm.getTestClass();
-        m_classes.put(tc.getRealClass().getName(), tc);
+        // Collect testClasses
+        for (ITestNGMethod tm : methods) {
+          ITestClass tc = tm.getTestClass();
+          m_classes.put(tc.getRealClass().getName(), tc);
+        }
       }
     }
 
