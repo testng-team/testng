@@ -43,11 +43,14 @@ public class XMLReporter implements IReporter {
     int failed = 0;
     int skipped = 0;
     for (ISuite s : suites) {
-      for (ISuiteResult sr : s.getResults().values()) {
-        ITestContext testContext = sr.getTestContext();
-        passed += testContext.getPassedTests().size();
-        failed += testContext.getFailedTests().size();
-        skipped += testContext.getSkippedTests().size();
+      Map<String, ISuiteResult> suiteResults = s.getResults();
+      synchronized(suiteResults) {
+        for (ISuiteResult sr : suiteResults.values()) {
+          ITestContext testContext = sr.getTestContext();
+          passed += testContext.getPassedTests().size();
+          failed += testContext.getFailedTests().size();
+          skipped += testContext.getSkippedTests().size();
+        }
       }
     }
 
