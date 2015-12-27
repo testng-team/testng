@@ -631,25 +631,27 @@ public class SuiteHTMLReporter implements IReporter {
       Map<String, ISuiteResult> yellowResults = Maps.newHashMap();
       Map<String, ISuiteResult> greenResults = Maps.newHashMap();
 
-      for (Map.Entry<String, ISuiteResult> entry : suiteResults.entrySet()) {
-        String suiteName = entry.getKey();
-        ISuiteResult sr = entry.getValue();
-        ITestContext tc = sr.getTestContext();
-        int failed = tc.getFailedTests().size();
-        int skipped = tc.getSkippedTests().size();
-        int passed = tc.getPassedTests().size();
+      synchronized(suiteResults) {
+        for (Map.Entry<String, ISuiteResult> entry : suiteResults.entrySet()) {
+          String suiteName = entry.getKey();
+          ISuiteResult sr = entry.getValue();
+          ITestContext tc = sr.getTestContext();
+          int failed = tc.getFailedTests().size();
+          int skipped = tc.getSkippedTests().size();
+          int passed = tc.getPassedTests().size();
 
-        if (failed > 0) {
-          redResults.put(suiteName, sr);
-        }
-        else if (skipped > 0) {
-          yellowResults.put(suiteName, sr);
-        }
-        else if (passed > 0) {
-          greenResults.put(suiteName, sr);
-        }
-        else {
-          redResults.put(suiteName, sr);
+          if (failed > 0) {
+            redResults.put(suiteName, sr);
+          }
+          else if (skipped > 0) {
+            yellowResults.put(suiteName, sr);
+          }
+          else if (passed > 0) {
+            greenResults.put(suiteName, sr);
+          }
+          else {
+            redResults.put(suiteName, sr);
+          }
         }
       }
 
