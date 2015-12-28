@@ -133,7 +133,7 @@ public class Yaml {
 
     maybeAdd(result, "preserveOrder", sp2, t.getPreserveOrder(), XmlSuite.DEFAULT_PRESERVE_ORDER);
 
-    toYaml(result, "parameters", sp2, t.getTestParameters());
+    toYaml(result, "parameters", sp2, t.getLocalParameters());
 
     if (t.getIncludedGroups().size() > 0) {
       result.append(sp2).append("includedGroups: [ ")
