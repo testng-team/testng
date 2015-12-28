@@ -155,18 +155,19 @@ public class XMLReporter implements IReporter {
     Date minStartDate = new Date();
     Date maxEndDate = null;
     // TODO: We could probably optimize this in order not to traverse this twice
-    for (Map.Entry<String, ISuiteResult> result : results.entrySet()) {
-      ITestContext testContext = result.getValue().getTestContext();
-      Date startDate = testContext.getStartDate();
-      Date endDate = testContext.getEndDate();
-      if (minStartDate.after(startDate)) {
-        minStartDate = startDate;
-      }
-      if (maxEndDate == null || maxEndDate.before(endDate)) {
-        maxEndDate = endDate != null ? endDate : startDate;
+    synchronized(results) {
+      for (Map.Entry<String, ISuiteResult> result : results.entrySet()) {
+        ITestContext testContext = result.getValue().getTestContext();
+        Date startDate = testContext.getStartDate();
+        Date endDate = testContext.getEndDate();
+        if (minStartDate.after(startDate)) {
+          minStartDate = startDate;
+        }
+        if (maxEndDate == null || maxEndDate.before(endDate)) {
+          maxEndDate = endDate != null ? endDate : startDate;
+        }
       }
     }
-
     // The suite could be completely empty
     if (maxEndDate == null) {
       maxEndDate = minStartDate;
