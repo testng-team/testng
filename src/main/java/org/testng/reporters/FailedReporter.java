@@ -60,15 +60,17 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
 
     Map<String, ISuiteResult> results = suite.getResults();
 
-    for(Map.Entry<String, ISuiteResult> entry : results.entrySet()) {
-      ISuiteResult suiteResult = entry.getValue();
-      ITestContext testContext = suiteResult.getTestContext();
+    synchronized(results) {
+      for(Map.Entry<String, ISuiteResult> entry : results.entrySet()) {
+        ISuiteResult suiteResult = entry.getValue();
+        ITestContext testContext = suiteResult.getTestContext();
 
-      generateXmlTest(suite,
-                      xmlTests.get(testContext.getName()),
-                      testContext,
-                      testContext.getFailedTests().getAllResults(),
-                      testContext.getSkippedTests().getAllResults());
+        generateXmlTest(suite,
+                        xmlTests.get(testContext.getName()),
+                        testContext,
+                        testContext.getFailedTests().getAllResults(),
+                        testContext.getSkippedTests().getAllResults());
+      }
     }
 
     if(null != failedSuite.getTests() && failedSuite.getTests().size() > 0) {
