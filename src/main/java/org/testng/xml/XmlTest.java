@@ -378,10 +378,13 @@ public class XmlTest implements Serializable, Cloneable {
   }
 
   /**
+   * @deprecated Use {@code getLocalParameters()} instead
+   *
    * @return the parameters defined on this <test> tag only
    */
+  @Deprecated
   public Map<String, String> getTestParameters() {
-    return m_parameters;
+    return getLocalParameters();
   }
 
   public void setParallel(XmlSuite.ParallelMode parallel) {

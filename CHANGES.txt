@@ -1,4 +1,5 @@
 ﻿Current
+New: GITHUB-XXX: Deprecate XmlTest#getTestParameters (Julien Herr)
 Fixed: GITHUB-911: TestListener#onTestStart should be invoked if a suite configuration method fails (Harmin Parra Rueda & Julien Herr)﻿
 Fixed: GITHUB-793: Test suite with tests using dependency and priority has wrong behavior (Martin Hereu & Julien Herr)
 ﻿
