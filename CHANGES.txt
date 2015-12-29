@@ -2,6 +2,7 @@
 New: GITHUB-XXX: Deprecate XmlTest#getTestParameters (Julien Herr)
 Fixed: GITHUB-911: TestListener#onTestStart should be invoked if a suite configuration method fails (Harmin Parra Rueda & Julien Herr)﻿
 Fixed: GITHUB-793: Test suite with tests using dependency and priority has wrong behavior (Martin Hereu & Julien Herr)
+Fixed: GITHUB-922: ITestResult doesn't contain name if a class has @Test (@dr29bart & Julien Herr)
 ﻿
 ﻿6.9.10:
 2015/12/15

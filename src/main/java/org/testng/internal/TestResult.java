@@ -87,7 +87,7 @@ public class TestResult implements ITestResult {
       if (m_instance instanceof ITest) {
         m_name = ((ITest) m_instance).getTestName();
       }
-      else if (testClass.getTestName() != null) {
+      else if (testClass.getTestName() != null && !testClass.getTestName().isEmpty()) {
         m_name = testClass.getTestName();
       }
       else {
