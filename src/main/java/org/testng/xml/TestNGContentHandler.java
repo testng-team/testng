@@ -385,7 +385,8 @@ public class TestNGContentHandler extends DefaultHandler {
     }
     else {
       if (null != m_currentPackages) {
-        switch(m_locations.peek()) {
+        Location location = m_locations.peek();
+        switch(location) {
           case TEST:
             m_currentTest.setXmlPackages(m_currentPackages);
             break;
@@ -394,6 +395,8 @@ public class TestNGContentHandler extends DefaultHandler {
             break;
           case CLASS:
             throw new UnsupportedOperationException("CLASS");
+          default:
+            throw new AssertionError("Unexpected value: " + location);
         }
       }
 
@@ -591,7 +594,8 @@ public class TestNGContentHandler extends DefaultHandler {
     }
     else if ("parameter".equals(qName)) {
       String value = expandValue(attributes.getValue("value"));
-      switch(m_locations.peek()) {
+      Location location = m_locations.peek();
+      switch(location) {
         case TEST:
           m_currentTestParameters.put(name, value);
           break;
@@ -604,6 +608,8 @@ public class TestNGContentHandler extends DefaultHandler {
         case INCLUDE:
           m_currentInclude.parameters.put(name, value);
           break;
+        default:
+          throw new AssertionError("Unexpected value: " + location);
       }
     }
   }

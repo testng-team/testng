@@ -165,6 +165,8 @@ public class TestNGMethodFinder implements ITestMethodFinder {
           create = afterGroups.length > 0;
           isBeforeTestMethod = true;
           break;
+        default:
+          throw new AssertionError("Unexpected value: " + configurationType);
       }
 
       if(create) {

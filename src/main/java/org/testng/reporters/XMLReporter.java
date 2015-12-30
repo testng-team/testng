@@ -92,6 +92,9 @@ public class XMLReporter implements IReporter {
     case XMLReporterConfig.FF_LEVEL_SUITE_RESULT:
       File suiteFile = referenceSuite(rootBuffer, suite);
       writeSuiteToFile(suiteFile, suite);
+      break;
+    default:
+      throw new AssertionError("Unexpected value: " + config.getFileFragmentationLevel());
     }
   }
 
