@@ -67,6 +67,7 @@ import com.beust.jcommander.ParameterException;
 import static org.testng.internal.Utils.defaultIfStringEmpty;
 import static org.testng.internal.Utils.isStringEmpty;
 import static org.testng.internal.Utils.isStringNotEmpty;
+import static org.testng.xml.XmlSuite.ParallelMode.skipDeprecatedValues;
 
 /**
  * This class is the main entry point for running tests in the TestNG framework.
@@ -472,14 +473,14 @@ public class TestNG {
   @Deprecated
   public void setParallel(String parallel) {
     if (parallel == null) {
-      setParallel(XmlSuite.ParallelMode.FALSE);
+      setParallel(XmlSuite.ParallelMode.NONE);
     } else {
       setParallel(XmlSuite.ParallelMode.getValidParallel(parallel));
     }
   }
 
   public void setParallel(XmlSuite.ParallelMode parallel) {
-    m_parallelMode = parallel;
+    m_parallelMode = skipDeprecatedValues(parallel);
   }
 
   public void setCommandLineSuite(XmlSuite suite) {
@@ -848,12 +849,10 @@ public class TestNG {
     }
 
     for (XmlSuite s : m_cmdlineSuites) {
-      if(m_threadCount != -1) {
+      if(m_useThreadCount) {
         s.setThreadCount(m_threadCount);
       }
-      if (m_parallelMode != null) {
-        s.setParallel(m_parallelMode);
-      }
+      s.setParallel(m_parallelMode);
       if(m_configFailurePolicy != null) {
         s.setConfigFailurePolicy(m_configFailurePolicy.toString());
       }

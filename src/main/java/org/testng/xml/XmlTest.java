@@ -11,8 +11,11 @@ import org.testng.TestNG;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.internal.Utils;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.dom.ParentSetter;
+
+import static org.testng.xml.XmlSuite.ParallelMode.skipDeprecatedValues;
 
 /**
  * This class describes the tag &lt;test&gt;  in testng.xml.
@@ -388,7 +391,7 @@ public class XmlTest implements Serializable, Cloneable {
   }
 
   public void setParallel(XmlSuite.ParallelMode parallel) {
-    m_parallel = parallel;
+    m_parallel = skipDeprecatedValues(parallel);
   }
 
   public XmlSuite.ParallelMode getParallel() {

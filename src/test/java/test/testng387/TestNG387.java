@@ -15,7 +15,7 @@ public class TestNG387 extends SimpleBaseTest {
   public void testInvocationCounterIsCorrectForMethodWithDataProvider() throws Exception {
     final TestNG tng = create(FailedDPTest.class);
     tng.setThreadCount(1);
-    tng.setParallel(XmlSuite.ParallelMode.FALSE);
+    tng.setParallel(XmlSuite.ParallelMode.NONE);
     tng.setPreserveOrder(true);
     final TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
