@@ -8,7 +8,11 @@ import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
-public class MethodInheritance {
+public final class MethodInheritance {
+  private MethodInheritance() {
+    throw new AssertionError("Must not instantiate this class");
+  }
+
   /**
    * Look in map for a class that is a superclass of methodClass
    */

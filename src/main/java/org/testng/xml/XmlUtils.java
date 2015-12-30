@@ -6,7 +6,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-public class XmlUtils {
+public final class XmlUtils {
+
+  private XmlUtils() {
+    throw new AssertionError("Must not instantiate this class");
+  }
 
   /**
    * Don't add this property if it's equal to its default value.

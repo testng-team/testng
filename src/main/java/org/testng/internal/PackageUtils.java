@@ -26,11 +26,15 @@ import org.testng.collections.Lists;
  * Created on Feb 24, 2006
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
-public class PackageUtils {
+public final class PackageUtils {
   private static String[] s_testClassPaths;
 
   /** The additional class loaders to find classes in. */
   private static final List<ClassLoader> m_classLoaders = new Vector<>();
+
+  private PackageUtils() {
+    throw new AssertionError("Must not instantiate this class");
+  }
 
   /** Add a class loader to the searchable loaders. */
   public static void addClassLoader(final ClassLoader loader) {

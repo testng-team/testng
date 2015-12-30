@@ -3,8 +3,12 @@ package test.thread;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Helper {
+public final class Helper {
   private static Map<String, Map<Long, Long>> m_maps = new HashMap<>();
+
+  private Helper() {
+    throw new AssertionError("Must not instantiate this class");
+  }
 
   public static Map<Long, Long> getMap(String className) {
     synchronized(m_maps) {

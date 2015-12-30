@@ -27,7 +27,7 @@ import org.testng.util.Strings;
  * Created on Nov 2, 2005
  * @author cbeust
  */
-public class Reporter {
+public final class Reporter {
   // when tests are run in parallel, each thread may be working with different
   // 'current test result'. Also, this value should be inherited if the test code
   // spawns its own thread.
@@ -45,6 +45,10 @@ public class Reporter {
   //This variable is responsible for persisting all output that is yet to be associated with any
   //valid TestResult objects.
   private static ThreadLocal<List<String>> m_orphanedOutput = new InheritableThreadLocal<>();
+
+  private Reporter() {
+    throw new AssertionError("Must not instantiate this class");
+  }
 
   public static void setCurrentTestResult(ITestResult m) {
     m_currentTestResult.set(m);

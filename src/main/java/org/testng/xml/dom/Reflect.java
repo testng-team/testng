@@ -8,7 +8,11 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
-public class Reflect {
+public final class Reflect {
+  private Reflect() {
+    throw new AssertionError("Must not instantiate this class");
+  }
+
   public static List<Pair<Method, Wrapper>> findMethodsWithAnnotation(
       Class<?> c, Class<? extends Annotation> ac, Object bean) {
     List<Pair<Method, Wrapper>> result = Lists.newArrayList();

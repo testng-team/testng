@@ -11,7 +11,11 @@ import java.util.List;
  * @author Cedric Beust <cedric@beust.com>
  *
  */
-public class ConversionUtils {
+public final class ConversionUtils {
+  private ConversionUtils() {
+    throw new AssertionError("Must not instantiate this class");
+  }
+
   /**
    * Turns the output of a JUnit 4 @Parameters style data provider into
    * one that is suitable for TestNG's @DataProvider.

@@ -38,8 +38,12 @@ import org.testng.xml.XmlTest;
  *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
-public class Parameters {
+public final class Parameters {
   public static final String NULL_VALUE= "null";
+
+  private Parameters() {
+    throw new AssertionError("Must not instantiate this class");
+  }
 
   /**
    * Creates the parameters needed for constructing a test class instance.

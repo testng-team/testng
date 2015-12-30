@@ -28,6 +28,10 @@ public final class JUnitTestFinder {
         }
     }
 
+    private JUnitTestFinder() {
+        throw new AssertionError("Must not instantiate this class");
+    }
+
     public static boolean isJUnitTest(Class c) {
         if (!haveJUnit()) {
             return false;

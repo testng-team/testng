@@ -25,13 +25,17 @@ import org.testng.internal.collections.Pair;
  * @author nullin <nalin.makar * gmail.com>
  *
  */
-public class MethodGroupsHelper {
+public final class MethodGroupsHelper {
 
   private static final Map<String, Pattern> PATTERN_CACHE = new ConcurrentHashMap<>();
   private static final Map<Pair<String, String>, Boolean> MATCH_CACHE =
           new ConcurrentHashMap<>();
 
-    /**
+  private MethodGroupsHelper() {
+    throw new AssertionError("Must not instantiate this class");
+  }
+
+  /**
    * Collect all the methods that belong to the included groups and exclude all
    * the methods that belong to an excluded group.
    */

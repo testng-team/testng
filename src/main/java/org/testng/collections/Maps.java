@@ -6,7 +6,11 @@ import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class Maps {
+public final class Maps {
+
+  private Maps() {
+    throw new AssertionError("Must not instantiate this class");
+  }
 
   public static <K, V> Map<K,V> newHashMap() {
     return new HashMap<>();
