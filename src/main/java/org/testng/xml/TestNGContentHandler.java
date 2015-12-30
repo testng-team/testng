@@ -39,6 +39,7 @@ public class TestNGContentHandler extends DefaultHandler {
   private List<XmlPackage> m_currentPackages = null;
   private XmlPackage m_currentPackage = null;
   private List<XmlSuite> m_suites = Lists.newArrayList();
+  private XmlGroups m_currentGroups = null;
   private List<String> m_currentIncludedGroups = null;
   private List<String> m_currentExcludedGroups = null;
   private Map<String, String> m_currentTestParameters = null;
@@ -234,7 +235,15 @@ public class TestNGContentHandler extends DefaultHandler {
       m_currentMetaGroupName = name;
     }
     else {
-      m_currentTest.addMetaGroup(m_currentMetaGroupName, m_currentMetaGroup);
+      if (m_currentTest != null) {
+        m_currentTest.addMetaGroup(m_currentMetaGroupName, m_currentMetaGroup);
+      } else {
+        XmlDefine define = new XmlDefine();
+        define.setName(m_currentMetaGroupName);
+        define.getIncludes().addAll(m_currentMetaGroup);
+
+        m_currentGroups.addDefine(define);
+      }
       m_currentDefines = null;
     }
   }
@@ -499,6 +508,22 @@ public class TestNGContentHandler extends DefaultHandler {
   }
 
   /**
+   * Parse <groups>
+   */
+  public void xmlGroups(boolean start, Attributes attributes) throws SAXException {
+    if (start) {
+      m_currentGroups = new XmlGroups();
+      m_currentIncludedGroups = Lists.newArrayList();
+      m_currentExcludedGroups = Lists.newArrayList();
+    } else {
+      if (m_currentTest == null) {
+        m_currentSuite.setGroups(m_currentGroups);
+      }
+      m_currentGroups = null;
+    }
+  }
+
+  /**
    * NOTE: I only invoke xml*methods (e.g. xmlSuite()) if I am acting on both
    * the start and the end of the tag. This way I can keep the treatment of
    * this tag in one place. If I am only doing something when the tag opens,
@@ -578,8 +603,7 @@ public class TestNGContentHandler extends DefaultHandler {
       xmlGroup(true, attributes);
     }
     else if ("groups".equals(qName)) {
-      m_currentIncludedGroups = Lists.newArrayList();
-      m_currentExcludedGroups = Lists.newArrayList();
+      xmlGroups(true, attributes);
     }
     else if ("methods".equals(qName)) {
       xmlMethod(true, attributes);
@@ -712,6 +736,9 @@ public class TestNGContentHandler extends DefaultHandler {
     }
     else if ("run".equals(qName)) {
       xmlRun(false, null);
+    }
+    else if ("groups".equals(qName)) {
+      xmlGroups(false, null);
     }
     else if ("methods".equals(qName)) {
       xmlMethod(false, null);
