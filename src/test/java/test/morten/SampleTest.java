@@ -15,7 +15,7 @@ public class SampleTest {
         new SampleTest(10, 0.5f),
       };
       }
-    };
+    }
 
     public SampleTest() {
 

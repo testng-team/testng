@@ -33,5 +33,5 @@ public class FactoryAndTestMethodTest {
   @DataProvider(name = "data")
   public Object[][] makeData() {
     return new Object[][] { { "foo" } };
-  };
+  }
 }

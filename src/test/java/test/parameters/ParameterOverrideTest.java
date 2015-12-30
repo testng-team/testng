@@ -18,7 +18,7 @@ public class ParameterOverrideTest extends SimpleBaseTest {
     PASS_TEST,
     PASS_CLASS,
     PASS_INCLUDE,
-  };
+  }
 
   @Test
   public void testOverrideSuite() {
