@@ -66,9 +66,7 @@ public class DynamicGraph<T> {
 
       List<T> du = m_dependedUpon.get(m);
       // - no other nodes depend on it
-      if (!m_dependedUpon.containsKey(m)) {
-        result.add(m);
-      } else if (getUnfinishedNodes(du).size() == 0) {
+      if (!m_dependedUpon.containsKey(m) || getUnfinishedNodes(du).size() == 0) {
         result.add(m);
       }
     }

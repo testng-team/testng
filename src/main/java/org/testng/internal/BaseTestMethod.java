@@ -142,14 +142,12 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     int result = -2;
     Class<?> thisClass = getRealClass();
     Class<?> otherClass = ((ITestNGMethod) o).getRealClass();
-    if (this == o) {
+    if (this == o || equals(o)) {
       result = 0;
     } else if (thisClass.isAssignableFrom(otherClass)) {
       result = -1;
     } else if (otherClass.isAssignableFrom(thisClass)) {
       result = 1;
-    } else if (equals(o)) {
-      result = 0;
     }
 
     return result;

@@ -738,9 +738,6 @@ public class TestNGContentHandler extends DefaultHandler {
     else if ("script".equals(qName)) {
       xmlScript(false, null);
     }
-    else if ("packages".equals(qName)) {
-      xmlPackages(false, null);
-    }
     else if ("include".equals(qName)) {
       xmlInclude(false, null);
     } else if ("exclude".equals(qName)){
