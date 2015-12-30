@@ -729,16 +729,12 @@ public class TestRunner
     m_allTestMethods= runMethods.toArray(new ITestNGMethod[runMethods.size()]);
   }
 
-  private static final EnumSet<XmlSuite.ParallelMode> PRIVATE_RUN_PARALLEL_MODES
-      = EnumSet.of(XmlSuite.ParallelMode.METHODS,
-                   XmlSuite.ParallelMode.CLASSES, XmlSuite.ParallelMode.INSTANCES);
   /**
    * Main method that create a graph of methods and then pass it to the
    * graph executor to run them.
    */
   private void privateRun(XmlTest xmlTest) {
-    XmlSuite.ParallelMode parallelMode = xmlTest.getParallel();
-    boolean parallel = PRIVATE_RUN_PARALLEL_MODES.contains(parallelMode);
+    boolean parallel = xmlTest.getParallel().isParallel();
 
     {
       // parallel
