@@ -1,9 +1,10 @@
 ﻿Current
-New: GITHUB-XXX: Deprecate XmlTest#getTestParameters (Julien Herr)
+New: GITHUB-933: Deprecate XmlTest#getTestParameters (Julien Herr)
 Fixed: GITHUB-911: TestListener#onTestStart should be invoked if a suite configuration method fails (Harmin Parra Rueda & Julien Herr)﻿
 Fixed: GITHUB-793: Test suite with tests using dependency and priority has wrong behavior (Martin Hereu & Julien Herr)
+Fixed: GITHUB-922: ITestResult doesn't contain name if a class has @Test (@dr29bart & Julien Herr)
 ﻿
-﻿6.9.10:
+6.9.10:
 2015/12/15
 Fixed: GITHUB-841: testName from @Test is now used and available from ITestResult#getName() and ITestResult#getTestName() (Julien Herr)
 New: GITHUB-776: Add BeforeClass/AfterClass like on ITestListener (@vguna & Julien Herr)

@@ -143,4 +143,16 @@ public class NameTest extends SimpleBaseTest {
     }
     return names;
   }
+
+  @Test(description = "GITHUB-922: ITestResult doesn't contain name if a class has @Test")
+  public void testOnClassFromReporter() {
+    TestNG tng = create(TestOnClassSample.class);
+    TestOnClassListener listener = new TestOnClassListener();
+    tng.addListener(listener);
+
+    tng.run();
+
+    Assert.assertEquals(listener.getNames().size(), 1);
+    Assert.assertEquals(listener.getNames().get(0), "test");
+  }
 }
