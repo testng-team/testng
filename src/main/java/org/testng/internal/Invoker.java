@@ -1221,9 +1221,8 @@ public class Invoker implements IInvoker {
       ITestContext context, ITestResult testResult)
     throws TestNGException {
     List<Object> vResult = Lists.newArrayList();
-    int i = 0;
-    int numValues = parameterValues.length;
-    int numParams = method.getParameterTypes().length;
+    final int numValues = parameterValues.length;
+    final int numParams = method.getParameterTypes().length;
 
     if (numValues > numParams && ! method.isVarArgs()) {
       throw new TestNGException("The data provider is trying to pass " + numValues
@@ -1233,8 +1232,10 @@ public class Invoker implements IInvoker {
     }
 
     // beyond this, numValues <= numParams
-    for (Class<?> cls : method.getParameterTypes()) {
-      Annotation[] annotations = method.getParameterAnnotations()[i];
+    int valueIndex = 0;
+    for (int paramIndex = 0; paramIndex < numParams; ++paramIndex) {
+      Class<?> cls = method.getParameterTypes()[paramIndex];
+      Annotation[] annotations = method.getParameterAnnotations()[paramIndex];
       boolean noInjection = false;
       for (Annotation a : annotations) {
         if (a instanceof NoInjection) {
@@ -1247,8 +1248,10 @@ public class Invoker implements IInvoker {
         vResult.add(injected);
       } else {
         try {
-          if (method.isVarArgs()) vResult.add(parameterValues);
-          else vResult.add(parameterValues[i++]);
+          if (paramIndex + 1 == numParams && method.isVarArgs()) {
+              vResult.add(Arrays.copyOfRange(parameterValues, valueIndex, parameterValues.length));
+          }
+          else vResult.add(parameterValues[valueIndex++]);
         } catch (ArrayIndexOutOfBoundsException ex) {
           throw new TestNGException("The data provider is trying to pass " + numValues
               + " parameters but the method "
