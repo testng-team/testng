@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -270,9 +271,16 @@ public class TestNG {
     	//to parse the suite files (<suite-file>), if any
     	for (XmlSuite s: m_suites) {
         for (String suiteFile : s.getSuiteFiles()) {
-            Path rootPath = Paths.get(s.getFileName()).getParent();
             try {
-                Collection<XmlSuite> childSuites = getParser(rootPath.resolve(suiteFile).normalize().toString()).parse();
+                Collection<XmlSuite> childSuites;
+                if (s.getFileName() != null) {
+                  Path rootPath = Paths.get(s.getFileName()).getParent();
+                  try (InputStream is = Files.newInputStream(rootPath.resolve(suiteFile))) {
+                    childSuites = getParser(is).parse();
+                  }
+                } else {
+                  childSuites = getParser(suiteFile).parse();
+                }
                 for (XmlSuite cSuite : childSuites){
                     cSuite.setParentSuite(s);
                     s.getChildSuites().add(cSuite);
