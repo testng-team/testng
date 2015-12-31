@@ -5,7 +5,8 @@ Fixed: GITHUB-1084 Using deprecated addListener methods should not register many
 Fixed: GITHUB-447 Copy test parameters instead of storing a reference (Huagang Li & Julien Herr)
 Fixed: GITHUB-174: NPE when parsing xml where <suite> has <groups> (Peter Stout & Julien Herr)
 Fixed: GITHUB-918: NullPointerException on loading XmlSuites programmatically (@ispitkovskyi & Julien Herr)
-
+Fixed: GITHUB-689: <groups> at <suite> level not applied to <suite-files> (@kunal546 & Julien Herr)
+﻿
 6.9.12
 2016/06/21
 
