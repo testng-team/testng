@@ -5,6 +5,7 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -50,6 +51,13 @@ public class DynamicGraph<T> {
    * Add an edge between two nodes.
    */
   public void addEdge(T from, T... tos) {
+    addEdge(from, Arrays.asList(tos));
+  }
+
+  /**
+   * Add an edge between two nodes.
+   */
+  public void addEdge(T from, Iterable<T> tos) {
     for (T to : tos) {
       m_dependingOn.put(to, from);
       m_dependedUpon.put(from, to);

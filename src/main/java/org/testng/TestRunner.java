@@ -1068,9 +1068,7 @@ public class TestRunner
           = createInstanceDependencies(methods, getCurrentXmlTest());
 
       for (Map.Entry<ITestNGMethod, List<ITestNGMethod>> es : instanceDependencies.entrySet()) {
-        for (ITestNGMethod dm : es.getValue()) {
-          result.addEdge(dm, es.getKey());
-        }
+        result.addEdge(es.getKey(), es.getValue());
       }
 
     }
