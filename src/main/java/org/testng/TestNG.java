@@ -849,10 +849,12 @@ public class TestNG {
     }
 
     for (XmlSuite s : m_cmdlineSuites) {
-      if(m_useThreadCount) {
+      if (m_threadCount != -1) {
         s.setThreadCount(m_threadCount);
       }
-      s.setParallel(m_parallelMode);
+      if (m_parallelMode != null) {
+        s.setParallel(m_parallelMode);
+      }
       if(m_configFailurePolicy != null) {
         s.setConfigFailurePolicy(m_configFailurePolicy.toString());
       }
