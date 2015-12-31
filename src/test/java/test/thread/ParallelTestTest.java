@@ -2,6 +2,7 @@ package test.thread;
 
 import org.testng.Assert;
 import org.testng.TestNG;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 import org.testng.xml.XmlClass;
@@ -17,84 +18,82 @@ import java.util.Map;
 
 public class ParallelTestTest extends BaseTest {
 
-  @Test
-  public void verifyParallelNone() {
-    verifyExpected(XmlSuite.ParallelMode.NONE, 1);
+  @DataProvider
+  private static Object[][] verifyParallelDp() {
+    return new Object[][]{
+            // isCommandLine, parallelMode, expectedThreadCount
+            {true,  XmlSuite.ParallelMode.NONE,      1},
+            {false, XmlSuite.ParallelMode.NONE,      1},
+            {true,  XmlSuite.ParallelMode.TESTS,     2},
+            {false, XmlSuite.ParallelMode.TESTS,     2},
+            {true,  XmlSuite.ParallelMode.METHODS,   4},
+            {false, XmlSuite.ParallelMode.METHODS,   4},
+            {true,  XmlSuite.ParallelMode.CLASSES,   2},
+            {false, XmlSuite.ParallelMode.CLASSES,   2},
+            {true,  XmlSuite.ParallelMode.INSTANCES, 2},
+            {false, XmlSuite.ParallelMode.INSTANCES, 2}
+    };
   }
 
-  @Test
-  public void verifyParallelTests() {
-    verifyExpected(XmlSuite.ParallelMode.TESTS, 2);
+  @Test(dataProvider = "verifyParallelDp")
+  public void verifyParallel(boolean isCommandLine, XmlSuite.ParallelMode parallelMode, int expectedThreadCount) {
+    verifyExpected(isCommandLine, parallelMode, expectedThreadCount, Test1Test.class, Test2Test.class);
   }
 
-  @Test
-  public void verifyParallelMethods() {
-    verifyExpected(XmlSuite.ParallelMode.METHODS, 4);
+  @DataProvider
+  private static Object[][] verifyParallelWithFactoryDp() {
+    return new Object[][]{
+            // isCommandLine, parallelMode, expectedThreadCount
+            {true,  XmlSuite.ParallelMode.NONE,      1},
+            {false, XmlSuite.ParallelMode.NONE,      1},
+            {true,  XmlSuite.ParallelMode.INSTANCES, 2},
+            {false, XmlSuite.ParallelMode.INSTANCES, 2}
+    };
   }
 
-  @Test
-  public void verifyParallelClasses() {
-    verifyExpected(XmlSuite.ParallelMode.CLASSES, 2);
+  @Test(dataProvider = "verifyParallelWithFactoryDp") // TODO use "verifyParallelDp"
+  public void verifyParallelWithFactory(boolean isCommandLine, XmlSuite.ParallelMode parallelMode, int expectedThreadCount) {
+    verifyExpected(isCommandLine, parallelMode, expectedThreadCount, ParallelWithFactorySampleTest.class);
   }
 
-  @Test
-  public void verifyParallelClassesWithFactory() {
-    verifyExpected(XmlSuite.ParallelMode.INSTANCES, 2, ParallelWithFactorySampleTest.class.getName());
-  }
-
-  @Test
-  public void verifyNonParallelClassesWithFactory() {
-    verifyExpected(XmlSuite.ParallelMode.NONE, 1, ParallelWithFactorySampleTest.class.getName());
-  }
-
-  public static final String CLASS1 = "test.thread.Test1Test";
-  public static final String CLASS2 = "test.thread.Test2Test";
-
-  private void createTest(XmlSuite xmlSuite, String className) {
+  private void createTest(XmlSuite xmlSuite, Class<?> clazz) {
     XmlTest result = new XmlTest(xmlSuite);
     List<XmlClass> classes = result.getXmlClasses();
-    XmlClass xmlClass = new XmlClass(className);
+    XmlClass xmlClass = new XmlClass(clazz);
     classes.add(xmlClass);
   }
 
-  private void verifyExpected(XmlSuite.ParallelMode parallelMode, int expectedThreadCount) {
-    verifyExpected(parallelMode, expectedThreadCount, CLASS1, CLASS2);
-  }
-
-  private void verifyExpected(XmlSuite.ParallelMode parallelMode, int expectedThreadCount,
-      String... classNames) {
+  private void verifyExpected(boolean isCommandLine, XmlSuite.ParallelMode parallelMode, int expectedThreadCount,
+      Class<?>... classes) {
     XmlSuite xmlSuite = new XmlSuite();
     xmlSuite.setName("ParallelTestTest");
     xmlSuite.setParallel(parallelMode);
-    for (String cn : classNames) {
-      createTest(xmlSuite, cn);
+    for (Class<?> clazz : classes) {
+      createTest(xmlSuite, clazz);
     }
 
     TestNG tng = new TestNG();
     tng.setVerbose(0);
-    tng.setXmlSuites(Arrays.asList(new XmlSuite[] { xmlSuite }));
+    if (isCommandLine) {
+      tng.setCommandLineSuite(xmlSuite);
+    } else {
+      tng.setXmlSuites(Arrays.asList(xmlSuite));
+    }
 
     Helper.reset();
 
     tng.run();
 
     List<Map<Long, Long>> maps = Lists.newArrayList();
-    for (String c : classNames) {
-      maps.add(Helper.getMap(c));
-    };
+    for (Class<?> clazz : classes) {
+      maps.add(Helper.getMap(clazz.getName()));
+    }
 
     Map<Long, Long> mergedMap = new HashMap<>();
-    for (Map<Long, Long>m : maps) {
+    for (Map<Long, Long> m : maps) {
       mergedMap.putAll(m);
     }
 
     Assert.assertEquals(mergedMap.size(), expectedThreadCount);
   }
-
-  private static void ppp(String s) {
-    if (false) {
-      System.out.println("[SequentialTest] " + s);
-    }
-  }
-
 }

@@ -156,9 +156,8 @@ public class TestNG {
   private String m_masterfileName = null;
 
   // Command line suite parameters
-  private int m_threadCount;
-  private boolean m_useThreadCount;
-  private XmlSuite.ParallelMode m_parallelMode = XmlSuite.ParallelMode.FALSE;
+  private int m_threadCount = -1;
+  private XmlSuite.ParallelMode m_parallelMode = null;
   private String m_configFailurePolicy;
   private Class[] m_commandLineTestClasses;
 
@@ -464,7 +463,6 @@ public class TestNG {
     }
 
     m_threadCount = threadCount;
-    m_useThreadCount = true;
   }
 
   /**
@@ -850,10 +848,12 @@ public class TestNG {
     }
 
     for (XmlSuite s : m_cmdlineSuites) {
-      if(m_useThreadCount) {
+      if(m_threadCount != -1) {
         s.setThreadCount(m_threadCount);
       }
-      s.setParallel(m_parallelMode);
+      if (m_parallelMode != null) {
+        s.setParallel(m_parallelMode);
+      }
       if(m_configFailurePolicy != null) {
         s.setConfigFailurePolicy(m_configFailurePolicy.toString());
       }
