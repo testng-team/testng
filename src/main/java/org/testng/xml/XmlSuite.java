@@ -2,7 +2,6 @@ package org.testng.xml;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -12,6 +11,7 @@ import org.testng.ITestObjectFactory;
 import org.testng.TestNG;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.internal.Utils;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.dom.OnElement;
 import org.testng.xml.dom.OnElementList;
@@ -19,6 +19,7 @@ import org.testng.xml.dom.Tag;
 
 import static org.testng.collections.CollectionUtils.hasElements;
 import static org.testng.internal.Utils.isStringNotEmpty;
+import static org.testng.xml.XmlSuite.ParallelMode.skipDeprecatedValues;
 
 /**
  * This class describes the tag &lt;suite&gt; in testng.xml.
@@ -29,7 +30,18 @@ import static org.testng.internal.Utils.isStringNotEmpty;
 public class XmlSuite implements Serializable, Cloneable {
   /** Parallel modes */
   public enum ParallelMode {
-    TESTS, METHODS, CLASSES, INSTANCES, NONE, TRUE, FALSE;
+    TESTS(false), METHODS, CLASSES, INSTANCES, NONE(false),
+    @Deprecated TRUE, @Deprecated FALSE(false);
+
+    private final boolean isParallel;
+
+    ParallelMode() {
+      this(true);
+    }
+
+    ParallelMode(boolean isParallel) {
+      this.isParallel = isParallel;
+    }
 
     public static XmlSuite.ParallelMode getValidParallel(String parallel) {
       if (parallel == null) {
@@ -40,6 +52,24 @@ public class XmlSuite implements Serializable, Cloneable {
       } catch (IllegalArgumentException e) {
         return null;
       }
+    }
+
+    public static ParallelMode skipDeprecatedValues(ParallelMode parallel) {
+      if (parallel == ParallelMode.TRUE) {
+        Utils.log("XmlSuite", 1, "[WARN] 'parallel' value 'true' is deprecated, default value will be used instead: '" + ParallelMode.METHODS + "'.");
+        return ParallelMode.METHODS;
+      }
+
+      if (parallel == ParallelMode.FALSE) {
+        Utils.log("XmlSuite", 1, "[WARN] 'parallel' value 'false' is deprecated, default value will be used instead: '" + ParallelMode.NONE + "'.");
+        return ParallelMode.NONE;
+      }
+
+      return parallel;
+    }
+
+    public boolean isParallel() {
+      return isParallel;
     }
 
     @Override
@@ -64,7 +94,7 @@ public class XmlSuite implements Serializable, Cloneable {
   public static final Integer DEFAULT_VERBOSE = 1;
   private Integer m_verbose = null;
 
-  public static final ParallelMode DEFAULT_PARALLEL = ParallelMode.FALSE;
+  public static final ParallelMode DEFAULT_PARALLEL = ParallelMode.NONE;
   private ParallelMode m_parallel = DEFAULT_PARALLEL;
 
   private String m_parentModule = "";
@@ -201,7 +231,7 @@ public class XmlSuite implements Serializable, Cloneable {
     if (parallel == null) {
       m_parallel = DEFAULT_PARALLEL;
     } else {
-      m_parallel = parallel;
+      m_parallel = skipDeprecatedValues(parallel);
     }
   }
 

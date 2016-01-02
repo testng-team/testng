@@ -729,16 +729,12 @@ public class TestRunner
     m_allTestMethods= runMethods.toArray(new ITestNGMethod[runMethods.size()]);
   }
 
-  private static final EnumSet<XmlSuite.ParallelMode> PRIVATE_RUN_PARALLEL_MODES
-      = EnumSet.of(XmlSuite.ParallelMode.METHODS, XmlSuite.ParallelMode.TRUE,
-                   XmlSuite.ParallelMode.CLASSES, XmlSuite.ParallelMode.INSTANCES);
   /**
    * Main method that create a graph of methods and then pass it to the
    * graph executor to run them.
    */
   private void privateRun(XmlTest xmlTest) {
-    XmlSuite.ParallelMode parallelMode = xmlTest.getParallel();
-    boolean parallel = PRIVATE_RUN_PARALLEL_MODES.contains(parallelMode);
+    boolean parallel = xmlTest.getParallel().isParallel();
 
     {
       // parallel
@@ -993,9 +989,6 @@ public class TestRunner
   //
   // Invoke the workers
   //
-  private static final EnumSet<XmlSuite.ParallelMode> WORKERS_PARALLEL_MODES
-      = EnumSet.of(XmlSuite.ParallelMode.METHODS, XmlSuite.ParallelMode.TRUE,
-                   XmlSuite.ParallelMode.CLASSES);
   private void runJUnitWorkers(List<? extends IWorker<ITestNGMethod>> workers) {
       //
       // Sequential run
@@ -1087,7 +1080,7 @@ public class TestRunner
     // giving the impression of parallelism (multiple thread id's) while still running
     // sequentially.
     if (! hasDependencies
-        && getCurrentXmlTest().getParallel() == XmlSuite.ParallelMode.FALSE
+        && getCurrentXmlTest().getParallel() == XmlSuite.ParallelMode.NONE
         && "true".equalsIgnoreCase(getCurrentXmlTest().getPreserveOrder())) {
       // If preserve-order was specified and the class order is A, B
       // create a new set of dependencies where each method of B depends
