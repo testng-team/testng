@@ -157,7 +157,7 @@ public class TestNGAntTask extends Task {
 
   public enum Mode {
       //lower-case to better look in build scripts
-      testng, junit, mixed;
+      testng, junit, mixed
   }
   
   /**

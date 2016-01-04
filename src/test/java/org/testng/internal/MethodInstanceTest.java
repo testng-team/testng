@@ -251,7 +251,7 @@ public class MethodInstanceTest {
     @Override
     public ITestNGMethod clone() {
       return (TestNGMethodStub) this;
-    };
+    }
 
     @Override
     public int compareTo(Object o) {

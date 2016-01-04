@@ -540,7 +540,7 @@ public class Invoker implements IInvoker {
 
   private void throwConfigurationFailure(ITestResult testResult, Throwable ex)
   {
-    testResult.setStatus(ITestResult.FAILURE);;
+    testResult.setStatus(ITestResult.FAILURE);
     testResult.setThrowable(ex.getCause() == null ? ex : ex.getCause());
   }
 

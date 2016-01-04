@@ -15,7 +15,7 @@ public class ParameterHolder {
   public enum ParameterOrigin {
     ORIGIN_DATA_PROVIDER, // A data provider
     ORIGIN_XML // TestNG XML suite
-  };
+  }
 
   public DataProviderHolder dataProviderHolder;
   public Iterator<Object[]> parameters;

@@ -188,7 +188,7 @@ public class PackageUtils {
       fileName= URLDecoder.decode(url.getFile(), "UTF-8");
     }
     catch(UnsupportedEncodingException ueex) {
-      ; // ignore. should never happen
+      // ignore. should never happen
     }
 
     for(String classpathFrag: classpathFragments) {

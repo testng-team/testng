@@ -10,4 +10,4 @@ public class SampleTestFactory {
     new SampleTest(10, 0.5f),
   };
   }
-};
+}

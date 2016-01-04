@@ -19,7 +19,7 @@ public class NestedStaticFactoryTest {
         new NestedStaticFactoryTest(10, 0.5f),
       };
     }
-  };
+  }
 
   private static int m_instanceCount = 0;
   public NestedStaticFactoryTest() {

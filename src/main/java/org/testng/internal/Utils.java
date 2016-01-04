@@ -208,7 +208,7 @@ public final class Utils {
         }
       }
       catch (IOException e) {
-        ; // ignore
+        // ignore
       }
     }
   }
@@ -642,7 +642,7 @@ public final class Utils {
       }
     }
     catch(IOException ioex) {
-      ; // do nothing
+      // do nothing
     }
 
     return buf.toString();
