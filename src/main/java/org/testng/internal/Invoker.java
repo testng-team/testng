@@ -1668,6 +1668,8 @@ public class Invoker implements IInvoker {
           case ITestResult.SUCCESS:
             icl.onConfigurationSuccess(tr);
             break;
+          default:
+            throw new AssertionError("Unexpected value: " + tr.getStatus());
         }
       }
     }

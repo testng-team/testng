@@ -27,6 +27,8 @@ public class MyTransformer implements IAnnotationTransformer {
         case "five":
           annotation.setInvocationCount(5);
           break;
+        default:
+          break;
       }
       methodNames.add(testMethod.getName());
     }

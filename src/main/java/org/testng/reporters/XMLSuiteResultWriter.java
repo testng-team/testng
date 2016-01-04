@@ -170,8 +170,9 @@ public class XMLSuiteResultWriter {
         return "SKIP";
       case ITestResult.SUCCESS_PERCENTAGE_FAILURE:
         return "SUCCESS_PERCENTAGE_FAILURE";
+      default:
+        throw new AssertionError("Unexpected value: " + testResultStatus);
     }
-    return null;
   }
 
   private Properties getTestResultAttributes(ITestResult testResult) {

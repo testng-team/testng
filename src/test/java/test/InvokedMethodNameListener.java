@@ -33,6 +33,8 @@ public class InvokedMethodNameListener implements IInvokedMethodListener {
       case ITestResult.SUCCESS:
         succeedMethodNames.add(method.getTestMethod().getConstructorOrMethod().getName());
         break;
+      default:
+        throw new AssertionError("Unexpected value: " + testResult.getStatus());
     }
   }
 
