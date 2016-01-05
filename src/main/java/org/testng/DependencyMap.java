@@ -5,6 +5,7 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -21,7 +22,20 @@ public class DependencyMap {
 
   public DependencyMap(ITestNGMethod[] methods) {
     for (ITestNGMethod m : methods) {
-    	m_dependencies.put( m.getRealClass().getName() + "." +  m.getMethodName(), m);
+      m_dependencies.put( m.getRealClass().getName() + "." +  m.getMethodName(), m);
+      Method realMethod = m.getConstructorOrMethod().getMethod();
+      // populate m_dependencies also with dependencies for overridden methods
+      Class<?> superclass = realMethod.getDeclaringClass().getSuperclass();
+      while (superclass !=null) {
+        try {
+          realMethod = superclass.getMethod(m.getMethodName(), m.getConstructorOrMethod().getMethod().getParameterTypes());
+          m_dependencies.put( realMethod.getDeclaringClass().getName() + "." +  m.getMethodName(), m);
+        } catch(NoSuchMethodException e) {
+          // do nothing, search further
+        }
+        superclass = superclass.getSuperclass();
+      }
+
       for (String g : m.getGroups()) {
         m_groups.put(g, m);
       }
