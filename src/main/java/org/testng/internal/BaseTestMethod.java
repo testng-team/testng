@@ -137,24 +137,6 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     m_testClass = tc;
   }
 
-  @Override
-  public int compareTo(Object o) {
-    int result = -2;
-    Class<?> thisClass = getRealClass();
-    Class<?> otherClass = ((ITestNGMethod) o).getRealClass();
-    if (this == o) {
-      result = 0;
-    } else if (thisClass.isAssignableFrom(otherClass)) {
-      result = -1;
-    } else if (otherClass.isAssignableFrom(thisClass)) {
-      result = 1;
-    } else if (equals(o)) {
-      result = 0;
-    }
-
-    return result;
-  }
-
   /**
    * {@inheritDoc}
    */
