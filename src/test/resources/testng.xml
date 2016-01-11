@@ -96,7 +96,6 @@
       <class name="test.preserveorder.PreserveOrderTest" />
       <class name="test.SerializationTest" />
       <class name="test.CountTest" />
-      <class name="test.remote.RemoteTest" />
       <class name="test.EclipseTest" />
       <class name="test.ReporterApiTest" />
       <class name="test.abstractmethods.AbstractTest" />

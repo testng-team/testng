@@ -126,14 +126,6 @@ public class CommandLineArgs {
   @Parameter(names = HOST, description = "The host", hidden = true)
   public String host;
 
-  public static final String MASTER = "-master";
-  @Parameter(names = MASTER, description = "Host where the master is", hidden = true)
-  public String master;
-
-  public static final String SLAVE = "-slave";
-  @Parameter(names = SLAVE, description = "Host where the slave is", hidden = true)
-  public String slave;
-
   public static final String METHODS = "-methods";
   @Parameter(names = METHODS, description = "Comma separated of test methods",
       splitter = CommaParameterSplitter.class)
