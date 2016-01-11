@@ -9,7 +9,10 @@ import org.testng.ITestNGMethod;
  * @since 5.3
  * @version $Revision: 173 $
  */
-public class StackTraceTools {
+public final class StackTraceTools {
+  private StackTraceTools() {
+    throw new AssertionError("Must not instantiate this class");
+  }
   // ~ Methods --------------------------------------------------------------
 
   /** Finds topmost position of the test method in the stack, or top of stack if <code>method</code> is not in it. */

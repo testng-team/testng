@@ -27,12 +27,16 @@ import org.testng.internal.collections.Pair;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
-public class MethodHelper {
+public final class MethodHelper {
   private static final Map<ITestNGMethod[], Graph<ITestNGMethod>> GRAPH_CACHE =
           new ConcurrentHashMap<>();
   private static final Map<Method, String> CANONICAL_NAME_CACHE = new ConcurrentHashMap<>();
   private static final Map<Pair<String, String>, Boolean> MATCH_CACHE =
           new ConcurrentHashMap<>();
+
+  private MethodHelper() {
+    throw new AssertionError("Must not instantiate this class");
+  }
 
   /**
    * Collects and orders test or configuration methods

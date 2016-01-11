@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  *
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
-public class MessageHelper {
+public final class MessageHelper {
   public static final char DELIMITER = '\u0001';
   public static final char PARAM_DELIMITER = '\u0004';
   private static final char LINE_SEP_DELIMITER_1 = '\u0002';
@@ -38,6 +38,10 @@ public class MessageHelper {
 
   public static final String STOP_MSG = ">STOP";
   public static final String ACK_MSG = ">ACK";
+
+  private MessageHelper() {
+    throw new AssertionError("Must not instantiate this class");
+  }
 
   public static int getMessageType(final String message) {
     int idx = message.indexOf(DELIMITER);

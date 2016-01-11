@@ -4,7 +4,11 @@ import org.testng.internal.ClonedMethod;
 
 import java.lang.reflect.Method;
 
-public class TestNGUtils {
+public final class TestNGUtils {
+
+  private TestNGUtils() {
+    throw new AssertionError("Must not instantiate this class");
+  }
 
   /**
    * Create an ITestNGMethod for @code{method} based on @code{existingMethod}, which needs

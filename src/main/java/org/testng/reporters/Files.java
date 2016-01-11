@@ -15,7 +15,11 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 
-public class Files {
+public final class Files {
+
+  private Files() {
+    throw new AssertionError("Must not instantiate this class");
+  }
 
   public static String readFile(File f) throws IOException {
     try (InputStream is = new FileInputStream(f)) {

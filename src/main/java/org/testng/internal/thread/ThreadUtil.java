@@ -17,8 +17,12 @@ import java.util.concurrent.TimeUnit;
  *
  * @author <a href="mailto:the_mindstorm@evolva.ro>Alex Popescu</a>
  */
-public class ThreadUtil {
+public final class ThreadUtil {
   private static final String THREAD_NAME = "TestNG";
+
+  private ThreadUtil() {
+    throw new AssertionError("Must not instantiate this class");
+  }
 
   /**
    * @return true if the current thread was created by TestNG.

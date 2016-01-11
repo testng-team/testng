@@ -14,9 +14,13 @@ import java.lang.reflect.Method;
  *
  * @author Cosmin Marginean, Apr 12, 2007
  */
-public class PropertyUtils {
+public final class PropertyUtils {
 
   private static final Logger LOGGER = Logger.getLogger(PropertyUtils.class);
+
+  private PropertyUtils() {
+    throw new AssertionError("Must not instantiate this class");
+  }
 
   public static void setProperty(Object instance, String name, String value) {
     if (instance == null) {

@@ -23,7 +23,11 @@ import java.util.Map;
  *
  * @author Cedric Beust <cedric@beust.com>
  */
-public class Yaml {
+public final class Yaml {
+
+  private Yaml() {
+    throw new AssertionError("Must not instantiate this class");
+  }
 
   public static XmlSuite parse(String filePath, InputStream is)
       throws FileNotFoundException {

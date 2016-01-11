@@ -26,7 +26,11 @@ import org.testng.xml.XmlTest;
  * Created on Dec 20, 2005
  * @author cbeust
  */
-public class AnnotationHelper {
+public final class AnnotationHelper {
+
+  private AnnotationHelper() {
+    throw new AssertionError("Must not instantiate this class");
+  }
 
   public static ITestAnnotation findTest(IAnnotationFinder finder, Class<?> cls) {
     return finder.findAnnotation(cls, ITestAnnotation.class);

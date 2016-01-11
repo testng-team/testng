@@ -11,7 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class TestHelper {
+public final class TestHelper {
+
+  private TestHelper() {
+    throw new AssertionError("Must not instantiate this class");
+  }
 
   public static XmlSuite createSuite(String cls, String suiteName) {
     return createSuite(cls, suiteName, "TmpTest");

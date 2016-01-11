@@ -35,7 +35,11 @@ import java.util.List;
  * @author nullin <nalin.makar * gmail.com>
  *
  */
-public class MethodInvocationHelper {
+public final class MethodInvocationHelper {
+
+  private MethodInvocationHelper() {
+    throw new AssertionError("Must not instantiate this class");
+  }
 
   protected static Object invokeMethod(Method thisMethod, Object instance, Object[] parameters)
       throws InvocationTargetException, IllegalAccessException {

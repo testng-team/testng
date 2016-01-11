@@ -12,8 +12,12 @@ import java.util.Map;
  *         Date: Jul 25, 2005
  *         Time: 1:12:18 PM
  */
-public class SuiteGenerator {
+public final class SuiteGenerator {
   private static final Collection<String> EMPTY_CLASS_LIST= Collections.emptyList();
+
+  private SuiteGenerator() {
+    throw new AssertionError("Must not instantiate this class");
+  }
 
   public static LaunchSuite createProxiedXmlSuite(final File xmlSuitePath) {
     return new LaunchSuite.ExistingSuite(xmlSuitePath);

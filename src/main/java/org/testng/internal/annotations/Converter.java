@@ -13,7 +13,11 @@ import java.util.StringTokenizer;
  * Created on Dec 20, 2005
  * @author cbeust
  */
-public class Converter {
+public final class Converter {
+
+  private Converter() {
+    throw new AssertionError("Must not instantiate this class");
+  }
 
   public static boolean  getBoolean(String tagValue, boolean def) {
     boolean result = def;
