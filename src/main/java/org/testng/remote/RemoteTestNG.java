@@ -168,14 +168,7 @@ public class RemoteTestNG extends TestNG {
     }
     m_debug = cla.debug;
     m_ack = ra.ack;
-    if (m_debug) {
-//      while (true) {
-        initAndRun(args, cla, ra);
-//      }
-    }
-    else {
-      initAndRun(args, cla, ra);
-    }
+    initAndRun(args, cla, ra);
   }
 
   private static void initAndRun(String[] args, CommandLineArgs cla, RemoteArgs ra) {

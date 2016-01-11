@@ -253,9 +253,7 @@ public class XmlClass implements Serializable, Cloneable {
     if (getClass() != obj.getClass())
       return XmlSuite.f();
     XmlClass other = (XmlClass) obj;
-    if (other.m_loadClasses != m_loadClasses) {
-      return XmlSuite.f();
-    } else if (!m_excludedMethods.equals(other.m_excludedMethods)) {
+    if (other.m_loadClasses != m_loadClasses || !m_excludedMethods.equals(other.m_excludedMethods)) {
       return XmlSuite.f();
     }
     if (m_includedMethods == null) {
