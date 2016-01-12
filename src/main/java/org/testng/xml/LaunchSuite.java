@@ -4,9 +4,7 @@ package org.testng.xml;
 import static org.testng.internal.Utils.isStringNotBlank;
 
 import org.testng.collections.Lists;
-import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
-import org.testng.remote.RemoteTestNG;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.io.File;
@@ -90,13 +88,7 @@ public abstract class LaunchSuite {
      */
     @Override
     public File save(File directory) {
-      if (RemoteTestNG.isDebug()) {
-        File result = new File(directory, RemoteTestNG.DEBUG_SUITE_FILE);
-        Utils.copyFile(m_suitePath, result);
-        return result;
-      } else {
-        return m_suitePath;
-      }
+      return m_suitePath;
     }
   }
 
