@@ -80,7 +80,7 @@ public class TestRunner
   transient private IAnnotationFinder m_annotationFinder= null;
 
   /** ITestListeners support. */
-  transient private List<ITestListener> m_testListeners = Lists.newArrayList();
+  transient private Map<Class<? extends ITestListener>, ITestListener> m_testListeners = Maps.newHashMap();
   transient private Set<IConfigurationListener> m_configurationListeners = Sets.newHashSet();
 
   transient private IConfigurationListener m_confListener= new ConfigurationListener();
@@ -1224,7 +1224,7 @@ public class TestRunner
    *                event is for finish
    */
   private void fireEvent(boolean isStart) {
-    for (ITestListener itl : m_testListeners) {
+    for (ITestListener itl : m_testListeners.values()) {
       if (isStart) {
         itl.onStart(this);
       }
@@ -1411,7 +1411,7 @@ public class TestRunner
 
   @Override
   public List<ITestListener> getTestListeners() {
-    return m_testListeners;
+    return new ArrayList<ITestListener>(m_testListeners.values());
   }
 
   @Override
@@ -1479,7 +1479,7 @@ public class TestRunner
   }
 
   public void addTestListener(ITestListener il) {
-    m_testListeners.add(il);
+    m_testListeners.put(il.getClass(), il);
   }
 
   public void addClassListener(IClassListener cl) {
