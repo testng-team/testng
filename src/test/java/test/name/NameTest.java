@@ -159,4 +159,38 @@ public class NameTest extends SimpleBaseTest {
     Assert.assertEquals(listener.getTestNames().size(), 1);
     Assert.assertEquals(listener.getTestNames().get(0), null);
   }
+  
+  @Test
+  public void blankNameTest() {
+	    TestNG tng = create(BlankNameSample.class);
+	    TestListenerAdapter adapter = new TestListenerAdapter();
+	    tng.addListener(adapter);
+
+	    tng.run();
+
+	    Assert.assertTrue(adapter.getFailedTests().isEmpty());
+	    Assert.assertTrue(adapter.getSkippedTests().isEmpty());
+	    Assert.assertEquals(adapter.getPassedTests().size(), 1);
+	    ITestResult result = adapter.getPassedTests().get(0);
+	    Assert.assertEquals(result.getMethod().getMethodName(), "test");
+	    Assert.assertEquals(result.getName(), "");
+	    Assert.assertEquals(result.getTestName(), "");
+  }
+  
+  @Test
+  public void blankNameTestWithXml() {
+	    TestNG tng = createTests("suite", BlankNameSample.class);
+	    TestListenerAdapter adapter = new TestListenerAdapter();
+	    tng.addListener(adapter);
+
+	    tng.run();
+
+	    Assert.assertTrue(adapter.getFailedTests().isEmpty());
+	    Assert.assertTrue(adapter.getSkippedTests().isEmpty());
+	    Assert.assertEquals(adapter.getPassedTests().size(), 1);
+	    ITestResult result = adapter.getPassedTests().get(0);
+	    Assert.assertEquals(result.getMethod().getMethodName(), "test");
+	    Assert.assertEquals(result.getName(), "");
+	    Assert.assertEquals(result.getTestName(), "");
+  }
 }
