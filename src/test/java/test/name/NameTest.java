@@ -1,15 +1,15 @@
 package test.name;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import test.SimpleBaseTest;
 
@@ -154,5 +154,43 @@ public class NameTest extends SimpleBaseTest {
 
     Assert.assertEquals(listener.getNames().size(), 1);
     Assert.assertEquals(listener.getNames().get(0), "test");
+    
+    // testName should be ignored if not specified
+    Assert.assertEquals(listener.getTestNames().size(), 1);
+    Assert.assertEquals(listener.getTestNames().get(0), null);
+  }
+  
+  @Test
+  public void blankNameTest() {
+	    TestNG tng = create(BlankNameSample.class);
+	    TestListenerAdapter adapter = new TestListenerAdapter();
+	    tng.addListener(adapter);
+
+	    tng.run();
+
+	    Assert.assertTrue(adapter.getFailedTests().isEmpty());
+	    Assert.assertTrue(adapter.getSkippedTests().isEmpty());
+	    Assert.assertEquals(adapter.getPassedTests().size(), 1);
+	    ITestResult result = adapter.getPassedTests().get(0);
+	    Assert.assertEquals(result.getMethod().getMethodName(), "test");
+	    Assert.assertEquals(result.getName(), "");
+	    Assert.assertEquals(result.getTestName(), "");
+  }
+  
+  @Test
+  public void blankNameTestWithXml() {
+	    TestNG tng = createTests("suite", BlankNameSample.class);
+	    TestListenerAdapter adapter = new TestListenerAdapter();
+	    tng.addListener(adapter);
+
+	    tng.run();
+
+	    Assert.assertTrue(adapter.getFailedTests().isEmpty());
+	    Assert.assertTrue(adapter.getSkippedTests().isEmpty());
+	    Assert.assertEquals(adapter.getPassedTests().size(), 1);
+	    ITestResult result = adapter.getPassedTests().get(0);
+	    Assert.assertEquals(result.getMethod().getMethodName(), "test");
+	    Assert.assertEquals(result.getName(), "");
+	    Assert.assertEquals(result.getTestName(), "");
   }
 }

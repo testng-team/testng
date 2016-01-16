@@ -65,7 +65,7 @@ public class ClassImpl implements IClass {
     }
     if (m_testName == null) {
       ITestAnnotation annotation = m_annotationFinder.findAnnotation(cls, ITestAnnotation.class);
-      if (annotation != null) {
+      if (annotation != null && !annotation.getTestName().isEmpty()) {
         m_testName = annotation.getTestName();
       }
     }
