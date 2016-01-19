@@ -644,8 +644,7 @@ public class XmlSuite implements Serializable, Cloneable {
    */
   @Override
   public Object clone() {
-    XmlSuite result = new XmlSuite();
-    
+    XmlSuite result = shallowCopy();
     result.setExcludedGroups(getExcludedGroups());
     result.setIncludedGroups(getIncludedGroups());
     result.setGroupByInstances(getGroupByInstances());
@@ -657,6 +656,15 @@ public class XmlSuite implements Serializable, Cloneable {
     result.setSuiteFiles(getSuiteFiles());
     result.setTests(getTests());
     result.setXmlMethodSelectors(getXmlMethodSelectors());
+    return result;
+  }
+
+  /**
+   * This method returns a shallow cloned version. {@link XmlTest} are not copied by this method.
+   * @return - A Shallow copied version of {@link XmlSuite}.
+     */
+  public XmlSuite shallowCopy() {
+    XmlSuite result = new XmlSuite();
     result.setName(getName());
     result.setFileName(getFileName());
     result.setListeners(getListeners());
