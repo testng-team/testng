@@ -59,11 +59,16 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     }
 
     Map<String, ISuiteResult> results = suite.getResults();
+    boolean hasFailures = false;
 
     synchronized(results) {
       for(Map.Entry<String, ISuiteResult> entry : results.entrySet()) {
         ISuiteResult suiteResult = entry.getValue();
         ITestContext testContext = suiteResult.getTestContext();
+        if (! testContext.getFailedTests().getAllResults().isEmpty() || (! testContext.getSkippedTests()
+            .getAllResults().isEmpty())) {
+          hasFailures = true;
+        }
 
         generateXmlTest(suite,
                         xmlTests.get(testContext.getName()),
@@ -73,7 +78,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       }
     }
 
-    if(null != failedSuite.getTests() && failedSuite.getTests().size() > 0) {
+    if(hasFailures && null != failedSuite.getTests() && failedSuite.getTests().size() > 0) {
       Utils.writeUtf8File(outputDir, TESTNG_FAILED_XML, failedSuite.toXml());
       Utils.writeUtf8File(suite.getOutputDirectory(), TESTNG_FAILED_XML, failedSuite.toXml());
     }
