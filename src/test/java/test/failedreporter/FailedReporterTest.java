@@ -46,13 +46,15 @@ public class FailedReporterTest extends BaseTest {
     tng.setTestClasses(new Class[] { cls });
     tng.setOutputDirectory(mTempDirectory.getAbsolutePath());
     tng.run();
+    runAssertions(mTempDirectory,expectedMethods,expectedLine);
+  }
 
-    File failed = new File(mTempDirectory, "testng-failed.xml");
+  public static void runAssertions(File outputDir, String[] expectedMethods, String expectedLine) {
+    File failed = new File(outputDir, "testng-failed.xml");
     for (String s : expectedMethods) {
       List<String> resultLines = Lists.newArrayList();
       grep(failed, expectedLine.format(s), resultLines);
       Assert.assertEquals(1, resultLines.size());
     }
-
   }
 }

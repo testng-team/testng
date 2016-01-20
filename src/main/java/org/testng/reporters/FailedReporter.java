@@ -49,7 +49,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
   }
 
   protected void generateFailureSuite(XmlSuite xmlSuite, ISuite suite, String outputDir) {
-    XmlSuite failedSuite = (XmlSuite) xmlSuite.clone();
+    XmlSuite failedSuite = xmlSuite.shallowCopy();
     failedSuite.setName("Failed suite [" + xmlSuite.getName() + "]");
     m_xmlSuite= failedSuite;
 
