@@ -702,6 +702,8 @@ public class Invoker implements IInvoker {
       runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
       runTestListeners(testResult);
 
+      collectResults(tm, testResult);
+
       //
       // Invoke afterMethods only if
       // - lastTimeOnly is not set
@@ -727,8 +729,7 @@ public class Invoker implements IInvoker {
     return testResult;
   }
 
-  void collectResults(ITestNGMethod testMethod, Collection<ITestResult> results) {
-    for (ITestResult result : results) {
+  void collectResults(ITestNGMethod testMethod, ITestResult result) {
       // Collect the results
       final int status = result.getStatus();
       if(ITestResult.SUCCESS == status) {
@@ -746,7 +747,6 @@ public class Invoker implements IInvoker {
       else {
         assert false : "UNKNOWN STATUS:" + status;
       }
-    }
   }
 
   /**
@@ -1323,7 +1323,7 @@ public class Invoker implements IInvoker {
       boolean handled = false;
 
       // Exception thrown?
-      if (ite != null) {
+      if (status == ITestResult.FAILURE && ite != null) {
 
         //  Invocation caused an exception, see if the method was annotated with @ExpectedException
         if (expectedExceptionsHolder != null) {
@@ -1368,7 +1368,6 @@ public class Invoker implements IInvoker {
           handleException(ite, testMethod, testResult, failure.count++);
         }
       }
-      collectResults(testMethod, Collections.singleton(testResult));
     } // for results
 
     removeResultsToRetryFromResult(resultsToRetry, result, failure);
