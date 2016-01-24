@@ -154,4 +154,16 @@ public class ListenerTest extends SimpleBaseTest {
     Assert.assertEquals(listener.onTestFailedButWithinSuccessPercentage, 0);
     Assert.assertEquals(listener.onTestSkipped, 2);
   }
+
+  @Test(description = "GITHUB-895: Changing status of test by setStatus of ITestResult")
+  public void setStatusShouldWorkInListener() {
+    SetStatusListener listener = new SetStatusListener();
+    TestNG tng = create(SetStatusSample.class);
+    tng.addListener(listener);
+    tng.run();
+    Assert.assertEquals(listener.getContext().getFailedTests().size(), 0);
+    Assert.assertEquals(listener.getContext().getFailedButWithinSuccessPercentageTests().size(), 0);
+    Assert.assertEquals(listener.getContext().getSkippedTests().size(), 0);
+    Assert.assertEquals(listener.getContext().getPassedTests().size(), 1);
+  }
 }
