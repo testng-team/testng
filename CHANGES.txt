@@ -7,6 +7,7 @@ Fixed: GITHUB-922: ITestResult doesn't contain name if a class has @Test (@dr29b
 Fixed: GITHUB-419: parallel mode was ignored with command line (@khospodarysko & Julien Herr)
 New: GITHUB-932: Deprecate true/false parallel values. none is the new default value. (Julien Herr)
 Fixed: GITHUB-960: testng-failed.xml gets generated even when there are no failures. (Krishnan Mahadevan)
+Fixed: GITHUB-895: Changing status of test by setStatus of ITestResult (Raj Srivastava & Julien Herr)
 ﻿
 6.9.10:
 2015/12/15
