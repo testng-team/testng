@@ -4,6 +4,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.testng.ITestNGMethod;
@@ -217,7 +219,7 @@ public class AnnotationHelper {
 //    for (Class<?> cls : classes) {
         while (null != cls) {
           boolean hasClassAnnotation = isAnnotationPresent(annotationFinder, cls, annotationClass);
-          Method[] methods = cls.getDeclaredMethods();
+          Method[] methods = getDeclaredMethods(cls);
           for (Method m : methods) {
             boolean hasMethodAnnotation = isAnnotationPresent(annotationFinder, m, annotationClass);
             boolean hasTestNGAnnotation =
@@ -316,6 +318,40 @@ public class AnnotationHelper {
     }
 
     return result.toString();
+  }
+  
+  private static Method[] getDeclaredMethods(Class<?> clazz) {
+    Method[] result;
+    Method[] declaredMethods = clazz.getDeclaredMethods();
+    List<Method> defaultMethods = getDefaultMethods(clazz);
+    if (defaultMethods != null) {
+      result = new Method[declaredMethods.length + defaultMethods.size()];
+      System.arraycopy(declaredMethods, 0, result, 0, declaredMethods.length);
+      int index = declaredMethods.length;
+      for (Method defaultMethod : defaultMethods) {
+        result[index] = defaultMethod;
+        index++;
+      }
+    }
+    else {
+      result = declaredMethods;
+    }
+    return result;
+  }
+
+  private static List<Method> getDefaultMethods(Class<?> clazz) {
+    List<Method> result = null;
+    for (Class<?> ifc : clazz.getInterfaces()) {
+      for (Method ifcMethod : ifc.getMethods()) {
+        if (!Modifier.isAbstract(ifcMethod.getModifiers())) {
+          if (result == null) {
+            result = new LinkedList<Method>();
+          }
+          result.add(ifcMethod);
+        }
+      }
+    }
+    return result;
   }
 
 }
