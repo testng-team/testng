@@ -217,10 +217,14 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       List<XmlInclude> methodNames= Lists.newArrayList(methodList.size());
       int ind = 0;
       for(ITestNGMethod m: methodList) {
-        methodNames.add(new XmlInclude(m.getMethod().getName(), m.getFailedInvocationNumbers(),
-            ind++));
+        XmlInclude methodName = new XmlInclude(m.getMethod().getName(), m.getFailedInvocationNumbers(),
+                ind++);
+        Map<String,String> methodParameters = findMethodLocalParameters(srcXmlTest, m);
+        if (methodParameters != null)
+          methodName.setParameters(methodParameters);
+        methodNames.add(methodName);
       }
-      xmlClass.setIncludedMethods(methodNames);
+      xmlClass.setIncludedMethods(methodNames);      
       xmlClass.setParameters(parameters);
       result.add(xmlClass);
 
@@ -229,6 +233,30 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     return result;
   }
 
+  /**
+   * 
+   * @param srcXmlTest
+   * @param method the method we want to find its parameters
+   * @return local parameters belong to one test method.
+   */
+  private Map<String, String> findMethodLocalParameters(XmlTest srcXmlTest, ITestNGMethod method) {
+      Object[] instances= method.getInstances();
+      Class clazz= instances == null || instances.length == 0 || instances[0] == null
+          ? method.getRealClass()
+          : instances[0].getClass();
+            
+      for (XmlClass c : srcXmlTest.getClasses()) {
+        if (c.getName().equals(clazz.getName())) {
+          for (XmlInclude xmlInclude : c.getIncludedMethods()) {
+            if (xmlInclude.getName().equals(method.getMethod().getName())) {
+              return xmlInclude.getLocalParameters();        	  }
+          }
+        }
+      }
+      
+      return null;
+  }
+  
   /**
    * TODO:  we might want to make that more flexible in the future, but for
    * now, hardcode the file name
