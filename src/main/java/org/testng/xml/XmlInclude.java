@@ -42,6 +42,11 @@ public class XmlInclude implements Serializable {
     m_description = description;
   }
 
+  public void setParameters(Map<String, String> parameters) {
+    m_parameters.clear();
+    m_parameters.putAll(parameters);
+  }
+  
   public String getDescription() {
     return m_description;
   }
