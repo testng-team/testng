@@ -18,6 +18,7 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -217,8 +218,10 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       List<XmlInclude> methodNames= Lists.newArrayList(methodList.size());
       int ind = 0;
       for(ITestNGMethod m: methodList) {
-        methodNames.add(new XmlInclude(m.getMethod().getName(), m.getFailedInvocationNumbers(),
-            ind++));
+        XmlInclude methodName = new XmlInclude(m.getMethod().getName(), m.getFailedInvocationNumbers(),
+                ind++);
+        methodName.setParameters(findMethodLocalParameters(srcXmlTest, m));
+        methodNames.add(methodName);
       }
       xmlClass.setIncludedMethods(methodNames);
       xmlClass.setParameters(parameters);
@@ -229,6 +232,28 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     return result;
   }
 
+  /**
+   * Get local parameters of one include method from origin test xml.
+   * @param srcXmlTest
+   * @param method the method we want to find its parameters
+   * @return local parameters belong to one test method.
+   */
+  private static Map<String, String> findMethodLocalParameters(XmlTest srcXmlTest, ITestNGMethod method) {
+      Class clazz = method.getRealClass();
+            
+      for (XmlClass c : srcXmlTest.getClasses()) {
+        if (clazz == c.getSupportClass()) {
+          for (XmlInclude xmlInclude : c.getIncludedMethods()) {
+            if (xmlInclude.getName().equals(method.getMethodName())) {
+              return xmlInclude.getLocalParameters();
+            }
+          }
+        }
+      }
+      
+      return Collections.emptyMap();
+  }
+  
   /**
    * TODO:  we might want to make that more flexible in the future, but for
    * now, hardcode the file name

@@ -116,6 +116,7 @@
       <class name="test.parameters.ParameterOverrideTest" />
       <class name="test.reports.FailedReporterTest" />
       <class name="test.failedreporter.FailedReporterScenariosTest"/>
+      <class name="test.failedreporter.FailedReporterParametersTest"/>
       <class name="test.reports.ReporterLogTest" />
       <class name="test.testng387.TestNG387"/>
     </classes>
