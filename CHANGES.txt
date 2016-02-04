@@ -8,6 +8,7 @@ Fixed: GITHUB-419: parallel mode was ignored with command line (@khospodarysko &
 New: GITHUB-932: Deprecate true/false parallel values. none is the new default value. (Julien Herr)
 Fixed: GITHUB-960: testng-failed.xml gets generated even when there are no failures. (Krishnan Mahadevan)
 Fixed: GITHUB-895: Changing status of test by setStatus of ITestResult (Raj Srivastava & Julien Herr)
+Fixed: GITHUB-969: testng-failed.xml does not carry over the parameters of methods from origin suite xml(Ning Zhang)
 ﻿
 6.9.10:
 2015/12/15
