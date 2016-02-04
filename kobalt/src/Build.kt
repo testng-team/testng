@@ -9,8 +9,6 @@ import java.io.File
 val VERSION = "6.9.11-SNAPSHOT"
 
 val p = javaProject {
-
-    //    line
     name = "testng"
     group = "org.testng"
     artifactId = name
