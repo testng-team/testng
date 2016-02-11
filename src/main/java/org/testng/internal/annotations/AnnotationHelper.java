@@ -19,6 +19,7 @@ import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Maps;
 import org.testng.internal.TestNGMethod;
 import org.testng.internal.Utils;
+import org.testng.internal.reflect.ReflectionHelper;
 import org.testng.xml.XmlTest;
 
 /**
@@ -219,7 +220,7 @@ public class AnnotationHelper {
 //    for (Class<?> cls : classes) {
         while (null != cls) {
           boolean hasClassAnnotation = isAnnotationPresent(annotationFinder, cls, annotationClass);
-          Method[] methods = getLocalMethods(cls);
+          Method[] methods = ReflectionHelper.getLocalMethods(cls);
           for (Method m : methods) {
             boolean hasMethodAnnotation = isAnnotationPresent(annotationFinder, m, annotationClass);
             boolean hasTestNGAnnotation =
@@ -320,40 +321,4 @@ public class AnnotationHelper {
     return result.toString();
   }
   
-  /**
-   * @return An array of all locally declared methods or equivalent thereof
-   * (such as default methods on Java 8 based interfaces that the given class
-   * implements).
-   */
-  private static Method[] getLocalMethods(Class<?> clazz) {
-    Method[] result;
-    Method[] declaredMethods = clazz.getDeclaredMethods();
-    List<Method> defaultMethods = getDefaultMethods(clazz);
-    if (!defaultMethods.isEmpty()) {
-      result = new Method[declaredMethods.length + defaultMethods.size()];
-      System.arraycopy(declaredMethods, 0, result, 0, declaredMethods.length);
-      int index = declaredMethods.length;
-      for (Method defaultMethod : defaultMethods) {
-        result[index] = defaultMethod;
-        index++;
-      }
-    }
-    else {
-      result = declaredMethods;
-    }
-    return result;
-  }
-
-  private static List<Method> getDefaultMethods(Class<?> clazz) {
-    List<Method> result = new LinkedList<Method>();
-    for (Class<?> ifc : clazz.getInterfaces()) {
-      for (Method ifcMethod : ifc.getMethods()) {
-        if (!Modifier.isAbstract(ifcMethod.getModifiers())) {
-          result.add(ifcMethod);
-        }
-      }
-    }
-    return result;
-  }
-
 }

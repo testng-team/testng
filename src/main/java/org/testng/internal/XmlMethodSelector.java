@@ -15,6 +15,7 @@ import org.testng.TestNGException;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.internal.reflect.ReflectionHelper;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 
@@ -217,11 +218,11 @@ public class XmlMethodSelector implements IMethodSelector {
     while (null != cls) {
       for (String im : methods) {
         String methodName = im;
-        Method[] allMethods = cls.getDeclaredMethods();
+        Method[] allMethods = ReflectionHelper.getLocalMethods(cls);
         Pattern pattern = Pattern.compile(methodName);
         for (Method m : allMethods) {
           if (pattern.matcher(m.getName()).matches()) {
-            vResult.add(makeMethodName(cls.getName(), m.getName()));
+            vResult.add(makeMethodName(m.getDeclaringClass().getName(), m.getName()));
           }
         }
       }
