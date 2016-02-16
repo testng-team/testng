@@ -74,111 +74,112 @@ public class TestHTMLReporter extends TestListenerAdapter {
     // User output?
     String id = "";
     Throwable tw = null;
+    synchronized(tests) {
+      for (ITestResult tr : tests) {
+        sb.append("<tr>\n");
 
-    for (ITestResult tr : tests) {
-      sb.append("<tr>\n");
+        // Test method
+        ITestNGMethod method = tr.getMethod();
 
-      // Test method
-      ITestNGMethod method = tr.getMethod();
+        String name = method.getMethodName();
+        sb.append("<td title='").append(tr.getTestClass().getName()).append(".")
+          .append(name)
+          .append("()'>")
+          .append("<b>").append(name).append("</b>");
 
-      String name = method.getMethodName();
-      sb.append("<td title='").append(tr.getTestClass().getName()).append(".")
-        .append(name)
-        .append("()'>")
-        .append("<b>").append(name).append("</b>");
+        // Test class
+        String testClass = tr.getTestClass().getName();
+        if (testClass != null) {
+          sb.append("<br>").append("Test class: " + testClass);
 
-      // Test class
-      String testClass = tr.getTestClass().getName();
-      if (testClass != null) {
-        sb.append("<br>").append("Test class: " + testClass);
-
-        // Test name
-        String testName = tr.getTestName();
-        if (testName != null) {
-          sb.append(" (").append(testName).append(")");
-        }
-      }
-
-      // Method description
-      if (! Utils.isStringEmpty(method.getDescription())) {
-        sb.append("<br>").append("Test method: ").append(method.getDescription());
-      }
-
-      Object[] parameters = tr.getParameters();
-      if (parameters != null && parameters.length > 0) {
-        sb.append("<br>Parameters: ");
-        for (int j = 0; j < parameters.length; j++) {
-          if (j > 0) {
-            sb.append(", ");
+          // Test name
+          String testName = tr.getTestName();
+          if (testName != null) {
+            sb.append(" (").append(testName).append(")");
           }
-          sb.append(parameters[j] == null ? "null" : parameters[j].toString());
         }
-      }
 
-      //
-      // Output from the method, created by the user calling Reporter.log()
-      //
-      {
-        List<String> output = Reporter.getOutput(tr);
-        if (null != output && output.size() > 0) {
-          sb.append("<br/>");
-          // Method name
-          String divId = "Output-" + tr.hashCode();
-          sb.append("\n<a href=\"#").append(divId).append("\"")
-            .append(" onClick='toggleBox(\"").append(divId).append("\", this, \"Show output\", \"Hide output\");'>")
-            .append("Show output</a>\n")
-            .append("\n<a href=\"#").append(divId).append("\"")
-            .append(" onClick=\"toggleAllBoxes();\">Show all outputs</a>\n")
-            ;
+        // Method description
+        if (! Utils.isStringEmpty(method.getDescription())) {
+          sb.append("<br>").append("Test method: ").append(method.getDescription());
+        }
 
-          // Method output
-          sb.append("<div class='log' id=\"").append(divId).append("\">\n");
-          for (String s : output) {
-            sb.append(s).append("<br/>\n");
+        Object[] parameters = tr.getParameters();
+        if (parameters != null && parameters.length > 0) {
+          sb.append("<br>Parameters: ");
+          for (int j = 0; j < parameters.length; j++) {
+            if (j > 0) {
+              sb.append(", ");
+            }
+            sb.append(parameters[j] == null ? "null" : parameters[j].toString());
           }
-          sb.append("</div>\n");
         }
+
+        //
+        // Output from the method, created by the user calling Reporter.log()
+        //
+        {
+          List<String> output = Reporter.getOutput(tr);
+          if (null != output && output.size() > 0) {
+            sb.append("<br/>");
+            // Method name
+            String divId = "Output-" + tr.hashCode();
+            sb.append("\n<a href=\"#").append(divId).append("\"")
+              .append(" onClick='toggleBox(\"").append(divId).append("\", this, \"Show output\", \"Hide output\");'>")
+              .append("Show output</a>\n")
+              .append("\n<a href=\"#").append(divId).append("\"")
+              .append(" onClick=\"toggleAllBoxes();\">Show all outputs</a>\n")
+              ;
+
+            // Method output
+            sb.append("<div class='log' id=\"").append(divId).append("\">\n");
+            for (String s : output) {
+              sb.append(s).append("<br/>\n");
+            }
+            sb.append("</div>\n");
+          }
+        }
+
+        sb.append("</td>\n");
+
+
+        // Exception
+        tw = tr.getThrowable();
+        String stackTrace = "";
+        String fullStackTrace = "";
+
+        id = "stack-trace" + tr.hashCode();
+        sb.append("<td>");
+
+        if (null != tw) {
+          String[] stackTraces = Utils.stackTrace(tw, true);
+          fullStackTrace = stackTraces[1];
+          stackTrace = "<div><pre>" + stackTraces[0]  + "</pre></div>";
+
+          sb.append(stackTrace);
+          // JavaScript link
+          sb.append("<a href='#' onClick='toggleBox(\"")
+          .append(id).append("\", this, \"Click to show all stack frames\", \"Click to hide stack frames\")'>")
+          .append("Click to show all stack frames").append("</a>\n")
+          .append("<div class='stack-trace' id='" + id + "'>")
+          .append("<pre>" + fullStackTrace + "</pre>")
+          .append("</div>")
+          ;
+        }
+
+        sb.append("</td>\n");
+
+        // Time
+        long time = (tr.getEndMillis() - tr.getStartMillis()) / 1000;
+        String strTime = Long.toString(time);
+        sb.append("<td>").append(strTime).append("</td>\n");
+
+        // Instance
+        Object instance = tr.getInstance();
+        sb.append("<td>").append(instance).append("</td>");
+
+        sb.append("</tr>\n");
       }
-
-      sb.append("</td>\n");
-
-
-      // Exception
-      tw = tr.getThrowable();
-      String stackTrace = "";
-      String fullStackTrace = "";
-
-      id = "stack-trace" + tr.hashCode();
-      sb.append("<td>");
-
-      if (null != tw) {
-        String[] stackTraces = Utils.stackTrace(tw, true);
-        fullStackTrace = stackTraces[1];
-        stackTrace = "<div><pre>" + stackTraces[0]  + "</pre></div>";
-
-        sb.append(stackTrace);
-        // JavaScript link
-        sb.append("<a href='#' onClick='toggleBox(\"")
-        .append(id).append("\", this, \"Click to show all stack frames\", \"Click to hide stack frames\")'>")
-        .append("Click to show all stack frames").append("</a>\n")
-        .append("<div class='stack-trace' id='" + id + "'>")
-        .append("<pre>" + fullStackTrace + "</pre>")
-        .append("</div>")
-        ;
-      }
-
-      sb.append("</td>\n");
-
-      // Time
-      long time = (tr.getEndMillis() - tr.getStartMillis()) / 1000;
-      String strTime = Long.toString(time);
-      sb.append("<td>").append(strTime).append("</td>\n");
-
-      // Instance
-      Object instance = tr.getInstance();
-      sb.append("<td>").append(instance).append("</td>");
-
-      sb.append("</tr>\n");
     }
 
     sb.append("</table><p>\n");
