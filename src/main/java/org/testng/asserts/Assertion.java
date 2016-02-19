@@ -541,7 +541,7 @@ public class Assertion implements IAssertLifecycle {
     });
   }
 
-  void assertNotEquals(final String actual, final String expected, final String message) {
+  public void assertNotEquals(final String actual, final String expected, final String message) {
     doAssert(new SimpleAssert<String>(actual, expected, message) {
       @Override
       public void doAssert() {
@@ -550,7 +550,7 @@ public class Assertion implements IAssertLifecycle {
     });
   }
 
-  void assertNotEquals(final String actual, final String expected) {
+  public void assertNotEquals(final String actual, final String expected) {
     doAssert(new SimpleAssert<String>(actual, expected) {
       @Override
       public void doAssert() {
@@ -559,7 +559,7 @@ public class Assertion implements IAssertLifecycle {
     });
   }
 
-  void assertNotEquals(final long actual, final long expected, final String message) {
+  public void assertNotEquals(final long actual, final long expected, final String message) {
     doAssert(new SimpleAssert<Long>(actual, expected, message) {
       @Override
       public void doAssert() {
@@ -568,7 +568,7 @@ public class Assertion implements IAssertLifecycle {
     });
   }
 
-  void assertNotEquals(final long actual, final long expected) {
+  public void assertNotEquals(final long actual, final long expected) {
     doAssert(new SimpleAssert<Long>(actual, expected) {
       @Override
       public void doAssert() {
@@ -577,7 +577,7 @@ public class Assertion implements IAssertLifecycle {
     });
   }
 
-  void assertNotEquals(final boolean actual, final boolean expected, final String message) {
+  public void assertNotEquals(final boolean actual, final boolean expected, final String message) {
     doAssert(new SimpleAssert<Boolean>(actual, expected, message) {
       @Override
       public void doAssert() {
@@ -586,7 +586,7 @@ public class Assertion implements IAssertLifecycle {
     });
   }
 
-  void assertNotEquals(final boolean actual, final boolean expected) {
+  public void assertNotEquals(final boolean actual, final boolean expected) {
     doAssert(new SimpleAssert<Boolean>(actual, expected) {
       @Override
       public void doAssert() {
@@ -595,7 +595,7 @@ public class Assertion implements IAssertLifecycle {
     });
   }
 
-  void assertNotEquals(final byte actual, final byte expected, final String message) {
+  public void assertNotEquals(final byte actual, final byte expected, final String message) {
     doAssert(new SimpleAssert<Byte>(actual, expected, message) {
       @Override
       public void doAssert() {
@@ -604,7 +604,7 @@ public class Assertion implements IAssertLifecycle {
     });
   }
 
-  void assertNotEquals(final byte actual, final byte expected) {
+  public void assertNotEquals(final byte actual, final byte expected) {
     doAssert(new SimpleAssert<Byte>(actual, expected) {
       @Override
       public void doAssert() {
@@ -613,7 +613,7 @@ public class Assertion implements IAssertLifecycle {
     });
   }
 
-  void assertNotEquals(final char actual, final char expected, final String message) {
+  public void assertNotEquals(final char actual, final char expected, final String message) {
     doAssert(new SimpleAssert<Character>(actual, expected, message) {
       @Override
       public void doAssert() {
@@ -622,7 +622,7 @@ public class Assertion implements IAssertLifecycle {
     });
   }
 
-  void assertNotEquals(final char actual, final char expected) {
+  public void assertNotEquals(final char actual, final char expected) {
     doAssert(new SimpleAssert<Character>(actual, expected) {
       @Override
       public void doAssert() {
@@ -631,7 +631,7 @@ public class Assertion implements IAssertLifecycle {
     });
   }
 
-  void assertNotEquals(final short actual, final short expected, final String message) {
+  public void assertNotEquals(final short actual, final short expected, final String message) {
     doAssert(new SimpleAssert<Short>(actual, expected, message) {
       @Override
       public void doAssert() {
@@ -640,7 +640,7 @@ public class Assertion implements IAssertLifecycle {
     });
   }
 
-  void assertNotEquals(final short actual, final short expected) {
+  public void assertNotEquals(final short actual, final short expected) {
     doAssert(new SimpleAssert<Short>(actual, expected) {
       @Override
       public void doAssert() {
@@ -649,7 +649,7 @@ public class Assertion implements IAssertLifecycle {
     });
   }
 
-  void assertNotEquals(final int actual, final int expected, final String message) {
+  public void assertNotEquals(final int actual, final int expected, final String message) {
     doAssert(new SimpleAssert<Integer>(actual, expected, message) {
       @Override
       public void doAssert() {
@@ -658,7 +658,7 @@ public class Assertion implements IAssertLifecycle {
     });
   }
 
-  void assertNotEquals(final int actual, final int expected) {
+  public void assertNotEquals(final int actual, final int expected) {
     doAssert(new SimpleAssert<Integer>(actual, expected) {
       @Override
       public void doAssert() {
