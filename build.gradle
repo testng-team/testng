@@ -55,7 +55,7 @@ dependencies {
     compile 'org.beanshell:bsh:2.0b4'
     compile 'com.beust:jcommander:1.48'
 
-    compile 'org.apache.ant:ant:1.7.0', optional
+    compile 'org.apache.ant:ant:1.7.0'
     compile 'junit:junit:4.10', optional
     compile 'org.yaml:snakeyaml:1.15', optional
 
