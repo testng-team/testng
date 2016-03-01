@@ -1,8 +1,9 @@
-import com.beust.kobalt.*
+
 import com.beust.kobalt.TaskResult
 import com.beust.kobalt.api.Project
 import com.beust.kobalt.api.annotation.Task
 import com.beust.kobalt.plugin.packaging.assemble
+import com.beust.kobalt.project
 import com.beust.kobalt.test
 import java.io.File
 
@@ -38,6 +39,7 @@ val p = project {
 
     assemble {
         jar {
+            fatJar = true
         }
     }
 }
@@ -53,4 +55,3 @@ fun taskCreateVersion(project: Project): TaskResult {
     }
     return TaskResult()
 }
-
