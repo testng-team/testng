@@ -680,7 +680,11 @@ public class SuiteHTMLReporter implements IReporter {
   }
 
   private String getOutputDirectory(XmlSuite xmlSuite) {
-    return m_outputDirectory + File.separatorChar + xmlSuite.getName();
+    File fileResult = new File(m_outputDirectory + File.separatorChar + xmlSuite.getName()).getAbsoluteFile();
+    if (! fileResult.mkdirs()) {
+      Utils.log("Problem creating output directory " + fileResult.getAbsolutePath());
+    }
+    return fileResult.getAbsolutePath();
   }
 
   private ISuiteResult[] sortResults(Collection<ISuiteResult> r) {
