@@ -1534,6 +1534,14 @@ at runtime:</p>
 &lt;class name="WebTestFactory" /&gt;
 </pre>
 
+<p>Or, if building a test suite instance programatically, you can add the factory in the same manner as for tests:</p>
+
+<pre class="brush: java">
+  TestNG testNG = new TestNG();
+  testNG.setTestClasses(WebTestFactory.class);
+  testNG.run();
+</pre>
+
 <p>The factory method can receive parameters just like <tt>@Test</tt> and <tt>@Before/After</tt> and it must return <tt>Object[]</tt>.&nbsp; 
 The objects returned can be of any class (not necessarily the same class as the 
 factory class) and they don't even need to contain TestNG annotations (in which 
