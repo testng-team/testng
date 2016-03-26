@@ -32,7 +32,7 @@ plugins {
     id "org.sonarqube" version "1.0"
 }
 
-version = '6.9.11-SNAPSHOT'
+version = '6.9.11'
 
 apply plugin: 'java'
 apply plugin: 'nebula.optional-base'
