@@ -20,8 +20,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -43,6 +41,8 @@ import org.testng.internal.thread.graph.IThreadWorkerFactory;
 import org.testng.internal.thread.graph.SuiteWorkerFactory;
 import org.testng.junit.JUnitTestFinder;
 import org.testng.log4testng.Logger;
+import org.testng.remote.SuiteDispatcher;
+import org.testng.remote.SuiteSlave;
 import org.testng.reporters.EmailableReporter;
 import org.testng.reporters.EmailableReporter2;
 import org.testng.reporters.FailedReporter;
@@ -57,7 +57,6 @@ import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-import org.xml.sax.SAXException;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
@@ -65,7 +64,6 @@ import com.beust.jcommander.ParameterException;
 import static org.testng.internal.Utils.defaultIfStringEmpty;
 import static org.testng.internal.Utils.isStringEmpty;
 import static org.testng.internal.Utils.isStringNotEmpty;
-import static org.testng.xml.XmlSuite.ParallelMode.skipDeprecatedValues;
 
 /**
  * This class is the main entry point for running tests in the TestNG framework.
@@ -151,9 +149,13 @@ public class TestNG {
   private int m_status;
   private boolean m_hasTests= false;
 
+  private String m_slavefileName = null;
+  private String m_masterfileName = null;
+
   // Command line suite parameters
-  private int m_threadCount = -1;
-  private XmlSuite.ParallelMode m_parallelMode = null;
+  private int m_threadCount;
+  private boolean m_useThreadCount;
+  private XmlSuite.ParallelMode m_parallelMode = XmlSuite.ParallelMode.FALSE;
   private String m_configFailurePolicy;
   private Class[] m_commandLineTestClasses;
 
@@ -280,7 +282,7 @@ public class TestNG {
                     cSuite.setParentSuite(s);
                     s.getChildSuites().add(cSuite);
                 }
-            } catch (ParserConfigurationException | IOException | SAXException e) {
+            } catch (IOException e) {
                 e.printStackTrace(System.out);
             }
         }
@@ -309,7 +311,7 @@ public class TestNG {
           }
         }
       }
-      catch(SAXException | ParserConfigurationException | IOException e) {
+      catch(IOException e) {
         e.printStackTrace(System.out);
       } catch(Exception ex) {
         // Probably a Yaml exception, unnest it
@@ -389,7 +391,7 @@ public class TestNG {
         m_suites.add(xmlSuite);
       }
     }
-    catch(ParserConfigurationException | IOException | SAXException ex) {
+    catch(IOException ex) {
       ex.printStackTrace();
     }
   }
@@ -459,6 +461,7 @@ public class TestNG {
     }
 
     m_threadCount = threadCount;
+    m_useThreadCount = true;
   }
 
   /**
@@ -468,14 +471,14 @@ public class TestNG {
   @Deprecated
   public void setParallel(String parallel) {
     if (parallel == null) {
-      setParallel(XmlSuite.ParallelMode.NONE);
+      setParallel(XmlSuite.ParallelMode.FALSE);
     } else {
       setParallel(XmlSuite.ParallelMode.getValidParallel(parallel));
     }
   }
 
   public void setParallel(XmlSuite.ParallelMode parallel) {
-    m_parallelMode = skipDeprecatedValues(parallel);
+    m_parallelMode = parallel;
   }
 
   public void setCommandLineSuite(XmlSuite suite) {
@@ -844,12 +847,10 @@ public class TestNG {
     }
 
     for (XmlSuite s : m_cmdlineSuites) {
-      if (m_threadCount != -1) {
+      if(m_useThreadCount) {
         s.setThreadCount(m_threadCount);
       }
-      if (m_parallelMode != null) {
-        s.setParallel(m_parallelMode);
-      }
+      s.setParallel(m_parallelMode);
       if(m_configFailurePolicy != null) {
         s.setConfigFailurePolicy(m_configFailurePolicy.toString());
       }
@@ -1044,7 +1045,31 @@ public class TestNG {
     runExecutionListeners(true /* start */);
 
     m_start = System.currentTimeMillis();
-    suiteRunners = runSuites();
+
+    //
+    // Slave mode
+    //
+    if (m_slavefileName != null) {
+       SuiteSlave slave = new SuiteSlave( m_slavefileName, this );
+       slave.waitForSuites();
+    }
+
+    //
+    // Regular mode
+    //
+    else if (m_masterfileName == null) {
+      suiteRunners = runSuitesLocally();
+    }
+
+    //
+    // Master mode
+    //
+    else {
+       SuiteDispatcher dispatcher = new SuiteDispatcher(m_masterfileName);
+       suiteRunners = dispatcher.dispatch(getConfiguration(),
+           m_suites, getOutputDirectory(),
+           getTestListeners());
+    }
 
     m_end = System.currentTimeMillis();
     runExecutionListeners(false /* finish */);
@@ -1062,17 +1087,8 @@ public class TestNG {
     }
   }
 
-  /**
-   * Run the test suites.
-   * <p>
-   * This method can be overridden by subclass. <br/>
-   * For example, DistributedTestNG to run in master/slave mode according to commandline args. 
-   * </p>
-   * @return
-   * @since 6.9.11 when moving distributed/remote classes out into separate project
-   */
-  protected List<ISuite> runSuites() {
-    return runSuitesLocally();
+  private void p(String string) {
+    System.out.println("[TestNG] " + string);
   }
 
   private void runSuiteAlterationListeners() {
@@ -1421,6 +1437,8 @@ public class TestNG {
     setXmlPathInJar(cla.xmlPathInJar);
     setJUnit(cla.junit);
     setMixed(cla.mixed);
+    setMaster(cla.master);
+    setSlave(cla.slave);
     setSkipFailedInvocationCounts(cla.skipFailedInvocationCounts);
     if (cla.parallelMode != null) {
       setParallel(cla.parallelMode);
@@ -1556,6 +1574,8 @@ public class TestNG {
     result.xmlPathInJar = (String) cmdLineArgs.get(CommandLineArgs.XML_PATH_IN_JAR);
     result.junit = (Boolean) cmdLineArgs.get(CommandLineArgs.JUNIT);
     result.mixed = (Boolean) cmdLineArgs.get(CommandLineArgs.MIXED);
+    result.master = (String) cmdLineArgs.get(CommandLineArgs.MASTER);
+    result.slave = (String) cmdLineArgs.get(CommandLineArgs.SLAVE);
     result.skipFailedInvocationCounts = (Boolean) cmdLineArgs.get(
         CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS);
     String parallelMode = (String) cmdLineArgs.get(CommandLineArgs.PARALLEL);
@@ -1649,6 +1669,24 @@ public class TestNG {
   }
 
   /**
+   * Specify if this run should be in Master-Slave mode as Master
+   *
+   * @param fileName remote.properties path
+   */
+  public void setMaster(String fileName) {
+     m_masterfileName = fileName;
+  }
+
+  /**
+   * Specify if this run should be in Master-Slave mode as slave
+   *
+   * @param fileName remote.properties path
+   */
+  public void setSlave(String fileName) {
+     m_slavefileName = fileName;
+  }
+
+  /**
    * Specify if this run should be made in JUnit mode
    *
    * @param isJUnit
@@ -1693,9 +1731,10 @@ public class TestNG {
     String testClasses = args.testClass;
     List<String> testNgXml = args.suiteFiles;
     String testJar = args.testJar;
+    String slave = args.slave;
     List<String> methods = args.commandLineMethods;
 
-    if (testClasses == null && testJar == null
+    if (testClasses == null && slave == null && testJar == null
         && (testNgXml == null || testNgXml.isEmpty())
         && (methods == null || methods.isEmpty())) {
       throw new ParameterException("You need to specify at least one testng.xml, one class"
@@ -1709,6 +1748,11 @@ public class TestNG {
         (null != groups || null != excludedGroups) && testClasses == null
         && (testNgXml == null || testNgXml.isEmpty())) {
       throw new ParameterException("Groups option should be used with testclass option");
+    }
+
+    if (args.slave != null && args.master != null) {
+     throw new ParameterException(CommandLineArgs.SLAVE + " can't be combined with "
+         + CommandLineArgs.MASTER);
     }
 
     Boolean junit = args.junit;
