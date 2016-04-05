@@ -607,6 +607,8 @@ public class Invoker implements IInvoker {
       testResult.setHost(m_testContext.getHost());
       testResult.setStatus(ITestResult.STARTED);
 
+      Reporter.setCurrentTestResult(testResult);
+
       invokedMethod= new InvokedMethod(instance,
           tm,
           parameterValues,
@@ -629,8 +631,6 @@ public class Invoker implements IInvoker {
 
       if(confInvocationPassed(tm, tm, testClass, instance)) {
         log(3, "Invoking " + tm.getRealClass().getName() + "." + tm.getMethodName());
-
-        Reporter.setCurrentTestResult(testResult);
 
         // If this method is a IHookable, invoke its run() method
         IHookable hookableInstance =
