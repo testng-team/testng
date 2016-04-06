@@ -73,7 +73,7 @@ public final class InvocationCountTest implements IRetryAnalyzer {
   @Test (
 			retryAnalyzer = InvocationCountTest.class,
 			dataProvider = "dataProvider3")
-  public void retryWithDataProvider(String tc, int paf, boolean test) {
+  public void retryWithDataProvider(String tc) {
 		if ("tc1".equals(tc)) {
 
 			if (tcid1++ < MAX_RETRY) {
@@ -119,7 +119,7 @@ public final class InvocationCountTest implements IRetryAnalyzer {
   @DataProvider (
 			name = "dataProvider3")
 	private Object[][] dataProvider3() {
-		return new Object[][] { { "tc1", 1, false }, { "tc2", 0, true }, { "tc3", 1, true } };
+		return new Object[][] { {"tc1"}, {"tc2"}, {"tc3"} };
 	}
 
   @Test(retryAnalyzer = InvocationCountTest.class, dataProvider = "dataProvider")
