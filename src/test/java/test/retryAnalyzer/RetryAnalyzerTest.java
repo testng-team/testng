@@ -16,6 +16,7 @@ import test.SimpleBaseTest;
 public class RetryAnalyzerTest extends SimpleBaseTest {
     @Test
     public void testInvocationCounts() {
+    	
         TestNG tng = create(InvocationCountTest.class);
         TestListenerAdapter tla = new TestListenerAdapter();
         tng.addListener(tla);
@@ -32,6 +33,7 @@ public class RetryAnalyzerTest extends SimpleBaseTest {
         assertEquals(fsp.get(0).getName(), "failAfterThreeRetries");
 
         List<ITestResult> skipped = tla.getSkippedTests();
+        
         assertEquals(skipped.size(), InvocationCountTest.invocations.size() - fsp.size());
     }
 }
