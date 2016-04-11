@@ -1,4 +1,5 @@
 ﻿Current
+New: Minimal code changes to allow TestNG to work for OpenJDK tests, which should be run with only the java.base module present.
 Fixed: GITHUB-923 Refactored data provider's parameter values passing to a varargs or non-varargs method with @NoInjection handling (Nitin Verma)
 New: GITHUB-933: Deprecate XmlTest#getTestParameters (Julien Herr)
 Fixed: GITHUB-911: TestListener#onTestStart should be invoked if a suite configuration method fails (Harmin Parra Rueda & Julien Herr)﻿

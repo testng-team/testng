@@ -20,8 +20,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -57,7 +55,6 @@ import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-import org.xml.sax.SAXException;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
@@ -280,7 +277,7 @@ public class TestNG {
                     cSuite.setParentSuite(s);
                     s.getChildSuites().add(cSuite);
                 }
-            } catch (ParserConfigurationException | IOException | SAXException e) {
+            } catch (IOException e) {
                 e.printStackTrace(System.out);
             }
         }
@@ -309,7 +306,7 @@ public class TestNG {
           }
         }
       }
-      catch(SAXException | ParserConfigurationException | IOException e) {
+      catch(IOException e) {
         e.printStackTrace(System.out);
       } catch(Exception ex) {
         // Probably a Yaml exception, unnest it
@@ -389,7 +386,7 @@ public class TestNG {
         m_suites.add(xmlSuite);
       }
     }
-    catch(ParserConfigurationException | IOException | SAXException ex) {
+    catch(IOException ex) {
       ex.printStackTrace();
     }
   }
