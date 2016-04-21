@@ -20,9 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.testng.ITestNGMethod;
 import org.testng.TestNG;
@@ -449,19 +446,6 @@ public final class Utils {
     strings.add(string.substring(start).trim());
 
     return strings.toArray(new String[strings.size()]);
-  }
-
-  public static void initLogger(Logger logger, String outputLogPath) {
-    try {
-      logger.setUseParentHandlers(false);
-      FileHandler fh = new FileHandler(outputLogPath);
-      fh.setFormatter(new TextFormatter());
-      fh.setLevel(Level.INFO);
-      logger.addHandler(fh);
-    }
-    catch (SecurityException | IOException se) {
-      se.printStackTrace();
-    }
   }
 
   public static void logInvocation(String reason, Method thisMethod, Object[] parameters) {

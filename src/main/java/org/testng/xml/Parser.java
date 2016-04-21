@@ -132,13 +132,11 @@ public class Parser {
    *
    * @return the parsed TestNG test suite.
    *
-   * @throws ParserConfigurationException
-   * @throws SAXException
    * @throws IOException if an I/O error occurs while parsing the test suite file or
    * if the default testng.xml file is not found.
    */
   public Collection<XmlSuite> parse()
-    throws ParserConfigurationException, SAXException, IOException
+    throws IOException
   {
     // Each suite found is put in this list, using their canonical
     // path to make sure we don't add a same file twice
