@@ -56,8 +56,8 @@ public class FileStringBuffer implements IBuffer {
     } else {
       // Big string, add it to the temporary file directly
       flushToFile();
-      try {
-        copy(new StringReader(s.toString()), new FileWriter(m_file, true /* append */));
+      try (FileWriter writer = new FileWriter(m_file, true /* append */)) {
+        copy(new StringReader(s.toString()), writer);
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -77,7 +77,9 @@ public class FileStringBuffer implements IBuffer {
         bw.close();
       } else {
         flushToFile();
-        copy(new FileReader(m_file), bw);
+        try (FileReader reader = new FileReader(m_file)) {
+          copy(reader, bw);
+        }
       }
     } catch(IOException ex) {
       ex.printStackTrace();
@@ -91,15 +93,6 @@ public class FileStringBuffer implements IBuffer {
       int length = input.read(buf);
       if (length < 0) break;
       output.write(buf, 0, length);
-    }
-
-    try {
-      input.close();
-    } catch (IOException ignore) {
-    }
-    try {
-      output.close();
-    } catch (IOException ignore) {
     }
   }
 
@@ -147,13 +140,6 @@ public class FileStringBuffer implements IBuffer {
     return result;
   }
 
-  private static void save(File expected, String s) throws IOException {
-    expected.delete();
-    try (FileWriter expectedWriter = new FileWriter(expected)) {
-      expectedWriter.append(s);
-    }
-  }
-
   public static void main(String[] args) throws IOException {
     String s = "abcdefghijklmnopqrstuvwxyz";
     FileStringBuffer fsb = new FileStringBuffer(10);
@@ -170,15 +156,15 @@ public class FileStringBuffer implements IBuffer {
 
     File expected = new File("/tmp/expected");
     expected.delete();
-    FileWriter expectedWriter = new FileWriter(expected);
-    expectedWriter.append(control);
-    expectedWriter.close();
+    try (FileWriter expectedWriter = new FileWriter(expected)) {
+      expectedWriter.append(control);
+    }
 
     File actual = new File("/tmp/actual");
     actual.delete();
-    FileWriter actualWriter = new FileWriter(actual);
-    fsb.toWriter(actualWriter);
-    actualWriter.close();
+    try (FileWriter actualWriter = new FileWriter(actual)) {
+      fsb.toWriter(actualWriter);
+    }
 //    Assert.assertEquals(fsb.toString(), control.toString());
   }
 

@@ -2,7 +2,6 @@ package org.testng.reporters;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -14,6 +13,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 public class Files {
 
@@ -36,11 +36,10 @@ public class Files {
 
   public static void writeFile(String string, File f) throws IOException {
     f.getParentFile().mkdirs();
-    FileWriter fw = new FileWriter(f);
-    BufferedWriter bw = new BufferedWriter(fw);
-    bw.write(string);
-    bw.close();
-    fw.close();
+    try (FileWriter fw = new FileWriter(f);
+        BufferedWriter bw = new BufferedWriter(fw)) {
+      bw.write(string);
+    }
   }
 
   public static void copyFile(InputStream from, File to) throws IOException {
@@ -63,14 +62,11 @@ public class Files {
       Writer writer = new StringWriter();
 
       char[] buffer = new char[1024];
-      try {
-        Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+      try (Reader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
         int n;
         while ((n = reader.read(buffer)) != -1) {
           writer.write(buffer, 0, n);
         }
-      } finally {
-        is.close();
       }
       return writer.toString();
     } else {
