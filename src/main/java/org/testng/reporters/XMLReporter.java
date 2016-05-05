@@ -102,7 +102,8 @@ public class XMLReporter implements IReporter {
     XMLStringBuffer xmlBuffer = new XMLStringBuffer();
     writeSuiteToBuffer(xmlBuffer, suite);
     File parentDir = suiteFile.getParentFile();
-    if (parentDir.exists() || suiteFile.getParentFile().mkdirs()) {
+    suiteFile.getParentFile().mkdirs();
+    if (parentDir.exists() || suiteFile.getParentFile().exists()) {
       Utils.writeFile(parentDir.getAbsolutePath(), FILE_NAME, xmlBuffer.toXML());
     }
   }
