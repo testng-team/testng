@@ -9,15 +9,15 @@ package org.testng;
  *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
-public interface IInstanceInfo {
+public interface IInstanceInfo<T> {
 
   /**
    * @return The instance on which the tests will be invoked.
    */
-  public Object getInstance();
+  T getInstance();
 
   /**
    * @return The class on which the TestNG annotations should be looked for.
    */
-  public Class getInstanceClass();
+  Class<T> getInstanceClass();
 }

@@ -145,40 +145,29 @@ public class TestNGClassFinder extends BaseClassFinder {
               m_testContext);
             ClassInfoMap moreClasses = new ClassInfoMap();
 
-            {
-//            ppp("INVOKING FACTORY " + fm + " " + this.hashCode());
-              Object[] instances= fm.invoke();
-
-              //
-              // If the factory returned IInstanceInfo, get the class from it,
-              // otherwise, just call getClass() on the returned instances
-              //
-              if (instances.length > 0) {
-                if (instances[0] != null) {
-                  Class elementClass = instances[0].getClass();
-                  if(IInstanceInfo.class.isAssignableFrom(elementClass)) {
-                    for(Object o : instances) {
-                      IInstanceInfo ii = (IInstanceInfo) o;
-                      addInstance(ii.getInstanceClass(), ii.getInstance());
-                      moreClasses.addClass(ii.getInstanceClass());
-                    }
-                  }
-                  else {
-                    for (int i = 0; i < instances.length; i++) {
-                      Object o = instances[i];
-                      if (o == null) {
-                        throw new TestNGException("The factory " + fm + " returned a null instance" +
-                            "at index " + i);
-                      } else {
-                        addInstance(o.getClass(), o);
-                        if(!classExists(o.getClass())) {
-                          moreClasses.addClass(o.getClass());
-                        }
-                      }
-                    }
-                  }
-                }
+            //
+            // If the factory returned IInstanceInfo, get the class from it,
+            // otherwise, just call getClass() on the returned instances
+            //
+            int i = 0;
+            for (Object o : fm.invoke()) {
+              if (o == null) {
+                throw new TestNGException("The factory " + fm + " returned a null instance" +
+                    "at index " + i);
               }
+              Class<?> oneMoreClass;
+              if(IInstanceInfo.class.isAssignableFrom(o.getClass())) {
+                IInstanceInfo<?> ii = (IInstanceInfo) o;
+                addInstance(ii);
+                oneMoreClass = ii.getInstanceClass();
+              } else {
+                addInstance(o);
+                oneMoreClass = o.getClass();
+              }
+              if(!classExists(oneMoreClass)) {
+                moreClasses.addClass(oneMoreClass);
+              }
+              i++;
             }
 
             if(moreClasses.getSize() > 0) {
@@ -262,7 +251,15 @@ public class TestNGClassFinder extends BaseClassFinder {
     }
   }
 
-  private void addInstance(Class clazz, Object o) {
+  private void addInstance(IInstanceInfo<?> ii) {
+    addInstance(ii.getInstanceClass(), ii.getInstance());
+  }
+
+  private <T> void addInstance(T o) {
+    addInstance(o.getClass(), o);
+  }
+
+  private <T> void addInstance(Class<? extends T> clazz, T o) {
     List<Object> list= m_instanceMap.get(clazz);
 
     if(null == list) {
