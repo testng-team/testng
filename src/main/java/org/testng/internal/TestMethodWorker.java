@@ -150,11 +150,12 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
     // if no BeforeClass than return immediately
     // used for parallel case when BeforeClass were already invoked
-    if( (null == m_classMethodMap) || (null == m_classMethodMap.getInvokedBeforeClassMethods())) {
+    if (m_classMethodMap == null) {
       return;
     }
-    ITestNGMethod[] classMethods= testClass.getBeforeClassMethods();
-    if(null == classMethods || classMethods.length == 0) {
+
+    ITestNGMethod[] classMethods = testClass.getBeforeClassMethods();
+    if (classMethods.length == 0) {
       return;
     }
 
@@ -162,10 +163,6 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     // get a full initialized test object (not the same for @After)
     Map<ITestClass, Set<Object>> invokedBeforeClassMethods =
         m_classMethodMap.getInvokedBeforeClassMethods();
-//    System.out.println("SYNCHRONIZING ON " + testClass
-//        + " thread:" + Thread.currentThread().getId()
-//        + " invokedMap:" + invokedBeforeClassMethods.hashCode() + " "
-//        + invokedBeforeClassMethods);
     synchronized(testClass) {
       Set<Object> instances= invokedBeforeClassMethods.get(testClass);
       if(null == instances) {
@@ -198,12 +195,12 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
     // if no BeforeClass than return immediately
     // used for parallel case when BeforeClass were already invoked
-    if( (null == m_classMethodMap) || (null == m_classMethodMap.getInvokedAfterClassMethods()) ) {
+    if (m_classMethodMap == null) {
       return;
     }
-    ITestNGMethod[] afterClassMethods= testClass.getAfterClassMethods();
 
-    if(null == afterClassMethods || afterClassMethods.length == 0) {
+    ITestNGMethod[] afterClassMethods = testClass.getAfterClassMethods();
+    if (afterClassMethods.length == 0) {
       return;
     }
 
