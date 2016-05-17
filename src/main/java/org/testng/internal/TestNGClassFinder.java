@@ -145,40 +145,28 @@ public class TestNGClassFinder extends BaseClassFinder {
               m_testContext);
             ClassInfoMap moreClasses = new ClassInfoMap();
 
-            {
-//            ppp("INVOKING FACTORY " + fm + " " + this.hashCode());
-              Object[] instances= fm.invoke();
-
-              //
-              // If the factory returned IInstanceInfo, get the class from it,
-              // otherwise, just call getClass() on the returned instances
-              //
-              if (instances.length > 0) {
-                if (instances[0] != null) {
-                  Class elementClass = instances[0].getClass();
-                  if(IInstanceInfo.class.isAssignableFrom(elementClass)) {
-                    for(Object o : instances) {
-                      IInstanceInfo ii = (IInstanceInfo) o;
-                      addInstance(ii.getInstanceClass(), ii.getInstance());
-                      moreClasses.addClass(ii.getInstanceClass());
-                    }
-                  }
-                  else {
-                    for (int i = 0; i < instances.length; i++) {
-                      Object o = instances[i];
-                      if (o == null) {
-                        throw new TestNGException("The factory " + fm + " returned a null instance" +
-                            "at index " + i);
-                      } else {
-                        addInstance(o.getClass(), o);
-                        if(!classExists(o.getClass())) {
-                          moreClasses.addClass(o.getClass());
-                        }
-                      }
-                    }
-                  }
+            //
+            // If the factory returned IInstanceInfo, get the class from it,
+            // otherwise, just call getClass() on the returned instances
+            //
+            int i = 0;
+            for (Object o : fm.invoke()) {
+              if (o == null) {
+                throw new TestNGException("The factory " + fm + " returned a null instance" +
+                    "at index " + i);
+              }
+              Class<?> elementClass = o.getClass();
+              if(IInstanceInfo.class.isAssignableFrom(elementClass)) {
+                IInstanceInfo<?> ii = (IInstanceInfo) o;
+                addInstance(ii.getInstanceClass(), ii.getInstance());
+                moreClasses.addClass(ii.getInstanceClass());
+              } else {
+                addInstance(o.getClass(), o);
+                if(!classExists(o.getClass())) {
+                  moreClasses.addClass(o.getClass());
                 }
               }
+              i++;
             }
 
             if(moreClasses.getSize() > 0) {
