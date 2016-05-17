@@ -155,16 +155,17 @@ public class TestNGClassFinder extends BaseClassFinder {
                 throw new TestNGException("The factory " + fm + " returned a null instance" +
                     "at index " + i);
               }
-              Class<?> elementClass = o.getClass();
-              if(IInstanceInfo.class.isAssignableFrom(elementClass)) {
+              Class<?> oneMoreClass;
+              if(IInstanceInfo.class.isAssignableFrom(o.getClass())) {
                 IInstanceInfo<?> ii = (IInstanceInfo) o;
-                addInstance(ii.getInstanceClass(), ii.getInstance());
-                moreClasses.addClass(ii.getInstanceClass());
+                addInstance(ii);
+                oneMoreClass = ii.getInstanceClass();
               } else {
-                addInstance(o.getClass(), o);
-                if(!classExists(o.getClass())) {
-                  moreClasses.addClass(o.getClass());
-                }
+                addInstance(o);
+                oneMoreClass = o.getClass();
+              }
+              if(!classExists(oneMoreClass)) {
+                moreClasses.addClass(oneMoreClass);
               }
               i++;
             }
@@ -250,7 +251,15 @@ public class TestNGClassFinder extends BaseClassFinder {
     }
   }
 
-  private void addInstance(Class clazz, Object o) {
+  private void addInstance(IInstanceInfo<?> ii) {
+    addInstance(ii.getInstanceClass(), ii.getInstance());
+  }
+
+  private <T> void addInstance(T o) {
+    addInstance(o.getClass(), o);
+  }
+
+  private <T> void addInstance(Class<? extends T> clazz, T o) {
     List<Object> list= m_instanceMap.get(clazz);
 
     if(null == list) {
