@@ -12,17 +12,17 @@ public class NoOpTestClass implements ITestClass {
   protected Class m_testClass= null;
 
   // Test methods
-  protected ITestNGMethod[] m_beforeClassMethods= null;
-  protected ITestNGMethod[] m_beforeTestMethods= null;
-  protected ITestNGMethod[] m_testMethods= null;
-  protected ITestNGMethod[] m_afterClassMethods= null;
-  protected ITestNGMethod[] m_afterTestMethods= null;
-  protected ITestNGMethod[] m_beforeSuiteMethods= null;
-  protected ITestNGMethod[] m_afterSuiteMethods= null;
-  protected ITestNGMethod[] m_beforeTestConfMethods= null;
-  protected ITestNGMethod[] m_afterTestConfMethods= null;
-  protected ITestNGMethod[] m_beforeGroupsMethods= null;
-  protected ITestNGMethod[] m_afterGroupsMethods= null;
+  protected ITestNGMethod[] m_beforeClassMethods = new ITestNGMethod[0];
+  protected ITestNGMethod[] m_beforeTestMethods = new ITestNGMethod[0];
+  protected ITestNGMethod[] m_testMethods = new ITestNGMethod[0];
+  protected ITestNGMethod[] m_afterClassMethods = new ITestNGMethod[0];
+  protected ITestNGMethod[] m_afterTestMethods = new ITestNGMethod[0];
+  protected ITestNGMethod[] m_beforeSuiteMethods = new ITestNGMethod[0];
+  protected ITestNGMethod[] m_afterSuiteMethods = new ITestNGMethod[0];
+  protected ITestNGMethod[] m_beforeTestConfMethods = new ITestNGMethod[0];
+  protected ITestNGMethod[] m_afterTestConfMethods = new ITestNGMethod[0];
+  protected ITestNGMethod[] m_beforeGroupsMethods = new ITestNGMethod[0];
+  protected ITestNGMethod[] m_afterGroupsMethods = new ITestNGMethod[0];
 
   private transient Object[] m_instances;
   private long[] m_instanceHashes;

@@ -8,4 +8,7 @@ public class ClassListenerSample {
 
   @Test
   public void test() {}
+
+  @Test
+  public void test2() {}
 }

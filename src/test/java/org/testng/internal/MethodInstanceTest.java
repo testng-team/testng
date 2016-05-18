@@ -182,57 +182,57 @@ public class MethodInstanceTest {
 
     @Override
     public ITestNGMethod[] getTestMethods() {
-      return null;
+      return new ITestNGMethod[0];
     }
 
     @Override
     public ITestNGMethod[] getBeforeTestMethods() {
-      return null;
+      return new ITestNGMethod[0];
     }
 
     @Override
     public ITestNGMethod[] getAfterTestMethods() {
-      return null;
+      return new ITestNGMethod[0];
     }
 
     @Override
     public ITestNGMethod[] getBeforeClassMethods() {
-      return null;
+      return new ITestNGMethod[0];
     }
 
     @Override
     public ITestNGMethod[] getAfterClassMethods() {
-      return null;
+      return new ITestNGMethod[0];
     }
 
     @Override
     public ITestNGMethod[] getBeforeSuiteMethods() {
-      return null;
+      return new ITestNGMethod[0];
     }
 
     @Override
     public ITestNGMethod[] getAfterSuiteMethods() {
-      return null;
+      return new ITestNGMethod[0];
     }
 
     @Override
     public ITestNGMethod[] getBeforeTestConfigurationMethods() {
-      return null;
+      return new ITestNGMethod[0];
     }
 
     @Override
     public ITestNGMethod[] getAfterTestConfigurationMethods() {
-      return null;
+      return new ITestNGMethod[0];
     }
 
     @Override
     public ITestNGMethod[] getBeforeGroupsMethods() {
-      return null;
+      return new ITestNGMethod[0];
     }
 
     @Override
     public ITestNGMethod[] getAfterGroupsMethods() {
-      return null;
+      return new ITestNGMethod[0];
     }
 
   }

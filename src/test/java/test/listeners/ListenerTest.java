@@ -1,18 +1,15 @@
 package test.listeners;
 
 import org.testng.Assert;
+import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 
-import org.testng.xml.XmlClass;
-import org.testng.xml.XmlSuite;
-import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -120,24 +117,58 @@ public class ListenerTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-356: Add listeners for @BeforeClass/@AfterClass")
   public void classListenerShouldWork() {
-    MyClassListener.beforeNames.clear();
-    MyClassListener.afterNames.clear();
+    MyClassListener.names.clear();
     TestNG tng = create(Derived1.class, Derived2.class);
     MyClassListener listener = new MyClassListener();
-    tng.addListener(listener);
+    tng.addListener((Object)listener);
+    TestListenerAdapter adapter = new TestListenerAdapter();
+    tng.addListener(adapter);
     tng.run();
-    assertThat(MyClassListener.beforeNames).containsExactly("Derived1", "Derived2");
-    assertThat(MyClassListener.afterNames).containsExactly("Derived1", "Derived2");
+    assertThat(adapter.getFailedTests()).isEmpty();
+    assertThat(adapter.getSkippedTests()).isEmpty();
+    assertThat(MyClassListener.names).containsExactly(
+        "BeforeClass=Derived1",
+          "BeforeMethod=Derived1.t", "AfterMethod=Derived1.t",
+        "AfterClass=Derived1",
+        "BeforeClass=Derived2",
+          "BeforeMethod=Derived2.s", "AfterMethod=Derived2.s",
+        "AfterClass=Derived2");
+  }
+
+  @Test
+  public void classListenerShouldWorkWithManyTestMethods() {
+    MyClassListener.names.clear();
+    TestNG tng = create(Derived3.class);
+    MyClassListener listener = new MyClassListener();
+    tng.addListener((Object)listener);
+    TestListenerAdapter adapter = new TestListenerAdapter();
+    tng.addListener(adapter);
+    tng.run();
+    assertThat(adapter.getFailedTests()).isEmpty();
+    assertThat(adapter.getSkippedTests()).isEmpty();
+    assertThat(MyClassListener.names).containsExactly(
+        "BeforeClass=Derived3",
+          "BeforeMethod=Derived3.r", "AfterMethod=Derived3.r",
+          "BeforeMethod=Derived3.r1", "AfterMethod=Derived3.r1",
+        "AfterClass=Derived3"
+    );
   }
 
   @Test(description = "GITHUB-356: Add listeners for @BeforeClass/@AfterClass")
   public void classListenerShouldWorkFromAnnotation() {
-    MyClassListener.beforeNames.clear();
-    MyClassListener.afterNames.clear();
+    MyClassListener.names.clear();
     TestNG tng = create(ClassListenerSample.class);
+    TestListenerAdapter adapter = new TestListenerAdapter();
+    tng.addListener(adapter);
     tng.run();
-    assertThat(MyClassListener.beforeNames).containsExactly("ClassListenerSample");
-    assertThat(MyClassListener.afterNames).containsExactly("ClassListenerSample");
+    assertThat(adapter.getFailedTests()).isEmpty();
+    assertThat(adapter.getSkippedTests()).isEmpty();
+    assertThat(MyClassListener.names).containsExactly(
+        "BeforeClass=ClassListenerSample",
+          "BeforeMethod=ClassListenerSample.test", "AfterMethod=ClassListenerSample.test",
+          "BeforeMethod=ClassListenerSample.test2", "AfterMethod=ClassListenerSample.test2",
+        "AfterClass=ClassListenerSample"
+    );
   }
 
   @Test(description = "GITHUB-911: Should not call method listeners for skipped methods")

@@ -79,7 +79,7 @@ public class MethodInvocationHelper {
     }
 
     synchronized(thisMethod) {
-      if (! Modifier.isPublic(thisMethod.getModifiers())) {
+      if (! Modifier.isPublic(thisMethod.getModifiers()) || !thisMethod.isAccessible()) {
         thisMethod.setAccessible(true);
       }
     }

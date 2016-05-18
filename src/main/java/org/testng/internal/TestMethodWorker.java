@@ -144,17 +144,9 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
    * @param mi
    */
   protected void invokeBeforeClassMethods(ITestClass testClass, IMethodInstance mi) {
-    for (IClassListener listener : m_listeners) {
-      listener.onBeforeClass(testClass, mi);
-    }
-
     // if no BeforeClass than return immediately
     // used for parallel case when BeforeClass were already invoked
-    if( (null == m_classMethodMap) || (null == m_classMethodMap.getInvokedBeforeClassMethods())) {
-      return;
-    }
-    ITestNGMethod[] classMethods= testClass.getBeforeClassMethods();
-    if(null == classMethods || classMethods.length == 0) {
+    if (m_classMethodMap == null) {
       return;
     }
 
@@ -162,10 +154,6 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     // get a full initialized test object (not the same for @After)
     Map<ITestClass, Set<Object>> invokedBeforeClassMethods =
         m_classMethodMap.getInvokedBeforeClassMethods();
-//    System.out.println("SYNCHRONIZING ON " + testClass
-//        + " thread:" + Thread.currentThread().getId()
-//        + " invokedMap:" + invokedBeforeClassMethods.hashCode() + " "
-//        + invokedBeforeClassMethods);
     synchronized(testClass) {
       Set<Object> instances= invokedBeforeClassMethods.get(testClass);
       if(null == instances) {
@@ -175,6 +163,9 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       for(Object instance: mi.getInstances()) {
         if (! instances.contains(instance)) {
           instances.add(instance);
+          for (IClassListener listener : m_listeners) {
+            listener.onBeforeClass(testClass);
+          }
           m_invoker.invokeConfigurations(testClass,
                                          testClass.getBeforeClassMethods(),
                                          m_suite,
@@ -192,18 +183,9 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
    * @param mi
    */
   protected void invokeAfterClassMethods(ITestClass testClass, IMethodInstance mi) {
-    for (IClassListener listener : m_listeners) {
-      listener.onAfterClass(testClass, mi);
-    }
-
     // if no BeforeClass than return immediately
     // used for parallel case when BeforeClass were already invoked
-    if( (null == m_classMethodMap) || (null == m_classMethodMap.getInvokedAfterClassMethods()) ) {
-      return;
-    }
-    ITestNGMethod[] afterClassMethods= testClass.getAfterClassMethods();
-
-    if(null == afterClassMethods || afterClassMethods.length == 0) {
+    if (m_classMethodMap == null) {
       return;
     }
 
@@ -228,9 +210,12 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
         }
       }
 
+      for (IClassListener listener : m_listeners) {
+        listener.onAfterClass(testClass);
+      }
       for(Object inst: invokeInstances) {
         m_invoker.invokeConfigurations(testClass,
-                                       afterClassMethods,
+                                       testClass.getAfterClassMethods(),
                                        m_suite,
                                        m_parameters,
                                        null, /* no parameter values */
