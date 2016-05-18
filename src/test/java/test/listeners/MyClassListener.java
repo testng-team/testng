@@ -1,24 +1,38 @@
 package test.listeners;
 
 import org.testng.IClassListener;
-import org.testng.IMethodInstance;
+import org.testng.IInvokedMethod;
+import org.testng.IInvokedMethodListener;
 import org.testng.ITestClass;
+import org.testng.ITestResult;
+import org.testng.internal.BaseTestMethod;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyClassListener implements IClassListener {
+public class MyClassListener implements IClassListener, IInvokedMethodListener {
 
-  public static final List<String> beforeNames = new ArrayList<>();
-  public static final List<String> afterNames = new ArrayList<>();
+  public static final List<String> names = new ArrayList<>();
 
   @Override
-  public void onBeforeClass(ITestClass testClass, IMethodInstance mi) {
-    beforeNames.add(testClass.getRealClass().getSimpleName());
+  public void onBeforeClass(ITestClass testClass) {
+    names.add("BeforeClass=" + testClass.getRealClass().getSimpleName());
   }
 
   @Override
-  public void onAfterClass(ITestClass testClass, IMethodInstance mi) {
-    afterNames.add(testClass.getRealClass().getSimpleName());
+  public void onAfterClass(ITestClass testClass) {
+    names.add("AfterClass=" + testClass.getRealClass().getSimpleName());
+  }
+
+  @Override
+  public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
+    BaseTestMethod m = (BaseTestMethod) method.getTestMethod();
+    names.add("BeforeMethod=" + m.getSimpleName());
+  }
+
+  @Override
+  public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
+    BaseTestMethod m = (BaseTestMethod) method.getTestMethod();
+    names.add("AfterMethod=" + m.getSimpleName());
   }
 }
