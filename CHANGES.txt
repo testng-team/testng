@@ -1,6 +1,7 @@
 ﻿Current
 Fixed: GITHUB-1017 Reporter.log is ignored in skipped test listener (Scott Kirkpatrick)
 New: Minimal code changes to allow TestNG to work for OpenJDK tests, which should be run with only the java.base module present.
+Fixed: GITHUB-xxxx IClassListener didn't work (Julien Herr).
 
 6.9.11:
 2016/03/26

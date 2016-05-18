@@ -153,7 +153,7 @@ public class Invoker implements IInvoker {
                                    Object instance,
                                    ITestResult testMethodResult)
   {
-    if(null == allMethods) {
+    if(null == allMethods || allMethods.length == 0) {
       log(5, "No configuration methods found");
 
       return;

@@ -521,6 +521,10 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return result.toString();
   }
 
+  public String getSimpleName() {
+    return m_method.getDeclaringClass().getSimpleName() + "." + m_method.getName();
+  }
+
   protected String getSignature() {
     if (m_signature == null) {
       m_signature = computeSignature();
