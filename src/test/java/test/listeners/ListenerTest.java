@@ -1,6 +1,7 @@
 package test.listeners;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeMethod;
@@ -169,6 +170,23 @@ public class ListenerTest extends SimpleBaseTest {
           "BeforeMethod=ClassListenerSample.test2", "AfterMethod=ClassListenerSample.test2",
         "AfterClass=ClassListenerSample"
     );
+  }
+
+  @Test
+  public void classListenerShouldBeOnlyRunOnce() {
+    MyClassListener.names.clear();
+    TestNG tng = create(Derived3.class);
+    MyClassListener listener = new MyClassListener();
+    tng.addListener((ITestNGListener) listener);
+    TestListenerAdapter adapter = new TestListenerAdapter();
+    tng.addListener((ITestNGListener) adapter);
+    TestAndClassListener tacl = new TestAndClassListener();
+    tng.addListener((ITestNGListener) tacl);
+    tng.run();
+    assertThat(adapter.getFailedTests()).isEmpty();
+    assertThat(adapter.getSkippedTests()).isEmpty();
+    assertThat(tacl.getBeforeClassCount()).isEqualTo(1);
+    assertThat(tacl.getAfterClassCount()).isEqualTo(1);
   }
 
   @Test(description = "GITHUB-911: Should not call method listeners for skipped methods")
