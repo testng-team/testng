@@ -448,8 +448,8 @@ public class BaseTest extends BaseDistributedTest {
       TestRunner testRunner= new TestRunner(m_baseTest.getConfiguration(), suite, test, false,
           listeners, classListeners);
 
-      testRunner.addTestListener(new TestHTMLReporter());
-      testRunner.addTestListener(new JUnitXMLReporter());
+      testRunner.addListener(new TestHTMLReporter());
+      testRunner.addListener(new JUnitXMLReporter());
       testRunner.addListener(new TestListener(m_baseTest));
       if (listeners != null) {
         for (IInvokedMethodListener l : listeners) {
