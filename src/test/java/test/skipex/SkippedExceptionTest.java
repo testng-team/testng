@@ -1,6 +1,7 @@
 package test.skipex;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -17,7 +18,7 @@ public class SkippedExceptionTest {
   public void skippedExceptionInConfigurationMethods() {
     TestListenerAdapter listener= new TestListenerAdapter();
     TestNG test= new TestNG(false);
-    test.addListener(listener);
+    test.addListener((ITestNGListener)listener);
     test.setVerbose(0);
     test.setTestClasses(new Class[] {ConfigurationSkippedExceptionTest.class});
     test.run();

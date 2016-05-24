@@ -569,7 +569,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       }
 
       for (ITestListener itl : m_failureGenerators) {
-        testRunner.addListener(itl);
+        testRunner.addTestListener(itl);
       }
       for (IConfigurationListener cl : m_configuration.getConfigurationListeners()) {
         testRunner.addConfigurationListener(cl);

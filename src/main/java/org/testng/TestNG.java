@@ -689,6 +689,11 @@ public class TestNG {
     }
   }
 
+  /**
+   * @deprecated Use addListener(ITestNGListener) instead
+   */
+  // TODO remove later
+  @Deprecated
   public void addListener(Object listener) {
     if (! (listener instanceof ITestNGListener))
     {
@@ -696,76 +701,103 @@ public class TestNG {
           + " must be one of ITestListener, ISuiteListener, IReporter, "
           + " IAnnotationTransformer, IMethodInterceptor or IInvokedMethodListener");
     }
-    else {
-      if (listener instanceof ISuiteListener) {
-        addListener((ISuiteListener) listener);
-      }
-      if (listener instanceof ITestListener) {
-        addListener((ITestListener) listener);
-      }
-      if (listener instanceof IClassListener) {
-        addListener((IClassListener) listener);
-      }
-      if (listener instanceof IReporter) {
-        addListener((IReporter) listener);
-      }
-      if (listener instanceof IAnnotationTransformer) {
-        setAnnotationTransformer((IAnnotationTransformer) listener);
-      }
-      if (listener instanceof IMethodInterceptor) {
-        m_methodInterceptors.add((IMethodInterceptor) listener);
-      }
-      if (listener instanceof IInvokedMethodListener) {
-        addInvokedMethodListener((IInvokedMethodListener) listener);
-      }
-      if (listener instanceof IHookable) {
-        setHookable((IHookable) listener);
-      }
-      if (listener instanceof IConfigurable) {
-        setConfigurable((IConfigurable) listener);
-      }
-      if (listener instanceof IExecutionListener) {
-        addExecutionListener((IExecutionListener) listener);
-      }
-      if (listener instanceof IConfigurationListener) {
-        getConfiguration().addConfigurationListener((IConfigurationListener) listener);
-      }
-      if (listener instanceof IAlterSuiteListener) {
-        addAlterSuiteListener((IAlterSuiteListener) listener);
-      }
+    addListener((ITestNGListener) listener);
+  }
+
+  public void addListener(ITestNGListener listener) {
+    if (listener == null) {
+      return;
+    }
+    if (listener instanceof ISuiteListener) {
+      m_suiteListeners.add((ISuiteListener) listener);
+    }
+    if (listener instanceof ITestListener) {
+      m_testListeners.add((ITestListener) listener);
+    }
+    if (listener instanceof IClassListener) {
+      m_classListeners.add((IClassListener) listener);
+    }
+    if (listener instanceof IReporter) {
+      m_reporters.add((IReporter) listener);
+    }
+    if (listener instanceof IAnnotationTransformer) {
+      setAnnotationTransformer((IAnnotationTransformer) listener);
+    }
+    if (listener instanceof IMethodInterceptor) {
+      m_methodInterceptors.add((IMethodInterceptor) listener);
+    }
+    if (listener instanceof IInvokedMethodListener) {
+      m_invokedMethodListeners.add((IInvokedMethodListener) listener);
+    }
+    if (listener instanceof IHookable) {
+      setHookable((IHookable) listener);
+    }
+    if (listener instanceof IConfigurable) {
+      setConfigurable((IConfigurable) listener);
+    }
+    if (listener instanceof IExecutionListener) {
+      m_executionListeners.add((IExecutionListener) listener);
+    }
+    if (listener instanceof IConfigurationListener) {
+      getConfiguration().addConfigurationListener((IConfigurationListener) listener);
+    }
+    if (listener instanceof IAlterSuiteListener) {
+      m_alterSuiteListeners.add((IAlterSuiteListener) listener);
     }
   }
 
+  /**
+   * @deprecated Use addListener(ITestNGListener) instead
+   */
+  // TODO remove later
+  @Deprecated
   public void addListener(IInvokedMethodListener listener) {
-    m_invokedMethodListeners.add(listener);
+    addListener((ITestNGListener) listener);
   }
 
+  /**
+   * @deprecated Use addListener(ITestNGListener) instead
+   */
+  // TODO remove later
+  @Deprecated
   public void addListener(ISuiteListener listener) {
-    if (null != listener) {
-      m_suiteListeners.add(listener);
-    }
+    addListener((ITestNGListener) listener);
   }
 
+  /**
+   * @deprecated Use addListener(ITestNGListener) instead
+   */
+  // TODO remove later
+  @Deprecated
   public void addListener(ITestListener listener) {
-    if (null != listener) {
-      m_testListeners.add(listener);
-    }
+    addListener((ITestNGListener) listener);
   }
 
+  /**
+   * @deprecated Use addListener(ITestNGListener) instead
+   */
+  // TODO remove later
+  @Deprecated
   public void addListener(IClassListener listener) {
-    if (null != listener) {
-      m_classListeners.add(listener);
-    }
+    addListener((ITestNGListener) listener);
   }
 
+  /**
+   * @deprecated Use addListener(ITestNGListener) instead
+   */
+  // TODO remove later
+  @Deprecated
   public void addListener(IReporter listener) {
-    if (null != listener) {
-      m_reporters.add(listener);
-    }
+    addListener((ITestNGListener) listener);
   }
 
+  /**
+   * @deprecated Use addListener(ITestNGListener) instead
+   */
+  // TODO remove later
+  @Deprecated
   public void addInvokedMethodListener(IInvokedMethodListener listener) {
-    m_invokedMethodListeners.add(listener);
+    addListener((ITestNGListener) listener);
   }
 
   public Set<IReporter> getReporters() {
@@ -1091,12 +1123,22 @@ public class TestNG {
     }
   }
 
+  /**
+   * @deprecated Use addListener(ITestNGListener) instead
+   */
+  // TODO remove later
+  @Deprecated
   public void addAlterSuiteListener(IAlterSuiteListener l) {
-    m_alterSuiteListeners.add(l);
+    addListener((ITestNGListener) l);
   }
 
+  /**
+   * @deprecated Use addListener(ITestNGListener) instead
+   */
+  // TODO remove later
+  @Deprecated
   public void addExecutionListener(IExecutionListener l) {
-    m_executionListeners.add(l);
+    addListener((ITestNGListener) l);
   }
 
   private static void usage() {
@@ -1340,7 +1382,7 @@ public class TestNG {
     TestNG result = new TestNG();
 
     if (null != listener) {
-      result.addListener(listener);
+      result.addListener((Object)listener);
     }
 
     //
@@ -1751,6 +1793,11 @@ public class TestNG {
     return m_annotationTransformer;
   }
 
+  /**
+   * @deprecated Use addListener(ITestNGListener) instead
+   */
+  // TODO make private
+  @Deprecated
   public void setAnnotationTransformer(IAnnotationTransformer t) {
 	// compare by reference!
     if (m_annotationTransformer != m_defaultAnnoProcessor && m_annotationTransformer != t) {

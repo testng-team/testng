@@ -331,44 +331,12 @@ public class TestRunner
 
     // Instantiate all the listeners
     for (Class<? extends ITestNGListener> c : listenerClasses) {
-      Object listener = listenerFactory != null ? listenerFactory.createListener(c) : null;
+      ITestNGListener listener = listenerFactory != null ? listenerFactory.createListener(c) : null;
       if (listener == null) {
         listener = ClassHelper.newInstance(c);
       }
 
-      if (listener instanceof IMethodInterceptor) {
-        m_methodInterceptors.add((IMethodInterceptor) listener);
-      }
-      if (listener instanceof ISuiteListener) {
-        m_suite.addListener((ISuiteListener) listener);
-      }
-      if (listener instanceof IInvokedMethodListener) {
-        m_suite.addListener((ITestNGListener) listener);
-      }
-      if (listener instanceof ITestListener) {
-        // At this point, the field m_testListeners has already been used in the creation
-        addTestListener((ITestListener) listener);
-      }
-      if (listener instanceof IClassListener) {
-        m_classListeners.add((IClassListener) listener);
-      }
-      if (listener instanceof IConfigurationListener) {
-        addConfigurationListener((IConfigurationListener) listener);
-      }
-      if (listener instanceof IReporter) {
-        m_suite.addListener((ITestNGListener) listener);
-      }
-      if (listener instanceof IConfigurable) {
-        m_configuration.setConfigurable((IConfigurable) listener);
-      }
-      if (listener instanceof IHookable) {
-        m_configuration.setHookable((IHookable) listener);
-      }
-      if (listener instanceof IExecutionListener) {
-        IExecutionListener iel = (IExecutionListener) listener;
-        iel.onExecutionStart();
-        m_configuration.addExecutionListener(iel);
-      }
+      addListener(listener);
     }
   }
 
@@ -1466,24 +1434,61 @@ public class TestRunner
   /////
   // Listeners
   //
+  /**
+   * @deprecated addListener(ITestNGListener) should be used instead
+   */
+  // TODO remove it
+  @Deprecated
   public void addListener(Object listener) {
-    if(listener instanceof ITestListener) {
+    if (listener instanceof ITestNGListener) {
+      addListener((ITestNGListener) listener);
+    }
+  }
+
+  public void addListener(ITestNGListener listener) {
+    // TODO a listener may be added many times if it implements many interfaces
+    if (listener instanceof IMethodInterceptor) {
+      m_methodInterceptors.add((IMethodInterceptor) listener);
+    }
+    if (listener instanceof ISuiteListener) {
+      m_suite.addListener(listener);
+    }
+    if (listener instanceof IInvokedMethodListener) {
+      m_suite.addListener(listener);
+    }
+    if (listener instanceof ITestListener) {
+      // At this point, the field m_testListeners has already been used in the creation
       addTestListener((ITestListener) listener);
     }
-    if(listener instanceof IConfigurationListener) {
+    if (listener instanceof IClassListener) {
+      m_classListeners.add((IClassListener) listener);
+    }
+    if (listener instanceof IConfigurationListener) {
       addConfigurationListener((IConfigurationListener) listener);
     }
-    if(listener instanceof IClassListener) {
-      addClassListener((IClassListener) listener);
+    if (listener instanceof IReporter) {
+      m_suite.addListener(listener);
+    }
+    if (listener instanceof IConfigurable) {
+      m_configuration.setConfigurable((IConfigurable) listener);
+    }
+    if (listener instanceof IHookable) {
+      m_configuration.setHookable((IHookable) listener);
+    }
+    if (listener instanceof IExecutionListener) {
+      IExecutionListener iel = (IExecutionListener) listener;
+      iel.onExecutionStart();
+      m_configuration.addExecutionListener(iel);
     }
   }
 
+  /**
+   * @deprecated addListener(ITestNGListener) should be used instead
+   */
+  // TODO change public to package visibility
+  @Deprecated
   public void addTestListener(ITestListener il) {
     m_testListeners.add(il);
-  }
-
-  public void addClassListener(IClassListener cl) {
-    m_classListeners.add(cl);
   }
 
   void addConfigurationListener(IConfigurationListener icl) {
