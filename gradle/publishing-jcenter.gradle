@@ -48,8 +48,8 @@ artifactory {
     publish {
         repository {
             repoKey = 'oss-snapshot-local'
-            username = "${a_user}"
-            password = "${a_password}"
+            username = a_user
+            password = a_password
             maven = true
 
         }
@@ -61,8 +61,8 @@ artifactory {
     resolve {
         repository {
             repoKey = 'libs-snapshot'
-            username = "${a_user}"
-            password = "${a_password}"
+            username = a_user
+            password = a_password
             maven = true
 
         }
