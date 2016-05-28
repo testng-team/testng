@@ -4,9 +4,6 @@
 // ./gradlew bintrayUpload (upload release to JCenter)
 //
 
-apply plugin: 'com.jfrog.bintray'
-apply plugin: 'com.jfrog.artifactory'
-
 Properties properties = new Properties()
 try {
     properties.load(project.rootProject.file('local.properties').newDataInputStream())

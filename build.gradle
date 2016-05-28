@@ -19,17 +19,16 @@ buildscript {
     }
 
     dependencies {
-        //Check for the latest version here: http://plugins.gradle.org/plugin/com.jfrog.artifactory
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:3.0.3"
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
-        classpath "com.netflix.nebula:gradle-extra-configurations-plugin:3.0.3"
     }
 }
 
 plugins {
-    id "com.jfrog.bintray" version "1.2"
-    id "com.jfrog.artifactory" version "3.1.1"
-    id "org.sonarqube" version "1.0"
+    id "com.jfrog.bintray" version "1.6"
+    id "com.jfrog.artifactory" version "4.3.0"
+    id "org.sonarqube" version "2.0.1"
+    id "nebula.optional-base" version "3.0.3"
+    id "nebula.provided-base" version "3.0.3"
 }
 
 task wrapper(type: Wrapper) {
@@ -39,8 +38,6 @@ task wrapper(type: Wrapper) {
 version = '6.9.12-SNAPSHOT'
 
 apply plugin: 'java'
-apply plugin: 'nebula.optional-base'
-apply plugin: 'nebula.provided-base'
 
 targetCompatibility = "1.7"
 sourceCompatibility = "1.7"
