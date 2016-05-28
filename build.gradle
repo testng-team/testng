@@ -38,11 +38,11 @@ task wrapper(type: Wrapper) {
 version = '6.9.12-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'jacoco'
+apply plugin: 'osgi'
 
 targetCompatibility = "1.7"
 sourceCompatibility = "1.7"
-
-apply plugin: 'osgi'
 
 repositories {
     mavenCentral()
