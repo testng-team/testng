@@ -167,10 +167,13 @@ if (JavaVersion.current().isJava8Compatible()) {
     }
 }
 
+jacoco {
+    toolVersion = "0.7.1.201405082137"
+}
+
 sonarqube {
     properties {
-        property "sonar.host.url", "http://nemo.sonarqube.org"
-        property "sonar.analysis.mode", "preview"
+        property "sonar.host.url", "https://nemo.sonarqube.org"
         property "sonar.github.repository", "cbeust/testng"
         property "sonar.github.login", "testng-bot"
     }
