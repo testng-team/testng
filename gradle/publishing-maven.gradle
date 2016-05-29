@@ -8,7 +8,7 @@ apply plugin: 'maven'
 apply plugin: 'io.codearte.nexus-staging'
 
 nexusStaging {
-    packageGroup 'org.testng'
+    packageGroup project.group
     username System.getenv('SONATYPE_USER')
     password System.getenv('SONATYPE_PASSWORD')
 }
@@ -28,8 +28,8 @@ publishing {
             from components.java
             artifact sourcesJar
 
-            groupId 'org.testng'
-            artifactId 'testng'
+            groupId project.group
+            artifactId project.name
             version project.version
         }
     }
@@ -49,8 +49,8 @@ uploadArchives {
             }
             pom {
                 version = project.version
-                artifactId = 'testng'
-                groupId = 'org.testng'
+                artifactId = project.name
+                groupId = project.group
                 project {
                     name project.name
                     description 'Testing framework for Java'

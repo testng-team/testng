@@ -9,8 +9,6 @@ try {
     properties.load(project.rootProject.file('local.properties').newDataInputStream())
 } catch (FileNotFoundException ignore) {}
 
-group = 'org.testng'
-
 bintray {
     user = properties.getProperty("bintray.user")
     key = properties.getProperty("bintray.apikey")
@@ -19,7 +17,7 @@ bintray {
     configurations = ['archives']
     pkg {
         repo = 'maven'
-        name = 'testng'
+        name = project.name
         desc = 'Testing framework for Java'
         licenses = ['Apache-2.0']
         labels = ['testng']

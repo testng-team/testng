@@ -35,6 +35,7 @@ task wrapper(type: Wrapper) {
     gradleVersion = '2.13'
 }
 
+group = 'org.testng'
 version = '6.9.12-SNAPSHOT'
 
 apply plugin: 'java'
