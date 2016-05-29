@@ -4,9 +4,8 @@ jdk:
   - oraclejdk7
   - openjdk7
 
-#before_install: bash "gradle/uploadSnapshot.sh"
 script:
-  - ./gradlew clean test
+  - ./gradlew clean test jacoco
   - ./travis.sh
-after_success: test "${TRAVIS_PULL_REQUEST}" == "false" && test "${TRAVIS_JDK_VERSION}" == "oraclejdk7" && ./gradlew uploadArchives
+after_success: test "${TRAVIS_PULL_REQUEST}" == "false" && test "${TRAVIS_JDK_VERSION}" == "oraclejdk7" && test "${TRAVIS_BRANCH}" == "master" && ./gradlew uploadArchives sonarqube -Dsonar.login=${SONAR_TOKEN}
 

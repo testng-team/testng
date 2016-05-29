@@ -19,29 +19,31 @@ buildscript {
     }
 
     dependencies {
-        //Check for the latest version here: http://plugins.gradle.org/plugin/com.jfrog.artifactory
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:3.0.3"
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
-        classpath "com.netflix.nebula:gradle-extra-configurations-plugin:3.0.3"
     }
 }
 
 plugins {
-    id "com.jfrog.bintray" version "1.2"
-    id "com.jfrog.artifactory" version "3.1.1"
-    id "org.sonarqube" version "1.0"
+    id "com.jfrog.bintray" version "1.6"
+    id "com.jfrog.artifactory" version "4.3.0"
+    id "org.sonarqube" version "2.0.1"
+    id "nebula.optional-base" version "3.0.3"
+    id "nebula.provided-base" version "3.0.3"
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.13'
+}
+
+group = 'org.testng'
 version = '6.9.12-SNAPSHOT'
 
 apply plugin: 'java'
-apply plugin: 'nebula.optional-base'
-apply plugin: 'nebula.provided-base'
+apply plugin: 'jacoco'
+apply plugin: 'osgi'
 
 targetCompatibility = "1.7"
 sourceCompatibility = "1.7"
-
-apply plugin: 'osgi'
 
 repositories {
     mavenCentral()
@@ -165,10 +167,13 @@ if (JavaVersion.current().isJava8Compatible()) {
     }
 }
 
+jacoco {
+    toolVersion = "0.7.1.201405082137"
+}
+
 sonarqube {
     properties {
-        property "sonar.host.url", "http://nemo.sonarqube.org"
-        property "sonar.analysis.mode", "preview"
+        property "sonar.host.url", "https://nemo.sonarqube.org"
         property "sonar.github.repository", "cbeust/testng"
         property "sonar.github.login", "testng-bot"
     }
