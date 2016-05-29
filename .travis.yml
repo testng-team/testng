@@ -5,7 +5,7 @@ jdk:
   - openjdk7
 
 script:
-  - ./gradlew clean test jacoco sonarqube -Dsonar.login=${SONAR_TOKEN}
+  - ./gradlew clean test jacoco
   - ./travis.sh
-after_success: test "${TRAVIS_PULL_REQUEST}" == "false" && test "${TRAVIS_JDK_VERSION}" == "oraclejdk7" && ./gradlew uploadArchives
+after_success: test "${TRAVIS_PULL_REQUEST}" == "false" && test "${TRAVIS_JDK_VERSION}" == "oraclejdk7" && test "${TRAVIS_BRANCH}" == "master" && ./gradlew uploadArchives sonarqube -Dsonar.login=${SONAR_TOKEN}
 
