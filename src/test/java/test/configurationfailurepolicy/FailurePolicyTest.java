@@ -17,7 +17,7 @@ public class FailurePolicyTest {
   // only if this is run from an xml file that sets this on the suite
   @BeforeClass(enabled=false)
   public void setupClass( ITestContext testContext) {
-    assertEquals(testContext.getSuite().getXmlSuite().getConfigFailurePolicy(), XmlSuite.CONTINUE);
+    assertEquals(testContext.getSuite().getXmlSuite().getConfigFailurePolicy(), XmlSuite.FailurePolicy.CONTINUE);
   }
 
   @DataProvider( name="dp" )
@@ -48,7 +48,7 @@ public class FailurePolicyTest {
     testng.setTestClasses(classesUnderTest);
     testng.addListener(tla);
     testng.setVerbose(0);
-    testng.setConfigFailurePolicy(XmlSuite.CONTINUE);
+    testng.setConfigFailurePolicy(XmlSuite.FailurePolicy.CONTINUE);
     testng.run();
 
     verify(tla, configurationFailures, configurationSkips, skippedTests);

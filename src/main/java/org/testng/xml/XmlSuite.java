@@ -79,8 +79,25 @@ public class XmlSuite implements Serializable, Cloneable {
   }
 
   /** Configuration failure policy options */
-  public static final String SKIP = "skip";
-  public static final String CONTINUE = "continue";
+  public enum FailurePolicy {
+    SKIP, CONTINUE;
+
+    public static FailurePolicy getValidPolicy(String policy) {
+      if (policy == null) {
+        return null;
+      }
+      try {
+        return XmlSuite.FailurePolicy.valueOf(policy.toUpperCase());
+      } catch (IllegalArgumentException e) {
+        return null;
+      }
+    }
+
+    @Override
+    public String toString() {
+      return name().toLowerCase();
+    }
+  }
 
   private String m_test;
 
@@ -101,8 +118,8 @@ public class XmlSuite implements Serializable, Cloneable {
   private String m_guiceStage = "";
 
   /** Whether to SKIP or CONTINUE to re-attempt failed configuration methods. */
-  public static final String DEFAULT_CONFIG_FAILURE_POLICY = SKIP;
-  private String m_configFailurePolicy = DEFAULT_CONFIG_FAILURE_POLICY;
+  public static final FailurePolicy DEFAULT_CONFIG_FAILURE_POLICY = FailurePolicy.SKIP;
+  private FailurePolicy m_configFailurePolicy = DEFAULT_CONFIG_FAILURE_POLICY;
 
   /** JUnit compatibility flag. */
   public static final Boolean DEFAULT_JUNIT = Boolean.FALSE;
@@ -247,7 +264,7 @@ public class XmlSuite implements Serializable, Cloneable {
    * Sets the configuration failure policy.
    * @param configFailurePolicy the config failure policy
    */
-  public void setConfigFailurePolicy(String configFailurePolicy) {
+  public void setConfigFailurePolicy(FailurePolicy configFailurePolicy) {
     m_configFailurePolicy = configFailurePolicy;
   }
 
@@ -255,7 +272,7 @@ public class XmlSuite implements Serializable, Cloneable {
    * Returns the configuration failure policy.
    * @return the configuration failure policy
    */
-  public String getConfigFailurePolicy() {
+  public FailurePolicy getConfigFailurePolicy() {
     return m_configFailurePolicy;
   }
 
@@ -501,8 +518,8 @@ public class XmlSuite implements Serializable, Cloneable {
     }
     XmlUtils.setProperty(p, "group-by-instances", String.valueOf(getGroupByInstances()),
         DEFAULT_GROUP_BY_INSTANCES.toString());
-    XmlUtils.setProperty(p, "configfailurepolicy", getConfigFailurePolicy(),
-        DEFAULT_CONFIG_FAILURE_POLICY);
+    XmlUtils.setProperty(p, "configfailurepolicy", getConfigFailurePolicy().toString(),
+        DEFAULT_CONFIG_FAILURE_POLICY.toString());
     XmlUtils.setProperty(p, "thread-count", String.valueOf(getThreadCount()),
         DEFAULT_THREAD_COUNT.toString());
     XmlUtils.setProperty(p, "data-provider-thread-count", String.valueOf(getDataProviderThreadCount()),

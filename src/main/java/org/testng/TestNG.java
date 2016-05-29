@@ -151,7 +151,7 @@ public class TestNG {
   // Command line suite parameters
   private int m_threadCount = -1;
   private XmlSuite.ParallelMode m_parallelMode = null;
-  private String m_configFailurePolicy;
+  private XmlSuite.FailurePolicy m_configFailurePolicy;
   private Class[] m_commandLineTestClasses;
 
   private String m_defaultSuiteName=DEFAULT_COMMAND_LINE_SUITE_NAME;
@@ -880,7 +880,7 @@ public class TestNG {
         s.setParallel(m_parallelMode);
       }
       if(m_configFailurePolicy != null) {
-        s.setConfigFailurePolicy(m_configFailurePolicy.toString());
+        s.setConfigFailurePolicy(m_configFailurePolicy);
       }
     }
 
@@ -1837,18 +1837,26 @@ public class TestNG {
   /**
    * Sets the policy for whether or not to ever invoke a configuration method again after
    * it has failed once. Possible values are defined in {@link XmlSuite}.  The default
-   * value is {@link XmlSuite#SKIP}.
+   * value is {@link XmlSuite.FailurePolicy#SKIP}.
    * @param failurePolicy the configuration failure policy
    */
-  public void setConfigFailurePolicy(String failurePolicy) {
+  public void setConfigFailurePolicy(XmlSuite.FailurePolicy failurePolicy) {
     m_configFailurePolicy = failurePolicy;
+  }
+
+  /**
+   * @deprecated Use {@link #setConfigFailurePolicy(org.testng.xml.XmlSuite.FailurePolicy)} instead
+   */
+  @Deprecated
+  public void setConfigFailurePolicy(String failurePolicy) {
+    setConfigFailurePolicy(XmlSuite.FailurePolicy.getValidPolicy(failurePolicy));
   }
 
   /**
    * Returns the configuration failure policy.
    * @return config failure policy
    */
-  public String getConfigFailurePolicy() {
+  public XmlSuite.FailurePolicy getConfigFailurePolicy() {
     return m_configFailurePolicy;
   }
 
