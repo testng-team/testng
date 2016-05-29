@@ -1,16 +1,10 @@
 package test;
 
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import test.junit4.JUnit4Child;
-import test.junit4.JUnit4ParameterizedTest;
-import test.junit4.JUnit4Sample2;
-import test.junit4.JUnit4SampleSuite;
+import test.junit4.*;
 
-/**
- *
- * @author lukas
- */
 public class JUnit4Test extends BaseTest {
 
     @BeforeMethod(dependsOnGroups = {"initTest"})
@@ -18,79 +12,41 @@ public class JUnit4Test extends BaseTest {
         getTest().setJUnit(true);
     }
 
-    @Test
-    public void testTests() {
-        addClass("test.junit4.JUnit4Sample2");
-        assert getTest().isJUnit();
-
-        run();
-        String[] passed = JUnit4Sample2.EXPECTED;
-        String[] failed = JUnit4Sample2.FAILED;
-        String[] skipped = JUnit4Sample2.SKIPPED;
-
-        verifyTests("Passed", passed, getPassedTests());
-        verifyTests("Failed", failed, getFailedTests());
-        verifyTests("Skipped", skipped, getSkippedTests());
+    @DataProvider
+    public static Object[][] dp() {
+        return new Object[][]{
+                new Object[]{
+                        new Class<?>[]{JUnit4Sample2.class},
+                        JUnit4Sample2.EXPECTED, JUnit4Sample2.FAILED, JUnit4Sample2.SKIPPED
+                },
+                new Object[]{
+                        new Class<?>[]{JUnit4SampleSuite.class},
+                        JUnit4SampleSuite.EXPECTED, JUnit4SampleSuite.FAILED, JUnit4SampleSuite.SKIPPED
+                },
+                new Object[]{
+                        new Class<?>[]{JUnit4Child.class},
+                        JUnit4Child.EXPECTED, new String[0], new String[0]
+                },
+                new Object[]{
+                        new Class<?>[]{InheritedTest.class, JUnit4Sample1.class},
+                        new String[]{"t1", "t1"}, new String[0], new String[0]
+                },
+                new Object[]{
+                        new Class<?>[]{JUnit4ParameterizedTest.class},
+                        JUnit4ParameterizedTest.EXPECTED, JUnit4ParameterizedTest.FAILED, JUnit4ParameterizedTest.SKIPPED
+                }
+        };
     }
 
-    @Test
-    public void testSuite() {
-        addClass("test.junit4.JUnit4SampleSuite");
+    @Test(dataProvider = "dp")
+    public void testTests(Class<?>[] classes, String[] expectedPassedTests, String[] expectedFailedTests, String[] expectedSkippedTests) {
+        addClasses(classes);
         assert getTest().isJUnit();
 
         run();
-        String[] passed = JUnit4SampleSuite.EXPECTED;
-        String[] failed = JUnit4SampleSuite.FAILED;
-        String[] skipped = JUnit4SampleSuite.SKIPPED;
 
-        verifyTests("Passed", passed, getPassedTests());
-        verifyTests("Failed", failed, getFailedTests());
-        verifyTests("Skipped", skipped, getSkippedTests());
-    }
-
-    @Test
-    public void testSuiteInheritance() {
-        addClass("test.junit4.JUnit4Child");
-        assert getTest().isJUnit();
-
-        run();
-        String[] passed = JUnit4Child.EXPECTED;
-        String[] failed = {};
-        String[] skipped = {};
-
-        verifyTests("Passed", passed, getPassedTests());
-        verifyTests("Failed", failed, getFailedTests());
-        verifyTests("Skipped", skipped, getSkippedTests());
-    }
-
-    @Test
-    public void testTestInheritance() {
-        addClass("test.junit4.InheritedTest");
-        addClass("test.junit4.JUnit4Sample1");
-        assert getTest().isJUnit();
-
-        run();
-        String[] passed = {"t1", "t1"};
-        String[] failed = {};
-        String[] skipped = {};
-
-        verifyTests("Passed", passed, getPassedTests());
-        verifyTests("Failed", failed, getFailedTests());
-        verifyTests("Skipped", skipped, getSkippedTests());
-    }
-
-    @Test
-    public void testTestParameterized() {
-        addClass("test.junit4.JUnit4ParameterizedTest");
-        assert getTest().isJUnit();
-
-        run();
-        String[] passed = JUnit4ParameterizedTest.EXPECTED;
-        String[] failed = JUnit4ParameterizedTest.FAILED;
-        String[] skipped = JUnit4ParameterizedTest.SKIPPED;
-
-        verifyTests("Passed", passed, getPassedTests());
-        verifyTests("Failed", failed, getFailedTests());
-        verifyTests("Skipped", skipped, getSkippedTests());
+        verifyPassedTests(expectedPassedTests);
+        verifyFailedTests(expectedFailedTests);
+        verifySkippedTests(expectedSkippedTests);
     }
 }
