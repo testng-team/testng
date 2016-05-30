@@ -1,7 +1,7 @@
 package org.testng.junit;
 
-import java.lang.reflect.Method;
 import org.junit.runner.Description;
+import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.Utils;
 
 /**
@@ -19,20 +19,33 @@ public class JUnit4TestMethod extends JUnitTestMethod {
         return new Object[0];
     }
 
-    private static Method getMethod(Description desc) {
+    private static ConstructorOrMethod getMethod(Description desc) {
         Class<?> c = desc.getTestClass();
         String method = desc.getMethodName();
+        if (method == null) {
+            return new JUnit4ConfigurationMethod(c);
+        }
         // remove [index] from method name in case of parameterized test
         int idx = method.indexOf('[');
         if (idx != -1) {
             method = method.substring(0, idx);
         }
         try {
-            return c.getMethod(method);
+            return new ConstructorOrMethod(c.getMethod(method));
         } catch (Throwable t) {
             Utils.log("JUnit4TestMethod", 2,
                     "Method '" + method + "' not found in class '" + c.getName() + "': " + t.getMessage());
             return null;
         }
+    }
+
+    @Override
+    public boolean isTest() {
+        return !(m_method instanceof JUnit4ConfigurationMethod);
+    }
+
+    @Override
+    public String toString() {
+        return m_method.toString();
     }
 }

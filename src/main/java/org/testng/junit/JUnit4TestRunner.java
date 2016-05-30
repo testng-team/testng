@@ -27,6 +27,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
     private List<ITestNGMethod> m_methods = Lists.newArrayList();
     private List<ITestListener> m_listeners = Lists.newArrayList();
     private Collection<IInvokedMethodListener> m_invokeListeners = Lists.newArrayList();
+    private Map<Description, ITestResult> m_findedMethods = new WeakHashMap<>();
 
     public JUnit4TestRunner() {
     }
@@ -86,12 +87,18 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
                         return false;
                     }
                     if (methods.length == 0) {
+                        if (description.getTestClass() != null) {
+                            ITestResult tr = createTestResult(description);
+                            m_findedMethods.put(description, tr);
+                        }
                         //run everything
                         return true;
                     }
                     for (String m: methods) {
                         Pattern p = Pattern.compile(m);
                         if (p.matcher(description.getMethodName()).matches()) {
+                            ITestResult tr = createTestResult(description);
+                            m_findedMethods.put(description, tr);
                             return true;
                         }
                     }
@@ -110,13 +117,12 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
 
     private class RL extends RunListener {
 
-        private Map<Description, ITestResult> runs = new WeakHashMap<>();
         private List<Description> notified = new LinkedList<>();
 
         @Override
         public void testAssumptionFailure(Failure failure) {
             notified.add(failure.getDescription());
-            ITestResult tr = runs.get(failure.getDescription());
+            ITestResult tr = m_findedMethods.get(failure.getDescription());
             tr.setStatus(TestResult.SKIP);
             tr.setEndMillis(Calendar.getInstance().getTimeInMillis());
             tr.setThrowable(failure.getException());
@@ -133,19 +139,33 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
                 return;
             }
             notified.add(failure.getDescription());
-            ITestResult tr = runs.get(failure.getDescription());
-            tr.setStatus(TestResult.FAILURE);
-            tr.setEndMillis(Calendar.getInstance().getTimeInMillis());
-            tr.setThrowable(failure.getException());
-            m_parentRunner.addFailedTest(tr.getMethod(), tr);
-            for (ITestListener l : m_listeners) {
-                l.onTestFailure(tr);
+            ITestResult tr = m_findedMethods.get(failure.getDescription());
+            if (tr == null) {
+                // Not a test method, should be a config
+                tr = createTestResult(failure.getDescription());
+                tr.setStatus(TestResult.FAILURE);
+                tr.setEndMillis(Calendar.getInstance().getTimeInMillis());
+                tr.setThrowable(failure.getException());
+                for (IConfigurationListener l : m_parentRunner.getConfigurationListeners()) {
+                    l.onConfigurationFailure(tr);
+                }
+                for (Description childDesc : failure.getDescription().getChildren()) {
+                    testIgnored(childDesc);
+                }
+            } else {
+                tr.setStatus(TestResult.FAILURE);
+                tr.setEndMillis(Calendar.getInstance().getTimeInMillis());
+                tr.setThrowable(failure.getException());
+                m_parentRunner.addFailedTest(tr.getMethod(), tr);
+                for (ITestListener l : m_listeners) {
+                    l.onTestFailure(tr);
+                }
             }
         }
 
         @Override
         public void testFinished(Description description) throws Exception {
-            ITestResult tr = runs.get(description);
+            ITestResult tr = m_findedMethods.get(description);
             if (!notified.contains(description)) {
                 tr.setStatus(TestResult.SUCCESS);
                 tr.setEndMillis(Calendar.getInstance().getTimeInMillis());
@@ -159,13 +179,16 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
 
         @Override
         public void testIgnored(Description description) throws Exception {
-            ITestResult tr = createTestResult(description);
-            tr.setStatus(TestResult.SKIP);
-            tr.setEndMillis(tr.getStartMillis());
-            m_parentRunner.addSkippedTest(tr.getMethod(), tr);
-            m_methods.add(tr.getMethod());
-            for (ITestListener l : m_listeners) {
-                l.onTestSkipped(tr);
+            if (!notified.contains(description)) {
+                notified.add(description);
+                ITestResult tr = m_findedMethods.get(description);
+                tr.setStatus(TestResult.SKIP);
+                tr.setEndMillis(tr.getStartMillis());
+                m_parentRunner.addSkippedTest(tr.getMethod(), tr);
+                m_methods.add(tr.getMethod());
+                for (ITestListener l : m_listeners) {
+                    l.onTestSkipped(tr);
+                }
             }
         }
 
@@ -179,32 +202,31 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
 
         @Override
         public void testStarted(Description description) throws Exception {
-            ITestResult tr = createTestResult(description);
-            runs.put(description, tr);
+            ITestResult tr = m_findedMethods.get(description);
             for (ITestListener l : m_listeners) {
                 l.onTestStart(tr);
             }
         }
+    }
 
-        private ITestResult createTestResult(Description test) {
-            JUnit4TestClass tc = new JUnit4TestClass(test);
-            JUnitTestMethod tm = new JUnit4TestMethod(tc, test);
+    private ITestResult createTestResult(Description test) {
+        JUnit4TestClass tc = new JUnit4TestClass(test);
+        JUnitTestMethod tm = new JUnit4TestMethod(tc, test);
 
-            TestResult tr = new TestResult(tc,
-                    test,
-                    tm,
-                    null,
-                    Calendar.getInstance().getTimeInMillis(),
-                    0,
-                    null);
+        TestResult tr = new TestResult(tc,
+                test,
+                tm,
+                null,
+                Calendar.getInstance().getTimeInMillis(),
+                0,
+                null);
 
-            InvokedMethod im = new InvokedMethod(tr.getTestClass(), tr.getMethod(), new Object[0], tr.getStartMillis(), tr);
-            m_parentRunner.addInvokedMethod(im);
-            for (IInvokedMethodListener l: m_invokeListeners) {
-                l.beforeInvocation(im, tr);
-            }
-            return tr;
+        InvokedMethod im = new InvokedMethod(tr.getTestClass(), tr.getMethod(), new Object[0], tr.getStartMillis(), tr);
+        m_parentRunner.addInvokedMethod(im);
+        for (IInvokedMethodListener l: m_invokeListeners) {
+            l.beforeInvocation(im, tr);
         }
+        return tr;
     }
 
     private static boolean isAssumptionFailed(Failure failure) {
