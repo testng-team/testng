@@ -197,6 +197,12 @@ public class BaseTest extends BaseDistributedTest {
     getTest().getMethodSelectors().add(methodSelector);
   }
 
+  protected void addClasses(Class<?>... classes) {
+    for (Class<?> clazz : classes) {
+      addClass(clazz);
+    }
+  }
+
   protected XmlClass addClass(Class<?> cls) {
     return addClass(cls.getName());
   }
@@ -382,6 +388,10 @@ public class BaseTest extends BaseDistributedTest {
 
   protected void verifyFailedTests(String... expectedFailed) {
     verifyTests("Failed", expectedFailed, getFailedTests());
+  }
+
+  protected void verifySkippedTests(String... expectedSkipped) {
+    verifyTests("Skipped", expectedSkipped, getSkippedTests());
   }
 
   /**

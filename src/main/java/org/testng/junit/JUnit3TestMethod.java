@@ -2,6 +2,7 @@ package org.testng.junit;
 
 import java.lang.reflect.Method;
 import junit.framework.Test;
+import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.Utils;
 
 /**
@@ -14,12 +15,12 @@ public class JUnit3TestMethod extends JUnitTestMethod {
         super(owner, getMethod(test), test);
     }
 
-    private static Method getMethod(Test t) {
+    private static ConstructorOrMethod getMethod(Test t) {
         String name = null;
         try {
             Method nameMethod = t.getClass().getMethod("getName");
             name = (String) nameMethod.invoke(t);
-            return t.getClass().getMethod(name);
+            return new ConstructorOrMethod(t.getClass().getMethod(name));
         } catch (Throwable th) {
             Utils.log("JUnit3TestMethod", 2,
                     "Method '" + name + "' not found in class '" + t + "': " + th.getMessage());
