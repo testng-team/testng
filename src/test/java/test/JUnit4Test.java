@@ -34,6 +34,14 @@ public class JUnit4Test extends BaseTest {
                 new Object[]{
                         new Class<?>[]{JUnit4ParameterizedTest.class},
                         JUnit4ParameterizedTest.EXPECTED, JUnit4ParameterizedTest.FAILED, JUnit4ParameterizedTest.SKIPPED
+                },
+                new Object[]{
+                        new Class<?>[]{BeforeClassJUnit4Sample.class},
+                        new String[0], new String[0], new String[]{"myTest"}
+                },
+                new Object[]{
+                        new Class<?>[]{ClassRuleJUnit4Sample.class},
+                        new String[0], new String[0], new String[]{"myTest"}
                 }
         };
     }
