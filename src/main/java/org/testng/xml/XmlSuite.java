@@ -30,16 +30,18 @@ import static org.testng.xml.XmlSuite.ParallelMode.skipDeprecatedValues;
 public class XmlSuite implements Serializable, Cloneable {
   /** Parallel modes */
   public enum ParallelMode {
-    TESTS(false), METHODS, CLASSES, INSTANCES, NONE(false),
-    @Deprecated TRUE, @Deprecated FALSE(false);
+    TESTS("tests", false), METHODS("methods"), CLASSES("classes"), INSTANCES("instances"), NONE("none", false),
+    @Deprecated TRUE("true"), @Deprecated FALSE("false", false);
 
+    private final String name;
     private final boolean isParallel;
 
-    ParallelMode() {
-      this(true);
+    ParallelMode(String name) {
+      this(name, true);
     }
 
-    ParallelMode(boolean isParallel) {
+    ParallelMode(String name, boolean isParallel) {
+      this.name = name;
       this.isParallel = isParallel;
     }
 
@@ -74,13 +76,19 @@ public class XmlSuite implements Serializable, Cloneable {
 
     @Override
     public String toString() {
-      return name().toLowerCase();
+      return name;
     }
   }
 
   /** Configuration failure policy options */
   public enum FailurePolicy {
-    SKIP, CONTINUE;
+    SKIP("skip"), CONTINUE("continue");
+
+    private final String name;
+
+    FailurePolicy(String name) {
+      this.name = name;
+    }
 
     public static FailurePolicy getValidPolicy(String policy) {
       if (policy == null) {
@@ -95,7 +103,7 @@ public class XmlSuite implements Serializable, Cloneable {
 
     @Override
     public String toString() {
-      return name().toLowerCase();
+      return name;
     }
   }
 
