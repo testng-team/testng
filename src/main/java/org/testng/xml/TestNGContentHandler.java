@@ -173,11 +173,9 @@ public class TestNGContentHandler extends DefaultHandler {
       if (guiceStage != null) {
         m_currentSuite.setGuiceStage(guiceStage);
       }
-      String configFailurePolicy = attributes.getValue("configfailurepolicy");
+      XmlSuite.FailurePolicy configFailurePolicy = XmlSuite.FailurePolicy.getValidPolicy(attributes.getValue("configfailurepolicy"));
       if (null != configFailurePolicy) {
-        if (XmlSuite.SKIP.equals(configFailurePolicy) || XmlSuite.CONTINUE.equals(configFailurePolicy)) {
-          m_currentSuite.setConfigFailurePolicy(configFailurePolicy);
-        }
+        m_currentSuite.setConfigFailurePolicy(configFailurePolicy);
       }
       String groupByInstances = attributes.getValue("group-by-instances");
       if (groupByInstances!= null) {
