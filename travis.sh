@@ -8,7 +8,7 @@ if [ $1 == "sonarqube" ] ; then
         ./gradlew sonarqube \
           -Dsonar.github.pullRequest=$TRAVIS_PULL_REQUEST \
           -Dsonar.github.oauth=$SONAR_GITHUB_OAUTH \
-          -Dsonar.analysis.mode=issue \
+          -Dsonar.analysis.mode=issues \
           --stacktrace --info
       else
         echo "Sonar analyse skipped: No GitHub token available"
