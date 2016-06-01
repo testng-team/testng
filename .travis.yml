@@ -6,8 +6,7 @@ jdk:
 
 script:
   - ./gradlew check --stacktrace --info
-  - test "${TRAVIS_PULL_REQUEST}" != "false" && test "${TRAVIS_JDK_VERSION}" == "oraclejdk8" && ./travis.sh
 after_success:
-  - test "${TRAVIS_PULL_REQUEST}" == "false" && test "${TRAVIS_JDK_VERSION}" == "oraclejdk7" && test "${TRAVIS_BRANCH}" == "master" && ./gradlew uploadArchives --stacktrace --info
-  - test "${TRAVIS_PULL_REQUEST}" == "false" && test "${TRAVIS_JDK_VERSION}" == "oraclejdk8" && test "${TRAVIS_BRANCH}" == "master" && ./gradlew sonarqube -Dsonar.login=${SONAR_TOKEN} --stacktrace --info
+  - ./travis.sh deploy
+  - ./travis.sh sonarqube
 
