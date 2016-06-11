@@ -15,7 +15,7 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   private int m_invocationCount = 1;
   private int m_threadPoolSize = 0;
   private int m_successPercentage = 100;
-  private String m_dataProvider = "";
+  private String[] m_dataProvider = {};
   private boolean m_alwaysRun = false;
   private Class<?>[] m_expectedExceptions = {};
   private String m_expectedExceptionsMessageRegExp = ".*";
@@ -61,7 +61,7 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   }
 
   @Override
-  public void setDataProvider(String dataProvider) {
+  public void setDataProvider(String[] dataProvider) {
     m_dataProvider = dataProvider;
   }
 
@@ -107,7 +107,7 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   }
 
   @Override
-  public String getDataProvider() {
+  public String[] getDataProvider() {
     return m_dataProvider;
   }
 

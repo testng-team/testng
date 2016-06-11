@@ -5,6 +5,7 @@ import com.google.inject.Injector;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -245,24 +246,18 @@ public class Parameters {
     return result;
   }
 
-  private static DataProviderHolder findDataProvider(Object instance, ITestClass clazz,
+  private static List<DataProviderHolder> findDataProvider(Object instance, ITestClass clazz,
                                                      ConstructorOrMethod m,
                                                      IAnnotationFinder finder, ITestContext context) {
-    DataProviderHolder result = null;
+    List<DataProviderHolder> result = null;
 
     IDataProvidable dp = findDataProviderInfo(clazz, m, finder);
     if (dp != null) {
-      String dataProviderName = dp.getDataProvider();
+      String[] dataProviderNames = dp.getDataProvider();
       Class dataProviderClass = dp.getDataProviderClass();
 
-      if (! Utils.isStringEmpty(dataProviderName)) {
-        result = findDataProvider(instance, clazz, finder, dataProviderName, dataProviderClass, context);
-
-        if(null == result) {
-          throw new TestNGException("Method " + m + " requires a @DataProvider named : "
-              + dataProviderName + (dataProviderClass != null ? " in class " + dataProviderClass.getName() : "")
-              );
-        }
+      if (dataProviderNames.length > 0) {
+        result = findDataProvider(m, instance, clazz, finder, dataProviderNames, dataProviderClass, context);
       }
     }
 
@@ -306,13 +301,9 @@ public class Parameters {
   /**
    * Find a method that has a @DataProvider(name=name)
    */
-  private static DataProviderHolder findDataProvider(Object instance, ITestClass clazz,
-                                                     IAnnotationFinder finder,
-                                                     String name, Class dataProviderClass,
-                                                     ITestContext context)
+  private static List<DataProviderHolder> findDataProvider(ConstructorOrMethod annotated, Object instance,
+      ITestClass clazz, IAnnotationFinder finder, String[] names, Class dataProviderClass, ITestContext context)
   {
-    DataProviderHolder result = null;
-
     Class cls = clazz.getRealClass();
     boolean shouldBeStatic = false;
     if (dataProviderClass != null) {
@@ -320,24 +311,34 @@ public class Parameters {
       shouldBeStatic = true;
     }
 
-    for (Method m : ClassHelper.getAvailableMethods(cls)) {
-      IDataProviderAnnotation dp = finder.findAnnotation(m, IDataProviderAnnotation.class);
-      if (null != dp && name.equals(getDataProviderName(dp, m))) {
-        if (shouldBeStatic && (m.getModifiers() & Modifier.STATIC) == 0) {
-          Injector injector = context.getInjector(clazz);
-          if (injector != null) {
-            instance = injector.getInstance(dataProviderClass);
+    List<DataProviderHolder> providers = new ArrayList<>();
+    for (String name : names) {
+      DataProviderHolder result = null;
+      for (Method m : ClassHelper.getAvailableMethods(cls)) {
+        IDataProviderAnnotation dp = finder.findAnnotation(m, IDataProviderAnnotation.class);
+        if (null != dp && name.equals(getDataProviderName(dp, m))) {
+          if (shouldBeStatic && (m.getModifiers() & Modifier.STATIC) == 0) {
+            Injector injector = context.getInjector(clazz);
+            if (injector != null) {
+              instance = injector.getInstance(dataProviderClass);
+            }
           }
-        }
 
-        if (result != null) {
-          throw new TestNGException("Found two providers called '" + name + "' on " + cls);
+          if (result != null) {
+            throw new TestNGException("Found two providers called '" + name + "' on " + cls);
+          }
+          result = new DataProviderHolder(dp, m, instance);
         }
-        result = new DataProviderHolder(dp, m, instance);
       }
+      if(null == result) {
+        throw new TestNGException("Method " + annotated + " requires a @DataProvider named : "
+            + name + (dataProviderClass != null ? " in class " + dataProviderClass.getName() : "")
+        );
+      }
+      providers.add(result);
     }
 
-    return result;
+    return providers;
   }
 
   private static String getDataProviderName(IDataProviderAnnotation dp, Method m) {
@@ -415,11 +416,11 @@ public class Parameters {
      * Do we have a @DataProvider? If yes, then we have several
      * sets of parameters for this method
      */
-    DataProviderHolder dataProviderHolder =
+    List<DataProviderHolder> dataProviderHolders =
         findDataProvider(instance, testMethod.getTestClass(),
             testMethod.getConstructorOrMethod(), annotationFinder, methodParams.context);
 
-    if (null != dataProviderHolder) {
+    if (null != dataProviderHolders && !dataProviderHolders.isEmpty()) {
       int parameterCount = testMethod.getConstructorOrMethod().getParameterTypes().length;
 
       for (int i = 0; i < parameterCount; i++) {
@@ -427,19 +428,23 @@ public class Parameters {
         allParameterNames.put(n, n);
       }
 
-      parameters = MethodInvocationHelper.invokeDataProvider(
-          dataProviderHolder.instance, /* a test instance or null if the dataprovider is static*/
-          dataProviderHolder.method,
-          testMethod,
-          methodParams.context,
-          fedInstance,
-          annotationFinder);
+      List<Iterator<Object[]>> cartesianParameters = new ArrayList<>();
+      for (DataProviderHolder dataProviderHolder : dataProviderHolders) {
+        cartesianParameters.add(MethodInvocationHelper.invokeDataProvider(
+            dataProviderHolder.instance, /* a test instance or null if the dataprovider is static*/
+            dataProviderHolder.method,
+            testMethod,
+            methodParams.context,
+            fedInstance,
+            annotationFinder));
+      }
+      parameters = cartesianProduct(cartesianParameters);
 
       Iterator<Object[]> filteredParameters = filterParameters(parameters,
           testMethod.getInvocationNumbers());
 
       result = new ParameterHolder(filteredParameters, ParameterOrigin.ORIGIN_DATA_PROVIDER,
-          dataProviderHolder);
+          dataProviderHolders);
     }
     else {
       //
@@ -462,6 +467,42 @@ public class Parameters {
     }
 
     return result;
+  }
+
+  private static Iterator<Object[]> cartesianProduct(List<Iterator<Object[]>> cartesianParameters) {
+    if (cartesianParameters.size() == 0) {
+      throw new IllegalArgumentException("Must provide more than one collection of data");
+    } else if (cartesianParameters.size() == 1) {
+      return cartesianParameters.get(0);
+    }
+
+    List<Object[]> result = new ArrayList<>();
+
+    Iterator<Object[]> left = cartesianParameters.get(0);
+    List<Object[]> right = new ArrayList<>();
+    while (cartesianParameters.get(1).hasNext()) {
+      right.add(cartesianParameters.get(1).next());
+    }
+    while (left.hasNext()) {
+      Object[] leftRow = left.next();
+      for (Object[] rightRow : right) {
+        Object[] row = new Object[leftRow.length + rightRow.length];
+        System.arraycopy(leftRow, 0, row, 0, leftRow.length);
+        System.arraycopy(rightRow, 0, row, leftRow.length, rightRow.length);
+        result.add(row);
+      }
+    }
+
+    if (cartesianParameters.size()> 2) {
+      List<Iterator<Object[]>> nextProduct = new ArrayList<>();
+      nextProduct.add(result.iterator());
+      for (int i = 2; i < cartesianParameters.size(); i++) {
+        nextProduct.add(cartesianParameters.get(i));
+      }
+      return cartesianProduct(nextProduct);
+    }
+
+    return result.iterator();
   }
 
   /**

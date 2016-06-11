@@ -16,6 +16,7 @@ import org.testng.util.Strings;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -227,9 +228,9 @@ public class XMLSuiteResultWriter {
     if (cm.getMethod() != null) {
       testAnnotation = cm.getMethod().getAnnotation(Test.class);
       if (testAnnotation != null) {
-        String dataProvider = testAnnotation.dataProvider();
-        if (!Strings.isNullOrEmpty(dataProvider)) {
-          attributes.setProperty(XMLReporterConfig.ATTR_DATA_PROVIDER, dataProvider);
+        String[] dataProvider = testAnnotation.dataProvider();
+        if (dataProvider.length > 0) {
+          attributes.setProperty(XMLReporterConfig.ATTR_DATA_PROVIDER, Arrays.toString(dataProvider));
         }
       }
     }

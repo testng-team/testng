@@ -42,7 +42,7 @@ public class MAnnotationSampleTest {
     Assert.assertEquals(test1.getInvocationCount(), 43);
     Assert.assertEquals(test1.getSuccessPercentage(), 44);
     Assert.assertEquals(test1.getThreadPoolSize(), 3);
-    Assert.assertEquals(test1.getDataProvider(), "dp");
+    Assert.assertEquals(test1.getDataProvider(), new String[] {"dp"});
     Assert.assertEquals(test1.getDescription(), "Class level description");
 
     //
@@ -55,7 +55,7 @@ public class MAnnotationSampleTest {
     Assert.assertEquals(test2.getTimeOut(), 0);
     Assert.assertEquals(test2.getInvocationCount(), 1);
     Assert.assertEquals(test2.getSuccessPercentage(), 100);
-    Assert.assertEquals(test2.getDataProvider(), "");
+    Assert.assertEquals(test2.getDataProvider(), new String[] {});
   }
 
   public void verifyTestMethodLevel() throws SecurityException, NoSuchMethodException
@@ -74,7 +74,7 @@ public class MAnnotationSampleTest {
     Assert.assertEquals(test1.getTimeOut(), 142);
     Assert.assertEquals(test1.getInvocationCount(), 143);
     Assert.assertEquals(test1.getSuccessPercentage(), 61);
-    Assert.assertEquals(test1.getDataProvider(), "dp2");
+    Assert.assertEquals(test1.getDataProvider(), new String[] {"dp2"});
     Assert.assertEquals(test1.getDescription(), "Method description");
     Class[] exceptions = test1.getExpectedExceptions();
     Assert.assertEquals(exceptions.length, 1);
@@ -98,7 +98,7 @@ public class MAnnotationSampleTest {
     Assert.assertEquals(test1.getTimeOut(), 242);
     Assert.assertEquals(test1.getInvocationCount(), 243);
     Assert.assertEquals(test1.getSuccessPercentage(), 62);
-    Assert.assertEquals(test1.getDataProvider(), "dp3");
+    Assert.assertEquals(test1.getDataProvider(), new String[] {"dp3"});
     Assert.assertEquals(test1.getDescription(), "Constructor description");
     Class[] exceptions = test1.getExpectedExceptions();
     Assert.assertEquals(exceptions.length, 1);

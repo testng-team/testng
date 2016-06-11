@@ -6,8 +6,8 @@ package org.testng.internal.annotations;
  * @author Cedric Beust <cedric@beust.com>
  */
 public interface IDataProvidable {
-  public String getDataProvider();
-  public void setDataProvider(String v);
+  public String[] getDataProvider();
+  public void setDataProvider(String[] v);
 
   public Class<?> getDataProviderClass();
   public void setDataProviderClass(Class<?> v);
