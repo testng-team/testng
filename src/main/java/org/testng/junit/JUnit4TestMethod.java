@@ -22,6 +22,9 @@ public class JUnit4TestMethod extends JUnitTestMethod {
     private static ConstructorOrMethod getMethod(Description desc) {
         Class<?> c = desc.getTestClass();
         String method = desc.getMethodName();
+        if (JUnit4SpockMethod.isSpockClass(c)) {
+            return new JUnit4SpockMethod(desc);
+        }
         if (method == null) {
             return new JUnit4ConfigurationMethod(c);
         }
