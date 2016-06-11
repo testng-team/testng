@@ -39,6 +39,7 @@ group = 'org.testng'
 version = '6.9.12-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'groovy'
 apply plugin: 'jacoco'
 apply plugin: 'osgi'
 
@@ -58,13 +59,17 @@ dependencies {
     compile 'com.beust:jcommander:1.48'
 
     compile 'org.apache.ant:ant:1.7.0'
-    compile 'junit:junit:4.10', optional
+    compile 'junit:junit:4.12', optional
     compile 'org.yaml:snakeyaml:1.15', optional
 
     provided 'com.google.inject:guice:4.0:no_aop'
 
     testCompile 'org.assertj:assertj-core:2.0.0'
     testCompile 'org.testng:testng:6.9.4'
+    testCompile 'org.codehaus.groovy:groovy-test:2.4.7'
+    testCompile ('org.spockframework:spock-core:1.0-groovy-2.4') {
+        exclude module: 'grovy-all'
+    }
 }
 
 task sourceJar(type: Jar) {
