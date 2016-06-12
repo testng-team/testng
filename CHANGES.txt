@@ -5,6 +5,7 @@ Fixed: GITHUB-1047 IClassListener didn't work (Julien Herr)
 Fixed: GITHUB-1049 IClassListener was called many time (Julien Herr)
 Fixed: GITHUB-1045 TestNG swallows exceptions silently if @ClassRule is used (Gili Tzabari & Julien Herr)
 Fixed: GITHUB-506 TestNG cannot find JUnit method names from Spock (@blackduck-joe & Julien Herr)
+Fixed: GITHUB-1009 Iterator<Object[]> DataProvider: indices not working (Mark Fulton & Julien Herr)
 
 6.9.11:
 2016/03/26
