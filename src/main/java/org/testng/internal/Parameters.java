@@ -1,10 +1,13 @@
 package org.testng.internal;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterators;
 import com.google.inject.Injector;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,6 +20,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
 import org.testng.annotations.IParameterizable;
@@ -435,8 +439,18 @@ public class Parameters {
           fedInstance,
           annotationFinder);
 
-      Iterator<Object[]> filteredParameters = filterParameters(parameters,
-          testMethod.getInvocationNumbers());
+      // If the data provider is restricting the indices to return, filter them out
+      // TODO must not iterate, it may fail with iterator data provider
+      if (parameters instanceof ArrayIterator) {
+        int[] indices = dataProviderHolder.method.getAnnotation(DataProvider.class).indices();
+        Iterator<Object[]> filteredParameters = filterByIndices(parameters, indices);
+        ArrayList<Object[]> list = new ArrayList<>();
+        Iterators.addAll(list, filteredParameters);
+        testMethod.setParameterInvocationCount(list.size());
+        parameters = list.iterator();
+      }
+
+      Iterator<Object[]> filteredParameters = filterParameters(parameters, testMethod.getInvocationNumbers());
 
       result = new ParameterHolder(filteredParameters, ParameterOrigin.ORIGIN_DATA_PROVIDER,
           dataProviderHolder);
@@ -462,6 +476,27 @@ public class Parameters {
     }
 
     return result;
+  }
+
+  private static Iterator<Object[]> filterByIndices(Iterator<Object[]> originalResult, final int[] indices) {
+    if (indices.length == 0) {
+      return originalResult;
+    }
+    return Iterators.filter(originalResult, new Predicate<Object[]>() {
+
+      int i=-1;
+
+      @Override
+      public boolean apply(Object[] input) {
+        i++;
+        for (int index : indices) {
+          if (index == i) {
+            return true;
+          }
+        }
+        return false;
+      }
+    });
   }
 
   /**

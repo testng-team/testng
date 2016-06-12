@@ -107,11 +107,7 @@ public class MethodInvocationHelper {
     Class<?> returnType = dataProvider.getReturnType();
     // If it returns an Object[][], convert it to an Iterable<Object[]>
     if (Object[][].class.isAssignableFrom(returnType)) {
-      Object[][] originalResult = (Object[][]) invokeMethodNoCheckedException(dataProvider, instance, parameters);
-      // If the data provider is restricting the indices to return, filter them out
-      int[] indices = dataProvider.getAnnotation(DataProvider.class).indices();
-      Object[][] result = filterByIndices(originalResult, indices);
-      method.setParameterInvocationCount(result.length);
+      Object[][] result = (Object[][]) invokeMethodNoCheckedException(dataProvider, instance, parameters);
       return new ArrayIterator(result);
     } else if (Iterator.class.isAssignableFrom(returnType)) {
       return (Iterator<Object[]>) invokeMethodNoCheckedException(dataProvider, instance, parameters);
@@ -160,18 +156,6 @@ public class MethodInvocationHelper {
       throw new TestNGException(sb.toString());
     }
     return parameters;
-  }
-
-  private static Object[][] filterByIndices(Object[][] originalResult, int[] indices) {
-    if (indices.length == 0) {
-      return originalResult;
-    }
-    Object[][] result = new Object[indices.length][];
-    for (int j = 0; j < indices.length; j++) {
-      result[j] = originalResult[indices[j]];
-    }
-
-    return result;
   }
 
   /**
