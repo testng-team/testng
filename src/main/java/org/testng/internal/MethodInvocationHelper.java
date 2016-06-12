@@ -9,7 +9,6 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
 import org.testng.annotations.DataProvider;
-import org.testng.collections.Lists;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.collections.Pair;
 import org.testng.internal.thread.IExecutor;
@@ -36,6 +35,21 @@ import java.util.List;
  *
  */
 public class MethodInvocationHelper {
+
+  protected static Object invokeMethodNoCheckedException(Method thisMethod, Object instance, List<Object> parameters) {
+    try {
+      return invokeMethod(thisMethod, instance, parameters);
+    } catch (InvocationTargetException | IllegalAccessException e) {
+      // Don't throw TestNGException here or this test won't be reported as a
+      // skip or failure
+      throw new RuntimeException(e.getCause());
+    }
+  }
+
+  protected static Object invokeMethod(Method thisMethod, Object instance, List<Object> parameters)
+    throws InvocationTargetException, IllegalAccessException {
+    return invokeMethod(thisMethod, instance, parameters.toArray(new Object[parameters.size()]));
+  }
 
   protected static Object invokeMethod(Method thisMethod, Object instance, Object[] parameters)
       throws InvocationTargetException, IllegalAccessException {
@@ -89,78 +103,72 @@ public class MethodInvocationHelper {
   protected static Iterator<Object[]> invokeDataProvider(Object instance, Method dataProvider,
       ITestNGMethod method, ITestContext testContext, Object fedInstance,
       IAnnotationFinder annotationFinder) {
-    Iterator<Object[]> result;
-    final ConstructorOrMethod com = method.getConstructorOrMethod();
-
+    List<Object> parameters = getParameters(dataProvider, method, testContext, fedInstance, annotationFinder);
+    Class<?> returnType = dataProvider.getReturnType();
     // If it returns an Object[][], convert it to an Iterable<Object[]>
-    try {
-      List<Object> lParameters = Lists.newArrayList();
+    if (Object[][].class.isAssignableFrom(returnType)) {
+      Object[][] originalResult = (Object[][]) invokeMethodNoCheckedException(dataProvider, instance, parameters);
+      // If the data provider is restricting the indices to return, filter them out
+      int[] indices = dataProvider.getAnnotation(DataProvider.class).indices();
+      Object[][] result = filterByIndices(originalResult, indices);
+      method.setParameterInvocationCount(result.length);
+      return new ArrayIterator(result);
+    } else if (Iterator.class.isAssignableFrom(returnType)) {
+      return (Iterator<Object[]>) invokeMethodNoCheckedException(dataProvider, instance, parameters);
+    } else {
+      throw new TestNGException("Data Provider " + dataProvider + " must return"
+          + " either Object[][] or Iterator<Object>[], not " + returnType);
+    }
+  }
 
-      // Go through all the parameters declared on this Data Provider and
-      // make sure we have at most one Method and one ITestContext.
-      // Anything else is an error
-      Class<?>[] parameterTypes = dataProvider.getParameterTypes();
-
-      final Collection<Pair<Integer, Class<?>>> unresolved = new ArrayList<>(parameterTypes.length);
-      int i = 0;
-      for (Class<?> cls : parameterTypes) {
-        boolean isTestInstance = annotationFinder.hasTestInstance(dataProvider, i++);
-        if (cls.equals(Method.class)) {
-          lParameters.add(com.getMethod());
-        } else if (cls.equals(Constructor.class)) {
-          lParameters.add(com.getConstructor());
-        } else if (cls.equals(ConstructorOrMethod.class)) {
-          lParameters.add(com);
-        } else if (cls.equals(ITestNGMethod.class)) {
-          lParameters.add(method);
-        } else if (cls.equals(ITestContext.class)) {
-          lParameters.add(testContext);
-        } else if (isTestInstance) {
-          lParameters.add(fedInstance);
+  private static List<Object> getParameters(Method dataProvider, ITestNGMethod method, ITestContext testContext,
+                                            Object fedInstance, IAnnotationFinder annotationFinder) {
+    // Go through all the parameters declared on this Data Provider and
+    // make sure we have at most one Method and one ITestContext.
+    // Anything else is an error
+    List<Object> parameters = new ArrayList<>();
+    Collection<Pair<Integer, Class<?>>> unresolved = new ArrayList<>();
+    ConstructorOrMethod com = method.getConstructorOrMethod();
+    int i = 0;
+    for (Class<?> cls : dataProvider.getParameterTypes()) {
+      if (cls.equals(Method.class)) {
+        parameters.add(com.getMethod());
+      } else if (cls.equals(Constructor.class)) {
+        parameters.add(com.getConstructor());
+      } else if (cls.equals(ConstructorOrMethod.class)) {
+        parameters.add(com);
+      } else if (cls.equals(ITestNGMethod.class)) {
+        parameters.add(method);
+      } else if (cls.equals(ITestContext.class)) {
+        parameters.add(testContext);
+      } else {
+        boolean isTestInstance = annotationFinder.hasTestInstance(dataProvider, i);
+        if (isTestInstance) {
+          parameters.add(fedInstance);
         } else {
           unresolved.add(new Pair<Integer, Class<?>>(i, cls));
         }
       }
-      if (!unresolved.isEmpty()) {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("Some DataProvider ").append(dataProvider).append(" parameters unresolved: ");
-        for (Pair<Integer, Class<?>> pair : unresolved) {
-          sb.append(" at ").append(pair.first()).append(" type ").append(pair.second()).append("\n");
-        }
-        throw new TestNGException(sb.toString());
+      i++;
+    }
+    if (!unresolved.isEmpty()) {
+      StringBuilder sb = new StringBuilder();
+      sb.append("Some DataProvider ").append(dataProvider).append(" parameters unresolved: ");
+      for (Pair<Integer, Class<?>> pair : unresolved) {
+        sb.append(" at ").append(pair.first()).append(" type ").append(pair.second()).append("\n");
       }
+      throw new TestNGException(sb.toString());
+    }
+    return parameters;
+  }
 
-      Object[] parameters = lParameters.toArray(new Object[lParameters.size()]);
-
-      Class<?> returnType = dataProvider.getReturnType();
-      if (Object[][].class.isAssignableFrom(returnType)) {
-        Object[][] originalResult = (Object[][]) invokeMethod(dataProvider, instance, parameters);
-
-        // If the data provider is restricting the indices to return, filter them out
-        int[] indices = dataProvider.getAnnotation(DataProvider.class).indices();
-        Object[][] oResult;
-        if (indices.length > 0) {
-          oResult = new Object[indices.length][];
-          for (int j = 0; j < indices.length; j++) {
-            oResult[j] = originalResult[indices[j]];
-          }
-        } else {
-          oResult = originalResult;
-        }
-
-        method.setParameterInvocationCount(oResult.length);
-        result = MethodHelper.createArrayIterator(oResult);
-      } else if (Iterator.class.isAssignableFrom(returnType)) {
-        // Already an Iterator<Object[]>, assign it directly
-        result = (Iterator<Object[]>) invokeMethod(dataProvider, instance, parameters);
-      } else {
-        throw new TestNGException("Data Provider " + dataProvider + " must return"
-            + " either Object[][] or Iterator<Object>[], not " + returnType);
-      }
-    } catch (InvocationTargetException | IllegalAccessException e) {
-      // Don't throw TestNGException here or this test won't be reported as a
-      // skip or failure
-      throw new RuntimeException(e.getCause());
+  private static Object[][] filterByIndices(Object[][] originalResult, int[] indices) {
+    if (indices.length == 0) {
+      return originalResult;
+    }
+    Object[][] result = new Object[indices.length][];
+    for (int j = 0; j < indices.length; j++) {
+      result[j] = originalResult[indices[j]];
     }
 
     return result;
