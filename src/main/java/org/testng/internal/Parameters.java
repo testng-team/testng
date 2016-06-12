@@ -1,7 +1,6 @@
 package org.testng.internal;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterators;
+import com.google.common.primitives.Ints;
 import com.google.inject.Injector;
 
 import java.lang.reflect.Constructor;
@@ -412,9 +411,6 @@ public class Parameters {
       IAnnotationFinder annotationFinder,
       Object fedInstance)
   {
-    ParameterHolder result;
-    Iterator<Object[]> parameters;
-
     /*
      * Do we have a @DataProvider? If yes, then we have several
      * sets of parameters for this method
@@ -431,7 +427,7 @@ public class Parameters {
         allParameterNames.put(n, n);
       }
 
-      parameters = MethodInvocationHelper.invokeDataProvider(
+      final Iterator<Object[]> parameters = MethodInvocationHelper.invokeDataProvider(
           dataProviderHolder.instance, /* a test instance or null if the dataprovider is static*/
           dataProviderHolder.method,
           testMethod,
@@ -440,19 +436,44 @@ public class Parameters {
           annotationFinder);
 
       // If the data provider is restricting the indices to return, filter them out
-      // TODO must not iterate, it may fail with iterator data provider
-      if (parameters instanceof ArrayIterator) {
-        int[] indices = dataProviderHolder.method.getAnnotation(DataProvider.class).indices();
-        Iterator<Object[]> filteredParameters = filterByIndices(parameters, indices);
-        ArrayList<Object[]> list = new ArrayList<>();
-        Iterators.addAll(list, filteredParameters);
-        testMethod.setParameterInvocationCount(list.size());
-        parameters = list.iterator();
+      final List<Integer> allIndices = new ArrayList<>();
+      allIndices.addAll(testMethod.getInvocationNumbers());
+      allIndices.addAll(Ints.asList(dataProviderHolder.method.getAnnotation(DataProvider.class).indices())); // dataProviderHolder.annotation.getIndices()
+
+      if (!allIndices.isEmpty()) {
+        testMethod.setParameterInvocationCount(allIndices.size());
+      } else {
+        // Mark that this method needs to have at least a certain
+        // number of invocations (needed later to call AfterGroups
+        // at the right time).
+        testMethod.setParameterInvocationCount(1);
       }
 
-      Iterator<Object[]> filteredParameters = filterParameters(parameters, testMethod.getInvocationNumbers());
+      Iterator<Object[]> filteredParameters = new Iterator<Object[]>() {
+        int index = 0;
 
-      result = new ParameterHolder(filteredParameters, ParameterOrigin.ORIGIN_DATA_PROVIDER,
+        @Override
+        public boolean hasNext() {
+          return parameters.hasNext();
+        }
+
+        @Override
+        public Object[] next() {
+          Object[] next = parameters.next();
+          if (!allIndices.isEmpty() && !allIndices.contains(index)) {
+            next = null;
+          }
+          index++;
+          return next;
+        }
+
+        @Override
+        public void remove() {
+          throw new UnsupportedOperationException("remove");
+        }
+      };
+
+      return new ParameterHolder(filteredParameters, ParameterOrigin.ORIGIN_DATA_PROVIDER,
           dataProviderHolder);
     }
     else {
@@ -470,59 +491,10 @@ public class Parameters {
       // at the right time).
       testMethod.setParameterInvocationCount(allParameterValuesArray.length);
       // Turn it into an Iterable
-      parameters = MethodHelper.createArrayIterator(allParameterValuesArray);
+      Iterator<Object[]> parameters = MethodHelper.createArrayIterator(allParameterValuesArray);
 
-      result = new ParameterHolder(parameters, ParameterOrigin.ORIGIN_XML, null);
+      return new ParameterHolder(parameters, ParameterOrigin.ORIGIN_XML, null);
     }
-
-    return result;
-  }
-
-  private static Iterator<Object[]> filterByIndices(Iterator<Object[]> originalResult, final int[] indices) {
-    if (indices.length == 0) {
-      return originalResult;
-    }
-    return Iterators.filter(originalResult, new Predicate<Object[]>() {
-
-      int i=-1;
-
-      @Override
-      public boolean apply(Object[] input) {
-        i++;
-        for (int index : indices) {
-          if (index == i) {
-            return true;
-          }
-        }
-        return false;
-      }
-    });
-  }
-
-  /**
-   * If numbers is empty, return parameters, otherwise, return a subset of parameters
-   * whose ordinal number match these found in numbers.
-   */
-  static private Iterator<Object[]> filterParameters(Iterator<Object[]> parameters,
-      List<Integer> list) {
-    if (list.isEmpty()) {
-      return parameters;
-    } else {
-      List<Object[]> result = Lists.newArrayList();
-      int i = 0;
-      while (parameters.hasNext()) {
-        Object[] next = parameters.next();
-        if (list.contains(i)) {
-          result.add(next);
-        }
-        i++;
-      }
-      return new ArrayIterator(result.toArray(new Object[list.size()][]));
-    }
-  }
-
-  private static void ppp(String s) {
-    System.out.println("[Parameters] " + s);
   }
 
   /** A parameter passing helper class. */
@@ -535,11 +507,6 @@ public class Parameters {
 
     public MethodParameters(Map<String, String> params, Map<String, String> methodParams) {
       this(params, methodParams, null, null, null, null);
-    }
-
-    public MethodParameters(Map<String, String> params, Map<String, String> methodParams,
-        Method m) {
-      this(params, methodParams, null, m, null, null);
     }
 
     /**
