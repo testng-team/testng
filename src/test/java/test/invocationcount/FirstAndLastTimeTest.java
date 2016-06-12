@@ -17,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author cbeust@google.com
  *
  */
-// TODO check with iterator data provider
 public class FirstAndLastTimeTest extends SimpleBaseTest {
   @Test
   public void verifyDataProviderFalseFalse() {

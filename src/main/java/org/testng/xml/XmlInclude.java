@@ -5,7 +5,6 @@ import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -13,23 +12,20 @@ import java.util.Properties;
 public class XmlInclude implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  private String m_name;
-  private List<Integer> m_invocationNumbers = Lists.newArrayList();
-  private int m_index;
+  private final String m_name;
+  private final List<Integer> m_invocationNumbers;
+  private final int m_index;
   private String m_description;
-  private Map<String, String> m_parameters = Maps.newHashMap();
+  private final Map<String, String> m_parameters = Maps.newHashMap();
 
   private XmlClass m_xmlClass;
 
-  public XmlInclude() {
-  }
-
   public XmlInclude(String n) {
-    this(n, Collections.<Integer> emptyList(), 0);
+    this(n, 0);
   }
 
   public XmlInclude(String n, int index) {
-    this(n, Collections.<Integer> emptyList(), index);
+    this(n, Lists.<Integer>newArrayList(), index);
   }
 
   public XmlInclude(String n, List<Integer> list, int index) {

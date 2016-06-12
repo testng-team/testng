@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import org.testng.ITestClass;
 import org.testng.ITestContext;
@@ -440,16 +441,7 @@ public class Parameters {
       allIndices.addAll(testMethod.getInvocationNumbers());
       allIndices.addAll(Ints.asList(dataProviderHolder.method.getAnnotation(DataProvider.class).indices())); // dataProviderHolder.annotation.getIndices()
 
-      if (!allIndices.isEmpty()) {
-        testMethod.setParameterInvocationCount(allIndices.size());
-      } else {
-        // Mark that this method needs to have at least a certain
-        // number of invocations (needed later to call AfterGroups
-        // at the right time).
-        testMethod.setParameterInvocationCount(1);
-      }
-
-      Iterator<Object[]> filteredParameters = new Iterator<Object[]>() {
+      final Iterator<Object[]> filteredParameters = new Iterator<Object[]>() {
         int index = 0;
 
         @Override
@@ -472,6 +464,13 @@ public class Parameters {
           throw new UnsupportedOperationException("remove");
         }
       };
+
+      testMethod.setMoreInvocationChecker(new Callable<Boolean>() {
+        @Override
+        public Boolean call() throws Exception {
+          return filteredParameters.hasNext();
+        }
+      });
 
       return new ParameterHolder(filteredParameters, ParameterOrigin.ORIGIN_DATA_PROVIDER,
           dataProviderHolder);
