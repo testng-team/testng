@@ -28,6 +28,15 @@ public class GroupsTest {
   }
 
   @Test
+  public void verifyIteratorDataProviderAfterGroups() {
+    runTest(ConfigurationGroupIteratorDataProviderSampleTest.class,
+        ConfigurationGroupIteratorDataProviderSampleTest.m_list,
+        Arrays.asList(new Integer[] {
+                1, 2, 2, 2, 3
+        }));
+  }
+
+  @Test
   public void verifyParametersAfterGroups() {
     runTest(ConfigurationGroupInvocationCountSampleTest.class,
         ConfigurationGroupInvocationCountSampleTest.m_list,

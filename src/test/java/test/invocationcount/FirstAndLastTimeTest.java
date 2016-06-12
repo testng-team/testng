@@ -17,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author cbeust@google.com
  *
  */
+// TODO check with iterator data provider
 public class FirstAndLastTimeTest extends SimpleBaseTest {
   @Test
   public void verifyDataProviderFalseFalse() {
@@ -25,7 +26,10 @@ public class FirstAndLastTimeTest extends SimpleBaseTest {
     assertThat(invokedMethodNames).containsExactly(
         "beforeMethod", "f", "afterMethod",
         "beforeMethod", "f", "afterMethod",
-        "beforeMethod", "f", "afterMethod"
+        "beforeMethod", "f", "afterMethod",
+        "beforeMethod", "f2", "afterMethod",
+        "beforeMethod", "f2", "afterMethod",
+        "beforeMethod", "f2", "afterMethod"
     );
   }
 
@@ -36,7 +40,10 @@ public class FirstAndLastTimeTest extends SimpleBaseTest {
     assertThat(invokedMethodNames).containsExactly(
         "beforeMethod", "f", "afterMethod",
         "f", "afterMethod",
-        "f", "afterMethod"
+        "f", "afterMethod",
+        "beforeMethod", "f2", "afterMethod",
+        "f2", "afterMethod",
+        "f2", "afterMethod"
     );
   }
 
@@ -47,7 +54,10 @@ public class FirstAndLastTimeTest extends SimpleBaseTest {
     assertThat(invokedMethodNames).containsExactly(
         "beforeMethod", "f",
         "beforeMethod", "f",
-        "beforeMethod", "f", "afterMethod"
+        "beforeMethod", "f", "afterMethod",
+        "beforeMethod", "f2",
+        "beforeMethod", "f2",
+        "beforeMethod", "f2", "afterMethod"
     );
   }
 
@@ -58,7 +68,10 @@ public class FirstAndLastTimeTest extends SimpleBaseTest {
     assertThat(invokedMethodNames).containsExactly(
         "beforeMethod", "f",
         "f",
-        "f", "afterMethod"
+        "f", "afterMethod",
+        "beforeMethod", "f2",
+        "f2",
+        "f2", "afterMethod"
     );
   }
 
