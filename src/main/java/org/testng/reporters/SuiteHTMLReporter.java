@@ -684,7 +684,7 @@ public class SuiteHTMLReporter implements IReporter {
     if (! fileResult.exists()) {
       fileResult.mkdirs();
       if (! fileResult.exists()) {
-        Utils.log("Problem creating output directory " + fileResult.getAbsolutePath());
+        Utils.log("Reports", 2, "Problem creating output directory " + fileResult.getAbsolutePath());
       }
     }
     return fileResult.getAbsolutePath();
