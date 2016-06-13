@@ -60,8 +60,7 @@ public class ConfigurationGroupMethods implements Serializable {
   public synchronized boolean isLastMethodForGroup(String group, ITestNGMethod method) {
 
     // If we have more invocation to do, this is not the last one yet
-    int invocationCount= method.getCurrentInvocationCount();
-    if(invocationCount < (method.getInvocationCount() * method.getParameterInvocationCount())) {
+    if(method.hasMoreInvocation()) {
       return false;
     }
 

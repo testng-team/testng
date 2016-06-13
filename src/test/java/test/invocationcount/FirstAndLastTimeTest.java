@@ -25,7 +25,10 @@ public class FirstAndLastTimeTest extends SimpleBaseTest {
     assertThat(invokedMethodNames).containsExactly(
         "beforeMethod", "f", "afterMethod",
         "beforeMethod", "f", "afterMethod",
-        "beforeMethod", "f", "afterMethod"
+        "beforeMethod", "f", "afterMethod",
+        "beforeMethod", "f2", "afterMethod",
+        "beforeMethod", "f2", "afterMethod",
+        "beforeMethod", "f2", "afterMethod"
     );
   }
 
@@ -36,7 +39,10 @@ public class FirstAndLastTimeTest extends SimpleBaseTest {
     assertThat(invokedMethodNames).containsExactly(
         "beforeMethod", "f", "afterMethod",
         "f", "afterMethod",
-        "f", "afterMethod"
+        "f", "afterMethod",
+        "beforeMethod", "f2", "afterMethod",
+        "f2", "afterMethod",
+        "f2", "afterMethod"
     );
   }
 
@@ -47,7 +53,10 @@ public class FirstAndLastTimeTest extends SimpleBaseTest {
     assertThat(invokedMethodNames).containsExactly(
         "beforeMethod", "f",
         "beforeMethod", "f",
-        "beforeMethod", "f", "afterMethod"
+        "beforeMethod", "f", "afterMethod",
+        "beforeMethod", "f2",
+        "beforeMethod", "f2",
+        "beforeMethod", "f2", "afterMethod"
     );
   }
 
@@ -58,7 +67,10 @@ public class FirstAndLastTimeTest extends SimpleBaseTest {
     assertThat(invokedMethodNames).containsExactly(
         "beforeMethod", "f",
         "f",
-        "f", "afterMethod"
+        "f", "afterMethod",
+        "beforeMethod", "f2",
+        "f2",
+        "f2", "afterMethod"
     );
   }
 

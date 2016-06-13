@@ -769,19 +769,7 @@ public class Invoker implements IInvoker {
         }
       }
       else {
-        int current = tm.getCurrentInvocationCount();
-        boolean isLast = false;
-        // If we have parameters, set the boolean if we are about to run
-        // the last invocation
-        if (tm.getParameterInvocationCount() > 0) {
-          isLast = current == tm.getParameterInvocationCount() * tm.getTotalInvocationCount();
-        }
-        // If we have invocationCount > 1, set the boolean if we are about to
-        // run the last invocation
-        else if (tm.getTotalInvocationCount() > 1) {
-          isLast = current == tm.getTotalInvocationCount();
-        }
-        if (! cm.isLastTimeOnly() || (cm.isLastTimeOnly() && isLast)) {
+        if (! cm.isLastTimeOnly() || (cm.isLastTimeOnly() && !tm.hasMoreInvocation())) {
           result.add(m);
         }
       }
@@ -1095,13 +1083,18 @@ public class Invoker implements IInvoker {
         int parametersIndex = 0;
 
         try {
-          List<TestMethodWithDataProviderMethodWorker> workers = Lists.newArrayList();
-
           if (bag.parameterHolder.origin == ParameterOrigin.ORIGIN_DATA_PROVIDER &&
               bag.parameterHolder.dataProviderHolder.annotation.isParallel()) {
+            List<TestMethodWithDataProviderMethodWorker> workers = Lists.newArrayList();
             while (allParameterValues.hasNext()) {
-              Object[] parameterValues = injectParameters(allParameterValues.next(),
+              Object[] next = allParameterValues.next();
+              if (next == null) {
+                // skipped value
+                continue;
+              }
+              Object[] parameterValues = injectParameters(next,
                   testMethod.getMethod(), testContext, null /* test result */);
+
               TestMethodWithDataProviderMethodWorker w =
                 new TestMethodWithDataProviderMethodWorker(this,
                     testMethod, parametersIndex,
@@ -1122,7 +1115,12 @@ public class Invoker implements IInvoker {
 
           } else {
             while (allParameterValues.hasNext()) {
-              Object[] parameterValues = injectParameters(allParameterValues.next(),
+              Object[] next = allParameterValues.next();
+              if (next == null) {
+                // skipped value
+                continue;
+              }
+              Object[] parameterValues = injectParameters(next,
                   testMethod.getMethod(), testContext, null /* test result */);
 
               List<ITestResult> tmpResults = Lists.newArrayList();
@@ -1165,7 +1163,6 @@ public class Invoker implements IInvoker {
                   while (invocationCount-- > 0) {
                     result.add(registerSkippedTestResult(testMethod, instance, System.currentTimeMillis(), null));
                   }
-                  break;
                 }
               }// end finally
               parametersIndex++;
@@ -1251,9 +1248,6 @@ public class Invoker implements IInvoker {
             m_annotationFinder,
             fedInstance));
     }
-//    catch(TestNGException ex) {
-//      throw ex;
-//    }
     catch(Throwable cause) {
       return new ParameterBag(
           new TestResult(

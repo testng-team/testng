@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
@@ -57,6 +58,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   private String m_description = null;
   protected AtomicInteger m_currentInvocationCount = new AtomicInteger(0);
   private int m_parameterInvocationCount = 1;
+  private Callable<Boolean> m_moreInvocationChecker;
   private IRetryAnalyzer m_retryAnalyzer = null;
   private boolean m_skipFailedInvocations = true;
   private long m_invocationTimeOut = 0L;
@@ -683,6 +685,24 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   @Override
   public int getParameterInvocationCount() {
     return m_parameterInvocationCount;
+  }
+
+  @Override
+  public void setMoreInvocationChecker(Callable<Boolean> moreInvocationChecker) {
+    m_moreInvocationChecker = moreInvocationChecker;
+  }
+
+  @Override
+  public boolean hasMoreInvocation() {
+    if (m_moreInvocationChecker != null) {
+      try {
+        return m_moreInvocationChecker.call();
+      } catch (Exception e) {
+        // Should never append
+        throw new RuntimeException(e);
+      }
+    }
+    return getCurrentInvocationCount() < getInvocationCount() * getParameterInvocationCount();
   }
 
   @Override

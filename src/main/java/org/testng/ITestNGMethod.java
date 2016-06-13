@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 /**
  * Describes a TestNG annotated method and the instance on which it will be invoked.
@@ -214,6 +215,8 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
   public int getCurrentInvocationCount();
   public void setParameterInvocationCount(int n);
   public int getParameterInvocationCount();
+  void setMoreInvocationChecker(Callable<Boolean> moreInvocationChecker);
+  boolean hasMoreInvocation();
 
   public ITestNGMethod clone();
 

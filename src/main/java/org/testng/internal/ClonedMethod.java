@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 public class ClonedMethod implements ITestNGMethod {
   private static final long serialVersionUID = 1L;
@@ -142,6 +143,14 @@ public class ClonedMethod implements ITestNGMethod {
   @Override
   public int getParameterInvocationCount() {
     return 1;
+  }
+
+  @Override
+  public void setMoreInvocationChecker(Callable<Boolean> moreInvocationChecker) {}
+
+  @Override
+  public boolean hasMoreInvocation() {
+    return false;
   }
 
   @Override

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import org.testng.Assert;
 import org.testng.IClass;
@@ -412,6 +413,15 @@ public class MethodInstanceTest {
 
     @Override
     public void setInvocationCount(int count) {
+    }
+
+    @Override
+    public void setMoreInvocationChecker(Callable<Boolean> moreInvocationChecker) {
+    }
+
+    @Override
+    public boolean hasMoreInvocation() {
+      return false;
     }
 
     @Override
