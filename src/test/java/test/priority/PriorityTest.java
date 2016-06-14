@@ -18,9 +18,7 @@ public class PriorityTest extends SimpleBaseTest {
       tng.setParallel(XmlSuite.ParallelMode.METHODS);
     }
     tng.run();
-    for (int i=0; i<methods.length; i++) {
-      Assert.assertEquals(listener.getInvokedMethodNames().get(i), methods[i]);
-    }
+    Assert.assertEquals(listener.getInvokedMethodNames().toArray(), methods);
   }
 
   @Test(enabled = false, description = "Make sure priorities work in parallel mode")
