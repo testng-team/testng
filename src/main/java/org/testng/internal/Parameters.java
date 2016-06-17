@@ -1,6 +1,5 @@
 package org.testng.internal;
 
-import com.google.common.primitives.Ints;
 import com.google.inject.Injector;
 
 import java.lang.reflect.Constructor;
@@ -20,7 +19,6 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
-import org.testng.annotations.DataProvider;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
 import org.testng.annotations.IParameterizable;
@@ -439,7 +437,7 @@ public class Parameters {
       // If the data provider is restricting the indices to return, filter them out
       final List<Integer> allIndices = new ArrayList<>();
       allIndices.addAll(testMethod.getInvocationNumbers());
-      allIndices.addAll(Ints.asList(dataProviderHolder.method.getAnnotation(DataProvider.class).indices())); // dataProviderHolder.annotation.getIndices()
+      allIndices.addAll(dataProviderHolder.annotation.getIndices());
 
       final Iterator<Object[]> filteredParameters = new Iterator<Object[]>() {
         int index = 0;

@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.primitives.Ints;
 import org.testng.IAnnotationTransformer;
 import org.testng.TestNGException;
 import org.testng.annotations.AfterClass;
@@ -327,6 +328,7 @@ public class JDK15TagFactory {
     DataProvider c = (DataProvider) a;
     result.setName(c.name());
     result.setParallel(c.parallel());
+    result.setIndices(Ints.asList(c.indices()));
 
     return result;
   }
