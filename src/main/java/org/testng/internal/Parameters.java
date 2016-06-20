@@ -315,7 +315,7 @@ public class Parameters {
   {
     DataProviderHolder result = null;
 
-    Class cls = clazz.getRealClass();
+    Class<?> cls = clazz.getRealClass();
     boolean shouldBeStatic = false;
     if (dataProviderClass != null) {
       cls = dataProviderClass;

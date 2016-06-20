@@ -21,36 +21,6 @@ import java.io.Serializable;
 public interface ITestClass extends IClass, Serializable {
 
   /**
-   * Returns all the instances the methods will be invoked upon.
-   * This will typically be an array of one object in the absence
-   * of a @Factory annotation.
-   *
-   * @param reuse flag if a new set of instances must be returned
-   *  (if set to <tt>false</tt>)
-   * @return All the instances the methods will be invoked upon.
-   *
-   * {@inheritDoc}
-   */
-  @Override
-  Object[] getInstances(boolean reuse);
-
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * {@inheritDoc}
-   */
-  @Override
-  long[] getInstanceHashCodes();
-
-  /**
-   * @return The number of instances used in this class.  This method
-   * is needed for serialization since we don't know ahead of time if the
-   * instances of the test classes will be serializable.
-   */
-  @Override
-  int getInstanceCount();
-
-  /**
    * Returns all the applicable test methods.
    * @return All the applicable test methods.
    */
