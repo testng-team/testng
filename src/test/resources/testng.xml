@@ -321,6 +321,7 @@
       <class name="test.factory.FactoryAndTestMethodTest" />
 
       <class name="test.factory.FactoryIntegrationTest" />
+      <class name="test.factory.EmptyFactoryDataProviderTest" />
     </classes>
   </test>
 
@@ -490,6 +491,7 @@
       <class name="test.dataprovider.TestNG411Test" />
       <class name="test.dataprovider.VarArgsDataProviderTest" />
       <class name="test.dataprovider.IndicesTest" />
+      <class name="test.dataprovider.EmptyDataProviderTest" />
     </classes>
   </test>
 
