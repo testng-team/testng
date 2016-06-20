@@ -188,7 +188,10 @@ public class ClassImpl implements IClass {
             m_xmlTest, m_annotationFinder, m_objectFactory) };
       }
     } else {
-      result = new Object[] { getDefaultInstance() };
+      Object defaultInstance = getDefaultInstance();
+      if (defaultInstance != null) {
+        result = new Object[]{defaultInstance};
+      }
     }
     if (m_instances.size() > 0) {
       result = m_instances.toArray(new Object[m_instances.size()]);
