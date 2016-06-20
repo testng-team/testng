@@ -47,7 +47,7 @@ import org.testng.internal.Utils;
  */
 public class JDK15TagFactory {
 
-  public <A extends IAnnotation> A createTag(Class<?> cls, Annotation a,
+  public <A extends IAnnotation> A createTag(Class<?> cls, Method method, Annotation a,
                                              Class<A> annotationClass, IAnnotationTransformer transformer) {
     IAnnotation result = null;
 
@@ -56,7 +56,7 @@ public class JDK15TagFactory {
         result = createConfigurationTag(cls, a);
       }
       else if (annotationClass == IDataProviderAnnotation.class) {
-        result = createDataProviderTag(a);
+        result = createDataProviderTag(method, a);
       }
       else if (annotationClass == IExpectedExceptionsAnnotation.class) {
         result = createExpectedExceptionsTag(a);
@@ -323,10 +323,14 @@ public class JDK15TagFactory {
     return result;
   }
 
-  private IAnnotation createDataProviderTag(Annotation a) {
+  private IAnnotation createDataProviderTag(Method method, Annotation a) {
     DataProviderAnnotation result = new DataProviderAnnotation();
     DataProvider c = (DataProvider) a;
-    result.setName(c.name());
+    if (c.name().isEmpty()) {
+      result.setName(method.getName());
+    } else {
+      result.setName(c.name());
+    }
     result.setParallel(c.parallel());
     result.setIndices(Ints.asList(c.indices()));
 
