@@ -131,7 +131,11 @@ public class TestNGClassFinder extends BaseClassFinder {
           if (theseInstances.length == 0) {
             theseInstances = ic.getInstances(true);
           }
-          Object instance= theseInstances[0];
+
+          Object instance = null;
+          if (theseInstances.length != 0) {
+            instance = theseInstances[0];
+          }
           putIClass(cls, ic);
 
           ConstructorOrMethod factoryMethod =

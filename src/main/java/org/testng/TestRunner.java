@@ -297,7 +297,7 @@ public class TestRunner
     Class<? extends ITestNGListenerFactory> listenerFactoryClass = null;
 
     for (IClass cls : getTestClasses()) {
-      Class<? extends ITestNGListenerFactory> realClass = cls.getRealClass();
+      Class<?> realClass = cls.getRealClass();
       ListenerHolder listenerHolder = findAllListeners(realClass);
       if (listenerFactoryClass == null) {
         listenerFactoryClass = listenerHolder.listenerFactoryClass;

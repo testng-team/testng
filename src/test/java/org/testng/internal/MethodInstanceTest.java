@@ -176,6 +176,7 @@ public class MethodInstanceTest {
       return null;
     }
 
+    @Deprecated
     @Override
     public int getInstanceCount() {
       return 0;

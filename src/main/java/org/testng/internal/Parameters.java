@@ -315,7 +315,7 @@ public class Parameters {
   {
     DataProviderHolder result = null;
 
-    Class cls = clazz.getRealClass();
+    Class<?> cls = clazz.getRealClass();
     boolean shouldBeStatic = false;
     if (dataProviderClass != null) {
       cls = dataProviderClass;
@@ -414,7 +414,7 @@ public class Parameters {
      * Do we have a @DataProvider? If yes, then we have several
      * sets of parameters for this method
      */
-    DataProviderHolder dataProviderHolder =
+    final DataProviderHolder dataProviderHolder =
         findDataProvider(instance, testMethod.getTestClass(),
             testMethod.getConstructorOrMethod(), annotationFinder, methodParams.context);
 
@@ -441,9 +441,14 @@ public class Parameters {
 
       final Iterator<Object[]> filteredParameters = new Iterator<Object[]>() {
         int index = 0;
+        boolean hasWarn = false;
 
         @Override
         public boolean hasNext() {
+          if (index == 0 && !parameters.hasNext() && !hasWarn) {
+            hasWarn = true;
+            Utils.log("", 2,  "Warning: the data provider '" + dataProviderHolder.annotation.getName() + "' returned an empty array or iterator, so this test is not doing anything");
+          }
           return parameters.hasNext();
         }
 

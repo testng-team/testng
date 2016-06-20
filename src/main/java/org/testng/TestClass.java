@@ -45,9 +45,6 @@ class TestClass extends NoOpTestClass implements ITestClass {
     init(cls, testMethodFinder, annotationFinder, runInfo, xmlTest, xmlClass);
   }
 
-  /**
-   * @return the name of this test if the class implements org.testng.ITest, null otherwise.
-   */
   @Override
   public String getTestName() {
     return m_testName;
@@ -112,6 +109,7 @@ class TestClass extends NoOpTestClass implements ITestClass {
     return m_iClass.getInstanceHashCodes();
   }
 
+  @Deprecated
   @Override
   public int getInstanceCount() {
     return m_iClass.getInstanceCount();
