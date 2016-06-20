@@ -13,6 +13,7 @@ public class EmptyFactoryDataProviderTest {
         TestNG testng = new TestNG(false);
         TestListenerAdapter tla = new TestListenerAdapter();
         testng.addListener((ITestNGListener) tla);
+        // Used to check the warning message
         testng.setVerbose(2);
         testng.setTestClasses(new Class[]{ArrayEmptyFactorySample.class, IteratorEmptyFactorySample.class});
 
