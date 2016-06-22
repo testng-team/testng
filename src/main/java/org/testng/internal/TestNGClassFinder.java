@@ -28,34 +28,41 @@ import static org.testng.internal.ClassHelper.getAvailableMethods;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class TestNGClassFinder extends BaseClassFinder {
-  private ITestContext m_testContext = null;
-  private Map<Class, List<Object>> m_instanceMap = Maps.newHashMap();
+
+  private final ITestContext m_testContext;
+  private final Map<Class<?>, List<Object>> m_instanceMap = Maps.newHashMap();
 
   public TestNGClassFinder(ClassInfoMap cim,
-                           Map<Class, List<Object>> instanceMap,
+                           XmlTest xmlTest,
+                           IConfiguration configuration,
+                           ITestContext testContext)
+  {
+    this(cim,  Maps.<Class<?>, List<Object>>newHashMap(), xmlTest, configuration, testContext);
+  }
+
+  public TestNGClassFinder(ClassInfoMap cim,
+                           Map<Class<?>, List<Object>> instanceMap,
                            XmlTest xmlTest,
                            IConfiguration configuration,
                            ITestContext testContext)
   {
     m_testContext = testContext;
 
-    if(null == instanceMap) {
-      instanceMap= Maps.newHashMap();
+    if (instanceMap == null) {
+      throw new IllegalArgumentException("instanceMap must not be null");
     }
 
     IAnnotationFinder annotationFinder = configuration.getAnnotationFinder();
     ITestObjectFactory objectFactory = configuration.getObjectFactory();
 
-    //
     // Find all the new classes and their corresponding instances
-    //
     Set<Class<?>> allClasses= cim.getClasses();
 
     //very first pass is to find ObjectFactory, can't create anything else until then
     if(objectFactory == null) {
       objectFactory = new ObjectFactoryImpl();
       outer:
-      for (Class cls : allClasses) {
+      for (Class<?> cls : allClasses) {
         try {
           if (null != cls) {
             Method[] ms;
@@ -63,7 +70,7 @@ public class TestNGClassFinder extends BaseClassFinder {
               ms = cls.getMethods();
             } catch (NoClassDefFoundError e) {
               // https://github.com/cbeust/testng/issues/602
-              ppp("Warning: Can't link and determine methods of " + cls);
+              Utils.log("TestNGClassFinder", 5, "[WARN] Can't link and determine methods of " + cls + "(" + e.getMessage() + ")");
               ms = new Method[0];
             }
             for (Method m : ms) {
@@ -92,7 +99,6 @@ public class TestNGClassFinder extends BaseClassFinder {
         } catch (NoClassDefFoundError e) {
           Utils.log("[TestNGClassFinder]", 1, "Unable to read methods on class " + cls.getName()
               + " - unable to resolve class reference " + e.getMessage());
-
           for (XmlClass xmlClass : xmlTest.getXmlClasses()) {
             if (xmlClass.loadClasses() && xmlClass.getName().equals(cls.getName())) {
               throw e;
@@ -103,20 +109,15 @@ public class TestNGClassFinder extends BaseClassFinder {
       }
     }
 
-    for(Class cls : allClasses) {
-      if((null == cls)) {
-        ppp("FOUND NULL CLASS IN FOLLOWING ARRAY:");
-        int i= 0;
-        for(Class c : allClasses) {
-          ppp("  " + i + ": " + c);
-        }
-
+    for(Class<?> cls : allClasses) {
+      if (null == cls) {
+        Utils.log("TestNGClassFinder", 5, "[WARN] FOUND NULL CLASS");
         continue;
       }
 
       if(isTestNGClass(cls, annotationFinder)) {
-        List allInstances= instanceMap.get(cls);
-        Object thisInstance= (null != allInstances) ? allInstances.get(0) : null;
+        List<Object> allInstances = instanceMap.get(cls);
+        Object thisInstance = (allInstances != null && !allInstances.isEmpty()) ? allInstances.get(0) : null;
 
         // If annotation class and instances are abstract, skip them
         if ((null == thisInstance) && Modifier.isAbstract(cls.getModifiers())) {
@@ -127,21 +128,17 @@ public class TestNGClassFinder extends BaseClassFinder {
         IClass ic= findOrCreateIClass(m_testContext, cls, cim.getXmlClass(cls), thisInstance,
             xmlTest, annotationFinder, objectFactory);
         if(null != ic) {
-          Object[] theseInstances = ic.getInstances(false);
-          if (theseInstances.length == 0) {
-            theseInstances = ic.getInstances(true);
-          }
-
-          Object instance = null;
-          if (theseInstances.length != 0) {
-            instance = theseInstances[0];
-          }
           putIClass(cls, ic);
 
-          ConstructorOrMethod factoryMethod =
-            ClassHelper.findDeclaredFactoryMethod(cls, annotationFinder);
+          ConstructorOrMethod factoryMethod = ClassHelper.findDeclaredFactoryMethod(cls, annotationFinder);
           if (factoryMethod != null && factoryMethod.getEnabled()) {
-            FactoryMethod fm = new FactoryMethod( /* cls, */
+            Object[] theseInstances = ic.getInstances(false);
+            if (theseInstances.length == 0) {
+              theseInstances = ic.getInstances(true);
+            }
+
+            Object instance = theseInstances.length != 0 ? theseInstances[0] : null;
+            FactoryMethod fm = new FactoryMethod(
               factoryMethod,
               instance,
               xmlTest,
@@ -149,10 +146,8 @@ public class TestNGClassFinder extends BaseClassFinder {
               m_testContext);
             ClassInfoMap moreClasses = new ClassInfoMap();
 
-            //
             // If the factory returned IInstanceInfo, get the class from it,
             // otherwise, just call getClass() on the returned instances
-            //
             int i = 0;
             for (Object o : fm.invoke()) {
               if (o == null) {
@@ -175,15 +170,14 @@ public class TestNGClassFinder extends BaseClassFinder {
             }
 
             if(moreClasses.getSize() > 0) {
-              TestNGClassFinder finder=
+              TestNGClassFinder finder =
                 new TestNGClassFinder(moreClasses,
                     m_instanceMap,
                     xmlTest,
                     configuration,
                     m_testContext);
 
-              IClass[] moreIClasses= finder.findTestClasses();
-              for(IClass ic2 : moreIClasses) {
+              for(IClass ic2 : finder.findTestClasses()) {
                 putIClass(ic2.getRealClass(), ic2);
               }
             } // if moreClasses.size() > 0
@@ -198,8 +192,8 @@ public class TestNGClassFinder extends BaseClassFinder {
     //
     // Add all the instances we found to their respective IClasses
     //
-    for(Map.Entry<Class, List<Object>> entry : m_instanceMap.entrySet()) {
-      Class clazz = entry.getKey();
+    for(Map.Entry<Class<?>, List<Object>> entry : m_instanceMap.entrySet()) {
+      Class<?> clazz = entry.getKey();
       for(Object instance : entry.getValue()) {
         IClass ic= getIClass(clazz);
         if(null != ic) {
@@ -213,13 +207,11 @@ public class TestNGClassFinder extends BaseClassFinder {
    * @return true if this class contains TestNG annotations (either on itself
    * or on a superclass).
    */
-  public static boolean isTestNGClass(Class<?> c, IAnnotationFinder annotationFinder) {
-    Class[] allAnnotations= AnnotationHelper.getAllAnnotations();
+  private static boolean isTestNGClass(Class<?> c, IAnnotationFinder annotationFinder) {
     Class<?> cls = c;
 
     try {
-      for(Class annotation : allAnnotations) {
-
+      for(Class<? extends IAnnotation> annotation : AnnotationHelper.getAllAnnotations()) {
         for (cls = c; cls != null; cls = cls.getSuperclass()) {
           // Try on the methods
           for (Method m : getAvailableMethods(cls)) {
@@ -265,19 +257,14 @@ public class TestNGClassFinder extends BaseClassFinder {
   }
 
   // Class<S> should be replaced by Class<? extends T> but java doesn't fail as expected: https://github.com/cbeust/testng/issues/1070
-  private <T, S extends T> void addInstance(Class<S> clazz, T o) {
-    List<Object> list= m_instanceMap.get(clazz);
+  private <T, S extends T> void addInstance(Class<S> clazz, T instance) {
+    List<Object> instances = m_instanceMap.get(clazz);
 
-    if(null == list) {
-      list= Lists.newArrayList();
-      m_instanceMap.put(clazz, list);
+    if (instances == null) {
+      instances = Lists.newArrayList();
+      m_instanceMap.put(clazz, instances);
     }
 
-    list.add(o);
+    instances.add(instance);
   }
-
-  public static void ppp(String s) {
-    System.out.println("[TestNGClassFinder] " + s);
-  }
-
 }

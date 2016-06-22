@@ -191,7 +191,7 @@ public class TestRunner
 
 
     boolean preserveOrder = "true".equalsIgnoreCase(test.getPreserveOrder());
-    m_methodInterceptors = new ArrayList<IMethodInterceptor>();
+    m_methodInterceptors = new ArrayList<>();
     builtinInterceptor = preserveOrder ? new PreserveOrderMethodInterceptor() : new InstanceOrderingMethodInterceptor();
 
     m_packageNamesFromXml= test.getXmlPackages();
@@ -390,7 +390,6 @@ public class TestRunner
 
     ClassInfoMap classMap = new ClassInfoMap(m_testClassesFromXml);
     m_testClassFinder= new TestNGClassFinder(classMap,
-                                             null,
                                              m_xmlTest,
                                              m_configuration,
                                              this);
