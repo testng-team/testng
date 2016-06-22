@@ -172,7 +172,7 @@ if (JavaVersion.current().isJava8Compatible()) {
 
 sonarqube {
     properties {
-        property "sonar.host.url", "https://nemo.sonarqube.org"
+        property "sonar.host.url", "https://sonarqube.com/"
         property "sonar.github.repository", "cbeust/testng"
         property "sonar.github.login", "testng-bot"
     }
