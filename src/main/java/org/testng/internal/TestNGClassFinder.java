@@ -255,15 +255,17 @@ public class TestNGClassFinder extends BaseClassFinder {
     }
   }
 
-  private void addInstance(IInstanceInfo<?> ii) {
+  // IInstanceInfo<T> should be replaced by IInstanceInfo<?> but eclipse complains against it: https://github.com/cbeust/testng/issues/1070
+  private <T> void addInstance(IInstanceInfo<T> ii) {
     addInstance(ii.getInstanceClass(), ii.getInstance());
   }
 
-  private <T> void addInstance(T o) {
+  private void addInstance(Object o) {
     addInstance(o.getClass(), o);
   }
 
-  private <T> void addInstance(Class<? extends T> clazz, T o) {
+  // Class<S> should be replaced by Class<? extends T> but java doesn't fail as expected: https://github.com/cbeust/testng/issues/1070
+  private <T, S extends T> void addInstance(Class<S> clazz, T o) {
     List<Object> list= m_instanceMap.get(clazz);
 
     if(null == list) {
