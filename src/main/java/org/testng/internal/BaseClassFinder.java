@@ -16,22 +16,18 @@ import java.util.Map;
  *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
-abstract public class BaseClassFinder implements ITestClassFinder {
-  private Map<Class, IClass> m_classes = Maps.newLinkedHashMap();
+public abstract class BaseClassFinder implements ITestClassFinder {
+  private final Map<Class<?>, IClass> m_classes = Maps.newLinkedHashMap();
 
   @Override
-  public IClass getIClass(Class cls) {
+  public IClass getIClass(Class<?> cls) {
     return m_classes.get(cls);
   }
 
-  protected void putIClass(Class cls, IClass iClass) {
+  protected void putIClass(Class<?> cls, IClass iClass) {
     if (! m_classes.containsKey(cls)) {
       m_classes.put(cls, iClass);
     }
-  }
-
-  private void ppp(String s) {
-    System.out.println("[BaseClassFinder] " + s);
   }
 
   /**
@@ -39,7 +35,7 @@ abstract public class BaseClassFinder implements ITestClassFinder {
    * @return An IClass for the given class, or null if we have
    * already treated this class.
    */
-  protected IClass findOrCreateIClass(ITestContext context, Class cls, XmlClass xmlClass,
+  protected IClass findOrCreateIClass(ITestContext context, Class<?> cls, XmlClass xmlClass,
       Object instance, XmlTest xmlTest, IAnnotationFinder annotationFinder,
       ITestObjectFactory objectFactory)
   {
@@ -53,11 +49,12 @@ abstract public class BaseClassFinder implements ITestClassFinder {
     return result;
   }
 
+  @Deprecated
   protected Map getExistingClasses() {
     return m_classes;
   }
 
-  protected boolean classExists(Class cls) {
+  protected boolean classExists(Class<?> cls) {
     return m_classes.containsKey(cls);
   }
 

@@ -39,7 +39,7 @@ public class ClassImpl implements IClass {
   private XmlTest m_xmlTest = null;
   transient private IAnnotationFinder m_annotationFinder = null;
   transient private List<Object> m_instances = Lists.newArrayList();
-  transient private Map<Class, IClass> m_classes = null;
+  transient private Map<Class<?>, IClass> m_classes = null;
   private int m_instanceCount;
   private long[] m_instanceHashCodes;
   private transient Object m_instance;
@@ -49,8 +49,8 @@ public class ClassImpl implements IClass {
   private ITestContext m_testContext;
   private final boolean m_hasParentModule;
 
-  public ClassImpl(ITestContext context, Class cls, XmlClass xmlClass, Object instance,
-      Map<Class, IClass> classes, XmlTest xmlTest, IAnnotationFinder annotationFinder,
+  public ClassImpl(ITestContext context, Class<?> cls, XmlClass xmlClass, Object instance,
+      Map<Class<?>, IClass> classes, XmlTest xmlTest, IAnnotationFinder annotationFinder,
       ITestObjectFactory objectFactory) {
     m_testContext = context;
     m_class = cls;

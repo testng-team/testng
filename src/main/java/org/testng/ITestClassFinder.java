@@ -14,11 +14,11 @@ public interface ITestClassFinder {
    * - TestNG:  the class contains an @Factory method
    * - JUnit:  the class contains a suite() method
    */
-  public IClass[] findTestClasses();
+  IClass[] findTestClasses();
 
   /**
    * Return the IClass for a given class
    */
-  public IClass getIClass(Class cls);
+  IClass getIClass(Class<?> cls);
 
 }

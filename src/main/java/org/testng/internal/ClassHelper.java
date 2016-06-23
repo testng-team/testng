@@ -281,7 +281,7 @@ public final class ClassHelper {
    * Create an instance for the given class.
    */
   public static Object createInstance(Class<?> declaringClass,
-      Map<Class, IClass> classes,
+      Map<Class<?>, IClass> classes,
       XmlTest xmlTest,
       IAnnotationFinder finder,
       ITestObjectFactory objectFactory)
@@ -301,7 +301,7 @@ public final class ClassHelper {
   }
 
   public static Object createInstance1(Class<?> declaringClass,
-                                      Map<Class, IClass> classes,
+                                      Map<Class<?>, IClass> classes,
                                       XmlTest xmlTest,
                                       IAnnotationFinder finder,
                                       IObjectFactory objectFactory) {
