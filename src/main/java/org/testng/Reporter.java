@@ -63,6 +63,13 @@ public class Reporter {
   }
 
   /**
+   * @return If true, use HTML entities for special HTML characters (<, >, &, ...).
+   */
+  public static boolean getEscapeHtml() {
+    return m_escapeHtml;
+  }
+
+  /**
    * @param escapeHtml If true, use HTML entities for special HTML characters (<, >, &, ...).
    */
   public static void setEscapeHtml(boolean escapeHtml) {
