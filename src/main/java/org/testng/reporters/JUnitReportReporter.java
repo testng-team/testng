@@ -91,20 +91,12 @@ public class JUnitReportReporter implements IReporter {
       List<TestTag> testCases = Lists.newArrayList();
       int failures = 0;
       int errors = 0;
+      int skipped= 0;
       int testCount = 0;
       float totalTime = 0;
 
       for (ITestResult tr: entry.getValue()) {
         TestTag testTag = new TestTag();
-
-        boolean isSuccess = tr.getStatus() == ITestResult.SUCCESS;
-        if (! isSuccess) {
-          if (tr.getThrowable() instanceof AssertionError) {
-            failures++;
-          } else {
-            errors++;
-          }
-        }
 
         Properties p2 = new Properties();
         p2.setProperty("classname", cls.getName());
@@ -116,15 +108,35 @@ public class JUnitReportReporter implements IReporter {
 
         p2.setProperty("time", "" + formatTime(time));
         Throwable t = getThrowable(tr, failedConfigurations);
-        if (! isSuccess && t != null) {
+        switch (tr.getStatus()) {
+          case ITestResult.SUCCESS:
+            break;
+
+          case ITestResult.SKIP:
+          case ITestResult.SUCCESS_PERCENTAGE_FAILURE:
+            skipped++;
+            testTag.childTag = "skipped";
+            break;
+
+          case ITestResult.FAILURE:
+            if (t instanceof AssertionError) {
+              failures++;
+              testTag.childTag = "failure";
+            } else {
+              errors++;
+              testTag.childTag = "error";
+            }
+            if (t != null) {
           StringWriter sw = new StringWriter();
           PrintWriter pw = new PrintWriter(sw);
           t.printStackTrace(pw);
           testTag.message = t.getMessage();
           testTag.type = t.getClass().getName();
           testTag.stackTrace = sw.toString();
-          testTag.errorTag = tr.getThrowable() instanceof AssertionError ? "failure" : "error";
         }
+            break;
+        }
+
         totalTime += time;
         testCount++;
         testTag.properties = p2;
@@ -133,6 +145,7 @@ public class JUnitReportReporter implements IReporter {
 
       p1.setProperty("failures", "" + failures);
       p1.setProperty("errors", "" + errors);
+      p1.setProperty("skipped", "" + skipped);
       p1.setProperty("name", cls.getName());
       p1.setProperty("tests", "" + testCount);
       p1.setProperty("time", "" + formatTime(totalTime));
@@ -150,21 +163,15 @@ public class JUnitReportReporter implements IReporter {
 
       xsb.push("testsuite", p1);
       for (TestTag testTag : testCases) {
-        if (testTag.stackTrace == null) {
-          xsb.addEmptyElement("testcase", testTag.properties);
-        }
-        else {
-          xsb.push("testcase", testTag.properties);
-
+        if (putElement(xsb, "testcase", testTag.properties, testTag.childTag != null)) {
           Properties p = new Properties();
-          if (testTag.message != null) {
-            p.setProperty("message", testTag.message);
-          }
-          p.setProperty("type", testTag.type);
-          xsb.push(testTag.errorTag, p);
-          xsb.addCDATA(testTag.stackTrace);
-          xsb.pop(testTag.errorTag);
+          safeSetProperty(p, "message", testTag.message);
+          safeSetProperty(p, "type", testTag.type);
 
+          if (putElement(xsb, testTag.childTag, p, testTag.stackTrace != null)) {
+            xsb.addCDATA(testTag.stackTrace);
+            xsb.pop(testTag.childTag);
+          }
           xsb.pop("testcase");
         }
       }
@@ -177,6 +184,24 @@ public class JUnitReportReporter implements IReporter {
 //    System.out.println(xsb.toXML());
 //    System.out.println("");
 
+  }
+
+  /** Put a XML start or empty tag to the XMLStringBuffer depending on hasChildElements parameter */
+  private boolean putElement(XMLStringBuffer xsb, String tagName, Properties attributes, boolean hasChildElements) {
+    if (hasChildElements) {
+      xsb.push(tagName, attributes);
+    }
+    else {
+      xsb.addEmptyElement(tagName, attributes);
+    }
+    return hasChildElements;
+  }
+
+  /** Set property if value is non-null */
+  private void safeSetProperty(Properties p, String key, String value) {
+    if (value != null) {
+      p.setProperty(key, value);
+    }
   }
 
   /**
@@ -249,7 +274,7 @@ public class JUnitReportReporter implements IReporter {
     public String message;
     public String type;
     public String stackTrace;
-    public String errorTag;
+    public String childTag;
   }
 
   private void addResults(Set<ITestResult> allResults, Map<Class<?>, Set<ITestResult>> out) {
