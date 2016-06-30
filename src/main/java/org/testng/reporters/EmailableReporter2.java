@@ -474,10 +474,18 @@ public class EmailableReporter2 implements IReporter {
         writer.print("<div class=\"messages\">");
         Iterator<String> iterator = reporterMessages.iterator();
         assert iterator.hasNext();
-        writer.print(Utils.escapeHtml(iterator.next()));
+        if (Reporter.getEscapeHtml()) {
+        	writer.print(Utils.escapeHtml(iterator.next()));
+        } else {
+        	writer.print(iterator.next());
+        }
         while (iterator.hasNext()) {
             writer.print("<br/>");
-            writer.print(Utils.escapeHtml(iterator.next()));
+            if (Reporter.getEscapeHtml()) {
+            	writer.print(Utils.escapeHtml(iterator.next()));
+            } else {
+            	writer.print(iterator.next());
+            }
         }
         writer.print("</div>");
     }
