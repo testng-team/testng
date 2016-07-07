@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.primitives.Ints;
 import org.testng.IAnnotationTransformer;
 import org.testng.TestNGException;
 import org.testng.annotations.AfterClass;
@@ -37,6 +36,7 @@ import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
+import org.testng.internal.collections.Ints;
 
 /**
  * This class creates implementations of IAnnotations based on the JDK5
