@@ -208,7 +208,7 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       String preserveOrder = attributes.getValue("preserve-order");
       if (preserveOrder != null) {
-        m_currentSuite.setPreserveOrder(preserveOrder);
+        m_currentSuite.setPreserveOrder(Boolean.valueOf(preserveOrder));
       }
       String allowReturnValues = attributes.getValue("allow-return-values");
       if (allowReturnValues != null) {
@@ -291,7 +291,7 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       String preserveOrder = attributes.getValue("preserve-order");
       if (preserveOrder != null) {
-        m_currentTest.setPreserveOrder(preserveOrder);
+        m_currentTest.setPreserveOrder(Boolean.valueOf(preserveOrder));
       }
       String parallel = attributes.getValue("parallel");
       if (parallel != null) {

@@ -190,7 +190,7 @@ public class TestRunner
     setVerbose(test.getVerbose());
 
 
-    boolean preserveOrder = "true".equalsIgnoreCase(test.getPreserveOrder());
+    boolean preserveOrder = test.getPreserveOrder();
     m_methodInterceptors = new ArrayList<>();
     builtinInterceptor = preserveOrder ? new PreserveOrderMethodInterceptor() : new InstanceOrderingMethodInterceptor();
 
@@ -1048,7 +1048,7 @@ public class TestRunner
     // sequentially.
     if (! hasDependencies
         && getCurrentXmlTest().getParallel() == XmlSuite.ParallelMode.NONE
-        && "true".equalsIgnoreCase(getCurrentXmlTest().getPreserveOrder())) {
+        && getCurrentXmlTest().getPreserveOrder()) {
       // If preserve-order was specified and the class order is A, B
       // create a new set of dependencies where each method of B depends
       // on all the methods of A
