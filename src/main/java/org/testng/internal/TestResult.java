@@ -277,14 +277,9 @@ public class TestResult implements ITestResult {
         Method clone;
         try {
           clone = parameters[i].getClass().getDeclaredMethod("clone");
-        } catch (NoSuchMethodException e) {
-          // Cannot append: method available in Object
-          throw new RuntimeException(e);
-        }
-        try {
           clone.setAccessible(true);
           m_parameters[i] = clone.invoke(parameters[i]);
-        } catch (InvocationTargetException | IllegalAccessException | SecurityException e) {
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | SecurityException e) {
           m_parameters[i] = parameters[i];
         }
       } else {
