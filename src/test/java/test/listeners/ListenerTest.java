@@ -1,9 +1,6 @@
 package test.listeners;
 
-import org.testng.Assert;
-import org.testng.ITestNGListener;
-import org.testng.TestListenerAdapter;
-import org.testng.TestNG;
+import org.testng.*;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
@@ -214,5 +211,23 @@ public class ListenerTest extends SimpleBaseTest {
     Assert.assertEquals(listener.getContext().getFailedButWithinSuccessPercentageTests().size(), 0);
     Assert.assertEquals(listener.getContext().getSkippedTests().size(), 0);
     Assert.assertEquals(listener.getContext().getPassedTests().size(), 1);
+  }
+
+  @Test(description = "GITHUB-1084: Using deprecated addListener methods should not register many times")
+  public void listenerRegistration() {
+    MultiListener listener = new MultiListener();
+    TestNG tng = create(SimpleSample.class);
+    tng.addListener((ISuiteListener) listener);
+    tng.addListener((ITestListener) listener);
+    tng.addInvokedMethodListener(listener);
+    tng.run();
+    Assert.assertEquals(listener.getOnSuiteStartCount(), 1);
+    Assert.assertEquals(listener.getOnSuiteFinishCount(), 1);
+    Assert.assertEquals(listener.getOnTestStartCount(), 1);
+    Assert.assertEquals(listener.getOnTestFinishCount(), 1);
+    Assert.assertEquals(listener.getBeforeInvocationCount(), 1);
+    Assert.assertEquals(listener.getAfterInvocationCount(), 1);
+    Assert.assertEquals(listener.getOnMethodTestStartCount(), 1);
+    Assert.assertEquals(listener.getOnMethodTestSuccessCount(), 1);
   }
 }
