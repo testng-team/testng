@@ -20,7 +20,7 @@ public class MainTest extends SimpleBaseTest {
     XmlTest t = createXmlTest(s, "T", Main.class.getName());
     XmlClass c = t.getXmlClasses().get(0);
     c.getIncludedMethods().add(new XmlInclude("test1"));
-    t.setPreserveOrder("true");
+    t.setPreserveOrder(true);
     TestNG tng = create();
     tng.setXmlSuites(Arrays.asList(new XmlSuite[] { s }));
     Main.m_passed = false;

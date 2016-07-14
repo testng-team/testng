@@ -56,4 +56,38 @@ public class XmlVerifyTest extends SimpleBaseTest {
         Assert.assertEquals(tla.getPassedTests().size(), 0);
      }
   }
+
+  @Test
+  public void preserverOrderAttribute() {
+    XmlSuite suite = new XmlSuite();
+    XmlTest test = new XmlTest(suite);
+
+    suite.setPreserveOrder(true);
+    test.setPreserveOrder(false);
+    Assert.assertFalse(test.getPreserveOrder());
+
+    suite.setPreserveOrder(false);
+    test.setPreserveOrder(true);
+    Assert.assertTrue(test.getPreserveOrder());
+
+    suite.setPreserveOrder((Boolean)null);
+    test.setPreserveOrder(false);
+    Assert.assertFalse(test.getPreserveOrder());
+
+    suite.setPreserveOrder(false);
+    test.setPreserveOrder((Boolean)null);
+    Assert.assertFalse(test.getPreserveOrder());
+
+    suite.setPreserveOrder((Boolean)null);
+    test.setPreserveOrder(true);
+    Assert.assertTrue(test.getPreserveOrder());
+
+    suite.setPreserveOrder(true);
+    test.setPreserveOrder((Boolean)null);
+    Assert.assertTrue(test.getPreserveOrder());
+
+    suite.setPreserveOrder((Boolean)null);
+    test.setPreserveOrder((Boolean)null);
+    Assert.assertNull(test.getPreserveOrder());
+  }
 }

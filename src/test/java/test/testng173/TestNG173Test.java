@@ -24,7 +24,7 @@ public class TestNG173Test extends SimpleBaseTest {
 		t.getXmlClasses().add(new XmlClass("test.testng173.ClassA"));
 		t.getXmlClasses().add(new XmlClass("test.testng173.ClassB"));
 
-		t.setPreserveOrder("true");
+		t.setPreserveOrder(true);
 
 		tng.setXmlSuites(Arrays.asList(s));
 
@@ -48,7 +48,7 @@ public class TestNG173Test extends SimpleBaseTest {
 		t.getXmlClasses().add(new XmlClass("test.testng173.ClassA"));
 		t.getXmlClasses().add(new XmlClass("test.testng173.anotherpackage.ClassC"));
 
-		t.setPreserveOrder("true");
+		t.setPreserveOrder(true);
 
 		tng.setXmlSuites(Arrays.asList(s));
 

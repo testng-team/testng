@@ -51,7 +51,7 @@ public class XmlTest implements Serializable, Cloneable {
   private Boolean m_skipFailedInvocationCounts = XmlSuite.DEFAULT_SKIP_FAILED_INVOCATION_COUNTS;
   private Map<String, List<Integer>> m_failedInvocationNumbers = null; // lazily initialized
 
-  private String m_preserveOrder = XmlSuite.DEFAULT_PRESERVE_ORDER;
+  private Boolean m_preserveOrder = XmlSuite.DEFAULT_PRESERVE_ORDER;
 
   private int m_index;
 
@@ -697,17 +697,24 @@ public class XmlTest implements Serializable, Cloneable {
     }
   }
 
+  /**
+   * @deprecated Use {@link #setPreserveOrder(Boolean)} instead
+   */
+  @Deprecated
   public void setPreserveOrder(String preserveOrder) {
+    setPreserveOrder(Boolean.valueOf(preserveOrder));
+  }
+
+  public void setPreserveOrder(Boolean preserveOrder) {
     m_preserveOrder = preserveOrder;
   }
 
-  public String getPreserveOrder() {
-    String result = m_preserveOrder;
-    if (result == null || XmlSuite.DEFAULT_PRESERVE_ORDER.equals(m_preserveOrder)) {
-      result = m_suite.getPreserveOrder();
+  public Boolean getPreserveOrder() {
+    if (m_preserveOrder == null) {
+      return m_suite.getPreserveOrder();
     }
 
-    return result;
+    return m_preserveOrder;
   }
 
   public void setSuite(XmlSuite result) {

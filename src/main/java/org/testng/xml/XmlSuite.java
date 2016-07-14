@@ -190,8 +190,8 @@ public class XmlSuite implements Serializable, Cloneable {
 
   private static final long serialVersionUID = 4999962288272750226L;
 
-  public static final String DEFAULT_PRESERVE_ORDER = "true";
-  private String m_preserveOrder = DEFAULT_PRESERVE_ORDER;
+  public static final Boolean DEFAULT_PRESERVE_ORDER = Boolean.TRUE;
+  private Boolean m_preserveOrder = DEFAULT_PRESERVE_ORDER;
 
   private List<String> m_includedGroups = Lists.newArrayList();
   private List<String> m_excludedGroups = Lists.newArrayList();
@@ -1012,11 +1012,19 @@ public class XmlSuite implements Serializable, Cloneable {
     return result;
   }
 
+  /**
+   * @deprecated Use {@link #setPreserveOrder(Boolean)} instead
+   */
+  @Deprecated
   public void setPreserveOrder(String f) {
+    setPreserveOrder(Boolean.valueOf(f));
+  }
+
+  public void setPreserveOrder(Boolean f) {
     m_preserveOrder = f;
   }
 
-  public String getPreserveOrder() {
+  public Boolean getPreserveOrder() {
     return m_preserveOrder;
   }
 
