@@ -683,8 +683,8 @@ public class TestNG {
    * @param classes A list of classes, which must be either ISuiteListener,
    * ITestListener or IReporter
    */
-  public void setListenerClasses(List<Class> classes) {
-    for (Class cls: classes) {
+  public void setListenerClasses(List<Class<? extends ITestNGListener>> classes) {
+    for (Class<? extends ITestNGListener> cls: classes) {
       addListener(ClassHelper.newInstance(cls));
     }
   }
@@ -692,7 +692,7 @@ public class TestNG {
   /**
    * @deprecated Use addListener(ITestNGListener) instead
    */
-  // TODO remove later
+  // TODO remove later /!\ Caution: IntelliJ is using it. Check with @akozlova before removing it
   @Deprecated
   public void addListener(Object listener) {
     if (! (listener instanceof ITestNGListener))
@@ -752,7 +752,9 @@ public class TestNG {
   // TODO remove later
   @Deprecated
   public void addListener(IInvokedMethodListener listener) {
-    addListener((ITestNGListener) listener);
+    if (!m_invokedMethodListeners.contains(listener)) {
+      addListener((ITestNGListener) listener);
+    }
   }
 
   /**
@@ -761,7 +763,9 @@ public class TestNG {
   // TODO remove later
   @Deprecated
   public void addListener(ISuiteListener listener) {
-    addListener((ITestNGListener) listener);
+    if (!m_suiteListeners.contains(listener)) {
+      addListener((ITestNGListener) listener);
+    }
   }
 
   /**
@@ -770,7 +774,9 @@ public class TestNG {
   // TODO remove later
   @Deprecated
   public void addListener(ITestListener listener) {
-    addListener((ITestNGListener) listener);
+    if (!m_testListeners.contains(listener)) {
+      addListener((ITestNGListener) listener);
+    }
   }
 
   /**
@@ -779,7 +785,9 @@ public class TestNG {
   // TODO remove later
   @Deprecated
   public void addListener(IClassListener listener) {
-    addListener((ITestNGListener) listener);
+    if (!m_classListeners.contains(listener)) {
+      addListener((ITestNGListener) listener);
+    }
   }
 
   /**
@@ -788,7 +796,9 @@ public class TestNG {
   // TODO remove later
   @Deprecated
   public void addListener(IReporter listener) {
-    addListener((ITestNGListener) listener);
+    if (!m_reporters.contains(listener)) {
+      addListener((ITestNGListener) listener);
+    }
   }
 
   /**
@@ -797,7 +807,9 @@ public class TestNG {
   // TODO remove later
   @Deprecated
   public void addInvokedMethodListener(IInvokedMethodListener listener) {
-    addListener((ITestNGListener) listener);
+    if (!m_invokedMethodListeners.contains(listener)) {
+      addListener((ITestNGListener) listener);
+    }
   }
 
   public Set<IReporter> getReporters() {
@@ -1485,10 +1497,13 @@ public class TestNG {
         sep = ",";
       }
       String[] strs = Utils.split(cla.listener, sep);
-      List<Class> classes = Lists.newArrayList();
+      List<Class<? extends ITestNGListener>> classes = Lists.newArrayList();
 
       for (String cls : strs) {
-        classes.add(ClassHelper.fileToClass(cls));
+        Class<?> clazz = ClassHelper.fileToClass(cls);
+        if (ITestNGListener.class.isAssignableFrom(clazz)) {
+          classes.add((Class<? extends ITestNGListener>) clazz);
+        }
       }
 
       setListenerClasses(classes);

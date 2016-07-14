@@ -19,7 +19,7 @@ public class TestMaker
   {
     final TestNG tng = new TestNG();
     tng.setUseDefaultListeners(false);
-    tng.setListenerClasses(Arrays.<Class> asList(TestListenerAdapter.class, SimpleReporter.class));
+    tng.setListenerClasses(Arrays.asList(TestListenerAdapter.class, SimpleReporter.class));
     final List<XmlSuite> suites = createSuites();
     tng.setXmlSuites(suites);
     tng.setVerbose(0);
