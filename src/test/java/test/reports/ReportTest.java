@@ -1,12 +1,8 @@
 package test.reports;
 
-import org.testng.Assert;
-import org.testng.ITestListener;
-import org.testng.ITestResult;
-import org.testng.Reporter;
-import org.testng.TestListenerAdapter;
-import org.testng.TestNG;
+import org.testng.*;
 import org.testng.annotations.Test;
+import org.testng.reporters.TextReporter;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
@@ -138,5 +134,33 @@ public class ReportTest {
     tng.run();
 
     Assert.assertTrue(m_success);
+  }
+
+  @Test(description = "GITHUB-1090")
+  public void github1090() {
+    TestNG tng = new TestNG();
+    tng.setVerbose(0);
+    tng.setTestClasses(new Class[]{GitHub447Sample.class});
+    GitHub447Listener reporter = new GitHub447Listener();
+    tng.addListener((ITestNGListener) reporter);
+    tng.run();
+
+    List<Object[]> parameters = reporter.getParameters();
+    Assert.assertEquals(parameters.size(), 5);
+    Assert.assertEquals(parameters.get(0)[0].toString(), "[]");
+    Assert.assertEquals(parameters.get(0)[1], null);
+    Assert.assertEquals(parameters.get(0)[2].toString(), "[null]");
+    Assert.assertEquals(parameters.get(1)[0].toString(), "[null]");
+    Assert.assertEquals(parameters.get(1)[1], "dup");
+    Assert.assertEquals(parameters.get(1)[2].toString(), "[null, dup]");
+    Assert.assertEquals(parameters.get(2)[0].toString(), "[null, dup]");
+    Assert.assertEquals(parameters.get(2)[1], "dup");
+    Assert.assertEquals(parameters.get(2)[2].toString(), "[null, dup, dup]");
+    Assert.assertEquals(parameters.get(3)[0].toString(), "[null, dup, dup]");
+    Assert.assertEquals(parameters.get(3)[1], "str");
+    Assert.assertEquals(parameters.get(3)[2].toString(), "[null, dup, dup, str]");
+    Assert.assertEquals(parameters.get(4)[0].toString(), "[null, dup, dup, str]");
+    Assert.assertEquals(parameters.get(4)[1], null);
+    Assert.assertEquals(parameters.get(4)[2].toString(), "[null, dup, dup, str, null]");
   }
 }
