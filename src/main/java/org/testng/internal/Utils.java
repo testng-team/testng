@@ -395,31 +395,13 @@ public final class Utils {
     System.err.println("[Error] " + errorMessage);
   }
 
-  /**
-   * @return The number of methods invoked, taking into account the number
-   * of instances.
-   */
-//  public static int calculateInvokedMethodCount(IResultMap map) {
-//    return calculateInvokedMethodCount(
-//        (ITestNGMethod[]) map.getAllMethods().toArray(new ITestNGMethod[map.size()]));
-//  }
-
   public static int calculateInvokedMethodCount(ITestNGMethod[] methods) {
     return methods.length;
-//    int result = 0;
-//
-//    for (ITestNGMethod method : methods) {
-//      int instanceCount = method.getInvocationCount();
-//      result += instanceCount;
-//    }
-//
-//    return result;
   }
 
-//  public static int calculateInvokedMethodCount(Map<ITestNGMethod, ITestResult> methods) {
-//    return calculateInvokedMethodCount(methods.keySet().toArray(new ITestNGMethod[methods.values()
-//                                                                .size()]));
-//  }
+  public static int calculateInvokedMethodCount(List<ITestNGMethod> methods) {
+    return methods.size();
+  }
 
   /**
    * Tokenize the string using the separator.

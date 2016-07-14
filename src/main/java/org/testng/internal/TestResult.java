@@ -51,15 +51,6 @@ public class TestResult implements ITestResult {
     init(testClass, instance, method, throwable, start, end, context);
   }
 
-  /**
-   *
-   * @param testClass
-   * @param instance
-   * @param method
-   * @param throwable
-   * @param start
-   * @param end
-   */
   public void init (IClass testClass,
       Object instance,
       ITestNGMethod method,
@@ -88,11 +79,9 @@ public class TestResult implements ITestResult {
     } else {
       if (m_instance instanceof ITest) {
         m_name = ((ITest) m_instance).getTestName();
-      }
-      else if (testClass.getTestName() != null) {
+      } else if (testClass.getTestName() != null) {
         m_name = testClass.getTestName();
-      }
-      else {
+      } else {
         String string = m_instance.toString();
         // Only display toString() if it's been overridden by the user
         m_name = getMethod().getMethodName();
@@ -104,16 +93,11 @@ public class TestResult implements ITestResult {
                 : string;
             m_name = m_name + " on " + m_instanceName;
           }
-        }
-        catch(NoSuchMethodException ignore) {
+        } catch(NoSuchMethodException ignore) {
           // ignore
         }
       }
     }
-  }
-
-  private static void ppp(String s) {
-    System.out.println("[TestResult] " + s);
   }
 
   @Override
@@ -224,10 +208,6 @@ public class TestResult implements ITestResult {
     return m_startMillis;
   }
 
-//  public List<String> getOutput() {
-//    return m_output;
-//  }
-
   @Override
   public String toString() {
     List<String> output = Reporter.getOutput(this);
@@ -243,7 +223,7 @@ public class TestResult implements ITestResult {
     return result;
   }
 
-  private String toString(int status) {
+  private static String toString(int status) {
     switch(status) {
       case SUCCESS: return "SUCCESS";
       case FAILURE: return "FAILURE";
@@ -277,14 +257,9 @@ public class TestResult implements ITestResult {
         Method clone;
         try {
           clone = parameters[i].getClass().getDeclaredMethod("clone");
-        } catch (NoSuchMethodException e) {
-          // Cannot append: method available in Object
-          throw new RuntimeException(e);
-        }
-        try {
           clone.setAccessible(true);
           m_parameters[i] = clone.invoke(parameters[i]);
-        } catch (InvocationTargetException | IllegalAccessException | SecurityException e) {
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | SecurityException e) {
           m_parameters[i] = parameters[i];
         }
       } else {
