@@ -9,6 +9,8 @@ import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.collections.Objects;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
 
@@ -268,7 +270,27 @@ public class TestResult implements ITestResult {
 
   @Override
   public void setParameters(Object[] parameters) {
-    m_parameters = parameters;
+    m_parameters = new Object[parameters.length];
+    for (int i=0; i<parameters.length; i++) {
+      // Copy parameter if possible because user may change it later
+      if (parameters[i] instanceof Cloneable) {
+        Method clone;
+        try {
+          clone = parameters[i].getClass().getDeclaredMethod("clone");
+        } catch (NoSuchMethodException e) {
+          // Cannot append: method available in Object
+          throw new RuntimeException(e);
+        }
+        try {
+          clone.setAccessible(true);
+          m_parameters[i] = clone.invoke(parameters[i]);
+        } catch (InvocationTargetException | IllegalAccessException | SecurityException e) {
+          m_parameters[i] = parameters[i];
+        }
+      } else {
+        m_parameters[i] = parameters[i];
+      }
+    }
   }
 
   @Override
