@@ -692,7 +692,7 @@ public class TestNG {
   /**
    * @deprecated Use addListener(ITestNGListener) instead
    */
-  // TODO remove later
+  // TODO remove later /!\ Caution: IntelliJ is using it. Check with @akozlova before removing it
   @Deprecated
   public void addListener(Object listener) {
     if (! (listener instanceof ITestNGListener))
