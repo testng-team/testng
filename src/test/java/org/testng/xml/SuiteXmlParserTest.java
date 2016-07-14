@@ -19,7 +19,8 @@ public class SuiteXmlParserTest {
                 { "goodWithDoctype.xml", true },
                 { "goodWithoutDoctype.xml", true },
                 { "badWithDoctype.xml", false }, // TestNGException -> SAXParseException
-                { "badWithoutDoctype.xml", false } // NullPointerException
+                { "badWithoutDoctype.xml", false }, // NullPointerException
+                { "issue174.xml", true }
         };
     }
 
@@ -28,7 +29,7 @@ public class SuiteXmlParserTest {
         SuiteXmlParser parser = new SuiteXmlParser();
 
         try (FileInputStream stream = new FileInputStream(new File(PARENT, fileName))) {
-            parser.parse(fileName, stream, false);
+            XmlSuite suite = parser.parse(fileName, stream, false);
             if (!shouldWork) {
                 Assert.fail("Parsing of " + fileName + " is supposed to fail");
             }
