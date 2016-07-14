@@ -1,4 +1,5 @@
 ﻿Current
+Fixed: GITHUB-1090 Inconsistent handling "preserve-order" on suite/test level (Michal Domagala & Julien Herr)
 Fixed: GITHUB-1085 Remove Guava dependency (Erik C. Thauvin & Julien Herr)
 
 6.9.12
