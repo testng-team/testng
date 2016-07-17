@@ -1079,7 +1079,7 @@ public class TestRunner
   private ListMultiMap<ITestNGMethod, ITestNGMethod> createInstanceDependencies(
       ITestNGMethod[] methods, XmlTest currentXmlTest)
   {
-    ListMultiMap<Object, ITestNGMethod> instanceMap = Maps.newListMultiMap();
+    ListMultiMap<Object, ITestNGMethod> instanceMap = Maps.newSortedListMultiMap();
     for (ITestNGMethod m : methods) {
       instanceMap.put(m.getInstance(), m);
     }
