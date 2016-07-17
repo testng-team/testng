@@ -1064,21 +1064,16 @@ public class TestRunner
 
     // Group by instances
     if (getCurrentXmlTest().getGroupByInstances()) {
-      ListMultiMap<ITestNGMethod, ITestNGMethod> instanceDependencies
-          = createInstanceDependencies(methods, getCurrentXmlTest());
-
+      ListMultiMap<ITestNGMethod, ITestNGMethod> instanceDependencies = createInstanceDependencies(methods);
       for (Map.Entry<ITestNGMethod, List<ITestNGMethod>> es : instanceDependencies.entrySet()) {
         result.addEdge(es.getKey(), es.getValue());
       }
-
     }
 
     return result;
   }
 
-  private ListMultiMap<ITestNGMethod, ITestNGMethod> createInstanceDependencies(
-      ITestNGMethod[] methods, XmlTest currentXmlTest)
-  {
+  private ListMultiMap<ITestNGMethod, ITestNGMethod> createInstanceDependencies(ITestNGMethod[] methods) {
     ListMultiMap<Object, ITestNGMethod> instanceMap = Maps.newSortedListMultiMap();
     for (ITestNGMethod m : methods) {
       instanceMap.put(m.getInstance(), m);
