@@ -1,28 +1,30 @@
 package test.groupbug;
 
-import org.testng.Assert;
+import org.testng.ITestNGListener;
+import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
+import org.testng.xml.XmlSuite;
+import test.InvokedMethodNameListener;
+import test.SimpleBaseTest;
 
-import test.BaseTest;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Arrays;
-import java.util.List;
+public class GroupBugTest extends SimpleBaseTest {
 
-public class GroupBugTest extends BaseTest {
-
-  static List<String> passed = Lists.newArrayList();
-
-  @Test(groups = "broken",
-      description = "Comment out dependsOnGroups in ITCaseOne will fix the ordering, that's the bug")
+  @Test(description = "Comment out dependsOnGroups in ITCaseOne will fix the ordering, that's the bug")
   public void shouldOrderByClass() {
-    passed.clear();
-    addClass(ITCaseOne.class);
-    addClass(ITCaseTwo.class);
-    run();
-    List<String> expected = Arrays.asList(
-        "one1", "one2", "two1", "two2"
+    TestNG tng = create(ITCaseOne.class, ITCaseTwo.class);
+    tng.setVerbose(10);
+    tng.setGroupByInstances(true);
+
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener((ITestNGListener) listener);
+
+    tng.run();
+
+    assertThat(listener.getInvokedMethodNames()).containsExactly(
+            "beforeClassOne", "one1", "one2", "afterClassOne",
+            "beforeClassTwo", "two1", "two2", "afterClassTwo"
     );
-    Assert.assertEquals(passed, expected);
   }
 }

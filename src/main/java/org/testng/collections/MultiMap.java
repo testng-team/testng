@@ -8,7 +8,15 @@ import java.util.Map;
 import java.util.Set;
 
 public abstract class MultiMap<K, V, C extends Collection<V>> {
-  protected final Map<K, C> m_objects = Maps.newHashMap();
+  protected final Map<K, C> m_objects;
+
+  protected MultiMap(boolean isSorted) {
+    if (isSorted) {
+      m_objects = Maps.newLinkedHashMap();
+    } else {
+      m_objects = Maps.newHashMap();
+    }
+  }
 
   protected abstract C createValue();
 

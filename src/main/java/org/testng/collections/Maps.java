@@ -17,11 +17,15 @@ public class Maps {
   }
 
   public static <K, V> ListMultiMap<K, V> newListMultiMap() {
-    return new ListMultiMap<>();
+    return new ListMultiMap<>(false);
+  }
+
+  public static <K, V> ListMultiMap<K, V> newSortedListMultiMap() {
+    return new ListMultiMap<>(true);
   }
 
   public static <K, V> SetMultiMap<K, V> newSetMultiMap() {
-    return new SetMultiMap<>();
+    return new SetMultiMap<>(false);
   }
 
   public static <K, V> Map<K, V> newLinkedHashMap() {

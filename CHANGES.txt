@@ -4,6 +4,7 @@ Fixed: GITHUB-1085 Remove Guava dependency (Erik C. Thauvin & Julien Herr)
 Fixed: GITHUB-1084 Using deprecated addListener methods should not register many times (Anna Kozlova & Julien Herr)
 Fixed: GITHUB-447 Copy test parameters instead of storing a reference (Huagang Li & Julien Herr)
 Fixed: GITHUB-174: NPE when parsing xml where <suite> has <groups> (Peter Stout & Julien Herr)
+Fixed: GITHUB-918: NullPointerException on loading XmlSuites programmatically (@ispitkovskyi & Julien Herr)
 
 6.9.12
 2016/06/21

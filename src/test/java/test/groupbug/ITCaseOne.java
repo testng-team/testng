@@ -7,18 +7,17 @@ import org.testng.annotations.Test;
 public class ITCaseOne {
 
   @BeforeClass
-  public void beforeClass() {
+  public void beforeClassOne() {
     System.out.printf("RUN %s.beforeClass()\n", getClass());
   }
 
   @AfterClass(alwaysRun = true)
-  public void afterClass() {
+  public void afterClassOne() {
     System.out.printf("RUN %s.afterClass()\n", getClass());
   }
 
   @Test(groups = "std-one")
   public void one1() {
-    GroupBugTest.passed.add("one1");
     System.out.printf("RUN %s.one1()\n", getClass());
   }
 
@@ -27,7 +26,6 @@ public class ITCaseOne {
    */
   @Test(groups = "logic-one", dependsOnGroups = "std-one")
   public void one2() {
-    GroupBugTest.passed.add("one2");
     System.out.printf("RUN %s.one2()\n", getClass());
   }
 
