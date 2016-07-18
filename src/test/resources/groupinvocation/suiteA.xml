@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Suite A">
+    <test name="Test A">
+        <classes>
+            <class name="test.groupinvocation.GroupSuiteSampleTest" />
+        </classes>
+    </test>
+</suite>

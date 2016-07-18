@@ -1033,7 +1033,9 @@ public class XmlSuite implements Serializable, Cloneable {
    * Note: do not modify the returned value, use {@link #addIncludedGroup(String)}.
    */
   public List<String> getIncludedGroups() {
-    if (m_xmlGroups != null) {
+    if (m_parentSuite != null) {
+      return m_parentSuite.getIncludedGroups();
+    } else if (m_xmlGroups != null) {
       return m_xmlGroups.getRun().getIncludes();
     } else {
       // deprecated
@@ -1064,7 +1066,9 @@ public class XmlSuite implements Serializable, Cloneable {
    * Note: do not modify the returned value, use {@link #addExcludedGroup(String)}.
    */
   public List<String> getExcludedGroups() {
-    if (m_xmlGroups != null) {
+    if (m_parentSuite != null) {
+      return m_parentSuite.getExcludedGroups();
+    } else if (m_xmlGroups != null) {
       return m_xmlGroups.getRun().getExcludes();
     } else {
       return m_excludedGroups;
