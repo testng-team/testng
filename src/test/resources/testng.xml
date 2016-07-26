@@ -636,6 +636,7 @@
     <classes>
       <class name="test.retryAnalyzer.RetryAnalyzerTest" />
       <class name="test.retryAnalyzer.ExitCodeTest" />
+      <class name="test.retryAnalyzer.dataprovider.RetryAnalyzerWithDataProviderTest" />
     </classes>
   </test>
 
