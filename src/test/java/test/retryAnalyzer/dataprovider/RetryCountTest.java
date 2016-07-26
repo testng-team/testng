@@ -7,19 +7,19 @@ import org.testng.annotations.Test;
 
 public final class RetryCountTest {
 
-    @DataProvider
-    public Object[][] provider() {
-        return new Object[][] {
-            {"a"},
-            {"b"},
-            {"c"},
-            {"d"}
-        };
-    }
+  @DataProvider
+  public Object[][] provider() {
+    return new Object[][] {
+      {"a"},
+      {"b"},
+      {"c"},
+      {"d"}
+    };
+  }
 
-    @Test(dataProvider = "provider", retryAnalyzer = DataProviderRetryAnalyzer.class)
-    public void test1(String param) {
-        assertEquals(param, "c");
-    }
+  @Test(dataProvider = "provider", retryAnalyzer = DataProviderRetryAnalyzer.class)
+  public void test1(String param) {
+    assertEquals(param, "c");
+  }
 
 }
