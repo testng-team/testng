@@ -6,6 +6,7 @@ Fixed: GITHUB-447 Copy test parameters instead of storing a reference (Huagang L
 Fixed: GITHUB-174: NPE when parsing xml where <suite> has <groups> (Peter Stout & Julien Herr)
 Fixed: GITHUB-918: NullPointerException on loading XmlSuites programmatically (@ispitkovskyi & Julien Herr)
 Fixed: GITHUB-689: <groups> at <suite> level not applied to <suite-files> (@kunal546 & Julien Herr)
+Fixed: GITHUB-740: More than one execution even when success with DataProvider and IRetryAnalyzer (Sergio Sacristán)
 Fixed: GITHUB-877: Retries don't work correctly with DataProvider tests (Simonas Tvirbutas)
 ﻿
 6.9.12
@@ -81,7 +82,6 @@ Fixed: GITHUB-773: Test should not be skipped when the exception is expected (@C
 6.9.5:
 2015/07/12
 
-Fixed: GITHUB-740: Fix "More than one execution even when success" with DataProvider and IRetryAnalyzer. (Sergio Sacristán)
 Fixed: The ServiceLoaderTest on Windows (Mathieu Sebire)
 Fixed: GITHUB-691: Fix classloading issue when using TestNG 6.9.4 and JMockit. (Mathieu Sebire)
 Fixed: GITHUB-686: IAnnotationTransformer.transform is called for methods with testClass populated. (Łukasz Rekucki & Julien Herr)
