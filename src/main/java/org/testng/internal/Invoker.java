@@ -1359,7 +1359,10 @@ public class Invoker implements IInvoker {
       if (willRetry) {
         resultsToRetry.add(testResult);
         failure.count++;
-        failure.instances.add(testResult.getInstance());
+        Object instance = testResult.getInstance();
+        if (!failure.instances.contains(instance)) {
+          failure.instances.add(instance);
+        }
         testResult.setStatus(ITestResult.SKIP);
       } else {
         testResult.setStatus(status);
