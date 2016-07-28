@@ -18,8 +18,7 @@ public class RetryAnalyzerWithDataProviderTest extends SimpleBaseTest {
 
     tng.run();
 
-    // TODO re-enabled after #740 or #1104 is fixed/merged
-//    assertEquals(tla.getPassedTests().size(), 1);
+    assertEquals(tla.getPassedTests().size(), 1);
     assertEquals(tla.getPassedTests().get(0).getParameters(), new String[]{"c"});
 
     assertEquals(tla.getFailedTests().size(), 3);
