@@ -9,7 +9,7 @@ val VERSION = "6.9.13-SNAPSHOT"
 
 val r = repos("https://dl.bintray.com/cbeust/maven")
 
-val pl = plugins("com.beust:kobalt-groovy:0.1")
+//val pl = plugins("com.beust:kobalt-groovy:0.4")
 //        file(homeDir("kotlin/kobalt-groovy/kobaltBuild/libs/kobalt-groovy-0.1.jar")))
 
 val p = project {
