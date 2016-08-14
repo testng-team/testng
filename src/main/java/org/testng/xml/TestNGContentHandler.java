@@ -653,6 +653,7 @@ public class TestNGContentHandler extends DefaultHandler {
       m_locations.push(Location.INCLUDE);
       m_currentInclude = new Include(attributes.getValue("name"),
           attributes.getValue("invocation-numbers"));
+      m_currentInclude.description = attributes.getValue("description");
     } else {
       String name = m_currentInclude.name;
       if (null != m_currentIncludedMethods) {
