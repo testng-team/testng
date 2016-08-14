@@ -447,6 +447,12 @@
     </classes>
   </test>
 
+  <test name="Individual method with description">
+    <classes>
+      <class name="test.xml.TestNGContentHandlerTest"/>
+    </classes>
+  </test>
+
   <test name="Method inheritance">
     <classes>
       <class name="test.inheritance.DChild_2" />
