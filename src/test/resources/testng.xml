@@ -668,6 +668,12 @@
     </classes>
   </test>
 
+  <test name="Invoker">
+    <classes>
+      <class name="org.testng.internal.invokers.InvokerTest"/>
+    </classes>
+  </test>
+
   <test name="ConfigFailurePolicy">
     <classes>
       <class name="test.configurationfailurepolicy.FailurePolicyTest" />
