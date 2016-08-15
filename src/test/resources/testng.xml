@@ -670,7 +670,7 @@
 
   <test name="Invoker">
     <classes>
-      <class name="org.testng.internal.invokers.InvokerTest"/>
+      <class name="test.groupinvocation.InvokerTest"/>
     </classes>
   </test>
 

@@ -1596,7 +1596,7 @@ public class Invoker implements IInvoker {
     List<ITestNGMethod> vResult= Lists.newArrayList();
 
     for(ITestNGMethod tm : methods) {
-      if (predicate.isTrue(tm, testClass) &&  (!alreadyAdded(tm, vResult)) ) {
+      if (predicate.isTrue(tm, testClass) &&  (!TestNgMethodUtils.containsConfigurationMethod(tm, vResult)) ) {
         log(10, "Keeping method " + tm + " for class " + testClass);
         vResult.add(tm);
       } else {
@@ -1607,21 +1607,6 @@ public class Invoker implements IInvoker {
     ITestNGMethod[] result= vResult.toArray(new ITestNGMethod[vResult.size()]);
 
     return result;
-  }
-
-  private boolean isConfiguration(ITestNGMethod method) {
-    return method.isAfterClassConfiguration() || method.isBeforeClassConfiguration() ||
-        method.isBeforeGroupsConfiguration() || method.isAfterGroupsConfiguration() ||
-        method.isBeforeMethodConfiguration() || method.isAfterMethodConfiguration() ||
-        method.isBeforeTestConfiguration() || method.isAfterTestConfiguration() ||
-        method.isBeforeSuiteConfiguration() || method.isAfterSuiteConfiguration();
-  }
-
-  private boolean alreadyAdded(ITestNGMethod method, List<ITestNGMethod> methods) {
-    if (!isConfiguration(method)) {
-      return false;
-    }
-    return methods.contains(method);
   }
 
   /**
