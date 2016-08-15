@@ -668,6 +668,12 @@
     </classes>
   </test>
 
+  <test name="Invoker">
+    <classes>
+      <class name="test.groupinvocation.InvokerTest"/>
+    </classes>
+  </test>
+
   <test name="ConfigFailurePolicy">
     <classes>
       <class name="test.configurationfailurepolicy.FailurePolicyTest" />

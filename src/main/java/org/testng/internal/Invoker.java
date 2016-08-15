@@ -1596,7 +1596,7 @@ public class Invoker implements IInvoker {
     List<ITestNGMethod> vResult= Lists.newArrayList();
 
     for(ITestNGMethod tm : methods) {
-      if (predicate.isTrue(tm, testClass)) {
+      if (predicate.isTrue(tm, testClass) &&  (!TestNgMethodUtils.containsConfigurationMethod(tm, vResult)) ) {
         log(10, "Keeping method " + tm + " for class " + testClass);
         vResult.add(tm);
       } else {
