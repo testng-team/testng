@@ -32,7 +32,7 @@ import org.testng.xml.XmlSuite;
  * @author Abraham Lin
  */
 public class EmailableReporter2 implements IReporter {
-    private static final Logger LOG = Logger.getLogger(EmailableReporter.class);
+    private static final Logger LOG = Logger.getLogger(EmailableReporter2.class);
 
     protected PrintWriter writer;
 
