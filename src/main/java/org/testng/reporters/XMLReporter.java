@@ -104,7 +104,7 @@ public class XMLReporter implements IReporter {
     File parentDir = suiteFile.getParentFile();
     suiteFile.getParentFile().mkdirs();
     if (parentDir.exists() || suiteFile.getParentFile().exists()) {
-      Utils.writeFile(parentDir.getAbsolutePath(), FILE_NAME, xmlBuffer.toXML());
+      Utils.writeUtf8File(parentDir.getAbsolutePath(), FILE_NAME, xmlBuffer.toXML());
     }
   }
 
