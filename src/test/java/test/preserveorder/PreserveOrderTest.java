@@ -1,6 +1,7 @@
 package test.preserveorder;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -9,10 +10,13 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 import test.BaseLogTest;
+import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PreserveOrderTest extends SimpleBaseTest {
 
@@ -115,5 +119,18 @@ public class PreserveOrderTest extends SimpleBaseTest {
     t.setPreserveOrder(true);
     tng.setXmlSuites(Arrays.asList(s));
     tng.run();
+  }
+
+  @Test(description = "GITHUB-1122 Use default value for preserve-order")
+  public void preserveOrderValueShouldBeTheDefaultOne() {
+    TestNG tng = create(Issue1122Sample.class);
+
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener((ITestNGListener) listener);
+
+    tng.run();
+
+    assertThat(listener.getFailedMethodNames()).isEmpty();
+    assertThat(listener.getSkippedMethodNames()).isEmpty();
   }
 }

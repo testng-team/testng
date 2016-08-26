@@ -849,7 +849,7 @@ public class TestNG {
 
   private boolean m_randomizeSuites = Boolean.FALSE;
 
-  private boolean m_preserveOrder = false;
+  private Boolean m_preserveOrder = XmlSuite.DEFAULT_PRESERVE_ORDER;
   private Boolean m_groupByInstances;
 
   private IConfiguration m_configuration;
