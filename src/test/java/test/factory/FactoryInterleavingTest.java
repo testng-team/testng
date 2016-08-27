@@ -16,6 +16,7 @@ public class FactoryInterleavingTest extends SimpleBaseTest {
   @Test
   public void methodsShouldBeInterleaved() {
     TestNG tng = create(FactoryInterleavingSampleFactory.class);
+    tng.setPreserveOrder(false);
     tng.run();
     Integer[] valid1 = {
         10, 11, 12, 13,

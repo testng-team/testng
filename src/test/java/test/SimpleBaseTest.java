@@ -55,14 +55,17 @@ public class SimpleBaseTest {
     return result;
   }
 
-  protected XmlTest createXmlTest(XmlSuite suite, String name, Class clazz, Class... classes) {
+  protected XmlTest createXmlTest(XmlSuite suite, String name) {
     XmlTest result = new XmlTest(suite);
-    int index = 0;
     result.setName(name);
-    XmlClass xc = new XmlClass(clazz.getName(), index++, true /* load classes */);
-    result.getXmlClasses().add(xc);
-    for (Class c : classes) {
-      xc = new XmlClass(c.getName(), index++, true /* load classes */);
+    return result;
+  }
+
+  protected XmlTest createXmlTest(XmlSuite suite, String name, Class<?>... classes) {
+    XmlTest result = createXmlTest(suite, name);
+    int index = 0;
+    for (Class<?> c : classes) {
+      XmlClass xc = new XmlClass(c.getName(), index++, true /* load classes */);
       result.getXmlClasses().add(xc);
     }
 
@@ -70,9 +73,8 @@ public class SimpleBaseTest {
   }
 
   protected XmlTest createXmlTest(XmlSuite suite, String name, String... classes) {
-    XmlTest result = new XmlTest(suite);
+    XmlTest result = createXmlTest(suite, name);
     int index = 0;
-    result.setName(name);
     for (String c : classes) {
       XmlClass xc = new XmlClass(c, index++, true /* load classes */);
       result.getXmlClasses().add(xc);
@@ -81,10 +83,10 @@ public class SimpleBaseTest {
     return result;
   }
 
-  protected void addMethods(XmlClass cls, String... methods) {
+  protected static void addMethods(XmlClass cls, String... methods) {
     int index = 0;
-    for (String m : methods) {
-      XmlInclude include = new XmlInclude(m, index++);
+    for (String method : methods) {
+      XmlInclude include = new XmlInclude(method, index++);
       cls.getIncludedMethods().add(include);
     }
   }
