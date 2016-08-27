@@ -20,6 +20,7 @@ buildscript {
 
     dependencies {
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
+        classpath 'org.hibernate.build.gradle:version-injection-plugin:1.0.0'
     }
 }
 
@@ -42,6 +43,7 @@ apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'jacoco'
 apply plugin: 'osgi'
+apply plugin: 'version-injection'
 
 targetCompatibility = "1.7"
 sourceCompatibility = "1.7"
@@ -81,47 +83,6 @@ artifacts {
     sourceJar
 }
 
-import org.apache.tools.ant.filters.ReplaceTokens
-
-def generatedSourcesFolder = projectDir.toString() + '/src/generated/java'
-
-def dirFrom = projectDir.toString() + '/src/main/resources/org/testng/internal'
-def dirTo = generatedSourcesFolder + "/org/testng/internal"
-def fileFrom = 'VersionTemplateJava'
-def fileTo = 'Version.java'
-
-task removeVersion {
-    delete dirTo + fileTo
-}
-
-sourceSets {
-    generated {
-        java {
-            srcDir 'src/generated/java'
-        }
-        resources {
-            srcDir 'src/generated/resources'
-        }
-    }
-}
-
-sourceSets {
-    main {
-        compileClasspath += generated.output
-        runtimeClasspath += generated.output
-    }
-}
-
-gradle.projectsEvaluated {
-    compileJava.dependsOn(myDir)
-}
-
-task myDir {
-    delete dirTo + "/" + fileTo
-    mkdir(dirTo)
-}
-
-// Include the generated Version.class in the jar
 jar {
     manifest {
         instruction 'Bundle-License', 'http://apache.org/licenses/LICENSE-2.0'
@@ -139,19 +100,12 @@ jar {
             '!com.sun.*',
             '*'
     }
-    from "$buildDir/classes/generated"
 }
 
-task createVersion(type: Copy, dependsOn: myDir) {
-    println("Creating Version file: ${version} in ${dirTo}")
-    from dirFrom
-    include fileFrom
-    into(dirTo)
-    rename(fileFrom, fileTo)
-    filter(ReplaceTokens, tokens: [version: version])
+versionInjection {
+    into( 'org.testng.internal.Version', 'VERSION' )
+    into( 'org.testng.internal.Version', 'getVersionString' )
 }
-
-compileJava.dependsOn(createVersion)
 
 test {
     useTestNG() {
