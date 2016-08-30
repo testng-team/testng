@@ -121,9 +121,9 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
       dir.mkdir();
       for (int i = 0; i < files.size(); i++) {
         File f = new File(dir, "" + (i < 10 ? "0" : "") + i + ".dot");
-        BufferedWriter bw = new BufferedWriter(new FileWriter(f));
-        bw.append(files.get(i));
-        bw.close();
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(f))) {
+          bw.append(files.get(i));
+        }
       }
       if (DOT_FILES) {
         System.out.println("Created graph files in " + dir);

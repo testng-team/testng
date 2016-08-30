@@ -300,17 +300,17 @@ public class XMLStringBuffer {
    * Add a CDATA tag.
    */
   public void addCDATA(String content) {
+    m_buffer.append(m_currentIndent);
     if (content == null) {
-      content = "null";
-    }
-    if (!content.contains("]]>")) {
-      m_buffer.append(m_currentIndent).append("<![CDATA[").append(content).append("]]>");
-    } else if (content.equals("]]>")) {
+      m_buffer.append("<![CDATA[null]]>");
+    } else if (!content.contains("]]>")) {
+      m_buffer.append("<![CDATA[").append(content).append("]]>");
+    } else if ("]]>".equals(content)) {
       // Solution from http://stackoverflow.com/q/223652/4234729
-      m_buffer.append(m_currentIndent).append("<![CDATA[]]]]><![CDATA[>]]>");
+      m_buffer.append("<![CDATA[]]]]><![CDATA[>]]>");
     } else { // content contains "]]>"
       String[] subStrings = content.split("]]>");
-      m_buffer.append(m_currentIndent).append("<![CDATA[").append(subStrings[0]).append("]]]]>");
+      m_buffer.append("<![CDATA[").append(subStrings[0]).append("]]]]>");
       for (int i = 1; i < subStrings.length - 1; i++) {
         m_buffer.append("<![CDATA[>").append(subStrings[i]).append("]]]]>");
       }
