@@ -36,7 +36,7 @@ public class JqReporter implements IReporter {
   @Override
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
       String outputDirectory) {
-    m_outputDirectory = "/Users/cedric/java/misc/jquery";
+    m_outputDirectory = outputDirectory;
 
     XMLStringBuffer xsb = new XMLStringBuffer("  ");
     xsb.push(D, "id", "suites");
@@ -45,7 +45,7 @@ public class JqReporter implements IReporter {
 
     String all;
     try {
-      all = Files.readFile(new File("/Users/cedric/java/misc/jquery/head"));
+      all = Files.readFile(new File(m_outputDirectory + "/head"));
       Utils.writeFile(m_outputDirectory, "index2.html", all + xsb.toXML());
     } catch (IOException e) {
       // TODO Auto-generated catch block
