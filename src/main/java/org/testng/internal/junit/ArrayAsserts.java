@@ -39,6 +39,15 @@ public class ArrayAsserts {
       assertArrayEquals(null, expecteds, actuals);
   }
 
+  public static void assertArrayEquals(String message, boolean[] expecteds,
+                                     boolean[] actuals) throws ArrayComparisonFailure {
+    internalArrayEquals(message, expecteds, actuals);
+  }
+
+  public static void assertArrayEquals(boolean[] expecteds, boolean[] actuals) {
+    assertArrayEquals(null, expecteds, actuals);
+  }
+
   /**
    * Asserts that two byte arrays are equal. If they are not, an
    * {@link AssertionError} is thrown with the given message.

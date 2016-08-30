@@ -10,6 +10,7 @@ Fixed: GITHUB-918: NullPointerException on loading XmlSuites programmatically (@
 Fixed: GITHUB-689: <groups> at <suite> level not applied to <suite-files> (@kunal546 & Julien Herr)
 Fixed: GITHUB-740: More than one execution even when success with DataProvider and IRetryAnalyzer (Sergio Sacristán)
 Fixed: GITHUB-877: Retries don't work correctly with DataProvider tests (Simonas Tvirbutas)
+Fixed: GITHUB-1103: Add ...junit.ArrayAsserts.assertArrayEquals(boolean[], boolean[]) (Jonathan Halterman & Julien Herr)
 Fixed: GITHUB-1122: Use the default value for preserve-order (Guillaume Guillot & Julien Herr)
 ﻿
 6.9.12
