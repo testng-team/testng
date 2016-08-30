@@ -15,7 +15,7 @@ public class FactoryInterleavingTest extends SimpleBaseTest {
 
   @Test
   public void methodsShouldBeInterleaved() {
-    TestNG tng = create(FactoryInterleavingSampleFactory.class);
+    TestNG tng = create(InterleavingFactorySample.class);
     tng.setPreserveOrder(false);
     tng.run();
     Integer[] valid1 = {
@@ -31,7 +31,6 @@ public class FactoryInterleavingTest extends SimpleBaseTest {
     if (! logArray.equals(valid1)) {
       Assert.assertEquals(logArray, valid1);
     } else if (! logArray.equals(valid2)) {
-      System.err.println(logArray + " " + valid2);
       Assert.assertEquals(logArray, valid2);
     }
   }

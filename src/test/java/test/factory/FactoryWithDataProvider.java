@@ -12,7 +12,7 @@ public class FactoryWithDataProvider {
   public Object[][] dp() {
     return new Object[][] {
       new Object[] { new int[] { 3, 5 } },
-      new Object[] { new int [] { 7, 9 } },
+      new Object[] { new int[] { 7, 9 } },
     };
   }
 
@@ -20,14 +20,9 @@ public class FactoryWithDataProvider {
   public Object[] factory(int[] array) {
     List<Object> result = new ArrayList<>();
     for (int n : array) {
-      result.add(new OddTest(n));
+      result.add(new OddSample(n));
     }
 
     return result.toArray();
   }
-
-  private static void ppp(String s) {
-    System.out.println("[FactoryWithDataProvider] " + s);
-  }
-
 }

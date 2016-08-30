@@ -2,13 +2,13 @@ package test.factory;
 
 import org.testng.annotations.Factory;
 
-public class BadFactoryMethodReturnTypeSample {
+public class BadMethodReturnTypeFactory {
 
     @Factory
     private Object createInstances() {
         return new Object[] {
-                new BaseFactory(42),
-                new BaseFactory(43)
+                new BaseFactorySample(42),
+                new BaseFactorySample(43)
         };
     }
 }

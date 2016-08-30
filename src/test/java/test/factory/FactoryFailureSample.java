@@ -3,7 +3,7 @@ package test.factory;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
-public class FactoryFailureSampleTest {
+public class FactoryFailureSample {
 
   @Factory
   public Object[] factory() {

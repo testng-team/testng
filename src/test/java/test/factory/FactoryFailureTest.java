@@ -10,7 +10,7 @@ public class FactoryFailureTest extends SimpleBaseTest {
 
    @Test
    public void factoryThrowingShouldNotRunTests() {
-     TestNG tng = create(FactoryFailureSampleTest.class);
+     TestNG tng = create(FactoryFailureSample.class);
 
      try {
        tng.run();

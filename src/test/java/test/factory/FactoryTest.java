@@ -1,21 +1,22 @@
 package test.factory;
 
-import static org.testng.Assert.assertFalse;
-
-import org.testng.Assert;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Parameters;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+
 public class FactoryTest {
-  static boolean m_invoked = false;
+
+  static boolean isInvoked = false;
 
   @Parameters({ "factory-param" })
   @Factory
   public Object[] createObjects(String param) {
-    Assert.assertEquals(param, "FactoryParam");
-    assertFalse(m_invoked, "Should only be invoked once");
-    m_invoked = true;
+    assertEquals(param, "FactoryParam");
+    assertFalse(isInvoked, "Should only be invoked once");
+    isInvoked = true;
 
     return new Object[] {
         new FactoryTest2(42),
@@ -25,6 +26,6 @@ public class FactoryTest {
 
   @AfterSuite
   public void afterSuite() {
-    m_invoked = false;
+    isInvoked = false;
   }
 }

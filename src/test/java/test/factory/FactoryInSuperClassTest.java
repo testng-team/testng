@@ -11,7 +11,7 @@ public class FactoryInSuperClassTest extends SimpleBaseTest {
 
   @Test
   public void factoryInSuperClassShouldWork() {
-    TestNG tng = create(FactoryChild.class);
+    TestNG tng = create(ChildFactory.class);
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
     tng.run();

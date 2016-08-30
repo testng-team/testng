@@ -5,17 +5,18 @@ import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import test.SimpleBaseTest;
 
-public class EmptyFactoryDataProviderTest {
+public class EmptyFactoryDataProviderTest extends SimpleBaseTest {
 
     @Test
     public void test() {
-        TestNG testng = new TestNG(false);
+        TestNG testng = create(ArrayEmptyFactorySample.class, IteratorEmptyFactorySample.class);
+
         TestListenerAdapter tla = new TestListenerAdapter();
         testng.addListener((ITestNGListener) tla);
         // Used to check the warning message
         testng.setVerbose(2);
-        testng.setTestClasses(new Class[]{ArrayEmptyFactorySample.class, IteratorEmptyFactorySample.class});
 
         testng.run();
 

@@ -2,7 +2,7 @@ package test.factory;
 
 import org.testng.annotations.Test;
 
-public class FactoryBaseSampleTest {
+public class FactoryBaseSample {
 
   @Test
   public void f() {}
