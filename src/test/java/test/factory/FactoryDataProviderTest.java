@@ -18,9 +18,14 @@ public class FactoryDataProviderTest extends SimpleBaseTest {
     runTest(FactoryDataProviderSampleTest.class, 41, 42);
   }
   
-  @Test(description = "Test @Factory(dataProvider) on a data provider in another class")
+  @Test(description = "Test @Factory(dataProvider) on a data provider in another class (static)")
   public void factoryWithStaticDataProvider() {
-    runTest(FactoryDataProviderStaticSampleTest.class, 43, 44);
+    runTest(FactoryDataProviderStaticSample.class, 43, 44);
+  }
+
+  @Test(description = "Test @Factory(dataProvider) on a data provider in another class (not static)")
+  public void factoryWithNotStaticDataProvider() {
+    runTest(FactoryDataProviderNotStaticSample.class, 43, 44);
   }
 
   @Test(description = "Test @Factory(dataProvider) on a non static data provider with no arg ctor")

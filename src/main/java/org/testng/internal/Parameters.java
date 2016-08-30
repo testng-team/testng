@@ -310,7 +310,7 @@ public class Parameters {
    */
   private static DataProviderHolder findDataProvider(Object instance, ITestClass clazz,
                                                      IAnnotationFinder finder,
-                                                     String name, Class dataProviderClass,
+                                                     String name, Class<?> dataProviderClass,
                                                      ITestContext context)
   {
     DataProviderHolder result = null;
@@ -329,6 +329,8 @@ public class Parameters {
           Injector injector = context.getInjector(clazz);
           if (injector != null) {
             instance = injector.getInstance(dataProviderClass);
+          } else {
+            instance = ClassHelper.newInstance(dataProviderClass);
           }
         }
 
