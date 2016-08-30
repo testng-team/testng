@@ -16,6 +16,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @deprecated Use {@link org.testng.reporters.jq.Main} instead
+ */
+@Deprecated
 public class JqReporter implements IReporter {
   private static final String C = "class";
   private static final String D = "div";
@@ -24,6 +28,10 @@ public class JqReporter implements IReporter {
   private int m_testCount = 0;
   private String m_outputDirectory;
   private Map<String, String> m_testMap = Maps.newHashMap();
+
+  public JqReporter() {
+      System.err.println("JqReporter is deprecated. Use 'org.testng.reporters.jq.Main' instead.");
+  }
 
   @Override
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
