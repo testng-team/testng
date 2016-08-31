@@ -303,7 +303,12 @@ public class XMLStringBuffer {
     if (content == null) {
       content = "null";
     }
-    if (content.contains("]]>")) {
+    if (!content.contains("]]>")) {
+      m_buffer.append(m_currentIndent).append("<![CDATA[").append(content).append("]]>");
+    } else if (content.equals("]]>")) {
+      // Solution from http://stackoverflow.com/q/223652/4234729
+      m_buffer.append(m_currentIndent).append("<![CDATA[]]]]><![CDATA[>]]>");
+    } else { // content contains "]]>"
       String[] subStrings = content.split("]]>");
       m_buffer.append(m_currentIndent).append("<![CDATA[").append(subStrings[0]).append("]]]]>");
       for (int i = 1; i < subStrings.length - 1; i++) {
@@ -313,10 +318,8 @@ public class XMLStringBuffer {
       if (content.endsWith("]]>")) {
         m_buffer.append("<![CDATA[]]]]>").append("<![CDATA[>]]>");
       }
-      m_buffer.append(EOL);
-    } else {
-      m_buffer.append(m_currentIndent).append("<![CDATA[").append(content).append("]]>" + EOL);
     }
+    m_buffer.append(EOL);
   }
 
   /**
