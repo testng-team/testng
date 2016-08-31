@@ -3,9 +3,10 @@ package test.factory;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 
-public class FactoryDataProviderStaticSampleErrorTest extends BaseFactory {
+public class FactoryDataProviderStaticErrorSample extends BaseFactorySample {
+
   @Factory(dataProvider = "dp")
-  public FactoryDataProviderStaticSampleErrorTest(int n) {
+  public FactoryDataProviderStaticErrorSample(int n) {
     super(n);
   }
 
@@ -16,5 +17,4 @@ public class FactoryDataProviderStaticSampleErrorTest extends BaseFactory {
       new Object[] { 42 },
     };
   }
-
 }

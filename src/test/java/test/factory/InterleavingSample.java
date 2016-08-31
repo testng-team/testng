@@ -4,21 +4,20 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class FactoryInterleavingSampleA {
-  public int m_n;
+public class InterleavingSample {
+  public final int n;
 
-  public FactoryInterleavingSampleA(int n) {
-    m_n = n;
+  public InterleavingSample(int n) {
+    this.n = n;
   }
 
   private void log(Integer s) {
-    FactoryInterleavingTest.LOG.add(m_n * 10 + s);
-//    System.out.println(" Instance " + m_n + " " + s);
+    FactoryInterleavingTest.LOG.add(n * 10 + s);
   }
 
   @Override
   public String toString() {
-    return "[A n:" + m_n + "]";
+    return "[A n:" + n + "]";
   }
 
   @BeforeClass

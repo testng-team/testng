@@ -1,6 +1,7 @@
 package test.factory;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -14,14 +15,14 @@ public class FactoryOrderMainTest extends SimpleBaseTest {
 
   @Test
   public void factoriesShouldBeInvokedInTheOrderOfCreation() {
-    TestNG tng = create(FactoryOrderTest.class);
+    TestNG tng = create(OrderFactory.class);
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener(tla);
+    tng.addListener((ITestNGListener) tla);
     tng.run();
 
     List<ITestResult> passed = tla.getPassedTests();
     for (int i = 0; i < passed.size(); i++) {
-      Assert.assertEquals(((FactoryOrderSampleTest) passed.get(i).getInstance()).getValue(), i);
+      Assert.assertEquals(((OrderSample) passed.get(i).getInstance()).getValue(), i);
     }
   }
 }

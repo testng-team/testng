@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
  * this is like the FactoryTest, except it creates test instances in a separate
  * class from the test class
  */
-public class FactoryInSeparateClass {
+public class FactoryInSeparateClassTest {
   static private boolean m_wasRun = false;
   static private int m_checkSum = 0;
 
@@ -25,13 +25,13 @@ public class FactoryInSeparateClass {
   @Factory
   public Object[] createObjects() {
     return new Object[] {
-      new MyTest(1),
-      new MyTest(2),
-      new MyTest(3),
+      new MySample(1),
+      new MySample(2),
+      new MySample(3),
     };
   }
 
-   @Test(groups = "testMethodOnFactoryClass", dependsOnGroups={"MyTest"})
+   @Test(groups = "testMethodOnFactoryClass", dependsOnGroups={"MySample"})
     public void checkSum() {
     m_wasRun = true;
       assert (m_checkSum == 6) :

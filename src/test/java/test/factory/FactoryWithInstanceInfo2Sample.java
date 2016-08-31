@@ -5,11 +5,15 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FactoryTest2 {
+/**
+ * This class is created by FactoryWithInstanceInfo2Sample
+ */
+public class FactoryWithInstanceInfo2Sample {
+
   private static List<Integer> numbers = new ArrayList<>();
   private int number;
 
-  public FactoryTest2() {
+  public FactoryWithInstanceInfo2Sample() {
     throw new RuntimeException("Shouldn't be invoked");
   }
 
@@ -17,18 +21,12 @@ public class FactoryTest2 {
     return numbers;
   }
 
-  public FactoryTest2(int n) {
+  public FactoryWithInstanceInfo2Sample(int n) {
     number = n;
   }
 
   @Test(groups = { "first" })
   public void testInt() {
-    Integer n = number;
-    numbers.add(n);
-  }
-
-  @Override
-  public String toString() {
-    return "[FactoryTest2 " + number + "]";
+    numbers.add(number);
   }
 }

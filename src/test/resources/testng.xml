@@ -300,7 +300,7 @@
     <classes>
       <class name="test.factory.FactoryTest" />
       <class name="test.factory.VerifyFactoryTest" />
-      <class name="test.factory.FactoryInSeparateClass" />
+      <class name="test.factory.FactoryInSeparateClassTest" />
       <class name="test.factory.Factory2Test" />
 
       <class name="test.factory.FactoryWithInstanceInfoTest" />
@@ -484,6 +484,7 @@
       <class name="test.dataprovider.ExplicitDataProviderNameTest" />
       <class name="test.dataprovider.MethodTest"/>
       <class name="test.dataprovider.StaticDataProviderSampleTest" />
+      <class name="test.dataprovider.StaticDataProviderSampleWithoutGuiceTest" />
       <class name="test.dataprovider.UnnamedDataProviderTest" />
       <class name="test.dataprovider.TestContextTest" />
       <class name="test.dataprovider.FailingDataProviderTest" />

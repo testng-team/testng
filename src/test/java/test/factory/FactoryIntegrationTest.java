@@ -25,7 +25,7 @@ public class FactoryIntegrationTest extends SimpleBaseTest {
 
     @Test
     public void testNonPublicFactoryMethodShouldWork() {
-        TestNG tng = create(NonPublicFactoryMethodSample.class);
+        TestNG tng = create(NonPublicFactory.class);
         TestListenerAdapter tla = new TestListenerAdapter();
         tng.addListener(tla);
 
@@ -36,12 +36,12 @@ public class FactoryIntegrationTest extends SimpleBaseTest {
 
     @Test
     public void testExceptionWithBadFactoryMethodReturnType() {
-        TestNG tng = create(BadFactoryMethodReturnTypeSample.class);
+        TestNG tng = create(BadMethodReturnTypeFactory.class);
         try {
             tng.run();
             failBecauseExceptionWasNotThrown(TestNGException.class);
         } catch (TestNGException e) {
-            assertThat(e).hasMessage("\ntest.factory.BadFactoryMethodReturnTypeSample.createInstances MUST return [ java.lang.Object[] or org.testng.IInstanceInfo[] ] but returns java.lang.Object");
+            assertThat(e).hasMessage("\ntest.factory.BadMethodReturnTypeFactory.createInstances MUST return [ java.lang.Object[] or org.testng.IInstanceInfo[] ] but returns java.lang.Object");
         }
     }
 }

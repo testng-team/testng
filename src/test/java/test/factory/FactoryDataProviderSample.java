@@ -4,10 +4,10 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
-public class FactoryDataProviderSampleTest extends BaseFactory {
+public class FactoryDataProviderSample extends BaseFactorySample {
 
   @Factory(dataProvider = "dp")
-  public FactoryDataProviderSampleTest(int n) {
+  public FactoryDataProviderSample(int n) {
     super(n);
   }
 
@@ -19,13 +19,7 @@ public class FactoryDataProviderSampleTest extends BaseFactory {
     };
   }
 
-  @Override
-  public String toString() {
-    return "[FactoryDataProviderSampleTest " + getN() + "]";
-  }
-
   @Test
   public void f() {
-//    System.out.println("Test:" + getN());
   }
 }

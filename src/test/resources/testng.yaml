@@ -170,7 +170,7 @@ tests:
     classes:
       - test.factory.FactoryTest
       - test.factory.VerifyFactoryTest
-      - test.factory.FactoryInSeparateClass
+      - test.factory.FactoryInSeparateClassTest
       - test.factory.Factory2Test
       - test.factory.FactoryWithInstanceInfoTest
       - test.factory.VerifyFactoryWithInstanceInfoTest
