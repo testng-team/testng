@@ -485,10 +485,16 @@ public class Parameters {
       // Normal case: we have only one set of parameters coming from testng.xml
       //
       allParameterNames.putAll(methodParams.xmlParameters);
-      // Create an Object[][] containing just one row of parameters
-      Object[][] allParameterValuesArray = new Object[1][];
-      allParameterValuesArray[0] = createParameters(testMethod.getMethod(),
-          methodParams, annotationFinder, xmlSuite, ITestAnnotation.class, "@Test");
+      
+      // Create multi Object[][] containing parameters defined in the include tags.
+			List<Map<String, String>> realMethodParameters = testMethod.getMethodParameters();
+			Object[][] allParameterValuesArray = new Object[realMethodParameters.size()][];
+			for (int i = 0; i < realMethodParameters.size(); i++) {
+				methodParams.xmlParameters = realMethodParameters.get(i);
+				allParameterValuesArray[i] = createParameters(testMethod.getMethod(),
+						methodParams, annotationFinder, xmlSuite, ITestAnnotation.class,
+						"@Test");
+			}
 
       // Mark that this method needs to have at least a certain
       // number of invocations (needed later to call AfterGroups
@@ -503,7 +509,7 @@ public class Parameters {
 
   /** A parameter passing helper class. */
   public static class MethodParameters {
-    private final Map<String, String> xmlParameters;
+    private Map<String, String> xmlParameters;
     private final Method currentTestMethod;
     private final ITestContext context;
     private Object[] parameterValues;
