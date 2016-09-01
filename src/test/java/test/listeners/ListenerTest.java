@@ -118,9 +118,9 @@ public class ListenerTest extends SimpleBaseTest {
     MyClassListener.names.clear();
     TestNG tng = create(Derived1.class, Derived2.class);
     MyClassListener listener = new MyClassListener();
-    tng.addListener((Object)listener);
+    tng.addListener((ITestNGListener) listener);
     TestListenerAdapter adapter = new TestListenerAdapter();
-    tng.addListener(adapter);
+    tng.addListener((ITestNGListener) adapter);
     tng.run();
     assertThat(adapter.getFailedTests()).isEmpty();
     assertThat(adapter.getSkippedTests()).isEmpty();
@@ -138,9 +138,9 @@ public class ListenerTest extends SimpleBaseTest {
     MyClassListener.names.clear();
     TestNG tng = create(Derived3.class);
     MyClassListener listener = new MyClassListener();
-    tng.addListener((Object)listener);
+    tng.addListener((ITestNGListener) listener);
     TestListenerAdapter adapter = new TestListenerAdapter();
-    tng.addListener(adapter);
+    tng.addListener((ITestNGListener) adapter);
     tng.run();
     assertThat(adapter.getFailedTests()).isEmpty();
     assertThat(adapter.getSkippedTests()).isEmpty();
@@ -157,7 +157,7 @@ public class ListenerTest extends SimpleBaseTest {
     MyClassListener.names.clear();
     TestNG tng = create(ClassListenerSample.class);
     TestListenerAdapter adapter = new TestListenerAdapter();
-    tng.addListener(adapter);
+    tng.addListener((ITestNGListener) adapter);
     tng.run();
     assertThat(adapter.getFailedTests()).isEmpty();
     assertThat(adapter.getSkippedTests()).isEmpty();
@@ -190,7 +190,7 @@ public class ListenerTest extends SimpleBaseTest {
   public void methodListenersShouldNotBeCalledForSkippedMethods() {
     GitHub911Listener listener = new GitHub911Listener();
     TestNG tng = create(GitHub911Sample.class);
-    tng.addListener(listener);
+    tng.addListener((ITestNGListener) listener);
     tng.run();
     Assert.assertEquals(listener.onStart, 1);
     Assert.assertEquals(listener.onFinish, 1);
@@ -205,7 +205,7 @@ public class ListenerTest extends SimpleBaseTest {
   public void setStatusShouldWorkInListener() {
     SetStatusListener listener = new SetStatusListener();
     TestNG tng = create(SetStatusSample.class);
-    tng.addListener(listener);
+    tng.addListener((ITestNGListener) listener);
     tng.run();
     Assert.assertEquals(listener.getContext().getFailedTests().size(), 0);
     Assert.assertEquals(listener.getContext().getFailedButWithinSuccessPercentageTests().size(), 0);
@@ -217,6 +217,7 @@ public class ListenerTest extends SimpleBaseTest {
   public void listenerRegistration() {
     MultiListener listener = new MultiListener();
     TestNG tng = create(SimpleSample.class);
+    // Keep using deprecated addListener methods. It is what the test is testing
     tng.addListener((ISuiteListener) listener);
     tng.addListener((ITestListener) listener);
     tng.addInvokedMethodListener(listener);
