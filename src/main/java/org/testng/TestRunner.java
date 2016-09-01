@@ -87,7 +87,7 @@ public class TestRunner
   transient private boolean m_skipFailedInvocationCounts;
 
   transient private Collection<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
-  transient private List<IClassListener> m_classListeners = Lists.newArrayList();
+  transient private final List<IClassListener> m_classListeners = Lists.newArrayList();
 
   /**
    * All the test methods we found, associated with their respective classes.
@@ -203,7 +203,8 @@ public class TestRunner
 
     m_annotationFinder= annotationFinder;
     m_invokedMethodListeners = invokedMethodListeners;
-    m_classListeners = classListeners;
+    m_classListeners.clear();
+    m_classListeners.addAll(classListeners);
     m_invoker = new Invoker(m_configuration, this, this, m_suite.getSuiteState(),
         m_skipFailedInvocationCounts, invokedMethodListeners, classListeners);
 
@@ -770,12 +771,12 @@ public class TestRunner
     for (IMethodInstance imi : methodInstances) {
       result.add(imi.getMethod());
     }
-    
-    //Since an interceptor is involved, we would need to ensure that the ClassMethodMap object is in sync with the 
+
+    //Since an interceptor is involved, we would need to ensure that the ClassMethodMap object is in sync with the
     //output of the interceptor, else @AfterClass doesn't get executed at all when interceptors are involved.
     //so let's update the current classMethodMap object with the list of methods obtained from the interceptor.
     this.m_classMethodMap = new ClassMethodMap(result, null);
-    
+
     return result.toArray(new ITestNGMethod[result.size()]);
   }
 
