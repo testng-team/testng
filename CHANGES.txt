@@ -14,6 +14,7 @@ Fixed: GITHUB-877: Retries don't work correctly with DataProvider tests (Simonas
 Fixed: GITHUB-1103: Add ...junit.ArrayAsserts.assertArrayEquals(boolean[], boolean[]) (Jonathan Halterman & Julien Herr)
 Fixed: GITHUB-1122: Use the default value for preserve-order (Guillaume Guillot & Julien Herr)
 Fixed: GITHUB-1022: Non static methods from external data providers are not working without @Guice (Sourav Chandra & Julien Herr)
+Fixed: GITHUB-1130: IClassListener should only be instantiated once (Guillaume Guillot & Julien Herr)
 ﻿
 6.9.12
 2016/06/21

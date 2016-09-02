@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,7 +44,6 @@ import org.testng.internal.Utils;
 import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.IListeners;
 import org.testng.internal.thread.graph.GraphThreadPoolExecutor;
 import org.testng.internal.thread.graph.IThreadWorkerFactory;
 import org.testng.internal.thread.graph.IWorker;
@@ -87,7 +85,7 @@ public class TestRunner
   transient private boolean m_skipFailedInvocationCounts;
 
   transient private Collection<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
-  transient private final List<IClassListener> m_classListeners = Lists.newArrayList();
+  transient private final Map<Class<? extends IClassListener>, IClassListener> m_classListeners = Maps.newHashMap();
 
   /**
    * All the test methods we found, associated with their respective classes.
@@ -204,7 +202,9 @@ public class TestRunner
     m_annotationFinder= annotationFinder;
     m_invokedMethodListeners = invokedMethodListeners;
     m_classListeners.clear();
-    m_classListeners.addAll(classListeners);
+    for (IClassListener classListener : classListeners) {
+      m_classListeners.put(classListener.getClass(), classListener);
+    }
     m_invoker = new Invoker(m_configuration, this, this, m_suite.getSuiteState(),
         m_skipFailedInvocationCounts, invokedMethodListeners, classListeners);
 
@@ -332,6 +332,9 @@ public class TestRunner
 
     // Instantiate all the listeners
     for (Class<? extends ITestNGListener> c : listenerClasses) {
+      if (IClassListener.class.isAssignableFrom(c) && m_classListeners.containsKey(c)) {
+          continue;
+      }
       ITestNGListener listener = listenerFactory != null ? listenerFactory.createListener(c) : null;
       if (listener == null) {
         listener = ClassHelper.newInstance(c);
@@ -882,7 +885,7 @@ public class TestRunner
           m_groupMethods,
           m_classMethodMap,
           this,
-          m_classListeners);
+          new ArrayList<>(m_classListeners.values()));
       result.add(tmw);
     }
 
@@ -921,7 +924,7 @@ public class TestRunner
         m_groupMethods,
         m_classMethodMap,
         this,
-        m_classListeners);
+        new ArrayList<>(m_classListeners.values()));
   }
 
   private IMethodInstance[] findClasses(List<IMethodInstance> methodInstances, Class<?> c) {
@@ -1443,24 +1446,18 @@ public class TestRunner
     if (listener instanceof IMethodInterceptor) {
       m_methodInterceptors.add((IMethodInterceptor) listener);
     }
-    if (listener instanceof ISuiteListener) {
-      m_suite.addListener(listener);
-    }
-    if (listener instanceof IInvokedMethodListener) {
-      m_suite.addListener(listener);
-    }
     if (listener instanceof ITestListener) {
       // At this point, the field m_testListeners has already been used in the creation
       addTestListener((ITestListener) listener);
     }
     if (listener instanceof IClassListener) {
-      m_classListeners.add((IClassListener) listener);
+      IClassListener classListener = (IClassListener) listener;
+      if (!m_classListeners.containsKey(classListener.getClass())) {
+        m_classListeners.put(classListener.getClass(), classListener);
+      }
     }
     if (listener instanceof IConfigurationListener) {
       addConfigurationListener((IConfigurationListener) listener);
-    }
-    if (listener instanceof IReporter) {
-      m_suite.addListener(listener);
     }
     if (listener instanceof IConfigurable) {
       m_configuration.setConfigurable((IConfigurable) listener);
@@ -1473,6 +1470,7 @@ public class TestRunner
       iel.onExecutionStart();
       m_configuration.addExecutionListener(iel);
     }
+    m_suite.addListener(listener);
   }
 
   /**

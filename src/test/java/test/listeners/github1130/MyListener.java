@@ -7,21 +7,25 @@ import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MyListener implements ISuiteListener, IClassListener {
 
-    public static int beforeSuiteCount = 0;
-    public static int beforeClassCount = 0;
+    public static int count = 0;
+    public static List<String> beforeSuiteCount = new ArrayList<>();
+    public static List<String> beforeClassCount = new ArrayList<>();
 
     public MyListener() {
-        System.out.println("Instantiate new MyListener");
+        count++;
     }
 
     public void onStart(ISuite suite) {
-        beforeSuiteCount++;
+        beforeSuiteCount.add(this.toString());
     }
 
     public void onBeforeClass(ITestClass testClass) {
-        beforeClassCount++;
+        beforeClassCount.add(this.toString());
     }
 
     public void onTestStart(ITestResult result) {
