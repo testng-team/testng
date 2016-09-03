@@ -199,10 +199,9 @@ public class Parameters {
     }
   }
 
-  public static Object convertType(Class type, String value, String paramName) {
-    Object result = null;
-
-    if(NULL_VALUE.equals(value.toLowerCase())) {
+  public static <T> T convertType(Class<T> type, String value, String paramName) {
+    try {
+      if (value == null || NULL_VALUE.equals(value.toLowerCase())) {
       if(type.isPrimitive()) {
         Utils.log("Parameters", 2, "Attempt to pass null value to primitive type parameter '" + paramName + "'");
       }
@@ -211,40 +210,39 @@ public class Parameters {
     }
 
     if(type == String.class) {
-      result = value;
+        return (T) value;
     }
-    else if(type == int.class || type == Integer.class) {
-      result = Integer.parseInt(value);
+      if (type == int.class || type == Integer.class) {
+        return (T) Integer.valueOf(value);
     }
-    else if(type == boolean.class || type == Boolean.class) {
-      result = Boolean.valueOf(value);
+      if (type == boolean.class || type == Boolean.class) {
+        return (T) Boolean.valueOf(value);
     }
-    else if(type == byte.class || type == Byte.class) {
-      result = Byte.parseByte(value);
+      if (type == byte.class || type == Byte.class) {
+        return (T) Byte.valueOf(value);
     }
-    else if(type == char.class || type == Character.class) {
-      result = value.charAt(0);
+      if (type == char.class || type == Character.class) {
+        return (T) Character.valueOf(value.charAt(0));
     }
-    else if(type == double.class || type == Double.class) {
-      result = Double.parseDouble(value);
+      if (type == double.class || type == Double.class) {
+        return (T) Double.valueOf(value);
     }
-    else if(type == float.class || type == Float.class) {
-      result = Float.parseFloat(value);
+      if (type == float.class || type == Float.class) {
+        return (T) Float.valueOf(value);
     }
-    else if(type == long.class || type == Long.class) {
-      result = Long.parseLong(value);
+      if (type == long.class || type == Long.class) {
+        return (T) Long.valueOf(value);
     }
-    else if(type == short.class || type == Short.class) {
-      result = Short.parseShort(value);
+      if (type == short.class || type == Short.class) {
+        return (T) Short.valueOf(value);
     }
-    else if (type.isEnum()) {
-    	result = Enum.valueOf(type, value);
+      if (type.isEnum()) {
+        return (T) Enum.valueOf((Class<Enum>) type, value);
     }
-    else {
-      assert false : "Unsupported type parameter : " + type;
+    } catch (Exception e) {
+      throw new TestNGException("Conversion issue on parameter: " + paramName, e);
     }
-
-    return result;
+    throw new TestNGException("Unsupported type parameter : " + type);
   }
 
   private static DataProviderHolder findDataProvider(Object instance, ITestClass clazz,
