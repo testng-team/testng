@@ -1,5 +1,6 @@
 package test.inheritance.testng471;
 
+import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
@@ -17,7 +18,7 @@ public class TestNG471 extends SimpleBaseTest {
     tng.setVerbose(10);
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     tng.setPreserveOrder(true);
-    tng.addListener(listener);
+    tng.addListener((ITestNGListener) listener);
 
     tng.run();
     assertThat(listener.getFailedMethodNames()).containsExactly("afterMethodClass1");

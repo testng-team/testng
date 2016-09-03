@@ -1,9 +1,6 @@
 package test.methodinterceptors;
 
-import org.testng.IMethodInstance;
-import org.testng.IMethodInterceptor;
-import org.testng.ITestContext;
-import org.testng.TestNG;
+import org.testng.*;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -33,7 +30,7 @@ public class Issue392Test extends SimpleBaseTest {
     });
 
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
-    tng.addListener(listener);
+    tng.addListener((ITestNGListener) listener);
 
     tng.run();
 
