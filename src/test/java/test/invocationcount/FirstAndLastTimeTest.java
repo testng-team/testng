@@ -1,5 +1,6 @@
 package test.invocationcount;
 
+import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
@@ -14,21 +15,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Test various combination of @BeforeMethod(firstTimeOnly = true/false) and
  * @AfterMethod(lastTimeOnly = true/false) with invocation counts and data
  * providers.
- * @author cbeust@google.com
- *
  */
 public class FirstAndLastTimeTest extends SimpleBaseTest {
+
   @Test
   public void verifyDataProviderFalseFalse() {
     List<String> invokedMethodNames = run(DataProviderFalseFalseTest.class);
 
     assertThat(invokedMethodNames).containsExactly(
-        "beforeMethod", "f", "afterMethod",
-        "beforeMethod", "f", "afterMethod",
-        "beforeMethod", "f", "afterMethod",
-        "beforeMethod", "f2", "afterMethod",
-        "beforeMethod", "f2", "afterMethod",
-        "beforeMethod", "f2", "afterMethod"
+            "beforeMethod", "f(0)", "afterMethod",
+            "beforeMethod", "f(1)", "afterMethod",
+            "beforeMethod", "f(2)", "afterMethod",
+            "beforeMethod", "f2(0)", "afterMethod",
+            "beforeMethod", "f2(1)", "afterMethod",
+            "beforeMethod", "f2(2)", "afterMethod"
     );
   }
 
@@ -37,12 +37,12 @@ public class FirstAndLastTimeTest extends SimpleBaseTest {
     List<String> invokedMethodNames = run(DataProviderTrueFalseTest.class);
 
     assertThat(invokedMethodNames).containsExactly(
-        "beforeMethod", "f", "afterMethod",
-        "f", "afterMethod",
-        "f", "afterMethod",
-        "beforeMethod", "f2", "afterMethod",
-        "f2", "afterMethod",
-        "f2", "afterMethod"
+        "beforeMethod", "f(0)", "afterMethod",
+        "f(1)", "afterMethod",
+        "f(2)", "afterMethod",
+        "beforeMethod", "f2(0)", "afterMethod",
+        "f2(1)", "afterMethod",
+        "f2(2)", "afterMethod"
     );
   }
 
@@ -51,12 +51,12 @@ public class FirstAndLastTimeTest extends SimpleBaseTest {
     List<String> invokedMethodNames = run(DataProviderFalseTrueTest.class);
 
     assertThat(invokedMethodNames).containsExactly(
-        "beforeMethod", "f",
-        "beforeMethod", "f",
-        "beforeMethod", "f", "afterMethod",
-        "beforeMethod", "f2",
-        "beforeMethod", "f2",
-        "beforeMethod", "f2", "afterMethod"
+        "beforeMethod", "f(0)",
+        "beforeMethod", "f(1)",
+        "beforeMethod", "f(2)", "afterMethod",
+        "beforeMethod", "f2(0)",
+        "beforeMethod", "f2(1)",
+        "beforeMethod", "f2(2)", "afterMethod"
     );
   }
 
@@ -65,12 +65,12 @@ public class FirstAndLastTimeTest extends SimpleBaseTest {
     List<String> invokedMethodNames = run(DataProviderTrueTrueTest.class);
 
     assertThat(invokedMethodNames).containsExactly(
-        "beforeMethod", "f",
-        "f",
-        "f", "afterMethod",
-        "beforeMethod", "f2",
-        "f2",
-        "f2", "afterMethod"
+        "beforeMethod", "f(0)",
+        "f(1)",
+        "f(2)", "afterMethod",
+        "beforeMethod", "f2(0)",
+        "f2(1)",
+        "f2(2)", "afterMethod"
     );
   }
 
@@ -121,11 +121,10 @@ public class FirstAndLastTimeTest extends SimpleBaseTest {
   private static List<String> run(Class<?> cls) {
     TestNG tng = create(cls);
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
-    tng.addListener(listener);
+    tng.addListener((ITestNGListener) listener);
 
     tng.run();
 
     return listener.getInvokedMethodNames();
   }
-
 }
