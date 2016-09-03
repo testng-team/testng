@@ -1,6 +1,7 @@
 package test.priority;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
@@ -13,7 +14,7 @@ public class PriorityTest extends SimpleBaseTest {
   private void runTest(Class<?> cls, boolean parallel, String... methods) {
     TestNG tng = create(cls);
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
-    tng.addListener(listener);
+    tng.addListener((ITestNGListener) listener);
     if (parallel) {
       tng.setParallel(XmlSuite.ParallelMode.METHODS);
     }

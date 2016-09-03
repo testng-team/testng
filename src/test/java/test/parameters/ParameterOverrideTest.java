@@ -1,92 +1,73 @@
 package test.parameters;
 
-import org.testng.TestListenerAdapter;
+import org.testng.ITest;
+import org.testng.ITestNGListener;
 import org.testng.TestNG;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
+import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
-import java.util.Arrays;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ParameterOverrideTest extends SimpleBaseTest {
-  enum S {
-    FAIL,
+
+  enum Status {
     PASS_TEST,
     PASS_CLASS,
-    PASS_INCLUDE,
+    PASS_INCLUDE
   }
 
-  @Test
-  public void testOverrideSuite() {
-    privateTestOverrideSuite(S.PASS_TEST);
+  @DataProvider
+  public static Object[][] dp() {
+      return new Object[][] {
+          new Object[]{"testOverrideSuite", Status.PASS_TEST},
+          new Object[]{"classOverrideSuite", Status.PASS_CLASS},
+          new Object[]{"includeOverrideClass", Status.PASS_INCLUDE},
+      };
   }
 
-  @Test(expectedExceptions = AssertionError.class)
-  public void testOverrideSuiteNegative() {
-    privateTestOverrideSuite(S.FAIL);
-  }
+  @Test(dataProvider = "dp")
+  public void testOverrideParameter(String name, Status status) {
+    XmlSuite suite = createXmlSuite("suite");
+    suite.getParameters().put("a", "Incorrect");
+    suite.getParameters().put("InheritedFromSuite", "InheritedFromSuite");
 
-  @Test
-  public void classOverrideSuite() {
-    privateTestOverrideSuite(S.PASS_CLASS);
-  }
+    XmlTest test = createXmlTest(suite, "test");
+    test.getLocalParameters().put("InheritedFromTest", "InheritedFromTest");
 
-  @Test(expectedExceptions = AssertionError.class)
-  public void classOverrideSuiteNegative() {
-    privateTestOverrideSuite(S.FAIL);
-  }
+    XmlClass clazz = createXmlClass(test, Override1Sample.class);
+    clazz.getLocalParameters().put("InheritedFromClass", "InheritedFromClass");
 
-  @Test
-  public void includeOverrideClass() {
-    privateTestOverrideSuite(S.PASS_INCLUDE);
-  }
+    XmlInclude includeF = createXmlInclude(clazz, "f");
+    XmlInclude includeG = createXmlInclude(clazz, "g");
 
-  @Test(expectedExceptions = AssertionError.class)
-  public void includeOverrideClassNegative() {
-    privateTestOverrideSuite(S.FAIL);
-  }
-
-  public void privateTestOverrideSuite(S status) {
-    XmlSuite s = createXmlSuite("s");
-    s.getParameters().put("a", "Incorrect");
-    s.getParameters().put("InheritedFromSuite", "InheritedFromSuite");
-    XmlTest t = createXmlTest(s, "t");
-    t.getLocalParameters().put("InheritedFromTest", "InheritedFromTest");
-    if (status == S.PASS_TEST) {
-      t.getLocalParameters().put("a", "Correct");
+    switch (status) {
+      case PASS_TEST:
+        test.getLocalParameters().put("a", "Correct");
+        break;
+      case PASS_CLASS:
+        clazz.getLocalParameters().put("a", "Correct");
+        break;
+      case PASS_INCLUDE:
+        includeF.getLocalParameters().put("a", "Correct");
+        break;
     }
 
-    {
-      XmlClass c1 = new XmlClass(Override1Sample.class.getName());
-      c1.getLocalParameters().put("InheritedFromClass", "InheritedFromClass");
-      if (status == S.PASS_CLASS) {
-        c1.getLocalParameters().put("a", "Correct");
-      }
-      t.getXmlClasses().add(c1);
+    TestNG tng = create(suite);
 
-      for (String method : new String[] { "f", "g" }) {
-        XmlInclude include1 = new XmlInclude(method);
-        if (status == S.PASS_INCLUDE) {
-          include1.getLocalParameters().put("a", "Correct");
-        }
-        include1.setXmlClass(c1);
-        c1.getIncludedMethods().add(include1);
-      }
+    InvokedMethodNameListener tla = new InvokedMethodNameListener();
+    tng.addListener((ITestNGListener) tla);
 
-    }
-
-    TestNG tng = create();
-    tng.setXmlSuites(Arrays.asList(s));
-    TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener(tla);
-//    System.out.println(s.toXml());
-//    tng.setVerbose(10);
     tng.run();
 
-    assertTestResultsEqual(tla.getPassedTests(), Arrays.asList("f", "g"));
+    assertThat(tla.getSucceedMethodNames()).containsExactly(
+            "f(Correct)", "g(InheritedFromSuite,InheritedFromTest,InheritedFromClass)"
+    );
   }
 }

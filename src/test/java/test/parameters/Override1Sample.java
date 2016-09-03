@@ -15,7 +15,6 @@ public class Override1Sample {
   }
 
   public void h() {
-    System.out.println("h()");
   }
 
   @Parameters("a")

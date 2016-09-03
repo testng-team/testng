@@ -37,7 +37,7 @@ public class ParameterTest extends SimpleBaseTest {
   @Test
   public void beforeMethodWithParameters() {
     XmlSuite suite = createXmlSuite("beforeMethodWithParameters");
-    XmlTest test = createXmlTest(suite, "Before with parameter sample", BeforeSampleTest.class);
+    XmlTest test = createXmlTest(suite, "Before with parameter sample", BeforeWithParameterSample.class);
     test.addParameter("parameter", "parameter value");
 
     TestNG tng = create(suite);

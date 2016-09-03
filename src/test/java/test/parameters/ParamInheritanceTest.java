@@ -1,6 +1,7 @@
 package test.parameters;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -20,11 +21,12 @@ public class ParamInheritanceTest extends SimpleBaseTest {
       + "because it's unable to find SuiteRunner in HashMap, because the list of parameters in "
       + "SuiteRunner changed" + " during execution. This test makes sure we dont run into any NPEs")
   public void noNPEInCountingResults() {
-    TestListenerAdapter tla = new TestListenerAdapter();
     TestNG tng = create();
     tng.setTestSuites(Arrays.asList(getPathToResource("param-inheritance/parent-suite.xml")));
-    tng.setVerbose(2);
-    tng.addListener(tla);
+
+    TestListenerAdapter tla = new TestListenerAdapter();
+    tng.addListener((ITestNGListener) tla);
+
     OutputStream os = new ByteArrayOutputStream();
     PrintStream out = System.out;
     PrintStream err = System.err;
@@ -35,10 +37,11 @@ public class ParamInheritanceTest extends SimpleBaseTest {
        */
       System.setOut(new PrintStream(os));
       System.setErr(new PrintStream(os));
+
       tng.run();
+      
       Assert.assertEquals(tla.getPassedTests().size(), 1);
-    }
-    finally {
+    } finally {
       try {
         os.close();
       }
@@ -52,12 +55,14 @@ public class ParamInheritanceTest extends SimpleBaseTest {
 
   @Test(description = "Checks to make sure parameters are inherited and overridden properly")
   public void parameterInheritanceAndOverriding() {
-    TestListenerAdapter tla = new TestListenerAdapter();
     TestNG tng = create();
-    tng.setUseDefaultListeners(false);
     tng.setTestSuites(Arrays.asList(getPathToResource("parametertest/parent-suite.xml")));
-    tng.addListener(tla);
+
+    TestListenerAdapter tla = new TestListenerAdapter();
+    tng.addListener((ITestNGListener) tla);
+
     tng.run();
+
     Assert.assertEquals(tla.getPassedTests().size(), 3);
   }
 }
