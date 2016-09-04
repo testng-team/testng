@@ -53,7 +53,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   private Injector m_parentInjector;
 
   transient private List<ITestListener> m_testListeners = Lists.newArrayList();
-  transient private List<IClassListener> m_classListeners = Lists.newArrayList();
+  transient private final Map<Class<? extends IClassListener>, IClassListener> m_classListeners = Maps.newHashMap();
   transient private ITestRunnerFactory m_tmpRunnerFactory;
 
   transient private ITestRunnerFactory m_runnerFactory;
@@ -151,7 +151,9 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       m_testListeners.addAll(testListeners);
     }
     if (null != classListeners) {
-      m_classListeners.addAll(classListeners);
+      for (IClassListener classListener : classListeners) {
+        m_classListeners.put(classListener.getClass(), classListener);
+      }
     }
     m_runnerFactory = buildRunnerFactory();
 
@@ -165,7 +167,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     });
 
     for (XmlTest test : xmlTests) {
-      TestRunner tr = m_runnerFactory.newTestRunner(this, test, m_invokedMethodListeners.values(), m_classListeners);
+      TestRunner tr = m_runnerFactory.newTestRunner(this, test, m_invokedMethodListeners.values(), Lists.newArrayList(m_classListeners.values()));
 
       //
       // Install the method interceptor, if any was passed
@@ -408,7 +410,9 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
    * @param reporter
    */
   protected void addListener(ISuiteListener reporter) {
-    m_listeners.put(reporter.getClass(), reporter);
+    if (!m_listeners.containsKey(reporter.getClass())) {
+      m_listeners.put(reporter.getClass(), reporter);
+    }
   }
 
   @Override
@@ -425,6 +429,12 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     }
     if (listener instanceof IConfigurationListener) {
       addConfigurationListener((IConfigurationListener) listener);
+    }
+    if (listener instanceof IClassListener) {
+      IClassListener classListener = (IClassListener) listener;
+      if (!m_classListeners.containsKey(classListener.getClass())) {
+        m_classListeners.put(classListener.getClass(), classListener);
+      }
     }
   }
 
