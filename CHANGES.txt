@@ -1,4 +1,5 @@
 ﻿Current
+Fixed: GITHUB-1105: Test skipped instead failed if incorrect enum value (Liza Ivanova & Julien Herr)﻿
 Fixed: GITHUB-1111: XMLReporter crashes if a test parameter is exactly "]]>" (Łukasz Rekucki & Julien Herr)
 Fixed: GITHUB-1108 @BeforeGroups called twice (Krishnan Mahadevan)
 Fixed: GITHUB-1112 XmlInclude.getDescription returns null always (Krishnan Mahadevan)

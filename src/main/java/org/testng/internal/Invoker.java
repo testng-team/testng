@@ -1072,9 +1072,15 @@ public class Invoker implements IInvoker {
 
         if (bag.hasErrors()) {
           final ITestResult tr = bag.errorResult;
-          tr.setStatus(ITestResult.SKIP);
+          Throwable throwable = tr.getThrowable();
+          if (throwable instanceof TestNGException) {
+            tr.setStatus(ITestResult.FAILURE);
+            m_notifier.addFailedTest(testMethod, tr);
+          } else {
+            tr.setStatus(ITestResult.SKIP);
+            m_notifier.addSkippedTest(testMethod, tr);
+          }
           runTestListeners(tr);
-          m_notifier.addSkippedTest(testMethod, tr);
           result.add(tr);
           continue;
         }

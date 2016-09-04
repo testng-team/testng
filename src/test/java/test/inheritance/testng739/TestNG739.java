@@ -1,5 +1,6 @@
 package test.inheritance.testng739;
 
+import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
@@ -16,7 +17,7 @@ public class TestNG739 extends SimpleBaseTest {
     tng.setPreserveOrder(true);
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     tng.setPreserveOrder(true);
-    tng.addListener(listener);
+    tng.addListener((ITestNGListener) listener);
 
     tng.run();
     assertThat(listener.getSucceedMethodNames()).containsExactly("beforeBaseClass", "beforeBaseClass", "testB");

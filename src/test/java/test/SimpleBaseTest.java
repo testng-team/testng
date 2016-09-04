@@ -10,6 +10,7 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+import test.parameters.Override1Sample;
 
 import java.io.File;
 import java.util.Arrays;
@@ -70,6 +71,21 @@ public class SimpleBaseTest {
     }
 
     return result;
+  }
+
+  protected XmlClass createXmlClass(XmlTest test, Class<?> testClass) {
+    XmlClass clazz = new XmlClass(testClass);
+    test.getXmlClasses().add(clazz);
+    return clazz;
+  }
+
+  protected XmlInclude createXmlInclude(XmlClass clazz, String method) {
+    XmlInclude include = new XmlInclude(method);
+
+    include.setXmlClass(clazz);
+    clazz.getIncludedMethods().add(include);
+
+    return include;
   }
 
   protected XmlTest createXmlTest(XmlSuite suite, String name, String... classes) {

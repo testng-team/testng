@@ -1,6 +1,7 @@
 package test.dataprovider;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -8,12 +9,23 @@ import org.testng.annotations.Test;
 import test.SimpleBaseTest;
 
 public class FailingDataProviderTest extends SimpleBaseTest {
-  private void shouldSkip(Class cls, String message, int expected) {
+
+  private static void shouldSkip(Class<?> cls, String message, int expected) {
+    TestListenerAdapter tla = run(cls);
+    Assert.assertEquals(tla.getSkippedTests().size(), expected, message);
+  }
+
+  private static void shouldFail(Class<?> cls, String message, int expected) {
+    TestListenerAdapter tla = run(cls);
+    Assert.assertEquals(tla.getFailedTests().size(), expected, message);
+  }
+
+  private static TestListenerAdapter run(Class<?> cls) {
     TestNG testng = create(cls);
     TestListenerAdapter tla = new TestListenerAdapter();
-    testng.addListener(tla);
+    testng.addListener((ITestNGListener) tla);
     testng.run();
-    Assert.assertEquals(tla.getSkippedTests().size(), expected, message);
+    return tla;
   }
 
   @Test(description = "TESTNG-142: Exceptions in DataProvider are not reported as failed test")
@@ -23,7 +35,7 @@ public class FailingDataProviderTest extends SimpleBaseTest {
 
   @Test(description = "TESTNG-447: Abort when two data providers have the same name")
   public void duplicateDataProviders() {
-    shouldSkip(DuplicateDataProviderSampleTest.class, "", 1);
+    shouldFail(DuplicateDataProviderSampleTest.class, "", 1);
   }
 
   @Test
