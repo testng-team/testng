@@ -299,7 +299,7 @@ public class Invoker implements IInvoker {
       return;
     }
     Utils.log("", 3, "Failed to invoke configuration method "
-        + tm.getRealClass().getName() + "." + tm.getMethodName() + ":" + cause.getMessage());
+        + tm.getQualifiedName() + ":" + cause.getMessage());
     handleException(cause, tm, testResult, 1);
     runConfigurationListeners(testResult, false /* after */);
 
@@ -630,7 +630,7 @@ public class Invoker implements IInvoker {
       Method thisMethod = tm.getConstructorOrMethod().getMethod();
 
       if(confInvocationPassed(tm, tm, testClass, instance)) {
-        log(3, "Invoking " + tm.getRealClass().getName() + "." + tm.getMethodName());
+        log(3, "Invoking " + tm.getQualifiedName());
 
         // If this method is a IHookable, invoke its run() method
         IHookable hookableInstance =
