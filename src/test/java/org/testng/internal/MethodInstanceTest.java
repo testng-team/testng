@@ -572,6 +572,11 @@ public class MethodInstanceTest {
     public Map<String, String> findMethodParameters(XmlTest test) {
       return null;
     }
+
+    @Override
+    public String getQualifiedName() {
+  	  return getRealClass().getName() + "." + getMethodName();
+    }
   }
 
 }
