@@ -91,9 +91,7 @@ public final class ClassHelper {
     if (contextClassLoader != null) {
       allClassLoaders.add(contextClassLoader);
     }
-    if (m_classLoaders != null) {
-      allClassLoaders.addAll(m_classLoaders);
-    }
+    allClassLoaders.addAll(m_classLoaders);
 
     for (ClassLoader classLoader : allClassLoaders) {
       if (null == classLoader) {
@@ -104,7 +102,7 @@ public final class ClassHelper {
       }
       catch(ClassNotFoundException ex) {
         // With additional class loaders, it is legitimate to ignore ClassNotFoundException
-        if (null == m_classLoaders || m_classLoaders.size() == 0) {
+        if (m_classLoaders.isEmpty()) {
           logClassNotFoundError(className, ex);
         }
       }

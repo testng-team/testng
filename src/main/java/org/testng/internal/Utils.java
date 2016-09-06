@@ -107,12 +107,12 @@ public final class Utils {
       if (!file.exists()) {
         file.createNewFile();
       }
-      final OutputStreamWriter w = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
-      if (prefix != null) {
-        w.append(prefix);
+      try (final OutputStreamWriter w = new OutputStreamWriter(new FileOutputStream(file), "UTF-8")) {
+        if (prefix != null) {
+          w.append(prefix);
+        }
+        xsb.toWriter(w);
       }
-      xsb.toWriter(w);
-      w.close();
     } catch(IOException ex) {
       ex.printStackTrace();
     }
@@ -740,9 +740,9 @@ public final class Utils {
       result.deleteOnExit();
 
       // Write to temp file
-      BufferedWriter out = new BufferedWriter(new FileWriter(result));
-      out.write(content);
-      out.close();
+      try (BufferedWriter out = new BufferedWriter(new FileWriter(result))) {
+        out.write(content);
+      }
 
       return result;
     } catch (IOException e) {

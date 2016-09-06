@@ -198,16 +198,9 @@ public abstract class LaunchSuite {
      */
     protected void saveSuiteContent(final File file, final XMLStringBuffer content) {
 
-      try {
-        OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8"));
-        try {
-          fw.write(content.getStringBuffer().toString());
-        }
-        finally {
-          fw.close();
-        }
-      }
-      catch (IOException ioe) {
+      try (OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8"))) {
+        fw.write(content.getStringBuffer().toString());
+      } catch (IOException ioe) {
         // TODO CQ is this normal to swallow exception here
         LOGGER.error("IO Exception", ioe);
       }

@@ -820,11 +820,12 @@ public class Assert {
   //
 
   public static void assertNotEquals(Object actual1, Object actual2, String message) {
-    boolean fail = false;
+    boolean fail;
     try {
       Assert.assertEquals(actual1, actual2);
       fail = true;
     } catch (AssertionError e) {
+      fail = false;
     }
 
     if (fail) {
@@ -893,12 +894,12 @@ public class Assert {
   }
 
   static public void assertNotEquals(float actual1, float actual2, float delta, String message) {
-    boolean fail = false;
+    boolean fail;
     try {
       Assert.assertEquals(actual1, actual2, delta, message);
       fail = true;
     } catch (AssertionError e) {
-
+      fail = false;
     }
 
     if (fail) {
@@ -911,12 +912,12 @@ public class Assert {
   }
 
   static public void assertNotEquals(double actual1, double actual2, double delta, String message) {
-    boolean fail = false;
+    boolean fail;
     try {
       Assert.assertEquals(actual1, actual2, delta, message);
       fail = true;
     } catch (AssertionError e) {
-
+      fail = false;
     }
 
     if (fail) {

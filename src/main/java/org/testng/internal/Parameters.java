@@ -323,19 +323,22 @@ public class Parameters {
     for (Method m : ClassHelper.getAvailableMethods(cls)) {
       IDataProviderAnnotation dp = finder.findAnnotation(m, IDataProviderAnnotation.class);
       if (null != dp && name.equals(getDataProviderName(dp, m))) {
+        Object instanceToUse;
         if (shouldBeStatic && (m.getModifiers() & Modifier.STATIC) == 0) {
           Injector injector = context.getInjector(clazz);
           if (injector != null) {
-            instance = injector.getInstance(dataProviderClass);
+            instanceToUse = injector.getInstance(dataProviderClass);
           } else {
-            instance = ClassHelper.newInstance(dataProviderClass);
+            instanceToUse = ClassHelper.newInstance(dataProviderClass);
           }
+        } else {
+          instanceToUse = instance;
         }
 
         if (result != null) {
           throw new TestNGException("Found two providers called '" + name + "' on " + cls);
         }
-        result = new DataProviderHolder(dp, m, instance);
+        result = new DataProviderHolder(dp, m, instanceToUse);
       }
     }
 

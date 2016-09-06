@@ -6,7 +6,7 @@ import java.util.List;
 public final class Ints {
 
     private Ints() {
-        throw new Error();
+        throw new AssertionError();
     }
 
     public static List<Integer> asList(int... ints) {
