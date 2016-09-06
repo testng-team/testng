@@ -21,7 +21,7 @@ public class DependencyMap {
 
   public DependencyMap(ITestNGMethod[] methods) {
     for (ITestNGMethod m : methods) {
-    	m_dependencies.put( m.getRealClass().getName() + "." +  m.getMethodName(), m);
+    	m_dependencies.put( m.getQualifiedName(), m);
       for (String g : m.getGroups()) {
         m_groups.put(g, m);
       }
