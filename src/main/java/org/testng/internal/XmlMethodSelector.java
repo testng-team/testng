@@ -372,8 +372,7 @@ public class XmlMethodSelector implements IMethodSelector {
 
       // Make the transitive closure our new included methods
       for (ITestNGMethod m : methodClosure) {
-        String methodName =
-         m.getMethod().getDeclaringClass().getName() + "." + m.getMethodName();
+        String methodName = m.getQualifiedName();
 //        m_includedMethods.add(methodName);
         List<XmlInclude> includeList = m_includedMethods.get(methodName);
         XmlInclude xi = new XmlInclude(methodName);
