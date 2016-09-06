@@ -809,9 +809,4 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
     return result;
   }
-  
-  @Override
-  public String getQualifiedName() {
-	return getRealClass().getName() + "." + getMethodName();
-  }
 }

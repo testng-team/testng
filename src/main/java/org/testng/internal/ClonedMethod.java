@@ -387,9 +387,4 @@ public class ClonedMethod implements ITestNGMethod {
   public Map<String, String> findMethodParameters(XmlTest test) {
     return Collections.emptyMap();
   }
-  
-  @Override
-  public String getQualifiedName() {
-	return getRealClass().getName() + "." + getMethodName();
-  }
 }

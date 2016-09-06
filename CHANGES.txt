@@ -1,7 +1,6 @@
 ﻿Current
 Fixed: GITHUB-1105: Test skipped instead failed if incorrect enum value (Liza Ivanova & Julien Herr)﻿
 Fixed: GITHUB-1111: XMLReporter crashes if a test parameter is exactly "]]>" (Łukasz Rekucki & Julien Herr)
-New: code improvement in order to calculate key for dependency map. Dependency map will use methodQualifiedName as key provided by ITestNGMethod (Chirag Jayswal)
 Fixed: GITHUB-1108 @BeforeGroups called twice (Krishnan Mahadevan)
 Fixed: GITHUB-1112 XmlInclude.getDescription returns null always (Krishnan Mahadevan)
 Fixed: GITHUB-1090 Inconsistent handling "preserve-order" on suite/test level (Michal Domagala & Julien Herr)

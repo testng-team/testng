@@ -268,10 +268,4 @@ public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
    * @param test
    */
   Map<String, String> findMethodParameters(XmlTest test);
-  
-  /**
-   * getRealClass().getName() + "." +  getMethodName()
-   * @return qualified name for this method
-   */
-  public String getQualifiedName();
 }
