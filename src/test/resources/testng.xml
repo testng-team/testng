@@ -788,5 +788,11 @@
       <class name="test.name.NameTest" />
     </classes>
   </test>
+
+  <test name="Issue949 dependsOnMethods and inheritance">
+    <classes>
+      <class name="test.inheritance.testng949.TestNG949" />
+    </classes>
+  </test>
 </suite>
 

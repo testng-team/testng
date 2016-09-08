@@ -1,21 +1,16 @@
 package org.testng.internal;
 
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
-import org.testng.annotations.IExpectedExceptionsAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.ITestOrConfiguration;
 import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -72,6 +67,9 @@ public class MethodHelper {
     String canonicalMethodName = calculateMethodCanonicalName(m);
     List<ITestNGMethod> vResult = Lists.newArrayList();
     String regexp = null;
+    
+    Map<Method, ITestNGMethod> methodsForDependsOnCheck = prepareMethodsForDependsOnCheck(methods);
+
     for (String fullyQualifiedRegexp : m.getMethodsDependedUpon()) {
       boolean foundAtLeastAMethod = false;
 
@@ -81,8 +79,8 @@ public class MethodHelper {
         boolean usePackage = regexp.indexOf('.') != -1;
         Pattern pattern = Pattern.compile(regexp);
 
-        for (ITestNGMethod method : methods) {
-          Method thisMethod = method.getMethod();
+        for (Map.Entry<Method, ITestNGMethod> methodEntry : methodsForDependsOnCheck.entrySet()) {
+          Method thisMethod = methodEntry.getKey();
           String thisMethodName = thisMethod.getName();
           String methodName = usePackage ?
               calculateMethodCanonicalName(thisMethod)
@@ -94,7 +92,7 @@ public class MethodHelper {
               MATCH_CACHE.put(cacheKey, match);
           }
           if (match) {
-            vResult.add(method);
+            vResult.add(methodEntry.getValue());
             foundAtLeastAMethod = true;
           }
         }
@@ -118,6 +116,35 @@ public class MethodHelper {
     }//end for
 
     return vResult.toArray(new ITestNGMethod[vResult.size()]);
+  }
+
+  /**
+   * Prepare map with methods used for dependsOn check. Map will contain all test methods and the methods which they
+   * override. Overridden methods will be mapped to the ITestNGMethod which represents override.
+   *
+   * @param methods array of ITestNGMethod with test methods
+   * @return map of methods which should be used for dependsOn check
+   */
+  private static Map<Method, ITestNGMethod> prepareMethodsForDependsOnCheck(ITestNGMethod[] methods) {
+    Map<Method, ITestNGMethod> methodsForDependsOnCheck = Maps.newLinkedHashMap();
+    // populate methodsForDependsOnCheck with test methods and methods which they override if such exists
+    for (ITestNGMethod testMethod : methods) {
+      Method method = testMethod.getConstructorOrMethod().getMethod();
+      methodsForDependsOnCheck.put(method, testMethod);
+      Class<?> superclass = method.getDeclaringClass().getSuperclass();
+      while (superclass != null) {
+        try {
+          Method parenMethod = superclass.getDeclaredMethod(method.getName(), method.getParameterTypes());
+          if (parenMethod != null) {
+            methodsForDependsOnCheck.put(parenMethod, testMethod);
+          }
+        } catch (Exception e) {
+          // ignore
+        }
+        superclass = superclass.getSuperclass();
+      }
+    }
+    return methodsForDependsOnCheck;
   }
 
   /**
