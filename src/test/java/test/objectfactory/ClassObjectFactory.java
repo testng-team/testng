@@ -10,12 +10,10 @@ public class ClassObjectFactory implements IObjectFactory2 {
   public Object newInstance(Class<?> cls) {
     try {
       Constructor ctor = cls.getConstructors()[0];
-      return ctor.newInstance(new Object[] { 42 });
-    }
-    catch(Exception ex) {
+      return ctor.newInstance(42);
+    } catch(Exception ex) {
       ex.printStackTrace();
       return null;
     }
   }
-
 }

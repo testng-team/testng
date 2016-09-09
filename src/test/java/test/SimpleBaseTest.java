@@ -56,6 +56,12 @@ public class SimpleBaseTest {
     return result;
   }
 
+  protected XmlSuite createXmlSuite(String suiteName, String testName, Class<?>... classes) {
+    XmlSuite suite = createXmlSuite(suiteName);
+    createXmlTest(suite, testName, classes);
+    return suite;
+  }
+
   protected XmlTest createXmlTest(XmlSuite suite, String name) {
     XmlTest result = new XmlTest(suite);
     result.setName(name);
