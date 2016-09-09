@@ -47,23 +47,20 @@ public final class ClassHelper {
 
   public static <T> T newInstance(Class<T> clazz) {
     try {
-      T instance = clazz.newInstance();
+      return clazz.newInstance();
+    } catch(IllegalAccessException | InstantiationException | ExceptionInInitializerError | SecurityException e) {
+      throw new TestNGException("Cannot instantiate class " + clazz.getName(), e);
+    }
+  }
 
-      return instance;
-    }
-    catch(IllegalAccessException iae) {
-      throw new TestNGException("Class " + clazz.getName()
-          + " does not have a no-args constructor", iae);
-    }
-    catch(InstantiationException ie) {
-      throw new TestNGException("Cannot instantiate class " + clazz.getName(), ie);
-    }
-    catch(ExceptionInInitializerError eiierr) {
-      throw new TestNGException("An exception occurred in static initialization of class "
-          + clazz.getName(), eiierr);
-    }
-    catch(SecurityException se) {
-      throw new TestNGException(se);
+  public static <T> T newInstanceOrNull(Class<T> clazz) {
+    try {
+      Constructor<T> constructor = clazz.getConstructor();
+      return newInstance(constructor);
+    } catch(ExceptionInInitializerError | SecurityException e) {
+      throw new TestNGException("Cannot instantiate class " + clazz.getName(), e);
+    } catch (NoSuchMethodException e) {
+      return null;
     }
   }
 
@@ -312,16 +309,17 @@ public final class ClassHelper {
       //
       Constructor<?> constructor = findAnnotatedConstructor(finder, declaringClass);
       if (null != constructor) {
-        IParametersAnnotation annotation = finder.findAnnotation(constructor, IParametersAnnotation.class);
-
-        String[] parameterNames = annotation.getValue();
-        Object[] parameters = Parameters.createInstantiationParameters(constructor,
-                                                          "@Parameters",
-                                                          finder,
-                                                          parameterNames,
-                                                          xmlTest.getAllParameters(),
-                                                          xmlTest.getSuite());
-        result = objectFactory.newInstance(constructor, parameters);
+        IParametersAnnotation parametersAnnotation = finder.findAnnotation(constructor, IParametersAnnotation.class);
+        if (parametersAnnotation != null) { // null if the annotation is @Factory
+          String[] parameterNames = parametersAnnotation.getValue();
+          Object[] parameters = Parameters.createInstantiationParameters(constructor,
+                  "@Parameters",
+                  finder,
+                  parameterNames,
+                  xmlTest.getAllParameters(),
+                  xmlTest.getSuite());
+          result = objectFactory.newInstance(constructor, parameters);
+        }
       }
 
       //
@@ -430,10 +428,9 @@ public final class ClassHelper {
     Constructor<?>[] constructors = declaringClass.getDeclaredConstructors();
 
     for (Constructor<?> result : constructors) {
-      IParametersAnnotation annotation = finder.findAnnotation(result, IParametersAnnotation.class);
-
-      if (null != annotation) {
-        String[] parameters = annotation.getValue();
+      IParametersAnnotation parametersAnnotation = finder.findAnnotation(result, IParametersAnnotation.class);
+      if (parametersAnnotation != null) {
+        String[] parameters = parametersAnnotation.getValue();
         Class<?>[] parameterTypes = result.getParameterTypes();
         if (parameters.length != parameterTypes.length) {
           throw new TestNGException("Parameter count mismatch:  " + result + "\naccepts "
@@ -441,9 +438,12 @@ public final class ClassHelper {
                                     + " parameters but the @Test annotation declares "
                                     + parameters.length);
         }
-        else {
-          return result;
-        }
+        return result;
+      }
+
+      IFactoryAnnotation factoryAnnotation = finder.findAnnotation(result, IFactoryAnnotation.class);
+      if (factoryAnnotation != null) {
+        return result;
       }
     }
 

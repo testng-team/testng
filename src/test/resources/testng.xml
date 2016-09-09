@@ -323,6 +323,8 @@
 
       <class name="test.factory.FactoryIntegrationTest" />
       <class name="test.factory.EmptyFactoryDataProviderTest" />
+
+      <class name="test.factory.github1131.GitHub1131Test" />
     </classes>
   </test>
 
