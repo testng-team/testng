@@ -17,7 +17,7 @@ public class GroupByInstancesSampleTest {
   }
 
   @DataProvider
-  public Object[][] dp() {
+  public static Object[][] dp() {
     return new Object[][] {
         new Object[] { "usa" },
         new Object[] { "uk" },

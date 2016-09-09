@@ -47,23 +47,20 @@ public final class ClassHelper {
 
   public static <T> T newInstance(Class<T> clazz) {
     try {
-      T instance = clazz.newInstance();
+      return clazz.newInstance();
+    } catch(IllegalAccessException | InstantiationException | ExceptionInInitializerError | SecurityException e) {
+      throw new TestNGException("Cannot instantiate class " + clazz.getName(), e);
+    }
+  }
 
-      return instance;
-    }
-    catch(IllegalAccessException iae) {
-      throw new TestNGException("Class " + clazz.getName()
-          + " does not have a no-args constructor", iae);
-    }
-    catch(InstantiationException ie) {
-      throw new TestNGException("Cannot instantiate class " + clazz.getName(), ie);
-    }
-    catch(ExceptionInInitializerError eiierr) {
-      throw new TestNGException("An exception occurred in static initialization of class "
-          + clazz.getName(), eiierr);
-    }
-    catch(SecurityException se) {
-      throw new TestNGException(se);
+  public static <T> T newInstanceOrNull(Class<T> clazz) {
+    try {
+      Constructor<T> constructor = clazz.getConstructor();
+      return newInstance(constructor);
+    } catch(ExceptionInInitializerError | SecurityException e) {
+      throw new TestNGException("Cannot instantiate class " + clazz.getName(), e);
+    } catch (NoSuchMethodException e) {
+      return null;
     }
   }
 

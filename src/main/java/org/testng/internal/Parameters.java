@@ -202,43 +202,43 @@ public class Parameters {
   public static <T> T convertType(Class<T> type, String value, String paramName) {
     try {
       if (value == null || NULL_VALUE.equals(value.toLowerCase())) {
-      if(type.isPrimitive()) {
-        Utils.log("Parameters", 2, "Attempt to pass null value to primitive type parameter '" + paramName + "'");
+        if(type.isPrimitive()) {
+          Utils.log("Parameters", 2, "Attempt to pass null value to primitive type parameter '" + paramName + "'");
+        }
+
+        return null; // null value must be used
       }
 
-      return null; // null value must be used
-    }
-
-    if(type == String.class) {
+      if(type == String.class) {
         return (T) value;
-    }
+      }
       if (type == int.class || type == Integer.class) {
         return (T) Integer.valueOf(value);
-    }
+      }
       if (type == boolean.class || type == Boolean.class) {
         return (T) Boolean.valueOf(value);
-    }
+      }
       if (type == byte.class || type == Byte.class) {
         return (T) Byte.valueOf(value);
-    }
+      }
       if (type == char.class || type == Character.class) {
         return (T) Character.valueOf(value.charAt(0));
-    }
+      }
       if (type == double.class || type == Double.class) {
         return (T) Double.valueOf(value);
-    }
+      }
       if (type == float.class || type == Float.class) {
         return (T) Float.valueOf(value);
-    }
+      }
       if (type == long.class || type == Long.class) {
         return (T) Long.valueOf(value);
-    }
+      }
       if (type == short.class || type == Short.class) {
         return (T) Short.valueOf(value);
-    }
+      }
       if (type.isEnum()) {
         return (T) Enum.valueOf((Class<Enum>) type, value);
-    }
+      }
     } catch (Exception e) {
       throw new TestNGException("Conversion issue on parameter: " + paramName, e);
     }
@@ -333,6 +333,10 @@ public class Parameters {
           }
         } else {
           instanceToUse = instance;
+        }
+        // Not a static method but no instance exists, then create new one if possible
+        if ((m.getModifiers() & Modifier.STATIC) == 0 && instanceToUse == null) {
+          instanceToUse = ClassHelper.newInstanceOrNull(cls);
         }
 
         if (result != null) {
