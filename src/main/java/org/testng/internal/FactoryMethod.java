@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.testng.IInstanceInfo;
+import org.testng.IObjectFactory;
+import org.testng.IObjectFactory2;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
+import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -16,24 +19,18 @@ import org.testng.xml.XmlTest;
 
 /**
  * This class represents a method annotated with @Factory
- *
- * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class FactoryMethod extends BaseTestMethod {
-  /**
-   *
-   */
-  private static final long serialVersionUID = -7329918821346197099L;
-  private Object m_instance = null;
-  private XmlTest m_xmlTest = null;
-  private ITestContext m_testContext = null;
 
-  public FactoryMethod(ConstructorOrMethod com,
-                       Object instance,
-                       XmlTest xmlTest,
-                       IAnnotationFinder annotationFinder,
-                       ITestContext testContext)
-  {
+  private static final long serialVersionUID = -7329918821346197099L;
+
+  private final Object m_instance;
+  private final XmlTest m_xmlTest;
+  private final ITestContext m_testContext;
+  private final ITestObjectFactory objectFactory;
+
+  public FactoryMethod(ConstructorOrMethod com, Object instance, XmlTest xmlTest, IAnnotationFinder annotationFinder,
+                       ITestContext testContext, ITestObjectFactory objectFactory) {
     super(com.getName(), com, annotationFinder, instance);
     Utils.checkInstanceOrStatic(instance, com.getMethod());
     Utils.checkReturnType(com.getMethod(), Object[].class, IInstanceInfo[].class);
@@ -59,10 +56,7 @@ public class FactoryMethod extends BaseTestMethod {
     NoOpTestClass tc = new NoOpTestClass();
     tc.setTestClass(declaringClass);
     m_testClass = tc;
-  }
-
-  private static void ppp(String s) {
-    System.out.println("[FactoryMethod] " + s);
+    this.objectFactory = objectFactory;
   }
 
   public Object[] invoke() {
@@ -92,12 +86,18 @@ public class FactoryMethod extends BaseTestMethod {
             result.add(testInstance);
           }
         } else {
-          Object instance = com.getConstructor().newInstance(parameters);
+          Object instance;
+          if (objectFactory instanceof IObjectFactory) {
+            instance = ((IObjectFactory) objectFactory).newInstance(com.getConstructor(), parameters);
+          } else if (objectFactory instanceof IObjectFactory2) {
+            instance = ((IObjectFactory2) objectFactory).newInstance(com.getDeclaringClass());
+          } else {
+            throw new IllegalStateException("Unsupported ITestObjectFactory " + objectFactory.getClass());
+          }
           result.add(instance);
         }
       }
-    }
-    catch (Throwable t) {
+    } catch (Throwable t) {
       ConstructorOrMethod com = getConstructorOrMethod();
       throw new TestNGException("The factory method "
           + com.getDeclaringClass() + "." + com.getName()
