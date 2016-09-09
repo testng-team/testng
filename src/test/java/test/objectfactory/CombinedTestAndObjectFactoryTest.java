@@ -1,24 +1,27 @@
 package test.objectfactory;
 
+import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
-import test.BaseTest;
+import test.InvokedMethodNameListener;
+import test.SimpleBaseTest;
 
-public class CombinedTestAndObjectFactoryTest extends BaseTest {
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class CombinedTestAndObjectFactoryTest extends SimpleBaseTest {
+
   @Test
   void combinedTestAndObjectFactory() {
-    addClass(CombinedTestAndObjectFactorySample.class.getName());
-    run();
-    verifyTests("Should have passed", new String[]{"isConfigured"}, getPassedTests());
-    verifyTests("Failures", new String[0], getFailedTests());
-    verifyTests("Skipped", new String[0], getSkippedTests());
-  }
+    TestNG tng = create(CombinedTestAndObjectFactorySample.class);
 
-  public static void main(String[] args) {
-    TestNG tng = new TestNG();
-    tng.setTestClasses(new Class[] {CombinedTestAndObjectFactorySample.class});
-    tng.setVerbose(10);
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener((ITestNGListener) listener);
+
     tng.run();
+
+    assertThat(listener.getFailedMethodNames()).isEmpty();
+    assertThat(listener.getSkippedMethodNames()).isEmpty();
+    assertThat(listener.getSucceedMethodNames()).containsExactly("isConfigured");
   }
 }

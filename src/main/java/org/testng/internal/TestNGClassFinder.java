@@ -143,7 +143,7 @@ public class TestNGClassFinder extends BaseClassFinder {
               instance,
               xmlTest,
               annotationFinder,
-              m_testContext);
+              m_testContext, objectFactory);
             ClassInfoMap moreClasses = new ClassInfoMap();
 
             // If the factory returned IInstanceInfo, get the class from it,

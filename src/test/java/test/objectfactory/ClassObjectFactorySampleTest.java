@@ -4,6 +4,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class ClassObjectFactorySampleTest {
+
   public static int m_n = 0;
 
   /**
@@ -15,6 +16,6 @@ public class ClassObjectFactorySampleTest {
 
   @Test
   public void f() {
-    Assert.assertEquals(42, m_n);
+    Assert.assertEquals(m_n, 42);
   }
 }
