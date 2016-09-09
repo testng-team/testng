@@ -312,16 +312,17 @@ public final class ClassHelper {
       //
       Constructor<?> constructor = findAnnotatedConstructor(finder, declaringClass);
       if (null != constructor) {
-        IParametersAnnotation annotation = finder.findAnnotation(constructor, IParametersAnnotation.class);
-
-        String[] parameterNames = annotation.getValue();
-        Object[] parameters = Parameters.createInstantiationParameters(constructor,
-                                                          "@Parameters",
-                                                          finder,
-                                                          parameterNames,
-                                                          xmlTest.getAllParameters(),
-                                                          xmlTest.getSuite());
-        result = objectFactory.newInstance(constructor, parameters);
+        IParametersAnnotation parametersAnnotation = finder.findAnnotation(constructor, IParametersAnnotation.class);
+        if (parametersAnnotation != null) { // null if the annotation is @Factory
+          String[] parameterNames = parametersAnnotation.getValue();
+          Object[] parameters = Parameters.createInstantiationParameters(constructor,
+                  "@Parameters",
+                  finder,
+                  parameterNames,
+                  xmlTest.getAllParameters(),
+                  xmlTest.getSuite());
+          result = objectFactory.newInstance(constructor, parameters);
+        }
       }
 
       //
@@ -430,10 +431,9 @@ public final class ClassHelper {
     Constructor<?>[] constructors = declaringClass.getDeclaredConstructors();
 
     for (Constructor<?> result : constructors) {
-      IParametersAnnotation annotation = finder.findAnnotation(result, IParametersAnnotation.class);
-
-      if (null != annotation) {
-        String[] parameters = annotation.getValue();
+      IParametersAnnotation parametersAnnotation = finder.findAnnotation(result, IParametersAnnotation.class);
+      if (parametersAnnotation != null) {
+        String[] parameters = parametersAnnotation.getValue();
         Class<?>[] parameterTypes = result.getParameterTypes();
         if (parameters.length != parameterTypes.length) {
           throw new TestNGException("Parameter count mismatch:  " + result + "\naccepts "
@@ -441,9 +441,12 @@ public final class ClassHelper {
                                     + " parameters but the @Test annotation declares "
                                     + parameters.length);
         }
-        else {
-          return result;
-        }
+        return result;
+      }
+
+      IFactoryAnnotation factoryAnnotation = finder.findAnnotation(result, IFactoryAnnotation.class);
+      if (factoryAnnotation != null) {
+        return result;
       }
     }
 
