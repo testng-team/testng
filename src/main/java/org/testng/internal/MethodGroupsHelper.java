@@ -225,8 +225,7 @@ public class MethodGroupsHelper {
   private static ITestNGMethod findMethodNamed(String tm, List<ITestNGMethod> allMethods) {
     for (ITestNGMethod m : allMethods) {
       // TODO(cbeust):  account for package
-      String methodName =
-        m.getMethod().getDeclaringClass().getName() + "." + m.getMethodName();
+      String methodName = m.getQualifiedName();
       if (methodName.equals(tm)) {
         return m;
       }
