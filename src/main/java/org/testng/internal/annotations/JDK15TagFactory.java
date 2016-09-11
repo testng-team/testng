@@ -356,6 +356,7 @@ public class JDK15TagFactory {
         findInherited(c.dataProviderClass(), cls, Factory.class, "dataProviderClass",
             DEFAULT_CLASS));
     result.setEnabled(c.enabled());
+    result.setIndices(Ints.asList(c.indices()));
 
     return result;
   }

@@ -12,6 +12,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
+import org.testng.annotations.IFactoryAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -24,6 +25,7 @@ public class FactoryMethod extends BaseTestMethod {
 
   private static final long serialVersionUID = -7329918821346197099L;
 
+  private final IFactoryAnnotation factoryAnnotation;
   private final Object m_instance;
   private final XmlTest m_xmlTest;
   private final ITestContext m_testContext;
@@ -49,6 +51,8 @@ public class FactoryMethod extends BaseTestMethod {
         throw new TestNGException(e);
       }
     }
+
+    factoryAnnotation = annotationFinder.findAnnotation(com, IFactoryAnnotation.class);
 
     m_instance = instance;
     m_xmlTest = xmlTest;
@@ -76,25 +80,39 @@ public class FactoryMethod extends BaseTestMethod {
           null /* fedInstance */).parameters;
 
     try {
+      List<Integer> indices = factoryAnnotation.getIndices();
+      int position = 0;
       while (parameterIterator.hasNext()) {
         Object[] parameters = parameterIterator.next();
-        Object[] testInstances;
         ConstructorOrMethod com = getConstructorOrMethod();
         if (com.getMethod() != null) {
-          testInstances = (Object[]) getMethod().invoke(m_instance, parameters);
-          for (Object testInstance : testInstances) {
-            result.add(testInstance);
-          }
-        } else {
-          Object instance;
-          if (objectFactory instanceof IObjectFactory) {
-            instance = ((IObjectFactory) objectFactory).newInstance(com.getConstructor(), parameters);
-          } else if (objectFactory instanceof IObjectFactory2) {
-            instance = ((IObjectFactory2) objectFactory).newInstance(com.getDeclaringClass());
+          Object[] testInstances = (Object[]) com.getMethod().invoke(m_instance, parameters);
+          if (indices == null || indices.isEmpty()) {
+            for (Object testInstance : testInstances) {
+              result.add(testInstance);
+            }
           } else {
-            throw new IllegalStateException("Unsupported ITestObjectFactory " + objectFactory.getClass());
+            for (Integer index : indices) {
+              int i = index - position;
+              if (i >= 0 && i < testInstances.length) {
+                result.add(testInstances[i]);
+              }
+            }
           }
-          result.add(instance);
+          position += testInstances.length;
+        } else {
+          if (indices == null || indices.isEmpty() || indices.contains(position)) {
+            Object instance;
+            if (objectFactory instanceof IObjectFactory) {
+              instance = ((IObjectFactory) objectFactory).newInstance(com.getConstructor(), parameters);
+            } else if (objectFactory instanceof IObjectFactory2) {
+              instance = ((IObjectFactory2) objectFactory).newInstance(com.getDeclaringClass());
+            } else {
+              throw new IllegalStateException("Unsupported ITestObjectFactory " + objectFactory.getClass());
+            }
+            result.add(instance);
+          }
+          position++;
         }
       }
     } catch (Throwable t) {
