@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 
 import org.testng.ITestNGMethod;
 import org.testng.annotations.IAnnotation;
+import org.testng.internal.ConstructorOrMethod;
 
 
 /**
@@ -30,8 +31,9 @@ public interface IAnnotationFinder {
    * If not found, return the annotation on the declaring class.
    * If not found, return null.
    */
-  public <A extends IAnnotation> A findAnnotation(Method m, Class<A> annotationClass);
+  <A extends IAnnotation> A findAnnotation(Method m, Class<A> annotationClass);
   <A extends IAnnotation> A findAnnotation(ITestNGMethod m, Class<A> annotationClass);
+  <A extends IAnnotation> A findAnnotation(ConstructorOrMethod com, Class<A> annotationClass);
 
   /**
    * @param cons

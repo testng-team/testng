@@ -39,6 +39,7 @@ import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.testng.annotations.TestInstance;
+import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.collections.Pair;
 
 /**
@@ -134,8 +135,19 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
         new Pair<>(annotation, m));
   }
 
+  @Override
+  public <A extends IAnnotation> A findAnnotation(ConstructorOrMethod com, Class<A> annotationClass) {
+    if (com.getConstructor() != null) {
+      return findAnnotation(com.getConstructor(), annotationClass);
+    }
+    if (com.getMethod() != null) {
+      return findAnnotation(com.getMethod(), annotationClass);
+    }
+    return null;
+  }
+
   private void transform(IAnnotation a, Class<?> testClass,
-      Constructor<?> testConstructor, Method testMethod)  {
+                         Constructor<?> testConstructor, Method testMethod)  {
     //
     // Transform @Test
     //
