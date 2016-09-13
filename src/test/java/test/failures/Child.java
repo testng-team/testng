@@ -6,7 +6,6 @@ public class Child extends Base1 {
 
   @Test
   public void pass() {
-      assert true;
   }
 
   @Test
