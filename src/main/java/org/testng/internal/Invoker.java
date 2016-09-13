@@ -1096,6 +1096,7 @@ public class Invoker implements IInvoker {
               Object[] next = allParameterValues.next();
               if (next == null) {
                 // skipped value
+                parametersIndex++;
                 continue;
               }
               Object[] parameterValues = injectParameters(next,
@@ -1124,6 +1125,7 @@ public class Invoker implements IInvoker {
               Object[] next = allParameterValues.next();
               if (next == null) {
                 // skipped value
+                parametersIndex++;
                 continue;
               }
               Object[] parameterValues = injectParameters(next,

@@ -1,14 +1,19 @@
 package test.reports;
 
 import org.testng.*;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.reporters.FailedReporter;
 import org.testng.reporters.TestHTMLReporter;
+import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
+import org.xml.sax.SAXException;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 import test.TestHelper;
 import test.simple.SimpleSample;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -167,5 +172,58 @@ public class ReportTest extends SimpleBaseTest {
     Assert.assertEquals(parameters.get(4)[0].toString(), "[null, dup, dup, str]");
     Assert.assertEquals(parameters.get(4)[1], null);
     Assert.assertEquals(parameters.get(4)[2].toString(), "[null, dup, dup, str, null]");
+  }
+
+  @DataProvider
+  public static Object[][] dp() {
+    return new Object[][]{
+        {GitHub1148Sample.class, new String[]{"verifyData(Cedric)"}, new String[]{"verifyData(Anne)"}},
+        {GitHub148Sample.class, new String[]{"testMethod(1)", "testMethod(2)"}, new String[]{"testMethod(3)"}}
+    };
+  }
+
+  @Test(dataProvider = "dp")
+  public void runFailedTestTwiceShouldBeConsistent(Class<?> testClass, String[] succeedMethods, String[] failedMethods) throws IOException, ParserConfigurationException, SAXException {
+    Path outputDirectory = TestHelper.createRandomDirectory();
+
+    TestNG tng = create(outputDirectory, testClass);
+
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener((ITestNGListener) listener);
+    tng.addListener((ITestNGListener) new FailedReporter());
+
+    tng.run();
+
+    assertThat(listener.getFailedMethodNames()).containsExactly(failedMethods);
+    assertThat(listener.getSucceedMethodNames()).containsExactly(succeedMethods);
+    assertThat(listener.getSkippedMethodNames()).isEmpty();
+
+    Path testngFailedXml = outputDirectory.resolve(FailedReporter.TESTNG_FAILED_XML);
+    assertThat(testngFailedXml).exists();
+
+    for (int i = 0; i < 5; i++) {
+      testngFailedXml = checkFailed(testngFailedXml, failedMethods);
+    }
+  }
+
+  private static Path checkFailed(Path testngFailedXml, String... failedMethods) throws IOException, ParserConfigurationException, SAXException {
+    Path outputDirectory = TestHelper.createRandomDirectory();
+
+    List<XmlSuite> suites = new Parser(Files.newInputStream(testngFailedXml)).parseToList();
+    TestNG tng = create(outputDirectory, suites);
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener((ITestNGListener) listener);
+    tng.addListener((ITestNGListener) new FailedReporter());
+
+    tng.run();
+
+    assertThat(listener.getSucceedMethodNames()).isEmpty();
+    assertThat(listener.getSkippedMethodNames()).isEmpty();
+    assertThat(listener.getFailedMethodNames()).containsExactly(failedMethods);
+
+    Path testngFailedXml2 = outputDirectory.resolve(FailedReporter.TESTNG_FAILED_XML);
+    assertThat(testngFailedXml2).exists();
+
+    return testngFailedXml2;
   }
 }
