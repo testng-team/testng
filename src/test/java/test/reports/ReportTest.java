@@ -2,145 +2,150 @@ package test.reports;
 
 import org.testng.*;
 import org.testng.annotations.Test;
-import org.testng.reporters.TextReporter;
+import org.testng.reporters.TestHTMLReporter;
 import org.testng.xml.XmlSuite;
-import org.testng.xml.XmlTest;
-
+import test.InvokedMethodNameListener;
+import test.SimpleBaseTest;
 import test.TestHelper;
+import test.simple.SimpleSample;
 
-import java.io.File;
-import java.util.Arrays;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
-public class ReportTest {
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class ReportTest extends SimpleBaseTest {
 
   @Test
-  public void verifyIndex() {
-    File outputDir = TestHelper.createRandomDirectory();
+  public void verifyIndex() throws IOException {
+    Path outputDir = TestHelper.createRandomDirectory();
 
     String suiteName = "VerifyIndexSuite";
     String testName = "TmpTest";
-    XmlSuite suite = TestHelper.createSuite(test.simple.SimpleTest.class, suiteName, testName);
+    XmlSuite suite = createXmlSuite(suiteName, testName, SimpleSample.class);
 
-    TestNG tng = TestHelper.createTestNG(suite, outputDir.getAbsolutePath());
+    TestNG tng = create(outputDir, suite);
+    tng.addListener((ITestNGListener) new TestHTMLReporter());
 
-    File f = getHtmlReportFile(outputDir, suiteName, testName);
+    Path f = getHtmlReportFile(outputDir, suiteName, testName);
 
     tng.run();
 
-    Assert.assertTrue(f.exists());
+    Assert.assertTrue(Files.exists(f), f.toString());
   }
 
   @Test
-  public void directoryShouldBeSuiteName() {
-    File outputDirectory = TestHelper.createRandomDirectory();
+  public void directoryShouldBeSuiteName() throws IOException {
+    Path outputDirectory = TestHelper.createRandomDirectory();
 
-    XmlSuite xmlSuite = new XmlSuite();
     String suiteName = "ReportTestSuite1";
-    xmlSuite.setName(suiteName);
-
-    XmlTest xmlTest = new XmlTest(xmlSuite);
     String testName = "Test1";
-    xmlTest.setName(testName);
-
-    XmlTest xmlTest2 = new XmlTest(xmlSuite);
     String testName2 = "Test2";
-    xmlTest2.setName(testName2);
+    XmlSuite xmlSuite = createXmlSuite(suiteName);
+    createXmlTest(xmlSuite, testName);
+    createXmlTest(xmlSuite, testName2);
 
-    TestNG testng = new TestNG();
-    testng.setVerbose(0);
-    testng.setOutputDirectory(outputDirectory.getAbsolutePath());
-    testng.setXmlSuites(Arrays.asList(xmlSuite));
+    TestNG tng = create(outputDirectory, xmlSuite);
+    tng.addListener((ITestNGListener) new TestHTMLReporter());
 
-    File f = getHtmlReportFile(outputDirectory, suiteName, testName);
-    File f2 = getHtmlReportFile(outputDirectory, suiteName, testName2);
+    Path f = getHtmlReportFile(outputDirectory, suiteName, testName);
+    Path f2 = getHtmlReportFile(outputDirectory, suiteName, testName2);
 
-    testng.run();
+    tng.run();
 
-    Assert.assertTrue(f.exists(), "Expected to find file:" + f);
-    Assert.assertTrue(f2.exists(), "Expected to find file:" + f2);
+    Assert.assertTrue(Files.exists(f));
+    Assert.assertTrue(Files.exists(f2));
   }
 
   @Test
-  public void oneDirectoryPerSuite() {
-    File outputDirectory = TestHelper.createRandomDirectory();
+  public void oneDirectoryPerSuite() throws IOException {
+    Path outputDirectory = TestHelper.createRandomDirectory();
 
-    String testName = "TmpTest";
     String suiteNameA = "ReportSuiteA";
-    XmlSuite xmlSuiteA = TestHelper.createSuite(test.reports.A.class, suiteNameA, testName);
-
     String suiteNameB = "ReportSuiteB";
-    XmlSuite xmlSuiteB = TestHelper.createSuite(test.reports.B.class, suiteNameB, testName);
+    String testName = "TmpTest";
+    XmlSuite xmlSuiteA = createXmlSuite(suiteNameA, testName, SampleA.class);
+    XmlSuite xmlSuiteB = createXmlSuite(suiteNameB, testName, SampleB.class);
 
-    TestNG testng = TestHelper.createTestNG();
-    testng.setOutputDirectory(outputDirectory.getAbsolutePath());
-    testng.setXmlSuites(Arrays.asList(xmlSuiteA, xmlSuiteB));
+    TestNG tng = create(outputDirectory, xmlSuiteA, xmlSuiteB);
+    tng.addListener((ITestNGListener) new TestHTMLReporter());
 
-    File f1 = getHtmlReportFile(outputDirectory, suiteNameA, testName);
-    File f2 = getHtmlReportFile(outputDirectory, suiteNameB, testName);
+    Path f1 = getHtmlReportFile(outputDirectory, suiteNameA, testName);
+    Path f2 = getHtmlReportFile(outputDirectory, suiteNameB, testName);
 
-    testng.run();
+    tng.run();
 
-    Assert.assertTrue(f1.exists());
-    Assert.assertTrue(f2.exists());
+    Assert.assertTrue(Files.exists(f1));
+    Assert.assertTrue(Files.exists(f2));
   }
 
-  private static File getHtmlReportFile(File outputDir, String suiteName, String testName) {
-    File f = new File(outputDir.getAbsolutePath() + File.separatorChar + suiteName
-                    + File.separatorChar + testName + ".html");
-    if (f.exists()) {
-      f.delete();
-    }
+  private static Path getHtmlReportFile(Path outputDir, String suiteName, String testName) throws IOException {
+    Path f = outputDir.resolve(Paths.get(suiteName, testName + ".html"));
+    Files.deleteIfExists(f);
     return f;
   }
 
   @Test
-  public void shouldHonorSuiteName() {
-    TestNG testng = TestHelper.createTestNG();
-    testng.setTestClasses(new Class[] { A.class, B.class });
-    String outputDir = testng.getOutputDirectory();
+  public void shouldHonorSuiteName() throws IOException {
+    Path outputDirectory = TestHelper.createRandomDirectory();
 
-    String dirA = outputDir + File.separatorChar + "SuiteA-JDK5";
-    File fileA = new File(dirA);
-    String dirB = outputDir + File.separatorChar + "SuiteB-JDK5";
-    File fileB = new File(dirB);
-    Assert.assertFalse(fileA.exists());
-    Assert.assertFalse(fileB.exists());
+    TestNG tng = create(outputDirectory, SampleA.class, SampleB.class);
+    tng.addListener((ITestNGListener) new TestHTMLReporter());
 
-    testng.run();
+    Path fileA = outputDirectory.resolve("SuiteA-JDK5");
+    Path fileB = outputDirectory.resolve("SuiteB-JDK5");
+    Assert.assertTrue(Files.notExists(fileA));
+    Assert.assertTrue(Files.notExists(fileB));
 
-    Assert.assertTrue(fileA.exists(), fileA + " wasn't created");
-    Assert.assertTrue(fileB.exists(), fileB + " wasn't created");
+    tng.run();
+
+    Assert.assertTrue(Files.exists(fileA));
+    Assert.assertTrue(Files.exists(fileB));
   }
 
-  static boolean m_success = false;
+  private static boolean m_success;
 
   @Test
   public void reportLogShouldBeAvailableEvenWithTimeOut() {
     m_success = false;
-    TestNG tng = new TestNG();
-    tng.setVerbose(0);
-    tng.setTestClasses(new Class[] { ReporterSampleTest.class });
+    TestNG tng = create(ReporterSample.class);
 
     ITestListener listener = new TestListenerAdapter() {
       @Override
       public void onTestSuccess(ITestResult tr) {
         super.onTestSuccess(tr);
         List<String> output = Reporter.getOutput(tr);
-        m_success = output != null && output.size() > 0;
+        ReportTest.m_success = (output != null && output.size() > 0);
       }
     };
-    tng.addListener(listener);
+    tng.addListener((ITestNGListener) listener);
     tng.run();
 
     Assert.assertTrue(m_success);
   }
 
+  @Test
+  public void reportLogShouldBeAvailableWithListener() {
+    TestNG tng = create(ListenerReporterSample.class);
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener((ITestNGListener) listener);
+
+    Reporter.clear();
+
+    tng.run();
+
+    assertThat(listener.getFailedMethodNames()).isEmpty();
+    assertThat(listener.getSkippedMethodNames()).isEmpty();
+    assertThat(listener.getSucceedMethodNames()).containsExactly("testMethod");
+    assertThat(Reporter.getOutput()).hasSize(2);
+  }
+
   @Test(description = "GITHUB-1090")
   public void github1090() {
-    TestNG tng = new TestNG();
-    tng.setVerbose(0);
-    tng.setTestClasses(new Class[]{GitHub447Sample.class});
+    TestNG tng = create(GitHub447Sample.class);
     GitHub447Listener reporter = new GitHub447Listener();
     tng.addListener((ITestNGListener) reporter);
     tng.run();

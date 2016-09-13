@@ -2,7 +2,7 @@ package test.reports;
 
 import org.testng.annotations.Test;
 
-public class FailedSampleTest {
+public class SimpleFailedSample {
 
   @Test
   public void failed() {

@@ -5,14 +5,13 @@ import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.collections.Lists;
-import org.testng.internal.Utils;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-import test.parameters.Override1Sample;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -34,9 +33,21 @@ public class SimpleBaseTest {
     return result;
   }
 
+  protected TestNG create(Path outputDir, Class<?>... testClasses) {
+    TestNG result = create(testClasses);
+    result.setOutputDirectory(outputDir.toAbsolutePath().toString());
+    return result;
+  }
+
   protected TestNG create(XmlSuite... suites) {
     TestNG result = create();
     result.setXmlSuites(Arrays.asList(suites));
+    return result;
+  }
+
+  protected TestNG create(Path outputDir, XmlSuite... suites) {
+    TestNG result = create(suites);
+    result.setOutputDirectory(outputDir.toAbsolutePath().toString());
     return result;
   }
 

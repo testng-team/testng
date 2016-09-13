@@ -7,13 +7,14 @@ import org.testng.xml.XmlSuite;
 
 import test.TestHelper;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class FailuresTest extends BaseFailuresTest {
 
   @Test
-  public void shouldIncludeFailedMethodsFromBaseClass() {
+  public void shouldIncludeFailedMethodsFromBaseClass() throws IOException {
     XmlSuite suite = TestHelper.createSuite("test.failures.Child", getSuiteName());
     TestNG tng = TestHelper.createTestNG(suite);
     tng.run();
@@ -28,7 +29,7 @@ public class FailuresTest extends BaseFailuresTest {
   }
 
   @Test(enabled = false)
-  public void shouldIncludeDependentMethods() {
+  public void shouldIncludeDependentMethods() throws IOException {
     XmlSuite suite = TestHelper.createSuite("test.failures.DependentTest", getSuiteName());
     TestNG tng = TestHelper.createTestNG(suite);
     tng.run();
@@ -42,7 +43,7 @@ public class FailuresTest extends BaseFailuresTest {
   }
 
   @Test(enabled = false)
-  public void shouldIncludeParameters() {
+  public void shouldIncludeParameters() throws IOException {
     XmlSuite suite = TestHelper.createSuite("test.failures.Child", getSuiteName());
     Map<String, String> params = new HashMap<>();
     params.put("first-name", "Cedric");
@@ -61,9 +62,5 @@ public class FailuresTest extends BaseFailuresTest {
 
   private String getOutputDir() {
     return System.getProperty("java.io.tmpdir");
-  }
-
-  private static void ppp(String s) {
-    System.out.println("[FailuresTest] " + s);
   }
 }
