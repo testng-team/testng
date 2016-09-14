@@ -5,7 +5,7 @@ import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 @Listeners(ReporterLogListener.class)
-public class ReporterLogFailureSampleTest {
+public class ReporterLogFailureSample {
 
   @Test
   public void test_onFailure() {

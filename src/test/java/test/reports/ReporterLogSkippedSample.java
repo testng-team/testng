@@ -6,7 +6,7 @@ import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 @Listeners(ReporterLogListener.class)
-public class ReporterLogSkippedSampleTest {
+public class ReporterLogSkippedSample {
   
   @BeforeMethod
   public void beforeMethod() {
@@ -17,5 +17,4 @@ public class ReporterLogSkippedSampleTest {
   public void test_onSkip() {
     Reporter.log("Log from test_onSkip");
   }
-
 }

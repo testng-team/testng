@@ -3,6 +3,7 @@ package test.reports;
 import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.TestNG;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import test.SimpleBaseTest;
@@ -14,34 +15,24 @@ import java.util.List;
  */
 public class ReporterLogTest extends SimpleBaseTest {
 
-  @Test
-  public void shouldLogFromListenerOnSuccess() {
-    TestNG tng = create(ReporterLogSuccessSampleTest.class);
-    tng.run();
-    List<String> output = Reporter.getOutput();
-    //System.out.println(output);
-    Assert.assertTrue(contains(output, "Listener: onTestSuccess"), "Reporter should log from onTestSuccess listener");
-  }
-  
-  @Test
-  public void shouldLogFromListenerOnSkip() {
-    TestNG tng = create(ReporterLogSkippedSampleTest.class);
-    tng.run();
-    List<String> output = Reporter.getOutput();
-    //System.out.println(output);
-    Assert.assertTrue(contains(output, "Listener: onTestSkipped"), "Reporter should log from onTestSkipped listener");
+  @DataProvider
+  public static Object[][] dp() {
+    return new Object[][]{
+        new Object[]{ReporterLogSuccessSample.class, "Listener: onTestSuccess"},
+        new Object[]{ReporterLogSkippedSample.class, "Listener: onTestSkipped"},
+        new Object[]{ReporterLogFailureSample.class, "Listener: onTestFailure"}
+    };
   }
 
-  @Test
-  public void shouldLogFromListenerOnFailure() {
-    TestNG tng = create(ReporterLogFailureSampleTest.class);
+  @Test(dataProvider = "dp")
+  public void shouldLogFromListener(Class<?> testClass, String value) {
+    TestNG tng = create(testClass);
     tng.run();
     List<String> output = Reporter.getOutput();
-    //System.out.println(output);
-    Assert.assertTrue(contains(output, "Listener: onTestFailure"), "Reporter should log from onTestFailure listener");
+    Assert.assertTrue(contains(output, value));
   }
-  
-  private boolean contains(List<String> output, String logMessage) {
+
+  private static boolean contains(List<String> output, String logMessage) {
     for (String s : output) {
       if (s.contains(logMessage)) {
         return true;

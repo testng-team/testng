@@ -5,14 +5,13 @@ import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.collections.Lists;
-import org.testng.internal.Utils;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-import test.parameters.Override1Sample;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -34,13 +33,33 @@ public class SimpleBaseTest {
     return result;
   }
 
-  protected TestNG create(XmlSuite... suites) {
-    TestNG result = create();
-    result.setXmlSuites(Arrays.asList(suites));
+  protected static TestNG create(Path outputDir, Class<?>... testClasses) {
+    TestNG result = create(testClasses);
+    result.setOutputDirectory(outputDir.toAbsolutePath().toString());
     return result;
   }
 
-  protected TestNG createTests(String suiteName, Class<?>... testClasses) {
+  protected static TestNG create(XmlSuite... suites) {
+    return create(Arrays.asList(suites));
+  }
+
+  protected static TestNG create(List<XmlSuite> suites) {
+    TestNG result = create();
+    result.setXmlSuites(suites);
+    return result;
+  }
+
+  protected static TestNG create(Path outputDir, XmlSuite... suites) {
+    return create(outputDir, Arrays.asList(suites));
+  }
+
+  protected static TestNG create(Path outputDir, List<XmlSuite> suites) {
+    TestNG result = create(suites);
+    result.setOutputDirectory(outputDir.toAbsolutePath().toString());
+    return result;
+  }
+
+  protected static TestNG createTests(String suiteName, Class<?>... testClasses) {
     XmlSuite suite = createXmlSuite(suiteName);
     int i=0;
     for (Class<?> testClass : testClasses) {
@@ -50,25 +69,25 @@ public class SimpleBaseTest {
     return create(suite);
   }
 
-  protected XmlSuite createXmlSuite(String name) {
+  protected static XmlSuite createXmlSuite(String name) {
     XmlSuite result = new XmlSuite();
     result.setName(name);
     return result;
   }
 
-  protected XmlSuite createXmlSuite(String suiteName, String testName, Class<?>... classes) {
+  protected static XmlSuite createXmlSuite(String suiteName, String testName, Class<?>... classes) {
     XmlSuite suite = createXmlSuite(suiteName);
     createXmlTest(suite, testName, classes);
     return suite;
   }
 
-  protected XmlTest createXmlTest(XmlSuite suite, String name) {
+  protected static XmlTest createXmlTest(XmlSuite suite, String name) {
     XmlTest result = new XmlTest(suite);
     result.setName(name);
     return result;
   }
 
-  protected XmlTest createXmlTest(XmlSuite suite, String name, Class<?>... classes) {
+  protected static XmlTest createXmlTest(XmlSuite suite, String name, Class<?>... classes) {
     XmlTest result = createXmlTest(suite, name);
     int index = 0;
     for (Class<?> c : classes) {
@@ -79,13 +98,13 @@ public class SimpleBaseTest {
     return result;
   }
 
-  protected XmlClass createXmlClass(XmlTest test, Class<?> testClass) {
+  protected static XmlClass createXmlClass(XmlTest test, Class<?> testClass) {
     XmlClass clazz = new XmlClass(testClass);
     test.getXmlClasses().add(clazz);
     return clazz;
   }
 
-  protected XmlInclude createXmlInclude(XmlClass clazz, String method) {
+  protected static XmlInclude createXmlInclude(XmlClass clazz, String method) {
     XmlInclude include = new XmlInclude(method);
 
     include.setXmlClass(clazz);
@@ -94,7 +113,7 @@ public class SimpleBaseTest {
     return include;
   }
 
-  protected XmlTest createXmlTest(XmlSuite suite, String name, String... classes) {
+  protected static XmlTest createXmlTest(XmlSuite suite, String name, String... classes) {
     XmlTest result = createXmlTest(suite, name);
     int index = 0;
     for (String c : classes) {
@@ -121,7 +140,7 @@ public class SimpleBaseTest {
     return result + File.separatorChar + fileName;
   }
 
-  protected void verifyPassedTests(TestListenerAdapter tla, String... methodNames) {
+  protected static void verifyPassedTests(TestListenerAdapter tla, String... methodNames) {
     Iterator<ITestResult> it = tla.getPassedTests().iterator();
     Assert.assertEquals(tla.getPassedTests().size(), methodNames.length);
 

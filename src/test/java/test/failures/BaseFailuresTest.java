@@ -3,25 +3,24 @@ package test.failures;
 import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.reporters.FailedReporter;
+import test.SimpleBaseTest;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.regex.Pattern;
 
-public class BaseFailuresTest {
+public abstract class BaseFailuresTest extends SimpleBaseTest {
 
-//  protected TestNG run(Class[] classes, String outputDir) {
-//    return run(new TestNG(), classes, outputDir);
-//  }
-
-  protected String getSuiteName() {
-    return "TmpSuite";
-  }
-
-  protected TestNG run(TestNG result, Class[] classes, String outputDir) {
+  protected static TestNG run(TestNG result, Class<?>[] classes, String outputDir) {
      result.setVerbose(0);
      result.setOutputDirectory(outputDir);
      result.setTestClasses(classes);
@@ -30,12 +29,7 @@ public class BaseFailuresTest {
      return result;
   }
 
-  /**
-   * @param f
-   * @param regexps
-   * @return true if the file contains at least one occurrence of each regexp
-   */
-  protected boolean containsRegularExpressions(File f, String[] strRegexps) {
+  protected static boolean containsRegularExpressions(Path f, String[] strRegexps) {
     Pattern[] matchers = new Pattern[strRegexps.length];
     boolean[] results = new boolean[strRegexps.length];
     for (int i = 0; i < strRegexps.length; i++) {
@@ -43,9 +37,7 @@ public class BaseFailuresTest {
       results[i] = false;
     }
 
-    try {
-      FileReader fr = new FileReader(f);
-      BufferedReader br = new BufferedReader(fr);
+    try (BufferedReader br = Files.newBufferedReader(f, Charset.forName("UTF-8"))) {
       String line = br.readLine();
       while (line != null) {
         for (int i = 0; i < strRegexps.length; i++) {
@@ -55,21 +47,13 @@ public class BaseFailuresTest {
         }
         line = br.readLine();
       }
-      fr.close();
-      br.close();
-    }
-    catch (FileNotFoundException e) {
-      e.printStackTrace();
-      return false;
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       e.printStackTrace();
       return false;
     }
 
     for (int i = 0; i < results.length; i++) {
-      boolean result = results[i];
-      if (! result) {
+      if (!results[i]) {
         throw new AssertionError("Couldn't find " + strRegexps[i]);
       }
     }
@@ -77,15 +61,23 @@ public class BaseFailuresTest {
     return true;
   }
 
-  protected void verify(String outputDir, String[] expected) {
-    File f = new File(outputDir +
-        File.separatorChar + getSuiteName() +
-        File.separator + FailedReporter.TESTNG_FAILED_XML);
-     boolean passed = containsRegularExpressions(f, expected);
-     Assert.assertTrue(passed);
+  protected static void verify(Path outputDir, String suiteName, String[] expected) throws IOException {
+    Path f = outputDir.resolve(suiteName).resolve(FailedReporter.TESTNG_FAILED_XML);
+    Assert.assertTrue(containsRegularExpressions(f, expected));
 
-     File tmpDir = new File(outputDir);
-     tmpDir.delete();
+    Files.walkFileTree(outputDir, new SimpleFileVisitor<Path>() {
+      @Override
+      public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+        Files.delete(file);
+        return FileVisitResult.CONTINUE;
+      }
+
+      @Override
+      public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+        Files.delete(dir);
+        return FileVisitResult.CONTINUE;
+      }
+    });
+    Files.deleteIfExists(outputDir);
   }
-
 }
