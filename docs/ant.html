@@ -1,0 +1,397 @@
+<html>
+    <head>
+        <title>TestNG - Ant</title>
+
+        <link rel="stylesheet" href="testng.css" type="text/css" />
+        <link type="text/css" rel="stylesheet" href="http://beust.com/beust.css"  />
+        <script type="text/javascript" src="http://beust.com/prettify.js"></script>
+        <script type="text/javascript" src="banner.js"></script>
+
+        <script type="text/javascript" src="http://beust.com/scripts/shCore.js"></script>
+        <script type="text/javascript" src="http://beust.com/scripts/shBrushJava.js"></script>
+        <script type="text/javascript" src="http://beust.com/scripts/shBrushXml.js"></script>
+        <script type="text/javascript" src="http://beust.com/scripts/shBrushBash.js"></script>
+        <script type="text/javascript" src="http://beust.com/scripts/shBrushPlain.js"></script>
+        <link type="text/css" rel="stylesheet" href="http://beust.com/styles/shCore.css"/>
+        <link type="text/css" rel="stylesheet" href="http://beust.com/styles/shThemeCedric.css"/>
+        <script type="text/javascript">
+          SyntaxHighlighter.config.clipboardSwf = 'scripts/clipboard.swf';
+          SyntaxHighlighter.defaults['gutter'] = false;
+          SyntaxHighlighter.all();
+        </script>
+
+</head>
+
+<body onLoad="prettyPrint()">
+
+<script type="text/javascript">
+    displayMenu("ant.html")
+</script>
+
+<h2 align="center">TestNG Ant Task</h2>
+<p>You define the TestNG ant task as follows:</p>
+
+<pre class="brush: xml">
+&lt;taskdef resource="testngtasks" classpath="testng.jar"/&gt;
+</pre>
+
+This task runs TestNG tests and is always run in a forked JVM.&nbsp; It 
+accepts the following attributes: <br>
+&nbsp;<table border="2" id="table1">
+	<tr>
+		<th>Attribute </th>
+		<th>Description </th>
+		<th>Required </th>
+	</tr>
+	<tr>
+		<td><tt>classfilesetref</tt> </td>
+		<td>A reference to a
+		<a href="http://ant.apache.org/manual/Types/resources.html#collection">ResourceCollection</a>
+		containing the test classes to be run. Only File based
+                <a href="http://ant.apache.org/manual/Types/resources.html#collection">ResourceCollection</a>s
+                are supported (ie. <a href="http://ant.apache.org/manual/Types/fileset.html">FileSet</a>).</td>
+		<td>&nbsp; </td>
+	</tr>
+	<tr>
+		<td><tt>classpath</tt> </td>
+		<td>A PATH-like structure for the tests to be run. </td>
+		<td>&nbsp; </td>
+	</tr>
+	<tr>
+		<td><tt>classpathref</tt> </td>
+		<td>A reference to a PATH-like structure for the tests to be run. </td>
+		<td>&nbsp; </td>
+	</tr>
+	<tr>
+		<td><tt>configFailurePolicy</tt> </td>
+		<td>Whether TestNG should <tt>continue</tt> to execute the remaining tests in the suite or <tt>skip</tt> them if an @Before* method fails.</td>
+		<td>No. Defaults to <tt>skip</tt></td>
+	</tr>
+	<tr>
+		<td><tt>dataProviderThreadCount</tt> </td>
+		<td>The number of threads to use for data providers
+		for this run. Ignored unless the parallel mode is also specified</td>
+		<td>1</td>
+	</tr>
+	<tr>
+		<td><tt>delegateCommandSystemProperties</tt> </td>
+		<td>Pass the command line properties as system properties.</td>
+		<td>No. Defaults to false </td>
+	</tr>
+	<tr>
+		<td><tt>dumpCommand</tt> </td>
+		<td>Print the TestNG launcher command. </td>
+		<td>No. Defaults to false </td>
+	</tr>
+	<tr>
+		<td><tt>failureProperty</tt> </td>
+		<td>The name of a property to set in the event of a failure. It is used 
+		only if the <tt>haltonfailure</tt> is not set. </td>
+		<td>No.</td>
+	</tr>
+	<tr>
+		<td><tt>haltonfailure</tt> </td>
+		<td>Stop the build process if a failure has occurred during the test 
+		run. </td>
+		<td>No. Defaults to false 
+		</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td><tt>haltonskipped</tt> </td>
+		<td>Stop the build process if there is at least on skipped test. </td>
+		<td>No. Default to false </td>
+	</tr>
+	<tr>
+	  <td><tt>groups</tt></td>
+	  <td>
+   	The list of groups to run, separated by spaces or commas.</td>
+	  <td>
+   	</td>
+	</tr>
+	<tr>
+	  <td><tt>excludedgroups</tt></td>
+	  <td>
+   	The list of groups to exclude, separated by spaces or commas</td>
+	  <td>
+   	</td>
+	</tr>
+	<tr>
+		<td><tt>jvm</tt></td>
+		<td>The JVM to use, which will be run by <tt>Runtime.exec()</tt></td>
+		<td><tt>java</tt></td>
+	</tr>
+	<tr>
+		<td><tt>listeners</tt></td>
+		<td>A comma or space-separated list of fully qualified classes that are TestNG listeners (for example<tt>
+		<a href="http://testng.org/javadocs/org/testng/ITestListener.html">
+		org.testng.ITestListener</a></tt> or <tt>
+		<a href="http://testng.org/javadocs/org/testng/IReporter.html">
+		org.testng.IReporter</a>)</tt></td>
+		<td>No.</td>
+	</tr>
+
+        <tr>
+		<td><tt>methods</tt></td>
+		<td>A comma separated list of fully qualified class name and method. For example <tt>com.example.Foo.f1,com.example.Bar.f2</tt>.</td>
+		<td>No.</td>
+        </tr>
+
+        <tr>
+		<td><tt>mode</tt></td>
+                <td>Either <tt>"testng"</tt>, <tt>"junit"</tt> or <tt>"mixed"</tt>. Whether TestNG should run only TestNG tests, JUnit tests or both.</td>
+		<td>No. Defaults to "testng".</td>
+        </tr>
+
+	<tr>
+		<td><tt>outputdir</tt> </td>
+		<td>Directory for reports output. 
+		</td>
+		<td>No. Defaults to <tt>test-output</tt>. </td>
+	</tr>
+	<tr>
+		<td><tt>skippedProperty</tt> </td>
+		<td>The name of a property to set in the event of a skipped test. It is 
+		used only if the <tt>haltonskipped</tt> is not set. </td>
+		<td>No. </td>
+	</tr>
+	<tr>
+		<td><tt>suiteRunnerClass</tt> </td>
+		<td>A fully qualified name of a TestNG starter. </td>
+		<td>
+		<p align="left">No.&nbsp; Defaults to <tt>
+		<a href="http://testng.org/javadocs/org/testng/TestNG.html">org.testng.TestNG</a> </tt></td>
+	</tr>
+	
+	<tr>
+		<td><tt>suiteThreadPoolSize</tt> </td>
+		<td>The size of a thread pool to run suites.</td>
+		<td>
+		<p align="left">No.&nbsp; Defaults to 1.</td>
+	</tr>
+
+	<tr>
+		<td><tt>parallel</tt> </td>
+		<td>The parallel mode to use for running the tests - either methods or tests</td>
+		<td>No - if not present, parallel mode will not be selected</td>
+	</tr>
+
+	<tr>
+		<td><tt>suitename</tt> </td>
+		<td>Sets the default name of the test suite, if one is not specified in a suite xml file or in the source code</td>
+		<td>No. Defaults to "Ant suite"</td>
+	</tr>
+
+	<tr>
+		<td><tt>testJar</tt> </td>
+		<td>Path to a jar containing tests and a suite definition. </td>
+		<td>&nbsp;</td>
+	</tr>
+
+	<tr>
+		<td><tt>testname</tt> </td>
+		<td>Sets the default name of the test, if one is not specified in a suite xml file or in the source code</td>
+		<td>No. defaults to "Ant test"</td>
+	</tr>
+
+	<tr>
+		<td><tt>testnames</tt> </td>
+		<td>A comma separated list of test names, as defined
+		in the &lt;test&gt; tag. Only these tests will be run.</td>
+		<td>No. defaults to "Ant test"</td>
+	</tr>
+
+	<tr>
+		<td><tt>threadCount</tt> </td>
+		<td>The number of threads to use for this run. Ignored unless the parallel mode is also specified</td>
+		<td>1</td>
+	</tr>
+
+	<tr>
+		<td><tt>timeOut</tt></td>
+		<td>The maximum time out in milliseconds that all the tests should run 
+		under.</td>
+		<td>&nbsp;</td>
+	</tr>
+
+	<tr>
+		<td><tt>useDefaultListeners</tt></td>
+		<td>Whether the default listeners and reporters should be used.</td>
+		<td>Defaults to true.</td>
+	</tr>
+	<tr>
+		<td><tt>workingDir</tt></td>
+		<td>The directory where the ant task should change to before running 
+		TestNG.</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td><tt>xmlfilesetref</tt> </td>
+		<td>A reference to a
+		<a href="http://ant.apache.org/manual/Types/resources.html#collection">ResourceCollection</a>
+		containing the suite definitions to be run. Only File based
+                <a href="http://ant.apache.org/manual/Types/resources.html#collection">ResourceCollection</a>s
+                are supported (ie. <a href="http://ant.apache.org/manual/Types/fileset.html">FileSet</a>).</td>
+		<td>&nbsp; </td>
+	</tr>
+
+	<tr>
+		<td><tt>xmlPathInJar</tt></td>
+		<td>The path of the XML file inside the jar file, only applicable if <tt>testJar</tt> was specified</td>
+		<td>testng.xml</td>
+	</tr>
+</table>
+<br>
+One of attributes <tt>classpath</tt>, <tt>classpathref</tt> or nested <tt>
+&lt;classpath&gt;</tt> must be used for providing the tests classpath. 
+<p>One of the attributes <tt>xmlfilesetref</tt>, <tt>classfilesetref</tt> or 
+nested <tt>&lt;xmlfileset&gt;</tt>, respectively <tt>&lt;classfileset&gt;</tt> must be used 
+for providing the tests. </p>
+
+<h3>TestNG modes</h3>
+<p>The TestNG mode gets applied when tests are passed to TestNG using <tt>classfilesetref</tt>, <tt>methods</tt>
+or nested <tt>&lt;classfileset&gt;</tt> and tells TestNG what kind of
+tests it should look for and run:
+
+<ul>
+  <li><tt>"testng"</tt>: find and run TestNG tests.
+  <li><tt>"junit"</tt>: find and run JUnit tests.
+  <li><tt>"mixed"</tt>: run both TestNG and JUnit tests.
+</ul>
+
+<p><em>Note</em>: <tt>"junit"</tt> and <tt>"mixed"</tt> modes require the JUnit jar file on the classpath.</p>
+
+<h3><a name="nested">Nested Elements</a></h3>
+<h4>classpath</h4>
+<p>The <tt>&lt;testng&gt;</tt> task supports a nested <tt>&lt;classpath&gt;</tt> element 
+that represents a <em>PATH</em>-like structure. </p>
+<h4>bootclasspath</h4>
+<p>The location of bootstrap class files can be specified using this <em>
+PATH-like</em> structure - will be ignored if <tt>fork </tt>is not set. </p>
+<h4>xmlfileset</h4>
+<p>The suite definitions (<tt>testng.xml</tt>) can be passed to the task with a
+<tt><a href="http://ant.apache.org/manual/Types/fileset.html">FileSet</a></tt>
+structure. </p>
+<h4>classfileset</h4>
+<p>TestNG can also run directly on classes, also supplied with a <tt>
+<a href="http://ant.apache.org/manual/Types/fileset.html">FileSet</a></tt>
+structure.</p>
+<h4>jvmarg</h4>
+<p>Additional parameters may be passed to the new VM via nested <tt>&lt;jvmarg&gt;</tt> 
+elements. For example: </p>
+
+<pre class="brush: xml">
+&lt;testng&gt;
+   &lt;jvmarg value="-Djava.compiler=NONE" /&gt;
+   &lt;!-- ... --&gt;
+&lt;/testng&gt;
+</pre>
+
+<h4>sysproperty</h4>
+<p>Use nested <tt>&lt;sysproperty&gt;</tt> elements to specify system properties 
+required by the class. These properties will be made available to the virtual 
+machine during the execution of the test. The attributes for this element are 
+the same as for <em>environment variables</em>:</p>
+
+<pre class="brush: xml">
+&lt;testng&gt;
+   &lt;sysproperty key="basedir" value="${basedir}"/&gt;
+   &lt;!-- ... --&gt;
+&lt;/testng&gt;
+</pre>
+
+<p>will run the test and make the <code>basedir</code> property 
+available to the test.</p>
+
+<h4>propertyset</h4>
+<p>You may also use a nested <tt>&lt;propertyset&gt;</tt> element to specify a set of system properties that are defined 
+outside of the TestNG ant task. This allows for more flexible definitions of system properties, for instance selecting
+all properties with a specific prefix or matching a regex. See the 
+<a href="http://ant.apache.org/manual/Types/propertyset.html">PropertySet page</a> in the 
+<a href="http://ant.apache.org/manual/">Ant manual</a> for full details. Here's a simple example:</p>
+<pre class="brush: xml">
+      &lt;property name="myprop1" value="value 1"/&gt;
+      &lt;property name="myprop2" value="value 2"/>
+	
+      &lt;propertyset id="propset1"&gt;
+          &lt;propertyref name="myprop1"/&gt;
+          &lt;propertyref name="myprop2"/&gt;
+      &lt;/propertyset&gt;
+
+      &lt;testng outputdir="${testng.report.dir}" classpathref="run.cp"&gt;
+          &lt;xmlfileset dir="${test15.dir}" includes="testng-single3.xml"/&gt;
+          &lt;propertyset refid="propset1"/&gt;
+      &lt;/testng&gt;
+</pre>
+<p>In this case, the system properties named "myprop1" and "myprop2" are passed along to the TestNG process.</p>
+
+<h4>reporter</h4>
+<p>An inner <tt>&lt;reporter&gt;</tt> element is an alternative way to inject a
+custom report listener allowing the user to set custom properties in order to fine-tune
+the behavior of the reporter at run-time.
+<br>
+The element has one <tt>classname</tt> attribute which is mandatory, indicating
+the class of the custom listener. In order to set the properties of the reporter, the
+<tt>&lt;reporter&gt;</tt> element can contain several nested <tt>&lt;property&gt;</tt>
+elements which will provide the <tt>name</tt> and <tt>value</tt> attributes as seen below:
+</p>
+<pre class="brush: xml">
+&lt;testng ...&gt;
+   ...
+   &lt;reporter classname="com.test.MyReporter"&gt;
+      &lt;property name="methodFilter" value="*insert*"/&gt;
+      &lt;property name="enableFiltering" value="true"/&gt;
+   &lt;/reporter&gt;
+   ...
+&lt;/testng&gt;
+</pre>
+<pre class="brush: java">
+public class MyReporter {
+
+  public String getMethodFilter() {...}
+  public void setMethodFilter(String methodFilter) {...}
+  public boolean isEnableFiltering() {...}
+  public void setEnableFiltering(boolean enableFiltering) {...}
+  ...
+}
+</pre>
+You have to consider though that for the moment only a limited set of property types are supported:
+<tt>String, int, boolean, byte, char, double, float, long, short</tt>.
+
+<h4>env</h4>
+<p>It is possible to specify environment variables to pass to the TestNG forked 
+virtual machine via nested <tt>&lt;env&gt;</tt> elements. For a description of the <tt>
+&lt;env&gt;</tt> element's attributes, see the description in the <em>
+<a href="http://ant.apache.org/manual/CoreTasks/exec.html">exec</a></em> task.</p>
+<h3>Examples</h3>
+<h4>Suite xml</h4>
+
+<pre class="brush: text">
+&lt;testng classpathref="run.cp"
+        outputDir="${testng.report.dir}"
+        sourcedir="${test.src.dir}"
+        haltOnfailure="true"&gt;
+ 
+   &lt;xmlfileset dir="${test14.dir}" includes="testng.xml"/&gt;
+&lt;/testng&gt;
+</pre>
+
+<h4>Class FileSet</h4>
+<pre class="brush: xml">
+&lt;testng classpathref="run.cp"
+		outputDir="${testng.report.dir}"
+		haltOnFailure="true" verbose="2"&gt;
+	&lt;classfileset dir="${test.build.dir}" includes="**/*.class" /&gt;
+&lt;/testng&gt;
+</pre>
+
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-238215-2";
+urchinTracker();
+</script>
+
+</body>
+
+</html>

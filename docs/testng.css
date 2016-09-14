@@ -1,0 +1,163 @@
+body, td, th {
+  font-family: Lucida Grande, Tahoma, Verdana, Arial, sans-serif;
+  font-size: 9pt;
+}
+
+table,th,tr,td {
+        border: none;
+}
+
+th {
+        background: #aaa;
+}
+
+td {
+        background: #efefef;
+}
+
+td {
+        padding-top: 3px;
+        padding-right: 4px;
+        padding-left: 4px;
+        padding-bottom: 3px;
+}
+
+h2 {
+        text-align: center;
+}
+
+h3 {
+        background: #efefef;
+        letter-spacing: 0.12em;
+        border-bottom: 1px dotted #aaa;
+        padding-top: 8px;
+        padding-left: 4px;
+        width: 70%;
+}
+
+hr {
+        height: 5px;
+        border: 0;
+        color: #aaa;
+        background-color: #aaa;
+}
+
+.doctype {
+  color: red
+}
+
+.xml-comment {
+  color: green;
+}
+
+.attribute {
+  color: blue;
+}
+
+.tag {
+  color: #7f0055;
+  font-weight: bold;
+}
+
+.float-right {
+  float: right;
+}
+
+.code {
+  margin-left: 20px;
+  margin-top: 10px;
+  background-color: #ffffdd;
+  border: 1pt solid silver;
+  border-color: #ccc #999 #999 #CCC;
+  color: #000000;
+  padding: 5px 5px 5px 7px;
+  font-size: 11px;
+  padding: .3em .6em;
+  font-family: Courier New
+}
+
+.box {
+  border: 1pt solid silver;
+  border-color: #ccc #999 #999 #CCC;
+  background-color: #ffffdd;
+}
+
+#menu {
+        font-size: small;
+        line-height: 0.9em;
+        clear: both;
+        margin-top: 10px;
+        }
+
+#menu li {
+        margin-bottom: 7px;
+        }
+
+#menu li li {
+        margin-top: 2px;
+        margin-bottom: 2px;
+        }
+
+#menu li.submenuitems {
+        margin-bottom: 2px;
+        }
+
+#menu a {
+        text-decoration: none;
+        }
+
+.e{margin-left:1em;text-indent:-1em;margin-right:1em}
+.m{color:blue}
+.t{color:#990000}
+
+A:link {
+  text-decoration: none;
+}
+
+A:hover.summary {
+  text-decoration: none;
+  color: #ff9900;
+}
+
+A:visited {
+  text-decoration: none;
+}
+
+
+
+
+
+
+/*********************************************/
+/* The following rules apply to the top menu */
+/*********************************************/
+#topmenu a {
+	text-decoration: none;
+}
+#topmenu a:link {
+	color: #0066bb; 
+}
+#topmenu a:visited {
+	color: #006699; 
+}
+#topmenu a:active {
+	color: red; 
+}
+#topmenu a:hover {
+	color: red; 
+}
+#topmenu table {
+	background-color: #ffcc66; 
+	text-align: center;
+}
+#topmenu td {
+  font-size: small;
+  font-weight: bold;
+}
+#topmenu td.current {
+  background: #ffff00;
+}
+/* The next rule is a patch because other rules are not scoped correctly */
+#topmenu td {
+    background-color: #ffcc66;
+}
