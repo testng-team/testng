@@ -1,0 +1,123 @@
+<html>
+    <head>
+        <title>TestNG - Download Current Release and Beta Versions</title>
+
+        <link rel="stylesheet" href="testng.css" type="text/css" />
+        <link type="text/css" rel="stylesheet" href="http://beust.com/beust.css"  />
+        <script type="text/javascript" src="banner.js"></script>
+
+      <script type="text/javascript" src="http://beust.com/scripts/shCore.js"></script>
+      <script type="text/javascript" src="http://beust.com/scripts/shBrushJava.js"></script>
+      <script type="text/javascript" src="http://beust.com/scripts/shBrushXml.js"></script>
+      <script type="text/javascript" src="http://beust.com/scripts/shBrushBash.js"></script>
+      <script type="text/javascript" src="http://beust.com/scripts/shBrushPlain.js"></script>
+      <link type="text/css" rel="stylesheet" href="http://beust.com/styles/shCore.css"/>
+      <link type="text/css" rel="stylesheet" href="http://beust.com/styles/shThemeCedric.css"/>
+      <script type="text/javascript">
+        SyntaxHighlighter.config.clipboardSwf = 'scripts/clipboard.swf';
+        SyntaxHighlighter.defaults['gutter'] = false;
+        SyntaxHighlighter.all();
+      </script>
+      <script type="text/javascript" src="http://beust.com/toc.js"></script>
+
+        <style type="text/css">
+            /* Set the command-line table option column width. */
+            #command-line colgroup.option {
+                 width: 7em;
+            }
+        </style
+      </head>
+<body onload="prettyPrint()">
+
+<script type="text/javascript">
+    displayMenu("download.html")
+</script>
+
+
+<h2 align="center">Downloading TestNG</h2>
+
+<h3>Current Release Version</h3>
+
+<h4>Maven</h4>
+
+<pre class="brush: xml">
+    &lt;repositories&gt;
+      &lt;repository&gt;
+        &lt;id&gt;central&lt;/id&gt;
+        &lt;name&gt;bintray&lt;/name&gt;
+        &lt;url&gt;http://jcenter.bintray.com&lt;/url&gt;
+      &lt;/repository&gt;
+    &lt;/repositories&gt;
+
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.testng&lt;/groupId&gt;
+      &lt;artifactId&gt;testng&lt;/artifactId&gt;
+      &lt;version&gt;6.9.10&lt;/version&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+</pre>
+
+<h4>Gradle</h4>
+
+<pre class="brush: java">
+repositories {
+    jcenter()
+}
+
+dependencies {
+    testCompile 'org.testng:testng:6.9.10'
+}
+</pre>
+
+<h3>Snapshots</h3>
+
+TestNG <a href="https://oss.sonatype.org/content/repositories/snapshots/org/testng/testng/">automatically uploads snapshots to Sonatype</a> which you can access by adding the following repository:
+
+<pre class="brush: java">
+repositories {
+    maven {
+        url 'https://oss.sonatype.org/content/repositories/snapshots'
+    }
+}
+</pre>
+
+<h3>Eclipse plug-in</h3>
+<p>You can use either the Eclipse Market Place or the update site:</p>
+<ul>
+	<li>Select<i> Help / Install new software.</i> 
+	</li>
+	<li><i>Search for new features to install.</i> 
+	</li>
+	<li><i>New remote site.</i> 
+	</li>
+	<li>For Eclipse 3.4 and above, enter <a href="http://beust.com/eclipse">http://beust.com/eclipse</a>.
+	<li>For Eclipse 3.3 and below, enter <a href="http://beust.com/eclipse1">http://beust.com/eclipse1</a>.
+	</li>
+	<li>Make sure the check box next to URL is checked and click <i>Next</i>. 
+	</li>
+	<li>Eclipse will then guide you through the process. </li>
+</ul>
+
+<p>You can also install older versions of the plug-ins <a href="http://beust.com/eclipse-old">here</a>. Note that the URL's on this page are update sites as well, not direct download links.
+
+<p>TestNG is also <a href="http://github.com/cbeust/testng">hosted on GitHub</a>, where you can download the source and build the distribution yourself:
+
+<pre class="brush: plain">
+$ git clone git://github.com/cbeust/testng.git
+$ cd testng
+$ mvn package
+</pre>
+
+<p>You will then find the jar file in the <tt>target</tt> directory</p>
+
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-238215-2";
+urchinTracker();
+</script>
+
+
+</body>
+
+</html>
