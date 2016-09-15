@@ -1154,10 +1154,8 @@ public class TestRunner
         // index
         String classDependedUpon = indexedClasses2.get(index - 1);
         List<ITestNGMethod> methodsDependedUpon = methodsFromClass.get(classDependedUpon);
-        if (methodsDependedUpon != null) {
-          for (ITestNGMethod mdu : methodsDependedUpon) {
-            result.put(mdu, m);
-          }
+        for (ITestNGMethod mdu : methodsDependedUpon) {
+          result.put(mdu, m);
         }
       }
     }
@@ -1586,8 +1584,7 @@ public class TestRunner
 
   @Override
   public List<Module> getGuiceModules(Class<? extends Module> cls) {
-    List<Module> result = m_guiceModules.get(cls);
-    return result;
+    return m_guiceModules.get(cls);
   }
 
   private void addGuiceModule(Class<? extends Module> cls, Module module) {

@@ -135,7 +135,7 @@ public class Model {
   }
 
   public List<ITestResult> getTestResults(ISuite suite) {
-    return nonnullList(m_model.get(suite));
+    return m_model.get(suite);
    }
 
   public static String getTestResultName(ITestResult tr) {
@@ -174,22 +174,14 @@ public class Model {
     return result != null ? result : "passed";
   }
 
-  public <T> Set<T> nonnullSet(Set<T> l) {
-    return l != null ? l : Collections.<T>emptySet();
-  }
-
-  public <T> List<T> nonnullList(List<T> l) {
-    return l != null ? l : Collections.<T>emptyList();
-  }
-
   public List<String> getGroups(String name) {
-    List<String> result = Lists.newArrayList(nonnullSet(m_groupsBySuiteName.get(name)));
+    List<String> result = Lists.newArrayList(m_groupsBySuiteName.get(name));
     Collections.sort(result);
     return result;
   }
 
   public List<String> getMethodsInGroup(String groupName) {
-    List<String> result = Lists.newArrayList(nonnullSet(m_methodsByGroup.get(groupName)));
+    List<String> result = Lists.newArrayList(m_methodsByGroup.get(groupName));
     Collections.sort(result);
     return result;
   }
