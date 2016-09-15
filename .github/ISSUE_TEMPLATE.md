@@ -9,13 +9,13 @@
 
 ### Is the issue reproductible on runner?
 
-[ ] CLI
-[ ] Maven
-[ ] Gradle
-[ ] Ant
-[ ] Eclipse
-[ ] IntelliJ
-[ ] NetBeans
+- [ ] Shell
+- [ ] Maven
+- [ ] Gradle
+- [ ] Ant
+- [ ] Eclipse
+- [ ] IntelliJ
+- [ ] NetBeans
 
 
 ### Test case sample

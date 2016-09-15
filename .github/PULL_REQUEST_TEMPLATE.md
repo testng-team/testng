@@ -1,6 +1,6 @@
 Fixes # .
 
-Did you remember to?
+### Did you remember to?
 
-[ ] Add test case(s)
-[ ] Update CHANGES.txt
+- [ ] Add test case(s)
+- [ ] Update `CHANGES.txt`
