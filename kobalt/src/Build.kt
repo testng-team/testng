@@ -3,6 +3,7 @@ import com.beust.kobalt.TaskResult
 import com.beust.kobalt.api.Project
 import com.beust.kobalt.api.annotation.Task
 import com.beust.kobalt.plugin.packaging.assemble
+import com.beust.kobalt.plugin.publish.bintray
 import com.beust.kobalt.project
 import com.beust.kobalt.repos
 import com.beust.kobalt.test
@@ -52,6 +53,10 @@ val p = project {
         jar {
             fatJar = true
         }
+    }
+
+    bintray {
+        publish = true
     }
 }
 
