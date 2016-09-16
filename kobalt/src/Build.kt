@@ -1,8 +1,11 @@
 
-import com.beust.kobalt.*
+import com.beust.kobalt.TaskResult
 import com.beust.kobalt.api.Project
 import com.beust.kobalt.api.annotation.Task
 import com.beust.kobalt.plugin.packaging.assemble
+import com.beust.kobalt.project
+import com.beust.kobalt.repos
+import com.beust.kobalt.test
 import java.io.File
 
 val VERSION = "6.9.13-SNAPSHOT"
@@ -28,15 +31,15 @@ val p = project {
 
     dependencies {
         compile("com.beust:jcommander:1.48",
-                "com.google.inject:guice:4.0",
-                "junit:junit:4.10",
-                "org.apache.ant:ant:1.7.0",
+                "com.google.inject:guice:4.1.0",
+                "junit:junit:4.12",
+                "org.apache.ant:ant:1.9.7",
                 "org.beanshell:bsh:2.0b4",
-                "org.yaml:snakeyaml:1.15")
+                "org.yaml:snakeyaml:1.17")
     }
 
     dependenciesTest {
-        compile("org.assertj:assertj-core:2.0.0",
+        compile("org.assertj:assertj-core:3.5.2",
                 "org.testng:testng:6.9.9",
                 "org.spockframework:spock-core:1.0-groovy-2.4")
     }
