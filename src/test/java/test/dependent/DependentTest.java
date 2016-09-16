@@ -1,16 +1,21 @@
 package test.dependent;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.TestNG;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Test;
 
 import test.BaseTest;
+import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 import test.dependent.github1156.ASample;
 import test.dependent.github1156.BSample;
 
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DependentTest extends BaseTest {
 
@@ -116,26 +121,27 @@ public class DependentTest extends BaseTest {
     }
   }
 
-  @Test(description = "GITHUB-1156")
-  public void methodDependencyBetweenClassesShouldWork() {
-    TestNG tng = SimpleBaseTest.create(ASample.class, BSample.class);
-    try {
-      tng.run();
-      Assert.fail();
-    } catch (IllegalStateException e) {
-      Assert.assertTrue(e.getMessage().matches("Circular dependency: .*"));
-    }
+  @DataProvider
+  public static Object[][] dp() {
+    return new Object[][]{
+        {new Class[]{ASample.class, BSample.class}, true},
+        {new Class[]{ASample.class, BSample.class}, false},
+        {new Class[]{BSample.class, ASample.class}, true},
+        {new Class[]{BSample.class, ASample.class}, false}
+    };
+  }
 
-    tng = SimpleBaseTest.create(ASample.class, BSample.class);
-    tng.setPreserveOrder(false);
+  @Test(dataProvider = "dp", description = "GITHUB-1156")
+  public void methodDependencyBetweenClassesShouldWork(Class[] classes, boolean preserveOrder) {
+    TestNG tng = SimpleBaseTest.create(classes);
+    tng.setPreserveOrder(preserveOrder);
+
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener((ITestNGListener) listener);
+
     tng.run();
 
-    tng = SimpleBaseTest.create(BSample.class, ASample.class);
-    tng.run();
-
-    tng = SimpleBaseTest.create(BSample.class, ASample.class);
-    tng.setPreserveOrder(false);
-    tng.run();
+    assertThat(listener.getSucceedMethodNames()).containsExactly("testB", "testA");
   }
 }
 

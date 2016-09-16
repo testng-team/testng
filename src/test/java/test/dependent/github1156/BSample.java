@@ -5,6 +5,6 @@ import org.testng.annotations.Test;
 public class BSample {
 
     @Test
-    public void test() {
+    public void testB() {
     }
 }

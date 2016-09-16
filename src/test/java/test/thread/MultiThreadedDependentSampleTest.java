@@ -10,26 +10,23 @@ import org.testng.collections.Lists;
 import java.util.List;
 
 public class MultiThreadedDependentSampleTest {
+
   public static List<String> m_methods = Lists.newArrayList();
 
   @BeforeClass
   public void bc() {
-//    log("beforeClass");
   }
 
   @AfterClass
   public void ac() {
-//    log("afterClass");
   }
 
   @BeforeMethod
   public void bm() {
-//    log("beforeMethod");
   }
 
   @AfterMethod
   public void am() {
-//    log("afterMethod");
   }
 
   @Test(groups = "1")
@@ -112,16 +109,12 @@ public class MultiThreadedDependentSampleTest {
     log("t");
   }
 
-  //  @Test(groups = "mytest", dependsOnMethods = "g")
-//  public void f() {
-//  }
-//
-//
-//  @AfterMethod
-//  public void after() {
-//  }
-
   private void logThread() {
+    try {
+      // With a lower value, tests fail sometimes
+      Thread.sleep(40);
+    } catch (InterruptedException e) {
+    }
     long id = Thread.currentThread().getId();
     Helper.getMap(getClass().getName()).put(id, id);
   }
@@ -131,5 +124,4 @@ public class MultiThreadedDependentSampleTest {
       m_methods.add(string);
     }
   }
-
 }
