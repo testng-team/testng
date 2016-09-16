@@ -93,7 +93,7 @@ public class XmlMethodSelector implements IMethodSelector {
     //
     // Is this method included implicitly?
     //
-    else if (includeList != null) {
+    else if (!includeList.isEmpty()) {
       result = true;
     }
 
@@ -373,8 +373,6 @@ public class XmlMethodSelector implements IMethodSelector {
       // Make the transitive closure our new included methods
       for (ITestNGMethod m : methodClosure) {
         String methodName = m.getQualifiedName();
-//        m_includedMethods.add(methodName);
-        List<XmlInclude> includeList = m_includedMethods.get(methodName);
         XmlInclude xi = new XmlInclude(methodName);
         // TODO: set the XmlClass on this xi or we won't get inheritance of parameters
         m_includedMethods.put(methodName, xi);

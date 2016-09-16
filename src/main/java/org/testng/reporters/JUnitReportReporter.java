@@ -217,12 +217,10 @@ public class JUnitReportReporter implements IReporter {
 
     List<ITestResult> confResults = configurations.get(tr.getInstance());
     Map<ITestNGMethod, ITestResult> seen = Maps.newHashMap();
-    if (confResults != null) {
-      for (ITestResult r : confResults) {
-        if (! seen.containsKey(r.getMethod())) {
-          result += r.getEndMillis() - r.getStartMillis();
-          seen.put(r.getMethod(), r);
-        }
+    for (ITestResult r : confResults) {
+      if (! seen.containsKey(r.getMethod())) {
+        result += r.getEndMillis() - r.getStartMillis();
+        seen.put(r.getMethod(), r);
       }
       confResults.removeAll(seen.values());
     }

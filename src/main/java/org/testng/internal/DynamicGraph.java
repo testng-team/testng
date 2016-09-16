@@ -59,6 +59,9 @@ public class DynamicGraph<T> {
    */
   public void addEdge(T from, Iterable<T> tos) {
     for (T to : tos) {
+      if (m_dependingOn.get(from).contains(to) || m_dependedUpon.get(to).contains(from)) {
+        throw new IllegalStateException("Circular dependency: " + from + " <-> " + to);
+      }
       m_dependingOn.put(to, from);
       m_dependedUpon.put(from, to);
     }

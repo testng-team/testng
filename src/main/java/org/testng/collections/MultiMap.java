@@ -32,7 +32,12 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
   }
 
   public C get(K key) {
-    return m_objects.get(key);
+    C list = m_objects.get(key);
+    if (list == null) {
+      list = createValue();
+      m_objects.put(key, list);
+    }
+    return list;
   }
 
   @Deprecated
@@ -80,11 +85,7 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
   }
 
   public boolean remove(K key, V value) {
-    C values = get(key);
-    if (values == null) {
-      return false;
-    }
-    return values.remove(value);
+    return get(key).remove(value);
   }
 
   public C removeAll(K key) {

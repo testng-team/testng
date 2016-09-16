@@ -7,6 +7,8 @@ import org.testng.annotations.Test;
 
 import test.BaseTest;
 import test.SimpleBaseTest;
+import test.dependent.github1156.ASample;
+import test.dependent.github1156.BSample;
 
 import java.util.List;
 
@@ -113,5 +115,27 @@ public class DependentTest extends BaseTest {
       Assert.assertEquals(log.get(i + 3), "clean#" + instance);
     }
   }
-} // DependentTest
+
+  @Test(description = "GITHUB-1156")
+  public void methodDependencyBetweenClassesShouldWork() {
+    TestNG tng = SimpleBaseTest.create(ASample.class, BSample.class);
+    try {
+      tng.run();
+      Assert.fail();
+    } catch (IllegalStateException e) {
+      Assert.assertTrue(e.getMessage().matches("Circular dependency: .*"));
+    }
+
+    tng = SimpleBaseTest.create(ASample.class, BSample.class);
+    tng.setPreserveOrder(false);
+    tng.run();
+
+    tng = SimpleBaseTest.create(BSample.class, ASample.class);
+    tng.run();
+
+    tng = SimpleBaseTest.create(BSample.class, ASample.class);
+    tng.setPreserveOrder(false);
+    tng.run();
+  }
+}
 
