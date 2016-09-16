@@ -8,7 +8,7 @@ import com.beust.kobalt.repos
 import com.beust.kobalt.test
 import java.io.File
 
-val VERSION = "6.9.13"
+val VERSION = "6.9.14-SNAPSHOT"
 
 val r = repos("https://dl.bintray.com/cbeust/maven")
 
