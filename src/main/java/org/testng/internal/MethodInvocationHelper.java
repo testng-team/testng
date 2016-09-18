@@ -8,8 +8,10 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
-import org.testng.annotations.DataProvider;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.collections.ArrayIterator;
+import org.testng.internal.collections.OneToTwoDimArrayIterator;
+import org.testng.internal.collections.OneToTwoDimIterator;
 import org.testng.internal.collections.Pair;
 import org.testng.internal.thread.IExecutor;
 import org.testng.internal.thread.IFutureResult;
@@ -22,6 +24,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -104,17 +108,29 @@ public class MethodInvocationHelper {
       ITestNGMethod method, ITestContext testContext, Object fedInstance,
       IAnnotationFinder annotationFinder) {
     List<Object> parameters = getParameters(dataProvider, method, testContext, fedInstance, annotationFinder);
-    Class<?> returnType = dataProvider.getReturnType();
-    // If it returns an Object[][], convert it to an Iterable<Object[]>
-    if (Object[][].class.isAssignableFrom(returnType)) {
-      Object[][] result = (Object[][]) invokeMethodNoCheckedException(dataProvider, instance, parameters);
-      return new ArrayIterator(result);
-    } else if (Iterator.class.isAssignableFrom(returnType)) {
-      return (Iterator<Object[]>) invokeMethodNoCheckedException(dataProvider, instance, parameters);
-    } else {
-      throw new TestNGException("Data Provider " + dataProvider + " must return"
-          + " either Object[][] or Iterator<Object>[], not " + returnType);
+    Object result = invokeMethodNoCheckedException(dataProvider, instance, parameters);
+    // If it returns an Object[][] or Object[], convert it to an Iterator<Object[]>
+    if (result instanceof Object[][]) {
+      return new ArrayIterator((Object[][]) result);
+    } else if (result instanceof Object[]) {
+      return new OneToTwoDimArrayIterator((Object[]) result);
+    } else if (result instanceof Iterator) {
+      Type returnType = dataProvider.getGenericReturnType();
+      if (returnType instanceof ParameterizedType) {
+        ParameterizedType contentType = (ParameterizedType) returnType;
+        Class<?> type = (Class<?>) contentType.getActualTypeArguments()[0];
+        if (type.isArray()) {
+          return (Iterator<Object[]>) result;
+        } else {
+          return new OneToTwoDimIterator((Iterator<Object>) result);
+        }
+      } else {
+        // Raw Iterator, we expect user provides the expected type
+        return (Iterator<Object[]>) result;
+      }
     }
+    throw new TestNGException("Data Provider " + dataProvider + " must return"
+          + " either Object[][] or Iterator<Object>[], not " + dataProvider.getReturnType());
   }
 
   private static List<Object> getParameters(Method dataProvider, ITestNGMethod method, ITestContext testContext,

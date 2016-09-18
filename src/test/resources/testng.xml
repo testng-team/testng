@@ -502,6 +502,7 @@
       <class name="test.dataprovider.VarArgsDataProviderTest" />
       <class name="test.dataprovider.IndicesTest" />
       <class name="test.dataprovider.EmptyDataProviderTest" />
+      <class name="test.dataprovider.DataProviderTest"/>
     </classes>
   </test>
 

@@ -1,6 +1,7 @@
 package test;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -19,6 +20,17 @@ import java.util.List;
 public class SimpleBaseTest {
   // System property specifying where the resources (e.g. xml files) can be found
   private static final String TEST_RESOURCES_DIR = "test.resources.dir";
+
+  public static InvokedMethodNameListener run(Class<?>... testClasses) {
+    TestNG tng = create(testClasses);
+
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener((ITestNGListener) listener);
+
+    tng.run();
+
+    return listener;
+  }
 
   public static TestNG create() {
     TestNG result = new TestNG();

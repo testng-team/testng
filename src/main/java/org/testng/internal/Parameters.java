@@ -30,6 +30,7 @@ import org.testng.internal.ParameterHolder.ParameterOrigin;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IDataProvidable;
+import org.testng.internal.collections.ArrayIterator;
 import org.testng.util.Strings;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -500,7 +501,7 @@ public class Parameters {
       // at the right time).
       testMethod.setParameterInvocationCount(allParameterValuesArray.length);
       // Turn it into an Iterable
-      Iterator<Object[]> parameters = MethodHelper.createArrayIterator(allParameterValuesArray);
+      Iterator<Object[]> parameters = new ArrayIterator(allParameterValuesArray);
 
       return new ParameterHolder(parameters, ParameterOrigin.ORIGIN_XML, null);
     }
