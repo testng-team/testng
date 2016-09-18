@@ -1,65 +1,48 @@
 package test.dataprovider;
 
-import org.testng.Assert;
 import org.testng.ITestNGListener;
-import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
-import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+import test.InvokedMethodNameListener;
+import test.SimpleBaseTest;
 
-import java.util.Arrays;
-import java.util.Collections;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * TESTNG-291:
- * Exceptions thrown by Iterable DataProviders are not caught, no failed test reported
+ * TESTNG-291: Exceptions thrown by Iterable DataProviders are not caught, no failed test reported
  */
-public class FailingIterableDataProviderTest {
+public class FailingIterableDataProviderTest extends SimpleBaseTest {
+
   @Test
   public void failingDataProvider() {
-    TestNG testng= new TestNG(false);
-    testng.setTestClasses(new Class[] {FailingIterableDataProvider.class});
-    TestListenerAdapter tla = new TestListenerAdapter();
-    testng.addListener(tla);
-    testng.setVerbose(0);
-    try {
-      testng.run();
-    } catch (RuntimeException e) {
-      Assert.fail("Exceptions thrown during tests should always be caught!", e);
-    }
-    Assert.assertEquals(tla.getFailedTests().size(), 1,
-      "Should have 1 failure from a bad data-provider iteration");
-    Assert.assertEquals(tla.getPassedTests().size(), 5,
-      "Should have 5 passed test from before the bad data-provider iteration");
-    }
+    InvokedMethodNameListener listener = run(FailingIterableDataProvider.class);
+
+    assertThat(listener.getFailedBeforeInvocationMethodNames()).containsExactly("happyTest");
+    assertThat(listener.getSucceedMethodNames()).containsExactly(
+        "happyTest(1)", "happyTest(2)", "happyTest(3)", "happyTest(4)", "happyTest(5)"
+    );
+  }
 
   @Test
   public void failingDataProviderWithInvocationNumber() {
-    XmlSuite suite = new XmlSuite();
-    XmlTest test = new XmlTest(suite);
-    XmlClass clazz = new XmlClass(FailingIterableDataProvider.class);
-    clazz.setXmlTest(test);
-    test.getClasses().add(clazz);
-    XmlInclude include = new XmlInclude("happyTest",  Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9), 0);
-    include.setXmlClass(clazz);
-    clazz.getIncludedMethods().add(include);
-    TestListenerAdapter tla = new TestListenerAdapter();
+    XmlSuite xmlSuite = createXmlSuite("Suite");
+    XmlTest xmlTest = createXmlTest(xmlSuite, "Test");
+    XmlClass xmlClass = createXmlClass(xmlTest, FailingIterableDataProvider.class);
+    createXmlInclude(xmlClass, "happyTest", /* index */ 0, /* list */ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
 
-    TestNG testng= new TestNG(false);
-    testng.setXmlSuites(Collections.singletonList(suite));
-    testng.addListener((ITestNGListener) tla);
-    testng.setVerbose(0);
-    try {
-      testng.run();
-    } catch (RuntimeException e) {
-      Assert.fail("Exceptions thrown during tests should always be caught!", e);
-    }
-    Assert.assertEquals(tla.getFailedTests().size(), 1,
-            "Should have 1 failure from a bad data-provider iteration");
-    Assert.assertEquals(tla.getPassedTests().size(), 5,
-            "Should have 5 passed test from before the bad data-provider iteration");
+    TestNG tng = create(xmlSuite);
+
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener((ITestNGListener) listener);
+
+    tng.run();
+
+    assertThat(listener.getFailedBeforeInvocationMethodNames()).containsExactly("happyTest");
+    assertThat(listener.getSucceedMethodNames()).containsExactly(
+        "happyTest(1)", "happyTest(2)", "happyTest(3)", "happyTest(4)", "happyTest(5)"
+    );
   }
 }

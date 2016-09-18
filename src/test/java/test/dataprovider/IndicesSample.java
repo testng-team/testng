@@ -8,12 +8,10 @@ import java.util.Iterator;
 
 public class IndicesSample {
 
-  @DataProvider(indices = { 2 })
+  @DataProvider(indices = {2})
   public Object[][] dp1() {
-    return new Object[][] {
-      new Object[] { 1 },  
-      new Object[] { 2 },  
-      new Object[] { 3 },  
+    return new Object[][]{
+        {1}, {2}, {3}
     };
   }
 
@@ -24,12 +22,12 @@ public class IndicesSample {
     }
   }
 
-  @DataProvider(indices = { 2 })
+  @DataProvider(indices = {2})
   public Iterator<Object[]> dp2() {
     return Arrays.asList(
-      new Object[] { 1 },
-      new Object[] { 2 },
-      new Object[] { 3 }
+        new Object[]{1},
+        new Object[]{2},
+        new Object[]{3}
     ).iterator();
   }
 

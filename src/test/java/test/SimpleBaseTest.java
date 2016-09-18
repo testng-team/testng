@@ -125,7 +125,16 @@ public class SimpleBaseTest {
     return include;
   }
 
-  protected static XmlTest createXmlTest(XmlSuite suite, String name, String... classes) {
+  protected static XmlInclude createXmlInclude(XmlClass clazz, String method, int index, Integer... list) {
+    XmlInclude include = new XmlInclude(method, Arrays.asList(list), index);
+
+    include.setXmlClass(clazz);
+    clazz.getIncludedMethods().add(include);
+
+    return include;
+  }
+
+    protected static XmlTest createXmlTest(XmlSuite suite, String name, String... classes) {
     XmlTest result = createXmlTest(suite, name);
     int index = 0;
     for (String c : classes) {

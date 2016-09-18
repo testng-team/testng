@@ -4,10 +4,8 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-/**
- * @author Vladislav.Rassokhin
- */
-public class DataProviderWithError {
+public class DataProviderWithErrorSample {
+
   @Test(dataProvider = "Data", invocationCount = 2)
   public void testShouldSkip() throws Exception {
     Assert.fail();

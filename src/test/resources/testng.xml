@@ -480,35 +480,12 @@
 
   <test name="DataProvider">
     <classes>
-      <class name="test.dataprovider.Sample1Test" />
-      <class name="test.dataprovider.IterableTest" />
-      <class name="test.dataprovider.ConfigurationAndDataProvidersTest" />
-      <class name="test.dataprovider.BooleanTest" />
-      <class name="test.dataprovider.ExplicitDataProviderNameTest" />
-      <class name="test.dataprovider.MethodTest"/>
-      <class name="test.dataprovider.StaticDataProviderSampleTest" />
-      <class name="test.dataprovider.StaticDataProviderSampleWithoutGuiceTest" />
-      <class name="test.dataprovider.UnnamedDataProviderTest" />
+      <class name="test.dataprovider.StaticDataProviderSampleWithoutGuiceSample" />
       <class name="test.dataprovider.TestContextTest" />
       <class name="test.dataprovider.FailingDataProviderTest" />
-      <class name="test.dataprovider.DataProviderAsTest" />
-      <class name="test.dataprovider.TestInstanceFactory" />
-      <class name="test.dataprovider.FailedDataProviderTest" />
-      <class name="test.dataprovider.InstanceDataProviderTest" />
       <class name="test.dataprovider.FailingIterableDataProviderTest" />
-      <class name="test.dataprovider.ClassTest" />
-      <class name="test.dataprovider.InheritedDataProviderTest" />
-      <class name="test.dataprovider.TestNG411Test" />
-      <class name="test.dataprovider.VarArgsDataProviderTest" />
       <class name="test.dataprovider.IndicesTest" />
-      <class name="test.dataprovider.EmptyDataProviderTest" />
       <class name="test.dataprovider.DataProviderTest"/>
-    </classes>
-  </test>
-
-  <test name="DP">
-    <classes>
-      <class name="test.dataprovider.ParallelDataProviderTest" />
     </classes>
   </test>
 

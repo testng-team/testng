@@ -4,13 +4,13 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 @Test(dataProvider = "dp")
-public class ClassSampleTest {
+public class ClassDataProviderSample {
 
   @DataProvider
   public Object[][] dp() {
     return new Object[][] {
-        new Object[] { "a" },
-        new Object[] { "b" },
+        new Object[]{"a"},
+        new Object[]{"b"}
     };
   }
 
@@ -19,5 +19,4 @@ public class ClassSampleTest {
 
   public void g(String a) {
   }
-
 }

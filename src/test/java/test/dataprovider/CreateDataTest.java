@@ -10,9 +10,7 @@ public class CreateDataTest {
    */
   @DataProvider(name = "create-data")
   public Object[][] create() {
-         return new Object[][] {
-                 new Object[] { new MyObject() }
-         };
+    return new Object[][]{{new MyObject()}};
   }
 
   /**
@@ -20,10 +18,14 @@ public class CreateDataTest {
    */
   @Test(dataProvider = "create-data")
   public void testMyTest(MyObject o) {
-   // do something with o
+    // do something with o
   }
-
-
 }
 
-class MyObject {}
+class MyObject {
+
+  @Override
+  public String toString() {
+    return "MyObject{}";
+  }
+}

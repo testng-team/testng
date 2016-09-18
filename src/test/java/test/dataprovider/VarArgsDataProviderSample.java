@@ -1,19 +1,16 @@
 package test.dataprovider;
 
-import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-public class VarArgsDataProviderTest {
-  private static final String[] S = new String[] { "a", "b", "c" };
+public class VarArgsDataProviderSample {
 
   @DataProvider
   public Object[][] data() {
-    return new Object[][] { S };
+    return new Object[][]{new String[]{"a", "b", "c"}};
   }
 
   @Test(dataProvider = "data")
   public void testWithTwoEntriesInTestToolWindow(String... o) {
-    Assert.assertEquals(o, S);
   }
 }

@@ -4,8 +4,7 @@ import org.testng.ITestContext;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import test.dataprovider.MyIterator;
-
+import java.util.Arrays;
 import java.util.Iterator;
 
 /**
@@ -38,11 +37,10 @@ public class InjectDataProviderTest {
 
   @DataProvider
   public Iterator<Object[]> dp2() {
-    return new MyIterator(
-    new Object[][] {
-      new Object[] { 1, "a" },
-      new Object[] { 2, "b" },
-    });
+    return Arrays.asList(
+        new Object[]{1, "a"},
+        new Object[]{2, "b"}
+    ).iterator();
   }
 
   @Test(dataProvider = "dp2", enabled = false)

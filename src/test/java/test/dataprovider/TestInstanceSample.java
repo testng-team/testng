@@ -7,26 +7,27 @@ import org.testng.annotations.TestInstance;
 
 import java.lang.reflect.Method;
 
-public class TestInstanceTest {
+public class TestInstanceSample {
 
-  private int m_n;
-  private static int m_instanceCount = 0;
+  public static int m_instanceCount = 0;
 
-  public TestInstanceTest() {}
+  private final int m_n;
 
-  public TestInstanceTest(int n) {
+  public TestInstanceSample() {
+    this(0);
+  }
+
+  public TestInstanceSample(int n) {
     this.m_n = n;
   }
 
   @DataProvider
   public Object[][] dp(Method m, @TestInstance Object instance) {
-    TestInstanceTest o0 = (TestInstanceTest) instance;
+    TestInstanceSample o0 = (TestInstanceSample) instance;
     Assert.assertTrue(o0.m_n == 1 || o0.m_n == 2);
     m_instanceCount++;
-    return new Object[][] {
-        new Object[] {42},
-        new Object[] {43},
-    };
+
+    return new Object[][]{{42}, {43}};
   }
 
   @Test(dataProvider = "dp")
@@ -36,9 +37,5 @@ public class TestInstanceTest {
   @Override
   public String toString() {
     return "[A n:" + m_n + "]";
-  }
-
-  private static void ppp(String s) {
-    System.out.println("[A] " + s);
   }
 }

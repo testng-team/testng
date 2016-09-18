@@ -2,8 +2,7 @@ package test.dataprovider;
 
 import org.testng.annotations.Test;
 
-//@Test(description = "class")
-public class InheritedDataProviderTest extends InheritedDataProviderBaseSampleTest {
+public class AnnotatedInheritedDataProviderSample extends AnnotatedInheritedDataProviderBaseSample {
 
   @Test(dataProvider = "dp")
   public void f(String a) {

@@ -3,13 +3,13 @@ package test.dataprovider;
 import org.testng.annotations.Factory;
 
 
-public class InstanceDataProviderTest {
+public class InstanceDataProviderSampleFactory {
 
   @Factory
   public Object[] create() {
     return new Object[] {
-        new InstanceDataProviderSampleTest(),
-        new InstanceDataProviderSampleTest()
+        new InstanceDataProviderSample(),
+        new InstanceDataProviderSample()
     };
   }
 }

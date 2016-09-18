@@ -1,70 +1,48 @@
 package test.dataprovider;
 
-import org.testng.Assert;
 import org.testng.ITestNGListener;
-import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
-import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+import test.InvokedMethodNameListener;
+import test.SimpleBaseTest;
 
-import java.util.Arrays;
-import java.util.Collections;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class IndicesTest {
+public class IndicesTest extends SimpleBaseTest {
 
     @Test
     public void test() {
-        TestNG testng = new TestNG(false);
+        InvokedMethodNameListener listener = run(IndicesSample.class);
 
-        testng.setTestClasses(new Class[]{IndicesSample.class});
-
-        TestListenerAdapter tla = new TestListenerAdapter();
-        testng.addListener((ITestNGListener) tla);
-        testng.setVerbose(0);
-        try {
-            testng.run();
-        } catch (RuntimeException e) {
-            Assert.fail("Exceptions thrown during tests should always be caught!", e);
-        }
-
-        Assert.assertTrue(tla.getFailedTests().isEmpty(),
-                "Should have 0 failure: bad data-provider iteration should be ignored");
-        Assert.assertEquals(tla.getPassedTests().size(), 2,
-                "Should have 2 passed test");
+        assertThat(listener.getFailedMethodNames()).isEmpty();
+        assertThat(listener.getSucceedMethodNames()).containsExactly(
+            "indicesShouldWork(3)",
+            "indicesShouldWorkWithIterator(3)"
+        );
     }
 
     @Test
     public void test2() {
-        TestNG testng = new TestNG(false);
+        XmlSuite xmlSuite = createXmlSuite("Suite");
+        XmlTest xmlTest = createXmlTest(xmlSuite, "Test");
+        XmlClass xmlClass = createXmlClass(xmlTest, IndicesSample.class);
+        createXmlInclude(xmlClass, "indicesShouldWork", /* index*/ 0, /* list */ 0);
+        createXmlInclude(xmlClass, "indicesShouldWorkWithIterator", /* index*/ 0, /* list */ 0);
 
-        XmlSuite suite = new XmlSuite();
-        XmlTest test = new XmlTest(suite);
-        XmlClass clazz = new XmlClass(IndicesSample.class);
-        clazz.setXmlTest(test);
-        test.getClasses().add(clazz);
-        XmlInclude include = new XmlInclude("indicesShouldWork", Arrays.asList(0), 0);
-        include.setXmlClass(clazz);
-        clazz.getIncludedMethods().add(include);
-        XmlInclude include2 = new XmlInclude("indicesShouldWorkWithIterator", Arrays.asList(0), 0);
-        include2.setXmlClass(clazz);
-        clazz.getIncludedMethods().add(include2);
-        testng.setXmlSuites(Collections.singletonList(suite));
+        TestNG tng = create(xmlSuite);
 
-        TestListenerAdapter tla = new TestListenerAdapter();
-        testng.addListener((ITestNGListener) tla);
-        testng.setVerbose(0);
-        try {
-            testng.run();
-        } catch (RuntimeException e) {
-            Assert.fail("Exceptions thrown during tests should always be caught!", e);
-        }
+        InvokedMethodNameListener listener = new InvokedMethodNameListener();
+        tng.addListener((ITestNGListener) listener);
 
-        Assert.assertTrue(tla.getFailedTests().isEmpty(),
-                "Should have 0 failure: bad data-provider iteration should be ignored");
-        Assert.assertEquals(tla.getPassedTests().size(), 4,
-                "Should have 4 passed test");
+        tng.run();
+
+        assertThat(listener.getFailedMethodNames()).isEmpty();
+        assertThat(listener.getSucceedMethodNames()).containsExactly(
+            "indicesShouldWork(1)", "indicesShouldWork(3)",
+            "indicesShouldWorkWithIterator(1)", "indicesShouldWorkWithIterator(3)"
+        );
     }
 }
