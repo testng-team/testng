@@ -2,6 +2,7 @@
 import com.beust.kobalt.TaskResult
 import com.beust.kobalt.api.Project
 import com.beust.kobalt.api.annotation.Task
+import com.beust.kobalt.plugin.java.javaCompiler
 import com.beust.kobalt.plugin.packaging.assemble
 import com.beust.kobalt.plugin.publish.bintray
 import com.beust.kobalt.project
@@ -49,8 +50,12 @@ val p = project {
         jvmArgs("-Dtest.resources.dir=src/test/resources")
     }
 
+    javaCompiler {
+        args("-target", "1.7", "-source", "1.7")
+    }
+
     assemble {
-        jar {
+        mavenJars {
             fatJar = true
         }
     }
