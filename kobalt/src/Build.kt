@@ -56,7 +56,6 @@ val p = project {
 
     assemble {
         mavenJars {
-            fatJar = true
         }
     }
 
