@@ -1301,7 +1301,7 @@ public class TestNG {
     }
     else {
       for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
-        suiteGraph.addEdge(parentSuiteRunner, suiteRunnerMap.get(childSuite));
+        suiteGraph.addEdge(0, parentSuiteRunner, suiteRunnerMap.get(childSuite));
         populateSuiteGraph(suiteGraph, suiteRunnerMap, childSuite);
       }
     }

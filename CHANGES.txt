@@ -1,4 +1,11 @@
 ﻿Current
+
+New: Hierarchy on order features (from less important to more important): groupByInstance, preserveOrder, priority, dependsOnGroups, dependsOnMethods
+Fixed: GITHUB-1156: test execution dependant upon class name order and fails with TestNGException: No free nodes found (@t-weil & Julien Herr)
+
+6.9.13
+2016/09/16
+
 New: code improvement in order to calculate key for dependency map. Dependency map will use methodQualifiedName as key provided by ITestNGMethod (Chirag Jayswal)
 Fixed: GITHUB-1105: Test skipped instead failed if incorrect enum value (Liza Ivanova & Julien Herr)﻿
 Fixed: GITHUB-1111: XMLReporter crashes if a test parameter is exactly "]]>" (Łukasz Rekucki & Julien Herr)

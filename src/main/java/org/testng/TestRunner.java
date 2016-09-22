@@ -147,6 +147,10 @@ public class TestRunner
   private transient IConfiguration m_configuration;
   private IMethodInterceptor builtinInterceptor;
 
+  private enum PriorityWeight {
+    groupByInstance, preserveOrder, priority, dependsOnGroups, dependsOnMethods
+  }
+
   protected TestRunner(IConfiguration configuration,
                     ISuite suite,
                     XmlTest test,
@@ -999,12 +1003,23 @@ public class TestRunner
 
   private DynamicGraph<ITestNGMethod> createDynamicGraph(ITestNGMethod[] methods) {
     DynamicGraph<ITestNGMethod> result = new DynamicGraph<>();
-    result.setComparator(new Comparator<ITestNGMethod>() {
-      @Override
-      public int compare(ITestNGMethod o1, ITestNGMethod o2) {
-        return o1.getPriority() - o2.getPriority();
+
+    ListMultiMap<Integer, ITestNGMethod> methodsByPriority = Maps.newListMultiMap();
+    for (ITestNGMethod method : methods) {
+      methodsByPriority.put(method.getPriority(), method);
+    }
+    List<Integer> availablePriorities = Lists.newArrayList(methodsByPriority.keySet());
+    Collections.sort(availablePriorities);
+    Integer previousPriority = methods.length > 0 ? availablePriorities.get(0) : 0;
+    for (int i = 1; i < availablePriorities.size(); i++) {
+      Integer currentPriority = availablePriorities.get(i);
+      for (ITestNGMethod p0Method : methodsByPriority.get(previousPriority)) {
+        for (ITestNGMethod p1Method : methodsByPriority.get(currentPriority)) {
+          result.addEdge(PriorityWeight.priority.ordinal(), p1Method, p0Method);
+        }
       }
-    });
+      previousPriority = currentPriority;
+    }
 
     DependencyMap dependencyMap = new DependencyMap(methods);
 
@@ -1022,7 +1037,7 @@ public class TestRunner
           for (String d : dependentMethods) {
             ITestNGMethod dm = dependencyMap.getMethodDependingOn(d, m);
             if (m != dm){
-            	result.addEdge(m, dm);
+            	result.addEdge(PriorityWeight.dependsOnMethods.ordinal(), m, dm);
             }
           }
         }
@@ -1039,7 +1054,7 @@ public class TestRunner
                 + "\" depends on nonexistent group \"" + d + "\"");
           }
           for (ITestNGMethod ddm : dg) {
-            result.addEdge(m, ddm);
+            result.addEdge(PriorityWeight.dependsOnGroups.ordinal(), m, ddm);
           }
         }
       }
@@ -1061,7 +1076,7 @@ public class TestRunner
 
       for (Map.Entry<ITestNGMethod, List<ITestNGMethod>> es : classDependencies.entrySet()) {
         for (ITestNGMethod dm : es.getValue()) {
-          result.addEdge(dm, es.getKey());
+          result.addEdge(PriorityWeight.preserveOrder.ordinal(), dm, es.getKey());
         }
       }
     }
@@ -1070,7 +1085,7 @@ public class TestRunner
     if (getCurrentXmlTest().getGroupByInstances()) {
       ListMultiMap<ITestNGMethod, ITestNGMethod> instanceDependencies = createInstanceDependencies(methods);
       for (Map.Entry<ITestNGMethod, List<ITestNGMethod>> es : instanceDependencies.entrySet()) {
-        result.addEdge(es.getKey(), es.getValue());
+        result.addEdge(PriorityWeight.groupByInstance.ordinal(), es.getKey(), es.getValue());
       }
     }
 
