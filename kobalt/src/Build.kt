@@ -8,6 +8,10 @@ import com.beust.kobalt.plugin.publish.bintray
 import com.beust.kobalt.project
 import com.beust.kobalt.repos
 import com.beust.kobalt.test
+import org.apache.maven.model.Developer
+import org.apache.maven.model.License
+import org.apache.maven.model.Model
+import org.apache.maven.model.Scm
 import java.io.File
 
 val VERSION = "6.9.14-SNAPSHOT"
@@ -21,7 +25,27 @@ val p = project {
     name = "testng"
     group = "org.testng"
     artifactId = name
+    url = "http://testng.org"
     version = VERSION
+
+    pom = Model().apply {
+        name = project.name
+        description = "A testing framework for the JVM"
+        url = "http://testng.org"
+        licenses = listOf(License().apply {
+            name = "Apache 2.0"
+            url = "http://www.apache .org/licenses/LICENSE-2.0"
+        })
+        scm = Scm().apply {
+            url = "http://github.com/cbeust/testng"
+            connection = "https://github.com/cbeust/testng.git"
+            developerConnection = "git@github.com:cbeust/testng.git"
+        }
+        developers = listOf(Developer().apply {
+            name = "Cedric Beust"
+            email = "cedric@beust.com"
+        })
+    }
 
     sourceDirectories {
         path("src/generated/java", "src/main/groovy")
@@ -61,6 +85,7 @@ val p = project {
 
     bintray {
         publish = true
+        sign = true
     }
 }
 
