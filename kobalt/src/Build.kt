@@ -57,11 +57,10 @@ val p = project {
 
     dependencies {
         compile("com.beust:jcommander:1.48",
-                "com.google.inject:guice:4.1.0",
-                "junit:junit:4.12",
                 "org.apache.ant:ant:1.9.7",
-                "org.beanshell:bsh:2.0b4",
-                "org.yaml:snakeyaml:1.17")
+                "org.beanshell:bsh:2.0b4")
+        provided("com.google.inject:guice:4.1.0")
+        compileOptional("junit:junit:4.12", "org.yaml:snakeyaml:1.17")
     }
 
     dependenciesTest {
