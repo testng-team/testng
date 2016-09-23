@@ -83,6 +83,10 @@ val p = project {
         }
     }
 
+    github {
+        autoGitTag = true
+    }
+
     bintray {
         publish = true
         sign = true
