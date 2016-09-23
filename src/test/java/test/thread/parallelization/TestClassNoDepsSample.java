@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 
 import java.util.concurrent.TimeUnit;
 
-public class TestClassSampleNoDeps {
+public class TestClassNoDepsSample {
 
     @Parameters({ "suiteName", "testName", "sleepFor" })
     @Test
@@ -18,7 +18,7 @@ public class TestClassSampleNoDeps {
                         .setTimeOfEvent(time)
                         .setThreadId(Thread.currentThread().getId())
                         .addData(TestNgRunStateTracker.EventInfo.METHOD_NAME, "testMethodA")
-                        .addData(TestNgRunStateTracker.EventInfo.CLASS_NAME, TestClassSampleNoDeps.class
+                        .addData(TestNgRunStateTracker.EventInfo.CLASS_NAME, TestClassNoDepsSample.class
                                 .getCanonicalName())
                         .addData(TestNgRunStateTracker.EventInfo.CLASS_INSTANCE, this)
                         .addData(TestNgRunStateTracker.EventInfo.TEST_NAME, testName)
@@ -40,7 +40,7 @@ public class TestClassSampleNoDeps {
                         .setTimeOfEvent(time)
                         .setThreadId(Thread.currentThread().getId())
                         .addData(TestNgRunStateTracker.EventInfo.METHOD_NAME, "testMethodB")
-                        .addData(TestNgRunStateTracker.EventInfo.CLASS_NAME, TestClassSampleNoDeps.class
+                        .addData(TestNgRunStateTracker.EventInfo.CLASS_NAME, TestClassNoDepsSample.class
                                 .getCanonicalName())
                         .addData(TestNgRunStateTracker.EventInfo.CLASS_INSTANCE, this)
                         .addData(TestNgRunStateTracker.EventInfo.TEST_NAME, testName)
@@ -62,7 +62,7 @@ public class TestClassSampleNoDeps {
                         .setTimeOfEvent(time)
                         .setThreadId(Thread.currentThread().getId())
                         .addData(TestNgRunStateTracker.EventInfo.METHOD_NAME, "testMethodC")
-                        .addData(TestNgRunStateTracker.EventInfo.CLASS_NAME, TestClassSampleNoDeps.class
+                        .addData(TestNgRunStateTracker.EventInfo.CLASS_NAME, TestClassNoDepsSample.class
                                 .getCanonicalName())
                         .addData(TestNgRunStateTracker.EventInfo.CLASS_INSTANCE, this)
                         .addData(TestNgRunStateTracker.EventInfo.TEST_NAME, testName)
@@ -84,7 +84,7 @@ public class TestClassSampleNoDeps {
                         .setTimeOfEvent(time)
                         .setThreadId(Thread.currentThread().getId())
                         .addData(TestNgRunStateTracker.EventInfo.METHOD_NAME, "testMethodD")
-                        .addData(TestNgRunStateTracker.EventInfo.CLASS_NAME, TestClassSampleNoDeps.class
+                        .addData(TestNgRunStateTracker.EventInfo.CLASS_NAME, TestClassNoDepsSample.class
                                 .getCanonicalName())
                         .addData(TestNgRunStateTracker.EventInfo.CLASS_INSTANCE, this)
                         .addData(TestNgRunStateTracker.EventInfo.TEST_NAME, testName)
@@ -106,7 +106,7 @@ public class TestClassSampleNoDeps {
                         .setTimeOfEvent(time)
                         .setThreadId(Thread.currentThread().getId())
                         .addData(TestNgRunStateTracker.EventInfo.METHOD_NAME, "testMethodE")
-                        .addData(TestNgRunStateTracker.EventInfo.CLASS_NAME, TestClassSampleNoDeps.class
+                        .addData(TestNgRunStateTracker.EventInfo.CLASS_NAME, TestClassNoDepsSample.class
                                 .getCanonicalName())
                         .addData(TestNgRunStateTracker.EventInfo.CLASS_INSTANCE, this)
                         .addData(TestNgRunStateTracker.EventInfo.TEST_NAME, testName)

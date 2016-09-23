@@ -1,5 +1,8 @@
 package test.thread.parallelization;
 
+import test.thread.parallelization.TestNgRunStateTracker.EventLog;
+import test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent;
+
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
 import org.testng.ITestContext;
@@ -8,220 +11,109 @@ import org.testng.ITestResult;
 
 import java.util.concurrent.TimeUnit;
 
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.CLASS_INSTANCE;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.CLASS_NAME;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.METHOD_NAME;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.SUITE_NAME;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.TEST_NAME;
+
+import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.LISTENER_SUITE_START;
+import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.LISTENER_SUITE_FINISH;
+
+import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.LISTENER_TEST_START;
+import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.LISTENER_TEST_FINISH;
+
+import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.LISTENER_TEST_METHOD_FAIL;
+import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.LISTENER_TEST_METHOD_FAIL_PERCENTAGE;
+import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.LISTENER_TEST_METHOD_SKIPPED;
+import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.LISTENER_TEST_METHOD_START;
+import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.LISTENER_TEST_METHOD_PASS;
+
+import static test.thread.parallelization.TestNgRunStateTracker.logEvent;
+
 public class TestNgRunStateListener implements ISuiteListener, ITestListener {
     @Override
     public void onStart(ISuite suite) {
-        long time = System.currentTimeMillis();
-
-        TestNgRunStateTracker.logEvent(
-                TestNgRunStateTracker.EventLog.builder()
-                        .setEvent(TestNgRunStateTracker.TestNgRunEvent.LISTENER_SUITE_START)
-                        .setTimeOfEvent(time)
-                        .setThreadId(Thread.currentThread().getId())
-                        .addData(TestNgRunStateTracker.EventInfo.SUITE_NAME, suite.getName())
-                        .build()
-        );
-
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch(InterruptedException e) {
-            throw new RuntimeException("Problem with delaying after suite listener onStart", e);
-        }
+        logEvent(buildEventLog(suite, LISTENER_SUITE_START).build());
+        delayAfterEvent(LISTENER_SUITE_START);
     }
 
     @Override
     public void onFinish(ISuite suite) {
-        long time = System.currentTimeMillis();
-
-        TestNgRunStateTracker.logEvent(
-                TestNgRunStateTracker.EventLog.builder()
-                        .setEvent(TestNgRunStateTracker.TestNgRunEvent.LISTENER_SUITE_FINISH)
-                        .setTimeOfEvent(time)
-                        .setThreadId(Thread.currentThread().getId())
-                        .addData(TestNgRunStateTracker.EventInfo.SUITE_NAME, suite.getName())
-                        .build()
-        );
-
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch(InterruptedException e) {
-            throw new RuntimeException("Problem with delaying after suite listener onFinish", e);
-        }
+        logEvent(buildEventLog(suite, LISTENER_SUITE_FINISH).build());
+        delayAfterEvent(LISTENER_SUITE_FINISH);
     }
 
     @Override
     public void onStart(ITestContext context) {
-        long time = System.currentTimeMillis();
-
-        TestNgRunStateTracker.logEvent(
-                TestNgRunStateTracker.EventLog.builder()
-                        .setEvent(TestNgRunStateTracker.TestNgRunEvent.LISTENER_TEST_START)
-                        .setTimeOfEvent(time)
-                        .setThreadId(Thread.currentThread().getId())
-                        .addData(TestNgRunStateTracker.EventInfo.TEST_NAME, context.getName())
-                        .addData(TestNgRunStateTracker.EventInfo.SUITE_NAME, context.getSuite().getName())
-                        .build()
-        );
-
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch(InterruptedException e) {
-            throw new RuntimeException("Problem with delaying after test listener onStart", e);
-        }
+        logEvent(buildEventLog(context, LISTENER_TEST_START).build());
+        delayAfterEvent(LISTENER_TEST_START);
     }
 
     @Override
     public void onFinish(ITestContext context) {
-        long time = System.currentTimeMillis();
-
-        TestNgRunStateTracker.logEvent(
-                TestNgRunStateTracker.EventLog.builder()
-                        .setEvent(TestNgRunStateTracker.TestNgRunEvent.LISTENER_TEST_FINISH)
-                        .setTimeOfEvent(time)
-                        .setThreadId(Thread.currentThread().getId())
-                        .addData(TestNgRunStateTracker.EventInfo.TEST_NAME, context.getName())
-                        .addData(TestNgRunStateTracker.EventInfo.SUITE_NAME, context.getSuite().getName())
-                        .build()
-        );
-
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch(InterruptedException e) {
-            throw new RuntimeException("Problem with delaying after test listener onFinish", e);
-        }
+        logEvent(buildEventLog(context, LISTENER_TEST_FINISH).build());
+        delayAfterEvent(LISTENER_TEST_FINISH);
     }
-
 
     @Override
     public void onTestStart(ITestResult result) {
-        long time = System.currentTimeMillis();
-
-        TestNgRunStateTracker.logEvent(
-                TestNgRunStateTracker.EventLog.builder()
-                        .setEvent(TestNgRunStateTracker.TestNgRunEvent.LISTENER_TEST_METHOD_START)
-                        .setTimeOfEvent(time)
-                        .setThreadId(Thread.currentThread().getId())
-                        .addData(TestNgRunStateTracker.EventInfo.METHOD_NAME, result.getMethod().getMethodName())
-                        .addData(TestNgRunStateTracker.EventInfo.CLASS_NAME, result.getMethod().getRealClass()
-                                .getCanonicalName())
-                        .addData(TestNgRunStateTracker.EventInfo.CLASS_INSTANCE, result.getMethod().getInstance())
-                        .addData(TestNgRunStateTracker.EventInfo.TEST_NAME, result.getTestContext().getName())
-                        .addData(TestNgRunStateTracker.EventInfo.SUITE_NAME, result.getTestContext().getSuite()
-                                .getName())
-                        .build()
-        );
-
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch(InterruptedException e) {
-            throw new RuntimeException("Problem with delaying after test method listener onTestStart", e);
-        }
+        logEvent(buildEventLog(result, LISTENER_TEST_METHOD_START).build());
+        delayAfterEvent(LISTENER_TEST_METHOD_START);
     }
 
     @Override
     public void onTestSuccess(ITestResult result) {
-        long time = System.currentTimeMillis();
-
-        TestNgRunStateTracker.logEvent(
-                TestNgRunStateTracker.EventLog.builder()
-                        .setEvent(TestNgRunStateTracker.TestNgRunEvent.LISTENER_TEST_METHOD_PASS)
-                        .setTimeOfEvent(time)
-                        .setThreadId(Thread.currentThread().getId())
-                        .addData(TestNgRunStateTracker.EventInfo.METHOD_NAME, result.getMethod().getMethodName())
-                        .addData(TestNgRunStateTracker.EventInfo.CLASS_NAME, result.getMethod().getRealClass()
-                                .getCanonicalName())
-                        .addData(TestNgRunStateTracker.EventInfo.CLASS_INSTANCE, result.getMethod().getInstance())
-                        .addData(TestNgRunStateTracker.EventInfo.TEST_NAME, result.getTestContext().getName())
-                        .addData(TestNgRunStateTracker.EventInfo.SUITE_NAME, result.getTestContext().getSuite()
-                                .getName())
-                        .build()
-        );
-
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch(InterruptedException e) {
-            throw new RuntimeException("Problem with delaying after test method listener onTestSuccess", e);
-        }
+        logEvent(buildEventLog(result, LISTENER_TEST_METHOD_PASS).build());
+        delayAfterEvent(LISTENER_TEST_METHOD_PASS);
     }
 
 
     @Override
     public void onTestFailure(ITestResult result) {
-        long time = System.currentTimeMillis();
-
-        TestNgRunStateTracker.logEvent(
-                TestNgRunStateTracker.EventLog.builder()
-                        .setEvent(TestNgRunStateTracker.TestNgRunEvent.LISTENER_TEST_METHOD_FAIL)
-                        .setTimeOfEvent(time)
-                        .setThreadId(Thread.currentThread().getId())
-                        .addData(TestNgRunStateTracker.EventInfo.METHOD_NAME, result.getMethod().getMethodName())
-                        .addData(TestNgRunStateTracker.EventInfo.CLASS_NAME, result.getMethod().getRealClass()
-                                .getCanonicalName())
-                        .addData(TestNgRunStateTracker.EventInfo.CLASS_INSTANCE, result.getMethod().getInstance())
-                        .addData(TestNgRunStateTracker.EventInfo.TEST_NAME, result.getTestContext().getName())
-                        .addData(TestNgRunStateTracker.EventInfo.SUITE_NAME, result.getTestContext().getSuite()
-                                .getName())
-                        .build()
-        );
-
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch(InterruptedException e) {
-            throw new RuntimeException("Problem with delaying after test method listener onTestFailure", e);
-        }
+        logEvent(buildEventLog(result, LISTENER_TEST_METHOD_FAIL).build());
+        delayAfterEvent(LISTENER_TEST_METHOD_FAIL);
     }
 
     @Override
     public void onTestSkipped(ITestResult result) {
-        long time = System.currentTimeMillis();
-
-        TestNgRunStateTracker.logEvent(
-                TestNgRunStateTracker.EventLog.builder()
-                        .setEvent(TestNgRunStateTracker.TestNgRunEvent.LISTENER_TEST_METHOD_SKIPPED)
-                        .setTimeOfEvent(time)
-                        .setThreadId(Thread.currentThread().getId())
-                        .addData(TestNgRunStateTracker.EventInfo.METHOD_NAME, result.getMethod().getMethodName())
-                        .addData(TestNgRunStateTracker.EventInfo.CLASS_NAME, result.getMethod().getRealClass()
-                                .getCanonicalName())
-                        .addData(TestNgRunStateTracker.EventInfo.CLASS_INSTANCE, result.getMethod().getInstance())
-                        .addData(TestNgRunStateTracker.EventInfo.TEST_NAME, result.getTestContext().getName())
-                        .addData(TestNgRunStateTracker.EventInfo.SUITE_NAME, result.getTestContext().getSuite()
-                                .getName())
-                        .build()
-        );
-
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch(InterruptedException e) {
-            throw new RuntimeException("Problem with delaying after test method listener onTestSkipped", e);
-        }
-
+        logEvent(buildEventLog(result, LISTENER_TEST_METHOD_SKIPPED).build());
+        delayAfterEvent(LISTENER_TEST_METHOD_SKIPPED);
     }
 
     @Override
     public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
+        logEvent(buildEventLog(result, LISTENER_TEST_METHOD_FAIL_PERCENTAGE).build());
+        delayAfterEvent(LISTENER_TEST_METHOD_FAIL_PERCENTAGE);
+    }
+
+    private TestNgRunStateTracker.EventLogBuilder buildEventLog(ISuite suite, TestNgRunEvent event) {
         long time = System.currentTimeMillis();
 
-        TestNgRunStateTracker.logEvent(
-                TestNgRunStateTracker.EventLog.builder()
-                        .setEvent(TestNgRunStateTracker.TestNgRunEvent.LISTENER_TEST_METHOD_FAIL_PERCENTAGE)
-                        .setTimeOfEvent(time)
-                        .setThreadId(Thread.currentThread().getId())
-                        .addData(TestNgRunStateTracker.EventInfo.METHOD_NAME, result.getMethod().getMethodName())
-                        .addData(TestNgRunStateTracker.EventInfo.CLASS_NAME, result.getMethod().getRealClass()
-                                .getCanonicalName())
-                        .addData(TestNgRunStateTracker.EventInfo.CLASS_INSTANCE, result.getMethod().getInstance())
-                        .addData(TestNgRunStateTracker.EventInfo.TEST_NAME, result.getTestContext().getName())
-                        .addData(TestNgRunStateTracker.EventInfo.SUITE_NAME, result.getTestContext().getSuite()
-                                .getName())
-                        .build()
-        );
+        return EventLog.builder()
+                .setEvent(event)
+                .setTimeOfEvent(time)
+                .setThreadId(Thread.currentThread().getId())
+                .addData(SUITE_NAME, suite.getName());
+    }
 
+    private TestNgRunStateTracker.EventLogBuilder buildEventLog(ITestContext context, TestNgRunEvent event) {
+        return buildEventLog(context.getSuite(), event)
+                .addData(TEST_NAME, context.getName());
+    }
+
+    private TestNgRunStateTracker.EventLogBuilder buildEventLog(ITestResult result, TestNgRunEvent event) {
+        return(buildEventLog(result.getTestContext(), event))
+                .addData(METHOD_NAME, result.getMethod().getMethodName())
+                .addData(CLASS_NAME, result.getMethod().getRealClass().getCanonicalName())
+                .addData(CLASS_INSTANCE, result.getMethod().getInstance());
+    }
+
+    private void delayAfterEvent(TestNgRunEvent event) {
         try {
             TimeUnit.SECONDS.sleep(1);
         } catch(InterruptedException e) {
-            throw new RuntimeException("Problem with delaying after test method listener " +
-                    "onTestFailedButWithinSuccessPercentage", e);
+            throw new RuntimeException("Problem with delaying after listener event: " + event, e);
         }
     }
 }

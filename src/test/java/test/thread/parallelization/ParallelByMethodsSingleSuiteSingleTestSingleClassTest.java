@@ -31,7 +31,7 @@ import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodLis
 import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodListenerStartTimestamps;
 import static test.thread.parallelization.TestNgRunStateTracker.reset;
 
-public class ParallelizationByMethodsTest extends SimpleBaseTest {
+public class ParallelByMethodsSingleSuiteSingleTestSingleClassTest extends SimpleBaseTest {
 
     private Long testListenerOnStartTimestamp;
     private Long testListenerOnFinishTimestamp;
@@ -83,7 +83,7 @@ public class ParallelizationByMethodsTest extends SimpleBaseTest {
         suiteOne.setParallel(XmlSuite.ParallelMode.METHODS);
         suiteOne.setThreadCount(5);
 
-        createXmlTest(suiteOne, "SingleTestClassTest", TestClassSampleNoDeps.class);
+        createXmlTest(suiteOne, "SingleTestClassTest", TestClassNoDepsSample.class);
 
         addParams(suiteOne, "SingleTestSuite", "SingleTestClassTest", "5");
 
@@ -97,73 +97,73 @@ public class ParallelizationByMethodsTest extends SimpleBaseTest {
         testListenerOnStartThreadId = getTestListenerStartThreadId("SingleTestSuite", "SingleTestClassTest");
 
         Object instanceKey = getTestMethodEventLogsForMethod("SingleTestSuite", "SingleTestClassTest",
-                TestClassSampleNoDeps.class.getCanonicalName(), "testMethodA").keySet().toArray()[0];
+                TestClassNoDepsSample.class.getCanonicalName(), "testMethodA").keySet().toArray()[0];
 
         testMethodAListenerOnStartTimestamp = getTestMethodListenerStartTimestamps("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodA").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodA").get(instanceKey);
         testMethodBListenerOnStartTimestamp = getTestMethodListenerStartTimestamps("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodB").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodB").get(instanceKey);
         testMethodCListenerOnStartTimestamp = getTestMethodListenerStartTimestamps("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodC").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodC").get(instanceKey);
         testMethodDListenerOnStartTimestamp = getTestMethodListenerStartTimestamps("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodD").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodD").get(instanceKey);
         testMethodEListenerOnStartTimestamp = getTestMethodListenerStartTimestamps("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodE").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodE").get(instanceKey);
 
         testMethodAListenerExecutionTimestamp = getTestMethodExecutionTimestamps("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodA").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodA").get(instanceKey);
         testMethodBListenerExecutionTimestamp = getTestMethodExecutionTimestamps("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodB").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodB").get(instanceKey);
         testMethodCListenerExecutionTimestamp = getTestMethodExecutionTimestamps("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodC").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodC").get(instanceKey);
         testMethodDListenerExecutionTimestamp = getTestMethodExecutionTimestamps("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodD").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodD").get(instanceKey);
         testMethodEListenerExecutionTimestamp = getTestMethodExecutionTimestamps("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodE").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodE").get(instanceKey);
 
         testMethodAListenerOnPassTimestamp = getTestMethodListenerPassTimestamps("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodA").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodA").get(instanceKey);
         testMethodBListenerOnPassTimestamp = getTestMethodListenerPassTimestamps("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodB").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodB").get(instanceKey);
         testMethodCListenerOnPassTimestamp = getTestMethodListenerPassTimestamps("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodC").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodC").get(instanceKey);
         testMethodDListenerOnPassTimestamp = getTestMethodListenerPassTimestamps("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodD").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodD").get(instanceKey);
         testMethodEListenerOnPassTimestamp = getTestMethodListenerPassTimestamps("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodE").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodE").get(instanceKey);
 
         testMethodAListenerOnStartThreadId = getTestMethodListenerStartThreadIds("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodA").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodA").get(instanceKey);
         testMethodBListenerOnStartThreadId = getTestMethodListenerStartThreadIds("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodB").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodB").get(instanceKey);
         testMethodCListenerOnStartThreadId = getTestMethodListenerStartThreadIds("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodC").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodC").get(instanceKey);
         testMethodDListenerOnStartThreadId = getTestMethodListenerStartThreadIds("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodD").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodD").get(instanceKey);
         testMethodEListenerOnStartThreadId = getTestMethodListenerStartThreadIds("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodE").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodE").get(instanceKey);
 
         testMethodAExecutionThreadId = getTestMethodExeuctionThreadIds("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodA").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodA").get(instanceKey);
         testMethodBExecutionThreadId  = getTestMethodExeuctionThreadIds("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodB").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodB").get(instanceKey);
         testMethodCExecutionThreadId  = getTestMethodExeuctionThreadIds("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodC").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodC").get(instanceKey);
         testMethodDExecutionThreadId  = getTestMethodExeuctionThreadIds("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodD").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodD").get(instanceKey);
         testMethodEExecutionThreadId  = getTestMethodExeuctionThreadIds("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodE").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodE").get(instanceKey);
 
         testMethodAListenerOnPassThreadId = getTestMethodListenerPassThreadIds("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodA").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodA").get(instanceKey);
         testMethodBListenerOnPassThreadId = getTestMethodListenerPassThreadIds("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodB").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodB").get(instanceKey);
         testMethodCListenerOnPassThreadId = getTestMethodListenerPassThreadIds("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodC").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodC").get(instanceKey);
         testMethodDListenerOnPassThreadId = getTestMethodListenerPassThreadIds("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodD").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodD").get(instanceKey);
         testMethodEListenerOnPassThreadId = getTestMethodListenerPassThreadIds("SingleTestSuite",
-                "SingleTestClassTest", TestClassSampleNoDeps.class.getCanonicalName(), "testMethodE").get(instanceKey);
+                "SingleTestClassTest", TestClassNoDepsSample.class.getCanonicalName(), "testMethodE").get(instanceKey);
     }
 
     //Verify that the suite listener and test listener events have timestamps in the following order: suite start,
@@ -193,46 +193,46 @@ public class ParallelizationByMethodsTest extends SimpleBaseTest {
     @Test
     public void verifyOnlyOneInstanceOfTestClassForAllTestMethods() {
         Multimap<Object,TestNgRunStateTracker.EventLog> testMethodAEventLogMap =
-                getTestMethodEventLogsForMethod("SingleTestSuite", "SingleTestClassTest", TestClassSampleNoDeps.class
+                getTestMethodEventLogsForMethod("SingleTestSuite", "SingleTestClassTest", TestClassNoDepsSample.class
                         .getCanonicalName(), "testMethodA");
 
         Multimap<Object,TestNgRunStateTracker.EventLog> testMethodBEventLogMap =
-                getTestMethodEventLogsForMethod("SingleTestSuite", "SingleTestClassTest", TestClassSampleNoDeps.class
+                getTestMethodEventLogsForMethod("SingleTestSuite", "SingleTestClassTest", TestClassNoDepsSample.class
                         .getCanonicalName(), "testMethodB");
 
         Multimap<Object,TestNgRunStateTracker.EventLog> testMethodCEventLogMap =
-                getTestMethodEventLogsForMethod("SingleTestSuite", "SingleTestClassTest", TestClassSampleNoDeps.class
+                getTestMethodEventLogsForMethod("SingleTestSuite", "SingleTestClassTest", TestClassNoDepsSample.class
                         .getCanonicalName(), "testMethodC");
 
         Multimap<Object,TestNgRunStateTracker.EventLog> testMethodDEventLogMap =
-                getTestMethodEventLogsForMethod("SingleTestSuite", "SingleTestClassTest", TestClassSampleNoDeps.class
+                getTestMethodEventLogsForMethod("SingleTestSuite", "SingleTestClassTest", TestClassNoDepsSample.class
                         .getCanonicalName(), "testMethodD");
 
         Multimap<Object,TestNgRunStateTracker.EventLog> testMethodEEventLogMap =
-                getTestMethodEventLogsForMethod("SingleTestSuite", "SingleTestClassTest", TestClassSampleNoDeps.class
+                getTestMethodEventLogsForMethod("SingleTestSuite", "SingleTestClassTest", TestClassNoDepsSample.class
                         .getCanonicalName(), "testMethodE");
 
         assertEquals(testMethodAEventLogMap.keySet().size(), 1, "There should be only one test class instance " +
-                "associated with testMethodA from " + TestClassSampleNoDeps.class.getCanonicalName());
+                "associated with testMethodA from " + TestClassNoDepsSample.class.getCanonicalName());
         assertEquals(testMethodBEventLogMap.keySet().size(), 1, "There should be only one test class instance " +
-                "associated with testMethodB from " + TestClassSampleNoDeps.class.getCanonicalName());
+                "associated with testMethodB from " + TestClassNoDepsSample.class.getCanonicalName());
         assertEquals(testMethodCEventLogMap.keySet().size(), 1, "There should be only one test class instance " +
-                "associated with testMethodC from " + TestClassSampleNoDeps.class.getCanonicalName());
+                "associated with testMethodC from " + TestClassNoDepsSample.class.getCanonicalName());
         assertEquals(testMethodDEventLogMap.keySet().size(), 1, "There should be only one test class instance " +
-                "associated with testMethodD from " + TestClassSampleNoDeps.class.getCanonicalName());
+                "associated with testMethodD from " + TestClassNoDepsSample.class.getCanonicalName());
         assertEquals(testMethodEEventLogMap.keySet().size(), 1, "There should be only one test class instance " +
-                "associated with testMethodE from " + TestClassSampleNoDeps.class.getCanonicalName());
+                "associated with testMethodE from " + TestClassNoDepsSample.class.getCanonicalName());
 
         Object methodAInstanceKey = getTestMethodEventLogsForMethod("SingleTestSuite", "SingleTestClassTest",
-                TestClassSampleNoDeps.class.getCanonicalName(), "testMethodA").keySet().toArray()[0];
+                TestClassNoDepsSample.class.getCanonicalName(), "testMethodA").keySet().toArray()[0];
         Object methodBInstanceKey = getTestMethodEventLogsForMethod("SingleTestSuite", "SingleTestClassTest",
-                TestClassSampleNoDeps.class.getCanonicalName(), "testMethodB").keySet().toArray()[0];
+                TestClassNoDepsSample.class.getCanonicalName(), "testMethodB").keySet().toArray()[0];
         Object methodCInstanceKey = getTestMethodEventLogsForMethod("SingleTestSuite", "SingleTestClassTest",
-                TestClassSampleNoDeps.class.getCanonicalName(), "testMethodC").keySet().toArray()[0];
+                TestClassNoDepsSample.class.getCanonicalName(), "testMethodC").keySet().toArray()[0];
         Object methodDInstanceKey = getTestMethodEventLogsForMethod("SingleTestSuite", "SingleTestClassTest",
-                TestClassSampleNoDeps.class.getCanonicalName(), "testMethodD").keySet().toArray()[0];
+                TestClassNoDepsSample.class.getCanonicalName(), "testMethodD").keySet().toArray()[0];
         Object methodEInstanceKey = getTestMethodEventLogsForMethod("SingleTestSuite", "SingleTestClassTest",
-                TestClassSampleNoDeps.class.getCanonicalName(), "testMethodE").keySet().toArray()[0];
+                TestClassNoDepsSample.class.getCanonicalName(), "testMethodE").keySet().toArray()[0];
 
         assertTrue(
                 methodAInstanceKey == methodBInstanceKey &&
@@ -432,7 +432,7 @@ public class ParallelizationByMethodsTest extends SimpleBaseTest {
 
     }
 
-    private void addParams(XmlSuite suite, String suiteName, String testName, String sleepFor) {
+    private static void addParams(XmlSuite suite, String suiteName, String testName, String sleepFor) {
         Map<String,String> parameters = new HashMap<>();
         parameters.put("suiteName", suiteName);
         parameters.put("testName", testName);
