@@ -790,5 +790,11 @@
       <class name="test.name.NameTest" />
     </classes>
   </test>
+
+  <test name = "Parallelization">
+    <classes>
+      <class name="test.thread.parallelization.ParallelByMethodsSingleSuiteSingleTestSingleClassTest"/>
+    </classes>
+  </test>
 </suite>
 
