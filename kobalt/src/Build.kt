@@ -91,7 +91,7 @@ val p = project {
     }
 }
 
-@Task(name = "createVersion", runBefore = arrayOf("compile"), runAfter = arrayOf("clean"), description = "")
+@Task(name = "createVersion", reverseDependsOn = arrayOf("compile"), runAfter = arrayOf("clean"), description = "")
 fun taskCreateVersion(project: Project): TaskResult {
     val path = "org/testng/internal"
     with(arrayListOf<String>()) {
