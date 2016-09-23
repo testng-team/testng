@@ -16,8 +16,6 @@ public class ConstructorInjectionProvider {
 
   @DataProvider(name = "injection")
   public Object[][] create() {
-    return new Object[][] {
-        new Object[] { value },
-    };
+    return new Object[][]{{value}};
   }
 }

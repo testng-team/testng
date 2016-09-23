@@ -1,46 +1,48 @@
 package test.dataprovider;
 
-import org.testng.Assert;
-import org.testng.TestListenerAdapter;
+import org.testng.ITestNGListener;
 import org.testng.TestNG;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import test.InvokedMethodNameListener;
+import test.SimpleBaseTest;
 
-public class TestContextTest {
+import static org.assertj.core.api.Assertions.assertThat;
 
-  @Test
-  public void verifyTen() {
-    verify("10", "verifyTen", 1, 0);
-  }
-
-  @Test
-  public void verifyFive() {
-    verify("5", "verifyFive", 1, 0);
-  }
+public class TestContextTest extends SimpleBaseTest {
 
   @Test
   public void verifySix() {
     // Not including any group, so the two test methods should fail
-    verify(null, null, 0, 2);
-  }
+    TestNG tng = create(TestContextSample.class);
 
-  private void verify(String groupName, String passed, int passedCount, int failedCount) {
-    TestNG tng = new TestNG();
-    tng.setVerbose(0);
-    tng.setTestClasses(new Class[] { TestContextSampleTest.class });
-    if (groupName != null) {
-      tng.setGroups(groupName);
-    }
-    TestListenerAdapter al = new TestListenerAdapter();
-    tng.addListener(al);
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener((ITestNGListener) listener);
+
     tng.run();
 
-    if (passedCount > 0) {
-      Assert.assertEquals(al.getPassedTests().size(), passedCount);
-      Assert.assertEquals(al.getPassedTests().get(0).getMethod().getMethodName(), passed);
-    }
+    assertThat(listener.getFailedMethodNames()).hasSize(2);
+  }
 
-    if (failedCount > 0) {
-      Assert.assertEquals(al.getFailedTests().size(), failedCount);
-    }
+  @DataProvider
+  public static Object[][] dp() {
+    return new Object[][]{
+        {10, "verifyTen"}, {5, "verifyFive"}
+    };
+  }
+
+  @Test(dataProvider = "dp")
+  public void verify(int number, String passed) {
+    TestNG tng = create(TestContextSample.class);
+    tng.setGroups(String.valueOf(number));
+
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener((ITestNGListener) listener);
+
+    tng.run();
+
+    assertThat(listener.getSucceedMethodNames()).hasSize(1);
+    assertThat(listener.getSucceedMethodNames().get(0)).matches(passed + "\\(\\[foo(,foo){" + (number - 1) + "}?\\]\\)");
+    assertThat(listener.getFailedMethodNames()).isEmpty();
   }
 }

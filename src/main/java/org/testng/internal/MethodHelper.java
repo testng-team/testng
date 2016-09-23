@@ -2,17 +2,14 @@ package org.testng.internal;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
-import org.testng.annotations.IExpectedExceptionsAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.ITestOrConfiguration;
 import org.testng.collections.Lists;
@@ -308,11 +305,6 @@ public class MethodHelper {
     return result;
   }
 
-  protected static Iterator<Object[]> createArrayIterator(final Object[][] objects) {
-    ArrayIterator result = new ArrayIterator(objects);
-    return result;
-  }
-
   protected static String calculateMethodCanonicalName(Class<?> methodClass, String methodName) {
     Set<Method> methods = ClassHelper.getAvailableMethods(methodClass); // TESTNG-139
     Method result = null;
@@ -330,37 +322,4 @@ public class MethodHelper {
     long result = tm.getTimeOut() > 0 ? tm.getTimeOut() : tm.getInvocationTimeOut();
     return result;
   }
-}
-
-/**
- * Custom iterator class over a 2D array
- *
- */
-class ArrayIterator implements Iterator<Object[]> {
-  private Object[][] m_objects;
-  private int m_count;
-
-  public ArrayIterator(Object[][] objects) {
-    m_objects = objects;
-    m_count = 0;
-  }
-
-  @Override
-  public boolean hasNext() {
-    return m_count < m_objects.length;
-  }
-
-  @Override
-  public Object[] next() {
-    if (m_count >= m_objects.length) {
-      throw new NoSuchElementException();
-    }
-    return m_objects[m_count++];
-  }
-
-  @Override
-  public void remove() {
-    throw new UnsupportedOperationException("Remove operation is not supported on this iterator");
-  }
-
 }

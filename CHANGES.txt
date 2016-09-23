@@ -1,9 +1,23 @@
 ﻿Current
 
+Fixed: GITHUB-1139: DataProvider could support Object[] as a valid return type (Julien Herr)
+
+6.9.13.4 (Bad release: Wrong interna version)
+2016/09/22
+
 New: Hierarchy on order features (from less important to more important): groupByInstance, preserveOrder, priority, dependsOnGroups, dependsOnMethods
 Fixed: GITHUB-1156: test execution dependant upon class name order and fails with TestNGException: No free nodes found (@t-weil & Julien Herr)
 
-6.9.13
+6.9.13.3 (Ok, but too many direct dependencies)
+2016/09/22
+
+6.9.13.2 (Bad release: Wrong internal version)
+2016/09/20
+
+6.9.13.1 (Bad release: fat jar)
+2016/09/19
+
+6.9.13 (Bad release: JDK8 target only)
 2016/09/16
 
 New: code improvement in order to calculate key for dependency map. Dependency map will use methodQualifiedName as key provided by ITestNGMethod (Chirag Jayswal)

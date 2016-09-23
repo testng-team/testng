@@ -11,7 +11,7 @@ public class EmptyDataProviderSample {
 
     @DataProvider
     public Object[][] dp1() {
-        return new Object[][]{};
+        return new Object[0][];
     }
 
     @Test(dataProvider = "dp1")
@@ -19,7 +19,7 @@ public class EmptyDataProviderSample {
         Assert.fail();
     }
 
-    @DataProvider(indices = { 2 })
+    @DataProvider(indices = {2})
     public Iterator<Object[]> dp2() {
         return Collections.emptyIterator();
     }

@@ -265,26 +265,14 @@ tests:
 
   - name: DataProvider
     classes:
-      - test.dataprovider.Sample1Test
-      - test.dataprovider.IterableTest
       - test.dataprovider.ConfigurationAndDataProvidersTest
-      - test.dataprovider.BooleanTest
       - test.dataprovider.MethodTest
-      - test.dataprovider.StaticDataProviderSampleTest
-      - test.dataprovider.UnnamedDataProviderTest
       - test.dataprovider.TestContextTest
       - test.dataprovider.FailingDataProviderTest
-      - test.dataprovider.DataProviderAsTest
-      - test.dataprovider.TestInstanceFactory
-      - test.dataprovider.FailedDataProviderTest
       - test.dataprovider.InstanceDataProviderTest
       - test.dataprovider.FailingIterableDataProviderTest
       - test.dataprovider.ClassTest
       - test.dataprovider.InheritedDataProviderTest
-
-  - name: DP
-    classes:
-      - test.dataprovider.ParallelDataProviderTest
 
   - name: UniqueSuite
     classes:
