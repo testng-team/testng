@@ -100,7 +100,7 @@ public class DynamicGraph<T> {
         result.add(node);
       }
     }
-    // if all nodes has dependencies, then we can ignore the lowest one
+    // if all nodes have dependencies, then we can ignore the lowest one
     if (result.isEmpty()) {
       int lowestPriority = getLowestEdgePriority(m_nodesReady);
       for (T node : m_nodesReady) {
