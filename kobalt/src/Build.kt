@@ -5,6 +5,7 @@ import com.beust.kobalt.api.annotation.Task
 import com.beust.kobalt.plugin.java.javaCompiler
 import com.beust.kobalt.plugin.packaging.assemble
 import com.beust.kobalt.plugin.publish.bintray
+import com.beust.kobalt.plugin.publish.github
 import com.beust.kobalt.project
 import com.beust.kobalt.repos
 import com.beust.kobalt.test
@@ -14,7 +15,7 @@ import org.apache.maven.model.Model
 import org.apache.maven.model.Scm
 import java.io.File
 
-val VERSION = "6.9.14-SNAPSHOT"
+val VERSION = "6.9.13.8"
 
 val r = repos("https://dl.bintray.com/cbeust/maven")
 
@@ -83,13 +84,10 @@ val p = project {
         }
     }
 
-    github {
-        autoGitTag = true
-    }
-
     bintray {
         publish = true
         sign = true
+        autoGitTag = true
     }
 }
 
