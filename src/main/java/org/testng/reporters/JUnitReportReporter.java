@@ -222,8 +222,8 @@ public class JUnitReportReporter implements IReporter {
         result += r.getEndMillis() - r.getStartMillis();
         seen.put(r.getMethod(), r);
       }
-      confResults.removeAll(seen.values());
     }
+    confResults.removeAll(seen.values());
 
     return result;
   }
