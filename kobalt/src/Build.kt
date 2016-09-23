@@ -34,7 +34,7 @@ val p = project {
         url = "http://testng.org"
         licenses = listOf(License().apply {
             name = "Apache 2.0"
-            url = "http://www.apache .org/licenses/LICENSE-2.0"
+            url = "http://www.apache.org/licenses/LICENSE-2.0"
         })
         scm = Scm().apply {
             url = "http://github.com/cbeust/testng"
@@ -56,11 +56,12 @@ val p = project {
     }
 
     dependencies {
-        compile("com.beust:jcommander:1.48",
+        compile("com.beust:jcommander:1.48")
+        provided("com.google.inject:guice:4.1.0")
+        compileOptional("junit:junit:4.12",
+                "org.yaml:snakeyaml:1.17",
                 "org.apache.ant:ant:1.9.7",
                 "org.beanshell:bsh:2.0b4")
-        provided("com.google.inject:guice:4.1.0")
-        compileOptional("junit:junit:4.12", "org.yaml:snakeyaml:1.17")
     }
 
     dependenciesTest {
