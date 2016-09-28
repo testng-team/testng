@@ -5,8 +5,12 @@ import com.google.common.collect.Multimap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import static java.lang.Thread.State.TERMINATED;
 
 /**
  * {@code TestNgRunStateTracker} tracks state information for a TestNG run: suite listener start, suite listener end,
@@ -17,11 +21,40 @@ import java.util.Map;
 public class TestNgRunStateTracker {
 
     private static List<EventLog> eventLogs = new ArrayList<>();
+    private static Set<Thread> threads = new HashSet<Thread>();
 
-    public static void logEvent(EventLog event) {
+    public static void logEvent(EventLog eventLog, Thread thread) {
         synchronized(eventLogs) {
-            eventLogs.add(event);
+            int count = 0;
+
+            synchronized (threads) {
+                List<Thread> deadThreads = new ArrayList<>();
+
+                for(Thread t : threads) {
+                    if(t.getState() == TERMINATED) {
+                        deadThreads.add(t);
+                    }
+                }
+
+                for(Thread t : deadThreads) {
+                    threads.remove(t);
+                }
+
+                threads.add(thread);
+
+                for (Thread t : threads) {
+                    count++;
+                }
+            }
+
+            eventLog.setActiveThreadCount(count);
+            eventLogs.add(eventLog);
         }
+    }
+
+    //Get all event logs for all suites
+    public static List<EventLog> getAllEventLogs() {
+        return eventLogs;
     }
 
     //Get all suite level event logs
@@ -34,6 +67,30 @@ public class TestNgRunStateTracker {
             }
         }
         return suiteEventLogs;
+    }
+
+    public static List<EventLog> getSuiteListenerStartEventLogs() {
+        List<EventLog> suiteStartEventLogs = new ArrayList<>();
+
+        for(EventLog eventLog : eventLogs) {
+            if(eventLog.getEvent() == TestNgRunEvent.LISTENER_SUITE_START) {
+                suiteStartEventLogs.add(eventLog);
+            }
+        }
+
+        return suiteStartEventLogs;
+    }
+
+    public static List<EventLog> getSuiteListenerFinishEventLogs() {
+        List<EventLog> suiteFinishEventLogs = new ArrayList<>();
+
+        for(EventLog eventLog : eventLogs) {
+            if(eventLog.getEvent() == TestNgRunEvent.LISTENER_SUITE_FINISH) {
+                suiteFinishEventLogs.add(eventLog);
+            }
+        }
+
+        return suiteFinishEventLogs;
     }
 
     //Get all suite level event logs associated with the specified suite
@@ -123,6 +180,18 @@ public class TestNgRunStateTracker {
         return eventLog == null ? null : eventLog.getThreadId();
     }
 
+    public static Integer getSuiteListenerStartActiveThreadCount(String suiteName) {
+        EventLog eventLog = getSuiteListenerStartEventLog(suiteName);
+
+        return eventLog == null ? null : eventLog.getActiveThreadCount();
+    }
+
+    public static Integer getSuiteListenerFinishActiveThreadCount(String suiteName) {
+        EventLog eventLog = getSuiteListenerFinishEventLog(suiteName);
+
+        return eventLog == null ? null : eventLog.getActiveThreadCount();
+    }
+
     //Get all test level event logs
     public static List<EventLog> getAllTestLevelEventLogs() {
         List<EventLog> testEventLogs = new ArrayList<>();
@@ -145,6 +214,30 @@ public class TestNgRunStateTracker {
             }
         }
         return testEventLogs;
+    }
+
+    public static List<EventLog> getTestListenerStartEventLogsForSuite(String suiteName) {
+        List<EventLog> testStartEventLogs = new ArrayList<>();
+
+        for(EventLog eventLog : eventLogs) {
+            if(eventLog.getEvent() == TestNgRunEvent.LISTENER_TEST_START && belongsToSuite(suiteName, eventLog)) {
+                testStartEventLogs.add(eventLog);
+            }
+        }
+
+        return testStartEventLogs;
+    }
+
+    public static List<EventLog> getTestListenerFinishEventLogsForSuite(String suiteName) {
+        List<EventLog> testFinishEventLogs = new ArrayList<>();
+
+        for(EventLog eventLog : eventLogs) {
+            if(eventLog.getEvent() == TestNgRunEvent.LISTENER_TEST_FINISH && belongsToSuite(suiteName, eventLog)) {
+                testFinishEventLogs.add(eventLog);
+            }
+        }
+
+        return testFinishEventLogs;
     }
 
     //Get all test level event logs for with the specified test
@@ -239,6 +332,18 @@ public class TestNgRunStateTracker {
         return eventLog == null ? null : eventLog.getThreadId();
     }
 
+    public static Integer getTestListenerStartActiveThreadCount(String suiteName, String testName) {
+        EventLog eventLog = getTestListenerStartEventLog(suiteName, testName);
+
+        return eventLog == null ? null : eventLog.getActiveThreadCount();
+    }
+
+    public static Integer getTestListenerFinishActiveThreadCount(String suiteName, String testName) {
+        EventLog eventLog = getTestListenerFinishEventLog(suiteName, testName);
+
+        return eventLog == null ? null : eventLog.getActiveThreadCount();
+    }
+
     //Get all test method level event logs
     public static List<EventLog> getAllTestMethodLevelEventLogs() {
         List<EventLog> testMethodEventLogs = new ArrayList<>();
@@ -273,6 +378,45 @@ public class TestNgRunStateTracker {
             }
         }
         return testMethodEventLogs;
+    }
+
+    public static List<EventLog> getTestMethodListenerStartEventLogsForTest(String suiteName, String testName) {
+        List<EventLog> testMethodStartEventLogs = new ArrayList<>();
+
+        for(EventLog eventLog : eventLogs) {
+            if(eventLog.getEvent() == TestNgRunEvent.LISTENER_TEST_METHOD_START && belongsToTest(suiteName, testName,
+                    eventLog)) {
+                testMethodStartEventLogs.add(eventLog);
+            }
+        }
+
+        return testMethodStartEventLogs;
+    }
+
+    public static List<EventLog> getTestMethodListenerPassEventLogsForTest(String suiteName, String testName) {
+        List<EventLog> testMethodPassEventLogs = new ArrayList<>();
+
+        for(EventLog eventLog : eventLogs) {
+            if(eventLog.getEvent() == TestNgRunEvent.LISTENER_TEST_METHOD_PASS && belongsToTest(suiteName, testName,
+                    eventLog)) {
+                testMethodPassEventLogs.add(eventLog);
+            }
+        }
+
+        return testMethodPassEventLogs;
+    }
+
+    public static List<EventLog> getTestMethodExecutionEventLogsForTest(String suiteName, String testName) {
+        List<EventLog> testMethodExecuteEventLogs = new ArrayList<>();
+
+        for(EventLog eventLog : eventLogs) {
+            if(eventLog.getEvent() == TestNgRunEvent.TEST_METHOD_EXECUTION && belongsToTest(suiteName, testName,
+                    eventLog)) {
+                testMethodExecuteEventLogs.add(eventLog);
+            }
+        }
+
+        return testMethodExecuteEventLogs;
     }
 
     //Get the test method level event logs for the test methods from the specified suite, test and test class, separated
@@ -612,7 +756,7 @@ public class TestNgRunStateTracker {
     //Get the thread IDs for execution of the test method's body for the specified test method from the specified
     //suite, test and test class separated out in a map where the keys are the class instances on which the method was
     //run.
-    public static Map<Object, Long> getTestMethodExeuctionThreadIds(String suiteName, String testName, String
+    public static Map<Object, Long> getTestMethodExecutionThreadIds(String suiteName, String testName, String
             className, String methodName) {
         Map<Object,Long> testMethodEventThreadIds = new HashMap<>();
         Map<Object,EventLog> testMethodEventLogs = getTestMethodExecutionEventLogsForMethod(suiteName, testName,
@@ -696,9 +840,9 @@ public class TestNgRunStateTracker {
         private TestNgRunEvent event;
         private long timeOfEvent;
         private long threadId;
+        private int activeThreadCount;
 
         private Map<EventInfo, Object> data = new HashMap<>();
-
 
         public void setEvent(TestNgRunEvent event) {
             this.event = event;
@@ -720,6 +864,8 @@ public class TestNgRunStateTracker {
             this.threadId = threadId;
         }
 
+        public int getActiveThreadCount() { return activeThreadCount; }
+
         public long getThreadId() {
             return threadId;
         }
@@ -732,6 +878,10 @@ public class TestNgRunStateTracker {
             return data.get(key);
         }
 
+        private void setActiveThreadCount(int count) {
+            this.activeThreadCount = count;
+        }
+
         public static EventLogBuilder builder() {
             return new EventLogBuilder();
         }
@@ -742,6 +892,7 @@ public class TestNgRunStateTracker {
                     "event=" + event +
                     ", timeOfEvent=" + timeOfEvent +
                     ", threadId=" + threadId +
+                    ", activeThreadCount=" + activeThreadCount +
                     ", data=" + data +
                     '}';
         }
