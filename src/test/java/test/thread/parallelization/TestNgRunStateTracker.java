@@ -21,28 +21,21 @@ import static java.lang.Thread.State.TERMINATED;
 public class TestNgRunStateTracker {
 
     private static List<EventLog> eventLogs = new ArrayList<>();
-    private static Set<Thread> threads = new HashSet<Thread>();
 
-    public static void logEvent(EventLog eventLog, Thread thread) {
+    public static void logEvent(EventLog eventLog) {
         synchronized(eventLogs) {
+            Set<Thread> uniqueThreads = new HashSet<>();
+
+            for(EventLog eL : eventLogs) {
+                uniqueThreads.add(eL.getThread());
+            }
+
+            uniqueThreads.add(eventLog.getThread());
+
             int count = 0;
 
-            synchronized (threads) {
-                List<Thread> deadThreads = new ArrayList<>();
-
-                for(Thread t : threads) {
-                    if(t.getState() == TERMINATED) {
-                        deadThreads.add(t);
-                    }
-                }
-
-                for(Thread t : deadThreads) {
-                    threads.remove(t);
-                }
-
-                threads.add(thread);
-
-                for (Thread t : threads) {
+            for(Thread t : uniqueThreads) {
+                if(t.getState() != TERMINATED) {
                     count++;
                 }
             }
@@ -841,6 +834,7 @@ public class TestNgRunStateTracker {
         private long timeOfEvent;
         private long threadId;
         private int activeThreadCount;
+        private Thread thread;
 
         private Map<EventInfo, Object> data = new HashMap<>();
 
@@ -860,14 +854,14 @@ public class TestNgRunStateTracker {
             return timeOfEvent;
         }
 
-        public void setThreadId(long threadId) {
-            this.threadId = threadId;
+        public void setThread(Thread thread) {
+            this.thread = thread;
         }
 
         public int getActiveThreadCount() { return activeThreadCount; }
 
         public long getThreadId() {
-            return threadId;
+            return thread.getId();
         }
 
         public void addData(EventInfo key, Object value) {
@@ -880,6 +874,10 @@ public class TestNgRunStateTracker {
 
         private void setActiveThreadCount(int count) {
             this.activeThreadCount = count;
+        }
+
+        private Thread getThread() {
+            return thread;
         }
 
         public static EventLogBuilder builder() {
@@ -911,8 +909,8 @@ public class TestNgRunStateTracker {
             return this;
         }
 
-        EventLogBuilder setThreadId(long threadId) {
-            eventLog.setThreadId(threadId);
+        EventLogBuilder setThread(Thread thread) {
+            eventLog.setThread(thread);
             return this;
         }
 

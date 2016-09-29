@@ -34,56 +34,56 @@ import static test.thread.parallelization.TestNgRunStateTracker.logEvent;
 public class TestNgRunStateListener implements ISuiteListener, ITestListener {
     @Override
     public void onStart(ISuite suite) {
-        logEvent(buildEventLog(suite, LISTENER_SUITE_START).build(), Thread.currentThread());
+        logEvent(buildEventLog(suite, LISTENER_SUITE_START).build());
         delayAfterEvent(LISTENER_SUITE_START);
     }
 
     @Override
     public void onFinish(ISuite suite) {
-        logEvent(buildEventLog(suite, LISTENER_SUITE_FINISH).build(), Thread.currentThread());
+        logEvent(buildEventLog(suite, LISTENER_SUITE_FINISH).build());
         delayAfterEvent(LISTENER_SUITE_FINISH);
     }
 
     @Override
     public void onStart(ITestContext context) {
-        logEvent(buildEventLog(context, LISTENER_TEST_START).build(), Thread.currentThread());
+        logEvent(buildEventLog(context, LISTENER_TEST_START).build());
         delayAfterEvent(LISTENER_TEST_START);
     }
 
     @Override
     public void onFinish(ITestContext context) {
-        logEvent(buildEventLog(context, LISTENER_TEST_FINISH).build(), Thread.currentThread());
+        logEvent(buildEventLog(context, LISTENER_TEST_FINISH).build());
         delayAfterEvent(LISTENER_TEST_FINISH);
     }
 
     @Override
     public void onTestStart(ITestResult result) {
-        logEvent(buildEventLog(result, LISTENER_TEST_METHOD_START).build(), Thread.currentThread());
+        logEvent(buildEventLog(result, LISTENER_TEST_METHOD_START).build());
         delayAfterEvent(LISTENER_TEST_METHOD_START);
     }
 
     @Override
     public void onTestSuccess(ITestResult result) {
-        logEvent(buildEventLog(result, LISTENER_TEST_METHOD_PASS).build(), Thread.currentThread());
+        logEvent(buildEventLog(result, LISTENER_TEST_METHOD_PASS).build());
         delayAfterEvent(LISTENER_TEST_METHOD_PASS);
     }
 
 
     @Override
     public void onTestFailure(ITestResult result) {
-        logEvent(buildEventLog(result, LISTENER_TEST_METHOD_FAIL).build(), Thread.currentThread());
+        logEvent(buildEventLog(result, LISTENER_TEST_METHOD_FAIL).build());
         delayAfterEvent(LISTENER_TEST_METHOD_FAIL);
     }
 
     @Override
     public void onTestSkipped(ITestResult result) {
-        logEvent(buildEventLog(result, LISTENER_TEST_METHOD_SKIPPED).build(), Thread.currentThread());
+        logEvent(buildEventLog(result, LISTENER_TEST_METHOD_SKIPPED).build());
         delayAfterEvent(LISTENER_TEST_METHOD_SKIPPED);
     }
 
     @Override
     public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
-        logEvent(buildEventLog(result, LISTENER_TEST_METHOD_FAIL_PERCENTAGE).build(), Thread.currentThread());
+        logEvent(buildEventLog(result, LISTENER_TEST_METHOD_FAIL_PERCENTAGE).build());
         delayAfterEvent(LISTENER_TEST_METHOD_FAIL_PERCENTAGE);
     }
 
@@ -93,7 +93,7 @@ public class TestNgRunStateListener implements ISuiteListener, ITestListener {
         return EventLog.builder()
                 .setEvent(event)
                 .setTimeOfEvent(time)
-                .setThreadId(Thread.currentThread().getId())
+                .setThread(Thread.currentThread())
                 .addData(SUITE_NAME, suite.getName());
     }
 
