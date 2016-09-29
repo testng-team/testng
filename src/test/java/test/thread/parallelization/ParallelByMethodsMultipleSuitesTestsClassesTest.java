@@ -1157,19 +1157,25 @@ public class ParallelByMethodsMultipleSuitesTestsClassesTest extends BaseParalle
     private static void verifyEventsForTestMethodRunInSameThread(Class<?> testClass, String suiteName, String
             testName) {
 
-        for(Method method : testClass.getDeclaredMethods()) {
-            Multimap<Object, EventLog> testMethodEventLogs = getTestMethodEventLogsForMethod(suiteName, testName,
-                    testClass.getCanonicalName(), method.getName());
+        for(Method method : testClass.getMethods()) {
+            if (method.getDeclaringClass().equals(testClass)) {
+                Multimap<Object, EventLog> testMethodEventLogs = getTestMethodEventLogsForMethod(suiteName, testName,
+                        testClass.getCanonicalName(), method.getName());
 
-            long threadId = -1;
+                assertTrue(testMethodEventLogs.keySet().size() > 0, "There should be event logs for the method " +
+                        method.getName() + " in an instance of " + testClass.getCanonicalName() + " for test " +
+                        testName + " in suite " + suiteName);
 
-            for(EventLog eventLog : testMethodEventLogs.get(testMethodEventLogs.keySet().toArray()[0])) {
-                if (threadId == -1) {
-                    threadId = eventLog.getThreadId();
-                } else {
-                    assertEquals(eventLog.getThreadId(), threadId, "All of the method level events for the test " +
-                            "method " + method.getName() + " in the test class " + testClass.getCanonicalName() +
-                            " for the test " + suiteName + " should be run in the same thread");
+                long threadId = -1;
+
+                for (EventLog eventLog : testMethodEventLogs.get(testMethodEventLogs.keySet().toArray()[0])) {
+                    if (threadId == -1) {
+                        threadId = eventLog.getThreadId();
+                    } else {
+                        assertEquals(eventLog.getThreadId(), threadId, "All of the method level events for the test " +
+                                "method " + method.getName() + " in the test class " + testClass.getCanonicalName() +
+                                " for the test " + suiteName + " should be run in the same thread");
+                    }
                 }
             }
         }
