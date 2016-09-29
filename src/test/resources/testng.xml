@@ -772,6 +772,7 @@
   <test name = "Parallelization">
     <classes>
       <class name="test.thread.parallelization.ParallelByMethodsSingleSuiteSingleTestSingleClassTest"/>
+      <class name="test.thread.parallelization.ParallelByMethodsMultipleSuitesTestsClassesTest"/>
     </classes>
   </test>
 </suite>

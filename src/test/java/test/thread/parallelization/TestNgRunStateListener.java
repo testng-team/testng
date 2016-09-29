@@ -93,7 +93,7 @@ public class TestNgRunStateListener implements ISuiteListener, ITestListener {
         return EventLog.builder()
                 .setEvent(event)
                 .setTimeOfEvent(time)
-                .setThreadId(Thread.currentThread().getId())
+                .setThread(Thread.currentThread())
                 .addData(SUITE_NAME, suite.getName());
     }
 
