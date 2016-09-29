@@ -30,7 +30,6 @@ import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.log.TextFormatter;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.XmlClass;
 
@@ -167,8 +166,8 @@ public final class Utils {
       File outputFile = new File(outDir, fileName);
       if (!append) {
         outputFile.delete();
-        log("Attempting to create " + outputFile);
-        log("  Directory " + outDir + " exists: " + outDir.exists());
+        log("[Utils]", 3, "Attempting to create " + outputFile);
+        log("[Utils]", 3, "  Directory " + outDir + " exists: " + outDir.exists());
         outputFile.createNewFile();
       }
       writeFile(outputFile, sb, encoding, append);
