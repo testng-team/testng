@@ -24,23 +24,6 @@ public class TestNgRunStateTracker {
 
     public static void logEvent(EventLog eventLog) {
         synchronized(eventLogs) {
-            Set<Thread> uniqueThreads = new HashSet<>();
-
-            for(EventLog eL : eventLogs) {
-                uniqueThreads.add(eL.getThread());
-            }
-
-            uniqueThreads.add(eventLog.getThread());
-
-            int count = 0;
-
-            for(Thread t : uniqueThreads) {
-                if(t.getState() != TERMINATED) {
-                    count++;
-                }
-            }
-
-            eventLog.setActiveThreadCount(count);
             eventLogs.add(eventLog);
         }
     }
@@ -171,18 +154,6 @@ public class TestNgRunStateTracker {
         EventLog eventLog = getSuiteListenerFinishEventLog(suiteName);
 
         return eventLog == null ? null : eventLog.getThreadId();
-    }
-
-    public static Integer getSuiteListenerStartActiveThreadCount(String suiteName) {
-        EventLog eventLog = getSuiteListenerStartEventLog(suiteName);
-
-        return eventLog == null ? null : eventLog.getActiveThreadCount();
-    }
-
-    public static Integer getSuiteListenerFinishActiveThreadCount(String suiteName) {
-        EventLog eventLog = getSuiteListenerFinishEventLog(suiteName);
-
-        return eventLog == null ? null : eventLog.getActiveThreadCount();
     }
 
     //Get all test level event logs
@@ -323,18 +294,6 @@ public class TestNgRunStateTracker {
         EventLog eventLog = getTestListenerFinishEventLog(suiteName, testName);
 
         return eventLog == null ? null : eventLog.getThreadId();
-    }
-
-    public static Integer getTestListenerStartActiveThreadCount(String suiteName, String testName) {
-        EventLog eventLog = getTestListenerStartEventLog(suiteName, testName);
-
-        return eventLog == null ? null : eventLog.getActiveThreadCount();
-    }
-
-    public static Integer getTestListenerFinishActiveThreadCount(String suiteName, String testName) {
-        EventLog eventLog = getTestListenerFinishEventLog(suiteName, testName);
-
-        return eventLog == null ? null : eventLog.getActiveThreadCount();
     }
 
     //Get all test method level event logs
@@ -858,8 +817,6 @@ public class TestNgRunStateTracker {
             this.thread = thread;
         }
 
-        public int getActiveThreadCount() { return activeThreadCount; }
-
         public long getThreadId() {
             return thread.getId();
         }
@@ -870,10 +827,6 @@ public class TestNgRunStateTracker {
 
         public Object getData(EventInfo key) {
             return data.get(key);
-        }
-
-        private void setActiveThreadCount(int count) {
-            this.activeThreadCount = count;
         }
 
         private Thread getThread() {

@@ -9,22 +9,16 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 
-import test.thread.parallelization.TestNgRunStateTracker.EventLog;
-
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
-import static test.thread.parallelization.TestNgRunStateTracker.getSuiteListenerFinishActiveThreadCount;
 import static test.thread.parallelization.TestNgRunStateTracker.getSuiteListenerFinishThreadId;
 import static test.thread.parallelization.TestNgRunStateTracker.getSuiteListenerFinishTimestamp;
-import static test.thread.parallelization.TestNgRunStateTracker.getSuiteListenerStartActiveThreadCount;
 import static test.thread.parallelization.TestNgRunStateTracker.getSuiteListenerStartThreadId;
 import static test.thread.parallelization.TestNgRunStateTracker.getSuiteListenerStartTimestamp;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerFinishThreadId;
-import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerFinishActiveThreadCount;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerFinishTimestamp;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerStartThreadId;
-import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerStartActiveThreadCount;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerStartTimestamp;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodEventLogsForMethod;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodExecutionTimestamps;
@@ -33,7 +27,6 @@ import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodLis
 import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodListenerPassTimestamps;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodListenerStartThreadIds;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodListenerStartTimestamps;
-import static test.thread.parallelization.TestNgRunStateTracker.getAllTestMethodLevelEventLogs;
 
 import static test.thread.parallelization.TestNgRunStateTracker.reset;
 
@@ -44,8 +37,6 @@ public class ParallelByMethodsSingleSuiteSingleTestSingleClassTest extends BaseP
     private Long testListenerOnStartTimestamp;
     private Long testListenerOnFinishTimestamp;
     private Long testListenerOnStartThreadId;
-
-    private Integer suiteListenerOnStartThreadCount;
 
     private Long testMethodAListenerOnStartTimestamp;
     private Long testMethodBListenerOnStartTimestamp;
@@ -100,7 +91,6 @@ public class ParallelByMethodsSingleSuiteSingleTestSingleClassTest extends BaseP
 
         tng.run();
 
-        suiteListenerOnStartThreadCount = getSuiteListenerStartActiveThreadCount("SingleTestSuite");
         testListenerOnStartTimestamp = getTestListenerStartTimestamp("SingleTestSuite", "SingleTestClassTest");
         testListenerOnFinishTimestamp = getTestListenerFinishTimestamp("SingleTestSuite", "SingleTestClassTest");
         testListenerOnStartThreadId = getTestListenerStartThreadId("SingleTestSuite", "SingleTestClassTest");
@@ -225,21 +215,6 @@ public class ParallelByMethodsSingleSuiteSingleTestSingleClassTest extends BaseP
         assertEquals(testListenerOnStartThreadId, getTestListenerFinishThreadId("SingleTestSuite",
                 "SingleTestClassTest"), "The thread ID for the onFinish methods for the suite and test listeners " +
                 "should be the same as the thread ID for their onStart methods");
-    }
-
-    @Test
-    public void verifyThreadCountsForSuiteAndTestLevelEvents() {
-        assertEquals(suiteListenerOnStartThreadCount, getTestListenerStartActiveThreadCount("SingleTestSuite",
-                "SingleTestClassTest"), "The number of active threads when the test listener's onStart event was " +
-                "logged should be the same as the number of active threads when the suite listener's onStart " +
-                "event was logged");
-        assertEquals(suiteListenerOnStartThreadCount, getSuiteListenerFinishActiveThreadCount("SingleTestSuite"),
-                "The number of active threads when the suite listener's onFinish event was logged should be the same " +
-                        "as the number of active threads when the suite listener's onStart event was logged");
-        assertEquals(suiteListenerOnStartThreadCount, getTestListenerFinishActiveThreadCount("SingleTestSuite",
-                "SingleTestClassTest"), "The number of active threads when the test listener's onFinish event was " +
-                "logged should be the same as the number of active threads when the suite listener's onStart event " +
-                "was logged");
     }
 
     //Verify that there is only a single test class instance associated with each of the test methods from the
@@ -479,16 +454,5 @@ public class ParallelByMethodsSingleSuiteSingleTestSingleClassTest extends BaseP
                         "other methods."
         );
 
-    }
-
-    @Test
-    public void verifyThreadCountsForTestMethodLevelEvents() {
-        for(EventLog eventLog : getAllTestMethodLevelEventLogs()) {
-            assertTrue(eventLog.getActiveThreadCount() <= 6 && eventLog.getActiveThreadCount() >= 2, "The thread " +
-                    "count when the test method level events are logged should be at least two: the methods should " +
-                    "have a thread and the suite and test level events should have a thread. Moreover, the thread " +
-                    "count when the test level events are logged should be no more than six because the thread count " +
-                    "is set to 5.");
-        }
     }
 }

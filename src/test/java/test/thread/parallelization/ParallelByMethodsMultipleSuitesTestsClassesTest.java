@@ -24,19 +24,15 @@ import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.METHOD
 import static test.thread.parallelization.TestNgRunStateTracker.getAllEventLogsForSuite;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllEventLogsForTest;
 
-import static test.thread.parallelization.TestNgRunStateTracker.getSuiteListenerFinishActiveThreadCount;
 import static test.thread.parallelization.TestNgRunStateTracker.getSuiteListenerFinishThreadId;
 import static test.thread.parallelization.TestNgRunStateTracker.getSuiteListenerFinishTimestamp;
 import static test.thread.parallelization.TestNgRunStateTracker.getSuiteListenerStartEventLogs;
-import static test.thread.parallelization.TestNgRunStateTracker.getSuiteListenerStartActiveThreadCount;
 import static test.thread.parallelization.TestNgRunStateTracker.getSuiteListenerStartThreadId;
 import static test.thread.parallelization.TestNgRunStateTracker.getSuiteListenerStartTimestamp;
 
-import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerFinishActiveThreadCount;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerFinishThreadId;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerFinishTimestamp;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerStartEventLogsForSuite;
-import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerStartActiveThreadCount;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerStartThreadId;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerStartTimestamp;
 
@@ -100,22 +96,11 @@ public class ParallelByMethodsMultipleSuitesTestsClassesTest extends BaseParalle
     private Long suiteTwoListenerFinishThreadId;
     private Long suiteThreeListenerFinishThreadId;
 
-    private Integer suiteOneListenerStartThreadCount;
-    private Integer suiteTwoListenerStartThreadCount;
-    private Integer suiteThreeListenerStartThreadCount;
-
-    private Integer suiteOneListenerFinishThreadCount;
-    private Integer suiteTwoListenerFinishThreadCount;
-    private Integer suiteThreeListenerFinishThreadCount;
-
     private Long suiteOneTestOneListenerStartTimestamp;
     private Long suiteOneTestOneListenerFinishTimestamp;
     
     private Long suiteOneTestOneListenerStartThreadId;
     private Long suiteOneTestOneListenerFinishThreadId;
-
-    private Integer suiteOneTestOneListenerStartThreadCount;
-    private Integer suiteOneTestOneListenerFinishThreadCount;
 
     private Long suiteTwoTestOneListenerStartTimestamp;
     private Long suiteTwoTestTwoListenerStartTimestamp;
@@ -126,11 +111,6 @@ public class ParallelByMethodsMultipleSuitesTestsClassesTest extends BaseParalle
     private Long suiteTwoTestTwoListenerStartThreadId;
     private Long suiteTwoTestOneListenerFinishThreadId;
     private Long suiteTwoTestTwoListenerFinishThreadId;
-
-    private Integer suiteTwoTestOneListenerStartThreadCount;
-    private Integer suiteTwoTestTwoListenerStartThreadCount;
-    private Integer suiteTwoTestOneListenerFinishThreadCount;
-    private Integer suiteTwoTestTwoListenerFinishThreadCount;
     
     private Long suiteThreeTestOneListenerStartTimestamp;
     private Long suiteThreeTestTwoListenerStartTimestamp;
@@ -145,13 +125,6 @@ public class ParallelByMethodsMultipleSuitesTestsClassesTest extends BaseParalle
     private Long suiteThreeTestOneListenerFinishThreadId;
     private Long suiteThreeTestTwoListenerFinishThreadId;
     private Long suiteThreeTestThreeListenerFinishThreadId;
-
-    private Integer suiteThreeTestOneListenerStartThreadCount;
-    private Integer suiteThreeTestTwoListenerStartThreadCount;
-    private Integer suiteThreeTestThreeListenerStartThreadCount;
-    private Integer suiteThreeTestOneListenerFinishThreadCount;
-    private Integer suiteThreeTestTwoListenerFinishThreadCount;
-    private Integer suiteThreeTestThreeListenerFinishThreadCount;
 
     private Multimap<Object,EventLog> suiteOneTestOneFiveMethodsClassEventLogMap;
     private Multimap<Object,EventLog> suiteOneTestOneSixMethodsClassEventLogMap;
@@ -283,22 +256,11 @@ public class ParallelByMethodsMultipleSuitesTestsClassesTest extends BaseParalle
         suiteTwoListenerFinishThreadId = getSuiteListenerFinishThreadId(SUITE_B);
         suiteThreeListenerFinishThreadId= getSuiteListenerFinishThreadId(SUITE_C);
 
-        suiteOneListenerStartThreadCount = getSuiteListenerStartActiveThreadCount(SUITE_A);
-        suiteTwoListenerStartThreadCount = getSuiteListenerStartActiveThreadCount(SUITE_B);
-        suiteThreeListenerStartThreadCount = getSuiteListenerStartActiveThreadCount(SUITE_C);
-
-        suiteOneListenerFinishThreadCount = getSuiteListenerFinishActiveThreadCount(SUITE_A);
-        suiteTwoListenerFinishThreadCount = getSuiteListenerFinishActiveThreadCount(SUITE_B);
-        suiteThreeListenerFinishThreadCount = getSuiteListenerFinishActiveThreadCount(SUITE_C);
-
         suiteOneTestOneListenerStartTimestamp = getTestListenerStartTimestamp(SUITE_A, SUITE_A_TEST_A);
         suiteOneTestOneListenerFinishTimestamp = getTestListenerFinishTimestamp(SUITE_A, SUITE_A_TEST_A);
 
         suiteOneTestOneListenerStartThreadId = getTestListenerStartThreadId(SUITE_A, SUITE_A_TEST_A);
         suiteOneTestOneListenerFinishThreadId = getTestListenerFinishThreadId(SUITE_A, SUITE_A_TEST_A);
-
-        suiteOneTestOneListenerStartThreadCount = getTestListenerStartActiveThreadCount(SUITE_A, SUITE_A_TEST_A);
-        suiteOneTestOneListenerFinishThreadCount = getTestListenerFinishActiveThreadCount(SUITE_A, SUITE_A_TEST_A);
 
         suiteTwoTestOneListenerStartTimestamp = getTestListenerStartTimestamp(SUITE_B, SUITE_B_TEST_A);
         suiteTwoTestTwoListenerStartTimestamp = getTestListenerStartTimestamp(SUITE_B, SUITE_B_TEST_B);
@@ -309,11 +271,6 @@ public class ParallelByMethodsMultipleSuitesTestsClassesTest extends BaseParalle
         suiteTwoTestTwoListenerStartThreadId = getTestListenerStartThreadId(SUITE_B, SUITE_B_TEST_B);
         suiteTwoTestOneListenerFinishThreadId = getTestListenerFinishThreadId(SUITE_B, SUITE_B_TEST_A);
         suiteTwoTestTwoListenerFinishThreadId = getTestListenerFinishThreadId(SUITE_B, SUITE_B_TEST_B);
-
-        suiteTwoTestOneListenerStartThreadCount = getTestListenerStartActiveThreadCount(SUITE_B, SUITE_B_TEST_A);
-        suiteTwoTestTwoListenerStartThreadCount = getTestListenerStartActiveThreadCount(SUITE_B, SUITE_B_TEST_B);
-        suiteTwoTestOneListenerFinishThreadCount = getTestListenerFinishActiveThreadCount(SUITE_B, SUITE_B_TEST_A);
-        suiteTwoTestTwoListenerFinishThreadCount = getTestListenerFinishActiveThreadCount(SUITE_B, SUITE_B_TEST_B);
 
         suiteThreeTestOneListenerStartTimestamp = getTestListenerStartTimestamp(SUITE_C, SUITE_C_TEST_A);
         suiteThreeTestTwoListenerStartTimestamp = getTestListenerStartTimestamp(SUITE_C, SUITE_C_TEST_B);
@@ -329,13 +286,6 @@ public class ParallelByMethodsMultipleSuitesTestsClassesTest extends BaseParalle
         suiteThreeTestOneListenerFinishThreadId = getTestListenerFinishThreadId(SUITE_C, SUITE_C_TEST_A);
         suiteThreeTestTwoListenerFinishThreadId = getTestListenerFinishThreadId(SUITE_C, SUITE_C_TEST_B);
         suiteThreeTestThreeListenerFinishThreadId = getTestListenerFinishThreadId(SUITE_C, SUITE_C_TEST_C);
-
-        suiteThreeTestOneListenerStartThreadCount = getTestListenerStartActiveThreadCount(SUITE_C, SUITE_C_TEST_A);
-        suiteThreeTestTwoListenerStartThreadCount = getTestListenerStartActiveThreadCount(SUITE_C, SUITE_C_TEST_B);
-        suiteThreeTestThreeListenerStartThreadCount = getTestListenerStartActiveThreadCount(SUITE_C, SUITE_C_TEST_C);
-        suiteThreeTestOneListenerFinishThreadCount = getTestListenerFinishActiveThreadCount(SUITE_C, SUITE_C_TEST_A);
-        suiteThreeTestTwoListenerFinishThreadCount = getTestListenerFinishActiveThreadCount(SUITE_C, SUITE_C_TEST_B);
-        suiteThreeTestThreeListenerFinishThreadCount = getTestListenerFinishActiveThreadCount(SUITE_C, SUITE_C_TEST_C);
 
         suiteOneTestOneFiveMethodsClassEventLogMap = getTestMethodEventLogsForClass(SUITE_A, SUITE_A_TEST_A,
                 TestClassAWithNoDepsSample.class.getCanonicalName());
@@ -782,76 +732,6 @@ public class ParallelByMethodsMultipleSuitesTestsClassesTest extends BaseParalle
                 "the suite level and the test level events for all the test suites should be the same");
     }
 
-    @Test
-    public void verifyThreadCountsForSuiteAndTestLevelEvents() {
-        assertEquals(suiteOneListenerStartThreadCount, suiteOneListenerFinishThreadCount, "The number of active " +
-                "threads when the suite listener's onStart event for " + SUITE_A + " was logged should be the same " +
-                "as the number of active threads when the suite listener's onFinish event for " + SUITE_A + " was " +
-                "logged");
-        assertEquals(suiteOneTestOneListenerStartThreadCount, suiteOneTestOneListenerFinishThreadCount, "The number " +
-                "of active threads when the test listener's onStart event for " + SUITE_A_TEST_A + " was logged " +
-                "should be the same as the number of active threads when the test listener's onFinish event for " +
-                SUITE_A_TEST_A + " was logged");
-
-        assertEquals(suiteTwoListenerStartThreadCount, suiteTwoListenerFinishThreadCount, "The number of active " +
-                "threads when the suite listener's onStart event for " + SUITE_B + " was logged should be the same " +
-                "as the number of active threads when the suite listener's onFinish event for " + SUITE_B + " was " +
-                "logged");
-        assertEquals(suiteTwoTestOneListenerStartThreadCount, suiteTwoTestOneListenerFinishThreadCount, "The number " +
-                "of active threads when the test listener's onStart event for " + SUITE_B_TEST_A + " was logged " +
-                "should be the same as the number of active threads when the test listener's onFinish event for " +
-                SUITE_B_TEST_A + " was logged");
-        assertEquals(suiteTwoTestTwoListenerStartThreadCount, suiteTwoTestTwoListenerFinishThreadCount, "The number " +
-                "of active threads when the test listener's onStart event for " + SUITE_B_TEST_B + " was logged " +
-                "should be the same as the number of active threads when the test listener's onFinish event for " +
-                SUITE_B_TEST_B + " was logged");
-
-        assertEquals(suiteThreeListenerStartThreadCount, suiteThreeListenerFinishThreadCount, "The number of active " +
-                "threads when the suite listener's onStart event for " + SUITE_C + " was logged should be the same " +
-                "as the number of active threads when the suite listener's onFinish event for " + SUITE_C + " was " +
-                "logged");
-        assertEquals(suiteThreeTestOneListenerStartThreadCount, suiteThreeTestOneListenerFinishThreadCount, "The " +
-                "number of active threads when the test listener's onStart event for " + SUITE_C_TEST_A + " was " +
-                "logged should be the same as the number of active threads when the test listener's onFinish event " +
-                "for " + SUITE_C_TEST_A + " was logged");
-        assertEquals(suiteThreeTestTwoListenerStartThreadCount, suiteThreeTestTwoListenerFinishThreadCount, "The " +
-                "number of active threads when the test listener's onStart event for " + SUITE_C_TEST_B + " was " +
-                "logged should be the same as the number of active threads when the test listener's onFinish event " +
-                "for " + SUITE_C_TEST_B + " was logged");
-        assertEquals(suiteThreeTestThreeListenerStartThreadCount, suiteThreeTestThreeListenerFinishThreadCount, "The " +
-                "number of active threads when the test listener's onStart event for " + SUITE_C_TEST_C + " was " +
-                "logged should be the same as the number of active threads when the test listener's onFinish event " +
-                "for " + SUITE_C_TEST_C + " was logged");
-
-        assertEquals(suiteOneListenerStartThreadCount, suiteTwoListenerStartThreadCount, "The number of active " +
-                "threads when the suite listener's onStart method for " + SUITE_A + " was logged should be the same " +
-                "as the number of active threads when the suite listener's onStart method for " + SUITE_B + " was " +
-                "logged");
-        assertEquals(suiteOneListenerStartThreadCount, suiteThreeListenerStartThreadCount, "The number of active " +
-                "threads when the suite listener's onStart method for " + SUITE_A + " was logged should be the same " +
-                "as the number of active threads when the suite listener's onStart method for " + SUITE_C + " was " +
-                "logged");
-
-        assertEquals(suiteOneListenerStartThreadCount, suiteOneTestOneListenerStartThreadCount, "The active thread " +
-                "count when all the suite level and the test level events for all the test suites were logged should " +
-                "be the same");
-        assertEquals(suiteOneListenerStartThreadCount, suiteTwoTestOneListenerStartThreadCount, "The active thread " +
-                "count when all the suite level and the test level events for all the test suites were logged should " +
-                "be the same");
-        assertEquals(suiteOneListenerStartThreadCount, suiteTwoTestTwoListenerStartThreadCount, "The active thread " +
-                "count when all the suite level and the test level events for all the test suites were logged should " +
-                "be the same");
-        assertEquals(suiteOneListenerStartThreadCount, suiteThreeTestOneListenerStartThreadCount, "The active thread " +
-                "count when all the suite level and the test level events for all the test suites were logged should " +
-                "be the same");
-        assertEquals(suiteOneListenerStartThreadCount, suiteThreeTestTwoListenerStartThreadCount, "The active thread " +
-                "count when all the suite level and the test level events for all the test suites were logged should " +
-                "be the same");
-        assertEquals(suiteOneListenerStartThreadCount, suiteThreeTestThreeListenerStartThreadCount, "The active " +
-                "thread count when all the suite level and the test level events for all the test suites were logged " +
-                "should be the same");
-    }
-
     //Verify that there is only a single test class instance associated with each of the test methods from the sample
     //classes for every test in all the suites. Verify that instances are unique and separate if the same test class
     //is included in different tests in different suites or in different tests within the same suite
@@ -1144,16 +1024,6 @@ public class ParallelByMethodsMultipleSuitesTestsClassesTest extends BaseParalle
         verifyParallelismForTestMethodEvents(SUITE_C, SUITE_C_TEST_C, 12);
     }
 
-    @Test
-    public void verifyThreadCountsForTestMethodLevelEvents() {
-        verifyThreadCounts(SUITE_A, SUITE_A_TEST_A, 3);
-        verifyThreadCounts(SUITE_B, SUITE_B_TEST_A, 6);
-        verifyThreadCounts(SUITE_B, SUITE_B_TEST_B, 20);
-        verifyThreadCounts(SUITE_C, SUITE_C_TEST_A, 10);
-        verifyThreadCounts(SUITE_C, SUITE_C_TEST_B, 5);
-        verifyThreadCounts(SUITE_C, SUITE_C_TEST_C, 12);
-    }
-
     private static void verifyEventsForTestMethodRunInSameThread(Class<?> testClass, String suiteName, String
             testName) {
 
@@ -1377,17 +1247,6 @@ public class ParallelByMethodsMultipleSuitesTestsClassesTest extends BaseParalle
                 assertTrue(Math.abs(firstEventLogBlock.get(i).getTimeOfEvent() -
                         secondEventLogBlock.get(j).getTimeOfEvent()) <= timingRange, failMessage);
             }
-        }
-    }
-
-    private static void verifyThreadCounts(String suiteName, String testName, int threadCount) {
-        for(EventLog eventLog : getTestMethodLevelEventLogsForTest(suiteName, testName)) {
-
-            assertTrue(eventLog.getActiveThreadCount() <= threadCount + 1 && eventLog.getActiveThreadCount() >= 2,
-                    "The thread count when the test method level events are logged should be at least two: the " +
-                            "methods should have a thread and the suite and test level events should have a thread. " +
-                            "Moreover, the thread count when the test level events are logged should be no more than " +
-                            threadCount + 1 + " because the thread count is " + threadCount);
         }
     }
 }
