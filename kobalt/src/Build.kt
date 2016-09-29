@@ -5,6 +5,7 @@ import com.beust.kobalt.api.annotation.Task
 import com.beust.kobalt.plugin.java.javaCompiler
 import com.beust.kobalt.plugin.packaging.assemble
 import com.beust.kobalt.plugin.publish.bintray
+import com.beust.kobalt.plugin.publish.github
 import com.beust.kobalt.project
 import com.beust.kobalt.repos
 import com.beust.kobalt.test
@@ -14,7 +15,7 @@ import org.apache.maven.model.Model
 import org.apache.maven.model.Scm
 import java.io.File
 
-val VERSION = "6.9.14-SNAPSHOT"
+val VERSION = "6.9.13.8"
 
 val r = repos("https://dl.bintray.com/cbeust/maven")
 
@@ -34,7 +35,7 @@ val p = project {
         url = "http://testng.org"
         licenses = listOf(License().apply {
             name = "Apache 2.0"
-            url = "http://www.apache .org/licenses/LICENSE-2.0"
+            url = "http://www.apache.org/licenses/LICENSE-2.0"
         })
         scm = Scm().apply {
             url = "http://github.com/cbeust/testng"
@@ -56,16 +57,17 @@ val p = project {
     }
 
     dependencies {
-        compile("com.beust:jcommander:1.48",
+        compile("com.beust:jcommander:1.48")
+        provided("com.google.inject:guice:4.1.0")
+        compileOptional("junit:junit:4.12",
+                "org.yaml:snakeyaml:1.17",
                 "org.apache.ant:ant:1.9.7",
                 "org.beanshell:bsh:2.0b4")
-        provided("com.google.inject:guice:4.1.0")
-        compileOptional("junit:junit:4.12", "org.yaml:snakeyaml:1.17")
     }
 
     dependenciesTest {
         compile("org.assertj:assertj-core:3.5.2",
-                "org.testng:testng:6.9.9",
+                "org.testng:testng:6.9.13.7",
                 "org.spockframework:spock-core:1.0-groovy-2.4")
     }
 
@@ -85,10 +87,11 @@ val p = project {
     bintray {
         publish = true
         sign = true
+        autoGitTag = true
     }
 }
 
-@Task(name = "createVersion", runBefore = arrayOf("compile"), runAfter = arrayOf("clean"), description = "")
+@Task(name = "createVersion", reverseDependsOn = arrayOf("compile"), runAfter = arrayOf("clean"), description = "")
 fun taskCreateVersion(project: Project): TaskResult {
     val path = "org/testng/internal"
     with(arrayListOf<String>()) {
