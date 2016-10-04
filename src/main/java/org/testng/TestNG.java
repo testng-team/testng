@@ -433,7 +433,7 @@ public class TestNG {
     }
 
     if (tests.size() == 0) {
-      return s;
+      throw new TestNGException("The test(s) <" + testNames.toString() + "> cannot be found.");
     }
     else {
       XmlSuite result = (XmlSuite) s.clone();
