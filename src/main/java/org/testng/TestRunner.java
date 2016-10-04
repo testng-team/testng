@@ -212,8 +212,8 @@ public class TestRunner
     m_invoker = new Invoker(m_configuration, this, this, m_suite.getSuiteState(),
         m_skipFailedInvocationCounts, invokedMethodListeners, classListeners);
 
-    if (suite.getParallel() != null) {
-      log(3, "Running the tests in '" + test.getName() + "' with parallel mode:" + suite.getParallel());
+    if (test.getParallel() != null) {
+      log(3, "Running the tests in '" + test.getName() + "' with parallel mode:" + test.getParallel());
     }
 
     setOutputDirectory(outputDirectory);
