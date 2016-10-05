@@ -130,57 +130,59 @@ public class TestNGClassFinder extends BaseClassFinder {
         if(null != ic) {
           putIClass(cls, ic);
 
-          ConstructorOrMethod factoryMethod = ClassHelper.findDeclaredFactoryMethod(cls, annotationFinder);
-          if (factoryMethod != null && factoryMethod.getEnabled()) {
-            Object[] theseInstances = ic.getInstances(false);
-            if (theseInstances.length == 0) {
-              theseInstances = ic.getInstances(true);
+          List<ConstructorOrMethod> factoryMethods = ClassHelper.findDeclaredFactoryMethods(cls, annotationFinder);
+          for (ConstructorOrMethod factoryMethod : factoryMethods) {
+            if (factoryMethod.getEnabled()) {
+              Object[] theseInstances = ic.getInstances(false);
+              if (theseInstances.length == 0) {
+                theseInstances = ic.getInstances(true);
+              }
+
+              Object instance = theseInstances.length != 0 ? theseInstances[0] : null;
+              FactoryMethod fm = new FactoryMethod(
+                      factoryMethod,
+                      instance,
+                      xmlTest,
+                      annotationFinder,
+                      m_testContext, objectFactory);
+              ClassInfoMap moreClasses = new ClassInfoMap();
+
+              // If the factory returned IInstanceInfo, get the class from it,
+              // otherwise, just call getClass() on the returned instances
+              int i = 0;
+              for (Object o : fm.invoke()) {
+                if (o == null) {
+                  throw new TestNGException("The factory " + fm + " returned a null instance" +
+                          "at index " + i);
+                }
+                Class<?> oneMoreClass;
+                if(IInstanceInfo.class.isAssignableFrom(o.getClass())) {
+                  IInstanceInfo<?> ii = (IInstanceInfo) o;
+                  addInstance(ii);
+                  oneMoreClass = ii.getInstanceClass();
+                } else {
+                  addInstance(o);
+                  oneMoreClass = o.getClass();
+                }
+                if(!classExists(oneMoreClass)) {
+                  moreClasses.addClass(oneMoreClass);
+                }
+                i++;
+              }
+
+              if(moreClasses.getSize() > 0) {
+                TestNGClassFinder finder =
+                        new TestNGClassFinder(moreClasses,
+                                m_instanceMap,
+                                xmlTest,
+                                configuration,
+                                m_testContext);
+
+                for(IClass ic2 : finder.findTestClasses()) {
+                  putIClass(ic2.getRealClass(), ic2);
+                }
+              } // if moreClasses.size() > 0
             }
-
-            Object instance = theseInstances.length != 0 ? theseInstances[0] : null;
-            FactoryMethod fm = new FactoryMethod(
-              factoryMethod,
-              instance,
-              xmlTest,
-              annotationFinder,
-              m_testContext, objectFactory);
-            ClassInfoMap moreClasses = new ClassInfoMap();
-
-            // If the factory returned IInstanceInfo, get the class from it,
-            // otherwise, just call getClass() on the returned instances
-            int i = 0;
-            for (Object o : fm.invoke()) {
-              if (o == null) {
-                throw new TestNGException("The factory " + fm + " returned a null instance" +
-                    "at index " + i);
-              }
-              Class<?> oneMoreClass;
-              if(IInstanceInfo.class.isAssignableFrom(o.getClass())) {
-                IInstanceInfo<?> ii = (IInstanceInfo) o;
-                addInstance(ii);
-                oneMoreClass = ii.getInstanceClass();
-              } else {
-                addInstance(o);
-                oneMoreClass = o.getClass();
-              }
-              if(!classExists(oneMoreClass)) {
-                moreClasses.addClass(oneMoreClass);
-              }
-              i++;
-            }
-
-            if(moreClasses.getSize() > 0) {
-              TestNGClassFinder finder =
-                new TestNGClassFinder(moreClasses,
-                    m_instanceMap,
-                    xmlTest,
-                    configuration,
-                    m_testContext);
-
-              for(IClass ic2 : finder.findTestClasses()) {
-                putIClass(ic2.getRealClass(), ic2);
-              }
-            } // if moreClasses.size() > 0
           }
         } // null != ic
       } // if not TestNG class

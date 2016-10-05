@@ -1,10 +1,12 @@
 package test.factory;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.TestNGException;
 import org.testng.annotations.Test;
+import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,5 +45,22 @@ public class FactoryIntegrationTest extends SimpleBaseTest {
         } catch (TestNGException e) {
             assertThat(e).hasMessage("\ntest.factory.BadMethodReturnTypeFactory.createInstances MUST return [ java.lang.Object[] or org.testng.IInstanceInfo[] ] but returns java.lang.Object");
         }
+    }
+
+    @Test
+    public void doubleFactoryMethodShouldWork() {
+        TestNG tng = create(DoubleFactory.class);
+        InvokedMethodNameListener listener = new InvokedMethodNameListener();
+        tng.addListener((ITestNGListener) listener);
+
+        tng.run();
+
+        // TODO containsExactly is not used here because the order is not consistent. Check if we should fix it.
+        assertThat(listener.getSucceedMethodNames()).contains(
+                "FactoryBaseSample{1}#f",
+                "FactoryBaseSample{2}#f",
+                "FactoryBaseSample{3}#f",
+                "FactoryBaseSample{4}#f"
+        );
     }
 }
