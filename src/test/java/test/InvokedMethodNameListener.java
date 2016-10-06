@@ -98,7 +98,14 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
   }
 
   private static String getName(ITestResult result) {
-    String name = result.getMethod().getConstructorOrMethod().getName();
+    String testName = result.getName();
+    String methodName = result.getMethod().getConstructorOrMethod().getName();
+    String name;
+    if (testName.contains(methodName)) {
+      name = methodName;
+    } else {
+      name = testName + "#" + methodName;
+    }
     if (result.getParameters().length != 0) {
       name = name + "(" + Joiner.on(",").useForNull("null").join(getParameterNames(result.getParameters())) + ")";
     }
