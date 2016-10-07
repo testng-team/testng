@@ -1,8 +1,11 @@
 ﻿Current
 
+Fixed: GITHUB-1064: Incorrect logging of parallel mode of a test
+Fixed: GITHUB-1178: Halt execution when invalid testname is provided. (Krishnan Mahadevan)
 Fixed: GITHUB-1139: DataProvider could support Object[] as a valid return type (Julien Herr)
+Fixed: GITHUB-1182: Cannot run multiple @Factory-annotated methods in the same class (Ian Donovan & Julien Herr)
 
-6.9.13.4 (Bad release: Wrong interna version)
+6.9.13.4 (Bad release: Wrong internal version)
 2016/09/22
 
 New: Hierarchy on order features (from less important to more important): groupByInstance, preserveOrder, priority, dependsOnGroups, dependsOnMethods

@@ -155,6 +155,19 @@ Here is a quick overview of the annotations available in TestNG along with their
 
 <br><b>@AfterMethod</b>: The annotated method will be run after each test method.
 
+<p>
+<b>Behaviour of annotations in superclass of a TestNG class</b>
+</p>
+<p>
+The annotations above will also be honored (inherited) when placed on a
+superclass of a TestNG class. This is useful for example to centralize test
+setup for multiple test classes in a common superclass.
+</p>
+<p>
+In that case, TestNG guarantees that the "@Before" methods are executed in
+inheritance order (highest superclass first, then going down the inheritance
+chain), and the "@After" methods in reverse order (going up the inheritance chain).
+</p>
 </td>
 </tr>
 

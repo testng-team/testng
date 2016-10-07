@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -126,40 +127,29 @@ public final class ClassHelper {
    * @param cls The class to search for the @Factory annotation.
    * @param finder The finder (JDK 1.4 or JDK 5.0+) use to search for the annotation.
    *
-   * @return the @Factory <CODE>method</CODE> or null
+   * @return the @Factory <CODE>methods</CODE>
    */
-  public static ConstructorOrMethod findDeclaredFactoryMethod(Class<?> cls,
-      IAnnotationFinder finder) {
-    ConstructorOrMethod result = null;
+  public static List<ConstructorOrMethod> findDeclaredFactoryMethods(Class<?> cls,
+                                                                     IAnnotationFinder finder) {
+    List<ConstructorOrMethod> result = new ArrayList<>();
 
     for (Method method : getAvailableMethods(cls)) {
       IFactoryAnnotation f = finder.findAnnotation(method, IFactoryAnnotation.class);
-
-      if (null != f) {
-        result = new ConstructorOrMethod(method);
-        result.setEnabled(f.getEnabled());
-        break;
+      if (f != null) {
+        ConstructorOrMethod factory = new ConstructorOrMethod(method);
+        factory.setEnabled(f.getEnabled());
+        result.add(factory);
       }
     }
 
-    if (result == null) {
-      for (Constructor constructor : cls.getDeclaredConstructors()) {
-        IAnnotation f = finder.findAnnotation(constructor, IFactoryAnnotation.class);
-        if (f != null) {
-          result = new ConstructorOrMethod(constructor);
-        }
+    for (Constructor constructor : cls.getDeclaredConstructors()) {
+      IFactoryAnnotation f = finder.findAnnotation(constructor, IFactoryAnnotation.class);
+      if (f != null) {
+        ConstructorOrMethod factory = new ConstructorOrMethod(constructor);
+        factory.setEnabled(f.getEnabled());
+        result.add(factory);
       }
     }
-    // If we didn't find anything, look for nested classes
-//    if (null == result) {
-//      Class[] subClasses = cls.getClasses();
-//      for (Class subClass : subClasses) {
-//        result = findFactoryMethod(subClass, finder);
-//        if (null != result) {
-//          break;
-//        }
-//      }
-//    }
 
     return result;
   }
