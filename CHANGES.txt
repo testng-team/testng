@@ -1,5 +1,5 @@
 ﻿Current
-
+Fixed: GITHUB-1180: NullPointerException on getting excluded/included groups (Krishnan Mahadevan)
 Fixed: GITHUB-1064: Incorrect logging of parallel mode of a test
 Fixed: GITHUB-1178: Halt execution when invalid testname is provided. (Krishnan Mahadevan)
 Fixed: GITHUB-1139: DataProvider could support Object[] as a valid return type (Julien Herr)

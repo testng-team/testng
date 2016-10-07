@@ -1,10 +1,10 @@
 package org.testng.xml;
 
-import java.util.List;
-
 import org.testng.collections.Lists;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.dom.Tag;
+
+import java.util.List;
 
 import static org.testng.collections.CollectionUtils.hasElements;
 
@@ -63,7 +63,11 @@ public class XmlGroups {
       xsb.getStringBuffer().append(d.toXml(indent2));
     }
 
-    xsb.getStringBuffer().append(m_run.toXml(indent2));
+      if (null != m_run) {
+          //XmlRun is optional and is not always available. So check if its available before running toXml()
+          xsb.getStringBuffer().append(m_run.toXml(indent2));
+      }
+
 
     for (XmlDependencies d : m_dependencies) {
       xsb.getStringBuffer().append(d.toXml(indent2));

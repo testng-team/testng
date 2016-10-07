@@ -691,6 +691,7 @@
   <test name="XML">
     <classes>
       <class name="org.testng.xml.SuiteXmlParserTest" />
+      <class name="org.testng.xml.XmlSuiteTest"/>
     </classes>
   </test>
 
@@ -775,5 +776,6 @@
       <class name="test.thread.parallelization.ParallelByMethodsMultipleSuitesTestsClassesTest"/>
     </classes>
   </test>
+
 </suite>
 
