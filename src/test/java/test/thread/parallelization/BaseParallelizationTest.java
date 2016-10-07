@@ -170,12 +170,13 @@ public class BaseParallelizationTest extends SimpleBaseTest {
     public static void verifyTimestampDifference(long timestampOne, long timestampTwo, long lowerTimingRange,
             long upperTimingRange, String failMessage) {
         assertTrue(Math.abs(timestampOne - timestampTwo) <= upperTimingRange &&
-                Math.abs(timestampOne - timestampTwo) >= lowerTimingRange, failMessage);
+                Math.abs(timestampOne - timestampTwo) >= lowerTimingRange, failMessage + ". Difference: " +
+                "Math.abs(timestampOne - timestampTwo)");
     }
 
     public static void verifyTimestampDifference(long timestampOne, long timestampTwo, long timingRange, String
             failMessage) {
-        assertTrue(Math.abs(timestampOne - timestampTwo) <= timingRange, failMessage + " Difference: " +
+        assertTrue(Math.abs(timestampOne - timestampTwo) <= timingRange, failMessage + ". Difference: " +
                 Math.abs(timestampOne - timestampTwo));
     }
 
@@ -310,9 +311,9 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                     " methods should be running at the same time. The test execution event logs for a block of " +
                     "simultaneously running test methods should all belong to the same methods as the test method " +
                     "listener onTestStart event logs immediately preceding");
-            verifyTimingOfEvents(eventLogMethodListenerStartSublist, eventLogMethodExecuteSublist, 950, 1200, "The " +
+            verifyTimingOfEvents(eventLogMethodListenerStartSublist, eventLogMethodExecuteSublist, 950, 1500, "The " +
                     "test method execution event logs for a block of simultaneously executing methods should be " +
-                    "within 950 and 1200 milliseconds of their test method listener's onTestStart events");
+                    "within 950 and 1500 milliseconds of their test method listener's onTestStart events");
 
             verifySimultaneousTestMethodListenerPassEvents(eventLogMethodListenerPassSublist, testName, threadCount);
             verifyEventsBelongToSameMethods(eventLogMethodExecuteSublist, eventLogMethodListenerPassSublist, "The " +
@@ -320,9 +321,9 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                     " methods should be running at the same time. The test method listener on onTestSuccess event " +
                     "logs for a block of simultaneously running test methods should all belong to the same methods " +
                     "as the test method execution event logs immediately preceding");
-            verifyTimingOfEvents(eventLogMethodExecuteSublist, eventLogMethodListenerPassSublist, 4950, 5200, "The " +
+            verifyTimingOfEvents(eventLogMethodExecuteSublist, eventLogMethodListenerPassSublist, 4950, 5500, "The " +
                     "test method listener's onTestSuccess events for a block of simultaneously executing methods " +
-                    "should be within 4950 and 5200 milliseconds of their execution events");
+                    "should be within 4950 and 5500 milliseconds of their execution events");
         }
     }
 
@@ -340,8 +341,8 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                 testName + " so the thread IDs for all the test method listener's onTestStart method " + "the " +
                 threadCount + "currently executing test methods should be different. Event logs: " +
                 listenerStartEventLogs);
-        verifyTimingOfEvents(listenerStartEventLogs, 200, "The test method listener's onTestStart method " +
-                "for a block of simultaneously executing methods should be within 200 milliseconds of each other. " +
+        verifyTimingOfEvents(listenerStartEventLogs, 500, "The test method listener's onTestStart method " +
+                "for a block of simultaneously executing methods should be within 500 milliseconds of each other. " +
                 "Event logs: " + listenerStartEventLogs);
     }
 
@@ -359,8 +360,8 @@ public class BaseParallelizationTest extends SimpleBaseTest {
         verifyDifferentThreadIdsForEvents(testMethodExecutionEventLogs, "The thread count is " + threadCount + " for " +
                 testName + " so the thread IDs for the test method execution events for the " + threadCount +
                 "currently executing test methods should be different. Event logs: " + testMethodExecutionEventLogs);
-        verifyTimingOfEvents(testMethodExecutionEventLogs, 200, "The test method execution events for a block of " +
-                "simultaneously executing methods should be within 200 milliseconds of each other. Event logs: " +
+        verifyTimingOfEvents(testMethodExecutionEventLogs, 500, "The test method execution events for a block of " +
+                "simultaneously executing methods should be within 500 milliseconds of each other. Event logs: " +
                 testMethodExecutionEventLogs);
     }
 
@@ -377,8 +378,8 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                 " for " + testName + " so the thread IDs for the test method listener onTestSuccess events for the " +
                 threadCount + "currently executing test methods should be different. Event logs: " +
                 testMethodListenerPassEventLogs);
-        verifyTimingOfEvents(testMethodListenerPassEventLogs, 200, "The test method listener's onTestSuccess events " +
-                "for a block of simultaneously executing methods should be within 200 milliseconds of each other. " +
+        verifyTimingOfEvents(testMethodListenerPassEventLogs, 500, "The test method listener's onTestSuccess events " +
+                "for a block of simultaneously executing methods should be within 500 milliseconds of each other. " +
                 "Event logs: " + testMethodListenerPassEventLogs);
     }
 
@@ -441,7 +442,7 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                     secondSuiteEventLogs);
 
             verifyTimingOfEvents(firstSuiteEventLogs, secondSuiteEventLogs, 950,
-                    expectedExecutionTimes.get(firstSuite) + expectedExecutionTimes.get(secondSuite) - 800,
+                    expectedExecutionTimes.get(firstSuite) + expectedExecutionTimes.get(secondSuite) - 500,
                     "The expected execution time of " + firstSuite + " is " + expectedExecutionTimes.get(firstSuite) +
                             " and the expected execution time of " + secondSuite + " is " +
                             expectedExecutionTimes.get(secondSuite) + ". The delay for the suite listener's onFinish " +
@@ -452,7 +453,7 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                             "for " + firstSuite + " is 950 milliseconds and the maximum difference in the timestamps " +
                             "for the first event log for " + firstSuite + " and the last event log for " +
                             secondSuite + " is " + (expectedExecutionTimes.get(firstSuite) +
-                            expectedExecutionTimes.get(secondSuite) - 800));
+                            expectedExecutionTimes.get(secondSuite) - 500));
         }
     }
 
@@ -493,7 +494,7 @@ public class BaseParallelizationTest extends SimpleBaseTest {
             List<EventLog> secondTestEventLogs = testEventLogsMap.get(secondTest);
 
             verifyTimingOfEvents(firstTestEventLogs,secondTestEventLogs, 950,
-                    expectedTestExecutionTimes.get(firstTest) + expectedTestExecutionTimes.get(secondTest) - 800,
+                    expectedTestExecutionTimes.get(firstTest) + expectedTestExecutionTimes.get(secondTest) - 500,
                     "The expected execution time of " + firstTest + " is " + expectedTestExecutionTimes.get(firstTest) +
                             " and the expected execution time of " + secondTest + " is " +
                             expectedTestExecutionTimes.get(secondTest) + ". The delay for the test listener's " +
@@ -504,7 +505,7 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                             "the last event log for " + firstTest + " is 950 milliseconds and the maximum difference " +
                             "in the timestamps for the first event log for " + firstTest + " and the last event log " +
                             "for " + secondTest  + " is " + (expectedTestExecutionTimes.get(firstTest) +
-                            expectedTestExecutionTimes.get(secondTest) - 800));
+                            expectedTestExecutionTimes.get(secondTest) - 500));
 
         }
     }
@@ -558,11 +559,11 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                                 "known to be equal to the maximum thread pool size, the previously logged suite " +
                                 "level event should be a suite listener onFinish event.");
 
-                        verifyTimingOfEvents(priorEventLog, eventLog, 1200, "When suites are executing in parallel, " +
+                        verifyTimingOfEvents(priorEventLog, eventLog, 1500, "When suites are executing in parallel, " +
                                 "and a new suite begins executing because a prior suite completed execution, causing " +
                                 "the active thread count to drop below the thread pool size, the event log for " +
                                 "suite listener onStart associated with the new suite should have a timestamp " +
-                                "within 1200 milliseconds of the timestamp for the event log for suite listener's " +
+                                "within 1500 milliseconds of the timestamp for the event log for suite listener's " +
                                 "onFinish event associated with the suite which completed immediately prior. The " +
                                 "delay for a suite listener onFinish event is 1 second.");
 
@@ -601,8 +602,8 @@ public class BaseParallelizationTest extends SimpleBaseTest {
         verifyDifferentThreadIdsForEvents(listenerStartEventLogs, "The suite thread pool size is " + threadPoolSize +
                 ", so the thread IDs for all the suite listener's onStart method for the " + threadPoolSize +
                 " currently executing suites should be different");
-        verifyTimingOfEvents(listenerStartEventLogs, 200, "The suite listener's onTestStart method for a block of " +
-                "simultaneously executing methods should be within 200 milliseconds of each other");
+        verifyTimingOfEvents(listenerStartEventLogs, 500, "The suite listener's onTestStart method for a block of " +
+                "simultaneously executing methods should be within 500 milliseconds of each other");
     }
 
     private static void verifyFirstBlockOfSimultaneouslyExecutingSuites(List<EventLog> suiteListenerStartEventLogs,
@@ -627,14 +628,14 @@ public class BaseParallelizationTest extends SimpleBaseTest {
 
                 long upperTimingRange = suiteOneTime > suiteTwoTime ? suiteOneTime : suiteTwoTime;
 
-                verifyTimingOfEvents(suiteOneEventLogs, suiteTwoEventLogs, 0, upperTimingRange - 800, "The " +
+                verifyTimingOfEvents(suiteOneEventLogs, suiteTwoEventLogs, 0, upperTimingRange - 500, "The " +
                         "expected execution time of " + suiteOneName + " is " + suiteOneTime + " and the " +
                         "expected execution time of " + suiteTwoName + " is " + suiteTwoTime + ". The delay for " +
                         "the suite listener's onFinish event is 1 second. Because the suites should execute in " +
                         "parallel and started at the same time the minimum difference between the timestamps for " +
                         "the event logs for " + suiteOneName + " and " + suiteTwoName + " is 0 milliseconds and " +
                         "the maximum difference in the timestamps for their event logs is " +
-                        (upperTimingRange - 800));
+                        (upperTimingRange - 500));
             }
         }
     }
