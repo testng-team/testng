@@ -129,56 +129,55 @@ public class BaseParallelizationTest extends SimpleBaseTest {
         }
     }
 
-    //Verify that the timestamps of the list of event logs are all within the specified range of each other. Print
-    //the specified failure message if the assertion on the timing range fails.
-    public static void verifyTimingOfEvents(List<EventLog> eventLogs, long timingRange, String failMessage) {
-        if(!eventLogs.isEmpty()) {
-            Pair<Long,Long> timestamps = getEarliestAndLatestTimestamps(eventLogs);
-            verifyTimestampDifference(timestamps.second(), timestamps.first(), timingRange, failMessage);
-//            assertTrue(Math.abs(timestamps.second() - timestamps.first()) <= timingRange, failMessage);
-        }
-    }
+//    //Verify that the timestamps of the list of event logs are all within the specified range of each other. Print
+//    //the specified failure message if the assertion on the timing range fails.
+//    public static void verifyTimingOfEvents(List<EventLog> eventLogs, long timingRange, String failMessage) {
+//        if(!eventLogs.isEmpty()) {
+//            Pair<Long,Long> timestamps = getEarliestAndLatestTimestamps(eventLogs);
+//            verifyTimestampDifference(timestamps.second(), timestamps.first(), timingRange, failMessage);
+//        }
+//    }
 
 
-    public static void verifyTimingOfEvents(EventLog eventLogOne, EventLog eventLogTwo, long timingRange, String
-            failMessage) {
-        verifyTimestampDifference(eventLogOne.getTimeOfEvent(), eventLogTwo.getTimeOfEvent(), timingRange, failMessage);
-    }
+//    public static void verifyTimingOfEvents(EventLog eventLogOne, EventLog eventLogTwo, long timingRange, String
+//            failMessage) {
+//        verifyTimestampDifference(eventLogOne.getTimeOfEvent(), eventLogTwo.getTimeOfEvent(), timingRange, failMessage);
+//    }
+//
+//    //Verify that the timestamps of the first list of events are all within the specified range from the timestamps
+//    //of the second list of events. Print the specified failure message if the assertion on the timing range fails.
+//    public static void verifyTimingOfEvents(List<EventLog> firstEventLogs, List<EventLog> secondEventLogs,
+//            long lowerTimingRange, long upperTimingRange, String failMessage) {
+//
+//        if(!firstEventLogs.isEmpty() && !secondEventLogs.isEmpty()) {
+//            Pair<Long, Long> timestampsListOne = getEarliestAndLatestTimestamps(firstEventLogs);
+//            Pair<Long, Long> timestampsListTwo = getEarliestAndLatestTimestamps(secondEventLogs);
+//
+//            verifyTimestampDifference(timestampsListTwo.first(), timestampsListOne.first(), lowerTimingRange,
+//                    upperTimingRange, failMessage);
+//            verifyTimestampDifference(timestampsListTwo.first(), timestampsListOne.second(), lowerTimingRange,
+//                    upperTimingRange, failMessage);
+//            verifyTimestampDifference(timestampsListTwo.second(), timestampsListOne.first(), lowerTimingRange,
+//                    upperTimingRange, failMessage);
+//            verifyTimestampDifference(timestampsListTwo.second(), timestampsListOne.second(), lowerTimingRange,
+//                    upperTimingRange, failMessage);
+//        }
+//    }
 
-    //Verify that the timestamps of the first list of events are all within the specified range from the timestamps
-    //of the second list of events. Print the specified failure message if the assertion on the timing range fails.
-    public static void verifyTimingOfEvents(List<EventLog> firstEventLogs, List<EventLog> secondEventLogs,
-            long lowerTimingRange, long upperTimingRange, String failMessage) {
-
-        if(!firstEventLogs.isEmpty() && !secondEventLogs.isEmpty()) {
-            Pair<Long, Long> timestampsListOne = getEarliestAndLatestTimestamps(firstEventLogs);
-            Pair<Long, Long> timestampsListTwo = getEarliestAndLatestTimestamps(secondEventLogs);
-
-            verifyTimestampDifference(timestampsListTwo.first(), timestampsListOne.first(), lowerTimingRange,
-                    upperTimingRange, failMessage);
-            verifyTimestampDifference(timestampsListTwo.first(), timestampsListOne.second(), lowerTimingRange,
-                    upperTimingRange, failMessage);
-            verifyTimestampDifference(timestampsListTwo.second(), timestampsListOne.first(), lowerTimingRange,
-                    upperTimingRange, failMessage);
-            verifyTimestampDifference(timestampsListTwo.second(), timestampsListOne.second(), lowerTimingRange,
-                    upperTimingRange, failMessage);
-        }
-    }
-
-    //Verify that the difference between the two specified timestamps is within the specfied upper and lower bound. The
-    //difference is calculated as an absolute value.
-    public static void verifyTimestampDifference(long timestampOne, long timestampTwo, long lowerTimingRange,
-            long upperTimingRange, String failMessage) {
-        assertTrue(Math.abs(timestampOne - timestampTwo) <= upperTimingRange &&
-                Math.abs(timestampOne - timestampTwo) >= lowerTimingRange, failMessage + ". Difference: " +
-                "Math.abs(timestampOne - timestampTwo)");
-    }
-
-    public static void verifyTimestampDifference(long timestampOne, long timestampTwo, long timingRange, String
-            failMessage) {
-        assertTrue(Math.abs(timestampOne - timestampTwo) <= timingRange, failMessage + ". Difference: " +
-                Math.abs(timestampOne - timestampTwo));
-    }
+//    //Verify that the difference between the two specified timestamps is within the specfied upper and lower bound. The
+//    //difference is calculated as an absolute value.
+//    public static void verifyTimestampDifference(long timestampOne, long timestampTwo, long lowerTimingRange,
+//            long upperTimingRange, String failMessage) {
+//        assertTrue(Math.abs(timestampOne - timestampTwo) <= upperTimingRange &&
+//                Math.abs(timestampOne - timestampTwo) >= lowerTimingRange, failMessage + ". Difference: " +
+//                Math.abs(timestampOne - timestampTwo));
+//    }
+//
+//    public static void verifyTimestampDifference(long timestampOne, long timestampTwo, long timingRange, String
+//            failMessage) {
+//        assertTrue(Math.abs(timestampOne - timestampTwo) <= timingRange, failMessage + ". Difference: " +
+//                Math.abs(timestampOne - timestampTwo));
+//    }
 
     //Verify that the specified event logs all have timestamps between the specified earlier and later event logs.
     //Print the specified failure message if the assertion on the timestamps fails.
@@ -311,9 +310,6 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                     " methods should be running at the same time. The test execution event logs for a block of " +
                     "simultaneously running test methods should all belong to the same methods as the test method " +
                     "listener onTestStart event logs immediately preceding");
-            verifyTimingOfEvents(eventLogMethodListenerStartSublist, eventLogMethodExecuteSublist, 950, 1500, "The " +
-                    "test method execution event logs for a block of simultaneously executing methods should be " +
-                    "within 950 and 1500 milliseconds of their test method listener's onTestStart events");
 
             verifySimultaneousTestMethodListenerPassEvents(eventLogMethodListenerPassSublist, testName, threadCount);
             verifyEventsBelongToSameMethods(eventLogMethodExecuteSublist, eventLogMethodListenerPassSublist, "The " +
@@ -321,9 +317,6 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                     " methods should be running at the same time. The test method listener on onTestSuccess event " +
                     "logs for a block of simultaneously running test methods should all belong to the same methods " +
                     "as the test method execution event logs immediately preceding");
-            verifyTimingOfEvents(eventLogMethodExecuteSublist, eventLogMethodListenerPassSublist, 4950, 5500, "The " +
-                    "test method listener's onTestSuccess events for a block of simultaneously executing methods " +
-                    "should be within 4950 and 5500 milliseconds of their execution events");
         }
     }
 
@@ -341,9 +334,6 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                 testName + " so the thread IDs for all the test method listener's onTestStart method " + "the " +
                 threadCount + "currently executing test methods should be different. Event logs: " +
                 listenerStartEventLogs);
-        verifyTimingOfEvents(listenerStartEventLogs, 500, "The test method listener's onTestStart method " +
-                "for a block of simultaneously executing methods should be within 500 milliseconds of each other. " +
-                "Event logs: " + listenerStartEventLogs);
     }
 
     //Verify that the specified test method execution event logs execute simultaneously in parallel fashion according
@@ -360,9 +350,6 @@ public class BaseParallelizationTest extends SimpleBaseTest {
         verifyDifferentThreadIdsForEvents(testMethodExecutionEventLogs, "The thread count is " + threadCount + " for " +
                 testName + " so the thread IDs for the test method execution events for the " + threadCount +
                 "currently executing test methods should be different. Event logs: " + testMethodExecutionEventLogs);
-        verifyTimingOfEvents(testMethodExecutionEventLogs, 500, "The test method execution events for a block of " +
-                "simultaneously executing methods should be within 500 milliseconds of each other. Event logs: " +
-                testMethodExecutionEventLogs);
     }
 
     //Verify that the specified test method listener onTestSuccess event logs execute simultaneously in parallel
@@ -378,9 +365,6 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                 " for " + testName + " so the thread IDs for the test method listener onTestSuccess events for the " +
                 threadCount + "currently executing test methods should be different. Event logs: " +
                 testMethodListenerPassEventLogs);
-        verifyTimingOfEvents(testMethodListenerPassEventLogs, 500, "The test method listener's onTestSuccess events " +
-                "for a block of simultaneously executing methods should be within 500 milliseconds of each other. " +
-                "Event logs: " + testMethodListenerPassEventLogs);
     }
 
     //Verify that the test method level events for the test methods declared in the specified class run in the same
@@ -411,7 +395,7 @@ public class BaseParallelizationTest extends SimpleBaseTest {
     }
 
     public static void verifySequentialSuites(List<EventLog> suiteLevelEventLogs, Map<String,List<EventLog>>
-            suiteEventLogsMap, Map<String, Long> expectedExecutionTimes) {
+            suiteEventLogsMap) {
 
         verifySameThreadIdForAllEvents(suiteLevelEventLogs, "Because the suites execute sequentially, the event logs " +
                 "suite level events should have the same thread ID: " + suiteLevelEventLogs);
@@ -440,26 +424,11 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                     "event logs for " + firstSuite + " should have timestamps earlier than all of the event logs for " +
                     secondSuite + ". First suite event logs: " + firstSuiteEventLogs + ". Second suite event logs: " +
                     secondSuiteEventLogs);
-
-            verifyTimingOfEvents(firstSuiteEventLogs, secondSuiteEventLogs, 950,
-                    expectedExecutionTimes.get(firstSuite) + expectedExecutionTimes.get(secondSuite) - 500,
-                    "The expected execution time of " + firstSuite + " is " + expectedExecutionTimes.get(firstSuite) +
-                            " and the expected execution time of " + secondSuite + " is " +
-                            expectedExecutionTimes.get(secondSuite) + ". The delay for the suite listener's onFinish " +
-                            "event is 1 second. Because there is no parallelism specified at the suite or test " +
-                            "level and all tests for all suites are supposed to execute in parallel by methods mode, " +
-                            "the suites should all execute sequentially. Therefore the minimum difference between " +
-                            "the timestamps for the first event log for " + secondSuite + " and the last event log " +
-                            "for " + firstSuite + " is 950 milliseconds and the maximum difference in the timestamps " +
-                            "for the first event log for " + firstSuite + " and the last event log for " +
-                            secondSuite + " is " + (expectedExecutionTimes.get(firstSuite) +
-                            expectedExecutionTimes.get(secondSuite) - 500));
         }
     }
 
     public static void verifySequentialTests(List<EventLog> suiteAndTestLevelEventLogs, List<EventLog>
-            testLevelEventLogs, EventLog suiteListenerOnStartEventLog, EventLog suiteListenerOnFinishEventLog,
-            Map<String, List<EventLog>> testEventLogsMap, Map<String, Long> expectedTestExecutionTimes) {
+            testLevelEventLogs, EventLog suiteListenerOnStartEventLog, EventLog suiteListenerOnFinishEventLog) {
 
         verifySameThreadIdForAllEvents(suiteAndTestLevelEventLogs, "All suite level and test level event logs " +
                 "should have the same thread ID because there is no parallelism specified at the suite or test " +
@@ -475,57 +444,30 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                         ". Suite listener onFinish event log: " + suiteListenerOnFinishEventLog + ". Test level " +
                         "event logs: " + testLevelEventLogs);
 
-        List<EventLog> testListenerStartEventLogs = new ArrayList<>();
-
         for(int i = 0; i < testLevelEventLogs.size(); i = i + 2) {
             assertTrue(testLevelEventLogs.get(i).getEvent() == LISTENER_TEST_START &&
                     testLevelEventLogs.get(i + 1).getEvent() == LISTENER_TEST_FINISH, "Because the tests are " +
                     "expected to execute sequentially, the test level event logs should consist of a series of " +
                     "pairs of a test listener onStart event log followed by a test listener onFinish event log: " +
                     testLevelEventLogs);
-            testListenerStartEventLogs.add((testLevelEventLogs.get(i)));
-        }
-
-        for(int i = 0; i < testListenerStartEventLogs.size() - 1; i++) {
-            String firstTest = (String) testListenerStartEventLogs.get(i).getData(TEST_NAME);
-            String secondTest = (String) testListenerStartEventLogs.get(i + 1).getData(TEST_NAME);
-
-            List<EventLog> firstTestEventLogs = testEventLogsMap.get(firstTest);
-            List<EventLog> secondTestEventLogs = testEventLogsMap.get(secondTest);
-
-            verifyTimingOfEvents(firstTestEventLogs,secondTestEventLogs, 950,
-                    expectedTestExecutionTimes.get(firstTest) + expectedTestExecutionTimes.get(secondTest) - 500,
-                    "The expected execution time of " + firstTest + " is " + expectedTestExecutionTimes.get(firstTest) +
-                            " and the expected execution time of " + secondTest + " is " +
-                            expectedTestExecutionTimes.get(secondTest) + ". The delay for the test listener's " +
-                            "onFinish event is 1 second. Because there is no parallelism specified at the suite or " +
-                            "test level and all tests for all suites are supposed to execute in parallel by methods " +
-                            "mode, tests in the suites should all execute sequentially. Therefore the minimum " +
-                            "difference between the timestamps for the first event log for " + secondTest + " and " +
-                            "the last event log for " + firstTest + " is 950 milliseconds and the maximum difference " +
-                            "in the timestamps for the first event log for " + firstTest + " and the last event log " +
-                            "for " + secondTest  + " is " + (expectedTestExecutionTimes.get(firstTest) +
-                            expectedTestExecutionTimes.get(secondTest) - 500));
-
         }
     }
 
-    public static void verifyParallelSuitesWithUnequalExecutionTimes(List<EventLog> suiteLevelEventLogs,
-            Map<String, Long> expectedExecutionTimes, int threadPoolSize) {
+    public static void verifyParallelSuitesWithUnequalExecutionTimes(List<EventLog> suiteLevelEventLogs, int
+            threadPoolSize) {
 
         Map<String, EventLog> suitesExecuting = new HashMap<>();
         Map<String, EventLog> suitesCompleted = new HashMap<>();
 
         List<Long> executingSuiteThreadIds = new ArrayList<>();
 
-        if(expectedExecutionTimes.keySet().size() > 1) {
-            int offset = expectedExecutionTimes.keySet().size() >= threadPoolSize ? threadPoolSize :
-                    expectedExecutionTimes.keySet().size();
+        if(suiteLevelEventLogs.size() > 2) {
+            int offset = suiteLevelEventLogs.size() >= 2 * threadPoolSize ? threadPoolSize :
+                    suiteLevelEventLogs.size() / 2;
 
             List<EventLog> suiteListenerStartEventLogs = suiteLevelEventLogs.subList(0, offset);
 
-            verifyFirstBlockOfSimultaneouslyExecutingSuites(suiteListenerStartEventLogs, expectedExecutionTimes,
-                    threadPoolSize);
+            verifyFirstBlockOfSimultaneouslyExecutingSuites(suiteListenerStartEventLogs, threadPoolSize);
 
             for(EventLog eventLog : suiteListenerStartEventLogs) {
                 suitesExecuting.put((String)eventLog.getData(SUITE_NAME), eventLog);
@@ -558,15 +500,6 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                                 "parallel and a new suite begins execution when the active thread count was last " +
                                 "known to be equal to the maximum thread pool size, the previously logged suite " +
                                 "level event should be a suite listener onFinish event.");
-
-                        verifyTimingOfEvents(priorEventLog, eventLog, 1500, "When suites are executing in parallel, " +
-                                "and a new suite begins executing because a prior suite completed execution, causing " +
-                                "the active thread count to drop below the thread pool size, the event log for " +
-                                "suite listener onStart associated with the new suite should have a timestamp " +
-                                "within 1500 milliseconds of the timestamp for the event log for suite listener's " +
-                                "onFinish event associated with the suite which completed immediately prior. The " +
-                                "delay for a suite listener onFinish event is 1 second.");
-
                     }
                 }
 
@@ -602,43 +535,17 @@ public class BaseParallelizationTest extends SimpleBaseTest {
         verifyDifferentThreadIdsForEvents(listenerStartEventLogs, "The suite thread pool size is " + threadPoolSize +
                 ", so the thread IDs for all the suite listener's onStart method for the " + threadPoolSize +
                 " currently executing suites should be different");
-        verifyTimingOfEvents(listenerStartEventLogs, 500, "The suite listener's onTestStart method for a block of " +
-                "simultaneously executing methods should be within 500 milliseconds of each other");
     }
 
     private static void verifyFirstBlockOfSimultaneouslyExecutingSuites(List<EventLog> suiteListenerStartEventLogs,
-                Map<String, Long> expectedExecutionTimes, int threadPoolSize) {
+            int threadPoolSize) {
 
-        //verify different thread Ids for their test level event logs too.
         verifySimultaneousSuiteListenerStartEvents(suiteListenerStartEventLogs, threadPoolSize);
         verifyDifferentThreadIdsForEvents(suiteListenerStartEventLogs, "The thread count is " + threadPoolSize +
                 " so the thread IDs for the suite listener onStart events for simultaneously executing suites " +
                 "should be different. Event logs: " + suiteListenerStartEventLogs);
-
-        for(int i = 0; i < suiteListenerStartEventLogs.size(); i ++) {
-            String suiteOneName = (String)suiteListenerStartEventLogs.get(i).getData(SUITE_NAME);
-            long suiteOneTime =  expectedExecutionTimes.get(suiteOneName);
-            List<EventLog> suiteOneEventLogs = getAllEventLogsForSuite(suiteOneName);
-
-            for(int j = i + 1; j < suiteListenerStartEventLogs.size(); j++) {
-
-                String suiteTwoName = (String)suiteListenerStartEventLogs.get(i).getData(SUITE_NAME);
-                long suiteTwoTime =  expectedExecutionTimes.get(suiteTwoName);
-                List<EventLog> suiteTwoEventLogs = getAllEventLogsForSuite(suiteTwoName);
-
-                long upperTimingRange = suiteOneTime > suiteTwoTime ? suiteOneTime : suiteTwoTime;
-
-                verifyTimingOfEvents(suiteOneEventLogs, suiteTwoEventLogs, 0, upperTimingRange - 500, "The " +
-                        "expected execution time of " + suiteOneName + " is " + suiteOneTime + " and the " +
-                        "expected execution time of " + suiteTwoName + " is " + suiteTwoTime + ". The delay for " +
-                        "the suite listener's onFinish event is 1 second. Because the suites should execute in " +
-                        "parallel and started at the same time the minimum difference between the timestamps for " +
-                        "the event logs for " + suiteOneName + " and " + suiteTwoName + " is 0 milliseconds and " +
-                        "the maximum difference in the timestamps for their event logs is " +
-                        (upperTimingRange - 500));
-            }
-        }
     }
+
     //Helper which verifies that the specified lists of test method level events are associated with the same methods
     private static void verifyEventsBelongToSameMethods(List<EventLog> firstEventLogs, List<EventLog> secondEventLogs,
             String faiMessage) {

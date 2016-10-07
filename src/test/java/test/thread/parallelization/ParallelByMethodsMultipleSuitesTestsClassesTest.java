@@ -307,31 +307,24 @@ public class ParallelByMethodsMultipleSuitesTestsClassesTest extends BaseParalle
     //listener's onFinish event for the first suite run.
     //Verify that all the events in the third suite run have timestamps later than the suite listener's onFinish
     //event for the second suite run.
-    //Verify expected intervals between first, second and third suites, based on the known expected execution
-    //times of the suites. This can be calculated from the known delays of all the logged events.
     //Verify that all suite level events run in the same thread
     @Test
     public void verifySuitesRunSequentiallyInSameThread() {
-        verifySequentialSuites(suiteLevelEventLogs, suiteEventLogsMap, expectedSuiteExecutionTimes);
+        verifySequentialSuites(suiteLevelEventLogs, suiteEventLogsMap);
     }
 
     //For all suites, verify that the test level events run sequentially because the parallel mode is by methods only.
-    //Verifies the specified intervals between sequentially executed tests which can be calculated from the known
-    //delays of all logged events.
     @Test
     public void verifySuiteAndTestLevelEventsRunInSequentialOrderForIndividualSuites() {
 
         verifySequentialTests(suiteOneSuiteAndTestLevelEventLogs, suiteOneTestLevelEventLogs,
-                suiteOneSuiteListenerOnStartEventLog, suiteOneSuiteListenerOnFinishEventLog,
-                testEventLogsMap, expectedTestExecutionTimes);
+                suiteOneSuiteListenerOnStartEventLog, suiteOneSuiteListenerOnFinishEventLog);
 
         verifySequentialTests(suiteTwoSuiteAndTestLevelEventLogs, suiteTwoTestLevelEventLogs,
-                suiteTwoSuiteListenerOnStartEventLog, suiteTwoSuiteListenerOnFinishEventLog,
-                testEventLogsMap, expectedTestExecutionTimes);
+                suiteTwoSuiteListenerOnStartEventLog, suiteTwoSuiteListenerOnFinishEventLog);
 
         verifySequentialTests(suiteThreeSuiteAndTestLevelEventLogs, suiteThreeTestLevelEventLogs,
-                suiteThreeSuiteListenerOnStartEventLog, suiteThreeSuiteListenerOnFinishEventLog,
-                testEventLogsMap, expectedTestExecutionTimes);
+                suiteThreeSuiteListenerOnStartEventLog, suiteThreeSuiteListenerOnFinishEventLog);
     }
 
     //Verify that there is only a single test class instance associated with each of the test methods from the sample
@@ -549,10 +542,7 @@ public class ParallelByMethodsMultipleSuitesTestsClassesTest extends BaseParalle
                 SUITE_C_TEST_C);
     }
 
-    //Verify that the methods are run in separate threads in true parallel fashion by checking that the start and run
-    //times of events that should be run simultaneously start basically at the same time using the timestamps and the
-    //known values of the wait time specified for the event. Verify that the thread IDs of parallel events are
-    //different.
+    //Verify that the methods are run in separate threads.
     @Test
     public void verifyThatTestMethodsRunInParallelThreads() {
         verifySimultaneousTestMethods(getTestMethodLevelEventLogsForTest(SUITE_A, SUITE_A_TEST_A), SUITE_A_TEST_A, 3);

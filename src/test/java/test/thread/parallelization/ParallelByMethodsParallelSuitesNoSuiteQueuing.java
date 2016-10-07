@@ -197,19 +197,16 @@ public class ParallelByMethodsParallelSuitesNoSuiteQueuing extends BaseParalleli
     //events for each suite.
     @Test
     public void verifyThatSuitesRunInParallelThreads() {
-        verifyParallelSuitesWithUnequalExecutionTimes(suiteLevelEventLogs, expectedSuiteExecutionTimes,
-                THREAD_POOL_SIZE);
+        verifyParallelSuitesWithUnequalExecutionTimes(suiteLevelEventLogs, THREAD_POOL_SIZE);
     }
 
     @Test
     public void verifyTestLevelEventsRunInSequentialOrderForIndividualSuites() {
         verifySequentialTests(suiteOneSuiteAndTestLevelEventLogs, suiteOneTestLevelEventLogs,
-                suiteOneSuiteListenerOnStartEventLog, suiteOneSuiteListenerOnFinishEventLog,
-                testEventLogsMap, expectedTestExecutionTimes);
+                suiteOneSuiteListenerOnStartEventLog, suiteOneSuiteListenerOnFinishEventLog);
 
         verifySequentialTests(suiteTwoSuiteAndTestLevelEventLogs, suiteTwoTestLevelEventLogs,
-                suiteTwoSuiteListenerOnStartEventLog, suiteTwoSuiteListenerOnFinishEventLog,
-                testEventLogsMap, expectedTestExecutionTimes);
+                suiteTwoSuiteListenerOnStartEventLog, suiteTwoSuiteListenerOnFinishEventLog);
     }
 
     @Test
