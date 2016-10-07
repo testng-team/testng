@@ -1,11 +1,12 @@
-package test.thread.parallelization;
+package test.thread.parallelization.sample;
 
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
+import test.thread.parallelization.TestNgRunStateTracker;
 
 import java.util.concurrent.TimeUnit;
 
-public class TestClassKWithNoDepsSample {
+public class TestClassNWithNoDepsSample {
 
     @Parameters({ "suiteName", "testName", "sleepFor" })
     @Test
