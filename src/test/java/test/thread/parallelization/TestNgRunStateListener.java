@@ -32,6 +32,7 @@ import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.L
 import static test.thread.parallelization.TestNgRunStateTracker.logEvent;
 
 public class TestNgRunStateListener implements ISuiteListener, ITestListener {
+
     @Override
     public void onStart(ISuite suite) {
         logEvent(buildEventLog(suite, LISTENER_SUITE_START).build());

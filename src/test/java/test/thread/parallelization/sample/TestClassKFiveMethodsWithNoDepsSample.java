@@ -6,7 +6,7 @@ import test.thread.parallelization.TestNgRunStateTracker;
 
 import java.util.concurrent.TimeUnit;
 
-public class TestClassKWithNoDepsSample {
+public class TestClassKFiveMethodsWithNoDepsSample {
 
     @Parameters({ "suiteName", "testName", "sleepFor" })
     @Test

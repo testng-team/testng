@@ -6,7 +6,7 @@ import test.thread.parallelization.TestNgRunStateTracker;
 
 import java.util.concurrent.TimeUnit;
 
-public class TestClassOWithNoDepsSample {
+public class TestClassOSixMethodsWithNoDepsSample {
     @Parameters({ "suiteName", "testName", "sleepFor" })
     @Test
     public void testMethodA(String suiteName, String testName, String sleepFor) throws InterruptedException {
