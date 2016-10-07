@@ -197,8 +197,6 @@ public class ParallelByMethodsParallelSuitesNoSuiteQueuing extends BaseParalleli
     //events for each suite.
     @Test
     public void verifyThatSuitesRunInParallelThreads() {
-        System.out.println("verifyThatSuitesRunInParallelThreads");
-
         verifyParallelSuitesWithUnequalExecutionTimes(suiteLevelEventLogs, expectedSuiteExecutionTimes,
                 THREAD_POOL_SIZE);
     }
@@ -330,7 +328,6 @@ public class ParallelByMethodsParallelSuitesNoSuiteQueuing extends BaseParalleli
     //different.
     @Test
     public void verifyThatTestMethodsRunInParallelThreads() {
-        System.out.println("Verifying the parallel, simultaneous methods");
         verifySimultaneousTestMethods(getTestMethodLevelEventLogsForTest(SUITE_A, SUITE_A_TEST_A), SUITE_A_TEST_A, 3);
         verifySimultaneousTestMethods(getTestMethodLevelEventLogsForTest(SUITE_B, SUITE_B_TEST_A), SUITE_B_TEST_A, 14);
         verifySimultaneousTestMethods(getTestMethodLevelEventLogsForTest(SUITE_B, SUITE_B_TEST_B), SUITE_B_TEST_B, 14);

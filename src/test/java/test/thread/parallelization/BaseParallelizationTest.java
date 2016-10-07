@@ -154,15 +154,6 @@ public class BaseParallelizationTest extends SimpleBaseTest {
             Pair<Long, Long> timestampsListOne = getEarliestAndLatestTimestamps(firstEventLogs);
             Pair<Long, Long> timestampsListTwo = getEarliestAndLatestTimestamps(secondEventLogs);
 
-            System.out.println("Difference earliest and earliest: " +
-                    Math.abs((timestampsListTwo.first() - timestampsListOne.first())));
-            System.out.println("Difference earliest and latest: " +
-                    Math.abs((timestampsListTwo.first() - timestampsListOne.second())));
-            System.out.println("Difference latest and earliest: " +
-                    Math.abs((timestampsListTwo.second() - timestampsListOne.first())));
-            System.out.println("Difference latest and latest: " +
-                    Math.abs((timestampsListTwo.second() - timestampsListOne.second())));
-
             verifyTimestampDifference(timestampsListTwo.first(), timestampsListOne.first(), lowerTimingRange,
                     upperTimingRange, failMessage);
             verifyTimestampDifference(timestampsListTwo.first(), timestampsListOne.second(), lowerTimingRange,
@@ -349,7 +340,7 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                 testName + " so the thread IDs for all the test method listener's onTestStart method " + "the " +
                 threadCount + "currently executing test methods should be different. Event logs: " +
                 listenerStartEventLogs);
-        verifyTimingOfEvents(listenerStartEventLogs, 50, "The test method listener's onTestStart method " +
+        verifyTimingOfEvents(listenerStartEventLogs, 100, "The test method listener's onTestStart method " +
                 "for a block of simultaneously executing methods should be within 50 milliseconds of each other. " +
                 "Event logs: " + listenerStartEventLogs);
     }
@@ -368,7 +359,7 @@ public class BaseParallelizationTest extends SimpleBaseTest {
         verifyDifferentThreadIdsForEvents(testMethodExecutionEventLogs, "The thread count is " + threadCount + " for " +
                 testName + " so the thread IDs for the test method execution events for the " + threadCount +
                 "currently executing test methods should be different. Event logs: " + testMethodExecutionEventLogs);
-        verifyTimingOfEvents(testMethodExecutionEventLogs, 50, "The test method execution events for a block of " +
+        verifyTimingOfEvents(testMethodExecutionEventLogs, 100, "The test method execution events for a block of " +
                 "simultaneously executing methods should be within 50 milliseconds of each other. Event logs: " +
                 testMethodExecutionEventLogs);
     }
@@ -386,7 +377,7 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                 " for " + testName + " so the thread IDs for the test method listener onTestSuccess events for the " +
                 threadCount + "currently executing test methods should be different. Event logs: " +
                 testMethodListenerPassEventLogs);
-        verifyTimingOfEvents(testMethodListenerPassEventLogs, 50, "The test method listener's onTestSuccess events " +
+        verifyTimingOfEvents(testMethodListenerPassEventLogs, 100, "The test method listener's onTestSuccess events " +
                 "for a block of simultaneously executing methods should be within 50 milliseconds of each other. Event logs: " +
                 testMethodListenerPassEventLogs);
     }
@@ -438,8 +429,6 @@ public class BaseParallelizationTest extends SimpleBaseTest {
         for(int i = 0; i < suiteListenerStartEventLogs.size() - 1; i++) {
             String firstSuite = (String)suiteListenerStartEventLogs.get(i).getData(SUITE_NAME);
             String secondSuite = (String)suiteListenerStartEventLogs.get(i + 1).getData(SUITE_NAME);
-
-            System.out.println("Comparing " + firstSuite + " and " + secondSuite);
 
             List<EventLog> firstSuiteEventLogs = suiteEventLogsMap.get(firstSuite);
             List<EventLog> secondSuiteEventLogs = suiteEventLogsMap.get(secondSuite);
@@ -500,8 +489,6 @@ public class BaseParallelizationTest extends SimpleBaseTest {
             String firstTest = (String) testListenerStartEventLogs.get(i).getData(TEST_NAME);
             String secondTest = (String) testListenerStartEventLogs.get(i + 1).getData(TEST_NAME);
 
-            System.out.println("Comparing " + firstTest + " and " + secondTest);
-
             List<EventLog> firstTestEventLogs = testEventLogsMap.get(firstTest);
             List<EventLog> secondTestEventLogs = testEventLogsMap.get(secondTest);
 
@@ -525,16 +512,12 @@ public class BaseParallelizationTest extends SimpleBaseTest {
     public static void verifyParallelSuitesWithUnequalExecutionTimes(List<EventLog> suiteLevelEventLogs,
             Map<String, Long> expectedExecutionTimes, int threadPoolSize) {
 
-        for(EventLog eventLog : suiteLevelEventLogs) {
-            System.out.println(eventLog);
-        }
         Map<String, EventLog> suitesExecuting = new HashMap<>();
         Map<String, EventLog> suitesCompleted = new HashMap<>();
 
         List<Long> executingSuiteThreadIds = new ArrayList<>();
 
         if(expectedExecutionTimes.keySet().size() > 1) {
-            System.out.println("Verifying first block");
             int offset = expectedExecutionTimes.keySet().size() >= threadPoolSize ? threadPoolSize :
                     expectedExecutionTimes.keySet().size();
 
@@ -549,7 +532,6 @@ public class BaseParallelizationTest extends SimpleBaseTest {
             }
 
             for (int i = offset; i < suiteLevelEventLogs.size(); i++) {
-                System.out.println("Processing #: " + (i+1) + ": " + suiteLevelEventLogs.get(i));
 
                 EventLog eventLog = suiteLevelEventLogs.get(i);
                 String suiteName = (String)eventLog.getData(SUITE_NAME);
@@ -576,9 +558,7 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                                 "known to be equal to the maximum thread pool size, the previously logged suite " +
                                 "level event should be a suite listener onFinish event.");
 
-                        System.out.println("Processing a start event: " + eventLog);
-
-                        verifyTimingOfEvents(priorEventLog, eventLog, 1050, "When suites are executing in parallel, " +
+                        verifyTimingOfEvents(priorEventLog, eventLog, 1100, "When suites are executing in parallel, " +
                                 "and a new suite begins executing because a prior suite completed execution, causing " +
                                 "the active thread count to drop below the thread pool size, the event log for " +
                                 "suite listener onStart associated with the new suite should have a timestamp " +
@@ -597,8 +577,6 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                 }
 
                 if(eventLog.getEvent() == LISTENER_SUITE_FINISH) {
-
-                    System.out.println("Processing a finish event: " + eventLog);
 
                     assertTrue(suitesExecuting.get(suiteName) != null, "Found an event log for a suite listener " +
                             "onFinish event that does not have a corresponding event log for a suite listener " +
@@ -623,7 +601,7 @@ public class BaseParallelizationTest extends SimpleBaseTest {
         verifyDifferentThreadIdsForEvents(listenerStartEventLogs, "The suite thread pool size is " + threadPoolSize +
                 ", so the thread IDs for all the suite listener's onStart method for the " + threadPoolSize +
                 " currently executing suites should be different");
-        verifyTimingOfEvents(listenerStartEventLogs, 50, "The suite listener's onTestStart method for a block of " +
+        verifyTimingOfEvents(listenerStartEventLogs, 100, "The suite listener's onTestStart method for a block of " +
                 "simultaneously executing methods should be within 50 milliseconds of each other");
     }
 

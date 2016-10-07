@@ -296,8 +296,6 @@ public class ParallelByMethodsParallelSuitesWithSuiteQueuing extends BaseParalle
     //events for each suite.
     @Test
     public void verifyThatSuitesRunInParallelThreads() {
-        System.out.println("verifyThatSuitesRunInParallelThreads");
-
         verifyParallelSuitesWithUnequalExecutionTimes(suiteLevelEventLogs, expectedSuiteExecutionTimes,
                 THREAD_POOL_SIZE);
     }
