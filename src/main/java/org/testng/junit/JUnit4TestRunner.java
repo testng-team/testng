@@ -221,7 +221,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
                 0,
                 null);
 
-        InvokedMethod im = new InvokedMethod(tr.getTestClass(), tr.getMethod(), new Object[0], tr.getStartMillis(), tr);
+        InvokedMethod im = new InvokedMethod(tr.getTestClass(), tr.getMethod(), tr.getStartMillis(), tr);
         m_parentRunner.addInvokedMethod(im);
         for (IInvokedMethodListener l: m_invokeListeners) {
             l.beforeInvocation(im, tr);

@@ -487,7 +487,6 @@ public class Invoker implements IInvoker {
     {
       InvokedMethod invokedMethod= new InvokedMethod(targetInstance,
                                           tm,
-                                          params,
                                           System.currentTimeMillis(),
                                           testResult);
 
@@ -611,7 +610,6 @@ public class Invoker implements IInvoker {
 
       invokedMethod= new InvokedMethod(instance,
           tm,
-          parameterValues,
           System.currentTimeMillis(),
           testResult);
 
