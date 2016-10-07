@@ -1035,7 +1035,7 @@ public class XmlSuite implements Serializable, Cloneable {
   public List<String> getIncludedGroups() {
     if (m_parentSuite != null) {
       return m_parentSuite.getIncludedGroups();
-    } else if (m_xmlGroups != null) {
+    } else if (m_xmlGroups != null && (m_xmlGroups.getRun() != null)) {
       return m_xmlGroups.getRun().getIncludes();
     } else {
       // deprecated
@@ -1068,7 +1068,7 @@ public class XmlSuite implements Serializable, Cloneable {
   public List<String> getExcludedGroups() {
     if (m_parentSuite != null) {
       return m_parentSuite.getExcludedGroups();
-    } else if (m_xmlGroups != null) {
+    } else if (m_xmlGroups != null && (m_xmlGroups.getRun() != null)) {
       return m_xmlGroups.getRun().getExcludes();
     } else {
       return m_excludedGroups;
