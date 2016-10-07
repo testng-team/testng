@@ -10,18 +10,15 @@ public class InvokedMethod implements Serializable, IInvokedMethod {
   private static final long serialVersionUID = 2126127194102819222L;
   transient private Object m_instance;
   private ITestNGMethod m_testMethod;
-  private Object[] m_parameters;
   private long m_date = System.currentTimeMillis();
   private ITestResult m_testResult;
 
   public InvokedMethod(Object instance,
                        ITestNGMethod method,
-                       Object[] parameters,
                        long date,
                        ITestResult testResult) {
     m_instance = instance;
     m_testMethod = method;
-    m_parameters = parameters;
     m_date = date;
     m_testResult = testResult;
   }
@@ -36,8 +33,8 @@ public class InvokedMethod implements Serializable, IInvokedMethod {
 
   @Override
   public String toString() {
-    StringBuffer result = new StringBuffer(m_testMethod.toString());
-    for (Object p : m_parameters) {
+    StringBuilder result = new StringBuilder().append(m_testMethod);
+    for (Object p : m_testResult.getParameters()) {
       result.append(p).append(" ");
     }
     result.append(" ").append(m_instance != null ? m_instance.hashCode() : " <static>");
