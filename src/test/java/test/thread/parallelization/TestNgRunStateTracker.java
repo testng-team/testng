@@ -5,12 +5,8 @@ import com.google.common.collect.Multimap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import static java.lang.Thread.State.TERMINATED;
 
 /**
  * {@code TestNgRunStateTracker} tracks state information for a TestNG run: suite listener start, suite listener end,
@@ -45,7 +41,8 @@ public class TestNgRunStateTracker {
         return suiteEventLogs;
     }
 
-    public static List<EventLog> getSuiteListenerStartEventLogs() {
+    //Get all suite listener onStart event logs
+    public static List<EventLog> getAllSuiteListenerStartEventLogs() {
         List<EventLog> suiteStartEventLogs = new ArrayList<>();
 
         for(EventLog eventLog : eventLogs) {
@@ -57,7 +54,8 @@ public class TestNgRunStateTracker {
         return suiteStartEventLogs;
     }
 
-    public static List<EventLog> getSuiteListenerFinishEventLogs() {
+    //Get all suite listener onFinish event logs
+    public static List<EventLog> getAllSuiteListenerFinishEventLogs() {
         List<EventLog> suiteFinishEventLogs = new ArrayList<>();
 
         for(EventLog eventLog : eventLogs) {
@@ -168,6 +166,18 @@ public class TestNgRunStateTracker {
         return testEventLogs;
     }
 
+    //Get all suite and test level event logs
+    public static List<EventLog> getAllSuiteAndTestLevelEventLogs() {
+        List<EventLog> testEventLogs = new ArrayList<>();
+
+        for(EventLog eventLog : eventLogs) {
+            if(isSuiteLevelEventLog(eventLog) || isTestLevelEventLog(eventLog)) {
+                testEventLogs.add(eventLog);
+            }
+        }
+        return testEventLogs;
+    }
+
     //Get all test level event logs for the specified suite
     public static List<EventLog> getTestLevelEventLogsForSuite(String suiteName) {
         List<EventLog> testEventLogs = new ArrayList<>();
@@ -180,6 +190,20 @@ public class TestNgRunStateTracker {
         return testEventLogs;
     }
 
+    //Get all suite and test level event logs for the specified suite
+    public static List<EventLog> getSuiteAndTestLevelEventLogsForSuite(String suiteName) {
+        List<EventLog> testEventLogs = new ArrayList<>();
+
+        for(EventLog eventLog : eventLogs) {
+            if((isSuiteLevelEventLog(eventLog) || isTestLevelEventLog(eventLog)) &&
+                    belongsToSuite(suiteName, eventLog)) {
+                testEventLogs.add(eventLog);
+            }
+        }
+        return testEventLogs;
+    }
+
+    //Get all the test listener onStart event logs for the specified suite
     public static List<EventLog> getTestListenerStartEventLogsForSuite(String suiteName) {
         List<EventLog> testStartEventLogs = new ArrayList<>();
 
@@ -192,6 +216,7 @@ public class TestNgRunStateTracker {
         return testStartEventLogs;
     }
 
+    //Get all the test listener onFinish event logs for the specified suite
     public static List<EventLog> getTestListenerFinishEventLogsForSuite(String suiteName) {
         List<EventLog> testFinishEventLogs = new ArrayList<>();
 
@@ -332,6 +357,7 @@ public class TestNgRunStateTracker {
         return testMethodEventLogs;
     }
 
+    //Get the test method listener onTestStart event logs for the specified suite and test
     public static List<EventLog> getTestMethodListenerStartEventLogsForTest(String suiteName, String testName) {
         List<EventLog> testMethodStartEventLogs = new ArrayList<>();
 
@@ -345,6 +371,7 @@ public class TestNgRunStateTracker {
         return testMethodStartEventLogs;
     }
 
+    //Get the test method listener onTestSuccess event logs for the specified suite and test
     public static List<EventLog> getTestMethodListenerPassEventLogsForTest(String suiteName, String testName) {
         List<EventLog> testMethodPassEventLogs = new ArrayList<>();
 
@@ -358,6 +385,7 @@ public class TestNgRunStateTracker {
         return testMethodPassEventLogs;
     }
 
+    //Get the test method execution event logs for the specified suite and test
     public static List<EventLog> getTestMethodExecutionEventLogsForTest(String suiteName, String testName) {
         List<EventLog> testMethodExecuteEventLogs = new ArrayList<>();
 
@@ -595,6 +623,8 @@ public class TestNgRunStateTracker {
         return testMethodEventTimes;
     }
 
+    //Get the timestamps for test method listener onTestSkipped event logs for the specified test method from the
+    //specified suite, test and test class.
     public static Map<Object, Long> getTestMethodListenerSkipTimestamps(String suiteName, String testName, String
             className, String methodName) {
         Map<Object,Long> testMethodEventTimes = new HashMap<>();
@@ -721,6 +751,8 @@ public class TestNgRunStateTracker {
         return testMethodEventThreadIds;
     }
 
+
+
     public static void reset() {
         eventLogs = new ArrayList<>();
     }
@@ -792,7 +824,6 @@ public class TestNgRunStateTracker {
         private TestNgRunEvent event;
         private long timeOfEvent;
         private long threadId;
-        private int activeThreadCount;
         private Thread thread;
 
         private Map<EventInfo, Object> data = new HashMap<>();
@@ -815,10 +846,11 @@ public class TestNgRunStateTracker {
 
         public void setThread(Thread thread) {
             this.thread = thread;
+            this.threadId = thread.getId();
         }
 
         public long getThreadId() {
-            return thread.getId();
+            return threadId;
         }
 
         public void addData(EventInfo key, Object value) {
@@ -843,7 +875,6 @@ public class TestNgRunStateTracker {
                     "event=" + event +
                     ", timeOfEvent=" + timeOfEvent +
                     ", threadId=" + threadId +
-                    ", activeThreadCount=" + activeThreadCount +
                     ", data=" + data +
                     '}';
         }
@@ -852,27 +883,27 @@ public class TestNgRunStateTracker {
     public static class EventLogBuilder {
         private EventLog eventLog = new EventLog();
 
-        EventLogBuilder setEvent(TestNgRunEvent event) {
+        public EventLogBuilder setEvent(TestNgRunEvent event) {
             eventLog.setEvent(event);
             return this;
         }
 
-        EventLogBuilder setTimeOfEvent(long timeOfEvent) {
+        public EventLogBuilder setTimeOfEvent(long timeOfEvent) {
             eventLog.setTimeOfEvent(timeOfEvent);
             return this;
         }
 
-        EventLogBuilder setThread(Thread thread) {
+        public EventLogBuilder setThread(Thread thread) {
             eventLog.setThread(thread);
             return this;
         }
 
-        EventLogBuilder addData(EventInfo key, Object value) {
+        public EventLogBuilder addData(EventInfo key, Object value) {
             eventLog.addData(key, value);
             return this;
         }
 
-        EventLog build() {
+        public EventLog build() {
             return eventLog;
         }
     }

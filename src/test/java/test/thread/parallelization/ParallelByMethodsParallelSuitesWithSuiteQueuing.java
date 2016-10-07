@@ -6,14 +6,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import test.thread.parallelization.TestNgRunStateTracker.EventLog;
-
 import test.thread.parallelization.sample.TestClassAFiveMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassBFourMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassCSixMethodsWithNoDepsSample;
@@ -30,102 +22,101 @@ import test.thread.parallelization.sample.TestClassMFourMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassNFiveMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassOSixMethodsWithNoDepsSample;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.testng.Assert.assertEquals;
 
-import static test.thread.parallelization.TestNgRunStateTracker.getAllEventLogsForSuite;
-
 import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteLevelEventLogs;
+import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteListenerStartEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllTestLevelEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllTestMethodLevelEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getSuiteAndTestLevelEventLogsForSuite;
 import static test.thread.parallelization.TestNgRunStateTracker.getSuiteLevelEventLogsForSuite;
 import static test.thread.parallelization.TestNgRunStateTracker.getSuiteListenerFinishEventLog;
 import static test.thread.parallelization.TestNgRunStateTracker.getSuiteListenerStartEventLog;
-import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteListenerStartEventLogs;
-
 import static test.thread.parallelization.TestNgRunStateTracker.getTestLevelEventLogsForSuite;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestLevelEventLogsForTest;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerFinishEventLog;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerStartEventLog;
-
 import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodLevelEventLogsForSuite;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodLevelEventLogsForTest;
-
 import static test.thread.parallelization.TestNgRunStateTracker.reset;
 
-//Verify complex test run with multiple suites, tests and test classes and a thread count which is less than the number
-//of test methods to be executed.
-public class ParallelByMethodsMultipleSuitesTestsClassesTest extends BaseParallelizationTest {
+public class ParallelByMethodsParallelSuitesWithSuiteQueuing extends BaseParallelizationTest {
     private static final String SUITE_A = "TestSuiteA";
     private static final String SUITE_B = "TestSuiteB";
     private static final String SUITE_C = "TestSuiteC";
-    
+
     private static final String SUITE_A_TEST_A = "TestSuiteA-TwoTestClassTest";
 
     private static final String SUITE_B_TEST_A = "TestSuiteB-SingleTestClassTest";
     private static final String SUITE_B_TEST_B = "TestSuiteB-ThreeTestClassTest";
-    
+
     private static final String SUITE_C_TEST_A = "TestSuiteC-ThreeTestClassTest";
     private static final String SUITE_C_TEST_B = "TestSuiteC-TwoTestClassTest";
     private static final String SUITE_C_TEST_C = "TestSuiteC-FourTestClassTest";
 
+    private static final int THREAD_POOL_SIZE = 2;
+
     private Map<String, Long> expectedSuiteExecutionTimes = new HashMap<>();
     private Map<String, Long> expectedTestExecutionTimes = new HashMap<>();
 
-    private Map<String, List<EventLog>> suiteEventLogsMap = new HashMap<>();
-    private Map<String, List<EventLog>> testEventLogsMap = new HashMap<>();
+    private Map<String, List<TestNgRunStateTracker.EventLog>> testEventLogsMap = new HashMap<>();
 
-    private List<EventLog> suiteLevelEventLogs;
-    private List<EventLog> testLevelEventLogs;
-    private List<EventLog> testMethodLevelEventLogs;
+    private List<TestNgRunStateTracker.EventLog> suiteLevelEventLogs;
+    private List<TestNgRunStateTracker.EventLog> testLevelEventLogs;
+    private List<TestNgRunStateTracker.EventLog> testMethodLevelEventLogs;
 
-    private List<EventLog> suiteOneSuiteAndTestLevelEventLogs;
-    private List<EventLog> suiteOneSuiteLevelEventLogs;
-    private List<EventLog> suiteOneTestLevelEventLogs;
-    private List<EventLog> suiteOneTestMethodLevelEventLogs;
+    private List<TestNgRunStateTracker.EventLog> suiteOneSuiteAndTestLevelEventLogs;
+    private List<TestNgRunStateTracker.EventLog> suiteOneSuiteLevelEventLogs;
+    private List<TestNgRunStateTracker.EventLog> suiteOneTestLevelEventLogs;
+    private List<TestNgRunStateTracker.EventLog> suiteOneTestMethodLevelEventLogs;
 
-    private List<EventLog> suiteTwoSuiteAndTestLevelEventLogs;
-    private List<EventLog> suiteTwoSuiteLevelEventLogs;
-    private List<EventLog> suiteTwoTestLevelEventLogs;
-    private List<EventLog> suiteTwoTestMethodLevelEventLogs;
+    private List<TestNgRunStateTracker.EventLog> suiteTwoSuiteAndTestLevelEventLogs;
+    private List<TestNgRunStateTracker.EventLog> suiteTwoSuiteLevelEventLogs;
+    private List<TestNgRunStateTracker.EventLog> suiteTwoTestLevelEventLogs;
+    private List<TestNgRunStateTracker.EventLog> suiteTwoTestMethodLevelEventLogs;
 
-    private List<EventLog> suiteThreeSuiteAndTestLevelEventLogs;
-    private List<EventLog> suiteThreeSuiteLevelEventLogs;
-    private List<EventLog> suiteThreeTestLevelEventLogs;
-    private List<EventLog> suiteThreeTestMethodLevelEventLogs;
+    private List<TestNgRunStateTracker.EventLog> suiteThreeSuiteAndTestLevelEventLogs;
+    private List<TestNgRunStateTracker.EventLog> suiteThreeSuiteLevelEventLogs;
+    private List<TestNgRunStateTracker.EventLog> suiteThreeTestLevelEventLogs;
+    private List<TestNgRunStateTracker.EventLog> suiteThreeTestMethodLevelEventLogs;
 
-    private List<EventLog> suiteOneTestOneTestMethodLevelEventLogs;
+    private List<TestNgRunStateTracker.EventLog> suiteOneTestOneTestMethodLevelEventLogs;
 
-    private List<EventLog> suiteTwoTestOneTestMethodLevelEventLogs;
-    private List<EventLog> suiteTwoTestTwoTestMethodLevelEventLogs;
+    private List<TestNgRunStateTracker.EventLog> suiteTwoTestOneTestMethodLevelEventLogs;
+    private List<TestNgRunStateTracker.EventLog> suiteTwoTestTwoTestMethodLevelEventLogs;
 
-    private List<EventLog> suiteThreeTestOneTestMethodLevelEventLogs;
-    private List<EventLog> suiteThreeTestTwoTestMethodLevelEventLogs;
-    private List<EventLog> suiteThreeTestThreeTestMethodLevelEventLogs;
+    private List<TestNgRunStateTracker.EventLog> suiteThreeTestOneTestMethodLevelEventLogs;
+    private List<TestNgRunStateTracker.EventLog> suiteThreeTestTwoTestMethodLevelEventLogs;
+    private List<TestNgRunStateTracker.EventLog> suiteThreeTestThreeTestMethodLevelEventLogs;
 
-    private EventLog suiteOneSuiteListenerOnStartEventLog;
-    private EventLog suiteOneSuiteListenerOnFinishEventLog;
+    private TestNgRunStateTracker.EventLog suiteOneSuiteListenerOnStartEventLog;
+    private TestNgRunStateTracker.EventLog suiteOneSuiteListenerOnFinishEventLog;
 
-    private EventLog suiteTwoSuiteListenerOnStartEventLog;
-    private EventLog suiteTwoSuiteListenerOnFinishEventLog;
+    private TestNgRunStateTracker.EventLog suiteTwoSuiteListenerOnStartEventLog;
+    private TestNgRunStateTracker.EventLog suiteTwoSuiteListenerOnFinishEventLog;
 
-    private EventLog suiteThreeSuiteListenerOnStartEventLog;
-    private EventLog suiteThreeSuiteListenerOnFinishEventLog;
+    private TestNgRunStateTracker.EventLog suiteThreeSuiteListenerOnStartEventLog;
+    private TestNgRunStateTracker.EventLog suiteThreeSuiteListenerOnFinishEventLog;
 
-    private EventLog suiteOneTestOneListenerOnStartEventLog;
-    private EventLog suiteOneTestOneListenerOnFinishEventLog;
+    private TestNgRunStateTracker.EventLog suiteOneTestOneListenerOnStartEventLog;
+    private TestNgRunStateTracker.EventLog suiteOneTestOneListenerOnFinishEventLog;
 
-    private EventLog suiteTwoTestOneListenerOnStartEventLog;
-    private EventLog suiteTwoTestOneListenerOnFinishEventLog;
-    private EventLog suiteTwoTestTwoListenerOnStartEventLog;
-    private EventLog suiteTwoTestTwoListenerOnFinishEventLog;
+    private TestNgRunStateTracker.EventLog suiteTwoTestOneListenerOnStartEventLog;
+    private TestNgRunStateTracker.EventLog suiteTwoTestOneListenerOnFinishEventLog;
+    private TestNgRunStateTracker.EventLog suiteTwoTestTwoListenerOnStartEventLog;
+    private TestNgRunStateTracker.EventLog suiteTwoTestTwoListenerOnFinishEventLog;
 
-    private EventLog suiteThreeTestOneListenerOnStartEventLog;
-    private EventLog suiteThreeTestOneListenerOnFinishEventLog;
-    private EventLog suiteThreeTestTwoListenerOnStartEventLog;
-    private EventLog suiteThreeTestTwoListenerOnFinishEventLog;
-    private EventLog suiteThreeTestThreeListenerOnStartEventLog;
-    private EventLog suiteThreeTestThreeListenerOnFinishEventLog;
+    private TestNgRunStateTracker.EventLog suiteThreeTestOneListenerOnStartEventLog;
+    private TestNgRunStateTracker.EventLog suiteThreeTestOneListenerOnFinishEventLog;
+    private TestNgRunStateTracker.EventLog suiteThreeTestTwoListenerOnStartEventLog;
+    private TestNgRunStateTracker.EventLog suiteThreeTestTwoListenerOnFinishEventLog;
+    private TestNgRunStateTracker.EventLog suiteThreeTestThreeListenerOnStartEventLog;
+    private TestNgRunStateTracker.EventLog suiteThreeTestThreeListenerOnFinishEventLog;
 
     @BeforeClass
     public void complexMultipleSuites() {
@@ -188,6 +179,7 @@ public class ParallelByMethodsMultipleSuitesTestsClassesTest extends BaseParalle
         addParams(suiteThree, SUITE_C, SUITE_C_TEST_C, "5");
 
         TestNG tng = create(suiteOne, suiteTwo, suiteThree);
+        tng.setSuiteThreadPoolSize(2);
         tng.addListener((ITestNGListener) new TestNgRunStateListener());
 
         tng.run();
@@ -217,10 +209,6 @@ public class ParallelByMethodsMultipleSuitesTestsClassesTest extends BaseParalle
         suiteThreeSuiteAndTestLevelEventLogs = getSuiteAndTestLevelEventLogsForSuite(SUITE_C);
         suiteThreeSuiteLevelEventLogs = getSuiteLevelEventLogsForSuite(SUITE_C);
         suiteThreeTestLevelEventLogs = getTestLevelEventLogsForSuite(SUITE_C);
-
-        suiteEventLogsMap.put(SUITE_A, getAllEventLogsForSuite(SUITE_A));
-        suiteEventLogsMap.put(SUITE_B, getAllEventLogsForSuite(SUITE_B));
-        suiteEventLogsMap.put(SUITE_C, getAllEventLogsForSuite(SUITE_C));
 
         suiteOneTestMethodLevelEventLogs = getTestMethodLevelEventLogsForSuite(SUITE_A);
         suiteTwoTestMethodLevelEventLogs = getTestMethodLevelEventLogsForSuite(SUITE_B);
@@ -303,20 +291,16 @@ public class ParallelByMethodsMultipleSuitesTestsClassesTest extends BaseParalle
 
     }
 
-    //Verify that all the events in the second suite and third suites run have timestamps later than the suite
-    //listener's onFinish event for the first suite run.
-    //Verify that all the events in the third suite run have timestamps later than the suite listener's onFinish
-    //event for the second suite run.
-    //Verify that all suite level events run in the same thread
+    //Verify that the suites run in parallel by checking that the suite and test level events for both suites have
+    //overlapping timestamps. Verify that there are two separate threads executing the suite-level and test-level
+    //events for each suite.
     @Test
-    public void verifySuitesRunSequentiallyInSameThread() {
-        verifySequentialSuites(suiteLevelEventLogs, suiteEventLogsMap);
+    public void verifyThatSuitesRunInParallelThreads() {
+        verifyParallelSuitesWithUnequalExecutionTimes(suiteLevelEventLogs, THREAD_POOL_SIZE);
     }
 
-    //For all suites, verify that the test level events run sequentially because the parallel mode is by methods only.
     @Test
-    public void verifySuiteAndTestLevelEventsRunInSequentialOrderForIndividualSuites() {
-
+    public void verifyTestLevelEventsRunInSequentialOrderForIndividualSuites() {
         verifySequentialTests(suiteOneSuiteAndTestLevelEventLogs, suiteOneTestLevelEventLogs,
                 suiteOneSuiteListenerOnStartEventLog, suiteOneSuiteListenerOnFinishEventLog);
 
@@ -542,7 +526,10 @@ public class ParallelByMethodsMultipleSuitesTestsClassesTest extends BaseParalle
                 SUITE_C_TEST_C);
     }
 
-    //Verify that the methods are run in separate threads.
+    //Verify that the methods are run in separate threads in true parallel fashion by checking that the start and run
+    //times of events that should be run simultaneously start basically at the same time using the timestamps and the
+    //known values of the wait time specified for the event. Verify that the thread IDs of parallel events are
+    //different.
     @Test
     public void verifyThatTestMethodsRunInParallelThreads() {
         verifySimultaneousTestMethods(getTestMethodLevelEventLogsForTest(SUITE_A, SUITE_A_TEST_A), SUITE_A_TEST_A, 3);

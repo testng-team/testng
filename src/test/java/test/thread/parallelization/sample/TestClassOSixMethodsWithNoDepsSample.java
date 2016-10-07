@@ -1,11 +1,12 @@
-package test.thread.parallelization;
+package test.thread.parallelization.sample;
 
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
+import test.thread.parallelization.TestNgRunStateTracker;
 
 import java.util.concurrent.TimeUnit;
 
-public class TestClassFWithNoDepsSample {
+public class TestClassOSixMethodsWithNoDepsSample {
     @Parameters({ "suiteName", "testName", "sleepFor" })
     @Test
     public void testMethodA(String suiteName, String testName, String sleepFor) throws InterruptedException {
