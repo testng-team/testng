@@ -105,10 +105,6 @@ public class ParallelByMethodsSingleSuiteSingleTestSingleClassWithDataProvider e
                 testLevelEventLogs);
         assertEquals(testMethodLevelEventLogs.size(), 45, "There should be 15 test method level event logged for " +
                 SUITE + ": " + testMethodLevelEventLogs);
-
-        for(TestNgRunStateTracker.EventLog eventLog: getAllEventLogs()) {
-            System.out.println(eventLog);
-        }
     }
 
     //Verify that the suite listener and test listener events have timestamps in the following order: suite start,
