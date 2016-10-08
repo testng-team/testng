@@ -64,7 +64,7 @@ public class XmlMethodSelector implements IMethodSelector {
 
   private boolean includeMethodFromIncludeExclude(ITestNGMethod tm, boolean isTestMethod) {
     boolean result = false;
-    Method m = tm.getMethod();
+    ConstructorOrMethod method = tm.getConstructorOrMethod();
     String[] groups = tm.getGroups();
     Map<String, String> includedGroups = m_includedGroups;
     Map<String, String> excludedGroups = m_excludedGroups;
@@ -124,7 +124,6 @@ public class XmlMethodSelector implements IMethodSelector {
         //
         // Now filter by method name
         //
-        Method method = tm.getMethod();
         Class methodClass = method.getDeclaringClass();
         String fullMethodName =  methodClass.getName()
                 + "."
@@ -161,8 +160,8 @@ public class XmlMethodSelector implements IMethodSelector {
       }
     }
 
-    Package pkg = m.getDeclaringClass().getPackage();
-    String methodName = pkg != null ? pkg.getName() + "." + m.getName() : m.getName();
+    Package pkg = method.getDeclaringClass().getPackage();
+    String methodName = pkg != null ? pkg.getName() + "." + method.getName() : method.getName();
 
     logInclusion(result ? "Including" : "Excluding", "method", methodName + "()");
 

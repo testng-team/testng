@@ -289,11 +289,11 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       invoker = tr.getInvoker();
 
       for (ITestNGMethod m : tr.getBeforeSuiteMethods()) {
-        beforeSuiteMethods.put(m.getMethod(), m);
+        beforeSuiteMethods.put(m.getConstructorOrMethod().getMethod(), m);
       }
 
       for (ITestNGMethod m : tr.getAfterSuiteMethods()) {
-        afterSuiteMethods.put(m.getMethod(), m);
+        afterSuiteMethods.put(m.getConstructorOrMethod().getMethod(), m);
       }
     }
 

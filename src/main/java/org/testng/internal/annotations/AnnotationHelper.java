@@ -17,6 +17,7 @@ import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Maps;
+import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.TestNGMethod;
 import org.testng.internal.Utils;
 import org.testng.internal.reflect.ReflectionHelper;
@@ -55,7 +56,17 @@ public class AnnotationHelper {
     return finder.findAnnotation(ctor, ITestAnnotation.class);
   }
 
-  public static IConfigurationAnnotation findConfiguration(IAnnotationFinder finder, Constructor ctor) {
+  public static IConfigurationAnnotation findConfiguration(IAnnotationFinder finder, ConstructorOrMethod com) {
+    if (com.getMethod() != null) {
+      return findConfiguration(finder, com.getMethod());
+    }
+    if (com.getConstructor() != null) {
+      return findConfiguration(finder, com.getConstructor());
+    }
+    return null;
+  }
+
+    public static IConfigurationAnnotation findConfiguration(IAnnotationFinder finder, Constructor ctor) {
     IConfigurationAnnotation result = finder.findAnnotation(ctor, IConfigurationAnnotation.class);
     if (result == null) {
       IConfigurationAnnotation bs = (IConfigurationAnnotation) finder.findAnnotation(ctor, IBeforeSuite.class);

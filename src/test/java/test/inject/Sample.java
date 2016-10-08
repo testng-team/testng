@@ -12,7 +12,7 @@ public class Sample {
     Assert.assertNotNull(tc);
     ITestNGMethod[] allMethods = tc.getAllTestMethods();
     Assert.assertEquals(allMethods.length, 1);
-    Assert.assertEquals(allMethods[0].getMethod().getName(),"f");
+    Assert.assertEquals(allMethods[0].getConstructorOrMethod().getName(),"f");
 
   }
 }

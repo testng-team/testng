@@ -120,7 +120,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
       throw new IllegalArgumentException("Java @Annotation class for '"
             + annotationClass + "' not found.");
     }
-    Method m = tm.getMethod();
+    Method m = tm.getConstructorOrMethod().getMethod();
     Class<?> testClass;
     if (tm.getInstance() == null) {
       testClass = m.getDeclaringClass();

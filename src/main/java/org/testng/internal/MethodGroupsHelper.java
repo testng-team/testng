@@ -44,7 +44,7 @@ public class MethodGroupsHelper {
   {
     for (ITestNGMethod tm : methods) {
       boolean in = false;
-      Method m = tm.getMethod();
+      Method m = tm.getConstructorOrMethod().getMethod();
       //
       // @Test method
       //
@@ -107,8 +107,8 @@ public class MethodGroupsHelper {
   private static boolean isMethodAlreadyPresent(List<ITestNGMethod> result,
       ITestNGMethod tm) {
     for (ITestNGMethod m : result) {
-      Method jm1 = m.getMethod();
-      Method jm2 = tm.getMethod();
+      ConstructorOrMethod jm1 = m.getConstructorOrMethod();
+      ConstructorOrMethod jm2 = tm.getConstructorOrMethod();
       if (jm1.getName().equals(jm2.getName())) {
         // Same names, see if they are in the same hierarchy
         Class<?> c1 = jm1.getDeclaringClass();

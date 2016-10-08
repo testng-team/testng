@@ -49,11 +49,11 @@ public class InvokeMethodRunnable implements Runnable {
     try {
       RuntimeException t = null;
       try {
-        Method m = m_method.getMethod();
+        ConstructorOrMethod m = m_method.getConstructorOrMethod();
         if (m_hookable == null) {
-          MethodInvocationHelper.invokeMethod(m, m_instance, m_parameters);
+          MethodInvocationHelper.invokeMethod(m.getMethod(), m_instance, m_parameters);
         } else {
-          MethodInvocationHelper.invokeHookable(m_instance, m_parameters, m_hookable, m,
+          MethodInvocationHelper.invokeHookable(m_instance, m_parameters, m_hookable, m.getMethod(),
                                                 m_testResult);
         }
       }

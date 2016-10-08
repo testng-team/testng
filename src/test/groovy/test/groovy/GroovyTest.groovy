@@ -3,6 +3,7 @@ package test.groovy
 import org.testng.ITestNGListener
 import org.testng.TestListenerAdapter
 import org.testng.annotations.Test
+import org.testng.reporters.JUnitXMLReporter
 import test.SimpleBaseTest
 
 class GroovyTest extends SimpleBaseTest {
@@ -44,5 +45,13 @@ class GroovyTest extends SimpleBaseTest {
         assert adapter.failedTests.isEmpty()
         assert adapter.skippedTests.isEmpty()
         assert adapter.passedTests.size() == 1
+    }
+
+    @Test
+    void reporterWithSpockSampleShouldWork() {
+        def tng = create(SpockSample)
+        tng.setJUnit(true)
+        tng.addListener((ITestNGListener) new JUnitXMLReporter())
+        tng.run()
     }
 }

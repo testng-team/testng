@@ -442,7 +442,7 @@ public class ConfigurationMethod extends BaseTestMethod {
 
   public boolean isFirstTimeOnly() {
     boolean result = false;
-    IAnnotation before = m_annotationFinder.findAnnotation(getMethod(), IBeforeMethod.class);
+    IAnnotation before = m_annotationFinder.findAnnotation(getConstructorOrMethod(), IBeforeMethod.class);
     if (before != null) {
       result = ((ConfigurationAnnotation) before).isFirstTimeOnly();
     }
@@ -451,7 +451,7 @@ public class ConfigurationMethod extends BaseTestMethod {
 
   public boolean isLastTimeOnly() {
     boolean result = false;
-    IAnnotation before = m_annotationFinder.findAnnotation(getMethod(), IAfterMethod.class);
+    IAnnotation before = m_annotationFinder.findAnnotation(getConstructorOrMethod(), IAfterMethod.class);
     if (before != null) {
       result = ((ConfigurationAnnotation) before).isLastTimeOnly();
     }

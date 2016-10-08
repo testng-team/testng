@@ -218,7 +218,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       List<XmlInclude> methodNames= Lists.newArrayList(methodList.size());
       int ind = 0;
       for(ITestNGMethod m: methodList) {
-        XmlInclude methodName = new XmlInclude(m.getMethod().getName(), m.getFailedInvocationNumbers(),
+        XmlInclude methodName = new XmlInclude(m.getConstructorOrMethod().getName(), m.getFailedInvocationNumbers(),
                 ind++);
         methodName.setParameters(findMethodLocalParameters(srcXmlTest, m));
         methodNames.add(methodName);

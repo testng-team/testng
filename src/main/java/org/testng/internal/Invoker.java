@@ -181,7 +181,7 @@ public class Invoker implements IInvoker {
           inst = instance;
         }
         Class<?> objectClass= inst.getClass();
-        Method method= tm.getMethod();
+        ConstructorOrMethod method= tm.getConstructorOrMethod();
 
         // Only run the configuration if
         // - the test is enabled and
@@ -199,7 +199,7 @@ public class Invoker implements IInvoker {
 
             log(3, "Invoking " + Utils.detailedMethodName(tm, true));
 
-            Object[] parameters = Parameters.createConfigurationParameters(tm.getMethod(),
+            Object[] parameters = Parameters.createConfigurationParameters(tm.getConstructorOrMethod().getMethod(),
                 params,
                 parameterValues,
                 currentTestMethod,
@@ -494,16 +494,16 @@ public class Invoker implements IInvoker {
       m_notifier.addInvokedMethod(invokedMethod);
       try {
         Reporter.setCurrentTestResult(testResult);
-        Method method = tm.getMethod();
+        ConstructorOrMethod method = tm.getConstructorOrMethod();
 
         //
         // If this method is a IConfigurable, invoke its run() method
         //
         IConfigurable configurableInstance =
-          IConfigurable.class.isAssignableFrom(tm.getMethod().getDeclaringClass()) ?
+          IConfigurable.class.isAssignableFrom(method.getDeclaringClass()) ?
           (IConfigurable) targetInstance : m_configuration.getConfigurable();
         if (configurableInstance != null) {
-          MethodInvocationHelper.invokeConfigurable(targetInstance, params, configurableInstance, method,
+          MethodInvocationHelper.invokeConfigurable(targetInstance, params, configurableInstance, method.getMethod(),
               testResult);
         }
         else {
@@ -511,7 +511,7 @@ public class Invoker implements IInvoker {
           // Not a IConfigurable, invoke directly
           //
           if (MethodHelper.calculateTimeOut(tm) <= 0) {
-            MethodInvocationHelper.invokeMethod(method, targetInstance, params);
+            MethodInvocationHelper.invokeMethod(method.getMethod(), targetInstance, params);
           }
           else {
             MethodInvocationHelper.invokeWithTimeout(tm, targetInstance, params, testResult);
@@ -1009,7 +1009,7 @@ public class Invoker implements IInvoker {
     assert null != testMethod.getTestClass()
         : "COULDN'T FIND TESTCLASS FOR " + testMethod.getRealClass();
 
-    if (!MethodHelper.isEnabled(testMethod.getMethod(), m_annotationFinder)) {
+    if (!MethodHelper.isEnabled(testMethod.getConstructorOrMethod().getMethod(), m_annotationFinder)) {
       // return if the method is not enabled. No need to do any more calculations
       return Collections.emptyList();
     }
@@ -1098,7 +1098,7 @@ public class Invoker implements IInvoker {
                 continue;
               }
               Object[] parameterValues = injectParameters(next,
-                  testMethod.getMethod(), testContext, null /* test result */);
+                  testMethod.getConstructorOrMethod().getMethod(), testContext, null /* test result */);
 
               TestMethodWithDataProviderMethodWorker w =
                 new TestMethodWithDataProviderMethodWorker(this,
@@ -1127,7 +1127,7 @@ public class Invoker implements IInvoker {
                 continue;
               }
               Object[] parameterValues = injectParameters(next,
-                  testMethod.getMethod(), testContext, null /* test result */);
+                  testMethod.getConstructorOrMethod().getMethod(), testContext, null /* test result */);
 
               List<ITestResult> tmpResults = Lists.newArrayList();
               int tmpResultsIndex = -1;
@@ -1254,7 +1254,7 @@ public class Invoker implements IInvoker {
             new Parameters.MethodParameters(parameters,
                 testMethod.findMethodParameters(testContext.getCurrentXmlTest()),
                 parameterValues,
-                testMethod.getMethod(), testContext, testResult),
+                testMethod.getConstructorOrMethod().getMethod(), testContext, testResult),
             suite,
             m_annotationFinder,
             fedInstance));
