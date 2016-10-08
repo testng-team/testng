@@ -817,7 +817,8 @@ public class TestNgRunStateTracker {
         TEST_NAME,
         CLASS_NAME,
         METHOD_NAME,
-        CLASS_INSTANCE
+        CLASS_INSTANCE,
+        DATA_PROVIDER_PARAM
     }
 
     public static class EventLog {

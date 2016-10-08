@@ -112,7 +112,7 @@ public class TestNgRunStateListener implements ISuiteListener, ITestListener {
 
     private void delayAfterEvent(TestNgRunEvent event) {
         try {
-            TimeUnit.SECONDS.sleep(1);
+            TimeUnit.MILLISECONDS.sleep(500);
         } catch(InterruptedException e) {
             throw new RuntimeException("Problem with delaying after listener event: " + event, e);
         }
