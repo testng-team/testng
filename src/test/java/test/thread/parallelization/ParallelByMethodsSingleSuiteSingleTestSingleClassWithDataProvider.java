@@ -1,20 +1,23 @@
 package test.thread.parallelization;
 
 import com.google.common.collect.Multimap;
+
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
+
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
 import org.testng.xml.XmlSuite;
 
 import test.thread.parallelization.TestNgRunStateTracker.EventLog;
-import test.thread.parallelization.sample.TestClassAFiveMethodsWithNoDepsSample;
+import test.thread.parallelization.sample.TestClassAFiveMethodsWithDataProviderAndNoDepsSample;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.testng.Assert.assertEquals;
-
+import static test.thread.parallelization.TestNgRunStateTracker.getAllEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteAndTestLevelEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteLevelEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllTestLevelEventLogs;
@@ -25,13 +28,9 @@ import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerF
 import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerStartEventLog;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerStartThreadId;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodEventLogsForMethod;
-
 import static test.thread.parallelization.TestNgRunStateTracker.reset;
 
-//Verify simple test run with a single suite which consists of a single test with a single test class. The thread count
-//is sufficient to run all methods in parallel at once, so no methods should be queued.
-public class ParallelByMethodsSingleSuiteSingleTestSingleClassTest extends BaseParallelizationTest {
-
+public class ParallelByMethodsSingleSuiteSingleTestSingleClassWithDataProvider extends BaseParallelizationTest {
     private static final String SUITE = "SingleTestSuite";
     private static final String TEST = "SingleTestClassTest";
 
@@ -55,18 +54,19 @@ public class ParallelByMethodsSingleSuiteSingleTestSingleClassTest extends BaseP
     private Multimap<Object, EventLog> testMethodEEventLogs;
 
     @BeforeClass
-    public void singleSuiteSingleTestSingleTestClass() {
+    public void singleSuiteSingleTestSingleTestClassWithDataProvider() {
         reset();
 
         XmlSuite suite = createXmlSuite(SUITE);
         suite.setParallel(XmlSuite.ParallelMode.METHODS);
-        suite.setThreadCount(5);
+        suite.setThreadCount(15);
 
-        createXmlTest(suite, TEST, TestClassAFiveMethodsWithNoDepsSample.class);
+        createXmlTest(suite, TEST, TestClassAFiveMethodsWithDataProviderAndNoDepsSample.class);
 
-        addParams(suite, SUITE, TEST, "1");
+        addParams(suite, SUITE, TEST, "1", "paramOne,paramTwo,paramThree");
 
         TestNG tng = create(suite);
+
         tng.addListener((ITestNGListener)new TestNgRunStateListener());
 
         tng.run();
@@ -77,15 +77,15 @@ public class ParallelByMethodsSingleSuiteSingleTestSingleClassTest extends BaseP
         testMethodLevelEventLogs = getAllTestMethodLevelEventLogs();
 
         testMethodAEventLogs = getTestMethodEventLogsForMethod(SUITE, TEST,
-                TestClassAFiveMethodsWithNoDepsSample.class.getCanonicalName(), "testMethodA");
+                TestClassAFiveMethodsWithDataProviderAndNoDepsSample.class.getCanonicalName(), "testMethodA");
         testMethodBEventLogs = getTestMethodEventLogsForMethod(SUITE, TEST,
-                TestClassAFiveMethodsWithNoDepsSample.class.getCanonicalName(), "testMethodB");
+                TestClassAFiveMethodsWithDataProviderAndNoDepsSample.class.getCanonicalName(), "testMethodB");
         testMethodCEventLogs = getTestMethodEventLogsForMethod(SUITE, TEST,
-                TestClassAFiveMethodsWithNoDepsSample.class.getCanonicalName(), "testMethodC");
+                TestClassAFiveMethodsWithDataProviderAndNoDepsSample.class.getCanonicalName(), "testMethodC");
         testMethodDEventLogs = getTestMethodEventLogsForMethod(SUITE, TEST,
-                TestClassAFiveMethodsWithNoDepsSample.class.getCanonicalName(), "testMethodD");
+                TestClassAFiveMethodsWithDataProviderAndNoDepsSample.class.getCanonicalName(), "testMethodD");
         testMethodEEventLogs = getTestMethodEventLogsForMethod(SUITE, TEST,
-                TestClassAFiveMethodsWithNoDepsSample.class.getCanonicalName(), "testMethodE");
+                TestClassAFiveMethodsWithDataProviderAndNoDepsSample.class.getCanonicalName(), "testMethodE");
 
         suiteListenerOnStartEventLog = getSuiteListenerStartEventLog(SUITE);
         suiteListenerOnFinishEventLog = getSuiteListenerFinishEventLog(SUITE);
@@ -103,7 +103,7 @@ public class ParallelByMethodsSingleSuiteSingleTestSingleClassTest extends BaseP
                 suiteLevelEventLogs);
         assertEquals(testLevelEventLogs.size(), 2, "There should be 2 test level events logged for " + SUITE + ": " +
                 testLevelEventLogs);
-        assertEquals(testMethodLevelEventLogs.size(), 15, "There should be 15 test method level event logged for " +
+        assertEquals(testMethodLevelEventLogs.size(), 45, "There should be 15 test method level event logged for " +
                 SUITE + ": " + testMethodLevelEventLogs);
     }
 
@@ -134,13 +134,13 @@ public class ParallelByMethodsSingleSuiteSingleTestSingleClassTest extends BaseP
         verifyNumberOfInstancesOfTestClassForMethods(
                 SUITE,
                 TEST,
-                TestClassAFiveMethodsWithNoDepsSample.class,
+                TestClassAFiveMethodsWithDataProviderAndNoDepsSample.class,
                 1);
 
         verifySameInstancesOfTestClassAssociatedWithMethods(
                 SUITE,
                 TEST,
-                TestClassAFiveMethodsWithNoDepsSample.class);
+                TestClassAFiveMethodsWithDataProviderAndNoDepsSample.class);
     }
 
     //Verifies that all the test method level events execute between the test listener onStart and onFinish methods
@@ -204,4 +204,5 @@ public class ParallelByMethodsSingleSuiteSingleTestSingleClassTest extends BaseP
                         testMethodEEventLogs.get(testMethodEEventLogs.keySet().toArray()[0])
         );
     }
+
 }

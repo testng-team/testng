@@ -90,7 +90,7 @@ public class ParallelByMethodsParallelSuitesNoSuiteQueuing extends BaseParalleli
     private EventLog suiteTwoTestTwoListenerOnFinishEventLog;
 
     @BeforeClass
-    public void parallelSuites() {
+    public void parallelSuitesWithoutSuiteQueing() {
         reset();
 
         XmlSuite suiteOne = createXmlSuite(SUITE_A);
@@ -108,10 +108,10 @@ public class ParallelByMethodsParallelSuitesNoSuiteQueuing extends BaseParalleli
         suiteTwo.setThreadCount(14);
 
 
-        addParams(suiteOne, SUITE_A, SUITE_A_TEST_A, "5");
+        addParams(suiteOne, SUITE_A, SUITE_A_TEST_A, "1");
 
-        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_A, "5");
-        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_B, "5");
+        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_A, "1");
+        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_B, "1");
 
         TestNG tng = create(suiteOne, suiteTwo);
         tng.setSuiteThreadPoolSize(2);
@@ -119,11 +119,11 @@ public class ParallelByMethodsParallelSuitesNoSuiteQueuing extends BaseParalleli
 
         tng.run();
 
-        expectedSuiteExecutionTimes.put(SUITE_A, (long)32000);
-        expectedSuiteExecutionTimes.put(SUITE_B, (long)20000);
+        expectedSuiteExecutionTimes.put(SUITE_A, 10_000L);
+        expectedSuiteExecutionTimes.put(SUITE_B, 7_000L);
 
-        expectedTestExecutionTimes.put(SUITE_B_TEST_A, (long)9000);
-        expectedTestExecutionTimes.put(SUITE_B_TEST_B, (long)9000);
+        expectedTestExecutionTimes.put(SUITE_B_TEST_A, 3_000L);
+        expectedTestExecutionTimes.put(SUITE_B_TEST_B, 3_000L);
 
         suiteLevelEventLogs = getAllSuiteLevelEventLogs();
         testLevelEventLogs = getAllTestLevelEventLogs();
