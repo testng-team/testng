@@ -23,7 +23,7 @@ public class Bsh implements IBsh {
       for (String group : tm.getGroups()) {
         groups.put(group, group);
       }
-      setContext(interpreter, tm.getMethod(), groups, tm);
+      setContext(interpreter, tm.getConstructorOrMethod().getMethod(), groups, tm);
       Object evalResult = interpreter.eval(expression);
       result = (Boolean) evalResult;
     }

@@ -174,7 +174,7 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
    */
   @Override
   public BaseTestMethod clone() {
-    TestNGMethod clone= new TestNGMethod(getMethod(), getAnnotationFinder(), false, getXmlTest(),
+    TestNGMethod clone= new TestNGMethod(getConstructorOrMethod().getMethod(), getAnnotationFinder(), false, getXmlTest(),
         getInstance());
     ITestClass tc= getTestClass();
     NoOpTestClass testClass= new NoOpTestClass(tc);

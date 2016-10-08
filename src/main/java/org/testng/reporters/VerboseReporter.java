@@ -6,6 +6,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
+import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.Utils;
 
 /**
@@ -198,7 +199,7 @@ public class VerboseReporter extends TestListenerAdapter {
         int identLevel = sb.length();
         sb.append(getMethodDeclaration(tm));
         Object[] params = itr.getParameters();
-        Class[] paramTypes = tm.getMethod().getParameterTypes();
+        Class[] paramTypes = tm.getConstructorOrMethod().getParameterTypes();
         if (null != params && params.length > 0) {
             // The error might be a data provider parameter mismatch, so make
             // a special case here
@@ -264,7 +265,7 @@ public class VerboseReporter extends TestListenerAdapter {
     private String getMethodDeclaration(ITestNGMethod method) {
         //see Utils.detailedMethodName
         //perhaps should rather adopt the original method instead
-        Method m = method.getMethod();
+        ConstructorOrMethod m = method.getConstructorOrMethod();
         StringBuilder buf = new StringBuilder();
         buf.append("\"");
         if (suiteName != null) {

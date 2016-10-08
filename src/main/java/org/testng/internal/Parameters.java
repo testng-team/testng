@@ -78,7 +78,7 @@ public class Parameters {
       ITestResult testResult)
   {
     Method currentTestMeth= currentTestMethod != null ?
-        currentTestMethod.getMethod() : null;
+        currentTestMethod.getConstructorOrMethod().getMethod() : null;
 
     Map<String, String> methodParams = currentTestMethod != null
         ? currentTestMethod.findMethodParameters(ctx.getCurrentXmlTest())
@@ -493,7 +493,7 @@ public class Parameters {
       allParameterNames.putAll(methodParams.xmlParameters);
       // Create an Object[][] containing just one row of parameters
       Object[][] allParameterValuesArray = new Object[1][];
-      allParameterValuesArray[0] = createParameters(testMethod.getMethod(),
+      allParameterValuesArray[0] = createParameters(testMethod.getConstructorOrMethod().getMethod(),
           methodParams, annotationFinder, xmlSuite, ITestAnnotation.class, "@Test");
 
       // Mark that this method needs to have at least a certain

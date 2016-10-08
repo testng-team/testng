@@ -18,7 +18,7 @@ public class VerifyMethodInterceptor implements IMethodInterceptor {
     // twice, once to find the verifier and once more to actually create
     // the result. Obviously, this can be done with just one loop
     for (IMethodInstance m : methods) {
-      if (m.getMethod().getMethod().getAnnotation(Verifier.class) != null) {
+      if (m.getMethod().getConstructorOrMethod().getMethod().getAnnotation(Verifier.class) != null) {
         verifier = m;
         break;
       }
@@ -31,7 +31,7 @@ public class VerifyMethodInterceptor implements IMethodInterceptor {
         result.add(m);
       }
 
-      if (m.getMethod().getMethod().getAnnotation(Verify.class) != null) {
+      if (m.getMethod().getConstructorOrMethod().getMethod().getAnnotation(Verify.class) != null) {
         result.add(verifier);
       }
     }

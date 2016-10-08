@@ -57,7 +57,7 @@ public class TextReporter extends TestListenerAdapter {
           tr.getMethod().getDescription(),
           stackTrace,
           tr.getParameters(),
-          tr.getMethod().getMethod().getParameterTypes()
+          tr.getMethod().getConstructorOrMethod().getParameterTypes()
       );
     }
 
@@ -67,7 +67,7 @@ public class TextReporter extends TestListenerAdapter {
           tr.getMethod().getDescription(),
           null,
           tr.getParameters(),
-          tr.getMethod().getMethod().getParameterTypes()
+          tr.getMethod().getConstructorOrMethod().getParameterTypes()
       );
     }
 
@@ -108,7 +108,7 @@ public class TextReporter extends TestListenerAdapter {
 
   private void logResult(String status, ITestResult tr, String stackTrace) {
     logResult(status, tr.getName(), tr.getMethod().getDescription(), stackTrace,
-        tr.getParameters(), tr.getMethod().getMethod().getParameterTypes());
+        tr.getParameters(), tr.getMethod().getConstructorOrMethod().getParameterTypes());
   }
 
   private void logResult(String status, String message) {

@@ -328,7 +328,7 @@ public class ClonedMethod implements ITestNGMethod {
 
   @Override
   public String toString() {
-    Method m = getMethod();
+    ConstructorOrMethod m = getConstructorOrMethod();
     String cls = m.getDeclaringClass().getName();
     StringBuffer result = new StringBuffer(cls + "." + m.getName() + "(");
     int i = 0;

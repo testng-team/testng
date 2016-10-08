@@ -11,6 +11,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.Reporter;
 import org.testng.collections.Maps;
+import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlSuite;
 
@@ -175,7 +176,7 @@ public class SuiteHTMLReporter implements IReporter {
       Collection<ITestNGMethod> excluded = suite.getExcludedMethods();
       StringBuffer sb2 = new StringBuffer("<h2>Methods that were not run</h2><table>\n");
       for (ITestNGMethod method : excluded) {
-        Method m = method.getMethod();
+        ConstructorOrMethod m = method.getConstructorOrMethod();
         if (m != null) {
           sb2.append("<tr><td>")
           .append(m.getDeclaringClass().getName() + "." + m.getName());

@@ -3,6 +3,7 @@ package org.testng.junit;
 import org.testng.ITestMethodFinder;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
+import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.TestNGMethod;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
@@ -50,7 +51,7 @@ public class JUnitMethodFinder implements ITestMethodFinder {
     ITestNGMethod[] result =
       privateFindTestMethods(new INameFilter() {
         @Override
-        public boolean accept(Method method) {
+        public boolean accept(ConstructorOrMethod method) {
           return method.getName().startsWith("test") &&
             method.getParameterTypes().length == 0;
         }
@@ -84,7 +85,7 @@ public class JUnitMethodFinder implements ITestMethodFinder {
         ITestNGMethod m = new TestNGMethod(/* allMethods[i].getDeclaringClass(), */ allMethod,
             m_annotationFinder, null,
             null); /* @@@ */
-        Method method = m.getMethod();
+        ConstructorOrMethod method = m.getConstructorOrMethod();
         String methodName = method.getName();
         if(filter.accept(method) && !acceptedMethodNames.contains(methodName)) {
           //          if (m.getName().startsWith("test")) {
@@ -131,7 +132,7 @@ public class JUnitMethodFinder implements ITestMethodFinder {
   public ITestNGMethod[] getBeforeTestMethods(Class cls) {
     ITestNGMethod[] result = privateFindTestMethods(new INameFilter() {
         @Override
-        public boolean accept(Method method) {
+        public boolean accept(ConstructorOrMethod method) {
           return "setUp".equals(method.getName());
         }
       }, cls);
@@ -143,7 +144,7 @@ public class JUnitMethodFinder implements ITestMethodFinder {
   public ITestNGMethod[] getAfterTestMethods(Class cls) {
     ITestNGMethod[] result =  privateFindTestMethods(new INameFilter() {
         @Override
-        public boolean accept(Method method) {
+        public boolean accept(ConstructorOrMethod method) {
           return "tearDown".equals(method.getName());
         }
       }, cls);
@@ -195,5 +196,5 @@ public class JUnitMethodFinder implements ITestMethodFinder {
 /////////////
 
 interface INameFilter {
-  public boolean accept(Method method);
+  boolean accept(ConstructorOrMethod method);
 }

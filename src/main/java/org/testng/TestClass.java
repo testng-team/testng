@@ -2,11 +2,7 @@ package org.testng;
 
 import org.testng.collections.Lists;
 import org.testng.collections.Objects;
-import org.testng.internal.ConfigurationMethod;
-import org.testng.internal.NoOpTestClass;
-import org.testng.internal.RunInfo;
-import org.testng.internal.TestNGMethod;
-import org.testng.internal.Utils;
+import org.testng.internal.*;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
@@ -185,11 +181,11 @@ class TestClass extends NoOpTestClass implements ITestClass {
   private ITestNGMethod[] createTestMethods(ITestNGMethod[] methods) {
     List<ITestNGMethod> vResult = Lists.newArrayList();
     for (ITestNGMethod tm : methods) {
-      Method m = tm.getMethod();
+      ConstructorOrMethod m = tm.getConstructorOrMethod();
       if (m.getDeclaringClass().isAssignableFrom(m_testClass)) {
         for (Object o : m_iClass.getInstances(false)) {
           log(4, "Adding method " + tm + " on TestClass " + m_testClass);
-          vResult.add(new TestNGMethod(/* tm.getRealClass(), */ m, m_annotationFinder, m_xmlTest,
+          vResult.add(new TestNGMethod(/* tm.getRealClass(), */ m.getMethod(), m_annotationFinder, m_xmlTest,
               o));
         }
       }

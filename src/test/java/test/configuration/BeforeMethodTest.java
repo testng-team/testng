@@ -23,7 +23,7 @@ public class BeforeMethodTest {
     Assert.assertEquals(m_method.getName(), "mainTest");
     ITestNGMethod[] methods = m_context.getAllTestMethods();
     Assert.assertEquals(1, methods.length);
-    Assert.assertEquals(methods[0].getMethod().getName(), "mainTest");
+    Assert.assertEquals(methods[0].getConstructorOrMethod().getName(), "mainTest");
 
   }
 }

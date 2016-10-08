@@ -79,10 +79,10 @@ public class MethodHelper {
         Pattern pattern = Pattern.compile(regexp);
 
         for (ITestNGMethod method : methods) {
-          Method thisMethod = method.getMethod();
+          ConstructorOrMethod thisMethod = method.getConstructorOrMethod();
           String thisMethodName = thisMethod.getName();
           String methodName = usePackage ?
-              calculateMethodCanonicalName(thisMethod)
+              calculateMethodCanonicalName(method)
               : thisMethodName;
           Pair<String, String> cacheKey = Pair.create(regexp, methodName);
           Boolean match = MATCH_CACHE.get(cacheKey);
@@ -130,7 +130,7 @@ public class MethodHelper {
     int lastDot = regExp.lastIndexOf('.');
     String className, methodName;
     if (lastDot == -1) {
-      className = testngMethod.getMethod().getDeclaringClass().getCanonicalName();
+      className = testngMethod.getConstructorOrMethod().getDeclaringClass().getCanonicalName();
       methodName = regExp;
     } else {
       methodName = regExp.substring(lastDot + 1);
@@ -233,7 +233,7 @@ public class MethodHelper {
   }
 
   protected static String calculateMethodCanonicalName(ITestNGMethod m) {
-    return calculateMethodCanonicalName(m.getMethod());
+    return calculateMethodCanonicalName(m.getConstructorOrMethod().getMethod());
   }
 
   private static String calculateMethodCanonicalName(Method m) {
