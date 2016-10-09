@@ -44,6 +44,7 @@ import org.testng.internal.reflect.MethodMatcherContext;
 import org.testng.internal.thread.ThreadExecutionException;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.internal.thread.graph.IWorker;
+import org.testng.util.Strings;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -1260,6 +1261,10 @@ public class Invoker implements IInvoker {
             fedInstance));
     }
     catch(Throwable cause) {
+      String[] msg = Utils.stackTrace((cause.getCause() != null ? cause.getCause() : cause), true);
+      if (msg != null &&  Strings.isNotNullAndNotEmpty(msg[1]) ) {
+        Utils.error(msg[1]);
+      }
       return new ParameterBag(
           new TestResult(
               testMethod.getTestClass(),

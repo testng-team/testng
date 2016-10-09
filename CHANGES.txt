@@ -1,4 +1,5 @@
 ﻿Current
+Fixed: GITHUB-1107: TestNG does not report/print/log throwables in data providers (Krishnan Mahadevan)
 Fixed: GITHUB-1186: NullPointerException in JUnit reporter when used with Spock (Ian Robertson & Julien Herr)
 Fixed: GITHUB-1180: NullPointerException on getting excluded/included groups (Krishnan Mahadevan)
 Fixed: GITHUB-1064: Incorrect logging of parallel mode of a test
