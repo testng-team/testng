@@ -8,11 +8,11 @@ import java.util.Map;
 
 public class Strings {
   public static boolean isNullOrEmpty(String string) {
-    return string == null || string.length() == 0; // string.isEmpty() in Java 6
+    return string == null || string.trim().length() == 0; // string.isEmpty() in Java 6
   }
 
   public static boolean isNotNullAndNotEmpty(String string) {
-    return ( (string != null) && (! string.trim().isEmpty()));
+    return ! (isNullOrEmpty(string));
   }
 
   private static List<String> ESCAPE_HTML_LIST = Lists.newArrayList(
