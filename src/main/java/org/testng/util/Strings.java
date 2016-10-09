@@ -11,6 +11,10 @@ public class Strings {
     return string == null || string.length() == 0; // string.isEmpty() in Java 6
   }
 
+  public static boolean isNotNullAndNotEmpty(String string) {
+    return ( (string != null) && (! string.trim().isEmpty()));
+  }
+
   private static List<String> ESCAPE_HTML_LIST = Lists.newArrayList(
     "&", "&amp;",
     "<", "&lt;",
