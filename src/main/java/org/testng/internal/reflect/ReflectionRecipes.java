@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Arrays;
 
 /**
  * Utility class to handle reflection.
@@ -22,8 +23,14 @@ import java.util.Set;
 public final class ReflectionRecipes {
 
   private static final Map<Class, Class> PRIMITIVE_MAPPING = new HashMap<>();
+  private static final Map<Class, List<Class>> ASSIGNABLE_MAPPING = new HashMap<>();
 
   static {
+    initPrimitiveMapping();
+    initAssignableMapping();
+  }
+
+  private static void initPrimitiveMapping() {
     PRIMITIVE_MAPPING.put(boolean.class, Boolean.class);
     PRIMITIVE_MAPPING.put(byte.class, Byte.class);
     PRIMITIVE_MAPPING.put(short.class, Short.class);
@@ -33,6 +40,16 @@ public final class ReflectionRecipes {
     PRIMITIVE_MAPPING.put(double.class, Double.class);
     PRIMITIVE_MAPPING.put(char.class, Character.class);
     PRIMITIVE_MAPPING.put(void.class, Void.class);
+  }
+
+  private static void initAssignableMapping() {
+    ASSIGNABLE_MAPPING.put(double.class,
+        Arrays.<Class>asList(Float.class, Long.class, Integer.class, Short.class,Character.class,Byte.class));
+    ASSIGNABLE_MAPPING.put(float.class,
+        Arrays.<Class>asList(Long.class, Integer.class, Short.class, Character.class,Byte.class));
+    ASSIGNABLE_MAPPING.put(long.class, Arrays.<Class>asList(Integer.class, Short.class, Character.class,Byte.class));
+    ASSIGNABLE_MAPPING.put(int.class, Arrays.<Class>asList(Short.class, Character.class,Byte.class));
+    ASSIGNABLE_MAPPING.put(short.class, Arrays.<Class>asList(Character.class, Byte.class));
   }
 
   private ReflectionRecipes() {
@@ -54,6 +71,10 @@ public final class ReflectionRecipes {
     final boolean directInstance = reference.isInstance(object);
     if (!directInstance && reference.isPrimitive()) {
       isInstanceOf = PRIMITIVE_MAPPING.get(reference).isInstance(object);
+      if (!isInstanceOf) {
+        isInstanceOf = ASSIGNABLE_MAPPING.get(reference).contains(object.getClass());
+      }
+
     } else {
       isInstanceOf = directInstance;
     }

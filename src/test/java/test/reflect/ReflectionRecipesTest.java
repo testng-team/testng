@@ -288,7 +288,7 @@ public class ReflectionRecipesTest {
         case 0:
           return new Object[][]{
             new Object[]{new Object[]{10f, 2.1f}, true},
-            new Object[]{new Object[]{10}, false},
+            new Object[]{new Object[]{10}, true},
             new Object[]{new Object[]{10d, ""}, false},
             new Object[]{new Object[]{1, ""}, false},
           };
