@@ -652,7 +652,11 @@ public class Invoker implements IInvoker {
             MethodInvocationHelper.invokeMethod(thisMethod, instance,
                 parameterValues);
           }
-          testResult.setStatus(ITestResult.SUCCESS);
+          // set the test to success as long as the testResult hasn't been changed by the user via
+          // Reporter.getCurrentTestResult
+          if (testResult.getStatus() == ITestResult.STARTED) {
+            testResult.setStatus(ITestResult.SUCCESS);
+          }
         } else {
           // Method with a timeout
           MethodInvocationHelper.invokeWithTimeout(tm, instance, parameterValues, testResult, hookableInstance);
