@@ -1,4 +1,5 @@
-﻿Current
+Current
+Fixed: GITHUB-1197: Ability to dynamically set the status and exception of a test via ITestResult (Anthony Nguyen)
 Fixed: GITHUB-1181: Fix MethodMatcherException: Data provider mismatch (Krishnan Mahadevan)
 Fixed: GITHUB-1107: TestNG does not report/print/log throwables in data providers (Krishnan Mahadevan)
 Fixed: GITHUB-1186: NullPointerException in JUnit reporter when used with Spock (Ian Robertson & Julien Herr)
