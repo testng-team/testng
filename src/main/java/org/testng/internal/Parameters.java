@@ -191,13 +191,24 @@ public class Parameters {
       }
     }
 
-    if (parameterNames.length != totalLength) {
+    if ( (parameterNames.length ==0) && (totalLength != 0) ) {
+      //parameterNames is usually populated via the @Parameters annotation, so we would need to
+      //apply our logic only when @Parameters annotation is not involved.
       throw new TestNGException(
           "Cannot inject " + methodAnnotation + " annotated Method [" + methodName + "] with " +
               Arrays.toString(parameterTypes)
               + ".\nFor more information on native dependency injection please refer to " +
               "http://testng.org/doc/documentation-main.html#native-dependency-injection"
       );
+    }
+
+    if (parameterNames.length != totalLength) {
+      throw new TestNGException( "Method " + methodName + " requires "
+          + parameterTypes.length + " parameters but "
+          + parameterNames.length
+          + " were supplied in the "
+          + methodAnnotation
+          + " annotation.");
     }
   }
 

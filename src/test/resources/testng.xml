@@ -166,6 +166,7 @@
       <class name="test.inject.InjectTestResultTest" />
       <class name="test.inject.InjectDataProviderTest"/>
       <class name="test.inject.NoInjectionTest" />
+      <class name="test.inject.NativeInjectionTest" />
     </classes>
   </test>
 
