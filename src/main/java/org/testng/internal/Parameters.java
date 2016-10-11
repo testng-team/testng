@@ -5,6 +5,7 @@ import com.google.inject.Injector;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -191,12 +192,12 @@ public class Parameters {
     }
 
     if (parameterNames.length != totalLength) {
-      throw new TestNGException( "Method " + methodName + " requires "
-          + parameterTypes.length + " parameters but "
-          + parameterNames.length
-          + " were supplied in the "
-          + methodAnnotation
-          + " annotation.");
+      throw new TestNGException(
+          "Cannot inject " + methodAnnotation + " annotated Method [" + methodName + "] with " +
+              Arrays.toString(parameterTypes)
+              + ".\nFor more information on native dependency injection please refer to " +
+              "http://testng.org/doc/documentation-main.html#native-dependency-injection"
+      );
     }
   }
 
