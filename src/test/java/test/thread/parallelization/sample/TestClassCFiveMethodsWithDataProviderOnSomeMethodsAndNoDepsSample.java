@@ -2,10 +2,10 @@ package test.thread.parallelization.sample;
 
 import org.testng.ITestContext;
 import org.testng.annotations.DataProvider;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import test.thread.parallelization.TestNgRunStateTracker;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -15,8 +15,9 @@ import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.DATA_P
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.METHOD_NAME;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.SUITE_NAME;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.TEST_NAME;
+import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.TEST_METHOD_EXECUTION;
 
-public class TestClassAFiveMethodsWithDataProviderAndNoDepsSample {
+public class TestClassCFiveMethodsWithDataProviderOnSomeMethodsAndNoDepsSample {
 
     @Test(dataProvider = "data-provider")
     public void testMethodA(String suiteName, String testName, String sleepFor, String dpVal) throws
@@ -25,7 +26,7 @@ public class TestClassAFiveMethodsWithDataProviderAndNoDepsSample {
 
         TestNgRunStateTracker.logEvent(
                 TestNgRunStateTracker.EventLog.builder()
-                        .setEvent(TestNgRunStateTracker.TestNgRunEvent.TEST_METHOD_EXECUTION)
+                        .setEvent(TEST_METHOD_EXECUTION)
                         .setTimeOfEvent(time)
                         .setThread(Thread.currentThread())
                         .addData(METHOD_NAME, "testMethodA")
@@ -40,14 +41,15 @@ public class TestClassAFiveMethodsWithDataProviderAndNoDepsSample {
         TimeUnit.SECONDS.sleep(Integer.parseInt(sleepFor));
     }
 
-    @Test(dataProvider = "data-provider")
-    public void testMethodB(String suiteName, String testName, String sleepFor, String dpVal) throws
+    @Parameters({ "suiteName", "testName", "sleepFor" })
+    @Test
+    public void testMethodB(String suiteName, String testName, String sleepFor) throws
             InterruptedException {
         long time = System.currentTimeMillis();
 
         TestNgRunStateTracker.logEvent(
                 TestNgRunStateTracker.EventLog.builder()
-                        .setEvent(TestNgRunStateTracker.TestNgRunEvent.TEST_METHOD_EXECUTION)
+                        .setEvent(TEST_METHOD_EXECUTION)
                         .setTimeOfEvent(time)
                         .setThread(Thread.currentThread())
                         .addData(METHOD_NAME, "testMethodB")
@@ -55,7 +57,6 @@ public class TestClassAFiveMethodsWithDataProviderAndNoDepsSample {
                         .addData(CLASS_INSTANCE, this)
                         .addData(TEST_NAME, testName)
                         .addData(SUITE_NAME, suiteName)
-                        .addData(DATA_PROVIDER_PARAM, dpVal)
                         .build()
         );
 
@@ -69,7 +70,7 @@ public class TestClassAFiveMethodsWithDataProviderAndNoDepsSample {
 
         TestNgRunStateTracker.logEvent(
                 TestNgRunStateTracker.EventLog.builder()
-                        .setEvent(TestNgRunStateTracker.TestNgRunEvent.TEST_METHOD_EXECUTION)
+                        .setEvent(TEST_METHOD_EXECUTION)
                         .setTimeOfEvent(time)
                         .setThread(Thread.currentThread())
                         .addData(METHOD_NAME, "testMethodC")
@@ -84,14 +85,15 @@ public class TestClassAFiveMethodsWithDataProviderAndNoDepsSample {
         TimeUnit.SECONDS.sleep(Integer.parseInt(sleepFor));
     }
 
-    @Test(dataProvider = "data-provider")
-    public void testMethodD(String suiteName, String testName, String sleepFor, String dpVal) throws
+    @Parameters({ "suiteName", "testName", "sleepFor" })
+    @Test
+    public void testMethodD(String suiteName, String testName, String sleepFor) throws
             InterruptedException {
         long time = System.currentTimeMillis();
 
         TestNgRunStateTracker.logEvent(
                 TestNgRunStateTracker.EventLog.builder()
-                        .setEvent(TestNgRunStateTracker.TestNgRunEvent.TEST_METHOD_EXECUTION)
+                        .setEvent(TEST_METHOD_EXECUTION)
                         .setTimeOfEvent(time)
                         .setThread(Thread.currentThread())
                         .addData(METHOD_NAME, "testMethodD")
@@ -99,7 +101,6 @@ public class TestClassAFiveMethodsWithDataProviderAndNoDepsSample {
                         .addData(CLASS_INSTANCE, this)
                         .addData(TEST_NAME, testName)
                         .addData(SUITE_NAME, suiteName)
-                        .addData(DATA_PROVIDER_PARAM, dpVal)
                         .build()
         );
 
@@ -113,7 +114,7 @@ public class TestClassAFiveMethodsWithDataProviderAndNoDepsSample {
 
         TestNgRunStateTracker.logEvent(
                 TestNgRunStateTracker.EventLog.builder()
-                        .setEvent(TestNgRunStateTracker.TestNgRunEvent.TEST_METHOD_EXECUTION)
+                        .setEvent(TEST_METHOD_EXECUTION)
                         .setTimeOfEvent(time)
                         .setThread(Thread.currentThread())
                         .addData(METHOD_NAME, "testMethodE")

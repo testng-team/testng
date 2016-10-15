@@ -90,7 +90,7 @@ public class ParallelByMethodsParallelSuitesNoSuiteQueuing extends BaseParalleli
     private EventLog suiteTwoTestTwoListenerOnFinishEventLog;
 
     @BeforeClass
-    public void parallelSuitesWithoutSuiteQueing() {
+    public void parallelSuitesWithoutSuiteQueuing() {
         reset();
 
         XmlSuite suiteOne = createXmlSuite(SUITE_A);

@@ -505,8 +505,6 @@ public class ParallelByMethodsMultipleSuitesTestsClassesTest extends BaseParalle
 
         verifyEventsForTestMethodsRunInTheSameThread(TestClassAFiveMethodsWithNoDepsSample.class, SUITE_A,
                 SUITE_A_TEST_A);
-        verifyEventsForTestMethodsRunInTheSameThread(TestClassAFiveMethodsWithNoDepsSample.class, SUITE_A,
-                SUITE_A_TEST_A);
         verifyEventsForTestMethodsRunInTheSameThread(TestClassCSixMethodsWithNoDepsSample.class, SUITE_A,
                 SUITE_A_TEST_A);
 

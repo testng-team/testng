@@ -11,13 +11,12 @@ import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 
 import test.thread.parallelization.TestNgRunStateTracker.EventLog;
-import test.thread.parallelization.sample.TestClassAFiveMethodsWithDataProviderAndNoDepsSample;
+import test.thread.parallelization.sample.TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.testng.Assert.assertEquals;
-import static test.thread.parallelization.TestNgRunStateTracker.getAllEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteAndTestLevelEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteLevelEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllTestLevelEventLogs;
@@ -61,7 +60,7 @@ public class ParallelByMethodsSingleSuiteSingleTestSingleClassWithDataProvider e
         suite.setParallel(XmlSuite.ParallelMode.METHODS);
         suite.setThreadCount(15);
 
-        createXmlTest(suite, TEST, TestClassAFiveMethodsWithDataProviderAndNoDepsSample.class);
+        createXmlTest(suite, TEST, TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class);
 
         addParams(suite, SUITE, TEST, "1", "paramOne,paramTwo,paramThree");
 
@@ -77,15 +76,15 @@ public class ParallelByMethodsSingleSuiteSingleTestSingleClassWithDataProvider e
         testMethodLevelEventLogs = getAllTestMethodLevelEventLogs();
 
         testMethodAEventLogs = getTestMethodEventLogsForMethod(SUITE, TEST,
-                TestClassAFiveMethodsWithDataProviderAndNoDepsSample.class.getCanonicalName(), "testMethodA");
+                TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName(), "testMethodA");
         testMethodBEventLogs = getTestMethodEventLogsForMethod(SUITE, TEST,
-                TestClassAFiveMethodsWithDataProviderAndNoDepsSample.class.getCanonicalName(), "testMethodB");
+                TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName(), "testMethodB");
         testMethodCEventLogs = getTestMethodEventLogsForMethod(SUITE, TEST,
-                TestClassAFiveMethodsWithDataProviderAndNoDepsSample.class.getCanonicalName(), "testMethodC");
+                TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName(), "testMethodC");
         testMethodDEventLogs = getTestMethodEventLogsForMethod(SUITE, TEST,
-                TestClassAFiveMethodsWithDataProviderAndNoDepsSample.class.getCanonicalName(), "testMethodD");
+                TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName(), "testMethodD");
         testMethodEEventLogs = getTestMethodEventLogsForMethod(SUITE, TEST,
-                TestClassAFiveMethodsWithDataProviderAndNoDepsSample.class.getCanonicalName(), "testMethodE");
+                TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName(), "testMethodE");
 
         suiteListenerOnStartEventLog = getSuiteListenerStartEventLog(SUITE);
         suiteListenerOnFinishEventLog = getSuiteListenerFinishEventLog(SUITE);
@@ -134,13 +133,13 @@ public class ParallelByMethodsSingleSuiteSingleTestSingleClassWithDataProvider e
         verifyNumberOfInstancesOfTestClassForMethods(
                 SUITE,
                 TEST,
-                TestClassAFiveMethodsWithDataProviderAndNoDepsSample.class,
+                TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class,
                 1);
 
         verifySameInstancesOfTestClassAssociatedWithMethods(
                 SUITE,
                 TEST,
-                TestClassAFiveMethodsWithDataProviderAndNoDepsSample.class);
+                TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class);
     }
 
     //Verifies that all the test method level events execute between the test listener onStart and onFinish methods

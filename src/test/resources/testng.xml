@@ -777,6 +777,7 @@
       <class name="test.thread.parallelization.ParallelByMethodsParallelSuitesNoSuiteQueuing"/>
       <class name="test.thread.parallelization.ParallelByMethodsParallelSuitesWithSuiteQueuing"/>
       <class name="test.thread.parallelization.ParallelByMethodsSingleSuiteSingleTestSingleClassWithDataProvider"/>
+      <class name="test.thread.parallelization.ParallelByMethodsMultipleSuitesTestsWithDataProviderAndMethodQueueing"/>
     </classes>
   </test>
 
