@@ -80,6 +80,7 @@ public class FileStringBuffer implements IBuffer {
         try (FileReader reader = new FileReader(m_file)) {
           copy(reader, bw);
         }
+        bw.flush();
       }
     } catch(IOException ex) {
       ex.printStackTrace();
