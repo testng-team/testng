@@ -7,10 +7,10 @@ buildscript {
         mavenCentral()
         jcenter()
         maven {
-            url 'http://dl.bintray.com/cbeust/maven'
+            url 'https://dl.bintray.com/cbeust/maven'
         }
         maven {
-            url 'http://oss.jfrog.org/artifactory/plugins-release'
+            url 'https://oss.jfrog.org/artifactory/plugins-release'
             credentials {
                 username = "${a_user}"
                 password = "${a_password}"
