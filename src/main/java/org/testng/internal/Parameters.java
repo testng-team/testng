@@ -5,14 +5,7 @@ import com.google.inject.Injector;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 import org.testng.ITestClass;
@@ -35,6 +28,7 @@ import org.testng.internal.collections.ArrayIterator;
 import org.testng.util.Strings;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+import org.testng.annotations.*;
 
 /**
  * Methods that bind parameters declared in testng.xml to actual values
@@ -44,6 +38,42 @@ import org.testng.xml.XmlTest;
  */
 public class Parameters {
   public static final String NULL_VALUE= "null";
+  private static Class<?>[] annotationList = new Class<?>[] {
+      BeforeSuite.class,
+      AfterSuite.class,
+      BeforeTest.class,
+      AfterTest.class,
+      BeforeClass.class,
+      AfterClass.class,
+      BeforeGroups.class,
+      AfterGroups.class,
+      BeforeMethod.class,
+      AfterMethod.class
+  };
+
+  private static Map<String, List<Class>> mapping = new HashMap<>();
+
+  static {
+    List<Class> ctxTest = Arrays.asList(new Class[] {ITestContext.class, XmlTest.class});
+    List<Class> mParams = Arrays.asList(new Class[] {ITestContext.class, XmlTest.class,Method.class,Object[].class});
+    mapping.put(BeforeSuite.class.getSimpleName(), ctxTest);
+    mapping.put(AfterSuite.class.getSimpleName(), ctxTest);
+
+    mapping.put(BeforeTest.class.getSimpleName(), ctxTest);
+    mapping.put(AfterTest.class.getSimpleName(), ctxTest);
+
+    mapping.put(BeforeGroups.class.getSimpleName(), ctxTest);
+    mapping.put(AfterGroups.class.getSimpleName(), ctxTest);
+
+    mapping.put(BeforeClass.class.getSimpleName(), ctxTest);
+    mapping.put(AfterClass.class.getSimpleName(), ctxTest);
+
+    mapping.put(BeforeMethod.class.getSimpleName(), mParams);
+    mapping.put(AfterMethod.class.getSimpleName(), mParams);
+
+  }
+
+
 
   /**
    * Creates the parameters needed for constructing a test class instance.
@@ -90,7 +120,18 @@ public class Parameters {
             methodParams,
             parameterValues,
             currentTestMeth, ctx, testResult),
-        finder, xmlSuite, IConfigurationAnnotation.class, "@Configuration");
+        finder, xmlSuite, IConfigurationAnnotation.class, retrieveConfigAnnotation(m));
+  }
+
+  private static String retrieveConfigAnnotation(Method m) {
+    String value = "@Configuration";
+    for (Class annotation : annotationList) {
+      if (m.getAnnotation(annotation) != null) {
+        value = annotation.getSimpleName();
+        break;
+      }
+    }
+    return value;
   }
 
   ////////////////////////////////////////////////////////
@@ -194,11 +235,15 @@ public class Parameters {
     if ( (parameterNames.length ==0) && (totalLength != 0) ) {
       //parameterNames is usually populated via the @Parameters annotation, so we would need to
       //apply our logic only when @Parameters annotation is not involved.
-      throw new TestNGException(
-          "Cannot inject " + methodAnnotation + " annotated Method [" + methodName + "] with " +
-              Arrays.toString(parameterTypes)
-              + ".\nFor more information on native dependency injection please refer to " +
-              "http://testng.org/doc/documentation-main.html#native-dependency-injection"
+      String errPrefix = "Cannot inject " + methodAnnotation + " annotated Method [" + methodName + "] with "
+            + Arrays.toString(parameterTypes);
+      if (mapping.containsKey(methodAnnotation)) {
+        errPrefix = "Can inject only one of " + prettyFormat(mapping.get(methodAnnotation)) +
+            " into a " + methodAnnotation + " annotated " + methodName;
+      }
+      throw new TestNGException( errPrefix
+          + ".\nFor more information on native dependency injection please refer to " +
+          "http://testng.org/doc/documentation-main.html#native-dependency-injection"
       );
     }
 
@@ -210,6 +255,21 @@ public class Parameters {
           + methodAnnotation
           + " annotation.");
     }
+  }
+
+  private static String prettyFormat(List<Class> classes) {
+    StringBuilder builder = new StringBuilder("<");
+    if (classes.size() == 1) {
+      builder.append(classes.get(0));
+    } else {
+      int length = classes.size();
+      for (int i=0; i < length - 1; i++) {
+        builder.append(classes.get(i).getSimpleName()).append(",");
+      }
+      builder.append(classes.get(length-1).getSimpleName());
+    }
+    builder.append(">");
+    return builder.toString();
   }
 
   public static <T> T convertType(Class<T> type, String value, String paramName) {
@@ -365,7 +425,7 @@ public class Parameters {
   private static String getDataProviderName(IDataProviderAnnotation dp, Method m) {
 	  return Strings.isNullOrEmpty(dp.getName()) ? m.getName() : dp.getName();
   }
-  
+
   @SuppressWarnings({"deprecation"})
   private static Object[] createParameters(Method m, MethodParameters params,
       IAnnotationFinder finder, XmlSuite xmlSuite, Class annotationClass, String atName)
