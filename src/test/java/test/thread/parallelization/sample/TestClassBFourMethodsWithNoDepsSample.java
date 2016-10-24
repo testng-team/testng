@@ -6,7 +6,15 @@ import test.thread.parallelization.TestNgRunStateTracker;
 
 import java.util.concurrent.TimeUnit;
 
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.CLASS_INSTANCE;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.CLASS_NAME;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.METHOD_NAME;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.SUITE_NAME;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.TEST_NAME;
+import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.TEST_METHOD_EXECUTION;
+
 public class TestClassBFourMethodsWithNoDepsSample {
+
     @Parameters({ "suiteName", "testName", "sleepFor" })
     @Test
     public void testMethodA(String suiteName, String testName, String sleepFor) throws InterruptedException {
@@ -14,14 +22,14 @@ public class TestClassBFourMethodsWithNoDepsSample {
 
         TestNgRunStateTracker.logEvent(
                 TestNgRunStateTracker.EventLog.builder()
-                        .setEvent(TestNgRunStateTracker.TestNgRunEvent.TEST_METHOD_EXECUTION)
+                        .setEvent(TEST_METHOD_EXECUTION)
                         .setTimeOfEvent(time)
                         .setThread(Thread.currentThread())
-                        .addData(TestNgRunStateTracker.EventInfo.METHOD_NAME, "testMethodA")
-                        .addData(TestNgRunStateTracker.EventInfo.CLASS_NAME, getClass().getCanonicalName())
-                        .addData(TestNgRunStateTracker.EventInfo.CLASS_INSTANCE, this)
-                        .addData(TestNgRunStateTracker.EventInfo.TEST_NAME, testName)
-                        .addData(TestNgRunStateTracker.EventInfo.SUITE_NAME, suiteName)
+                        .addData(METHOD_NAME, "testMethodA")
+                        .addData(CLASS_NAME, getClass().getCanonicalName())
+                        .addData(CLASS_INSTANCE, this)
+                        .addData(TEST_NAME, testName)
+                        .addData(SUITE_NAME, suiteName)
                         .build()
         );
 
@@ -35,14 +43,14 @@ public class TestClassBFourMethodsWithNoDepsSample {
 
         TestNgRunStateTracker.logEvent(
                 TestNgRunStateTracker.EventLog.builder()
-                        .setEvent(TestNgRunStateTracker.TestNgRunEvent.TEST_METHOD_EXECUTION)
+                        .setEvent(TEST_METHOD_EXECUTION)
                         .setTimeOfEvent(time)
                         .setThread(Thread.currentThread())
-                        .addData(TestNgRunStateTracker.EventInfo.METHOD_NAME, "testMethodB")
-                        .addData(TestNgRunStateTracker.EventInfo.CLASS_NAME, getClass().getCanonicalName())
-                        .addData(TestNgRunStateTracker.EventInfo.CLASS_INSTANCE, this)
-                        .addData(TestNgRunStateTracker.EventInfo.TEST_NAME, testName)
-                        .addData(TestNgRunStateTracker.EventInfo.SUITE_NAME, suiteName)
+                        .addData(METHOD_NAME, "testMethodB")
+                        .addData(CLASS_NAME, getClass().getCanonicalName())
+                        .addData(CLASS_INSTANCE, this)
+                        .addData(TEST_NAME, testName)
+                        .addData(SUITE_NAME, suiteName)
                         .build()
         );
 
@@ -56,14 +64,14 @@ public class TestClassBFourMethodsWithNoDepsSample {
 
         TestNgRunStateTracker.logEvent(
                 TestNgRunStateTracker.EventLog.builder()
-                        .setEvent(TestNgRunStateTracker.TestNgRunEvent.TEST_METHOD_EXECUTION)
+                        .setEvent(TEST_METHOD_EXECUTION)
                         .setTimeOfEvent(time)
                         .setThread(Thread.currentThread())
-                        .addData(TestNgRunStateTracker.EventInfo.METHOD_NAME, "testMethodC")
-                        .addData(TestNgRunStateTracker.EventInfo.CLASS_NAME, getClass().getCanonicalName())
-                        .addData(TestNgRunStateTracker.EventInfo.CLASS_INSTANCE, this)
-                        .addData(TestNgRunStateTracker.EventInfo.TEST_NAME, testName)
-                        .addData(TestNgRunStateTracker.EventInfo.SUITE_NAME, suiteName)
+                        .addData(METHOD_NAME, "testMethodC")
+                        .addData(CLASS_NAME, getClass().getCanonicalName())
+                        .addData(CLASS_INSTANCE, this)
+                        .addData(TEST_NAME, testName)
+                        .addData(SUITE_NAME, suiteName)
                         .build()
         );
 
@@ -77,14 +85,14 @@ public class TestClassBFourMethodsWithNoDepsSample {
 
         TestNgRunStateTracker.logEvent(
                 TestNgRunStateTracker.EventLog.builder()
-                        .setEvent(TestNgRunStateTracker.TestNgRunEvent.TEST_METHOD_EXECUTION)
+                        .setEvent(TEST_METHOD_EXECUTION)
                         .setTimeOfEvent(time)
                         .setThread(Thread.currentThread())
-                        .addData(TestNgRunStateTracker.EventInfo.METHOD_NAME, "testMethodD")
-                        .addData(TestNgRunStateTracker.EventInfo.CLASS_NAME, getClass().getCanonicalName())
-                        .addData(TestNgRunStateTracker.EventInfo.CLASS_INSTANCE, this)
-                        .addData(TestNgRunStateTracker.EventInfo.TEST_NAME, testName)
-                        .addData(TestNgRunStateTracker.EventInfo.SUITE_NAME, suiteName)
+                        .addData(METHOD_NAME, "testMethodD")
+                        .addData(CLASS_NAME, getClass().getCanonicalName())
+                        .addData(CLASS_INSTANCE, this)
+                        .addData(TEST_NAME, testName)
+                        .addData(SUITE_NAME, suiteName)
                         .build()
         );
 
