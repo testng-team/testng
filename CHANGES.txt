@@ -8,12 +8,17 @@ Fixed: GITHUB-1064: Incorrect logging of parallel mode of a test
 Fixed: GITHUB-1178: Halt execution when invalid testname is provided. (Krishnan Mahadevan)
 Fixed: GITHUB-1139: DataProvider could support Object[] as a valid return type (Julien Herr)
 Fixed: GITHUB-1182: Cannot run multiple @Factory-annotated methods in the same class (Ian Donovan & Julien Herr)
+New: Hierarchy on order features (from less important to more important): groupByInstance, preserveOrder, priority, dependsOnGroups, dependsOnMethods
+Fixed: GITHUB-1156: test execution dependant upon class name order and fails with TestNGException: No free nodes found (@t-weil & Julien Herr)
+
+6.9.13.6
+2016/09/23
+
+6.9.13.5 (Bad release)
+2016/09/23
 
 6.9.13.4 (Bad release: Wrong internal version)
 2016/09/22
-
-New: Hierarchy on order features (from less important to more important): groupByInstance, preserveOrder, priority, dependsOnGroups, dependsOnMethods
-Fixed: GITHUB-1156: test execution dependant upon class name order and fails with TestNGException: No free nodes found (@t-weil & Julien Herr)
 
 6.9.13.3 (Ok, but too many direct dependencies)
 2016/09/22
