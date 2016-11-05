@@ -137,7 +137,7 @@ public class TestNG {
   private List<IClassListener> m_classListeners = Lists.newArrayList();
   private List<ITestListener> m_testListeners = Lists.newArrayList();
   private List<ISuiteListener> m_suiteListeners = Lists.newArrayList();
-  private Set<IReporter> m_reporters = Sets.newHashSet();
+  private Map<Class< ? extends IReporter>,IReporter> m_reporters = Maps.newHashMap();
 
   protected static final int HAS_FAILURE = 1;
   protected static final int HAS_SKIPPED = 2;
@@ -726,7 +726,8 @@ public class TestNG {
       m_classListeners.add((IClassListener) listener);
     }
     if (listener instanceof IReporter) {
-      m_reporters.add((IReporter) listener);
+      IReporter reporter = (IReporter) listener;
+      m_reporters.put(reporter.getClass(), reporter);
     }
     if (listener instanceof IAnnotationTransformer) {
       setAnnotationTransformer((IAnnotationTransformer) listener);
@@ -804,7 +805,7 @@ public class TestNG {
   // TODO remove later
   @Deprecated
   public void addListener(IReporter listener) {
-    if (!m_reporters.contains(listener)) {
+    if (!m_reporters.values().contains(listener)) {
       addListener((ITestNGListener) listener);
     }
   }
@@ -821,7 +822,9 @@ public class TestNG {
   }
 
   public Set<IReporter> getReporters() {
-    return m_reporters;
+    //This will now cause a different behavior for consumers of this method because unlike before they are no longer
+    //going to be getting the original set but only a copy of it (since we internally moved from Sets to Maps)
+    return Sets.newHashSet(m_reporters.values());
   }
 
   public List<ITestListener> getTestListeners() {
@@ -927,7 +930,7 @@ public class TestNG {
     }
   }
   private void addReporter(Class<? extends IReporter> r) {
-    m_reporters.add(ClassHelper.newInstance(r));
+    m_reporters.put(r, ClassHelper.newInstance(r));
   }
 
   private void initializeDefaultListeners() {
@@ -1171,7 +1174,7 @@ public class TestNG {
   }
 
   private void generateReports(List<ISuite> suiteRunners) {
-    for (IReporter reporter : m_reporters) {
+    for (IReporter reporter : m_reporters.values()) {
       try {
         long start = System.currentTimeMillis();
         reporter.generateReport(m_suites, suiteRunners, m_outputDir);

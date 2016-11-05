@@ -1,5 +1,6 @@
 ﻿Current
 Fixed: GITHUB-1231: Make IExecutionListener implementation be the last reporter call before JVM exit(Krishnan Mahadevan)
+Fixed: GITHUB-1227: Prevent multiple instances of same Reporter from being injected into TestNG (Krishnan Mahadevan)
 Fixed: GITHUB-1228: Control stacktrace levels in XmlReports via a JVM configuration (Krishnan Mahadevan)
 Fixed: GITHUB-1203: Add flush to BufferedWriter; fixes incomplete XML reports (Nathan Bruning)
 Fixed: GITHUB-1181: Fix MethodMatcherException: Data provider mismatch (Krishnan Mahadevan)
