@@ -117,6 +117,9 @@ public class XMLReporterConfig {
    */
   private int stackTraceOutputMethod = STACKTRACE_FULL;
 
+  private int stackTraceOutputLevel = Integer.parseInt(System.getProperty("stacktrace.success.output.level",Integer
+      .toString(STACKTRACE_FULL)));
+
   /**
    * The root output directory where the XMLs will be written. This will default
    * for now to the default TestNG output directory
@@ -171,6 +174,10 @@ public class XMLReporterConfig {
 
   public int getStackTraceOutputMethod() {
     return stackTraceOutputMethod;
+  }
+
+  public int getStackTraceOutputLevelForPassedTests() {
+    return stackTraceOutputLevel;
   }
 
   public void setStackTraceOutputMethod(int stackTraceOutputMethod) {
