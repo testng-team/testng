@@ -137,7 +137,7 @@ public class TestNG {
   private List<IClassListener> m_classListeners = Lists.newArrayList();
   private List<ITestListener> m_testListeners = Lists.newArrayList();
   private List<ISuiteListener> m_suiteListeners = Lists.newArrayList();
-  private Map<Class< ? extends IReporter>,IReporter> m_reporters = Maps.newHashMap();
+  private Map<Class<? extends IReporter>, IReporter> m_reporters = Maps.newHashMap();
 
   protected static final int HAS_FAILURE = 1;
   protected static final int HAS_SKIPPED = 2;
@@ -805,7 +805,7 @@ public class TestNG {
   // TODO remove later
   @Deprecated
   public void addListener(IReporter listener) {
-    if (!m_reporters.values().contains(listener)) {
+    if (!m_reporters.containsValue(listener)) {
       addListener((ITestNGListener) listener);
     }
   }
@@ -930,7 +930,9 @@ public class TestNG {
     }
   }
   private void addReporter(Class<? extends IReporter> r) {
-    m_reporters.put(r, ClassHelper.newInstance(r));
+    if (!m_reporters.containsKey(r)) {
+      m_reporters.put(r, ClassHelper.newInstance(r));
+    }
   }
 
   private void initializeDefaultListeners() {
