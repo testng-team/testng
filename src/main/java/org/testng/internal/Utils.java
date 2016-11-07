@@ -495,30 +495,61 @@ public final class Utils {
 
   /**
    * @return an array of two strings: the short stack trace and the long stack trace.
+   * @deprecated - Please consider using :
+   * <ul>
+   *     <li>{@link Utils#longStackTrace(Throwable, boolean)} - for getting full stack trace</li>
+   *     <li>{@link Utils#shortStackTrace(Throwable, boolean)} - for getting short stack trace</li>
+   * </ul>
    */
+  @Deprecated
   public static String[] stackTrace(Throwable t, boolean toHtml) {
+    return new String[] {
+        shortStackTrace(t, toHtml), longStackTrace(t, toHtml)
+    };
+  }
+
+  /**
+   * Helper that returns a short stack trace.
+   * @param t - The {@link Throwable} exception
+   * @param toHtml - <code>true</code> if the stacktrace should be translated to html as well
+   * @return - A string that represents the short stack trace.
+   */
+  public static String longStackTrace(Throwable t, boolean toHtml) {
+    return buildStrackTrace(t, toHtml, StackTraceType.FULL);
+  }
+
+  /**
+   * Helper that returns a long stack trace.
+   * @param t - The {@link Throwable} exception
+   * @param toHtml - <code>true</code> if the stacktrace should be translated to html as well
+   * @return - A string that represents the full stack trace.
+   */
+  public static String shortStackTrace(Throwable t, boolean toHtml) {
+    return buildStrackTrace(t, toHtml, StackTraceType.SHORT);
+  }
+
+  private static String buildStrackTrace(Throwable t, boolean toHtml, StackTraceType type) {
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw);
     t.printStackTrace(pw);
     pw.flush();
-
-    String fullStackTrace = sw.getBuffer().toString();
-    String shortStackTrace;
-
-    if (Boolean.getBoolean(TestNG.SHOW_TESTNG_STACK_FRAMES) || TestRunner.getVerbose() >= 2) {
-      shortStackTrace = fullStackTrace;
-    } else {
-      shortStackTrace = filterTrace(sw.getBuffer().toString());
+    String stackTrace = sw.getBuffer().toString();
+    if (type == StackTraceType.SHORT && !isTooVerbose()) {
+      stackTrace = filterTrace(sw.getBuffer().toString());
     }
-
     if (toHtml) {
-      shortStackTrace = escapeHtml(shortStackTrace);
-      fullStackTrace = escapeHtml(fullStackTrace);
+      stackTrace = escapeHtml(stackTrace);
     }
+    return stackTrace;
+  }
 
-    return new String[] {
-        shortStackTrace, fullStackTrace
-    };
+  private static boolean isTooVerbose() {
+    return (Boolean.getBoolean(TestNG.SHOW_TESTNG_STACK_FRAMES) || TestRunner.getVerbose() >= 2);
+  }
+
+
+  private enum StackTraceType {
+    SHORT,FULL;
   }
 
   private static final Map<Character, String> ESCAPES = new HashMap<Character, String>() {
