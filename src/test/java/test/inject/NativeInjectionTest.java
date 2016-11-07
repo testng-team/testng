@@ -20,8 +20,8 @@ public class NativeInjectionTest extends SimpleBaseTest {
 
     @DataProvider
     public Object[][] getTestData() {
-        String variant1="Can inject only one of <ITestContext,XmlTest> into a %s annotated ";
-        String variant2="Can inject only one of <ITestContext,XmlTest,Method,Object[]> into a %s annotated ";
+        String variant1="Can inject only one of <ITestContext, XmlTest> into a %s annotated ";
+        String variant2="Can inject only one of <ITestContext, XmlTest, Method, Object[]> into a %s annotated ";
         return new Object[][] {
             {BadBeforeSuiteSample.class, "beforeSuite", String.format(variant1, BeforeSuite.class.getSimpleName())},
             {BadBeforeTestSample.class, "beforeTest",String.format(variant1, BeforeTest.class.getSimpleName())},

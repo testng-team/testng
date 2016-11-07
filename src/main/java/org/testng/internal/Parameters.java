@@ -51,7 +51,7 @@ public class Parameters {
       AfterMethod.class
   };
 
-  private static Map<String, List<Class>> mapping = new HashMap<>();
+  private static Map<String, List<Class>> mapping = Maps.newHashMap();
 
   static {
     List<Class> ctxTest = Arrays.asList(new Class[] {ITestContext.class, XmlTest.class});
@@ -264,7 +264,7 @@ public class Parameters {
     } else {
       int length = classes.size();
       for (int i=0; i < length - 1; i++) {
-        builder.append(classes.get(i).getSimpleName()).append(",");
+        builder.append(classes.get(i).getSimpleName()).append(", ");
       }
       builder.append(classes.get(length-1).getSimpleName());
     }
