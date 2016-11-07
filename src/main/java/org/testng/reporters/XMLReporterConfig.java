@@ -84,23 +84,6 @@ public class XMLReporterConfig {
    */
   public static final int FF_LEVEL_SUITE_RESULT = 3;
 
-  /**
-   * No stacktrace will be written in the output file
-   */
-  public static final int STACKTRACE_NONE = 0;
-  /**
-   * Write only a short version of the stacktrace
-   */
-  public static final int STACKTRACE_SHORT = 1;
-  /**
-   * Write only the full version of the stacktrace
-   */
-  public static final int STACKTRACE_FULL = 2;
-  /**
-   * Write both types of stacktrace
-   */
-  public static final int STACKTRACE_BOTH = 3;
-
   // note: We're hardcoding the 'Z' because Java doesn't support all the
   // intricacies of ISO-8601.
   static final String FMT_DEFAULT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
@@ -115,10 +98,10 @@ public class XMLReporterConfig {
    * Stack trace output method for the failed tests using one of the
    * STACKTRACE_* constants.
    */
-  private int stackTraceOutputMethod = STACKTRACE_FULL;
+  private StackTraceLevels stackTraceOutputMethod = StackTraceLevels.FULL;
 
-  private int stackTraceOutputLevel = Integer.parseInt(System.getProperty("stacktrace.success.output.level",Integer
-      .toString(STACKTRACE_FULL)));
+  private StackTraceLevels stackTraceOutputLevel = StackTraceLevels.parse(System.getProperty("stacktrace.success"
+          + ".output.level", StackTraceLevels.FULL.toString()));
 
   /**
    * The root output directory where the XMLs will be written. This will default
@@ -172,16 +155,33 @@ public class XMLReporterConfig {
     this.fileFragmentationLevel = fileFragmentationLevel;
   }
 
+  /**
+   * @deprecated - Please use {@link XMLReporterConfig#getStackTraceOutput()} instead.
+   */
+  @Deprecated
   public int getStackTraceOutputMethod() {
+    return stackTraceOutputMethod.getLevel();
+  }
+
+  public StackTraceLevels getStackTraceOutput() {
     return stackTraceOutputMethod;
   }
 
-  public int getStackTraceOutputLevelForPassedTests() {
+  public void setStackTraceOutput(StackTraceLevels stackTraceOutputMethod) {
+    this.stackTraceOutputMethod = stackTraceOutputMethod;
+  }
+
+  public StackTraceLevels getStackTraceOutputLevelForPassedTests() {
     return stackTraceOutputLevel;
   }
 
+  /**
+   * @param stackTraceOutputMethod
+   * @deprecated - Please use {@link XMLReporterConfig#setStackTraceOutput(StackTraceLevels)} instead.
+   */
+  @Deprecated
   public void setStackTraceOutputMethod(int stackTraceOutputMethod) {
-    this.stackTraceOutputMethod = stackTraceOutputMethod;
+    this.stackTraceOutputMethod = StackTraceLevels.parse(stackTraceOutputMethod);
   }
 
   public String getOutputDirectory() {
@@ -238,5 +238,50 @@ public class XMLReporterConfig {
 
   public boolean isGenerateTestResultAttributes() {
     return generateTestResultAttributes;
+  }
+
+  public enum StackTraceLevels {
+    /**
+     * No stacktrace will be written in the output file
+     */
+    NONE(0),
+    /**
+     * Write only a short version of the stacktrace
+     */
+    SHORT(1),
+    /**
+     * Write only the full version of the stacktrace
+     */
+    FULL(2),
+    /**
+     * Write both types of stacktrace
+     */
+    BOTH(3);
+    StackTraceLevels(int level) {
+      this.level = level;
+    }
+    private int level;
+
+    public int getLevel() {
+      return level;
+    }
+
+    @Override
+    public String toString() {
+      return Integer.toString(level);
+    }
+
+    public static StackTraceLevels parse(int level) {
+      for (StackTraceLevels value : values()) {
+        if (value.getLevel() == level) {
+          return value;
+        }
+      }
+      throw new IllegalArgumentException(level + " is not a valid StackTrace level");
+    }
+
+    public static StackTraceLevels parse(String raw) {
+      return parse(Integer.parseInt(raw));
+    }
   }
 }

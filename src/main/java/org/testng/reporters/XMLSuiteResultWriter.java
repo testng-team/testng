@@ -283,38 +283,32 @@ public class XMLSuiteResultWriter {
         xmlBuffer.pop();
       }
 
-      String[] stackTraces = Utils.stackTrace(exception, false);
-      int level = calculateStackTraceLevels(testResult);
+      XMLReporterConfig.StackTraceLevels level = calculateStackTraceLevels(testResult);
       switch (level) {
-        case XMLReporterConfig.STACKTRACE_SHORT:
+        case SHORT:
           xmlBuffer.push(XMLReporterConfig.TAG_SHORT_STACKTRACE);
-          xmlBuffer.addCDATA(stackTraces[0]);
+          xmlBuffer.addCDATA(Utils.shortStackTrace(exception, false));
           xmlBuffer.pop();
           break;
-        case XMLReporterConfig.STACKTRACE_FULL:
+        case FULL:
           xmlBuffer.push(XMLReporterConfig.TAG_FULL_STACKTRACE);
-          xmlBuffer.addCDATA(stackTraces[1]);
+          xmlBuffer.addCDATA(Utils.longStackTrace(exception, false));
           xmlBuffer.pop();
           break;
         default:
+          //everything else is ignored for now.
       }
 
       xmlBuffer.pop();
     }
   }
 
-  private int calculateStackTraceLevels(ITestResult testResult) {
-    int stackTraceoutputMethod = config.getStackTraceOutputMethod();
+  private XMLReporterConfig.StackTraceLevels calculateStackTraceLevels(ITestResult testResult) {
+    XMLReporterConfig.StackTraceLevels stackTraceoutputMethod = config.getStackTraceOutput();
     if (testResult.isSuccess()) {
       stackTraceoutputMethod = config.getStackTraceOutputLevelForPassedTests();
     }
-    if ((stackTraceoutputMethod & XMLReporterConfig.STACKTRACE_SHORT) == XMLReporterConfig.STACKTRACE_SHORT) {
-      return XMLReporterConfig.STACKTRACE_SHORT;
-    }
-    if ((stackTraceoutputMethod & XMLReporterConfig.STACKTRACE_FULL) == XMLReporterConfig.STACKTRACE_FULL) {
-      return XMLReporterConfig.STACKTRACE_FULL;
-    }
-    return XMLReporterConfig.STACKTRACE_BOTH;
+    return stackTraceoutputMethod;
   }
 
   private void addTestResultOutput(XMLStringBuffer xmlBuffer, ITestResult testResult) {
