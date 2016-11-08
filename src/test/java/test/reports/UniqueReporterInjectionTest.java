@@ -19,11 +19,15 @@ public class UniqueReporterInjectionTest extends SimpleBaseTest {
         tng.setUseDefaultListeners(false);
         tng.addListener((ITestNGListener) new ReporterListenerForIssue1227());
         tng.run();
-        Assert.assertTrue(tng.getReporters().size() == 1);
+        Assert.assertEquals(tng.getReporters().size(),1);
+        Assert.assertEquals(ReporterListenerForIssue1227.counter, 1);
     }
 
     public static class ReporterListenerForIssue1227 implements IReporter {
+        static int counter = 0;
         @Override
-        public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {}
+        public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+            counter++;
+        }
     }
 }
