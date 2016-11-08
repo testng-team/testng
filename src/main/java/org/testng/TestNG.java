@@ -1089,18 +1089,20 @@ public class TestNG {
 
     List<ISuite> suiteRunners = null;
 
-    runSuiteAlterationListeners();
     runExecutionListeners(true /* start */);
+
+    runSuiteAlterationListeners();
 
     m_start = System.currentTimeMillis();
     suiteRunners = runSuites();
 
     m_end = System.currentTimeMillis();
-    runExecutionListeners(false /* finish */);
 
     if(null != suiteRunners) {
       generateReports(suiteRunners);
     }
+
+    runExecutionListeners(false /* finish */);
 
     if(!m_hasTests) {
       setStatus(HAS_NO_TEST);
