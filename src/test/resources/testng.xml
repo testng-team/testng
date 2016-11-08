@@ -119,6 +119,7 @@
       <class name="test.failedreporter.FailedReporterParametersTest"/>
       <class name="test.reports.ReporterLogTest" />
       <class name="test.testng387.TestNG387"/>
+      <class name="test.testng1231.TestExecutionListenerInvocationOrder"/>
     </classes>
   </test>
 
