@@ -141,7 +141,7 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
   }
 
   public List<String> getSucceedMethodNames() {
-    return Collections.unmodifiableList(succeedMethodNames);
+    return new ArrayList<>(succeedMethodNames);
   }
 
   public List<String> getFailedBeforeInvocationMethodNames() {

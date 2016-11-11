@@ -1124,7 +1124,7 @@ public class TestNG {
    * This method can be overridden by subclass. <br/>
    * For example, DistributedTestNG to run in master/slave mode according to commandline args. 
    * </p>
-   * @return
+   * @return - List of suites that were run as {@link ISuite} objects.
    * @since 6.9.11 when moving distributed/remote classes out into separate project
    */
   protected List<ISuite> runSuites() {
@@ -1867,7 +1867,7 @@ public class TestNG {
   /**
    * Sets the policy for whether or not to ever invoke a configuration method again after
    * it has failed once. Possible values are defined in {@link XmlSuite}.  The default
-   * value is {@link XmlSuite.FailurePolicy#SKIP}.
+   * value is {@link org.testng.xml.XmlSuite.FailurePolicy#SKIP}
    * @param failurePolicy the configuration failure policy
    */
   public void setConfigFailurePolicy(XmlSuite.FailurePolicy failurePolicy) {
