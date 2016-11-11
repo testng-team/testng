@@ -134,9 +134,9 @@ public class TestNG {
   private ITestRunnerFactory m_testRunnerFactory;
 
   // These listeners can be overridden from the command line
-  private List<IClassListener> m_classListeners = Lists.newArrayList();
-  private List<ITestListener> m_testListeners = Lists.newArrayList();
-  private List<ISuiteListener> m_suiteListeners = Lists.newArrayList();
+  private Map<Class<? extends IClassListener>, IClassListener> m_classListeners = Maps.newHashMap();
+  private Map<Class<? extends ITestListener>, ITestListener> m_testListeners = Maps.newHashMap();
+  private Map<Class<? extends ISuiteListener>, ISuiteListener> m_suiteListeners = Maps.newHashMap();
   private Map<Class<? extends IReporter>, IReporter> m_reporters = Maps.newHashMap();
 
   protected static final int HAS_FAILURE = 1;
@@ -162,7 +162,7 @@ public class TestNG {
 
   private ITestObjectFactory m_objectFactory;
 
-  private List<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
+  private Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener> m_invokedMethodListeners = Maps.newHashMap();
 
   private Integer m_dataProviderThreadCount = null;
 
@@ -178,9 +178,9 @@ public class TestNG {
   protected long m_end;
   protected long m_start;
 
-  private List<IExecutionListener> m_executionListeners = Lists.newArrayList();
+  private Map<Class<? extends IExecutionListener>, IExecutionListener> m_executionListeners = Maps.newHashMap();
 
-  private List<IAlterSuiteListener> m_alterSuiteListeners= Lists.newArrayList();
+  private Map<Class<? extends IAlterSuiteListener>, IAlterSuiteListener> m_alterSuiteListeners= Maps.newHashMap();
 
   private boolean m_isInitialized = false;
 
@@ -717,17 +717,28 @@ public class TestNG {
       return;
     }
     if (listener instanceof ISuiteListener) {
-      m_suiteListeners.add((ISuiteListener) listener);
+      ISuiteListener suite = (ISuiteListener) listener;
+      if (! m_suiteListeners.containsKey(suite.getClass())) {
+        m_suiteListeners.put(suite.getClass(), (ISuiteListener) listener);
+      }
     }
     if (listener instanceof ITestListener) {
-      m_testListeners.add((ITestListener) listener);
+      ITestListener test = (ITestListener) listener;
+      if (! m_testListeners.containsKey(test.getClass())) {
+        m_testListeners.put(test.getClass(), test);
+      }
     }
     if (listener instanceof IClassListener) {
-      m_classListeners.add((IClassListener) listener);
+      IClassListener clazz = (IClassListener) listener;
+      if (! m_classListeners.containsKey(clazz)) {
+        m_classListeners.put(clazz.getClass(), clazz);
+      }
     }
     if (listener instanceof IReporter) {
       IReporter reporter = (IReporter) listener;
-      m_reporters.put(reporter.getClass(), reporter);
+      if (! m_reporters.containsKey(reporter.getClass())) {
+        m_reporters.put(reporter.getClass(), reporter);
+      }
     }
     if (listener instanceof IAnnotationTransformer) {
       setAnnotationTransformer((IAnnotationTransformer) listener);
@@ -736,7 +747,10 @@ public class TestNG {
       m_methodInterceptors.add((IMethodInterceptor) listener);
     }
     if (listener instanceof IInvokedMethodListener) {
-      m_invokedMethodListeners.add((IInvokedMethodListener) listener);
+      IInvokedMethodListener method = (IInvokedMethodListener) listener;
+      if (! m_invokedMethodListeners.containsKey(method)) {
+        m_invokedMethodListeners.put(method.getClass(), method);
+      }
     }
     if (listener instanceof IHookable) {
       setHookable((IHookable) listener);
@@ -745,13 +759,19 @@ public class TestNG {
       setConfigurable((IConfigurable) listener);
     }
     if (listener instanceof IExecutionListener) {
-      m_executionListeners.add((IExecutionListener) listener);
+      IExecutionListener execution = (IExecutionListener) listener;
+      if (! m_executionListeners.containsKey(execution.getClass())) {
+        m_executionListeners.put(execution.getClass(), execution);
+      }
     }
     if (listener instanceof IConfigurationListener) {
       getConfiguration().addConfigurationListener((IConfigurationListener) listener);
     }
     if (listener instanceof IAlterSuiteListener) {
-      m_alterSuiteListeners.add((IAlterSuiteListener) listener);
+      IAlterSuiteListener alter = (IAlterSuiteListener) listener;
+      if (! m_alterSuiteListeners.containsKey(alter.getClass())) {
+        m_alterSuiteListeners.put(alter.getClass(), alter);
+      }
     }
   }
 
@@ -761,9 +781,7 @@ public class TestNG {
   // TODO remove later
   @Deprecated
   public void addListener(IInvokedMethodListener listener) {
-    if (!m_invokedMethodListeners.contains(listener)) {
-      addListener((ITestNGListener) listener);
-    }
+    addListener((ITestNGListener) listener);
   }
 
   /**
@@ -772,9 +790,7 @@ public class TestNG {
   // TODO remove later
   @Deprecated
   public void addListener(ISuiteListener listener) {
-    if (!m_suiteListeners.contains(listener)) {
-      addListener((ITestNGListener) listener);
-    }
+    addListener((ITestNGListener) listener);
   }
 
   /**
@@ -783,9 +799,7 @@ public class TestNG {
   // TODO remove later
   @Deprecated
   public void addListener(ITestListener listener) {
-    if (!m_testListeners.contains(listener)) {
-      addListener((ITestNGListener) listener);
-    }
+    addListener((ITestNGListener) listener);
   }
 
   /**
@@ -794,9 +808,7 @@ public class TestNG {
   // TODO remove later
   @Deprecated
   public void addListener(IClassListener listener) {
-    if (!m_classListeners.contains(listener)) {
-      addListener((ITestNGListener) listener);
-    }
+    addListener((ITestNGListener) listener);
   }
 
   /**
@@ -805,9 +817,7 @@ public class TestNG {
   // TODO remove later
   @Deprecated
   public void addListener(IReporter listener) {
-    if (!m_reporters.containsValue(listener)) {
-      addListener((ITestNGListener) listener);
-    }
+    addListener((ITestNGListener) listener);
   }
 
   /**
@@ -816,9 +826,7 @@ public class TestNG {
   // TODO remove later
   @Deprecated
   public void addInvokedMethodListener(IInvokedMethodListener listener) {
-    if (!m_invokedMethodListeners.contains(listener)) {
-      addListener((ITestNGListener) listener);
-    }
+    addListener((ITestNGListener) listener);
   }
 
   public Set<IReporter> getReporters() {
@@ -828,11 +836,11 @@ public class TestNG {
   }
 
   public List<ITestListener> getTestListeners() {
-    return m_testListeners;
+    return Lists.newArrayList(m_testListeners.values());
   }
 
   public List<ISuiteListener> getSuiteListeners() {
-    return m_suiteListeners;
+    return Lists.newArrayList(m_suiteListeners.values());
   }
 
   /** If m_verbose gets set, it will override the verbose setting in testng.xml */
@@ -936,7 +944,7 @@ public class TestNG {
   }
 
   private void initializeDefaultListeners() {
-    m_testListeners.add(new ExitCodeListener(this));
+    m_testListeners.put(ExitCodeListener.class, new ExitCodeListener(this));
 
     if (m_useDefaultListeners) {
       addReporter(SuiteHTMLReporter.class);
@@ -1132,8 +1140,8 @@ public class TestNG {
   }
 
   private void runSuiteAlterationListeners() {
-    for (List<IAlterSuiteListener> listeners
-        : Arrays.asList(m_alterSuiteListeners, m_configuration.getAlterSuiteListeners())) {
+    for (Collection<IAlterSuiteListener> listeners
+        : Arrays.asList(m_alterSuiteListeners.values(), m_configuration.getAlterSuiteListeners())) {
       for (IAlterSuiteListener l : listeners) {
         l.alter(m_suites);
       }
@@ -1141,8 +1149,8 @@ public class TestNG {
   }
 
   private void runExecutionListeners(boolean start) {
-    for (List<IExecutionListener> listeners
-        : Arrays.asList(m_executionListeners, m_configuration.getExecutionListeners())) {
+    for (Collection<IExecutionListener> listeners
+        : Arrays.asList(m_executionListeners.values(), m_configuration.getExecutionListeners())) {
       for (IExecutionListener l : listeners) {
         if (start) l.onExecutionStart();
         else l.onExecutionFinish();
@@ -1368,11 +1376,11 @@ public class TestNG {
         m_testRunnerFactory,
         m_useDefaultListeners,
         m_methodInterceptors,
-        m_invokedMethodListeners,
-        m_testListeners,
-        m_classListeners);
+        Lists.newArrayList(m_invokedMethodListeners.values()),
+        Lists.newArrayList(m_testListeners.values()),
+        Lists.newArrayList(m_classListeners.values()));
 
-    for (ISuiteListener isl : m_suiteListeners) {
+    for (ISuiteListener isl : m_suiteListeners.values()) {
       result.addListener(isl);
     }
 
@@ -2057,7 +2065,7 @@ public class TestNG {
   //
 
   private URLClassLoader m_serviceLoaderClassLoader;
-  private List<ITestNGListener> m_serviceLoaderListeners = Lists.newArrayList();
+  private Map<Class<? extends ITestNGListener>, ITestNGListener> m_serviceLoaderListeners = Maps.newHashMap();
 
   /*
    * Used to test ServiceClassLoader
@@ -2070,14 +2078,16 @@ public class TestNG {
    * Used to test ServiceClassLoader
    */
   private void addServiceLoaderListener(ITestNGListener l) {
-    m_serviceLoaderListeners.add(l);
+    if (! m_serviceLoaderListeners.containsKey(l.getClass())) {
+      m_serviceLoaderListeners.put(l.getClass(), l);
+    }
   }
 
   /*
    * Used to test ServiceClassLoader
    */
   public List<ITestNGListener> getServiceLoaderListeners() {
-    return m_serviceLoaderListeners;
+    return Lists.newArrayList(m_serviceLoaderListeners.values());
   }
 
   //
