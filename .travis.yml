@@ -10,7 +10,7 @@ jdk:
   - openjdk7
 
 script:
-  - ./gradlew check --stacktrace --info
+  - ./gradlew check --stacktrace
 after_success:
   - ./travis.sh deploy
   - ./travis.sh sonarqube
