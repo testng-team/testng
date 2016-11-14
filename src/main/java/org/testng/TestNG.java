@@ -134,10 +134,10 @@ public class TestNG {
   private ITestRunnerFactory m_testRunnerFactory;
 
   // These listeners can be overridden from the command line
-  private Map<Class<? extends IClassListener>, IClassListener> m_classListeners = Maps.newHashMap();
-  private Map<Class<? extends ITestListener>, ITestListener> m_testListeners = Maps.newHashMap();
-  private Map<Class<? extends ISuiteListener>, ISuiteListener> m_suiteListeners = Maps.newHashMap();
-  private Map<Class<? extends IReporter>, IReporter> m_reporters = Maps.newHashMap();
+  private final Map<Class<? extends IClassListener>, IClassListener> m_classListeners = Maps.newHashMap();
+  private final Map<Class<? extends ITestListener>, ITestListener> m_testListeners = Maps.newHashMap();
+  private final Map<Class<? extends ISuiteListener>, ISuiteListener> m_suiteListeners = Maps.newHashMap();
+  private final Map<Class<? extends IReporter>, IReporter> m_reporters = Maps.newHashMap();
 
   protected static final int HAS_FAILURE = 1;
   protected static final int HAS_SKIPPED = 2;
@@ -162,7 +162,8 @@ public class TestNG {
 
   private ITestObjectFactory m_objectFactory;
 
-  private Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener> m_invokedMethodListeners = Maps.newHashMap();
+  private final Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener> m_invokedMethodListeners = Maps
+      .newHashMap();
 
   private Integer m_dataProviderThreadCount = null;
 
@@ -178,9 +179,8 @@ public class TestNG {
   protected long m_end;
   protected long m_start;
 
-  private Map<Class<? extends IExecutionListener>, IExecutionListener> m_executionListeners = Maps.newHashMap();
-
-  private Map<Class<? extends IAlterSuiteListener>, IAlterSuiteListener> m_alterSuiteListeners= Maps.newHashMap();
+  private final Map<Class<? extends IExecutionListener>, IExecutionListener> m_executionListeners = Maps.newHashMap();
+  private final Map<Class<? extends IAlterSuiteListener>, IAlterSuiteListener> m_alterSuiteListeners= Maps.newHashMap();
 
   private boolean m_isInitialized = false;
 
@@ -712,33 +712,33 @@ public class TestNG {
     addListener((ITestNGListener) listener);
   }
 
+  private static <E> void wireListenerIfNotDuplicate(Map<Class<? extends E>, E> map, Class<? extends E> type, E value) {
+    if (map.containsKey(value.getClass())) {
+      LOGGER.warn("Skipping wiring in of the duplicate listener instance for the class : " + value.getClass().getName());
+    } else {
+      map.put(type, value);
+    }
+  }
+
   public void addListener(ITestNGListener listener) {
     if (listener == null) {
       return;
     }
     if (listener instanceof ISuiteListener) {
       ISuiteListener suite = (ISuiteListener) listener;
-      if (! m_suiteListeners.containsKey(suite.getClass())) {
-        m_suiteListeners.put(suite.getClass(), (ISuiteListener) listener);
-      }
+      wireListenerIfNotDuplicate(m_suiteListeners, suite.getClass(),  suite);
     }
     if (listener instanceof ITestListener) {
       ITestListener test = (ITestListener) listener;
-      if (! m_testListeners.containsKey(test.getClass())) {
-        m_testListeners.put(test.getClass(), test);
-      }
+      wireListenerIfNotDuplicate(m_testListeners, test.getClass(), test);
     }
     if (listener instanceof IClassListener) {
       IClassListener clazz = (IClassListener) listener;
-      if (! m_classListeners.containsKey(clazz)) {
-        m_classListeners.put(clazz.getClass(), clazz);
-      }
+      wireListenerIfNotDuplicate(m_classListeners, clazz.getClass(), clazz);
     }
     if (listener instanceof IReporter) {
       IReporter reporter = (IReporter) listener;
-      if (! m_reporters.containsKey(reporter.getClass())) {
-        m_reporters.put(reporter.getClass(), reporter);
-      }
+      wireListenerIfNotDuplicate(m_reporters, reporter.getClass(), reporter);
     }
     if (listener instanceof IAnnotationTransformer) {
       setAnnotationTransformer((IAnnotationTransformer) listener);
@@ -748,9 +748,7 @@ public class TestNG {
     }
     if (listener instanceof IInvokedMethodListener) {
       IInvokedMethodListener method = (IInvokedMethodListener) listener;
-      if (! m_invokedMethodListeners.containsKey(method)) {
-        m_invokedMethodListeners.put(method.getClass(), method);
-      }
+      wireListenerIfNotDuplicate(m_invokedMethodListeners, method.getClass(), method);
     }
     if (listener instanceof IHookable) {
       setHookable((IHookable) listener);
@@ -760,18 +758,14 @@ public class TestNG {
     }
     if (listener instanceof IExecutionListener) {
       IExecutionListener execution = (IExecutionListener) listener;
-      if (! m_executionListeners.containsKey(execution.getClass())) {
-        m_executionListeners.put(execution.getClass(), execution);
-      }
+      wireListenerIfNotDuplicate(m_executionListeners, execution.getClass(), execution);
     }
     if (listener instanceof IConfigurationListener) {
       getConfiguration().addConfigurationListener((IConfigurationListener) listener);
     }
     if (listener instanceof IAlterSuiteListener) {
       IAlterSuiteListener alter = (IAlterSuiteListener) listener;
-      if (! m_alterSuiteListeners.containsKey(alter.getClass())) {
-        m_alterSuiteListeners.put(alter.getClass(), alter);
-      }
+      wireListenerIfNotDuplicate(m_alterSuiteListeners, alter.getClass(), alter);
     }
   }
 
@@ -1376,9 +1370,9 @@ public class TestNG {
         m_testRunnerFactory,
         m_useDefaultListeners,
         m_methodInterceptors,
-        Lists.newArrayList(m_invokedMethodListeners.values()),
-        Lists.newArrayList(m_testListeners.values()),
-        Lists.newArrayList(m_classListeners.values()));
+        m_invokedMethodListeners.values(),
+        m_testListeners.values(),
+        m_classListeners.values());
 
     for (ISuiteListener isl : m_suiteListeners.values()) {
       result.addListener(isl);

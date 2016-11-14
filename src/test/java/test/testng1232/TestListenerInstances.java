@@ -26,11 +26,11 @@ public class TestListenerInstances extends SimpleBaseTest {
         runTestForTestClass(TestClassContainer.SimpleTestClass.class, true);
     }
 
-    private void runTestForTestClass(Class clazz) {
+    private static void runTestForTestClass(Class<?> clazz) {
         runTestForTestClass(clazz, false);
     }
 
-    private void runTestForTestClass(Class clazz, boolean injectListenerViaTag) {
+    private static void runTestForTestClass(Class<?> clazz, boolean injectListenerViaTag) {
         TestNG tng = createTestNGInstanceFor(clazz, injectListenerViaTag);
         TestListenerFor1232.resetCounters();
         TestListenerFor1232 listener = new TestListenerFor1232();
@@ -41,10 +41,9 @@ public class TestListenerInstances extends SimpleBaseTest {
         for (CounterTypes type : CounterTypes.values()) {
             Assert.assertEquals(TestListenerFor1232.counters.get(type).intValue(), 1);
         }
-
     }
 
-    private TestNG createTestNGInstanceFor(Class clazz, boolean addListenerTag) {
+    private static TestNG createTestNGInstanceFor(Class<?> clazz, boolean addListenerTag) {
         XmlSuite xmlSuite = createXmlSuite("Suite");
         if (addListenerTag) {
             xmlSuite.addListener(TestListenerFor1232.class.getName());

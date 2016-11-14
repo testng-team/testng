@@ -104,6 +104,12 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
         null /* class listeners */);
   }
 
+  /**
+   * @deprecated - This constructor stands deprecated.
+   */
+  @Deprecated
+  //There are no external callers for this constructor but for TestNG. But since this method is a protected method
+  //we are following a proper deprecation strategy.
   protected SuiteRunner(IConfiguration configuration,
       XmlSuite suite,
       String outputDir,
@@ -117,15 +123,28 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     init(configuration, suite, outputDir, runnerFactory, useDefaultListeners, methodInterceptors, invokedMethodListeners, testListeners, classListeners);
   }
 
+  protected SuiteRunner(IConfiguration configuration,
+      XmlSuite suite,
+      String outputDir,
+      ITestRunnerFactory runnerFactory,
+      boolean useDefaultListeners,
+      List<IMethodInterceptor> methodInterceptors,
+      Collection<IInvokedMethodListener> invokedMethodListeners,
+      Collection<ITestListener> testListeners,
+      Collection<IClassListener> classListeners)
+  {
+    init(configuration, suite, outputDir, runnerFactory, useDefaultListeners, methodInterceptors, invokedMethodListeners, testListeners, classListeners);
+  }
+
   private void init(IConfiguration configuration,
     XmlSuite suite,
     String outputDir,
     ITestRunnerFactory runnerFactory,
     boolean useDefaultListeners,
     List<IMethodInterceptor> methodInterceptors,
-    List<IInvokedMethodListener> invokedMethodListener,
-    List<ITestListener> testListeners,
-    List<IClassListener> classListeners)
+    Collection<IInvokedMethodListener> invokedMethodListener,
+    Collection<ITestListener> testListeners,
+    Collection<IClassListener> classListeners)
   {
     m_configuration = configuration;
     m_suite = suite;
