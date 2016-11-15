@@ -113,6 +113,7 @@ test {
 //    testLogging.showStandardStreams = true
     systemProperties = System.getProperties()
     systemProperties['test.resources.dir'] = 'build/resources/test/'
+	maxHeapSize = '1500m'
 }
 
 if (JavaVersion.current().isJava8Compatible()) {

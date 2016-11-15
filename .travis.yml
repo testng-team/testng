@@ -1,4 +1,9 @@
 language: java
+
+env:
+  global:
+    - GRADLE_OPTS=-Xmx512m
+
 jdk:
   - oraclejdk8
   - oraclejdk7
