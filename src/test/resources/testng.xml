@@ -121,6 +121,7 @@
       <class name="test.reports.ReporterLogTest" />
       <class name="test.testng387.TestNG387"/>
       <class name="test.testng1231.TestExecutionListenerInvocationOrder"/>
+      <class name="test.testng1232.TestListenerInstances"/>
     </classes>
   </test>
 
