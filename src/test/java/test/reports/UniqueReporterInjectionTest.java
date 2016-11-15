@@ -19,7 +19,9 @@ public class UniqueReporterInjectionTest extends SimpleBaseTest {
         tng.setUseDefaultListeners(false);
         tng.addListener((ITestNGListener) new ReporterListenerForIssue1227());
         tng.run();
-        Assert.assertEquals(tng.getReporters().size(),1);
+        //Since we have another reporting listener that is injected via the service loader file
+        //reporting listeners size will now have to be two.
+        Assert.assertEquals(tng.getReporters().size(),2);
         Assert.assertEquals(ReporterListenerForIssue1227.counter, 1);
     }
 

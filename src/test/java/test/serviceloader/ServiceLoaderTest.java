@@ -43,7 +43,7 @@ public class ServiceLoaderTest extends SimpleBaseTest {
     TestNG tng = create(ServiceLoaderSampleTest.class);
     tng.run();
 
-    Assert.assertEquals(1, tng.getServiceLoaderListeners().size());
+    Assert.assertEquals(2, tng.getServiceLoaderListeners().size());
     ListenerAssert.assertListenerType(tng.getServiceLoaderListeners(), MyConfigurationListener.class);
   }
 }
