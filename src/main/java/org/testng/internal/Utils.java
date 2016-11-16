@@ -599,7 +599,7 @@ public final class Utils {
     return result.toString();
   }
 
-  private static String filterTrace(String trace) {
+  static String filterTrace(String trace) {
     StringReader   stringReader = new StringReader(trace);
     BufferedReader bufferedReader = new BufferedReader(stringReader);
     StringBuffer buf = new StringBuffer();
@@ -618,6 +618,7 @@ public final class Utils {
       String[] excludedStrings = new String[] {
           "org.testng",
           "reflect",
+          "org.gradle",
           "org.apache.maven.surefire"
       };
 

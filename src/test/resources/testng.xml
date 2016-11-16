@@ -8,6 +8,10 @@
     <suite-file path="./parent-module-suite.xml" />
   </suite-files>
 
+  <listeners>
+    <listener class-name="org.testng.internal.ConsoleReporter"/>
+  </listeners>
+
   <test name="Nopackage">
     <groups>
       <run>
