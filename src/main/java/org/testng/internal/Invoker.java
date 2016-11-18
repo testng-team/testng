@@ -653,6 +653,7 @@ public class Invoker implements IInvoker {
       }
       else {
         testResult.setStatus(ITestResult.SKIP);
+        addExceptionDetailsToTestResult(testResult, instance);
       }
     }
     catch(InvocationTargetException ite) {
@@ -726,6 +727,46 @@ public class Invoker implements IInvoker {
     }
 
     return testResult;
+  }
+
+  private void addExceptionDetailsToTestResult(ITestResult testResult, Object instance) {
+    Set<ITestResult> configResults = m_testContext.getFailedConfigurations().getAllResults();
+    if (configResults.isEmpty()) {
+      configResults = m_testContext.getSkippedConfigurations().getAllResults();
+    }
+    for (ITestResult configResult : configResults) {
+      if (sameInstance(configResult, instance)) {
+        testResult.setThrowable(configResult.getThrowable());
+        return;
+      }
+    }
+    if (configResults.isEmpty()) {
+      //if we are here it means we have a test method skip due to a @BeforeSuite failure in a different <test> maybe
+      //So we will have to find out that first failure/skip and get its throwable and pack that information into our
+      //current test method's test result.
+      testResult.setThrowable(getConfigFailureException());
+    } else {
+      //If we are here it perhaps means that the test method is being skipped because there was a configuration
+      //failure in a different class due to @BeforeGroups being used.
+      //So lets just find the first exception information and then just pack it in.
+      testResult.setThrowable(configResults.iterator().next().getThrowable());
+    }
+  }
+
+  private Throwable getConfigFailureException() {
+    Throwable t = null;
+    for (IInvokedMethod method : m_testContext.getSuite().getAllInvokedMethods()) {
+      ITestNGMethod m = method.getTestMethod();
+      if (m.isBeforeSuiteConfiguration() && (! method.getTestResult().isSuccess())) {
+        t = method.getTestResult().getThrowable();
+        break;
+      }
+    }
+    return t;
+  }
+
+  private boolean sameInstance(ITestResult configResult, Object instance) {
+    return (configResult.getInstance()!= null ) && (configResult.getInstance().equals(instance));
   }
 
   void collectResults(ITestNGMethod testMethod, ITestResult result) {

@@ -126,6 +126,7 @@
       <class name="test.testng387.TestNG387"/>
       <class name="test.testng1231.TestExecutionListenerInvocationOrder"/>
       <class name="test.testng1232.TestListenerInstances"/>
+      <class name="test.testng674.BeforeClassSkipExceptionTest"/>
     </classes>
   </test>
 
