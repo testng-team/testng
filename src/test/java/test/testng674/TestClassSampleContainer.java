@@ -69,16 +69,12 @@ public class TestClassSampleContainer {
             throw new SkipException(ERROR_MSG);
         }
         @Test
-        public void testMethod() {
-            System.err.println("Hello World " + getClass().getName());
-        }
+        public void testMethod() {}
     }
 
     public static class RegularTestClass {
         @Test
-        public void testMethod() {
-            System.err.println("Hello World " + getClass().getName());
-        }
+        public void testMethod() {}
     }
 
     public static class GroupsContainer {
@@ -97,5 +93,25 @@ public class TestClassSampleContainer {
             @Test(groups = "foo")
             public void testMethod() {}
         }
+    }
+
+    public static class BaseSample {
+
+        @BeforeSuite
+        public void beforeSuite() {
+            throw new RuntimeException(ERROR_MSG);
+        }
+    }
+
+    public static class A extends BaseSample {
+
+        @Test
+        public void testMethod() {}
+    }
+
+    public static class B extends BaseSample {
+
+        @Test
+        public void testMethod() {}
     }
 }

@@ -69,6 +69,16 @@ public class BeforeClassSkipExceptionTest extends SimpleBaseTest {
         }
     }
 
+    @Test
+    public void testExceptionDetailsWhenFailuresExistInABaseClass() {
+        ReportingListenerFor674 reporter = new ReportingListenerFor674();
+        Class<?>[] classes = {
+            TestClassSampleContainer.A.class,
+            TestClassSampleContainer.B.class
+        };
+        createTestNGInstanceAndRun(reporter, 2, false, classes);
+    }
+
     private static void createTestNGInstanceAndRun(ReportingListenerFor674 reporter, Class<?>... clazz) {
         createTestNGInstanceAndRun(reporter, 1, false, clazz);
     }
