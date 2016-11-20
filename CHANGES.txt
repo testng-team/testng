@@ -17,6 +17,7 @@ Fixed: GITHUB-1139: DataProvider could support Object[] as a valid return type (
 Fixed: GITHUB-1182: Cannot run multiple @Factory-annotated methods in the same class (Ian Donovan & Julien Herr)
 New: Hierarchy on order features (from less important to more important): groupByInstance, preserveOrder, priority, dependsOnGroups, dependsOnMethods
 Fixed: GITHUB-1156: test execution dependant upon class name order and fails with TestNGException: No free nodes found (@t-weil & Julien Herr)
+Fixed: GITHUB-1221: ConcurrentModificationException in TextReporter (Nick Tan)
 
 6.9.13.6
 2016/09/23

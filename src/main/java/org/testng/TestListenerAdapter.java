@@ -77,25 +77,25 @@ public class TestListenerAdapter implements IResultListener2 {
    * @return Returns the failedButWithinSuccessPercentageTests.
    */
   public List<ITestResult> getFailedButWithinSuccessPercentageTests() {
-    return m_failedButWSPerTests;
+    return new ArrayList<>(m_failedButWSPerTests);
   }
   /**
    * @return Returns the failedTests.
    */
   public List<ITestResult> getFailedTests() {
-    return m_failedTests;
+    return new ArrayList<>(m_failedTests);
   }
   /**
    * @return Returns the passedTests.
    */
   public List<ITestResult> getPassedTests() {
-    return m_passedTests;
+    return new ArrayList<>(m_passedTests);
   }
   /**
    * @return Returns the skippedTests.
    */
   public List<ITestResult> getSkippedTests() {
-    return m_skippedTests;
+    return new ArrayList<>(m_skippedTests);
   }
 
   private static void ppp(String s) {
