@@ -21,6 +21,8 @@ public interface XMLConstants {
   /** the failure element */
   String FAILURE = "failure";
 
+  String SKIPPED = "skipped";
+
   /** the system-err element */
   String SYSTEM_ERR = "system-err";
 
@@ -41,6 +43,9 @@ public interface XMLConstants {
 
   /** failures attribute for testsuite elements */
   String ATTR_FAILURES = "failures";
+
+  /** ignored attribute for testsuite elements */
+  String ATTR_IGNORED = "ignored";
 
   /** tests attribute for testsuite elements */
   String ATTR_TESTS = "tests";

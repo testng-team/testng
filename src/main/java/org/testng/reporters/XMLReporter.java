@@ -42,6 +42,7 @@ public class XMLReporter implements IReporter {
     int passed = 0;
     int failed = 0;
     int skipped = 0;
+    int ignored = 0;
     for (ISuite s : suites) {
       Map<String, ISuiteResult> suiteResults = s.getResults();
       synchronized(suiteResults) {
@@ -50,6 +51,7 @@ public class XMLReporter implements IReporter {
           passed += testContext.getPassedTests().size();
           failed += testContext.getFailedTests().size();
           skipped += testContext.getSkippedTests().size();
+          ignored += testContext.getExcludedMethods().size();
         }
       }
     }
@@ -59,7 +61,8 @@ public class XMLReporter implements IReporter {
     p.put("passed", passed);
     p.put("failed", failed);
     p.put("skipped", skipped);
-    p.put("total", passed + failed + skipped);
+    p.put("ignored", ignored);
+    p.put("total", passed + failed + skipped + ignored);
     rootBuffer.push(XMLReporterConfig.TAG_TESTNG_RESULTS, p);
     writeReporterOutput(rootBuffer);
     for (ISuite suite : suites) {

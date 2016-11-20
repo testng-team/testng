@@ -1,4 +1,6 @@
 ﻿Current
+Fixed: GITHUB-1211: Include "ignored" test count in JUnit reports (Krishnan Mahadevan)
+Fixed: GITHUB-1213: Include "ignored" test count in testng-results.xml (Krishnan Mahadevan)
 Fixed: GITHUB-674: Enrich Test method skips due to configuration failures with throwable data (Krishnan Mahadevan)
 Fixed: GITHUB-1240: Enrich the test results showing mechanism in Travis CI (Krishnan Mahadevan)
 Fixed: GITHUB-1232: Prevent TestNG from adding duplicate instances of the same listener (Krishnan Mahadevan)
