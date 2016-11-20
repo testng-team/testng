@@ -44,9 +44,16 @@ apply plugin: 'groovy'
 apply plugin: 'jacoco'
 apply plugin: 'osgi'
 apply plugin: 'version-injection'
+apply plugin: 'eclipse'
 
 targetCompatibility = "1.7"
 sourceCompatibility = "1.7"
+
+eclipse {
+    classpath {
+        defaultOutputDir = file('target/classes')
+    }
+}
 
 repositories {
     mavenCentral()
