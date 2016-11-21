@@ -772,12 +772,13 @@
 
   <test name = "Parallelization">
     <classes>
-      <class name="test.thread.parallelization.ParallelByMethodsSingleSuiteSingleTestSingleClassTest"/>
-      <class name="test.thread.parallelization.ParallelByMethodsMultipleSuitesTestsClassesTest"/>
-      <class name="test.thread.parallelization.ParallelByMethodsParallelSuitesNoSuiteQueuing"/>
-      <class name="test.thread.parallelization.ParallelByMethodsParallelSuitesWithSuiteQueuing"/>
-      <class name="test.thread.parallelization.ParallelByMethodsSingleSuiteSingleTestSingleClassWithDataProvider"/>
-      <class name="test.thread.parallelization.ParallelByMethodsMultipleSuitesTestsWithDataProviderAndMethodQueueing"/>
+      <class name="test.thread.parallelization.ParallelByMethodsTestCase1Scenario1"/>
+      <class name="test.thread.parallelization.ParallelByMethodsTestCase1Scenario2"/>
+      <class name="test.thread.parallelization.ParallelByMethodsTestCase2Scenario1"/>
+      <class name="test.thread.parallelization.ParallelByMethodsTestCase2Scenario2"/>
+      <class name="test.thread.parallelization.ParallelByMethodsTestCase3Scenario1"/>
+      <class name="test.thread.parallelization.ParallelByMethodsTestCase3Scenario2"/>
+      <class name="test.thread.parallelization.ParallelByMethodsTestCase4Scenario1"/>
     </classes>
   </test>
 

@@ -45,7 +45,32 @@ import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodLev
 import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodLevelEventLogsForTest;
 import static test.thread.parallelization.TestNgRunStateTracker.reset;
 
-public class ParallelByMethodsParallelSuitesWithSuiteQueuing extends BaseParallelizationTest {
+/**
+ * This class covers PTP_TC_2, Scenario 2 in the Parallelization Test Plan.
+ *
+ * Test Case Summary: Parallel by methods mode with parallel test suites, no dependencies and no factories or data
+ *                    providers.
+ *
+ * Scenario Description: Three suites with 1, 2 and 3 tests respectively. One test for a suite shall consist of a
+ *                       single test class while the rest shall consist of more than one test class.
+ *
+ * 1) The suite thread pool is 2, so one suite will have to wait for one of the others to complete execution before it
+ *    can begin execution
+ * 2) For one of the suites, the thread count and parallel mode are specified at the suite level
+ * 3) For one of the suites, the thread count and parallel mode are specified at the test level
+ * 4) For one of the suites, the parallel mode is specified at the suite level, and the thread counts are specified at
+ *    the test level (thread counts for each test differ)
+ * 5) The thread count is less than the number of test methods for the tests in two of the suites, so some methods will
+ *    have to wait the active thread count to drop below the maximum thread count before they can begin execution.
+ * 6) The thread count is more than the number of test methods for the tests in one of the suites, ensuring that none
+ *    of the methods in that suite should have to wait for any other method to complete execution
+ * 7) There are NO configuration methods
+ * 8) All test methods pass
+ * 9) NO ordering is specified
+ * 10) group-by-instances is NOT set
+ * 11) There are no method exclusions
+ */
+public class ParallelByMethodsTestCase2Scenario2 extends BaseParallelizationTest {
     private static final String SUITE_A = "TestSuiteA";
     private static final String SUITE_B = "TestSuiteB";
     private static final String SUITE_C = "TestSuiteC";
@@ -119,7 +144,7 @@ public class ParallelByMethodsParallelSuitesWithSuiteQueuing extends BaseParalle
     private TestNgRunStateTracker.EventLog suiteThreeTestThreeListenerOnFinishEventLog;
 
     @BeforeClass
-    public void parallelSuitesWithSuiteQueuing() {
+    public void setUp() {
         reset();
 
         XmlSuite suiteOne = createXmlSuite(SUITE_A);

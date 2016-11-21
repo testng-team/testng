@@ -36,7 +36,29 @@ import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodLev
 import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodLevelEventLogsForTest;
 import static test.thread.parallelization.TestNgRunStateTracker.reset;
 
-public class ParallelByMethodsMultipleSuitesTestsWithDataProviderAndMethodQueueing extends BaseParallelizationTest {
+/**
+ * This class covers PTP_TC_3, Scenario 2 in the Parallelization Test Plan.
+ *
+ * Test Case Summary: Parallel by methods mode with sequential test suites using a non-parallel data provider but no
+ *                    dependencies and no factories.
+ *
+ * Scenario Description: Two suites with 1 and 2 tests respectively. One test for a suite shall consist of a single
+ *                       test class while the rest shall consist of more than one test class. Each test class has some
+ *                       methods with use a data provider and some which do not. Two data providers are used: one which
+ *                       provides two sets of data, one which provide three sets of data.
+ *
+ * 1) For both suites, the thread count and parallel mode are specified at the suite level
+ * 2) The thread count is less than the number of test methods for all tests in both suites, so methods will have to
+ *    wait the active thread count to drop below the maximum thread count before they can begin execution. The
+ *    expectation is that a thread for a method does not terminate until the method has been invoked for all sets of
+ *    data if it uses a data provider.
+ * 3) There are NO configuration methods
+ * 4) All test methods pass
+ * 5) NO ordering is specified
+ * 6) group-by-instances is NOT set
+ * 7) There are no method exclusions
+ */
+public class ParallelByMethodsTestCase3Scenario2 extends BaseParallelizationTest {
 
     private static final String SUITE_A = "TestSuiteA";
     private static final String SUITE_B = "TestSuiteB";
@@ -83,7 +105,7 @@ public class ParallelByMethodsMultipleSuitesTestsWithDataProviderAndMethodQueuei
     private TestNgRunStateTracker.EventLog suiteTwoTestTwoListenerOnFinishEventLog;
 
     @BeforeClass
-    public void complexMultipleSequentialSuitesWithDataProvider() {
+    public void setUp() {
         reset();
 
         XmlSuite suiteOne = createXmlSuite(SUITE_A);
@@ -405,7 +427,8 @@ public class ParallelByMethodsMultipleSuitesTestsWithDataProviderAndMethodQueuei
         );
 
         verifyParallelTestMethodsWithNonParallelDataProvider(
-                getTestMethodLevelEventLogsForTest(SUITE_B, SUITE_B_TEST_B), SUITE_B_TEST_B, expectedInvocationCounts, 13,
+                getTestMethodLevelEventLogsForTest(SUITE_B, SUITE_B_TEST_B), SUITE_B_TEST_B, expectedInvocationCounts,
+                13,
                 4
         );
     }
