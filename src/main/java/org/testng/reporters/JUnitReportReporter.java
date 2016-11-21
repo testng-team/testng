@@ -7,6 +7,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.ListMultiMap;
+import org.testng.collections.SetMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
@@ -20,12 +21,12 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+
 
 public class JUnitReportReporter implements IReporter {
 
@@ -36,8 +37,12 @@ public class JUnitReportReporter implements IReporter {
     Map<Class<?>, Set<ITestResult>> results = Maps.newHashMap();
     ListMultiMap<Object, ITestResult> befores = Maps.newListMultiMap();
     ListMultiMap<Object, ITestResult> afters = Maps.newListMultiMap();
+    SetMultiMap<Class<?>, ITestNGMethod> mapping = new SetMultiMap(false);
+    int ignored = 0;
     for (ISuite suite : suites) {
       Map<String, ISuiteResult> suiteResults = suite.getResults();
+      ignored += suite.getExcludedMethods().size();
+      addMapping(mapping, suite.getExcludedMethods());
       for (ISuiteResult sr : suiteResults.values()) {
         ITestContext tc = sr.getTestContext();
         addResults(tc.getPassedTests().getAllResults(), results);
@@ -83,9 +88,8 @@ public class JUnitReportReporter implements IReporter {
     for (Map.Entry<Class<?>, Set<ITestResult>> entry : results.entrySet()) {
       Class<?> cls = entry.getKey();
       Properties p1 = new Properties();
-      p1.setProperty("name", cls.getName());
-      Date timeStamp = Calendar.getInstance().getTime();
-      p1.setProperty(XMLConstants.ATTR_TIMESTAMP, timeStamp.toGMTString());
+      p1.setProperty(XMLConstants.ATTR_NAME, cls.getName());
+      p1.setProperty(XMLConstants.ATTR_TIMESTAMP, JUnitXMLReporter.timeAsGmt());
 
       List<TestTag> testCases = Lists.newArrayList();
       int failures = 0;
@@ -95,59 +99,48 @@ public class JUnitReportReporter implements IReporter {
       float totalTime = 0;
 
       for (ITestResult tr: entry.getValue()) {
-        TestTag testTag = new TestTag();
 
-        Properties p2 = new Properties();
-        p2.setProperty("classname", cls.getName());
-        p2.setProperty("name", getTestName(tr));
         long time = tr.getEndMillis() - tr.getStartMillis();
 
         time += getNextConfiguration(befores, tr);
         time += getNextConfiguration(afters, tr);
 
-        p2.setProperty("time", "" + formatTime(time));
         Throwable t = tr.getThrowable();
         switch (tr.getStatus()) {
-          case ITestResult.SUCCESS:
-            break;
-
           case ITestResult.SKIP:
           case ITestResult.SUCCESS_PERCENTAGE_FAILURE:
             skipped++;
-            testTag.childTag = "skipped";
             break;
 
           case ITestResult.FAILURE:
             if (t instanceof AssertionError) {
               failures++;
-              testTag.childTag = "failure";
             } else {
               errors++;
-              testTag.childTag = "error";
             }
-            if (t != null) {
-          StringWriter sw = new StringWriter();
-          PrintWriter pw = new PrintWriter(sw);
-          t.printStackTrace(pw);
-          testTag.message = t.getMessage();
-          testTag.type = t.getClass().getName();
-          testTag.stackTrace = sw.toString();
-        }
             break;
         }
 
         totalTime += time;
         testCount++;
-        testTag.properties = p2;
+        TestTag testTag = createTestTagFor(tr, cls);
+        testTag.properties.setProperty(XMLConstants.ATTR_TIME, "" + formatTime(time));
         testCases.add(testTag);
       }
 
-      p1.setProperty("failures", "" + failures);
-      p1.setProperty("errors", "" + errors);
-      p1.setProperty("skipped", "" + skipped);
-      p1.setProperty("name", cls.getName());
-      p1.setProperty("tests", "" + testCount);
-      p1.setProperty("time", "" + formatTime(totalTime));
+      for (Map.Entry<Class<?>,Set<ITestNGMethod>> eachEntry : mapping.entrySet()) {
+        for (ITestNGMethod eachMethod : eachEntry.getValue()) {
+          testCases.add(createIgnoredTestTagFor(eachMethod));
+        }
+      }
+
+      p1.setProperty(XMLConstants.ATTR_FAILURES, "" + failures);
+      p1.setProperty(XMLConstants.ATTR_IGNORED, "" + ignored);
+      p1.setProperty(XMLConstants.ATTR_ERRORS, "" + errors);
+      p1.setProperty(XMLConstants.SKIPPED, "" + skipped);
+      p1.setProperty(XMLConstants.ATTR_NAME, cls.getName());
+      p1.setProperty(XMLConstants.ATTR_TESTS, "" + testCount);
+      p1.setProperty(XMLConstants.ATTR_TIME, "" + formatTime(totalTime));
       try {
         p1.setProperty(XMLConstants.ATTR_HOSTNAME, InetAddress.getLocalHost().getHostName());
       } catch (UnknownHostException e) {
@@ -160,21 +153,21 @@ public class JUnitReportReporter implements IReporter {
       XMLStringBuffer xsb = new XMLStringBuffer();
       xsb.addComment("Generated by " + getClass().getName());
 
-      xsb.push("testsuite", p1);
+      xsb.push(XMLConstants.TESTSUITE, p1);
       for (TestTag testTag : testCases) {
-        if (putElement(xsb, "testcase", testTag.properties, testTag.childTag != null)) {
+        if (putElement(xsb, XMLConstants.TESTCASE, testTag.properties, testTag.childTag != null)) {
           Properties p = new Properties();
-          safeSetProperty(p, "message", testTag.message);
-          safeSetProperty(p, "type", testTag.type);
+          safeSetProperty(p, XMLConstants.ATTR_MESSAGE, testTag.message);
+          safeSetProperty(p, XMLConstants.ATTR_TYPE, testTag.type);
 
           if (putElement(xsb, testTag.childTag, p, testTag.stackTrace != null)) {
             xsb.addCDATA(testTag.stackTrace);
             xsb.pop(testTag.childTag);
           }
-          xsb.pop("testcase");
+          xsb.pop(XMLConstants.TESTCASE);
         }
       }
-      xsb.pop("testsuite");
+      xsb.pop(XMLConstants.TESTSUITE);
 
       String outputDirectory = defaultOutputDirectory + File.separator + "junitreports";
       Utils.writeUtf8File(outputDirectory, getFileName(cls), xsb.toXML());
@@ -183,6 +176,50 @@ public class JUnitReportReporter implements IReporter {
 //    System.out.println(xsb.toXML());
 //    System.out.println("");
 
+  }
+
+  private TestTag createIgnoredTestTagFor(ITestNGMethod method) {
+    TestTag testTag = new TestTag();
+    Properties p2 = new Properties();
+    p2.setProperty(XMLConstants.ATTR_CLASSNAME, method.getRealClass().getName());
+    p2.setProperty(XMLConstants.ATTR_NAME, method.getMethodName());
+    testTag.childTag = XMLConstants.ATTR_IGNORED;
+    testTag.properties = p2;
+    return testTag;
+  }
+
+  private TestTag createTestTagFor(ITestResult tr, Class<?> cls) {
+    TestTag testTag = new TestTag();
+
+    Properties p2 = new Properties();
+    p2.setProperty(XMLConstants.ATTR_CLASSNAME, cls.getName());
+    p2.setProperty(XMLConstants.ATTR_NAME, getTestName(tr));
+    Throwable t = tr.getThrowable();
+
+    switch (tr.getStatus()) {
+      case ITestResult.SKIP:
+      case ITestResult.SUCCESS_PERCENTAGE_FAILURE:
+        testTag.childTag = XMLConstants.SKIPPED;
+        break;
+
+      case ITestResult.FAILURE:
+        testTag.childTag = XMLConstants.ERROR;
+        if (t instanceof AssertionError) {
+          testTag.childTag = XMLConstants.FAILURE;
+        }
+        if (t != null) {
+          StringWriter sw = new StringWriter();
+          PrintWriter pw = new PrintWriter(sw);
+          t.printStackTrace(pw);
+          testTag.message = t.getMessage();
+          testTag.type = t.getClass().getName();
+          testTag.stackTrace = sw.toString();
+        }
+        break;
+    }
+
+    testTag.properties = p2;
+    return testTag;
   }
 
   /** Put a XML start or empty tag to the XMLStringBuffer depending on hasChildElements parameter */
@@ -245,12 +282,12 @@ public class JUnitReportReporter implements IReporter {
     return format.format(time / 1000.0f);
   }
 
-  static class TestTag {
+  private static class TestTag {
     public Properties properties;
     public String message;
     public String type;
     public String stackTrace;
-    public String childTag;
+    String childTag;
   }
 
   private void addResults(Set<ITestResult> allResults, Map<Class<?>, Set<ITestResult>> out) {
@@ -264,5 +301,12 @@ public class JUnitReportReporter implements IReporter {
       l.add(tr);
     }
   }
+
+  private void addMapping(SetMultiMap<Class<?>, ITestNGMethod> mapping, Collection<ITestNGMethod> methods) {
+    for (ITestNGMethod method : methods) {
+      mapping.put(method.getRealClass(), method);
+    }
+  }
+
 
 }

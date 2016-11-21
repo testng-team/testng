@@ -14,12 +14,15 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
+import java.util.Collection;
+import java.util.TimeZone;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import java.text.SimpleDateFormat;
 
 /**
  * A JUnit XML report generator (replacing the original JUnitXMLReporter that was
@@ -43,13 +46,7 @@ public class JUnitXMLReporter implements IResultListener2 {
   }
 
 
-  /**
-   * keep lists of all the results
-   */
-  private int m_numPassed= 0;
   private int m_numFailed= 0;
-  private int m_numSkipped= 0;
-  private int m_numFailedButIgnored= 0;
   private List<ITestResult> m_allTests =
       Collections.synchronizedList(Lists.<ITestResult>newArrayList());
   private List<ITestResult> m_configIssues =
@@ -71,13 +68,11 @@ public class JUnitXMLReporter implements IResultListener2 {
   @Override
   public void onTestSuccess(ITestResult tr) {
     m_allTests.add(tr);
-    m_numPassed++;
   }
 
   @Override
   public void onTestFailedButWithinSuccessPercentage(ITestResult tr) {
     m_allTests.add(tr);
-    m_numFailedButIgnored++;
   }
 
   /**
@@ -95,7 +90,6 @@ public class JUnitXMLReporter implements IResultListener2 {
   @Override
   public void onTestSkipped(ITestResult tr) {
     m_allTests.add(tr);
-    m_numSkipped++;
   }
 
   /**
@@ -153,6 +147,7 @@ public class JUnitXMLReporter implements IResultListener2 {
       Properties attrs= new Properties();
       attrs.setProperty(XMLConstants.ATTR_ERRORS, "0");
       attrs.setProperty(XMLConstants.ATTR_FAILURES, "" + m_numFailed);
+      attrs.setProperty(XMLConstants.ATTR_IGNORED, "" + context.getExcludedMethods().size());
       try {
         attrs.setProperty(XMLConstants.ATTR_HOSTNAME, InetAddress.getLocalHost().getHostName());
       } catch (UnknownHostException e) {
@@ -168,26 +163,50 @@ public class JUnitXMLReporter implements IResultListener2 {
       attrs.setProperty(XMLConstants.ATTR_TIME, ""
           + ((context.getEndDate().getTime() - context.getStartDate().getTime()) / 1000.0));
 
-      Date timeStamp = Calendar.getInstance().getTime();
-      attrs.setProperty(XMLConstants.ATTR_TIMESTAMP, timeStamp.toGMTString());
+      attrs.setProperty(XMLConstants.ATTR_TIMESTAMP, timeAsGmt());
 
       document.push(XMLConstants.TESTSUITE, attrs);
-//      document.addEmptyElement(XMLConstants.PROPERTIES);
 
       createElementFromTestResults(document, m_configIssues);
       createElementFromTestResults(document, m_allTests);
+      createElementFromIgnoredTests(document, context);
 
       document.pop();
       Utils.writeUtf8File(context.getOutputDirectory(),generateFileName(context) + ".xml", document.toXML());
   }
 
-  private void createElementFromTestResults(XMLStringBuffer document, List<ITestResult> results) {
-    synchronized(results) {
-      for(ITestResult tr : results) {
-        createElement(document, tr);
-      }
+  static String timeAsGmt() {
+    SimpleDateFormat sdf = new SimpleDateFormat();
+    sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+    sdf.applyPattern("dd MMM yyyy HH:mm:ss z");
+    return sdf.format(Calendar.getInstance().getTime());
+  }
+
+  private synchronized void createElementFromTestResults(XMLStringBuffer document, List<ITestResult> results) {
+    for(ITestResult tr : results) {
+      createElement(document, tr);
     }
   }
+
+  private synchronized void createElementFromIgnoredTests(XMLStringBuffer doc, ITestContext context) {
+    Collection<ITestNGMethod> methods = context.getExcludedMethods();
+    for (ITestNGMethod method : methods) {
+      Properties properties = getPropertiesFor(method, 0);
+      doc.push(XMLConstants.TESTCASE,properties);
+      doc.addEmptyElement("ignored");
+      doc.pop();
+    }
+  }
+
+  private Properties getPropertiesFor(ITestNGMethod method, long elapsedTimeMillis) {
+    Properties attrs= new Properties();
+    String name= Utils.detailedMethodName(method, false);
+    attrs.setProperty(XMLConstants.ATTR_NAME, name);
+    attrs.setProperty(XMLConstants.ATTR_CLASSNAME, method.getRealClass().getName());
+    attrs.setProperty(XMLConstants.ATTR_TIME, "" + (((double) elapsedTimeMillis) / 1000));
+    return attrs;
+  }
+
 
   private Set<String> getPackages(ITestContext context) {
     Set<String> result = Sets.newHashSet();
@@ -201,12 +220,12 @@ public class JUnitXMLReporter implements IResultListener2 {
   }
 
   private void createElement(XMLStringBuffer doc, ITestResult tr) {
-    Properties attrs= new Properties();
+
     long elapsedTimeMillis= tr.getEndMillis() - tr.getStartMillis();
-    String name= tr.getMethod().isTest() ? tr.getName() : Utils.detailedMethodName(tr.getMethod(), false);
-    attrs.setProperty(XMLConstants.ATTR_NAME, name);
-    attrs.setProperty(XMLConstants.ATTR_CLASSNAME, tr.getTestClass().getRealClass().getName());
-    attrs.setProperty(XMLConstants.ATTR_TIME, "" + (((double) elapsedTimeMillis) / 1000));
+    Properties attrs= getPropertiesFor(tr.getMethod(), elapsedTimeMillis);
+    if (tr.getMethod().isTest()) {
+      attrs.setProperty(XMLConstants.ATTR_NAME, tr.getName());
+    }
 
     if((ITestResult.FAILURE == tr.getStatus()) || (ITestResult.SKIP == tr.getStatus())) {
       doc.push(XMLConstants.TESTCASE, attrs);
@@ -215,7 +234,7 @@ public class JUnitXMLReporter implements IResultListener2 {
         createFailureElement(doc, tr);
       }
       else if(ITestResult.SKIP == tr.getStatus()) {
-        createSkipElement(doc, tr);
+        createSkipElement(doc);
       }
 
       doc.pop();
@@ -235,7 +254,7 @@ public class JUnitXMLReporter implements IResultListener2 {
         attrs.setProperty(XMLConstants.ATTR_MESSAGE, encodeAttr(message)); // ENCODE
       }
       doc.push(XMLConstants.FAILURE, attrs);
-      doc.addCDATA(Utils.stackTrace(t, false)[0]);
+      doc.addCDATA(Utils.shortStackTrace(t, false));
       doc.pop();
     }
     else {
@@ -243,8 +262,8 @@ public class JUnitXMLReporter implements IResultListener2 {
     }
   }
 
-  private void createSkipElement(XMLStringBuffer doc, ITestResult tr) {
-    doc.addEmptyElement("skipped");
+  private void createSkipElement(XMLStringBuffer doc) {
+    doc.addEmptyElement(XMLConstants.SKIPPED);
   }
 
   private String encodeAttr(String attr) {
@@ -262,7 +281,7 @@ public class JUnitXMLReporter implements IResultListener2 {
     if(idx == -1) {
       return str;
     }
-    StringBuffer result= new StringBuffer();
+    StringBuilder result= new StringBuilder();
     while(idx != -1) {
       result.append(str.substring(start, idx));
       if(pattern.matcher(str.substring(idx)).matches()) {
@@ -288,22 +307,18 @@ public class JUnitXMLReporter implements IResultListener2 {
 		m_allTests = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
 		m_configIssues = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
 		m_numFailed = 0;
-		m_numFailedButIgnored = 0;
-		m_numPassed = 0;
-		m_numSkipped = 0;
-	}
+    }
 
 	/**
-	 * @author Borojevic Created this method to guarantee unique file names for
-	 *         reports.<br>
-	 *         Also, this will guarantee that the old reports are overwritten
-	 *         when tests are run again.
+	 * This method guarantees unique file names for reports.<br>
+	 * Also, this will guarantee that the old reports are overwritten when tests are run again.
+     * 
 	 * @param context
 	 *            test context
 	 * @return unique name for the file associated with this test context.
 	 * */
 	private String generateFileName(ITestContext context) {
-		String fileName = null;
+		String fileName;
 		String keyToSearch = context.getSuite().getName() + context.getName();
 		if (m_fileNameMap.get(keyToSearch) == null) {
 			fileName = context.getName();
