@@ -254,6 +254,9 @@ public class TestRunner
 
     initListeners();
     addConfigurationListener(m_confListener);
+    for (IConfigurationListener cl : m_configuration.getConfigurationListeners()) {
+      addConfigurationListener(cl);
+    }
   }
 
   private static class ListenerHolder {
