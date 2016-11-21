@@ -310,10 +310,9 @@ public class JUnitXMLReporter implements IResultListener2 {
     }
 
 	/**
-	 * Borojevic Created this method to guarantee unique file names for
-	 *         reports.<br>
-	 *         Also, this will guarantee that the old reports are overwritten
-	 *         when tests are run again.
+	 * This method guarantees unique file names for reports.<br>
+	 * Also, this will guarantee that the old reports are overwritten when tests are run again.
+     * 
 	 * @param context
 	 *            test context
 	 * @return unique name for the file associated with this test context.
