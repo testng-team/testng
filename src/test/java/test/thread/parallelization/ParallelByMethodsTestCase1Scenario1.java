@@ -1,22 +1,20 @@
 package test.thread.parallelization;
 
 import com.google.common.collect.Multimap;
-
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
-
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
 import org.testng.xml.XmlSuite;
 
 import test.thread.parallelization.TestNgRunStateTracker.EventLog;
-import test.thread.parallelization.sample.TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample;
+import test.thread.parallelization.sample.TestClassAFiveMethodsWithNoDepsSample;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.testng.Assert.assertEquals;
+
 import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteAndTestLevelEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteLevelEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllTestLevelEventLogs;
@@ -27,9 +25,28 @@ import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerF
 import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerStartEventLog;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerStartThreadId;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodEventLogsForMethod;
+
 import static test.thread.parallelization.TestNgRunStateTracker.reset;
 
-public class ParallelByMethodsSingleSuiteSingleTestSingleClassWithDataProvider extends BaseParallelizationTest {
+/**
+ * This class covers PTP_TC_1, Scenario 1 in the Parallelization Test Plan.
+ *
+ * Test Case Summary: Parallel by methods mode with sequential test suites, no dependencies and no factories or
+ *                    data providers.
+ *
+ * Scenario Description: Single suite with a single test consisting of a single test class with five methods
+ *
+ * 1) Thread count and parallel mode are specified at the suite level
+ * 2) The thread count is equal to the number of test methods, ensuring that no method should have to wait for any other
+ *    method to complete execution
+ * 3) There are NO configuration methods
+ * 4) All test methods pass
+ * 5) NO ordering is specified
+ * 6) group-by-instances is NOT set
+ * 7) There are no method exclusions
+ */
+public class ParallelByMethodsTestCase1Scenario1 extends BaseParallelizationTest {
+
     private static final String SUITE = "SingleTestSuite";
     private static final String TEST = "SingleTestClassTest";
 
@@ -53,19 +70,18 @@ public class ParallelByMethodsSingleSuiteSingleTestSingleClassWithDataProvider e
     private Multimap<Object, EventLog> testMethodEEventLogs;
 
     @BeforeClass
-    public void singleSuiteSingleTestSingleTestClassWithDataProvider() {
+    public void setUp() {
         reset();
 
         XmlSuite suite = createXmlSuite(SUITE);
         suite.setParallel(XmlSuite.ParallelMode.METHODS);
-        suite.setThreadCount(15);
+        suite.setThreadCount(5);
 
-        createXmlTest(suite, TEST, TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class);
+        createXmlTest(suite, TEST, TestClassAFiveMethodsWithNoDepsSample.class);
 
-        addParams(suite, SUITE, TEST, "1", "paramOne,paramTwo,paramThree");
+        addParams(suite, SUITE, TEST, "1");
 
         TestNG tng = create(suite);
-
         tng.addListener((ITestNGListener)new TestNgRunStateListener());
 
         tng.run();
@@ -76,15 +92,15 @@ public class ParallelByMethodsSingleSuiteSingleTestSingleClassWithDataProvider e
         testMethodLevelEventLogs = getAllTestMethodLevelEventLogs();
 
         testMethodAEventLogs = getTestMethodEventLogsForMethod(SUITE, TEST,
-                TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName(), "testMethodA");
+                TestClassAFiveMethodsWithNoDepsSample.class.getCanonicalName(), "testMethodA");
         testMethodBEventLogs = getTestMethodEventLogsForMethod(SUITE, TEST,
-                TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName(), "testMethodB");
+                TestClassAFiveMethodsWithNoDepsSample.class.getCanonicalName(), "testMethodB");
         testMethodCEventLogs = getTestMethodEventLogsForMethod(SUITE, TEST,
-                TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName(), "testMethodC");
+                TestClassAFiveMethodsWithNoDepsSample.class.getCanonicalName(), "testMethodC");
         testMethodDEventLogs = getTestMethodEventLogsForMethod(SUITE, TEST,
-                TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName(), "testMethodD");
+                TestClassAFiveMethodsWithNoDepsSample.class.getCanonicalName(), "testMethodD");
         testMethodEEventLogs = getTestMethodEventLogsForMethod(SUITE, TEST,
-                TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName(), "testMethodE");
+                TestClassAFiveMethodsWithNoDepsSample.class.getCanonicalName(), "testMethodE");
 
         suiteListenerOnStartEventLog = getSuiteListenerStartEventLog(SUITE);
         suiteListenerOnFinishEventLog = getSuiteListenerFinishEventLog(SUITE);
@@ -102,7 +118,7 @@ public class ParallelByMethodsSingleSuiteSingleTestSingleClassWithDataProvider e
                 suiteLevelEventLogs);
         assertEquals(testLevelEventLogs.size(), 2, "There should be 2 test level events logged for " + SUITE + ": " +
                 testLevelEventLogs);
-        assertEquals(testMethodLevelEventLogs.size(), 45, "There should be 15 test method level event logged for " +
+        assertEquals(testMethodLevelEventLogs.size(), 15, "There should be 15 test method level event logged for " +
                 SUITE + ": " + testMethodLevelEventLogs);
     }
 
@@ -133,13 +149,13 @@ public class ParallelByMethodsSingleSuiteSingleTestSingleClassWithDataProvider e
         verifyNumberOfInstancesOfTestClassForMethods(
                 SUITE,
                 TEST,
-                TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class,
+                TestClassAFiveMethodsWithNoDepsSample.class,
                 1);
 
         verifySameInstancesOfTestClassAssociatedWithMethods(
                 SUITE,
                 TEST,
-                TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class);
+                TestClassAFiveMethodsWithNoDepsSample.class);
     }
 
     //Verifies that all the test method level events execute between the test listener onStart and onFinish methods
@@ -203,5 +219,4 @@ public class ParallelByMethodsSingleSuiteSingleTestSingleClassWithDataProvider e
                         testMethodEEventLogs.get(testMethodEEventLogs.keySet().toArray()[0])
         );
     }
-
 }

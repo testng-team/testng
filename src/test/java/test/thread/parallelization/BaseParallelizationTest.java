@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import test.thread.parallelization.TestNgRunStateTracker.EventLog;
@@ -360,7 +361,13 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                 if(numUniqueMethods == 0) {
                     blockSize = methodsExecuting.keySet().size();
                 } else if(numUniqueMethods < maxSimultaneousTestMethods) {
-                    blockSize = numUniqueMethods + methodsExecuting.keySet().size();
+                    if(methodsExecuting.keySet().size() == maxSimultaneousTestMethods &&
+                            allExecutingMethodsHaveMoreInvocations(methodsExecuting, methodInvocationsCounts,
+                                    expectedInvocationCounts)) {
+                        blockSize = methodsExecuting.keySet().size();
+                    } else {
+                        blockSize = numUniqueMethods + methodsExecuting.keySet().size();
+                    }
                 }
             }
 
@@ -497,9 +504,9 @@ public class BaseParallelizationTest extends SimpleBaseTest {
 
         verifyEventTypeForEventsLogs(listenerStartEventLogs, LISTENER_TEST_METHOD_START, "The expected maximum " +
                 "number of methods to execute simultaneously is " + maxSimultaneousTestMethods + " for " + testName +
-                " so more more than " + maxSimultaneousTestMethods + " methods should start running at the same time " +
-                "if there are more than " + maxSimultaneousTestMethods + " methods remaining to execute. Event logs: " +
-                listenerStartEventLogs);
+                " so more no more than " + maxSimultaneousTestMethods + " methods should start running at the same " +
+                "time if there are more than " + maxSimultaneousTestMethods + " methods remaining to execute. Event " +
+                "logs: " + listenerStartEventLogs);
         verifyDifferentThreadIdsForEvents(listenerStartEventLogs, "The expected maximum number of methods to execute " +
                 "simultaneously is " + maxSimultaneousTestMethods + " for " + testName + " so the thread IDs for all " +
                 "the test method listener's onTestStart method " + "the " + maxSimultaneousTestMethods + "currently " +
@@ -756,6 +763,19 @@ public class BaseParallelizationTest extends SimpleBaseTest {
         }
 
         return new Pair<>(earliestTimestamp, latestTimestamp);
+    }
+
+    private static boolean allExecutingMethodsHaveMoreInvocations(Map<String, EventLog> methodsExecuting,
+            Map<String, Integer> methodInvocationsCounts, Map<String, Integer> expectedInvocationCounts) {
+
+        for(String methodAndClassName : methodsExecuting.keySet()) {
+            if(Objects.equals(methodInvocationsCounts.get(methodAndClassName),
+                    expectedInvocationCounts.get(methodAndClassName))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
 
