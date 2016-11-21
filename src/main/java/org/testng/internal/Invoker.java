@@ -1702,32 +1702,34 @@ public class Invoker implements IInvoker {
   // TODO: move this from here as it is directly called from TestNG
   public static void runTestListeners(ITestResult tr, List<ITestListener> listeners) {
     for (ITestListener itl : listeners) {
-      switch(tr.getStatus()) {
-        case ITestResult.SKIP: {
-          itl.onTestSkipped(tr);
-          break;
+      try {
+        switch(tr.getStatus()) {
+          case ITestResult.SKIP: {
+            itl.onTestSkipped(tr);
+            break;
+          }
+          case ITestResult.SUCCESS_PERCENTAGE_FAILURE: {
+            itl.onTestFailedButWithinSuccessPercentage(tr);
+            break;
+          }
+          case ITestResult.FAILURE: {
+            itl.onTestFailure(tr);
+            break;
+          }
+          case ITestResult.SUCCESS: {
+            itl.onTestSuccess(tr);
+            break;
+          }
+          case ITestResult.STARTED: {
+            itl.onTestStart(tr);
+            break;
+          }
+          default: {
+            assert false : "UNKNOWN STATUS:" + tr;
+          }
         }
-        case ITestResult.SUCCESS_PERCENTAGE_FAILURE: {
-          itl.onTestFailedButWithinSuccessPercentage(tr);
-          break;
-        }
-        case ITestResult.FAILURE: {
-          itl.onTestFailure(tr);
-          break;
-        }
-        case ITestResult.SUCCESS: {
-          itl.onTestSuccess(tr);
-          break;
-        }
-
-        case ITestResult.STARTED: {
-          itl.onTestStart(tr);
-          break;
-        }
-
-        default: {
-          assert false : "UNKNOWN STATUS:" + tr;
-        }
+      } catch (Exception e) {
+        e.printStackTrace();
       }
     }
   }
