@@ -77,9 +77,6 @@ public class FailedReporterParametersTest extends BaseTest {
       List<String> resultLines = Lists.newArrayList();
       grep(failed, String.format(expectedFormat, expectedKey, expectedKey + "Value"), resultLines);
       int expectedSize = 1;
-      if ("testParam".equals(expectedKey)) {
-        expectedSize = 2;
-      }
       Assert.assertEquals(resultLines.size(), expectedSize, "Mismatch param:" + expectedKey);
     }
   }
