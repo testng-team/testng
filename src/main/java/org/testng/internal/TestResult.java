@@ -31,7 +31,6 @@ public class TestResult implements ITestResult, IAlterTestName {
   private long m_startMillis = 0;
   private long m_endMillis = 0;
   private String m_name = null;
-  private String m_alteredName = null;
   private String m_host;
   transient private Object[] m_parameters = {};
   transient private Object m_instance;
@@ -124,9 +123,6 @@ public class TestResult implements ITestResult, IAlterTestName {
 
   @Override
   public String getName() {
-    if (m_alteredName != null && (!m_alteredName.trim().isEmpty())) {
-      return m_alteredName;
-    }
     return m_name;
   }
 
@@ -326,7 +322,7 @@ public class TestResult implements ITestResult, IAlterTestName {
 
   @Override
   public void setTestName(String name) {
-    m_alteredName = name;
+    m_name = name;
   }
 }
 

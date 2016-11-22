@@ -1,4 +1,4 @@
-package test.tesng1046;
+package test.name.github1046;
 
 import org.testng.IAlterTestName;
 import org.testng.IHookCallBack;
@@ -7,7 +7,7 @@ import org.testng.ITestResult;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertNotEquals;
 
 public class TestClassSample implements IHookable {
 
@@ -20,33 +20,37 @@ public class TestClassSample implements IHookable {
 
     @Test (dataProvider = "dp")
     public void testSample1(int num) {
-        assertTrue(num != 0);
+        assertNotEquals(num, 0);
     }
 
     @Test (dataProvider = "dp")
     public void testSample2(int num) {
-        assertTrue(num != 0);
+        assertNotEquals(num, 0);
     }
 
     @Test
-    public void ordinaryTestMethod() {
+    public void ordinaryTestMethod() {}
 
-    }
+    @Test
+    public void dontChangeName() {}
 
     @Override
     public void run(IHookCallBack callBack, ITestResult testResult) {
-        Object[] parameters = callBack.getParameters();
-        String testName = name(testResult.getMethod().getMethodName(), "999");
-        if (parameters != null && parameters.length != 0) {
-            testName = name(testResult.getMethod().getMethodName(), parameters[0]);
-        }
-        if (testResult instanceof IAlterTestName) {
-            ((IAlterTestName) testResult).setTestName(testName);
+        if (! ("dontChangeName".equals(testResult.getMethod().getMethodName()))) {
+            Object param = "999";
+            Object[] parameters = callBack.getParameters();
+            if (parameters.length != 0) {
+                param = parameters[0];
+            }
+            String testName = name(testResult.getMethod().getMethodName(), param);
+            if (testResult instanceof IAlterTestName) {
+                ((IAlterTestName) testResult).setTestName(testName);
+            }
         }
         callBack.runTestMethod(testResult);
     }
 
-    private String name(String prefix, Object count) {
+    private static String name(String prefix, Object count) {
         return prefix + "_TestNG_TestCase_" + count.toString();
     }
 }

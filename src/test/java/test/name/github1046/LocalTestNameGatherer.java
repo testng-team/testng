@@ -1,4 +1,4 @@
-package test.tesng1046;
+package test.name.github1046;
 
 import org.testng.IReporter;
 import org.testng.ISuite;

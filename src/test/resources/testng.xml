@@ -128,7 +128,6 @@
       <class name="test.testng1231.TestExecutionListenerInvocationOrder"/>
       <class name="test.testng1232.TestListenerInstances"/>
       <class name="test.testng674.BeforeClassSkipExceptionTest"/>
-      <class name="test.tesng1046.TestCustomNamesForTests"/>
     </classes>
   </test>
 
@@ -778,6 +777,7 @@
   <test name="Name">
     <classes>
       <class name="test.name.NameTest" />
+      <class name="test.name.github1046.TestCustomNamesForTests"/>
     </classes>
   </test>
 
