@@ -777,6 +777,7 @@
   <test name="Name">
     <classes>
       <class name="test.name.NameTest" />
+      <class name="test.name.github1046.TestCustomNamesForTests"/>
     </classes>
   </test>
 

@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import org.testng.IAttributes;
+import org.testng.IAlterTestName;
 import org.testng.IClass;
 import org.testng.ITest;
 import org.testng.ITestContext;
@@ -20,7 +21,7 @@ import java.util.Set;
  *
  * @author Cedric Beust, May 2, 2004
  */
-public class TestResult implements ITestResult {
+public class TestResult implements ITestResult, IAlterTestName {
 
   private static final long serialVersionUID = 6273017418233324556L;
   private IClass m_testClass = null;
@@ -211,7 +212,7 @@ public class TestResult implements ITestResult {
   @Override
   public String toString() {
     List<String> output = Reporter.getOutput(this);
-    String result = Objects.toStringHelper(getClass())
+    return Objects.toStringHelper(getClass())
         .omitNulls()
         .omitEmptyStrings()
         .add("name", getName())
@@ -220,7 +221,6 @@ public class TestResult implements ITestResult {
         .add("output", output != null && output.size() > 0 ? output.get(0) : null)
         .toString();
 
-    return result;
   }
 
   private static String toString(int status) {
@@ -318,6 +318,11 @@ public class TestResult implements ITestResult {
   @Override
   public String getInstanceName() {
     return m_instanceName;
+  }
+
+  @Override
+  public void setTestName(String name) {
+    m_name = name;
   }
 }
 
