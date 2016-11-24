@@ -21,6 +21,7 @@ public class JUnitReportsTest extends SimpleBaseTest {
         Testcase.newInstance("childTest", clazz, "skipped"),
         Testcase.newInstance("masterTest", clazz, "error"),
         Testcase.newInstance("masterTest", clazz, "failure"),
+        Testcase.newInstance("iShouldNeverBeExecuted", clazz, "skipped"),
         Testcase.newInstance("iShouldNeverBeExecuted", clazz, "ignored")
     );
 
@@ -62,7 +63,4 @@ public class JUnitReportsTest extends SimpleBaseTest {
             Assert.assertTrue(testcaseList.contains(actualTestcase));
         }
     }
-
-
-
 }

@@ -183,7 +183,7 @@ public class JUnitReportReporter implements IReporter {
     Properties p2 = new Properties();
     p2.setProperty(XMLConstants.ATTR_CLASSNAME, method.getRealClass().getName());
     p2.setProperty(XMLConstants.ATTR_NAME, method.getMethodName());
-    testTag.childTag = XMLConstants.ATTR_IGNORED;
+    testTag.childTag = XMLConstants.SKIPPED;
     testTag.properties = p2;
     return testTag;
   }
