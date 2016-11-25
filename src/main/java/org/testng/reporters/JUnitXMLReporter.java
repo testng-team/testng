@@ -193,7 +193,7 @@ public class JUnitXMLReporter implements IResultListener2 {
     for (ITestNGMethod method : methods) {
       Properties properties = getPropertiesFor(method, 0);
       doc.push(XMLConstants.TESTCASE,properties);
-      doc.addEmptyElement("ignored");
+      doc.addEmptyElement(XMLConstants.ATTR_IGNORED);
       doc.pop();
     }
   }
