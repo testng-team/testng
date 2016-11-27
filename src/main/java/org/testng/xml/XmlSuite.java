@@ -699,7 +699,7 @@ public class XmlSuite implements Serializable, Cloneable {
     result.setConfigFailurePolicy(getConfigFailurePolicy());
     result.setThreadCount(getThreadCount());
     result.setDataProviderThreadCount(getDataProviderThreadCount());
-    result.setParameters(getAllParameters());
+    result.setParameters(getParameters());
     result.setVerbose(getVerbose());
     result.setXmlPackages(getXmlPackages());
 //    result.setBeanShellExpression(getExpression());
