@@ -98,7 +98,12 @@ fun taskCreateVersion(project: Project): TaskResult {
         File("src/main/resources/$path/VersionTemplateJava").forEachLine {
             add(it.replace("@version@", VERSION))
         }
-        File("src/generated/java/$path/Version.java").writeText(joinToString("\n"))
+        File("src/generated/java/$path").apply {
+            mkdirs()
+            File(this, "Version.java").apply {
+                writeText(joinToString("\n"))
+            }
+        }
     }
     return TaskResult()
 }
