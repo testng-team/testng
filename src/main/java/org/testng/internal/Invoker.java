@@ -217,8 +217,6 @@ public class Invoker implements IInvoker {
             invokeConfigurationMethod(newInstance, tm,
               parameters, testResult);
 
-            // TODO: probably we should trigger the event for each instance???
-            testResult.setEndMillis(System.currentTimeMillis());
             runConfigurationListeners(testResult, false /* after */);
           }
           else {
@@ -532,6 +530,7 @@ public class Invoker implements IInvoker {
         throw new TestNGException(ex);
       }
       finally {
+        testResult.setEndMillis(System.currentTimeMillis());
         Reporter.setCurrentTestResult(testResult);
         runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
         Reporter.setCurrentTestResult(null);
