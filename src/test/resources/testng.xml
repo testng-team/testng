@@ -793,5 +793,12 @@
     </classes>
   </test>
 
+  <test name = "github551">
+    <classes>
+      <class name="test.listeners.github551.Test551"/>
+    </classes>
+  </test>
+
+
 </suite>
 
