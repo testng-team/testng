@@ -1,4 +1,8 @@
 ﻿Current
+Fixed: GITHUB-1257: Group parameter not applying on included <suite-files>
+
+6.10
+2016/11/28
 Fixed: GITHUB-551: Failed configuration method always has 0 execution time (dr29bart)
 Fixed: GITHUB-1250: Testng-failed.xml is getting test level parameters into suite level parameters (Krishnan Mahadevan)
 Fixed: GITHUB-1046: Provide a mechanism to customize a test method name for reporting (Krishnan Mahadevan)

@@ -2,16 +2,17 @@ package test.testng173;
 
 import java.util.Arrays;
 
-import org.testng.Assert;
-import org.testng.ITestResult;
-import org.testng.TestListenerAdapter;
+import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
+import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TestNG173Test extends SimpleBaseTest {
 
@@ -28,15 +29,15 @@ public class TestNG173Test extends SimpleBaseTest {
 
 		tng.setXmlSuites(Arrays.asList(s));
 
-		TestListenerAdapter tla = new TestListenerAdapter();
-		tng.addListener(tla);
+		InvokedMethodNameListener listener = new InvokedMethodNameListener();
+		tng.addListener((ITestNGListener) listener);
 		tng.run();
 
 		// bug
 		//verifyPassedTests(tla, "test1", "test2", "testX", "test1", "test2");
 
 		// Proposed fix
-		verifyPassedTests(tla, "test1", "test2", "testX", "test2", "test1");
+		assertThat(listener.getSucceedMethodNames()).containsExactly("test1", "test2", "testX", "test2", "test1");
 	}
 
 	@Test
@@ -52,14 +53,14 @@ public class TestNG173Test extends SimpleBaseTest {
 
 		tng.setXmlSuites(Arrays.asList(s));
 
-		TestListenerAdapter tla = new TestListenerAdapter();
-		tng.addListener(tla);
+		InvokedMethodNameListener listener = new InvokedMethodNameListener();
+		tng.addListener((ITestNGListener) listener);
 		tng.run();
 
 		// bug
 		//verifyPassedTests(tla, "test1", "test2", "testX", "test1", "test2");
 
-		verifyPassedTests(tla, "test1", "test2", "testX", "test2", "test1");
+		assertThat(listener.getSucceedMethodNames()).containsExactly("test1", "test2", "testX", "test2", "test1");
 	}
 
 }

@@ -36,7 +36,7 @@ public class XmlVerifyTest extends SimpleBaseTest {
     XmlTest test = new XmlTest(suite);
     XmlClass xClass = new XmlClass(XmlVerifyTest.class);
     test.getXmlClasses().add(xClass);
-    test.getExcludedGroups().add("fast");
+    test.addExcludedGroup("fast");
     test.setVerbose(5);
 
     suite.toXml();

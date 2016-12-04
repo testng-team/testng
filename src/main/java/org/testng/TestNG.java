@@ -919,16 +919,22 @@ public class TestNG {
     List<XmlSuite> suites = m_cmdlineSuites != null ? m_cmdlineSuites : m_suites;
     if (hasIncludedGroups || hasExcludedGroups) {
       for (XmlSuite s : suites) {
-        //set on each test, instead of just the first one of the suite
-        for (XmlTest t : s.getTests()) {
-          if(hasIncludedGroups) {
-            t.setIncludedGroups(Arrays.asList(m_includedGroups));
-          }
-          if(hasExcludedGroups) {
-            t.setExcludedGroups(Arrays.asList(m_excludedGroups));
-          }
-        }
+        initializeCommandLineSuitesGroups(s, hasIncludedGroups, m_includedGroups, hasExcludedGroups, m_excludedGroups);
       }
+    }
+  }
+
+  private static void initializeCommandLineSuitesGroups(XmlSuite s,
+                                                        boolean hasIncludedGroups, String[] m_includedGroups,
+                                                        boolean hasExcludedGroups, String[] m_excludedGroups) {
+    if (hasIncludedGroups) {
+      s.setIncludedGroups(Arrays.asList(m_includedGroups));
+    }
+    if (hasExcludedGroups) {
+      s.setExcludedGroups(Arrays.asList(m_excludedGroups));
+    }
+    for (XmlSuite child : s.getChildSuites()) {
+      initializeCommandLineSuitesGroups(child, hasIncludedGroups, m_includedGroups, hasExcludedGroups, m_excludedGroups);
     }
   }
   private void addReporter(Class<? extends IReporter> r) {

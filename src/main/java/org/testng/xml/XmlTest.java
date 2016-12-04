@@ -2,6 +2,7 @@ package org.testng.xml;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -11,17 +12,13 @@ import org.testng.TestNG;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.Utils;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.dom.ParentSetter;
 
 import static org.testng.xml.XmlSuite.ParallelMode.skipDeprecatedValues;
 
 /**
- * This class describes the tag &lt;test&gt;  in testng.xml.
- *
- * @author <a href = "mailto:cedric&#64;beust.com">Cedric Beust</a>
- * @author <a href = 'mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
+ * This class describes the tag &lt;test&gt; in testng.xml.
  */
 public class XmlTest implements Serializable, Cloneable {
   private static final long serialVersionUID = 6533504325942417606L;
@@ -35,9 +32,6 @@ public class XmlTest implements Serializable, Cloneable {
   private int m_threadCount= -1;
 
   private List<XmlClass> m_xmlClasses = Lists.newArrayList();
-
-  private List<String> m_includedGroups = Lists.newArrayList();
-  private List<String> m_excludedGroups = Lists.newArrayList();
 
   private Map<String, List<String>> m_metaGroups = Maps.newHashMap();
   private Map<String, String> m_parameters = Maps.newHashMap();
@@ -125,19 +119,14 @@ public class XmlTest implements Serializable, Cloneable {
 
   /**
    * @return the includedGroups.
-   * Note: do not modify the returned value, use {@link #addIncludedGroup(String)}.
    */
   public List<String> getIncludedGroups() {
-    List<String> result;
-    if (m_xmlGroups != null) {
-      result = m_xmlGroups.getRun().getIncludes();
-      result.addAll(m_suite.getIncludedGroups());
-    } else {
-      // deprecated
-      result = Lists.newArrayList(m_includedGroups);
-      result.addAll(m_suite.getIncludedGroups());
+    List<String> result = Lists.newArrayList();
+    if (m_xmlGroups != null && m_xmlGroups.getRun() != null) {
+      result.addAll(m_xmlGroups.getRun().getIncludes());
     }
-    return result;
+    result.addAll(m_suite.getIncludedGroups());
+    return Collections.unmodifiableList(result);
   }
 
   /**
@@ -204,36 +193,55 @@ public class XmlTest implements Serializable, Cloneable {
     m_threadCount = threadCount;
   }
 
-  /**
-   * @param g
-   */
   public void setIncludedGroups(List<String> g) {
-    m_includedGroups = g;
+    if (m_xmlGroups == null) {
+      m_xmlGroups = new XmlGroups();
+    }
+    if (m_xmlGroups.getRun() == null) {
+        m_xmlGroups.setRun(new XmlRun());
+    }
+    List<String> includes = m_xmlGroups.getRun().getIncludes();
+    includes.clear();
+    includes.addAll(g);
   }
 
-  /**
-   * @param g The excludedGrousps to set.
-   */
   public void setExcludedGroups(List<String> g) {
-    m_excludedGroups = g;
+    if (m_xmlGroups == null) {
+      m_xmlGroups = new XmlGroups();
+    }
+    if (m_xmlGroups.getRun() == null) {
+      m_xmlGroups.setRun(new XmlRun());
+    }
+    List<String> excludes = m_xmlGroups.getRun().getExcludes();
+    excludes.clear();
+    excludes.addAll(g);
   }
 
-  /**
-   * @return Returns the excludedGroups.
-   * Note: do not modify the returned value, use {@link #addExcludedGroup(String)}.
-   */
   public List<String> getExcludedGroups() {
-    List<String> result = new ArrayList(m_excludedGroups);
+    List<String> result = new ArrayList<>();
+    if (m_xmlGroups != null && m_xmlGroups.getRun() != null) {
+      result.addAll(m_xmlGroups.getRun().getExcludes());
+    }
     result.addAll(m_suite.getExcludedGroups());
-    return result;
+    return Collections.unmodifiableList(result);
   }
 
   public void addIncludedGroup(String g) {
-    m_includedGroups.add(g);
+    if (m_xmlGroups == null) {
+      m_xmlGroups = new XmlGroups();
+      m_xmlGroups.setRun(new XmlRun());
+    }
+    m_xmlGroups.getRun().getIncludes().add(g);
   }
 
   public void addExcludedGroup(String g) {
-    m_excludedGroups.add(g);
+    if (m_xmlGroups == null) {
+      m_xmlGroups = new XmlGroups();
+    }
+    if (m_xmlGroups.getRun() == null) {
+      m_xmlGroups.setRun(new XmlRun());
+    }
+    m_xmlGroups.getRun().getExcludes().add(g);
   }
 
   /**
@@ -502,7 +510,8 @@ public class XmlTest implements Serializable, Cloneable {
     XmlUtils.dumpParameters(xsb, m_parameters);
 
     // groups
-    if (!m_metaGroups.isEmpty() || !m_includedGroups.isEmpty() || !m_excludedGroups.isEmpty()
+    if (!m_metaGroups.isEmpty()
+        || ((m_xmlGroups != null && m_xmlGroups.getRun() != null) && (!m_xmlGroups.getRun().getIncludes().isEmpty() || !m_xmlGroups.getRun().getExcludes().isEmpty()))
         || !m_xmlDependencyGroups.isEmpty()) {
       xsb.push("groups");
 
@@ -527,17 +536,17 @@ public class XmlTest implements Serializable, Cloneable {
       }
 
       // run
-      if (!m_includedGroups.isEmpty() || !m_excludedGroups.isEmpty()) {
+      if ((m_xmlGroups != null && m_xmlGroups.getRun() != null) && (!m_xmlGroups.getRun().getIncludes().isEmpty() || !m_xmlGroups.getRun().getExcludes().isEmpty())) {
         xsb.push("run");
 
-        for (String includeGroupName: m_includedGroups) {
+        for (String includeGroupName: m_xmlGroups.getRun().getIncludes()) {
           Properties includeProps = new Properties();
           includeProps.setProperty("name", includeGroupName);
 
           xsb.addEmptyElement("include", includeProps);
         }
 
-        for (String excludeGroupName: m_excludedGroups) {
+        for (String excludeGroupName : m_xmlGroups.getRun().getExcludes()) {
           Properties excludeProps = new Properties();
           excludeProps.setProperty("name", excludeGroupName);
 
@@ -608,14 +617,18 @@ public class XmlTest implements Serializable, Cloneable {
     result.append("] ");
 
     result.append("[included: ");
-    for (String g : m_includedGroups) {
-      result.append(g).append(" ");
+    if (m_xmlGroups != null && m_xmlGroups.getRun() != null) {
+      for (String g : m_xmlGroups.getRun().getIncludes()) {
+        result.append(g).append(" ");
+      }
     }
     result.append("]");
 
     result.append("[excluded: ");
-    for (String g : m_excludedGroups) {
-      result.append(g).append(" ");
+    if (m_xmlGroups != null && m_xmlGroups.getRun() != null) {
+      for (String g : m_xmlGroups.getRun().getExcludes()) {
+        result.append(g).append(" ");
+      }
     }
     result.append("] ");
 
@@ -745,13 +758,13 @@ public class XmlTest implements Serializable, Cloneable {
     final int prime = 31;
     int result = 1;
     result = prime * result
-        + ((m_excludedGroups == null) ? 0 : m_excludedGroups.hashCode());
+        + ((m_xmlGroups == null || m_xmlGroups.getRun() == null) ? 0 : m_xmlGroups.getRun().getExcludes().hashCode());
     result = prime
         * result
         + ((m_failedInvocationNumbers == null) ? 0 : m_failedInvocationNumbers
             .hashCode());
     result = prime * result
-        + ((m_includedGroups == null) ? 0 : m_includedGroups.hashCode());
+        + ((m_xmlGroups == null || m_xmlGroups.getRun() == null) ? 0 : m_xmlGroups.getRun().getIncludes().hashCode());
     result = prime * result + ((m_isJUnit == null) ? 0 : m_isJUnit.hashCode());
     result = prime * result
         + ((m_metaGroups == null) ? 0 : m_metaGroups.hashCode());
@@ -788,26 +801,29 @@ public class XmlTest implements Serializable, Cloneable {
     if (getClass() != obj.getClass())
       return XmlSuite.f();
     XmlTest other = (XmlTest) obj;
-    if (m_excludedGroups == null) {
-      if (other.m_excludedGroups != null)
+    if (m_xmlGroups == null) {
+      if (other.m_xmlGroups != null)
         return XmlSuite.f();
-    } else if (!m_excludedGroups.equals(other.m_excludedGroups))
-      return XmlSuite.f();
-//    if (m_expression == null) {
-//      if (other.m_expression != null)
-//        return XmlSuite.f();
-//    } else if (!m_expression.equals(other.m_expression))
-//      return XmlSuite.f();
+    } else {
+      if (other.m_xmlGroups == null) {
+        return false;
+      }
+      if ((m_xmlGroups.getRun() == null && other.m_xmlGroups != null)
+           || m_xmlGroups.getRun() != null && other.m_xmlGroups == null) {
+        return false;
+      }
+      if (!m_xmlGroups.getRun().getExcludes().equals(other.m_xmlGroups.getRun().getExcludes())) {
+        return XmlSuite.f();
+      }
+      if (!m_xmlGroups.getRun().getIncludes().equals(other.m_xmlGroups.getRun().getIncludes())) {
+        return XmlSuite.f();
+      }
+    }
     if (m_failedInvocationNumbers == null) {
       if (other.m_failedInvocationNumbers != null)
         return XmlSuite.f();
     } else if (!m_failedInvocationNumbers
         .equals(other.m_failedInvocationNumbers))
-      return XmlSuite.f();
-    if (m_includedGroups == null) {
-      if (other.m_includedGroups != null)
-        return XmlSuite.f();
-    } else if (!m_includedGroups.equals(other.m_includedGroups))
       return XmlSuite.f();
     if (m_isJUnit == null) {
       if (other.m_isJUnit != null && ! other.m_isJUnit.equals(XmlSuite.DEFAULT_JUNIT))
