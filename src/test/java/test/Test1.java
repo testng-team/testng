@@ -1,143 +1,150 @@
 package test;
 
+import org.testng.Assert;
+import org.testng.ITestNGListener;
+import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlTest;
+import test.sample.Sample1;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Test1 extends BaseTest {
+import static org.assertj.core.api.Assertions.assertThat;
 
-  /**
-   * This constructor is package protected on purpose, to test that
-   * TestNG can still instantiate the class.
-   */
-  Test1() {}
+public class Test1 extends SimpleBaseTest {
 
-  @Test(groups = { "current" })
-  public void includedGroups() {
-    addClass("test.sample.Sample1");
-    assert 1 == getTest().getXmlClasses().size();
-    addIncludedGroup("odd");
-    run();
-    String[] passed = {
-      "method1", "method3",
-    };
-    String[] failed = {
-    };
-    verifyTests("Passed", passed, getPassedTests());
-    verifyTests("Failed", failed, getFailedTests());
-  }
-
-  @Test
-  public void groupsOfGroupsSimple() {
-    addClass("test.sample.Sample1");
-    assert 1 == getTest().getXmlClasses().size();
-    // should match all methods belonging to group "odd" and "even"
-    addIncludedGroup("evenodd");
-    List l = new ArrayList<>();
-    l.add("even");
-    l.add("odd");
-    addMetaGroup("evenodd", l);
-    run();
-   String passed[] = {
-    "method1", "method2", "method3",
-   };
-  String[] failed = {
-  };
-    verifyTests("Passed", passed, getPassedTests());
-    verifyTests("Failed", failed, getFailedTests());
-  }
-
-  @Test
-  public void groupsOfGroupsWithIndirections() {
-    addClass("test.sample.Sample1");
-    addIncludedGroup("all");
-    List l = new ArrayList<>();
-    l.add("methods");
-    l.add("broken");
-    addMetaGroup("all", l);
-    l = new ArrayList<>();
-    l.add("odd");
-    l.add("even");
-    addMetaGroup("methods", l);
-    addMetaGroup("broken", "broken");
-    run();
-    String[] passed = {
-      "method1", "method2", "method3", "broken"
-    };
-    String[] failed = {
-    };
-    verifyTests("Passed", passed, getPassedTests());
-    verifyTests("Failed", failed, getFailedTests());
-  }
-
-  @Test
-  public void groupsOfGroupsWithCycle() {
-    addClass("test.sample.Sample1");
-    addIncludedGroup("all");
-    addMetaGroup("all", "all2");
-    addMetaGroup("all2", "methods");
-    addMetaGroup("methods", "all");
-    run();
-    String[] passed = {
-    };
-    String[] failed = {
-    };
-    verifyTests("Passed", passed, getPassedTests());
-    verifyTests("Failed", failed, getFailedTests());
-  }
-
-  @Test // (groups = { "one" })
-  public void excludedGroups() {
-    addClass("test.sample.Sample1");
-    addExcludedGroup("odd");
-    run();
-   String passed[] = {
-    "method2",
-    "broken", "throwExpectedException1ShouldPass",
-    "throwExpectedException2ShouldPass"
-   };
-  String[] failed = {
-      "throwExceptionShouldFail", "verifyLastNameShouldFail"
-  };
-    verifyTests("Passed", passed, getPassedTests());
-    verifyTests("Failed", failed, getFailedTests());
-  }
-
-  @Test
-  public void regexp() {
-    addClass("test.sample.Sample1");
-    // should matches all methods belonging to group "odd"
-    addIncludedGroup("o.*");
-    run();
-   String passed[] = {
-      "method1", "method3"
-    };
-    String[] failed = {
-    };
-    verifyTests("Passed", passed, getPassedTests());
-    verifyTests("Failed", failed, getFailedTests());
-  }
-
-  @Test(groups = { "currentold" })
-  public void logger() {
-    Logger logger = Logger.getLogger("");
-//    System.out.println("# HANDLERS:" + logger.getHandlers().length);
-    for (Handler handler : logger.getHandlers())
-    {
-      handler.setLevel(Level.WARNING);
-      handler.setFormatter(new org.testng.log.TextFormatter());
+    /**
+     * This constructor is package protected on purpose, to test that
+     * TestNG can still instantiate the class.
+     */
+    Test1() {
     }
-    logger.setLevel(Level.SEVERE);
-  }
 
-  static public void ppp(String s) {
-    System.out.println("[Test1] " + s);
-  }
+    @Test(groups = {"current"})
+    public void includedGroups() {
+        XmlSuite suite = createXmlSuite("Internal_suite");
+        XmlTest test = createXmlTest(suite, "Internal_test_failures_are_expected", Sample1.class);
+        Assert.assertEquals(test.getXmlClasses().size(), 1);
+        test.addIncludedGroup("odd");
+        TestNG tng = create(suite);
 
-} // Test1
+        InvokedMethodNameListener listener = new InvokedMethodNameListener();
+        tng.addListener((ITestNGListener) listener);
+
+        tng.run();
+
+        assertThat(listener.getSucceedMethodNames()).containsExactly("method1", "method3");
+        assertThat(listener.getFailedMethodNames()).isEmpty();
+    }
+
+    @Test
+    public void groupsOfGroupsSimple() {
+        XmlSuite suite = createXmlSuite("Internal_suite");
+        XmlTest test = createXmlTest(suite, "Internal_test_failures_are_expected", Sample1.class);
+        Assert.assertEquals(test.getXmlClasses().size(), 1);
+        // should match all methods belonging to group "odd" and "even"
+        test.addIncludedGroup("evenodd");
+        test.addMetaGroup("evenodd", "even", "odd");
+        TestNG tng = create(suite);
+
+        InvokedMethodNameListener listener = new InvokedMethodNameListener();
+        tng.addListener((ITestNGListener) listener);
+
+        tng.run();
+
+        assertThat(listener.getSucceedMethodNames()).containsExactly("method1", "method2", "method3");
+        assertThat(listener.getFailedMethodNames()).isEmpty();
+    }
+
+    @Test
+    public void groupsOfGroupsWithIndirections() {
+        XmlSuite suite = createXmlSuite("Internal_suite");
+        XmlTest test = createXmlTest(suite, "Internal_test_failures_are_expected", Sample1.class);
+        test.addIncludedGroup("all");
+        test.addMetaGroup("all", "methods", "broken");
+        test.addMetaGroup("methods", "odd", "even");
+        test.addMetaGroup("broken", "broken");
+        TestNG tng = create(suite);
+
+        InvokedMethodNameListener listener = new InvokedMethodNameListener();
+        tng.addListener((ITestNGListener) listener);
+
+        tng.run();
+
+        assertThat(listener.getSucceedMethodNames()).containsExactly("method1", "broken", "method2", "method3");
+        assertThat(listener.getFailedMethodNames()).isEmpty();
+    }
+
+    @Test
+    public void groupsOfGroupsWithCycle() {
+        XmlSuite suite = createXmlSuite("Internal_suite");
+        XmlTest test = createXmlTest(suite, "Internal_test_failures_are_expected", Sample1.class);
+        test.addIncludedGroup("all");
+        test.addMetaGroup("all", "all2");
+        test.addMetaGroup("all2", "methods");
+        test.addMetaGroup("methods", "all");
+        TestNG tng = create(suite);
+
+        InvokedMethodNameListener listener = new InvokedMethodNameListener();
+        tng.addListener((ITestNGListener) listener);
+
+        tng.run();
+
+        assertThat(listener.getSucceedMethodNames()).isEmpty();
+        assertThat(listener.getFailedMethodNames()).isEmpty();
+    }
+
+    @Test
+    public void excludedGroups() {
+        XmlSuite suite = createXmlSuite("Internal_suite");
+        XmlTest test = createXmlTest(suite, "Internal_test_failures_are_expected", Sample1.class);
+        test.addExcludedGroup("odd");
+        TestNG tng = create(suite);
+
+        InvokedMethodNameListener listener = new InvokedMethodNameListener(true);
+        tng.addListener((ITestNGListener) listener);
+
+        tng.run();
+
+        assertThat(listener.getSucceedMethodNames()).containsExactly(
+                "broken", "method2",
+                "throwExpectedException1ShouldPass",
+                "throwExpectedException2ShouldPass"
+        );
+        assertThat(listener.getFailedMethodNames()).containsExactly(
+                "throwExceptionShouldFail", "verifyLastNameShouldFail"
+        );
+    }
+
+    @Test
+    public void regexp() {
+        XmlSuite suite = createXmlSuite("Internal_suite");
+        XmlTest test = createXmlTest(suite, "Internal_test_failures_are_expected", Sample1.class);
+        // should matches all methods belonging to group "odd"
+        test.addIncludedGroup("o.*");
+        TestNG tng = create(suite);
+
+        InvokedMethodNameListener listener = new InvokedMethodNameListener();
+        tng.addListener((ITestNGListener) listener);
+
+        tng.run();
+
+        assertThat(listener.getSucceedMethodNames()).containsExactly("method1", "method3");
+        assertThat(listener.getFailedMethodNames()).isEmpty();
+    }
+
+    @Test(groups = {"currentold"})
+    public void logger() {
+        Logger logger = Logger.getLogger("");
+        for (Handler handler : logger.getHandlers()) {
+            handler.setLevel(Level.WARNING);
+            handler.setFormatter(new org.testng.log.TextFormatter());
+        }
+        logger.setLevel(Level.SEVERE);
+    }
+}
 
 

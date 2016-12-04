@@ -2,6 +2,7 @@ package org.testng.xml;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,6 @@ public class XmlTest implements Serializable, Cloneable {
 
   private List<XmlClass> m_xmlClasses = Lists.newArrayList();
 
-  private Map<String, List<String>> m_metaGroups = Maps.newHashMap();
   private Map<String, String> m_parameters = Maps.newHashMap();
   private XmlSuite.ParallelMode m_parallel;
 
@@ -317,29 +317,39 @@ public class XmlTest implements Serializable, Cloneable {
   }
 
   public void addMetaGroup(String name, List<String> metaGroup) {
-    m_metaGroups.put(name, metaGroup);
+    if (m_xmlGroups == null) {
+      m_xmlGroups = new XmlGroups();
+    }
+    XmlDefine define = new XmlDefine();
+    define.setName(name);
+    define.getIncludes().addAll(metaGroup);
+    m_xmlGroups.getDefines().add(define);
+  }
+
+  public void addMetaGroup(String name, String... metaGroup) {
+    addMetaGroup(name, Arrays.asList(metaGroup));
   }
 
   // For YAML
   public void setMetaGroups(Map<String, List<String>> metaGroups) {
-    m_metaGroups = metaGroups;
+    for (Map.Entry<String, List<String>> entry : metaGroups.entrySet()) {
+      addMetaGroup(entry.getKey(), entry.getValue());
+    }
   }
 
   /**
    * @return Returns the metaGroups.
    */
   public Map<String, List<String>> getMetaGroups() {
-    if (m_xmlGroups != null) {
-      Map<String, List<String>> result = Maps.newHashMap();
-      List<XmlDefine> defines = m_xmlGroups.getDefines();
-      for (XmlDefine xd : defines) {
-        result.put(xd.getName(), xd.getIncludes());
-      }
-      return result;
-    } else {
-      // deprecated
-      return m_metaGroups;
+    if (m_xmlGroups == null) {
+      return Collections.emptyMap();
     }
+    Map<String, List<String>> result = Maps.newHashMap();
+    List<XmlDefine> defines = m_xmlGroups.getDefines();
+    for (XmlDefine xd : defines) {
+      result.put(xd.getName(), xd.getIncludes());
+    }
+    return result;
   }
 
   /**
@@ -510,29 +520,30 @@ public class XmlTest implements Serializable, Cloneable {
     XmlUtils.dumpParameters(xsb, m_parameters);
 
     // groups
-    if (!m_metaGroups.isEmpty()
-        || ((m_xmlGroups != null && m_xmlGroups.getRun() != null) && (!m_xmlGroups.getRun().getIncludes().isEmpty() || !m_xmlGroups.getRun().getExcludes().isEmpty()))
-        || !m_xmlDependencyGroups.isEmpty()) {
+    if ((m_xmlGroups != null &&
+            (!m_xmlGroups.getDefines().isEmpty() ||
+            (m_xmlGroups.getRun() != null && (!m_xmlGroups.getRun().getIncludes().isEmpty() || !m_xmlGroups.getRun().getExcludes().isEmpty()))
+            )
+        ) || !m_xmlDependencyGroups.isEmpty()) {
       xsb.push("groups");
 
       // define
-      for (Map.Entry<String, List<String>> entry: m_metaGroups.entrySet()) {
-        String metaGroupName = entry.getKey();
-        List<String> groupNames = entry.getValue();
+      if (m_xmlGroups != null) {
+        for (XmlDefine define : m_xmlGroups.getDefines()) {
+          Properties metaGroupProp = new Properties();
+          metaGroupProp.setProperty("name", define.getName());
 
-        Properties metaGroupProp= new Properties();
-        metaGroupProp.setProperty("name",  metaGroupName);
+          xsb.push("define", metaGroupProp);
 
-        xsb.push("define", metaGroupProp);
+          for (String groupName : define.getIncludes()) {
+            Properties includeProps = new Properties();
+            includeProps.setProperty("name", groupName);
 
-        for (String groupName: groupNames) {
-          Properties includeProps = new Properties();
-          includeProps.setProperty("name", groupName);
+            xsb.addEmptyElement("include", includeProps);
+          }
 
-          xsb.addEmptyElement("include", includeProps);
+          xsb.pop("define");
         }
-
-        xsb.pop("define");
       }
 
       // run
@@ -594,7 +605,6 @@ public class XmlTest implements Serializable, Cloneable {
 
   @Override
   public String toString() {
-//    return toXml("");
     StringBuilder result = new StringBuilder("[Test: \"")
             .append(m_name)
             .append("\"")
@@ -603,15 +613,17 @@ public class XmlTest implements Serializable, Cloneable {
 
     result.append("[parameters:");
     for (Map.Entry<String, String> entry : m_parameters.entrySet()) {
-      result.append(entry.getKey()).append("=>").append(entry.getValue());
+      result.append(entry.getKey()).append("=>").append(entry.getValue()).append(",");
     }
 
     result.append("]");
     result.append("[metagroups:");
-    for (Map.Entry<String, List<String>> entry : m_metaGroups.entrySet()) {
-      result.append(entry.getKey()).append("=");
-      for (String n : entry.getValue()) {
-        result.append(n).append(",");
+    if (m_xmlGroups != null) {
+      for (XmlDefine define : m_xmlGroups.getDefines()) {
+        result.append(define.getName()).append("=");
+        for (String n : define.getIncludes()) {
+          result.append(n).append(",");
+        }
       }
     }
     result.append("] ");
@@ -767,7 +779,7 @@ public class XmlTest implements Serializable, Cloneable {
         + ((m_xmlGroups == null || m_xmlGroups.getRun() == null) ? 0 : m_xmlGroups.getRun().getIncludes().hashCode());
     result = prime * result + ((m_isJUnit == null) ? 0 : m_isJUnit.hashCode());
     result = prime * result
-        + ((m_metaGroups == null) ? 0 : m_metaGroups.hashCode());
+        + ((m_xmlGroups == null) ? 0 : m_xmlGroups.getDefines().hashCode());
     result = prime * result
         + ((m_methodSelectors == null) ? 0 : m_methodSelectors.hashCode());
     result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
@@ -818,6 +830,9 @@ public class XmlTest implements Serializable, Cloneable {
       if (!m_xmlGroups.getRun().getIncludes().equals(other.m_xmlGroups.getRun().getIncludes())) {
         return XmlSuite.f();
       }
+      if (!m_xmlGroups.getDefines().equals(other.m_xmlGroups.getDefines())) {
+        return false;
+      }
     }
     if (m_failedInvocationNumbers == null) {
       if (other.m_failedInvocationNumbers != null)
@@ -829,11 +844,6 @@ public class XmlTest implements Serializable, Cloneable {
       if (other.m_isJUnit != null && ! other.m_isJUnit.equals(XmlSuite.DEFAULT_JUNIT))
         return XmlSuite.f();
     } else if (!m_isJUnit.equals(other.m_isJUnit))
-      return XmlSuite.f();
-    if (m_metaGroups == null) {
-      if (other.m_metaGroups != null)
-        return XmlSuite.f();
-    } else if (!m_metaGroups.equals(other.m_metaGroups))
       return XmlSuite.f();
     if (m_methodSelectors == null) {
       if (other.m_methodSelectors != null)
