@@ -27,15 +27,13 @@ public class OverrideProcessor implements IPostProcessor {
     for (XmlSuite s : suites) {
       if (m_groups != null && m_groups.length > 0) {
         for (XmlTest t : s.getTests()) {
-          t.getIncludedGroups().clear();
-          t.getIncludedGroups().addAll(Arrays.asList(m_groups));
+          t.setIncludedGroups(Arrays.asList(m_groups));
         }
       }
 
       if (m_excludedGroups != null && m_excludedGroups.length > 0) {
         for (XmlTest t : s.getTests()) {
-          t.getExcludedGroups().clear();
-          t.getExcludedGroups().addAll(Arrays.asList(m_excludedGroups));
+          t.setExcludedGroups(Arrays.asList(m_excludedGroups));
         }
       }
     }

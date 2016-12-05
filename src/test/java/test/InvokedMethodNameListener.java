@@ -24,10 +24,21 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
   private final List<String> skippedBeforeInvocationMethodNames = new ArrayList<>();
   private final List<String> succeedMethodNames = new ArrayList<>();
   private final Map<String, ITestResult> results = new HashMap<>();
+  private final boolean skipConfiguration;
+
+  public InvokedMethodNameListener() {
+    this(false);
+  }
+
+  public InvokedMethodNameListener(boolean skipConfiguration) {
+    this.skipConfiguration = skipConfiguration;
+  }
 
   @Override
   public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
-    invokedMethodNames.add(getName(testResult));
+    if (!(skipConfiguration && method.isConfigurationMethod())) {
+      invokedMethodNames.add(getName(testResult));
+    }
   }
 
   @Override
@@ -35,13 +46,19 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
     String name = getName(testResult);
     switch (testResult.getStatus()) {
       case ITestResult.FAILURE:
-        failedMethodNames.add(name);
+        if (!(skipConfiguration && method.isConfigurationMethod())) {
+          failedMethodNames.add(name);
+        }
         break;
       case ITestResult.SKIP:
-        skippedMethodNames.add(name);
+        if (!(skipConfiguration && method.isConfigurationMethod())) {
+          skippedMethodNames.add(name);
+        }
         break;
       case ITestResult.SUCCESS:
-        succeedMethodNames.add(name);
+        if (!(skipConfiguration && method.isConfigurationMethod())) {
+          succeedMethodNames.add(name);
+        }
         break;
       default:
         throw new AssertionError("Unexpected value: " + testResult.getStatus());

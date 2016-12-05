@@ -3,7 +3,6 @@ package test;
 import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.ITestResult;
-import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.collections.Lists;
 import org.testng.xml.XmlClass;
@@ -14,7 +13,6 @@ import org.testng.xml.XmlTest;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 public class SimpleBaseTest {
@@ -159,16 +157,6 @@ public class SimpleBaseTest {
       throw new IllegalArgumentException("System property " + TEST_RESOURCES_DIR + " was not defined.");
     }
     return result + File.separatorChar + fileName;
-  }
-
-  protected static void verifyPassedTests(TestListenerAdapter tla, String... methodNames) {
-    Iterator<ITestResult> it = tla.getPassedTests().iterator();
-    Assert.assertEquals(tla.getPassedTests().size(), methodNames.length);
-
-    int i = 0;
-    while (it.hasNext()) {
-      Assert.assertEquals(it.next().getName(), methodNames[i++]);
-    }
   }
 
   /**
