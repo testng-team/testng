@@ -196,7 +196,7 @@ public class EmailableReporter2 implements IReporter {
      * Writes a summary of all the test scenarios.
      */
     protected void writeScenarioSummary() {
-        writer.print("<table>");
+        writer.print("<table id='summary'>");
         writer.print("<thead>");
         writer.print("<tr>");
         writer.print("<th>Class</th>");
