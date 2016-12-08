@@ -70,13 +70,22 @@ public class SimpleBaseTest {
   }
 
   protected static TestNG createTests(String suiteName, Class<?>... testClasses) {
+    return createTests(null, suiteName, testClasses);
+  }
+
+  protected static TestNG createTests(Path outDir,String suiteName, Class<?>... testClasses) {
     XmlSuite suite = createXmlSuite(suiteName);
     int i=0;
     for (Class<?> testClass : testClasses) {
       createXmlTest(suite, testClass.getName() + i, testClass);
       i++;
     }
-    return create(suite);
+    if (outDir == null) {
+      return create(suite);
+    }
+    return create(outDir, suite);
+
+
   }
 
   protected static XmlSuite createXmlSuite(String name) {
