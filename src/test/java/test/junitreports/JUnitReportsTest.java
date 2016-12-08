@@ -1,6 +1,7 @@
 package test.junitreports;
 
-import org.testng.Assert;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -32,7 +33,7 @@ public class JUnitReportsTest extends SimpleBaseTest {
 
     @Test
     public void testJUnitReportReporter() throws IOException {
-        runTest(2, 1, 1, 0, 1, new LocalJUnitReportReporter(), true);
+        runTest(3, 1, 0, 0, 2, new LocalJUnitReportReporter(), true);
     }
 
     private void runTest(int tests,
@@ -51,16 +52,16 @@ public class JUnitReportsTest extends SimpleBaseTest {
             suitename = xmlTest.getName();
         }
         Testsuite suite = reportReporter.getTestsuite(suitename);
-        Assert.assertEquals(suite.getName(), suitename);
-        Assert.assertEquals(suite.getTests(), tests);
-        Assert.assertEquals(suite.getErrors(), errors);
-        Assert.assertEquals(suite.getIgnored(), ignored);
-        Assert.assertEquals(suite.getFailures(), failures);
-        Assert.assertEquals(suite.getSkipped(), skipped);
-        Assert.assertEquals(suite.getTestcase().size(), 3);
+        assertEquals(suite.getName(), suitename,"Suite Name validation.");
+        assertEquals(suite.getTests(), tests, "<test> count validation.");
+        assertEquals(suite.getErrors(), errors, "errored count validation.");
+        assertEquals(suite.getIgnored(), ignored, "ignored count validation.");
+        assertEquals(suite.getFailures(), failures, "failure count validation.");
+        assertEquals(suite.getSkipped(), skipped, "skipped count validation.");
+        assertEquals(suite.getTestcase().size(), 3, "test case count validation.");
         List<Testcase> actualTestcases = suite.getTestcase();
         for (Testcase actualTestcase : actualTestcases) {
-            Assert.assertTrue(testcaseList.contains(actualTestcase));
+            assertTrue(testcaseList.contains(actualTestcase), "Validation of " + actualTestcase.getName() + " " + "presence.");
         }
     }
 }
