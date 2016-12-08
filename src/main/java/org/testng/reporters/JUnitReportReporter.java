@@ -135,11 +135,10 @@ public class JUnitReportReporter implements IReporter {
       }
 
       p1.setProperty(XMLConstants.ATTR_FAILURES, "" + failures);
-      p1.setProperty(XMLConstants.ATTR_IGNORED, "" + ignored);
       p1.setProperty(XMLConstants.ATTR_ERRORS, "" + errors);
-      p1.setProperty(XMLConstants.SKIPPED, "" + skipped);
+      p1.setProperty(XMLConstants.SKIPPED, "" + (skipped + ignored));
       p1.setProperty(XMLConstants.ATTR_NAME, cls.getName());
-      p1.setProperty(XMLConstants.ATTR_TESTS, "" + testCount);
+      p1.setProperty(XMLConstants.ATTR_TESTS, "" + (testCount + ignored));
       p1.setProperty(XMLConstants.ATTR_TIME, "" + formatTime(totalTime));
       try {
         p1.setProperty(XMLConstants.ATTR_HOSTNAME, InetAddress.getLocalHost().getHostName());
