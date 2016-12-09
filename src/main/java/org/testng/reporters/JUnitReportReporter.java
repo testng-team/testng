@@ -21,7 +21,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -96,7 +99,9 @@ public class JUnitReportReporter implements IReporter {
       int testCount = 0;
       float totalTime = 0;
 
-      for (ITestResult tr: entry.getValue()) {
+      Collection<ITestResult> iTestResults = sort(entry.getValue());
+
+      for (ITestResult tr: iTestResults) {
 
         long time = tr.getEndMillis() - tr.getStartMillis();
 
@@ -169,6 +174,18 @@ public class JUnitReportReporter implements IReporter {
       Utils.writeUtf8File(outputDirectory, getFileName(cls), xsb.toXML());
     }
 
+  }
+
+  private static Collection<ITestResult> sort(Set<ITestResult> results) {
+    List<ITestResult> sortedResults = new ArrayList<>(results);
+    Collections.sort(sortedResults, new Comparator<ITestResult> () {
+
+      @Override
+      public int compare(ITestResult o1, ITestResult o2) {
+        return Integer.compare(o1.getMethod().getPriority(), o2.getMethod().getPriority());
+      }
+    });
+    return sortedResults;
   }
 
   private static int getDisabledTestCount(Set<ITestNGMethod> methods) {

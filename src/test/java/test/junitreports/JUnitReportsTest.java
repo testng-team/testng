@@ -1,7 +1,6 @@
 package test.junitreports;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import com.beust.jcommander.internal.Lists;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -14,9 +13,11 @@ import test.TestHelper;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static org.testng.Assert.*;
 import static test.junitreports.TestClassContainerForGithubIssue1265.*;
 
 public class JUnitReportsTest extends SimpleBaseTest {
@@ -68,6 +69,29 @@ public class JUnitReportsTest extends SimpleBaseTest {
             assertEquals(suite.getFailures(), attributes.get(FAILURES).intValue(), "failure count validation.");
             assertEquals(suite.getSkipped(), attributes.get(SKIPPED).intValue(), "skipped count validation.");
         }
+    }
+
+    @Test
+    public void testTestCaseOrderingInJUnitReportReporterWhenPrioritiesDefined() throws IOException {
+        Path outputDir = TestHelper.createRandomDirectory();
+        TestNG tng = createTests(outputDir, "suite", Issue1262TestSample.class);
+        LocalJUnitReportReporter reportReporter = new LocalJUnitReportReporter();
+        tng.addListener((ITestNGListener) reportReporter);
+        tng.run();
+        Testsuite suite = reportReporter.getTestsuite(Issue1262TestSample.class.getName());
+        List<String> expected = new LinkedList<String>() {
+            {
+                add("testRoles001_Post");
+                add("testRoles002_Post");
+                add("testRoles003_Post");
+                add("testRoles004_Post");
+            }
+        };
+        List<String> actual = Lists.newLinkedList();
+        for (Testcase testcase : suite.getTestcase()) {
+            actual.add(testcase.getName().trim());
+        }
+        assertEquals(actual,expected);
     }
 
     private static Map<String, Integer> createMapFor(int testCount, int errors, int ignored, int failures, int skipped) {
