@@ -38,10 +38,8 @@ public class JUnitReportReporter implements IReporter {
     ListMultiMap<Object, ITestResult> befores = Maps.newListMultiMap();
     ListMultiMap<Object, ITestResult> afters = Maps.newListMultiMap();
     SetMultiMap<Class<?>, ITestNGMethod> mapping = new SetMultiMap(false);
-    int ignored = 0;
     for (ISuite suite : suites) {
       Map<String, ISuiteResult> suiteResults = suite.getResults();
-      ignored += suite.getExcludedMethods().size();
       addMapping(mapping, suite.getExcludedMethods());
       for (ISuiteResult sr : suiteResults.values()) {
         ITestContext tc = sr.getTestContext();
@@ -127,11 +125,10 @@ public class JUnitReportReporter implements IReporter {
         testTag.properties.setProperty(XMLConstants.ATTR_TIME, "" + formatTime(time));
         testCases.add(testTag);
       }
+      int ignored = getDisabledTestCount(mapping.get(entry.getKey()));
 
-      for (Map.Entry<Class<?>,Set<ITestNGMethod>> eachEntry : mapping.entrySet()) {
-        for (ITestNGMethod eachMethod : eachEntry.getValue()) {
-          testCases.add(createIgnoredTestTagFor(eachMethod));
-        }
+      for (ITestNGMethod eachMethod : mapping.get(entry.getKey())) {
+        testCases.add(createIgnoredTestTagFor(eachMethod));
       }
 
       p1.setProperty(XMLConstants.ATTR_FAILURES, "" + failures);
@@ -172,9 +169,16 @@ public class JUnitReportReporter implements IReporter {
       Utils.writeUtf8File(outputDirectory, getFileName(cls), xsb.toXML());
     }
 
-//    System.out.println(xsb.toXML());
-//    System.out.println("");
+  }
 
+  private static int getDisabledTestCount(Set<ITestNGMethod> methods) {
+    int count = 0;
+    for (ITestNGMethod method : methods) {
+      if (!method.getEnabled()) {
+        count = count + 1;
+      }
+    }
+    return count;
   }
 
   private TestTag createIgnoredTestTagFor(ITestNGMethod method) {
@@ -303,9 +307,9 @@ public class JUnitReportReporter implements IReporter {
 
   private void addMapping(SetMultiMap<Class<?>, ITestNGMethod> mapping, Collection<ITestNGMethod> methods) {
     for (ITestNGMethod method : methods) {
-      mapping.put(method.getRealClass(), method);
+      if (! method.getEnabled()) {
+        mapping.put(method.getRealClass(), method);
+      }
     }
   }
-
-
 }
