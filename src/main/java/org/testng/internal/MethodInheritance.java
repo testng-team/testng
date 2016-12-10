@@ -11,6 +11,33 @@ import org.testng.collections.Maps;
 
 public class MethodInheritance {
 
+  /**
+   * A Custom comparator that helps in {@link ITestNGMethod} ordering keeping in mind the class hierarchy.
+   * Here's how the comparator works: <br>
+   * Lets say we have two method objects o1 and o2. <br>
+   * o1 is associated with MyClass and o2 is associated with
+   * AnotherClass.
+   * <ul>
+   *     <li>-1 is returned if  MyClass is the parent of AnotherClass </li>
+   *     <li>1 is returned if AnotherClass is the parent of MyClass </li>
+   *     <li>0 is returned otherwise if MyClass and AnotherClass are the same i.e., both methods belong to the same
+   *     class. </li>
+   *
+   * </ul>
+   *
+   * Working of isAssignableFrom <br>
+   * Lets say we have : <br>
+   * <ol>
+   *     <li>interface Oven</li>
+   *     <li>Microwave implements Oven</li>
+   * </ol>
+   *
+   * <ol>
+   *     <li>microwave instanceof Oven : <b>returns true</b></li>
+   *     <li>Oven.class.isAssignableFrom(microwave.getClass()) : <b>returns true</b></li>
+   * </ol>
+   *
+   */
   private static final Comparator<ITestNGMethod> COMPARATOR = new Comparator<ITestNGMethod>() {
     @Override
     public int compare(ITestNGMethod o1, ITestNGMethod o2) {
