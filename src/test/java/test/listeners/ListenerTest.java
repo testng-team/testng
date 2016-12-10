@@ -5,9 +5,13 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 
+import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
+import test.listeners.github956.ListenerFor956;
+import test.listeners.github956.TestClassContainer;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -231,4 +235,18 @@ public class ListenerTest extends SimpleBaseTest {
     Assert.assertEquals(listener.getOnMethodTestStartCount(), 1);
     Assert.assertEquals(listener.getOnMethodTestSuccessCount(), 1);
   }
+
+  @Test
+  public void testListenerCallInvocation() {
+    XmlSuite suite = createXmlSuite("suite956", "test956", TestClassContainer.FirstTestClass.class,
+        TestClassContainer.SecondTestClass.class);
+    TestNG tng = create(suite);
+    ListenerFor956 listener = new ListenerFor956();
+    tng.addListener((ITestNGListener) listener);
+    tng.run();
+    List<String> messages = listener.getMessages();
+    Assert.assertEquals(messages.size(), 1);
+    Assert.assertEquals(messages.get(0), "Executing test956");
+  }
+
 }

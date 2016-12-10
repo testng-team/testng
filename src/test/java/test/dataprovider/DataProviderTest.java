@@ -5,6 +5,7 @@ import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.internal.reflect.MethodMatcherException;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
@@ -258,5 +259,12 @@ public class DataProviderTest extends SimpleBaseTest {
     assertThat(listener.getSucceedMethodNames()).containsExactly(
         "testMyTest(MyObject{})"
     );
+  }
+
+  @Test
+  public void testExceptions() {
+    InvokedMethodNameListener listener = run(DataProviderIntegrationSample.class);
+    Throwable exception = listener.getResult("theTest").getThrowable();
+    assertThat(exception).isInstanceOf(MethodMatcherException.class);
   }
 }
