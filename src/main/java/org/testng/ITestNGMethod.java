@@ -17,7 +17,7 @@ import java.util.concurrent.Callable;
  *
  * @author Cedric Beust, May 3, 2004
  */
-public interface ITestNGMethod extends Comparable, Serializable, Cloneable {
+public interface ITestNGMethod extends Serializable, Cloneable {
 
   /**
    * @return The real class on which this method was declared
