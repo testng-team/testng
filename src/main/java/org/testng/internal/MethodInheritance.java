@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,51 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
 public class MethodInheritance {
+
+  /**
+   * A Custom comparator that helps in {@link ITestNGMethod} ordering keeping in mind the class hierarchy.
+   * Here's how the comparator works: <br>
+   * Lets say we have two method objects o1 and o2. <br>
+   * o1 is associated with MyClass and o2 is associated with
+   * AnotherClass.
+   * <ul>
+   *     <li>-1 is returned if  MyClass is the parent of AnotherClass </li>
+   *     <li>1 is returned if AnotherClass is the parent of MyClass </li>
+   *     <li>0 is returned otherwise if MyClass and AnotherClass are the same i.e., both methods belong to the same
+   *     class. </li>
+   *
+   * </ul>
+   *
+   * Working of isAssignableFrom <br>
+   * Lets say we have : <br>
+   * <ol>
+   *     <li>interface Oven</li>
+   *     <li>Microwave implements Oven</li>
+   * </ol>
+   *
+   * <ol>
+   *     <li>microwave instanceof Oven : <b>returns true</b></li>
+   *     <li>Oven.class.isAssignableFrom(microwave.getClass()) : <b>returns true</b></li>
+   * </ol>
+   *
+   */
+  private static final Comparator<ITestNGMethod> COMPARATOR = new Comparator<ITestNGMethod>() {
+    @Override
+    public int compare(ITestNGMethod o1, ITestNGMethod o2) {
+      int result = -2;
+      Class<?> thisClass = o1.getRealClass();
+      Class<?> otherClass = o2.getRealClass();
+      if (thisClass.isAssignableFrom(otherClass)) {
+        result = -1;
+      } else if (otherClass.isAssignableFrom(thisClass)) {
+        result = 1;
+      } else if (o1.equals(o2)) {
+        result = 0;
+      }
+      return result;
+    }
+  };
+
   /**
    * Look in map for a class that is a superclass of methodClass
    */
@@ -153,7 +199,7 @@ public class MethodInheritance {
   private static void sortMethodsByInheritance(List<ITestNGMethod> methods,
       boolean baseClassToChild)
   {
-    Collections.sort(methods);
+    Collections.sort(methods, COMPARATOR);
     if (! baseClassToChild) {
       Collections.reverse(methods);
     }
