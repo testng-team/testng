@@ -37,7 +37,7 @@ task wrapper(type: Wrapper) {
 }
 
 group = 'org.testng'
-version = '6.9.14-SNAPSHOT'
+version = '6.10.1-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'groovy'
