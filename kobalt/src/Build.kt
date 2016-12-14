@@ -15,7 +15,7 @@ import org.apache.maven.model.Model
 import org.apache.maven.model.Scm
 import java.io.File
 
-val VERSION = "6.9.13.8"
+val VERSION = "6.10.1-SNAPSHOT"
 
 val r = repos("https://dl.bintray.com/cbeust/maven")
 
