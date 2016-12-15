@@ -132,13 +132,13 @@ if (JavaVersion.current().isJava8Compatible()) {
             options.addStringOption('Xdoclint:none', '-quiet')
         }
     }
-}
 
-sonarqube {
-    properties {
-        property "sonar.host.url", "https://sonarqube.com/"
-        property "sonar.github.repository", "cbeust/testng"
-        property "sonar.github.login", "testng-bot"
+    sonarqube {
+        properties {
+            property "sonar.host.url", "https://sonarqube.com/"
+            property "sonar.github.repository", "cbeust/testng"
+            property "sonar.github.login", "testng-bot"
+        }
     }
 }
 
