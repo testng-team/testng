@@ -33,6 +33,7 @@ New: Hierarchy on order features (from less important to more important): groupB
 Fixed: GITHUB-1156: test execution dependant upon class name order and fails with TestNGException: No free nodes found (@t-weil & Julien Herr)
 Fixed: GITHUB-1221: ConcurrentModificationException in TextReporter (Nick Tan)
 Fixed: testng-eclipse/issues/298: IConfigurationListener was not loaded when running Test in Eclipse Plugin (@jmcgrail & Nick Tan)
+New: Resources for test reports (header, images) now live in a sub directory org/testng to remove conflicts with other similar files in the class loader.
 
 6.9.13.6
 2016/09/23
