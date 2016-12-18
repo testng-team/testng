@@ -2,9 +2,6 @@ package org.testng.internal.reflect;
 
 import org.testng.internal.ThreeStateBoolean;
 
-import static org.testng.internal.ThreeStateBoolean.FALSE;
-import static org.testng.internal.ThreeStateBoolean.TRUE;
-
 /**
  * Checks the conformance as per data-provide specifications.
  *
