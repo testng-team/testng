@@ -18,7 +18,6 @@ import org.testng.IObjectFactory2;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.TestRunner;
-import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.collections.Sets;

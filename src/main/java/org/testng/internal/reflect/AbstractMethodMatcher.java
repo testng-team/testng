@@ -44,7 +44,6 @@ public abstract class AbstractMethodMatcher implements MethodMatcher {
    * Checks if the arguments conform to the method.
    *
    * @return conformance
-   * @throws MethodMatcherException if any internal failure.
    */
   protected abstract boolean hasConformance();
 }

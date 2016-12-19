@@ -61,10 +61,6 @@ public class ClassMethodMap {
     }
   }
 
-  private Class<?> getMethodClass(ITestNGMethod m) {
-    return m.getTestClass().getRealClass();
-  }
-
   public Map<ITestClass, Set<Object>> getInvokedBeforeClassMethods() {
     return m_beforeClassMethods;
   }

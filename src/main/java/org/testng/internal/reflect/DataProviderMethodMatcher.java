@@ -39,7 +39,7 @@ public class DataProviderMethodMatcher extends AbstractMethodMatcher {
    * {@inheritDoc}
    */
   @Override
-  public Object[] getConformingArguments() throws MethodMatcherException {
+  public Object[] getConformingArguments(){
     if (ThreeStateBoolean.NONE.equals(getConforms())) {
       conforms();
     }

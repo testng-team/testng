@@ -110,7 +110,7 @@ public class TestNGMethodFinder implements ITestMethodFinder {
         continue;
       }
 
-      boolean create = false;
+      boolean create;
       boolean isBeforeSuite = false;
       boolean isAfterSuite = false;
       boolean isBeforeTest = false;
@@ -189,14 +189,13 @@ public class TestNGMethodFinder implements ITestMethodFinder {
 
     List<ITestNGMethod> excludedMethods = Lists.newArrayList();
     boolean unique = configurationType == BEFORE_SUITE || configurationType == AFTER_SUITE;
-    ITestNGMethod[] tmResult = MethodHelper.collectAndOrderMethods(Lists.newArrayList(vResult),
+    return MethodHelper.collectAndOrderMethods(Lists.newArrayList(vResult),
                                               false /* forTests */,
                                               m_runInfo,
                                               m_annotationFinder,
                                               unique,
                                               excludedMethods);
 
-    return tmResult;
   }
 
   private void addConfigurationMethod(Class<?> clazz,

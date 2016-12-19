@@ -1,26 +1,5 @@
 package org.testng.internal;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
 import org.testng.ITestNGMethod;
 import org.testng.TestNG;
 import org.testng.TestNGException;
@@ -32,6 +11,11 @@ import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.XmlClass;
+
+import java.io.*;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.*;
 
 /**
  * Helper methods to parse annotations.
@@ -235,7 +219,7 @@ public final class Utils {
     if (!outputFile.exists()) {
       outputFile.createNewFile();
     }
-    OutputStreamWriter osw= null;
+    OutputStreamWriter osw;
     if (null != encoding) {
       osw = new OutputStreamWriter(new FileOutputStream(outputFile, append), encoding);
     }
@@ -437,7 +421,7 @@ public final class Utils {
     }
     String methodName = clsName + '.' + thisMethod.getName();
     if (TestRunner.getVerbose() >= 2) {
-      StringBuffer paramString = new StringBuffer();
+      StringBuilder paramString = new StringBuilder();
       if (parameters != null) {
         for (Object p : parameters) {
           paramString.append(p.toString()).append(' ');
@@ -451,25 +435,18 @@ public final class Utils {
     InputStream inputStream = clasz.getResourceAsStream("/" + resourceName);
     if (inputStream == null) {
       System.err.println("Couldn't find resource on the class path: " + resourceName);
-//      throw new IllegalArgumentException("Resource does not exist: " + resourceName);
+      return;
     }
-
-    else {
-
-      try {
-        FileOutputStream outputStream = new FileOutputStream(file);
-        try {
-          int nread;
-          byte[] buffer = new byte[4096];
-          while (0 < (nread = inputStream.read(buffer))) {
-            outputStream.write(buffer, 0, nread);
-          }
-        } finally {
-          outputStream.close();
+    try {
+      try (FileOutputStream outputStream = new FileOutputStream(file)) {
+        int nread;
+        byte[] buffer = new byte[4096];
+        while (0 < (nread = inputStream.read(buffer))) {
+          outputStream.write(buffer, 0, nread);
         }
-      } finally {
-        inputStream.close();
       }
+    } finally {
+      inputStream.close();
     }
   }
 
@@ -549,7 +526,7 @@ public final class Utils {
 
 
   private enum StackTraceType {
-    SHORT,FULL;
+    SHORT,FULL
   }
 
   private static final Map<Character, String> ESCAPES = new HashMap<Character, String>() {
@@ -602,7 +579,7 @@ public final class Utils {
   static String filterTrace(String trace) {
     StringReader   stringReader = new StringReader(trace);
     BufferedReader bufferedReader = new BufferedReader(stringReader);
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
 
     try {
       // first line contains the thrown exception
@@ -637,7 +614,7 @@ public final class Utils {
         }
       }
       if (excludedCount > 0) {
-        buf.append("... Removed " + excludedCount + " stack frames");
+        buf.append("... Removed ").append(excludedCount).append(" stack frames");
       }
     }
     catch(IOException ioex) {
@@ -664,43 +641,54 @@ public final class Utils {
   }
 
   public static String detailedMethodName(ITestNGMethod method, boolean fqn) {
-    StringBuffer buf= new StringBuffer();
-    if(method.isBeforeSuiteConfiguration()) {
-      buf.append("@BeforeSuite ");
+    String tempName = annotationFormFor(method);
+    if (! tempName.isEmpty()) {
+      tempName += " ";
     }
-    else if(method.isBeforeTestConfiguration()) {
-      buf.append("@BeforeTest ");
-    }
-    else if(method.isBeforeClassConfiguration()) {
-      buf.append("@BeforeClass ");
-    }
-    else if(method.isBeforeGroupsConfiguration()) {
-      buf.append("@BeforeGroups ");
-    }
-    else if(method.isBeforeMethodConfiguration()) {
-      buf.append("@BeforeMethod ");
-    }
-    else if(method.isAfterMethodConfiguration()) {
-      buf.append("@AfterMethod ");
-    }
-    else if(method.isAfterGroupsConfiguration()) {
-      buf.append("@AfterGroups ");
-    }
-    else if(method.isAfterClassConfiguration()) {
-      buf.append("@AfterClass ");
-    }
-    else if(method.isAfterTestConfiguration()) {
-      buf.append("@AfterTest ");
-    }
-    else if(method.isAfterSuiteConfiguration()) {
-      buf.append("@AfterSuite ");
-    }
+    return tempName + (fqn ? method.toString() : method.getMethodName());
+  }
 
-    return buf.append(fqn ? method.toString() : method.getMethodName()).toString();
+  /**
+   * Given a TestNG method, returns the corresponding annotation based on the method type
+   * @param method - An {@link ITestNGMethod} object.
+   * @return - A String representation of the corresponding annotation.
+   */
+  public static String annotationFormFor(ITestNGMethod method) {
+    if(method.isBeforeSuiteConfiguration()) {
+      return "@BeforeSuite";
+    }
+    if(method.isBeforeTestConfiguration()) {
+      return "@BeforeTest";
+    }
+    if(method.isBeforeClassConfiguration()) {
+      return "@BeforeClass";
+    }
+    if(method.isBeforeGroupsConfiguration()) {
+      return "@BeforeGroups";
+    }
+    if(method.isBeforeMethodConfiguration()) {
+      return "@BeforeMethod";
+    }
+    if(method.isAfterMethodConfiguration()) {
+      return "@AfterMethod";
+    }
+    if(method.isAfterGroupsConfiguration()) {
+      return "@AfterGroups";
+    }
+    if(method.isAfterClassConfiguration()) {
+      return "@AfterClass";
+    }
+    if (method.isAfterTestConfiguration()) {
+      return "@AfterTest";
+    }
+    if(method.isAfterSuiteConfiguration()) {
+      return "@AfterSuite";
+    }
+    return "";
   }
 
   public static String arrayToString(String[] strings) {
-    StringBuffer result = new StringBuffer("");
+    StringBuilder result = new StringBuilder("");
     if ((strings != null) && (strings.length > 0)) {
       for (int i = 0; i < strings.length; i++) {
         result.append(strings[i]);
@@ -722,7 +710,6 @@ public final class Utils {
    *
    * @param fileName file name that could contain special characters.
    * @return fileName with special characters replaced
-   * @author Borojevic
    */
   public static String replaceSpecialCharacters(String fileName) {
    if (fileName == null || fileName.length() == 0) {

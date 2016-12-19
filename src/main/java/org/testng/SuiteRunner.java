@@ -244,7 +244,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   }
 
   private ITestRunnerFactory buildRunnerFactory() {
-    ITestRunnerFactory factory = null;
+    ITestRunnerFactory factory;
 
     if (null == m_tmpRunnerFactory) {
       factory = new DefaultTestRunnerFactory(m_configuration,
