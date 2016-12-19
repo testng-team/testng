@@ -146,8 +146,8 @@ public class JUnitXMLReporter implements IResultListener2 {
 
       Properties attrs= new Properties();
       attrs.setProperty(XMLConstants.ATTR_ERRORS, "0");
-      attrs.setProperty(XMLConstants.ATTR_FAILURES, "" + m_numFailed);
-      attrs.setProperty(XMLConstants.ATTR_IGNORED, "" + context.getExcludedMethods().size());
+      attrs.setProperty(XMLConstants.ATTR_FAILURES, Integer.toString(m_numFailed));
+      attrs.setProperty(XMLConstants.ATTR_IGNORED, Integer.toString(context.getExcludedMethods().size()));
       try {
         attrs.setProperty(XMLConstants.ATTR_HOSTNAME, InetAddress.getLocalHost().getHostName());
       } catch (UnknownHostException e) {
@@ -159,9 +159,9 @@ public class JUnitXMLReporter implements IResultListener2 {
 //        attrs.setProperty(XMLConstants.ATTR_PACKAGE, packages.iterator().next());
       }
 
-      attrs.setProperty(XMLConstants.ATTR_TESTS, "" + m_allTests.size());
-      attrs.setProperty(XMLConstants.ATTR_TIME, ""
-          + ((context.getEndDate().getTime() - context.getStartDate().getTime()) / 1000.0));
+      attrs.setProperty(XMLConstants.ATTR_TESTS, Integer.toString(m_allTests.size()));
+      attrs.setProperty(XMLConstants.ATTR_TIME,
+          Double.toString(((context.getEndDate().getTime() - context.getStartDate().getTime()) / 1000.0)));
 
       attrs.setProperty(XMLConstants.ATTR_TIMESTAMP, timeAsGmt());
 
@@ -203,7 +203,7 @@ public class JUnitXMLReporter implements IResultListener2 {
     String name= Utils.detailedMethodName(method, false);
     attrs.setProperty(XMLConstants.ATTR_NAME, name);
     attrs.setProperty(XMLConstants.ATTR_CLASSNAME, method.getRealClass().getName());
-    attrs.setProperty(XMLConstants.ATTR_TIME, "" + (((double) elapsedTimeMillis) / 1000));
+    attrs.setProperty(XMLConstants.ATTR_TIME, Double.toString(((double) elapsedTimeMillis) / 1000));
     return attrs;
   }
 

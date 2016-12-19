@@ -544,7 +544,7 @@ public final class Utils {
   }
 
   private static boolean isTooVerbose() {
-    return (Boolean.getBoolean(TestNG.SHOW_TESTNG_STACK_FRAMES) || TestRunner.getVerbose() >= 2);
+    return Boolean.getBoolean(TestNG.SHOW_TESTNG_STACK_FRAMES) || TestRunner.getVerbose() >= 2;
   }
 
 
