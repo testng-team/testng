@@ -2065,7 +2065,7 @@ public class TestNG {
   //
 
   private URLClassLoader m_serviceLoaderClassLoader;
-  private Map<Class<? extends ITestNGListener>, ITestNGListener> m_serviceLoaderListeners = Maps.newHashMap();
+  private Map<Class<? extends ITestNGListener>, ITestNGListener> serviceLoaderListeners = Maps.newHashMap();
 
   /*
    * Used to test ServiceClassLoader
@@ -2078,8 +2078,8 @@ public class TestNG {
    * Used to test ServiceClassLoader
    */
   private void addServiceLoaderListener(ITestNGListener l) {
-    if (! m_serviceLoaderListeners.containsKey(l.getClass())) {
-      m_serviceLoaderListeners.put(l.getClass(), l);
+    if (! serviceLoaderListeners.containsKey(l.getClass())) {
+      serviceLoaderListeners.put(l.getClass(), l);
     }
   }
 
@@ -2087,7 +2087,7 @@ public class TestNG {
    * Used to test ServiceClassLoader
    */
   public List<ITestNGListener> getServiceLoaderListeners() {
-    return Lists.newArrayList(m_serviceLoaderListeners.values());
+    return Lists.newArrayList(serviceLoaderListeners.values());
   }
 
   //
