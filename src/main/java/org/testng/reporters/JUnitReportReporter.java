@@ -214,32 +214,27 @@ public class JUnitReportReporter implements IReporter {
     Properties p2 = new Properties();
     p2.setProperty(XMLConstants.ATTR_CLASSNAME, cls.getName());
     p2.setProperty(XMLConstants.ATTR_NAME, getTestName(tr));
-    Throwable t = tr.getThrowable();
-
-    switch (tr.getStatus()) {
-      case ITestResult.SKIP:
-      case ITestResult.SUCCESS_PERCENTAGE_FAILURE:
-        testTag.childTag = XMLConstants.SKIPPED;
-        break;
-
-      case ITestResult.FAILURE:
-        testTag.childTag = XMLConstants.ERROR;
-        if (t instanceof AssertionError) {
-          testTag.childTag = XMLConstants.FAILURE;
-        }
-        if (t != null) {
-          StringWriter sw = new StringWriter();
-          PrintWriter pw = new PrintWriter(sw);
-          t.printStackTrace(pw);
-          testTag.message = t.getMessage();
-          testTag.type = t.getClass().getName();
-          testTag.stackTrace = sw.toString();
-        }
-        break;
+    int status = tr.getStatus();
+    if (status == ITestResult.SKIP || status == ITestResult.SUCCESS_PERCENTAGE_FAILURE) {
+      testTag.childTag = XMLConstants.SKIPPED;
+    } else if (status == ITestResult.FAILURE) {
+      handleFailure(testTag, tr.getThrowable());
     }
-
     testTag.properties = p2;
     return testTag;
+  }
+
+  private static void handleFailure(TestTag testTag, Throwable t) {
+    testTag.childTag = XMLConstants.ERROR;
+    if (t instanceof AssertionError) {
+      testTag.childTag = XMLConstants.FAILURE;
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter(sw);
+      t.printStackTrace(pw);
+      testTag.message = t.getMessage();
+      testTag.type = t.getClass().getName();
+      testTag.stackTrace = sw.toString();
+    }
   }
 
   /** Put a XML start or empty tag to the XMLStringBuffer depending on hasChildElements parameter */
