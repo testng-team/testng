@@ -119,55 +119,65 @@ class TestClass extends NoOpTestClass implements ITestClass {
   private void initMethods() {
     ITestNGMethod[] methods = m_testMethodFinder.getTestMethods(m_testClass, m_xmlTest);
     m_testMethods = createTestMethods(methods);
-
+    // moving these out of the loops reduces creation time of the methods from 196 seconds to 2 seconds under extreme circumstances
+    ITestNGMethod[] beforeSuiteMethods = m_testMethodFinder.getBeforeSuiteMethods(m_testClass);
+    ITestNGMethod[] afterSuiteMethods = m_testMethodFinder.getAfterSuiteMethods(m_testClass);
+    ITestNGMethod[] beforeTestConfMethods = m_testMethodFinder.getBeforeTestConfigurationMethods(m_testClass);
+    ITestNGMethod[] afterTestConfMethods = m_testMethodFinder.getAfterTestConfigurationMethods(m_testClass);
+    ITestNGMethod[] beforeClassMethods = m_testMethodFinder.getBeforeClassMethods(m_testClass);
+    ITestNGMethod[] afterClassMethods = m_testMethodFinder.getAfterClassMethods(m_testClass);
+    ITestNGMethod[] beforeGroupsMethods = m_testMethodFinder.getBeforeGroupsConfigurationMethods(m_testClass);
+    ITestNGMethod[] afterGroupsMethods = m_testMethodFinder.getAfterGroupsConfigurationMethods(m_testClass);
+    ITestNGMethod[] beforeTestMethods = m_testMethodFinder.getBeforeTestMethods(m_testClass);
+    ITestNGMethod[] afterTestMethods = m_testMethodFinder.getAfterTestMethods(m_testClass);
     for (Object instance : m_iClass.getInstances(false)) {
       m_beforeSuiteMethods = ConfigurationMethod
-          .createSuiteConfigurationMethods(m_testMethodFinder.getBeforeSuiteMethods(m_testClass),
+          .createSuiteConfigurationMethods(beforeSuiteMethods,
                                            m_annotationFinder,
                                            true,
                                            instance);
       m_afterSuiteMethods = ConfigurationMethod
-          .createSuiteConfigurationMethods(m_testMethodFinder.getAfterSuiteMethods(m_testClass),
+          .createSuiteConfigurationMethods(afterSuiteMethods,
                                            m_annotationFinder,
                                            false,
                                            instance);
       m_beforeTestConfMethods = ConfigurationMethod
-          .createTestConfigurationMethods(m_testMethodFinder.getBeforeTestConfigurationMethods(m_testClass),
+          .createTestConfigurationMethods(beforeTestConfMethods,
                                           m_annotationFinder,
                                           true,
                                           instance);
       m_afterTestConfMethods = ConfigurationMethod
-          .createTestConfigurationMethods(m_testMethodFinder.getAfterTestConfigurationMethods(m_testClass),
+          .createTestConfigurationMethods(afterTestConfMethods,
                                           m_annotationFinder,
                                           false,
                                           instance);
       m_beforeClassMethods = ConfigurationMethod
-          .createClassConfigurationMethods(m_testMethodFinder.getBeforeClassMethods(m_testClass),
+          .createClassConfigurationMethods(beforeClassMethods,
                                            m_annotationFinder,
                                            true,
                                            instance);
       m_afterClassMethods = ConfigurationMethod
-          .createClassConfigurationMethods(m_testMethodFinder.getAfterClassMethods(m_testClass),
+          .createClassConfigurationMethods(afterClassMethods,
                                            m_annotationFinder,
                                            false,
                                            instance);
       m_beforeGroupsMethods = ConfigurationMethod
-          .createBeforeConfigurationMethods(m_testMethodFinder.getBeforeGroupsConfigurationMethods(m_testClass),
+          .createBeforeConfigurationMethods(beforeGroupsMethods, 
                                             m_annotationFinder,
                                             true,
                                             instance);
       m_afterGroupsMethods = ConfigurationMethod
-          .createAfterConfigurationMethods(m_testMethodFinder.getAfterGroupsConfigurationMethods(m_testClass),
+          .createAfterConfigurationMethods(afterGroupsMethods,
                                            m_annotationFinder,
                                            false,
                                            instance);
       m_beforeTestMethods = ConfigurationMethod
-          .createTestMethodConfigurationMethods(m_testMethodFinder.getBeforeTestMethods(m_testClass),
+          .createTestMethodConfigurationMethods(beforeTestMethods,
                                                 m_annotationFinder,
                                                 true,
                                                 instance);
       m_afterTestMethods = ConfigurationMethod
-          .createTestMethodConfigurationMethods(m_testMethodFinder.getAfterTestMethods(m_testClass),
+          .createTestMethodConfigurationMethods(afterTestMethods, 
                                                 m_annotationFinder,
                                                 false,
                                                 instance);
