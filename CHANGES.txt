@@ -5,6 +5,7 @@ Fixed: GITHUB-116 : BaseTestMethod does respect general contract of Comparable (
 Fixed: GITHUB-1265: JUnit Reporter includes redundant ignored methods (Krishnan Mahadevan)
 Fixed: GITHUB-1266: JUnit Reporter produces a wrong number of total test methods (Krishnan Mahadevan)
 Fixed: GITHUB-1257: Group parameter not applying on included <suite-files>
+Fixed: GITHUB-1284: Listeners on the child suites are not applied (Vimalraj Selvam)
 
 6.10
 2016/11/28

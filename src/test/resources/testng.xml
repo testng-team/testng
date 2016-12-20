@@ -6,6 +6,7 @@
   <suite-files>
     <suite-file path="./junit-suite.xml" />
     <suite-file path="./parent-module-suite.xml" />
+    <suite-file path="./test/listeners/github1284/github1284.xml" />
   </suite-files>
 
   <listeners>
@@ -799,7 +800,6 @@
       <class name="test.listeners.github551.Test551"/>
     </classes>
   </test>
-
 
 </suite>
 
