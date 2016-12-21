@@ -8,12 +8,7 @@ import org.testng.xml.XmlTest;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Arrays;
+import java.util.*;
 
 /**
  * Utility class to handle reflection.
@@ -67,7 +62,7 @@ public final class ReflectionRecipes {
     if (object == null) {
       return !reference.isPrimitive();
     }
-    boolean isInstanceOf = false;
+    boolean isInstanceOf;
     final boolean directInstance = reference.isInstance(object);
     if (!directInstance && reference.isPrimitive()) {
       isInstanceOf = PRIMITIVE_MAPPING.get(reference).isInstance(object);

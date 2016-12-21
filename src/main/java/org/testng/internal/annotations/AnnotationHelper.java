@@ -4,8 +4,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.testng.ITestNGMethod;
@@ -31,6 +29,30 @@ import org.testng.xml.XmlTest;
  * @author cbeust
  */
 public class AnnotationHelper {
+
+  private static final Class[] ALL_ANNOTATIONS = new Class[] {
+      ITestAnnotation.class, IConfigurationAnnotation.class,
+      IBeforeClass.class, IAfterClass.class,
+      IBeforeMethod.class, IAfterMethod.class,
+      IDataProviderAnnotation.class, IExpectedExceptionsAnnotation.class,
+      IFactoryAnnotation.class, IParametersAnnotation.class,
+      IBeforeSuite.class, IAfterSuite.class,
+      IBeforeTest.class, IAfterTest.class,
+      IBeforeGroups.class, IAfterGroups.class
+  };
+
+  public static final Class[] CONFIGURATION_CLASSES = new Class[] {
+      IConfigurationAnnotation.class,
+      IBeforeSuite.class, IAfterSuite.class,
+      IBeforeTest.class, IAfterTest.class,
+      IBeforeGroups.class, IAfterGroups.class,
+      IBeforeClass.class, IAfterClass.class,
+      IBeforeMethod.class, IAfterMethod.class
+  };
+
+  private AnnotationHelper() {
+    //Utility class.defeat instantiation.
+  }
 
   public static ITestAnnotation findTest(IAnnotationFinder finder, Class<?> cls) {
     return finder.findAnnotation(cls, ITestAnnotation.class);
@@ -178,25 +200,7 @@ public class AnnotationHelper {
     result.setTimeOut(bs.getTimeOut());
   }
 
-  private static final Class[] ALL_ANNOTATIONS = new Class[] {
-    ITestAnnotation.class, IConfigurationAnnotation.class,
-    IBeforeClass.class, IAfterClass.class,
-    IBeforeMethod.class, IAfterMethod.class,
-    IDataProviderAnnotation.class, IExpectedExceptionsAnnotation.class,
-    IFactoryAnnotation.class, IParametersAnnotation.class,
-    IBeforeSuite.class, IAfterSuite.class,
-    IBeforeTest.class, IAfterTest.class,
-    IBeforeGroups.class, IAfterGroups.class
-  };
 
-  public static final Class[] CONFIGURATION_CLASSES = new Class[] {
-    IConfigurationAnnotation.class,
-    IBeforeSuite.class, IAfterSuite.class,
-    IBeforeTest.class, IAfterTest.class,
-    IBeforeGroups.class, IAfterGroups.class,
-    IBeforeClass.class, IAfterClass.class,
-    IBeforeMethod.class, IAfterMethod.class
-  };
 
   public static Class[] getAllAnnotations() {
     return ALL_ANNOTATIONS;
@@ -279,20 +283,19 @@ public class AnnotationHelper {
     catch (SecurityException e) {
       e.printStackTrace();
     }
-    ITestNGMethod[] result = vResult.values().toArray(new ITestNGMethod[vResult.size()]);
-
-  //    for (Method m : result) {
-  //      ppp("   METHOD FOUND: " + m);
-  //    }
-
-      return result;
+    return vResult.values().toArray(new ITestNGMethod[vResult.size()]);
     }
 
-  public static Annotation findAnnotationSuperClasses(Class<?> annotationClass, Class c) {
+  public static Annotation findAnnotationSuperClasses(Class<?> annotationClass, Class parameterClass) {
+    Class c = parameterClass;
     while (c != null) {
       Annotation result = c.getAnnotation(annotationClass);
-      if (result != null) return result;
-      else c = c.getSuperclass();
+      if (result != null) {
+        return result;
+      }
+      else {
+        c = c.getSuperclass();
+      }
     }
     return null;
   }
@@ -324,7 +327,7 @@ public class AnnotationHelper {
    * but without its class
    */
   private static String createMethodKey(Method m) {
-    StringBuffer result = new StringBuffer(m.getName());
+    StringBuilder result = new StringBuilder(m.getName());
     for (Class paramClass : m.getParameterTypes()) {
       result.append(' ').append(paramClass.toString());
     }

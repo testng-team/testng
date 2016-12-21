@@ -1100,14 +1100,12 @@ public class TestNG {
 
     sanityCheck();
 
-    List<ISuite> suiteRunners = null;
-
     runExecutionListeners(true /* start */);
 
     runSuiteAlterationListeners();
 
     m_start = System.currentTimeMillis();
-    suiteRunners = runSuites();
+    List<ISuite> suiteRunners = runSuites();
 
     m_end = System.currentTimeMillis();
 
