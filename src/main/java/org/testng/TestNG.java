@@ -975,13 +975,6 @@ public class TestNG {
     // Install the listeners found in the suites
     //
     for (XmlSuite s : m_suites) {
-      // Add the child suite listeners
-      List<XmlSuite> childSuites = s.getChildSuites();
-      for (XmlSuite c : childSuites) {
-        addListeners(c);
-      }
-
-      // Now add the actual suite listeners
       addListeners(s);
 
       //
@@ -1020,6 +1013,12 @@ public class TestNG {
 
       ITestNGListener listener = (ITestNGListener) ClassHelper.newInstance(listenerClass);
       addListener(listener);
+    }
+
+    // Add the child suite listeners
+    List<XmlSuite> childSuites = s.getChildSuites();
+    for (XmlSuite c : childSuites) {
+      addListeners(c);
     }
   }
 

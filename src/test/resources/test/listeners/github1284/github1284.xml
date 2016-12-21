@@ -4,9 +4,10 @@
         <listener class-name="test.listeners.github1284.Listener1284" />
     </listeners>
 
-    <test name="Github 1284 Test">
+    <test name="Github 1284 Test" preserve-order="true">
         <classes>
             <class name="test.listeners.github1284.Test1284" />
+            <class name="test.listeners.github1284.Test1284B" />
         </classes>
     </test>
 </suite>

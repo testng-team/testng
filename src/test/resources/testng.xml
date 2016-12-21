@@ -801,5 +801,11 @@
     </classes>
   </test>
 
+  <test name="github1284c">
+    <classes>
+      <class name="test.listeners.github1284.Test1284C" />
+    </classes>
+  </test>
+
 </suite>
 
