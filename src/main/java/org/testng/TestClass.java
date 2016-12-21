@@ -4,6 +4,7 @@ import org.testng.collections.Lists;
 import org.testng.collections.Objects;
 import org.testng.internal.*;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.log4testng.Logger;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
@@ -21,15 +22,16 @@ import java.util.List;
 class TestClass extends NoOpTestClass implements ITestClass {
 	/* generated */
 	private static final long serialVersionUID = -8077917128278361294L;
-  transient private IAnnotationFinder m_annotationFinder = null;
+  private transient  IAnnotationFinder annotationFinder = null;
   // The Strategy used to locate test methods (TestNG, JUnit, etc...)
-  transient private ITestMethodFinder m_testMethodFinder = null;
+  private transient ITestMethodFinder testMethodFinder = null;
 
-  private IClass m_iClass = null;
-  private RunInfo m_runInfo = null;
-  private String m_testName;
-  private XmlTest m_xmlTest;
-  private XmlClass m_xmlClass;
+  private IClass iClass = null;
+  private String testName;
+  private XmlTest xmlTest;
+  private XmlClass xmlClass;
+
+  private static final Logger LOG =Logger.getLogger(TestClass.class);
 
   protected TestClass(IClass cls,
                    ITestMethodFinder testMethodFinder,
@@ -37,43 +39,41 @@ class TestClass extends NoOpTestClass implements ITestClass {
                    RunInfo runInfo,
                    XmlTest xmlTest,
                    XmlClass xmlClass) {
-    init(cls, testMethodFinder, annotationFinder, runInfo, xmlTest, xmlClass);
+    init(cls, testMethodFinder, annotationFinder, xmlTest, xmlClass);
   }
 
   @Override
   public String getTestName() {
-    return m_testName;
+    return testName;
   }
 
   @Override
   public XmlTest getXmlTest() {
-    return m_xmlTest;
+    return xmlTest;
   }
 
   @Override
   public XmlClass getXmlClass() {
-    return m_xmlClass;
+    return xmlClass;
   }
 
   public IAnnotationFinder getAnnotationFinder() {
-    return m_annotationFinder;
+    return annotationFinder;
   }
 
   private void init(IClass cls,
                     ITestMethodFinder testMethodFinder,
                     IAnnotationFinder annotationFinder,
-                    RunInfo runInfo,
                     XmlTest xmlTest,
                     XmlClass xmlClass)
   {
     log(3, "Creating TestClass for " + cls);
-    m_iClass = cls;
+    iClass = cls;
     m_testClass = cls.getRealClass();
-    m_xmlTest = xmlTest;
-    m_xmlClass = xmlClass;
-    m_runInfo = runInfo;
-    m_testMethodFinder = testMethodFinder;
-    m_annotationFinder = annotationFinder;
+    this.xmlTest = xmlTest;
+    this.xmlClass = xmlClass;
+    this.testMethodFinder = testMethodFinder;
+    this.annotationFinder = annotationFinder;
     initTestClassesAndInstances();
     initMethods();
   }
@@ -85,89 +85,89 @@ class TestClass extends NoOpTestClass implements ITestClass {
     Object[] instances = getInstances(false);
     for (Object instance : instances) {
       if (instance instanceof ITest) {
-        m_testName = ((ITest) instance).getTestName();
+        testName = ((ITest) instance).getTestName();
         break;
       }
     }
-    if (m_testName == null) {
-      m_testName = m_iClass.getTestName();
+    if (testName == null) {
+      testName = iClass.getTestName();
     }
   }
 
   @Override
   public Object[] getInstances(boolean create) {
-    return m_iClass.getInstances(create);
+    return iClass.getInstances(create);
   }
 
   @Override
   public long[] getInstanceHashCodes() {
-    return m_iClass.getInstanceHashCodes();
+    return iClass.getInstanceHashCodes();
   }
 
   @Deprecated
   @Override
   public int getInstanceCount() {
-    return m_iClass.getInstanceCount();
+    return iClass.getInstanceCount();
   }
 
   @Override
   public void addInstance(Object instance) {
-    m_iClass.addInstance(instance);
+    iClass.addInstance(instance);
   }
 
   private void initMethods() {
-    ITestNGMethod[] methods = m_testMethodFinder.getTestMethods(m_testClass, m_xmlTest);
+    ITestNGMethod[] methods = testMethodFinder.getTestMethods(m_testClass, xmlTest);
     m_testMethods = createTestMethods(methods);
 
-    for (Object instance : m_iClass.getInstances(false)) {
+    for (Object instance : iClass.getInstances(false)) {
       m_beforeSuiteMethods = ConfigurationMethod
-          .createSuiteConfigurationMethods(m_testMethodFinder.getBeforeSuiteMethods(m_testClass),
-                                           m_annotationFinder,
+          .createSuiteConfigurationMethods(testMethodFinder.getBeforeSuiteMethods(m_testClass),
+              annotationFinder,
                                            true,
                                            instance);
       m_afterSuiteMethods = ConfigurationMethod
-          .createSuiteConfigurationMethods(m_testMethodFinder.getAfterSuiteMethods(m_testClass),
-                                           m_annotationFinder,
+          .createSuiteConfigurationMethods(testMethodFinder.getAfterSuiteMethods(m_testClass),
+              annotationFinder,
                                            false,
                                            instance);
       m_beforeTestConfMethods = ConfigurationMethod
-          .createTestConfigurationMethods(m_testMethodFinder.getBeforeTestConfigurationMethods(m_testClass),
-                                          m_annotationFinder,
+          .createTestConfigurationMethods(testMethodFinder.getBeforeTestConfigurationMethods(m_testClass),
+              annotationFinder,
                                           true,
                                           instance);
       m_afterTestConfMethods = ConfigurationMethod
-          .createTestConfigurationMethods(m_testMethodFinder.getAfterTestConfigurationMethods(m_testClass),
-                                          m_annotationFinder,
+          .createTestConfigurationMethods(testMethodFinder.getAfterTestConfigurationMethods(m_testClass),
+              annotationFinder,
                                           false,
                                           instance);
       m_beforeClassMethods = ConfigurationMethod
-          .createClassConfigurationMethods(m_testMethodFinder.getBeforeClassMethods(m_testClass),
-                                           m_annotationFinder,
+          .createClassConfigurationMethods(testMethodFinder.getBeforeClassMethods(m_testClass),
+              annotationFinder,
                                            true,
                                            instance);
       m_afterClassMethods = ConfigurationMethod
-          .createClassConfigurationMethods(m_testMethodFinder.getAfterClassMethods(m_testClass),
-                                           m_annotationFinder,
+          .createClassConfigurationMethods(testMethodFinder.getAfterClassMethods(m_testClass),
+              annotationFinder,
                                            false,
                                            instance);
       m_beforeGroupsMethods = ConfigurationMethod
-          .createBeforeConfigurationMethods(m_testMethodFinder.getBeforeGroupsConfigurationMethods(m_testClass),
-                                            m_annotationFinder,
+          .createBeforeConfigurationMethods(testMethodFinder.getBeforeGroupsConfigurationMethods(m_testClass),
+              annotationFinder,
                                             true,
                                             instance);
       m_afterGroupsMethods = ConfigurationMethod
-          .createAfterConfigurationMethods(m_testMethodFinder.getAfterGroupsConfigurationMethods(m_testClass),
-                                           m_annotationFinder,
+          .createAfterConfigurationMethods(testMethodFinder.getAfterGroupsConfigurationMethods(m_testClass),
+              annotationFinder,
                                            false,
                                            instance);
       m_beforeTestMethods = ConfigurationMethod
-          .createTestMethodConfigurationMethods(m_testMethodFinder.getBeforeTestMethods(m_testClass),
-                                                m_annotationFinder,
+          .createTestMethodConfigurationMethods(testMethodFinder.getBeforeTestMethods(m_testClass),
+              annotationFinder,
                                                 true,
                                                 instance);
       m_afterTestMethods = ConfigurationMethod
-          .createTestMethodConfigurationMethods(m_testMethodFinder.getAfterTestMethods(m_testClass),
-                                                m_annotationFinder,
+          .createTestMethodConfigurationMethods(testMethodFinder.getAfterTestMethods(m_testClass),
+              annotationFinder,
                                                 false,
                                                 instance);
     }
@@ -182,9 +182,9 @@ class TestClass extends NoOpTestClass implements ITestClass {
     for (ITestNGMethod tm : methods) {
       ConstructorOrMethod m = tm.getConstructorOrMethod();
       if (m.getDeclaringClass().isAssignableFrom(m_testClass)) {
-        for (Object o : m_iClass.getInstances(false)) {
+        for (Object o : iClass.getInstances(false)) {
           log(4, "Adding method " + tm + " on TestClass " + m_testClass);
-          vResult.add(new TestNGMethod(/* tm.getRealClass(), */ m.getMethod(), m_annotationFinder, m_xmlTest,
+          vResult.add(new TestNGMethod(/* tm.getRealClass(), */ m.getMethod(), annotationFinder, xmlTest,
               o));
         }
       }
@@ -193,44 +193,35 @@ class TestClass extends NoOpTestClass implements ITestClass {
       }
     }
 
-    ITestNGMethod[] result = vResult.toArray(new ITestNGMethod[vResult.size()]);
-    return result;
-  }
-
-  private RunInfo getRunInfo() {
-    return m_runInfo;
+    return vResult.toArray(new ITestNGMethod[vResult.size()]);
   }
 
   public ITestMethodFinder getTestMethodFinder() {
-    return m_testMethodFinder;
+    return testMethodFinder;
   }
 
   private void log(int level, String s) {
     Utils.log("TestClass", level, s);
   }
 
-  private static void ppp(String s) {
-    System.out.println("[TestClass] " + s);
-  }
-
   protected void dump() {
-    System.out.println("===== Test class\n" + m_testClass.getName());
+    LOG.info("===== Test class\n" + m_testClass.getName());
     for (ITestNGMethod m : m_beforeClassMethods) {
-      System.out.println("  @BeforeClass " + m);
+      LOG.info("  @BeforeClass " + m);
     }
     for (ITestNGMethod m : m_beforeTestMethods) {
-      System.out.println("  @BeforeMethod " + m);
+      LOG.info("  @BeforeMethod " + m);
     }
     for (ITestNGMethod m : m_testMethods) {
-      System.out.println("    @Test " + m);
+      LOG.info("    @Test " + m);
     }
     for (ITestNGMethod m : m_afterTestMethods) {
-      System.out.println("  @AfterMethod " + m);
+      LOG.info("  @AfterMethod " + m);
     }
     for (ITestNGMethod m : m_afterClassMethods) {
-      System.out.println("  @AfterClass " + m);
+      LOG.info("  @AfterClass " + m);
     }
-    System.out.println("======");
+    LOG.info("======");
   }
 
   @Override
@@ -241,6 +232,6 @@ class TestClass extends NoOpTestClass implements ITestClass {
   }
 
   public IClass getIClass() {
-    return m_iClass;
+    return iClass;
   }
 }

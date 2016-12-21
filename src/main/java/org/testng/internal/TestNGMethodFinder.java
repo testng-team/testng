@@ -33,19 +33,17 @@ public class TestNGMethodFinder implements ITestMethodFinder {
   private static final int BEFORE_GROUPS = 9;
   private static final int AFTER_GROUPS = 10;
 
-  private RunInfo m_runInfo = null;
-  private IAnnotationFinder m_annotationFinder = null;
+  private RunInfo runInfo = null;
+  private IAnnotationFinder annotationFinder = null;
 
-  public TestNGMethodFinder(RunInfo runInfo, IAnnotationFinder annotationFinder)
-  {
-    m_runInfo = runInfo;
-    m_annotationFinder = annotationFinder;
+  public TestNGMethodFinder(RunInfo runInfo, IAnnotationFinder annotationFinder) {
+    this.runInfo = runInfo;
+    this.annotationFinder = annotationFinder;
   }
 
   @Override
   public ITestNGMethod[] getTestMethods(Class<?> clazz, XmlTest xmlTest) {
-    return AnnotationHelper.findMethodsWithAnnotation(
-        clazz, ITestAnnotation.class, m_annotationFinder, xmlTest);
+    return AnnotationHelper.findMethodsWithAnnotation(clazz, ITestAnnotation.class, annotationFinder, xmlTest);
   }
 
   @Override
@@ -104,7 +102,7 @@ public class TestNGMethodFinder implements ITestMethodFinder {
     Set<Method> methods = ClassHelper.getAvailableMethods(clazz);
 
     for (Method m : methods) {
-      IConfigurationAnnotation configuration = AnnotationHelper.findConfiguration(m_annotationFinder, m);
+      IConfigurationAnnotation configuration = AnnotationHelper.findConfiguration(annotationFinder, m);
 
       if (null == configuration) {
         continue;
@@ -191,8 +189,8 @@ public class TestNGMethodFinder implements ITestMethodFinder {
     boolean unique = configurationType == BEFORE_SUITE || configurationType == AFTER_SUITE;
     return MethodHelper.collectAndOrderMethods(Lists.newArrayList(vResult),
                                               false /* forTests */,
-                                              m_runInfo,
-                                              m_annotationFinder,
+        runInfo,
+        annotationFinder,
                                               unique,
                                               excludedMethods);
 
@@ -215,7 +213,7 @@ public class TestNGMethodFinder implements ITestMethodFinder {
   {
     if(method.getDeclaringClass().isAssignableFrom(clazz)) {
       ITestNGMethod confMethod = new ConfigurationMethod(new ConstructorOrMethod(method),
-                                                         m_annotationFinder,
+          annotationFinder,
                                                          isBeforeSuite,
                                                          isAfterSuite,
                                                          isBeforeTest,

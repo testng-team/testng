@@ -161,7 +161,7 @@ public class JUnitXMLReporter implements IResultListener2 {
 
       attrs.setProperty(XMLConstants.ATTR_TESTS, Integer.toString(m_allTests.size()));
       attrs.setProperty(XMLConstants.ATTR_TIME,
-          Double.toString(((context.getEndDate().getTime() - context.getStartDate().getTime()) / 1000.0)));
+          Double.toString((context.getEndDate().getTime() - context.getStartDate().getTime()) / 1000.0));
 
       attrs.setProperty(XMLConstants.ATTR_TIMESTAMP, timeAsGmt());
 
