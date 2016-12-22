@@ -9,19 +9,16 @@ import org.testng.annotations.IParametersAnnotation;
  * Created on Dec 20, 2005
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
-public class ParametersAnnotation
-  extends BaseAnnotation
-  implements IParametersAnnotation
-{
-  private String[] m_value  = {};
+public class ParametersAnnotation extends BaseAnnotation implements IParametersAnnotation {
+  private String[] value = {};
 
   @Override
   public String[] getValue() {
-    return m_value;
+    return value;
   }
 
   public void setValue(String[] value) {
-    m_value = value;
+    this.value = value;
   }
 
 }

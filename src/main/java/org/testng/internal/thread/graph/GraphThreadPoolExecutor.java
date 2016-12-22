@@ -25,32 +25,32 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
   /** Set to true if you want to generate GraphViz graphs */
   private static final boolean DOT_FILES = false;
 
-  private DynamicGraph<T> m_graph;
-  private List<Runnable> m_activeRunnables = Lists.newArrayList();
-  private IThreadWorkerFactory<T> m_factory;
-  private List<String> m_dotFiles = Lists.newArrayList();
-  private int m_threadCount;
+  private DynamicGraph<T> graph;
+  private List<Runnable> activeRunnables = Lists.newArrayList();
+  private IThreadWorkerFactory<T> factory;
+  private List<String> dotFiles = Lists.newArrayList();
+  private int threadCount;
 
   public GraphThreadPoolExecutor(DynamicGraph<T> graph, IThreadWorkerFactory<T> factory, int corePoolSize,
       int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
     super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue
         /* , new TestNGThreadPoolFactory() */);
     ppp("Initializing executor with " + corePoolSize + " threads and following graph " + graph);
-    m_threadCount = maximumPoolSize;
-    m_graph = graph;
-    m_factory = factory;
+    threadCount = maximumPoolSize;
+    this.graph = graph;
+    this.factory = factory;
 
-    if (m_graph.getFreeNodes().isEmpty()) {
+    if (this.graph.getFreeNodes().isEmpty()) {
       throw new TestNGException("The graph of methods contains a cycle:" + graph.getEdges());
     }
   }
 
   public void run() {
-    synchronized(m_graph) {
+    synchronized(graph) {
       if (DOT_FILES) {
-        m_dotFiles.add(m_graph.toDot());
+        dotFiles.add(graph.toDot());
       }
-      List<T> freeNodes = m_graph.getFreeNodes();
+      List<T> freeNodes = graph.getFreeNodes();
       runNodes(freeNodes);
     }
   }
@@ -59,15 +59,15 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
    * Create one worker per node and execute them.
    */
   private void runNodes(List<T> freeNodes) {
-    List<IWorker<T>> runnables = m_factory.createWorkers(freeNodes);
+    List<IWorker<T>> runnables = factory.createWorkers(freeNodes);
     for (IWorker<T> r : runnables) {
-      m_activeRunnables.add(r);
+      activeRunnables.add(r);
       ppp("Added to active runnable");
       setStatus(r, Status.RUNNING);
       ppp("Executing: " + r);
       try {
         execute(r);
-//        if (m_threadCount > 1) execute(r);
+//        if (threadCount > 1) execute(r);
 //        else r.run();
       }
       catch(Exception ex) {
@@ -79,11 +79,11 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
   private void setStatus(IWorker<T> worker, Status status) {
     ppp("Set status:" + worker + " status:" + status);
     if (status == Status.FINISHED) {
-      m_activeRunnables.remove(worker);
+      activeRunnables.remove(worker);
     }
-    synchronized(m_graph) {
+    synchronized(graph) {
       for (T m : worker.getTasks()) {
-        m_graph.setStatus(m, status);
+        graph.setStatus(m, status);
       }
     }
   }
@@ -92,24 +92,24 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
   public void afterExecute(Runnable r, Throwable t) {
     ppp("Finished runnable:" + r);
     setStatus((IWorker<T>) r, Status.FINISHED);
-    synchronized(m_graph) {
-      ppp("Node count:" + m_graph.getNodeCount() + " and "
-          + m_graph.getNodeCountWithStatus(Status.FINISHED) + " finished");
-      if (m_graph.getNodeCount() == m_graph.getNodeCountWithStatus(Status.FINISHED)) {
+    synchronized(graph) {
+      ppp("Node count:" + graph.getNodeCount() + " and "
+          + graph.getNodeCountWithStatus(Status.FINISHED) + " finished");
+      if (graph.getNodeCount() == graph.getNodeCountWithStatus(Status.FINISHED)) {
         ppp("Shutting down executor " + this);
         if (DOT_FILES) {
-          generateFiles(m_dotFiles);
+          generateFiles(dotFiles);
         }
         shutdown();
       } else {
         if (DOT_FILES) {
-          m_dotFiles.add(m_graph.toDot());
+          dotFiles.add(graph.toDot());
         }
-        List<T> freeNodes = m_graph.getFreeNodes();
+        List<T> freeNodes = graph.getFreeNodes();
         runNodes(freeNodes);
       }
     }
-//    if (m_activeRunnables.isEmpty() && m_index < m_runnables.getSize()) {
+//    if (activeRunnables.isEmpty() && m_index < m_runnables.getSize()) {
 //      runNodes(m_index++);
 //    }
   }
@@ -143,12 +143,12 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
 }
 
 class TestNGThreadPoolFactory implements ThreadFactory {
-  private int m_count = 0;
+  private int count = 0;
 
   @Override
   public Thread newThread(Runnable r) {
     Thread result = new Thread(r);
-    result.setName("TestNG-" + m_count++);
+    result.setName("TestNG-" + count++);
     return result;
   }
 }

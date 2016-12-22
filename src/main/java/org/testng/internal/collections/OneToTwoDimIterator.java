@@ -4,20 +4,20 @@ import java.util.Iterator;
 
 public class OneToTwoDimIterator implements Iterator<Object[]> {
 
-  private final Iterator<Object> m_iterator;
+  private final Iterator<Object> iterator;
 
   public OneToTwoDimIterator(Iterator<Object> iterator) {
-    m_iterator = iterator;
+    this.iterator = iterator;
   }
 
   @Override
   public boolean hasNext() {
-    return m_iterator.hasNext();
+    return iterator.hasNext();
   }
 
   @Override
   public Object[] next() {
-    return new Object[]{m_iterator.next()};
+    return new Object[]{iterator.next()};
   }
 
   @Override

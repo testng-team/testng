@@ -1,22 +1,19 @@
 package org.testng.internal.annotations;
 
-public class BaseBeforeAfter
-  extends TestOrConfiguration
-  implements IBaseBeforeAfter
-{
-  private String[] m_parameters = {};
-  private boolean m_alwaysRun = false;
-  private boolean m_inheritGroups = true;
-  private String[] m_beforeGroups = {};
-  private String[] m_afterGroups = {};
-  private String m_description;
+public class BaseBeforeAfter extends TestOrConfiguration implements IBaseBeforeAfter {
+  private String[] parameters = {};
+  private boolean alwaysRun = false;
+  private boolean inheritGroups = true;
+  private String[] beforeGroups = {};
+  private String[] afterGroups = {};
+  private String description;
 
   /**
    * @return the description
    */
   @Override
   public String getDescription() {
-    return m_description;
+    return description;
   }
 
   /**
@@ -24,51 +21,51 @@ public class BaseBeforeAfter
    */
   @Override
   public void setDescription(String description) {
-    m_description = description;
+    this.description = description;
   }
 
   public void setAlwaysRun(boolean alwaysRun) {
-    m_alwaysRun = alwaysRun;
+    this.alwaysRun = alwaysRun;
   }
 
   public void setInheritGroups(boolean inheritGroups) {
-    m_inheritGroups = inheritGroups;
+    this.inheritGroups = inheritGroups;
   }
 
   @Override
   public void setParameters(String[] parameters) {
-    m_parameters = parameters;
+    this.parameters = parameters;
   }
 
   @Override
   public String[] getParameters() {
-    return m_parameters;
+    return parameters;
   }
 
   @Override
   public boolean getAlwaysRun() {
-    return m_alwaysRun;
+    return alwaysRun;
   }
 
   @Override
   public boolean getInheritGroups() {
-    return m_inheritGroups;
+    return inheritGroups;
   }
 
   public String[] getAfterGroups() {
-    return m_afterGroups;
+    return afterGroups;
   }
 
   public void setAfterGroups(String[] afterGroups) {
-    m_afterGroups = afterGroups;
+    this.afterGroups = afterGroups;
   }
 
   public String[] getBeforeGroups() {
-    return m_beforeGroups;
+    return beforeGroups;
   }
 
   public void setBeforeGroups(String[] beforeGroups) {
-    m_beforeGroups = beforeGroups;
+    this.beforeGroups = beforeGroups;
   }
 
 }

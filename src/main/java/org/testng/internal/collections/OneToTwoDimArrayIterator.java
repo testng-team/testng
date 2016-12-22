@@ -5,25 +5,25 @@ import java.util.NoSuchElementException;
 
 public class OneToTwoDimArrayIterator implements Iterator<Object[]> {
 
-  private final Object[] m_objects;
-  private int m_count;
+  private final Object[] objects;
+  private int count;
 
   public OneToTwoDimArrayIterator(Object[] objects) {
-    m_objects = objects;
-    m_count = 0;
+    this.objects = objects;
+    count = 0;
   }
 
   @Override
   public boolean hasNext() {
-    return m_count < m_objects.length;
+    return count < objects.length;
   }
 
   @Override
   public Object[] next() {
-    if (m_count >= m_objects.length) {
+    if (count >= objects.length) {
       throw new NoSuchElementException();
     }
-    return new Object[]{m_objects[m_count++]};
+    return new Object[]{objects[count++]};
   }
 
   @Override

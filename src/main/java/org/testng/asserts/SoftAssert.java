@@ -11,7 +11,7 @@ import org.testng.collections.Maps;
  */
 public class SoftAssert extends Assertion {
   // LinkedHashMap to preserve the order
-  private final Map<AssertionError, IAssert<?>> m_errors = Maps.newLinkedHashMap();
+  private final Map<AssertionError, IAssert<?>> errors = Maps.newLinkedHashMap();
 
   @Override
   protected void doAssert(IAssert<?> a) {
@@ -21,17 +21,17 @@ public class SoftAssert extends Assertion {
       onAssertSuccess(a);
     } catch (AssertionError ex) {
       onAssertFailure(a, ex);
-      m_errors.put(ex, a);
+      errors.put(ex, a);
     } finally {
       onAfterAssert(a);
     }
   }
 
   public void assertAll() {
-    if (!m_errors.isEmpty()) {
+    if (! errors.isEmpty()) {
       StringBuilder sb = new StringBuilder("The following asserts failed:");
       boolean first = true;
-      for (Map.Entry<AssertionError, IAssert<?>> ae : m_errors.entrySet()) {
+      for (Map.Entry<AssertionError, IAssert<?>> ae : errors.entrySet()) {
         if (first) {
           first = false;
         } else {

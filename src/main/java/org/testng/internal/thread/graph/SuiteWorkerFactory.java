@@ -15,15 +15,15 @@ import java.util.List;
  */
 public class SuiteWorkerFactory implements IThreadWorkerFactory<ISuite>
 {
-  private Integer m_verbose;
-  private String m_defaultSuiteName;
-  private SuiteRunnerMap m_suiteRunnerMap;
+  private Integer verbose;
+  private String defaultSuiteName;
+  private SuiteRunnerMap suiteRunnerMap;
 
   public SuiteWorkerFactory(SuiteRunnerMap suiteRunnerMap,
       Integer verbose, String defaultSuiteName) {
-    m_suiteRunnerMap = suiteRunnerMap;
-    m_verbose = verbose;
-    m_defaultSuiteName = defaultSuiteName;
+    this.suiteRunnerMap = suiteRunnerMap;
+    this.verbose = verbose;
+    this.defaultSuiteName = defaultSuiteName;
   }
 
   /**
@@ -36,8 +36,8 @@ public class SuiteWorkerFactory implements IThreadWorkerFactory<ISuite>
   {
     List<IWorker<ISuite>> suiteWorkers = Lists.newArrayList();
     for (ISuite suiteRunner : suites) {
-      SuiteRunnerWorker worker = new SuiteRunnerWorker(suiteRunner, m_suiteRunnerMap,
-        m_verbose, m_defaultSuiteName);
+      SuiteRunnerWorker worker = new SuiteRunnerWorker(suiteRunner, suiteRunnerMap,
+          verbose, defaultSuiteName);
       suiteWorkers.add(worker);
     }
     return suiteWorkers;

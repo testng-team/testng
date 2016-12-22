@@ -11,29 +11,29 @@ import org.testng.annotations.ITestAnnotation;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class TestAnnotation extends TestOrConfiguration implements ITestAnnotation {
-  private long m_invocationTimeOut = 0;
-  private int m_invocationCount = 1;
-  private int m_threadPoolSize = 0;
-  private int m_successPercentage = 100;
-  private String m_dataProvider = "";
-  private boolean m_alwaysRun = false;
-  private Class<?>[] m_expectedExceptions = {};
-  private String m_expectedExceptionsMessageRegExp = ".*";
-  private String m_suiteName = "";
-  private String m_testName = "";
-  private boolean m_singleThreaded = false;
-  private boolean m_sequential = false;
-  private Class<?> m_dataProviderClass = null;
-  private IRetryAnalyzer m_retryAnalyzer = null;
-  private boolean m_skipFailedInvocations = false;
-  private boolean m_ignoreMissingDependencies = false;
+  private long invocationTimeOut = 0;
+  private int invocationCount = 1;
+  private int threadPoolSize = 0;
+  private int successPercentage = 100;
+  private String dataProvider = "";
+  private boolean alwaysRun = false;
+  private Class<?>[] expectedExceptions = {};
+  private String expectedExceptionsMessageRegExp = ".*";
+  private String suiteName = "";
+  private String testName = "";
+  private boolean singleThreaded = false;
+  private boolean sequential = false;
+  private Class<?> dataProviderClass = null;
+  private IRetryAnalyzer retryAnalyzer = null;
+  private boolean skipFailedInvocations = false;
+  private boolean ignoreMissingDependencies = false;
 
   /**
    * @return the expectedExceptions
    */
   @Override
   public Class<?>[] getExpectedExceptions() {
-    return m_expectedExceptions;
+    return expectedExceptions;
   }
 
   /**
@@ -41,143 +41,143 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
    */
   @Override
   public void setExpectedExceptions(Class<?>[] expectedExceptions) {
-    m_expectedExceptions = expectedExceptions;
+    this.expectedExceptions = expectedExceptions;
   }
 
   @Override
   public String getExpectedExceptionsMessageRegExp() {
-    return m_expectedExceptionsMessageRegExp;
+    return expectedExceptionsMessageRegExp;
   }
 
   @Override
   public void setExpectedExceptionsMessageRegExp(
       String expectedExceptionsMessageRegExp) {
-    m_expectedExceptionsMessageRegExp = expectedExceptionsMessageRegExp;
+    this.expectedExceptionsMessageRegExp = expectedExceptionsMessageRegExp;
   }
 
   @Override
   public void setAlwaysRun(boolean alwaysRun) {
-    m_alwaysRun = alwaysRun;
+    this.alwaysRun = alwaysRun;
   }
 
   @Override
   public void setDataProvider(String dataProvider) {
-    m_dataProvider = dataProvider;
+    this.dataProvider = dataProvider;
   }
 
   @Override
   public Class<?> getDataProviderClass() {
-    return m_dataProviderClass;
+    return dataProviderClass;
   }
 
   @Override
   public void setDataProviderClass(Class<?> dataProviderClass) {
-    m_dataProviderClass = dataProviderClass;
+    this.dataProviderClass = dataProviderClass;
   }
 
   @Override
   public void setInvocationCount(int invocationCount) {
-    m_invocationCount = invocationCount;
+    this.invocationCount = invocationCount;
   }
 
   @Override
   public void setSuccessPercentage(int successPercentage) {
-    m_successPercentage = successPercentage;
+    this.successPercentage = successPercentage;
   }
 
   @Override
   public int getInvocationCount() {
-    return m_invocationCount;
+    return invocationCount;
   }
 
   @Override
   public long invocationTimeOut() {
-   return m_invocationTimeOut;
+   return invocationTimeOut;
   }
 
   @Override
   public void setInvocationTimeOut(long timeOut) {
-    m_invocationTimeOut = timeOut;
+    invocationTimeOut = timeOut;
   }
 
 
   @Override
   public int getSuccessPercentage() {
-    return m_successPercentage;
+    return successPercentage;
   }
 
   @Override
   public String getDataProvider() {
-    return m_dataProvider;
+    return dataProvider;
   }
 
   @Override
   public boolean getAlwaysRun() {
-    return m_alwaysRun;
+    return alwaysRun;
   }
 
   @Override
   public int getThreadPoolSize() {
-    return m_threadPoolSize;
+    return threadPoolSize;
   }
 
   @Override
   public void setThreadPoolSize(int threadPoolSize) {
-    m_threadPoolSize = threadPoolSize;
+    this.threadPoolSize = threadPoolSize;
   }
 
   @Override
   public String getSuiteName() {
-    return m_suiteName;
+    return suiteName;
   }
 
   @Override
   public void setSuiteName(String xmlSuite) {
-    m_suiteName = xmlSuite;
+    suiteName = xmlSuite;
   }
 
   @Override
   public String getTestName() {
-    return m_testName;
+    return testName;
   }
 
   @Override
   public void setTestName(String xmlTest) {
-    m_testName = xmlTest;
+    testName = xmlTest;
   }
 
   @Override
   public boolean getSingleThreaded() {
-    return m_singleThreaded;
+    return singleThreaded;
   }
 
   @Override
   public void setSingleThreaded(boolean singleThreaded) {
-    m_singleThreaded = singleThreaded;
+    this.singleThreaded = singleThreaded;
   }
 
   @Override
   public boolean getSequential() {
-    return m_sequential;
+    return sequential;
   }
 
   @Override
   public void setSequential(boolean sequential) {
-    m_sequential = sequential;
+    this.sequential = sequential;
   }
 
   @Override
   public IRetryAnalyzer getRetryAnalyzer() {
-    return m_retryAnalyzer;
+    return retryAnalyzer;
   }
 
   @Override
   public void setRetryAnalyzer(Class<?> c) {
-    m_retryAnalyzer = null;
+    retryAnalyzer = null;
 
     if (c != null && IRetryAnalyzer.class.isAssignableFrom(c)) {
       try {
-        m_retryAnalyzer = (IRetryAnalyzer) c.newInstance();
+        retryAnalyzer = (IRetryAnalyzer) c.newInstance();
       }
       catch (InstantiationException | IllegalAccessException e) {
         // The class will never be called.
@@ -187,21 +187,21 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
 
   @Override
   public void setSkipFailedInvocations(boolean skip) {
-    m_skipFailedInvocations = skip;
+    skipFailedInvocations = skip;
   }
 
   @Override
   public boolean skipFailedInvocations() {
-    return m_skipFailedInvocations;
+    return skipFailedInvocations;
   }
 
   @Override
   public void setIgnoreMissingDependencies(boolean ignore) {
-    m_ignoreMissingDependencies = ignore;
+    ignoreMissingDependencies = ignore;
   }
 
   @Override
   public boolean ignoreMissingDependencies() {
-    return m_ignoreMissingDependencies;
+    return ignoreMissingDependencies;
   }
 }

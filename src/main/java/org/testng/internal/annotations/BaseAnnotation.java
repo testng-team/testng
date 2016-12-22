@@ -4,27 +4,27 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 public class BaseAnnotation {
-  private Class m_testClass;
-  private Method m_method;
-  private Constructor m_constructor;
+  private Class testClass;
+  private Method method;
+  private Constructor constructor;
 
   public Constructor getConstructor() {
-    return m_constructor;
+    return constructor;
   }
   public void setConstructor(Constructor constructor) {
-    m_constructor = constructor;
+    this.constructor = constructor;
   }
   public Method getMethod() {
-    return m_method;
+    return method;
   }
   public void setMethod(Method method) {
-    m_method = method;
+    this.method = method;
   }
   public Class getTestClass() {
-    return m_testClass;
+    return testClass;
   }
   public void setTestClass(Class testClass) {
-    m_testClass = testClass;
+    this.testClass = testClass;
   }
 
 }
