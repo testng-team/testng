@@ -24,7 +24,8 @@ public class BeanShellNegativeTest extends SimpleBaseTest {
         System.setProperty("skip.caller.clsLoader", Boolean.FALSE.toString());
     }
 
-    @Test (expectedExceptions = TestNGException.class, expectedExceptionsMessageRegExp = ".*Please add a dependency.*")
+    @Test (expectedExceptions = TestNGException.class,
+        expectedExceptionsMessageRegExp = ".*Please add a compile dependency.*")
     public void testNegativeScenario() {
         XmlSuite suite = createXmlSuite("suite");
         XmlTest test = createXmlTest(suite, "test", "test.methodselectors.SampleTest");

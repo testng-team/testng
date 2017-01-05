@@ -62,7 +62,7 @@ val p = project {
         compileOptional("junit:junit:4.12",
                 "org.yaml:snakeyaml:1.17",
                 "org.apache.ant:ant:1.9.7",
-                "org.beanshell:bsh:2.0b4")
+                "org.apache-extras.beanshell:bsh:2.0b6")
     }
 
     dependenciesTest {
