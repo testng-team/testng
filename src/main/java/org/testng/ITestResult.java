@@ -12,6 +12,7 @@ package org.testng;
 public interface ITestResult extends IAttributes, Comparable<ITestResult> {
 
   // Test status
+  int CREATED = -1;
   int SUCCESS = 1;
   int FAILURE = 2;
   int SKIP = 3;

@@ -8,6 +8,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
+import org.testng.TestNGException;
 import org.testng.collections.Objects;
 
 import java.lang.reflect.InvocationTargetException;
@@ -26,7 +27,7 @@ public class TestResult implements ITestResult, IAlterTestName {
   private static final long serialVersionUID = 6273017418233324556L;
   private IClass m_testClass = null;
   private ITestNGMethod m_method = null;
-  private int m_status = -1;
+  private int m_status = CREATED;
   private Throwable m_throwable = null;
   private long m_startMillis = 0;
   private long m_endMillis = 0;
@@ -230,7 +231,8 @@ public class TestResult implements ITestResult, IAlterTestName {
       case SKIP: return "SKIP";
       case SUCCESS_PERCENTAGE_FAILURE: return "SUCCESS WITHIN PERCENTAGE";
       case STARTED: return "STARTED";
-      default: throw new RuntimeException();
+      case CREATED: return "CREATED";
+      default: throw new TestNGException("Encountered an un-defined test status of [" + status + "].");
     }
   }
 
