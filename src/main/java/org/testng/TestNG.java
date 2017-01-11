@@ -975,18 +975,7 @@ public class TestNG {
     // Install the listeners found in the suites
     //
     for (XmlSuite s : m_suites) {
-      for (String listenerName : s.getListeners()) {
-        Class<?> listenerClass = ClassHelper.forName(listenerName);
-
-        // If specified listener does not exist, a TestNGException will be thrown
-        if(listenerClass == null) {
-          throw new TestNGException("Listener " + listenerName
-              + " was not found in project's classpath");
-        }
-
-        Object listener = ClassHelper.newInstance(listenerClass);
-        addListener(listener);
-      }
+      addListeners(s);
 
       //
       // Install the method selectors
@@ -1011,6 +1000,26 @@ public class TestNG {
     m_configuration.setHookable(m_hookable);
     m_configuration.setConfigurable(m_configurable);
     m_configuration.setObjectFactory(factory);
+  }
+
+  private void addListeners(XmlSuite s) {
+    for (String listenerName : s.getListeners()) {
+      Class<?> listenerClass = ClassHelper.forName(listenerName);
+
+      // If specified listener does not exist, a TestNGException will be thrown
+      if(listenerClass == null) {
+        throw new TestNGException("Listener " + listenerName + " was not found in project's classpath");
+      }
+
+      ITestNGListener listener = (ITestNGListener) ClassHelper.newInstance(listenerClass);
+      addListener(listener);
+    }
+
+    // Add the child suite listeners
+    List<XmlSuite> childSuites = s.getChildSuites();
+    for (XmlSuite c : childSuites) {
+      addListeners(c);
+    }
   }
 
   /**
