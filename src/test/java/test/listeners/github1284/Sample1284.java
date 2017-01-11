@@ -6,7 +6,7 @@ import org.testng.collections.Lists;
 
 import java.util.List;
 
-public class Test1284 {
+public class Sample1284 {
     @Test
     public void testWithNoListener() {
         Assert.assertNull(Listener1284.getInstance());
@@ -17,7 +17,7 @@ public class Test1284 {
     public void testWithListener() {
         Assert.assertNotNull(Listener1284.getInstance());
         Assert.assertEquals(Listener1284.testList.size(), 1);
-        Assert.assertEquals(Listener1284.testList.get(0), Test1284.class.getName() + " - Before Invocation");
+        Assert.assertEquals(Listener1284.testList.get(0), Sample1284.class.getName() + " - Before Invocation");
     }
 
     @Test
@@ -25,8 +25,8 @@ public class Test1284 {
         Assert.assertNotNull(Listener1284.getInstance());
         Assert.assertEquals(Listener1284.testList.size(), 3);
 
-        String beforeInvocation = Test1284.class.getName() + " - Before Invocation";
-        String afterInvocation = Test1284.class.getName() + " - After Invocation";
+        String beforeInvocation = Sample1284.class.getName() + " - Before Invocation";
+        String afterInvocation = Sample1284.class.getName() + " - After Invocation";
         List<String> expectedList = Lists.newArrayList(beforeInvocation, afterInvocation, beforeInvocation);
 
         Assert.assertEquals(Listener1284.testList, expectedList);

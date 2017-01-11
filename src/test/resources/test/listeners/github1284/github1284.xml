@@ -7,7 +7,7 @@
 
     <test name="Github 1284 Test" preserve-order="true">
         <classes>
-            <class name="test.listeners.github1284.Test1284B">
+            <class name="test.listeners.github1284.Sample1284B">
                 <methods>
                     <include name="testTheOrderOfInvokedMethods"/>
                 </methods>

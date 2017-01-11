@@ -9,7 +9,7 @@ import java.util.Collections;
 
 public class TestListeners extends SimpleBaseTest {
 
-    @Test
+    @Test(priority = 1)
     public void verifyWithoutListener() {
         TestNG testNG = create();
         testNG.setTestSuites(Collections.singletonList(getPathToResource("test/listeners/github1284/github1284_nolistener.xml")));
@@ -17,7 +17,7 @@ public class TestListeners extends SimpleBaseTest {
         Assert.assertEquals(testNG.getStatus(), 0);
     }
 
-    @Test(dependsOnMethods = "verifyWithoutListener")
+    @Test(priority = 2)
     public void verifyWithListener() {
         TestNG testNG = create();
         testNG.setTestSuites(Collections.singletonList(getPathToResource("test/listeners/github1284/github1284_withlistener.xml")));
@@ -25,7 +25,7 @@ public class TestListeners extends SimpleBaseTest {
         Assert.assertEquals(testNG.getStatus(), 0);
     }
 
-    @Test(dependsOnMethods = "verifyWithListener")
+    @Test(priority = 3)
     public void verifyWithChildSuite() {
         TestNG testNG = create();
         testNG.setTestSuites(Collections.singletonList(getPathToResource("test/listeners/github1284/github1284.xml")));
