@@ -792,6 +792,7 @@
       <class name="test.thread.parallelization.ParallelByMethodsTestCase4Scenario1"/>
       <class name="test.thread.parallelization.ParallelByMethodsTestCase5Scenario1"/>
       <class name="test.thread.parallelization.ParallelByMethodsTestCase5Scenario2"/>
+      <class name="test.thread.parallelization.ParallelByMethodsTestCase6Scenario1"/>
     </classes>
   </test>
 
