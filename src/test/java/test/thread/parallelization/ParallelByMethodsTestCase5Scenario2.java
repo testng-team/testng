@@ -342,11 +342,6 @@ public class ParallelByMethodsTestCase5Scenario2 extends BaseParallelizationTest
         verifyEventsForTestMethodsRunInTheSameThread(TestClassCSixMethodsWithNoDepsSample.class, SUITE_A,
                 SUITE_A_TEST_A);
 
-        verifyEventsForTestMethodsInDifferentInstancesRunInDifferentThreads(TestClassAFiveMethodsWithNoDepsSample.class,
-                SUITE_A, SUITE_A_TEST_A);
-        verifyEventsForTestMethodsInDifferentInstancesRunInDifferentThreads(TestClassCSixMethodsWithNoDepsSample.class,
-                SUITE_A, SUITE_A_TEST_A);
-
         verifyEventsForTestMethodsRunInTheSameThread(TestClassEFiveMethodsWithNoDepsSample.class, SUITE_B,
                 SUITE_B_TEST_A);
 
@@ -356,16 +351,6 @@ public class ParallelByMethodsTestCase5Scenario2 extends BaseParallelizationTest
                 SUITE_B_TEST_B);
         verifyEventsForTestMethodsRunInTheSameThread(TestClassFSixMethodsWithNoDepsSample.class, SUITE_B,
                 SUITE_B_TEST_B);
-
-        verifyEventsForTestMethodsInDifferentInstancesRunInDifferentThreads(TestClassEFiveMethodsWithNoDepsSample.class,
-                SUITE_B, SUITE_B_TEST_A);
-
-        verifyEventsForTestMethodsInDifferentInstancesRunInDifferentThreads(
-                TestClassDThreeMethodsWithNoDepsSample.class, SUITE_B, SUITE_B_TEST_B);
-        verifyEventsForTestMethodsInDifferentInstancesRunInDifferentThreads(TestClassBFourMethodsWithNoDepsSample.class,
-                SUITE_B, SUITE_B_TEST_B);
-        verifyEventsForTestMethodsInDifferentInstancesRunInDifferentThreads(TestClassFSixMethodsWithNoDepsSample.class,
-                SUITE_B, SUITE_B_TEST_B);
 
     }
 

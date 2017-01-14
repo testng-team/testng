@@ -197,12 +197,6 @@ public class ParallelByMethodsTestCase5Scenario1 extends BaseParallelizationTest
                         testMethodAEventLogs.get(testMethodAEventLogs.keySet().toArray()[1])
         );
 
-        verifyDifferentThreadIdsForEvents(
-                new ArrayList<>(testMethodAEventLogs.get(testMethodAEventLogs.keySet().toArray()[0])),
-                new ArrayList<>(testMethodAEventLogs.get(testMethodAEventLogs.keySet().toArray()[1])),
-                "The test method event logs for testMethodA for different test class instances should run in " +
-                        "different threads");
-
         verifySameThreadIdForAllEvents(
                 new ArrayList<>(testMethodBEventLogs.get(testMethodBEventLogs.keySet().toArray()[0])), "The event " +
                         "for testMethodB should all be run in the same thread: " +
@@ -214,12 +208,6 @@ public class ParallelByMethodsTestCase5Scenario1 extends BaseParallelizationTest
                         "for testMethodB should all be run in the same thread: " +
                         testMethodBEventLogs.get(testMethodBEventLogs.keySet().toArray()[1])
         );
-
-        verifyDifferentThreadIdsForEvents(
-                new ArrayList<>(testMethodBEventLogs.get(testMethodBEventLogs.keySet().toArray()[0])),
-                new ArrayList<>(testMethodBEventLogs.get(testMethodBEventLogs.keySet().toArray()[1])),
-                "The test method event logs for testMethodB for different test class instances should run in " +
-                        "different threads");
 
         verifySameThreadIdForAllEvents(
                 new ArrayList<>(testMethodCEventLogs.get(testMethodCEventLogs.keySet().toArray()[0])), "The event " +
@@ -233,12 +221,6 @@ public class ParallelByMethodsTestCase5Scenario1 extends BaseParallelizationTest
                         testMethodCEventLogs.get(testMethodCEventLogs.keySet().toArray()[1])
         );
 
-        verifyDifferentThreadIdsForEvents(
-                new ArrayList<>(testMethodCEventLogs.get(testMethodCEventLogs.keySet().toArray()[0])),
-                new ArrayList<>(testMethodCEventLogs.get(testMethodCEventLogs.keySet().toArray()[1])),
-                "The test method event logs for testMethodC for different test class instances should run in " +
-                        "different threads");
-
         verifySameThreadIdForAllEvents(
                 new ArrayList<>(testMethodDEventLogs.get(testMethodDEventLogs.keySet().toArray()[0])), "The event " +
                         "for testMethodD should all be run in the same thread: " +
@@ -251,12 +233,6 @@ public class ParallelByMethodsTestCase5Scenario1 extends BaseParallelizationTest
                         testMethodDEventLogs.get(testMethodDEventLogs.keySet().toArray()[1])
         );
 
-        verifyDifferentThreadIdsForEvents(
-                new ArrayList<>(testMethodDEventLogs.get(testMethodDEventLogs.keySet().toArray()[0])),
-                new ArrayList<>(testMethodDEventLogs.get(testMethodDEventLogs.keySet().toArray()[1])),
-                "The test method event logs for testMethodD for different test class instances should run in " +
-                        "different threads");
-
         verifySameThreadIdForAllEvents(
                 new ArrayList<>(testMethodEEventLogs.get(testMethodEEventLogs.keySet().toArray()[0])), "The event " +
                         "for testMethodE should all be run in the same thread: " +
@@ -268,12 +244,6 @@ public class ParallelByMethodsTestCase5Scenario1 extends BaseParallelizationTest
                         "for testMethodE should all be run in the same thread: " +
                         testMethodEEventLogs.get(testMethodEEventLogs.keySet().toArray()[1])
         );
-
-        verifyDifferentThreadIdsForEvents(
-                new ArrayList<>(testMethodEEventLogs.get(testMethodEEventLogs.keySet().toArray()[0])),
-                new ArrayList<>(testMethodEEventLogs.get(testMethodEEventLogs.keySet().toArray()[1])),
-                "The test method event logs for testMethodE for different test class instances should run in " +
-                        "different threads");
     }
 
 }
