@@ -1,23 +1,42 @@
 package test.thread.parallelization.sample;
 
-import org.testng.annotations.Parameters;
+import org.testng.ITestContext;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 import test.thread.parallelization.TestNgRunStateTracker;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.CLASS_INSTANCE;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.CLASS_NAME;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.DATA_PROVIDER_PARAM;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.METHOD_NAME;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.SUITE_NAME;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.TEST_NAME;
 import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.TEST_METHOD_EXECUTION;
 
-public class TestClassCSixMethodsWithNoDepsSample {
+public class TestClassFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample {
 
-    @Parameters({ "suiteName", "testName", "sleepFor" })
+    private final String suiteName;
+    private final String testName;
+    private final int sleepFor;
+    private final String dpVal;
+
+    @Factory(dataProvider = "data-provider")
+    public TestClassFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample(String suiteName, String testName, String
+            sleepFor, String dpVal) {
+
+        this.suiteName = suiteName;
+        this.testName = testName;
+        this.sleepFor = Integer.parseInt(sleepFor);
+        this.dpVal = dpVal;
+    }
+
     @Test
-    public void testMethodA(String suiteName, String testName, String sleepFor) throws InterruptedException {
+    public void testMethodA() throws
+            InterruptedException {
         long time = System.currentTimeMillis();
 
         TestNgRunStateTracker.logEvent(
@@ -30,15 +49,16 @@ public class TestClassCSixMethodsWithNoDepsSample {
                         .addData(CLASS_INSTANCE, this)
                         .addData(TEST_NAME, testName)
                         .addData(SUITE_NAME, suiteName)
+                        .addData(DATA_PROVIDER_PARAM, dpVal)
                         .build()
         );
 
-        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
+        TimeUnit.MILLISECONDS.sleep(sleepFor);
     }
 
-    @Parameters({ "suiteName", "testName", "sleepFor" })
     @Test
-    public void testMethodB(String suiteName, String testName, String sleepFor) throws InterruptedException {
+    public void testMethodB() throws
+            InterruptedException {
         long time = System.currentTimeMillis();
 
         TestNgRunStateTracker.logEvent(
@@ -51,15 +71,16 @@ public class TestClassCSixMethodsWithNoDepsSample {
                         .addData(CLASS_INSTANCE, this)
                         .addData(TEST_NAME, testName)
                         .addData(SUITE_NAME, suiteName)
+                        .addData(DATA_PROVIDER_PARAM, dpVal)
                         .build()
         );
 
-        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
+        TimeUnit.MILLISECONDS.sleep(sleepFor);
     }
 
-    @Parameters({ "suiteName", "testName", "sleepFor" })
     @Test
-    public void testMethodC(String suiteName, String testName, String sleepFor) throws InterruptedException {
+    public void testMethodC() throws
+            InterruptedException {
         long time = System.currentTimeMillis();
 
         TestNgRunStateTracker.logEvent(
@@ -72,15 +93,16 @@ public class TestClassCSixMethodsWithNoDepsSample {
                         .addData(CLASS_INSTANCE, this)
                         .addData(TEST_NAME, testName)
                         .addData(SUITE_NAME, suiteName)
+                        .addData(DATA_PROVIDER_PARAM, dpVal)
                         .build()
         );
 
-        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
+        TimeUnit.MILLISECONDS.sleep(sleepFor);
     }
 
-    @Parameters({ "suiteName", "testName", "sleepFor" })
     @Test
-    public void testMethodD(String suiteName, String testName, String sleepFor) throws InterruptedException {
+    public void testMethodD() throws
+            InterruptedException {
         long time = System.currentTimeMillis();
 
         TestNgRunStateTracker.logEvent(
@@ -93,15 +115,16 @@ public class TestClassCSixMethodsWithNoDepsSample {
                         .addData(CLASS_INSTANCE, this)
                         .addData(TEST_NAME, testName)
                         .addData(SUITE_NAME, suiteName)
+                        .addData(DATA_PROVIDER_PARAM, dpVal)
                         .build()
         );
 
-        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
+        TimeUnit.MILLISECONDS.sleep(sleepFor);
     }
 
-    @Parameters({ "suiteName", "testName", "sleepFor" })
     @Test
-    public void testMethodE(String suiteName, String testName, String sleepFor) throws InterruptedException {
+    public void testMethodE() throws
+            InterruptedException {
         long time = System.currentTimeMillis();
 
         TestNgRunStateTracker.logEvent(
@@ -114,30 +137,33 @@ public class TestClassCSixMethodsWithNoDepsSample {
                         .addData(CLASS_INSTANCE, this)
                         .addData(TEST_NAME, testName)
                         .addData(SUITE_NAME, suiteName)
+                        .addData(DATA_PROVIDER_PARAM, dpVal)
                         .build()
         );
 
-        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
+        TimeUnit.MILLISECONDS.sleep(sleepFor);
     }
 
-    @Parameters({ "suiteName", "testName", "sleepFor" })
-    @Test
-    public void testMethodF(String suiteName, String testName, String sleepFor) throws InterruptedException {
-        long time = System.currentTimeMillis();
+    @DataProvider(name = "data-provider")
+    public static Object[][] dataProvider(ITestContext context) {
+        Map<String,String> params = context.getCurrentXmlTest().getAllParameters();
 
-        TestNgRunStateTracker.logEvent(
-                TestNgRunStateTracker.EventLog.builder()
-                        .setEvent(TEST_METHOD_EXECUTION)
-                        .setTimeOfEvent(time)
-                        .setThread(Thread.currentThread())
-                        .addData(METHOD_NAME, "testMethodF")
-                        .addData(CLASS_NAME, getClass().getCanonicalName())
-                        .addData(CLASS_INSTANCE, this)
-                        .addData(TEST_NAME, testName)
-                        .addData(SUITE_NAME, suiteName)
-                        .build()
-        );
+        String suiteName = params.get("suiteName");
+        String testName = params.get("testName");
+        String sleepFor = params.get("sleepFor");
 
-        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
+        String dataProviderParam = params.get("dataProviderParam");
+        String[] dataProviderVals = dataProviderParam.split(",");
+
+        Object[][] dataToProvide = new Object[dataProviderVals.length][4];
+
+        for(int i = 0; i < dataProviderVals.length; i ++)  {
+            dataToProvide[i][0] = suiteName;
+            dataToProvide[i][1] = testName;
+            dataToProvide[i][2] = sleepFor;
+            dataToProvide[i][3] = dataProviderVals[i];
+        }
+
+        return dataToProvide;
     }
 }

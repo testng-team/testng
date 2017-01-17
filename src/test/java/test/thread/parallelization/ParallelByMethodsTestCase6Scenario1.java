@@ -6,6 +6,11 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+import test.thread.parallelization.sample.FactoryForTestClassAFiveMethodsWithNoDepsTwoInstancesSample;
+import test.thread.parallelization.sample.FactoryForTestClassBFourMethodsWithNoDepsFiveInstancesSample;
+import test.thread.parallelization.sample.FactoryForTestClassCSixMethodsWithNoDepsThreeInstancesSample;
+import test.thread.parallelization.sample.FactoryForTestClassDThreeMethodsWithNoDepsFourInstancesSample;
+import test.thread.parallelization.sample.FactoryForTestClassFSixMethodsWithNoDepsSixInstancesSample;
 import test.thread.parallelization.sample.TestClassAFiveMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassBFourMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassCSixMethodsWithNoDepsSample;
@@ -28,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.testng.Assert.assertEquals;
-
 import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteLevelEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteListenerStartEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllTestLevelEventLogs;
@@ -45,14 +49,16 @@ import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodLev
 import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodLevelEventLogsForTest;
 import static test.thread.parallelization.TestNgRunStateTracker.reset;
 
-/**
- * This class covers PTP_TC_2, Scenario 2 in the Parallelization Test Plan.
+/** This class covers PTP_TC_6, Scenario 1 in the Parallelization Test Plan.
  *
- * Test Case Summary: Parallel by methods mode with parallel test suites, no dependencies and no factories or data
- *                    providers.
+ * Test Case Summary: Parallel by methods mode with parallel test suites using factories but no dependencies and no
+ *                    data providers.
  *
- * Scenario Description: Three suites with 1, 2 and 3 tests respectively. One test for a suite shall consist of a
- *                       single test class while the rest shall consist of more than one test class.
+ * Scenario Description: Three suites with 1, 2 and 3 tests respectively. One suite with two tests which have a test
+ *                       for a suite shall consist of a single test class without a factory while the other shall
+ *                       consist of factories which provide multiple instances of multiple test classes. One suite
+ *                       shall consist of a single test with multiple test classes which uses factories. One suite
+ *                       shall have multiple tests with multiple classes, none of which use a factory.
  *
  * 1) The suite thread pool is 2, so one suite will have to wait for one of the others to complete execution before it
  *    can begin execution
@@ -61,16 +67,18 @@ import static test.thread.parallelization.TestNgRunStateTracker.reset;
  * 4) For one of the suites, the parallel mode is specified at the suite level, and the thread counts are specified at
  *    the test level (thread counts for each test differ)
  * 5) The thread count is less than the number of test methods for the tests in two of the suites, so some methods will
- *    have to wait the active thread count to drop below the maximum thread count before they can begin execution.
+ *    have to wait for the active thread count to drop below the maximum thread count before they can begin execution.
  * 6) The thread count is more than the number of test methods for the tests in one of the suites, ensuring that none
  *    of the methods in that suite should have to wait for any other method to complete execution
- * 7) There are NO configuration methods
- * 8) All test methods pass
- * 9) NO ordering is specified
- * 10) group-by-instances is NOT set
- * 11) There are no method exclusions
+ * 7) The expectation is that threads will be spawned for each test method that executes just as they would if there
+ *    were no factories and test suites simply used the default mechanism for instantiating single instances of the test classes.
+ * 8) There are NO configuration methods
+ * 9) All test methods pass
+ * 10) NO ordering is specified
+ * 11) group-by-instances is NOT set
+ * 12) There are no method exclusions
  */
-public class ParallelByMethodsTestCase2Scenario2 extends BaseParallelizationTest {
+public class ParallelByMethodsTestCase6Scenario1 extends BaseParallelizationTest {
     private static final String SUITE_A = "TestSuiteA";
     private static final String SUITE_B = "TestSuiteB";
     private static final String SUITE_C = "TestSuiteC";
@@ -152,19 +160,20 @@ public class ParallelByMethodsTestCase2Scenario2 extends BaseParallelizationTest
         XmlSuite suiteThree = createXmlSuite(SUITE_C);
 
         suiteOne.setParallel(XmlSuite.ParallelMode.METHODS);
-        suiteOne.setThreadCount(3);
+        suiteOne.setThreadCount(10);
 
-        createXmlTest(suiteOne, SUITE_A_TEST_A, TestClassAFiveMethodsWithNoDepsSample.class,
-                TestClassCSixMethodsWithNoDepsSample.class);
+        createXmlTest(suiteOne, SUITE_A_TEST_A, FactoryForTestClassAFiveMethodsWithNoDepsTwoInstancesSample.class,
+                FactoryForTestClassCSixMethodsWithNoDepsThreeInstancesSample.class);
         createXmlTest(suiteTwo, SUITE_B_TEST_A, TestClassEFiveMethodsWithNoDepsSample.class);
-        createXmlTest(suiteTwo, SUITE_B_TEST_B, TestClassDThreeMethodsWithNoDepsSample.class,
-                TestClassBFourMethodsWithNoDepsSample.class, TestClassFSixMethodsWithNoDepsSample.class);
+        createXmlTest(suiteTwo, SUITE_B_TEST_B, FactoryForTestClassDThreeMethodsWithNoDepsFourInstancesSample.class,
+                FactoryForTestClassBFourMethodsWithNoDepsFiveInstancesSample.class,
+                FactoryForTestClassFSixMethodsWithNoDepsSixInstancesSample.class);
 
         suiteTwo.setParallel(XmlSuite.ParallelMode.METHODS);
 
         for(XmlTest test : suiteTwo.getTests()) {
             if(test.getName().equals(SUITE_B_TEST_A)) {
-                test.setThreadCount(6);
+                test.setThreadCount(3);
             } else {
                 test.setThreadCount(20);
             }
@@ -209,12 +218,13 @@ public class ParallelByMethodsTestCase2Scenario2 extends BaseParallelizationTest
 
         tng.run();
 
-//        expectedSuiteExecutionTimes.put(SUITE_A, 10_000L);
-//        expectedSuiteExecutionTimes.put(SUITE_B, 7_000L);
+//        expectedSuiteExecutionTimes.put(SUITE_A, 8_000L);
+//        expectedSuiteExecutionTimes.put(SUITE_B, 15_000L);
 //        expectedSuiteExecutionTimes.put(SUITE_C, 16_000L);
 //
-//        expectedTestExecutionTimes.put(SUITE_B_TEST_A, 3_000L);
-//        expectedTestExecutionTimes.put(SUITE_B_TEST_B, 3_000L);
+//        expectedTestExecutionTimes.put(SUITE_B_TEST_A, 5_000L);
+//        expectedTestExecutionTimes.put(SUITE_B_TEST_B, 9_000L);
+//
 //        expectedTestExecutionTimes.put(SUITE_C_TEST_A, 5_000L);
 //        expectedTestExecutionTimes.put(SUITE_C_TEST_B, 5_000L);
 //        expectedTestExecutionTimes.put(SUITE_C_TEST_C, 5_000L);
@@ -290,21 +300,21 @@ public class ParallelByMethodsTestCase2Scenario2 extends BaseParallelizationTest
         assertEquals(testLevelEventLogs.size(), 12, "There should be 12 test level events logged for " + SUITE_A +
                 ", " + SUITE_B + " and " + SUITE_C + ": " + testLevelEventLogs);
 
-        assertEquals(testMethodLevelEventLogs.size(), 204, "There should 204 test method level events logged for " +
+        assertEquals(testMethodLevelEventLogs.size(), 420, "There should 420 test method level events logged for " +
                 SUITE_A + ", " + SUITE_B + " and " + SUITE_C + ": " + testMethodLevelEventLogs);
 
         assertEquals(suiteOneSuiteLevelEventLogs.size(), 2, "There should be 2 suite level events logged for " +
                 SUITE_A + ": " + suiteOneSuiteLevelEventLogs);
         assertEquals(suiteOneTestLevelEventLogs.size(), 2, "There should be 2 test level events logged for " + SUITE_A +
                 ": " + suiteOneTestLevelEventLogs);
-        assertEquals(suiteOneTestMethodLevelEventLogs.size(), 33, "There should be 33 test method level events " +
+        assertEquals(suiteOneTestMethodLevelEventLogs.size(), 84, "There should be 84 test method level events " +
                 "logged for " + SUITE_A + ": " + suiteOneTestMethodLevelEventLogs);
 
         assertEquals(suiteTwoSuiteLevelEventLogs.size(), 2, "There should be 2 suite level events logged for " +
                 SUITE_B + ": " + suiteTwoSuiteLevelEventLogs);
         assertEquals(suiteTwoTestLevelEventLogs.size(), 4, "There should be 4 test level events logged for " + SUITE_B +
                 ": " + suiteTwoTestLevelEventLogs);
-        assertEquals(suiteTwoTestMethodLevelEventLogs.size(), 54, "There should be 54 test method level events " +
+        assertEquals(suiteTwoTestMethodLevelEventLogs.size(), 219, "There should be 219 test method level events " +
                 "logged for " + SUITE_B + ": " + suiteTwoTestMethodLevelEventLogs);
 
         assertEquals(suiteThreeSuiteLevelEventLogs.size(), 2, "There should be 2 suite level events logged for " +
@@ -336,17 +346,16 @@ public class ParallelByMethodsTestCase2Scenario2 extends BaseParallelizationTest
                 suiteThreeSuiteListenerOnStartEventLog, suiteThreeSuiteListenerOnFinishEventLog);
     }
 
-    //Verify that there is only a single test class instance associated with each of the test methods from the sample
-    //classes for every test in all the suites.
-    //Verify that the same test class instance is associated with each of the test methods from the sample test class
+    //Verify the expected number of test class instances for the test method events.
+    //Verify that the same test class instances are associated with each of the test methods from the sample test class
     @Test
-    public void verifyOnlyOneInstanceOfTestClassForAllTestMethodsForAllSuites() {
+    public void verifyNumberOfInstanceOfTestClassForAllTestMethodsForAllSuites() {
 
         verifyNumberOfInstancesOfTestClassesForMethods(
                 SUITE_A,
                 SUITE_A_TEST_A,
                 Arrays.asList(TestClassAFiveMethodsWithNoDepsSample.class, TestClassCSixMethodsWithNoDepsSample.class),
-                1);
+                2, 3);
 
         verifySameInstancesOfTestClassesAssociatedWithMethods(
                 SUITE_A,
@@ -374,7 +383,7 @@ public class ParallelByMethodsTestCase2Scenario2 extends BaseParallelizationTest
                         TestClassBFourMethodsWithNoDepsSample.class,
                         TestClassFSixMethodsWithNoDepsSample.class
                 ),
-                1
+                4, 5, 6
         );
 
         verifySameInstancesOfTestClassesAssociatedWithMethods(
@@ -557,8 +566,8 @@ public class ParallelByMethodsTestCase2Scenario2 extends BaseParallelizationTest
     //different.
     @Test
     public void verifyThatTestMethodsRunInParallelThreads() {
-        verifySimultaneousTestMethods(getTestMethodLevelEventLogsForTest(SUITE_A, SUITE_A_TEST_A), SUITE_A_TEST_A, 3);
-        verifySimultaneousTestMethods(getTestMethodLevelEventLogsForTest(SUITE_B, SUITE_B_TEST_A), SUITE_B_TEST_A, 6);
+        verifySimultaneousTestMethods(getTestMethodLevelEventLogsForTest(SUITE_A, SUITE_A_TEST_A), SUITE_A_TEST_A, 10);
+        verifySimultaneousTestMethods(getTestMethodLevelEventLogsForTest(SUITE_B, SUITE_B_TEST_A), SUITE_B_TEST_A, 3);
         verifySimultaneousTestMethods(getTestMethodLevelEventLogsForTest(SUITE_B, SUITE_B_TEST_B), SUITE_B_TEST_B, 20);
         verifySimultaneousTestMethods(getTestMethodLevelEventLogsForTest(SUITE_C, SUITE_C_TEST_A), SUITE_C_TEST_A, 10);
         verifySimultaneousTestMethods(getTestMethodLevelEventLogsForTest(SUITE_C, SUITE_C_TEST_B), SUITE_C_TEST_B, 5);

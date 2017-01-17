@@ -33,7 +33,7 @@ public class TestClassLThreeMethodsWithNoDepsSample {
                         .build()
         );
 
-        TimeUnit.SECONDS.sleep(Integer.parseInt(sleepFor));
+        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
     }
 
     @Parameters({ "suiteName", "testName", "sleepFor" })
@@ -54,7 +54,7 @@ public class TestClassLThreeMethodsWithNoDepsSample {
                         .build()
         );
 
-        TimeUnit.SECONDS.sleep(Integer.parseInt(sleepFor));
+        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
     }
 
     @Parameters({ "suiteName", "testName", "sleepFor" })
@@ -75,6 +75,6 @@ public class TestClassLThreeMethodsWithNoDepsSample {
                         .build()
         );
 
-        TimeUnit.SECONDS.sleep(Integer.parseInt(sleepFor));
+        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
     }
 }

@@ -79,7 +79,7 @@ public class ParallelByMethodsTestCase1Scenario1 extends BaseParallelizationTest
 
         createXmlTest(suite, TEST, TestClassAFiveMethodsWithNoDepsSample.class);
 
-        addParams(suite, SUITE, TEST, "1");
+        addParams(suite, SUITE, TEST, "100");
 
         TestNG tng = create(suite);
         tng.addListener((ITestNGListener)new TestNgRunStateListener());

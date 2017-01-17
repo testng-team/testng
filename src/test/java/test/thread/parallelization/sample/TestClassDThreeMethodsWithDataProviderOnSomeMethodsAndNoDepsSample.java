@@ -37,7 +37,7 @@ public class TestClassDThreeMethodsWithDataProviderOnSomeMethodsAndNoDepsSample 
                         .build()
         );
 
-        TimeUnit.SECONDS.sleep(Integer.parseInt(sleepFor));
+        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
     }
 
     @Test(dataProvider = "data-provider")
@@ -59,7 +59,7 @@ public class TestClassDThreeMethodsWithDataProviderOnSomeMethodsAndNoDepsSample 
                         .build()
         );
 
-        TimeUnit.SECONDS.sleep(Integer.parseInt(sleepFor));
+        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
     }
 
     @Parameters({ "suiteName", "testName", "sleepFor" })
@@ -80,7 +80,7 @@ public class TestClassDThreeMethodsWithDataProviderOnSomeMethodsAndNoDepsSample 
                         .build()
         );
 
-        TimeUnit.SECONDS.sleep(Integer.parseInt(sleepFor));
+        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
     }
 
     @DataProvider(name = "data-provider")
