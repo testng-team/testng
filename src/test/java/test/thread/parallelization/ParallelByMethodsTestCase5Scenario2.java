@@ -140,21 +140,21 @@ public class ParallelByMethodsTestCase5Scenario2 extends BaseParallelizationTest
             }
         }
 
-        addParams(suiteOne, SUITE_A, SUITE_A_TEST_A, "1");
+        addParams(suiteOne, SUITE_A, SUITE_A_TEST_A, "100");
 
-        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_A, "1");
-        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_B, "1");
+        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_A, "100");
+        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_B, "100");
 
         TestNG tng = create(suiteOne, suiteTwo);
         tng.addListener((ITestNGListener) new TestNgRunStateListener());
 
         tng.run();
 
-        expectedSuiteExecutionTimes.put(SUITE_A, 8_000L);
-        expectedSuiteExecutionTimes.put(SUITE_B, 15_000L);
-
-        expectedTestExecutionTimes.put(SUITE_B_TEST_A, 5_000L);
-        expectedTestExecutionTimes.put(SUITE_B_TEST_B, 9_000L);
+//        expectedSuiteExecutionTimes.put(SUITE_A, 8_000L);
+//        expectedSuiteExecutionTimes.put(SUITE_B, 15_000L);
+//
+//        expectedTestExecutionTimes.put(SUITE_B_TEST_A, 5_000L);
+//        expectedTestExecutionTimes.put(SUITE_B_TEST_B, 9_000L);
 
         suiteLevelEventLogs = getAllSuiteLevelEventLogs();
         testLevelEventLogs = getAllTestLevelEventLogs();

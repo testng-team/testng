@@ -53,7 +53,7 @@ public class TestClassFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample {
                         .build()
         );
 
-        TimeUnit.SECONDS.sleep(sleepFor);
+        TimeUnit.MILLISECONDS.sleep(sleepFor);
     }
 
     @Test
@@ -75,7 +75,7 @@ public class TestClassFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample {
                         .build()
         );
 
-        TimeUnit.SECONDS.sleep(sleepFor);
+        TimeUnit.MILLISECONDS.sleep(sleepFor);
     }
 
     @Test
@@ -97,7 +97,7 @@ public class TestClassFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample {
                         .build()
         );
 
-        TimeUnit.SECONDS.sleep(sleepFor);
+        TimeUnit.MILLISECONDS.sleep(sleepFor);
     }
 
     @Test
@@ -119,7 +119,7 @@ public class TestClassFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample {
                         .build()
         );
 
-        TimeUnit.SECONDS.sleep(sleepFor);
+        TimeUnit.MILLISECONDS.sleep(sleepFor);
     }
 
     @Test
@@ -141,7 +141,7 @@ public class TestClassFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample {
                         .build()
         );
 
-        TimeUnit.SECONDS.sleep(sleepFor);
+        TimeUnit.MILLISECONDS.sleep(sleepFor);
     }
 
     @DataProvider(name = "data-provider")

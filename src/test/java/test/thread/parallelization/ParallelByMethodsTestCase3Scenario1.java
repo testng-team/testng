@@ -82,7 +82,7 @@ public class ParallelByMethodsTestCase3Scenario1 extends BaseParallelizationTest
 
         createXmlTest(suite, TEST, TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class);
 
-        addParams(suite, SUITE, TEST, "1", "paramOne,paramTwo,paramThree");
+        addParams(suite, SUITE, TEST, "100", "paramOne,paramTwo,paramThree");
 
         TestNG tng = create(suite);
 

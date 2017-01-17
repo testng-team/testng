@@ -210,14 +210,14 @@ public class ParallelByMethodsTestCase4Scenario1 extends BaseParallelizationTest
             }
         }
 
-        addParams(suiteOne, SUITE_A, SUITE_A_TEST_A, "1", "paramOne,paramTwo,paramThree");
+        addParams(suiteOne, SUITE_A, SUITE_A_TEST_A, "100", "paramOne,paramTwo,paramThree");
 
-        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_A, "1", "paramOne,paramTwo");
-        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_B, "1", "paramOne,paramTwo");
+        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_A, "100", "paramOne,paramTwo");
+        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_B, "100", "paramOne,paramTwo");
 
-        addParams(suiteThree, SUITE_C, SUITE_C_TEST_A, "1", "paramOne,paramTwo,paramThree");
-        addParams(suiteThree, SUITE_C, SUITE_C_TEST_B, "1", "paramOne,paramTwo");
-        addParams(suiteThree, SUITE_C, SUITE_C_TEST_C, "1", "paramOne,paramTwo,paramThree");
+        addParams(suiteThree, SUITE_C, SUITE_C_TEST_A, "100", "paramOne,paramTwo,paramThree");
+        addParams(suiteThree, SUITE_C, SUITE_C_TEST_B, "100", "paramOne,paramTwo");
+        addParams(suiteThree, SUITE_C, SUITE_C_TEST_C, "100", "paramOne,paramTwo,paramThree");
 
         TestNG tng = create(suiteOne, suiteTwo, suiteThree);
         tng.setSuiteThreadPoolSize(2);

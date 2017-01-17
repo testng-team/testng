@@ -129,10 +129,10 @@ public class ParallelByMethodsTestCase2Scenario1 extends BaseParallelizationTest
         suiteTwo.setThreadCount(14);
 
 
-        addParams(suiteOne, SUITE_A, SUITE_A_TEST_A, "1");
+        addParams(suiteOne, SUITE_A, SUITE_A_TEST_A, "100");
 
-        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_A, "1");
-        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_B, "1");
+        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_A, "100");
+        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_B, "100");
 
         TestNG tng = create(suiteOne, suiteTwo);
         tng.setSuiteThreadPoolSize(2);
@@ -140,11 +140,11 @@ public class ParallelByMethodsTestCase2Scenario1 extends BaseParallelizationTest
 
         tng.run();
 
-        expectedSuiteExecutionTimes.put(SUITE_A, 10_000L);
-        expectedSuiteExecutionTimes.put(SUITE_B, 7_000L);
-
-        expectedTestExecutionTimes.put(SUITE_B_TEST_A, 3_000L);
-        expectedTestExecutionTimes.put(SUITE_B_TEST_B, 3_000L);
+//        expectedSuiteExecutionTimes.put(SUITE_A, 10_000L);
+//        expectedSuiteExecutionTimes.put(SUITE_B, 7_000L);
+//
+//        expectedTestExecutionTimes.put(SUITE_B_TEST_A, 3_000L);
+//        expectedTestExecutionTimes.put(SUITE_B_TEST_B, 3_000L);
 
         suiteLevelEventLogs = getAllSuiteLevelEventLogs();
         testLevelEventLogs = getAllTestLevelEventLogs();

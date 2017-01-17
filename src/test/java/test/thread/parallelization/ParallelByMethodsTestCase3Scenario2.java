@@ -129,10 +129,10 @@ public class ParallelByMethodsTestCase3Scenario2 extends BaseParallelizationTest
         suiteTwo.setThreadCount(4);
 
 
-        addParams(suiteOne, SUITE_A, SUITE_A_TEST_A, "1", "paramOne,paramTwo,paramThree");
+        addParams(suiteOne, SUITE_A, SUITE_A_TEST_A, "100", "paramOne,paramTwo,paramThree");
 
-        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_A, "1", "paramOne,paramTwo");
-        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_B, "1", "paramOne,paramTwo");
+        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_A, "100", "paramOne,paramTwo");
+        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_B, "100", "paramOne,paramTwo");
 
         TestNG tng = create(suiteOne, suiteTwo);
         tng.addListener((ITestNGListener) new TestNgRunStateListener());

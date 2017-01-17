@@ -36,7 +36,7 @@ public class TestClassThreeMethodsWithDataProviderOnAllMethodsAndNoDepsSample {
                         .build()
         );
 
-        TimeUnit.SECONDS.sleep(Integer.parseInt(sleepFor));
+        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
     }
 
     @Test(dataProvider = "data-provider")
@@ -58,7 +58,7 @@ public class TestClassThreeMethodsWithDataProviderOnAllMethodsAndNoDepsSample {
                         .build()
         );
 
-        TimeUnit.SECONDS.sleep(Integer.parseInt(sleepFor));
+        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
     }
 
     @Test(dataProvider = "data-provider")
@@ -80,7 +80,7 @@ public class TestClassThreeMethodsWithDataProviderOnAllMethodsAndNoDepsSample {
                         .build()
         );
 
-        TimeUnit.SECONDS.sleep(Integer.parseInt(sleepFor));
+        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
     }
 
     @DataProvider(name = "data-provider")

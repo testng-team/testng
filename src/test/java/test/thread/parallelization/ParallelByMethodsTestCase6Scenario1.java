@@ -203,14 +203,14 @@ public class ParallelByMethodsTestCase6Scenario1 extends BaseParallelizationTest
             }
         }
 
-        addParams(suiteOne, SUITE_A, SUITE_A_TEST_A, "1");
+        addParams(suiteOne, SUITE_A, SUITE_A_TEST_A, "100");
 
-        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_A, "1");
-        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_B, "1");
+        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_A, "100");
+        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_B, "100");
 
-        addParams(suiteThree, SUITE_C, SUITE_C_TEST_A, "1");
-        addParams(suiteThree, SUITE_C, SUITE_C_TEST_B, "1");
-        addParams(suiteThree, SUITE_C, SUITE_C_TEST_C, "1");
+        addParams(suiteThree, SUITE_C, SUITE_C_TEST_A, "100");
+        addParams(suiteThree, SUITE_C, SUITE_C_TEST_B, "100");
+        addParams(suiteThree, SUITE_C, SUITE_C_TEST_C, "100");
 
         TestNG tng = create(suiteOne, suiteTwo, suiteThree);
         tng.setSuiteThreadPoolSize(2);
@@ -218,16 +218,16 @@ public class ParallelByMethodsTestCase6Scenario1 extends BaseParallelizationTest
 
         tng.run();
 
-        expectedSuiteExecutionTimes.put(SUITE_A, 8_000L);
-        expectedSuiteExecutionTimes.put(SUITE_B, 15_000L);
-        expectedSuiteExecutionTimes.put(SUITE_C, 16_000L);
-
-        expectedTestExecutionTimes.put(SUITE_B_TEST_A, 5_000L);
-        expectedTestExecutionTimes.put(SUITE_B_TEST_B, 9_000L);
-
-        expectedTestExecutionTimes.put(SUITE_C_TEST_A, 5_000L);
-        expectedTestExecutionTimes.put(SUITE_C_TEST_B, 5_000L);
-        expectedTestExecutionTimes.put(SUITE_C_TEST_C, 5_000L);
+//        expectedSuiteExecutionTimes.put(SUITE_A, 8_000L);
+//        expectedSuiteExecutionTimes.put(SUITE_B, 15_000L);
+//        expectedSuiteExecutionTimes.put(SUITE_C, 16_000L);
+//
+//        expectedTestExecutionTimes.put(SUITE_B_TEST_A, 5_000L);
+//        expectedTestExecutionTimes.put(SUITE_B_TEST_B, 9_000L);
+//
+//        expectedTestExecutionTimes.put(SUITE_C_TEST_A, 5_000L);
+//        expectedTestExecutionTimes.put(SUITE_C_TEST_B, 5_000L);
+//        expectedTestExecutionTimes.put(SUITE_C_TEST_C, 5_000L);
 
         suiteLevelEventLogs = getAllSuiteLevelEventLogs();
         testLevelEventLogs = getAllTestLevelEventLogs();
