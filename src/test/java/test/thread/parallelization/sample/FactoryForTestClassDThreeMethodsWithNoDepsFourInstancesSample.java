@@ -5,7 +5,7 @@ import org.testng.annotations.Factory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FactoryTestClassDThreeMethodsWithNoDepsFourInstancesSample {
+public class FactoryForTestClassDThreeMethodsWithNoDepsFourInstancesSample {
     @Factory
     public Object[] init() {
         List<Object> instances = new ArrayList<>();
@@ -23,7 +23,7 @@ public class FactoryTestClassDThreeMethodsWithNoDepsFourInstancesSample {
         } catch (IllegalAccessException e) {
             throw new RuntimeException(
                     "Could not instantiate an instance of TestClassDThreeMethodsWithNoDepsSample " +
-                            "FactoryTestClassDThreeMethodsWithNoDepsFourInstancesSample does not have access to its " +
+                            "FactoryForTestClassDThreeMethodsWithNoDepsFourInstancesSample does not have access to its " +
                             "class definition", e
             );
         }

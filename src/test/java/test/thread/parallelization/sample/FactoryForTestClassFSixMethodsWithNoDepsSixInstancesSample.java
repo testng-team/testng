@@ -5,7 +5,7 @@ import org.testng.annotations.Factory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FactoryTestClassFSixMethodsWithNoDepsSixInstancesSample {
+public class FactoryForTestClassFSixMethodsWithNoDepsSixInstancesSample {
     @Factory
     public Object[] init() {
         List<Object> instances = new ArrayList<>();

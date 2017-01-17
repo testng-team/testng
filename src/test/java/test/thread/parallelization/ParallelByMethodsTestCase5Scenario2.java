@@ -7,11 +7,11 @@ import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
-import test.thread.parallelization.sample.FactoryTestClassAFiveMethodsWithNoDepsTwoInstancesSample;
-import test.thread.parallelization.sample.FactoryTestClassBFourMethodsWithNoDepsFiveInstancesSample;
-import test.thread.parallelization.sample.FactoryTestClassCSixMethodsWithNoDepsThreeInstancesSample;
-import test.thread.parallelization.sample.FactoryTestClassDThreeMethodsWithNoDepsFourInstancesSample;
-import test.thread.parallelization.sample.FactoryTestClassFSixMethodsWithNoDepsSixInstancesSample;
+import test.thread.parallelization.sample.FactoryForTestClassAFiveMethodsWithNoDepsTwoInstancesSample;
+import test.thread.parallelization.sample.FactoryForTestClassBFourMethodsWithNoDepsFiveInstancesSample;
+import test.thread.parallelization.sample.FactoryForTestClassCSixMethodsWithNoDepsThreeInstancesSample;
+import test.thread.parallelization.sample.FactoryForTestClassDThreeMethodsWithNoDepsFourInstancesSample;
+import test.thread.parallelization.sample.FactoryForTestClassFSixMethodsWithNoDepsSixInstancesSample;
 
 import test.thread.parallelization.sample.TestClassAFiveMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassBFourMethodsWithNoDepsSample;
@@ -123,12 +123,12 @@ public class ParallelByMethodsTestCase5Scenario2 extends BaseParallelizationTest
         suiteOne.setParallel(XmlSuite.ParallelMode.METHODS);
         suiteOne.setThreadCount(10);
 
-        createXmlTest(suiteOne, SUITE_A_TEST_A, FactoryTestClassAFiveMethodsWithNoDepsTwoInstancesSample.class,
-                FactoryTestClassCSixMethodsWithNoDepsThreeInstancesSample.class);
+        createXmlTest(suiteOne, SUITE_A_TEST_A, FactoryForTestClassAFiveMethodsWithNoDepsTwoInstancesSample.class,
+                FactoryForTestClassCSixMethodsWithNoDepsThreeInstancesSample.class);
         createXmlTest(suiteTwo, SUITE_B_TEST_A, TestClassEFiveMethodsWithNoDepsSample.class);
-        createXmlTest(suiteTwo, SUITE_B_TEST_B, FactoryTestClassDThreeMethodsWithNoDepsFourInstancesSample.class,
-                FactoryTestClassBFourMethodsWithNoDepsFiveInstancesSample.class,
-                FactoryTestClassFSixMethodsWithNoDepsSixInstancesSample.class);
+        createXmlTest(suiteTwo, SUITE_B_TEST_B, FactoryForTestClassDThreeMethodsWithNoDepsFourInstancesSample.class,
+                FactoryForTestClassBFourMethodsWithNoDepsFiveInstancesSample.class,
+                FactoryForTestClassFSixMethodsWithNoDepsSixInstancesSample.class);
 
         suiteTwo.setParallel(XmlSuite.ParallelMode.METHODS);
 

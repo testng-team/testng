@@ -11,7 +11,7 @@ import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 
 import test.thread.parallelization.TestNgRunStateTracker.EventLog;
-import test.thread.parallelization.sample.FactoryTestClassAFiveMethodsWithNoDepsTwoInstancesSample;
+import test.thread.parallelization.sample.FactoryForTestClassAFiveMethodsWithNoDepsTwoInstancesSample;
 import test.thread.parallelization.sample.TestClassAFiveMethodsWithNoDepsSample;
 
 import java.util.ArrayList;
@@ -80,7 +80,7 @@ public class ParallelByMethodsTestCase5Scenario1 extends BaseParallelizationTest
         suite.setParallel(XmlSuite.ParallelMode.METHODS);
         suite.setThreadCount(15);
 
-        createXmlTest(suite, TEST, FactoryTestClassAFiveMethodsWithNoDepsTwoInstancesSample.class);
+        createXmlTest(suite, TEST, FactoryForTestClassAFiveMethodsWithNoDepsTwoInstancesSample.class);
 
         addParams(suite, SUITE, TEST, "1", "paramOne,paramTwo,paramThree");
 
