@@ -22,9 +22,9 @@ import static org.testng.internal.invokers.InvokedMethodListenerSubtype.SIMPLE_L
  */
 public class InvokedMethodListenerInvoker {
 
-  private InvokedMethodListenerMethod m_listenerMethod;
-  private ITestContext m_testContext;
-  private ITestResult m_testResult;
+  private InvokedMethodListenerMethod listenerMethod;
+  private ITestContext testContext;
+  private ITestResult testResult;
 
   /**
    * Creates a new invoker instance which can be used to call the specified {@code listenerMethod}
@@ -37,9 +37,9 @@ public class InvokedMethodListenerInvoker {
    */
   public InvokedMethodListenerInvoker(InvokedMethodListenerMethod listenerMethod,
                                       ITestResult testResult, ITestContext testContext) {
-    m_listenerMethod = listenerMethod;
-    m_testContext = testContext;
-    m_testResult = testResult;
+    this.listenerMethod = listenerMethod;
+    this.testContext = testContext;
+    this.testResult = testResult;
   }
 
   /**
@@ -58,8 +58,8 @@ public class InvokedMethodListenerInvoker {
   @SuppressWarnings("unchecked")
   public void invokeListener(IInvokedMethodListener listenerInstance,
                              IInvokedMethod invokedMethod) {
-    final InvocationStrategy strategy = obtainStrategyFor(listenerInstance, m_listenerMethod);
-    strategy.callMethod(listenerInstance, invokedMethod, m_testResult, m_testContext);
+    final InvocationStrategy strategy = obtainStrategyFor(listenerInstance, listenerMethod);
+    strategy.callMethod(listenerInstance, invokedMethod, testResult, testContext);
   }
 
   private InvocationStrategy obtainStrategyFor(IInvokedMethodListener listenerInstance,

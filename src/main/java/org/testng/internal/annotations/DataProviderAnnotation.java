@@ -10,41 +10,38 @@ import java.util.List;
  * Created on Dec 20, 2005
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
-public class DataProviderAnnotation
-  extends BaseAnnotation
-  implements IDataProviderAnnotation
-{
-  private String m_name;
-  private boolean m_parallel;
-  private List<Integer> m_indices;
+public class DataProviderAnnotation extends BaseAnnotation implements IDataProviderAnnotation {
+  private String name;
+  private boolean parallel;
+  private List<Integer> indices;
 
   @Override
   public boolean isParallel() {
-    return m_parallel;
+    return parallel;
   }
 
   @Override
   public void setParallel(boolean parallel) {
-    m_parallel = parallel;
+    this.parallel = parallel;
   }
 
   @Override
   public String getName() {
-    return m_name;
+    return name;
   }
 
   @Override
   public void setName(String name) {
-    m_name = name;
+    this.name = name;
   }
 
   @Override
   public List<Integer> getIndices() {
-    return m_indices;
+    return indices;
   }
 
   @Override
   public void setIndices(List<Integer> indices) {
-    m_indices = indices;
+    this.indices = indices;
   }
 }

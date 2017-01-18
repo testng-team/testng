@@ -10,61 +10,59 @@ import java.util.List;
  * Created on Dec 20, 2005
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
-public class FactoryAnnotation
-  extends BaseAnnotation
-  implements IFactoryAnnotation
-{
-  private String[] m_parameters = {};
-  private String m_dataProvider = null;
-  private Class<?> m_dataProviderClass;
-  private boolean m_enabled = true;
-  private List<Integer> m_indices;
+public class FactoryAnnotation extends BaseAnnotation implements IFactoryAnnotation {
+  private String[] parameters = {};
+  private String dataProvider = null;
+  private Class<?> dataProviderClass;
+  private boolean enabled = true;
+  private List<Integer> indices;
 
   @Override
   public String getDataProvider() {
-    return m_dataProvider;
+    return dataProvider;
   }
 
   @Override
   public void setDataProvider(String dataProvider) {
-    m_dataProvider = dataProvider;
+    this.dataProvider = dataProvider;
   }
 
   @Override
   public String[] getParameters() {
-    return m_parameters;
+    return parameters;
   }
 
   public void setParameters(String[] parameters) {
-    m_parameters = parameters;
+    this.parameters = parameters;
   }
 
+  @Override
   public void setDataProviderClass(Class<?> dataProviderClass) {
-    m_dataProviderClass = dataProviderClass;
+    this.dataProviderClass = dataProviderClass;
   }
 
   @Override
   public Class<?> getDataProviderClass() {
-    return m_dataProviderClass;
+    return dataProviderClass;
   }
 
   @Override
   public boolean getEnabled() {
-    return m_enabled;
+    return enabled;
   }
 
   @Override
   public void setEnabled(boolean enabled) {
-    m_enabled = enabled;
+    this.enabled = enabled;
   }
 
   @Override
   public List<Integer> getIndices() {
-    return m_indices;
+    return indices;
   }
 
   @Override
   public void setIndices(List<Integer> indices) {
-    m_indices = indices;
+    this.indices = indices;
   }
 }

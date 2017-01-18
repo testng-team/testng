@@ -16,25 +16,25 @@ public class Attributes implements IAttributes {
    *
    */
   private static final long serialVersionUID = 6701159979281335152L;
-  private Map<String, Object> m_attributes = Maps.newHashMap();
+  private Map<String, Object> attributes = Maps.newHashMap();
 
   @Override
   public Object getAttribute(String name) {
-    return m_attributes.get(name);
+    return attributes.get(name);
   }
 
   @Override
   public Set<String> getAttributeNames() {
-    return m_attributes.keySet();
+    return attributes.keySet();
   }
 
   @Override
   public void setAttribute(String name, Object value) {
-    m_attributes.put(name, value);
+    attributes.put(name, value);
   }
 
   @Override
   public Object removeAttribute(String name) {
-    return m_attributes.remove(name);
+    return attributes.remove(name);
   }
 }

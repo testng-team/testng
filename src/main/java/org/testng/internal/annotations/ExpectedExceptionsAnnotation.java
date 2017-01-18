@@ -8,18 +8,15 @@ import org.testng.annotations.IExpectedExceptionsAnnotation;
  * Created on Dec 20, 2005
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
-public class ExpectedExceptionsAnnotation
-  extends BaseAnnotation
-  implements IExpectedExceptionsAnnotation
-{
-  private Class[] m_value = {};
+public class ExpectedExceptionsAnnotation extends BaseAnnotation implements IExpectedExceptionsAnnotation {
+  private Class[] value = {};
 
   @Override
   public Class[] getValue() {
-    return m_value;
+    return value;
   }
 
   public void setValue(Class[] value) {
-    m_value = value;
+    this.value = value;
   }
 }

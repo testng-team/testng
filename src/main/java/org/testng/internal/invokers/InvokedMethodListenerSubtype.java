@@ -17,14 +17,14 @@ enum InvokedMethodListenerSubtype {
   EXTENDED_LISTENER(IInvokedMethodListener2.class),
   SIMPLE_LISTENER(IInvokedMethodListener.class);
 
-  private Class<? extends IInvokedMethodListener> m_matchingInterface;
+  private Class<? extends IInvokedMethodListener> matchingInterface;
 
   private InvokedMethodListenerSubtype(Class<? extends IInvokedMethodListener> listenerClass) {
-    m_matchingInterface = listenerClass;
+    matchingInterface = listenerClass;
   }
 
   private boolean isInstance(IInvokedMethodListener listenerInstance) {
-    return m_matchingInterface.isInstance(listenerInstance);
+    return matchingInterface.isInstance(listenerInstance);
   }
 
   public static InvokedMethodListenerSubtype fromListener(IInvokedMethodListener listenerInstance) {

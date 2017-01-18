@@ -17,16 +17,16 @@ import java.util.Map;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public abstract class BaseClassFinder implements ITestClassFinder {
-  private final Map<Class<?>, IClass> m_classes = Maps.newLinkedHashMap();
+  private final Map<Class<?>, IClass> classes = Maps.newLinkedHashMap();
 
   @Override
   public IClass getIClass(Class<?> cls) {
-    return m_classes.get(cls);
+    return classes.get(cls);
   }
 
   protected void putIClass(Class<?> cls, IClass iClass) {
-    if (! m_classes.containsKey(cls)) {
-      m_classes.put(cls, iClass);
+    if (! classes.containsKey(cls)) {
+      classes.put(cls, iClass);
     }
   }
 
@@ -39,11 +39,11 @@ public abstract class BaseClassFinder implements ITestClassFinder {
       Object instance, XmlTest xmlTest, IAnnotationFinder annotationFinder,
       ITestObjectFactory objectFactory)
   {
-    IClass result = m_classes.get(cls);
+    IClass result = classes.get(cls);
     if (null == result) {
-      result = new ClassImpl(context, cls, xmlClass, instance, m_classes, xmlTest, annotationFinder,
+      result = new ClassImpl(context, cls, xmlClass, instance, classes, xmlTest, annotationFinder,
           objectFactory);
-      m_classes.put(cls, result);
+      classes.put(cls, result);
     }
 
     return result;
@@ -51,15 +51,15 @@ public abstract class BaseClassFinder implements ITestClassFinder {
 
   @Deprecated
   protected Map getExistingClasses() {
-    return m_classes;
+    return classes;
   }
 
   protected boolean classExists(Class<?> cls) {
-    return m_classes.containsKey(cls);
+    return classes.containsKey(cls);
   }
 
   @Override
   public IClass[] findTestClasses() {
-    return m_classes.values().toArray(new IClass[m_classes.size()]);
+    return classes.values().toArray(new IClass[classes.size()]);
    }
 }

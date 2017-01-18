@@ -3,6 +3,7 @@ package org.testng.internal.annotations;
 import org.testng.collections.Lists;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Utils;
+import org.testng.log4testng.Logger;
 
 import java.util.List;
 import java.util.StringTokenizer;
@@ -14,6 +15,9 @@ import java.util.StringTokenizer;
  * @author cbeust
  */
 public class Converter {
+  private Converter() {
+    //Utility class. Defeat instantiation.
+  }
 
   public static boolean  getBoolean(String tagValue, boolean def) {
     boolean result = def;
@@ -68,7 +72,7 @@ public class Converter {
           vResult.add(cls);
         }
         catch (ClassNotFoundException e) {
-          e.printStackTrace();
+          Logger.getLogger(Converter.class).error(e.getMessage(),e);
         }
       }
       result = (Class[]) vResult.toArray(new Class[vResult.size()]);

@@ -10,16 +10,16 @@ import java.util.concurrent.Future;
  * @author <a href="mailto:the_mindstorm@evolva.ro>the_mindstorm</a>
  */
 public class FutureResultAdapter implements IFutureResult {
-   Future<?> m_future;
+   Future<?> future;
 
    public FutureResultAdapter(Future<?> future) {
-      m_future = future;
+      this.future = future;
    }
 
    @Override
   public Object get() throws InterruptedException, ThreadExecutionException {
       try {
-         return m_future.get();
+         return future.get();
       }
       catch(ExecutionException ee) {
          throw new ThreadExecutionException(ee.getCause()); // NOTE there is no need to keep the EE

@@ -6,6 +6,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ReflectionHelper {
+  private ReflectionHelper() {
+    //Utility class. Defeat instatiation.
+  }
   /**
    * @return An array of all locally declared methods or equivalent thereof
    * (such as default methods on Java 8 based interfaces that the given class

@@ -8,13 +8,13 @@ import java.util.Map;
 import java.util.Set;
 
 public abstract class MultiMap<K, V, C extends Collection<V>> {
-  protected final Map<K, C> m_objects;
+  protected final Map<K, C> objects;
 
   protected MultiMap(boolean isSorted) {
     if (isSorted) {
-      m_objects = Maps.newLinkedHashMap();
+      objects = Maps.newLinkedHashMap();
     } else {
-      m_objects = Maps.newHashMap();
+      objects = Maps.newHashMap();
     }
   }
 
@@ -22,20 +22,20 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
 
   public boolean put(K key, V method) {
     boolean setExists = true;
-    C l = m_objects.get(key);
+    C l = objects.get(key);
     if (l == null) {
       setExists = false;
       l = createValue();
-      m_objects.put(key, l);
+      objects.put(key, l);
     }
     return l.add(method) && setExists;
   }
 
   public C get(K key) {
-    C list = m_objects.get(key);
+    C list = objects.get(key);
     if (list == null) {
       list = createValue();
-      m_objects.put(key, list);
+      objects.put(key, list);
     }
     return list;
   }
@@ -46,11 +46,11 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
   }
 
   public Set<K> keySet() {
-    return new HashSet(m_objects.keySet());
+    return new HashSet(objects.keySet());
   }
 
   public boolean containsKey(K k) {
-    return m_objects.containsKey(k);
+    return objects.containsKey(k);
   }
 
   @Override
@@ -59,7 +59,7 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
     Set<K> indices = keySet();
     for (K i : indices) {
       result.append("\n    ").append(i).append(" <-- ");
-      for (Object o : m_objects.get(i)) {
+      for (Object o : objects.get(i)) {
         result.append(o).append(" ");
       }
     }
@@ -67,7 +67,7 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
   }
 
   public boolean isEmpty() {
-    return m_objects.size() == 0;
+    return objects.size() == 0;
   }
 
   @Deprecated
@@ -76,7 +76,7 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
   }
 
   public int size() {
-    return m_objects.size();
+    return objects.size();
   }
 
   @Deprecated
@@ -89,7 +89,7 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
   }
 
   public C removeAll(K key) {
-    return m_objects.remove(key);
+    return objects.remove(key);
   }
 
   @Deprecated
@@ -98,7 +98,7 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
   }
 
   public Set<Map.Entry<K, C>> entrySet() {
-    return m_objects.entrySet();
+    return objects.entrySet();
   }
 
   @Deprecated
@@ -107,7 +107,7 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
   }
 
   public Collection<C> values() {
-    return m_objects.values();
+    return objects.values();
   }
 
   public boolean putAll(K k, Collection<? extends V> values) {

@@ -15,167 +15,167 @@ public class ConfigurationAnnotation extends TestOrConfiguration implements ICon
     IBeforeGroups, IAfterGroups,
     IBeforeClass, IAfterClass,
     IBeforeMethod, IAfterMethod {
-  private boolean m_beforeTestClass = false;
-  private boolean m_afterTestClass = false;
-  private boolean m_beforeTestMethod = false;
-  private boolean m_afterTestMethod = false;
-  private boolean m_beforeTest = false;
-  private boolean m_afterTest = false;
-  private boolean m_beforeSuite = false;
-  private boolean m_afterSuite = false;
-  private String[] m_parameters = {};
-  private boolean m_alwaysRun = false;
-  private boolean m_inheritGroups = true;
-  private String[] m_beforeGroups = {};
-  private String[] m_afterGroups = {};
-  private boolean m_isFakeConfiguration;
-  private boolean m_firstTimeOnly = false;
-  private boolean m_lastTimeOnly = false;
+  private boolean beforeTestClass = false;
+  private boolean afterTestClass = false;
+  private boolean beforeTestMethod = false;
+  private boolean afterTestMethod = false;
+  private boolean beforeTest = false;
+  private boolean afterTest = false;
+  private boolean beforeSuite = false;
+  private boolean afterSuite = false;
+  private String[] parameters = {};
+  private boolean alwaysRun = false;
+  private boolean inheritGroups = true;
+  private String[] beforeGroups = {};
+  private String[] afterGroups = {};
+  private boolean isFakeConfiguration;
+  private boolean firstTimeOnly = false;
+  private boolean lastTimeOnly = false;
 
   public ConfigurationAnnotation() {
 
   }
 
   public void setAfterSuite(boolean afterSuite) {
-    m_afterSuite = afterSuite;
+    this.afterSuite = afterSuite;
   }
 
   public void setAfterTest(boolean afterTest) {
-    m_afterTest = afterTest;
+    this.afterTest = afterTest;
   }
 
   public void setAfterTestClass(boolean afterTestClass) {
-    m_afterTestClass = afterTestClass;
+    this.afterTestClass = afterTestClass;
   }
 
   public void setAfterTestMethod(boolean afterTestMethod) {
-    m_afterTestMethod = afterTestMethod;
+    this.afterTestMethod = afterTestMethod;
   }
 
   public void setAlwaysRun(boolean alwaysRun) {
-    m_alwaysRun = alwaysRun;
+    this.alwaysRun = alwaysRun;
   }
 
   public void setBeforeSuite(boolean beforeSuite) {
-    m_beforeSuite = beforeSuite;
+    this.beforeSuite = beforeSuite;
   }
 
   public void setBeforeTest(boolean beforeTest) {
-    m_beforeTest = beforeTest;
+    this.beforeTest = beforeTest;
   }
 
   public void setBeforeTestClass(boolean beforeTestClass) {
-    m_beforeTestClass = beforeTestClass;
+    this.beforeTestClass = beforeTestClass;
   }
 
   public void setBeforeTestMethod(boolean beforeTestMethod) {
-    m_beforeTestMethod = beforeTestMethod;
+    this.beforeTestMethod = beforeTestMethod;
   }
 
   public void setInheritGroups(boolean inheritGroups) {
-    m_inheritGroups = inheritGroups;
+    this.inheritGroups = inheritGroups;
   }
 
   @Override
   public void setParameters(String[] parameters) {
-    m_parameters = parameters;
+    this.parameters = parameters;
   }
 
   @Override
   public boolean getBeforeTestClass() {
-    return m_beforeTestClass;
+    return beforeTestClass;
   }
 
   @Override
   public boolean getAfterTestClass() {
-    return m_afterTestClass;
+    return afterTestClass;
   }
 
   @Override
   public boolean getBeforeTestMethod() {
-    return m_beforeTestMethod;
+    return beforeTestMethod;
   }
 
   @Override
   public boolean getAfterTestMethod() {
-    return m_afterTestMethod;
+    return afterTestMethod;
   }
 
   @Override
   public boolean getBeforeSuite() {
-    return m_beforeSuite;
+    return beforeSuite;
   }
 
   @Override
   public boolean getAfterSuite() {
-    return m_afterSuite;
+    return afterSuite;
   }
 
   @Override
   public boolean getBeforeTest() {
-    return m_beforeTest;
+    return beforeTest;
   }
 
   @Override
   public boolean getAfterTest() {
-    return m_afterTest;
+    return afterTest;
   }
 
   @Override
   public String[] getParameters() {
-    return m_parameters;
+    return parameters;
   }
 
   @Override
   public boolean getAlwaysRun() {
-    return m_alwaysRun;
+    return alwaysRun;
   }
 
   @Override
   public boolean getInheritGroups() {
-    return m_inheritGroups;
+    return inheritGroups;
   }
 
   @Override
   public String[] getAfterGroups() {
-    return m_afterGroups;
+    return afterGroups;
   }
 
   public void setAfterGroups(String[] afterGroups) {
-    m_afterGroups = afterGroups;
+    this.afterGroups = afterGroups;
   }
 
   @Override
   public String[] getBeforeGroups() {
-    return m_beforeGroups;
+    return beforeGroups;
   }
 
   public void setBeforeGroups(String[] beforeGroups) {
-    m_beforeGroups = beforeGroups;
+    this.beforeGroups = beforeGroups;
   }
 
   public void setFakeConfiguration(boolean b) {
-    m_isFakeConfiguration = b;
+    isFakeConfiguration = b;
   }
 
   @Override
   public boolean isFakeConfiguration() {
-    return m_isFakeConfiguration;
+    return isFakeConfiguration;
   }
 
   public void setFirstTimeOnly(boolean f) {
-    m_firstTimeOnly = f;
+    firstTimeOnly = f;
   }
 
   public boolean isFirstTimeOnly() {
-    return m_firstTimeOnly;
+    return firstTimeOnly;
   }
 
   public void setLastTimeOnly(boolean f) {
-    m_lastTimeOnly = f;
+    lastTimeOnly = f;
   }
 
   public boolean isLastTimeOnly() {
-    return m_lastTimeOnly;
+    return lastTimeOnly;
   }
 }

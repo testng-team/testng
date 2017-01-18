@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:the_mindstorm@evolva.ro>Alexandru Popescu</a>
  */
 public class ExecutorAdapter extends ThreadPoolExecutor implements IExecutor {
-  private IThreadFactory m_threadFactory;
+  private IThreadFactory threadFactory;
 
   public ExecutorAdapter(int threadCount, IThreadFactory tf) {
       super(threadCount,
@@ -22,7 +22,7 @@ public class ExecutorAdapter extends ThreadPoolExecutor implements IExecutor {
             TimeUnit.MILLISECONDS,
             new LinkedBlockingQueue<Runnable>(),
             (ThreadFactory) tf.getThreadFactory());
-      m_threadFactory = tf;
+      threadFactory = tf;
    }
 
    @Override
@@ -51,7 +51,7 @@ public class ExecutorAdapter extends ThreadPoolExecutor implements IExecutor {
 
   @Override
   public StackTraceElement[][] getStackTraces() {
-    List<Thread> threads = m_threadFactory.getThreads();
+    List<Thread> threads = threadFactory.getThreads();
     int threadCount = threads.size();
     StackTraceElement[][] result = new StackTraceElement[threadCount][];
     for (int i = 0; i < result.length; i++) {

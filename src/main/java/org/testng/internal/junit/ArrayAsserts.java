@@ -1,6 +1,9 @@
 package org.testng.internal.junit;
 
 public class ArrayAsserts {
+    private ArrayAsserts() {
+        //Utility class. Defeat instantiation.
+    }
   /**
    * Asserts that two object arrays are equal. If they are not, an
    * {@link AssertionError} is thrown with the given message. If
