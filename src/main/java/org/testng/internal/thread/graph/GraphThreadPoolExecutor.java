@@ -9,6 +9,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -26,7 +27,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
   private static final boolean DOT_FILES = false;
 
   private DynamicGraph<T> m_graph;
-  private List<Runnable> m_activeRunnables = Lists.newArrayList();
+  private List<Runnable> m_activeRunnables = Collections.synchronizedList(Lists.<Runnable>newArrayList());
   private IThreadWorkerFactory<T> m_factory;
   private List<String> m_dotFiles = Lists.newArrayList();
   private int m_threadCount;
