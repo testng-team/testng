@@ -125,6 +125,11 @@ public class TestNGClassFinder extends BaseClassFinder {
           continue;
         }
 
+        if((null == thisInstance) && cls.isAnonymousClass()) {
+          Utils.log("", 5, "[WARN] Found an anonymous class with no valid instance attached" + cls);
+          continue;
+        }
+        
         IClass ic= findOrCreateIClass(m_testContext, cls, cim.getXmlClass(cls), thisInstance,
             xmlTest, annotationFinder, objectFactory);
         if(null != ic) {
