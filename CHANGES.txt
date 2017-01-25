@@ -1,5 +1,5 @@
 Current
-Fixed: GITHUB-1302: while set parallel to classes the program may occur the exception(Jianhua Li)
+Fixed: GITHUB-1302: When 'parallel' is set to 'classes', ConcurrentModificationException can be thrown(Jianhua Li)
 Fixed: GITHUB-772: Severe thread contention while running large test with parallel methods (Shaburov Oleg)
 Fixed: GITHUB-1298: ITestResult injection is failing in BeforeMethod method (Krishnan Mahadevan)
 Fixed: GITHUB-1293: Beanshell based execution does not work any more (Krishnan Mahadevan)
