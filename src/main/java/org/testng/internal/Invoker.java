@@ -88,12 +88,14 @@ public class Invoker implements IInvoker {
   private static final Predicate<ITestNGMethod, IClass> SAME_CLASS = new SameClassNamePredicate();
 
   private void setClassInvocationFailure(Class<?> clazz, Object instance) {
-    Set<Object> instances = m_classInvocationResults.get( clazz );
-    if (instances == null) {
-      instances = Sets.newHashSet();
-      m_classInvocationResults.put(clazz, instances);
+    synchronized(m_classInvocationResults){
+       Set<Object> instances = m_classInvocationResults.get( clazz );
+       if (instances == null) {
+         instances = Sets.newHashSet();
+         m_classInvocationResults.put(clazz, instances);
+       }
+       instances.add(instance);
     }
-    instances.add(instance);
   }
 
   private void setMethodInvocationFailure(ITestNGMethod method, Object instance) {
@@ -397,12 +399,14 @@ public class Invoker implements IInvoker {
    * @return true if this class or a parent class failed to initialize.
    */
   private boolean classConfigurationFailed(Class<?> cls) {
-    for (Class<?> c : m_classInvocationResults.keySet()) {
-      if (c == cls || c.isAssignableFrom(cls)) {
-        return true;
-      }
+    synchronized(m_classInvocationResults){
+       for (Class<?> c : m_classInvocationResults.keySet()) {
+         if (c == cls || c.isAssignableFrom(cls)) {
+           return true;
+         }
+       }
+       return false;
     }
-    return false;
   }
 
   /**
@@ -423,7 +427,9 @@ public class Invoker implements IInvoker {
         if (! m_continueOnFailedConfiguration) {
           result = !classConfigurationFailed(cls);
         } else {
-          result = !m_classInvocationResults.get(cls).contains(instance);
+          synchronized(m_classInvocationResults){
+             result = !m_classInvocationResults.get(cls).contains(instance);
+          }
         }
       }
       // if method is BeforeClass, currentTestMethod will be null
@@ -433,12 +439,14 @@ public class Invoker implements IInvoker {
         result = !m_methodInvocationResults.get(currentTestMethod).contains(getMethodInvocationToken(currentTestMethod, instance));
       }
       else if (! m_continueOnFailedConfiguration) {
-        for(Class<?> clazz: m_classInvocationResults.keySet()) {
+        synchronized(m_classInvocationResults){
+           for(Class<?> clazz: m_classInvocationResults.keySet()) {
 //          if (clazz == cls) {
-          if(clazz.isAssignableFrom(cls)) {
-            result= false;
-            break;
-          }
+             if(clazz.isAssignableFrom(cls)) {
+               result= false;
+               break;
+             }
+           }
         }
       }
     }
