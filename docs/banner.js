@@ -33,7 +33,7 @@ function displayMenu(pCurrentPage) {
        writeTD(pCurrentPage,          "download.html", "Download")
        writeTD(pCurrentPage,"documentation-main.html", "Documentation")
        writeTD(pCurrentPage,         "migrating.html", "Migrating from JUnit")
-       writeTD(pCurrentPage, "../javadocs/index.html", "JavaDoc")
+       writeTD(pCurrentPage, "https://jitpack.io/com/github/cbeust/testng/master-SNAPSHOT/javadoc/", "JavaDoc")
        writeTD(pCurrentPage, "selenium.html", "Selenium")
    document.writeln('            </tr>')
    document.writeln('            <tr>')
