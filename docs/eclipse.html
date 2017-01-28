@@ -50,14 +50,19 @@ and easily monitor their execution and their output. It has its own <a href="htt
 <br>
 &nbsp;&nbsp;<a class="summary" href="#eclipse-project-properties">9.2 - Project Properties</a>
 <br>
-&nbsp;&nbsp;<a class="summary" href="#testng-xml"></a>
+&nbsp;&nbsp;<a class="summary" href="#eclipse-m2e-integration">10 - M2E Integration</a>
 
 <!--
   Installation
 -->
 <h3><a name="eclipse-installation">1 - Installation</a></h3><p>
-Once you have <a href="download.html">installed the plug-in</a>, restart Eclipse and select the menu <tt>Window / Show View
-/ Other...</tt>&nbsp; and you should see the TestNG view listed in the Java category.</p><p align="center">
+Follow the instructions to <a href="http://testng.org/doc/download.html">install the plug-in</a>. <br/>
+NOTE: since TestNG Eclipse Plugin 6.9.10, there is a new optional plug-in for M2E (Maven Eclipse Plugin) integration. It's recommended to install it if your Java project(s) are managed by Maven.
+<p align="center">
+    <img border="0" width="50%" src="http://testng.org/pictures/install-plugin.png" />
+</p>
+
+Once done, restart Eclipse and select the menu <tt>Window / Show View / Other...</tt>&nbsp; and you should see the TestNG view listed in the Java category.</p><p align="center">
 <img border="0" src="pics/view.png" />
 </p>
 <p>
@@ -93,7 +98,7 @@ The plug-in will make a guess about the best location where this file should be 
 more <tt>testng.xml</tt> files, you can create a TestNG Launch Configuration.&nbsp; 
 Select the <tt>Run / Run...</tt> (or <tt>Run / Debug...</tt>) menu and create a new TestNG 
 configuration:</p><p align="center">
-<img border="0" src="pics/launch.png" />
+<img border="0" width="50%" src="pics/launch.png" />
 </p>
 <p>You should change the name of this configuration and pick a project, which 
 can be selected by clicking on the <tt>Browse...</tt> button at the top of the window.</p>
@@ -104,10 +109,12 @@ Runtime options:
 <li><b>Verbose</b>: enable the runtime TestNG verbose log</li>
 <li><b>Debug</b>: enable more runtime TestNG debug info</li>
 <li><b>Serialization Protocol</b>: the serialization protocol used for communicating between TestNG Eclipse Plugin and TestNG runtime.
-The default is "Object Serialization", the other option ("String Serialization") is deprecated.</li>
-<li><b>Add the POM's JVM Arguments when launch</b>: for maven based project, we normally define maven-surefire-plugin for test phase and maven-failsafe-plugin for integration test phase, there might be having the testing runtime JVM arguments defined in the "argLine" element of the maven plugin configuration. If you check this option, TestNG Eclipse Plugin will try to recognize the JVM arguments in "argLine", add them to TestNG runtime JVM arguments when launch.<br/>
-NOTE 1: these JVM arguments are put on front of user defined VM arguments on "Arguments" tab, which means you can overide the POM defined JVM argumetns with the ones on "Arguments" tab.<br/>
-NOTE 2: if there are multiple "argLine" elements in the pom.xml, the first presence will be used. If it's not the desired behaviour, you can simply uncheck this option, and type your JVM arguments on the "Arguments" tab next to this "Test" tab.</li>
+  <ul>
+    <li><b>Json Serialization</b>: This protocol was introduced in the TestNG Eclipse plug-in 6.9.11 to better communicate with a different JRE running TestNG.</li>
+    <li><b>Object Serialization</b>: This protocol packs the message data with Java serialization.</li>
+    <li>String Serialization: <i>Deprecated</i>.</li>
+  </ul>
+</li>
 </ul>
 </p>
 <p>Then you choose to launch your TestNG tests in the following ways:</p><h4><a name="eclipse-launch-class">4.2.1 - From a class file</a></h4><p>Make sure the box near <tt>Class</tt> is checked and then pick a class from your 
@@ -131,7 +138,7 @@ Finally, you can select a suite definition from your project.  It doesn't have t
 <tt>testng.xml</tt>, the plug-in will automatically identify all the applicable TestNG XML files 
 in your project:
 <p align="center">
-<img border="0" src="pics/suites.png" />
+<img border="0" width="50%" src="pics/suites.png" />
 </p>
 You can type the regex on the filter text field to narrow down to suite definition files matching your search from a long list of files.
 
@@ -272,21 +279,7 @@ This was covered in the <a href="#eclipse-quickfix"> previous section</a>.
 
 <h4>Pushing and pulling <tt>@Test</tt> annotations</h4>
 
-If you have several test methods annotated with <tt>@Test</tt> and you'd like to replace them all with a single <tt>@Test</tt> annotation at the class level, choose the "Pull annotation" quick fix:
-
-<p align="center">
-<img border="0" src="pics/refactoring-pull-annotation.png" />
-</p>
-
-Reciprocally, you can move a class level <tt>@Test</tt> annotation onto all your public methods:
-
-<p align="center">
-<img border="0" src="pics/refactoring-push-annotation.png" />
-</p>
-
-<h4>Automatically importing <tt>asserts</tt></h4>
-
-Apply a quick fix on an assert method to automatically import it:
+If you have several test methods annotated with <tt>@Test</tt> and you'd like to replace them all with a single <tt>@Test</tt> annotation at the class level, choose the "Pull annotation" quick fix. Reciprocally, you can move a class level <tt>@Test</tt> annotation onto all your public methods or apply a quick fix on an assert method to automatically import it.
 
 <p align="center">
 <img border="0" src="pics/quickfix-import.png" />
@@ -299,40 +292,79 @@ Apply a quick fix on an assert method to automatically import it:
 <h4><a name="eclipse-workbench-preferences">9.1 - Workbench Preferences</a></h4>
 TestNG workbench preferences:
 <p align="center">
-<img border="0" src="pics/preferences.png" />
+<img border="0" width="50%" src="pics/preferences.png" />
 </p>
 <p>
 The preferences here are shared among projects and launch configurations.
 <ul>
-<li><b>Output directory</b>: the path where to store the output including temp files, report files, etc. By default, the path is relative to each project except you check the option <b>Absolute ouput path</b> below.</li>
-<li><b>Disalbe default listeners</b>: disable the default listeners when launch testng runtime</li>
-<li><b>Show view when test complete</b>: active the TestNG result view when the test complete</li>
-<li><b>Use Project TestNG jar</b>: It's default to be checked which means TestNG Eclipse Plugin will use the project TestNG jar (for example, the TestNG version managed with maven) when launch TestNG runtime. Otherwise, the TestNG eclipse plugin embedded TestNG version will be used.<br/>
-When to check this option?
-<ul>
-  <li>you want it behviour as close as running outside IDE, e.g. with maven surefire plugin, since the Plugin embedded version of TestNG most likely different with the version of your project.</li>
-  <li>you don't want the Plugin embedded plugin and it's dependent libs (e.g. snakeyaml, etc.) pollute your TestNG runtime classpath.</li>
-</ul></li>
-<li><b>Template XML file</b>: the absolute path of the template xml file used to genernate the custom test suite xml before launch</li>
-<li><b>Excluded stack traces</b>: </li>
-<li><b>Pre Defined Listeners</b>: </li>
+  <li><b>Output directory</b>: the path where to store the output including temp files, report files, etc... By default, the path is relative to each project except if you check the option <b>Absolute ouput path</b> below.</li>
+  <li><b>Absolute output path</b>: whether the path above is absolute or relative to the current project.</li>
+  <li><b>Disable default listeners</b>: disable the default listeners when launching TestNG.</li>
+  <li><b>Show view when test complete</b>: activate the TestNG result view when the test completes.</li>
+  <li><b>Template XML file</b>: the absolute path of the template XML file used to genernate the custom test suite XML file before launching.</li>
+  <li><b>Excluded stack traces</b>: </li>
+  <li><b>Predefined Listeners</b>: </li>
 </ul>
 </p>
 
 <h4><a name="eclipse-project-properties">9.2 - Project Properties</a></h4>
 Project level properties:
 <p align="center">
-<img border="0" src="pics/project_properties.png" />
+  <img border="0" width="50%" src="pics/project_properties.png" />
 </p>
 <p>
 Here are properties on each project level, it will override the same properties if defined in <a class="summary" href="#eclipse-workbench-preferences">TestNG workbench preferences</a>
 <ul>
-<li><b>Output directory</b>: for example, in the figure above, I prefer to put the output to maven 'target' directory rather than the default one under project root</li>
-<li><b>Watch testng-result.xml</b>:</li>
-<li><b>Template XML file</b>: see in <a class="summary" href="#eclipse-workbench-preferences">TestNG workbench preferences</a></li>
-<li><b>Use Project TestNG jar</b>: see in <a class="summary" href="#eclipse-workbench-preferences">TestNG workbench preferences</a></li>
-<li><b>Pre Defined Listeners</b>: see in <a class="summary" href="#eclipse-workbench-preferences">TestNG workbench preferences</a></li>
+  <li><b>Output directory</b>: for example, in the figure above, I prefer to put the output to maven 'target' directory rather than the default one under project root</li>
+  <li><b>Watch testng-result.xml</b>:</li>
+  <li><b>Template XML file</b>: see in <a class="summary" href="#eclipse-workbench-preferences">TestNG workbench preferences</a></li>
+  <li><b>Predefined Listeners</b>: see in <a class="summary" href="#eclipse-workbench-preferences">TestNG workbench preferences</a></li>
 </ul>
+</p>
+
+<h3><a name="eclipse-m2e-integration">10 - M2E Integration</a></h3>
+
+The (optional) TestNG M2E Integration plug-in was introduced in 6.9.10.
+It allows you to run your tests with System Properties or JVM settings, which are defined by maven-surefire-plugin or maven-failsafe-plugin of pom.xml, to be appended to the runtime TestNG process.
+
+Once this plugin installed, you can see a dedicated preference page (workspace level settings):
+<p align="center">
+  <img border="0" width="50%" src="pics/m2e-pref.png" />
+</p>
+or on the project properties page. You can override workspace settings with project specific ones:
+<p align="center">
+  <img border="0" width="50%" src="pics/m2e-prop.png" />
+</p>
+
+Let's say there is maven-surefire-plugin confguration in your pom.xml:
+<pre class="brush: xml">
+        &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;
+        &lt;configuration&gt;
+          &lt;suiteXmlFiles&gt;
+            &lt;suiteXmlFile&gt;test-suite/testng.xml&lt;/suiteXmlFile&gt;
+          &lt;/suiteXmlFiles&gt;
+          &lt;argLine&gt;-javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar
+                        -Xmx1024m -XX:MaxPermSize=512m -Xms256m -Xmx1024m -XX:PermSize=128m
+                        -Dversion=${project.version}
+          &lt;/argLine&gt;
+          &lt;systemPropertyVariables&gt;
+            &lt;foo&gt;${foo.value}&lt;/foo&gt;
+          &lt;/systemPropertyVariables&gt;
+          &lt;environmentVariables&gt;
+            &lt;bar&gt;${bar.value}&lt;/bar&gt;
+          &lt;/environmentVariables&gt;
+        &lt;/configuration&gt;
+</pre>
+
+You can pass the following Maven configuration parameters to the TestNG process:
+<ul>
+  <li><b><a href="http://maven.apache.org/surefire/maven-surefire-plugin/test-mojo.html#argLine">argLine</a></b>: the JVM arguments</li>
+  <li><b><a href="http://maven.apache.org/surefire/maven-surefire-plugin/test-mojo.html#systemPropertyVariables">systemPropertyVariables</a></b>: the system properties</li>
+  <li><b><a href="http://maven.apache.org/surefire/maven-surefire-plugin/test-mojo.html#environmentVariables">environmentVariables</a></b>: the environment variables</li>
+</ul>
+<p>
+  NOTE: as the snippet of the configuration above shows, properties placeholders (e.g. <code>${aspectj.version}</code>) in <code>argLine</code> or <code>systemPropertyVariables</code> will be substituted and correctly passed to the TestNG process as long as the properties are visible on the Maven project (e.g. defined in the current <code>pom.xml</code>, or inherited from the parent <code>pom.xml</code>, etc.).<br/>
+  NOTE: if your maven-surefire-plugin is defined in a Maven profile, you will need to select the Maven profile which contains the maven-surefire-plugin configuration: "Right click on the project -> Maven -> Select Maven Profiles...", then check the profile you need.
 </p>
 
 <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">

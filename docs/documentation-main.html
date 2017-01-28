@@ -2046,6 +2046,41 @@ The <tt>@Listeners</tt> annotation can contain any class that extends <tt>org.te
 
 Note that the <tt>@Listeners</tt> annotation will apply to your entire suite file, just as if you had specified it in a <tt>testng.xml</tt> file. If you want to restrict its scope (for example, only running on the current class), the code in your listener could first check the test method that's about to run and decide what to do then.
 
+Here's how it can be done.
+
+<ol>
+    <li>First define a new custom annotation that can be used to specify this restriction:
+        <pre class="brush: java">
+            @Retention(RetentionPolicy.RUNTIME)
+            @Target ({ElementType.TYPE})
+            public @interface DisableListener {}
+        </pre>
+    </li>
+
+    <li>Add an edit check as below within your regular listeners:
+        <pre class="brush: java">
+            public void beforeInvocation(IInvokedMethod iInvokedMethod, ITestResult iTestResult) {
+              ConstructorOrMethod consOrMethod =iInvokedMethod.getTestMethod().getConstructorOrMethod();
+              DisableListener disable = consOrMethod.getMethod().getDeclaringClass().getAnnotation(DisableListener.class);
+              if (disable != null) {
+                return;
+              }
+              // else resume your normal operations
+            }
+        </pre>
+    </li>
+
+    <li>Annotate test classes wherein the listener is not to be invoked:
+        <pre class="brush: java">
+            @DisableListener
+            @Listeners({ com.example.MyListener.class, com.example.MyMethodInterceptor.class })
+            public class MyTest {
+              // ...
+            }
+        </pre>
+    </li>
+</ol>
+
 <h5><a class="section" indent="..." name="listeners-service-loader">Specifying listeners with <tt>ServiceLoader</tt></a></h5>
 
 Finally, the JDK offers a very elegant mechanism to specify implementations of interfaces on the class path via the <tt><a href="http://download.oracle.com/javase/6/docs/api/java/util/ServiceLoader.html">ServiceLoader</a></tt> class.

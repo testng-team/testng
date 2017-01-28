@@ -43,7 +43,7 @@
 <pre class="brush: xml">
     &lt;repositories&gt;
       &lt;repository&gt;
-        &lt;id&gt;central&lt;/id&gt;
+        &lt;id&gt;jcenter&lt;/id&gt;
         &lt;name&gt;bintray&lt;/name&gt;
         &lt;url&gt;http://jcenter.bintray.com&lt;/url&gt;
       &lt;/repository&gt;
@@ -52,7 +52,7 @@
     &lt;dependency&gt;
       &lt;groupId&gt;org.testng&lt;/groupId&gt;
       &lt;artifactId&gt;testng&lt;/artifactId&gt;
-      &lt;version&gt;6.9.10&lt;/version&gt;
+      &lt;version&gt;6.10&lt;/version&gt;
       &lt;scope&gt;test&lt;/scope&gt;
     &lt;/dependency&gt;
 </pre>
@@ -65,7 +65,7 @@ repositories {
 }
 
 dependencies {
-    testCompile 'org.testng:testng:6.9.10'
+    testCompile 'org.testng:testng:6.10'
 }
 </pre>
 
@@ -82,33 +82,43 @@ repositories {
 </pre>
 
 <h3>Eclipse plug-in</h3>
-<p>You can use either the Eclipse Market Place or the update site:</p>
+
+<p><b>Java 1.7+ is required</b> for running the TestNG for Eclipse plugin.</p>
+<p><b>Eclipse 4.2 and above is required</b>. Eclipse 3.x is NOT supported any more, please update your Eclipse to 4.2 or above.</p>
+
+<p>You can use either the <a href="http://marketplace.eclipse.org/content/testng-eclipse">Eclipse Marketplace</a> or the update site:</p>
+
+<h4>Install via Eclipse Marketplace</h4>
+<a href="http://marketplace.eclipse.org/marketplace-client-intro?mpc_install=1549" class="drag" title="Drag to your running Eclipse workspace to install TestNG for Eclipse"><img class="img-responsive" src="http://marketplace.eclipse.org/sites/all/themes/solstice/_themes/solstice_marketplace/public/images/btn-install.png" alt="Drag to your running Eclipse workspace to install TestNG for Eclipse" /></a>
+
+<h4>Install from update site</h4>
 <ul>
-	<li>Select<i> Help / Install new software.</i> 
-	</li>
-	<li><i>Search for new features to install.</i> 
-	</li>
-	<li><i>New remote site.</i> 
-	</li>
-	<li>For Eclipse 3.4 and above, enter <a href="http://beust.com/eclipse">http://beust.com/eclipse</a>.
-	<li>For Eclipse 3.3 and below, enter <a href="http://beust.com/eclipse1">http://beust.com/eclipse1</a>.
-	</li>
-	<li>Make sure the check box next to URL is checked and click <i>Next</i>. 
-	</li>
-	<li>Eclipse will then guide you through the process. </li>
+  <li>Select<i> Help / Install New Software...</i></li>
+  <li>Enter the update site URL in "Work with:" field:</li>
+  <ul>
+    <li>Update site for release: <a href="http://beust.com/eclipse">http://beust.com/eclipse</a>.</li>
+    <li>Or, Update site for beta: <a href="http://beust.org/eclipse-beta">http://beust.org/eclipse-beta</a> , use it if you want to experiment with the new features or verify the bug fixes, and please <a href="https://github.com/cbeust/testng-eclipse/issues">report back if you encounter any issues</a>.</li>
+  </ul>
+  <li>Make sure the check box next to URL is checked and click <i>Next</i>.</li>
+  <li>Eclipse will then guide you through the process.</li>
 </ul>
 
-<p>You can also install older versions of the plug-ins <a href="http://beust.com/eclipse-old">here</a>. Note that the URL's on this page are update sites as well, not direct download links.
+<p>You can also install older versions of the plug-ins <a href="http://beust.com/eclipse-old">here</a>. Note that the URL's on this page are update sites as well, <b>not</b> direct download links.</p>
 
+<h3>Build TestNG from source code</h3>
 <p>TestNG is also <a href="http://github.com/cbeust/testng">hosted on GitHub</a>, where you can download the source and build the distribution yourself:
 
 <pre class="brush: plain">
 $ git clone git://github.com/cbeust/testng.git
 $ cd testng
-$ mvn package
+$ ./build-with-gradle
 </pre>
 
 <p>You will then find the jar file in the <tt>target</tt> directory</p>
+
+<h3>Build the TestNG Eclipse Plugin from source code</h3>
+<p>TestNG Eclipse Plugin is <a href="https://github.com/cbeust/testng-eclipse">hosted on GitHub</a>,
+you can download the source code and <a href="https://github.com/cbeust/testng-eclipse/blob/master/README.md#building">build by ourself</a>.</p>
 
 <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
 </script>
