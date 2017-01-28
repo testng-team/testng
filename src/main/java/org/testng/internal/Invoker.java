@@ -652,24 +652,20 @@ public class Invoker implements IInvoker {
             MethodInvocationHelper.invokeMethod(thisMethod, instance,
                 parameterValues);
           }
-          // set the test to success as long as the testResult hasn't been changed by the user via
-          // Reporter.getCurrentTestResult
-          if (testResult.getStatus() == ITestResult.STARTED) {
-            testResult.setStatus(ITestResult.SUCCESS);
-          }
+          setTestStatus(testResult, ITestResult.SUCCESS);
         } else {
           // Method with a timeout
           MethodInvocationHelper.invokeWithTimeout(tm, instance, parameterValues, testResult, hookableInstance);
         }
       }
       else {
-        testResult.setStatus(ITestResult.SKIP);
+        setTestStatus(testResult, ITestResult.SKIP);
         addExceptionDetailsToTestResult(testResult, instance);
       }
     }
     catch(InvocationTargetException ite) {
       testResult.setThrowable(ite.getCause());
-      testResult.setStatus(ITestResult.FAILURE);
+      setTestStatus(testResult, ITestResult.FAILURE);
     }
     catch(ThreadExecutionException tee) { // wrapper for TestNGRuntimeException
       Throwable cause= tee.getCause();
@@ -679,11 +675,11 @@ public class Invoker implements IInvoker {
       else {
         testResult.setThrowable(cause);
       }
-      testResult.setStatus(ITestResult.FAILURE);
+      setTestStatus(testResult, ITestResult.FAILURE);
     }
     catch(Throwable thr) { // covers the non-wrapper exceptions
       testResult.setThrowable(thr);
-      testResult.setStatus(ITestResult.FAILURE);
+      setTestStatus(testResult, ITestResult.FAILURE);
     }
     finally {
       // Set end time ASAP
@@ -738,6 +734,14 @@ public class Invoker implements IInvoker {
     }
 
     return testResult;
+  }
+
+  private static void setTestStatus(ITestResult result, int status) {
+    // set the test to success as long as the testResult hasn't been changed by the user via
+    // Reporter.getCurrentTestResult
+    if (result.getStatus() == ITestResult.STARTED) {
+      result.setStatus(status);
+    }
   }
 
   private void addExceptionDetailsToTestResult(ITestResult testResult, Object instance) {
