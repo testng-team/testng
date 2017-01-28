@@ -128,6 +128,13 @@
       <class name="test.testng1231.TestExecutionListenerInvocationOrder"/>
       <class name="test.testng1232.TestListenerInstances"/>
       <class name="test.testng674.BeforeClassSkipExceptionTest"/>
+      <class name="test.testng106.TestNG106"/>
+      <class name="test.issue107.Issue107Test"/>
+      <class name="test.test111.Test1" />
+      <class name="test.testng173.TestNG173Test" />
+      <class name="test.listeners.github551.Test551"/>
+      <class name="test.listeners.github1284.TestListeners"/>
+      <class name="test_result.GitHub1197Test"/>
     </classes>
   </test>
 
@@ -501,12 +508,6 @@
     </classes>
   </test>
 
-  <test name="bug111">
-    <classes>
-      <class name="test.test111.Test1" />
-    </classes>
-  </test>
-
   <test name="UniqueSuite">
     <classes>
       <class name="test.uniquesuite.TestBefore1" />
@@ -733,12 +734,6 @@
     </classes>
   </test>
 
-  <test name="Bug173">
-    <classes>
-      <class name="test.testng173.TestNG173Test" />
-    </classes>
-  </test>
-
   <test name="Mustache">
     <classes>
       <class name="test.mustache.MustacheTest" />
@@ -753,7 +748,6 @@
 
   <test name="Issue 107">
     <classes>
-      <class name="test.issue107.Issue107Test"/>
     </classes>
   </test>
 
@@ -761,12 +755,6 @@
     <classes>
       <class name="test.assertion.AssertionTest"/>
       <class name="test.assertion.SoftAssertTest"/>
-    </classes>
-  </test>
-
-  <test name="TESTNG-106">
-    <classes>
-      <class name="test.testng106.TestNG106"/>
     </classes>
   </test>
 
@@ -798,18 +786,5 @@
       <class name="test.thread.parallelization.ParallelByMethodsTestCase7Scenario1"/>
     </classes>
   </test>
-
-  <test name = "github551">
-    <classes>
-      <class name="test.listeners.github551.Test551"/>
-    </classes>
-  </test>
-
-  <test name="github1284">
-    <classes>
-      <class name="test.listeners.github1284.TestListeners" />
-    </classes>
-  </test>
-
 </suite>
 
