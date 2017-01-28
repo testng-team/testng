@@ -1,0 +1,196 @@
+h3.sourcetitle {
+/*
+  margin-bottom: -40px; !important;
+*/
+  margin-left: 30px;
+  padding: 2px 15px;
+  display: none; inline-block;
+  font-size: 1.0em;
+  color: #444;
+  background-color: #ffffdd !important;
+
+  border-top: 1px solid #ccc; -moz-border-top-colors: #ccc white white #e5e5e5;
+  border-left: 1px solid #ccc; -moz-border-left-colors: #ccc white white #e5e5e5;
+  border-right: 1px solid #ccc;-moz-border-right-colors: #ccc white white #e5e5e5;
+  border-top-left-radius: 8px; -webkit-border-top-left-radius: 8px;  -moz-border-radius-topleft: 8px;
+  border-top-right-radius: 8px; -webkit-border-top-right-radius: 8px; -moz-border-radius-topright: 8px; 
+}
+
+.cedric {
+border-style: solid; border-color:#ff0000;
+color: #00ff00;
+}
+
+tt
+{
+#  background-color: #ffffdd !important;
+}
+
+pre {
+  padding-top: 10px; !important;
+}
+
+.syntaxhighlighter
+{
+  margin-left: 30px !important;
+  margin-right: 30px !important;
+/*
+  margin-top: -10px !important;
+*/
+  width: 95% !important;
+  border-style: solid !important;
+  border-width: 1px !important;
+  background-color: #ffffdd !important;
+
+}
+
+/* Highlighted line number */
+.syntaxhighlighter .line.highlighted .number
+{
+	background-color: #c3defe !important;
+}
+
+/* Highlighted line */
+.syntaxhighlighter .line.highlighted.alt1,
+.syntaxhighlighter .line.highlighted.alt2
+{
+	background-color: #c3defe !important;
+}
+
+/* Gutter line numbers */
+.syntaxhighlighter .line .number
+{
+	color: #787878 !important;
+	background-color: #fff !important;
+}
+
+/* Add border to the lines */
+.syntaxhighlighter .line .content
+{
+	border-left: 1px solid #d4d0c8 !important;
+	color: #000 !important;
+}
+
+.syntaxhighlighter.printing .line .content 
+{
+	border: 0 !important;
+}
+
+/* First line */
+.syntaxhighlighter .line.alt1
+{
+	background-color: #ffffff;
+}
+
+/* Second line */
+.syntaxhighlighter .line.alt2
+{
+	background-color: #ff0000;
+}
+
+.syntaxhighlighter .toolbar
+{
+	background-color: #F8F8F8 !important;
+	border: #E7E5DC solid 1px !important;
+}
+
+.syntaxhighlighter .toolbar a
+{
+	color: #a0a0a0 !important;
+}
+
+.syntaxhighlighter .toolbar a:hover
+{
+	color: red !important;
+}
+
+/************************************
+ * Actual syntax highlighter colors.
+ ************************************/
+.syntaxhighlighter .plain,
+.syntaxhighlighter .plain a
+{ 
+	color: #000 !important;
+}
+
+.syntaxhighlighter .comments,
+.syntaxhighlighter .comments a
+{ 
+	color: #3f5fbf !important;
+}
+
+.syntaxhighlighter .string,
+.syntaxhighlighter .string a
+{
+	color: #2a00ff !important; 
+}
+
+.syntaxhighlighter .keyword
+{ 
+	color: #7f0055 !important; 
+	font-weight: bold !important; 
+}
+
+.syntaxhighlighter .preprocessor 
+{ 
+	color: #646464 !important; 
+}
+
+.syntaxhighlighter .variable 
+{ 
+	color: #a70 !important; 
+}
+
+.syntaxhighlighter .value
+{ 
+	color: #090 !important; 
+}
+
+.syntaxhighlighter .functions
+{ 
+	color: #ff1493 !important; 
+}
+
+.syntaxhighlighter .constants
+{ 
+	color: #0066CC !important; 
+}
+
+.syntaxhighlighter .script
+{ 
+	background-color: yellow !important;
+}
+
+.syntaxhighlighter .color1,
+.syntaxhighlighter .color1 a
+{ 
+	color: #808080 !important; 
+}
+
+.syntaxhighlighter .color2,
+.syntaxhighlighter .color2 a
+{ 
+	color: #ff1493 !important; 
+}
+
+.syntaxhighlighter .color3,
+.syntaxhighlighter .color3 a
+{ 
+	color: red !important; 
+}
+
+
+.xml .keyword {
+    color: #3f7f7f !important;
+    font-weight: normal !important;
+}
+
+.xml .color1,
+.xml .color1 a{
+    color: #7f007f !important;
+}
+
+.xml .string {
+    font-style: italic !important;
+    color: #2a00ff !important;
+}

@@ -3,22 +3,22 @@
         <title>TestNG</title>
 
         <link rel="stylesheet" href="testng.css" type="text/css" />
-        <link type="text/css" rel="stylesheet" href="http://beust.com/beust.css"  />
+        <link type="text/css" rel="stylesheet" href="beust.css"  />
         <script type="text/javascript" src="banner.js"></script>
 
-      <script type="text/javascript" src="http://beust.com/scripts/shCore.js"></script>
-      <script type="text/javascript" src="http://beust.com/scripts/shBrushJava.js"></script>
-      <script type="text/javascript" src="http://beust.com/scripts/shBrushXml.js"></script>
-      <script type="text/javascript" src="http://beust.com/scripts/shBrushBash.js"></script>
-      <script type="text/javascript" src="http://beust.com/scripts/shBrushPlain.js"></script>
-      <link type="text/css" rel="stylesheet" href="http://beust.com/styles/shCore.css"/>
-      <link type="text/css" rel="stylesheet" href="http://beust.com/styles/shThemeCedric.css"/>
+      <script type="text/javascript" src="scripts/shCore.js"></script>
+      <script type="text/javascript" src="scripts/shBrushJava.js"></script>
+      <script type="text/javascript" src="scripts/shBrushXml.js"></script>
+      <script type="text/javascript" src="scripts/shBrushBash.js"></script>
+      <script type="text/javascript" src="scripts/shBrushPlain.js"></script>
+      <link type="text/css" rel="stylesheet" href="styles/shCore.css"/>
+      <link type="text/css" rel="stylesheet" href="styles/shThemeCedric.css"/>
       <script type="text/javascript">
         SyntaxHighlighter.config.clipboardSwf = 'scripts/clipboard.swf';
         SyntaxHighlighter.defaults['gutter'] = false;
         SyntaxHighlighter.all();
       </script>
-      <script type="text/javascript" src="http://beust.com/toc.js"></script>
+      <script type="text/javascript" src="toc.js"></script>
 
         <style type="text/css">
             /* Set the command-line table option column width. */
@@ -510,11 +510,11 @@ invocationCount. <br>Note:  this attribute is ignored if invocationCount is not 
 <h3><a class="section" name="testng-xml">testng.xml</a></h3>
 
 <p>You can invoke TestNG in several different ways:</p><ul>
-	<li>With a <tt>testng.xml</tt> file</li><li><a href="http://testng.org/doc/ant.html">With ant</a></li><li>From the command line</li></ul><p>This section describes the format of <tt>testng.xml</tt> (you will find documentation 
+	<li>With a <tt>testng.xml</tt> file</li><li><a href="ant.html">With ant</a></li><li>From the command line</li></ul><p>This section describes the format of <tt>testng.xml</tt> (you will find documentation
 on ant and the command line below).</p><p>The current DTD for <tt>testng.xml</tt> can be found on the main Web site:&nbsp;
-<a href="http://testng.org/testng-1.0.dtd">http://testng.org/testng-1.0.dtd</a> 
+<a href="https://raw.githubusercontent.com/cbeust/testng/master/src/main/resources/testng-1.0.dtd">testng-1.0.dtd</a>
 (for your convenience, you might prefer to browse the
-<a href="http://testng.org/dtd">HTML version</a>).</p>
+<a href="dtd/">HTML version</a>).</p>
 
 Here is an example <tt>testng.xml</tt> file:
 
@@ -2538,7 +2538,7 @@ This method will be invoked by TestNG when all the suites have been run and you 
 
 
 TestNG contains a listener that takes the TestNG results 
-and outputs an XML file that can then be fed to JUnitReport.  <a href="http://testng.org/test-report/junit-noframes.html">
+and outputs an XML file that can then be fed to JUnitReport.  <a href="test-report/junit-noframes.html">
 Here</a> is an example, and the ant task to create this report:
 
 <h3 class="sourcetitle">build.xml</h3>
@@ -2700,7 +2700,7 @@ TestNG offers an XML reporter capturing TestNG specific information that is not 
   </tr>
 </table>
 <p>
-  In order to configure this reporter you can use the <tt>-reporter</tt> option in the command line or the <a href="http://testng.org/doc/ant.html">Ant</a>
+  In order to configure this reporter you can use the <tt>-reporter</tt> option in the command line or the <a href="ant.html">Ant</a>
   task with the nested <tt>&lt;reporter&gt;</tt> element. For each of these you must specify the class <tt>org.testng.reporters.XMLReporter</tt>.
   Please note that you cannot configure the built-in reporter because this one will only use default settings. If you need just the XML report with custom settings
   you will have to add it manually with one of the two methods and disable the default listeners.

@@ -1,21 +1,47 @@
-// Copyright 2005 Google Inc.
-// All Rights Reserved.
+// Copyright (C) 2006 Google Inc.
 //
-// msamuel@google.com
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
-// Usage:
-// 1) include this source file in an html page via
-// <script type=text/javascript src=prettify.js></script>
-// 2) define style rules.  See the example page for examples.
-// 3) mark the <pre> and <code> tags in your source with class=prettyprint.
-//    You can also use the (html deprecated) <xmp> tag, but the pretty printer
-//    needs to do more substantial DOM manipulations to support that, so some
-//    css styles may not be preserved.
 
-// Change log:
-// cbeust, 2006/08/22
-//   Java annotations (start with "@") are now captured as literals ("lit")
-// 
+/**
+ * @fileoverview
+ * some functions for browser-side pretty printing of code contained in html.
+ *
+ * The lexer should work on a number of languages including C and friends,
+ * Java, Python, Bash, SQL, HTML, XML, CSS, Javascript, and Makefiles.
+ * It works passably on Ruby, PHP and Awk and a decent subset of Perl, but,
+ * because of commenting conventions, doesn't work on Smalltalk, Lisp-like, or
+ * CAML-like languages.
+ *
+ * If there's a language not mentioned here, then I don't know it, and don't
+ * know whether it works.  If it has a C-like, Bash-like, or XML-like syntax
+ * then it should work passably.
+ *
+ * Usage:
+ * 1) include this source file in an html page via
+ * <script type="text/javascript" src="/path/to/prettify.js"></script>
+ * 2) define style rules.  See the example page for examples.
+ * 3) mark the <pre> and <code> tags in your source with class=prettyprint.
+ *    You can also use the (html deprecated) <xmp> tag, but the pretty printer
+ *    needs to do more substantial DOM manipulations to support that, so some
+ *    css styles may not be preserved.
+ * That's it.  I wanted to keep the API as simple as possible, so there's no
+ * need to specify which language the code is in.
+ *
+ * Change log:
+ * cbeust, 2006/08/22
+ *   Java annotations (start with "@") are now captured as literals ("lit")
+ */
 
 var PR_keywords = new Object();
 /** initialize the keyword list for our target languages. */
@@ -38,7 +64,7 @@ var PR_keywords = new Object();
   var PYTHON_KEYWORDS = (
     "and assert break class continue def del elif else except exec finally " +
     "for from global if import in is lambda not or pass print raise return " +
-    "try while yield");
+    "try while yield False True None");
   var JSCRIPT_KEYWORDS = (
     "abstract boolean break byte case catch char class const continue " +
     "debugger default delete do double else enum export extends false final " +
@@ -49,9 +75,13 @@ var PR_keywords = new Object();
   var PERL_KEYWORDS = (
     "foreach require sub unless until use elsif BEGIN END");
   var SH_KEYWORDS = (
-    "if then do else fi end");
-  var KEYWORDS = [CPP_KEYWORDS, JAVA_KEYWORDS, PYTHON_KEYWORDS,
-                  JSCRIPT_KEYWORDS, PERL_KEYWORDS, SH_KEYWORDS];
+    "if then do done else fi end");
+  var RUBY_KEYWORDS = (
+      "if then elsif else end begin do rescue ensure while for class module " +
+      "def yield raise until unless and or not when case super undef break " +
+      "next redo retry in return alias defined");
+  var KEYWORDS = [CPP_KEYWORDS, JAVA_KEYWORDS, JSCRIPT_KEYWORDS, PERL_KEYWORDS,
+                  PYTHON_KEYWORDS, RUBY_KEYWORDS, SH_KEYWORDS];
   for (var k = 0; k < KEYWORDS.length; k++) {
     var kw = KEYWORDS[k].split(' ');
     for (var i = 0; i < kw.length; i++) {
@@ -210,9 +240,85 @@ function PR_prefixMatch(chars, len, prefix) {
   return true;
 }
 
-/** used to convert html special characters embedded in XMP tags into html. */
+/** like textToHtml but escapes double quotes to be attribute safe. */
+function PR_attribToHtml(str) {
+  return str.replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\"/g, '&quot;')
+    .replace(/\xa0/, '&nbsp;');
+}
+
+/** escapest html special characters to html. */
 function PR_textToHtml(str) {
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return str.replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\xa0/g, '&nbsp;');
+}
+
+/** is the given node's innerHTML normally unescaped? */
+function PR_isRawContent(node) {
+  return 'XMP' == node.tagName;
+}
+
+var PR_innerHtmlWorks = null;
+function PR_getInnerHtml(node) {
+  // inner html is hopelessly broken in Safari 2.0.4 when the content is
+  // an html description of well formed XML and the containing tag is a PRE
+   // tag, so we detect that case and emulate innerHTML.
+  if (null == PR_innerHtmlWorks) {
+    var testNode = document.createElement('PRE');
+    testNode.appendChild(
+        document.createTextNode('<!DOCTYPE foo PUBLIC "foo bar">\n<foo />'));
+    PR_innerHtmlWorks = !/</.test(testNode.innerHTML);
+  }
+
+  if (PR_innerHtmlWorks) {
+    var content = node.innerHTML;
+    // XMP tags contain unescaped entities so require special handling.
+    if (PR_isRawContent(node)) {
+       content = PR_textToHtml(content);
+    }
+    return content;
+  }
+
+  var out = [];
+  for (var child = node.firstChild; child; child = child.nextSibling) {
+    PR_normalizedHtml(child, out);
+  }
+  return out.join('');
+}
+
+/**
+ * walks the DOM returning a properly escaped version of innerHTML.
+ */
+function PR_normalizedHtml(node, out) {
+  switch (node.nodeType) {
+    case 1:  // an element
+      var name = node.tagName.toLowerCase();
+      out.push('\074', name);
+      for (var i = 0; i < node.attributes.length; ++i) {
+        var attr = node.attributes[i];
+        if (!attr.specified) { continue; }
+        out.push(' ');
+        PR_normalizedHtml(attr, out);
+      }
+      out.push('>');
+      for (var child = node.firstChild; child; child = child.nextSibling) {
+        PR_normalizedHtml(child, out);
+      }
+      if (node.firstChild || !/^(?:br|link|img)$/.test(name)) {
+        out.push('<\/', name, '>');
+      }
+      break;
+    case 2: // an attribute
+      out.push(node.name.toLowerCase(), '="', PR_attribToHtml(node.value), '"');
+      break;
+    case 3: case 4: // text
+      out.push(PR_textToHtml(node.nodeValue));
+      break;
+  }
 }
 
 
@@ -624,7 +730,20 @@ function PR_splitStringAndCommentTokens(chunks) {
     }
     k += s.length;
   }
-  tokenEnds.push(new PR_TokenEnd(k, PR_PLAIN));  // a token ends at the end
+  var endTokenType;
+  switch (state) {
+    case 1: case 2:
+      endTokenType = PR_STRING;
+      break;
+    case 4: case 5: case 6:
+      endTokenType = PR_COMMENT;
+      break;
+    default:
+      endTokenType = PR_PLAIN;
+      break;
+  }
+  // handle unclosed token which can legally happen for line comments (state 4)
+  tokenEnds.push(new PR_TokenEnd(k, endTokenType));  // a token ends at the end
 
   return PR_splitChunks(chunks, tokenEnds);
 }
@@ -695,8 +814,7 @@ function PR_splitNonStringNonCommentToken(s, outlist) {
           if (PR_isIdentifierStart(ch0)) {
             if (PR_keywords[t]) {
               style = PR_KEYWORD;
-            }
-            else if (ch0 == '@') {
+            } else if (ch0 === '@') {
               style = PR_LITERAL;
             } else {
               // Treat any word that starts with an uppercase character and
@@ -978,13 +1096,13 @@ function PR_splitSourceNodes(tokens) {
 function PR_splitAttributeQuotes(tokens) {
   var firstPlain = null, lastPlain = null;
   for (var i = 0; i < tokens.length; ++i) {
-    if (PR_PLAIN = tokens[i].style) {
+    if (PR_PLAIN == tokens[i].style) {
       firstPlain = i;
       break;
     }
   }
   for (var i = tokens.length; --i >= 0;) {
-    if (PR_PLAIN = tokens[i].style) {
+    if (PR_PLAIN == tokens[i].style) {
       lastPlain = i;
       break;
     }
@@ -1199,33 +1317,36 @@ function PR_lexOne(s) {
 function prettyPrintOne(s) {
   try {
     var tokens = PR_lexOne(s);
-    var out = '';
+    var out = [];
     var lastStyle = null;
     for (var i = 0; i < tokens.length; i++) {
       var t = tokens[i];
       if (t.style != lastStyle) {
         if (lastStyle != null) {
-          out += '</span>';
+          out.push('</span>');
         }
         if (t.style != null) {
-          out += '<span class=' + t.style + '>';
+          out.push('<span class=', t.style, '>');
         }
         lastStyle = t.style;
       }
       var html = t.token;
       if (null != t.style) {
-        // This interacts badly with the wiki which introduces paragraph tags
-        // int pre blocks for some strange reason.
+        // This interacts badly with some wikis which introduces paragraph tags
+        // into pre blocks for some strange reason.
         // It's necessary for IE though which seems to lose the preformattedness
         // of <pre> tags when their innerHTML is assigned.
-        html = html.replace(/(?:\r\n?)|\n/g, '<br>').replace(/  /g, '&nbsp; ');
+        // http://stud3.tuwien.ac.at/~e0226430/innerHtmlQuirk.html
+        html = html
+               .replace(/(\r\n?|\n| ) /g, '$1&nbsp;')
+               .replace(/\r\n?|\n/g, '<br>');
       }
-      out += html;
+      out.push(html);
     }
     if (lastStyle != null) {
-      out += '</span>';
+      out.push('</span>');
     }
-    return out;
+    return out.join('');
   } catch (e) {
     //alert(e.stack);  // DISABLE in production
     return s;
@@ -1270,20 +1391,17 @@ function prettyPrint() {
           }
         }
         if (!nested) {
-          // XMP tags contain unescaped entities so require special handling.
-          var isRawContent = 'XMP' == cs.tagName;
-
-          // fetch the content as a snippet of properly escaped HTML
-          var content = cs.innerHTML;
-          if (isRawContent) {
-            content = PR_textToHtml(content);
-          }
+          // fetch the content as a snippet of properly escaped HTML.
+          // Firefox adds newlines at the end.
+          var content = PR_getInnerHtml(cs);
+          content = content.replace(/(?:\r\n?|\n)$/, '');
+          if (!content) { continue; }
 
           // do the pretty printing
           var newContent = prettyPrintOne(content);
 
           // push the prettified html back into the tag.
-          if (!isRawContent) {
+          if (!PR_isRawContent(cs)) {
             // just replace the old html with the new
             cs.innerHTML = newContent;
           } else {
