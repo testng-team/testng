@@ -2,6 +2,7 @@ Current
 Fixed: GITHUB-1197: Ability to dynamically set the status and exception of a test via ITestResult (Anthony Nguyen)
 Fixed: GITHUB-1302: When 'parallel' is set to 'classes', ConcurrentModificationException can be thrown(Jianhua Li)
 Fixed: GITHUB-772: Severe thread contention while running large test with parallel methods (Shaburov Oleg)
+Fixed: GITHUB-1307: TestNGException when using an anonymous class in Factory (Mike Cowan)
 Fixed: GITHUB-1298: ITestResult injection is failing in BeforeMethod method (Krishnan Mahadevan)
 Fixed: GITHUB-1293: Beanshell based execution does not work any more (Krishnan Mahadevan)
 Fixed: GITHUB-1262: Testcases out of order in XML file in junitreport folder when using testng (Krishnan Mahadevan)
