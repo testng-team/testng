@@ -92,7 +92,7 @@ public class DataProviderTest extends SimpleBaseTest {
     InvokedMethodNameListener listener = run(DependentSample.class);
 
     assertThat(listener.getSucceedMethodNames()).containsExactly("method1(ok)");
-    assertThat(listener.getSkippedBeforeInvocationMethodNames()).containsExactly("method2");
+    assertThat(listener.getSkippedMethodNames()).containsExactly("method2");
     assertThat(listener.getFailedMethodNames()).containsExactly("method1(not ok)");
   }
 

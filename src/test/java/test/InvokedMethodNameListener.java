@@ -21,7 +21,6 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
   private final List<String> failedMethodNames = new ArrayList<>();
   private final List<String> failedBeforeInvocationMethodNames = new ArrayList<>();
   private final List<String> skippedMethodNames = new ArrayList<>();
-  private final List<String> skippedBeforeInvocationMethodNames = new ArrayList<>();
   private final List<String> succeedMethodNames = new ArrayList<>();
   private final Map<String, ITestResult> results = new HashMap<>();
   private final boolean skipConfiguration;
@@ -52,7 +51,7 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
         break;
       case ITestResult.SKIP:
         if (!(skipConfiguration && method.isConfigurationMethod())) {
-          skippedMethodNames.add(name);
+          throw new IllegalStateException("A skipped test is not supposed to be invoked");
         }
         break;
       case ITestResult.SUCCESS:
@@ -92,9 +91,7 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
   public void onTestSkipped(ITestResult result) {
     String name = getName(result);
     results.put(name, result);
-    if (!skippedMethodNames.contains(name)) {
-      skippedBeforeInvocationMethodNames.add(name);
-    }
+    skippedMethodNames.add(name);
   }
 
   @Override
@@ -163,10 +160,6 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
 
   public List<String> getFailedBeforeInvocationMethodNames() {
     return Collections.unmodifiableList(failedBeforeInvocationMethodNames);
-  }
-
-  public List<String> getSkippedBeforeInvocationMethodNames() {
-    return Collections.unmodifiableList(skippedBeforeInvocationMethodNames);
   }
 
   public ITestResult getResult(String name) {
