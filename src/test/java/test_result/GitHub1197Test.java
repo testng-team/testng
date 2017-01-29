@@ -14,13 +14,14 @@ public class GitHub1197Test extends SimpleBaseTest {
     public void testGitHub1197() {
         TestNG tng = create(GitHub1197Sample.class);
 
-        InvokedMethodNameListener listener = new InvokedMethodNameListener(true);
+        // A skipped method is not supposed to be run but, here, it's the goal of the feature
+        InvokedMethodNameListener listener = new InvokedMethodNameListener(true, true);
         tng.addListener((ITestNGListener) listener);
 
         tng.run();
 
         assertThat(listener.getSucceedMethodNames()).containsExactly("succeedTest", "succeedTest2");
         assertThat(listener.getFailedMethodNames()).containsExactly("failedTest"); // , "failedTest2");
-        assertThat(listener.getSkippedMethodNames()).containsExactly("skippedTest");
+        assertThat(listener.getSkippedAfterInvocationMethodNames()).containsExactly("skippedTest");
     }
 }

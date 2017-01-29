@@ -21,16 +21,23 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
   private final List<String> failedMethodNames = new ArrayList<>();
   private final List<String> failedBeforeInvocationMethodNames = new ArrayList<>();
   private final List<String> skippedMethodNames = new ArrayList<>();
+  private final List<String> skippedAfterInvocationMethodNames = new ArrayList<>();
   private final List<String> succeedMethodNames = new ArrayList<>();
   private final Map<String, ITestResult> results = new HashMap<>();
   private final boolean skipConfiguration;
+  private final boolean wantSkippedMethodAfterInvocation;
 
   public InvokedMethodNameListener() {
     this(false);
   }
 
   public InvokedMethodNameListener(boolean skipConfiguration) {
+    this(skipConfiguration, false);
+  }
+
+  public InvokedMethodNameListener(boolean skipConfiguration, boolean wantSkippedMethodAfterInvocation) {
     this.skipConfiguration = skipConfiguration;
+    this.wantSkippedMethodAfterInvocation = wantSkippedMethodAfterInvocation;
   }
 
   @Override
@@ -51,7 +58,11 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
         break;
       case ITestResult.SKIP:
         if (!(skipConfiguration && method.isConfigurationMethod())) {
-          throw new IllegalStateException("A skipped test is not supposed to be invoked");
+          if (wantSkippedMethodAfterInvocation) {
+            skippedAfterInvocationMethodNames.add(name);
+          } else {
+            throw new IllegalStateException("A skipped test is not supposed to be invoked");
+          }
         }
         break;
       case ITestResult.SUCCESS:
@@ -91,7 +102,9 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
   public void onTestSkipped(ITestResult result) {
     String name = getName(result);
     results.put(name, result);
-    skippedMethodNames.add(name);
+    if (!skippedAfterInvocationMethodNames.contains(name)) {
+      skippedMethodNames.add(name);
+    }
   }
 
   @Override
@@ -160,6 +173,10 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
 
   public List<String> getFailedBeforeInvocationMethodNames() {
     return Collections.unmodifiableList(failedBeforeInvocationMethodNames);
+  }
+
+  public List<String> getSkippedAfterInvocationMethodNames() {
+    return Collections.unmodifiableList(skippedAfterInvocationMethodNames);
   }
 
   public ITestResult getResult(String name) {

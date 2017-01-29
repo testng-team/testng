@@ -1,8 +1,10 @@
 package test.configurationfailurepolicy;
 
 import static org.testng.Assert.assertEquals;
+import static test.SimpleBaseTest.getPathToResource;
 
 import org.testng.ITestContext;
+import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeClass;
@@ -23,7 +25,7 @@ public class FailurePolicyTest {
   @DataProvider( name="dp" )
   public Object[][] getData() {
     Object[][] data = new Object[][] {
-      // params - confFail, confSkip, skipedTests
+      // params - confFail, confSkip, skippedTests
       new Object[] { new Class[] { ClassWithFailedBeforeClassMethod.class }, 1, 1, 1 },
       new Object[] { new Class[] { ClassWithFailedBeforeMethodAndMultipleTests.class }, 2, 0, 2 },
       new Object[] { new Class[] { ClassWithFailedBeforeMethodAndMultipleInvocations.class }, 4, 0, 4 },
@@ -46,7 +48,7 @@ public class FailurePolicyTest {
     TestNG testng = new TestNG();
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     testng.setTestClasses(classesUnderTest);
-    testng.addListener(tla);
+    testng.addListener((ITestNGListener) tla);
     testng.setVerbose(0);
     testng.setConfigFailurePolicy(XmlSuite.FailurePolicy.CONTINUE);
     testng.run();
@@ -58,7 +60,7 @@ public class FailurePolicyTest {
   public void commandLineTest_policyAsSkip() {
     String[] argv = new String[] { "-log", "0", "-d", OutputDirectoryPatch.getOutputDirectory(),
             "-configfailurepolicy", "skip",
-            "-testclass", "test.configurationfailurepolicy.ClassWithFailedBeforeMethodAndMultipleTests" };
+            "-testclass", ClassWithFailedBeforeMethodAndMultipleTests.class.getCanonicalName() };
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG.privateMain(argv, tla);
 
@@ -69,7 +71,7 @@ public class FailurePolicyTest {
   public void commandLineTest_policyAsContinue() {
     String[] argv = new String[] { "-log", "0", "-d", OutputDirectoryPatch.getOutputDirectory(),
             "-configfailurepolicy", "continue",
-            "-testclass", "test.configurationfailurepolicy.ClassWithFailedBeforeMethodAndMultipleTests" };
+            "-testclass", ClassWithFailedBeforeMethodAndMultipleTests.class.getCanonicalName() };
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG.privateMain(argv, tla);
 
@@ -79,7 +81,7 @@ public class FailurePolicyTest {
   @Test
   public void commandLineTestWithXMLFile_policyAsSkip() {
     String[] argv = new String[] { "-log", "0", "-d", OutputDirectoryPatch.getOutputDirectory(),
-            "-configfailurepolicy", "skip", "src/test/resources/testng-configfailure.xml" };
+            "-configfailurepolicy", "skip", getPathToResource("testng-configfailure.xml") };
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG.privateMain(argv, tla);
 
@@ -89,7 +91,7 @@ public class FailurePolicyTest {
   @Test
   public void commandLineTestWithXMLFile_policyAsContinue() {
     String[] argv = new String[] { "-log", "0", "-d", OutputDirectoryPatch.getOutputDirectory(),
-            "-configfailurepolicy", "continue", "src/test/resources/testng-configfailure.xml" };
+            "-configfailurepolicy", "continue", getPathToResource("testng-configfailure.xml") };
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG.privateMain(argv, tla);
 
