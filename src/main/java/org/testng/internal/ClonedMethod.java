@@ -112,7 +112,7 @@ public class ClonedMethod implements ITestNGMethod {
 
   @Override
   public int getTotalInvocationCount() {
-    return 1;
+    return 0;
   }
 
   @Override

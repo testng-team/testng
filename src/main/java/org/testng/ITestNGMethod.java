@@ -166,11 +166,10 @@ public interface ITestNGMethod extends Serializable, Cloneable {
   void setInvocationCount(int count);
 
   /**
-   * @return the total number of thimes this method needs to be invoked, including possible
-   *         clones of this method - this is relevant when threadPoolSize is bigger than 1
-   *         where each clone of this method is only invoked once individually, i.e.
-   *         {@link org.testng.ITestNGMethod#getInvocationCount()} would always return 1.
+   * @deprecated Will always return 0
+   * @return 0
    */
+  @Deprecated
   int getTotalInvocationCount();
 
   /**
