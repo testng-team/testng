@@ -1,0 +1,165 @@
+
+.prettyprint .kwd, .tag {
+  font-weight: bold;
+  color: #7f0055;
+}
+
+.prettyprint .str,.atv {
+  color: #0000cc;
+}
+
+.prettyprint .com {
+  color: #008800;
+}
+
+.prettyprint .lit {
+  color: #cc2222;
+  font-weight: bold;
+}
+
+
+pre.prettyprint { padding: 2px; border: 1px solid #888; }
+
+@media print {
+  .str { color: #060; }
+  .kwd { color: #006; font-weight: bold; }
+  .com { color: #600; font-style: italic; }
+  .typ { color: #404; font-weight: bold; }
+  .lit { color: #044; }
+  .pun { color: #440; }
+  .pln { color: #000; }
+  .tag { color: #006; font-weight: bold; }
+  .atn { color: #404; }
+  .atv { color: #060; }
+}
+
+.prettyprint, .code {
+  margin-left: 20px;
+  margin-top: 10px;
+  background-color: #ffffdd;
+  border: 1pt solid silver;
+  border-color: #ccc #999 #999 #CCC;
+  color: #000000;
+  padding: 5px 5px 5px 7px;
+  font-size: 11px;
+  padding: .3em .6em;
+  font-family: Courier New
+}
+
+
+.float-right {
+  float: right;
+}
+
+.box {
+  border: 1pt solid silver;
+  border-color: #ccc #999 #999 #CCC;
+  background-color: #ffffdd;
+}
+
+#menu {
+	font-size: small;
+	line-height: 0.9em;
+	clear: both;
+	margin-top: 10px;
+	}
+
+#menu li {
+	margin-bottom: 7px;
+	}
+
+#menu li li {
+	margin-top: 2px;
+	margin-bottom: 2px;
+	}
+
+#menu li.submenuitems {
+	margin-bottom: 2px;
+	}
+
+#menu a {
+	text-decoration: none;
+	}
+
+
+
+
+
+.CJT {
+  display: none;
+}
+
+.ColorJava_block {
+  display: block;
+  color: black;
+  background-color: #ffffdd;
+  padding: 4px 5px 4px 5px;
+  border: 1px solid #999999;
+}
+
+.ColorJava_inline {
+  color: black;
+  font-family: monospace;
+  border: 1px solid #999999;
+  padding: 0px 3px 1px 3px;
+  background-color: #ffffdd;
+  white-space: pre;
+}
+
+.ColorJava_dropdown {
+}
+
+.ColorJava_innerPre {
+  margin: 0px;
+}
+
+/* Emacs JDE style */
+.j_jde_comment  { color: #b22222; }
+.j_jde_jdcomment{ color: #b22222; }
+.j_jde_jdtag    { color: #5f9ea0; }
+.j_jde_jdtagat  { }
+.j_jde_typekeyw { color: #228b22; }
+.j_jde_className{ color: #228b22; }
+.j_jde_keyword  { color: #a020f0; }
+.j_jde_string   { color: #bc8f8f; }
+.j_jde_constant { color: #5f9ea0; }
+.j_jde_pkgname  { color: #5f9ea0; }
+.j_jde_varname  { color: #b8860b; }
+.j_jde_methname { color: #0000ff; }
+
+/* Eclipse 2.1 style */
+.j_eclipse_comment  { color: #3f7f5f; }
+.j_eclipse_jdcomment{ color: #3f3fbf; }
+.j_eclipse_jdtag    { color: #7f9fbf; font-weight:bold; }
+.j_eclipse_jdtagat  { color: #7f9fbf; font-weight:bold; }
+.j_eclipse_typekeyw { color: #7f0055; font-weight:bold; }
+.j_eclipse_classname{ color: black; }
+.j_eclipse_keyword  { color: #7f0055; font-weight:bold; }
+.j_eclipse_string   { color: blue; }
+.j_eclipse_constant { color: #7f0055; font-weight:bold; }
+.j_eclipse_pkgname  { color: black; }
+.j_eclipse_varname  { color: black; }
+.j_eclipse_methname { color: black; }
+.j_eclipse_cmtlink  { color: black; }
+
+
+/* XML coloring */
+
+.xml-comment {
+  color: green;
+}
+
+.attribute {
+  color: blue;
+}
+
+/* XML coloring */
+
+a:link {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+

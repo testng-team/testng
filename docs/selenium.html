@@ -5,16 +5,16 @@
         <title>TestNG</title>
 
         <link rel="stylesheet" href="testng.css" type="text/css" />
-        <link type="text/css" rel="stylesheet" href="http://beust.com/beust.css"  />
+        <link type="text/css" rel="stylesheet" href="beust.css"  />
         <script type="text/javascript" src="banner.js"></script>
 
-      <script type="text/javascript" src="http://beust.com/scripts/shCore.js"></script>
-      <script type="text/javascript" src="http://beust.com/scripts/shBrushJava.js"></script>
-      <script type="text/javascript" src="http://beust.com/scripts/shBrushXml.js"></script>
-      <script type="text/javascript" src="http://beust.com/scripts/shBrushBash.js"></script>
-      <script type="text/javascript" src="http://beust.com/scripts/shBrushPlain.js"></script>
-      <link type="text/css" rel="stylesheet" href="http://beust.com/styles/shCore.css"/>
-      <link type="text/css" rel="stylesheet" href="http://beust.com/styles/shThemeCedric.css"/>
+      <script type="text/javascript" src="scripts/shCore.js"></script>
+      <script type="text/javascript" src="scripts/shBrushJava.js"></script>
+      <script type="text/javascript" src="scripts/shBrushXml.js"></script>
+      <script type="text/javascript" src="scripts/shBrushBash.js"></script>
+      <script type="text/javascript" src="scripts/shBrushPlain.js"></script>
+      <link type="text/css" rel="stylesheet" href="styles/shCore.css"/>
+      <link type="text/css" rel="stylesheet" href="styles/shThemeCedric.css"/>
       <script type="text/javascript">
         SyntaxHighlighter.config.clipboardSwf = 'scripts/clipboard.swf';
         SyntaxHighlighter.defaults['gutter'] = false;
@@ -152,7 +152,7 @@ public void logout() {
 
 <p>If you are familiar with unit testing frameworks, you probably know about the setup and teardown methods. TestNG goes beyond that idea and allows you to define methods that will be run after or before your test suites, test groups or test methods. This is very useful for our Selenium tests because you can create a Selenium server and browser instance before you start running your test suite.)</p>
 
-<p>To achieve this, we will use two TestNG <a href="http://testng.org/doc/documentation-main.html#annotations">annotations</a>: <tt>@BeforeSuite</tt> and <tt>@AfterSuite</tt>:</p>
+<p>To achieve this, we will use two TestNG <a href="documentation-main.html#annotations">annotations</a>: <tt>@BeforeSuite</tt> and <tt>@AfterSuite</tt>:</p>
 
 <pre class="brush:java "> 
 @BeforeSuite(alwaysRun = true)
@@ -186,7 +186,7 @@ public void setupAfterSuite() {
 }
 </pre>
 
-<p>PS: Did you notice those weird parameters? They are stored in the XML file (we are going to see in the next section) and accessed by a <tt>ITestContext</tt> object, which was <a href="http://testng.org/doc/documentation-main.html#dependency-injection">injected</a>. </p>
+<p>PS: Did you notice those weird parameters? They are stored in the XML file (we are going to see in the next section) and accessed by a <tt>ITestContext</tt> object, which was <a href="documentation-main.html#dependency-injection">injected</a>. </p>
 
 <p>By adding these annotations, the TestNG engine will invoke the configuration methods automatically before/after your test suite (make sure the test methods are annotated with <tt>@Test</tt>), launching the Selenium server and instantiating the Selenium client object only once, reusing the same browser session across the tests.</p>
 
@@ -228,21 +228,21 @@ public void setupAfterSuite() {
 <h3><a name="launching">Launching your tests in Eclipse</a></h3>
 
 <p>We finished writing our tests, now how can we run them?</p> 
-<p>You can launch TestNG from the command line, using a Eclipse plugin or even programatically. We are going to use the Eclipse plugin. Follow the steps described on the official TestNG documentation <a href="http://testng.org/doc/download.html">over here</a></p>
+<p>You can launch TestNG from the command line, using a Eclipse plugin or even programatically. We are going to use the Eclipse plugin. Follow the steps described on the official TestNG documentation <a href="download.html">over here</a></p>
 
 <p>If you installed TestNG correctly, you will see this menu when you right click on the XML file:<br />
 
 <p align="center">
-  <a href="http://testng.org/pictures/testNG-run.png">
-    <img src="http://testng.org/pictures/testNG-run.png" alt="" title="testNG-run" width="464" height="59" class="aligncenter size-full wp-image-19" />
+  <a href="pics/testNG-run.png">
+    <img src="pics/testNG-run.png" alt="" title="testNG-run" width="464" height="59" class="aligncenter size-full wp-image-19" />
 </a>
 </p>
 
 <p>Click on &#8220;Run as TestNG Suite&#8221; and your test will start running. You will then see this nice results tree:</p>
 
 <p align="center">
-  <a href="http://testng.org/pictures/testNG-exec.png">
-    <img src="http://testng.org/pictures/testNG-exec.png" alt="" title="testNG-exec" width="591" height="256" class="aligncenter size-full wp-image-20" /></a>
+  <a href="pics/testNG-exec.png">
+    <img src="pics/testNG-exec.png" alt="" title="testNG-exec" width="591" height="256" class="aligncenter size-full wp-image-20" /></a>
 </p>
 
 <h3><a name="future">Thinking about the future</a></h3>

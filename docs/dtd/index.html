@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+    <head><title>TestNG DTD</title>
+        <script type="text/javascript">
+            var client = new XMLHttpRequest();
+            client.open('GET', 'https://raw.githubusercontent.com/cbeust/testng/master/src/main/resources/testng-1.0.dtd');
+            client.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    document.getElementById("dtd").innerText = client.responseText;
+                }
+            }
+            client.send();
+        </script>
+        <link rel="stylesheet" href="../testng.css" type="text/css"/>
+        <link type="text/css" rel="stylesheet" href="../beust.css"/>
+        <script type="text/javascript" src="../prettify.js"></script>
+        <script type="text/javascript" src="../banner.js"></script>
+
+        <script type="text/javascript" src="../scripts/shCore.js"></script>
+        <script type="text/javascript" src="../scripts/shBrushJava.js"></script>
+        <script type="text/javascript" src="../scripts/shBrushXml.js"></script>
+        <script type="text/javascript" src="../scripts/shBrushBash.js"></script>
+        <script type="text/javascript" src="../scripts/shBrushPlain.js"></script>
+        <link type="text/css" rel="stylesheet" href="../styles/shCore.css"/>
+        <link type="text/css" rel="stylesheet" href="../styles/shThemeCedric.css"/>
+        <script type="text/javascript">
+            SyntaxHighlighter.config.clipboardSwf = "../scripts/clipboard.swf";
+            SyntaxHighlighter.defaults["gutter"] = false;
+            SyntaxHighlighter.all();
+        </script>
+
+        <style type="text/css">
+            /* Set the command-line table option column width. */
+            #command-line colgroup.option {
+                width: 7em;
+            }
+        </style>
+    </head>
+    <body>
+
+        <h1>
+            <p align="center">
+                DTD for TestNG
+            </p>
+        </h1>
+
+        <pre id="dtd" class="brush: xml">
+            DTD content
+        </pre>
+    </body>
+</html>
