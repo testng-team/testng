@@ -1269,6 +1269,7 @@ public class Invoker implements IInvoker {
         System.currentTimeMillis(),
         m_testContext);
     result.setStatus(TestResult.SKIP);
+    Reporter.setCurrentTestResult(result);
     runTestListeners(result);
 
     return result;
