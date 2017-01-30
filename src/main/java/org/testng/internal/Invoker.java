@@ -196,6 +196,7 @@ public class Invoker implements IInvoker {
           if (MethodHelper.isEnabled(configurationAnnotation)) {
 
             if (!confInvocationPassed(tm, currentTestMethod, testClass, instance) && !alwaysRun) {
+              log(3, "Skipping " + Utils.detailedMethodName(tm, true));
               handleConfigurationSkip(tm, testResult, configurationAnnotation, currentTestMethod, instance, suite);
               continue;
             }
@@ -415,14 +416,13 @@ public class Invoker implements IInvoker {
    */
   private boolean confInvocationPassed(ITestNGMethod method, ITestNGMethod currentTestMethod,
       IClass testClass, Object instance) {
-    boolean result= true;
+    boolean result = true;
 
     Class<?> cls = testClass.getRealClass();
 
     if(m_suiteState.isFailed()) {
-      result= false;
-    }
-    else {
+      result = false;
+    } else {
       if (classConfigurationFailed(cls)) {
         if (! m_continueOnFailedConfiguration) {
           result = !classConfigurationFailed(cls);
@@ -440,10 +440,9 @@ public class Invoker implements IInvoker {
       }
       else if (! m_continueOnFailedConfiguration) {
         synchronized(m_classInvocationResults){
-           for(Class<?> clazz: m_classInvocationResults.keySet()) {
-//          if (clazz == cls) {
-             if(clazz.isAssignableFrom(cls)) {
-               result= false;
+           for(Class<?> clazz : m_classInvocationResults.keySet()) {
+             if (clazz.isAssignableFrom(cls)) {
+               result = false;
                break;
              }
            }
@@ -452,11 +451,11 @@ public class Invoker implements IInvoker {
     }
 
     // check if there are failed @BeforeGroups
-    String[] groups= method.getGroups();
+    String[] groups = method.getGroups();
     if(null != groups && groups.length > 0) {
-      for(String group: groups) {
+      for(String group : groups) {
         if(m_beforegroupsFailures.containsKey(group)) {
-          result= false;
+          result = false;
           break;
         }
       }
@@ -466,8 +465,8 @@ public class Invoker implements IInvoker {
 
    // Creates a token for tracking a unique invocation of a method on an instance.
    // Is used when configFailurePolicy=continue.
-  private Object getMethodInvocationToken(ITestNGMethod method, Object instance) {
-    return String.format("%s+%d", instance.toString(), method.getCurrentInvocationCount());
+  private static Object getMethodInvocationToken(ITestNGMethod method, Object instance) {
+    return String.format("%s+%d+%d", instance.toString(), method.getCurrentInvocationCount(), method.getParameterInvocationCount());
   }
 
   /**
@@ -599,6 +598,15 @@ public class Invoker implements IInvoker {
       suite, params, parameterValues,
       instance, testResult);
 
+    if (!confInvocationPassed(tm, tm, testClass, instance)) {
+      ITestResult result = registerSkippedTestResult(tm, instance, System.currentTimeMillis(),
+              getExceptionDetails(instance));
+      m_notifier.addSkippedTest(tm, result);
+      tm.incrementCurrentInvocationCount();
+
+      return result;
+    }
+
     //
     // Create the ExtraOutput for this method
     //
@@ -629,38 +637,31 @@ public class Invoker implements IInvoker {
         runTestListeners(testResult);
       }
 
+      log(3, "Invoking " + tm.getQualifiedName());
       runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
 
       m_notifier.addInvokedMethod(invokedMethod);
 
       Method thisMethod = tm.getConstructorOrMethod().getMethod();
 
-      if(confInvocationPassed(tm, tm, testClass, instance)) {
-        log(3, "Invoking " + tm.getQualifiedName());
+      // If this method is a IHookable, invoke its run() method
+      IHookable hookableInstance =
+          IHookable.class.isAssignableFrom(tm.getRealClass()) ?
+          (IHookable) instance : m_configuration.getHookable();
 
-        // If this method is a IHookable, invoke its run() method
-        IHookable hookableInstance =
-            IHookable.class.isAssignableFrom(tm.getRealClass()) ?
-            (IHookable) instance : m_configuration.getHookable();
-
-        if (MethodHelper.calculateTimeOut(tm) <= 0) {
-          if (hookableInstance != null) {
-            MethodInvocationHelper.invokeHookable(instance,
-                parameterValues, hookableInstance, thisMethod, testResult);
-          } else {
-            // Not a IHookable, invoke directly
-            MethodInvocationHelper.invokeMethod(thisMethod, instance,
-                parameterValues);
-          }
-          setTestStatus(testResult, ITestResult.SUCCESS);
+      if (MethodHelper.calculateTimeOut(tm) <= 0) {
+        if (hookableInstance != null) {
+          MethodInvocationHelper.invokeHookable(instance,
+              parameterValues, hookableInstance, thisMethod, testResult);
         } else {
-          // Method with a timeout
-          MethodInvocationHelper.invokeWithTimeout(tm, instance, parameterValues, testResult, hookableInstance);
+          // Not a IHookable, invoke directly
+          MethodInvocationHelper.invokeMethod(thisMethod, instance,
+              parameterValues);
         }
-      }
-      else {
-        setTestStatus(testResult, ITestResult.SKIP);
-        addExceptionDetailsToTestResult(testResult, instance);
+        setTestStatus(testResult, ITestResult.SUCCESS);
+      } else {
+        // Method with a timeout
+        MethodInvocationHelper.invokeWithTimeout(tm, instance, parameterValues, testResult, hookableInstance);
       }
     }
     catch(InvocationTargetException ite) {
@@ -744,27 +745,26 @@ public class Invoker implements IInvoker {
     }
   }
 
-  private void addExceptionDetailsToTestResult(ITestResult testResult, Object instance) {
+  private Throwable getExceptionDetails(Object instance) {
     Set<ITestResult> configResults = m_testContext.getFailedConfigurations().getAllResults();
     if (configResults.isEmpty()) {
       configResults = m_testContext.getSkippedConfigurations().getAllResults();
     }
     for (ITestResult configResult : configResults) {
       if (sameInstance(configResult, instance)) {
-        testResult.setThrowable(configResult.getThrowable());
-        return;
+        return configResult.getThrowable();
       }
     }
     if (configResults.isEmpty()) {
       //if we are here it means we have a test method skip due to a @BeforeSuite failure in a different <test> maybe
       //So we will have to find out that first failure/skip and get its throwable and pack that information into our
       //current test method's test result.
-      testResult.setThrowable(getConfigFailureException());
+      return getConfigFailureException();
     } else {
       //If we are here it perhaps means that the test method is being skipped because there was a configuration
       //failure in a different class due to @BeforeGroups being used.
       //So lets just find the first exception information and then just pack it in.
-      testResult.setThrowable(configResults.iterator().next().getThrowable());
+      return configResults.iterator().next().getThrowable();
     }
   }
 
@@ -1269,6 +1269,7 @@ public class Invoker implements IInvoker {
         System.currentTimeMillis(),
         m_testContext);
     result.setStatus(TestResult.SKIP);
+    Reporter.setCurrentTestResult(result);
     runTestListeners(result);
 
     return result;

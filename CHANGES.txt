@@ -1,4 +1,5 @@
 Current
+New: Skipped methods are not supposed to be executed (Julien Herr)
 Fixed: GITHUB-1197: Ability to dynamically set the status and exception of a test via ITestResult (Anthony Nguyen)
 Fixed: GITHUB-1302: When 'parallel' is set to 'classes', ConcurrentModificationException can be thrown(Jianhua Li)
 Fixed: GITHUB-772: Severe thread contention while running large test with parallel methods (Shaburov Oleg)
