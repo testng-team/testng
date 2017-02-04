@@ -2,21 +2,23 @@ package org.testng.internal;
 
 import org.testng.*;
 import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
 
 import java.util.List;
+import java.util.Map;
 
 public class Configuration implements IConfiguration {
 
-  IAnnotationFinder m_annotationFinder;
-  ITestObjectFactory m_objectFactory;
-  IHookable m_hookable;
-  IConfigurable m_configurable;
-  List<IExecutionListener> m_executionListeners = Lists.newArrayList();
-  List<IAlterSuiteListener> m_alterSuiteListeners = Lists.newArrayList();
-  private List<IConfigurationListener> m_configurationListeners = Lists.newArrayList();
+  private IAnnotationFinder m_annotationFinder;
+  private ITestObjectFactory m_objectFactory;
+  private IHookable m_hookable;
+  private IConfigurable m_configurable;
+  private final List<IExecutionListener> m_executionListeners = Lists.newArrayList();
+  private final List<IAlterSuiteListener> m_alterSuiteListeners = Lists.newArrayList();
+  private final Map<Class<? extends IConfigurationListener>, IConfigurationListener> m_configurationListeners = Maps.newHashMap();
 
   public Configuration() {
     init(new JDK15AnnotationFinder(new DefaultAnnotationTransformer()));
@@ -82,14 +84,12 @@ public class Configuration implements IConfiguration {
 
   @Override
   public List<IConfigurationListener> getConfigurationListeners() {
-    return Lists.newArrayList(m_configurationListeners);
+    return Lists.newArrayList(m_configurationListeners.values());
   }
 
   @Override
   public void addConfigurationListener(IConfigurationListener cl) {
-    if (! m_configurationListeners.contains(cl)) {
-      m_configurationListeners.add(cl);
-    }
+    m_configurationListeners.put(cl.getClass(), cl);
   }
 
   @Override
