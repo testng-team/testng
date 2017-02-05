@@ -5,8 +5,6 @@ import static org.testng.internal.EclipseInterface.ASSERT_LEFT2;
 import static org.testng.internal.EclipseInterface.ASSERT_MIDDLE;
 import static org.testng.internal.EclipseInterface.ASSERT_RIGHT;
 
-import org.testng.collections.Lists;
-
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.testng.collections.Lists;
 
 
 /**
@@ -108,7 +107,7 @@ public class Assert {
    * @param expected the expected value
    * @param message the assertion error message
    */
-  static public void assertEquals(Object actual, Object expected, String message) {
+  public static void assertEquals(Object actual, Object expected, String message) {
     if (expected != null && expected.getClass().isArray()) {
        assertArrayEquals(actual, expected, message);
        return;
@@ -175,7 +174,7 @@ public class Assert {
    * @param actual the actual value
    * @param expected the expected value
    */
-  static public void assertEquals(Object actual, Object expected) {
+  public static void assertEquals(Object actual, Object expected) {
     assertEquals(actual, expected, null);
   }
 
@@ -757,14 +756,14 @@ public class Assert {
   /**
    * Asserts that two sets are equal.
    */
-  static public void assertEquals(Set<?> actual, Set<?> expected) {
+  public static void assertEquals(Set<?> actual, Set<?> expected) {
     assertEquals(actual, expected, null);
   }
   
 	/**
 	 * Assert set equals
 	 */
-  static public void assertEquals(Set<?> actual, Set<?> expected, String message) {
+  public static void assertEquals(Set<?> actual, Set<?> expected, String message) {
     if (actual == expected) {
       return;
     }
@@ -787,10 +786,40 @@ public class Assert {
     }
   }
 
+  public static void assertEqualsDeep(Set<?> actual, Set<?> expected, String message) {
+    if (actual == expected) {
+      return;
+    }
+
+    if (actual == null || expected == null) {
+      // Keep the back compatible
+      if (message == null) {
+        fail("Sets not equal: expected: " + expected + " and actual: " + actual);
+      } else {
+        failNotEquals(actual, expected, message);
+      }
+    }
+
+    Iterator<?> actualIterator = actual.iterator();
+    Iterator<?> expectedIterator = expected.iterator();
+    while (expectedIterator.hasNext()) {
+      Object expectedValue = expectedIterator.next();
+      if (!actualIterator.hasNext()) {
+        fail("Sets not equal: expected: " + expected + " and actual: " + actual);
+      }
+      Object value = actualIterator.next();
+      if (expectedValue.getClass().isArray()) {
+        assertArrayEquals(value, expectedValue, message);
+      } else {
+        assertEqualsImpl(value, expectedValue, message);
+      }
+    }
+  }
+
   /**
    * Asserts that two maps are equal.
    */
-  static public void assertEquals(Map<?, ?> actual, Map<?, ?> expected) {
+  public static void assertEquals(Map<?, ?> actual, Map<?, ?> expected, String message) {
     if (actual == expected) {
       return;
     }
@@ -809,8 +838,44 @@ public class Assert {
       Object key = entry.getKey();
       Object value = entry.getValue();
       Object expectedValue = expected.get(key);
-      assertEqualsImpl(value, expectedValue, "Maps do not match for key:" + key + " actual:" + value
-              + " expected:" + expectedValue);
+      String assertMessage = message != null ? message : "Maps do not match for key:"
+          + key + " actual:" + value + " expected:" + expectedValue;
+      assertEqualsImpl(value, expectedValue, assertMessage);
+    }
+
+  }
+
+  public static void assertEqualsDeep(Map<?, ?> actual, Map<?, ?> expected) {
+    assertEqualsDeep(actual, expected, null);
+  }
+
+
+  public static void assertEqualsDeep(Map<?, ?> actual, Map<?, ?> expected, String message) {
+    if (actual == expected) {
+      return;
+    }
+
+    if (actual == null || expected == null) {
+      fail("Maps not equal: expected: " + expected + " and actual: " + actual);
+    }
+
+    if (actual.size() != expected.size()) {
+      fail("Maps do not have the same size:" + actual.size() + " != " + expected.size());
+    }
+
+    Set<?> entrySet = actual.entrySet();
+    for (Object anEntrySet : entrySet) {
+      Map.Entry<?, ?> entry = (Map.Entry<?, ?>) anEntrySet;
+      Object key = entry.getKey();
+      Object value = entry.getValue();
+      Object expectedValue = expected.get(key);
+      String assertMessage = message != null ? message : "Maps do not match for key:"
+          + key + " actual:" + value + " expected:" + expectedValue;
+      if (expectedValue.getClass().isArray()) {
+        assertArrayEquals(value, expectedValue, assertMessage);
+      } else {
+        assertEqualsImpl(value, expectedValue, assertMessage);
+      }
     }
 
   }
@@ -915,6 +980,78 @@ public class Assert {
     boolean fail;
     try {
       Assert.assertEquals(actual1, actual2, delta, message);
+      fail = true;
+    } catch (AssertionError e) {
+      fail = false;
+    }
+
+    if (fail) {
+      Assert.fail(message);
+    }
+  }
+
+  public static void assertNotEquals(Set<?> actual, Set<?> expected) {
+    assertNotEquals(actual, expected, null);
+  }
+
+  public static void assertNotEquals(Set<?> actual, Set<?> expected, String message) {
+    boolean fail;
+    try {
+      Assert.assertEquals(actual, expected, message);
+      fail = true;
+    } catch (AssertionError e) {
+      fail = false;
+    }
+
+    if (fail) {
+      Assert.fail(message);
+    }
+  }
+
+  public static void assertNotEqualsDeep(Set<?> actual, Set<?> expected) {
+    assertNotEqualsDeep(actual, expected, null);
+  }
+
+  public static void assertNotEqualsDeep(Set<?> actual, Set<?> expected, String message) {
+    boolean fail;
+    try {
+      Assert.assertEqualsDeep(actual, expected, message);
+      fail = true;
+    } catch (AssertionError e) {
+      fail = false;
+    }
+
+    if (fail) {
+      Assert.fail(message);
+    }
+  }
+
+  public static void assertNotEquals(Map<?, ?> actual, Map<?, ?> expected) {
+    assertNotEquals(actual, expected, null);
+  }
+
+  public static void assertNotEquals(Map<?, ?> actual, Map<?, ?> expected, String message) {
+    boolean fail;
+    try {
+      Assert.assertEquals(actual, expected, message);
+      fail = true;
+    } catch (AssertionError e) {
+      fail = false;
+    }
+
+    if (fail) {
+      Assert.fail(message);
+    }
+  }
+
+  public static void assertNotEqualsDeep(Map<?, ?> actual, Map<?, ?> expected) {
+    assertNotEqualsDeep(actual, expected, null);
+  }
+
+  public static void assertNotEqualsDeep(Map<?, ?> actual, Map<?, ?> expected, String message) {
+    boolean fail;
+    try {
+      Assert.assertEqualsDeep(actual, expected, message);
       fail = true;
     } catch (AssertionError e) {
       fail = false;

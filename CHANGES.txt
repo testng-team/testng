@@ -15,6 +15,7 @@ Fixed: GITHUB-1257: Group parameter not applying on included <suite-files>
 Fixed: GITHUB-1284: Listeners on the child suites are not applied (Vimalraj Selvam)
 New: GITHUB-1313: Add Java9 as test environment on Travis (Julien Herr)
 Fixed: GITHUB-1296: Configuration listeners run multiple times (@mikimrozowski & Julien Herr)
+Fixed: GITHUB-1300: Add deep assertions to assert on array values (array reference by default) (Jordan Zimmerman & Julien Herr)
 
 6.10
 2016/11/28
