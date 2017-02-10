@@ -117,7 +117,7 @@ public @interface Test {
 
   /**
    * The list of exceptions that a test method is expected to throw.  If no
-   * exception or a different than one on this list is thrown, this test will be
+   * exception or a different one than on this list is thrown, this test will be
    * marked a failure.
    */
   public Class[] expectedExceptions() default {};
