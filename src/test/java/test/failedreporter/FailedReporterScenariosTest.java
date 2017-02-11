@@ -42,7 +42,7 @@ public class FailedReporterScenariosTest extends BaseTest {
     private void runAssertions(File fileLocation) {
         try {
             FailedReporterTest.runAssertions(fileLocation, new String[] {"testMethodWithFailure"},
-                "<include name=\"%s\"" + "\"/>");
+                "<include name=\"%s\"/>");
             Assert.assertTrue(getLocation(fileLocation).exists());
         } finally {
             if (fileLocation.exists()) {

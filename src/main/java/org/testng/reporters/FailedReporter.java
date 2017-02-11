@@ -3,6 +3,7 @@ package org.testng.reporters;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
+import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -17,7 +18,7 @@ import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -54,25 +55,18 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     failedSuite.setName("Failed suite [" + xmlSuite.getName() + "]");
     m_xmlSuite= failedSuite;
 
-    Map<String, XmlTest> xmlTests= Maps.newHashMap();
-    for(XmlTest xmlT: xmlSuite.getTests()) {
-      xmlTests.put(xmlT.getName(), xmlT);
-    }
-
     Map<String, ISuiteResult> results = suite.getResults();
 
-    synchronized(results) {
       for(Map.Entry<String, ISuiteResult> entry : results.entrySet()) {
         ISuiteResult suiteResult = entry.getValue();
         ITestContext testContext = suiteResult.getTestContext();
 
-        generateXmlTest(suite,
-                        xmlTests.get(testContext.getName()),
+
+        generateXmlTest(testContext.getCurrentXmlTest(),
                         testContext,
                         testContext.getFailedTests().getAllResults(),
                         testContext.getSkippedTests().getAllResults());
       }
-    }
 
     if(null != failedSuite.getTests() && failedSuite.getTests().size() > 0) {
       Utils.writeUtf8File(outputDir, TESTNG_FAILED_XML, failedSuite.toXml());
@@ -80,30 +74,10 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     }
   }
 
-  /**
-   * Do not rely on this method. The class is used as <code>IReporter</code>.
-   *
-   * @see org.testng.TestListenerAdapter#onFinish(org.testng.ITestContext)
-   * @deprecated this class is used now as IReporter
-   */
-  @Deprecated
-  @Override
-  public void onFinish(ITestContext context) {
-    // Delete the previous file
-//    File f = new File(context.getOutputDirectory(), getFileName(context));
-//    f.delete();
-
-    // Calculate the methods we need to rerun :  failed tests and
-    // their dependents
-//    List<ITestResult> failedTests = getFailedTests();
-//    List<ITestResult> skippedTests = getSkippedTests();
-  }
-
-  private void generateXmlTest(ISuite suite,
-                               XmlTest xmlTest,
+  private void generateXmlTest(XmlTest xmlTest,
                                ITestContext context,
-                               Collection<ITestResult> failedTests,
-                               Collection<ITestResult> skippedTests) {
+                               Set<ITestResult> failedTests,
+                               Set<ITestResult> skippedTests) {
     // Note:  we can have skipped tests and no failed tests
     // if a method depends on nonexistent groups
     if (skippedTests.size() > 0 || failedTests.size() > 0) {
@@ -111,27 +85,20 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
 
       // Get the transitive closure of all the failed methods and the methods
       // they depend on
-      Collection[] allTests = new Collection[] {
-          failedTests, skippedTests
-      };
+      Set<ITestResult> allTests = new HashSet<>();
+      allTests.addAll(failedTests);
+      allTests.addAll(skippedTests);
+      for (ITestResult failedTest : allTests) {
+        ITestNGMethod current = failedTest.getMethod();
+        if (! current.isTest()) { // Don't count configuration methods
+          continue;
+        }
+        methodsToReRun.add(current);
+        List<ITestNGMethod> methodsDependedUpon = MethodHelper.getMethodsDependedUpon(current, context.getAllTestMethods());
 
-      for (Collection<ITestResult> tests : allTests) {
-        for (ITestResult failedTest : tests) {
-          ITestNGMethod current = failedTest.getMethod();
-          if (current.isTest()) {
-            methodsToReRun.add(current);
-            ITestNGMethod method = failedTest.getMethod();
-            // Don't count configuration methods
-            if (method.isTest()) {
-              List<ITestNGMethod> methodsDependedUpon =
-                  MethodHelper.getMethodsDependedUpon(method, context.getAllTestMethods());
-
-              for (ITestNGMethod m : methodsDependedUpon) {
-                if (m.isTest()) {
-                  methodsToReRun.add(m);
-                }
-              }
-            }
+        for (ITestNGMethod m : methodsDependedUpon) {
+          if (m.isTest()) {
+            methodsToReRun.add(m);
           }
         }
       }
@@ -143,23 +110,29 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       // sorted, we don't need to sort them again.
       //
       List<ITestNGMethod> result = Lists.newArrayList();
+      Set<ITestNGMethod> relevantConfigs = Sets.newHashSet();
       for (ITestNGMethod m : context.getAllTestMethods()) {
         if (methodsToReRun.contains(m)) {
           result.add(m);
+          relevantConfigs.addAll(getAllApplicableConfigs(m.getTestClass()));
         }
       }
-
-      methodsToReRun.clear();
-      Collection<ITestNGMethod> invoked= suite.getInvokedMethods();
-      for(ITestNGMethod tm: invoked) {
-        if(!tm.isTest()) {
-          methodsToReRun.add(tm);
-        }
-      }
-
-      result.addAll(methodsToReRun);
+      result.addAll(relevantConfigs);
       createXmlTest(context, result, xmlTest);
     }
+  }
+
+  private Set<ITestNGMethod> getAllApplicableConfigs(ITestClass iTestClass) {
+    Set<ITestNGMethod> configs = Sets.newHashSet();
+    configs.addAll(Arrays.asList(iTestClass.getBeforeSuiteMethods()));
+    configs.addAll(Arrays.asList(iTestClass.getAfterSuiteMethods()));
+    configs.addAll(Arrays.asList(iTestClass.getBeforeTestConfigurationMethods()));
+    configs.addAll(Arrays.asList(iTestClass.getAfterTestConfigurationMethods()));
+    configs.addAll(Arrays.asList(iTestClass.getBeforeTestMethods()));
+    configs.addAll(Arrays.asList(iTestClass.getAfterTestMethods()));
+    configs.addAll(Arrays.asList(iTestClass.getBeforeClassMethods()));
+    configs.addAll(Arrays.asList(iTestClass.getAfterClassMethods()));
+    return configs;
   }
 
   /**
@@ -180,7 +153,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
 
   /**
    * @param methods The methods we want to represent
-   * @param srcXmlTest 
+   * @param srcXmlTest The {@link XmlTest} object that represents the source.
    * @return A list of XmlClass objects (each representing a <class> tag) based
    * on the parameter methods
    */
@@ -189,10 +162,8 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     Map<Class, Set<ITestNGMethod>> methodsMap= Maps.newHashMap();
 
     for (ITestNGMethod m : methods) {
-      Object[] instances= m.getInstances();
-      Class clazz= instances == null || instances.length == 0 || instances[0] == null
-          ? m.getRealClass()
-          : instances[0].getClass();
+      Object instances= m.getInstance();
+      Class clazz= instances == null ? m.getRealClass() : instances.getClass();
       Set<ITestNGMethod> methodList= methodsMap.get(clazz);
       if(null == methodList) {
         methodList= new HashSet<>();
@@ -234,7 +205,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
 
   /**
    * Get local parameters of one include method from origin test xml.
-   * @param srcXmlTest
+   * @param srcXmlTest The {@link XmlTest} object that represents the source.
    * @param method the method we want to find its parameters
    * @return local parameters belong to one test method.
    */
@@ -253,16 +224,5 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       
       return Collections.emptyMap();
   }
-  
-  /**
-   * TODO:  we might want to make that more flexible in the future, but for
-   * now, hardcode the file name
-   */
-  private String getFileName(ITestContext context) {
-    return TESTNG_FAILED_XML;
-  }
 
-  private static void ppp(String s) {
-    System.out.println("[FailedReporter] " + s);
-  }
 }
