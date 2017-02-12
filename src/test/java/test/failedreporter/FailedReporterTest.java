@@ -7,11 +7,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 import org.testng.xml.XmlGroups;
-import org.testng.xml.XmlPackage;
-import org.testng.xml.XmlRun;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-import test.BaseTest;
+import test.SimpleBaseTest;
 import test.failedreporter.issue1297.groups.GroupsPassSample;
 import test.failedreporter.issue1297.groups.GroupsSampleBase;
 import test.failedreporter.issue1297.inheritance.InheritanceFailureSample;
@@ -21,18 +19,14 @@ import test.failedreporter.issue1297.straightforward.FailureSample;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-public class FailedReporterTest extends BaseTest {
+public class FailedReporterTest extends SimpleBaseTest {
   private File mTempDirectory;
 
   @BeforeMethod
   public void setUp() {
-    File slashTmpDir = new File(System.getProperty("java.io.tmpdir"));
-    mTempDirectory = new File(slashTmpDir, "testng-tmp-" + System.currentTimeMillis() % 1000);
-    mTempDirectory.mkdirs();
-    mTempDirectory.deleteOnExit();
+    mTempDirectory = createDirInTempDir("testng-tmp-" + System.currentTimeMillis() % 1000);
   }
 
   @AfterMethod
@@ -89,33 +83,18 @@ public class FailedReporterTest extends BaseTest {
   }
 
   private void triggerTest(String packageName, boolean applyGroupSelectionAtTest) {
-    TestNG tng = new TestNG();
-    tng.setVerbose(0);
-    final XmlSuite suite = new XmlSuite();
-    suite.setName("1297_suite");
+    final XmlSuite suite = createXmlSuite("1297_suite");
 
-    final XmlPackage xmlPackage = new XmlPackage();
-    xmlPackage.setName(packageName);
-    final XmlTest xmlTest = new XmlTest(suite);
-    xmlTest.setName("1297_test");
+    final XmlTest xmlTest = createXmlTestWithPackages(suite, "1297_test", packageName);
+    XmlGroups groups = createGroupIncluding("run");
     if (applyGroupSelectionAtTest) {
-      xmlTest.setGroups(getGroup());
+      xmlTest.setGroups(groups);
     } else {
-      suite.setGroups(getGroup());
+      suite.setGroups(groups);
     }
-      xmlTest.setPackages(new ArrayList<XmlPackage>(){{add(xmlPackage);}});
-    suite.setTests(new ArrayList<XmlTest>(){{add(xmlTest);}});
-    tng.setXmlSuites(new ArrayList<XmlSuite>(){{add(suite);}});
-    tng.setOutputDirectory(mTempDirectory.getAbsolutePath());
+    TestNG tng = create(mTempDirectory.toPath(), suite);
+    tng.setUseDefaultListeners(true);
     tng.run();
-  }
-
-  private XmlGroups getGroup() {
-    XmlGroups xmlGroups = new XmlGroups();
-    XmlRun xmlRun = new XmlRun();
-    xmlRun.onInclude("run");
-    xmlGroups.setRun(xmlRun);
-    return xmlGroups;
   }
 
   private void testFailedReporter(String[] expectedMethods, String expectedLine, Class<?>... cls) {
@@ -124,10 +103,8 @@ public class FailedReporterTest extends BaseTest {
   }
 
   private void triggerTest(Class<?>... cls) {
-    TestNG tng = new TestNG();
-    tng.setVerbose(0);
-    tng.setTestClasses(cls);
-    tng.setOutputDirectory(mTempDirectory.getAbsolutePath());
+    TestNG tng = create(mTempDirectory.toPath(), cls);
+    tng.setUseDefaultListeners(true);
     tng.run();
   }
 

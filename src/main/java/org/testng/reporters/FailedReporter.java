@@ -114,7 +114,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       for (ITestNGMethod m : context.getAllTestMethods()) {
         if (methodsToReRun.contains(m)) {
           result.add(m);
-          relevantConfigs.addAll(getAllApplicableConfigs(m.getTestClass()));
+          getAllApplicableConfigs(relevantConfigs, m.getTestClass());
         }
       }
       result.addAll(relevantConfigs);
@@ -122,8 +122,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     }
   }
 
-  private Set<ITestNGMethod> getAllApplicableConfigs(ITestClass iTestClass) {
-    Set<ITestNGMethod> configs = Sets.newHashSet();
+  private static void getAllApplicableConfigs(Set<ITestNGMethod> configs, ITestClass iTestClass) {
     configs.addAll(Arrays.asList(iTestClass.getBeforeSuiteMethods()));
     configs.addAll(Arrays.asList(iTestClass.getAfterSuiteMethods()));
     configs.addAll(Arrays.asList(iTestClass.getBeforeTestConfigurationMethods()));
@@ -132,7 +131,6 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     configs.addAll(Arrays.asList(iTestClass.getAfterTestMethods()));
     configs.addAll(Arrays.asList(iTestClass.getBeforeClassMethods()));
     configs.addAll(Arrays.asList(iTestClass.getAfterClassMethods()));
-    return configs;
   }
 
   /**
