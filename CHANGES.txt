@@ -1,4 +1,6 @@
 ﻿Current
+Fixed: GITHUB-1297: testng-failed.xml includes setup and tearDown (before and after annotations) of passed tests
+(Krishnan Mahadevan)
 Fixed: GITHUB-1319: ITestResult#getInstance() returns null in IConfigurationListener implementation (Krishnan Mahadevan)
 New: Skipped methods are not supposed to be executed (Julien Herr)
 Fixed: GITHUB-1197: Ability to dynamically set the status and exception of a test via ITestResult (Anthony Nguyen)

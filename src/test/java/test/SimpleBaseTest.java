@@ -6,14 +6,28 @@ import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.collections.Lists;
 import org.testng.xml.XmlClass;
+import org.testng.xml.XmlGroups;
 import org.testng.xml.XmlInclude;
+import org.testng.xml.XmlPackage;
+import org.testng.xml.XmlRun;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.regex.Pattern;
 
 public class SimpleBaseTest {
   // System property specifying where the resources (e.g. xml files) can be found
@@ -94,15 +108,42 @@ public class SimpleBaseTest {
     return result;
   }
 
+  protected static XmlSuite createXmlSuite(Map<String, String> params) {
+    XmlSuite result = createXmlSuite(UUID.randomUUID().toString());
+    result.setParameters(params);
+    return result;
+  }
+
   protected static XmlSuite createXmlSuite(String suiteName, String testName, Class<?>... classes) {
     XmlSuite suite = createXmlSuite(suiteName);
     createXmlTest(suite, testName, classes);
     return suite;
   }
 
+  protected static XmlTest createXmlTestWithPackages(XmlSuite suite, String name, String ...packageName) {
+    XmlTest result = createXmlTest(suite, name);
+    List<XmlPackage> xmlPackages = Lists.newArrayList();
+
+    for (String each : packageName) {
+      XmlPackage xmlPackage = new XmlPackage();
+      xmlPackage.setName(each);
+      xmlPackages.add(xmlPackage);
+    }
+    result.setPackages(xmlPackages);
+
+    return result;
+  }
+
   protected static XmlTest createXmlTest(XmlSuite suite, String name) {
     XmlTest result = new XmlTest(suite);
     result.setName(name);
+    return result;
+  }
+
+  protected static XmlTest createXmlTest(XmlSuite suite, String name, Map<String, String> params) {
+    XmlTest result = new XmlTest(suite);
+    result.setName(name);
+    result.setParameters(params);
     return result;
   }
 
@@ -123,12 +164,24 @@ public class SimpleBaseTest {
     return clazz;
   }
 
+  protected static XmlClass createXmlClass(XmlTest test, Class<?> testClass, Map<String, String> params) {
+    XmlClass clazz = createXmlClass(test, testClass);
+    clazz.setParameters(params);
+    return clazz;
+  }
+
   protected static XmlInclude createXmlInclude(XmlClass clazz, String method) {
     XmlInclude include = new XmlInclude(method);
 
     include.setXmlClass(clazz);
     clazz.getIncludedMethods().add(include);
 
+    return include;
+  }
+
+  protected static XmlInclude createXmlInclude(XmlClass clazz, String method, Map<String, String> params) {
+    XmlInclude include = createXmlInclude(clazz, method);
+    include.setParameters(params);
     return include;
   }
 
@@ -140,6 +193,17 @@ public class SimpleBaseTest {
 
     return include;
   }
+
+  protected static XmlGroups createGroupIncluding(String ...groupNames) {
+    XmlGroups xmlGroups = new XmlGroups();
+    XmlRun xmlRun = new XmlRun();
+    for (String group : groupNames) {
+      xmlRun.onInclude(group);
+    }
+    xmlGroups.setRun(xmlRun);
+    return xmlGroups;
+  }
+
 
     protected static XmlTest createXmlTest(XmlSuite suite, String name, String... classes) {
     XmlTest result = createXmlTest(suite, name);
@@ -171,12 +235,75 @@ public class SimpleBaseTest {
   /**
    * Compare a list of ITestResult with a list of String method names,
    */
-  public static void assertTestResultsEqual(List<ITestResult> results, List<String> methods) {
+  protected static void assertTestResultsEqual(List<ITestResult> results, List<String> methods) {
     List<String> resultMethods = Lists.newArrayList();
     for (ITestResult r : results) {
       resultMethods.add(r.getMethod().getMethodName());
     }
     Assert.assertEquals(resultMethods, methods);
+  }
+
+  /**
+   *  Deletes all files and subdirectories under dir.
+   */
+  protected static void deleteDir(File dir) {
+    try {
+      Files.walkFileTree(dir.toPath(), new SimpleFileVisitor<Path>() {
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+          Files.delete(file);
+          return FileVisitResult.CONTINUE;
+        }
+
+        @Override
+        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+          Files.delete(dir);
+          return FileVisitResult.CONTINUE;
+        }
+      });
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  protected static File createDirInTempDir(String dir) {
+    File slashTmpDir = new File(System.getProperty("java.io.tmpdir"));
+    File mTempDirectory = new File(slashTmpDir, dir);
+    mTempDirectory.mkdirs();
+    mTempDirectory.deleteOnExit();
+    return mTempDirectory;
+  }
+
+  /**
+   *
+   * @param fileName The filename to parse
+   * @param regexp The regular expression
+   * @param resultLines An out parameter that will contain all the lines
+   * that matched the regexp
+   * @return A List<Integer> containing the lines of all the matches
+   *
+   * Note that the size() of the returned valuewill always be equal to
+   * result.size() at the end of this function.
+   */
+  protected static List<Integer> grep(File fileName, String regexp, List<String> resultLines) {
+    List<Integer> resultLineNumbers = new ArrayList<>();
+    try (BufferedReader fr = new BufferedReader(new FileReader(fileName))) {
+      String line;
+      int currentLine = 0;
+      Pattern p = Pattern.compile(".*" + regexp + ".*");
+      while ((line = fr.readLine()) != null) {
+        if (p.matcher(line).matches()) {
+          resultLines.add(line);
+          resultLineNumbers.add(currentLine);
+        }
+        currentLine++;
+      }
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return resultLineNumbers;
+
   }
 
 }
