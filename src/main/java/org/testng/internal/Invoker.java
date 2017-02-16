@@ -1209,16 +1209,14 @@ public class Invoker implements IInvoker {
                 if (failure.instances.isEmpty() || lastSucces) {
                   result.addAll(tmpResults);
                 } else {
-                  for (Object failedInstance : failure.instances) {
                     List<ITestResult> retryResults = Lists.newArrayList();
 
                     failure.count = retryFailed(
-                            failedInstance, testMethod, suite, testClass, beforeMethods,
+                    		instance, testMethod, suite, testClass, beforeMethods,
                      afterMethods, groupMethods, retryResults,
                      failure.count, expectedExceptionHolder,
                      testContext, parameters, parametersIndex);
                   result.addAll(retryResults);
-                  }
                 }
 
                 //
