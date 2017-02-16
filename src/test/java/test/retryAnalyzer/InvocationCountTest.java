@@ -70,9 +70,8 @@ public final class InvocationCountTest implements IRetryAnalyzer {
     assertEquals(invocations.count("failAfterThreeRetries"), 4);
   }
 
-  @Test (
-			retryAnalyzer = InvocationCountTest.class,
-			dataProvider = "dataProvider3")
+  @Test (retryAnalyzer = InvocationCountTest.class,
+		dataProvider = "dataProvider3")
   public void retryWithDataProvider(String tc) {
 		if ("tc1".equals(tc)) {
 
