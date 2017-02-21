@@ -1728,7 +1728,7 @@ public class TestNG {
     if (instance != null) {
       addListener(instance);
     } else {
-      LOGGER.warn("Could not find reporte class : " + reporterConfig.getClassName());
+      LOGGER.warn("Could not find reporter class : " + reporterConfig.getClassName());
     }
   }
 

@@ -50,6 +50,18 @@ public class EmailableReporter implements IReporter {
 
   private int m_methodIndex;
 
+  private String fileName = "emailable-report.html";
+
+  private static final String JVM_ARG = "emailable.report.name";
+
+  public String getFileName() {
+    return fileName;
+  }
+
+  public void setFileName(String fileName) {
+    this.fileName = fileName;
+  }
+
   // ~ Methods --------------------------------------------------------------
 
   /** Creates summary of the run */
@@ -73,8 +85,12 @@ public class EmailableReporter implements IReporter {
 
   protected PrintWriter createWriter(String outdir) throws IOException {
     new File(outdir).mkdirs();
-    return new PrintWriter(new BufferedWriter(new FileWriter(new File(outdir,
-        "emailable-report.html"))));
+    String jvmArg = System.getProperty(JVM_ARG);
+    if ((jvmArg != null) && (!jvmArg.trim().isEmpty())) {
+      fileName = jvmArg;
+    }
+
+    return new PrintWriter(new BufferedWriter(new FileWriter(new File(outdir, fileName))));
   }
 
   /** Creates a table showing the highlights of each test method with links to the method details */
