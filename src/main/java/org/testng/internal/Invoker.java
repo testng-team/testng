@@ -213,12 +213,15 @@ public class Invoker implements IInvoker {
                 testMethodResult);
             testResult.setParameters(parameters);
 
-            Object newInstance = null != instance ? instance: inst;
-
             runConfigurationListeners(testResult, true /* before */);
 
-            invokeConfigurationMethod(newInstance, tm,
-              parameters, testResult);
+            Object newInstance;
+            if (instance == null || !tm.getConstructorOrMethod().getDeclaringClass().isAssignableFrom(instance.getClass())) {
+              newInstance = inst;
+            } else {
+              newInstance = instance;
+            }
+            invokeConfigurationMethod(newInstance, tm, parameters, testResult);
 
             runConfigurationListeners(testResult, false /* after */);
           }
