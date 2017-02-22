@@ -86,11 +86,10 @@ public class FailedReporterTest extends SimpleBaseTest {
     final XmlSuite suite = createXmlSuite("1297_suite");
 
     final XmlTest xmlTest = createXmlTestWithPackages(suite, "1297_test", packageName);
-    XmlGroups groups = createGroupIncluding("run");
     if (applyGroupSelectionAtTest) {
-      xmlTest.setGroups(groups);
+      createXmlGroups(xmlTest, "run");
     } else {
-      suite.setGroups(groups);
+      createXmlGroups(suite, "run");
     }
     TestNG tng = create(mTempDirectory.toPath(), suite);
     tng.setUseDefaultListeners(true);
