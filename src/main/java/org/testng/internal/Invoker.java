@@ -901,8 +901,7 @@ public class Invoker implements IInvoker {
         // don't pass the IClass or the instance as the method may be external
         // the invocation must be similar to @BeforeTest/@BeforeSuite
         invokeConfigurations(null, beforeMethodsArray, suite, params,
-            null, /* no parameter values */
-            null);
+            /* no parameter values */ null, instance);
       }
 
       //
@@ -963,8 +962,7 @@ public class Invoker implements IInvoker {
       // don't pass the IClass or the instance as the method may be external
       // the invocation must be similar to @BeforeTest/@BeforeSuite
       invokeConfigurations(null, afterMethodsArray, suite, params,
-          null, /* no parameter values */
-          null);
+          /* no parameter values */ null, instance);
 
       // Remove the groups so they don't get run again
       groupMethods.removeAfterGroups(filteredGroups.keySet());
