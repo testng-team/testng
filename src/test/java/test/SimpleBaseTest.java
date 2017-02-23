@@ -194,7 +194,19 @@ public class SimpleBaseTest {
     return include;
   }
 
-  protected static XmlGroups createGroupIncluding(String ...groupNames) {
+  protected static XmlGroups createXmlGroups(XmlSuite suite, String...includedGroupNames) {
+    XmlGroups xmlGroups = createGroupIncluding(includedGroupNames);
+    suite.setGroups(xmlGroups);
+    return xmlGroups;
+  }
+
+  protected static XmlGroups createXmlGroups(XmlTest test, String...includedGroupNames) {
+    XmlGroups xmlGroups = createGroupIncluding(includedGroupNames);
+    test.setGroups(xmlGroups);
+    return xmlGroups;
+  }
+
+  private static XmlGroups createGroupIncluding(String...groupNames) {
     XmlGroups xmlGroups = new XmlGroups();
     XmlRun xmlRun = new XmlRun();
     for (String group : groupNames) {
@@ -204,8 +216,7 @@ public class SimpleBaseTest {
     return xmlGroups;
   }
 
-
-    protected static XmlTest createXmlTest(XmlSuite suite, String name, String... classes) {
+  protected static XmlTest createXmlTest(XmlSuite suite, String name, String... classes) {
     XmlTest result = createXmlTest(suite, name);
     int index = 0;
     for (String c : classes) {

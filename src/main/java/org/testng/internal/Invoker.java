@@ -213,12 +213,15 @@ public class Invoker implements IInvoker {
                 testMethodResult);
             testResult.setParameters(parameters);
 
-            Object newInstance = null != instance ? instance: inst;
-
             runConfigurationListeners(testResult, true /* before */);
 
-            invokeConfigurationMethod(newInstance, tm,
-              parameters, testResult);
+            Object newInstance;
+            if (instance == null || !tm.getConstructorOrMethod().getDeclaringClass().isAssignableFrom(instance.getClass())) {
+              newInstance = inst;
+            } else {
+              newInstance = instance;
+            }
+            invokeConfigurationMethod(newInstance, tm, parameters, testResult);
 
             runConfigurationListeners(testResult, false /* after */);
           }
@@ -901,8 +904,7 @@ public class Invoker implements IInvoker {
         // don't pass the IClass or the instance as the method may be external
         // the invocation must be similar to @BeforeTest/@BeforeSuite
         invokeConfigurations(null, beforeMethodsArray, suite, params,
-            null, /* no parameter values */
-            null);
+            /* no parameter values */ null, instance);
       }
 
       //
@@ -963,8 +965,7 @@ public class Invoker implements IInvoker {
       // don't pass the IClass or the instance as the method may be external
       // the invocation must be similar to @BeforeTest/@BeforeSuite
       invokeConfigurations(null, afterMethodsArray, suite, params,
-          null, /* no parameter values */
-          null);
+          /* no parameter values */ null, instance);
 
       // Remove the groups so they don't get run again
       groupMethods.removeAfterGroups(filteredGroups.keySet());
