@@ -1,5 +1,6 @@
 ﻿Current
 Fixed: GITHUB-1338: @BeforeGroups method is run on a wrong instance (Pavel Vetokhin & Julien Herr)
+Fixed: GITHUB-1332: Make EmailableReport name configurable (Krishnan Mahadevan)
 Fixed: GITHUB-1297: testng-failed.xml includes setup and tearDown (before and after annotations) of passed tests
 (Krishnan Mahadevan)
 Fixed: GITHUB-1319: ITestResult#getInstance() returns null in IConfigurationListener implementation (Krishnan Mahadevan)

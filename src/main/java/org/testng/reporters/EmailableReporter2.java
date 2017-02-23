@@ -41,9 +41,20 @@ public class EmailableReporter2 implements IReporter {
     // Reusable buffer
     private StringBuilder buffer = new StringBuilder();
 
+    private String fileName = "emailable-report.html";
+
+    private static final String JVM_ARG = "emailable.report2.name";
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
     @Override
-    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
-            String outputDirectory) {
+    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
         try {
             writer = createWriter(outputDirectory);
         } catch (IOException e) {
@@ -64,8 +75,11 @@ public class EmailableReporter2 implements IReporter {
 
     protected PrintWriter createWriter(String outdir) throws IOException {
         new File(outdir).mkdirs();
-        return new PrintWriter(new BufferedWriter(new FileWriter(new File(
-                outdir, "emailable-report.html"))));
+        String jvmArg = System.getProperty(JVM_ARG);
+        if (jvmArg != null && !jvmArg.trim().isEmpty()) {
+            fileName = jvmArg;
+        }
+        return new PrintWriter(new BufferedWriter(new FileWriter(new File(outdir, fileName))));
     }
 
     protected void writeDocumentStart() {
