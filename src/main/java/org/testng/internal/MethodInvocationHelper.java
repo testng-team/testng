@@ -98,7 +98,11 @@ public class MethodInvocationHelper {
 
     synchronized(thisMethod) {
       if (! Modifier.isPublic(thisMethod.getModifiers()) || !thisMethod.isAccessible()) {
-        thisMethod.setAccessible(true);
+        try {
+          thisMethod.setAccessible(true);
+        } catch (SecurityException e) {
+          throw new TestNGException(thisMethod.getName() + " must be public", e);
+        }
       }
     }
     return thisMethod.invoke(instance, parameters);
