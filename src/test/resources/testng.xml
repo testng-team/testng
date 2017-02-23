@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="TestNG" verbose="1" parallel="none" thread-count="2"
+<suite name="TestNG" verbose="1" parallel="false" thread-count="2"
     data-provider-thread-count="3">
 
   <suite-files>
@@ -22,6 +22,23 @@
       <class name="NoPackageTest" />
     </classes>
   </test>
+
+  <test name="1336_Tests_With_Priority" parallel="classes" thread-count="10">
+    <classes>
+      <class name="test.github1336.TestNG1"/>
+      <class name="test.github1336.TestNG2"/>
+      <class name="test.github1336.TestNG3"/>
+    </classes>
+  </test>
+
+  <test name="1336_Tests_No_Priority" parallel="classes" thread-count="10">
+    <classes>
+      <class name="test.github1336.TestNG1NoPriority"/>
+      <class name="test.github1336.TestNG2NoPriority"/>
+      <class name="test.github1336.TestNG3NoPriority"/>
+    </classes>
+  </test>
+
 
   <parameter name="first-name" value="Cedric" />
 
