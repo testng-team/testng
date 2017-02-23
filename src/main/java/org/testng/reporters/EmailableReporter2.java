@@ -76,7 +76,7 @@ public class EmailableReporter2 implements IReporter {
     protected PrintWriter createWriter(String outdir) throws IOException {
         new File(outdir).mkdirs();
         String jvmArg = System.getProperty(JVM_ARG);
-        if ((jvmArg != null) && (!jvmArg.trim().isEmpty())) {
+        if (jvmArg != null && !jvmArg.trim().isEmpty()) {
             fileName = jvmArg;
         }
         return new PrintWriter(new BufferedWriter(new FileWriter(new File(outdir, fileName))));

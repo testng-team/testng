@@ -19,38 +19,39 @@ import java.security.Permission;
 public class EmailableReporterTest extends SimpleBaseTest {
     private SecurityManager manager;
 
-    @BeforeClass (alwaysRun = true)
+    @BeforeClass(alwaysRun = true)
     public void setup() {
         manager = System.getSecurityManager();
         System.setSecurityManager(new MySecurityManager(manager));
     }
 
-    @AfterClass (alwaysRun = true)
+    @AfterClass(alwaysRun = true)
     public void cleanup() {
         System.setSecurityManager(manager);
     }
 
-    @Test (dataProvider = "getReporterInstances", priority = 1)
+    @Test(dataProvider = "getReporterInstances", priority = 1)
     public void testReportsNameCustomizationViaRunMethodInvocationAndJVMArguments(IReporter reporter, String jvm) {
         runTestViaRunMethod(reporter, jvm);
     }
 
-    @Test (dataProvider = "getReporterInstances", priority = 2)
+    @Test(dataProvider = "getReporterInstances", priority = 2)
     public void testReportsNameCustomizationViaRunMethodInvocation(IReporter reporter) {
         runTestViaRunMethod(reporter, null /* no jvm arguments */);
     }
 
-    @Test (dataProvider = "getReporterNames", priority = 3)
+    @Test(dataProvider = "getReporterNames", priority = 3)
     public void testReportsNameCustomizationViaMainMethodInvocation(String clazzName) {
         runTestViaMainMethod(clazzName, null /* no jvm arguments */);
     }
-    @Test (dataProvider = "getReporterNames", priority = 4)
+
+    @Test(dataProvider = "getReporterNames", priority = 4)
     public void testReportsNameCustomizationViaMainMethodInvocationAndJVMArguments(String clazzName, String jvm) {
         runTestViaMainMethod(clazzName, jvm);
     }
 
 
-    @DataProvider (name = "getReporterInstances")
+    @DataProvider(name = "getReporterInstances")
     public Object[][] getReporterInstances(Method method) {
         if (method.getName().toLowerCase().contains("jvmarguments")) {
             return new Object[][] {
@@ -64,7 +65,7 @@ public class EmailableReporterTest extends SimpleBaseTest {
         };
     }
 
-    @DataProvider (name = "getReporterNames")
+    @DataProvider(name = "getReporterNames")
     public Object[][] getReporterNames(Method method) {
         if (method.getName().toLowerCase().contains("jvmarguments")) {
             return new Object[][] {
@@ -144,6 +145,5 @@ public class EmailableReporterTest extends SimpleBaseTest {
                 baseSecurityManager.checkPermission(permission);
             }
         }
-
     }
 }
