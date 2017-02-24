@@ -4,6 +4,7 @@ import org.testng.*;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.junit.IJUnitTestRunner;
@@ -165,16 +166,26 @@ public final class ClassHelper {
    * the Java access rules).
    */
   public static Set<Method> getAvailableMethods(Class<?> clazz) {
-    Set<Method> methods = Sets.newHashSet();
-    methods.addAll(Arrays.asList(clazz.getDeclaredMethods()));
+    Map<String, Set<Method>> methods = Maps.newHashMap();
+    for (final Method method : clazz.getDeclaredMethods()) {
+      if (methods.containsKey(method.getName())) {
+        methods.get(method.getName()).add(method);
+        continue;
+      }
+      methods.put(method.getName(), new HashSet<Method>() {{add(method);}});
+    }
 
     Class<?> parent = clazz.getSuperclass();
     while (null != parent) {
-      methods.addAll(extractMethods(clazz, parent, methods));
+      methods.putAll(extractMethods(clazz, parent, methods));
       parent = parent.getSuperclass();
     }
 
-    return methods;
+    Set<Method> returnValue = Sets.newHashSet();
+    for (Set<Method> each : methods.values()) {
+      returnValue.addAll(each);
+    }
+    return returnValue;
   }
 
   public static IJUnitTestRunner createTestRunner(TestRunner runner) {
@@ -207,9 +218,9 @@ public final class ClassHelper {
       }
   }
 
-  private static Set<Method> extractMethods(Class<?> childClass, Class<?> clazz,
-      Set<Method> collected) {
-    Set<Method> methods = Sets.newHashSet();
+  private static Map<String, Set<Method>> extractMethods(Class<?> childClass, Class<?> clazz, Map<String,
+      Set<Method>> collected) {
+    Map<String, Set<Method>> methods = Maps.newHashMap();
 
     Method[] declaredMethods = clazz.getDeclaredMethods();
 
@@ -224,12 +235,16 @@ public final class ClassHelper {
       isSamePackage = childPackage.getName().equals(classPackage.getName());
     }
 
-    for (Method method : declaredMethods) {
+    for (final Method method : declaredMethods) {
       int methodModifiers = method.getModifiers();
       if ((Modifier.isPublic(methodModifiers) || Modifier.isProtected(methodModifiers))
         || (isSamePackage && !Modifier.isPrivate(methodModifiers))) {
         if (!isOverridden(method, collected) && !Modifier.isAbstract(methodModifiers)) {
-          methods.add(method);
+          if (methods.containsKey(method.getName())) {
+            methods.get(method.getName()).add(method);
+            continue;
+          }
+          methods.put(method.getName(), new HashSet<Method>() {{add(method);}});
         }
       }
     }
@@ -237,7 +252,11 @@ public final class ClassHelper {
     return methods;
   }
 
-  private static boolean isOverridden(Method method, Set<Method> collectedMethods) {
+  private static boolean isOverridden(Method method, Map<String, Set<Method>> methods) {
+    Set<Method> collectedMethods = methods.get(method.getName());
+    if (collectedMethods == null) {
+      return false;
+    }
     Class<?> methodClass = method.getDeclaringClass();
     Class<?>[] methodParams = method.getParameterTypes();
 
