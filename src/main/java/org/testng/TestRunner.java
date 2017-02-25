@@ -1479,8 +1479,9 @@ public class TestRunner
     }
     if (listener instanceof IExecutionListener) {
       IExecutionListener iel = (IExecutionListener) listener;
-      iel.onExecutionStart();
-      m_configuration.addExecutionListener(iel);
+      if (!m_configuration.addExecutionListener(iel)) {
+        iel.onExecutionStart();
+      }
     }
     m_suite.addListener(listener);
   }

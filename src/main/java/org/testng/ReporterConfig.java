@@ -96,7 +96,7 @@ public class ReporterConfig {
     Class<?> reporterClass = ClassHelper.forName(m_className);
     if (reporterClass != null) {
       Object tmp = ClassHelper.newInstance(reporterClass);
-      if (!(result instanceof IReporter)) {
+      if (!(tmp instanceof IReporter)) {
         throw new TestNGException(m_className + " is not a IReporter");
       }
       result = (IReporter) tmp;
