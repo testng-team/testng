@@ -49,7 +49,7 @@ public class TextReporter extends TestListenerAdapter {
       Throwable ex = tr.getThrowable();
       String stackTrace = "";
       if (ex != null && m_verbose >= 2) {
-        stackTrace = Utils.stackTrace(ex, false)[0];
+        stackTrace = Utils.shortStackTrace(ex, false);
       }
 
       logResult("FAILED CONFIGURATION",
@@ -79,7 +79,7 @@ public class TextReporter extends TestListenerAdapter {
       Throwable ex = tr.getThrowable();
       String stackTrace= "";
       if (ex != null && m_verbose >= 2) {
-        stackTrace= Utils.stackTrace(ex, false)[0];
+        stackTrace= Utils.shortStackTrace(ex, false);
       }
 
       logResult("FAILED", tr, stackTrace);
@@ -87,7 +87,7 @@ public class TextReporter extends TestListenerAdapter {
 
     for (ITestResult tr : getSkippedTests()) {
       Throwable throwable = tr.getThrowable();
-      logResult("SKIPPED", tr, throwable != null ? Utils.stackTrace(throwable, false)[0] : null);
+      logResult("SKIPPED", tr, throwable != null ? Utils.shortStackTrace(throwable, false) : null);
     }
 
     List<ITestNGMethod> ft = resultsToMethods(getFailedTests());

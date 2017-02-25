@@ -173,12 +173,12 @@ public class VerboseReporter extends TestListenerAdapter {
             case SKIP:
                 sb.append("SKIPPED");
                 stackTrace = itr.getThrowable() != null
-                        ? Utils.stackTrace(itr.getThrowable(), false)[0] : "";
+                        ? Utils.shortStackTrace(itr.getThrowable(), false) : "";
                 break;
             case FAILURE:
                 sb.append("FAILED");
                 stackTrace = itr.getThrowable() != null
-                        ? Utils.stackTrace(itr.getThrowable(), false)[0] : "";
+                        ? Utils.shortStackTrace(itr.getThrowable(), false) : "";
                 break;
             case SUCCESS:
                 sb.append("PASSED");
