@@ -26,18 +26,16 @@ class InstanceOrderingMethodInterceptor implements IMethodInterceptor {
     List<Object> instanceList = Lists.newArrayList();
     Map<Object, List<IMethodInstance>> map = Maps.newHashMap();
     for (IMethodInstance mi : methods) {
-      Object[] methodInstances = mi.getInstances();
-      for (Object instance : methodInstances) {
-        if (!instanceList.contains(instance)) {
-          instanceList.add(instance);
-        }
-        List<IMethodInstance> l = map.get(instance);
-        if (l == null) {
-          l = Lists.newArrayList();
-          map.put(instance, l);
-        }
-        l.add(mi);
+      Object instance = mi.getInstance();
+      if (!instanceList.contains(instance)) {
+        instanceList.add(instance);
       }
+      List<IMethodInstance> l = map.get(instance);
+      if (l == null) {
+        l = Lists.newArrayList();
+        map.put(instance, l);
+      }
+      l.add(mi);
     }
 
     List<IMethodInstance> result = Lists.newArrayList();

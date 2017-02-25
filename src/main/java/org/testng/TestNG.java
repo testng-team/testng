@@ -958,7 +958,7 @@ public class TestNG {
       }
       addReporter(JUnitReportReporter.class);
       if (m_verbose != null && m_verbose > 4) {
-        addListener(new VerboseReporter("[TestNG] "));
+        addListener((ITestNGListener) new VerboseReporter("[TestNG] "));
       }
     }
   }
@@ -1392,7 +1392,7 @@ public class TestNG {
     }
 
     for (IReporter r : result.getReporters()) {
-      addListener(r);
+      addListener((ITestNGListener) r);
     }
 
     for (IConfigurationListener cl : m_configuration.getConfigurationListeners()) {
@@ -1424,7 +1424,7 @@ public class TestNG {
     TestNG result = new TestNG();
 
     if (null != listener) {
-      result.addListener((Object)listener);
+      result.addListener((ITestNGListener) listener);
     }
 
     //
@@ -1724,9 +1724,9 @@ public class TestNG {
   }
 
   private void addReporter(ReporterConfig reporterConfig) {
-    Object instance = reporterConfig.newReporterInstance();
+    IReporter instance = reporterConfig.newReporterInstance();
     if (instance != null) {
-      addListener(instance);
+      addListener((ITestNGListener) instance);
     } else {
       LOGGER.warn("Could not find reporter class : " + reporterConfig.getClassName());
     }

@@ -2,6 +2,7 @@ package test.conffailure;
 
 import static org.testng.Assert.assertTrue;
 
+import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -25,7 +26,7 @@ public class ConfigurationFailure {
         ClassWithFailedBeforeTestClass.class,
         ClassWithFailedBeforeTestClassVerification.class
     });
-    testng.addListener(tla);
+    testng.addListener((ITestNGListener) tla);
     testng.setVerbose(0);
     testng.run();
     assertTrue(ClassWithFailedBeforeTestClassVerification.success(),
@@ -38,14 +39,10 @@ public class ConfigurationFailure {
     TestNG testng = new TestNG();
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     testng.setTestClasses(new Class[] { ClassWithFailedBeforeSuite.class, ClassWithFailedBeforeSuiteVerification.class });
-    testng.addListener(tla);
+    testng.addListener((ITestNGListener) tla);
     testng.setVerbose(0);
     testng.run();
     assertTrue(ClassWithFailedBeforeSuiteVerification.success(),
         "No @Configuration methods should have run");
-  }
-
-  private static void ppp(String s) {
-    System.out.println("[AlwaysRunTest] " + s);
   }
 }

@@ -506,7 +506,7 @@ public class EmailableReporter2 implements IReporter {
 
     protected void writeStackTrace(Throwable throwable) {
         writer.print("<div class=\"stacktrace\">");
-        writer.print(Utils.stackTrace(throwable, true)[0]);
+        writer.print(Utils.shortStackTrace(throwable, true));
         writer.print("</div>");
     }
 

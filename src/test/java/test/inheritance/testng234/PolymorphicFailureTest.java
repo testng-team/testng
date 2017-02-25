@@ -1,6 +1,7 @@
 package test.inheritance.testng234;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -15,7 +16,7 @@ public class PolymorphicFailureTest extends SimpleBaseTest {
   public void superclassFailureShouldCauseFailure() {
     TestNG tng = create(ChildTest.class);
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener(tla);
+    tng.addListener((ITestNGListener) tla);
     tng.run();
 
     assertTestResultsEqual(tla.getSkippedTests(), Arrays.asList(

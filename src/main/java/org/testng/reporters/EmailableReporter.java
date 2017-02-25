@@ -320,7 +320,7 @@ public class EmailableReporter implements IReporter {
 
   protected void generateExceptionReport(Throwable exception,ITestNGMethod method) {
     m_out.print("<div class=\"stacktrace\">");
-    m_out.print(Utils.stackTrace(exception, true)[0]);
+    m_out.print(Utils.shortStackTrace(exception, true));
     m_out.println("</div>");
   }
 

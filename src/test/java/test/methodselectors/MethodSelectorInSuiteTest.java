@@ -1,6 +1,7 @@
 package test.methodselectors;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -41,7 +42,7 @@ public class MethodSelectorInSuiteTest  extends SimpleBaseTest{
     XmlClass testClass = new XmlClass(test.methodselectors.SampleTest.class);
     test.setXmlClasses(Arrays.asList(testClass));
     tng.setXmlSuites(Arrays.asList(suite));
-    tng.addListener(m_tla);
+    tng.addListener((ITestNGListener) m_tla);
     tng.run();
 
     validate(new String[] { "test2" });
@@ -51,7 +52,7 @@ public class MethodSelectorInSuiteTest  extends SimpleBaseTest{
   public void xmlXmlSuite() {
     TestNG tng = create();
     tng.setTestSuites(Arrays.asList(getPathToResource("methodselector-in-xml.xml")));
-    tng.addListener(m_tla);
+    tng.addListener((ITestNGListener) m_tla);
     tng.run();
 
     validate(new String[] { "test2" });

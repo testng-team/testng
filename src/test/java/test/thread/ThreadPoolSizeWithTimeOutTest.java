@@ -1,5 +1,6 @@
 package test.thread;
 
+import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -22,7 +23,7 @@ public class ThreadPoolSizeWithTimeOutTest extends ThreadPoolSizeBase {
   public void threadPoolAndTimeOutShouldFail() {
     TestNG tng = create(ThreadPoolSizeSampleTest.class);
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener(tla);
+    tng.addListener((ITestNGListener) tla);
     tng.run();
 
     Assert.assertEquals(0, tla.getPassedTests().size());
