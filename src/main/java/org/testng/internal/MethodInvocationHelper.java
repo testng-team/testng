@@ -251,9 +251,19 @@ public class MethodInvocationHelper {
       Object[] parameterValues, ITestResult testResult, IHookable hookable) {
 
     InvokeMethodRunnable imr = new InvokeMethodRunnable(tm, instance, parameterValues, hookable, testResult);
+    long startTime = System.currentTimeMillis();
+    long realTimeOut = MethodHelper.calculateTimeOut(tm);
     try {
       imr.run();
-      testResult.setStatus(ITestResult.SUCCESS);
+      if (System.currentTimeMillis() <= startTime + realTimeOut) {
+        testResult.setStatus(ITestResult.SUCCESS);
+      } else {
+        ThreadTimeoutException exception = new ThreadTimeoutException("Method "
+            + tm.getQualifiedName() + "()"
+            + " didn't finish within the time-out " + realTimeOut);
+        testResult.setThrowable(exception);
+        testResult.setStatus(ITestResult.FAILURE);
+      }
     } catch (Exception ex) {
       testResult.setThrowable(ex.getCause());
       testResult.setStatus(ITestResult.FAILURE);
