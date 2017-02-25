@@ -55,6 +55,7 @@ public class VerifyInterceptor implements IMethodInterceptor {
         final ITestNGMethod vm = TestNGUtils.createITestNGMethod(tm, m);
         result.add(new IMethodInstance() {
 
+          @Deprecated
           @Override
           public Object[] getInstances() {
             return tm.getInstances();
@@ -63,14 +64,6 @@ public class VerifyInterceptor implements IMethodInterceptor {
           @Override
           public ITestNGMethod getMethod() {
             return vm;
-          }
-
-          public int compareTo(IMethodInstance o) {
-            if (getInstances()[0] == o.getInstances()[0]) {
-              return 0;
-            } else {
-              return -1;
-            }
           }
 
           @Override

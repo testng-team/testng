@@ -844,7 +844,7 @@ public class TestRunner
         if (!processedClasses.contains(c)) {
           processedClasses.add(c);
           if (System.getProperty("experimental") != null) {
-            List<List<IMethodInstance>> instances = createInstances(methodInstances);
+            Collection<List<IMethodInstance>> instances = createInstances(methodInstances);
             for (List<IMethodInstance> inst : instances) {
               TestMethodWorker worker = createTestMethodWorker(inst, params, c);
               result.add(worker);
@@ -897,26 +897,18 @@ public class TestRunner
     return result;
   }
 
-  private List<List<IMethodInstance>> createInstances(List<IMethodInstance> methodInstances) {
+  private Collection<List<IMethodInstance>> createInstances(List<IMethodInstance> methodInstances) {
     Map<Object, List<IMethodInstance>> map = Maps.newHashMap();
-//    MapList<IMethodInstance[], Object> map = new MapList<IMethodInstance[], Object>();
     for (IMethodInstance imi : methodInstances) {
-      for (Object o : imi.getInstances()) {
-        System.out.println(o);
-        List<IMethodInstance> l = map.get(o);
-        if (l == null) {
-          l = Lists.newArrayList();
-          map.put(o, l);
-        }
-        l.add(imi);
+      Object o = imi.getInstance();
+      List<IMethodInstance> l = map.get(o);
+      if (l == null) {
+        l = Lists.newArrayList();
+        map.put(o, l);
       }
-//      for (Object instance : imi.getInstances()) {
-//        map.put(imi, instance);
-//      }
+      l.add(imi);
     }
-//    return map.getKeys();
-//    System.out.println(map);
-    return new ArrayList<>(map.values());
+    return map.values();
   }
 
   private TestMethodWorker createTestMethodWorker(
