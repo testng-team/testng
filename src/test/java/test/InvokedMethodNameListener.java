@@ -6,6 +6,8 @@ import org.testng.IInvokedMethodListener;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +26,7 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
   private final List<String> skippedAfterInvocationMethodNames = new ArrayList<>();
   private final List<String> succeedMethodNames = new ArrayList<>();
   private final Map<String, ITestResult> results = new HashMap<>();
+  private final Map<Class<?>, List<String>> mapping = Maps.newHashMap();
   private final boolean skipConfiguration;
   private final boolean wantSkippedMethodAfterInvocation;
 
@@ -49,6 +52,12 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
 
   @Override
   public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
+    List<String> methodNames = mapping.get(testResult.getMethod().getRealClass());
+    if (methodNames == null) {
+      methodNames = Lists.newArrayList();
+      mapping.put(testResult.getMethod().getRealClass(), methodNames);
+    }
+    methodNames.add(method.getTestMethod().getMethodName());
     String name = getName(testResult);
     switch (testResult.getStatus()) {
       case ITestResult.FAILURE:
@@ -181,5 +190,9 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
 
   public ITestResult getResult(String name) {
     return results.get(name);
+  }
+
+  public List<String> getMethodsForTestClass(Class<?> testClass) {
+    return mapping.get(testClass);
   }
 }
