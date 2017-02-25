@@ -26,6 +26,7 @@ import java.util.Set;
  * constructor on its run() method.
  */
 public class TestMethodWorker implements IWorker<ITestNGMethod> {
+
   // Map of the test methods and their associated instances
   // It has to be a set because the same method can be passed several times
   // and associated to a different instance
