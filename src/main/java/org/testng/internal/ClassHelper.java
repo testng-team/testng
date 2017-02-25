@@ -1,6 +1,12 @@
 package org.testng.internal;
 
-import org.testng.*;
+import org.testng.IClass;
+import org.testng.IMethodSelector;
+import org.testng.IObjectFactory;
+import org.testng.IObjectFactory2;
+import org.testng.ITestObjectFactory;
+import org.testng.TestNGException;
+import org.testng.TestRunner;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.collections.Lists;
@@ -15,7 +21,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * Utility class for different class manipulations.
@@ -167,17 +177,26 @@ public final class ClassHelper {
    */
   public static Set<Method> getAvailableMethods(Class<?> clazz) {
     Map<String, Set<Method>> methods = Maps.newHashMap();
-    for (final Method method : clazz.getDeclaredMethods()) {
-      if (methods.containsKey(method.getName())) {
-        methods.get(method.getName()).add(method);
-        continue;
+    for (final Method declaredMethod : clazz.getDeclaredMethods()) {
+      Set<Method> declaredMethods = methods.get(declaredMethod.getName());
+      if (declaredMethods == null) {
+        declaredMethods = Sets.newHashSet();
+        methods.put(declaredMethod.getName(), declaredMethods);
       }
-      methods.put(method.getName(), new HashSet<Method>() {{add(method);}});
+      declaredMethods.add(declaredMethod);
     }
 
     Class<?> parent = clazz.getSuperclass();
     while (null != parent) {
-      methods.putAll(extractMethods(clazz, parent, methods));
+      Set<Map.Entry<String, Set<Method>>> extractedMethods = extractMethods(clazz, parent, methods).entrySet();
+      for (Map.Entry<String, Set<Method>> extractedMethod : extractedMethods){
+        Set<Method> m = methods.get(extractedMethod.getKey());
+        if (m == null) {
+          methods.put(extractedMethod.getKey(), extractedMethod.getValue());
+        } else {
+          m.addAll(extractedMethod.getValue());
+        }
+      }
       parent = parent.getSuperclass();
     }
 
@@ -240,11 +259,12 @@ public final class ClassHelper {
       if ((Modifier.isPublic(methodModifiers) || Modifier.isProtected(methodModifiers))
         || (isSamePackage && !Modifier.isPrivate(methodModifiers))) {
         if (!isOverridden(method, collected) && !Modifier.isAbstract(methodModifiers)) {
-          if (methods.containsKey(method.getName())) {
-            methods.get(method.getName()).add(method);
-            continue;
+          Set<Method> eligibleMethods = methods.get(method.getName());
+          if (eligibleMethods == null) {
+            eligibleMethods = Sets.newHashSet();
+            methods.put(method.getName(), eligibleMethods);
           }
-          methods.put(method.getName(), new HashSet<Method>() {{add(method);}});
+          eligibleMethods.add(method);
         }
       }
     }
@@ -252,8 +272,8 @@ public final class ClassHelper {
     return methods;
   }
 
-  private static boolean isOverridden(Method method, Map<String, Set<Method>> methods) {
-    Set<Method> collectedMethods = methods.get(method.getName());
+  private static boolean isOverridden(Method method, Map<String, Set<Method>> methodsByName) {
+    Set<Method> collectedMethods = methodsByName.get(method.getName());
     if (collectedMethods == null) {
       return false;
     }
@@ -262,10 +282,7 @@ public final class ClassHelper {
 
     for (Method m: collectedMethods) {
       Class<?>[] paramTypes = m.getParameterTypes();
-      if (method.getName().equals(m.getName())
-         && methodClass.isAssignableFrom(m.getDeclaringClass())
-         && methodParams.length == paramTypes.length) {
-
+      if (methodClass.isAssignableFrom(m.getDeclaringClass()) && methodParams.length == paramTypes.length) {
         boolean sameParameters = true;
         for (int i= 0; i < methodParams.length; i++) {
           if (!methodParams[i].equals(paramTypes[i])) {
