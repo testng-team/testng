@@ -13,9 +13,6 @@ import java.util.List;
 
 /**
  * A simple reporter that collects the results and prints them on standard out.
- *
- * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
- * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public class TextReporter extends TestListenerAdapter {
 

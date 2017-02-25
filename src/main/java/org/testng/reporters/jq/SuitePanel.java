@@ -9,6 +9,7 @@ import org.testng.util.Strings;
 import java.util.List;
 
 public class SuitePanel extends BasePanel {
+
   private static final String PASSED = "passed";
   private static final String SKIPPED = "skipped";
   private static final String FAILED = "failed";
@@ -96,8 +97,7 @@ public class SuitePanel extends BasePanel {
         xsb.addString("(" + description + ")");
         xsb.pop("em");
     }
-//    long time = tr.getEndMillis() - tr.getStartMillis();
-//    xsb.addOptional(S, " " + Long.toString(time) + " ms", C, "method-time");
+
     xsb.pop(D);
     xsb.pop(D);
   }
