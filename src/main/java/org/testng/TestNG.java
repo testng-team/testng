@@ -179,7 +179,6 @@ public class TestNG {
   protected long m_end;
   protected long m_start;
 
-  private final Map<Class<? extends IExecutionListener>, IExecutionListener> m_executionListeners = Maps.newHashMap();
   private final Map<Class<? extends IAlterSuiteListener>, IAlterSuiteListener> m_alterSuiteListeners= Maps.newHashMap();
 
   private boolean m_isInitialized = false;
@@ -757,11 +756,10 @@ public class TestNG {
       setConfigurable((IConfigurable) listener);
     }
     if (listener instanceof IExecutionListener) {
-      IExecutionListener execution = (IExecutionListener) listener;
-      maybeAddListener(m_executionListeners, execution.getClass(), execution);
+      m_configuration.addExecutionListener((IExecutionListener) listener);
     }
     if (listener instanceof IConfigurationListener) {
-      getConfiguration().addConfigurationListener((IConfigurationListener) listener);
+      m_configuration.addConfigurationListener((IConfigurationListener) listener);
     }
     if (listener instanceof IAlterSuiteListener) {
       IAlterSuiteListener alter = (IAlterSuiteListener) listener;
@@ -1147,20 +1145,17 @@ public class TestNG {
   }
 
   private void runSuiteAlterationListeners() {
-    for (Collection<IAlterSuiteListener> listeners
-        : Arrays.asList(m_alterSuiteListeners.values(), m_configuration.getAlterSuiteListeners())) {
-      for (IAlterSuiteListener l : listeners) {
-        l.alter(m_suites);
-      }
+    for (IAlterSuiteListener l : m_alterSuiteListeners.values()) {
+      l.alter(m_suites);
     }
   }
 
   private void runExecutionListeners(boolean start) {
-    for (Collection<IExecutionListener> listeners
-        : Arrays.asList(m_executionListeners.values(), m_configuration.getExecutionListeners())) {
-      for (IExecutionListener l : listeners) {
-        if (start) l.onExecutionStart();
-        else l.onExecutionFinish();
+    for (IExecutionListener l : m_configuration.getExecutionListeners()) {
+      if (start) {
+        l.onExecutionStart();
+      } else {
+        l.onExecutionFinish();
       }
     }
   }
