@@ -1724,7 +1724,7 @@ public class TestNG {
   }
 
   private void addReporter(ReporterConfig reporterConfig) {
-    Object instance = reporterConfig.newReporterInstance();
+    IReporter instance = reporterConfig.newReporterInstance();
     if (instance != null) {
       addListener(instance);
     } else {
