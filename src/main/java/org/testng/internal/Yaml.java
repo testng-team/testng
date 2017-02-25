@@ -90,6 +90,7 @@ public class Yaml {
         XmlSuite.DEFAULT_DATA_PROVIDER_THREAD_COUNT);
     maybeAdd(result, "timeOut", suite.getTimeOut(), null);
     maybeAdd(result, "parallel", suite.getParallel(), XmlSuite.DEFAULT_PARALLEL);
+    maybeAdd(result, "configFailurePolicy", suite.getConfigFailurePolicy().toString(), XmlSuite.DEFAULT_CONFIG_FAILURE_POLICY);
     maybeAdd(result, "skipFailedInvocationCounts", suite.skipFailedInvocationCounts(),
         XmlSuite.DEFAULT_SKIP_FAILED_INVOCATION_COUNTS);
 
@@ -270,6 +271,10 @@ public class Yaml {
         if (node.getType().equals(XmlSuite.ParallelMode.class)) {
           String parallel = (String) constructScalar((ScalarNode) node);
           return XmlSuite.ParallelMode.getValidParallel(parallel);
+        }
+        if (node.getType().equals(XmlSuite.FailurePolicy.class)) {
+          String failurePolicy = (String) constructScalar((ScalarNode) node);
+          return XmlSuite.FailurePolicy.getValidPolicy(failurePolicy);
         }
         return super.construct(node);
       }

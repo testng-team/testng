@@ -1,4 +1,5 @@
 ﻿Current
+Fixed: GITHUB-1351: FailurePolicy failing with YAML (Steven Zaluk & Julien Herr)
 New: The name of all TestNG threads follow "TestNG-<thread type>-<number>" pattern (Julien Herr)
 Fixed: GITHUB-1338: @BeforeGroups method is run on a wrong instance (Pavel Vetokhin & Julien Herr)
 Fixed: GITHUB-1332: Make EmailableReport name configurable (Krishnan Mahadevan)
