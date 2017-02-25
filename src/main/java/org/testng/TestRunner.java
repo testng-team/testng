@@ -864,8 +864,6 @@ public class TestRunner
       }
     }
 
-    // Sort by priorities
-    Collections.sort(result);
     return result;
   }
 
