@@ -724,7 +724,7 @@ public class TestRunner
       if (parallel) {
         if (graph.getNodeCount() > 0) {
           GraphThreadPoolExecutor<ITestNGMethod> executor =
-                  new GraphThreadPoolExecutor<>(graph, this,
+                  new GraphThreadPoolExecutor<>("test=" + xmlTest.getName(), graph, this,
                           threadCount, threadCount, 0, TimeUnit.MILLISECONDS,
                           new LinkedBlockingQueue<Runnable>());
           executor.run();

@@ -1243,7 +1243,7 @@ public class TestNG {
         IThreadWorkerFactory<ISuite> factory = new SuiteWorkerFactory(suiteRunnerMap,
           0 /* verbose hasn't been set yet */, getDefaultSuiteName());
         GraphThreadPoolExecutor<ISuite> pooledExecutor =
-                new GraphThreadPoolExecutor<>(suiteGraph, factory, m_suiteThreadPoolSize,
+                new GraphThreadPoolExecutor<>("suites", suiteGraph, factory, m_suiteThreadPoolSize,
                         m_suiteThreadPoolSize, Integer.MAX_VALUE, TimeUnit.MILLISECONDS,
                         new LinkedBlockingQueue<Runnable>());
 

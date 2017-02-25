@@ -396,7 +396,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       tasks.add(new SuiteWorker(tr));
     }
 
-    ThreadUtil.execute(tasks, xmlSuite.getThreadCount(),
+    ThreadUtil.execute("tests", tasks, xmlSuite.getThreadCount(),
         xmlSuite.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS), false);
   }
 
