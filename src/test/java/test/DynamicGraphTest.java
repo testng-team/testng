@@ -1,13 +1,19 @@
 package test;
 
 import org.testng.Assert;
+import org.testng.ITestNGMethod;
 import org.testng.annotations.Test;
+import org.testng.collections.ListMultiMap;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 import org.testng.internal.DynamicGraph;
 import org.testng.internal.DynamicGraph.Status;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-public class DynamicGraphTest {
+public class DynamicGraphTest extends SimpleBaseTest {
 
   private static class Node {
     private final String name;
@@ -124,6 +130,62 @@ public class DynamicGraphTest {
     dg.setStatus(b2, Status.RUNNING);
     dg.setStatus(b1, Status.FINISHED);
     assertFreeNodesEquals(dg);
+  }
+
+  @Test
+  public void testOrderingOfEdgesWithSameWeight() {
+    Class<?>[] classes = new Class[] {
+        TestClassContainerForGitHubIssue1360.TestNG1.class,
+        TestClassContainerForGitHubIssue1360.TestNG2.class,
+        TestClassContainerForGitHubIssue1360.TestNG3.class
+    };
+    List<ITestNGMethod> methods = extractTestNGMethods(classes);
+    DynamicGraph<ITestNGMethod> graph = new DynamicGraph<>();
+
+    ListMultiMap<Integer, ITestNGMethod> methodsByPriority = Maps.newListMultiMap();
+    for (ITestNGMethod method : methods) {
+      methodsByPriority.put(method.getPriority(), method);
+      graph.addNode(method);
+    }
+    List<Integer> availablePriorities = Lists.newArrayList(methodsByPriority.keySet());
+    Collections.sort(availablePriorities);
+    Integer previousPriority = methods.size() > 0 ? availablePriorities.get(0) : 0;
+    for (int i = 1; i < availablePriorities.size(); i++) {
+      Integer currentPriority = availablePriorities.get(i);
+      for (ITestNGMethod p0Method : methodsByPriority.get(previousPriority)) {
+        for (ITestNGMethod p1Method : methodsByPriority.get(currentPriority)) {
+          graph.addEdge(1, p1Method, p0Method, p1Method.getPriority());
+        }
+      }
+      previousPriority = currentPriority;
+    }
+    List<String> expected = Arrays.asList("TestNG1.test1TestNG1", "TestNG2.test1TestNG2", "TestNG3.test1TestNG3");
+    List<ITestNGMethod> p1Methods = graph.getFreeNodes();
+    Assert.assertEquals(p1Methods.size(), 3);
+    graph.setStatus(p1Methods, Status.FINISHED);
+    for (ITestNGMethod p1Method : p1Methods) {
+      Assert.assertTrue(expected.contains(constructName(p1Method)));
+    }
+    expected = Arrays.asList("TestNG1.test2TestNG1", "TestNG2.test2TestNG2", "TestNG3.test2TestNG3");
+    List<ITestNGMethod> p2Methods = graph.getFreeNodes();
+    Assert.assertEquals(p2Methods.size(), 3);
+    graph.setStatus(p2Methods, Status.FINISHED);
+    for (ITestNGMethod p2Method : p2Methods) {
+      Assert.assertTrue(expected.contains(constructName(p2Method)));
+    }
+
+    expected = Arrays.asList("TestNG1.test3TestNG1", "TestNG2.test3TestNG2", "TestNG3.test3TestNG3");
+    List<ITestNGMethod> p3Methods = graph.getFreeNodes();
+    Assert.assertEquals(p3Methods.size(), 3);
+    graph.setStatus(p3Methods, Status.FINISHED);
+    for (ITestNGMethod p3Method : p3Methods) {
+      Assert.assertTrue(expected.contains(constructName(p3Method)));
+    }
+
+  }
+
+  private static String constructName(ITestNGMethod method) {
+    return method.getConstructorOrMethod().getDeclaringClass().getSimpleName() + "." + method.getMethodName();
   }
 
 }

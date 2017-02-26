@@ -8,6 +8,7 @@ import org.testng.internal.collections.Pair;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,11 +32,17 @@ public class DynamicGraph<T> {
     private final T from;
     private final T to;
     private int weight;
+    private int order;
 
     private Edge(T from, T to, int weight) {
+      this(from, to, weight, 0);
+    }
+
+    private Edge(T from, T to, int weight, int order) {
       this.from = from;
       this.to = to;
       this.weight = weight;
+      this.order = order;
     }
   }
 
@@ -44,6 +51,10 @@ public class DynamicGraph<T> {
    */
   public void addNode(T node) {
     m_nodesReady.add(node);
+  }
+
+  public void addEdge(int weight, T from, T to, int order) {
+    addEdges(Collections.singletonList(new Edge<>(from, to, weight, order)));
   }
 
   /**
@@ -103,8 +114,10 @@ public class DynamicGraph<T> {
     // if all nodes have dependencies, then we can ignore the lowest one
     if (result.isEmpty()) {
       int lowestPriority = getLowestEdgePriority(m_nodesReady);
+      int lowestOrder = getLowestOrder(m_nodesReady);
       for (T node : m_nodesReady) {
-        if (hasAllEdgesWithLevel(m_edges.get(node), lowestPriority)) {
+        if (hasAllEdgesWithLevel(m_edges.get(node), lowestPriority) &&
+            hasAllEdgesWithSameOrder(m_edges.get(node), lowestOrder)) {
           result.add(node);
         }
       }
@@ -129,9 +142,35 @@ public class DynamicGraph<T> {
     return lowerPriority == null ? 0 : lowerPriority;
   }
 
+  private int getLowestOrder(List<T> nodes) {
+    if (nodes.isEmpty()) {
+      return 0;
+    }
+    Integer lowestOrder = null;
+    for (T node : nodes) {
+      for (Edge<T> edge : m_edges.get(node)) {
+        if (lowestOrder == null) {
+          lowestOrder = edge.order;
+        } else {
+          lowestOrder = lowestOrder < edge.order ? lowestOrder : edge.order;
+        }
+      }
+    }
+    return lowestOrder == null ? 0 : lowestOrder;
+  }
+
   private static <T> boolean hasAllEdgesWithLevel(List<Edge<T>> edges, int level) {
     for (Edge<?> edge : edges) {
       if (edge.weight != level) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private static <T> boolean hasAllEdgesWithSameOrder(List<Edge<T>> edges, int order) {
+    for (Edge<?> edge : edges) {
+      if (edge.order != order) {
         return false;
       }
     }

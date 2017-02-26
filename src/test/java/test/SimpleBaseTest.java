@@ -2,9 +2,15 @@ package test;
 
 import org.testng.Assert;
 import org.testng.ITestNGListener;
+import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestNG;
+import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
+import org.testng.internal.annotations.AnnotationHelper;
+import org.testng.internal.annotations.DefaultAnnotationTransformer;
+import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.JDK15AnnotationFinder;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlGroups;
 import org.testng.xml.XmlInclude;
@@ -242,6 +248,23 @@ public class SimpleBaseTest {
     }
     return result + File.separatorChar + fileName;
   }
+
+  public static List<ITestNGMethod> extractTestNGMethods(Class<?>... classes) {
+    XmlSuite xmlSuite = new XmlSuite();
+    xmlSuite.setName("suite");
+    XmlTest xmlTest = createXmlTest(xmlSuite, "tests", classes);
+    IAnnotationFinder annotationFinder = new JDK15AnnotationFinder(new DefaultAnnotationTransformer());
+    List<ITestNGMethod> methods = Lists.newArrayList();
+    for (Class<?> clazz : classes) {
+      methods.addAll(
+          Arrays.asList(
+              AnnotationHelper.findMethodsWithAnnotation(clazz, ITestAnnotation.class, annotationFinder, xmlTest)
+          )
+      );
+    }
+    return methods;
+  }
+
 
   /**
    * Compare a list of ITestResult with a list of String method names,
