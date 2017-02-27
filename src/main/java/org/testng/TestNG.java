@@ -179,7 +179,6 @@ public class TestNG {
   protected long m_end;
   protected long m_start;
 
-  private final Map<Class<? extends IExecutionListener>, IExecutionListener> m_executionListeners = Maps.newHashMap();
   private final Map<Class<? extends IAlterSuiteListener>, IAlterSuiteListener> m_alterSuiteListeners= Maps.newHashMap();
 
   private boolean m_isInitialized = false;
@@ -757,11 +756,10 @@ public class TestNG {
       setConfigurable((IConfigurable) listener);
     }
     if (listener instanceof IExecutionListener) {
-      IExecutionListener execution = (IExecutionListener) listener;
-      maybeAddListener(m_executionListeners, execution.getClass(), execution);
+      m_configuration.addExecutionListener((IExecutionListener) listener);
     }
     if (listener instanceof IConfigurationListener) {
-      getConfiguration().addConfigurationListener((IConfigurationListener) listener);
+      m_configuration.addConfigurationListener((IConfigurationListener) listener);
     }
     if (listener instanceof IAlterSuiteListener) {
       IAlterSuiteListener alter = (IAlterSuiteListener) listener;
@@ -958,7 +956,7 @@ public class TestNG {
       }
       addReporter(JUnitReportReporter.class);
       if (m_verbose != null && m_verbose > 4) {
-        addListener(new VerboseReporter("[TestNG] "));
+        addListener((ITestNGListener) new VerboseReporter("[TestNG] "));
       }
     }
   }
@@ -1156,11 +1154,11 @@ public class TestNG {
   }
 
   private void runExecutionListeners(boolean start) {
-    for (Collection<IExecutionListener> listeners
-        : Arrays.asList(m_executionListeners.values(), m_configuration.getExecutionListeners())) {
-      for (IExecutionListener l : listeners) {
-        if (start) l.onExecutionStart();
-        else l.onExecutionFinish();
+    for (IExecutionListener l : m_configuration.getExecutionListeners()) {
+      if (start) {
+        l.onExecutionStart();
+      } else {
+        l.onExecutionFinish();
       }
     }
   }
@@ -1392,7 +1390,7 @@ public class TestNG {
     }
 
     for (IReporter r : result.getReporters()) {
-      addListener(r);
+      addListener((ITestNGListener) r);
     }
 
     for (IConfigurationListener cl : m_configuration.getConfigurationListeners()) {
@@ -1424,7 +1422,7 @@ public class TestNG {
     TestNG result = new TestNG();
 
     if (null != listener) {
-      result.addListener((Object)listener);
+      result.addListener((ITestNGListener) listener);
     }
 
     //
@@ -1724,9 +1722,9 @@ public class TestNG {
   }
 
   private void addReporter(ReporterConfig reporterConfig) {
-    Object instance = reporterConfig.newReporterInstance();
+    IReporter instance = reporterConfig.newReporterInstance();
     if (instance != null) {
-      addListener(instance);
+      addListener((ITestNGListener) instance);
     } else {
       LOGGER.warn("Could not find reporter class : " + reporterConfig.getClassName());
     }

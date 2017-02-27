@@ -1,6 +1,7 @@
 package test.dependsongroup;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -17,7 +18,7 @@ public class DependsOnGroupsTest extends SimpleBaseTest {
     });
 
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener(tla);
+    tng.addListener((ITestNGListener) tla);
     tng.run();
     String[] expected = new String[] {
         "zeroA", "zeroB",

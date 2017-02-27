@@ -1,5 +1,6 @@
 package org.testng.reporters.jq;
 
+import java.util.Set;
 import org.testng.ITestResult;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Maps;
@@ -32,8 +33,7 @@ public class ResultsByClass {
     return result;
   }
 
-  public List<Class<?>> getClasses() {
-    // TODO do not use deprecated method
-    return m_results.getKeys();
+  public Set<Class<?>> getClasses() {
+    return m_results.keySet();
   }
 }

@@ -899,23 +899,15 @@ public class TestRunner
 
   private List<List<IMethodInstance>> createInstances(List<IMethodInstance> methodInstances) {
     Map<Object, List<IMethodInstance>> map = Maps.newHashMap();
-//    MapList<IMethodInstance[], Object> map = new MapList<IMethodInstance[], Object>();
     for (IMethodInstance imi : methodInstances) {
-      for (Object o : imi.getInstances()) {
-        System.out.println(o);
-        List<IMethodInstance> l = map.get(o);
-        if (l == null) {
-          l = Lists.newArrayList();
-          map.put(o, l);
-        }
-        l.add(imi);
+      Object o = imi.getInstance();
+      List<IMethodInstance> l = map.get(o);
+      if (l == null) {
+        l = Lists.newArrayList();
+        map.put(o, l);
       }
-//      for (Object instance : imi.getInstances()) {
-//        map.put(imi, instance);
-//      }
+      l.add(imi);
     }
-//    return map.getKeys();
-//    System.out.println(map);
     return new ArrayList<>(map.values());
   }
 
@@ -1485,8 +1477,9 @@ public class TestRunner
     }
     if (listener instanceof IExecutionListener) {
       IExecutionListener iel = (IExecutionListener) listener;
-      iel.onExecutionStart();
-      m_configuration.addExecutionListener(iel);
+      if (!m_configuration.addExecutionListener(iel)) {
+        iel.onExecutionStart();
+      }
     }
     m_suite.addListener(listener);
   }

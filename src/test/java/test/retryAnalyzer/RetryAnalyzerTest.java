@@ -6,6 +6,7 @@ import static org.testng.Assert.assertTrue;
 
 import java.util.List;
 
+import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -18,7 +19,7 @@ public class RetryAnalyzerTest extends SimpleBaseTest {
     public void testInvocationCounts() {
         TestNG tng = create(InvocationCountTest.class);
         TestListenerAdapter tla = new TestListenerAdapter();
-        tng.addListener(tla);
+        tng.addListener((ITestNGListener) tla);
 
         tng.run();
 

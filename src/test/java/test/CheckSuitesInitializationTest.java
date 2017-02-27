@@ -3,6 +3,7 @@ package test;
 import java.util.Arrays;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -34,7 +35,7 @@ public class CheckSuitesInitializationTest extends SimpleBaseTest {
     TestNG tng = create();
     String testngXmlPath = getPathToResource("checksuitesinitialization/parent-suite.xml");
     tng.setTestSuites(Arrays.asList(testngXmlPath));
-    tng.addListener(tla);
+    tng.addListener((ITestNGListener) tla);
     tng.run();
     Assert.assertEquals(tla.getPassedTests().size(), 4);
   }

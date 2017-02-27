@@ -156,9 +156,8 @@ public class TestHTMLReporter extends TestListenerAdapter {
       pw.append("<td>");
 
       if (null != tw) {
-        String[] stackTraces = Utils.stackTrace(tw, true);
-        fullStackTrace = stackTraces[1];
-        stackTrace = "<div><pre>" + stackTraces[0]  + "</pre></div>";
+        fullStackTrace = Utils.longStackTrace(tw, true);
+        stackTrace = "<div><pre>" + Utils.shortStackTrace(tw, true)  + "</pre></div>";
 
         pw.append(stackTrace);
         // JavaScript link

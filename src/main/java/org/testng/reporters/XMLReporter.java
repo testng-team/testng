@@ -217,10 +217,12 @@ public class XMLReporter implements IReporter {
     config.setFileFragmentationLevel(fileFragmentationLevel);
   }
 
+  @Deprecated
   public int getStackTraceOutputMethod() {
     return config.getStackTraceOutputMethod();
   }
 
+  @Deprecated
   public void setStackTraceOutputMethod(int stackTraceOutputMethod) {
     config.setStackTraceOutputMethod(stackTraceOutputMethod);
   }

@@ -160,19 +160,18 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
         instances= new HashSet<>();
         invokedBeforeClassMethods.put(testClass, instances);
       }
-      for(Object instance: mi.getInstances()) {
-        if (! instances.contains(instance)) {
-          instances.add(instance);
-          for (IClassListener listener : m_listeners) {
-            listener.onBeforeClass(testClass);
-          }
-          m_invoker.invokeConfigurations(testClass,
-                                         testClass.getBeforeClassMethods(),
-                                         m_suite,
-                                         m_parameters,
-                                         null, /* no parameter values */
-                                         instance);
+      Object instance = mi.getInstance();
+      if (! instances.contains(instance)) {
+        instances.add(instance);
+        for (IClassListener listener : m_listeners) {
+          listener.onBeforeClass(testClass);
         }
+        m_invoker.invokeConfigurations(testClass,
+                                       testClass.getBeforeClassMethods(),
+                                       m_suite,
+                                       m_parameters,
+                                       null, /* no parameter values */
+                                       instance);
       }
     }
   }
@@ -203,10 +202,9 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
           instances= new HashSet<>();
           invokedAfterClassMethods.put(testClass, instances);
         }
-        for(Object inst: mi.getInstances()) {
-          if(! instances.contains(inst)) {
-            invokeInstances.add(inst);
-          }
+        Object inst = mi.getInstance();
+        if(! instances.contains(inst)) {
+          invokeInstances.add(inst);
         }
       }
 

@@ -5,6 +5,7 @@ import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
+import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
@@ -30,7 +31,7 @@ public class CountTest extends SimpleBaseTest {
       }
     };
 
-    tng.addListener(r);
+    tng.addListener((ITestNGListener) r);
     tng.run();
   }
 }

@@ -16,7 +16,7 @@ public class Configuration implements IConfiguration {
   private ITestObjectFactory m_objectFactory;
   private IHookable m_hookable;
   private IConfigurable m_configurable;
-  private final List<IExecutionListener> m_executionListeners = Lists.newArrayList();
+  private final Map<Class<? extends IExecutionListener>, IExecutionListener> m_executionListeners = Maps.newHashMap();
   private final List<IAlterSuiteListener> m_alterSuiteListeners = Lists.newArrayList();
   private final Map<Class<? extends IConfigurationListener>, IConfigurationListener> m_configurationListeners = Maps.newHashMap();
 
@@ -74,12 +74,18 @@ public class Configuration implements IConfiguration {
 
   @Override
   public List<IExecutionListener> getExecutionListeners() {
-    return m_executionListeners;
+    return Lists.newArrayList(m_executionListeners.values());
   }
 
   @Override
-  public void addExecutionListener(IExecutionListener l) {
-    m_executionListeners.add(l);
+  public boolean addExecutionListener(IExecutionListener l) {
+    IExecutionListener listener = m_executionListeners.get(l.getClass());
+    if (listener != null) {
+      // Skip the listener
+      return false;
+    }
+    m_executionListeners.put(l.getClass(), l);
+    return true;
   }
 
   @Override
@@ -89,6 +95,11 @@ public class Configuration implements IConfiguration {
 
   @Override
   public void addConfigurationListener(IConfigurationListener cl) {
+    IConfigurationListener listener = m_configurationListeners.get(cl.getClass());
+    if (listener != null) {
+      // Skip the listener
+      return;
+    }
     m_configurationListeners.put(cl.getClass(), cl);
   }
 

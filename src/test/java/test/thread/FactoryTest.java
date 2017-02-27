@@ -1,6 +1,7 @@
 package test.thread;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -39,7 +40,7 @@ public class FactoryTest {
       tng.setParallel(parallelMode);
     }
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener(tla);
+    tng.addListener((ITestNGListener) tla);
 
     B.setUp();
     tng.run();

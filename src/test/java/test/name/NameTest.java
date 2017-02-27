@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -19,7 +20,7 @@ public class NameTest extends SimpleBaseTest {
   public void itestTest() {
     TestNG tng = create(SimpleITestSample.class);
     TestListenerAdapter adapter = new TestListenerAdapter();
-    tng.addListener(adapter);
+    tng.addListener((ITestNGListener) adapter);
 
     tng.run();
 
@@ -36,7 +37,7 @@ public class NameTest extends SimpleBaseTest {
   public void itestTestWithXml() {
     TestNG tng = createTests("suite", SimpleITestSample.class);
     TestListenerAdapter adapter = new TestListenerAdapter();
-    tng.addListener(adapter);
+    tng.addListener((ITestNGListener) adapter);
 
     tng.run();
 
@@ -53,7 +54,7 @@ public class NameTest extends SimpleBaseTest {
   public void testNameTest() {
     TestNG tng = create(NameSample.class);
     TestListenerAdapter adapter = new TestListenerAdapter();
-    tng.addListener(adapter);
+    tng.addListener((ITestNGListener) adapter);
 
     tng.run();
 
@@ -70,7 +71,7 @@ public class NameTest extends SimpleBaseTest {
   public void testNameTestWithXml() {
     TestNG tng = createTests("suite", NameSample.class);
     TestListenerAdapter adapter = new TestListenerAdapter();
-    tng.addListener(adapter);
+    tng.addListener((ITestNGListener) adapter);
 
     tng.run();
 
@@ -87,7 +88,7 @@ public class NameTest extends SimpleBaseTest {
   public void noNameTest() {
     TestNG tng = create(NoNameSample.class);
     TestListenerAdapter adapter = new TestListenerAdapter();
-    tng.addListener(adapter);
+    tng.addListener((ITestNGListener) adapter);
 
     tng.run();
 
@@ -104,7 +105,7 @@ public class NameTest extends SimpleBaseTest {
   public void noNameTestWithXml() {
     TestNG tng = createTests("suite", NoNameSample.class);
     TestListenerAdapter adapter = new TestListenerAdapter();
-    tng.addListener(adapter);
+    tng.addListener((ITestNGListener) adapter);
 
     tng.run();
 
@@ -121,7 +122,7 @@ public class NameTest extends SimpleBaseTest {
   public void complexITestTest() {
     TestNG tng = create(ITestSample.class);
     TestListenerAdapter adapter = new TestListenerAdapter();
-    tng.addListener(adapter);
+    tng.addListener((ITestNGListener) adapter);
 
     tng.run();
 
@@ -148,7 +149,7 @@ public class NameTest extends SimpleBaseTest {
   public void testOnClassFromReporter() {
     TestNG tng = create(TestOnClassSample.class);
     TestOnClassListener listener = new TestOnClassListener();
-    tng.addListener(listener);
+    tng.addListener((ITestNGListener) listener);
 
     tng.run();
 
@@ -164,7 +165,7 @@ public class NameTest extends SimpleBaseTest {
   public void blankNameTest() {
 	    TestNG tng = create(BlankNameSample.class);
 	    TestListenerAdapter adapter = new TestListenerAdapter();
-	    tng.addListener(adapter);
+	    tng.addListener((ITestNGListener) adapter);
 
 	    tng.run();
 
@@ -181,7 +182,7 @@ public class NameTest extends SimpleBaseTest {
   public void blankNameTestWithXml() {
 	    TestNG tng = createTests("suite", BlankNameSample.class);
 	    TestListenerAdapter adapter = new TestListenerAdapter();
-	    tng.addListener(adapter);
+	    tng.addListener((ITestNGListener) adapter);
 
 	    tng.run();
 

@@ -1,6 +1,7 @@
 package test.invocationcount;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -15,7 +16,7 @@ public class FailedInvocationCountTest {
     testng.setSkipFailedInvocationCounts(skip);
     testng.setTestClasses(new Class[] { FailedInvocationCount.class });
     TestListenerAdapter tla = new TestListenerAdapter();
-    testng.addListener(tla);
+    testng.addListener((ITestNGListener) tla);
     testng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), passed);
@@ -39,7 +40,7 @@ public class FailedInvocationCountTest {
     testng.setVerbose(0);
     testng.setTestClasses(new Class[] { FailedInvocationCount2.class });
     TestListenerAdapter tla = new TestListenerAdapter();
-    testng.addListener(tla);
+    testng.addListener((ITestNGListener) tla);
     testng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), 8);

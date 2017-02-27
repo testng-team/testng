@@ -1,6 +1,7 @@
 package test.issue107;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -11,9 +12,6 @@ import test.SimpleBaseTest;
 import java.util.Arrays;
 import java.util.Map;
 
-/**
- * @author Vladislav.Rassokhin
- */
 public class Issue107Test extends SimpleBaseTest {
 
   @Test(description = "GITHUB-107, Check that suite parameters set from listener does not affects tests count")
@@ -41,7 +39,7 @@ public class Issue107Test extends SimpleBaseTest {
     final TestListenerAdapter tla = new TestListenerAdapter();
     final TestNG tng = create();
     tng.setXmlSuites(Arrays.asList(suite));
-    tng.addListener(tla);
+    tng.addListener((ITestNGListener) tla);
     tng.run();
 
     Assert.assertEquals(tla.getFailedTests().size(), 0);

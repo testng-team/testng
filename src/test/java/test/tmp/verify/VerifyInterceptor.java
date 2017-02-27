@@ -65,14 +65,6 @@ public class VerifyInterceptor implements IMethodInterceptor {
             return vm;
           }
 
-          public int compareTo(IMethodInstance o) {
-            if (getInstances()[0] == o.getInstances()[0]) {
-              return 0;
-            } else {
-              return -1;
-            }
-          }
-
           @Override
           public Object getInstance() {
             return tm.getInstance();

@@ -9,7 +9,6 @@ import org.testng.annotations.Test;
 
 import java.util.List;
 
-
 /**
  * This class/interface
  */
@@ -18,7 +17,7 @@ public class SkippedExceptionTest {
   public void skippedExceptionInConfigurationMethods() {
     TestListenerAdapter listener= new TestListenerAdapter();
     TestNG test= new TestNG(false);
-    test.addListener((ITestNGListener)listener);
+    test.addListener((ITestNGListener) listener);
     test.setVerbose(0);
     test.setTestClasses(new Class[] {ConfigurationSkippedExceptionTest.class});
     test.run();
@@ -36,7 +35,7 @@ public class SkippedExceptionTest {
   public void skippedExceptionInTestMethods() {
     TestListenerAdapter listener= new TestListenerAdapter();
     TestNG test= new TestNG(false);
-    test.addListener(listener);
+    test.addListener((ITestNGListener) listener);
     test.setTestClasses(new Class[] {TestSkippedExceptionTest.class});
     test.run();
     List<ITestResult> skips= listener.getSkippedTests();

@@ -12,8 +12,6 @@ import java.util.List;
  * in conjunction with the &lt;reporter&gt; sub-element of the Ant task
  *
  * NOTE: this class needs to be public. It's used by TestNG Ant task
- *
- * @author Cosmin Marginean, Apr 12, 2007
  */
 public class ReporterConfig {
 
@@ -93,11 +91,15 @@ public class ReporterConfig {
   /**
    * Creates a reporter based on the current configuration
    */
-  public Object newReporterInstance() {
-    Object result = null;
-    Class reporterClass = ClassHelper.forName(m_className);
+  public IReporter newReporterInstance() {
+    IReporter result = null;
+    Class<?> reporterClass = ClassHelper.forName(m_className);
     if (reporterClass != null) {
-      result = ClassHelper.newInstance(reporterClass);
+      Object tmp = ClassHelper.newInstance(reporterClass);
+      if (!(tmp instanceof IReporter)) {
+        throw new TestNGException(m_className + " is not a IReporter");
+      }
+      result = (IReporter) tmp;
       for (ReporterConfig.Property property : m_properties) {
         PropertyUtils.setProperty(result, property.getName(), property.getValue());
       }

@@ -1,5 +1,6 @@
 package test.commandline;
 
+import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -36,7 +37,7 @@ public class CommandLineOverridesXml extends SimpleBaseTest {
     if (excludedGroups != null) tng.setExcludedGroups(excludedGroups);
     tng.setXmlSuites(Arrays.asList(new XmlSuite[] { s }));
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener(tla);
+    tng.addListener((ITestNGListener) tla);
     tng.run();
 
     assertTestResultsEqual(tla.getPassedTests(), methods);
