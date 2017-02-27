@@ -25,21 +25,16 @@ import org.testng.xml.XmlSuite;
 
 /**
  * Reporter that generates a single-page HTML report of the test results.
- * <p>
- * Based on an earlier implementation by Paul Mendelson.
- * </p>
- * 
- * @author Abraham Lin
  */
 public class EmailableReporter2 implements IReporter {
     private static final Logger LOG = Logger.getLogger(EmailableReporter2.class);
 
     protected PrintWriter writer;
 
-    protected List<SuiteResult> suiteResults = Lists.newArrayList();
+    protected final List<SuiteResult> suiteResults = Lists.newArrayList();
 
     // Reusable buffer
-    private StringBuilder buffer = new StringBuilder();
+    private final StringBuilder buffer = new StringBuilder();
 
     private String fileName = "emailable-report.html";
 
@@ -506,7 +501,7 @@ public class EmailableReporter2 implements IReporter {
 
     protected void writeStackTrace(Throwable throwable) {
         writer.print("<div class=\"stacktrace\">");
-        writer.print(Utils.stackTrace(throwable, true)[0]);
+        writer.print(Utils.shortStackTrace(throwable, true));
         writer.print("</div>");
     }
 

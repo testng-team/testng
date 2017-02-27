@@ -20,17 +20,16 @@ import java.util.*;
 
 /**
  * Helper methods to parse annotations.
- *
- * @author Cedric Beust, Apr 26, 2004
  */
 public final class Utils {
+
   private static final String LINE_SEP = System.getProperty("line.separator");
 
   public static final char[] SPECIAL_CHARACTERS =
       {'*','/','\\','?','%',':',';','<','>','&','~','|'};
   public static final char CHAR_REPLACEMENT = '_';
   public static final char UNICODE_REPLACEMENT = 0xFFFD;
-  private static final String FORMAT = String.format("[%s]",Utils.class.getSimpleName());
+  private static final String FORMAT = String.format("[%s]", Utils.class.getSimpleName());
 
   private static final Logger LOG = Logger.getLogger(Utils.class);
 
@@ -59,7 +58,10 @@ public final class Utils {
    *
    * @param s the string to split
    * @return the split token
+   *
+   * @deprecated Unused
    */
+  @Deprecated
   public static String[] stringToArray(String s) {
     // TODO CQ would s.split() be a better way of doing this?
     StringTokenizer st = new StringTokenizer(s, " ,");
@@ -81,6 +83,10 @@ public final class Utils {
     return result.toArray(new XmlClass[classes.length]);
   }
 
+  /**
+   * @deprecated Unused
+   */
+  @Deprecated
   public static String[] parseMultiLine(String line) {
     List<String> vResult = Lists.newArrayList();
     if (isStringNotBlank(line)) {
@@ -127,7 +133,7 @@ public final class Utils {
   public static void writeUtf8File(@Nullable String outputDir, String fileName, String sb) {
     final String outDirPath= outputDir != null ? outputDir : "";
     final File outDir= new File(outDirPath);
-    writeFile(outDir, fileName, escapeUnicode(sb), "UTF-8", false /* don't append */);
+    writeFile(outDir, fileName, escapeUnicode(sb), "UTF-8");
   }
 
   /**
@@ -141,7 +147,7 @@ public final class Utils {
   public static void writeFile(@Nullable String outputDir, String fileName, String sb) {
     final String outDirPath= outputDir != null ? outputDir : "";
     final File outDir= new File(outDirPath);
-    writeFile(outDir, fileName, sb, null, false /* don't append */);
+    writeFile(outDir, fileName, sb, null);
   }
 
   /**
@@ -152,7 +158,7 @@ public final class Utils {
    * @param fileName the filename
    * @param sb the file content
    */
-  private static void writeFile(@Nullable File outDir, String fileName, String sb, @Nullable String encoding, boolean append) {
+  private static void writeFile(@Nullable File outDir, String fileName, String sb, @Nullable String encoding) {
     try {
       if (outDir == null) {
         outDir = new File("").getAbsoluteFile();
@@ -163,13 +169,11 @@ public final class Utils {
 
       fileName = replaceSpecialCharacters(fileName);
       File outputFile = new File(outDir, fileName);
-      if (!append) {
-        outputFile.delete();
-        log(FORMAT, 3, "Attempting to create " + outputFile);
-        log(FORMAT, 3, "  Directory " + outDir + " exists: " + outDir.exists());
-        outputFile.createNewFile();
-      }
-      writeFile(outputFile, sb, encoding, append);
+      outputFile.delete();
+      log(FORMAT, 3, "Attempting to create " + outputFile);
+      log(FORMAT, 3, "  Directory " + outDir + " exists: " + outDir.exists());
+      outputFile.createNewFile();
+      writeFile(outputFile, sb, encoding);
     }
     catch (IOException e) {
       if (TestRunner.getVerbose() > 1) {
@@ -181,10 +185,10 @@ public final class Utils {
     }
   }
 
-  private static void writeFile(File outputFile, String sb, @Nullable String encoding, boolean append) {
+  private static void writeFile(File outputFile, String sb, @Nullable String encoding) {
     BufferedWriter fw = null;
     try {
-      fw = openWriter(outputFile, encoding, append);
+      fw = openWriter(outputFile, encoding);
       fw.write(sb);
 
       Utils.log("", 3, "Creating " + outputFile.getAbsolutePath());
@@ -226,19 +230,19 @@ public final class Utils {
     fileName = replaceSpecialCharacters(fileName);
     File outputFile = new File(outDir, fileName);
     outputFile.delete();
-    return openWriter(outputFile, null, false);
+    return openWriter(outputFile, null);
   }
 
-  private static BufferedWriter openWriter(File outputFile, @Nullable String encoding, boolean append) throws IOException {
+  private static BufferedWriter openWriter(File outputFile, @Nullable String encoding) throws IOException {
     if (!outputFile.exists()) {
       outputFile.createNewFile();
     }
     OutputStreamWriter osw;
     if (null != encoding) {
-      osw = new OutputStreamWriter(new FileOutputStream(outputFile, append), encoding);
+      osw = new OutputStreamWriter(new FileOutputStream(outputFile), encoding);
     }
     else {
-      osw = new OutputStreamWriter(new FileOutputStream(outputFile, append));
+      osw = new OutputStreamWriter(new FileOutputStream(outputFile));
     }
     return new BufferedWriter(osw);
   }
@@ -248,8 +252,9 @@ public final class Utils {
   }
 
   /**
-   * @param result
+   * @deprecated Unused
    */
+  @Deprecated
   public static void dumpMap(Map<?, ?> result) {
     LOG.info("vvvvv");
     for (Map.Entry<?, ?> entry : result.entrySet()) {
@@ -259,8 +264,9 @@ public final class Utils {
   }
 
   /**
-   * @param allMethods
+   * @deprecated Unused
    */
+  @Deprecated
   public static void dumpMethods(List<ITestNGMethod> allMethods) {
     ppp("======== METHODS:");
     for (ITestNGMethod tm : allMethods) {
@@ -269,9 +275,9 @@ public final class Utils {
   }
 
   /**
-   * @return The list of dependent groups for this method, including the
-   * class groups
+   * @deprecated Unused
    */
+  @Deprecated
   public static String[] dependentGroupsForThisMethodForTest(Method m, IAnnotationFinder finder) {
     List<String> vResult = Lists.newArrayList();
     Class<?> cls = m.getDeclaringClass();
@@ -298,9 +304,9 @@ public final class Utils {
   }
 
   /**
-   * @return The list of groups this method belongs to, including the
-   * class groups
+   * @deprecated Unused
    */
+  @Deprecated
   public static String[] groupsForThisMethodForTest(Method m, IAnnotationFinder finder) {
     List<String> vResult = Lists.newArrayList();
     Class<?> cls = m.getDeclaringClass();
@@ -327,9 +333,9 @@ public final class Utils {
   }
 
   /**
-   * @return The list of groups this method belongs to, including the
-   * class groups
+   * @deprecated Unused
    */
+  @Deprecated
   public static String[] groupsForThisMethodForConfiguration(Method m, IAnnotationFinder finder) {
     String[] result = {};
 
@@ -343,9 +349,9 @@ public final class Utils {
   }
 
   /**
-   * @return The list of groups this method depends on, including the
-   * class groups
+   * @deprecated Unused
    */
+  @Deprecated
   public static String[] dependentGroupsForThisMethodForConfiguration(Method m,
                                                                       IAnnotationFinder finder) {
     String[] result = {};
@@ -425,6 +431,10 @@ public final class Utils {
     return strings.toArray(new String[strings.size()]);
   }
 
+  /**
+   * @deprecated Unused
+   */
+  @Deprecated
   public static void logInvocation(String reason, Method thisMethod, Object[] parameters) {
     String clsName = thisMethod.getDeclaringClass().getName();
     int n = clsName.lastIndexOf('.');
@@ -504,7 +514,7 @@ public final class Utils {
    * @return - A string that represents the short stack trace.
    */
   public static String longStackTrace(Throwable t, boolean toHtml) {
-    return buildStrackTrace(t, toHtml, StackTraceType.FULL);
+    return buildStackTrace(t, toHtml, StackTraceType.FULL);
   }
 
   /**
@@ -514,10 +524,10 @@ public final class Utils {
    * @return - A string that represents the full stack trace.
    */
   public static String shortStackTrace(Throwable t, boolean toHtml) {
-    return buildStrackTrace(t, toHtml, StackTraceType.SHORT);
+    return buildStackTrace(t, toHtml, StackTraceType.SHORT);
   }
 
-  private static String buildStrackTrace(Throwable t, boolean toHtml, StackTraceType type) {
+  private static String buildStackTrace(Throwable t, boolean toHtml, StackTraceType type) {
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw);
     t.printStackTrace(pw);
@@ -536,11 +546,9 @@ public final class Utils {
     return Boolean.getBoolean(TestNG.SHOW_TESTNG_STACK_FRAMES) || TestRunner.getVerbose() >= 2;
   }
 
-
   private enum StackTraceType {
     SHORT,FULL
   }
-
 
   public static String escapeHtml(String s) {
     if (s == null) {
@@ -579,7 +587,7 @@ public final class Utils {
   }
 
   static String filterTrace(String trace) {
-    StringReader   stringReader = new StringReader(trace);
+    StringReader stringReader = new StringReader(trace);
     BufferedReader bufferedReader = new BufferedReader(stringReader);
     StringBuilder buf = new StringBuilder();
 
@@ -735,6 +743,10 @@ public final class Utils {
     return result.toString();
   }
 
+  /**
+   * @deprecated Unused
+   */
+  @Deprecated
   public static void copyFile(File from, File to) {
     to.getParentFile().mkdirs();
     try (InputStream in = new FileInputStream(from); OutputStream out = new FileOutputStream(to)) {

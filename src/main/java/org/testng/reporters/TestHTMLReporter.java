@@ -18,12 +18,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-
 /**
  * This class implements an HTML reporter for individual tests.
- *
- * @author Cedric Beust, May 2, 2004
- * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public class TestHTMLReporter extends TestListenerAdapter {
   private static final Comparator<ITestResult> NAME_COMPARATOR= new NameComparator();
@@ -156,9 +152,8 @@ public class TestHTMLReporter extends TestListenerAdapter {
       pw.append("<td>");
 
       if (null != tw) {
-        String[] stackTraces = Utils.stackTrace(tw, true);
-        fullStackTrace = stackTraces[1];
-        stackTrace = "<div><pre>" + stackTraces[0]  + "</pre></div>";
+        fullStackTrace = Utils.longStackTrace(tw, true);
+        stackTrace = "<div><pre>" + Utils.shortStackTrace(tw, true)  + "</pre></div>";
 
         pw.append(stackTrace);
         // JavaScript link
@@ -299,23 +294,23 @@ public class TestHTMLReporter extends TestListenerAdapter {
               .append("</table><p/>\n");
 
       writer.append("<small><i>(Hover the method name to see the test class name)</i></small><p/>\n");
-      if (failedConfs.size() > 0) {
+      if (!failedConfs.isEmpty()) {
         generateTable(writer, "FAILED CONFIGURATIONS", failedConfs, "failed", CONFIGURATION_COMPARATOR);
       }
-      if (skippedConfs.size() > 0) {
+      if (!skippedConfs.isEmpty()) {
         generateTable(writer, "SKIPPED CONFIGURATIONS", skippedConfs, "skipped", CONFIGURATION_COMPARATOR);
       }
-      if (failedTests.size() > 0) {
+      if (!failedTests.isEmpty()) {
         generateTable(writer, "FAILED TESTS", failedTests, "failed", NAME_COMPARATOR);
       }
-      if (percentageTests.size() > 0) {
+      if (!percentageTests.isEmpty()) {
         generateTable(writer, "FAILED TESTS BUT WITHIN SUCCESS PERCENTAGE",
                 percentageTests, "percent", NAME_COMPARATOR);
       }
-      if (passedTests.size() > 0) {
+      if (!passedTests.isEmpty()) {
         generateTable(writer, "PASSED TESTS", passedTests, "passed", NAME_COMPARATOR);
       }
-      if (skippedTests.size() > 0) {
+      if (!skippedTests.isEmpty()) {
         generateTable(writer, "SKIPPED TESTS", skippedTests, "skipped", NAME_COMPARATOR);
       }
 
@@ -336,6 +331,8 @@ public class TestHTMLReporter extends TestListenerAdapter {
 
   private static class NameComparator implements Comparator<ITestResult>, Serializable {
     private static final long serialVersionUID = 381775815838366907L;
+
+    @Override
     public int compare(ITestResult o1, ITestResult o2) {
       String c1 = o1.getMethod().getMethodName();
       String c2 = o2.getMethod().getMethodName();
@@ -347,6 +344,7 @@ public class TestHTMLReporter extends TestListenerAdapter {
   private static class ConfigurationComparator implements Comparator<ITestResult>, Serializable {
     private static final long serialVersionUID = 5558550850685483455L;
 
+    @Override
     public int compare(ITestResult o1, ITestResult o2) {
       ITestNGMethod tm1= o1.getMethod();
       ITestNGMethod tm2= o2.getMethod();

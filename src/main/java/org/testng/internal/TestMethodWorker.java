@@ -8,7 +8,6 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
-import org.testng.internal.thread.ThreadUtil;
 import org.testng.internal.thread.graph.IWorker;
 import org.testng.xml.XmlSuite;
 
@@ -25,11 +24,9 @@ import java.util.Set;
  *
  * This class implements Runnable and will invoke the ITestMethod passed in its
  * constructor on its run() method.
- *
- * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
- * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class TestMethodWorker implements IWorker<ITestNGMethod> {
+
   // Map of the test methods and their associated instances
   // It has to be a set because the same method can be passed several times
   // and associated to a different instance
@@ -160,19 +157,18 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
         instances= new HashSet<>();
         invokedBeforeClassMethods.put(testClass, instances);
       }
-      for(Object instance: mi.getInstances()) {
-        if (! instances.contains(instance)) {
-          instances.add(instance);
-          for (IClassListener listener : m_listeners) {
-            listener.onBeforeClass(testClass);
-          }
-          m_invoker.invokeConfigurations(testClass,
-                                         testClass.getBeforeClassMethods(),
-                                         m_suite,
-                                         m_parameters,
-                                         null, /* no parameter values */
-                                         instance);
+      Object instance = mi.getInstance();
+      if (! instances.contains(instance)) {
+        instances.add(instance);
+        for (IClassListener listener : m_listeners) {
+          listener.onBeforeClass(testClass);
         }
+        m_invoker.invokeConfigurations(testClass,
+                                       testClass.getBeforeClassMethods(),
+                                       m_suite,
+                                       m_parameters,
+                                       null, /* no parameter values */
+                                       instance);
       }
     }
   }
@@ -203,10 +199,9 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
           instances= new HashSet<>();
           invokedAfterClassMethods.put(testClass, instances);
         }
-        for(Object inst: mi.getInstances()) {
-          if(! instances.contains(inst)) {
-            invokeInstances.add(inst);
-          }
+        Object inst = mi.getInstance();
+        if(!instances.contains(inst)) {
+          invokeInstances.add(inst);
         }
       }
 
@@ -235,10 +230,6 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
   public List<ITestResult> getTestResults() {
     return m_testResults;
-  }
-
-  private void ppp(String s) {
-    Utils.log("TestMethodWorker", 2, ThreadUtil.currentThreadInfo() + ":" + s);
   }
 
   @Override

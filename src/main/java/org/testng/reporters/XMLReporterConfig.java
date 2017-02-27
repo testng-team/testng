@@ -5,9 +5,6 @@ import org.testng.ITestResult;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author Hani Suleiman Date: Mar 27, 2007 Time: 9:16:28 AM
- */
 public class XMLReporterConfig {
 
   public static final String TAG_TEST = "test";
