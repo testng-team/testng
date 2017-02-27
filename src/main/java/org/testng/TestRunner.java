@@ -26,7 +26,6 @@ import org.testng.internal.ClassInfoMap;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.Constants;
 import org.testng.internal.DynamicGraph;
-import org.testng.internal.DynamicGraph.Status;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IInvoker;
 import org.testng.internal.ITestResultNotifier;
@@ -741,7 +740,8 @@ public class TestRunner
         }
       } else {
         boolean debug = false;
-        List<ITestNGMethod> freeNodes = graph.getFreeNodes();
+        ClassPriorityQueue queue = new ClassPriorityQueue(graph);
+        PriorityQueue<ITestNGMethod> freeNodes = queue.getFreeNodes();
         if (debug) {
           System.out.println("Free nodes:" + freeNodes);
         }
@@ -750,16 +750,13 @@ public class TestRunner
           throw new TestNGException("No free nodes found in:" + graph);
         }
 
+        List<ITestNGMethod> nodes = new ArrayList<>(freeNodes.size());
         while (! freeNodes.isEmpty()) {
-          List<IWorker<ITestNGMethod>> runnables = createWorkers(freeNodes);
-          for (IWorker<ITestNGMethod> r : runnables) {
-            r.run();
-          }
-          graph.setStatus(freeNodes, Status.FINISHED);
-          freeNodes = graph.getFreeNodes();
-          if (debug) {
-            System.out.println("Free nodes:" + freeNodes);
-          }
+          nodes.add(freeNodes.poll());
+        }
+        List<IWorker<ITestNGMethod>> runnables = createWorkers(nodes);
+        for (IWorker<ITestNGMethod> r : runnables) {
+          r.run();
         }
       }
     }
