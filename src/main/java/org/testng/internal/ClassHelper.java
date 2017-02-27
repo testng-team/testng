@@ -1,9 +1,16 @@
 package org.testng.internal;
 
-import org.testng.*;
+import org.testng.IClass;
+import org.testng.IMethodSelector;
+import org.testng.IObjectFactory;
+import org.testng.IObjectFactory2;
+import org.testng.ITestObjectFactory;
+import org.testng.TestNGException;
+import org.testng.TestRunner;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.junit.IJUnitTestRunner;
@@ -14,7 +21,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * Utility class for different class manipulations.
@@ -165,16 +176,35 @@ public final class ClassHelper {
    * the Java access rules).
    */
   public static Set<Method> getAvailableMethods(Class<?> clazz) {
-    Set<Method> methods = Sets.newHashSet();
-    methods.addAll(Arrays.asList(clazz.getDeclaredMethods()));
+    Map<String, Set<Method>> methods = Maps.newHashMap();
+    for (final Method declaredMethod : clazz.getDeclaredMethods()) {
+      Set<Method> declaredMethods = methods.get(declaredMethod.getName());
+      if (declaredMethods == null) {
+        declaredMethods = Sets.newHashSet();
+        methods.put(declaredMethod.getName(), declaredMethods);
+      }
+      declaredMethods.add(declaredMethod);
+    }
 
     Class<?> parent = clazz.getSuperclass();
     while (null != parent) {
-      methods.addAll(extractMethods(clazz, parent, methods));
+      Set<Map.Entry<String, Set<Method>>> extractedMethods = extractMethods(clazz, parent, methods).entrySet();
+      for (Map.Entry<String, Set<Method>> extractedMethod : extractedMethods){
+        Set<Method> m = methods.get(extractedMethod.getKey());
+        if (m == null) {
+          methods.put(extractedMethod.getKey(), extractedMethod.getValue());
+        } else {
+          m.addAll(extractedMethod.getValue());
+        }
+      }
       parent = parent.getSuperclass();
     }
 
-    return methods;
+    Set<Method> returnValue = Sets.newHashSet();
+    for (Set<Method> each : methods.values()) {
+      returnValue.addAll(each);
+    }
+    return returnValue;
   }
 
   public static IJUnitTestRunner createTestRunner(TestRunner runner) {
@@ -207,9 +237,9 @@ public final class ClassHelper {
       }
   }
 
-  private static Set<Method> extractMethods(Class<?> childClass, Class<?> clazz,
-      Set<Method> collected) {
-    Set<Method> methods = Sets.newHashSet();
+  private static Map<String, Set<Method>> extractMethods(Class<?> childClass, Class<?> clazz, Map<String,
+      Set<Method>> collected) {
+    Map<String, Set<Method>> methods = Maps.newHashMap();
 
     Method[] declaredMethods = clazz.getDeclaredMethods();
 
@@ -224,12 +254,17 @@ public final class ClassHelper {
       isSamePackage = childPackage.getName().equals(classPackage.getName());
     }
 
-    for (Method method : declaredMethods) {
+    for (final Method method : declaredMethods) {
       int methodModifiers = method.getModifiers();
       if ((Modifier.isPublic(methodModifiers) || Modifier.isProtected(methodModifiers))
         || (isSamePackage && !Modifier.isPrivate(methodModifiers))) {
         if (!isOverridden(method, collected) && !Modifier.isAbstract(methodModifiers)) {
-          methods.add(method);
+          Set<Method> eligibleMethods = methods.get(method.getName());
+          if (eligibleMethods == null) {
+            eligibleMethods = Sets.newHashSet();
+            methods.put(method.getName(), eligibleMethods);
+          }
+          eligibleMethods.add(method);
         }
       }
     }
@@ -237,16 +272,17 @@ public final class ClassHelper {
     return methods;
   }
 
-  private static boolean isOverridden(Method method, Set<Method> collectedMethods) {
+  private static boolean isOverridden(Method method, Map<String, Set<Method>> methodsByName) {
+    Set<Method> collectedMethods = methodsByName.get(method.getName());
+    if (collectedMethods == null) {
+      return false;
+    }
     Class<?> methodClass = method.getDeclaringClass();
     Class<?>[] methodParams = method.getParameterTypes();
 
     for (Method m: collectedMethods) {
       Class<?>[] paramTypes = m.getParameterTypes();
-      if (method.getName().equals(m.getName())
-         && methodClass.isAssignableFrom(m.getDeclaringClass())
-         && methodParams.length == paramTypes.length) {
-
+      if (methodClass.isAssignableFrom(m.getDeclaringClass()) && methodParams.length == paramTypes.length) {
         boolean sameParameters = true;
         for (int i= 0; i < methodParams.length; i++) {
           if (!methodParams[i].equals(paramTypes[i])) {

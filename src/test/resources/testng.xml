@@ -664,6 +664,7 @@
   <test name="Utils">
     <classes>
       <class name="org.testng.internal.UtilsTest" />
+      <class name="test.issue1339.ClassHelperTest"/>
     </classes>
   </test>
 
