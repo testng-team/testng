@@ -1,4 +1,8 @@
 ﻿Current
+
+6.11
+2016/02/27
+
 Fixed: GITHUB-1351: FailurePolicy failing with YAML (Steven Zaluk & Julien Herr)
 New: The name of all TestNG threads follow "TestNG-<thread type>-<number>" pattern (Julien Herr)
 Fixed: GITHUB-1339: Alter ClassHelper to use Maps instead of Lists for extracting methods (Krishnan Mahadevan)

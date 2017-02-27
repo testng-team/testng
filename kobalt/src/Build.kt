@@ -14,7 +14,7 @@ import org.apache.maven.model.Model
 import org.apache.maven.model.Scm
 import java.io.File
 
-val VERSION = "6.10.1-SNAPSHOT"
+val VERSION = "6.11.1-SNAPSHOT"
 
 val bs = buildScript {
     repos("https://dl.bintray.com/cbeust/maven")
