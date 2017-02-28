@@ -31,14 +31,14 @@ public class DynamicGraph<T> {
   private static class Edge<T> {
     private final T from;
     private final T to;
-    private int weight;
-    private int order;
+    private final int weight;
+    private final int order;
 
-    private Edge(T from, T to, int weight) {
-      this(from, to, weight, 0);
+    private Edge(int weight, T from, T to) {
+      this(weight, 0, from, to);
     }
 
-    private Edge(T from, T to, int weight, int order) {
+    private Edge(int weight, int order, T from, T to) {
       this.from = from;
       this.to = to;
       this.weight = weight;
@@ -53,8 +53,16 @@ public class DynamicGraph<T> {
     m_nodesReady.add(node);
   }
 
-  public void addEdge(int weight, T from, T to, int order) {
-    addEdges(Collections.singletonList(new Edge<>(from, to, weight, order)));
+  /**
+   *
+   * @param weight - Represents one of {@link org.testng.TestRunner.PriorityWeight} ordinals indicating
+   *               the weightage of a particular node in the graph
+   * @param order - Represents an ordering of nodes that have the same weight.
+   * @param from - Represents the edge that depends on another edge.
+   * @param to - Represents the edge on which another edge depends upon.
+   */
+  public void addEdge(int weight, int order, T from, T to) {
+    addEdges(Collections.singletonList(new Edge<>(weight, order, from, to)));
   }
 
   /**
@@ -70,7 +78,7 @@ public class DynamicGraph<T> {
   public void addEdge(int weight, T from, Iterable<T> tos) {
     List<Edge<T>> edges = Lists.newArrayList();
     for (T to : tos) {
-      edges.add(new Edge<>(from, to, weight));
+      edges.add(new Edge<>(weight, from, to));
     }
     addEdges(edges);
   }

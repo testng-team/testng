@@ -154,34 +154,27 @@ public class DynamicGraphTest extends SimpleBaseTest {
       Integer currentPriority = availablePriorities.get(i);
       for (ITestNGMethod p0Method : methodsByPriority.get(previousPriority)) {
         for (ITestNGMethod p1Method : methodsByPriority.get(currentPriority)) {
-          graph.addEdge(1, p1Method, p0Method, p1Method.getPriority());
+          graph.addEdge(1, p1Method.getPriority(), p1Method, p0Method);
         }
       }
       previousPriority = currentPriority;
     }
     List<String> expected = Arrays.asList("TestNG1.test1TestNG1", "TestNG2.test1TestNG2", "TestNG3.test1TestNG3");
+    runAssertion(graph, expected);
+    expected = Arrays.asList("TestNG1.test2TestNG1", "TestNG2.test2TestNG2", "TestNG3.test2TestNG3");
+    runAssertion(graph, expected);
+
+    expected = Arrays.asList("TestNG1.test3TestNG1", "TestNG2.test3TestNG2", "TestNG3.test3TestNG3");
+    runAssertion(graph, expected);
+  }
+
+  private static void runAssertion(DynamicGraph<ITestNGMethod> graph, List<String> expected) {
     List<ITestNGMethod> p1Methods = graph.getFreeNodes();
     Assert.assertEquals(p1Methods.size(), 3);
     graph.setStatus(p1Methods, Status.FINISHED);
     for (ITestNGMethod p1Method : p1Methods) {
       Assert.assertTrue(expected.contains(constructName(p1Method)));
     }
-    expected = Arrays.asList("TestNG1.test2TestNG1", "TestNG2.test2TestNG2", "TestNG3.test2TestNG3");
-    List<ITestNGMethod> p2Methods = graph.getFreeNodes();
-    Assert.assertEquals(p2Methods.size(), 3);
-    graph.setStatus(p2Methods, Status.FINISHED);
-    for (ITestNGMethod p2Method : p2Methods) {
-      Assert.assertTrue(expected.contains(constructName(p2Method)));
-    }
-
-    expected = Arrays.asList("TestNG1.test3TestNG1", "TestNG2.test3TestNG2", "TestNG3.test3TestNG3");
-    List<ITestNGMethod> p3Methods = graph.getFreeNodes();
-    Assert.assertEquals(p3Methods.size(), 3);
-    graph.setStatus(p3Methods, Status.FINISHED);
-    for (ITestNGMethod p3Method : p3Methods) {
-      Assert.assertTrue(expected.contains(constructName(p3Method)));
-    }
-
   }
 
   private static String constructName(ITestNGMethod method) {
