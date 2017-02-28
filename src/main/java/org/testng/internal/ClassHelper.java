@@ -178,12 +178,7 @@ public final class ClassHelper {
   public static Set<Method> getAvailableMethods(Class<?> clazz) {
     Map<String, Set<Method>> methods = Maps.newHashMap();
     for (final Method declaredMethod : clazz.getDeclaredMethods()) {
-      Set<Method> declaredMethods = methods.get(declaredMethod.getName());
-      if (declaredMethods == null) {
-        declaredMethods = Sets.newHashSet();
-        methods.put(declaredMethod.getName(), declaredMethods);
-      }
-      declaredMethods.add(declaredMethod);
+      appendMethod(methods, declaredMethod);
     }
 
     Class<?> parent = clazz.getSuperclass();
@@ -237,14 +232,43 @@ public final class ClassHelper {
       }
   }
 
-  private static Map<String, Set<Method>> extractMethods(Class<?> childClass, Class<?> clazz, Map<String,
-      Set<Method>> collected) {
+  private static void appendMethod(Map<String, Set<Method>> methods, Method declaredMethod) {
+    Set<Method> declaredMethods = methods.get(declaredMethod.getName());
+    if (declaredMethods == null) {
+      declaredMethods = Sets.newHashSet();
+      methods.put(declaredMethod.getName(), declaredMethods);
+    }
+    declaredMethods.add(declaredMethod);
+  }
+
+  private static Map<String, Set<Method>> extractMethods(Class<?> childClass, Class<?> clazz,
+      Map<String, Set<Method>> collected) {
     Map<String, Set<Method>> methods = Maps.newHashMap();
 
     Method[] declaredMethods = clazz.getDeclaredMethods();
 
     Package childPackage = childClass.getPackage();
     Package classPackage = clazz.getPackage();
+    boolean isSamePackage = isSamePackage(childPackage, classPackage);
+
+    for (Method method : declaredMethods) {
+      if (canInclude(isSamePackage, method, collected)) {
+        appendMethod(methods, method);
+      }
+    }
+
+    return methods;
+  }
+
+  private static boolean canInclude(boolean isSamePackage, Method method, Map<String, Set<Method>> collected) {
+    int methodModifiers = method.getModifiers();
+    boolean visible = (Modifier.isPublic(methodModifiers) || Modifier.isProtected(methodModifiers))
+        || (isSamePackage && !Modifier.isPrivate(methodModifiers));
+    boolean hasNoInheritanceTraits = !isOverridden(method, collected) && !Modifier.isAbstract(methodModifiers);
+    return visible && hasNoInheritanceTraits;
+  }
+
+  private static boolean isSamePackage(Package childPackage, Package classPackage) {
     boolean isSamePackage = false;
 
     if ((null == childPackage) && (null == classPackage)) {
@@ -253,23 +277,7 @@ public final class ClassHelper {
     if ((null != childPackage) && (null != classPackage)) {
       isSamePackage = childPackage.getName().equals(classPackage.getName());
     }
-
-    for (final Method method : declaredMethods) {
-      int methodModifiers = method.getModifiers();
-      if ((Modifier.isPublic(methodModifiers) || Modifier.isProtected(methodModifiers))
-        || (isSamePackage && !Modifier.isPrivate(methodModifiers))) {
-        if (!isOverridden(method, collected) && !Modifier.isAbstract(methodModifiers)) {
-          Set<Method> eligibleMethods = methods.get(method.getName());
-          if (eligibleMethods == null) {
-            eligibleMethods = Sets.newHashSet();
-            methods.put(method.getName(), eligibleMethods);
-          }
-          eligibleMethods.add(method);
-        }
-      }
-    }
-
-    return methods;
+    return isSamePackage;
   }
 
   private static boolean isOverridden(Method method, Map<String, Set<Method>> methodsByName) {
