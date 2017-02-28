@@ -990,7 +990,7 @@ public class TestRunner
       Integer currentPriority = availablePriorities.get(i);
       for (ITestNGMethod p0Method : methodsByPriority.get(previousPriority)) {
         for (ITestNGMethod p1Method : methodsByPriority.get(currentPriority)) {
-          result.addEdge(PriorityWeight.priority.ordinal(), p1Method, p0Method);
+          result.addEdge(PriorityWeight.priority.ordinal(), p1Method.getPriority(), p1Method, p0Method);
         }
       }
       previousPriority = currentPriority;

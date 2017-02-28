@@ -8,6 +8,7 @@ import org.testng.internal.collections.Pair;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,12 +31,18 @@ public class DynamicGraph<T> {
   private static class Edge<T> {
     private final T from;
     private final T to;
-    private int weight;
+    private final int weight;
+    private final int order;
 
-    private Edge(T from, T to, int weight) {
+    private Edge(int weight, T from, T to) {
+      this(weight, 0, from, to);
+    }
+
+    private Edge(int weight, int order, T from, T to) {
       this.from = from;
       this.to = to;
       this.weight = weight;
+      this.order = order;
     }
   }
 
@@ -44,6 +51,18 @@ public class DynamicGraph<T> {
    */
   public void addNode(T node) {
     m_nodesReady.add(node);
+  }
+
+  /**
+   *
+   * @param weight - Represents one of {@link org.testng.TestRunner.PriorityWeight} ordinals indicating
+   *               the weightage of a particular node in the graph
+   * @param order - Represents an ordering of nodes that have the same weight.
+   * @param from - Represents the edge that depends on another edge.
+   * @param to - Represents the edge on which another edge depends upon.
+   */
+  public void addEdge(int weight, int order, T from, T to) {
+    addEdges(Collections.singletonList(new Edge<>(weight, order, from, to)));
   }
 
   /**
@@ -59,7 +78,7 @@ public class DynamicGraph<T> {
   public void addEdge(int weight, T from, Iterable<T> tos) {
     List<Edge<T>> edges = Lists.newArrayList();
     for (T to : tos) {
-      edges.add(new Edge<>(from, to, weight));
+      edges.add(new Edge<>(weight, from, to));
     }
     addEdges(edges);
   }
@@ -103,8 +122,10 @@ public class DynamicGraph<T> {
     // if all nodes have dependencies, then we can ignore the lowest one
     if (result.isEmpty()) {
       int lowestPriority = getLowestEdgePriority(m_nodesReady);
+      int lowestOrder = getLowestOrder(m_nodesReady);
       for (T node : m_nodesReady) {
-        if (hasAllEdgesWithLevel(m_edges.get(node), lowestPriority)) {
+        if (hasAllEdgesWithLevel(m_edges.get(node), lowestPriority) &&
+            hasAllEdgesWithSameOrder(m_edges.get(node), lowestOrder)) {
           result.add(node);
         }
       }
@@ -129,9 +150,35 @@ public class DynamicGraph<T> {
     return lowerPriority == null ? 0 : lowerPriority;
   }
 
+  private int getLowestOrder(List<T> nodes) {
+    if (nodes.isEmpty()) {
+      return 0;
+    }
+    Integer lowestOrder = null;
+    for (T node : nodes) {
+      for (Edge<T> edge : m_edges.get(node)) {
+        if (lowestOrder == null) {
+          lowestOrder = edge.order;
+        } else {
+          lowestOrder = lowestOrder < edge.order ? lowestOrder : edge.order;
+        }
+      }
+    }
+    return lowestOrder == null ? 0 : lowestOrder;
+  }
+
   private static <T> boolean hasAllEdgesWithLevel(List<Edge<T>> edges, int level) {
     for (Edge<?> edge : edges) {
       if (edge.weight != level) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private static <T> boolean hasAllEdgesWithSameOrder(List<Edge<T>> edges, int order) {
+    for (Edge<?> edge : edges) {
+      if (edge.order != order) {
         return false;
       }
     }
