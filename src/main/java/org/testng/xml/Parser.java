@@ -34,7 +34,7 @@ public class Parser {
   public static final String DEFAULT_FILENAME = "testng.xml";
 
   private static final ISuiteParser DEFAULT_FILE_PARSER = new SuiteXmlParser();
-  private static final List<ISuiteParser> PARSERS = Lists.newArrayList(DEFAULT_FILE_PARSER);
+  private static final List<ISuiteParser> PARSERS = Lists.newArrayList();
   static {
     ServiceLoader<ISuiteParser> suiteParserLoader = ServiceLoader.load(ISuiteParser.class);
     for (ISuiteParser parser : suiteParserLoader) {
