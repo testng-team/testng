@@ -1,4 +1,5 @@
-﻿Current
+Current
+Fixed: GITHUB-1365: Be able to override default XML parser (@ChristiKh & Julien Herr)
 
 6.11
 2016/02/27
