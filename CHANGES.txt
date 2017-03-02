@@ -1,9 +1,9 @@
 Current
 Fixed: GITHUB-1365: Be able to override default XML parser (@ChristiKh & Julien Herr)
+Fixed: GITHUB-1360: TestNG does not distinguish between methods of different priorities (Krishnan Mahadevan)
 
 6.11
 2016/02/27
-
 Fixed: GITHUB-1351: FailurePolicy failing with YAML (Steven Zaluk & Julien Herr)
 New: The name of all TestNG threads follow "TestNG-<thread type>-<number>" pattern (Julien Herr)
 Fixed: GITHUB-1339: Alter ClassHelper to use Maps instead of Lists for extracting methods (Krishnan Mahadevan)
