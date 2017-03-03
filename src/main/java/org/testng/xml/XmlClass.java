@@ -85,7 +85,7 @@ public class XmlClass implements Serializable, Cloneable {
   /**
    * @return Returns the className.
    */
-  public Class getSupportClass() {
+  public Class<?> getSupportClass() {
     if (m_class == null) loadClass();
     return m_class;
   }

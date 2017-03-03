@@ -175,7 +175,7 @@ public class TestNGClassFinder extends BaseClassFinder {
                 i++;
               }
 
-              if(moreClasses.getSize() > 0) {
+              if(!moreClasses.isEmpty()) {
                 TestNGClassFinder finder =
                         new TestNGClassFinder(moreClasses,
                                 m_instanceMap,
@@ -186,7 +186,7 @@ public class TestNGClassFinder extends BaseClassFinder {
                 for(IClass ic2 : finder.findTestClasses()) {
                   putIClass(ic2.getRealClass(), ic2);
                 }
-              } // if moreClasses.size() > 0
+              }
             }
           }
         } // null != ic
