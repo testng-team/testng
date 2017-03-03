@@ -8,6 +8,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
+import org.testng.internal.thread.IThreadSynchronizer;
 import org.testng.internal.thread.graph.IWorker;
 import org.testng.xml.XmlSuite;
 
@@ -16,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * FIXME: reduce contention when this class is used through parallel invocation due to
@@ -25,7 +27,7 @@ import java.util.Set;
  * This class implements Runnable and will invoke the ITestMethod passed in its
  * constructor on its run() method.
  */
-public class TestMethodWorker implements IWorker<ITestNGMethod> {
+public class TestMethodWorker implements IWorker<ITestNGMethod>,IThreadSynchronizer {
 
   // Map of the test methods and their associated instances
   // It has to be a set because the same method can be passed several times
@@ -39,6 +41,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   private final ClassMethodMap m_classMethodMap;
   private final ITestContext m_testContext;
   private final List<IClassListener> m_listeners;
+  private CountDownLatch latch;
 
   public TestMethodWorker(IInvoker invoker,
                           IMethodInstance[] testMethods,
@@ -57,6 +60,11 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     m_classMethodMap = classMethodMap;
     m_testContext = testContext;
     m_listeners = listeners;
+  }
+
+  @Override
+  public void setLatch(CountDownLatch latch) {
+    this.latch = latch;
   }
 
   /**
@@ -98,19 +106,28 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
    */
   @Override
   public void run() {
-    for (IMethodInstance testMthdInst : m_methodInstances) {
-      ITestNGMethod testMethod = testMthdInst.getMethod();
-      ITestClass testClass = testMethod.getTestClass();
+    try {
+      for (IMethodInstance testMthdInst : m_methodInstances) {
+        ITestNGMethod testMethod = testMthdInst.getMethod();
+        ITestClass testClass = testMethod.getTestClass();
 
-      invokeBeforeClassMethods(testClass, testMthdInst);
+        invokeBeforeClassMethods(testClass, testMthdInst);
 
-      // Invoke test method
-      try {
-        invokeTestMethods(testMethod, testMthdInst.getInstance(), m_testContext);
+        // Invoke test method
+        try {
+          invokeTestMethods(testMethod, testMthdInst.getInstance(), m_testContext);
+        } finally {
+          invokeAfterClassMethods(testClass, testMthdInst);
+        }
       }
-      finally {
-        invokeAfterClassMethods(testClass, testMthdInst);
-      }
+    } finally {
+      updateLatchIfRequired();
+    }
+  }
+
+  private void updateLatchIfRequired() {
+    if (latch != null) {
+      latch.countDown();
     }
   }
 
