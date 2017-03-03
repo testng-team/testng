@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 
@@ -11,41 +12,42 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
+import org.testng.internal.thread.ThreadUtil;
 
 /**
  * Simple wrapper for an ExecutorCompletionService.
  */
 public class PoolService<FutureType> {
 
-  private ExecutorCompletionService<FutureType> m_completionService;
-  private ThreadFactory m_threadFactory;
-  private ExecutorService m_executor;
+  private final ExecutorCompletionService<FutureType> m_completionService;
+  private final ExecutorService m_executor;
 
   public PoolService(int threadPoolSize) {
-    m_threadFactory = new ThreadFactory() {
-      private int m_threadIndex = 0;
+
+    ThreadFactory threadFactory = new ThreadFactory() {
+
+      private final AtomicInteger threadNumber = new AtomicInteger(0);
 
       @Override
       public Thread newThread(Runnable r) {
-        Thread result = new Thread(r);
-        result.setName("PoolService-" + m_threadIndex);
-        m_threadIndex++;
-        return result;
+        return new Thread(r,
+            ThreadUtil.THREAD_NAME + "-PoolService-" + threadNumber.getAndIncrement());
       }
     };
-    m_executor = Executors.newFixedThreadPool(threadPoolSize, m_threadFactory);
+    m_executor = Executors.newFixedThreadPool(threadPoolSize, threadFactory);
     m_completionService = new ExecutorCompletionService<>(m_executor);
   }
 
   public List<FutureType> submitTasksAndWait(List<? extends Callable<FutureType>> tasks) {
-    List<FutureType> result = Lists.newArrayList();
 
+    List<Future<FutureType>> takes = Lists.newArrayList(tasks.size());
     for (Callable<FutureType> callable : tasks) {
-      m_completionService.submit(callable);
+      takes.add(m_completionService.submit(callable));
     }
-    for (int i = 0; i < tasks.size(); i++) {
+
+    List<FutureType> result = Lists.newArrayList(takes.size());
+    for (Future<FutureType> take : takes) {
       try {
-        Future<FutureType> take = m_completionService.take();
         result.add(take.get());
       } catch (InterruptedException | ExecutionException e) {
         throw new TestNGException(e);
