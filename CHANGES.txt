@@ -1,4 +1,5 @@
 Current
+New: Make EmailableReporter2 W3C Compliant[XHTML 1.1] (Chris Rankin)
 Fixed: GITHUB-1336: (parallel=‘classes’) not working when coupled with priority (Krishnan Mahadevan)
 Fixed: GITHUB-1365: Be able to override default XML parser (@ChristiKh & Julien Herr)
 Fixed: GITHUB-1360: TestNG does not distinguish between methods of different priorities (Krishnan Mahadevan)
