@@ -1656,6 +1656,12 @@ public class TestNG {
     if (defaultSuiteName != null) {
       result.suiteName = defaultSuiteName;
     }
+    
+    // the value in the map will not be an Integer since surefire-testng isn't handling this value
+    String stps = (String) cmdLineArgs.get(CommandLineArgs.SUITE_THREAD_POOL_SIZE);
+    if (stps != null) {
+      result.suiteThreadPoolSize = Integer.parseInt(stps);  // what if it isn't a number?
+    }
 
     String defaultTestName = (String) cmdLineArgs.get(CommandLineArgs.TEST_NAME);
     if (defaultTestName != null) {
