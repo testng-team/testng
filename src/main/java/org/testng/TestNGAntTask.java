@@ -12,13 +12,11 @@ import java.net.URL;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
@@ -33,6 +31,7 @@ import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.PropertySet;
 import org.apache.tools.ant.types.Reference;
+import org.apache.tools.ant.types.Resource;
 import org.apache.tools.ant.types.ResourceCollection;
 import org.apache.tools.ant.types.resources.FileResource;
 import org.apache.tools.ant.types.selectors.FilenameSelector;
@@ -791,7 +790,7 @@ public class TestNGAntTask extends Task {
         getProject().setProperty("testng.outputdir", m_outputDir.getAbsolutePath());
       }
       getProject().setProperty("testng.returncode", String.valueOf(exitValue));
-      Target t= (Target) getProject().getTargets().get(m_onHaltTarget);
+      Target t= getProject().getTargets().get(m_onHaltTarget);
       if(t != null) {
         t.execute();
       }
@@ -802,7 +801,7 @@ public class TestNGAntTask extends Task {
    * Executes the command line as a new process.
    *
    * @param cmd the command to execute
-   * @param watchdog
+   * @param watchdog - A {@link ExecuteWatchdog} object.
    * @return the exit status of the subprocess or INVALID.
    */
   protected int executeAsForked(CommandlineJava cmd, ExecuteWatchdog watchdog) {
@@ -938,6 +937,7 @@ public class TestNGAntTask extends Task {
       url= new URL(uri);
     }
     catch(MalformedURLException murle) {
+      //Gobble exceptions and do nothing.
     }
     if((null == url) || !("file".equals(url.getProtocol()))) {
       throw new IllegalArgumentException("Can only handle valid file: URIs");
@@ -984,90 +984,29 @@ public class TestNGAntTask extends Task {
   /**
    * Returns the list of files corresponding to the resource collection
    *
-   * @param resources
+   * @param resources - A list of {@link ResourceCollection}
    * @return the list of files corresponding to the resource collection
    * @throws BuildException
    */
   private List<String> getFiles(List<ResourceCollection> resources) throws BuildException {
     List<String> files= Lists.newArrayList();
     for (ResourceCollection rc : resources) {
-        for (Iterator i = rc.iterator(); i.hasNext();) {
-          Object o = i.next();
-          if (o instanceof FileResource) {
-            FileResource fr = ((FileResource) o);
-            if (fr.isDirectory()) {
-              throw new BuildException("Directory based FileResources are not supported.");
-            }
-            if (!fr.isExists()) {
-              log("'" + fr.toLongString() + "' does not exist", Project.MSG_VERBOSE);
-            }
-            files.add(fr.getFile().getAbsolutePath());
-          } else {
-              log("Unsupported Resource type: " + o.toString(), Project.MSG_VERBOSE);
+      for (Resource o : rc) {
+        if (o instanceof FileResource) {
+          FileResource fr = ((FileResource) o);
+          if (fr.isDirectory()) {
+            throw new BuildException("Directory based FileResources are not supported.");
           }
+          if (! fr.isExists()) {
+            log("'" + fr.toLongString() + "' does not exist", Project.MSG_VERBOSE);
+          }
+          files.add(fr.getFile().getAbsolutePath());
+        } else {
+          log("Unsupported Resource type: " + o.toString(), Project.MSG_VERBOSE);
         }
+      }
     }
     return files;
-  }
-
-  /**
-   * Returns the list of files corresponding to the fileset
-   *
-   * @param filesets
-   * @return the list of files corresponding to the fileset
-   * @throws BuildException
-   */
-  private List<String> fileset(FileSet fileset) throws BuildException {
-    List<String> files= Lists.newArrayList();
-
-      DirectoryScanner ds= fileset.getDirectoryScanner(getProject());
-
-      for(String file : ds.getIncludedFiles()) {
-        files.add(ds.getBasedir() + File.separator + file);
-      }
-
-    return files;
-  }
-
-  /**
-   * Adds double quotes to the command line argument if it contains spaces.
-   * @param pCommandLineArg the command line argument
-   * @return pCommandLineArg in double quotes if it contains space.
-   *
-   */
-  private static String doubleQuote(String pCommandLineArg) {
-    if(pCommandLineArg.indexOf(" ") != -1 && !(pCommandLineArg.startsWith("\"") && pCommandLineArg.endsWith("\""))) {
-      return "\"" + pCommandLineArg + '\"';
-    }
-
-    return pCommandLineArg;
-  }
-
-  /**
-   * Creates a string representation of the path.
-   */
-  private String createPathString(Path path, String sep) {
-    if(path == null) {
-      return null;
-    }
-
-    final StringBuilder buf= new StringBuilder();
-
-    for(int i= 0; i < path.list().length; i++) {
-      File file= getProject().resolveFile(path.list()[i]);
-
-      if(!file.exists()) {
-        log("Classpath entry not found: " + file, Project.MSG_WARN);
-      }
-
-      buf.append(file.getAbsolutePath()).append(sep);
-    }
-
-    if(path.list().length > 0) { // cut the last ;
-      buf.deleteCharAt(buf.length() - 1);
-    }
-
-    return buf.toString();
   }
 
   private void dumpCommand(String fileName) {

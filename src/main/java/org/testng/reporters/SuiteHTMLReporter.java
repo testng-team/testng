@@ -71,10 +71,10 @@ public class SuiteHTMLReporter implements IReporter {
       generateMethodsAndGroups(xmlSuite, suite);
       generateMethodsChronologically(xmlSuite, suite, METHODS_CHRONOLOGICAL, false);
       generateMethodsChronologically(xmlSuite, suite, METHODS_ALPHABETICAL, true);
-      generateClasses(xmlSuite, suite);
-      generateReporterOutput(xmlSuite, suite);
+      generateClasses(xmlSuite);
+      generateReporterOutput(xmlSuite);
       generateExcludedMethodsReport(xmlSuite, suite);
-      generateXmlFile(xmlSuite, suite);
+      generateXmlFile(xmlSuite);
     }
 
     generateIndex(suites);
@@ -88,7 +88,7 @@ public class SuiteHTMLReporter implements IReporter {
     return outputDirectory;
   }
 
-  private void generateXmlFile(XmlSuite xmlSuite, ISuite suite) {
+  private void generateXmlFile(XmlSuite xmlSuite) {
     String content = xmlSuite.toXml().replaceAll("<", "&lt;").replaceAll(">", "&gt;")
           .replaceAll(" ", "&nbsp;").replaceAll("\n", "<br/>");
 
@@ -188,7 +188,7 @@ public class SuiteHTMLReporter implements IReporter {
       Utils.writeFile(getOutputDirectory(xmlSuite), METHODS_NOT_RUN, sb2.toString());
   }
 
-  private void generateReporterOutput(XmlSuite xmlSuite, ISuite suite) {
+  private void generateReporterOutput(XmlSuite xmlSuite) {
     StringBuilder sb = new StringBuilder();
 
     //
@@ -206,7 +206,7 @@ public class SuiteHTMLReporter implements IReporter {
     Utils.writeFile(getOutputDirectory(xmlSuite), REPORTER_OUTPUT, sb.toString());
   }
 
-  private void generateClasses(XmlSuite xmlSuite, ISuite suite) {
+  private void generateClasses(XmlSuite xmlSuite) {
     StringBuilder sb = new StringBuilder();
     sb.append("<table border='1'>\n")
     .append("<tr>\n")
@@ -226,8 +226,6 @@ public class SuiteHTMLReporter implements IReporter {
 
   private final static String SP = "&nbsp;";
   private final static String SP2 = SP + SP + SP + SP;
-  private final static String SP3 = SP2 + SP2;
-  private final static String SP4 = SP3 + SP3;
 
   private String generateClass(ITestClass cls) {
     StringBuilder sb = new StringBuilder();
@@ -288,22 +286,6 @@ public class SuiteHTMLReporter implements IReporter {
         sb.append("<td>&nbsp;</td>");
       }
       sb.append("</tr>\n");
-    }
-
-    return sb.toString();
-  }
-
-  private String dumpGroups(String[] groups) {
-    StringBuilder sb = new StringBuilder();
-
-    if (null != groups && groups.length > 0) {
-      sb.append(SP4).append("<em>[");
-
-      for (String g : groups) {
-        sb.append(g).append(" ");
-      }
-
-      sb.append("]</em><br/>\n");
     }
 
     return sb.toString();
@@ -687,8 +669,8 @@ public class SuiteHTMLReporter implements IReporter {
   /**
    * Writes a property file for each suite result.
    *
-   * @param xmlSuite
-   * @param suite
+   * @param xmlSuite - The {@link XmlSuite} suite.
+   * @param suite - The {@link ISuite} object.
    */
   private void generateSuites(XmlSuite xmlSuite, ISuite suite) {
     Map<String, ISuiteResult> suiteResults = suite.getResults();
