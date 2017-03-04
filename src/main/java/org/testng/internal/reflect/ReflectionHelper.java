@@ -1,5 +1,7 @@
 package org.testng.internal.reflect;
 
+import org.testng.collections.Lists;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
@@ -25,7 +27,13 @@ public class ReflectionHelper {
       }
     }
     else {
-      result = declaredMethods;
+      List<Method> prunedMethods = Lists.newArrayList();
+      for (Method declaredMethod : declaredMethods) {
+        if (!Modifier.isAbstract(declaredMethod.getModifiers()) && !declaredMethod.isBridge()) {
+          prunedMethods.add(declaredMethod);
+        }
+      }
+      result = prunedMethods.toArray(new Method[prunedMethods.size()]);
     }
     return result;
   }
@@ -36,7 +44,7 @@ public class ReflectionHelper {
       for (Method ifcMethod : ifc.getMethods()) {
         if (!Modifier.isAbstract(ifcMethod.getModifiers())) {
           if (result == null) {
-            result = new LinkedList<Method>();
+            result = new LinkedList<>();
           }
           result.add(ifcMethod);
         }
