@@ -314,7 +314,7 @@ public class ClonedMethod implements ITestNGMethod {
   public String toString() {
     ConstructorOrMethod m = getConstructorOrMethod();
     String cls = m.getDeclaringClass().getName();
-    StringBuffer result = new StringBuffer(cls + "." + m.getName() + "(");
+    StringBuilder result = new StringBuilder(cls).append(".").append( m.getName()).append("(");
     int i = 0;
     for (Class<?> p : m.getParameterTypes()) {
       if (i++ > 0) {

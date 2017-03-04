@@ -639,14 +639,14 @@ public class XmlSuite implements Serializable, Cloneable {
    */
   @Override
   public String toString() {
-    StringBuffer result = new StringBuffer("[Suite: \"").append( m_name).append( "\" ");
+    StringBuilder result = new StringBuilder("[Suite: \"").append( m_name).append( "\" ");
 
     for (XmlTest t : m_tests) {
       result.append("  ").append( t.toString()).append(' ');
     }
 
     for (XmlMethodSelector ms : m_methodSelectors) {
-      result.append(" methodSelector:" + ms);
+      result.append(" methodSelector:").append(ms);
     }
 
     result.append(']');

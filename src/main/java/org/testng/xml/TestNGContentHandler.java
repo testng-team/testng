@@ -808,7 +808,7 @@ public class TestNGContentHandler extends DefaultHandler {
 
   private static String expandValue(String value)
   {
-    StringBuffer result = null;
+    StringBuilder result = null;
     int startIndex = 0;
     int endIndex = 0;
     int startPosition = 0;
@@ -816,7 +816,7 @@ public class TestNGContentHandler extends DefaultHandler {
     while ((startIndex = value.indexOf("${", startPosition)) > -1 && (endIndex = value.indexOf("}", startIndex + 3)) > -1) {
       property = value.substring(startIndex + 2, endIndex);
       if (result == null) {
-        result = new StringBuffer(value.substring(startPosition, startIndex));
+        result = new StringBuilder(value.substring(startPosition, startIndex));
       } else {
         result.append(value.substring(startPosition, startIndex));
       }

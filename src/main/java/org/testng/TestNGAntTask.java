@@ -943,7 +943,7 @@ public class TestNGAntTask extends Task {
       throw new IllegalArgumentException("Can only handle valid file: URIs");
     }
 
-    StringBuffer buf= new StringBuffer(url.getHost());
+    StringBuilder buf= new StringBuilder(url.getHost());
     if(buf.length() > 0) {
       buf.insert(0, File.separatorChar).insert(0, File.separatorChar);
     }
@@ -959,7 +959,7 @@ public class TestNGAntTask extends Task {
       uri= uri.substring(1);
     }
 
-    StringBuffer sb= new StringBuffer();
+    StringBuilder sb= new StringBuilder();
     CharacterIterator iter= new StringCharacterIterator(uri);
     for(char c= iter.first(); c != CharacterIterator.DONE; c= iter.next()) {
       if(c == '%') {
@@ -1051,7 +1051,7 @@ public class TestNGAntTask extends Task {
       return null;
     }
 
-    final StringBuffer buf= new StringBuffer();
+    final StringBuilder buf= new StringBuilder();
 
     for(int i= 0; i < path.list().length; i++) {
       File file= getProject().resolveFile(path.list()[i]);
