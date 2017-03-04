@@ -538,7 +538,7 @@ public class TestNGAntTask extends Task {
     actOnResult(exitValue, wasKilled);
   }
 
-  private List<String> createArguments() {
+  protected List<String> createArguments() {
 	List<String> argv= Lists.newArrayList();
     addBooleanIfTrue(argv, CommandLineArgs.JUNIT, mode == Mode.junit);
     addBooleanIfTrue(argv, CommandLineArgs.MIXED, mode == Mode.mixed);
