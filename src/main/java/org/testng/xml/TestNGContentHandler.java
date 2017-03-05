@@ -79,10 +79,6 @@ public class TestNGContentHandler extends DefaultHandler {
     m_loadClasses = loadClasses;
   }
 
-  static private void ppp(String s) {
-    System.out.println("[TestNGContentHandler] " + s);
-  }
-
   /*
    * (non-Javadoc)
    *
@@ -92,7 +88,7 @@ public class TestNGContentHandler extends DefaultHandler {
   @Override
   public InputSource resolveEntity(String systemId, String publicId)
       throws IOException, SAXException {
-    InputSource result = null;
+    InputSource result;
     if (Parser.DEPRECATED_TESTNG_DTD_URL.equals(publicId)
         || Parser.TESTNG_DTD_URL.equals(publicId)) {
       m_validate = true;
@@ -130,7 +126,7 @@ public class TestNGContentHandler extends DefaultHandler {
     }
     else {
       m_currentSuite.setSuiteFiles(m_suiteFiles);
-      popLocation(Location.SUITE);
+      popLocation();
     }
   }
 
@@ -220,7 +216,7 @@ public class TestNGContentHandler extends DefaultHandler {
       m_currentSuite.setParameters(m_currentSuiteParameters);
       m_suites.add(m_currentSuite);
       m_currentSuiteParameters = null;
-      popLocation(Location.SUITE);
+      popLocation();
     }
   }
 
@@ -336,7 +332,7 @@ public class TestNGContentHandler extends DefaultHandler {
       m_currentClasses = null;
       m_currentTest = null;
       m_currentTestParameters = null;
-      popLocation(Location.TEST);
+      popLocation();
       if(!m_enabledTest) {
         List<XmlTest> tests= m_currentSuite.getTests();
         tests.remove(tests.size() - 1);
@@ -445,9 +441,6 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       m_currentSelector.setPriority(Integer.parseInt(priority));
     }
-    else {
-      // do nothing
-    }
   }
 
   /**
@@ -463,7 +456,7 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  private void xmlMethod(boolean start, Attributes attributes) {
+  private void xmlMethod(boolean start) {
     if (start) {
       m_currentIncludedMethods = new ArrayList<>();
       m_currentExcludedMethods = Lists.newArrayList();
@@ -606,7 +599,7 @@ public class TestNGContentHandler extends DefaultHandler {
       xmlGroups(true, attributes);
     }
     else if ("methods".equals(qName)) {
-      xmlMethod(true, attributes);
+      xmlMethod(true);
     }
     else if ("include".equals(qName)) {
       xmlInclude(true, attributes);
@@ -642,7 +635,7 @@ public class TestNGContentHandler extends DefaultHandler {
     String description;
     Map<String, String> parameters = Maps.newHashMap();
 
-    public Include(String name, String numbers) {
+    Include(String name, String numbers) {
       this.name = name;
       this.invocationNumbers = numbers;
     }
@@ -681,7 +674,7 @@ public class TestNGContentHandler extends DefaultHandler {
         m_currentPackage.getInclude().add(name);
       }
 
-      popLocation(Location.INCLUDE);
+      popLocation();
       m_currentInclude = null;
     }
   }
@@ -700,7 +693,7 @@ public class TestNGContentHandler extends DefaultHandler {
         m_currentPackage.getExclude().add(name);
       }
     } else {
-      popLocation(Location.EXCLUDE);
+      popLocation();
     }
   }
 
@@ -708,7 +701,7 @@ public class TestNGContentHandler extends DefaultHandler {
     m_locations.push(l);
   }
 
-  private Location popLocation(Location location) {
+  private Location popLocation() {
     return m_locations.pop();
   }
 
@@ -742,7 +735,7 @@ public class TestNGContentHandler extends DefaultHandler {
       xmlGroups(false, null);
     }
     else if ("methods".equals(qName)) {
-      xmlMethod(false, null);
+      xmlMethod(false);
     }
     else if ("classes".equals(qName)) {
       xmlClasses(false, null);
@@ -753,7 +746,7 @@ public class TestNGContentHandler extends DefaultHandler {
     else if ("class".equals(qName)) {
       m_currentClass.setParameters(m_currentClassParameters);
       m_currentClassParameters = null;
-      popLocation(Location.CLASS);
+      popLocation();
     }
     else if ("listeners".equals(qName)) {
       xmlListeners(false, null);
@@ -808,15 +801,15 @@ public class TestNGContentHandler extends DefaultHandler {
 
   private static String expandValue(String value)
   {
-    StringBuffer result = null;
-    int startIndex = 0;
-    int endIndex = 0;
+    StringBuilder result = null;
+    int startIndex;
+    int endIndex;
     int startPosition = 0;
-    String property = null;
+    String property;
     while ((startIndex = value.indexOf("${", startPosition)) > -1 && (endIndex = value.indexOf("}", startIndex + 3)) > -1) {
       property = value.substring(startIndex + 2, endIndex);
       if (result == null) {
-        result = new StringBuffer(value.substring(startPosition, startIndex));
+        result = new StringBuilder(value.substring(startPosition, startIndex));
       } else {
         result.append(value.substring(startPosition, startIndex));
       }
