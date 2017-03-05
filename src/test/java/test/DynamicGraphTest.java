@@ -35,7 +35,6 @@ public class DynamicGraphTest extends SimpleBaseTest {
     }
     Assert.assertEqualsNoOrder(graph.getFreeNodes().toArray(), expected);
   }
-
   @Test
   public void test8() {
     /*
@@ -74,15 +73,19 @@ public class DynamicGraphTest extends SimpleBaseTest {
     dg.addEdge(0, c1, x, y);
     assertFreeNodesEquals(dg, y, x);
     dg.setStatus( dg.getFreeNodes(), Status.RUNNING);
-
-    assertFreeNodesEquals(dg, a1, a2);
+    assertFreeNodesEquals(dg);
+    
+    dg.setStatus(x, Status.FINISHED);
+    dg.setStatus(y, Status.FINISHED);
+    assertFreeNodesEquals(dg,a1);
+    
     dg.setStatus(dg.getFreeNodes(), Status.RUNNING);
 
     dg.setStatus(a1, Status.FINISHED);
     assertFreeNodesEquals(dg);
 
     dg.setStatus(a2, Status.FINISHED);
-    assertFreeNodesEquals(dg, b1, b2);
+    assertFreeNodesEquals(dg, b1);
 
     dg.setStatus(b2, Status.RUNNING);
     dg.setStatus(b1, Status.FINISHED);
@@ -117,11 +120,15 @@ public class DynamicGraphTest extends SimpleBaseTest {
     dg.addEdge(0, b1, x);
     assertFreeNodesEquals(dg, x);
     dg.setStatus(dg.getFreeNodes(), Status.RUNNING);
-    assertFreeNodesEquals(dg, a1, a2);
+    assertFreeNodesEquals(dg);
+    
+    dg.setStatus(x, Status.FINISHED);
+    assertFreeNodesEquals(dg,a1);
+    
     dg.setStatus(dg.getFreeNodes(), Status.RUNNING);
 
     dg.setStatus(a1, Status.FINISHED);
-    assertFreeNodesEquals(dg);
+    assertFreeNodesEquals(dg,a2);
 
     dg.setStatus(a2, Status.FINISHED);
     assertFreeNodesEquals(dg, b1);
@@ -132,6 +139,55 @@ public class DynamicGraphTest extends SimpleBaseTest {
     assertFreeNodesEquals(dg);
   }
 
+  @Test
+  public void test3() {
+          DynamicGraph<Node> dg = new DynamicGraph<>();
+          Node a = new Node("a");
+          Node b = new Node("b");
+          Node c = new Node("c");
+          dg.addNode(a);
+          dg.addNode(b);
+          dg.addNode(c);
+          dg.addEdge(1, a, b);
+          dg.addEdge(0, c, b);
+          dg.addEdge(0, b, a);
+
+          assertFreeNodesEquals(dg, b);
+
+          dg.setStatus(b, Status.RUNNING);
+          assertFreeNodesEquals(dg);
+
+          dg.setStatus(b, Status.FINISHED);
+          assertFreeNodesEquals(dg, a, c);
+
+          dg.setStatus(a, Status.FINISHED);
+          dg.setStatus(c, Status.FINISHED);
+          assertFreeNodesEquals(dg);
+  }
+
+  @Test
+  public void test4() {
+          DynamicGraph<Node> dg = new DynamicGraph<>();
+          Node a = new Node("a");
+          Node b = new Node("b");
+          dg.addNode(a);
+          dg.addNode(b);
+          dg.addEdge(0, b, a);
+
+          assertFreeNodesEquals(dg, a);
+
+          dg.setStatus(a, Status.RUNNING);
+          assertFreeNodesEquals(dg);
+
+          dg.setStatus(a, Status.FINISHED);
+          assertFreeNodesEquals(dg, b);
+
+          dg.setStatus(b, Status.RUNNING);
+          assertFreeNodesEquals(dg);
+
+          dg.setStatus(b, Status.FINISHED);
+          assertFreeNodesEquals(dg);
+  }
   @Test
   public void testOrderingOfEdgesWithSameWeight() {
     Class<?>[] classes = new Class[] {

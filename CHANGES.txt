@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1287: Parallel (methods) execution with dependsOn running in unexpected order (Kevyn Reinholt)
 New: Enhance TestNGAntTask to be customizable (Denys Kurylenko)
 New: Make EmailableReporter2 W3C Compliant[XHTML 1.1] (Chris Rankin)
 Fixed: GITHUB-1336: (parallel=‘classes’) not working when coupled with priority (Krishnan Mahadevan)

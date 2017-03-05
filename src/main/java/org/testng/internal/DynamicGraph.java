@@ -125,7 +125,8 @@ public class DynamicGraph<T> {
       int lowestOrder = getLowestOrder(m_nodesReady);
       for (T node : m_nodesReady) {
         if (hasAllEdgesWithLevel(m_edges.get(node), lowestPriority) &&
-            hasAllEdgesWithSameOrder(m_edges.get(node), lowestOrder)) {
+            hasAllEdgesWithSameOrder(m_edges.get(node), lowestOrder) &&
+            getUnfinishedNodes(node).isEmpty()) {
           result.add(node);
         }
       }
