@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import javax.annotation.Nullable;
 import org.testng.ITestNGMethod;
 import org.testng.TestNG;
 import org.testng.TestNGException;

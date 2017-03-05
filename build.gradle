@@ -64,6 +64,8 @@ repositories {
 }
 
 dependencies {
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.1'
+
     compile 'org.apache-extras.beanshell:bsh:2.0b6'
     compile 'com.beust:jcommander:1.48'
 

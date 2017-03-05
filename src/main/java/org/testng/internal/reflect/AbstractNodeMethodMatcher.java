@@ -1,19 +1,11 @@
 package org.testng.internal.reflect;
 
-import org.testng.internal.ThreeStateBoolean;
-
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created on 1/4/16.
- *
- * @author <a href="mailto:nitin.matrix@gmail.com">Nitin Verma</a>
- */
 public abstract class AbstractNodeMethodMatcher extends AbstractMethodMatcher {
 
   private Parameter[] conformingParameters = null;
-  private Set<InjectableParameter> conformingInjects = null;
 
   public AbstractNodeMethodMatcher(final MethodMatcherContext context) {
     super(context);
@@ -21,10 +13,6 @@ public abstract class AbstractNodeMethodMatcher extends AbstractMethodMatcher {
 
   protected Parameter[] getConformingParameters() {
     return conformingParameters;
-  }
-
-  protected Set<InjectableParameter> getConformingInjects() {
-    return conformingInjects;
   }
 
   /**
@@ -38,7 +26,6 @@ public abstract class AbstractNodeMethodMatcher extends AbstractMethodMatcher {
       matching = match(parameters, getContext().getArguments());
       if (matching) {
         conformingParameters = parameters;
-        conformingInjects = injects;
         break;
       }
     }
@@ -64,7 +51,7 @@ public abstract class AbstractNodeMethodMatcher extends AbstractMethodMatcher {
    */
   @Override
   public Object[] getConformingArguments() {
-    if (ThreeStateBoolean.NONE.equals(getConforms())) {
+    if (getConforms() == null) {
       conforms();
     }
     if (getConformingParameters() == null) {

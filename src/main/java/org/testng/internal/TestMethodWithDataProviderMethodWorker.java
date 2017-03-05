@@ -13,24 +13,24 @@ import java.util.concurrent.Callable;
 
 public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITestResult>> {
 
-  private ITestNGMethod m_testMethod;
-  private Object[] m_parameterValues;
-  private Object m_instance;
-  private XmlSuite m_xmlSuite;
-  private Map<String, String> m_parameters;
-  private ITestClass m_testClass;
-  private ITestNGMethod[] m_beforeMethods;
-  private ITestNGMethod[] m_afterMethods;
-  private ConfigurationGroupMethods m_groupMethods;
-  private Invoker m_invoker;
-  private ExpectedExceptionsHolder m_expectedExceptionHolder;
-  private ITestContext m_testContext;
+  private final ITestNGMethod m_testMethod;
+  private final Object[] m_parameterValues;
+  private final Object m_instance;
+  private final XmlSuite m_xmlSuite;
+  private final Map<String, String> m_parameters;
+  private final ITestClass m_testClass;
+  private final ITestNGMethod[] m_beforeMethods;
+  private final ITestNGMethod[] m_afterMethods;
+  private final ConfigurationGroupMethods m_groupMethods;
+  private final Invoker m_invoker;
+  private final ExpectedExceptionsHolder m_expectedExceptionHolder;
+  private final ITestContext m_testContext;
   private int m_parameterIndex;
   private boolean m_skipFailedInvocationCounts;
   private int m_invocationCount;
-  private ITestResultNotifier m_notifier;
+  private final ITestResultNotifier m_notifier;
 
-  private List<ITestResult> m_testResults = Lists.newArrayList();
+  private final List<ITestResult> m_testResults = Lists.newArrayList();
   private int m_failureCount;
 
   public TestMethodWithDataProviderMethodWorker(Invoker invoker, ITestNGMethod testMethod,
@@ -58,10 +58,6 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
     m_invocationCount = invocationCount;
     m_failureCount = failureCount;
     m_notifier = notifier;
-  }
-
-  public long getMaxTimeOut() {
-    return 500;
   }
 
   @Override
@@ -135,15 +131,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
     return m_testResults;
   }
 
-  public List<ITestResult> getTestResults() {
-    return m_testResults;
-  }
-
   public int getInvocationCount() {
     return m_invocationCount;
-  }
-
-  public int getFailureCount() {
-    return m_failureCount;
   }
 }

@@ -24,7 +24,6 @@ import org.testng.internal.ClassHelper;
 import org.testng.internal.ClassImpl;
 import org.testng.internal.ClassInfoMap;
 import org.testng.internal.ConfigurationGroupMethods;
-import org.testng.internal.Constants;
 import org.testng.internal.DynamicGraph;
 import org.testng.internal.DynamicGraph.Status;
 import org.testng.internal.IConfiguration;
@@ -63,6 +62,9 @@ import com.google.inject.Module;
 public class TestRunner
     implements ITestContext, ITestResultNotifier, IThreadWorkerFactory<ITestNGMethod>
 {
+
+  public static final String DEFAULT_PROP_OUTPUT_DIR = "test-output";
+
   /* generated */
   private static final long serialVersionUID = 4247820024988306670L;
   private ISuite m_suite;
@@ -101,7 +103,7 @@ public class TestRunner
   transient private Map<Class<?>, ITestClass> m_classMap = Maps.newLinkedHashMap();
 
   /** Where the reports will be created. */
-  private String m_outputDirectory= Constants.getDefaultValueFor(Constants.PROP_OUTPUT_DIR);
+  private String m_outputDirectory= DEFAULT_PROP_OUTPUT_DIR;
 
   // The XML method selector (groups/methods included/excluded in XML)
   private XmlMethodSelector m_xmlMethodSelector = new XmlMethodSelector();
