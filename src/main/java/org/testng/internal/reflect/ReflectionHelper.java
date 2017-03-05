@@ -29,7 +29,7 @@ public class ReflectionHelper {
     else {
       List<Method> prunedMethods = Lists.newArrayList();
       for (Method declaredMethod : declaredMethods) {
-        if (!Modifier.isAbstract(declaredMethod.getModifiers()) && !declaredMethod.isBridge()) {
+        if (!declaredMethod.isBridge()) {
           prunedMethods.add(declaredMethod);
         }
       }

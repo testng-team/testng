@@ -13,16 +13,29 @@ public class ReflectionHelperTest {
 
     @Test
     public void testMethodCount() {
+        //Testing exclusion of synthetic methods Refer http://stackoverflow.com/a/5007394 to learn more
         Method[] methods = prune(ReflectionHelper.getLocalMethods(DuplicateCallsSample.class));
         Assert.assertEquals(methods.length, 2);
+
+        //Testing a straight forward use case of retrieving concrete methods
         methods = prune(ReflectionHelper.getLocalMethods(Dog.class));
         Assert.assertEquals(methods.length, 1);
+
+        //When class has no methods count should be zero.
         methods = prune(ReflectionHelper.getLocalMethods(Dinosaur.class));
         Assert.assertEquals(methods.length, 0);
+
+        //Abstract methods should be included.
         methods = prune(ReflectionHelper.getLocalMethods(Dragon.class));
-        Assert.assertEquals(methods.length, 1);
+        Assert.assertEquals(methods.length, 2);
     }
 
+    /**
+     * @param methods - The list of methods extracted from a Class
+     * @return - A {@link Method} array which excludes a special method named
+     * "jacocoInit" which is getting injected into the test class only when the test
+     * is executed via Gradle.
+     */
     private static Method[] prune(Method[] methods) {
         List<Method> pruned = Lists.newArrayList(methods.length);
         for (Method method : methods) {
@@ -37,7 +50,6 @@ public class ReflectionHelperTest {
         void makeSound();
     }
 
-
     class Dog implements Animal {
 
         @Override
@@ -46,11 +58,7 @@ public class ReflectionHelperTest {
         }
     }
 
-
-    abstract class Dinosaur implements Animal {
-
-    }
-
+    abstract class Dinosaur implements Animal {}
 
     abstract class Dragon implements Animal {
 

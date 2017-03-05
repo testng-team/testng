@@ -96,7 +96,7 @@
       <class name="test.thread.DataProviderThreadPoolSizeTest" />
       <class name="test.thread.MultiThreadedDependentTest" />
       <class name="test.thread.TrueParallelTest" />
-      <class name="test.github765.ExcludeAbstractMethodsFromTemplateCallsTest"/>
+      <class name="test.github765.ExcludeSyntheticMethodsFromTemplateCallsTest"/>
 <!--
       <class name="test.thread.ParallelSuiteTest"/>
 -->
