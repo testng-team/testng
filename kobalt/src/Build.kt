@@ -58,7 +58,7 @@ val p = project {
     }
 
     dependencies {
-        compile("com.beust:jcommander:1.64",
+        compile("com.beust:jcommander:1.66",
                 "org.yaml:snakeyaml:1.17",
                 "com.google.code.findbugs:jsr305:3.0.1")
         provided("com.google.inject:guice:4.1.0")
