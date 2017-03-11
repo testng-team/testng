@@ -1,5 +1,7 @@
 package test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.Assert;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.Test;
@@ -21,20 +23,17 @@ public class DynamicGraphTest extends SimpleBaseTest {
     private Node(String name) {
       this.name = name;
     }
+
+    @Override
+    public String toString() {
+      return name;
+    }
   }
 
   private static void assertFreeNodesEquals(DynamicGraph<Node> graph, Node... expected) {
-    List<Node> freeNodes = graph.getFreeNodes();
-    String[] actual = new String[freeNodes.size()];
-    for (int i=0; i<actual.length; i++) {
-      actual[i] = freeNodes.get(i).name;
-    }
-    String[] expectedNodes = new String[expected.length];
-    for (int i=0; i<expectedNodes.length; i++) {
-      expectedNodes[i] = expected[i].name;
-    }
-    Assert.assertEqualsNoOrder(graph.getFreeNodes().toArray(), expected);
+    assertThat(graph.getFreeNodes()).containsOnly(expected);
   }
+
   @Test
   public void test8() {
     /*
@@ -71,26 +70,32 @@ public class DynamicGraphTest extends SimpleBaseTest {
     dg.addEdge(0, a1, x, y);
     dg.addEdge(0, b1, x, y);
     dg.addEdge(0, c1, x, y);
+
     assertFreeNodesEquals(dg, y, x);
+
     dg.setStatus(dg.getFreeNodes(), Status.RUNNING);
     assertFreeNodesEquals(dg);
-    
     dg.setStatus(x, Status.FINISHED);
     dg.setStatus(y, Status.FINISHED);
     assertFreeNodesEquals(dg, a1);
     
-    dg.setStatus(dg.getFreeNodes(), Status.RUNNING);
-
-    dg.setStatus(a1, Status.FINISHED);
+    dg.setStatus(a1, Status.RUNNING);
     assertFreeNodesEquals(dg);
+    dg.setStatus(a1, Status.FINISHED);
+    assertFreeNodesEquals(dg, a2);
 
+    dg.setStatus(a2, Status.RUNNING);
+    assertFreeNodesEquals(dg);
     dg.setStatus(a2, Status.FINISHED);
     assertFreeNodesEquals(dg, b1);
 
-    dg.setStatus(b2, Status.RUNNING);
-    dg.setStatus(b1, Status.FINISHED);
+    dg.setStatus(b1, Status.RUNNING);
     assertFreeNodesEquals(dg);
+    dg.setStatus(b1, Status.FINISHED);
+    assertFreeNodesEquals(dg, b2);
 
+    dg.setStatus(b2, Status.RUNNING);
+    assertFreeNodesEquals(dg);
     dg.setStatus(b2, Status.FINISHED);
     assertFreeNodesEquals(dg, c1);
   }
@@ -118,18 +123,21 @@ public class DynamicGraphTest extends SimpleBaseTest {
     dg.addNode(x);
     dg.addEdge(0, a1, x);
     dg.addEdge(0, b1, x);
+
     assertFreeNodesEquals(dg, x);
-    dg.setStatus(dg.getFreeNodes(), Status.RUNNING);
+
+    dg.setStatus(x, Status.RUNNING);
     assertFreeNodesEquals(dg);
-    
     dg.setStatus(x, Status.FINISHED);
     assertFreeNodesEquals(dg, a1);
     
-    dg.setStatus(dg.getFreeNodes(), Status.RUNNING);
-
+    dg.setStatus(a1, Status.RUNNING);
+    assertFreeNodesEquals(dg);
     dg.setStatus(a1, Status.FINISHED);
     assertFreeNodesEquals(dg, a2);
 
+    dg.setStatus(a2, Status.RUNNING);
+    assertFreeNodesEquals(dg);
     dg.setStatus(a2, Status.FINISHED);
     assertFreeNodesEquals(dg, b1);
 
@@ -158,6 +166,10 @@ public class DynamicGraphTest extends SimpleBaseTest {
           assertFreeNodesEquals(dg);
 
           dg.setStatus(b, Status.FINISHED);
+          // TODO https://github.com/cbeust/testng/issues/1380
+          // a and c should not be free at the same time:
+          // if c -> b -> a then an explicit edge should exist from c to a.
+          // When b is finished then a should be free first and c only once a is finished.
           assertFreeNodesEquals(dg, a, c);
 
           dg.setStatus(a, Status.FINISHED);
