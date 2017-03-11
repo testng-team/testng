@@ -72,12 +72,12 @@ public class DynamicGraphTest extends SimpleBaseTest {
     dg.addEdge(0, b1, x, y);
     dg.addEdge(0, c1, x, y);
     assertFreeNodesEquals(dg, y, x);
-    dg.setStatus( dg.getFreeNodes(), Status.RUNNING);
+    dg.setStatus(dg.getFreeNodes(), Status.RUNNING);
     assertFreeNodesEquals(dg);
     
     dg.setStatus(x, Status.FINISHED);
     dg.setStatus(y, Status.FINISHED);
-    assertFreeNodesEquals(dg,a1);
+    assertFreeNodesEquals(dg, a1);
     
     dg.setStatus(dg.getFreeNodes(), Status.RUNNING);
 
@@ -123,12 +123,12 @@ public class DynamicGraphTest extends SimpleBaseTest {
     assertFreeNodesEquals(dg);
     
     dg.setStatus(x, Status.FINISHED);
-    assertFreeNodesEquals(dg,a1);
+    assertFreeNodesEquals(dg, a1);
     
     dg.setStatus(dg.getFreeNodes(), Status.RUNNING);
 
     dg.setStatus(a1, Status.FINISHED);
-    assertFreeNodesEquals(dg,a2);
+    assertFreeNodesEquals(dg, a2);
 
     dg.setStatus(a2, Status.FINISHED);
     assertFreeNodesEquals(dg, b1);
