@@ -124,8 +124,16 @@ public class DynamicGraph<T> {
       int lowestPriority = getLowestEdgePriority(m_nodesReady);
       int lowestOrder = getLowestOrder(m_nodesReady);
       for (T node : m_nodesReady) {
-        if (hasAllEdgesWithLevel(m_edges.get(node), lowestPriority) &&
-            hasAllEdgesWithSameOrder(m_edges.get(node), lowestOrder)) {
+        // if a node has a dependency on a running node,
+        // then we can expect to have a free node when the node will finish
+        for (T unode : getUnfinishedNodes(node)) {
+          if (m_nodesRunning.contains(unode)) {
+            return Collections.emptyList();
+          }
+        }
+        List<Edge<T>> edges = m_edges.get(node);
+        if (hasAllEdgesWithLevel(edges, lowestPriority) &&
+            hasAllEdgesWithSameOrder(edges, lowestOrder)) {
           result.add(node);
         }
       }

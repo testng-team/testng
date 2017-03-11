@@ -721,9 +721,6 @@ public class TestRunner
                   new GraphThreadPoolExecutor<>("test=" + xmlTest.getName(), graph, this,
                           threadCount, threadCount, 0, TimeUnit.MILLISECONDS,
                           new LinkedBlockingQueue<Runnable>());
-          if (xmlTest.getParallel() == XmlSuite.ParallelMode.CLASSES) {
-            executor.setUseLatches();
-          }
           executor.run();
           try {
             long timeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);

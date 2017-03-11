@@ -4,13 +4,11 @@ import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.internal.DynamicGraph;
 import org.testng.internal.DynamicGraph.Status;
-import org.testng.internal.thread.IThreadSynchronizer;
 import org.testng.internal.thread.TestNGThreadFactory;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -24,7 +22,6 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
   private final DynamicGraph<T> m_graph;
   private final List<Runnable> m_activeRunnables = Collections.synchronizedList(Lists.<Runnable>newArrayList());
   private final IThreadWorkerFactory<T> m_factory;
-  private boolean useLatches;
 
   public GraphThreadPoolExecutor(String name, DynamicGraph<T> graph, IThreadWorkerFactory<T> factory, int corePoolSize,
       int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
@@ -35,10 +32,6 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
     if (m_graph.getFreeNodes().isEmpty()) {
       throw new TestNGException("The graph of methods contains a cycle:" + graph.getEdges());
     }
-  }
-
-  public void setUseLatches(){
-    useLatches = true;
   }
 
   public void run() {
@@ -53,30 +46,14 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
    */
   private void runNodes(List<T> freeNodes) {
     List<IWorker<T>> runnables = m_factory.createWorkers(freeNodes);
-    CountDownLatch latch = null;
-    if (useLatches && runnables.size() > 1) {
-      latch = new CountDownLatch(runnables.size());
-    }
-    boolean latchUsed = false;
     for (IWorker<T> r : runnables) {
       m_activeRunnables.add(r);
-      if (latch != null && (r instanceof IThreadSynchronizer)) {
-        ((IThreadSynchronizer)r).setLatch(latch);
-        latchUsed = true;
-      }
       setStatus(r, Status.RUNNING);
       try {
         execute(r);
       }
       catch(Exception ex) {
         ex.printStackTrace();
-      }
-    }
-    if (latch != null && latchUsed) {
-      try {
-        latch.await(10, TimeUnit.SECONDS);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
       }
     }
   }
