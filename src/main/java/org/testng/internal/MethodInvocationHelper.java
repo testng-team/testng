@@ -134,7 +134,7 @@ public class MethodInvocationHelper {
       }
     }
     throw new TestNGException("Data Provider " + dataProvider + " must return"
-          + " either Object[][] or Iterator<Object>[], not " + dataProvider.getReturnType());
+          + " either Object[][] or Object[] or Iterator<Object[]> or Iterator<Object>, not " + dataProvider.getReturnType());
   }
 
   private static List<Object> getParameters(Method dataProvider, ITestNGMethod method, ITestContext testContext,
@@ -157,6 +157,8 @@ public class MethodInvocationHelper {
         parameters.add(method);
       } else if (cls.equals(ITestContext.class)) {
         parameters.add(testContext);
+      } else if (cls.equals(Class.class)) {
+        parameters.add(com.getDeclaringClass());
       } else {
         boolean isTestInstance = annotationFinder.hasTestInstance(dataProvider, i);
         if (isTestInstance) {

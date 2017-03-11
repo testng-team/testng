@@ -44,6 +44,10 @@ public class ConfigurationGroupMethods implements Serializable {
     m_afterGroupsMethods= afterGroupsMethods;
   }
 
+  public ITestNGMethod[] getAllTestMethods() {
+    return this.m_allMethods;
+  }
+
   public Map<String, List<ITestNGMethod>> getBeforeGroupsMethods() {
     return m_beforeGroupsMethods;
   }

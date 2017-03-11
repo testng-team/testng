@@ -777,7 +777,15 @@ public class TestRunner
     //so let's update the current classMethodMap object with the list of methods obtained from the interceptor.
     this.m_classMethodMap = new ClassMethodMap(result, null);
 
-    return result.toArray(new ITestNGMethod[result.size()]);
+    ITestNGMethod[] resultArray = result.toArray(new ITestNGMethod[result.size()]);
+
+    //Check if an interceptor had altered the effective test method count. If yes, then we need to
+    //update our configurationGroupMethod object with that information.
+    if (resultArray.length != m_groupMethods.getAllTestMethods().length) {
+      m_groupMethods = new ConfigurationGroupMethods(resultArray, m_groupMethods.getBeforeGroupsMethods(),
+          m_groupMethods.getAfterGroupsMethods());
+    }
+    return resultArray;
   }
 
   /**
