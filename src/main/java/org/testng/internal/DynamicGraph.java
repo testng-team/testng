@@ -1,17 +1,16 @@
 package org.testng.internal;
 
-import org.testng.collections.ListMultiMap;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.collections.Sets;
-import org.testng.internal.collections.Pair;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.testng.collections.ListMultiMap;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
+import org.testng.collections.Sets;
+import org.testng.internal.collections.Pair;
 
 /**
  * Representation of the graph of methods.
@@ -23,6 +22,7 @@ public class DynamicGraph<T> {
   private final List<T> m_nodesFinished = Lists.newArrayList();
 
   private final ListMultiMap<T, Edge<T>> m_edges = Maps.newListMultiMap();
+  private final ListMultiMap<T, Edge<T>> m_allEdges = Maps.newListMultiMap();
 
   public enum Status {
     READY, RUNNING, FINISHED
@@ -95,6 +95,7 @@ public class DynamicGraph<T> {
         m_edges.put(edge.from, edge);
       }
       // else: existingEdge.weight > edge.weight and ignore
+      m_allEdges.put(edge.from, edge);
     }
   }
 
@@ -241,6 +242,24 @@ public class DynamicGraph<T> {
           }
         }
         for (Pair<T, Edge<T>> pair : edgesToRemove) {
+          // Add virtual edge before removing intermediate node:
+          // ie: if a -> b and b -> c, then a -> c is added before the b deletion
+          for (Edge<T> edge : m_allEdges.get(node)) {
+            // If the edge doesn't exist yet
+            Edge<T> pedge = pair.second();
+            Edge<T> existingEdge = getNode(m_edges, new Edge<>(0, pedge.from, edge.to));
+            if ((existingEdge == null || existingEdge.weight != pedge.weight) &&
+                // Then we filter useless edge creation: the "to" must have to run later and,
+                // "from"/"to" must not be the same node
+                m_nodesReady.contains(edge.to) && !pedge.from.equals(edge.to)) {
+
+              if (edge.weight > pedge.weight) {
+                addEdge(edge.weight, edge.order, pedge.from, edge.to);
+              } else {
+                addEdge(pedge.weight, pedge.order, pedge.from, edge.to);
+              }
+            }
+          }
           m_edges.remove(pair.first(), pair.second());
         }
         break;
