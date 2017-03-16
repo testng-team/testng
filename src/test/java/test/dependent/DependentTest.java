@@ -9,6 +9,7 @@ import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Test;
+import org.testng.xml.XmlSuite.ParallelMode;
 import test.BaseTest;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
@@ -149,16 +150,23 @@ public class DependentTest extends BaseTest {
   @DataProvider
   public static Object[][] dp1380() {
     return new Object[][]{
-        {GitHub1380Sample.class, new String[]{"testMethodA", "testMethodB", "testMethodC"}},
-        {GitHub1380Sample2.class, new String[]{"testMethodC", "testMethodB", "testMethodA"}},
-        {GitHub1380Sample3.class, new String[]{"testMethodA", "testMethodB", "testMethodC"}},
-        {GitHub1380Sample4.class, new String[]{"testMethodB", "testMethodA", "testMethodC"}}
+        {GitHub1380Sample.class, new String[]{"testMethodA", "testMethodB", "testMethodC"}, false},
+        {GitHub1380Sample2.class, new String[]{"testMethodC", "testMethodB", "testMethodA"}, false},
+        {GitHub1380Sample3.class, new String[]{"testMethodA", "testMethodB", "testMethodC"}, false},
+        {GitHub1380Sample4.class, new String[]{"testMethodB", "testMethodA", "testMethodC"}, false},
+        {GitHub1380Sample.class, new String[]{"testMethodA", "testMethodB", "testMethodC"}, true},
+        {GitHub1380Sample2.class, new String[]{"testMethodC", "testMethodB", "testMethodA"}, true},
+        {GitHub1380Sample3.class, new String[]{"testMethodA", "testMethodB", "testMethodC"}, true},
+        {GitHub1380Sample4.class, new String[]{"testMethodB", "testMethodA", "testMethodC"}, true}
     };
   }
 
   @Test(dataProvider = "dp1380", description = "GITHUB-1380")
-  public void simpleCyclingDependencyShouldWork(Class<?> testClass, String[] runMethods) {
+  public void simpleCyclingDependencyShouldWork(Class<?> testClass, String[] runMethods, boolean isParallel) {
     TestNG tng = SimpleBaseTest.create(testClass);
+    if (isParallel) {
+      tng.setParallel(ParallelMode.METHODS);
+    }
 
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     tng.addListener((ITestNGListener) listener);
