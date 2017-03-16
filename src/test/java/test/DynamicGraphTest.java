@@ -2,6 +2,9 @@ package test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.Test;
@@ -10,10 +13,6 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.DynamicGraph;
 import org.testng.internal.DynamicGraph.Status;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 public class DynamicGraphTest extends SimpleBaseTest {
 
@@ -164,15 +163,16 @@ public class DynamicGraphTest extends SimpleBaseTest {
 
           dg.setStatus(b, Status.RUNNING);
           assertFreeNodesEquals(dg);
-
           dg.setStatus(b, Status.FINISHED);
-          // TODO https://github.com/cbeust/testng/issues/1380
-          // a and c should not be free at the same time:
-          // if c -> b -> a then an explicit edge should exist from c to a.
-          // When b is finished then a should be free first and c only once a is finished.
-          assertFreeNodesEquals(dg, a, c);
+          assertFreeNodesEquals(dg, a);
 
+          dg.setStatus(a, Status.RUNNING);
+          assertFreeNodesEquals(dg);
           dg.setStatus(a, Status.FINISHED);
+          assertFreeNodesEquals(dg, c);
+
+          dg.setStatus(c, Status.RUNNING);
+          assertFreeNodesEquals(dg);
           dg.setStatus(c, Status.FINISHED);
           assertFreeNodesEquals(dg);
   }
