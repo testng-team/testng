@@ -122,7 +122,7 @@ public class DynamicGraph<T> {
     // if all nodes have dependencies, then we can ignore the lowest one
     if (result.isEmpty()) {
       int lowestPriority = getLowestEdgePriority(m_nodesReady);
-      int lowestOrder = getLowestOrder(m_nodesReady);
+      int lowestOrder = getLowestOrder(m_nodesReady, lowestPriority);
       for (T node : m_nodesReady) {
         // if a node has a dependency on a running node,
         // then we can expect to have a free node when the node will finish
@@ -158,17 +158,19 @@ public class DynamicGraph<T> {
     return lowerPriority == null ? 0 : lowerPriority;
   }
 
-  private int getLowestOrder(List<T> nodes) {
+  private int getLowestOrder(List<T> nodes, int weight) {
     if (nodes.isEmpty()) {
       return 0;
     }
     Integer lowestOrder = null;
     for (T node : nodes) {
       for (Edge<T> edge : m_edges.get(node)) {
-        if (lowestOrder == null) {
-          lowestOrder = edge.order;
-        } else {
-          lowestOrder = lowestOrder < edge.order ? lowestOrder : edge.order;
+        if (edge.weight == weight) {
+          if (lowestOrder == null) {
+            lowestOrder = edge.order;
+          } else {
+            lowestOrder = lowestOrder < edge.order ? lowestOrder : edge.order;
+          }
         }
       }
     }
