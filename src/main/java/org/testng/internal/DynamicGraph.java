@@ -32,17 +32,11 @@ public class DynamicGraph<T> {
     private final T from;
     private final T to;
     private final int weight;
-    private final int order;
 
     private Edge(int weight, T from, T to) {
-      this(weight, 0, from, to);
-    }
-
-    private Edge(int weight, int order, T from, T to) {
       this.from = from;
       this.to = to;
       this.weight = weight;
-      this.order = order;
     }
   }
 
@@ -57,12 +51,11 @@ public class DynamicGraph<T> {
    *
    * @param weight - Represents one of {@link org.testng.TestRunner.PriorityWeight} ordinals indicating
    *               the weightage of a particular node in the graph
-   * @param order - Represents an ordering of nodes that have the same weight.
    * @param from - Represents the edge that depends on another edge.
    * @param to - Represents the edge on which another edge depends upon.
    */
-  public void addEdge(int weight, int order, T from, T to) {
-    addEdges(Collections.singletonList(new Edge<>(weight, order, from, to)));
+  public void addEdge(int weight, T from, T to) {
+    addEdges(Collections.singletonList(new Edge<>(weight, from, to)));
   }
 
   /**
@@ -123,7 +116,6 @@ public class DynamicGraph<T> {
     // if all nodes have dependencies, then we can ignore the lowest one
     if (result.isEmpty()) {
       int lowestPriority = getLowestEdgePriority(m_nodesReady);
-      int lowestOrder = getLowestOrder(m_nodesReady, lowestPriority);
       for (T node : m_nodesReady) {
         // if a node has a dependency on a running node,
         // then we can expect to have a free node when the node will finish
@@ -133,13 +125,28 @@ public class DynamicGraph<T> {
           }
         }
         List<Edge<T>> edges = m_edges.get(node);
-        if (hasAllEdgesWithLevel(edges, lowestPriority) &&
-            hasAllEdgesWithSameOrder(edges, lowestOrder)) {
+        if (hasAllEdgesWithLevel(edges, lowestPriority)) {
           result.add(node);
         }
       }
     }
-    return  result;
+
+    // Filter result: remove node if the result contains all nodes from an edge
+    List<T> finalResult = Lists.newArrayList();
+    for (T node : result) {
+      List<Edge<T>> edges = m_edges.get(node);
+      boolean canAdd = true;
+      for (Edge<T> edge : edges) {
+        if (result.contains(edge.to)) {
+          canAdd = false;
+        }
+      }
+      if (canAdd) {
+        finalResult.add(node);
+      }
+    }
+
+    return finalResult;
   }
 
   private int getLowestEdgePriority(List<T> nodes) {
@@ -159,37 +166,9 @@ public class DynamicGraph<T> {
     return lowerPriority == null ? 0 : lowerPriority;
   }
 
-  private int getLowestOrder(List<T> nodes, int weight) {
-    if (nodes.isEmpty()) {
-      return 0;
-    }
-    Integer lowestOrder = null;
-    for (T node : nodes) {
-      for (Edge<T> edge : m_edges.get(node)) {
-        if (edge.weight == weight) {
-          if (lowestOrder == null) {
-            lowestOrder = edge.order;
-          } else {
-            lowestOrder = lowestOrder < edge.order ? lowestOrder : edge.order;
-          }
-        }
-      }
-    }
-    return lowestOrder == null ? 0 : lowestOrder;
-  }
-
   private static <T> boolean hasAllEdgesWithLevel(List<Edge<T>> edges, int level) {
     for (Edge<?> edge : edges) {
       if (edge.weight != level) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  private static <T> boolean hasAllEdgesWithSameOrder(List<Edge<T>> edges, int order) {
-    for (Edge<?> edge : edges) {
-      if (edge.order != order) {
         return false;
       }
     }
@@ -254,9 +233,9 @@ public class DynamicGraph<T> {
                 m_nodesReady.contains(edge.to) && !pedge.from.equals(edge.to)) {
 
               if (edge.weight > pedge.weight) {
-                addEdge(edge.weight, edge.order, pedge.from, edge.to);
+                addEdge(edge.weight, pedge.from, edge.to);
               } else {
-                addEdge(pedge.weight, pedge.order, pedge.from, edge.to);
+                addEdge(pedge.weight, pedge.from, edge.to);
               }
             }
           }

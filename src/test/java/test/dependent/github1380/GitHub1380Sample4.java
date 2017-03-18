@@ -12,7 +12,6 @@ public class GitHub1380Sample4 {
 
   @Test(priority = 2)
   public void testMethodB() {
-
   }
 
   @Test(priority = 3)

@@ -222,7 +222,7 @@ public class DynamicGraphTest extends SimpleBaseTest {
       Integer currentPriority = availablePriorities.get(i);
       for (ITestNGMethod p0Method : methodsByPriority.get(previousPriority)) {
         for (ITestNGMethod p1Method : methodsByPriority.get(currentPriority)) {
-          graph.addEdge(1, p1Method.getPriority(), p1Method, p0Method);
+          graph.addEdge(1, p1Method, p0Method);
         }
       }
       previousPriority = currentPriority;
