@@ -8,5 +8,8 @@ not to include the external jar files in order to keep the size down.
 
 If you want to build TestNG, please sync to the GitHub repository at https://github.com/cbeust/testng.
 
+TestNG is Java 8 Compatible
+![Compatibility Badge](https://java.net/downloads/adoptopenjdk/compat.svg)
+
 --
 The TestNG team
