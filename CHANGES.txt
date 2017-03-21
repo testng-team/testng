@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1396: Order established by IMethodInterceptor not honored when running with parallel='instances' (Ryan Scott)
 Fixed: GITHUB-1287: Parallel (methods) execution with dependsOn running in unexpected order (Kevyn Reinholt)
 Fixed: GITHUB-1362: Ensure AfterGroups methods get executed when involving Method Interceptors (Krishnan Mahadevan)
 Fixed: GITHUB-765: Skip invocation of bridged methods (Krishnan Mahadevan)

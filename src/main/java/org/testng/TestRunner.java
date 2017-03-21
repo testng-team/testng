@@ -869,7 +869,7 @@ public class TestRunner
   private List<IWorker<ITestNGMethod>>
       createInstanceBasedParallelWorkers(List<ITestNGMethod> methods) {
     List<IWorker<ITestNGMethod>> result = Lists.newArrayList();
-    ListMultiMap<Object, ITestNGMethod> lmm = Maps.newListMultiMap();
+    ListMultiMap<Object, ITestNGMethod> lmm = Maps.newSortedListMultiMap();
     for (ITestNGMethod m : methods) {
       lmm.put(m.getInstance(), m);
     }
