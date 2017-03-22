@@ -22,7 +22,7 @@ class InstanceOrderingMethodInterceptor implements IMethodInterceptor {
    */
   private List<IMethodInstance> groupMethodsByInstance(List<IMethodInstance> methods) {
     List<Object> instanceList = Lists.newArrayList();
-    Map<Object, List<IMethodInstance>> map = Maps.newHashMap();
+    Map<Object, List<IMethodInstance>> map = Maps.newLinkedHashMap();
     for (IMethodInstance mi : methods) {
       Object instance = mi.getInstance();
       if (!instanceList.contains(instance)) {
