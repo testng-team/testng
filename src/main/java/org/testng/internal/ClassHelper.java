@@ -182,7 +182,7 @@ public final class ClassHelper {
     }
 
     Class<?> parent = clazz.getSuperclass();
-    while (null != parent) {
+    while (null != parent && (!Object.class.equals(parent))) {
       Set<Map.Entry<String, Set<Method>>> extractedMethods = extractMethods(clazz, parent, methods).entrySet();
       for (Map.Entry<String, Set<Method>> extractedMethod : extractedMethods){
         Set<Method> m = methods.get(extractedMethod.getKey());
