@@ -1095,16 +1095,22 @@ public class TestNG {
   }
 
   /**
-   * Run TestNG.
+   * Invoked by the remote runner.
    */
-  public void run() {
+  public void initializeEverything() {
     initializeSuitesAndJarFile();
     initializeConfiguration();
     initializeDefaultListeners();
     initializeCommandLineSuites();
     initializeCommandLineSuitesParams();
     initializeCommandLineSuitesGroups();
+  }
 
+  /**
+   * Run TestNG.
+   */
+  public void run() {
+    initializeEverything();
     sanityCheck();
 
     runExecutionListeners(true /* start */);
