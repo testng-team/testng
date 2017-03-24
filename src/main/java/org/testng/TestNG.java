@@ -259,13 +259,6 @@ public class TestNG {
   }
 
   public void initializeSuitesAndJarFile() {
-    // The Eclipse plug-in (RemoteTestNG) might have invoked this method already
-    // so don't initialize suites twice.
-    if (m_isInitialized) {
-      return;
-    }
-
-    m_isInitialized = true;
     if (m_suites.size() > 0) {
     	//to parse the suite files (<suite-file>), if any
     	for (XmlSuite s: m_suites) {
@@ -1098,12 +1091,20 @@ public class TestNG {
    * Invoked by the remote runner.
    */
   public void initializeEverything() {
+    // The Eclipse plug-in (RemoteTestNG) might have invoked this method already
+    // so don't initialize suites twice.
+    if (m_isInitialized) {
+      return;
+    }
+
     initializeSuitesAndJarFile();
     initializeConfiguration();
     initializeDefaultListeners();
     initializeCommandLineSuites();
     initializeCommandLineSuitesParams();
     initializeCommandLineSuitesGroups();
+
+    m_isInitialized = true;
   }
 
   /**
