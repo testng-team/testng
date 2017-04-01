@@ -1394,7 +1394,9 @@ public class TestNG {
     }
 
     for (IReporter r : result.getReporters()) {
-      addListener(r);
+      if (!m_reporters.containsKey(r.getClass())) {
+        addListener(r);
+      }
     }
 
     for (IConfigurationListener cl : m_configuration.getConfigurationListeners()) {
