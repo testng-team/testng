@@ -705,8 +705,14 @@ public class TestNG {
   }
 
   private static <E> void maybeAddListener(Map<Class<? extends E>, E> map, Class<? extends E> type, E value) {
+    maybeAddListener(map, type, value, false);
+  }
+
+  private static <E> void maybeAddListener(Map<Class<? extends E>, E> map, Class<? extends E> type, E value, boolean quiet) {
     if (map.containsKey(value.getClass())) {
-      LOGGER.warn("Ignoring duplicate listener : " + value.getClass().getName());
+      if (!quiet) {
+        LOGGER.warn("Ignoring duplicate listener : " + value.getClass().getName());
+      }
     } else {
       map.put(type, value);
     }
@@ -1394,9 +1400,7 @@ public class TestNG {
     }
 
     for (IReporter r : result.getReporters()) {
-      if (!m_reporters.containsKey(r.getClass())) {
-        addListener(r);
-      }
+      maybeAddListener(m_reporters, r.getClass(), r, true);
     }
 
     for (IConfigurationListener cl : m_configuration.getConfigurationListeners()) {
