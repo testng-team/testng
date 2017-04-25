@@ -622,6 +622,7 @@ public class Invoker implements IInvoker {
                                  0,
                                  m_testContext);
       testResult.setParameters(parameterValues);
+      testResult.setParameterIndex(parametersIndex);
       testResult.setHost(m_testContext.getHost());
       testResult.setStatus(ITestResult.STARTED);
 

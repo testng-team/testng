@@ -37,6 +37,7 @@ public class TestResult implements ITestResult, IAlterTestName {
   transient private Object m_instance;
   private String m_instanceName;
   private ITestContext m_context;
+  private int parameterIndex;
 
   public TestResult() {
 
@@ -323,6 +324,14 @@ public class TestResult implements ITestResult, IAlterTestName {
   @Override
   public void setTestName(String name) {
     m_name = name;
+  }
+
+  public void setParameterIndex(int parameterIndex) {
+    this.parameterIndex = parameterIndex;
+  }
+
+  public int getParameterIndex() {
+    return parameterIndex;
   }
 }
 
