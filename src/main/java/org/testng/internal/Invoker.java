@@ -601,11 +601,20 @@ public class Invoker implements IInvoker {
       suite, params, parameterValues,
       instance, testResult);
 
+    InvokedMethod invokedMethod = new InvokedMethod(instance,
+        tm,
+        System.currentTimeMillis(),
+        testResult);
+
     if (!confInvocationPassed(tm, tm, testClass, instance)) {
       ITestResult result = registerSkippedTestResult(tm, instance, System.currentTimeMillis(),
               getExceptionDetails(instance));
       m_notifier.addSkippedTest(tm, result);
       tm.incrementCurrentInvocationCount();
+
+      runInvokedMethodListeners(InvokedMethodListenerMethod.AFTER_INVOCATION, invokedMethod, testResult);
+      invokeConfigurations(testClass, tm, this.filterConfigurationMethods(tm, afterMethods, false), suite, params, parameterValues, instance, testResult);
+      invokeAfterGroupsConfigurations(testClass, tm, groupMethods, suite, params, instance);
 
       return result;
     }
@@ -613,7 +622,6 @@ public class Invoker implements IInvoker {
     //
     // Create the ExtraOutput for this method
     //
-    InvokedMethod invokedMethod = null;
     try {
       testResult.init(testClass, instance,
                                  tm,
@@ -627,11 +635,6 @@ public class Invoker implements IInvoker {
       testResult.setStatus(ITestResult.STARTED);
 
       Reporter.setCurrentTestResult(testResult);
-
-      invokedMethod= new InvokedMethod(instance,
-          tm,
-          System.currentTimeMillis(),
-          testResult);
 
       // Fix from ansgarkonermann
       // invokedMethod is used in the finally, which can be invoked if

@@ -3,6 +3,7 @@ package test.configurationfailurepolicy;
 import static org.testng.Assert.assertEquals;
 import static test.SimpleBaseTest.getPathToResource;
 
+import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
@@ -76,6 +77,17 @@ public class FailurePolicyTest {
     TestNG.privateMain(argv, tla);
 
     verify(tla, 2, 0, 2);
+  }
+
+  @Test
+  public void shouldCall_afterMethod_and_afterGroup_for_commandLineTest_policyAsContinue() {
+    String[] argv = new String[] { "-log", "0", "-d", OutputDirectoryPatch.getOutputDirectory(),
+        "-configfailurepolicy", "continue",
+        "-testclass", ClassWithFailedBeforeMethodAndVerifyAfterMethodAfterGroup.class.getCanonicalName() };
+    TestListenerAdapter tla = new TestListenerAdapter();
+    TestNG.privateMain(argv, tla);
+
+    Assert.assertTrue(ClassWithFailedBeforeMethodAndVerifyAfterMethodAfterGroup.sucess());
   }
 
   @Test
