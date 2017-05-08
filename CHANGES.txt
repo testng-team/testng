@@ -12,6 +12,7 @@ Fixed: GITHUB-1360: TestNG does not distinguish between methods of different pri
 Fixed: GITHUB-1144: Add Class and Constructor as legal native dependency injection (Guillaume Juillot)
 Fixed: GITHUB-1380: Circular dependencies may fail in parallel (Julien Herr)
 Fixed: GITHUB-1400: TestNG, Multiple duplicate listener warnings on implementing multiple listener interfaces (@bipo1980 & Nick Tan)
+Fixed: GITHUB-1426: @afterMethod is not getting called if we have exception in @beforeMethod with configfailurepolicy as continue (@dipak-pawar)
 
 6.11
 2017/02/27
