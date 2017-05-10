@@ -685,6 +685,7 @@
     <classes>
       <class name="org.testng.internal.UtilsTest" />
       <class name="test.issue1339.ClassHelperTest"/>
+      <class name="test.issue1430.TestFileToClass"/>
     </classes>
   </test>
 
