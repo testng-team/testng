@@ -190,7 +190,7 @@ public class Invoker implements IInvoker {
         // - the test is enabled and
         // - the Configuration method belongs to the same class or a parent
         configurationAnnotation = AnnotationHelper.findConfiguration(m_annotationFinder, method);
-        boolean alwaysRun= isAlwaysRun(configurationAnnotation);
+        boolean alwaysRun = isAlwaysRun(configurationAnnotation);
         if(MethodHelper.isEnabled(objectClass, m_annotationFinder) || alwaysRun) {
 
           if (MethodHelper.isEnabled(configurationAnnotation)) {
@@ -601,11 +601,24 @@ public class Invoker implements IInvoker {
       suite, params, parameterValues,
       instance, testResult);
 
+    InvokedMethod invokedMethod = new InvokedMethod(instance,
+        tm,
+        System.currentTimeMillis(),
+        testResult);
+
     if (!confInvocationPassed(tm, tm, testClass, instance)) {
       ITestResult result = registerSkippedTestResult(tm, instance, System.currentTimeMillis(),
               getExceptionDetails(instance));
       m_notifier.addSkippedTest(tm, result);
       tm.incrementCurrentInvocationCount();
+
+      runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
+      invokeConfigurations(testClass, tm,
+          filterConfigurationMethods(tm, afterMethods, false /* beforeMethods */),
+          suite, params, parameterValues,
+          instance,
+          testResult);
+      invokeAfterGroupsConfigurations(testClass, tm, groupMethods, suite, params, instance);
 
       return result;
     }
@@ -613,7 +626,6 @@ public class Invoker implements IInvoker {
     //
     // Create the ExtraOutput for this method
     //
-    InvokedMethod invokedMethod = null;
     try {
       testResult.init(testClass, instance,
                                  tm,
@@ -627,11 +639,6 @@ public class Invoker implements IInvoker {
       testResult.setStatus(ITestResult.STARTED);
 
       Reporter.setCurrentTestResult(testResult);
-
-      invokedMethod= new InvokedMethod(instance,
-          tm,
-          System.currentTimeMillis(),
-          testResult);
 
       // Fix from ansgarkonermann
       // invokedMethod is used in the finally, which can be invoked if
