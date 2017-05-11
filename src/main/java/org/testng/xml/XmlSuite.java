@@ -135,7 +135,6 @@ public class XmlSuite implements Serializable, Cloneable {
 
   /** mixed mode flag. */
   public static final Boolean DEFAULT_MIXED = Boolean.FALSE;
-  private Boolean m_isMixed = DEFAULT_MIXED;
 
   public static final Boolean DEFAULT_SKIP_FAILED_INVOCATION_COUNTS = Boolean.FALSE;
   private Boolean m_skipFailedInvocationCounts = DEFAULT_SKIP_FAILED_INVOCATION_COUNTS;
@@ -639,27 +638,19 @@ public class XmlSuite implements Serializable, Cloneable {
    */
   @Override
   public String toString() {
-    StringBuffer result = new StringBuffer("[Suite: \"").append( m_name).append( "\" ");
+    StringBuilder result = new StringBuilder("[Suite: \"").append( m_name).append( "\" ");
 
     for (XmlTest t : m_tests) {
       result.append("  ").append( t.toString()).append(' ');
     }
 
     for (XmlMethodSelector ms : m_methodSelectors) {
-      result.append(" methodSelector:" + ms);
+      result.append(" methodSelector:").append(ms);
     }
 
     result.append(']');
 
     return result.toString();
-  }
-
-  /**
-   * Logs to System.out.
-   * @param s the message to log.
-   */
-  private static void ppp(String s) {
-    System.out.println("[XmlSuite] " + s);
   }
 
   /**
@@ -784,12 +775,10 @@ public class XmlSuite implements Serializable, Cloneable {
   }
 
   public int getDataProviderThreadCount() {
-    // org.testng.CommandLineArgs.DATA_PROVIDER_THREAD_COUNT
     String s = System.getProperty("dataproviderthreadcount");
     if (s != null) {
       try {
-        int nthreads = Integer.parseInt(s);
-        return nthreads;
+        return Integer.parseInt(s);
       } catch(NumberFormatException nfe) {
         System.err.println("Parsing System property 'dataproviderthreadcount': " + nfe);
       }
@@ -814,8 +803,6 @@ public class XmlSuite implements Serializable, Cloneable {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-//      result = prime * result
-//          + ((m_childSuites == null) ? 0 : m_childSuites.hashCode());
     result = prime
         * result
         + ((m_configFailurePolicy == null) ? 0 : m_configFailurePolicy
@@ -995,23 +982,6 @@ public class XmlSuite implements Serializable, Cloneable {
     return true;
   }
 
-
-  /**
-   * The DTD sometimes forces certain attributes to receive a default value. Such
-   * a value is considered equal to another one if that other one is null.
-   */
-  private boolean eq(String o1, String o2, String def) {
-    boolean result = false;
-    if (o1 == null && o2 == null) result = true;
-    else if (o1 != null) {
-      result = o1.equals(o2) || (def.equals(o1) && o2 == null);
-    }
-    else if (o2 != null) {
-      result = o2.equals(o1) || (def.equals(o2) && o1 == null);
-    }
-    return result;
-  }
-
   /**
    * @deprecated Use {@link #setPreserveOrder(Boolean)} instead
    */
@@ -1048,7 +1018,7 @@ public class XmlSuite implements Serializable, Cloneable {
   }
 
   /**
-   * @param g
+   * @param g - The list of groups to include.
    */
   public void setIncludedGroups(List<String> g) {
     m_includedGroups = g;

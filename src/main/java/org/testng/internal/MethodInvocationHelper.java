@@ -98,7 +98,11 @@ public class MethodInvocationHelper {
 
     synchronized(thisMethod) {
       if (! Modifier.isPublic(thisMethod.getModifiers()) || !thisMethod.isAccessible()) {
-        thisMethod.setAccessible(true);
+        try {
+          thisMethod.setAccessible(true);
+        } catch (SecurityException e) {
+          throw new TestNGException(thisMethod.getName() + " must be public", e);
+        }
       }
     }
     return thisMethod.invoke(instance, parameters);
@@ -130,7 +134,7 @@ public class MethodInvocationHelper {
       }
     }
     throw new TestNGException("Data Provider " + dataProvider + " must return"
-          + " either Object[][] or Iterator<Object>[], not " + dataProvider.getReturnType());
+          + " either Object[][] or Object[] or Iterator<Object[]> or Iterator<Object>, not " + dataProvider.getReturnType());
   }
 
   private static List<Object> getParameters(Method dataProvider, ITestNGMethod method, ITestContext testContext,
@@ -153,6 +157,8 @@ public class MethodInvocationHelper {
         parameters.add(method);
       } else if (cls.equals(ITestContext.class)) {
         parameters.add(testContext);
+      } else if (cls.equals(Class.class)) {
+        parameters.add(com.getDeclaringClass());
       } else {
         boolean isTestInstance = annotationFinder.hasTestInstance(dataProvider, i);
         if (isTestInstance) {
@@ -247,9 +253,19 @@ public class MethodInvocationHelper {
       Object[] parameterValues, ITestResult testResult, IHookable hookable) {
 
     InvokeMethodRunnable imr = new InvokeMethodRunnable(tm, instance, parameterValues, hookable, testResult);
+    long startTime = System.currentTimeMillis();
+    long realTimeOut = MethodHelper.calculateTimeOut(tm);
     try {
       imr.run();
-      testResult.setStatus(ITestResult.SUCCESS);
+      if (System.currentTimeMillis() <= startTime + realTimeOut) {
+        testResult.setStatus(ITestResult.SUCCESS);
+      } else {
+        ThreadTimeoutException exception = new ThreadTimeoutException("Method "
+            + tm.getQualifiedName() + "()"
+            + " didn't finish within the time-out " + realTimeOut);
+        testResult.setThrowable(exception);
+        testResult.setStatus(ITestResult.FAILURE);
+      }
     } catch (Exception ex) {
       testResult.setThrowable(ex.getCause());
       testResult.setStatus(ITestResult.FAILURE);

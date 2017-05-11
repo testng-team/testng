@@ -22,6 +22,11 @@ import com.google.common.collect.Multiset;
 public final class InvocationCountTest implements IRetryAnalyzer {
   static final Multiset<String> invocations = ConcurrentHashMultiset.create();
   private static final AtomicInteger retriesRemaining = new AtomicInteger(100);
+  private static final int MAX_RETRY = 2;
+
+  static int tcid1 = 0;
+  static int tcid2 = 0;
+  static int tcid3 = 0;
 
   private int r1 = 0;
   private int r2 = 1;
@@ -66,6 +71,38 @@ public final class InvocationCountTest implements IRetryAnalyzer {
     assertEquals(invocations.count("failAfterThreeRetries"), 4);
   }
 
+  @Test (retryAnalyzer = InvocationCountTest.class,
+		dataProvider = "dataProvider3")
+  public void retryWithDataProvider(String tc) {
+		if ("tc1".equals(tc)) {
+
+			if (tcid1++ < MAX_RETRY) {
+				fail();
+			}
+		}
+		if ("tc2".equals(tc)) {
+			if (tcid2++ < MAX_RETRY) {
+				fail();
+			}
+		}
+		if ("tc3".equals(tc)) {
+			if (tcid3++ < MAX_RETRY) {
+				fail();
+			}
+		}
+	}
+
+
+	@Test (
+			dependsOnMethods = { "retryWithDataProvider" }, alwaysRun = true)
+	public void checkRetryCounts() {
+		assertEquals(tcid1, 3);
+		assertEquals(tcid2, 3);
+		assertEquals(tcid3, 3);
+	}
+
+  
+  
   @DataProvider(name="dataProvider")
   private Object[][] dataProvider() {
     return new Object[][] { { 1, true }, { 2, false }, { 3, true },
@@ -78,6 +115,12 @@ public final class InvocationCountTest implements IRetryAnalyzer {
 
     return new Object[][] { { true }, { true } };
   }
+  
+  @DataProvider (
+			name = "dataProvider3")
+	private Object[][] dataProvider3() {
+		return new Object[][] { {"tc1"}, {"tc2"}, {"tc3"} };
+	}
 
   @Test(retryAnalyzer = InvocationCountTest.class, dataProvider = "dataProvider")
   public void testAnnotationWithDataProvider(int paf, boolean test) {
@@ -131,4 +174,13 @@ public final class InvocationCountTest implements IRetryAnalyzer {
       return remainingRetries.getAndDecrement() > 0;
     }
   }
+  
+  public static class RetryCountTest implements IRetryAnalyzer {
+	    private final AtomicInteger remainingRetries = new AtomicInteger(12);
+
+	    @Override
+	    public boolean retry(ITestResult result) {
+	      return remainingRetries.getAndDecrement() > 0;
+	    }
+	  }
 }

@@ -29,7 +29,6 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
   private static final long serialVersionUID = -1742868891986775307L;
   private int m_threadPoolSize = 0;
   private int m_invocationCount = 1;
-  private int m_totalInvocationCount = m_invocationCount;
   private int m_successPercentage = 100;
 
   /**
@@ -57,14 +56,6 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
   @Override
   public int getInvocationCount() {
     return m_invocationCount;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public int getTotalInvocationCount() {
-    return m_totalInvocationCount;
   }
 
   /**
@@ -105,7 +96,6 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
         m_successPercentage = testAnnotation.getSuccessPercentage();
 
         setInvocationCount(testAnnotation.getInvocationCount());
-        m_totalInvocationCount = testAnnotation.getInvocationCount();
         setThreadPoolSize(testAnnotation.getThreadPoolSize());
         setAlwaysRun(testAnnotation.getAlwaysRun());
         setDescription(findDescription(testAnnotation, xmlTest));
@@ -195,7 +185,6 @@ public class TestNGMethod extends BaseTestMethod implements Serializable {
     clone.setEnabled(getEnabled());
     clone.setParameterInvocationCount(getParameterInvocationCount());
     clone.setInvocationCount(getInvocationCount());
-    clone.m_totalInvocationCount = getTotalInvocationCount();
     clone.m_successPercentage = getSuccessPercentage();
     clone.setTimeOut(getTimeOut());
     clone.setRetryAnalyzer(getRetryAnalyzer());

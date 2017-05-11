@@ -12,6 +12,7 @@ public interface IMethodInstance {
   /**
    * @deprecated Use getInstance()
    */
+  @Deprecated
   Object[] getInstances();
 
   Object getInstance();

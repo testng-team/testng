@@ -1,19 +1,16 @@
 package org.testng;
 
+import java.util.List;
 import org.testng.collections.Lists;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.PropertyUtils;
 import org.testng.internal.Utils;
-
-import java.util.List;
 
 /**
  * Stores the information regarding the configuration of a pluggable report listener. Used also
  * in conjunction with the &lt;reporter&gt; sub-element of the Ant task
  *
  * NOTE: this class needs to be public. It's used by TestNG Ant task
- *
- * @author Cosmin Marginean, Apr 12, 2007
  */
 public class ReporterConfig {
 
@@ -25,7 +22,7 @@ public class ReporterConfig {
   /**
    * The properties of the reporter listener
    */
-  private List<Property> m_properties = Lists.newArrayList();
+  private final List<Property> m_properties = Lists.newArrayList();
 
   public void addProperty(Property property) {
     m_properties.add(property);
@@ -44,16 +41,16 @@ public class ReporterConfig {
   }
 
   public String serialize() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append(m_className);
     if (!m_properties.isEmpty()) {
       sb.append(":");
 
       for (int i = 0; i < m_properties.size(); i++) {
         ReporterConfig.Property property = m_properties.get(i);
-        sb.append(property.getName());
+        sb.append(property.name);
         sb.append("=");
-        sb.append(property.getValue());
+        sb.append(property.value);
         if (i < m_properties.size() - 1) {
           sb.append(",");
         }
@@ -63,75 +60,69 @@ public class ReporterConfig {
   }
 
   public static ReporterConfig deserialize(String inputString) {
-    ReporterConfig reporterConfig = null;
-    if (!Utils.isStringEmpty(inputString)) {
-      reporterConfig = new ReporterConfig();
-      int clsNameEndIndex = inputString.indexOf(":");
-      if (clsNameEndIndex == -1) {
-        reporterConfig.setClassName(inputString);
-      } else {
-        reporterConfig.setClassName(inputString.substring(0, clsNameEndIndex));
-        String propString = inputString.substring(clsNameEndIndex + 1, inputString.length());
-        String[] props = propString.split(",");
-        if ((props != null) && (props.length > 0)) {
-          for (String prop : props) {
-            String[] propNameAndVal = prop.split("=");
-            if ((propNameAndVal != null) && (propNameAndVal.length == 2)) {
-              Property property = new Property();
-              property.setName(propNameAndVal[0]);
-              property.setValue(propNameAndVal[1]);
-              reporterConfig.addProperty(property);
-            }
-          }
+
+    if (Utils.isStringEmpty(inputString)) {
+      return null;
+    }
+
+    ReporterConfig reporterConfig = new ReporterConfig();
+
+    int clsNameEndIndex = inputString.indexOf(':');
+    if (clsNameEndIndex == -1) {
+      reporterConfig.setClassName(inputString);
+    } else {
+      reporterConfig.setClassName(inputString.substring(0, clsNameEndIndex));
+      String propString = inputString.substring(clsNameEndIndex + 1, inputString.length());
+      String[] props = propString.split(",");
+      for (String prop : props) {
+        String[] propNameAndVal = prop.split("=");
+        if (propNameAndVal.length == 2) {
+          reporterConfig.addProperty(new Property(propNameAndVal[0], propNameAndVal[1]));
         }
       }
-
     }
+
     return reporterConfig;
   }
 
   /**
    * Creates a reporter based on the current configuration
    */
-  public Object newReporterInstance() {
-    Object result = null;
-    Class reporterClass = ClassHelper.forName(m_className);
-    if (reporterClass != null) {
-      result = ClassHelper.newInstance(reporterClass);
-      for (ReporterConfig.Property property : m_properties) {
-        PropertyUtils.setProperty(result, property.getName(), property.getValue());
-      }
+  public IReporter newReporterInstance() {
+
+    Class<?> reporterClass = ClassHelper.forName(m_className);
+    if (reporterClass == null) {
+      return null;
+    }
+
+    Object tmp = ClassHelper.newInstance(reporterClass);
+    if (!(tmp instanceof IReporter)) {
+      throw new TestNGException(m_className + " is not a IReporter");
+    }
+
+    IReporter result = (IReporter) tmp;
+    for (ReporterConfig.Property property : m_properties) {
+      PropertyUtils.setProperty(result, property.name, property.value);
     }
     return result;
   }
 
   public static class Property {
-    private String name;
-    private String value;
+    private final String name;
+    private final String value;
 
-    public String getName() {
-      return name;
-    }
-
-    public void setName(String name) {
+    public Property(String name, String value) {
       this.name = name;
-    }
-
-    public String getValue() {
-      return value;
-    }
-
-    public void setValue(String value) {
       this.value = value;
     }
   }
 
   @Override
   public String toString() {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     buf.append("\nClass = " + m_className);
     for (Property prop : m_properties) {
-      buf.append("\n\t " + prop.getName() + "=" + prop.getValue());
+      buf.append("\n\t " + prop.name + "=" + prop.value);
     }
     return buf.toString();
   }

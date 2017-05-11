@@ -22,6 +22,7 @@ public class MethodInstance implements IMethodInstance {
     return m_method;
   }
 
+  @Deprecated
   @Override
   public Object[] getInstances() {
     return new Object[] { getInstance() };

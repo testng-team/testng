@@ -4,7 +4,7 @@ import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.reporters.FailedReporter;
-import test.BaseTest;
+import test.SimpleBaseTest;
 
 import java.io.File;
 import java.util.UUID;
@@ -12,8 +12,7 @@ import java.util.UUID;
 import static test.failedreporter.FailedReporterLocalTestClass.WithFailure;
 import static test.failedreporter.FailedReporterLocalTestClass.WithoutFailure;
 
-public class FailedReporterScenariosTest extends BaseTest {
-    private File tempDir = new File(System.getProperty("java.io.tmpdir"));
+public class FailedReporterScenariosTest extends SimpleBaseTest {
 
     @Test
     public void testFileCreationSkipWhenNoFailuresExist() {
@@ -22,7 +21,7 @@ public class FailedReporterScenariosTest extends BaseTest {
             Assert.assertFalse(getLocation(fileLocation).exists());
         } finally {
             if (fileLocation.exists()) {
-                deleteRecursive(fileLocation);
+                deleteDir(fileLocation);
             }
         }
     }
@@ -42,11 +41,11 @@ public class FailedReporterScenariosTest extends BaseTest {
     private void runAssertions(File fileLocation) {
         try {
             FailedReporterTest.runAssertions(fileLocation, new String[] {"testMethodWithFailure"},
-                "<include name=\"%s\"" + "\"/>");
+                "<include name=\"%s\"/>");
             Assert.assertTrue(getLocation(fileLocation).exists());
         } finally {
             if (fileLocation.exists()) {
-                deleteRecursive(fileLocation);
+                deleteDir(fileLocation);
             }
         }
     }
@@ -58,11 +57,7 @@ public class FailedReporterScenariosTest extends BaseTest {
 
     private File runTests(RUN_TYPES runType) {
         String suiteName = UUID.randomUUID().toString();
-        File fileLocation = new File(tempDir, suiteName);
-        if (! fileLocation.exists()) {
-            fileLocation.mkdirs();
-        }
-        TestNG testNG = new TestNG();
+        File fileLocation = createDirInTempDir(suiteName);
         Class[] classes = {};
         switch (runType) {
             case WITH_FAILURES:
@@ -74,8 +69,8 @@ public class FailedReporterScenariosTest extends BaseTest {
             case MIXED_MODE:
                 classes = new Class[] {WithFailure.class, WithoutFailure.class};
         }
-        testNG.setTestClasses(classes);
-        testNG.setOutputDirectory(fileLocation.getAbsolutePath());
+        TestNG testNG = create(fileLocation.toPath(), classes);
+        testNG.setUseDefaultListeners(true);
         try {
             testNG.run();
         } catch (AssertionError e) {
@@ -84,20 +79,7 @@ public class FailedReporterScenariosTest extends BaseTest {
         return fileLocation;
     }
 
-    private static void deleteRecursive(File path) {
-        if (! path.exists()) {
-            return;
-        }
-        if (path.isDirectory()) {
-            File[] files = path.listFiles();
-            if (null != files) {
-                for (File f : files) {
-                    deleteRecursive(f);
-                }
-            }
-        }
-        path.delete();
-    }
+
 
     enum RUN_TYPES {
         WITH_FAILURES,

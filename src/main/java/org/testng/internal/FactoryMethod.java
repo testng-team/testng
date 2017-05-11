@@ -48,7 +48,7 @@ public class FactoryMethod extends BaseTestMethod {
       try {
         com.getMethod().setAccessible(true);
       } catch (SecurityException e) {
-        throw new TestNGException(e);
+        throw new TestNGException(com.getMethod().getName() + " must be public", e);
       }
     }
 

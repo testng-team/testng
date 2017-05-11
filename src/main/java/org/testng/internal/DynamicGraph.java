@@ -1,16 +1,16 @@
 package org.testng.internal;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.collections.Pair;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Representation of the graph of methods.
@@ -22,6 +22,7 @@ public class DynamicGraph<T> {
   private final List<T> m_nodesFinished = Lists.newArrayList();
 
   private final ListMultiMap<T, Edge<T>> m_edges = Maps.newListMultiMap();
+  private final ListMultiMap<T, Edge<T>> m_allEdges = Maps.newListMultiMap();
 
   public enum Status {
     READY, RUNNING, FINISHED
@@ -30,9 +31,9 @@ public class DynamicGraph<T> {
   private static class Edge<T> {
     private final T from;
     private final T to;
-    private int weight;
+    private final int weight;
 
-    private Edge(T from, T to, int weight) {
+    private Edge(int weight, T from, T to) {
       this.from = from;
       this.to = to;
       this.weight = weight;
@@ -44,6 +45,17 @@ public class DynamicGraph<T> {
    */
   public void addNode(T node) {
     m_nodesReady.add(node);
+  }
+
+  /**
+   *
+   * @param weight - Represents one of {@link org.testng.TestRunner.PriorityWeight} ordinals indicating
+   *               the weightage of a particular node in the graph
+   * @param from - Represents the edge that depends on another edge.
+   * @param to - Represents the edge on which another edge depends upon.
+   */
+  public void addEdge(int weight, T from, T to) {
+    addEdges(Collections.singletonList(new Edge<>(weight, from, to)));
   }
 
   /**
@@ -59,7 +71,7 @@ public class DynamicGraph<T> {
   public void addEdge(int weight, T from, Iterable<T> tos) {
     List<Edge<T>> edges = Lists.newArrayList();
     for (T to : tos) {
-      edges.add(new Edge<>(from, to, weight));
+      edges.add(new Edge<>(weight, from, to));
     }
     addEdges(edges);
   }
@@ -76,6 +88,7 @@ public class DynamicGraph<T> {
         m_edges.put(edge.from, edge);
       }
       // else: existingEdge.weight > edge.weight and ignore
+      m_allEdges.put(edge.from, edge);
     }
   }
 
@@ -104,12 +117,36 @@ public class DynamicGraph<T> {
     if (result.isEmpty()) {
       int lowestPriority = getLowestEdgePriority(m_nodesReady);
       for (T node : m_nodesReady) {
-        if (hasAllEdgesWithLevel(m_edges.get(node), lowestPriority)) {
+        // if a node has a dependency on a running node,
+        // then we can expect to have a free node when the node will finish
+        for (T unode : getUnfinishedNodes(node)) {
+          if (m_nodesRunning.contains(unode)) {
+            return Collections.emptyList();
+          }
+        }
+        List<Edge<T>> edges = m_edges.get(node);
+        if (hasAllEdgesWithLevel(edges, lowestPriority)) {
           result.add(node);
         }
       }
     }
-    return  result;
+
+    // Filter result: remove node if the result contains all nodes from an edge
+    List<T> finalResult = Lists.newArrayList();
+    for (T node : result) {
+      List<Edge<T>> edges = m_edges.get(node);
+      boolean canAdd = true;
+      for (Edge<T> edge : edges) {
+        if (result.contains(edge.to)) {
+          canAdd = false;
+        }
+      }
+      if (canAdd) {
+        finalResult.add(node);
+      }
+    }
+
+    return finalResult;
   }
 
   private int getLowestEdgePriority(List<T> nodes) {
@@ -184,6 +221,24 @@ public class DynamicGraph<T> {
           }
         }
         for (Pair<T, Edge<T>> pair : edgesToRemove) {
+          // Add virtual edge before removing intermediate node:
+          // ie: if a -> b and b -> c, then a -> c is added before the b deletion
+          for (Edge<T> edge : m_allEdges.get(node)) {
+            // If the edge doesn't exist yet
+            Edge<T> pedge = pair.second();
+            Edge<T> existingEdge = getNode(m_edges, new Edge<>(0, pedge.from, edge.to));
+            if ((existingEdge == null || existingEdge.weight != pedge.weight) &&
+                // Then we filter useless edge creation: the "to" must have to run later and,
+                // "from"/"to" must not be the same node
+                m_nodesReady.contains(edge.to) && !pedge.from.equals(edge.to)) {
+
+              if (edge.weight > pedge.weight) {
+                addEdge(edge.weight, pedge.from, edge.to);
+              } else {
+                addEdge(pedge.weight, pedge.from, edge.to);
+              }
+            }
+          }
           m_edges.remove(pair.first(), pair.second());
         }
         break;

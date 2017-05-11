@@ -12,7 +12,9 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertEqualsDeep;
 import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertNotEqualsDeep;
 
 /**
  * Tests different equality cases for nested collections
@@ -117,6 +119,39 @@ public class ArrayEqualityAssertTest {
                 "arrays inside maps are compared by reference in assertNotEquals");
     }
 
+    @Test
+    public void arrayInsideMapAssertEqualsDeep() {
+        Map<String, int[]> map = new HashMap<>();
+        map.put("array", new int[]{ 42 });
+        Map<String, int[]> mapCopy = new HashMap<>();
+        mapCopy.put("array", new int[]{ 42 });
+
+        // arrays inside maps are compared by value in assertEqualsDeep(Map,Map)
+        assertEqualsDeep(map, mapCopy);
+    }
+
+    @Test
+    public void arrayInsideMapAssertEqualsDeepWithMessage() {
+        Map<String, int[]> map = new HashMap<>();
+        map.put("array", new int[]{ 42 });
+        Map<String, int[]> mapCopy = new HashMap<>();
+        mapCopy.put("array", new int[]{ 42 });
+
+        assertEqualsDeep(map, mapCopy,
+            "arrays inside maps are compared by value in assertEqualsDeep(Map,Map,String)");
+    }
+
+    @Test(expectedExceptions = AssertionError.class)
+    public void arrayInsideMapAssertNotEqualsDeep() {
+        Map<String, int[]> map = new HashMap<>();
+        map.put("array", new int[]{ 42 });
+        Map<String, int[]> mapCopy = new HashMap<>();
+        mapCopy.put("array", new int[]{ 42 });
+
+        assertNotEqualsDeep(map, mapCopy,
+            "arrays inside maps are compared by value in assertNotEqualsDeep");
+    }
+
     @Test(expectedExceptions = AssertionError.class)
     public void arrayInsideSetAssertEquals() {
         Set<int[]> set = new HashSet<>();
@@ -137,6 +172,28 @@ public class ArrayEqualityAssertTest {
 
         assertNotEquals(set, setCopy,
                 "arrays inside sets are compared by reference in assertNotEquals");
+    }
+
+    @Test
+    public void arrayInsideSetAssertEqualsDeep() {
+        Set<int[]> set = new HashSet<>();
+        set.add(new int[]{ 42 });
+        Set<int[]> setCopy = new HashSet<>();
+        setCopy.add(new int[]{ 42 });
+
+        assertEqualsDeep(set, setCopy,
+            "arrays inside sets are compared by value in assertEqualsDeep");
+    }
+
+    @Test(expectedExceptions = AssertionError.class)
+    public void arrayInsideSetAssertNotEqualsDeep() {
+        Set<int[]> set = new HashSet<>();
+        set.add(new int[]{ 42 });
+        Set<int[]> setCopy = new HashSet<>();
+        setCopy.add(new int[]{ 42 });
+
+        assertNotEqualsDeep(set, setCopy,
+            "arrays inside sets are compared by value in assertNotEqualsDeep");
     }
 
     @Test(expectedExceptions = AssertionError.class)

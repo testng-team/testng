@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="TestNG" verbose="1" parallel="none" thread-count="2"
+<suite name="TestNG" verbose="1" parallel="false" thread-count="2"
     data-provider-thread-count="3">
 
   <suite-files>
@@ -22,6 +22,23 @@
       <class name="NoPackageTest" />
     </classes>
   </test>
+
+  <test name="1336_Tests_With_Priority" parallel="classes" thread-count="10">
+    <classes>
+      <class name="test.github1336.TestNG1"/>
+      <class name="test.github1336.TestNG2"/>
+      <class name="test.github1336.TestNG3"/>
+    </classes>
+  </test>
+
+  <test name="1336_Tests_No_Priority" parallel="classes" thread-count="10">
+    <classes>
+      <class name="test.github1336.TestNG1NoPriority"/>
+      <class name="test.github1336.TestNG2NoPriority"/>
+      <class name="test.github1336.TestNG3NoPriority"/>
+    </classes>
+  </test>
+
 
   <parameter name="first-name" value="Cedric" />
 
@@ -62,6 +79,7 @@
       <class name="test.sample.AfterClassCalledAtEnd"/>
       <class name="test.GraphTest"/>
       <class name="test.DynamicGraphTest"/>
+      <class name="test.ReflectionHelperTest"/>
       <class name="test.privatemethod.PrivateMethodTest$PrivateMethodInnerTest"/>
       <class name="test.multiple.TestMultiple"/>
       <class name="test.ClassConfigurations"/>
@@ -78,6 +96,7 @@
       <class name="test.thread.DataProviderThreadPoolSizeTest" />
       <class name="test.thread.MultiThreadedDependentTest" />
       <class name="test.thread.TrueParallelTest" />
+      <class name="test.github765.ExcludeSyntheticMethodsFromTemplateCallsTest"/>
 <!--
       <class name="test.thread.ParallelSuiteTest"/>
 -->
@@ -121,6 +140,7 @@
       <class name="test.parameters.ShadowTest" />
       <class name="test.parameters.ParameterOverrideTest" />
       <class name="test.reports.FailedReporterTest" />
+      <class name="test.reports.EmailableReporterTest"/>
       <class name="test.failedreporter.FailedReporterScenariosTest"/>
       <class name="test.failedreporter.FailedReporterParametersTest"/>
       <class name="test.reports.ReporterLogTest" />
@@ -128,6 +148,15 @@
       <class name="test.testng1231.TestExecutionListenerInvocationOrder"/>
       <class name="test.testng1232.TestListenerInstances"/>
       <class name="test.testng674.BeforeClassSkipExceptionTest"/>
+      <class name="test.testng106.TestNG106"/>
+      <class name="test.issue107.Issue107Test"/>
+      <class name="test.test111.Test1" />
+      <class name="test.testng173.TestNG173Test" />
+      <class name="test.listeners.github551.Test551"/>
+      <class name="test.listeners.github1284.TestListeners"/>
+      <class name="test_result.GitHub1197Test"/>
+      <class name="test.listeners.github1319.TestResultInstanceCheckTest"/>
+      <class name="test.testng1396.ParallelByInstancesInterceptorTest"/>
     </classes>
   </test>
 
@@ -156,6 +185,7 @@
       <class name="test.listeners.ConfigurationListenerTest" />
       <class name="test.multiplelisteners.TestMaker" />
       <class name="test.listeners.github1130.GitHub1130Test"/>
+      <class name="test.listeners.github1296.GitHub1296Test"/>
     </classes>
   </test>
 
@@ -336,6 +366,7 @@
       <class name="test.factory.EmptyFactoryDataProviderTest" />
 
       <class name="test.factory.github1131.GitHub1131Test" />
+      <class name="test.factory.nested.GitHub1307Test"/>
     </classes>
   </test>
 
@@ -501,12 +532,6 @@
     </classes>
   </test>
 
-  <test name="bug111">
-    <classes>
-      <class name="test.test111.Test1" />
-    </classes>
-  </test>
-
   <test name="UniqueSuite">
     <classes>
       <class name="test.uniquesuite.TestBefore1" />
@@ -659,6 +684,8 @@
   <test name="Utils">
     <classes>
       <class name="org.testng.internal.UtilsTest" />
+      <class name="test.issue1339.ClassHelperTest"/>
+      <class name="test.issue1430.TestFileToClass"/>
     </classes>
   </test>
 
@@ -733,12 +760,6 @@
     </classes>
   </test>
 
-  <test name="Bug173">
-    <classes>
-      <class name="test.testng173.TestNG173Test" />
-    </classes>
-  </test>
-
   <test name="Mustache">
     <classes>
       <class name="test.mustache.MustacheTest" />
@@ -753,7 +774,6 @@
 
   <test name="Issue 107">
     <classes>
-      <class name="test.issue107.Issue107Test"/>
     </classes>
   </test>
 
@@ -761,12 +781,6 @@
     <classes>
       <class name="test.assertion.AssertionTest"/>
       <class name="test.assertion.SoftAssertTest"/>
-    </classes>
-  </test>
-
-  <test name="TESTNG-106">
-    <classes>
-      <class name="test.testng106.TestNG106"/>
     </classes>
   </test>
 
@@ -798,18 +812,5 @@
       <class name="test.thread.parallelization.ParallelByMethodsTestCase7Scenario1"/>
     </classes>
   </test>
-
-  <test name = "github551">
-    <classes>
-      <class name="test.listeners.github551.Test551"/>
-    </classes>
-  </test>
-
-  <test name="github1284">
-    <classes>
-      <class name="test.listeners.github1284.TestListeners" />
-    </classes>
-  </test>
-
 </suite>
 

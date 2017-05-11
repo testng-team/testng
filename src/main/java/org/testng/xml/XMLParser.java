@@ -52,13 +52,13 @@ abstract public class XMLParser<T> implements IFileParser<T> {
   private static SAXParserFactory loadSAXParserFactory() {
     SAXParserFactory spf = null;
 
-    StringBuffer errorLog= new StringBuffer();
+    StringBuilder errorLog= new StringBuilder();
     try {
       Class factoryClass= ClassHelper.forName("com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
       spf = (SAXParserFactory) factoryClass.newInstance();
     }
     catch(Exception ex) {
-      errorLog.append("JDK5 SAXParserFactory cannot be loaded: " + ex.getMessage());
+      errorLog.append("JDK5 SAXParserFactory cannot be loaded: ").append(ex.getMessage());
     }
 
     if(null == spf) {
@@ -68,7 +68,7 @@ abstract public class XMLParser<T> implements IFileParser<T> {
         spf = (SAXParserFactory) factoryClass.newInstance();
       }
       catch(Exception ex) {
-        errorLog.append("\n").append("JDK1.4 SAXParserFactory cannot be loaded: " + ex.getMessage());
+        errorLog.append("\n").append("JDK1.4 SAXParserFactory cannot be loaded: ").append(ex.getMessage());
       }
     }
 
