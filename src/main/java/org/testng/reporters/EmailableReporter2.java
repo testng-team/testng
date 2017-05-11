@@ -23,6 +23,9 @@ import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.Files.newBufferedWriter;
+
 /**
  * Reporter that generates a single-page HTML report of the test results.
  */
@@ -74,7 +77,7 @@ public class EmailableReporter2 implements IReporter {
         if (jvmArg != null && !jvmArg.trim().isEmpty()) {
             fileName = jvmArg;
         }
-        return new PrintWriter(new BufferedWriter(new FileWriter(new File(outdir, fileName))));
+        return new PrintWriter(newBufferedWriter(new File(outdir, fileName).toPath(), UTF_8));
     }
 
     protected void writeDocumentStart() {

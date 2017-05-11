@@ -15,9 +15,7 @@ import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
@@ -28,6 +26,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.Files.newBufferedWriter;
 
 /**
  * Reported designed to render self-contained HTML top down view of a testing
@@ -87,8 +88,7 @@ public class EmailableReporter implements IReporter {
     if (jvmArg != null && !jvmArg.trim().isEmpty()) {
       fileName = jvmArg;
     }
-
-    return new PrintWriter(new BufferedWriter(new FileWriter(new File(outdir, fileName))));
+    return new PrintWriter(newBufferedWriter(new File(outdir, fileName).toPath(), UTF_8));
   }
 
   /** Creates a table showing the highlights of each test method with links to the method details */
@@ -474,6 +474,7 @@ public class EmailableReporter implements IReporter {
     out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">");
     out.println("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
     out.println("<head>");
+    out.println("<meta charset='utf-8'>");
     out.println("<title>TestNG Report</title>");
     out.println("<style type=\"text/css\">");
     out.println("table {margin-bottom:10px;border-collapse:collapse;empty-cells:show}");
