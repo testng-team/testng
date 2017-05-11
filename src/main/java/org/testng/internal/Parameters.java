@@ -8,6 +8,7 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.Callable;
 
+import javax.annotation.Nullable;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
@@ -482,7 +483,7 @@ public class Parameters {
    * @return An Iterator over the values for each parameter of this
    * method.
    */
-  public static ParameterHolder handleParameters(ITestNGMethod testMethod,
+  public static ParameterHolder handleParameters(final ITestNGMethod testMethod,
       Map<String, String> allParameterNames,
       Object instance,
       MethodParameters methodParams,
@@ -534,6 +535,7 @@ public class Parameters {
 
         @Override
         public Object[] next() {
+          testMethod.setParameterInvocationCount(index);
           Object[] next = parameters.next();
           if (!allIndices.isEmpty() && !allIndices.contains(index)) {
             next = null;

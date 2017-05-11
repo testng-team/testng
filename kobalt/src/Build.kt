@@ -2,12 +2,13 @@
 import com.beust.kobalt.TaskResult
 import com.beust.kobalt.api.Project
 import com.beust.kobalt.api.annotation.Task
+import com.beust.kobalt.buildScript
+import com.beust.kobalt.plugin.osgi.*
 import com.beust.kobalt.plugin.java.javaCompiler
 import com.beust.kobalt.plugin.packaging.assemble
+import com.beust.kobalt.plugin.publish.autoGitTag
 import com.beust.kobalt.plugin.publish.bintray
-import com.beust.kobalt.plugin.publish.github
 import com.beust.kobalt.project
-import com.beust.kobalt.repos
 import com.beust.kobalt.test
 import org.apache.maven.model.Developer
 import org.apache.maven.model.License
@@ -15,12 +16,7 @@ import org.apache.maven.model.Model
 import org.apache.maven.model.Scm
 import java.io.File
 
-val VERSION = "6.10.1-SNAPSHOT"
-
-val r = repos("https://dl.bintray.com/cbeust/maven")
-
-//val pl = plugins("com.beust:kobalt-groovy:0.4")
-//        file(homeDir("kotlin/kobalt-groovy/kobaltBuild/libs/kobalt-groovy-0.1.jar")))
+val VERSION = "6.11.1-SNAPSHOT"
 
 val p = project {
     name = "testng"
@@ -57,10 +53,11 @@ val p = project {
     }
 
     dependencies {
-        compile("com.beust:jcommander:1.48")
-        provided("com.google.inject:guice:4.1.0")
-        compileOptional("junit:junit:4.12",
+        compile("com.beust:jcommander:1.66",
                 "org.yaml:snakeyaml:1.17",
+                "com.google.code.findbugs:jsr305:3.0.1")
+        provided("com.google.inject:guice:4.1.0")
+        compile("junit:junit:4.12",
                 "org.apache.ant:ant:1.9.7",
                 "org.apache-extras.beanshell:bsh:2.0b6")
     }
@@ -87,8 +84,13 @@ val p = project {
     bintray {
         publish = true
         sign = true
-        autoGitTag = true
     }
+
+    autoGitTag {
+        enabled = true
+    }
+
+    osgi{}
 }
 
 @Task(name = "createVersion", reverseDependsOn = arrayOf("compile"), runAfter = arrayOf("clean"), description = "")

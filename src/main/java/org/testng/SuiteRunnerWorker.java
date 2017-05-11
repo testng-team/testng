@@ -42,10 +42,10 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
   private void runSuite(SuiteRunnerMap suiteRunnerMap /* OUT */, XmlSuite xmlSuite)
   {
     if (m_verbose > 0) {
-      StringBuffer allFiles = new StringBuffer();
-      allFiles.append("  ").append(xmlSuite.getFileName() != null
-          ? xmlSuite.getFileName() : m_defaultSuiteName).append('\n');
-      Utils.log("TestNG", 0, "Running:\n" + allFiles.toString());
+      String allFiles = "  " + (xmlSuite.getFileName() != null
+          ? xmlSuite.getFileName() : m_defaultSuiteName) +
+          '\n';
+      Utils.log("TestNG", 0, "Running:\n" + allFiles);
     }
 
     SuiteRunner suiteRunner = (SuiteRunner) suiteRunnerMap.get(xmlSuite);
@@ -67,7 +67,7 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
         counts.calculateResultCounts(xmlSuite, suiteRunnerMap);
       }
 
-      StringBuffer bufLog = new StringBuffer("\n===============================================\n")
+      StringBuilder bufLog = new StringBuilder("\n===============================================\n")
           .append(xmlSuite.getName());
       bufLog.append("\nTotal tests run: ")
           .append(counts.m_total).append(", Failures: ").append(counts.m_failed)

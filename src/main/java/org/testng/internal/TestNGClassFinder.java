@@ -125,6 +125,11 @@ public class TestNGClassFinder extends BaseClassFinder {
           continue;
         }
 
+        if((null == thisInstance) && cls.isAnonymousClass()) {
+          Utils.log("", 5, "[WARN] Found an anonymous class with no valid instance attached" + cls);
+          continue;
+        }
+        
         IClass ic= findOrCreateIClass(m_testContext, cls, cim.getXmlClass(cls), thisInstance,
             xmlTest, annotationFinder, objectFactory);
         if(null != ic) {
@@ -170,7 +175,7 @@ public class TestNGClassFinder extends BaseClassFinder {
                 i++;
               }
 
-              if(moreClasses.getSize() > 0) {
+              if(!moreClasses.isEmpty()) {
                 TestNGClassFinder finder =
                         new TestNGClassFinder(moreClasses,
                                 m_instanceMap,
@@ -181,7 +186,7 @@ public class TestNGClassFinder extends BaseClassFinder {
                 for(IClass ic2 : finder.findTestClasses()) {
                   putIClass(ic2.getRealClass(), ic2);
                 }
-              } // if moreClasses.size() > 0
+              }
             }
           }
         } // null != ic

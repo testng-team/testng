@@ -1,5 +1,36 @@
-﻿Current
+Current
 Fixed: GITHUB-1433: Missing encoding for emailable reports (Shaburov Oleg)
+Fixed: GITHUB-1430: Cannot load class from file XXX when using with ant and classfileset (Olivier Mourez)
+Fixed: GITHUB-1394: Optimize ClassHelper.getAvailableMethods() to exclude Object class(Nathan Reynolds & Krishnan Mahadevan)
+Fixed: GITHUB-1396: Order established by IMethodInterceptor not honored when running with parallel='instances' (Ryan Scott)
+Fixed: GITHUB-1287: Parallel (methods) execution with dependsOn running in unexpected order (Kevyn Reinholt)
+Fixed: GITHUB-1362: Ensure AfterGroups methods get executed when involving Method Interceptors (Krishnan Mahadevan)
+Fixed: GITHUB-765: Skip invocation of bridged methods (Krishnan Mahadevan)
+New: Enhance TestNGAntTask to be customizable (Denys Kurylenko)
+New: Make EmailableReporter2 W3C Compliant[XHTML 1.1] (Chris Rankin)
+Fixed: GITHUB-1336: (parallel=‘classes’) not working when coupled with priority (Krishnan Mahadevan)
+Fixed: GITHUB-1365: Be able to override default XML parser (@ChristiKh & Julien Herr)
+Fixed: GITHUB-1360: TestNG does not distinguish between methods of different priorities (Krishnan Mahadevan)
+Fixed: GITHUB-1144: Add Class and Constructor as legal native dependency injection (Guillaume Juillot)
+Fixed: GITHUB-1380: Circular dependencies may fail in parallel (Julien Herr)
+Fixed: GITHUB-1400: TestNG, Multiple duplicate listener warnings on implementing multiple listener interfaces (@bipo1980 & Nick Tan)
+Fixed: GITHUB-1426: @AfterMethod(alwaysRun = true) is not getting called if we have exception in @BeforeMethod (@dipak-pawar)
+
+6.11
+2017/02/27
+Fixed: GITHUB-1351: FailurePolicy failing with YAML (Steven Zaluk & Julien Herr)
+New: The name of all TestNG threads follow "TestNG-<thread type>-<number>" pattern (Julien Herr)
+Fixed: GITHUB-1339: Alter ClassHelper to use Maps instead of Lists for extracting methods (Krishnan Mahadevan)
+Fixed: GITHUB-1338: @BeforeGroups method is run on a wrong instance (Pavel Vetokhin & Julien Herr)
+Fixed: GITHUB-1332: Make EmailableReport name configurable (Krishnan Mahadevan)
+Fixed: GITHUB-1297: testng-failed.xml includes setup and tearDown (before and after annotations) of passed tests
+(Krishnan Mahadevan)
+Fixed: GITHUB-1319: ITestResult#getInstance() returns null in IConfigurationListener implementation (Krishnan Mahadevan)
+New: Skipped methods are not supposed to be executed (Julien Herr)
+Fixed: GITHUB-1197: Ability to dynamically set the status and exception of a test via ITestResult (Anthony Nguyen)
+Fixed: GITHUB-1302: When 'parallel' is set to 'classes', ConcurrentModificationException can be thrown(Jianhua Li)
+Fixed: GITHUB-772: Severe thread contention while running large test with parallel methods (Shaburov Oleg)
+Fixed: GITHUB-1307: TestNGException when using an anonymous class in Factory (Mike Cowan)
 Fixed: GITHUB-1298: ITestResult injection is failing in BeforeMethod method (Krishnan Mahadevan)
 Fixed: GITHUB-1293: Beanshell based execution does not work any more (Krishnan Mahadevan)
 Fixed: GITHUB-1262: Testcases out of order in XML file in junitreport folder when using testng (Krishnan Mahadevan)
@@ -8,6 +39,9 @@ Fixed: GITHUB-1265: JUnit Reporter includes redundant ignored methods (Krishnan 
 Fixed: GITHUB-1266: JUnit Reporter produces a wrong number of total test methods (Krishnan Mahadevan)
 Fixed: GITHUB-1257: Group parameter not applying on included <suite-files>
 Fixed: GITHUB-1284: Listeners on the child suites are not applied (Vimalraj Selvam)
+New: GITHUB-1313: Add Java9 as test environment on Travis (Julien Herr)
+Fixed: GITHUB-1296: Configuration listeners run multiple times (@mikimrozowski & Julien Herr)
+Fixed: GITHUB-1300: Add deep assertions to assert on array values (array reference by default) (Jordan Zimmerman & Julien Herr)
 
 6.10
 2016/11/28

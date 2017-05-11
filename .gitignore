@@ -3,6 +3,7 @@
 .gitignore
 .gradle
 .idea
+*.iml
 .project
 .settings
 /_eclipse/

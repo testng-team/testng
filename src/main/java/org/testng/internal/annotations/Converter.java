@@ -10,9 +10,9 @@ import java.util.StringTokenizer;
 /**
  * Convert a string values into primitive types.
  *
- * Created on Dec 20, 2005
- * @author cbeust
+ * @deprecated Unused
  */
+@Deprecated
 public class Converter {
 
   public static boolean  getBoolean(String tagValue, boolean def) {
