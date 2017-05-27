@@ -48,10 +48,10 @@ import static test.thread.parallelization.TestNgRunStateTracker.reset;
  * Test Case Summary: Parallel by methods mode with sequential test suites using a factory but no dependencies and no
  *                    data providers.
  *
- * Scenario Description: Two suites with 1 and 2 tests respectively. One suite with two tests which have a test for a
- *                       suite shall consist of a single test class without a factory while the other shall consist of
- *                       factories which provide multiple instances of multiple test classes. One suite shall consist
- *                       of a single test with multiple test classes which uses factories.
+ * Scenario Description: Two suites with 1 and 2 tests respectively. One suite with two tests has a test consisting of
+ *                       a single test class without a factory while the other consists of factories which provide
+ *                       multiple instances of multiple test classes. One suite shall consist of a single test with
+ *                       multiple test classes which uses factories.
  *
  * 1) For both suites, the thread count and parallel mode are specified at the suite level
  * 2) The thread count is less than the number of test methods for all tests in both suites, so methods will have to

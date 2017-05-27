@@ -2,7 +2,6 @@ package test.thread.parallelization.sample;
 
 import org.testng.ITestContext;
 import org.testng.annotations.DataProvider;
-import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 import test.thread.parallelization.TestNgRunStateTracker;
 
@@ -17,25 +16,10 @@ import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.SUITE_
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.TEST_NAME;
 import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.TEST_METHOD_EXECUTION;
 
-public class TestClassFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample {
+public class TestClassBSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample {
 
-    private final String suiteName;
-    private final String testName;
-    private final int sleepFor;
-    private final String dpVal;
-
-    @Factory(dataProvider = "data-provider")
-    public TestClassFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample(String suiteName, String testName, String
-            sleepFor, String dpVal) {
-
-        this.suiteName = suiteName;
-        this.testName = testName;
-        this.sleepFor = Integer.parseInt(sleepFor);
-        this.dpVal = dpVal;
-    }
-
-    @Test
-    public void testMethodA() throws
+    @Test(dataProvider = "data-provider")
+    public void testMethodA(String suiteName, String testName, String sleepFor, String dpVal) throws
             InterruptedException {
         long time = System.currentTimeMillis();
 
@@ -53,11 +37,11 @@ public class TestClassFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample {
                         .build()
         );
 
-        TimeUnit.MILLISECONDS.sleep(sleepFor);
+        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
     }
 
-    @Test
-    public void testMethodB() throws
+    @Test(dataProvider = "data-provider")
+    public void testMethodB(String suiteName, String testName, String sleepFor, String dpVal) throws
             InterruptedException {
         long time = System.currentTimeMillis();
 
@@ -75,11 +59,11 @@ public class TestClassFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample {
                         .build()
         );
 
-        TimeUnit.MILLISECONDS.sleep(sleepFor);
+        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
     }
 
-    @Test
-    public void testMethodC() throws
+    @Test(dataProvider = "data-provider")
+    public void testMethodC(String suiteName, String testName, String sleepFor, String dpVal) throws
             InterruptedException {
         long time = System.currentTimeMillis();
 
@@ -97,11 +81,11 @@ public class TestClassFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample {
                         .build()
         );
 
-        TimeUnit.MILLISECONDS.sleep(sleepFor);
+        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
     }
 
-    @Test
-    public void testMethodD() throws
+    @Test(dataProvider = "data-provider")
+    public void testMethodD(String suiteName, String testName, String sleepFor, String dpVal) throws
             InterruptedException {
         long time = System.currentTimeMillis();
 
@@ -119,11 +103,11 @@ public class TestClassFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample {
                         .build()
         );
 
-        TimeUnit.MILLISECONDS.sleep(sleepFor);
+        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
     }
 
-    @Test
-    public void testMethodE() throws
+    @Test(dataProvider = "data-provider")
+    public void testMethodE(String suiteName, String testName, String sleepFor, String dpVal) throws
             InterruptedException {
         long time = System.currentTimeMillis();
 
@@ -141,11 +125,33 @@ public class TestClassFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample {
                         .build()
         );
 
-        TimeUnit.MILLISECONDS.sleep(sleepFor);
+        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
+    }
+
+    @Test(dataProvider = "data-provider")
+    public void testMethodF(String suiteName, String testName, String sleepFor, String dpVal) throws
+            InterruptedException {
+        long time = System.currentTimeMillis();
+
+        TestNgRunStateTracker.logEvent(
+                TestNgRunStateTracker.EventLog.builder()
+                        .setEvent(TEST_METHOD_EXECUTION)
+                        .setTimeOfEvent(time)
+                        .setThread(Thread.currentThread())
+                        .addData(METHOD_NAME, "testMethodF")
+                        .addData(CLASS_NAME, getClass().getCanonicalName())
+                        .addData(CLASS_INSTANCE, this)
+                        .addData(TEST_NAME, testName)
+                        .addData(SUITE_NAME, suiteName)
+                        .addData(DATA_PROVIDER_PARAM, dpVal)
+                        .build()
+        );
+
+        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
     }
 
     @DataProvider(name = "data-provider")
-    public static Object[][] dataProvider(ITestContext context) {
+    public Object[][] dataProvider(ITestContext context) {
         Map<String,String> params = context.getCurrentXmlTest().getAllParameters();
 
         String suiteName = params.get("suiteName");
@@ -167,3 +173,4 @@ public class TestClassFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample {
         return dataToProvide;
     }
 }
+

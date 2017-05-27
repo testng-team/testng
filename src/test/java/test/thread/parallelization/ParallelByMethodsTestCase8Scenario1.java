@@ -6,16 +6,18 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-import test.thread.parallelization.sample.FactoryForTestClassAFiveMethodsWithNoDepsTwoInstancesSample;
-import test.thread.parallelization.sample.FactoryForTestClassBFourMethodsWithNoDepsFiveInstancesSample;
-import test.thread.parallelization.sample.FactoryForTestClassCSixMethodsWithNoDepsThreeInstancesSample;
-import test.thread.parallelization.sample.FactoryForTestClassDThreeMethodsWithNoDepsFourInstancesSample;
+
 import test.thread.parallelization.sample.FactoryForTestClassFSixMethodsWithNoDepsSixInstancesSample;
+import test.thread.parallelization.sample.TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample;
 import test.thread.parallelization.sample.TestClassAFiveMethodsWithNoDepsSample;
+import test.thread.parallelization.sample.TestClassBFourMethodsWithFactoryUsingDataProviderAndNoDepsSample;
 import test.thread.parallelization.sample.TestClassBFourMethodsWithNoDepsSample;
+import test.thread.parallelization.sample.TestClassCSixMethodsWithFactoryUsingDataProviderAndNoDepsSample;
 import test.thread.parallelization.sample.TestClassCSixMethodsWithNoDepsSample;
+import test.thread.parallelization.sample.TestClassDThreeMethodsWithFactoryUsingDataProviderAndNoDepsSample;
 import test.thread.parallelization.sample.TestClassDThreeMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassEFiveMethodsWithNoDepsSample;
+import test.thread.parallelization.sample.TestClassFSixMethodsWithFactoryUsingDataProviderAndNoDepsSample;
 import test.thread.parallelization.sample.TestClassFSixMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassGThreeMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassHFourMethodsWithNoDepsSample;
@@ -49,16 +51,17 @@ import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodLev
 import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodLevelEventLogsForTest;
 import static test.thread.parallelization.TestNgRunStateTracker.reset;
 
-/** This class covers PTP_TC_6, Scenario 1 in the Parallelization Test Plan.
+/** This class covers PTP_TC_8, Scenario 1 in the Parallelization Test Plan.
  *
- * Test Case Summary: Parallel by methods mode with parallel test suites using factories but no dependencies and no
- *                    data providers.
+ * Test Case Summary: Parallel by methods mode with parallel test suites using factories with data providers but no
+ *                    dependencies.
  *
  * Scenario Description: Three suites with 1, 2 and 3 tests respectively. One suite with two tests has a test
- *                       consisting of a single test class without a factory while the other shall consist of factories
- *                       which provide multiple instances of multiple test classes. One suite shall consist of a single
- *                       test with multiple test classes which uses factories. One suite shall have multiple tests with
- *                       multiple classes, none of which use a factory.
+ *                       consisting of a single test class without a factory while the other shall consist of test
+ *                       classes with factories using data providers with varying numbers of data sets. One suite shall
+ *                       consist of a single test with multiple test classes with factories using data providers with
+ *                       varying numbers of data sets. One suite shall have multiple tests with multiple classes, none
+ *                       of which use a factory.
  *
  * 1) The suite thread pool is 2, so one suite will have to wait for one of the others to complete execution before it
  *    can begin execution
@@ -71,15 +74,15 @@ import static test.thread.parallelization.TestNgRunStateTracker.reset;
  * 6) The thread count is more than the number of test methods for the tests in one of the suites, ensuring that none
  *    of the methods in that suite should have to wait for any other method to complete execution
  * 7) The expectation is that threads will be spawned for each test method that executes just as they would if there
- *    were no factories and test suites simply used the default mechanism for instantiating single instances of the test
- *    classes.
+ *    were no factories and test suites simply used the default mechanism for instantiating single instances of the
+ *    test classes.
  * 8) There are NO configuration methods
  * 9) All test methods pass
  * 10) NO ordering is specified
- * 11) group-by-instances is NOT set
- * 12) There are no method exclusions
+ * 11) `group-by-instances is NOT set
+ * 12) here are no method exclusions
  */
-public class ParallelByMethodsTestCase6Scenario1 extends BaseParallelizationTest {
+public class ParallelByMethodsTestCase8Scenario1 extends BaseParallelizationTest {
     private static final String SUITE_A = "TestSuiteA";
     private static final String SUITE_B = "TestSuiteB";
     private static final String SUITE_C = "TestSuiteC";
@@ -163,12 +166,12 @@ public class ParallelByMethodsTestCase6Scenario1 extends BaseParallelizationTest
         suiteOne.setParallel(XmlSuite.ParallelMode.METHODS);
         suiteOne.setThreadCount(10);
 
-        createXmlTest(suiteOne, SUITE_A_TEST_A, FactoryForTestClassAFiveMethodsWithNoDepsTwoInstancesSample.class,
-                FactoryForTestClassCSixMethodsWithNoDepsThreeInstancesSample.class);
+        createXmlTest(suiteOne, SUITE_A_TEST_A, TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample.class,
+                TestClassCSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class);
         createXmlTest(suiteTwo, SUITE_B_TEST_A, TestClassEFiveMethodsWithNoDepsSample.class);
-        createXmlTest(suiteTwo, SUITE_B_TEST_B, FactoryForTestClassDThreeMethodsWithNoDepsFourInstancesSample.class,
-                FactoryForTestClassBFourMethodsWithNoDepsFiveInstancesSample.class,
-                FactoryForTestClassFSixMethodsWithNoDepsSixInstancesSample.class);
+        createXmlTest(suiteTwo, SUITE_B_TEST_B, TestClassDThreeMethodsWithFactoryUsingDataProviderAndNoDepsSample.class,
+                TestClassBFourMethodsWithFactoryUsingDataProviderAndNoDepsSample.class,
+                TestClassFSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class);
 
         suiteTwo.setParallel(XmlSuite.ParallelMode.METHODS);
 
@@ -193,7 +196,7 @@ public class ParallelByMethodsTestCase6Scenario1 extends BaseParallelizationTest
 
             switch(test.getName()) {
                 case SUITE_C_TEST_A:
-                    test.setThreadCount(10);
+                    test.setThreadCount(25);
                     break;
                 case SUITE_C_TEST_B:
                     test.setThreadCount(5);
@@ -204,10 +207,15 @@ public class ParallelByMethodsTestCase6Scenario1 extends BaseParallelizationTest
             }
         }
 
-        addParams(suiteOne, SUITE_A, SUITE_A_TEST_A, "100");
+        addParams(suiteOne, SUITE_A, SUITE_A_TEST_A, "100",
+                TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        "(paramOne,paramTwo,paramThree)" +
+                TestClassCSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        "(paramOne,paramTwo,paramThree,paramFour)"
+        );
 
         addParams(suiteTwo, SUITE_B, SUITE_B_TEST_A, "100");
-        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_B, "100");
+        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_B, "100", "paramOne,paramTwo,paramThree,paramFour");
 
         addParams(suiteThree, SUITE_C, SUITE_C_TEST_A, "100");
         addParams(suiteThree, SUITE_C, SUITE_C_TEST_B, "100");
