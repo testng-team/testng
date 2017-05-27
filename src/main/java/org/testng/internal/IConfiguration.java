@@ -23,6 +23,4 @@ public interface IConfiguration {
 
   List<IConfigurationListener> getConfigurationListeners();
   void addConfigurationListener(IConfigurationListener cl);
-
-  List<IAlterSuiteListener> getAlterSuiteListeners();
 }

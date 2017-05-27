@@ -7,6 +7,7 @@ import org.testng.collections.Maps;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 public class ResultsByClass {
   public static final Comparator<ITestResult> METHOD_NAME_COMPARATOR =
@@ -32,8 +33,7 @@ public class ResultsByClass {
     return result;
   }
 
-  public List<Class<?>> getClasses() {
-    // TODO do not use deprecated method
-    return m_results.getKeys();
+  public Set<Class<?>> getClasses() {
+    return m_results.keySet();
   }
 }

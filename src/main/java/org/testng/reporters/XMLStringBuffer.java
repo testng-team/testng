@@ -4,8 +4,7 @@ import java.io.Writer;
 import java.util.Properties;
 import java.util.Stack;
 import java.util.regex.Pattern;
-
-import org.testng.internal.Nullable;
+import javax.annotation.Nullable;
 
 /**
  * This class allows you to generate an XML text document by pushing

@@ -20,10 +20,10 @@ import java.util.Map;
 
 /**
  * YAML support for TestNG.
- *
- * @author Cedric Beust <cedric@beust.com>
  */
-public class Yaml {
+public final class Yaml {
+
+  private Yaml() {}
 
   public static XmlSuite parse(String filePath, InputStream is)
       throws FileNotFoundException {
@@ -46,12 +46,12 @@ public class Yaml {
     }
 
     org.yaml.snakeyaml.Yaml y = new org.yaml.snakeyaml.Yaml(constructor);
-    if (is == null) is = new FileInputStream(new File(filePath));
+    if (is == null) {
+      is = new FileInputStream(new File(filePath));
+    }
     XmlSuite result = (XmlSuite) y.load(is);
 
     result.setFileName(filePath);
-    // DEBUG
-//    System.out.println("[Yaml] " + result.toXml());
 
     // Adjust XmlTest parents and indices
     for (XmlTest t : result.getTests()) {
@@ -90,29 +90,30 @@ public class Yaml {
         XmlSuite.DEFAULT_DATA_PROVIDER_THREAD_COUNT);
     maybeAdd(result, "timeOut", suite.getTimeOut(), null);
     maybeAdd(result, "parallel", suite.getParallel(), XmlSuite.DEFAULT_PARALLEL);
+    maybeAdd(result, "configFailurePolicy", suite.getConfigFailurePolicy().toString(), XmlSuite.DEFAULT_CONFIG_FAILURE_POLICY);
     maybeAdd(result, "skipFailedInvocationCounts", suite.skipFailedInvocationCounts(),
         XmlSuite.DEFAULT_SKIP_FAILED_INVOCATION_COUNTS);
 
     toYaml(result, "parameters", "", suite.getParameters());
     toYaml(result, suite.getPackages());
 
-    if (suite.getListeners().size() > 0) {
+    if (!suite.getListeners().isEmpty()) {
       result.append("listeners:\n");
       toYaml(result, "  ", suite.getListeners());
     }
 
-    if (suite.getPackages().size() > 0) {
+    if (!suite.getPackages().isEmpty()) {
       result.append("packages:\n");
       toYaml(result, suite.getPackages());
     }
-    if (suite.getTests().size() > 0) {
+    if (!suite.getTests().isEmpty()) {
       result.append("tests:\n");
       for (XmlTest t : suite.getTests()) {
         toYaml(result, "  ", t);
       }
     }
 
-    if (suite.getChildSuites().size() > 0) {
+    if (!suite.getChildSuites().isEmpty()) {
       result.append("suite-files:\n");
       toYaml(result, "  ", suite.getSuiteFiles());
     }
@@ -135,13 +136,13 @@ public class Yaml {
 
     toYaml(result, "parameters", sp2, t.getLocalParameters());
 
-    if (t.getIncludedGroups().size() > 0) {
+    if (!t.getIncludedGroups().isEmpty()) {
       result.append(sp2).append("includedGroups: [ ")
           .append(Utils.join(t.getIncludedGroups(), ","))
           .append(" ]\n");
     }
 
-    if (t.getExcludedGroups().size() > 0) {
+    if (!t.getExcludedGroups().isEmpty()) {
       result.append(sp2).append("excludedGroups: [ ")
           .append(Utils.join(t.getExcludedGroups(), ","))
           .append(" ]\n");
@@ -152,7 +153,9 @@ public class Yaml {
       result.append(sp2).append("metaGroups: { ");
       boolean first = true;
       for (Map.Entry<String, List<String>> entry : mg.entrySet()) {
-        if (! first) result.append(", ");
+        if (! first) {
+          result.append(", ");
+        }
         result.append(entry.getKey()).append(": [ ")
         .append(Utils.join(entry.getValue(), ",")).append(" ] ");
         first = false;
@@ -160,20 +163,19 @@ public class Yaml {
       result.append(" }\n");
     }
 
-    if (t.getXmlPackages().size() > 0) {
+    if (!t.getXmlPackages().isEmpty()) {
       result.append(sp2).append("xmlPackages:\n");
       for (XmlPackage xp : t.getXmlPackages())  {
         toYaml(result, sp2 + "  - ", xp);
       }
     }
 
-    if (t.getXmlClasses().size() > 0) {
+    if (!t.getXmlClasses().isEmpty()) {
       result.append(sp2).append("classes:\n");
       for (XmlClass xc : t.getXmlClasses())  {
         toYaml(result, sp2 + "  ", xc);
       }
     }
-
 
     result.append("\n");
   }
@@ -181,24 +183,24 @@ public class Yaml {
   private static void toYaml(StringBuilder result, String sp2, XmlClass xc) {
     List<XmlInclude> im = xc.getIncludedMethods();
     List<String> em = xc.getExcludedMethods();
-    String name = im.size() > 0 || em.size() > 0 ? "name: " : "";
+    String name = (im.isEmpty() && em.isEmpty()) ? "" : "name: ";
 
-    result.append(sp2).append("- " + name).append(xc.getName()).append("\n");
-    if (im.size() > 0) {
-      result.append(sp2 + "  includedMethods:\n");
+    result.append(sp2).append("- ").append(name).append(xc.getName()).append("\n");
+    if (!im.isEmpty()) {
+      result.append(sp2).append("  includedMethods:\n");
       for (XmlInclude xi : im) {
         toYaml(result, sp2 + "    ", xi);
       }
     }
 
-    if (em.size() > 0) {
-      result.append(sp2 + "  excludedMethods:\n");
+    if (!em.isEmpty()) {
+      result.append(sp2).append("  excludedMethods:\n");
       toYaml(result, sp2 + "    ", em);
     }
   }
 
   private static void toYaml(StringBuilder result, String sp2, XmlInclude xi) {
-    result.append(sp2 + "- " + xi.getName()).append("\n");
+    result.append(sp2).append("- ").append(xi.getName()).append("\n");
   }
 
   private static void toYaml(StringBuilder result, String sp, List<String> strings) {
@@ -207,10 +209,8 @@ public class Yaml {
     }
   }
 
-  private static final String SP = "  ";
-
   private static void toYaml(StringBuilder sb, List<XmlPackage> packages) {
-    if (packages.size() > 0) {
+    if (!packages.isEmpty()) {
       sb.append("packages:\n");
       for (XmlPackage p : packages) {
         toYaml(sb, "  ", p);
@@ -230,7 +230,7 @@ public class Yaml {
 
   private static void generateIncludeExclude(StringBuilder sb, String sp,
       String key, List<String> includes) {
-    if (includes.size() > 0) {
+    if (!includes.isEmpty()) {
       sb.append(sp).append("  ").append(key).append("\n");
       for (String inc : includes) {
         sb.append(sp).append("    ").append(inc);
@@ -243,9 +243,11 @@ public class Yaml {
       out.append("{ ");
       boolean first = true;
       for (Map.Entry<String, String> e : map.entrySet()) {
-        if (! first) out.append(", ");
+        if (! first) {
+          out.append(", ");
+        }
         first = false;
-        out.append(e.getKey() + ": " + e.getValue());
+        out.append(e.getKey()).append(": ").append(e.getValue());
       }
       out.append(" }\n");
     }
@@ -253,23 +255,30 @@ public class Yaml {
 
   private static void toYaml(StringBuilder sb, String key, String sp,
       Map<String, String> parameters) {
-    if (parameters.size() > 0) {
+    if (!parameters.isEmpty()) {
       sb.append(sp).append(key).append(": ");
       mapToYaml(parameters, sb);
     }
   }
 
   private static class TestNGConstructor extends Constructor {
-    public TestNGConstructor(Class<? extends Object> theRoot) {
+
+    public TestNGConstructor(Class<?> theRoot) {
       super(theRoot);
       yamlClassConstructors.put(NodeId.scalar, new ConstructParallelMode());
     }
 
     private class ConstructParallelMode extends ConstructScalar {
+
+      @Override
       public Object construct(Node node) {
         if (node.getType().equals(XmlSuite.ParallelMode.class)) {
           String parallel = (String) constructScalar((ScalarNode) node);
           return XmlSuite.ParallelMode.getValidParallel(parallel);
+        }
+        if (node.getType().equals(XmlSuite.FailurePolicy.class)) {
+          String failurePolicy = (String) constructScalar((ScalarNode) node);
+          return XmlSuite.FailurePolicy.getValidPolicy(failurePolicy);
         }
         return super.construct(node);
       }

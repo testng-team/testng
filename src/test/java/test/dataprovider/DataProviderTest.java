@@ -9,6 +9,8 @@ import org.testng.internal.reflect.MethodMatcherException;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
+import java.util.ArrayList;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DataProviderTest extends SimpleBaseTest {
@@ -92,7 +94,7 @@ public class DataProviderTest extends SimpleBaseTest {
     InvokedMethodNameListener listener = run(DependentSample.class);
 
     assertThat(listener.getSucceedMethodNames()).containsExactly("method1(ok)");
-    assertThat(listener.getSkippedBeforeInvocationMethodNames()).containsExactly("method2");
+    assertThat(listener.getSkippedMethodNames()).containsExactly("method2");
     assertThat(listener.getFailedMethodNames()).containsExactly("method1(not ok)");
   }
 
@@ -133,12 +135,53 @@ public class DataProviderTest extends SimpleBaseTest {
     InvokedMethodNameListener listener = run(MethodSample.class);
 
     assertThat(listener.getSucceedMethodNames()).containsExactly(
-        "test1(Cedric)", "test1(Alois)",
-        "test2(Cedric)",
-        "test3(Cedric)"
+            "test1(Cedric)", "test1(Alois)",
+            "test2(Cedric)",
+            "test3(Cedric)"
     );
     Assert.assertEquals(MethodSample.m_test2, 1);
     Assert.assertEquals(MethodSample.m_test3, 1);
+  }
+
+  @Test
+  public void constructorTest() {
+    ConstructorSample.all = new ArrayList<>(2);
+
+    InvokedMethodNameListener listener = run(ConstructorSample.class);
+
+    assertThat(listener.getSucceedMethodNames()).containsExactly("test", "test");
+    assertThat(ConstructorSample.all).containsExactlyInAnyOrder("Cedric", "Alois");
+  }
+
+  @Test
+  public void constructorOrMethodTest() {
+    InvokedMethodNameListener listener = run(ConstructorOrMethodSample.class);
+
+    assertThat(listener.getSucceedMethodNames()).containsExactlyInAnyOrder(
+            "test1", "test1",
+            "test2(Cedric1)", "test2(Alois1)",
+            "test2(Cedric0)", "test2(Alois0)"
+    );
+  }
+
+  @Test
+  public void classInjectionTest() {
+    InvokedMethodNameListener listener = run(ClassSample.class);
+
+    assertThat(listener.getSucceedMethodNames()).containsExactlyInAnyOrder(
+            "test1", "test1",
+            "test2(Cedric1)", "test2(Alois1)",
+            "test2(Cedric0)", "test2(Alois0)"
+    );
+  }
+
+  @Test
+  public void iTestNGMethodTest() {
+    InvokedMethodNameListener listener = run(ITestNGMethodSample.class);
+
+    assertThat(listener.getSucceedMethodNames()).containsExactly(
+            "test1(Cedric)", "test1(Alois)"
+    );
   }
 
   @Test

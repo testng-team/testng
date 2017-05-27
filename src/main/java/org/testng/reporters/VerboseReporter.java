@@ -16,7 +16,6 @@ import java.util.List;
  * To see messages from this reporter, either run Ant in verbose mode ('ant -v')
  * or set verbose level to 5 or higher
  *
- * @author Lukas Jungmann
  * @since 6.4
  */
 public class VerboseReporter extends TestListenerAdapter {
@@ -35,14 +34,15 @@ public class VerboseReporter extends TestListenerAdapter {
         SUCCESS_PERCENTAGE_FAILURE(ITestResult.SUCCESS_PERCENTAGE_FAILURE), STARTED(ITestResult.STARTED);
         private int status;
 
-        private Status(int i) {
+        Status(int i) {
             status = i;
         }
     }
 
     /**
-     * Default constructor
+     * @deprecated Unused
      */
+    @Deprecated
     public VerboseReporter() {
         this(LISTENER_PREFIX);
     }
@@ -111,7 +111,7 @@ public class VerboseReporter extends TestListenerAdapter {
 
     @Override
     public void onStart(ITestContext ctx) {
-        suiteName = ctx.getName();//ctx.getSuite().getXmlSuite().getFileName();
+        suiteName = ctx.getName();
         log("RUNNING: Suite: \"" + suiteName + "\" containing \"" + ctx.getAllTestMethods().length + "\" Tests (config: " + ctx.getSuite().getXmlSuite().getFileName() + ")");
     }
 
@@ -173,12 +173,12 @@ public class VerboseReporter extends TestListenerAdapter {
             case SKIP:
                 sb.append("SKIPPED");
                 stackTrace = itr.getThrowable() != null
-                        ? Utils.stackTrace(itr.getThrowable(), false)[0] : "";
+                        ? Utils.shortStackTrace(itr.getThrowable(), false) : "";
                 break;
             case FAILURE:
                 sb.append("FAILED");
                 stackTrace = itr.getThrowable() != null
-                        ? Utils.stackTrace(itr.getThrowable(), false)[0] : "";
+                        ? Utils.shortStackTrace(itr.getThrowable(), false) : "";
                 break;
             case SUCCESS:
                 sb.append("PASSED");

@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import java.util.Collections;
 import org.testng.collections.Maps;
 import org.testng.xml.XmlClass;
 
@@ -8,10 +9,12 @@ import java.util.Map;
 import java.util.Set;
 
 public class ClassInfoMap {
-  private Map<Class<?>, XmlClass> m_map = Maps.newLinkedHashMap();
-  private boolean includeNestedClasses;
+
+  private final Map<Class<?>, XmlClass> m_map = Maps.newLinkedHashMap();
+  private final boolean includeNestedClasses;
 
   public ClassInfoMap() {
+    this(Collections.<XmlClass>emptyList(), false);
   }
 
   public ClassInfoMap(List<XmlClass> classes) {
@@ -22,7 +25,7 @@ public class ClassInfoMap {
     includeNestedClasses = includeNested;
     for (XmlClass xmlClass : classes) {
       try {
-        Class c = xmlClass.getSupportClass();
+        Class<?> c = xmlClass.getSupportClass();
         registerClass(c, xmlClass);
       } catch (NoClassDefFoundError e) {
         Utils.log("[ClassInfoMap]", 1, "Unable to open class " + xmlClass.getName()
@@ -34,11 +37,13 @@ public class ClassInfoMap {
     }
   }
 
-  private void registerClass(Class cl, XmlClass xmlClass) {
+  private void registerClass(Class<?> cl, XmlClass xmlClass) {
     m_map.put(cl, xmlClass);
     if (includeNestedClasses) {
-      for (Class c : cl.getClasses()) {
-        if (! m_map.containsKey(c)) registerClass(c, xmlClass);
+      for (Class<?> c : cl.getClasses()) {
+        if (!m_map.containsKey(c)) {
+          registerClass(c, xmlClass);
+        }
       }
     }
   }
@@ -59,7 +64,7 @@ public class ClassInfoMap {
     return m_map.keySet();
   }
 
-  public int getSize() {
-    return m_map.size();
+  public boolean isEmpty() {
+    return m_map.isEmpty();
   }
 }

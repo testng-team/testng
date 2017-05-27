@@ -23,6 +23,17 @@ public class AlwaysRunTest extends SimpleBaseTest {
   }
 
   @Test
+  public void withAlwaysRunAfterMethod() {
+    TestListenerAdapter tla = new TestListenerAdapter();
+    TestNG testng = create();
+    testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
+    testng.setTestClasses(new Class[] { AlwaysRunAfter3.class });
+    testng.addListener(tla);
+    testng.run();
+    assertTrue(AlwaysRunAfter3.success(), "afterMethod should have run");
+  }
+
+  @Test
   public void withoutAlwaysRunAfter() {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG testng = create();
