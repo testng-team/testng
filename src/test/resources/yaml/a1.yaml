@@ -4,6 +4,7 @@ threadCount: 4
 parameters: { n: 42 }
 dataProviderThreadCount: 3
 parallel: false
+configFailurePolicy: continue
 
 listeners:
   - test.methodinterceptors.FastTestsFirstInterceptor

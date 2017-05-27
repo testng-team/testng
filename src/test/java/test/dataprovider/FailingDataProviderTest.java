@@ -12,7 +12,7 @@ public class FailingDataProviderTest extends SimpleBaseTest {
   public void failingDataProvider() {
     InvokedMethodNameListener listener = run(FailingDataProviderSample.class);
 
-    assertThat(listener.getSkippedBeforeInvocationMethodNames()).containsExactly("dpThrowingException");
+    assertThat(listener.getSkippedMethodNames()).containsExactly("dpThrowingException");
   }
 
   @Test(description = "TESTNG-447: Abort when two data providers have the same name")
@@ -26,7 +26,7 @@ public class FailingDataProviderTest extends SimpleBaseTest {
   public void failingDataProviderAndInvocationCount() {
     InvokedMethodNameListener listener = run(DataProviderWithErrorSample.class);
 
-    assertThat(listener.getSkippedBeforeInvocationMethodNames()).containsExactly(
+    assertThat(listener.getSkippedMethodNames()).containsExactly(
         "testShouldSkip", "testShouldSkip", "testShouldSkipEvenIfSuccessPercentage", "testShouldSkipEvenIfSuccessPercentage"
     );
   }

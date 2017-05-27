@@ -9,6 +9,9 @@ import org.testng.xml.XmlSuite;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class PriorityTest extends SimpleBaseTest {
 
   private void runTest(Class<?> cls, boolean parallel, String... methods) {
@@ -46,4 +49,17 @@ public class PriorityTest extends SimpleBaseTest {
   public void priorityWithDependsOnMethods() {
     runTest(WithPriorityAndDependsMethodsSample.class, false /* sequential */, "first", "second", "third");
   }
+
+  @Test(description = "GITHUB #1334: Order by priority gets messed up when there are failures and dependsOnMethods")
+  public void priorityWithDependencyAndFailures() {
+    TestNG tng = create(SampleTest01.class, SampleTest02.class);
+    tng.setParallel(XmlSuite.ParallelMode.CLASSES);
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener((ITestNGListener) listener);
+    tng.run();
+    List<String> sampleTest01Methods = Arrays.asList("test0010_createAction", "test0030_advancedSearch",
+        "test0060_deleteAction");
+    Assert.assertEquals(listener.getMethodsForTestClass(SampleTest01.class), sampleTest01Methods);
+  }
+
 }

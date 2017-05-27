@@ -179,7 +179,6 @@ public class TestNG {
   protected long m_end;
   protected long m_start;
 
-  private final Map<Class<? extends IExecutionListener>, IExecutionListener> m_executionListeners = Maps.newHashMap();
   private final Map<Class<? extends IAlterSuiteListener>, IAlterSuiteListener> m_alterSuiteListeners= Maps.newHashMap();
 
   private boolean m_isInitialized = false;
@@ -260,13 +259,6 @@ public class TestNG {
   }
 
   public void initializeSuitesAndJarFile() {
-    // The Eclipse plug-in (RemoteTestNG) might have invoked this method already
-    // so don't initialize suites twice.
-    if (m_isInitialized) {
-      return;
-    }
-
-    m_isInitialized = true;
     if (m_suites.size() > 0) {
     	//to parse the suite files (<suite-file>), if any
     	for (XmlSuite s: m_suites) {
@@ -712,9 +704,15 @@ public class TestNG {
     addListener((ITestNGListener) listener);
   }
 
-  private static <E> void maybeAddListener(Map<Class<? extends E>, E> map, Class<? extends E> type, E value) {
-    if (map.containsKey(value.getClass())) {
-      LOGGER.warn("Ignoring duplicate listener : " + value.getClass().getName());
+  private static <E> void maybeAddListener(Map<Class<? extends E>, E> map, E value) {
+    maybeAddListener(map, (Class<? extends E>) value.getClass(), value, false);
+  }
+
+  private static <E> void maybeAddListener(Map<Class<? extends E>, E> map, Class<? extends E> type, E value, boolean quiet) {
+    if (map.containsKey(type)) {
+      if (!quiet) {
+        LOGGER.warn("Ignoring duplicate listener : " + type.getName());
+      }
     } else {
       map.put(type, value);
     }
@@ -726,19 +724,19 @@ public class TestNG {
     }
     if (listener instanceof ISuiteListener) {
       ISuiteListener suite = (ISuiteListener) listener;
-      maybeAddListener(m_suiteListeners, suite.getClass(),  suite);
+      maybeAddListener(m_suiteListeners, suite);
     }
     if (listener instanceof ITestListener) {
       ITestListener test = (ITestListener) listener;
-      maybeAddListener(m_testListeners, test.getClass(), test);
+      maybeAddListener(m_testListeners, test);
     }
     if (listener instanceof IClassListener) {
       IClassListener clazz = (IClassListener) listener;
-      maybeAddListener(m_classListeners, clazz.getClass(), clazz);
+      maybeAddListener(m_classListeners, clazz);
     }
     if (listener instanceof IReporter) {
       IReporter reporter = (IReporter) listener;
-      maybeAddListener(m_reporters, reporter.getClass(), reporter);
+      maybeAddListener(m_reporters, reporter);
     }
     if (listener instanceof IAnnotationTransformer) {
       setAnnotationTransformer((IAnnotationTransformer) listener);
@@ -748,7 +746,7 @@ public class TestNG {
     }
     if (listener instanceof IInvokedMethodListener) {
       IInvokedMethodListener method = (IInvokedMethodListener) listener;
-      maybeAddListener(m_invokedMethodListeners, method.getClass(), method);
+      maybeAddListener(m_invokedMethodListeners, method);
     }
     if (listener instanceof IHookable) {
       setHookable((IHookable) listener);
@@ -757,15 +755,14 @@ public class TestNG {
       setConfigurable((IConfigurable) listener);
     }
     if (listener instanceof IExecutionListener) {
-      IExecutionListener execution = (IExecutionListener) listener;
-      maybeAddListener(m_executionListeners, execution.getClass(), execution);
+      m_configuration.addExecutionListener((IExecutionListener) listener);
     }
     if (listener instanceof IConfigurationListener) {
-      getConfiguration().addConfigurationListener((IConfigurationListener) listener);
+      m_configuration.addConfigurationListener((IConfigurationListener) listener);
     }
     if (listener instanceof IAlterSuiteListener) {
       IAlterSuiteListener alter = (IAlterSuiteListener) listener;
-      maybeAddListener(m_alterSuiteListeners, alter.getClass(), alter);
+      maybeAddListener(m_alterSuiteListeners, alter);
     }
   }
 
@@ -1097,9 +1094,15 @@ public class TestNG {
   }
 
   /**
-   * Run TestNG.
+   * Invoked by the remote runner.
    */
-  public void run() {
+  public void initializeEverything() {
+    // The Eclipse plug-in (RemoteTestNG) might have invoked this method already
+    // so don't initialize suites twice.
+    if (m_isInitialized) {
+      return;
+    }
+
     initializeSuitesAndJarFile();
     initializeConfiguration();
     initializeDefaultListeners();
@@ -1107,6 +1110,14 @@ public class TestNG {
     initializeCommandLineSuitesParams();
     initializeCommandLineSuitesGroups();
 
+    m_isInitialized = true;
+  }
+
+  /**
+   * Run TestNG.
+   */
+  public void run() {
+    initializeEverything();
     sanityCheck();
 
     runExecutionListeners(true /* start */);
@@ -1147,20 +1158,17 @@ public class TestNG {
   }
 
   private void runSuiteAlterationListeners() {
-    for (Collection<IAlterSuiteListener> listeners
-        : Arrays.asList(m_alterSuiteListeners.values(), m_configuration.getAlterSuiteListeners())) {
-      for (IAlterSuiteListener l : listeners) {
-        l.alter(m_suites);
-      }
+    for (IAlterSuiteListener l : m_alterSuiteListeners.values()) {
+      l.alter(m_suites);
     }
   }
 
   private void runExecutionListeners(boolean start) {
-    for (Collection<IExecutionListener> listeners
-        : Arrays.asList(m_executionListeners.values(), m_configuration.getExecutionListeners())) {
-      for (IExecutionListener l : listeners) {
-        if (start) l.onExecutionStart();
-        else l.onExecutionFinish();
+    for (IExecutionListener l : m_configuration.getExecutionListeners()) {
+      if (start) {
+        l.onExecutionStart();
+      } else {
+        l.onExecutionFinish();
       }
     }
   }
@@ -1243,7 +1251,7 @@ public class TestNG {
         IThreadWorkerFactory<ISuite> factory = new SuiteWorkerFactory(suiteRunnerMap,
           0 /* verbose hasn't been set yet */, getDefaultSuiteName());
         GraphThreadPoolExecutor<ISuite> pooledExecutor =
-                new GraphThreadPoolExecutor<>(suiteGraph, factory, m_suiteThreadPoolSize,
+                new GraphThreadPoolExecutor<>("suites", suiteGraph, factory, m_suiteThreadPoolSize,
                         m_suiteThreadPoolSize, Integer.MAX_VALUE, TimeUnit.MILLISECONDS,
                         new LinkedBlockingQueue<Runnable>());
 
@@ -1392,7 +1400,7 @@ public class TestNG {
     }
 
     for (IReporter r : result.getReporters()) {
-      addListener(r);
+      maybeAddListener(m_reporters, r.getClass(), r, true);
     }
 
     for (IConfigurationListener cl : m_configuration.getConfigurationListeners()) {
@@ -1724,11 +1732,11 @@ public class TestNG {
   }
 
   private void addReporter(ReporterConfig reporterConfig) {
-    Object instance = reporterConfig.newReporterInstance();
+    IReporter instance = reporterConfig.newReporterInstance();
     if (instance != null) {
       addListener(instance);
     } else {
-      LOGGER.warn("Could not find reporte class : " + reporterConfig.getClassName());
+      LOGGER.warn("Could not find reporter class : " + reporterConfig.getClassName());
     }
   }
 

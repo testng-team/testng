@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -17,7 +16,8 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:the_mindstorm@evolva.ro>Alex Popescu</a>
  */
 public class ThreadUtil {
-  private static final String THREAD_NAME = "TestNG";
+
+  public static final String THREAD_NAME = "TestNG";
 
   /**
    * @return true if the current thread was created by TestNG.
@@ -34,23 +34,14 @@ public class ThreadUtil {
    * @param timeout a maximum timeout to wait for tasks finalization
    * @param triggerAtOnce <tt>true</tt> if the parallel execution of tasks should be trigger at once
    */
-  public static void execute(List<? extends Runnable> tasks, int threadPoolSize,
+  public static void execute(String name, List<? extends Runnable> tasks, int threadPoolSize,
       long timeout, boolean triggerAtOnce) {
 
     Utils.log("ThreadUtil", 2, "Starting executor timeOut:" + timeout + "ms"
         + " workers:" + tasks.size() + " threadPoolSize:" + threadPoolSize);
-    ExecutorService pooledExecutor = // Executors.newFixedThreadPool(threadPoolSize);
-        new ThreadPoolExecutor(threadPoolSize, threadPoolSize,
-        timeout, TimeUnit.MILLISECONDS,
-        new LinkedBlockingQueue<Runnable>(),
-        new ThreadFactory() {
-          @Override
-          public Thread newThread(Runnable r) {
-            Thread result = new Thread(r);
-            result.setName(THREAD_NAME);
-            return result;
-          }
-        });
+    ExecutorService pooledExecutor = new ThreadPoolExecutor(
+        threadPoolSize, threadPoolSize, timeout, TimeUnit.MILLISECONDS,
+        new LinkedBlockingQueue<Runnable>(), new TestNGThreadFactory(name));
 
     List<Callable<Object>> callables = Lists.newArrayList();
     for (final Runnable task : tasks) {
@@ -94,19 +85,12 @@ public class ThreadUtil {
     return new ThreadFactoryImpl(name);
   }
 
-  public static class ThreadFactoryImpl implements IThreadFactory, ThreadFactory {
-    private String m_methodName;
-    private List<Thread> m_threads = Lists.newArrayList();
+  public static class ThreadFactoryImpl extends TestNGThreadFactory implements IThreadFactory {
+
+    private final List<Thread> threads = Lists.newArrayList();
 
     public ThreadFactoryImpl(String name) {
-      m_methodName= name;
-    }
-
-    @Override
-    public Thread newThread(Runnable run) {
-      Thread result = new TestNGThread(run, m_methodName);
-      m_threads.add(result);
-      return result;
+      super("method=" + name);
     }
 
     @Override
@@ -116,7 +100,7 @@ public class ThreadUtil {
 
     @Override
     public List<Thread> getThreads() {
-      return m_threads;
+      return threads;
     }
   }
 }

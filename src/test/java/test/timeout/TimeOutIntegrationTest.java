@@ -1,26 +1,42 @@
 package test.timeout;
 
-import org.testng.Assert;
-import org.testng.TestListenerAdapter;
+import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
+import test.InvokedMethodNameListener;
+import test.SimpleBaseTest;
 
-public class TimeOutIntegrationTest {
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class TimeOutIntegrationTest extends SimpleBaseTest {
 
     @Test(description = "https://github.com/cbeust/testng/issues/811")
     public void testTimeOutWhenParallelIsTest() {
-        TestNG tng = new TestNG();
+        TestNG tng = create(TimeOutWithParallelSample.class);
         tng.setParallel(XmlSuite.ParallelMode.TESTS);
-        tng.setTestClasses(new Class[]{TimeOutWithParallelSample.class});
 
-        TestListenerAdapter tla = new TestListenerAdapter();
-        tng.addListener(tla);
+        InvokedMethodNameListener listener = new InvokedMethodNameListener();
+        tng.addListener((ITestNGListener) listener);
 
         tng.run();
 
-        Assert.assertEquals(tla.getFailedTests().size(), 1);
-        Assert.assertEquals(tla.getSkippedTests().size(), 0);
-        Assert.assertEquals(tla.getPassedTests().size(), 0);
+        assertThat(listener.getFailedMethodNames()).containsExactly("myTestMethod");
+        assertThat(listener.getSkippedMethodNames()).isEmpty();
+        assertThat(listener.getSucceedMethodNames()).isEmpty();
+    }
+
+    @Test(description = "https://github.com/cbeust/testng/issues/1314")
+    public void testGitHub1314() {
+        TestNG tng = create(GitHub1314Sample.class);
+
+        InvokedMethodNameListener listener = new InvokedMethodNameListener();
+        tng.addListener((ITestNGListener) listener);
+
+        tng.run();
+
+        assertThat(listener.getSucceedMethodNames()).containsExactly("iWorkWell");
+        assertThat(listener.getFailedMethodNames()).containsExactly("iHangHorribly");
+        assertThat(listener.getSkippedMethodNames()).containsExactly("iAmNeverRun");
     }
 }
