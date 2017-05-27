@@ -5,7 +5,6 @@ import org.testng.internal.Utils;
 
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -35,10 +34,8 @@ public class ThreadUtil {
    * @param timeout a maximum timeout to wait for tasks finalization
    * @param triggerAtOnce <tt>true</tt> if the parallel execution of tasks should be trigger at once
    */
-  public static final void execute(List<? extends Runnable> tasks, int threadPoolSize,
+  public static void execute(List<? extends Runnable> tasks, int threadPoolSize,
       long timeout, boolean triggerAtOnce) {
-    final CountDownLatch startGate= new CountDownLatch(1);
-    final CountDownLatch endGate= new CountDownLatch(tasks.size());
 
     Utils.log("ThreadUtil", 2, "Starting executor timeOut:" + timeout + "ms"
         + " workers:" + tasks.size() + " threadPoolSize:" + threadPoolSize);
@@ -84,21 +81,17 @@ public class ThreadUtil {
   /**
    * Returns a readable name of the current executing thread.
    */
-  public static final String currentThreadInfo() {
+  public static String currentThreadInfo() {
     Thread thread= Thread.currentThread();
     return String.valueOf(thread.getName() + "@" + thread.hashCode());
   }
 
-  public static final IExecutor createExecutor(int threadCount, String threadFactoryName) {
+  public static IExecutor createExecutor(int threadCount, String threadFactoryName) {
     return new ExecutorAdapter(threadCount, createFactory(threadFactoryName));
   }
 
-  private static final IThreadFactory createFactory(String name) {
+  private static IThreadFactory createFactory(String name) {
     return new ThreadFactoryImpl(name);
-  }
-
-  private static void log(int level, String msg) {
-    Utils.log("ThreadUtil:" + ThreadUtil.currentThreadInfo(), level, msg);
   }
 
   public static class ThreadFactoryImpl implements IThreadFactory, ThreadFactory {

@@ -1,13 +1,13 @@
 package org.testng.reporters;
 
-import java.lang.reflect.Method;
-import java.util.List;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.Utils;
+
+import java.util.List;
 
 /**
  * Reporter printing out detailed messages about what TestNG
@@ -275,26 +275,9 @@ public class VerboseReporter extends TestListenerAdapter {
         }
         buf.append("\"");
         buf.append(" - ");
-        if (method.isBeforeSuiteConfiguration()) {
-            buf.append("@BeforeSuite ");
-        } else if (method.isBeforeTestConfiguration()) {
-            buf.append("@BeforeTest ");
-        } else if (method.isBeforeClassConfiguration()) {
-            buf.append("@BeforeClass ");
-        } else if (method.isBeforeGroupsConfiguration()) {
-            buf.append("@BeforeGroups ");
-        } else if (method.isBeforeMethodConfiguration()) {
-            buf.append("@BeforeMethod ");
-        } else if (method.isAfterMethodConfiguration()) {
-            buf.append("@AfterMethod ");
-        } else if (method.isAfterGroupsConfiguration()) {
-            buf.append("@AfterGroups ");
-        } else if (method.isAfterClassConfiguration()) {
-            buf.append("@AfterClass ");
-        } else if (method.isAfterTestConfiguration()) {
-            buf.append("@AfterTest ");
-        } else if (method.isAfterSuiteConfiguration()) {
-            buf.append("@AfterSuite ");
+        String tempName = Utils.annotationFormFor(method);
+        if (! tempName.isEmpty()) {
+            buf.append(Utils.annotationFormFor(method)).append(" ");
         }
         buf.append(m.getDeclaringClass().getName());
         buf.append(".");

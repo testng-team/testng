@@ -1,30 +1,20 @@
 package org.testng.internal;
 
+import org.testng.*;
+import org.testng.annotations.IFactoryAnnotation;
+import org.testng.annotations.IParametersAnnotation;
+import org.testng.collections.Lists;
+import org.testng.collections.Sets;
+import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.junit.IJUnitTestRunner;
+import org.testng.log4testng.Logger;
+import org.testng.xml.XmlTest;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-
-import org.testng.IClass;
-import org.testng.IMethodSelector;
-import org.testng.IObjectFactory;
-import org.testng.IObjectFactory2;
-import org.testng.ITestObjectFactory;
-import org.testng.TestNGException;
-import org.testng.TestRunner;
-import org.testng.annotations.IAnnotation;
-import org.testng.annotations.IFactoryAnnotation;
-import org.testng.annotations.IParametersAnnotation;
-import org.testng.collections.Sets;
-import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.junit.IJUnitTestRunner;
-import org.testng.xml.XmlTest;
+import java.util.*;
 
 /**
  * Utility class for different class manipulations.
@@ -34,23 +24,36 @@ public final class ClassHelper {
   private static final String JUNIT_4_TESTRUNNER = "org.testng.junit.JUnit4TestRunner";
 
   /** The additional class loaders to find classes in. */
-  private static final List<ClassLoader> m_classLoaders = new Vector<>();
+  private static final List<ClassLoader> classLoaders = new Vector<>();
+  private static final String CANNOT_INSTANTIATE_CLASS = "Cannot instantiate class ";
+  private static final String CLASS_HELPER = ClassHelper.class.getSimpleName();
+  private static final String SKIP_CALLER_CLS_LOADER = "skip.caller.clsLoader";
 
-  /** Add a class loader to the searchable loaders. */
-  public static void addClassLoader(final ClassLoader loader) {
-    m_classLoaders.add(loader);
-  }
+  /**
+   * When given a file name to form a class name, the file name is parsed and divided
+   * into segments. For example, "c:/java/classes/com/foo/A.class" would be divided
+   * into 6 segments {"C:" "java", "classes", "com", "foo", "A"}. The first segment
+   * actually making up the class name is [3]. This value is saved in lastGoodRootIndex
+   * so that when we parse the next file name, we will try 3 right away. If 3 fails we
+   * will take the long approach. This is just a optimization cache value.
+   */
+  private static int lastGoodRootIndex = -1;
 
   /** Hide constructor. */
   private ClassHelper() {
     // Hide Constructor
   }
 
+  /** Add a class loader to the searchable loaders. */
+  public static void addClassLoader(final ClassLoader loader) {
+    classLoaders.add(loader);
+  }
+
   public static <T> T newInstance(Class<T> clazz) {
     try {
       return clazz.newInstance();
     } catch(IllegalAccessException | InstantiationException | ExceptionInInitializerError | SecurityException e) {
-      throw new TestNGException("Cannot instantiate class " + clazz.getName(), e);
+      throw new TestNGException(CANNOT_INSTANTIATE_CLASS + clazz.getName(), e);
     }
   }
 
@@ -59,7 +62,7 @@ public final class ClassHelper {
       Constructor<T> constructor = clazz.getConstructor();
       return newInstance(constructor);
     } catch(ExceptionInInitializerError | SecurityException e) {
-      throw new TestNGException("Cannot instantiate class " + clazz.getName(), e);
+      throw new TestNGException(CANNOT_INSTANTIATE_CLASS + clazz.getName(), e);
     } catch (NoSuchMethodException e) {
       return null;
     }
@@ -69,7 +72,7 @@ public final class ClassHelper {
     try {
       return constructor.newInstance(parameters);
     } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-      throw new TestNGException("Cannot instantiate class " + constructor.getDeclaringClass().getName(), e);
+      throw new TestNGException(CANNOT_INSTANTIATE_CLASS + constructor.getDeclaringClass().getName(), e);
     }
   }
 
@@ -84,12 +87,12 @@ public final class ClassHelper {
    * @return the class or null if the class is not found.
    */
   public static Class<?> forName(final String className) {
-    Vector<ClassLoader> allClassLoaders = new Vector<>();
+    List<ClassLoader> allClassLoaders = Lists.newArrayList();
     ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
     if (contextClassLoader != null) {
       allClassLoaders.add(contextClassLoader);
     }
-    allClassLoaders.addAll(m_classLoaders);
+    allClassLoaders.addAll(classLoaders);
 
     for (ClassLoader classLoader : allClassLoaders) {
       if (null == classLoader) {
@@ -100,10 +103,13 @@ public final class ClassHelper {
       }
       catch(ClassNotFoundException ex) {
         // With additional class loaders, it is legitimate to ignore ClassNotFoundException
-        if (m_classLoaders.isEmpty()) {
+        if (classLoaders.isEmpty()) {
           logClassNotFoundError(className, ex);
         }
       }
+    }
+    if (Boolean.parseBoolean(System.getProperty(SKIP_CALLER_CLS_LOADER))) {
+      return null;
     }
 
     try {
@@ -116,7 +122,7 @@ public final class ClassHelper {
   }
 
   private static void logClassNotFoundError(String className, Exception ex) {
-    Utils.log("ClassHelper", 2, "Could not instantiate " + className
+    Utils.log(CLASS_HELPER, 2, "Could not instantiate " + className
         + " : Class doesn't exist (" + ex.getMessage() + ")");
   }
 
@@ -172,26 +178,32 @@ public final class ClassHelper {
   }
 
   public static IJUnitTestRunner createTestRunner(TestRunner runner) {
+    IJUnitTestRunner tr = null;
       try {
           //try to get runner for JUnit 4 first
-          Class.forName("org.junit.Test");
-          IJUnitTestRunner tr = (IJUnitTestRunner) ClassHelper.forName(JUNIT_4_TESTRUNNER).newInstance();
+        Class.forName("org.junit.Test");
+        Class<?> clazz = ClassHelper.forName(JUNIT_4_TESTRUNNER);
+        if (clazz != null) {
+          tr = (IJUnitTestRunner) clazz.newInstance();
           tr.setTestResultNotifier(runner);
-          return tr;
+        }
       } catch (Throwable t) {
-          Utils.log("ClassHelper", 2, "JUnit 4 was not found on the classpath");
+          Utils.log(CLASS_HELPER, 2, "JUnit 4 was not found on the classpath");
           try {
               //fallback to JUnit 3
               Class.forName("junit.framework.Test");
-              IJUnitTestRunner tr = (IJUnitTestRunner) ClassHelper.forName(JUNIT_TESTRUNNER).newInstance();
-              tr.setTestResultNotifier(runner);
-
-              return tr;
+              Class<?> clazz =ClassHelper.forName(JUNIT_TESTRUNNER);
+              if (clazz != null) {
+                tr = (IJUnitTestRunner) clazz.newInstance();
+                tr.setTestResultNotifier(runner);
+              }
           } catch (Exception ex) {
-              Utils.log("ClassHelper", 2, "JUnit 3 was not found on the classpath");
+              Utils.log(CLASS_HELPER, 2, "JUnit 3 was not found on the classpath");
               //there's no JUnit on the classpath
               throw new TestNGException("Cannot create JUnit runner", ex);
           }
+      } finally {
+        return tr;
       }
   }
 
@@ -346,7 +358,6 @@ public final class ClassHelper {
           }
           Object enclosingClassInstance = enclosingInstances[0];
 
-          // Utils.createInstance(ec, classes, xmlTest, finder);
           parameters = new Object[] { enclosingClassInstance };
         } // isStatic
 
@@ -365,9 +376,9 @@ public final class ClassHelper {
     }
     catch (TestNGException ex) {
       throw ex;
-//      throw new TestNGException("Couldn't instantiate class:" + declaringClass);
     }
     catch (NoSuchMethodException ex) {
+      //Empty catch block
     }
     catch (Throwable cause) {
       // Something else went wrong when running the constructor
@@ -375,14 +386,10 @@ public final class ClassHelper {
           + declaringClass.getName() + ": " + cause.getMessage(), cause);
     }
 
-    if (result == null) {
-      if (! Modifier.isPublic(declaringClass.getModifiers())) {
-        //result should not be null
-        throw new TestNGException("An error occurred while instantiating class "
-            + declaringClass.getName() + ". Check to make sure it can be accessed/instantiated.");
-//      } else {
-//        Utils.log(ClassHelper.class.getName(), 2, "Couldn't instantiate class " + declaringClass);
-      }
+    if (result == null && ! Modifier.isPublic(declaringClass.getModifiers())) {
+      //result should not be null
+      throw new TestNGException("An error occurred while instantiating class "
+          + declaringClass.getName() + ". Check to make sure it can be accessed/instantiated.");
     }
 
     return result;
@@ -396,14 +403,14 @@ public final class ClassHelper {
     Class<?> result = null;
 
     String className = declaringClass.getName();
-    int index = className.indexOf("$");
+    int index = className.indexOf('$');
     if (index != -1) {
       String ecn = className.substring(0, index);
       try {
         result = Class.forName(ecn);
       }
       catch (ClassNotFoundException e) {
-        e.printStackTrace();
+        Logger.getLogger(ClassHelper.class).error(e.getMessage(),e);
       }
     }
 
@@ -465,15 +472,6 @@ public final class ClassHelper {
     return result;
   }
 
-  /**
-   * When given a file name to form a class name, the file name is parsed and divided
-   * into segments. For example, "c:/java/classes/com/foo/A.class" would be divided
-   * into 6 segments {"C:" "java", "classes", "com", "foo", "A"}. The first segment
-   * actually making up the class name is [3]. This value is saved in m_lastGoodRootIndex
-   * so that when we parse the next file name, we will try 3 right away. If 3 fails we
-   * will take the long approach. This is just a optimization cache value.
-   */
-  private static int m_lastGoodRootIndex = -1;
 
   /**
    * Returns the Class object corresponding to the given name. The name may be
@@ -510,17 +508,6 @@ public final class ClassHelper {
     int classIndex = file.lastIndexOf(".class");
     if (-1 == classIndex) {
       classIndex = file.lastIndexOf(".java");
-//
-//      if(-1 == classIndex) {
-//        result = ClassHelper.forName(file);
-//
-//        if (null == result) {
-//          throw new TestNGException("Cannot load class from file: " + file);
-//        }
-//
-//        return result;
-//      }
-//
     }
 
     // Transforms the file name into a class name.
@@ -529,19 +516,18 @@ public final class ClassHelper {
     String shortFileName = file.substring(0, classIndex);
 
     // Split file name into segments. For example "c:/java/classes/com/foo/A"
-    // becomes {"c:", "java", "classes", "com", "foo", "A"}
     String[] segments = shortFileName.split("[/\\\\]", -1);
 
     //
     // Check if the last good root index works for this one. For example, if the previous
-    // name was "c:/java/classes/com/foo/A.class" then m_lastGoodRootIndex is 3 and we
-    // try to make a class name ignoring the first m_lastGoodRootIndex segments (3). This
+    // name was "c:/java/classes/com/foo/A.class" then lastGoodRootIndex is 3 and we
+    // try to make a class name ignoring the first lastGoodRootIndex segments (3). This
     // will succeed rapidly if the path is the same as the one from the previous name.
     //
-    if (-1 != m_lastGoodRootIndex) {
+    if (-1 != lastGoodRootIndex) {
 
-      StringBuilder className = new StringBuilder(segments[m_lastGoodRootIndex]);
-      for (int i = m_lastGoodRootIndex + 1; i < segments.length; i++) {
+      StringBuilder className = new StringBuilder(segments[lastGoodRootIndex]);
+      for (int i = lastGoodRootIndex + 1; i < segments.length; i++) {
         className.append(".").append(segments[i]);
       }
 
@@ -559,20 +545,19 @@ public final class ClassHelper {
     // resolves.  When it does, we remember the path we are at as "lastGoodRoodIndex".
     //
 
-    // TODO CQ use a StringBuffer here
-    String className = null;
+    StringBuilder className = new StringBuilder();
     for (int i = segments.length - 1; i >= 0; i--) {
-      if (null == className) {
-        className = segments[i];
+      if (className.length() == 0) {
+        className.append(segments[i]);
       }
       else {
-        className = segments[i] + "." + className;
+        className.append(segments[i]).append(".").append(className);
       }
 
-      result = ClassHelper.forName(className);
+      result = ClassHelper.forName(className.toString());
 
       if (null != result) {
-        m_lastGoodRootIndex = i;
+        lastGoodRootIndex = i;
         break;
       }
     }

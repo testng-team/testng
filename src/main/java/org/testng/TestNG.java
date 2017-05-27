@@ -975,18 +975,7 @@ public class TestNG {
     // Install the listeners found in the suites
     //
     for (XmlSuite s : m_suites) {
-      for (String listenerName : s.getListeners()) {
-        Class<?> listenerClass = ClassHelper.forName(listenerName);
-
-        // If specified listener does not exist, a TestNGException will be thrown
-        if(listenerClass == null) {
-          throw new TestNGException("Listener " + listenerName
-              + " was not found in project's classpath");
-        }
-
-        Object listener = ClassHelper.newInstance(listenerClass);
-        addListener(listener);
-      }
+      addListeners(s);
 
       //
       // Install the method selectors
@@ -1011,6 +1000,26 @@ public class TestNG {
     m_configuration.setHookable(m_hookable);
     m_configuration.setConfigurable(m_configurable);
     m_configuration.setObjectFactory(factory);
+  }
+
+  private void addListeners(XmlSuite s) {
+    for (String listenerName : s.getListeners()) {
+      Class<?> listenerClass = ClassHelper.forName(listenerName);
+
+      // If specified listener does not exist, a TestNGException will be thrown
+      if(listenerClass == null) {
+        throw new TestNGException("Listener " + listenerName + " was not found in project's classpath");
+      }
+
+      ITestNGListener listener = (ITestNGListener) ClassHelper.newInstance(listenerClass);
+      addListener(listener);
+    }
+
+    // Add the child suite listeners
+    List<XmlSuite> childSuites = s.getChildSuites();
+    for (XmlSuite c : childSuites) {
+      addListeners(c);
+    }
   }
 
   /**
@@ -1100,14 +1109,12 @@ public class TestNG {
 
     sanityCheck();
 
-    List<ISuite> suiteRunners = null;
-
     runExecutionListeners(true /* start */);
 
     runSuiteAlterationListeners();
 
     m_start = System.currentTimeMillis();
-    suiteRunners = runSuites();
+    List<ISuite> suiteRunners = runSuites();
 
     m_end = System.currentTimeMillis();
 
@@ -2065,7 +2072,7 @@ public class TestNG {
   //
 
   private URLClassLoader m_serviceLoaderClassLoader;
-  private Map<Class<? extends ITestNGListener>, ITestNGListener> m_serviceLoaderListeners = Maps.newHashMap();
+  private Map<Class<? extends ITestNGListener>, ITestNGListener> serviceLoaderListeners = Maps.newHashMap();
 
   /*
    * Used to test ServiceClassLoader
@@ -2078,8 +2085,8 @@ public class TestNG {
    * Used to test ServiceClassLoader
    */
   private void addServiceLoaderListener(ITestNGListener l) {
-    if (! m_serviceLoaderListeners.containsKey(l.getClass())) {
-      m_serviceLoaderListeners.put(l.getClass(), l);
+    if (! serviceLoaderListeners.containsKey(l.getClass())) {
+      serviceLoaderListeners.put(l.getClass(), l);
     }
   }
 
@@ -2087,7 +2094,7 @@ public class TestNG {
    * Used to test ServiceClassLoader
    */
   public List<ITestNGListener> getServiceLoaderListeners() {
-    return Lists.newArrayList(m_serviceLoaderListeners.values());
+    return Lists.newArrayList(serviceLoaderListeners.values());
   }
 
   //

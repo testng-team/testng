@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class Model {
   private ListMultiMap<ISuite, ITestResult> m_model = Maps.newListMultiMap();

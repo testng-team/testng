@@ -1301,9 +1301,9 @@ public class Invoker implements IInvoker {
             fedInstance));
     }
     catch(Throwable cause) {
-      String[] msg = Utils.stackTrace((cause.getCause() != null ? cause.getCause() : cause), true);
-      if (msg != null &&  Strings.isNotNullAndNotEmpty(msg[1]) ) {
-        Utils.error(msg[1]);
+      String msg = Utils.longStackTrace(cause.getCause() != null ? cause.getCause() : cause, true);
+      if (Strings.isNotNullAndNotEmpty(msg) ) {
+        Utils.error(msg);
       }
       return new ParameterBag(
           new TestResult(

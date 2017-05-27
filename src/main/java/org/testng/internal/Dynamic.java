@@ -6,11 +6,6 @@ package org.testng.internal;
 public class Dynamic {
 
   public static boolean hasBsh() {
-    try {
-      Class.forName("bsh.Interpreter");
-      return true;
-    } catch (ClassNotFoundException e) {
-      return false;
-    }
+    return ClassHelper.forName("bsh.Interpreter") != null;
   }
 }

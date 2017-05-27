@@ -236,6 +236,16 @@ public class BaseParallelizationTest extends SimpleBaseTest {
 
     }
 
+    //Verify that the test methods declared in the specified list of classes have the specified number of class
+    //instances associated with them for the specified suite and test.
+    public static void verifyNumberOfInstancesOfTestClassesForMethods(String suiteName, String testName, List<Class<?>>
+            classes, int... numInstances) {
+
+        for(int i = 0; i < numInstances.length; i++) {
+            verifyNumberOfInstancesOfTestClassForMethods(suiteName, testName, classes.get(i), numInstances[i]);
+        }
+    }
+
     //Verify that the test methods declared in the specified class have the specified number of class instances
     //associated with them for the specified suite and test.
     public static void verifyNumberOfInstancesOfTestClassForMethods(String suiteName, String testName, Class<?>
@@ -566,6 +576,27 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                                     " for the test " + suiteName + " should be run in the same thread");
                         }
                     }
+                }
+            }
+        }
+    }
+
+    //Verify that the test method level events for the test methods declared in the specified class run in the same
+    //thread for each instance of the test class for the specified suite and test
+    public static void verifyEventsForTestMethodsInDifferentInstancesRunInDifferentThreads(Class<?> testClass, String
+            suiteName, String testName) {
+
+        for (Method method : testClass.getMethods()) {
+            if (method.getDeclaringClass().equals(testClass)) {
+                Multimap<Object, EventLog> testMethodEventLogs = getTestMethodEventLogsForMethod(suiteName, testName,
+                        testClass.getCanonicalName(), method.getName());
+
+                for(int i = 0; i <= testMethodEventLogs.keySet().size() - 2; i++) {
+                    verifyDifferentThreadIdsForEvents(
+                            new ArrayList<>(testMethodEventLogs.get(testMethodEventLogs.keySet().toArray()[i])),
+                            new ArrayList<>(testMethodEventLogs.get(testMethodEventLogs.keySet().toArray()[i + 1])),
+                            "The test method event logs for " + method.getName() + " for different test class " +
+                                    "instances should run in different threads");
                 }
             }
         }

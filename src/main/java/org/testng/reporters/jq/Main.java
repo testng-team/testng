@@ -17,11 +17,13 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Main implements IReporter {
+  private static final String TESTNG_RESOURCE_PREFIX = "/org/testng/";
   private static final String[] RESOURCES = new String[] {
     "jquery-1.7.1.min.js", "testng-reports.css", "testng-reports.js",
     "passed.png", "failed.png", "skipped.png", "navigator-bullet.png",
     "bullet_point.png", "collapseall.gif"
   };
+  public static final String REPORT_HEADER_FILE = "header";
 
   private Model m_model;
   private String m_outputDirectory;
@@ -71,12 +73,12 @@ public class Main implements IReporter {
 
     String all;
     try {
-      try (InputStream header = getClass().getResourceAsStream("/header")) {
+      try (InputStream header = getClass().getResourceAsStream(TESTNG_RESOURCE_PREFIX + REPORT_HEADER_FILE)) {
         if (header == null) {
           throw new RuntimeException("Couldn't find resource header");
         }
         for (String fileName : RESOURCES) {
-          try (InputStream is = getClass().getResourceAsStream("/" + fileName)) {
+          try (InputStream is = getClass().getResourceAsStream(TESTNG_RESOURCE_PREFIX + fileName)) {
             if (is == null) {
               throw new AssertionError("Couldn't find resource: " + fileName);
             }
@@ -91,5 +93,4 @@ public class Main implements IReporter {
       e.printStackTrace();
     }
   }
-
 }

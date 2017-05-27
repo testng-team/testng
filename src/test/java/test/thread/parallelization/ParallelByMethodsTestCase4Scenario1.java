@@ -13,15 +13,15 @@ import test.thread.parallelization.sample.TestClassCFiveMethodsWithDataProviderO
 import test.thread.parallelization.sample.TestClassDThreeMethodsWithDataProviderOnSomeMethodsAndNoDepsSample;
 import test.thread.parallelization.sample.TestClassEFourMethodsWithDataProviderOnSomeMethodsAndNoDepsSample;
 import test.thread.parallelization.sample.TestClassFSixMethodsWithDataProviderOnSomeMethodsAndNoDepsSample;
-import test.thread.parallelization.sample.TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample;
-import test.thread.parallelization.sample.TestClassFourMethodsWithDataProviderOnAllMethodsAndNoDepsSample;
+import test.thread.parallelization.sample.TestClassAFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample;
+import test.thread.parallelization.sample.TestClassBFourMethodsWithDataProviderOnAllMethodsAndNoDepsSample;
 import test.thread.parallelization.sample.TestClassGFourMethodsWithDataProviderOnSomeMethodsAndNoDepsSample;
 import test.thread.parallelization.sample.TestClassHFiveMethodsWithDataProviderOnSomeMethodsAndNoDepsSample;
 import test.thread.parallelization.sample.TestClassIThreeMethodsWithDataProviderOnSomeMethodsAndNoDepsSample;
 import test.thread.parallelization.sample.TestClassJFourMethodsWithDataProviderOnSomeMethodsAndNoDepsSample;
 import test.thread.parallelization.sample.TestClassKFiveMethodsWithDataProviderOnSomeMethodsAndNoDepsSample;
-import test.thread.parallelization.sample.TestClassSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample;
-import test.thread.parallelization.sample.TestClassThreeMethodsWithDataProviderOnAllMethodsAndNoDepsSample;
+import test.thread.parallelization.sample.TestClassBSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample;
+import test.thread.parallelization.sample.TestClassDThreeMethodsWithDataProviderOnAllMethodsAndNoDepsSample;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -182,17 +182,17 @@ public class ParallelByMethodsTestCase4Scenario1 extends BaseParallelizationTest
         }
 
         createXmlTest(suiteThree, SUITE_C_TEST_A,
-                TestClassThreeMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class,
+                TestClassDThreeMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class,
                 TestClassGFourMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class,
-                TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class);
+                TestClassAFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class);
         createXmlTest(suiteThree, SUITE_C_TEST_B,
-                TestClassFourMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class,
+                TestClassBFourMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class,
                 TestClassHFiveMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class);
         createXmlTest(suiteThree, SUITE_C_TEST_C,
                 TestClassIThreeMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class,
                 TestClassJFourMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class,
                 TestClassKFiveMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class,
-                TestClassSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class);
+                TestClassBSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class);
 
         for(XmlTest test : suiteThree.getTests()) {
             test.setParallel(XmlSuite.ParallelMode.METHODS);
@@ -210,14 +210,14 @@ public class ParallelByMethodsTestCase4Scenario1 extends BaseParallelizationTest
             }
         }
 
-        addParams(suiteOne, SUITE_A, SUITE_A_TEST_A, "1", "paramOne,paramTwo,paramThree");
+        addParams(suiteOne, SUITE_A, SUITE_A_TEST_A, "100", "paramOne,paramTwo,paramThree");
 
-        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_A, "1", "paramOne,paramTwo");
-        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_B, "1", "paramOne,paramTwo");
+        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_A, "100", "paramOne,paramTwo");
+        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_B, "100", "paramOne,paramTwo");
 
-        addParams(suiteThree, SUITE_C, SUITE_C_TEST_A, "1", "paramOne,paramTwo,paramThree");
-        addParams(suiteThree, SUITE_C, SUITE_C_TEST_B, "1", "paramOne,paramTwo");
-        addParams(suiteThree, SUITE_C, SUITE_C_TEST_C, "1", "paramOne,paramTwo,paramThree");
+        addParams(suiteThree, SUITE_C, SUITE_C_TEST_A, "100", "paramOne,paramTwo,paramThree");
+        addParams(suiteThree, SUITE_C, SUITE_C_TEST_B, "100", "paramOne,paramTwo");
+        addParams(suiteThree, SUITE_C, SUITE_C_TEST_C, "100", "paramOne,paramTwo,paramThree");
 
         TestNG tng = create(suiteOne, suiteTwo, suiteThree);
         tng.setSuiteThreadPoolSize(2);
@@ -323,13 +323,13 @@ public class ParallelByMethodsTestCase4Scenario1 extends BaseParallelizationTest
                         ".testMethodF", 2);
 
         expectedInvocationCounts.put(
-                TestClassThreeMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
+                TestClassDThreeMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
                         ".testMethodA", 3);
         expectedInvocationCounts.put(
-                TestClassThreeMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
+                TestClassDThreeMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
                         ".testMethodB", 3);
         expectedInvocationCounts.put(
-                TestClassThreeMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
+                TestClassDThreeMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
                         ".testMethodC", 3);
 
         expectedInvocationCounts.put(
@@ -346,32 +346,32 @@ public class ParallelByMethodsTestCase4Scenario1 extends BaseParallelizationTest
                         ".testMethodD", 1);
 
         expectedInvocationCounts.put(
-                TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
+                TestClassAFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
                         ".testMethodA", 3);
         expectedInvocationCounts.put(
-                TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
+                TestClassAFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
                         ".testMethodB", 3);
         expectedInvocationCounts.put(
-                TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
+                TestClassAFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
                         ".testMethodC", 3);
         expectedInvocationCounts.put(
-                TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
+                TestClassAFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
                         ".testMethodD", 3);
         expectedInvocationCounts.put(
-                TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
+                TestClassAFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
                         ".testMethodE", 3);
 
         expectedInvocationCounts.put(
-                TestClassFourMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
+                TestClassBFourMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
                         ".testMethodA", 2);
         expectedInvocationCounts.put(
-                TestClassFourMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
+                TestClassBFourMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
                         ".testMethodB", 2);
         expectedInvocationCounts.put(
-                TestClassFourMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
+                TestClassBFourMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
                         ".testMethodC", 2);
         expectedInvocationCounts.put(
-                TestClassFourMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
+                TestClassBFourMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
                         ".testMethodD", 2);
 
         expectedInvocationCounts.put(
@@ -430,22 +430,22 @@ public class ParallelByMethodsTestCase4Scenario1 extends BaseParallelizationTest
                         ".testMethodE", 3);
 
         expectedInvocationCounts.put(
-                TestClassSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
+                TestClassBSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
                         ".testMethodA", 3);
         expectedInvocationCounts.put(
-                TestClassSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
+                TestClassBSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
                         ".testMethodB", 3);
         expectedInvocationCounts.put(
-                TestClassSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
+                TestClassBSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
                         ".testMethodC", 3);
         expectedInvocationCounts.put(
-                TestClassSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
+                TestClassBSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
                         ".testMethodD", 3);
         expectedInvocationCounts.put(
-                TestClassSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
+                TestClassBSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
                         ".testMethodE", 3);
         expectedInvocationCounts.put(
-                TestClassSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
+                TestClassBSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
                         ".testMethodF", 3);
 
         suiteLevelEventLogs = getAllSuiteLevelEventLogs();
@@ -631,9 +631,9 @@ public class ParallelByMethodsTestCase4Scenario1 extends BaseParallelizationTest
                 SUITE_C,
                 SUITE_C_TEST_A,
                 Arrays.asList(
-                        TestClassThreeMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class,
+                        TestClassDThreeMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class,
                         TestClassGFourMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class,
-                        TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class
+                        TestClassAFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class
                 ),
                 1
         );
@@ -642,9 +642,9 @@ public class ParallelByMethodsTestCase4Scenario1 extends BaseParallelizationTest
                 SUITE_C,
                 SUITE_C_TEST_A,
                 Arrays.asList(
-                        TestClassThreeMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class,
+                        TestClassDThreeMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class,
                         TestClassGFourMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class,
-                        TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class
+                        TestClassAFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class
                 )
         );
 
@@ -652,7 +652,7 @@ public class ParallelByMethodsTestCase4Scenario1 extends BaseParallelizationTest
                 SUITE_C,
                 SUITE_C_TEST_B,
                 Arrays.asList(
-                        TestClassFourMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class,
+                        TestClassBFourMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class,
                         TestClassHFiveMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class
                 ),
                 1);
@@ -661,7 +661,7 @@ public class ParallelByMethodsTestCase4Scenario1 extends BaseParallelizationTest
                 SUITE_C,
                 SUITE_C_TEST_B,
                 Arrays.asList(
-                        TestClassFourMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class,
+                        TestClassBFourMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class,
                         TestClassHFiveMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class
                 )
         );
@@ -673,7 +673,7 @@ public class ParallelByMethodsTestCase4Scenario1 extends BaseParallelizationTest
                         TestClassIThreeMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class,
                         TestClassJFourMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class,
                         TestClassKFiveMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class,
-                        TestClassSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class
+                        TestClassBSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class
                 ),
                 1
         );
@@ -685,7 +685,7 @@ public class ParallelByMethodsTestCase4Scenario1 extends BaseParallelizationTest
                         TestClassIThreeMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class,
                         TestClassJFourMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class,
                         TestClassKFiveMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class,
-                        TestClassSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class
+                        TestClassBSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class
                 )
         );
     }

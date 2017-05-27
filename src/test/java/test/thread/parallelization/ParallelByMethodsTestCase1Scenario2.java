@@ -199,29 +199,29 @@ public class ParallelByMethodsTestCase1Scenario2 extends BaseParallelizationTest
             }
         }
 
-        addParams(suiteOne, SUITE_A, SUITE_A_TEST_A, "1");
+        addParams(suiteOne, SUITE_A, SUITE_A_TEST_A, "100");
 
-        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_A, "1");
-        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_B, "1");
+        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_A, "100");
+        addParams(suiteTwo, SUITE_B, SUITE_B_TEST_B, "100");
 
-        addParams(suiteThree, SUITE_C, SUITE_C_TEST_A, "1");
-        addParams(suiteThree, SUITE_C, SUITE_C_TEST_B, "1");
-        addParams(suiteThree, SUITE_C, SUITE_C_TEST_C, "1");
+        addParams(suiteThree, SUITE_C, SUITE_C_TEST_A, "100");
+        addParams(suiteThree, SUITE_C, SUITE_C_TEST_B, "100");
+        addParams(suiteThree, SUITE_C, SUITE_C_TEST_C, "100");
 
         TestNG tng = create(suiteOne, suiteTwo, suiteThree);
         tng.addListener((ITestNGListener) new TestNgRunStateListener());
 
         tng.run();
 
-        expectedSuiteExecutionTimes.put(SUITE_A, 10_000L);
-        expectedSuiteExecutionTimes.put(SUITE_B, 7_000L);
-        expectedSuiteExecutionTimes.put(SUITE_C, 16_000L);
-
-        expectedTestExecutionTimes.put(SUITE_B_TEST_A, 3_000L);
-        expectedTestExecutionTimes.put(SUITE_B_TEST_B, 3_000L);
-        expectedTestExecutionTimes.put(SUITE_C_TEST_A, 5_000L);
-        expectedTestExecutionTimes.put(SUITE_C_TEST_B, 5_000L);
-        expectedTestExecutionTimes.put(SUITE_C_TEST_C, 5_000L);
+//        expectedSuiteExecutionTimes.put(SUITE_A, 10_000L);
+//        expectedSuiteExecutionTimes.put(SUITE_B, 7_000L);
+//        expectedSuiteExecutionTimes.put(SUITE_C, 16_000L);
+//
+//        expectedTestExecutionTimes.put(SUITE_B_TEST_A, 3_000L);
+//        expectedTestExecutionTimes.put(SUITE_B_TEST_B, 3_000L);
+//        expectedTestExecutionTimes.put(SUITE_C_TEST_A, 5_000L);
+//        expectedTestExecutionTimes.put(SUITE_C_TEST_B, 5_000L);
+//        expectedTestExecutionTimes.put(SUITE_C_TEST_C, 5_000L);
 
         suiteLevelEventLogs = getAllSuiteLevelEventLogs();
         testLevelEventLogs = getAllTestLevelEventLogs();
