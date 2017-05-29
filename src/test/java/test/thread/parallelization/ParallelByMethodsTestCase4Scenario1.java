@@ -31,6 +31,7 @@ import java.util.Map;
 import static org.testng.Assert.assertEquals;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllEventLogsForSuite;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteLevelEventLogs;
+import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteListenerStartEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllTestLevelEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllTestMethodLevelEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getSuiteAndTestLevelEventLogsForSuite;
@@ -742,6 +743,89 @@ public class ParallelByMethodsTestCase4Scenario1 extends BaseParallelizationTest
                         suiteThreeTestThreeListenerOnFinishEventLog + ". Test method level event logs: " +
                         suiteThreeTestThreeTestMethodLevelEventLogs);
 
+    }
+
+    @Test
+    public void verifyThatMethodLevelEventsRunInDifferentThreadsFromSuiteAndTestLevelEvents() {
+
+        verifyEventThreadsSpawnedAfter(getAllSuiteListenerStartEventLogs().get(0).getThreadId(),
+                testMethodLevelEventLogs, "All the thread IDs for the test method level events should be greater " +
+                        "than the thread ID for the suite and test level events. The expectation is that since the " +
+                        "suite and test level events are running sequentially, and all the test methods are running " +
+                        "in parallel, new threads will be spawned after the thread executing the suite and test " +
+                        "level events when new methods begin executing. Suite and test level events thread ID: " +
+                        getAllSuiteListenerStartEventLogs().get(0).getThreadId() + ". Test method level event logs: " +
+                        testMethodLevelEventLogs);
+
+        verifyEventsForTestMethodsRunInTheSameThread(
+                TestClassAFiveMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class, SUITE_A,
+                SUITE_A_TEST_A
+        );
+
+        verifyEventsForTestMethodsRunInTheSameThread(
+                TestClassBSixMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class, SUITE_A,
+                SUITE_A_TEST_A
+        );
+
+        verifyEventsForTestMethodsRunInTheSameThread(
+                TestClassCFiveMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class, SUITE_B,
+                SUITE_B_TEST_A
+        );
+
+        verifyEventsForTestMethodsRunInTheSameThread(
+                TestClassDThreeMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class, SUITE_B,
+                SUITE_B_TEST_B
+        );
+
+        verifyEventsForTestMethodsRunInTheSameThread(
+                TestClassEFourMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class, SUITE_B,
+                SUITE_B_TEST_B
+        );
+
+        verifyEventsForTestMethodsRunInTheSameThread(
+                TestClassFSixMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class, SUITE_B,
+                SUITE_B_TEST_B
+        );
+
+        verifyEventsForTestMethodsRunInTheSameThread(
+                TestClassDThreeMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class, SUITE_C,
+                SUITE_C_TEST_A
+        );
+
+        verifyEventsForTestMethodsRunInTheSameThread(
+                TestClassGFourMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class, SUITE_C,
+                SUITE_C_TEST_A
+        );
+
+        verifyEventsForTestMethodsRunInTheSameThread(
+                TestClassBFourMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class, SUITE_C,
+                SUITE_C_TEST_B
+        );
+
+        verifyEventsForTestMethodsRunInTheSameThread(
+                TestClassHFiveMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class, SUITE_C,
+                SUITE_C_TEST_B
+        );
+
+        verifyEventsForTestMethodsRunInTheSameThread(
+                TestClassIThreeMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class, SUITE_C,
+                SUITE_C_TEST_C
+        );
+
+        verifyEventsForTestMethodsRunInTheSameThread(
+                TestClassJFourMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class, SUITE_C,
+                SUITE_C_TEST_C
+        );
+
+        verifyEventsForTestMethodsRunInTheSameThread(
+                TestClassKFiveMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class, SUITE_C,
+                SUITE_C_TEST_C
+        );
+
+        verifyEventsForTestMethodsRunInTheSameThread(
+                TestClassBSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class, SUITE_C,
+                SUITE_C_TEST_C
+        );
     }
 
     //Verifies that the test methods execute in different threads in parallel fashion.

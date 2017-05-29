@@ -413,26 +413,6 @@ public class ParallelByMethodsTestCase3Scenario2 extends BaseParallelizationTest
 
     }
 
-    //Verifies that the test methods execute in different threads in parallel fashion.
-    @Test
-    public void verifyThatTestMethodsRunInParallelThreads() {
-        verifyParallelTestMethodsWithNonParallelDataProvider(
-                getTestMethodLevelEventLogsForTest(SUITE_A, SUITE_A_TEST_A), SUITE_A_TEST_A, expectedInvocationCounts,
-                11, 3
-        );
-
-        verifyParallelTestMethodsWithNonParallelDataProvider(
-                getTestMethodLevelEventLogsForTest(SUITE_B, SUITE_B_TEST_A), SUITE_B_TEST_A, expectedInvocationCounts,
-                5, 4
-        );
-
-        verifyParallelTestMethodsWithNonParallelDataProvider(
-                getTestMethodLevelEventLogsForTest(SUITE_B, SUITE_B_TEST_B), SUITE_B_TEST_B, expectedInvocationCounts,
-                13,
-                4
-        );
-    }
-
     //Verifies that the method level events all run in different threads from the test and suite level events.
     //Verifies that the test method listener and execution events for a given test method all run in the same thread.
     @Test
@@ -477,6 +457,26 @@ public class ParallelByMethodsTestCase3Scenario2 extends BaseParallelizationTest
         verifyEventsForTestMethodsRunInTheSameThread(
                 TestClassFSixMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class, SUITE_B,
                 SUITE_B_TEST_B
+        );
+    }
+
+    //Verifies that the test methods execute in different threads in parallel fashion.
+    @Test
+    public void verifyThatTestMethodsRunInParallelThreads() {
+        verifyParallelTestMethodsWithNonParallelDataProvider(
+                getTestMethodLevelEventLogsForTest(SUITE_A, SUITE_A_TEST_A), SUITE_A_TEST_A, expectedInvocationCounts,
+                11, 3
+        );
+
+        verifyParallelTestMethodsWithNonParallelDataProvider(
+                getTestMethodLevelEventLogsForTest(SUITE_B, SUITE_B_TEST_A), SUITE_B_TEST_A, expectedInvocationCounts,
+                5, 4
+        );
+
+        verifyParallelTestMethodsWithNonParallelDataProvider(
+                getTestMethodLevelEventLogsForTest(SUITE_B, SUITE_B_TEST_B), SUITE_B_TEST_B, expectedInvocationCounts,
+                13,
+                4
         );
     }
 }

@@ -153,7 +153,18 @@ public class TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample {
         String sleepFor = params.get("sleepFor");
 
         String dataProviderParam = params.get("dataProviderParam");
-        String[] dataProviderVals = dataProviderParam.split(",");
+
+        String[] dataProviderVals = null;
+        String classNamePattern = TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getSimpleName() + "(";
+
+        if(dataProviderParam.contains(classNamePattern)) {
+            dataProviderParam = dataProviderParam.substring(dataProviderParam.indexOf(classNamePattern) +
+                    classNamePattern.length());
+            dataProviderParam = dataProviderParam.substring(0, dataProviderParam.indexOf(")"));
+
+        }
+
+        dataProviderVals = dataProviderParam.split(",");
 
         Object[][] dataToProvide = new Object[dataProviderVals.length][4];
 

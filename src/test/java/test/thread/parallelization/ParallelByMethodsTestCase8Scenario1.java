@@ -1,5 +1,6 @@
 package test.thread.parallelization;
 
+import com.google.common.collect.Multimap;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeClass;
@@ -29,6 +30,7 @@ import test.thread.parallelization.sample.TestClassMFourMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassNFiveMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassOSixMethodsWithNoDepsSample;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +49,7 @@ import static test.thread.parallelization.TestNgRunStateTracker.getTestLevelEven
 import static test.thread.parallelization.TestNgRunStateTracker.getTestLevelEventLogsForTest;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerFinishEventLog;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerStartEventLog;
+import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodEventLogsForMethod;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodLevelEventLogsForSuite;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodLevelEventLogsForTest;
 import static test.thread.parallelization.TestNgRunStateTracker.reset;
@@ -98,8 +101,7 @@ public class ParallelByMethodsTestCase8Scenario1 extends BaseParallelizationTest
 
     private static final int THREAD_POOL_SIZE = 2;
 
-    private Map<String, Long> expectedSuiteExecutionTimes = new HashMap<>();
-    private Map<String, Long> expectedTestExecutionTimes = new HashMap<>();
+    private Map<String, Integer> expectedInvocationCounts = new HashMap<>();
 
     private Map<String, List<TestNgRunStateTracker.EventLog>> testEventLogsMap = new HashMap<>();
 
@@ -227,16 +229,183 @@ public class ParallelByMethodsTestCase8Scenario1 extends BaseParallelizationTest
 
         tng.run();
 
-//        expectedSuiteExecutionTimes.put(SUITE_A, 8_000L);
-//        expectedSuiteExecutionTimes.put(SUITE_B, 15_000L);
-//        expectedSuiteExecutionTimes.put(SUITE_C, 16_000L);
-//
-//        expectedTestExecutionTimes.put(SUITE_B_TEST_A, 5_000L);
-//        expectedTestExecutionTimes.put(SUITE_B_TEST_B, 9_000L);
-//
-//        expectedTestExecutionTimes.put(SUITE_C_TEST_A, 5_000L);
-//        expectedTestExecutionTimes.put(SUITE_C_TEST_B, 5_000L);
-//        expectedTestExecutionTimes.put(SUITE_C_TEST_C, 5_000L);
+        expectedInvocationCounts.put(
+                TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodA", 3);
+        expectedInvocationCounts.put(
+                TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodB", 3);
+        expectedInvocationCounts.put(
+                TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodC", 3);
+        expectedInvocationCounts.put(
+                TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodD", 3);
+        expectedInvocationCounts.put(
+                TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodE", 3);
+
+        expectedInvocationCounts.put(
+                TestClassCSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodA", 4);
+        expectedInvocationCounts.put(
+                TestClassCSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodB", 4);
+        expectedInvocationCounts.put(
+                TestClassCSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodC", 4);
+        expectedInvocationCounts.put(
+                TestClassCSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodD", 4);
+        expectedInvocationCounts.put(
+                TestClassCSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodE", 4);
+        expectedInvocationCounts.put(
+                TestClassCSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodF", 4);
+
+        expectedInvocationCounts.put(
+                TestClassEFiveMethodsWithNoDepsSample.class.getCanonicalName() + ".testMethodA", 1);
+        expectedInvocationCounts.put(
+                TestClassEFiveMethodsWithNoDepsSample.class.getCanonicalName() + ".testMethodB", 1);
+        expectedInvocationCounts.put(
+                TestClassEFiveMethodsWithNoDepsSample.class.getCanonicalName() + ".testMethodC", 1);
+        expectedInvocationCounts.put(
+                TestClassEFiveMethodsWithNoDepsSample.class.getCanonicalName() + ".testMethodD", 1);
+        expectedInvocationCounts.put(
+                TestClassEFiveMethodsWithNoDepsSample.class.getCanonicalName() + ".testMethodE", 1);
+
+
+        expectedInvocationCounts.put(
+                TestClassDThreeMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodA", 4);
+        expectedInvocationCounts.put(
+                TestClassDThreeMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodB", 4);
+        expectedInvocationCounts.put(
+                TestClassDThreeMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodC", 4);
+
+
+        expectedInvocationCounts.put(
+                TestClassBFourMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodA", 4);
+        expectedInvocationCounts.put(
+                TestClassBFourMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodB", 4);
+        expectedInvocationCounts.put(
+                TestClassBFourMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodC", 4);
+        expectedInvocationCounts.put(
+                TestClassBFourMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodD", 4);
+
+
+        expectedInvocationCounts.put(
+                TestClassFSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodA", 4);
+        expectedInvocationCounts.put(
+                TestClassFSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodB", 4);
+        expectedInvocationCounts.put(
+                TestClassFSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodC", 4);
+        expectedInvocationCounts.put(
+                TestClassFSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodD", 4);
+        expectedInvocationCounts.put(
+                TestClassFSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodE", 4);
+        expectedInvocationCounts.put(
+                TestClassFSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ".testMethodF", 4);
+
+        expectedInvocationCounts.put(TestClassGThreeMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodA", 1);
+        expectedInvocationCounts.put(TestClassGThreeMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodB", 1);
+        expectedInvocationCounts.put(TestClassGThreeMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodC", 1);
+
+        expectedInvocationCounts.put(TestClassHFourMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodA", 1);
+        expectedInvocationCounts.put(TestClassHFourMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodB", 1);
+        expectedInvocationCounts.put(TestClassHFourMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodC", 1);
+        expectedInvocationCounts.put(TestClassHFourMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodD", 1);
+
+        expectedInvocationCounts.put(TestClassIFiveMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodA", 1);
+        expectedInvocationCounts.put(TestClassIFiveMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodB", 1);
+        expectedInvocationCounts.put(TestClassIFiveMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodC", 1);
+        expectedInvocationCounts.put(TestClassIFiveMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodD", 1);
+        expectedInvocationCounts.put(TestClassIFiveMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodE", 1);
+
+        expectedInvocationCounts.put(TestClassJFourMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodA", 1);
+        expectedInvocationCounts.put(TestClassJFourMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodB", 1);
+        expectedInvocationCounts.put(TestClassJFourMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodC", 1);
+        expectedInvocationCounts.put(TestClassJFourMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodD", 1);
+
+        expectedInvocationCounts.put(TestClassKFiveMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodA", 1);
+        expectedInvocationCounts.put(TestClassKFiveMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodB", 1);
+        expectedInvocationCounts.put(TestClassKFiveMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodC", 1);
+        expectedInvocationCounts.put(TestClassKFiveMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodD", 1);
+        expectedInvocationCounts.put(TestClassKFiveMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodE", 1);
+
+        expectedInvocationCounts.put(TestClassLThreeMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodA", 1);
+        expectedInvocationCounts.put(TestClassLThreeMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodB", 1);
+        expectedInvocationCounts.put(TestClassLThreeMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodC", 1);
+
+        expectedInvocationCounts.put(TestClassMFourMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodA", 1);
+        expectedInvocationCounts.put(TestClassMFourMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodB", 1);
+        expectedInvocationCounts.put(TestClassMFourMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodC", 1);
+        expectedInvocationCounts.put(TestClassMFourMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodD", 1);
+
+        expectedInvocationCounts.put(TestClassNFiveMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodA", 1);
+        expectedInvocationCounts.put(TestClassNFiveMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodB", 1);
+        expectedInvocationCounts.put(TestClassNFiveMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodC", 1);
+        expectedInvocationCounts.put(TestClassNFiveMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodD", 1);
+        expectedInvocationCounts.put(TestClassNFiveMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodE", 1);
+
+        expectedInvocationCounts.put(TestClassOSixMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodA", 1);
+        expectedInvocationCounts.put(TestClassOSixMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodB", 1);
+        expectedInvocationCounts.put(TestClassOSixMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodC", 1);
+        expectedInvocationCounts.put(TestClassOSixMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodD", 1);
+        expectedInvocationCounts.put(TestClassOSixMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodE", 1);
+        expectedInvocationCounts.put(TestClassOSixMethodsWithNoDepsSample.class.getCanonicalName() +
+                ".testMethodF", 1);
 
         suiteLevelEventLogs = getAllSuiteLevelEventLogs();
         testLevelEventLogs = getAllTestLevelEventLogs();
@@ -309,28 +478,28 @@ public class ParallelByMethodsTestCase8Scenario1 extends BaseParallelizationTest
         assertEquals(testLevelEventLogs.size(), 12, "There should be 12 test level events logged for " + SUITE_A +
                 ", " + SUITE_B + " and " + SUITE_C + ": " + testLevelEventLogs);
 
-        assertEquals(testMethodLevelEventLogs.size(), 420, "There should 420 test method level events logged for " +
+        assertEquals(testMethodLevelEventLogs.size(), 405, "There should 405 test method level events logged for " +
                 SUITE_A + ", " + SUITE_B + " and " + SUITE_C + ": " + testMethodLevelEventLogs);
 
         assertEquals(suiteOneSuiteLevelEventLogs.size(), 2, "There should be 2 suite level events logged for " +
                 SUITE_A + ": " + suiteOneSuiteLevelEventLogs);
         assertEquals(suiteOneTestLevelEventLogs.size(), 2, "There should be 2 test level events logged for " + SUITE_A +
                 ": " + suiteOneTestLevelEventLogs);
-        assertEquals(suiteOneTestMethodLevelEventLogs.size(), 84, "There should be 84 test method level events " +
+        assertEquals(suiteOneTestMethodLevelEventLogs.size(), 117, "There should be 117 test method level events " +
                 "logged for " + SUITE_A + ": " + suiteOneTestMethodLevelEventLogs);
 
         assertEquals(suiteTwoSuiteLevelEventLogs.size(), 2, "There should be 2 suite level events logged for " +
                 SUITE_B + ": " + suiteTwoSuiteLevelEventLogs);
         assertEquals(suiteTwoTestLevelEventLogs.size(), 4, "There should be 4 test level events logged for " + SUITE_B +
                 ": " + suiteTwoTestLevelEventLogs);
-        assertEquals(suiteTwoTestMethodLevelEventLogs.size(), 219, "There should be 219 test method level events " +
+        assertEquals(suiteTwoTestMethodLevelEventLogs.size(), 171, "There should be 171 test method level events " +
                 "logged for " + SUITE_B + ": " + suiteTwoTestMethodLevelEventLogs);
 
         assertEquals(suiteThreeSuiteLevelEventLogs.size(), 2, "There should be 2 suite level events logged for " +
                 SUITE_C + ": " + suiteThreeSuiteLevelEventLogs);
         assertEquals(suiteThreeTestLevelEventLogs.size(), 6, "There should be 6 test level events logged for " +
                 SUITE_C + ": " + suiteThreeTestLevelEventLogs);
-        assertEquals(suiteThreeTestMethodLevelEventLogs.size(), 117, "There should be 87 test method level events " +
+        assertEquals(suiteThreeTestMethodLevelEventLogs.size(), 117, "There should be 117 test method level events " +
                 "logged for " + SUITE_C + ": " + suiteThreeTestMethodLevelEventLogs);
 
     }
@@ -363,13 +532,19 @@ public class ParallelByMethodsTestCase8Scenario1 extends BaseParallelizationTest
         verifyNumberOfInstancesOfTestClassesForMethods(
                 SUITE_A,
                 SUITE_A_TEST_A,
-                Arrays.asList(TestClassAFiveMethodsWithNoDepsSample.class, TestClassCSixMethodsWithNoDepsSample.class),
-                2, 3);
+                Arrays.asList(
+                        TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample.class,
+                        TestClassCSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class
+                ),
+                3, 4);
 
         verifySameInstancesOfTestClassesAssociatedWithMethods(
                 SUITE_A,
                 SUITE_A_TEST_A,
-                Arrays.asList(TestClassAFiveMethodsWithNoDepsSample.class, TestClassCSixMethodsWithNoDepsSample.class)
+                Arrays.asList(
+                        TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample.class,
+                        TestClassCSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class
+                )
         );
 
         verifyNumberOfInstancesOfTestClassForMethods(
@@ -388,20 +563,20 @@ public class ParallelByMethodsTestCase8Scenario1 extends BaseParallelizationTest
                 SUITE_B,
                 SUITE_B_TEST_B,
                 Arrays.asList(
-                        TestClassDThreeMethodsWithNoDepsSample.class,
-                        TestClassBFourMethodsWithNoDepsSample.class,
-                        TestClassFSixMethodsWithNoDepsSample.class
+                        TestClassDThreeMethodsWithFactoryUsingDataProviderAndNoDepsSample.class,
+                        TestClassBFourMethodsWithFactoryUsingDataProviderAndNoDepsSample.class,
+                        TestClassFSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class
                 ),
-                4, 5, 6
+                4, 4, 4
         );
 
         verifySameInstancesOfTestClassesAssociatedWithMethods(
                 SUITE_B,
                 SUITE_B_TEST_B,
                 Arrays.asList(
-                        TestClassDThreeMethodsWithNoDepsSample.class,
-                        TestClassBFourMethodsWithNoDepsSample.class,
-                        TestClassFSixMethodsWithNoDepsSample.class
+                        TestClassDThreeMethodsWithFactoryUsingDataProviderAndNoDepsSample.class,
+                        TestClassBFourMethodsWithFactoryUsingDataProviderAndNoDepsSample.class,
+                        TestClassFSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class
                 )
         );
 
@@ -530,22 +705,23 @@ public class ParallelByMethodsTestCase8Scenario1 extends BaseParallelizationTest
                         getAllSuiteListenerStartEventLogs().get(0).getThreadId() + ". Test method level event logs: " +
                         testMethodLevelEventLogs);
 
-        verifyEventsForTestMethodsRunInTheSameThread(TestClassAFiveMethodsWithNoDepsSample.class, SUITE_A,
-                SUITE_A_TEST_A);
-        verifyEventsForTestMethodsRunInTheSameThread(TestClassAFiveMethodsWithNoDepsSample.class, SUITE_A,
-                SUITE_A_TEST_A);
-        verifyEventsForTestMethodsRunInTheSameThread(TestClassCSixMethodsWithNoDepsSample.class, SUITE_A,
-                SUITE_A_TEST_A);
+        verifyEventsForTestMethodsRunInTheSameThread(
+                TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample.class, SUITE_A, SUITE_A_TEST_A);
+
+        verifyEventsForTestMethodsRunInTheSameThread(
+                TestClassCSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class, SUITE_A, SUITE_A_TEST_A);
 
         verifyEventsForTestMethodsRunInTheSameThread(TestClassEFiveMethodsWithNoDepsSample.class, SUITE_B,
                 SUITE_B_TEST_A);
 
-        verifyEventsForTestMethodsRunInTheSameThread(TestClassDThreeMethodsWithNoDepsSample.class, SUITE_B,
-                SUITE_B_TEST_B);
-        verifyEventsForTestMethodsRunInTheSameThread(TestClassBFourMethodsWithNoDepsSample.class, SUITE_B,
-                SUITE_B_TEST_B);
-        verifyEventsForTestMethodsRunInTheSameThread(TestClassFSixMethodsWithNoDepsSample.class, SUITE_B,
-                SUITE_B_TEST_B);
+        verifyEventsForTestMethodsRunInTheSameThread(
+                TestClassDThreeMethodsWithFactoryUsingDataProviderAndNoDepsSample.class, SUITE_B, SUITE_B_TEST_B);
+
+        verifyEventsForTestMethodsRunInTheSameThread(
+                TestClassBFourMethodsWithFactoryUsingDataProviderAndNoDepsSample.class, SUITE_B, SUITE_B_TEST_B);
+
+        verifyEventsForTestMethodsRunInTheSameThread(
+                TestClassFSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class, SUITE_B, SUITE_B_TEST_B);
 
         verifyEventsForTestMethodsRunInTheSameThread(TestClassGThreeMethodsWithNoDepsSample.class, SUITE_C,
                 SUITE_C_TEST_A);
@@ -569,16 +745,13 @@ public class ParallelByMethodsTestCase8Scenario1 extends BaseParallelizationTest
                 SUITE_C_TEST_C);
     }
 
-    //Verify that the methods are run in separate threads in true parallel fashion by checking that the start and run
-    //times of events that should be run simultaneously start basically at the same time using the timestamps and the
-    //known values of the wait time specified for the event. Verify that the thread IDs of parallel events are
-    //different.
+    //Verifies that the test methods execute in different threads in parallel fashion.
     @Test
     public void verifyThatTestMethodsRunInParallelThreads() {
         verifySimultaneousTestMethods(getTestMethodLevelEventLogsForTest(SUITE_A, SUITE_A_TEST_A), SUITE_A_TEST_A, 10);
         verifySimultaneousTestMethods(getTestMethodLevelEventLogsForTest(SUITE_B, SUITE_B_TEST_A), SUITE_B_TEST_A, 3);
         verifySimultaneousTestMethods(getTestMethodLevelEventLogsForTest(SUITE_B, SUITE_B_TEST_B), SUITE_B_TEST_B, 20);
-        verifySimultaneousTestMethods(getTestMethodLevelEventLogsForTest(SUITE_C, SUITE_C_TEST_A), SUITE_C_TEST_A, 10);
+        verifySimultaneousTestMethods(getTestMethodLevelEventLogsForTest(SUITE_C, SUITE_C_TEST_A), SUITE_C_TEST_A, 25);
         verifySimultaneousTestMethods(getTestMethodLevelEventLogsForTest(SUITE_C, SUITE_C_TEST_B), SUITE_C_TEST_B, 5);
         verifySimultaneousTestMethods(getTestMethodLevelEventLogsForTest(SUITE_C, SUITE_C_TEST_C), SUITE_C_TEST_C, 12);
     }

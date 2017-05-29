@@ -1,6 +1,7 @@
 package test.thread.parallelization;
 
 import com.google.common.collect.Multimap;
+import org.testng.annotations.Test;
 import org.testng.internal.collections.Pair;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -560,14 +561,26 @@ public class BaseParallelizationTest extends SimpleBaseTest {
             testName) {
 
         for (Method method : testClass.getMethods()) {
-            if (method.getDeclaringClass().equals(testClass)) {
+            boolean isTestMethod = false;
+
+            Annotation[] annotations = method.getDeclaredAnnotations();
+
+            for(Annotation a : annotations) {
+                if(Test.class.isAssignableFrom(a.getClass())) {
+                    isTestMethod = true;
+                }
+            }
+
+            if (method.getDeclaringClass().equals(testClass) && isTestMethod) {
                 Multimap<Object, EventLog> testMethodEventLogs = getTestMethodEventLogsForMethod(suiteName, testName,
                         testClass.getCanonicalName(), method.getName());
 
                 for (Object instanceKey : testMethodEventLogs.keySet()) {
+
                     long threadId = -1;
 
                     for (EventLog eventLog : testMethodEventLogs.get(instanceKey)) {
+
                         if (threadId == -1) {
                             threadId = eventLog.getThreadId();
                         } else {

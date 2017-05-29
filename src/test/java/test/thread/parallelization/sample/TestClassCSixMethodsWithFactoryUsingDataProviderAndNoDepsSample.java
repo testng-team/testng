@@ -154,7 +154,7 @@ public class TestClassCSixMethodsWithFactoryUsingDataProviderAndNoDepsSample {
                         .setEvent(TEST_METHOD_EXECUTION)
                         .setTimeOfEvent(time)
                         .setThread(Thread.currentThread())
-                        .addData(METHOD_NAME, "testMethodE")
+                        .addData(METHOD_NAME, "testMethodF")
                         .addData(CLASS_NAME, getClass().getCanonicalName())
                         .addData(CLASS_INSTANCE, this)
                         .addData(TEST_NAME, testName)
@@ -175,7 +175,17 @@ public class TestClassCSixMethodsWithFactoryUsingDataProviderAndNoDepsSample {
         String sleepFor = params.get("sleepFor");
 
         String dataProviderParam = params.get("dataProviderParam");
-        String[] dataProviderVals = dataProviderParam.split(",");
+
+        String[] dataProviderVals = null;
+        String classNamePattern = TestClassCSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getSimpleName() + "(";
+
+        if(dataProviderParam.contains(classNamePattern)) {
+            dataProviderParam = dataProviderParam.substring(dataProviderParam.indexOf(classNamePattern) +
+                    classNamePattern.length());
+            dataProviderParam = dataProviderParam.substring(0,dataProviderParam.indexOf(")"));
+        }
+
+        dataProviderVals = dataProviderParam.split(",");
 
         Object[][] dataToProvide = new Object[dataProviderVals.length][4];
 
