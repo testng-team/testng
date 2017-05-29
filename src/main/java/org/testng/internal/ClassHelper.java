@@ -210,28 +210,31 @@ public final class ClassHelper {
           //try to get runner for JUnit 4 first
         Class.forName("org.junit.Test");
         Class<?> clazz = ClassHelper.forName(JUNIT_4_TESTRUNNER);
-        if (clazz != null) {
-          tr = (IJUnitTestRunner) clazz.newInstance();
-          tr.setTestResultNotifier(runner);
+        if (clazz == null) {
+          //Raise an exception so that we end up in the catch block and can retry with JUnit3
+          throw new NullPointerException(JUNIT_4_TESTRUNNER + " not found.");
         }
+        tr = (IJUnitTestRunner) clazz.newInstance();
+        tr.setTestResultNotifier(runner);
       } catch (Throwable t) {
           Utils.log(CLASS_HELPER, 2, "JUnit 4 was not found on the classpath");
-          try {
-              //fallback to JUnit 3
-              Class.forName("junit.framework.Test");
-              Class<?> clazz =ClassHelper.forName(JUNIT_TESTRUNNER);
-              if (clazz != null) {
-                tr = (IJUnitTestRunner) clazz.newInstance();
-                tr.setTestResultNotifier(runner);
-              }
-          } catch (Exception ex) {
-              Utils.log(CLASS_HELPER, 2, "JUnit 3 was not found on the classpath");
-              //there's no JUnit on the classpath
-              throw new TestNGException("Cannot create JUnit runner", ex);
+        try {
+          //fallback to JUnit 3
+          Class.forName("junit.framework.Test");
+          Class<?> clazz = ClassHelper.forName(JUNIT_TESTRUNNER);
+          if (clazz == null) {
+            //Raise an exception so that we end up in the catch block and abort execution.
+            throw new NullPointerException(JUNIT_TESTRUNNER + " not found.");
           }
-      } finally {
-        return tr;
+          tr = (IJUnitTestRunner) clazz.newInstance();
+          tr.setTestResultNotifier(runner);
+        } catch (Exception ex) {
+          Utils.log(CLASS_HELPER, 2, "JUnit 3 was not found on the classpath");
+          //there's no JUnit on the classpath
+          throw new TestNGException("Cannot create JUnit runner", ex);
+        }
       }
+    return tr;
   }
 
   private static void appendMethod(Map<String, Set<Method>> methods, Method declaredMethod) {
