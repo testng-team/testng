@@ -72,9 +72,6 @@ public class ParallelByMethodsTestCase2Scenario1 extends BaseParallelizationTest
 
     private static final int THREAD_POOL_SIZE = 2;
 
-    private Map<String, Long> expectedSuiteExecutionTimes = new HashMap<>();
-    private Map<String, Long> expectedTestExecutionTimes = new HashMap<>();
-
     private Map<String, List<EventLog>> testEventLogsMap = new HashMap<>();
 
     private List<EventLog> suiteLevelEventLogs;
@@ -139,12 +136,6 @@ public class ParallelByMethodsTestCase2Scenario1 extends BaseParallelizationTest
         tng.addListener((ITestNGListener) new TestNgRunStateListener());
 
         tng.run();
-
-//        expectedSuiteExecutionTimes.put(SUITE_A, 10_000L);
-//        expectedSuiteExecutionTimes.put(SUITE_B, 7_000L);
-//
-//        expectedTestExecutionTimes.put(SUITE_B_TEST_A, 3_000L);
-//        expectedTestExecutionTimes.put(SUITE_B_TEST_B, 3_000L);
 
         suiteLevelEventLogs = getAllSuiteLevelEventLogs();
         testLevelEventLogs = getAllTestLevelEventLogs();
@@ -322,8 +313,6 @@ public class ParallelByMethodsTestCase2Scenario1 extends BaseParallelizationTest
                         getAllSuiteListenerStartEventLogs().get(0).getThreadId() + ". Test method level event logs: " +
                         testMethodLevelEventLogs);
 
-        verifyEventsForTestMethodsRunInTheSameThread(TestClassAFiveMethodsWithNoDepsSample.class, SUITE_A,
-                SUITE_A_TEST_A);
         verifyEventsForTestMethodsRunInTheSameThread(TestClassAFiveMethodsWithNoDepsSample.class, SUITE_A,
                 SUITE_A_TEST_A);
         verifyEventsForTestMethodsRunInTheSameThread(TestClassCSixMethodsWithNoDepsSample.class, SUITE_A,

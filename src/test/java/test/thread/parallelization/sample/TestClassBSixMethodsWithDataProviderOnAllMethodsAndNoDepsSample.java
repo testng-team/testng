@@ -16,7 +16,7 @@ import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.SUITE_
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.TEST_NAME;
 import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.TEST_METHOD_EXECUTION;
 
-public class TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample {
+public class TestClassBSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample {
 
     @Test(dataProvider = "data-provider")
     public void testMethodA(String suiteName, String testName, String sleepFor, String dpVal) throws
@@ -128,6 +128,28 @@ public class TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample {
         TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
     }
 
+    @Test(dataProvider = "data-provider")
+    public void testMethodF(String suiteName, String testName, String sleepFor, String dpVal) throws
+            InterruptedException {
+        long time = System.currentTimeMillis();
+
+        TestNgRunStateTracker.logEvent(
+                TestNgRunStateTracker.EventLog.builder()
+                        .setEvent(TEST_METHOD_EXECUTION)
+                        .setTimeOfEvent(time)
+                        .setThread(Thread.currentThread())
+                        .addData(METHOD_NAME, "testMethodF")
+                        .addData(CLASS_NAME, getClass().getCanonicalName())
+                        .addData(CLASS_INSTANCE, this)
+                        .addData(TEST_NAME, testName)
+                        .addData(SUITE_NAME, suiteName)
+                        .addData(DATA_PROVIDER_PARAM, dpVal)
+                        .build()
+        );
+
+        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
+    }
+
     @DataProvider(name = "data-provider")
     public Object[][] dataProvider(ITestContext context) {
         Map<String,String> params = context.getCurrentXmlTest().getAllParameters();
@@ -151,3 +173,4 @@ public class TestClassFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample {
         return dataToProvide;
     }
 }
+
