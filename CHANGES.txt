@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1440: Improve error message when wrong params on configuration methods (Krishnan Mahadevan)
 Fixed: GITHUB-1433: Missing encoding for emailable reports (Shaburov Oleg)
 Fixed: GITHUB-1430: Cannot load class from file XXX when using with ant and classfileset (Olivier Mourez)
 Fixed: GITHUB-1394: Optimize ClassHelper.getAvailableMethods() to exclude Object class(Nathan Reynolds & Krishnan Mahadevan)
