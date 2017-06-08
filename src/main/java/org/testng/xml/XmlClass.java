@@ -282,8 +282,9 @@ public class XmlClass implements Serializable, Cloneable {
    */
   public Map<String, String> getAllParameters() {
     Map<String, String> result = Maps.newHashMap();
-    Map<String, String> parameters = m_xmlTest.getLocalParameters();
-    result.putAll(parameters);
+    if (m_xmlTest != null) {
+      result.putAll(m_xmlTest.getLocalParameters());
+    }
     result.putAll(m_parameters);
     return result;
   }

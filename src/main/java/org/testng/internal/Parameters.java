@@ -296,8 +296,7 @@ public class Parameters {
   }
 
   private static boolean validParameters(String methodAnnotation, Class[] parameterTypes) {
-    methodAnnotation = methodAnnotation.replace("@", "");
-    List<Class<?>> localMapping = mapping.get(methodAnnotation);
+    List<Class<?>> localMapping = mapping.get(methodAnnotation.replace("@", ""));
     if (localMapping == null) {
       return false;
     }
