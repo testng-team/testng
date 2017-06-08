@@ -23,17 +23,6 @@
     </classes>
   </test>
 
-  <test name="1417_test">
-    <classes>
-      <class name="test.github1417.TestClass">
-        <parameter name="browsername" value="firefox"/>
-      </class>
-      <class name="test.github1417.AnotherTestClassSample">
-        <parameter name="browsername" value="chrome"/>
-      </class>
-    </classes>
-  </test>
-
   <test name="1336_Tests_With_Priority" parallel="classes" thread-count="10">
     <classes>
       <class name="test.github1336.TestNG1"/>
@@ -168,6 +157,7 @@
       <class name="test_result.GitHub1197Test"/>
       <class name="test.listeners.github1319.TestResultInstanceCheckTest"/>
       <class name="test.testng1396.ParallelByInstancesInterceptorTest"/>
+      <class name="test.github1417.TestParamsInjectionInBeforeClass"/>
     </classes>
   </test>
 

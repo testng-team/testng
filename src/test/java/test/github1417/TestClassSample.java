@@ -5,12 +5,12 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
-public class TestClass {
+public class TestClassSample {
     private String browsername;
 
     @Parameters({"browsername"})
     @BeforeClass
-    public void LaunchBrowser(String browsername) {
+    public void beforeClass(String browsername) {
         this.browsername = browsername;
     }
 

@@ -936,18 +936,4 @@ public class XmlTest implements Serializable, Cloneable {
     m_xmlGroups = xmlGroups;
   }
 
-  /**
-   * For a given {@link Class} returns the corresponding {@link XmlClass} object (or) <code>null</code>.
-   * @param clazz - The {@link Class} for which the {@link XmlClass} is to be retrieved.
-   * @return - {@link XmlClass} if {@link Class} is part of the current {@link XmlTest} (or) <code>null</code>
-   * if not found.
-   */
-  public XmlClass getXmlClass(Class<?> clazz) {
-    for (XmlClass xmlClass : this.m_xmlClasses) {
-      if (xmlClass.getSupportClass().equals(clazz)) {
-        return xmlClass;
-      }
-    }
-    return null;
-  }
 }

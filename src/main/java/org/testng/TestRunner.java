@@ -866,14 +866,9 @@ public class TestRunner
     return result;
   }
 
-  private Map<String, String> getParameters(IMethodInstance im) {
-    Map<String, String> params = m_xmlTest.getAllParameters();
-    Class<?> c = im.getMethod().getTestClass().getRealClass();
-    XmlClass xmlClass = m_xmlTest.getXmlClass(c);
-    if (xmlClass != null) {
-      params.putAll(xmlClass.getAllParameters());
-    }
-    return params;
+  private static Map<String, String> getParameters(IMethodInstance im) {
+    XmlTest xmlTest = im.getMethod().getXmlTest();
+    return im.getMethod().findMethodParameters(xmlTest);
   }
 
 
