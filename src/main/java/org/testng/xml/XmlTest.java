@@ -935,4 +935,5 @@ public class XmlTest implements Serializable, Cloneable {
   public void setGroups(XmlGroups xmlGroups) {
     m_xmlGroups = xmlGroups;
   }
+
 }

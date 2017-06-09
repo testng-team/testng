@@ -157,6 +157,7 @@
       <class name="test_result.GitHub1197Test"/>
       <class name="test.listeners.github1319.TestResultInstanceCheckTest"/>
       <class name="test.testng1396.ParallelByInstancesInterceptorTest"/>
+      <class name="test.github1417.TestParamsInjectionInBeforeClass"/>
     </classes>
   </test>
 

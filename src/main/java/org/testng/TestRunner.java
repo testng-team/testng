@@ -829,12 +829,16 @@ public class TestRunner
       methodInstances.addAll(methodsToMultipleMethodInstances(tm));
     }
 
-
-    Map<String, String> params = m_xmlTest.getAllParameters();
-
     Set<Class<?>> processedClasses = Sets.newHashSet();
+    Map<String, String> params = null;
+    Class<?> prevClass = null;
     for (IMethodInstance im : methodInstances) {
       Class<?> c = im.getMethod().getTestClass().getRealClass();
+      if (!c.equals(prevClass)) {
+        //Calculate the parameters to be injected only once per Class and NOT for every iteration.
+        params = getParameters(im);
+        prevClass = c;
+      }
       if (sequentialClasses.contains(c)) {
         if (!processedClasses.contains(c)) {
           processedClasses.add(c);
@@ -860,6 +864,11 @@ public class TestRunner
     }
 
     return result;
+  }
+
+  private static Map<String, String> getParameters(IMethodInstance im) {
+    XmlTest xmlTest = im.getMethod().getXmlTest();
+    return im.getMethod().findMethodParameters(xmlTest);
   }
 
 
