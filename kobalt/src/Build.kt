@@ -5,6 +5,7 @@ import com.beust.kobalt.api.annotation.Task
 import com.beust.kobalt.buildScript
 import com.beust.kobalt.plugin.java.javaCompiler
 import com.beust.kobalt.plugin.packaging.assemble
+import com.beust.kobalt.plugin.publish.autoGitTag
 import com.beust.kobalt.plugin.publish.bintray
 import com.beust.kobalt.project
 import com.beust.kobalt.test
@@ -89,7 +90,10 @@ val p = project {
     bintray {
         publish = true
         sign = true
-        autoGitTag = true
+    }
+
+    autoGitTag {
+        enabled = true
     }
 }
 
