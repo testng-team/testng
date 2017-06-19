@@ -90,10 +90,6 @@ val p = project {
         enabled = true
     }
 
-    autoGitTag {
-        enabled = true
-    }
-
     osgi{}
 }
 
