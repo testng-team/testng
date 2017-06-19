@@ -54,11 +54,11 @@ import static test.thread.parallelization.TestNgRunStateTracker.reset;
  * Test Case Summary: Parallel by methods mode with parallel test suites using factories but no dependencies and no
  *                    data providers.
  *
- * Scenario Description: Three suites with 1, 2 and 3 tests respectively. One suite with two tests which have a test
- *                       for a suite shall consist of a single test class without a factory while the other shall
- *                       consist of factories which provide multiple instances of multiple test classes. One suite
- *                       shall consist of a single test with multiple test classes which uses factories. One suite
- *                       shall have multiple tests with multiple classes, none of which use a factory.
+ * Scenario Description: Three suites with 1, 2 and 3 tests respectively. One suite with two tests has a test
+ *                       consisting of a single test class without a factory while the other shall consist of factories
+ *                       which provide multiple instances of multiple test classes. One suite shall consist of a single
+ *                       test with multiple test classes which uses factories. One suite shall have multiple tests with
+ *                       multiple classes, none of which use a factory.
  *
  * 1) The suite thread pool is 2, so one suite will have to wait for one of the others to complete execution before it
  *    can begin execution
@@ -71,7 +71,8 @@ import static test.thread.parallelization.TestNgRunStateTracker.reset;
  * 6) The thread count is more than the number of test methods for the tests in one of the suites, ensuring that none
  *    of the methods in that suite should have to wait for any other method to complete execution
  * 7) The expectation is that threads will be spawned for each test method that executes just as they would if there
- *    were no factories and test suites simply used the default mechanism for instantiating single instances of the test classes.
+ *    were no factories and test suites simply used the default mechanism for instantiating single instances of the test
+ *    classes.
  * 8) There are NO configuration methods
  * 9) All test methods pass
  * 10) NO ordering is specified
@@ -93,9 +94,6 @@ public class ParallelByMethodsTestCase6Scenario1 extends BaseParallelizationTest
     private static final String SUITE_C_TEST_C = "TestSuiteC-FourTestClassTest";
 
     private static final int THREAD_POOL_SIZE = 2;
-
-    private Map<String, Long> expectedSuiteExecutionTimes = new HashMap<>();
-    private Map<String, Long> expectedTestExecutionTimes = new HashMap<>();
 
     private Map<String, List<TestNgRunStateTracker.EventLog>> testEventLogsMap = new HashMap<>();
 
@@ -217,17 +215,6 @@ public class ParallelByMethodsTestCase6Scenario1 extends BaseParallelizationTest
         tng.addListener((ITestNGListener) new TestNgRunStateListener());
 
         tng.run();
-
-//        expectedSuiteExecutionTimes.put(SUITE_A, 8_000L);
-//        expectedSuiteExecutionTimes.put(SUITE_B, 15_000L);
-//        expectedSuiteExecutionTimes.put(SUITE_C, 16_000L);
-//
-//        expectedTestExecutionTimes.put(SUITE_B_TEST_A, 5_000L);
-//        expectedTestExecutionTimes.put(SUITE_B_TEST_B, 9_000L);
-//
-//        expectedTestExecutionTimes.put(SUITE_C_TEST_A, 5_000L);
-//        expectedTestExecutionTimes.put(SUITE_C_TEST_B, 5_000L);
-//        expectedTestExecutionTimes.put(SUITE_C_TEST_C, 5_000L);
 
         suiteLevelEventLogs = getAllSuiteLevelEventLogs();
         testLevelEventLogs = getAllTestLevelEventLogs();
@@ -521,8 +508,6 @@ public class ParallelByMethodsTestCase6Scenario1 extends BaseParallelizationTest
                         getAllSuiteListenerStartEventLogs().get(0).getThreadId() + ". Test method level event logs: " +
                         testMethodLevelEventLogs);
 
-        verifyEventsForTestMethodsRunInTheSameThread(TestClassAFiveMethodsWithNoDepsSample.class, SUITE_A,
-                SUITE_A_TEST_A);
         verifyEventsForTestMethodsRunInTheSameThread(TestClassAFiveMethodsWithNoDepsSample.class, SUITE_A,
                 SUITE_A_TEST_A);
         verifyEventsForTestMethodsRunInTheSameThread(TestClassCSixMethodsWithNoDepsSample.class, SUITE_A,

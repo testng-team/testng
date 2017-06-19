@@ -1,4 +1,9 @@
 Current
+Fixed: GITHUB-1417: Class param injection is not working with @BeforeClass (Krishnan Mahadevan)
+Fixed: GITHUB-1440: Improve error message when wrong params on configuration methods (Krishnan Mahadevan)
+Fixed: GITHUB-1433: Missing encoding for emailable reports (Shaburov Oleg)
+Fixed: GITHUB-1430: Cannot load class from file XXX when using with ant and classfileset (Olivier Mourez)
+Fixed: GITHUB-1394: Optimize ClassHelper.getAvailableMethods() to exclude Object class(Nathan Reynolds & Krishnan Mahadevan)
 Fixed: GITHUB-1396: Order established by IMethodInterceptor not honored when running with parallel='instances' (Ryan Scott)
 Fixed: GITHUB-1287: Parallel (methods) execution with dependsOn running in unexpected order (Kevyn Reinholt)
 Fixed: GITHUB-1362: Ensure AfterGroups methods get executed when involving Method Interceptors (Krishnan Mahadevan)
@@ -9,6 +14,9 @@ Fixed: GITHUB-1336: (parallel=‘classes’) not working when coupled with prior
 Fixed: GITHUB-1365: Be able to override default XML parser (@ChristiKh & Julien Herr)
 Fixed: GITHUB-1360: TestNG does not distinguish between methods of different priorities (Krishnan Mahadevan)
 Fixed: GITHUB-1144: Add Class and Constructor as legal native dependency injection (Guillaume Juillot)
+Fixed: GITHUB-1380: Circular dependencies may fail in parallel (Julien Herr)
+Fixed: GITHUB-1400: TestNG, Multiple duplicate listener warnings on implementing multiple listener interfaces (@bipo1980 & Nick Tan)
+Fixed: GITHUB-1426: @AfterMethod(alwaysRun = true) is not getting called if we have exception in @BeforeMethod (@dipak-pawar)
 
 6.11
 2017/02/27

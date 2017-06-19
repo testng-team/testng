@@ -52,11 +52,39 @@ public class Parameters {
       AfterMethod.class
   };
 
-  private static Map<String, List<Class>> mapping = Maps.newHashMap();
+  private static Map<String, List<Class<?>>> mapping = Maps.newHashMap();
+/*
+          +--------------+--------------+---------+--------+----------+-------------+
+          |  Annotation  | ITestContext | XmlTest | Method | Object[] | ITestResult |
+          +--------------+--------------+---------+--------+----------+-------------+
+          | BeforeSuite  | Yes          | Yes     | No     | No       | No          |
+          +--------------+--------------+---------+--------+----------+-------------+
+          | BeforeTest   | Yes          | Yes     | No     | No       | No          |
+          +--------------+--------------+---------+--------+----------+-------------+
+          | BeforeGroups | Yes          | Yes     | No     | No       | No          |
+          +--------------+--------------+---------+--------+----------+-------------+
+          | BeforeClass  | Yes          | Yes     | No     | No       | No          |
+          +--------------+--------------+---------+--------+----------+-------------+
+          | BeforeMethod | Yes          | Yes     | Yes    | Yes      | Yes         |
+          +--------------+--------------+---------+--------+----------+-------------+
+          | AfterSuite   | Yes          | Yes     | No     | No       | No          |
+          +--------------+--------------+---------+--------+----------+-------------+
+          | AfterTest    | Yes          | Yes     | No     | No       | No          |
+          +--------------+--------------+---------+--------+----------+-------------+
+          | AfterGroups  | Yes          | Yes     | No     | No       | No          |
+          +--------------+--------------+---------+--------+----------+-------------+
+          | AfterClass   | Yes          | Yes     | No     | No       | No          |
+          +--------------+--------------+---------+--------+----------+-------------+
+          | AfterMethod  | Yes          | Yes     | Yes    | Yes      | Yes         |
+          +--------------+--------------+---------+--------+----------+-------------+
+          | Test         | Yes          | No      | No     | No       | No          |
+          +--------------+--------------+---------+--------+----------+-------------+
 
+ */
   static {
-    List<Class> ctxTest = Arrays.asList(new Class[] {ITestContext.class, XmlTest.class});
-    List<Class> mParams = Arrays.asList(new Class[] {ITestContext.class, XmlTest.class,Method.class,Object[].class});
+    List<Class<?>> ctxTest = Arrays.asList(new Class<?>[]{ITestContext.class, XmlTest.class});
+    List<Class<?>> beforeAfterMethod = Arrays.asList(ITestContext.class, XmlTest.class, Method.class,
+            Object[].class, ITestResult.class);
     mapping.put(BeforeSuite.class.getSimpleName(), ctxTest);
     mapping.put(AfterSuite.class.getSimpleName(), ctxTest);
 
@@ -69,12 +97,11 @@ public class Parameters {
     mapping.put(BeforeClass.class.getSimpleName(), ctxTest);
     mapping.put(AfterClass.class.getSimpleName(), ctxTest);
 
-    mapping.put(BeforeMethod.class.getSimpleName(), mParams);
-    mapping.put(AfterMethod.class.getSimpleName(), mParams);
+    mapping.put(BeforeMethod.class.getSimpleName(), beforeAfterMethod);
+    mapping.put(AfterMethod.class.getSimpleName(), beforeAfterMethod);
+    mapping.put(Test.class.getSimpleName(), Arrays.asList(new Class<?>[] {ITestContext.class}));
 
   }
-
-
 
   /**
    * Creates the parameters needed for constructing a test class instance.
@@ -233,19 +260,29 @@ public class Parameters {
       }
     }
 
-    if ( (parameterNames.length ==0) && (totalLength != 0) ) {
+
+    if (parameterNames.length == 0) {
       //parameterNames is usually populated via the @Parameters annotation, so we would need to
       //apply our logic only when @Parameters annotation is not involved.
-      String errPrefix = "Cannot inject " + methodAnnotation + " annotated Method [" + methodName + "] with "
-            + Arrays.toString(parameterTypes);
-      if (mapping.containsKey(methodAnnotation)) {
-        errPrefix = "Can inject only one of " + prettyFormat(mapping.get(methodAnnotation)) +
-            " into a " + methodAnnotation + " annotated " + methodName;
+      boolean invalid = (totalLength != 0) || (!validParameters(methodAnnotation, parameterTypes));
+      if (invalid) {
+        String annotation = methodAnnotation;
+        if (!methodAnnotation.startsWith("@")) {
+          annotation = "@" + methodAnnotation;
+        }
+        String errPrefix;
+        if (mapping.containsKey(methodAnnotation)) {
+          errPrefix = "Can inject only one of " + prettyFormat(mapping.get(methodAnnotation)) +
+                  " into a " + annotation + " annotated " + methodName;
+        } else {
+          errPrefix = "Cannot inject " + annotation + " annotated Method [" + methodName + "] with "
+                  + Arrays.toString(parameterTypes);
+        }
+        throw new TestNGException(errPrefix
+                + ".\nFor more information on native dependency injection please refer to " +
+                "http://testng.org/doc/documentation-main.html#native-dependency-injection"
+        );
       }
-      throw new TestNGException( errPrefix
-          + ".\nFor more information on native dependency injection please refer to " +
-          "http://testng.org/doc/documentation-main.html#native-dependency-injection"
-      );
     }
 
     if (parameterNames.length != totalLength) {
@@ -258,7 +295,20 @@ public class Parameters {
     }
   }
 
-  private static String prettyFormat(List<Class> classes) {
+  private static boolean validParameters(String methodAnnotation, Class[] parameterTypes) {
+    List<Class<?>> localMapping = mapping.get(methodAnnotation.replace("@", ""));
+    if (localMapping == null) {
+      return false;
+    }
+    for (Class<?> parameterType : parameterTypes) {
+      if (!localMapping.contains(parameterType)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private static String prettyFormat(List<Class<?>> classes) {
     StringBuilder builder = new StringBuilder("<");
     if (classes.size() == 1) {
       builder.append(classes.get(0));

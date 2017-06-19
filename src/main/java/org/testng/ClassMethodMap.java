@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * This class maintains a map of <CODE><Class, List<ITestNGMethod>></CODE>.
+ * This class maintains a map of {@code <Class, List<ITestNGMethod>>}.
  * It is used by TestWorkers to determine if the method they just ran
  * is the last of its class, in which case it's time to invoke all the
  * afterClass methods.

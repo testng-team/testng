@@ -16,7 +16,7 @@ import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.SUITE_
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.TEST_NAME;
 import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.TEST_METHOD_EXECUTION;
 
-public class TestClassFourMethodsWithDataProviderOnAllMethodsAndNoDepsSample {
+public class TestClassBFourMethodsWithDataProviderOnAllMethodsAndNoDepsSample {
     @Test(dataProvider = "data-provider")
     public void testMethodA(String suiteName, String testName, String sleepFor, String dpVal) throws
             InterruptedException {

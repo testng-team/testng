@@ -17,7 +17,7 @@ import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.SUITE_
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.TEST_NAME;
 import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.TEST_METHOD_EXECUTION;
 
-public class TestClassFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample {
+public class TestClassCSixMethodsWithFactoryUsingDataProviderAndNoDepsSample {
 
     private final String suiteName;
     private final String testName;
@@ -25,7 +25,7 @@ public class TestClassFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample {
     private final String dpVal;
 
     @Factory(dataProvider = "data-provider")
-    public TestClassFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample(String suiteName, String testName, String
+    public TestClassCSixMethodsWithFactoryUsingDataProviderAndNoDepsSample(String suiteName, String testName, String
             sleepFor, String dpVal) {
 
         this.suiteName = suiteName;
@@ -144,6 +144,28 @@ public class TestClassFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample {
         TimeUnit.MILLISECONDS.sleep(sleepFor);
     }
 
+    @Test
+    public void testMethodF() throws
+            InterruptedException {
+        long time = System.currentTimeMillis();
+
+        TestNgRunStateTracker.logEvent(
+                TestNgRunStateTracker.EventLog.builder()
+                        .setEvent(TEST_METHOD_EXECUTION)
+                        .setTimeOfEvent(time)
+                        .setThread(Thread.currentThread())
+                        .addData(METHOD_NAME, "testMethodF")
+                        .addData(CLASS_NAME, getClass().getCanonicalName())
+                        .addData(CLASS_INSTANCE, this)
+                        .addData(TEST_NAME, testName)
+                        .addData(SUITE_NAME, suiteName)
+                        .addData(DATA_PROVIDER_PARAM, dpVal)
+                        .build()
+        );
+
+        TimeUnit.MILLISECONDS.sleep(sleepFor);
+    }
+
     @DataProvider(name = "data-provider")
     public static Object[][] dataProvider(ITestContext context) {
         Map<String,String> params = context.getCurrentXmlTest().getAllParameters();
@@ -153,7 +175,17 @@ public class TestClassFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample {
         String sleepFor = params.get("sleepFor");
 
         String dataProviderParam = params.get("dataProviderParam");
-        String[] dataProviderVals = dataProviderParam.split(",");
+
+        String[] dataProviderVals = null;
+        String classNamePattern = TestClassCSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getSimpleName() + "(";
+
+        if(dataProviderParam.contains(classNamePattern)) {
+            dataProviderParam = dataProviderParam.substring(dataProviderParam.indexOf(classNamePattern) +
+                    classNamePattern.length());
+            dataProviderParam = dataProviderParam.substring(0,dataProviderParam.indexOf(")"));
+        }
+
+        dataProviderVals = dataProviderParam.split(",");
 
         Object[][] dataToProvide = new Object[dataProviderVals.length][4];
 

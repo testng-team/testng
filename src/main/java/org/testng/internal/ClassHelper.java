@@ -182,17 +182,19 @@ public final class ClassHelper {
     }
 
     Class<?> parent = clazz.getSuperclass();
-    while (null != parent) {
-      Set<Map.Entry<String, Set<Method>>> extractedMethods = extractMethods(clazz, parent, methods).entrySet();
-      for (Map.Entry<String, Set<Method>> extractedMethod : extractedMethods){
-        Set<Method> m = methods.get(extractedMethod.getKey());
-        if (m == null) {
-          methods.put(extractedMethod.getKey(), extractedMethod.getValue());
-        } else {
-          m.addAll(extractedMethod.getValue());
+    if (null != parent) {
+      while (!Object.class.equals(parent)) {
+        Set<Map.Entry<String, Set<Method>>> extractedMethods = extractMethods(clazz, parent, methods).entrySet();
+        for (Map.Entry<String, Set<Method>> extractedMethod : extractedMethods) {
+          Set<Method> m = methods.get(extractedMethod.getKey());
+          if (m == null) {
+            methods.put(extractedMethod.getKey(), extractedMethod.getValue());
+          } else {
+            m.addAll(extractedMethod.getValue());
+          }
         }
+        parent = parent.getSuperclass();
       }
-      parent = parent.getSuperclass();
     }
 
     Set<Method> returnValue = Sets.newHashSet();
@@ -589,16 +591,16 @@ public final class ClassHelper {
     // resolves.  When it does, we remember the path we are at as "lastGoodRoodIndex".
     //
 
-    StringBuilder className = new StringBuilder();
+    String className = "";
     for (int i = segments.length - 1; i >= 0; i--) {
       if (className.length() == 0) {
-        className.append(segments[i]);
+        className = segments[i];
       }
       else {
-        className.append(segments[i]).append(".").append(className);
+        className = segments[i] + "."  + className;
       }
 
-      result = ClassHelper.forName(className.toString());
+      result = ClassHelper.forName(className);
 
       if (null != result) {
         lastGoodRootIndex = i;

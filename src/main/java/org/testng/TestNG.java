@@ -704,9 +704,15 @@ public class TestNG {
     addListener((ITestNGListener) listener);
   }
 
-  private static <E> void maybeAddListener(Map<Class<? extends E>, E> map, Class<? extends E> type, E value) {
-    if (map.containsKey(value.getClass())) {
-      LOGGER.warn("Ignoring duplicate listener : " + value.getClass().getName());
+  private static <E> void maybeAddListener(Map<Class<? extends E>, E> map, E value) {
+    maybeAddListener(map, (Class<? extends E>) value.getClass(), value, false);
+  }
+
+  private static <E> void maybeAddListener(Map<Class<? extends E>, E> map, Class<? extends E> type, E value, boolean quiet) {
+    if (map.containsKey(type)) {
+      if (!quiet) {
+        LOGGER.warn("Ignoring duplicate listener : " + type.getName());
+      }
     } else {
       map.put(type, value);
     }
@@ -718,19 +724,19 @@ public class TestNG {
     }
     if (listener instanceof ISuiteListener) {
       ISuiteListener suite = (ISuiteListener) listener;
-      maybeAddListener(m_suiteListeners, suite.getClass(),  suite);
+      maybeAddListener(m_suiteListeners, suite);
     }
     if (listener instanceof ITestListener) {
       ITestListener test = (ITestListener) listener;
-      maybeAddListener(m_testListeners, test.getClass(), test);
+      maybeAddListener(m_testListeners, test);
     }
     if (listener instanceof IClassListener) {
       IClassListener clazz = (IClassListener) listener;
-      maybeAddListener(m_classListeners, clazz.getClass(), clazz);
+      maybeAddListener(m_classListeners, clazz);
     }
     if (listener instanceof IReporter) {
       IReporter reporter = (IReporter) listener;
-      maybeAddListener(m_reporters, reporter.getClass(), reporter);
+      maybeAddListener(m_reporters, reporter);
     }
     if (listener instanceof IAnnotationTransformer) {
       setAnnotationTransformer((IAnnotationTransformer) listener);
@@ -740,7 +746,7 @@ public class TestNG {
     }
     if (listener instanceof IInvokedMethodListener) {
       IInvokedMethodListener method = (IInvokedMethodListener) listener;
-      maybeAddListener(m_invokedMethodListeners, method.getClass(), method);
+      maybeAddListener(m_invokedMethodListeners, method);
     }
     if (listener instanceof IHookable) {
       setHookable((IHookable) listener);
@@ -756,7 +762,7 @@ public class TestNG {
     }
     if (listener instanceof IAlterSuiteListener) {
       IAlterSuiteListener alter = (IAlterSuiteListener) listener;
-      maybeAddListener(m_alterSuiteListeners, alter.getClass(), alter);
+      maybeAddListener(m_alterSuiteListeners, alter);
     }
   }
 
@@ -1394,7 +1400,7 @@ public class TestNG {
     }
 
     for (IReporter r : result.getReporters()) {
-      addListener(r);
+      maybeAddListener(m_reporters, r.getClass(), r, true);
     }
 
     for (IConfigurationListener cl : m_configuration.getConfigurationListeners()) {

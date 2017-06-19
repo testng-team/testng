@@ -128,13 +128,16 @@ test {
     }
 }
 
-if (JavaVersion.current().isJava8Compatible()) {
-    allprojects {
-        tasks.withType(Javadoc) {
+allprojects {
+    tasks.withType(Javadoc) {
+        if (JavaVersion.current().isJava8Compatible()) {
             options.addStringOption('Xdoclint:none', '-quiet')
-        }
+	}
+	options.links("https://docs.oracle.com/javase/7/docs/api")
     }
+}
 
+if (JavaVersion.current().isJava8Compatible()) {
     apply plugin: 'org.sonarqube'
     sonarqube {
         properties {

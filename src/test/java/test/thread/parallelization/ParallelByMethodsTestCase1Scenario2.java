@@ -90,9 +90,6 @@ public class ParallelByMethodsTestCase1Scenario2 extends BaseParallelizationTest
     private static final String SUITE_C_TEST_B = "TestSuiteC-TwoTestClassTest";
     private static final String SUITE_C_TEST_C = "TestSuiteC-FourTestClassTest";
 
-    private Map<String, Long> expectedSuiteExecutionTimes = new HashMap<>();
-    private Map<String, Long> expectedTestExecutionTimes = new HashMap<>();
-
     private Map<String, List<EventLog>> suiteEventLogsMap = new HashMap<>();
     private Map<String, List<EventLog>> testEventLogsMap = new HashMap<>();
 
@@ -212,16 +209,6 @@ public class ParallelByMethodsTestCase1Scenario2 extends BaseParallelizationTest
         tng.addListener((ITestNGListener) new TestNgRunStateListener());
 
         tng.run();
-
-//        expectedSuiteExecutionTimes.put(SUITE_A, 10_000L);
-//        expectedSuiteExecutionTimes.put(SUITE_B, 7_000L);
-//        expectedSuiteExecutionTimes.put(SUITE_C, 16_000L);
-//
-//        expectedTestExecutionTimes.put(SUITE_B_TEST_A, 3_000L);
-//        expectedTestExecutionTimes.put(SUITE_B_TEST_B, 3_000L);
-//        expectedTestExecutionTimes.put(SUITE_C_TEST_A, 5_000L);
-//        expectedTestExecutionTimes.put(SUITE_C_TEST_B, 5_000L);
-//        expectedTestExecutionTimes.put(SUITE_C_TEST_C, 5_000L);
 
         suiteLevelEventLogs = getAllSuiteLevelEventLogs();
         testLevelEventLogs = getAllTestLevelEventLogs();
