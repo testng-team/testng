@@ -10,6 +10,8 @@ import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,31 +20,36 @@ public class DataProviderTest extends SimpleBaseTest {
   @Test(description = "GITHUB-1139")
   public void oneDimDataProviderShouldWork() {
     InvokedMethodNameListener listener = run(OneDimDataProviderSample.class);
-
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
-        "testArray(foo)", "testArray(bar)",
-        "testIterator(foo)", "testIterator(bar)",
-        "testStaticArray(foo)", "testStaticArray(bar)",
-        "testStaticIterator(foo)", "testStaticIterator(bar)"
+    List<String> expected = Arrays.asList(
+            "testArray(foo)", "testArray(bar)",
+            "testIterator(foo)", "testIterator(bar)",
+            "testStaticArray(foo)", "testStaticArray(bar)",
+            "testStaticIterator(foo)", "testStaticIterator(bar)"
     );
+
+    for (String method : listener.getSucceedMethodNames()) {
+      assertThat(method).isIn(expected);
+    }
   }
 
   @Test
   public void booleanTest() {
     InvokedMethodNameListener listener = run(BooleanDataProviderSample.class);
-
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
-        "doStuff(true)", "doStuff(false)"
-    );
+    List<String> expected = Arrays.asList("doStuff(true)", "doStuff(false)");
+    for (String method : listener.getSucceedMethodNames()) {
+      assertThat(method).isIn(expected);
+    }
   }
 
   @Test
   public void classTest() {
     InvokedMethodNameListener listener = run(ClassDataProviderSample.class);
+    List<String> expected = Arrays.asList("f(a)", "f(b)", "g(a)", "g(b)");
 
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
-        "f(a)", "f(b)", "g(a)", "g(b)"
-    );
+    for (String method : listener.getSucceedMethodNames()) {
+      assertThat(method).isIn(expected);
+    }
+
   }
 
   @Test
@@ -133,12 +140,12 @@ public class DataProviderTest extends SimpleBaseTest {
     MethodSample.m_test3 = 0;
 
     InvokedMethodNameListener listener = run(MethodSample.class);
+    List<String> expected = Arrays.asList("test1(Cedric)", "test1(Alois)", "test2(Cedric)", "test3(Cedric)");
 
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
-            "test1(Cedric)", "test1(Alois)",
-            "test2(Cedric)",
-            "test3(Cedric)"
-    );
+    for (String method : listener.getSucceedMethodNames()) {
+      assertThat(method).isIn(expected);
+    }
+
     Assert.assertEquals(MethodSample.m_test2, 1);
     Assert.assertEquals(MethodSample.m_test3, 1);
   }
@@ -237,23 +244,29 @@ public class DataProviderTest extends SimpleBaseTest {
   @Test
   public void staticDataProviderTest() {
     InvokedMethodNameListener listener = run(StaticDataProviderSampleSample.class);
-
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
-        "verifyConstructorInjection(Cedric)",
-        "verifyExternal(Cedric)",
-        "verifyFieldInjection(Cedric)",
-        "verifyStatic(Cedric)"
+    List<String> expected = Arrays.asList(
+            "verifyConstructorInjection(Cedric)",
+            "verifyExternal(Cedric)",
+            "verifyFieldInjection(Cedric)",
+            "verifyStatic(Cedric)"
     );
+    for (String method : listener.getSucceedMethodNames()){
+      assertThat(method).isIn(expected);
+    }
+
   }
 
   @Test
   public void staticDataProviderSampleWithoutGuiceTest() {
     InvokedMethodNameListener listener = run(StaticDataProviderSampleWithoutGuiceSample.class);
-
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
-        "verifyExternal(Cedric)",
-        "verifyStatic(Cedric)"
+    List<String> expected = Arrays.asList(
+            "verifyExternal(Cedric)",
+            "verifyStatic(Cedric)"
     );
+
+    for (String method : listener.getSucceedMethodNames()){
+      assertThat(method).isIn(expected);
+    }
   }
 
   @Test
@@ -274,7 +287,10 @@ public class DataProviderTest extends SimpleBaseTest {
 
     assertThat(listener.getSucceedMethodNames()).hasSize(1)
         .are(new RegexCondition("checkMinTest_injection\\(1,2,org\\.testng\\.TestRunner@\\p{XDigit}+\\)"));
-    assertThat(listener.getFailedBeforeInvocationMethodNames()).containsExactly("checkMaxTest", "checkMinTest");
+    List<String> expected = Arrays.asList("checkMaxTest", "checkMinTest");
+    for (String method : listener.getFailedBeforeInvocationMethodNames()) {
+      assertThat(method).isIn(expected);
+    }
   }
 
   @Test

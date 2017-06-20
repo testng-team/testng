@@ -4,6 +4,9 @@ import org.testng.annotations.Test;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class FailingDataProviderTest extends SimpleBaseTest {
@@ -25,9 +28,12 @@ public class FailingDataProviderTest extends SimpleBaseTest {
   @Test
   public void failingDataProviderAndInvocationCount() {
     InvokedMethodNameListener listener = run(DataProviderWithErrorSample.class);
-
-    assertThat(listener.getSkippedMethodNames()).containsExactly(
-        "testShouldSkip", "testShouldSkip", "testShouldSkipEvenIfSuccessPercentage", "testShouldSkipEvenIfSuccessPercentage"
+    List<String> expected = Arrays.asList(
+            "testShouldSkip", "testShouldSkip", "testShouldSkipEvenIfSuccessPercentage", "testShouldSkipEvenIfSuccessPercentage"
     );
+
+    for (String method : listener.getSkippedMethodNames()) {
+      assertThat(method).isIn(expected);
+    }
   }
 }

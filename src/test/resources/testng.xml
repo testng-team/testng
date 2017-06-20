@@ -103,6 +103,7 @@
       <class name="test.simple.IncludedExcludedTest" />
       <class name="test.reports.ReportTest" />
       <class name="test.annotationtransformer.AnnotationTransformerTest" />
+      <class name="test.github799.EnsureInstancesAreOrderedViaFactories"/>
 <!--
       <class name="test.jar.JarTest" />
  -->

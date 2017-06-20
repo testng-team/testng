@@ -6,6 +6,9 @@ import org.testng.annotations.Test;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class GitHub1197Test extends SimpleBaseTest {
@@ -20,8 +23,9 @@ public class GitHub1197Test extends SimpleBaseTest {
 
         tng.run();
 
-        assertThat(listener.getSucceedMethodNames()).containsExactly("succeedTest", "succeedTest2");
-        assertThat(listener.getFailedMethodNames()).containsExactly("failedTest"); // , "failedTest2");
-        assertThat(listener.getSkippedAfterInvocationMethodNames()).containsExactly("skippedTest");
+        doAssert(listener.getSucceedMethodNames(),"succeedTest", "succeedTest2");
+        doAssert(listener.getFailedMethodNames(),"failedTest"); // , "failedTest2");
+        doAssert(listener.getSkippedAfterInvocationMethodNames(),"skippedTest");
     }
+
 }

@@ -5,7 +5,6 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -118,12 +117,6 @@ public class Graph<T> {
     }
 
     //
-    // Sort the nodes alphabetically to make sure that methods of the same class
-    // get run close to each other as much as possible
-    //
-    Collections.sort(nodes2);
-
-    //
     // Sort
     //
     while (! nodes2.isEmpty()) {
@@ -157,10 +150,6 @@ public class Graph<T> {
   private void initializeIndependentNodes() {
     if (null == m_independentNodes) {
       List<Node<T>> list = Lists.newArrayList(m_nodes.values());
-      // Ideally, we should not have to sort this. However, due to a bug where it treats all the methods as
-      // dependent nodes. Therefore, all the nodes were mostly sorted alphabetically. So we need to keep
-      // the behavior for now.
-      Collections.sort(list);
       m_independentNodes = Maps.newLinkedHashMap();
       for (Node<T> node : list) {
         m_independentNodes.put(node.getObject(), node);

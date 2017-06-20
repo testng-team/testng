@@ -9,6 +9,9 @@ import org.testng.xml.XmlTest;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class IndicesTest extends SimpleBaseTest {
@@ -18,10 +21,13 @@ public class IndicesTest extends SimpleBaseTest {
         InvokedMethodNameListener listener = run(IndicesSample.class);
 
         assertThat(listener.getFailedMethodNames()).isEmpty();
-        assertThat(listener.getSucceedMethodNames()).containsExactly(
-            "indicesShouldWork(3)",
-            "indicesShouldWorkWithIterator(3)"
+        List<String> expected = Arrays.asList(
+                "indicesShouldWork(3)",
+                "indicesShouldWorkWithIterator(3)"
         );
+        for (String method : listener.getSucceedMethodNames()) {
+            assertThat(method).isIn(expected);
+        }
     }
 
     @Test
@@ -40,9 +46,12 @@ public class IndicesTest extends SimpleBaseTest {
         tng.run();
 
         assertThat(listener.getFailedMethodNames()).isEmpty();
-        assertThat(listener.getSucceedMethodNames()).containsExactly(
-            "indicesShouldWork(1)", "indicesShouldWork(3)",
-            "indicesShouldWorkWithIterator(1)", "indicesShouldWorkWithIterator(3)"
+        List<String> expected = Arrays.asList(
+                "indicesShouldWork(1)", "indicesShouldWork(3)",
+                "indicesShouldWorkWithIterator(1)", "indicesShouldWorkWithIterator(3)"
         );
+        for (String method : listener.getSucceedMethodNames()) {
+            assertThat(method).isIn(expected);
+        }
     }
 }

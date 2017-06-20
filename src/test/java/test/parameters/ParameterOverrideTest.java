@@ -13,6 +13,9 @@ import org.testng.xml.XmlTest;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ParameterOverrideTest extends SimpleBaseTest {
@@ -65,9 +68,9 @@ public class ParameterOverrideTest extends SimpleBaseTest {
     tng.addListener((ITestNGListener) tla);
 
     tng.run();
+    List<String> expected = Arrays.asList(
+            "f(Correct)", "g(InheritedFromSuite,InheritedFromTest,InheritedFromClass)");
 
-    assertThat(tla.getSucceedMethodNames()).containsExactly(
-            "f(Correct)", "g(InheritedFromSuite,InheritedFromTest,InheritedFromClass)"
-    );
+    doAssert(tla.getSucceedMethodNames(), expected);
   }
 }

@@ -35,6 +35,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class SimpleBaseTest {
   // System property specifying where the resources (e.g. xml files) can be found
   private static final String TEST_RESOURCES_DIR = "test.resources.dir";
@@ -242,7 +244,7 @@ public class SimpleBaseTest {
   }
 
   public static String getPathToResource(String fileName) {
-    String result = System.getProperty(TEST_RESOURCES_DIR);
+    String result = System.getProperty(TEST_RESOURCES_DIR,"src/test/resources");
     if (result == null) {
       throw new IllegalArgumentException("System property " + TEST_RESOURCES_DIR + " was not defined.");
     }
@@ -338,6 +340,16 @@ public class SimpleBaseTest {
     }
     return resultLineNumbers;
 
+  }
+
+  protected static void doAssert(List<String> actual, String... expectedValues) {
+    doAssert(actual, Arrays.asList(expectedValues));
+  }
+
+  protected static void doAssert(List<String> actual, List<String>  expected) {
+    for (String each : actual) {
+      assertThat(each).isIn(expected);
+    }
   }
 
 }

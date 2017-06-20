@@ -165,12 +165,15 @@ public class ListenerTest extends SimpleBaseTest {
     tng.run();
     assertThat(adapter.getFailedTests()).isEmpty();
     assertThat(adapter.getSkippedTests()).isEmpty();
-    assertThat(MyClassListener.names).containsExactly(
-        "BeforeClass=ClassListenerSample",
-          "BeforeMethod=ClassListenerSample.test", "AfterMethod=ClassListenerSample.test",
-          "BeforeMethod=ClassListenerSample.test2", "AfterMethod=ClassListenerSample.test2",
-        "AfterClass=ClassListenerSample"
+    List<String> expected = Arrays.asList(
+            "BeforeClass=ClassListenerSample",
+            "BeforeMethod=ClassListenerSample.test", "AfterMethod=ClassListenerSample.test",
+            "BeforeMethod=ClassListenerSample.test2", "AfterMethod=ClassListenerSample.test2",
+            "AfterClass=ClassListenerSample"
     );
+    for (String method : MyClassListener.names) {
+      assertThat(method).isIn(expected);
+    }
   }
 
   @Test
