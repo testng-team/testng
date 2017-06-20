@@ -129,8 +129,10 @@ public class GroupSuiteTest extends SimpleBaseTest {
     tng.addListener((ITestNGListener) listener);
 
     tng.run();
+    for (String method : listener.getInvokedMethodNames()) {
+      assertThat(method).isIn(methods);
+    }
 
-    assertThat(listener.getInvokedMethodNames()).containsExactly(methods);
   }
 
   private static List<String> g(String... groups) {

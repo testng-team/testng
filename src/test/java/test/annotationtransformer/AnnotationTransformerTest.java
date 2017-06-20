@@ -1,5 +1,7 @@
 package test.annotationtransformer;
 
+import org.assertj.core.api.Condition;
+import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.iterable.Extractor;
 import org.testng.Assert;
 import org.testng.IAnnotationTransformer;
@@ -42,13 +44,12 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
 
     tng.run();
 
-    assertThat(tla.getPassedTests()).extracting(NAME_EXTRACTOR)
-        .containsExactly(
-            "five",
-            "four", "four", "four", "four", "four",
-            "three", "three", "three", "three", "three",
-            "two", "two"
-        );
+    ListAssert passedTests = assertThat(tla.getPassedTests()).extracting(NAME_EXTRACTOR);
+    passedTests.areExactly(5, new NameCondition("four"));
+    passedTests.areExactly(1, new NameCondition("five"));
+    passedTests.areExactly(5, new NameCondition("three"));
+    passedTests.areExactly(2, new NameCondition("two"));
+
     assertThat(tla.getFailedTests()).extracting(NAME_EXTRACTOR)
         .containsExactly("verify");
   }
@@ -70,15 +71,14 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     tng.run();
 
     assertThat(transformer.getMethodNames()).contains("two", "three", "four", "five", "verify");
+    ListAssert passedTests = assertThat(tla.getPassedTests()).extracting(NAME_EXTRACTOR);
 
-    assertThat(tla.getPassedTests()).extracting(NAME_EXTRACTOR)
-        .containsExactly(
-            "five", "five", "five", "five", "five",
-            "four", "four", "four", "four",
-            "three", "three", "three",
-            "two", "two",
-            "verify"
-        );
+    passedTests.areExactly(4, new NameCondition("four"));
+    passedTests.areExactly(5, new NameCondition("five"));
+    passedTests.areExactly(3, new NameCondition("three"));
+    passedTests.areExactly(2, new NameCondition("two"));
+    passedTests.areExactly(1, new NameCondition("verify"));
+
     assertThat(tla.getFailedTests()).isEmpty();
   }
 
@@ -248,5 +248,16 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
 
     Assert.assertEquals(tla.getPassedTests().size(), 1);
 
+  }
+
+  class NameCondition extends Condition<String> {
+    private String name;
+    public NameCondition(String name) {
+      this.name = name;
+    }
+    @Override
+    public boolean matches(String value) {
+      return name.equals(value);
+    }
   }
 }

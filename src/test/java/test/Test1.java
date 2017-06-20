@@ -8,6 +8,8 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.sample.Sample1;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,7 +38,8 @@ public class Test1 extends SimpleBaseTest {
 
         tng.run();
 
-        assertThat(listener.getSucceedMethodNames()).containsExactly("method1", "method3");
+        List<String> expected = Arrays.asList("method1", "method3");
+        doAssert(listener.getSucceedMethodNames(), expected);
         assertThat(listener.getFailedMethodNames()).isEmpty();
     }
 
@@ -55,7 +58,9 @@ public class Test1 extends SimpleBaseTest {
 
         tng.run();
 
-        assertThat(listener.getSucceedMethodNames()).containsExactly("method1", "method2", "method3");
+        List<String> expected = Arrays.asList("method1", "method2", "method3");
+        doAssert(listener.getSucceedMethodNames(), expected);
+
         assertThat(listener.getFailedMethodNames()).isEmpty();
     }
 
@@ -73,8 +78,8 @@ public class Test1 extends SimpleBaseTest {
         tng.addListener((ITestNGListener) listener);
 
         tng.run();
-
-        assertThat(listener.getSucceedMethodNames()).containsExactly("method1", "broken", "method2", "method3");
+        List<String> expected = Arrays.asList("method1", "broken", "method2", "method3");
+        doAssert(listener.getSucceedMethodNames(), expected);
         assertThat(listener.getFailedMethodNames()).isEmpty();
     }
 
@@ -108,15 +113,18 @@ public class Test1 extends SimpleBaseTest {
         tng.addListener((ITestNGListener) listener);
 
         tng.run();
-
-        assertThat(listener.getSucceedMethodNames()).containsExactly(
+        List<String> expected = Arrays.asList(
                 "broken", "method2",
                 "throwExpectedException1ShouldPass",
                 "throwExpectedException2ShouldPass"
         );
-        assertThat(listener.getFailedMethodNames()).containsExactly(
+        doAssert(listener.getSucceedMethodNames(), expected);
+
+        expected = Arrays.asList(
                 "throwExceptionShouldFail", "verifyLastNameShouldFail"
         );
+
+        doAssert(listener.getFailedMethodNames(), expected);
     }
 
     @Test
@@ -132,7 +140,7 @@ public class Test1 extends SimpleBaseTest {
 
         tng.run();
 
-        assertThat(listener.getSucceedMethodNames()).containsExactly("method1", "method3");
+        doAssert(listener.getSucceedMethodNames(), "method1", "method3");
         assertThat(listener.getFailedMethodNames()).isEmpty();
     }
 
