@@ -371,6 +371,11 @@ public final class ReflectionRecipes {
           arguments.add(queue.poll());
         }
       }
+      if (!queue.backingList.isEmpty()) { // TODO Remove duplication from Paramters#getInjectedParameter
+        throw new TestNGException(injectionMethod.getName()
+            + " don't bind all parameters provided by the data provider. You have to add parameter(s) for "
+            + queue.backingList.toString());
+      }
       final Object[] injectedArray = new Object[arguments.size()];
       return arguments.toArray(injectedArray);
     } else {
