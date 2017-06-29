@@ -28,7 +28,7 @@ public class MethodMatcherException extends TestNGException {
     super(cause);
   }
 
-  private static String generateMessage(final String message, final Method method, final Object[] args) {
+  public static String generateMessage(final String message, final Method method, final Object[] args) {
     final StringBuilder sb = new StringBuilder();
     sb.append(message).append("\n").append("Method: ");
     if (method != null) {
@@ -43,7 +43,7 @@ public class MethodMatcherException extends TestNGException {
       for (int i = 0; i < args.length; i++) {
         final Object arg = args[i];
         if (arg != null) {
-          sb.append("(").append(arg.getClass().getName()).append(")").append(arg);
+          sb.append("(").append(arg.getClass().getName()).append(") ").append(stringify(arg));
         } else {
           sb.append("null");
         }
@@ -57,4 +57,13 @@ public class MethodMatcherException extends TestNGException {
     }
     return sb.toString();
   }
+
+  private static String stringify(Object object) {
+    if (object.getClass().isArray()) {
+      return Arrays.toString((Object[]) object);
+    } else {
+      return object.toString();
+    }
+  }
+
 }

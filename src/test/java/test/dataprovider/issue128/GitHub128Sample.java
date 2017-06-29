@@ -1,4 +1,4 @@
-package test.dataprovider;
+package test.dataprovider.issue128;
 
 import java.lang.reflect.Method;
 import org.testng.Assert;

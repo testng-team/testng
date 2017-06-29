@@ -17,7 +17,7 @@ Fixed: GITHUB-1144: Add Class and Constructor as legal native dependency injecti
 Fixed: GITHUB-1380: Circular dependencies may fail in parallel (Julien Herr)
 Fixed: GITHUB-1400: TestNG, Multiple duplicate listener warnings on implementing multiple listener interfaces (@bipo1980 & Nick Tan)
 Fixed: GITHUB-1426: @AfterMethod(alwaysRun = true) is not getting called if we have exception in @BeforeMethod (@dipak-pawar)
-Fixed: GITHUB-128: Using Object[] and Method as parameters for a test in a certain order yields an IllegalArgumentException, citing a type mismatch (@leef590 & Julien Herr)
+Fixed: GITHUB-128: Using Object[] and Method as parameters for a test in a certain order yields an IllegalArgumentException, citing a type mismatch (@leef590 & Julien Herr,Krishnan Mahadevan)
 
 6.11
 2017/02/27
