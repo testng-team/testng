@@ -33,6 +33,7 @@ public class DataProviderParametersMismatchTest extends SimpleBaseTest {
             System.setProperty("strictParameterMatch", "false");
         }
     }
+
     @Test(dependsOnMethods = "testIfWarningsAreServed")
     public void testIfExceptionIsRaised() {
         try {

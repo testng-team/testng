@@ -2,12 +2,30 @@ package test.dataprovider.issue128;
 
 import java.lang.reflect.Method;
 import org.testng.Assert;
+import org.testng.ITestContext;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.NoInjection;
 import org.testng.annotations.Test;
 
 // TODO add the sample in a test and in the suite
 public class GitHub128Sample {
+
+  @BeforeClass
+  public void beforeClass(ITestContext ctx) {
+    Assert.assertNotNull(ctx);
+  }
+
+  @BeforeMethod
+  public void beforeMethod() {
+    //Ensuring that a no-arg configuration method doesn't trigger any errors.
+  }
+
+  @Test
+  public void testMethod(ITestContext ctx) {
+    Assert.assertNotNull(ctx);
+  }
 
   @DataProvider(name = "methods")
   public Object[][] getMethods() throws NoSuchMethodException {

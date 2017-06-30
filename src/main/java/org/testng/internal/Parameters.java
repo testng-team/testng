@@ -114,7 +114,7 @@ public class Parameters {
       Map<String, String> params, XmlSuite xmlSuite)
   {
     return createParameters(ctor.toString(), ctor.getParameterTypes(),
-        finder.findOptionalValues(ctor), methodAnnotation, finder, parameterNames,
+        finder.findOptionalValues(ctor), methodAnnotation, parameterNames,
             new MethodParameters(params, Collections.<String, String>emptyMap()),
             xmlSuite);
   }
@@ -190,54 +190,59 @@ public class Parameters {
       Class[] parameterTypes,
       String[] optionalValues,
       String methodAnnotation,
-      IAnnotationFinder finder,
       String[] parameterNames, MethodParameters params, XmlSuite xmlSuite)
   {
     Object[] result = new Object[0];
-    if(parameterTypes.length > 0) {
-      List<Object> vResult = Lists.newArrayList();
+    if (parameterTypes.length == 0) {
+      return result;
+    }
+    List<Object> vResult = Lists.newArrayList();
 
-      checkParameterTypes(methodName, parameterTypes, methodAnnotation, parameterNames);
+    checkParameterTypes(methodName, parameterTypes, methodAnnotation, parameterNames);
 
-      for(int i = 0, j = 0; i < parameterTypes.length; i++) {
-        Object inject = getInjectedParameter(parameterTypes[i], params.currentTestMethod,
-            params.context, params.testResult);
-        if (inject != null) {
-          vResult.add(inject);
-        }
-        else {
-          if (j < parameterNames.length) {
-            String p = parameterNames[j];
-            String value = params.xmlParameters.get(p);
-            if(null == value) {
-              // try SysEnv entries
-              value= System.getProperty(p);
+    for (int i = 0, j = 0; i < parameterTypes.length; i++) {
+      //Do not perform native injection for Test methods because they happen downstream later
+      //If we do native injection here also, we end up doing double injection.
+      Object inject = canInject(methodAnnotation) ? getInjectedParameter(parameterTypes[i], params.currentTestMethod,
+              params.context, params.testResult) : null;
+      if (inject != null) {
+        vResult.add(inject);
+      } else {
+        if (j < parameterNames.length) {
+          String p = parameterNames[j];
+          String value = params.xmlParameters.get(p);
+          if (null == value) {
+            // try SysEnv entries
+            value = System.getProperty(p);
+          }
+          if (null == value) {
+            if (optionalValues != null) {
+              value = optionalValues[i];
             }
             if (null == value) {
-              if (optionalValues != null) {
-                value = optionalValues[i];
-              }
-              if (null == value) {
               throw new TestNGException("Parameter '" + p + "' is required by "
-                  + methodAnnotation
-                  + " on method "
-                  + methodName
-                  + " but has not been marked @Optional or defined\n"
-                  + (xmlSuite.getFileName() != null ? "in "
-                  + xmlSuite.getFileName() : ""));
-              }
+                      + methodAnnotation
+                      + " on method "
+                      + methodName
+                      + " but has not been marked @Optional or defined\n"
+                      + (xmlSuite.getFileName() != null ? "in "
+                      + xmlSuite.getFileName() : ""));
             }
-
-            vResult.add(convertType(parameterTypes[i], value, p));
-            j++;
           }
+
+          vResult.add(convertType(parameterTypes[i], value, p));
+          j++;
         }
       }
-
-      result = vResult.toArray(new Object[vResult.size()]);
     }
 
+    result = vResult.toArray(new Object[vResult.size()]);
+
     return result;
+  }
+
+  private static boolean canInject(String annotation) {
+    return !("@" + Test.class.getSimpleName()).equalsIgnoreCase(annotation);
   }
 
   private static void checkParameterTypes(String methodName,
@@ -492,7 +497,7 @@ public class Parameters {
     if(null != annotation) {
       String[] parameterNames = annotation.getValue();
       extraParameters = createParameters(m.getName(), types,
-          finder.findOptionalValues(m), atName, finder, parameterNames, params, xmlSuite);
+          finder.findOptionalValues(m), atName, parameterNames, params, xmlSuite);
     }
 
     //
@@ -503,11 +508,11 @@ public class Parameters {
       if(null != a && a.getParameters().length > 0) {
         String[] parameterNames = a.getParameters();
         extraParameters = createParameters(m.getName(), types,
-            finder.findOptionalValues(m), atName, finder, parameterNames, params, xmlSuite);
+            finder.findOptionalValues(m), atName, parameterNames, params, xmlSuite);
       }
       else {
         extraParameters = createParameters(m.getName(), types,
-            finder.findOptionalValues(m), atName, finder, new String[0], params, xmlSuite);
+            finder.findOptionalValues(m), atName, new String[0], params, xmlSuite);
       }
     }
 
