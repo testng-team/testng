@@ -26,6 +26,9 @@ import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IDataProvidable;
 import org.testng.internal.collections.ArrayIterator;
+import org.testng.internal.reflect.InjectableParameter;
+import org.testng.internal.reflect.Parameter;
+import org.testng.internal.reflect.ReflectionRecipes;
 import org.testng.util.Strings;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -113,7 +116,8 @@ public class Parameters {
       String[] parameterNames,
       Map<String, String> params, XmlSuite xmlSuite)
   {
-    return createParameters(ctor.toString(), ctor.getParameterTypes(),
+
+    return createParametersForConstructor(ctor, ctor.getParameterTypes(),
         finder.findOptionalValues(ctor), methodAnnotation, parameterNames,
             new MethodParameters(params, Collections.<String, String>emptyMap()),
             xmlSuite);
@@ -164,6 +168,10 @@ public class Parameters {
 
   ////////////////////////////////////////////////////////
 
+  /**
+   * @deprecated - This method stands deprecated as of TestNG v6.11. There are no alternatives.
+   */
+  @Deprecated
   public static Object getInjectedParameter(Class<?> c, Method method, ITestContext context,
       ITestResult testResult) {
     Object result = null;
@@ -182,11 +190,78 @@ public class Parameters {
     return result;
   }
 
+  private static Object[] createParametersForConstructor(Constructor constructor,
+                                                         Class[] parameterTypes,
+                                                         String[] optionalValues,
+                                                         String methodAnnotation,
+                                                         String[] parameterNames, MethodParameters params, XmlSuite xmlSuite) {
+    Object[] result = new Object[0];
+    if (parameterTypes.length == 0) {
+      return result;
+    }
+    List<Object> vResult = Lists.newArrayList();
+
+    checkParameterTypes(constructor.getName(), parameterTypes, methodAnnotation, parameterNames);
+    Parameter[] paramsArray = ReflectionRecipes.getConstructorParameters(constructor);
+    if (canInject(methodAnnotation)) {
+      Object[] inject = ReflectionRecipes.inject(paramsArray, InjectableParameter.Assistant.ALL_INJECTS,
+              new Object[0], constructor, params.context, params.testResult);
+      if (inject != null) {
+        vResult.addAll(Arrays.asList(inject));
+      }
+    }
+    List<Object> consParams = createParams(constructor.getName(), "constructor", methodAnnotation,
+            parameterTypes, optionalValues, parameterNames, params, xmlSuite);
+    vResult.addAll(consParams);
+
+    return vResult.toArray(new Object[vResult.size()]);
+  }
+
+  private static List<Object> createParams(String name,
+                                       String prefix,
+                                       String methodAnnotation,
+                                       Class[] parameterTypes,
+                                       String[] optionalValues,
+                                       String[] parameterNames,
+                                       MethodParameters params,
+                                       XmlSuite xmlSuite) {
+    List<Object> vResult = Lists.newArrayList();
+    for (int i = 0, j = 0; i < parameterTypes.length; i++) {
+      if (j < parameterNames.length) {
+        String p = parameterNames[j];
+        String value = params.xmlParameters.get(p);
+        if (null == value) {
+          // try SysEnv entries
+          value = System.getProperty(p);
+        }
+        if (null == value) {
+          if (optionalValues != null) {
+            value = optionalValues[i];
+          }
+          if (null == value) {
+            throw new TestNGException("Parameter '" + p + "' is required by "
+                    + methodAnnotation
+                    + " on " + prefix + " "
+                    + name
+                    + " but has not been marked @Optional or defined\n"
+                    + (xmlSuite.getFileName() != null ? "in "
+                    + xmlSuite.getFileName() : ""));
+          }
+        }
+
+        vResult.add(convertType(parameterTypes[i], value, p));
+        j++;
+      }
+    }
+
+    return vResult;
+  }
+
   /**
    * @return An array of parameters suitable to invoke this method, possibly
    * picked from the property file
    */
-  private static Object[] createParameters(String methodName,
+  private static Object[] createParametersForMethod(Method method,
       Class[] parameterTypes,
       String[] optionalValues,
       String methodAnnotation,
@@ -198,47 +273,20 @@ public class Parameters {
     }
     List<Object> vResult = Lists.newArrayList();
 
-    checkParameterTypes(methodName, parameterTypes, methodAnnotation, parameterNames);
-
-    for (int i = 0, j = 0; i < parameterTypes.length; i++) {
-      //Do not perform native injection for Test methods because they happen downstream later
-      //If we do native injection here also, we end up doing double injection.
-      Object inject = canInject(methodAnnotation) ? getInjectedParameter(parameterTypes[i], params.currentTestMethod,
-              params.context, params.testResult) : null;
+    checkParameterTypes(method.getName(), parameterTypes, methodAnnotation, parameterNames);
+    Parameter[] paramsArray = ReflectionRecipes.getMethodParameters(method);
+    if (canInject(methodAnnotation)) {
+      Object[] inject = ReflectionRecipes.inject(paramsArray, InjectableParameter.Assistant.ALL_INJECTS,
+              new Object[0], params.currentTestMethod, params.context, params.testResult);
       if (inject != null) {
-        vResult.add(inject);
-      } else {
-        if (j < parameterNames.length) {
-          String p = parameterNames[j];
-          String value = params.xmlParameters.get(p);
-          if (null == value) {
-            // try SysEnv entries
-            value = System.getProperty(p);
-          }
-          if (null == value) {
-            if (optionalValues != null) {
-              value = optionalValues[i];
-            }
-            if (null == value) {
-              throw new TestNGException("Parameter '" + p + "' is required by "
-                      + methodAnnotation
-                      + " on method "
-                      + methodName
-                      + " but has not been marked @Optional or defined\n"
-                      + (xmlSuite.getFileName() != null ? "in "
-                      + xmlSuite.getFileName() : ""));
-            }
-          }
-
-          vResult.add(convertType(parameterTypes[i], value, p));
-          j++;
-        }
+        vResult.addAll(Arrays.asList(inject));
       }
     }
 
-    result = vResult.toArray(new Object[vResult.size()]);
-
-    return result;
+    List<Object> consParams = createParams(method.getName(), "method", methodAnnotation, parameterTypes,
+            optionalValues, parameterNames, params, xmlSuite);
+    vResult.addAll(consParams);
+    return vResult.toArray(new Object[vResult.size()]);
   }
 
   private static boolean canInject(String annotation) {
@@ -496,7 +544,7 @@ public class Parameters {
     Class<?>[] types = m.getParameterTypes();
     if(null != annotation) {
       String[] parameterNames = annotation.getValue();
-      extraParameters = createParameters(m.getName(), types,
+      extraParameters = createParametersForMethod(m, types,
           finder.findOptionalValues(m), atName, parameterNames, params, xmlSuite);
     }
 
@@ -507,12 +555,11 @@ public class Parameters {
       IParameterizable a = (IParameterizable) finder.findAnnotation(m, annotationClass);
       if(null != a && a.getParameters().length > 0) {
         String[] parameterNames = a.getParameters();
-        extraParameters = createParameters(m.getName(), types,
+        extraParameters = createParametersForMethod(m, types,
             finder.findOptionalValues(m), atName, parameterNames, params, xmlSuite);
       }
       else {
-        extraParameters = createParameters(m.getName(), types,
-            finder.findOptionalValues(m), atName, new String[0], params, xmlSuite);
+        extraParameters = createParametersForMethod(m, types, finder.findOptionalValues(m), atName, new String[0], params, xmlSuite);
       }
     }
 
