@@ -1,4 +1,5 @@
 Current
+New: Enhance XML Reporter to be able to customize the file name (Krishnan Mahadevan)
 Fixed: GITHUB-1417: Class param injection is not working with @BeforeClass (Krishnan Mahadevan)
 Fixed: GITHUB-1440: Improve error message when wrong params on configuration methods (Krishnan Mahadevan)
 Fixed: GITHUB-1433: Missing encoding for emailable reports (Shaburov Oleg)
