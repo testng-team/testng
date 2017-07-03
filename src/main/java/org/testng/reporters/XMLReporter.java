@@ -26,7 +26,7 @@ import java.util.TimeZone;
 public class XMLReporter implements IReporter {
 
   public static final String FILE_NAME = "testng-results.xml";
-  private static final String JVM_ARG = "xml.report.name";
+  private static final String JVM_ARG = "testng.report.xml.name";
 
 
   private final XMLReporterConfig config = new XMLReporterConfig();
