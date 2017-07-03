@@ -26,6 +26,8 @@ import java.util.TimeZone;
 public class XMLReporter implements IReporter {
 
   public static final String FILE_NAME = "testng-results.xml";
+  private static final String JVM_ARG = "xml.report.name";
+
 
   private final XMLReporterConfig config = new XMLReporterConfig();
   private XMLStringBuffer rootBuffer;
@@ -68,7 +70,11 @@ public class XMLReporter implements IReporter {
       writeSuite(suite);
     }
     rootBuffer.pop();
-    Utils.writeUtf8File(config.getOutputDirectory(), FILE_NAME, rootBuffer, null /* no prefix */);
+    Utils.writeUtf8File(config.getOutputDirectory(), fileName(), rootBuffer, null /* no prefix */);
+  }
+
+  private static final String fileName() {
+    return System.getProperty(JVM_ARG, FILE_NAME);
   }
 
   private void writeReporterOutput(XMLStringBuffer xmlBuffer) {
