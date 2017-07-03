@@ -191,19 +191,19 @@ public class Parameters {
   }
 
   private static Object[] createParametersForConstructor(Constructor constructor,
-                                                         Class[] parameterTypes,
+                                                         Class<?>[] parameterTypes,
                                                          String[] optionalValues,
                                                          String methodAnnotation,
                                                          String[] parameterNames, MethodParameters params, XmlSuite xmlSuite) {
-    Object[] result = new Object[0];
     if (parameterTypes.length == 0) {
-      return result;
+      return new Object[0];
     }
-    List<Object> vResult = Lists.newArrayList();
 
     checkParameterTypes(constructor.getName(), parameterTypes, methodAnnotation, parameterNames);
-    Parameter[] paramsArray = ReflectionRecipes.getConstructorParameters(constructor);
+    List<Object> vResult = Lists.newArrayList();
+
     if (canInject(methodAnnotation)) {
+      Parameter[] paramsArray = ReflectionRecipes.getConstructorParameters(constructor);
       Object[] inject = ReflectionRecipes.inject(paramsArray, InjectableParameter.Assistant.ALL_INJECTS,
               new Object[0], constructor, params.context, params.testResult);
       if (inject != null) {
@@ -220,7 +220,7 @@ public class Parameters {
   private static List<Object> createParams(String name,
                                        String prefix,
                                        String methodAnnotation,
-                                       Class[] parameterTypes,
+                                       Class<?>[] parameterTypes,
                                        String[] optionalValues,
                                        String[] parameterNames,
                                        MethodParameters params,
@@ -262,20 +262,20 @@ public class Parameters {
    * picked from the property file
    */
   private static Object[] createParametersForMethod(Method method,
-      Class[] parameterTypes,
+      Class<?>[] parameterTypes,
       String[] optionalValues,
       String methodAnnotation,
       String[] parameterNames, MethodParameters params, XmlSuite xmlSuite)
   {
-    Object[] result = new Object[0];
     if (parameterTypes.length == 0) {
-      return result;
+      return new Object[0];
     }
-    List<Object> vResult = Lists.newArrayList();
 
     checkParameterTypes(method.getName(), parameterTypes, methodAnnotation, parameterNames);
-    Parameter[] paramsArray = ReflectionRecipes.getMethodParameters(method);
+    List<Object> vResult = Lists.newArrayList();
+
     if (canInject(methodAnnotation)) {
+      Parameter[] paramsArray = ReflectionRecipes.getMethodParameters(method);
       Object[] inject = ReflectionRecipes.inject(paramsArray, InjectableParameter.Assistant.ALL_INJECTS,
               new Object[0], params.currentTestMethod, params.context, params.testResult);
       if (inject != null) {
@@ -294,7 +294,7 @@ public class Parameters {
   }
 
   private static void checkParameterTypes(String methodName,
-      Class[] parameterTypes, String methodAnnotation, String[] parameterNames)
+      Class<?>[] parameterTypes, String methodAnnotation, String[] parameterNames)
   {
     int totalLength = parameterTypes.length;
     Set<Class> injectedTypes = new HashSet<Class>() {

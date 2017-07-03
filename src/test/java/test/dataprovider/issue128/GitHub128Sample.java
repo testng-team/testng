@@ -9,7 +9,6 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.NoInjection;
 import org.testng.annotations.Test;
 
-// TODO add the sample in a test and in the suite
 public class GitHub128Sample {
 
   @BeforeClass
