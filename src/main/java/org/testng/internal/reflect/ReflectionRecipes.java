@@ -7,6 +7,7 @@ import org.testng.annotations.NoInjection;
 import org.testng.xml.XmlTest;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -143,17 +144,31 @@ public final class ReflectionRecipes {
    * @return extracted method parameters.
    */
   public static Parameter[] getMethodParameters(final Method method) {
-    if (method != null) {
-      final Class<?> parametersTypes[] = method.getParameterTypes();
-      final Annotation[][] parametersAnnotations = method.getParameterAnnotations();
-      final Parameter[] parameters = new Parameter[parametersTypes.length];
-      for (int i = 0; i < parametersTypes.length; i++) {
-        parameters[i] = new Parameter(i, parametersTypes[i], parametersAnnotations[i]);
-      }
-      return parameters;
-    } else {
+    if (method == null) {
       return null;
     }
+    return getParameters(method.getParameterTypes(), method.getParameterAnnotations());
+  }
+
+  /**
+   * Extracts constructor parameters.
+   *
+   * @param constructor any valid constructor.
+   * @return extracted constructor parameters.
+   */
+  public static Parameter[] getConstructorParameters(final Constructor constructor) {
+    if (constructor == null) {
+      return null;
+    }
+    return getParameters(constructor.getParameterTypes(), constructor.getParameterAnnotations());
+  }
+
+  private static Parameter[] getParameters(Class<?>[] parametersTypes, final Annotation[][] parametersAnnotations) {
+    final Parameter[] parameters = new Parameter[parametersTypes.length];
+    for (int i = 0; i < parametersTypes.length; i++) {
+      parameters[i] = new Parameter(i, parametersTypes[i], parametersAnnotations[i]);
+    }
+    return parameters;
   }
 
   /**
@@ -331,51 +346,94 @@ public final class ReflectionRecipes {
                                 final Method injectionMethod,
                                 final ITestContext context,
                                 final ITestResult testResult) {
-    if (filters != null && !filters.isEmpty()) {
-      final ArrayList<Object> arguments = new ArrayList<>(args.length);
-      final ListBackedImmutableQueue<Object> queue = new ListBackedImmutableQueue<>(args);
-      boolean firstMethodInjected = false;
-      for (final Parameter parameter : parameters) {
-        boolean inject = false;
-        Object injectObject = null;
-        for (final InjectableParameter injectableParameter : filters) {
-          inject = canInject(parameter, injectableParameter);
-          switch (injectableParameter) {
-            case CURRENT_TEST_METHOD:
-              injectObject = injectionMethod;
-              if (inject && !firstMethodInjected) {
-                firstMethodInjected = true;
-              } else {
-                inject = false;
-              }
-              break;
-            case ITEST_CONTEXT:
-              injectObject = context;
-              break;
-            case ITEST_RESULT:
-              injectObject = testResult;
-              break;
-            case XML_TEST:
-              injectObject = context != null ? context.getCurrentXmlTest() : null;
-              break;
-            default:
-              break;
-          }
-          if (inject) {
-            arguments.add(injectObject);
-            break;
-          }
-        }
+    return nativelyInject(parameters, filters, args, injectionMethod, context, testResult);
+  }
 
-        if (!inject) {
-          arguments.add(queue.poll());
-        }
-      }
-      final Object[] injectedArray = new Object[arguments.size()];
-      return arguments.toArray(injectedArray);
-    } else {
+  private static Object[] nativelyInject(final Parameter[] parameters, final Set<InjectableParameter> filters,
+                                         final Object[] args,
+                                         final Object injectionMethod,
+                                         final ITestContext context,
+                                         final ITestResult testResult) {
+    if (filters == null || filters.isEmpty()) {
       return args;
     }
+    final ArrayList<Object> arguments = new ArrayList<>(args.length);
+    final ListBackedImmutableQueue<Object> queue = new ListBackedImmutableQueue<>(args);
+    boolean firstMethodInjected = false;
+    for (final Parameter parameter : parameters) {
+      boolean inject = false;
+      Object injectObject = null;
+      for (final InjectableParameter injectableParameter : filters) {
+        inject = canInject(parameter, injectableParameter);
+        switch (injectableParameter) {
+          case CURRENT_TEST_METHOD:
+            injectObject = injectionMethod;
+            if (inject && !firstMethodInjected) {
+              firstMethodInjected = true;
+            } else {
+              inject = false;
+            }
+            break;
+          case ITEST_CONTEXT:
+            injectObject = context;
+            break;
+          case ITEST_RESULT:
+            injectObject = testResult;
+            break;
+          case XML_TEST:
+            injectObject = context != null ? context.getCurrentXmlTest() : null;
+            break;
+          default:
+            break;
+        }
+        if (inject) {
+          arguments.add(injectObject);
+          break;
+        }
+      }
+
+      if (!inject && !queue.backingList.isEmpty()) {
+        arguments.add(queue.poll());
+      }
+    }
+    if (!queue.backingList.isEmpty()) {
+      String prefix = "Missing one or more parameters that are being injected by the data provider. " +
+              "Please add the below arguments to the ";
+      String msg = null;
+      if (injectionMethod instanceof Method) {
+        msg = MethodMatcherException.generateMessage(prefix + "method.", (Method) injectionMethod, queue.backingList.toArray());
+      } else if (injectionMethod instanceof Constructor) {
+        msg = MethodMatcherException.generateMessage(prefix + "constructor.", (Constructor) injectionMethod, queue.backingList.toArray());
+      }
+
+      boolean block = Boolean.parseBoolean(System.getProperty("strictParameterMatch"));
+      if (block) {
+        throw new MethodMatcherException(msg);
+      } else {
+        System.err.println(":::WARNING:::\n" + msg);
+      }
+    }
+    final Object[] injectedArray = new Object[arguments.size()];
+    return arguments.toArray(injectedArray);
+  }
+
+  /**
+   * Injects appropriate arguments.
+   *
+   * @param parameters      array of parameter instances under question.
+   * @param filters         filters to use.
+   * @param args            user supplied arguments.
+   * @param constructor current test method.
+   * @param context         current test context.
+   * @param testResult      on going test results.
+   * @return injected arguments.
+   */
+  public static Object[] inject(final Parameter[] parameters, final Set<InjectableParameter> filters,
+                                final Object[] args,
+                                final Constructor constructor,
+                                final ITestContext context,
+                                final ITestResult testResult) {
+    return nativelyInject(parameters, filters, args, constructor, context, testResult);
   }
 
   private static boolean canInject(final Parameter parameter, final InjectableParameter injectableParameter) {
@@ -408,15 +466,12 @@ public final class ReflectionRecipes {
   private static class ListBackedImmutableQueue<T> {
     private final List<T> backingList;
 
-    public ListBackedImmutableQueue(final T[] elements) {
+    ListBackedImmutableQueue(final T[] elements) {
       backingList = new ArrayList<>(elements.length);
-      for (int i = 0; i < elements.length; i++) {
-        // to ensure fifo & hold nulls
-        backingList.add(elements[i]);
-      }
+      Collections.addAll(backingList, elements);
     }
 
-    public T poll() {
+    T poll() {
       if (!backingList.isEmpty()) {
         return backingList.remove(0);
       }

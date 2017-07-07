@@ -192,7 +192,7 @@ public class ReflectionRecipesTest {
     System.out.println("args: " + Arrays.asList(args));
     final Object[] injectedArgs = ReflectionRecipes.inject(
       parameters, InjectableParameter.Assistant.ALL_INJECTS, args,
-      null, null, null
+            (Method)null, null, null
     );
     System.out.println("injectedArgs: " + Arrays.asList(injectedArgs));
     Assert.assertEquals(injectedArgs.length, parameters.length);
