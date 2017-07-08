@@ -7,6 +7,7 @@ import org.testng.collections.Lists;
 
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
+import test.listeners.github1393.Listener1393;
 import test.listeners.github956.ListenerFor956;
 import test.listeners.github956.TestClassContainer;
 
@@ -249,4 +250,14 @@ public class ListenerTest extends SimpleBaseTest {
     Assert.assertEquals(messages.get(0), "Executing test956");
   }
 
+  @Test(description = "GITHUB-1393: fail a test from onTestStart method")
+  public void testFailATestFromOnTestStart() {
+    TestNG tng = create(SimpleSample.class);
+    TestListenerAdapter adapter = new TestListenerAdapter();
+    tng.addListener((ITestNGListener) adapter);
+    tng.addListener(new Listener1393());
+    tng.run();
+    Assert.assertEquals(adapter.getPassedTests().size(), 0);
+    Assert.assertEquals(adapter.getFailedTests().size(), 1);
+  }
 }
