@@ -815,11 +815,18 @@
       <class name="test.thread.parallelization.ParallelByMethodsTestCase8Scenario1"/>
     </classes>
   </test>
+
   <!--This test depends on System properties. So its intentionally being run at the end
   because the toggling of the system property will affect other tests -->
   <test name = "RunAtLast">
     <classes>
       <class name="test.dataprovider.issue128.DataProviderParametersMismatchTest"/>
+    </classes>
+  </test>
+
+  <test name="RunOrderingTest">
+    <classes>
+      <class name="test.github799.EnsureInstancesAreOrderedViaFactories"/>
     </classes>
   </test>
 </suite>

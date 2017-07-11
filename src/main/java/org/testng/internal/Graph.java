@@ -6,6 +6,7 @@ import org.testng.collections.Maps;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -121,7 +122,10 @@ public class Graph<T> {
     // Sort the nodes alphabetically to make sure that methods of the same class
     // get run close to each other as much as possible
     //
-    Collections.sort(nodes2);
+    Comparator<Node> comparator = Systematiser.getComparator();
+    if (comparator != null) {
+      Collections.sort(nodes2, comparator);
+    }
 
     //
     // Sort
@@ -160,7 +164,10 @@ public class Graph<T> {
       // Ideally, we should not have to sort this. However, due to a bug where it treats all the methods as
       // dependent nodes. Therefore, all the nodes were mostly sorted alphabetically. So we need to keep
       // the behavior for now.
-      Collections.sort(list);
+      Comparator<Node> comparator = Systematiser.getComparator();
+      if (comparator != null) {
+        Collections.sort(list, comparator);
+      }
       m_independentNodes = Maps.newLinkedHashMap();
       for (Node<T> node : list) {
         m_independentNodes.put(node.getObject(), node);
@@ -255,7 +262,7 @@ public class Graph<T> {
   /////
   // class Node
   //
-  public static class Node<T> implements Comparable<Node<T>> {
+  public static class Node<T>  {
     private T m_object = null;
     private Map<T, T> m_predecessors = Maps.newHashMap();
 
@@ -335,9 +342,5 @@ public class Graph<T> {
       return m_predecessors.containsKey(m);
     }
 
-    @Override
-    public int compareTo(Node<T> o) {
-      return getObject().toString().compareTo(o.getObject().toString());
-    }
   }
 }
