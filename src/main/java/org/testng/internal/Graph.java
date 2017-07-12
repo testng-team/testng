@@ -122,10 +122,7 @@ public class Graph<T> {
     // Sort the nodes alphabetically to make sure that methods of the same class
     // get run close to each other as much as possible
     //
-    Comparator<Node> comparator = Systematiser.getComparator();
-    if (comparator != null) {
-      Collections.sort(nodes2, comparator);
-    }
+    Collections.sort(nodes2, Systematiser.getComparator());
 
     //
     // Sort
@@ -164,10 +161,8 @@ public class Graph<T> {
       // Ideally, we should not have to sort this. However, due to a bug where it treats all the methods as
       // dependent nodes. Therefore, all the nodes were mostly sorted alphabetically. So we need to keep
       // the behavior for now.
-      Comparator<Node> comparator = Systematiser.getComparator();
-      if (comparator != null) {
-        Collections.sort(list, comparator);
-      }
+      Collections.sort(list, Systematiser.getComparator());
+
       m_independentNodes = Maps.newLinkedHashMap();
       for (Node<T> node : list) {
         m_independentNodes.put(node.getObject(), node);

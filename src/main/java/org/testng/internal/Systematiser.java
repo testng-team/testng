@@ -4,32 +4,18 @@ import org.testng.ITestNGMethod;
 
 import java.util.Comparator;
 
-public class Systematiser {
+public final class Systematiser {
 
     private Systematiser() {
         //Utility class. Defeat instantiation.
     }
 
     public static Comparator<Graph.Node> getComparator() {
-        Comparator<Graph.Node> comparator = null;
+        Comparator<Graph.Node> comparator;
         String text = System.getProperty("testng.order", Order.INSTANCES.getValue());
 
         Order order = Order.parse(text);
         switch (order) {
-            case INSTANCES:
-                comparator = new Comparator<Graph.Node>() {
-                    @Override
-                    public int compare(Graph.Node o1, Graph.Node o2) {
-                        return o1.getObject().toString().compareTo(o2.getObject().toString());
-                    }
-
-                    @Override
-                    public String toString() {
-                        return "Instance_Names";
-                    }
-                };
-                break;
-
             case METHOD_NAMES:
                 comparator = new Comparator<Graph.Node>() {
                     @Override
@@ -50,7 +36,34 @@ public class Systematiser {
                 break;
 
             case NONE:
+                //Disables sorting by providing a dummy comparator which always regards two elements as equal.
+                comparator = new Comparator<Graph.Node>() {
+                    @Override
+                    public int compare(Graph.Node o1, Graph.Node o2) {
+                        return 0;
+                    }
+
+                    @Override
+                    public String toString() {
+                        return "No_Sorting";
+                    }
+                };
+                break;
+
             default:
+            case INSTANCES:
+                comparator = new Comparator<Graph.Node>() {
+                    @Override
+                    public int compare(Graph.Node o1, Graph.Node o2) {
+                        return o1.getObject().toString().compareTo(o2.getObject().toString());
+                    }
+
+                    @Override
+                    public String toString() {
+                        return "Instance_Names";
+                    }
+                };
+
         }
 
         return comparator;
