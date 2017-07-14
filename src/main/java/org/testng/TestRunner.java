@@ -1198,15 +1198,11 @@ public class TestRunner
    */
   private void fireEvent(boolean isStart) {
     for (ITestListener itl : m_testListeners) {
-      try {
-        if (isStart) {
-          itl.onStart(this);
-        }
-        else {
-          itl.onFinish(this);
-        }
-      } catch (Exception e) {
-        e.printStackTrace();
+      if (isStart) {
+        itl.onStart(this);
+      }
+      else {
+        itl.onFinish(this);
       }
     }
   }
