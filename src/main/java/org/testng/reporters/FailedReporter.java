@@ -12,6 +12,7 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.MethodHelper;
+import org.testng.internal.Systematiser;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
@@ -94,7 +95,8 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
           continue;
         }
         methodsToReRun.add(current);
-        List<ITestNGMethod> methodsDependedUpon = MethodHelper.getMethodsDependedUpon(current, context.getAllTestMethods());
+        List<ITestNGMethod> methodsDependedUpon = MethodHelper.getMethodsDependedUpon(current,
+            context.getAllTestMethods(), Systematiser.getComparator());
 
         for (ITestNGMethod m : methodsDependedUpon) {
           if (m.isTest()) {

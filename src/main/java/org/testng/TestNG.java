@@ -32,6 +32,7 @@ import org.testng.internal.IConfiguration;
 import org.testng.internal.IResultListener2;
 import org.testng.internal.OverrideProcessor;
 import org.testng.internal.SuiteRunnerMap;
+import org.testng.internal.Systematiser;
 import org.testng.internal.Utils;
 import org.testng.internal.Version;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
@@ -1393,7 +1394,7 @@ public class TestNG {
         m_methodInterceptors,
         m_invokedMethodListeners.values(),
         m_testListeners.values(),
-        m_classListeners.values());
+        m_classListeners.values(), Systematiser.getComparator());
 
     for (ISuiteListener isl : m_suiteListeners.values()) {
       result.addListener(isl);

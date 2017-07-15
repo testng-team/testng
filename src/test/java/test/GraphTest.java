@@ -1,24 +1,28 @@
 package test;
 
+import java.util.Comparator;
 import org.testng.Assert;
 import org.testng.TestNGException;
 import org.testng.annotations.Test;
 import org.testng.internal.Graph;
+import org.testng.internal.Graph.Node;
 import org.testng.internal.Tarjan;
 
 import java.util.List;
 
-
-/**
- * This class
- *
- * @author cbeust
- */
 public class GraphTest {
+
+  private static final Comparator<Node<String>> COMPARATOR = new Comparator<Node<String>>() {
+
+    @Override
+    public int compare(Node<String> o1, Node<String> o2) {
+      return o1.getObject().compareTo(o2.getObject());
+    }
+  };
 
   @Test
   public void sort() {
-    Graph<String> g = new Graph<>();
+    Graph<String> g = new Graph<>(COMPARATOR);
     g.addNode("3");
     g.addNode("1");
     g.addNode("2.2");
@@ -70,7 +74,7 @@ public class GraphTest {
   }
 
   private Graph<String> createCyclicGraph() {
-    Graph<String> g = new Graph<>();
+    Graph<String> g = new Graph<>(COMPARATOR);
     g.addNode("3");
     g.addNode("2");
     g.addNode("1");
@@ -84,7 +88,7 @@ public class GraphTest {
 
   @Test
   public void findPredecessors() {
-    Graph<String> g = new Graph<>();
+    Graph<String> g = new Graph<>(COMPARATOR);
     g.addNode("3");
     g.addNode("1");
     g.addNode("2.2");
@@ -146,7 +150,7 @@ public class GraphTest {
   //
   @Test(timeOut = 5000) // If this takes more than 5 seconds we've definitely regressed.
   public void findPredecessorsTiming() {
-    Graph<String> g = new Graph<>();
+    Graph<String> g = new Graph<>(COMPARATOR);
 
     final String rootNode = "myroot";
     final String independentNode = "independent";
