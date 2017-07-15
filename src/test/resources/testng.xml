@@ -158,6 +158,7 @@
       <class name="test.listeners.github1319.TestResultInstanceCheckTest"/>
       <class name="test.testng1396.ParallelByInstancesInterceptorTest"/>
       <class name="test.github1417.TestParamsInjectionInBeforeClass"/>
+      <class name="test.order.OrderTest" />
     </classes>
   </test>
 
