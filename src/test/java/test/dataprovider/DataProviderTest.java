@@ -310,4 +310,13 @@ public class DataProviderTest extends SimpleBaseTest {
     Throwable exception = listener.getResult("theTest").getThrowable();
     assertThat(exception).isInstanceOf(MethodMatcherException.class);
   }
+
+  @Test
+  public void mixedVarArgsDataProviderTest() {
+    InvokedMethodNameListener listener = run(GitHub513Sample.class);
+
+    assertThat(listener.getSucceedMethodNames()).containsExactly(
+        "test(a,b,[c,d])"
+    );
+  }
 }
