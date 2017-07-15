@@ -2,6 +2,7 @@ package org.testng.internal;
 
 
 import java.lang.reflect.Method;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -35,10 +36,13 @@ public class TestNGMethodFinder implements ITestMethodFinder {
 
   private RunInfo runInfo = null;
   private IAnnotationFinder annotationFinder = null;
+  private final Comparator<ITestNGMethod> comparator;
 
-  public TestNGMethodFinder(RunInfo runInfo, IAnnotationFinder annotationFinder) {
+  public TestNGMethodFinder(RunInfo runInfo, IAnnotationFinder annotationFinder,
+      Comparator<ITestNGMethod> comparator) {
     this.runInfo = runInfo;
     this.annotationFinder = annotationFinder;
+    this.comparator = comparator;
   }
 
   @Override
@@ -192,7 +196,7 @@ public class TestNGMethodFinder implements ITestMethodFinder {
         runInfo,
         annotationFinder,
                                               unique,
-                                              excludedMethods);
+                                              excludedMethods, comparator);
 
   }
 

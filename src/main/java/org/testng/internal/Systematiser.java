@@ -10,22 +10,19 @@ public final class Systematiser {
         //Utility class. Defeat instantiation.
     }
 
-    public static Comparator<Graph.Node> getComparator() {
-        Comparator<Graph.Node> comparator;
+    public static Comparator<ITestNGMethod> getComparator() {
+        Comparator<ITestNGMethod> comparator;
         String text = System.getProperty("testng.order", Order.INSTANCES.getValue());
 
         Order order = Order.parse(text);
         switch (order) {
             case METHOD_NAMES:
-                comparator = new Comparator<Graph.Node>() {
+                comparator = new Comparator<ITestNGMethod>() {
                     @Override
-                    public int compare(Graph.Node o1, Graph.Node o2) {
-                        if (o1.getObject() instanceof ITestNGMethod && o2.getObject() instanceof ITestNGMethod) {
-                            String n1 = ((ITestNGMethod) o1.getObject()).getMethodName();
-                            String n2 = ((ITestNGMethod) o1.getObject()).getMethodName();
-                            return n1.compareTo(n2);
-                        }
-                        return o1.getObject().getClass().getName().compareTo(o2.getObject().getClass().getName());
+                    public int compare(ITestNGMethod o1, ITestNGMethod o2) {
+                        String n1 = o1.getMethodName();
+                        String n2 = o1.getMethodName();
+                        return n1.compareTo(n2);
                     }
 
                     @Override
@@ -37,9 +34,9 @@ public final class Systematiser {
 
             case NONE:
                 //Disables sorting by providing a dummy comparator which always regards two elements as equal.
-                comparator = new Comparator<Graph.Node>() {
+                comparator = new Comparator<ITestNGMethod>() {
                     @Override
-                    public int compare(Graph.Node o1, Graph.Node o2) {
+                    public int compare(ITestNGMethod o1, ITestNGMethod o2) {
                         return 0;
                     }
 
@@ -50,12 +47,12 @@ public final class Systematiser {
                 };
                 break;
 
-            default:
             case INSTANCES:
-                comparator = new Comparator<Graph.Node>() {
+            default:
+                comparator = new Comparator<ITestNGMethod>() {
                     @Override
-                    public int compare(Graph.Node o1, Graph.Node o2) {
-                        return o1.getObject().toString().compareTo(o2.getObject().toString());
+                    public int compare(ITestNGMethod o1, ITestNGMethod o2) {
+                        return o1.toString().compareTo(o2.toString());
                     }
 
                     @Override
