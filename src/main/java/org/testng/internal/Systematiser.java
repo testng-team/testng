@@ -4,12 +4,23 @@ import org.testng.ITestNGMethod;
 
 import java.util.Comparator;
 
+/**
+ * Helps determine how should {@link ITestNGMethod} be ordered by TestNG.
+ */
 public final class Systematiser {
 
     private Systematiser() {
         //Utility class. Defeat instantiation.
     }
 
+    /**
+     * @return - A {@link Comparator} that helps TestNG sort {@link ITestNGMethod}s in a specific order.
+     * Currently the following two orders are supported : <br>
+     * <ol>
+     * <li>Based on the name of methods</li>
+     * <li>Based on the <code>toString()</code> implementation that resides within the test class</li>
+     * </ol>
+     */
     public static Comparator<ITestNGMethod> getComparator() {
         Comparator<ITestNGMethod> comparator;
         String text = System.getProperty("testng.order", Order.INSTANCES.getValue());
